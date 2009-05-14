@@ -85,6 +85,7 @@ import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.OperationAccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -343,6 +344,20 @@ public class WorkspaceTreeHelper {
 			model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {binderId.toString()}));
 			return WebKeys.VIEW_ERROR_RETURN;
 		} catch(OperationAccessControlExceptionNoName e) {
+			//Access is not allowed
+			if (WebHelper.isUserLoggedIn(request) && 
+					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+				//Access is not allowed
+				String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+				model.put(WebKeys.URL, refererUrl);
+				return WebKeys.VIEW_ACCESS_DENIED;
+			} else {
+				//Please log in
+				String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+				model.put(WebKeys.URL, refererUrl);
+				return WebKeys.VIEW_LOGIN_PLEASE;
+			}
+		} catch(AccessControlException e) {
 			//Access is not allowed
 			if (WebHelper.isUserLoggedIn(request) && 
 					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {

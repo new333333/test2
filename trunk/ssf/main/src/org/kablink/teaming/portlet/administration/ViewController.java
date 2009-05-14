@@ -68,6 +68,7 @@ import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.license.LicenseModule.LicenseOperation;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
@@ -77,6 +78,7 @@ import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PortletPreferencesUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -116,7 +118,14 @@ public class ViewController extends  SAbstractController {
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
  		Map<String,Object> model = new HashMap<String,Object>();
+
+ 		Workspace top = null;
+ 		try {
+			top = getWorkspaceModule().getTopWorkspace();
+ 		} catch(Exception e) {}
+
 		model.put("releaseInfo", ReleaseInfo.getReleaseInfo());
 		//Put in the product name
 		model.put(WebKeys.PRODUCT_NAME, SPropsUtil.getString("product.name", ObjectKeys.PRODUCT_NAME_DEFAULT));
@@ -124,7 +133,11 @@ public class ViewController extends  SAbstractController {
 		model.put(WebKeys.PRODUCT_CONFERENCING_NAME, SPropsUtil.getString("product.conferencing.name", ObjectKeys.PRODUCT_CONFERENCING_NAME_DEFAULT));
 		model.put(WebKeys.PRODUCT_CONFERENCING_TITLE, SPropsUtil.getString("product.conferencing.title", ObjectKeys.PRODUCT_CONFERENCING_TITLE_DEFAULT));
  		model.put(WebKeys.PORTLET_TYPE, WebKeys.PORTLET_TYPE_ADMIN);
- 		model.put(WebKeys.UPGRADE_VERSION_CURRENT, getWorkspaceModule().getTopWorkspace().getProperty(ObjectKeys.BINDER_PROPERTY_UPGRADE_VERSION));
+ 		if (top != null) {
+ 			model.put(WebKeys.UPGRADE_VERSION_CURRENT, top.getProperty(ObjectKeys.BINDER_PROPERTY_UPGRADE_VERSION));
+ 		} else {
+ 			model.put(WebKeys.UPGRADE_VERSION_CURRENT, ObjectKeys.PRODUCT_UPGRADE_VERSION);
+ 		}
  		model.put(WebKeys.UPGRADE_VERSION, ObjectKeys.PRODUCT_UPGRADE_VERSION);
 		try {
  			//If running in a portal, see if we should redraw ourselves just after adding the portlet
@@ -142,22 +155,35 @@ public class ViewController extends  SAbstractController {
 			}
  		} catch(Exception e) {}
 		
+		//Set up the standard beans (without a binder)
+		BinderHelper.setupStandardBeans(this, request, response, model);
+
 		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Binder binder=null;
 		if (binderId != null) {
-			binder = getBinderModule().getBinder(binderId);
-			//Set up the standard beans
+			try {
+				binder = getBinderModule().getBinder(binderId);
+	 		} catch(AccessControlException e) {
+				//Access is not allowed
+				String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+				model.put(WebKeys.URL, refererUrl);
+				if (WebHelper.isUserLoggedIn(request) && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+					//Access is not allowed
+					return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
+				} else {
+					//Please log in
+					return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
+				}
+			}
+			//Set up the standard beans (with the binder)
 			BinderHelper.setupStandardBeans(this, request, response, model, binderId);
 			if (binder != null) model.put(WebKeys.ENTITY_TYPE_BEAN, binder.getEntityType().name());
-		
 		}
 		if (getAdminModule().testAccess(AdminOperation.manageFunction)) model.put(WebKeys.IS_SITE_ADMIN, true);
 		
 		PortletURL url;
 		//Build the tree
 		int nextId = 0;
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Workspace top = getWorkspaceModule().getTopWorkspace();
 
 		Document adminTree = DocumentHelper.createDocument();
 		Element rootElement = adminTree.addElement("root");
@@ -219,26 +245,28 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		//Add user
-		ProfileBinder profilesBinder = getProfileModule().getProfileBinder();
-		if (getProfileModule().testAccess(profilesBinder, ProfileOperation.addEntry)) {
-			List defaultEntryDefinitions = profilesBinder.getEntryDefinitions();
-			if (!defaultEntryDefinitions.isEmpty()) {
-				// Only one option
-				Definition def = (Definition) defaultEntryDefinitions.get(0);
-				adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY);
-				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, profilesBinder.getId().toString());
-				adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-				String[] nltArgs = new String[] {NLT.getDef(def.getTitle())};
-				String title = NLT.get("toolbar.new_with_arg", nltArgs);
-				element = DocumentHelper.createElement("child");
-				element.addAttribute("title", title);
-				element.addAttribute("image", "bullet");
-				element.addAttribute("id", String.valueOf(nextId++));
-				element.addAttribute("url", adapterUrl.toString());
-				elements.put(element.attributeValue("title"), element);
+		try {
+			ProfileBinder profilesBinder = getProfileModule().getProfileBinder();
+			if (getProfileModule().testAccess(profilesBinder, ProfileOperation.addEntry)) {
+				List defaultEntryDefinitions = profilesBinder.getEntryDefinitions();
+				if (!defaultEntryDefinitions.isEmpty()) {
+					// Only one option
+					Definition def = (Definition) defaultEntryDefinitions.get(0);
+					adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY);
+					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, profilesBinder.getId().toString());
+					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+					String[] nltArgs = new String[] {NLT.getDef(def.getTitle())};
+					String title = NLT.get("toolbar.new_with_arg", nltArgs);
+					element = DocumentHelper.createElement("child");
+					element.addAttribute("title", title);
+					element.addAttribute("image", "bullet");
+					element.addAttribute("id", String.valueOf(nextId++));
+					element.addAttribute("url", adapterUrl.toString());
+					elements.put(element.attributeValue("title"), element);
+				}
 			}
-		}
+		} catch(AccessControlException e) {}
 		
 		//Roles configuration
 		if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
@@ -269,74 +297,82 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		//Search index
-		if (ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId()) && 
+		if (top != null) {
+			if (ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId()) && 
 				getBinderModule().testAccess(top, BinderOperation.indexBinder)) {
-			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.configure_search_index"));
-			element.addAttribute("image", "bullet");			
-			element.addAttribute("id", String.valueOf(nextId++));
-			elements.put(element.attributeValue("title"), element);		
-			
-			if (getAdminModule().retrieveIndexNodes() != null) {
-				element.addAttribute("displayOnly", "true");
-				// index
-				Element indexElem = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-				indexElem.addAttribute("title", NLT.get("administration.search.title.index"));
-				indexElem.addAttribute("image", "bullet");			
-				indexElem.addAttribute("id", String.valueOf(nextId++));
-				url = response.createRenderURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_FOLDER_INDEX_CONFIGURE);
-				url.setWindowState(WindowState.MAXIMIZED);
-				url.setPortletMode(PortletMode.VIEW);
-				indexElem.addAttribute("url", url.toString());
-				element.add(indexElem);
-				// index
-				Element nodesElem = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-				nodesElem.addAttribute("title", NLT.get("administration.search.title.nodes"));
-				nodesElem.addAttribute("image", "bullet");			
-				nodesElem.addAttribute("id", String.valueOf(nextId++));
-				url = response.createRenderURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_FOLDER_SEARCH_NODES_CONFIGURE);
-				url.setWindowState(WindowState.MAXIMIZED);
-				url.setPortletMode(PortletMode.VIEW);
-				nodesElem.addAttribute("url", url.toString());
-				element.add(nodesElem);
-			}
-			else {
-				url = response.createRenderURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_FOLDER_INDEX_CONFIGURE);
-				url.setWindowState(WindowState.MAXIMIZED);
-				url.setPortletMode(PortletMode.VIEW);
-				element.addAttribute("url", url.toString());
+				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+				element.addAttribute("title", NLT.get("administration.configure_search_index"));
+				element.addAttribute("image", "bullet");			
+				element.addAttribute("id", String.valueOf(nextId++));
+				elements.put(element.attributeValue("title"), element);		
+				
+				if (getAdminModule().retrieveIndexNodes() != null) {
+					element.addAttribute("displayOnly", "true");
+					// index
+					Element indexElem = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+					indexElem.addAttribute("title", NLT.get("administration.search.title.index"));
+					indexElem.addAttribute("image", "bullet");			
+					indexElem.addAttribute("id", String.valueOf(nextId++));
+					url = response.createRenderURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_FOLDER_INDEX_CONFIGURE);
+					url.setWindowState(WindowState.MAXIMIZED);
+					url.setPortletMode(PortletMode.VIEW);
+					indexElem.addAttribute("url", url.toString());
+					element.add(indexElem);
+					// index
+					Element nodesElem = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+					nodesElem.addAttribute("title", NLT.get("administration.search.title.nodes"));
+					nodesElem.addAttribute("image", "bullet");			
+					nodesElem.addAttribute("id", String.valueOf(nextId++));
+					url = response.createRenderURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_FOLDER_SEARCH_NODES_CONFIGURE);
+					url.setWindowState(WindowState.MAXIMIZED);
+					url.setPortletMode(PortletMode.VIEW);
+					nodesElem.addAttribute("url", url.toString());
+					element.add(nodesElem);
+				}
+				else {
+					url = response.createRenderURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_FOLDER_INDEX_CONFIGURE);
+					url.setWindowState(WindowState.MAXIMIZED);
+					url.setPortletMode(PortletMode.VIEW);
+					element.addAttribute("url", url.toString());
+				}
 			}
 		}
 
 		//Manage groups
-		if (getProfileModule().testAccess((ProfileBinder)user.getParentBinder(), ProfileOperation.addEntry)) {
-			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.manage.groups"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_GROUPS);
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
-			elements.put(element.attributeValue("title"), element);
-		}
+		try {
+			ProfileBinder profiles = getProfileModule().getProfileBinder();
+			if (getProfileModule().testAccess(profiles, ProfileOperation.addEntry)) {
+				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+				element.addAttribute("title", NLT.get("administration.manage.groups"));
+				element.addAttribute("image", "bullet");
+				element.addAttribute("id", String.valueOf(nextId++));
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_GROUPS);
+				url.setWindowState(WindowState.MAXIMIZED);
+				url.setPortletMode(PortletMode.VIEW);
+				element.addAttribute("url", url.toString());
+				elements.put(element.attributeValue("title"), element);
+			}
+		} catch(AccessControlException e) {}
 	
 		//Import profiles
-		if (getProfileModule().testAccess((ProfileBinder)user.getParentBinder(), ProfileOperation.addEntry)) {
-			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.import.profiles"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			element.addAttribute("target", "_blank");
-			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_PROFILES_IMPORT);
-			element.addAttribute("url", adapterUrl.toString());
-			elements.put(element.attributeValue("title"), element);
-		}
+		try {
+			ProfileBinder profiles = getProfileModule().getProfileBinder();
+			if (getProfileModule().testAccess(profiles, ProfileOperation.addEntry)) {
+				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+				element.addAttribute("title", NLT.get("administration.import.profiles"));
+				element.addAttribute("image", "bullet");
+				element.addAttribute("id", String.valueOf(nextId++));
+				element.addAttribute("target", "_blank");
+				adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_PROFILES_IMPORT);
+				element.addAttribute("url", adapterUrl.toString());
+				elements.put(element.attributeValue("title"), element);
+			}
+		} catch(AccessControlException e) {}
 	
 
 		
@@ -523,32 +559,38 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		//Manage applications
-		if (getProfileModule().testAccess((ProfileBinder)user.getParentBinder(), ProfileOperation.addEntry)) {
-			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.manage.applications"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_APPLICATIONS);
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
-			elements.put(element.attributeValue("title"), element);
-		}
+		try {
+			ProfileBinder profiles = getProfileModule().getProfileBinder();
+			if (getProfileModule().testAccess(profiles, ProfileOperation.addEntry)) {
+				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+				element.addAttribute("title", NLT.get("administration.manage.applications"));
+				element.addAttribute("image", "bullet");
+				element.addAttribute("id", String.valueOf(nextId++));
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_APPLICATIONS);
+				url.setWindowState(WindowState.MAXIMIZED);
+				url.setPortletMode(PortletMode.VIEW);
+				element.addAttribute("url", url.toString());
+				elements.put(element.attributeValue("title"), element);
+			}
+		} catch(AccessControlException e) {}
 	
 		//Manage application groups
-		if (getProfileModule().testAccess((ProfileBinder)user.getParentBinder(), ProfileOperation.addEntry)) {
-			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.manage.application.groups"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_APPLICATION_GROUPS);
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
-			elements.put(element.attributeValue("title"), element);
-		}
+		try {
+			ProfileBinder profiles = getProfileModule().getProfileBinder();
+			if (getProfileModule().testAccess(profiles, ProfileOperation.addEntry)) {
+				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+				element.addAttribute("title", NLT.get("administration.manage.application.groups"));
+				element.addAttribute("image", "bullet");
+				element.addAttribute("id", String.valueOf(nextId++));
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_APPLICATION_GROUPS);
+				url.setWindowState(WindowState.MAXIMIZED);
+				url.setPortletMode(PortletMode.VIEW);
+				element.addAttribute("url", url.toString());
+				elements.put(element.attributeValue("title"), element);
+			}
+		} catch(AccessControlException e) {}
 	
 		for (Iterator iter=elements.entrySet().iterator(); iter.hasNext(); ) {
 			Map.Entry me = (Map.Entry)iter.next();
