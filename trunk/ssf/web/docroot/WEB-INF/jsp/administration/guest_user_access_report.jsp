@@ -41,8 +41,14 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
+
 <script type="text/javascript">
 var ssReportURL="<ssf:url action="guest_user_access_report" actionUrl="true"><ssf:param name="binderId" value="${ssBinder.id}"/><ssf:param name="binderType" value="${ssBinder.entityType}"/></ssf:url>";
+function ss_selectUser${renderResponse.namespace}(id, obj) {
+	var formObj = document.getElementById("reportForm");
+	formObj.users.value = id;
+}
 </script>
 
 <body class="ss_style_body tundra">
@@ -51,6 +57,42 @@ var ssReportURL="<ssf:url action="guest_user_access_report" actionUrl="true"><ss
 			<c:set var="formName">${renderResponse.namespace}fm</c:set>
 
 			<ssf:form titleTag="administration.report.title.guest_user_access">
+
+
+
+
+
+<form class="ss_style ss_form" 
+	action="<ssf:url webPath="reportDownload"/>" 
+	method="post" 
+	name="reportForm"
+	id="reportForm">
+  <br/>
+  <br/>
+  <ssf:find formName="${formName}" formElement="user" 
+	type="user" 
+	singleItem="true"
+	width="60"
+	clickRoutine="ss_selectUser${renderResponse.namespace}" />
+  <br/>
+  <br/>
+  
+  <input type="hidden" name="users" id="users" />
+  <input type="hidden" name="ss_reportType" id="ss_reportType" value="accessByGuest"/>
+  <input type="submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok"/>">
+     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="submit" class="ss_submit" name="closeBtn" 
+      value="<ssf:nlt tag="button.close" text="Close"/>" 
+      onclick="self.window.close(); return false;">
+</form>
+
+
+
+
+
+
+
+
 				<table cellspacing="0" cellpadding="3">
 					<tr>
 						<td>
