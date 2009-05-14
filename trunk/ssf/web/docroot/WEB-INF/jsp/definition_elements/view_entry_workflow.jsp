@@ -114,7 +114,7 @@
 		      <option value="${response.key}">${response.value}</option>
 		    </c:forEach>
 		    </select><input type="submit" class="ss_submit" name="respondBtn" 
-		     value="<ssf:nlt tag="button.ok" text="OK"/>">
+		     value="<ssf:nlt tag="button.ok" text="OK"/>"><br/>
 		    </form>
 		  </c:forEach>
 		  </td>
