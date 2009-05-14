@@ -756,10 +756,22 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	{
 		return executeSearchQuery(crit.toQuery(), offset, maxResults);
 	}
+    public Map executeSearchQuery(Criteria crit, int offset, int maxResults, Long asUserId)
+	{
+		return executeSearchQuery(crit.toQuery(), offset, maxResults, asUserId);
+	}
 	public Map executeSearchQuery(Document query, int offset, int maxResults) {
        	//Create the Lucene query
 	   	QueryBuilder qb = new QueryBuilder(true);
 	   	SearchObject so = qb.buildQuery(query);
+
+	   	return executeSearchQuery(so, offset, maxResults);
+	}
+
+	public Map executeSearchQuery(Document query, int offset, int maxResults, Long asUserId ) {
+       	//Create the Lucene query
+	   	QueryBuilder qb = new QueryBuilder(true);
+	   	SearchObject so = qb.buildQuery(query, asUserId);
 
 	   	return executeSearchQuery(so, offset, maxResults);
 	}

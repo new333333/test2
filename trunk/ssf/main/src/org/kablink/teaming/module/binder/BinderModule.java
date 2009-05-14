@@ -150,7 +150,7 @@ public interface BinderModule {
 	 */
 	public void deleteTag(Long binderId, String tagId) 
 		throws AccessControlException;
-   /**
+	   /**
 	 * Execute a search query using a <code>Criteria</code>.
      * @param query
      * @param offset
@@ -158,6 +158,14 @@ public interface BinderModule {
      * @return
      */
     public Map executeSearchQuery(Criteria crit, int offset, int maxResults);
+    /**
+	 * Execute a search query using a <code>Criteria</code>. Limit results to those of a different user
+     * @param query
+     * @param offset
+     * @param maxResults
+     * @return
+     */
+    public Map executeSearchQuery(Criteria crit, int offset, int maxResults, Long asUserId);
     /**
 	 * Execute a search query using a <code>QueryBuilder</code>-ready <code>Document</code>.
      * @param query

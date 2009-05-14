@@ -53,6 +53,11 @@ public class GuestUserAccessReportController extends  AbstractReportController
 	protected void populateModel( RenderRequest request, Map model )
 	{
 		super.populateModel(request, model);
+
+		//Initialize the acl bean
+		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
+		accessControlMap.put("generateReport", getAdminModule().testAccess(AdminOperation.report));
+
 	}// end populateModel()
 
 	

@@ -58,6 +58,8 @@ public interface ReportModule {
 	public static final String ENTRY_ID = "entry_id";
 	public static final String ENTRY_TITLE = "entry_title";
 	public static final String ENTITY = "entity";
+	public static final String ENTITY_TYPE = "entity_type";
+	public static final String ENTITY_PATH = "entity_path";
 	public static final String FILE_ID = "file_id";
 	public static final String FOLDER = "folder";
 	public static final String USER = "user";
@@ -134,6 +136,7 @@ public interface ReportModule {
 	public List<Map<String,Object>> generateWorkflowStateReport(Collection ids, Date startDate, Date endDate);
 	public List<Map<String,Object>> generateWorkflowStateCountReport(Collection ids);
 	public List<Map<String, Object>> generateQuotaReport(QuotaOption option, Long threshold);
+	public List<Map<String, Object>> generateAccessReportByUser(final Long userId, final Date startDate, final Date endDate, final String reportType);
 
 	public List<LicenseStats> generateLicenseReport(Date startDate, Date endDate);
 	public List<User> getUsersActivity(DefinableEntity entity, AuditTrail.AuditType type, Date startDate, Date endDate);
