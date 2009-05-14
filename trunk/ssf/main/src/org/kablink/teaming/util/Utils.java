@@ -41,6 +41,7 @@ import org.kablink.teaming.InternalException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.util.Validator;
 
 
 public class Utils {
@@ -90,11 +91,36 @@ public class Utils {
 	
 	public static String getUserTitle(User user) {
 		List values = new ArrayList();
-		values.add(user.getFirstName().trim());
-		values.add(user.getMiddleName().trim());
-		values.add(user.getLastName().trim());
-		String result = NLT.get("user.title", values.toArray(), user.getTitle());
-		result = result.trim().replaceAll("  ", " ");
+		String result = "";
+		
+		String fn = user.getFirstName();
+		if(Validator.isNotNull(fn)){
+			values.add(fn.trim());
+		} else {
+			values.add("");
+		}
+
+		String mn = user.getMiddleName();
+		if(Validator.isNotNull(mn)){
+			values.add(mn.trim());
+		} else {
+			values.add("");
+		}
+
+		String ln = user.getLastName();
+		if(Validator.isNotNull(ln)){
+			values.add(ln.trim());
+		} else {
+			values.add("");
+		}
+
+		String title = user.getTitle();
+		if(Validator.isNotNull(title))
+		{
+			result = NLT.get("user.title", values.toArray(), title);
+			result = result.trim().replaceAll("  ", " ");
+		}
+		
 		return result;
 	}
 }
