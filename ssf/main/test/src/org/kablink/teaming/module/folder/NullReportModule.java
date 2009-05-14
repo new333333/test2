@@ -44,15 +44,11 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.LicenseStats;
 import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.WorkflowState;
-import org.kablink.teaming.domain.WorkflowStateHistory;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.module.report.ReportModule;
-import org.kablink.teaming.module.report.ReportModule.QuotaOption;
 
 public class NullReportModule implements ReportModule {
 
@@ -89,6 +85,7 @@ public class NullReportModule implements ReportModule {
 		return new LicenseStats();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> generateReport(Collection ids,
 			boolean byUser, Date startDate, Date endDate) {
 		// TODO Auto-generated method stub
@@ -100,6 +97,7 @@ public class NullReportModule implements ReportModule {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> generateLoginReport(Date startDate,
 			Date endDate, String optionType, String sortType,
 			String sortType2, Set memberIds) {
@@ -107,12 +105,14 @@ public class NullReportModule implements ReportModule {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> generateWorkflowStateReport(
 			Collection ids, Date startDate, Date endDate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> generateWorkflowStateCountReport(
 			Collection ids) {
 		// TODO Auto-generated method stub
@@ -192,5 +192,11 @@ public class NullReportModule implements ReportModule {
 	public void addTokenInfo(User requester, User requestee, Long applicationId) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public List<Map<String, Object>> generateAccessReportByUser(Long userId,
+			Date startDate, Date endDate, String reportType) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
