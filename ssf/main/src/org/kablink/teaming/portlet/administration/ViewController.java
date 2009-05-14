@@ -446,6 +446,7 @@ public class ViewController extends  SAbstractController {
 			element.addAttribute("title", NLT.get("administration.report.title.activityByUser"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
+			element.addAttribute( "action", WebKeys.ACTION_ACTIVITY_REPORT_BY_USER );
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACTIVITY_REPORT_BY_USER); 
 			url.setWindowState(WindowState.MAXIMIZED);

@@ -320,7 +320,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				model.put(WebKeys.OPERATION, operation);
 				//Build the mashup beans
 				Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
-				DefinitionHelper.buildMashupBeans(this, binder, configDocument, model);
+				DefinitionHelper.buildMashupBeans(this, binder, configDocument, model, request );
 
 			} else if (WebKeys.OPERATION_MODIFY_TEMPLATE.equals(operation)) {
 				model.put(WebKeys.OPERATION, operation);

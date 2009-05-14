@@ -379,7 +379,7 @@ public class ViewEntryController extends  SAbstractController {
 
 			//Build the mashup beans
 			Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
-			DefinitionHelper.buildMashupBeans(this, fe.getParentBinder(), configDocument, model);
+			DefinitionHelper.buildMashupBeans(this, fe.getParentBinder(), configDocument, model, request );
 
 			boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
 			if (!displayType.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) || !accessible_simple_ui) {

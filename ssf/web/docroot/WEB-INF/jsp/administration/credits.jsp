@@ -77,11 +77,24 @@ a:hover {
 	      <ssf:param name="value" value="${creditProduct}"/>
 	    </ssf:nlt>
 	  </ssf:param>
-	   	<% if (openEdition) { %>
-			<%@ include file="/WEB-INF/jsp/administration/credits_eula_open.jsp" %>
-	   	<% } else { %>
-			<%@ include file="/WEB-INF/jsp/administration/credits_eula_closed.jsp" %>
-		<% } %>
+
+	   	<% 
+	   		String	jspName;
+	   	
+	   		if (openEdition)
+	   		{
+	   			jspName = "credits_eula_open.jsp";
+	   	%>
+				<jsp:include page="/WEB-INF/jsp/administration/credits_eula_open.jsp" />
+	   	<%
+	   		}
+	   		else
+	   		{
+	   	%>
+				<jsp:include page="/WEB-INF/jsp/administration/credits_eula_closed.jsp" />
+		<%
+			}
+		%>
 	</ssf:expandableArea><p style="padding-top:6px;"/>
 
 <br/>
