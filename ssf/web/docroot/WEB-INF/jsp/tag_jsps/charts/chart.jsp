@@ -38,7 +38,7 @@
 	<table class="ss_total">
 		<tr>
 			<c:if test="${percent > 0}">
-			<td class="ss_bar" style="width:${percent}%;">&nbsp;</td>
+			<td style="width:${percent}%;"><img class="ss_bar" src="<html:imagesPath/>pics/ss_bar_1px.gif" /></td>
 			</c:if>
 			<c:if test="${percent < 100}">
 			<td>&nbsp;</td>

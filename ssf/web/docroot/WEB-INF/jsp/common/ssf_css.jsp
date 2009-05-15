@@ -3873,6 +3873,14 @@ div.ss_chartContainer div.ss_total div, div.ss_chartContainer table.ss_total td.
 	  zoom:1; /* a workaround IE bug - font color not display correctly */
 	</c:if>	
 }
+
+/* Note that the height of the following style and the one    */
+/* after it are dependent on each other.  Keep them the same! */
+div.ss_chartContainer div.ss_total div, div.ss_chartContainer table.ss_total img.ss_bar {
+	margin: 0px;
+	height: 13px;
+	width: 100%;
+}
 div.ss_chartContainer table.ss_total td { 
 	line-height:13px; 
 	font-size: ${ss_style_font_finestprint};	
