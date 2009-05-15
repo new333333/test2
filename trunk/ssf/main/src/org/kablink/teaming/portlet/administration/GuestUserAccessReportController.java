@@ -31,13 +31,17 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.portlet.administration;
+import java.util.HashMap;
 import java.util.Map;
 
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.springframework.web.portlet.ModelAndView;
 
 
 /**
@@ -50,8 +54,33 @@ public class GuestUserAccessReportController extends  AbstractReportController
 	/**
 	 * 
 	 */
+	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+			RenderResponse response) throws Exception
+	{
+		PortletURL	url;
+		Map 		formData;
+		Map 		model;
+
+		formData = request.getParameterMap();
+		
+		model = new HashMap();
+		populateModel( request, model );
+	
+		// Construct the url needed to invoke the "Access Control" page and add the url to the response.
+		url = response.createRenderURL();
+		url.setParameter( WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL );
+		model.put( "access_control_page_url", url.toString() );
+
+		return new ModelAndView( chooseView( formData ), model );
+	}// end handleRenderRequestInternal()
+	
+	
+	/**
+	 * 
+	 */
 	protected void populateModel( RenderRequest request, Map model )
 	{
+		
 		super.populateModel(request, model);
 
 		//Initialize the acl bean

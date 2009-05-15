@@ -505,6 +505,11 @@ public class AjaxController  extends SAbstractControllerRetry {
 			// Remove the LdapSyncThread object we stored in the session.
 			return ajaxRemoveLdapSyncResults( request, response );
 		}
+		else if ( op.equals( WebKeys.OPERATION_GET_USER_ACCESS_REPORT ) )
+		{
+			// Get a user access report.
+			return ajaxGetUserAccessReport( request, response );
+		}
 		return ajaxReturn(request, response);
 	} 
 
@@ -695,6 +700,31 @@ public class AjaxController  extends SAbstractControllerRetry {
 					ObjectKeys.USER_PROPERTY_BUSINESS_CARD_PREFIX + scope, showBC);
 	}
 
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	private ModelAndView ajaxGetUserAccessReport( RenderRequest request, RenderResponse response ) throws Exception
+	{
+		Map		model;
+		String	userId;
+		
+		model = new HashMap();
+		
+		// Get the id of the user we should get an access report for.
+		userId = PortletRequestUtils.getStringParameter( request, "userId", "" );
+		
+		//!!! Call Peter's code to get the access report.
+		
+		//!!! Add the access report to the response.
+
+		response.setContentType( "text/json" );
+		return new ModelAndView("forum/json/user_access_report", model);
+	}// end ajaxGetUserAccessReport()
+	
+	
 	/**
 	 * 
 	 * @param request

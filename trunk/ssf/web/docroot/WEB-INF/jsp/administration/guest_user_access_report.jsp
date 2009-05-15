@@ -45,10 +45,289 @@
 
 <script type="text/javascript">
 var ssReportURL="<ssf:url action="guest_user_access_report" actionUrl="true"><ssf:param name="binderId" value="${ssBinder.id}"/><ssf:param name="binderType" value="${ssBinder.entityType}"/></ssf:url>";
-function ss_selectUser${renderResponse.namespace}(id, obj) {
-	var formObj = document.getElementById("reportForm");
-	formObj.users.value = id;
-}
+var m_workspaceEntryType;
+var m_folderEnryType;
+var m_profilesEntryType;
+var m_unknownEntryType;
+var m_header1;
+var m_cantInvokeAccessControl;
+var m_accessControlUrl;
+
+ss_createOnLoadObj( 'userAccessReport', onLoadEventHandler );
+
+
+/**
+ * Add an entry to the page for the given object the user has access to.
+ */
+function addAccessReportDataToPage( entry )
+{
+	var table;
+	var tr;
+	var td;
+	var typeName;
+	var anchor;
+
+	// Get the table that holds the list of entries the user has access to.
+	table = document.getElementById( 'accessReportTable' );
+
+	// Create a <tr> for the entry.
+	tr = table.insertRow( table.rows.length );
+
+	// Remember the entry this row is dealing with.
+	tr.n_entry = entry;
+
+	// Add the entry's path to the table.
+	td = tr.insertCell( 0 );
+	td.style.whiteSpace = 'nowrap';
+	anchor = document.createElement( 'a' );
+	anchor.style.cursor = 'pointer';
+	anchor.onclick =	function()
+						{
+							// Invoke the Access Control page to let the user change the access control
+							// on this item.
+							invokeAccessControlPage( tr.n_entry );
+						}
+	span = document.createElement( 'span' );
+	span.className = '';
+	updateElementsTextNode( span, entry.path );
+	anchor.appendChild( span );
+	td.appendChild( anchor );
+
+	// Add the entry's type to the table.
+	td = tr.insertCell( 1 );
+	td.style.whiteSpace = 'nowrap';
+	span = document.createElement( 'span' );
+	span.className = '';
+	typeName = m_unknownEntryType;
+	if ( entry.entryType == 'workspace' )
+		typeName = m_workspaceEntryType;
+	else if ( entry.entryType == 'folder' )
+		typeName = m_folderEntryType;
+	else if ( entry.entryType == 'profiles' )
+		typeName = m_profilesEntryType;
+	updateElementsTextNode( span, typeName );
+	td.appendChild( span );
+}// end addAccessReportDataToPage()
+
+
+/**
+ * Issue an ajax request to get an access report for the given user.
+ */
+function getAccessReport( userId )
+{
+	var	input;
+	var	id;
+	var url;
+	var obj;
+
+	// Display the wait indicator.
+	showWaitIndicator();
+	
+	// Set up the object that will be used in the ajax request.
+	obj = new Object();
+	obj.operation = 'getUserAccessReport'
+	obj.userId = userId;
+
+	// Build the url used in the ajax request.
+	url = ss_buildAdapterUrl( ss_AjaxBaseUrl, obj );
+
+	// Issue the ajax request.  The function handleResponseToGetAccessReport() will be called
+	// when we get the response to the request.
+	ss_get_url( url, handleResponseToGetAccessReport );
+}// end getAccessReport()
+
+
+/**
+ * This function gets called when we get a response to an ajax request to get an access report.
+ */
+function handleResponseToGetAccessReport( responseData )
+{
+	// Hide the wait indicator.
+	hideWaitIndicator();
+	
+	// Remove any previous access data from the page.
+	removeAccessReportDataFromPage();
+	
+	if ( responseData.status == 1 )
+	{
+		// If we get here then things worked.
+		// Do we have any data?
+		if ( responseData.reportData != null && responseData.reportData.length > 0 )
+		{
+			var i;
+			var div;
+
+			// Yes
+			// Update the header text with the name of the selected user.
+			updateHeaderText( responseData.userName );
+
+			// Show the table that holds the list of objects the user has access to.
+			div = document.getElementById( 'accessReportDiv' );
+			div.style.display = '';
+
+			// responseData.reportData is an array of objects.  Each object holds information about
+			// the object the user has access to.
+			for (i = 0; i < responseData.reportData.length; ++i)
+			{
+				var nextEntry;
+
+				// Get the next entry in the report.
+				nextEntry = responseData.reportData[i];
+
+				// Add this entry to the table.
+				addAccessReportDataToPage( nextEntry );
+			}// end for() 
+		}
+		else
+		{
+			// The user doesn't have access to anything.
+		}
+	}
+	else if ( responseData.status == -1 )
+	{
+		// If we get here an error happened retrieving the access report.
+		// Display the error.
+		if ( responseData.errDesc != null )
+		{
+			var msg;
+
+//			msg = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.syncResults.error"/></ssf:escapeJavaScript>';
+//			msg += '\n\n' + responseData.errDesc;
+			alert( responseData.errDesc );
+		}
+	}
+	else
+	{
+		// We should never get here.
+		alert( 'Unknown access report status: ' + responseData.status );
+	}
+}// end handleResponseToGetAccessReport()
+
+
+/**
+ * 
+ */
+function hideWaitIndicator()
+{
+	var span;
+
+	// Hide the Retrieving access report...
+	span = document.getElementById( 'progressIndicator' )
+	span.style.display = 'none';
+}// end hideWaitIndicator()
+
+
+/**
+ * Invoke the Access Control page for the given item.
+ */
+function invokeAccessControlPage( entry )
+{
+//	   href="http://localhost:8080/ssf/a/do?p_name=ss_forum&p_action=0&workAreaId=40&action=configure_access_control&workAreaType=workspace"
+		 
+	 // We can only invoke the Access Control Page on a workspace, folder or profiles binder
+	 if ( entry.entryType == 'workspace' || entry.entryType == 'folder' || entry.entryType == 'profiles' )
+	 {
+		 var url;
+
+		 // Construct the url needed to invoke the Access Control page.
+		 url = m_accessControlUrl + '&workAreaId=' + entry.id + '&workAreaType=' + entry.entryType;
+
+		 // Invoke the Access Control page.
+		 ss_openUrlInPortlet( url, true, '', '');
+	 }
+	 else
+	 {
+		 // Tell the user we can't bring up the Access Control page for the selected item.
+		 alert( m_cantInvokeAccessControl );
+	 }
+}// end invokeAccessControlPage()
+
+
+/**
+ * This function gets called when the page is loaded.
+ */
+function onLoadEventHandler()
+{
+	var form;
+	
+	// Load the various strings we will need.
+	m_unknownEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.guestAccess.unknownEntryType" /></ssf:escapeJavaScript>';
+	m_workspaceEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.guestAccess.workspaceEntryType" /></ssf:escapeJavaScript>';
+	m_folderEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.guestAccess.folderEntryType" /></ssf:escapeJavaScript>';
+	m_profilesEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.guestAccess.profilesEntryType" /></ssf:escapeJavaScript>';
+	m_header1 = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.guestAccess.header1" /></ssf:escapeJavaScript>';		
+	m_cantInvokeAccessControl = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.guestAccess.cantInvokeAccessControl" /></ssf:escapeJavaScript>';
+
+	// Get the url we need to invoke the access control page.
+	m_accessControlUrl = '${access_control_page_url}';
+}// end onLoadEventHandler()
+
+
+
+/**
+ * Remove any access report data from the page.
+ */
+function removeAccessReportDataFromPage()
+{
+	var table;
+	var i;
+
+	// Get the table that holds list of objects the user has access to.
+	table = document.getElementById( 'accessReportTable' );
+
+	// Remove all rows that have a property called 'n_entry'.
+	for (i = 0; i < table.rows.length; ++i)
+	{
+		// Does this row have a n_entry property?
+		if ( !(table.rows[i].n_entry === undefined) && table.rows[i].n_entry != null )
+		{
+			// Yes
+			table.deleteRow( i );
+			--i;
+		}
+	}
+}// end removeAccessReportDataFromPage()
+
+
+/**
+ * 
+ */
+function showWaitIndicator()
+{
+	var span;
+
+	// Show the Retrieving access report...
+	span = document.getElementById( 'progressIndicator' )
+	span.style.display = '';
+}// end showWaitIndicator()
+
+
+/**
+ *
+ */
+function ss_selectUser${renderResponse.namespace}(id, obj)
+{
+	// Issue an ajax request to get the access report for the given user.
+	getAccessReport( id );
+}// end ss_selectUser()
+
+
+/**
+ * Update the header text indicate the selected user.
+ */
+function updateHeaderText( userName )
+{
+	var span;
+	var text;
+
+	// Replace {0} with the user's name.
+	text = m_header1.replace( '{0}', userName );
+	
+	// Update the text that says "The user, xxx, has been given rights to the following objects.
+	span = document.getElementById( 'header1Span' );
+	updateElementsTextNode( span, text );
+}// end updateHeaderText()
+
 </script>
 
 <body class="ss_style_body tundra">
@@ -57,89 +336,64 @@ function ss_selectUser${renderResponse.namespace}(id, obj) {
 			<c:set var="formName">${renderResponse.namespace}fm</c:set>
 
 			<ssf:form titleTag="administration.report.title.guest_user_access">
+				<form class="ss_style ss_form" 
+					action="<ssf:url webPath="reportDownload"/>" 
+					method="post" 
+					name="reportForm"
+					id="reportForm">
 
+					<div style="margin-top: 2em;">
+						<span style="margin-right: 1em;"><ssf:nlt tag="administration.report.guestAccess.selectUser" /></span>
 
+					  	<ssf:find formName="${formName}" formElement="user" 
+									type="user" 
+									singleItem="true"
+									width="80"
+									clickRoutine="ss_selectUser${renderResponse.namespace}" />
 
+						<span id="progressIndicator" style="margin-left: 4em; display: none;">
+							<ssf:nlt tag="administration.report.guestAccess.retrievingReport" />
+							<img src="<html:imagesPath/>pics/spinner_small.gif" align="absmiddle" border="0" >
+						</span>
+					</div>
+				</form>
 
+				<div id="accessReportDiv" style="display: none;">
+					<table cellspacing="0" cellpadding="3">
+						<tr>
+							<td>
+								<div style="margin-top: .7em;">
+									<span id="header1Span"></span>
+								</div>
+								<div style="margin-bottom: .6em;">
+									<span><ssf:nlt tag="administration.report.guestAccess.header2" /></span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<table id="accessReportTable" width="100%" class="ss_style" cellspacing="0" cellpadding="3" style="border: 1px solid black;">
+									<tr style="font-family: arial, sans-serif; background-color: #EDEEEC; border-bottom: 1px solid black; color: black; font-size: .75em; font-weight: bold;">
+										<td align="left">
+											<span>&nbsp;<ssf:nlt tag="administration.report.guestAccess.col1" /><span>
+										</td>
+										<td align="left">
+											<span>&nbsp;<ssf:nlt tag="administration.report.guestAccess.col2" /><span>
+										</td>
+										<td align="left" width="100%">
+											&nbsp;
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</div>
 
-<form class="ss_style ss_form" 
-	action="<ssf:url webPath="reportDownload"/>" 
-	method="post" 
-	name="reportForm"
-	id="reportForm">
-  <br/>
-  <br/>
-  <ssf:find formName="${formName}" formElement="user" 
-	type="user" 
-	singleItem="true"
-	width="60"
-	clickRoutine="ss_selectUser${renderResponse.namespace}" />
-  <br/>
-  <br/>
-  
-  <input type="hidden" name="users" id="users" />
-  <input type="hidden" name="ss_reportType" id="ss_reportType" value="accessByGuest"/>
-  <input type="submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok"/>">
-     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="submit" class="ss_submit" name="closeBtn" 
-      value="<ssf:nlt tag="button.close" text="Close"/>" 
-      onclick="self.window.close(); return false;">
-</form>
-
-
-
-
-
-
-
-
-				<table cellspacing="0" cellpadding="3">
-					<tr>
-						<td>
-							<div style="margin-top: .7em;">
-								<span><ssf:nlt tag="administration.report.guestAccess.header1" /></span>
-							</div>
-							<div style="margin-bottom: .6em;">
-								<span><ssf:nlt tag="administration.report.guestAccess.header2" /></span>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<table width="100%" class="ss_style" cellspacing="0" cellpadding="3" style="border: 1px solid black;">
-								<tr style="font-family: arial, sans-serif; background-color: #EDEEEC; border-bottom: 1px solid black; color: black; font-size: .75em; font-weight: bold;">
-									<td align="left">
-										<span>&nbsp;<ssf:nlt tag="administration.report.guestAccess.col1" /><span>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<a onclick="return ss_openUrlInPortlet( this.href, true, '', '');"
-										   href="http://localhost:8080/ssf/a/do?p_name=ss_forum&p_action=0&workAreaId=40&action=configure_access_control&workAreaType=workspace">
-											<span>Some Workspace</span>
-										</a>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<a onclick="return ss_openUrlInPortlet( this.href, true, '', '');"
-										   href="http://localhost:8080/ssf/a/do?p_name=ss_forum&p_action=0&workAreaId=40&action=configure_access_control&workAreaType=workspace">
-											<span>Marketing Workspace</span>
-										</a>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<a onclick="return ss_openUrlInPortlet( this.href, true, '', '');"
-										   href="http://localhost:8080/ssf/a/do?p_name=ss_forum&p_action=0&workAreaId=40&action=configure_access_control&workAreaType=workspace">
-											<span>QA Workspace</span>
-										</a>
-									</td>
-								</tr>
-							</table>
-						</td>
-					</tr>
-				</table>
+				<div style="margin-top: 2em !important;">
+					<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+						onClick="self.window.close();return false;" />
+				</div>
 			</ssf:form>
 		</div>
 	</div>

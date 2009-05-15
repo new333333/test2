@@ -475,6 +475,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_TEAM_MEMBERS = "get_team_members";
 	public static final String OPERATION_GET_CLIPBOARD_USERS = "get_clipboard_users";
 	public static final String OPERATION_GET_LDAP_SYNC_RESULTS = "getLdapSyncResults";
+	public static final String OPERATION_GET_USER_ACCESS_REPORT = "getUserAccessReport";
 	public static final String OPERATION_REMOVE_LDAP_SYNC_RESULTS = "removeLdapSyncResults";
 	public static final String OPERATION_SHOW_TEAM_MEMBERS = "show_team_members";
 	public static final String OPERATION_SHOW_NO_ENTRIES = "show_no_entries";
