@@ -89,7 +89,8 @@ public class QueryBuilder {
 
 	public QueryBuilder(Long asUserId) {
 		this.userPrincipals = new HashSet();
-		this.userPrincipals.add(getProfileDao().loadUser(asUserId, RequestContextHolder.getRequestContext().getZoneId()).getId());
+		User asUser = getProfileDao().loadUser(asUserId, RequestContextHolder.getRequestContext().getZoneId());
+		this.userPrincipals = (getProfileDao().getPrincipalIds(asUser));
 		this.applicationPrincipals = null;
 	}
 
