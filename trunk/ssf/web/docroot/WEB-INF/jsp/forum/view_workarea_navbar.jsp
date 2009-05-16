@@ -134,6 +134,14 @@ ss_setObjectLeft(document.getElementById("ss_mastheadWatermark${renderResponse.n
 
 <!-- Start of global toolbar -->
 <script type="text/javascript">
+if (self != self.parent) {
+	//Check if this page is a full Teaming page inside a frame inside Teaming
+	try {
+		if (typeof self.parent.ss_urlBase != "undefined") {
+			self.parent.location.href = self.location.href;
+		}
+	} catch(e) {}
+}
 var ss_parentWorkareaNamespace${renderResponse.namespace} = "";
 function ss_workarea_showPseudoPortal${renderResponse.namespace}(obj) {
 	//See if we are in an iframe inside a portlet 
