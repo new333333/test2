@@ -72,16 +72,18 @@
   id="${renderResponse.namespace}ss_blog_reply_count_${ssDefinitionEntry._docId}"
 >${ssDefinitionEntry._totalReplyCount}</span>]</span></a>
 </li>
-<li>
-<a href="<ssf:url adapter="true" 
-		portletName="ss_forum" 
-	    action="send_entry_email"
-	    binderId="${ssBinder.id}"
-	    entryId="${ssDefinitionEntry._docId}"/>" 
-  onClick="ss_openUrlInWindow(this, '_blank');return false;"
-  <ssf:title tag="title.send.entry.to.friends" />
-><span><img src="<html:imagesPath/>icons/send_friend.gif"/><ssf:nlt tag="entry.sendtofriend"/></span></a>
-</li>
+<c:if test="${!empty ssUser.emailAddress}">
+	<li>
+	<a href="<ssf:url adapter="true" 
+			portletName="ss_forum" 
+		    action="send_entry_email"
+		    binderId="${ssBinder.id}"
+		    entryId="${ssDefinitionEntry._docId}"/>" 
+	  onClick="ss_openUrlInWindow(this, '_blank');return false;"
+	  <ssf:title tag="title.send.entry.to.friends" />
+	><span><img src="<html:imagesPath/>icons/send_friend.gif"/><ssf:nlt tag="entry.sendtofriend"/></span></a>
+	</li>
+</c:if>
 <li>
 <a onclick=" ss_createPopupDiv(this, '${renderResponse.namespace}ss_subscription_entry${ssDefinitionEntry._docId}');return false;" 
 	href="<ssf:url
