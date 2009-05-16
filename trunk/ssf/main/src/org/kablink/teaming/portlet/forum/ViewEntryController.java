@@ -81,6 +81,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.NLT;
@@ -321,6 +322,20 @@ public class ViewEntryController extends  SAbstractController {
 						throw nf;
 					}
 				} catch(OperationAccessControlExceptionNoName e) {
+					//Access is not allowed
+					if (WebHelper.isUserLoggedIn(request) && 
+							!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+						//Access is not allowed
+						String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+						model.put(WebKeys.URL, refererUrl);
+						return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
+					} else {
+						//Please log in
+						String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+						model.put(WebKeys.URL, refererUrl);
+						return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
+					}
+				} catch(AccessControlException e) {
 					//Access is not allowed
 					if (WebHelper.isUserLoggedIn(request) && 
 							!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
@@ -748,20 +763,22 @@ public class ViewEntryController extends  SAbstractController {
 			}
 		}	
 		
-		Map qualifiers = new HashMap();
-		qualifiers.put("popup", new Boolean(true));
-		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.shareThis");
-		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
-		adapterUrl.setParameter(WebKeys.ACTION, "__ajax_relevance");
-		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SHARE_THIS_BINDER);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
-		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-		toolbar.addToolbarMenu("8_shareThis", NLT.get("toolbar.shareThis"), adapterUrl.toString(), qualifiers);
+		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.shareThis");
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
+			adapterUrl.setParameter(WebKeys.ACTION, "__ajax_relevance");
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SHARE_THIS_BINDER);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
+			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+			toolbar.addToolbarMenu("8_shareThis", NLT.get("toolbar.shareThis"), adapterUrl.toString(), qualifiers);
+		}
 
 
 		//The "Footer" menu
 		Toolbar footerToolbar = new Toolbar();
-		qualifiers = new HashMap();
+		Map qualifiers = new HashMap();
 		String permaLink = PermaLinkUtil.getPermalink(request, entry);
 		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.entryPermalink"), permaLink, qualifiers);
@@ -769,8 +786,7 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.PERMALINK, permaLink);
 		model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
 
-		if (entry.isTop() && !user.getEmailAddresses().isEmpty() && 
-				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+		if (entry.isTop() && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			AdaptedPortletURL adapterSubscriptionUrl = new AdaptedPortletURL(request, "ss_forum", false);
 			adapterSubscriptionUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
 			adapterSubscriptionUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SUBSCRIBE);
@@ -787,7 +803,7 @@ public class ViewEntryController extends  SAbstractController {
 		
 		if (!user.getEmailAddresses().isEmpty() && 
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_ENTRY_EMAIL);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
 			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
@@ -800,7 +816,7 @@ public class ViewEntryController extends  SAbstractController {
 
 		if (getIcBrokerModule().isEnabled() && 
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
 			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
