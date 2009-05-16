@@ -34,6 +34,7 @@
 %>
 <% // View blog reply count %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
 <%
 	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
 	boolean thisEntryIsEntry = false;
@@ -84,21 +85,23 @@
 	><span><img src="<html:imagesPath/>icons/send_friend.gif"/><ssf:nlt tag="entry.sendtofriend"/></span></a>
 	</li>
 </c:if>
-<li>
-<a onclick=" ss_createPopupDiv(this, '${renderResponse.namespace}ss_subscription_entry${ssDefinitionEntry._docId}');return false;" 
-	href="<ssf:url
-			adapter="true" 
-			portletName="ss_forum" 
-			action="__ajax_request" 
-			actionUrl="false">
-				<ssf:param name="operation" value="subscribe" />
-				<ssf:param name="binderId" value="${ssBinder.id}" />
-				<ssf:param name="entryId" value="${ssDefinitionEntry._docId}" />
-				<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
-				<ssf:param name="namespace" value="${renderResponse.namespace}" />
-		</ssf:url>" <ssf:title tag="title.subscribe.to.entry"/>
-		><span><img src="<html:imagesPath/>icons/send_friend.gif"/><ssf:nlt tag="entry.subscribe"/></span></a>
-</li>	
+<c:if test="${ssUser.internalId != guestInternalId}">
+	<li>
+	<a onclick=" ss_createPopupDiv(this, '${renderResponse.namespace}ss_subscription_entry${ssDefinitionEntry._docId}');return false;" 
+		href="<ssf:url
+				adapter="true" 
+				portletName="ss_forum" 
+				action="__ajax_request" 
+				actionUrl="false">
+					<ssf:param name="operation" value="subscribe" />
+					<ssf:param name="binderId" value="${ssBinder.id}" />
+					<ssf:param name="entryId" value="${ssDefinitionEntry._docId}" />
+					<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
+					<ssf:param name="namespace" value="${renderResponse.namespace}" />
+			</ssf:url>" <ssf:title tag="title.subscribe.to.entry"/>
+			><span><img src="<html:imagesPath/>icons/send_friend.gif"/><ssf:nlt tag="entry.subscribe"/></span></a>
+	</li>	
+</c:if>
 </ul>
 </div>
 
