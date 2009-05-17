@@ -116,16 +116,14 @@
 				</c:if>
 
 				<c:if test="${!ssDefinitionEntry.mirrored || empty ssDefinitionEntry.resourceDriver}" >
-					<c:if test="${!empty resourceDrivers}" >
-						<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.driver.label"/></span>
-						<c:set var="resourceRootPath" value="${resourceDrivers[0].rootPath}"/>
-						<select name="resourceDriverName" onchange="updateResourceRootPath();">
-							<c:forEach var="driver" items="${resourceDrivers}">
-								<option value="${driver.name}" id="${driver.rootPath}" <c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}">selected</c:if>>${driver.titleAndMode}</option>
-								<c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}"><c:set var="resourceRootPath" value="${driver.rootPath}"/></c:if>
-							</c:forEach>
-						</select>
-					</c:if>
+					<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.driver.label"/></span>
+					<c:set var="resourceRootPath" value="${resourceDrivers[0].rootPath}"/>
+					<select name="resourceDriverName" onchange="updateResourceRootPath();">
+						<c:forEach var="driver" items="${resourceDrivers}">
+							<option value="${driver.name}" id="${driver.rootPath}" <c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}">selected</c:if>>${driver.titleAndMode}</option>
+							<c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}"><c:set var="resourceRootPath" value="${driver.rootPath}"/></c:if>
+						</c:forEach>
+					</select>
 				</c:if>				
 				<br/>
 	
