@@ -56,6 +56,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.dom4j.Element;
+import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -409,7 +410,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  					binder.setResourceDriverName(parent.getResourceDriverName());
  				}
  				else {
- 					throw new IllegalArgumentException("Resource driver name must be specified for new binder");
+ 					throw new ConfigurationException("Mirrored folder requires a resource driver to be specified");
  				}
  			}
  			else {
