@@ -236,7 +236,7 @@ public class ViewEntryController extends  SAbstractController {
 		} catch(Exception e) {}
 
 		//Set up the standard beans
-		BinderHelper.setupStandardBeans(this, request, response, model);
+		BinderHelper.setupStandardBeans(this, request, response, model, folderId);
 		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
 
 		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
