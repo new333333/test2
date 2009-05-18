@@ -749,7 +749,15 @@ function ss_updateStatusSoon(obj, evt, maxLength) {
 		ss_statusTimer = null;
 	}
 	//If the string is too long to fit in the database, truncate it
-	if (obj.value.length >= maxLength) obj.value = obj.value.substr(0,maxLength-1);
+	if (obj.value.length >= maxLength) {
+		obj.value = obj.value.substr(0,maxLength-1);
+		alert(ss_miniblogTextTooBigErrorMsg);
+		return;
+	}
+	if (ss_isIE6 && obj.value.length > 200) {
+		alert(ss_miniblogTextTooBigErrorMsg);
+		return;
+	}
 	
     var charCode = (evt.which) ? evt.which : event.keyCode
     //check for tab or cr; tab or 2 cr's signals the end of the input
@@ -787,6 +795,10 @@ function ss_updateStatusNow(obj) {
 			ss_statusCurrent = escape(obj.value);
 			var status = ss_replaceSubStrAll(obj.value, "\"", "&quot;");
 			if (status.length > 255) {
+				alert(ss_miniblogTextTooBigErrorMsg);
+				return;
+			}
+			if (ss_isIE6 && status.length > 200) {
 				alert(ss_miniblogTextTooBigErrorMsg);
 				return;
 			}
