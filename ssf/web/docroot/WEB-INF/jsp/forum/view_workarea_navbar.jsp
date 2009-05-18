@@ -736,18 +736,21 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			<tbody>
 			<tr>
 			  <td>
-				<a class="ss_inlineButton" onclick="ssMyFavorites${renderResponse.namespace}.moveSelectedFavorites('down')"
+				<a class="ss_inlineButton" 
+				  onclick="ssMyFavorites${renderResponse.namespace}.moveSelectedFavorites('down');return false;"
 				><img <ssf:alt tag="favorites.movedown"/> src="<html:imagesPath/>icons/button_move_down.gif" 
 				/><span><ssf:nlt tag="favorites.movedown"/></span></a>
 		  	  </td>	
 			  <td>		
-				<a class="ss_inlineButton" onclick="ssMyFavorites${renderResponse.namespace}.moveSelectedFavorites('up')"
+				<a class="ss_inlineButton" 
+				  onclick="ssMyFavorites${renderResponse.namespace}.moveSelectedFavorites('up');return false;"
 				><img <ssf:alt tag="favorites.moveup"/> src="<html:imagesPath/>icons/button_move_up.gif" 
 				/><span><ssf:nlt tag="favorites.moveup"/></span></a>
 		  	  </td>
 			  <td>
 				
-				<a class="ss_inlineButton" onclick="ssMyFavorites${renderResponse.namespace}.deleteSelectedFavorites()"
+				<a class="ss_inlineButton" 
+				  onclick="ssMyFavorites${renderResponse.namespace}.deleteSelectedFavorites();return false;"
 				><img <ssf:alt tag="favorites.delete"/> src="<html:imagesPath/>icons/button_delete.gif" 
 				/><span><ssf:nlt tag="favorites.delete"/></span></a>
 			  </td>
