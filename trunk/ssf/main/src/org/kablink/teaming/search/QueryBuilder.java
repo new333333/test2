@@ -79,19 +79,18 @@ public class QueryBuilder {
 			if(app != null && !app.isTrusted()) {
 				this.applicationPrincipals = getProfileDao().getPrincipalIds(app);
 			} else {
-				this.applicationPrincipals = new HashSet();
+				this.applicationPrincipals = null;
 			}
 		} else {
-			this.userPrincipals = new HashSet();
-			this.applicationPrincipals = new HashSet();
+			this.userPrincipals = null;
+			this.applicationPrincipals = null;
 		}
 	}
 
 	public QueryBuilder(Long asUserId) {
-		this.userPrincipals = new HashSet();
 		User asUser = getProfileDao().loadUser(asUserId, RequestContextHolder.getRequestContext().getZoneId());
 		this.userPrincipals = (getProfileDao().getPrincipalIds(asUser));
-		this.applicationPrincipals = new HashSet();
+		this.applicationPrincipals = null;
 	}
 
 	protected ProfileDao getProfileDao() {
