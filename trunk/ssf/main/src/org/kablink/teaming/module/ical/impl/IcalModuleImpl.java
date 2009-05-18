@@ -1919,16 +1919,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		}
 		
 		// If there are no attendees to this event...
-		//
-		// This fix was backed out to fix bug 474318.  Turns out that
-		// even when sent as an attachment, an iCal request causes GW
-		// to treat the event as an appointment.  For appointments, the
-		// GW display uses the iCal, not the Text/Plain or Text/HTML,
-		// as we hoped it would.  Going back to always publish makes
-		// it so GW displays this as an email with an iCal attachment.
-// --------------------------------------------------------------------
-//		if (0 == attendees)
-// --------------------------------------------------------------------
+		if (0 == attendees)
 		{
 			// ...we want to issue it as a publish, not a request.
 			calendar.getProperties().remove(Method.REQUEST);
