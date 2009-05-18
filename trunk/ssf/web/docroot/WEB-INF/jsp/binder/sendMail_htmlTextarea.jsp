@@ -78,7 +78,6 @@ tinyMCE.init(
 </script>
 <div align="left">
  <textarea class="ss_style mceEditable" name="mailBody" style="height:200px"><%--
-  --%><% //need to escape cause html is going into textarea %><%--
-  --%><c:out value="${body}" escapeXml="true"/><%--
+  --%><c:out value="${body}" /><%--
  --%></textarea>
 </div>
