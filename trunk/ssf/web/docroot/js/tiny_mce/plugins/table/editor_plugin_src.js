@@ -524,7 +524,7 @@
 						inst.windowManager.open({
 							url : url + '/table.htm',
 							width : 400 + parseInt(inst.getLang('table.table_delta_width', 0)),
-							height : 320 + parseInt(inst.getLang('table.table_delta_height', 0)),
+							height : 400 + parseInt(inst.getLang('table.table_delta_height', 0)),
 							inline : 1
 						}, {
 							plugin_url : url,
