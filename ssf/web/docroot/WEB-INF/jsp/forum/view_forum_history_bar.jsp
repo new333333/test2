@@ -96,6 +96,7 @@ var ss_history_bar_loaded = 1;
   <tr>
 
 <c:if test="${ssConfigJspStyle != 'template'}">
+     <c:if test="${!empty ssFolder.id}">
      <td><a  
           href="<ssf:url
           adapter="true"
@@ -122,6 +123,7 @@ var ss_history_bar_loaded = 1;
           onClick="if (self.ss_getPreviousEntryId) ss_getPreviousEntryId('${ss_history_bar_imageId}');return false;" ><img
           alt="<ssf:nlt tag="nav.nextEntry" text="Next entry"/>" id="ss_next"
           border="0" src="<html:imagesPath/>pics/sym_s_arrow_up.gif"></a></td>
+	</c:if>
 </c:if>
 <c:if test="${ssConfigJspStyle == 'template'}">
 
