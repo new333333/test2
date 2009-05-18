@@ -4347,7 +4347,7 @@ function ssFavorites(namespace) {
 				f.action = "view_ws_listing";
 			}
 			t += ", '" + f.action + "'";
-			t += ');">' + f.name + '</a></span>';
+			t += ');return false;">' + f.name + '</a></span>';
 			t += '</li>';
 		}
 		// Close the list and add a space so the div has something in it
@@ -4389,6 +4389,7 @@ function ssFavorites(namespace) {
 
 	this.showhideFavoritesEditor = function() {
 	   var ebox = dojo.byId("ss_favorites_editor" + namespace);
+		ebox.style.zIndex = ssMenuZ;
 		if (dojo.style(ebox, "display") != "none") {
 			dojo.fadeOut({node:ebox, delay:100}).play()
 			setFavoriteListEditable(false);
@@ -4524,6 +4525,7 @@ function ss_moveElementUp(node) {
 	if (prior) {
 		prior.parentNode.insertBefore(node, prior);
 	}
+	if (node.getElementsByTagName("input").length > 0) node.getElementsByTagName("input")[0].checked = true;
 }
 function ss_moveElementDown(node) {
 	var next = node.nextSibling;
@@ -4538,6 +4540,7 @@ function ss_moveElementDown(node) {
 			p.appendChild(node);
 		}
 	}
+	if (node.getElementsByTagName("input").length > 0) node.getElementsByTagName("input")[0].checked = true;
 }
 
 function ssTeams(namespace) {
