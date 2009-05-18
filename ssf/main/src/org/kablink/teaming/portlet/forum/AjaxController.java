@@ -73,6 +73,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
@@ -116,6 +117,7 @@ import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.module.ldap.LdapSyncThread;
+import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portlet.binder.AccessControlController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -709,16 +711,21 @@ public class AjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxGetUserAccessReport( RenderRequest request, RenderResponse response ) throws Exception
 	{
 		Map		model;
-		String	userId;
+		String	userIdStr;
+		Long	userId;
+		List<Map<String, Object>> report = null;
 		
 		model = new HashMap();
 		
 		// Get the id of the user we should get an access report for.
-		userId = PortletRequestUtils.getStringParameter( request, "userId", "" );
+		userIdStr = PortletRequestUtils.getStringParameter( request, "userId", "" );
+		userId = Long.getLong( userIdStr );
 		
-		//!!! Call Peter's code to get the access report.
-		
-		//!!! Add the access report to the response.
+		// Get a report of what items the given user has access to.
+        report = getReportModule().generateAccessReportByUser( userId, null, null, "summary" );
+
+        // Add the access report to the response.
+        model.put( "userAccessReport", report );
 
 		response.setContentType( "text/json" );
 		return new ModelAndView("forum/json/user_access_report", model);
