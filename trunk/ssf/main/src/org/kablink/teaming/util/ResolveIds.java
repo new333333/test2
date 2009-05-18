@@ -196,12 +196,14 @@ public class ResolveIds {
 				data.put("title", binder.getTitle());
 				data.put("iconName", binder.getIconName());
 				data.put("deleted", binder.isDeleted());
-				data.put("definitionType", binder.getDefinitionType().toString());
+				if (binder.getDefinitionType() != null) {
+					data.put("definitionType", binder.getDefinitionType().toString());
+				}
 				data.put("pathName", binder.getPathName());
 				data.put("parentTitle", binder.getParentBinder().getTitle());
 				results.put(binder.getId().toString(), data);
 			}
-		} catch (ClassNotFoundException e) {
+		} catch (Exception e) {
 			/* return an empty results map. */
 		}
 		return results;

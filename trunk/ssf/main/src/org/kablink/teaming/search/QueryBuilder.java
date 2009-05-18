@@ -79,11 +79,11 @@ public class QueryBuilder {
 			if(app != null && !app.isTrusted()) {
 				this.applicationPrincipals = getProfileDao().getPrincipalIds(app);
 			} else {
-				this.applicationPrincipals = null;
+				this.applicationPrincipals = new HashSet();
 			}
 		} else {
-			this.userPrincipals = null;
-			this.applicationPrincipals = null;
+			this.userPrincipals = new HashSet();
+			this.applicationPrincipals = new HashSet();
 		}
 	}
 
@@ -91,7 +91,7 @@ public class QueryBuilder {
 		this.userPrincipals = new HashSet();
 		User asUser = getProfileDao().loadUser(asUserId, RequestContextHolder.getRequestContext().getZoneId());
 		this.userPrincipals = (getProfileDao().getPrincipalIds(asUser));
-		this.applicationPrincipals = null;
+		this.applicationPrincipals = new HashSet();
 	}
 
 	protected ProfileDao getProfileDao() {
@@ -438,13 +438,15 @@ public class QueryBuilder {
 	}
 	private String idField(Collection<Long>ids, String prefix) {
 		StringBuffer buf = new StringBuffer("");
-		boolean first = true;
-		for (Long id:ids) {
-			if (!first) {
-				buf.append(" OR ");
+		if (ids != null) {
+			boolean first = true;
+			for (Long id:ids) {
+				if (!first) {
+					buf.append(" OR ");
+				}
+				buf.append(prefix + id);
+				first = false;
 			}
-			buf.append(prefix + id);
-			first = false;
 		}
 		return buf.toString();
 		
