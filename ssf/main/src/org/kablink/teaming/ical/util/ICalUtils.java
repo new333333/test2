@@ -78,15 +78,7 @@ public class ICalUtils {
 
 	public static CalendarOutputter getCalendarOutputter() {
 		CalendarOutputter	co = new CalendarOutputter();
-		
-		// Bugzilla 488900 and 500218:
-		//   Changed to output the iCal using a non-validating
-		//   CalendarOutputter.  Changed to non-validating because
-		//   ical4j throws a validation error if we use PUBLISH when
-		//   there are attendees.  In order to get GroupWise
-		//   interaction to work, that's what we're doing.
-		co.setValidating(false);
-		
+		co.setValidating(true);
 		return co;
 	}
 }
