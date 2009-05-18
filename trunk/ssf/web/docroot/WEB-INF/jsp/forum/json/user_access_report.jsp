@@ -34,61 +34,53 @@
 %>
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
 <%@ page import="java.lang.String" %>
-
+<%@ page import="org.kablink.teaming.module.report.ReportModule" %>
 
 <% // This is a JSON AJAX response %>
 <% // Do we have an access report? %>
 <c:if test="${!empty userAccessReport}">
 	<% // Yes %>
-	<jsp:useBean id="ldapSyncResults" type="org.kablink.teaming.module.ldap.LdapSyncResults" scope="request" />
+	<jsp:useBean id="userAccessReport" type="java.util.List" scope="request" />
 
 <%
-	org.kablink.teaming.module.ldap.LdapSyncResults.PartialLdapSyncResults	partialSyncResults;
-	ArrayList<String>	syncResults;
-	int					i;
-	int					status;
-	String				name;
-	String				seperator;
-	String				errDesc;
-	String				errLdapConfigId;
-	
-	status = ldapSyncResults.getStatus().ordinal();
-	errDesc = ldapSyncResults.getErrorDesc();
-	errLdapConfigId = ldapSyncResults.getErrorLdapConfigId();
+	int		i;
+	String	name;
+	String	seperator;
+
 %>
 {
-	status : <%= status %>,
-	errDesc : '<ssf:escapeJavaScript value="<%= errDesc %>" />',
-	errLdapConfigId : '<ssf:escapeJavaScript value="<%= errLdapConfigId %>" />',
+	status : 1,
+	errDesc : null,
 
+	reportData : [
 <%
-	// Get the list of users that were added.
-	partialSyncResults = ldapSyncResults.getAddedUsers();
-	syncResults = null;
-	if ( partialSyncResults != null )
-		syncResults = partialSyncResults.getResults();
-	
-%>
-	addedUsers : [
-<%
-	if ( syncResults != null && syncResults.size() > 0 )
+	for (i = 0; i < userAccessReport.size(); ++i)
 	{
-		for (i = 0; i < syncResults.size(); ++i)
-		{
-			// If this is not the first name, add a ',' before we add another name.
-			if ( i != 0 )
-				seperator = ",";
-			else
-				seperator = "";
+		Map		nextItem;
+		String	separator;
+		Long	binderId;
+		String	binderIdStr;
+		String	entityType;
+		String	entityPath;
+		
+		nextItem = (Map) userAccessReport.get( i );
+		binderId = (Long)nextItem.get( ReportModule.BINDER_ID );
+		binderIdStr = binderId.toString();
+		entityType = (String)nextItem.get( ReportModule.ENTITY_TYPE );
+		entityPath = (String)nextItem.get( ReportModule.ENTITY_PATH );
 
-			name = (String) syncResults.get( i );
+		// If this is not the first entity, add a ',' before we add another entity.
+		if ( i != 0 )
+			separator = ",";
+		else
+			separator = "";
 %>
-			<%= seperator %>'<ssf:escapeJavaScript value="<%= name %>" />'
+		<%= separator %>{ entryType : '<%= entityType %>', id : <%= binderIdStr %>, path: '<ssf:escapeJavaScript value="<%= entityPath %>" />' }
 <%
-		}
-	}
+	}// end for()
 %>
 	]
 }
@@ -98,9 +90,8 @@
 <c:if test="${empty userAccessReport}">
 	<% // No %>
 {
-	status : 1,
+	status : -1,
 	errDesc : null,
-	userName : 'some user',
-	reportData : [ {entryType : 'workspace', id : 40, path : '/Home Workspace/Personal Workspaces/admin (admin)/Landing Page WS'}, {entryType : 'folder', id : 41, path : '/Home Workspace/Personal Workspaces/admin (admin)/Blog'}, {entryType : 'folder', id : 646, path : '/Home Workspace/Personal Workspaces/user-hhh uboten (user-hhh)/Task Folder'}, {entryType : 'profiles', id : 97, path : '/Home Workspace/Personal Workspaces'}, {entryType : 'foobar', id : 100, path : '/Home Workspace/Bogus'} ]
+	reportData : []
 }
 </c:if>

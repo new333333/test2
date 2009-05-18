@@ -37,19 +37,18 @@
 
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
-<c:set var="ss_windowTitle" value='<%= NLT.get( "administration.report.title.guest_user_access" ) %>' scope="request"/>
+<c:set var="ss_windowTitle" value='<%= NLT.get( "administration.report.title.user_access" ) %>' scope="request"/>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 
 <script type="text/javascript">
-var ssReportURL="<ssf:url action="guest_user_access_report" actionUrl="true"><ssf:param name="binderId" value="${ssBinder.id}"/><ssf:param name="binderType" value="${ssBinder.entityType}"/></ssf:url>";
 var m_workspaceEntryType;
 var m_folderEnryType;
 var m_profilesEntryType;
 var m_unknownEntryType;
-var m_header1;
+var m_noAccess;
 var m_cantInvokeAccessControl;
 var m_accessControlUrl;
 
@@ -158,12 +157,12 @@ function handleResponseToGetAccessReport( responseData )
 			var div;
 
 			// Yes
-			// Update the header text with the name of the selected user.
-			updateHeaderText( responseData.userName );
-
 			// Show the table that holds the list of objects the user has access to.
-			div = document.getElementById( 'accessReportDiv' );
+			div = document.getElementById( 'accessReportDiv1' );
 			div.style.display = '';
+			div = document.getElementById( 'accessReportDiv2' );
+			div.style.display = '';
+			div.style.height = '500px';
 
 			// responseData.reportData is an array of objects.  Each object holds information about
 			// the object the user has access to.
@@ -180,7 +179,8 @@ function handleResponseToGetAccessReport( responseData )
 		}
 		else
 		{
-			// The user doesn't have access to anything.
+			// Tell the administrator that the selected user doesn't have access to anything.
+			alert( m_noAccess );
 		}
 	}
 	else if ( responseData.status == -1 )
@@ -191,8 +191,6 @@ function handleResponseToGetAccessReport( responseData )
 		{
 			var msg;
 
-//			msg = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.syncResults.error"/></ssf:escapeJavaScript>';
-//			msg += '\n\n' + responseData.errDesc;
 			alert( responseData.errDesc );
 		}
 	}
@@ -222,8 +220,6 @@ function hideWaitIndicator()
  */
 function invokeAccessControlPage( entry )
 {
-//	   href="http://localhost:8080/ssf/a/do?p_name=ss_forum&p_action=0&workAreaId=40&action=configure_access_control&workAreaType=workspace"
-		 
 	 // We can only invoke the Access Control Page on a workspace, folder or profiles binder
 	 if ( entry.entryType == 'workspace' || entry.entryType == 'folder' || entry.entryType == 'profiles' )
 	 {
@@ -251,12 +247,12 @@ function onLoadEventHandler()
 	var form;
 	
 	// Load the various strings we will need.
-	m_unknownEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.guestAccess.unknownEntryType" /></ssf:escapeJavaScript>';
-	m_workspaceEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.guestAccess.workspaceEntryType" /></ssf:escapeJavaScript>';
-	m_folderEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.guestAccess.folderEntryType" /></ssf:escapeJavaScript>';
-	m_profilesEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.guestAccess.profilesEntryType" /></ssf:escapeJavaScript>';
-	m_header1 = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.guestAccess.header1" /></ssf:escapeJavaScript>';		
-	m_cantInvokeAccessControl = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.guestAccess.cantInvokeAccessControl" /></ssf:escapeJavaScript>';
+	m_unknownEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.unknownEntryType" /></ssf:escapeJavaScript>';
+	m_workspaceEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.workspaceEntryType" /></ssf:escapeJavaScript>';
+	m_folderEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.folderEntryType" /></ssf:escapeJavaScript>';
+	m_profilesEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.profilesEntryType" /></ssf:escapeJavaScript>';
+	m_cantInvokeAccessControl = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.cantInvokeAccessControl" /></ssf:escapeJavaScript>';
+	m_noAccess = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.noAccess" /></ssf:escapeJavaScript>';
 
 	// Get the url we need to invoke the access control page.
 	m_accessControlUrl = '${access_control_page_url}';
@@ -312,22 +308,6 @@ function ss_selectUser${renderResponse.namespace}(id, obj)
 }// end ss_selectUser()
 
 
-/**
- * Update the header text indicate the selected user.
- */
-function updateHeaderText( userName )
-{
-	var span;
-	var text;
-
-	// Replace {0} with the user's name.
-	text = m_header1.replace( '{0}', userName );
-	
-	// Update the text that says "The user, xxx, has been given rights to the following objects.
-	span = document.getElementById( 'header1Span' );
-	updateElementsTextNode( span, text );
-}// end updateHeaderText()
-
 </script>
 
 <body class="ss_style_body tundra">
@@ -335,7 +315,7 @@ function updateHeaderText( userName )
 		<div class="ss_style ss_portlet">
 			<c:set var="formName">${renderResponse.namespace}fm</c:set>
 
-			<ssf:form titleTag="administration.report.title.guest_user_access">
+			<ssf:form titleTag="administration.report.title.user_access">
 				<form class="ss_style ss_form" 
 					action="<ssf:url webPath="reportDownload"/>" 
 					method="post" 
@@ -343,7 +323,7 @@ function updateHeaderText( userName )
 					id="reportForm">
 
 					<div style="margin-top: 2em;">
-						<span style="margin-right: 1em;"><ssf:nlt tag="administration.report.guestAccess.selectUser" /></span>
+						<span style="margin-right: 1em;"><ssf:nlt tag="administration.report.userAccess.selectUser" /></span>
 
 					  	<ssf:find formName="${formName}" formElement="user" 
 									type="user" 
@@ -352,39 +332,37 @@ function updateHeaderText( userName )
 									clickRoutine="ss_selectUser${renderResponse.namespace}" />
 
 						<span id="progressIndicator" style="margin-left: 4em; display: none;">
-							<ssf:nlt tag="administration.report.guestAccess.retrievingReport" />
+							<ssf:nlt tag="administration.report.userAccess.retrievingReport" />
 							<img src="<html:imagesPath/>pics/spinner_small.gif" align="absmiddle" border="0" >
 						</span>
 					</div>
 				</form>
 
-				<div id="accessReportDiv" style="display: none;">
+				<div id="accessReportDiv1" style="display: none;">
 					<table cellspacing="0" cellpadding="3">
 						<tr>
 							<td>
 								<div style="margin-top: .7em;">
-									<span id="header1Span"></span>
+									<span id="header1Span"><ssf:nlt tag="administration.report.userAccess.header1" /></span>
 								</div>
 								<div style="margin-bottom: .6em;">
-									<span><ssf:nlt tag="administration.report.guestAccess.header2" /></span>
+									<span><ssf:nlt tag="administration.report.userAccess.header2" /></span>
 								</div>
 							</td>
 						</tr>
-						<tr>
-							<td>
-								<table id="accessReportTable" width="100%" class="ss_style" cellspacing="0" cellpadding="3" style="border: 1px solid black;">
-									<tr style="font-family: arial, sans-serif; background-color: #EDEEEC; border-bottom: 1px solid black; color: black; font-size: .75em; font-weight: bold;">
-										<td align="left">
-											<span>&nbsp;<ssf:nlt tag="administration.report.guestAccess.col1" /><span>
-										</td>
-										<td align="left">
-											<span>&nbsp;<ssf:nlt tag="administration.report.guestAccess.col2" /><span>
-										</td>
-										<td align="left" width="100%">
-											&nbsp;
-										</td>
-									</tr>
-								</table>
+					</table>
+				</div>
+				<div id="accessReportDiv2" style="display: none; width: 90%; overflow: auto;">
+					<table id="accessReportTable" width="100%" class="ss_style" cellspacing="0" cellpadding="3" style="border: 1px solid black;">
+						<tr style="font-family: arial, sans-serif; background-color: #EDEEEC; border-bottom: 1px solid black; color: black; font-size: .75em; font-weight: bold;">
+							<td align="left">
+								<span>&nbsp;<ssf:nlt tag="administration.report.userAccess.col1" /><span>
+							</td>
+							<td align="left">
+								<span>&nbsp;<ssf:nlt tag="administration.report.userAccess.col2" /><span>
+							</td>
+							<td align="left" width="100%">
+								&nbsp;
 							</td>
 						</tr>
 					</table>

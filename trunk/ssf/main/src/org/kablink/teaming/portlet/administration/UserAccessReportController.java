@@ -45,11 +45,11 @@ import org.springframework.web.portlet.ModelAndView;
 
 
 /**
- * This class handles the Guest User Access Report.
+ * This class handles the User Access Report.
  * @author jwootton
  *
  */
-public class GuestUserAccessReportController extends  AbstractReportController
+public class UserAccessReportController extends  AbstractReportController
 {
 	/**
 	 * 
@@ -95,6 +95,6 @@ public class GuestUserAccessReportController extends  AbstractReportController
 	 */
 	protected String chooseView( Map formData )
 	{
-		return WebKeys.VIEW_GUEST_USER_ACCESS_REPORT;
+		return WebKeys.VIEW_USER_ACCESS_REPORT;
 	}
-}// end GuestUserAccessReportController
+}// end UserAccessReportController
