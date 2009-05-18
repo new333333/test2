@@ -61,14 +61,6 @@ public class TargetUrlResolverImpl implements TargetUrlResolver {
 
         String targetUrl = currentRequest.getParameter(targetUrlParameter);
         
-        if (StringUtils.hasText(targetUrl)) {
-            try {
-                return URLDecoder.decode(targetUrl, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                throw new IllegalStateException("UTF-8 not supported. Shouldn't be possible");
-            }
-        }
-
         if (savedRequest != null) {
             if (!justUseSavedRequestOnGet || savedRequest.getMethod().equals("GET")) {
                 targetUrl = savedRequest.getFullRequestUrl();

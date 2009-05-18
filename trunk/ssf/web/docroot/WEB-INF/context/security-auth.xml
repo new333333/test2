@@ -14,7 +14,11 @@
 		<property name="filterProcessesUrl" value="/s/portalLogin"/>
 		<property name="invalidateSessionOnSuccessfulAuthentication" value="true"/>
 		<property name="migrateInvalidatedSessionAttributes" value="false"/>
+		<property name="targetUrlResolver" ref="targetUrlResolver" />
     </bean>
+  	
+  	<bean id="targetUrlResolver" class="org.kablink.teaming.spring.security.TargetUrlResolverImpl">
+  	</bean>
   	
     <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.ui.webapp.AuthenticationProcessingFilterEntryPoint">
     	<property name="loginFormUrl" value="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login"/>    	
