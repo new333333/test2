@@ -179,7 +179,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 					</div>
 					
 					<div id="ss_div_attach_meeting_records${ssDefinitionEntry.id}${ss_attachments_namespace}" 
-					  style="display: none; padding: 5px;" class="ss_border_light">
+					  style="position:relative; display: none; padding: 5px; z-index:10;" class="ss_border_light">
 						<div align="right">
 						<a onClick="ss_hideAddAttachmentMeetingRecords('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"><img 
 						  border="0" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>icons/close_off.gif"/></a>
