@@ -725,19 +725,21 @@ public class WorkspaceTreeHelper {
 		}
 
 		//The "Who has access" menu
-		qualifiers = new HashMap();
-		qualifiers.put("title", NLT.get("toolbar.menu.title.whoHasAccessWorkspace"));
-		qualifiers.put("popup", Boolean.TRUE);
-		qualifiers.put("popupWidth", "600");
-		qualifiers.put("popupHeight", "700");
-		adminMenuCreated = true;
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
-		adapterUrl.setParameter(WebKeys.URL_WORKAREA_ID, workspace.getWorkAreaId().toString());
-		adapterUrl.setParameter(WebKeys.URL_WORKAREA_TYPE, workspace.getWorkAreaType());
-		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ACCESS);
-		toolbar.addToolbarMenu("2_whoHasAccess", 
-				NLT.get("toolbar.whoHasAccess"), adapterUrl.toString(), qualifiers);
+		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			qualifiers = new HashMap();
+			qualifiers.put("title", NLT.get("toolbar.menu.title.whoHasAccessWorkspace"));
+			qualifiers.put("popup", Boolean.TRUE);
+			qualifiers.put("popupWidth", "600");
+			qualifiers.put("popupHeight", "700");
+			adminMenuCreated = true;
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
+			adapterUrl.setParameter(WebKeys.URL_WORKAREA_ID, workspace.getWorkAreaId().toString());
+			adapterUrl.setParameter(WebKeys.URL_WORKAREA_TYPE, workspace.getWorkAreaType());
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ACCESS);
+			toolbar.addToolbarMenu("2_whoHasAccess", 
+					NLT.get("toolbar.whoHasAccess"), adapterUrl.toString(), qualifiers);
+		}
 		
 		//If this is a user workspace, add the "Manage this profile" menu
 		if ((workspace.getDefinitionType() != null) && 

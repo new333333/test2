@@ -54,6 +54,7 @@ import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -117,6 +118,7 @@ public class AccessControlController extends AbstractBinderController {
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+        User user = RequestContextHolder.getRequestContext().getUser();
 		//navigation links still use binderId
 		Long workAreaId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		if (workAreaId == null) workAreaId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_WORKAREA_ID));				
@@ -140,6 +142,11 @@ public class AccessControlController extends AbstractBinderController {
 		
 		setupAccess(this, request, response, wArea, model);
 
+		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			//Cannot do these things as guest
+			model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.access.denied"));
+			return new ModelAndView(WebKeys.VIEW_ACCESS_TO_BINDER, model);
+		}
 		if (operation.equals(WebKeys.OPERATION_VIEW_ACCESS)) {
 			return new ModelAndView(WebKeys.VIEW_ACCESS_TO_BINDER, model);
 		} else {

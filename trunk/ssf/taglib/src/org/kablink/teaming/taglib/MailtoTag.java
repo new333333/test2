@@ -57,6 +57,7 @@ public class MailtoTag extends BodyTagSupport {
 	protected static final Log logger = LogFactory.getLog(MailtoTag.class);
 	
 	private String email = "";
+	private Boolean noLink = false;
 
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -70,6 +71,7 @@ public class MailtoTag extends BodyTagSupport {
 		try {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
+			httpReq.setAttribute("noLink", this.noLink);
 			httpReq.setAttribute("email", email);
 			if (email.indexOf("@") > 0) {
 				httpReq.setAttribute("emailName", email.substring(0, email.indexOf("@")));
@@ -92,6 +94,7 @@ public class MailtoTag extends BodyTagSupport {
 			throw new JspTagException(e.getLocalizedMessage());
 		} finally {
 			email = "";
+			noLink = false;
 		}
 
 		return EVAL_PAGE;
@@ -99,6 +102,10 @@ public class MailtoTag extends BodyTagSupport {
 
 	public void setEmail(String email) {
 	    this.email = email;
+	}
+
+	public void setNoLink(Boolean noLink) {
+	    this.noLink = noLink;
 	}
 
 }

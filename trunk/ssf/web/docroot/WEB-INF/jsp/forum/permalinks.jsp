@@ -58,8 +58,7 @@
       </td>
       <td valign="top" nowrap>
 	    <c:forEach var="name" items="${ssSimpleUrlNames}">
-		  <span>${name.emailAddress}@${ssSimpleEmailHostname}</span>
-		  <br/>
+		  <div><ssf:mailto email="${name.emailAddress}@${ssSimpleEmailHostname}" noLink="true"/></div>
 	    </c:forEach>
       </td>
     </tr>
