@@ -74,9 +74,11 @@ public class SendMailController extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
+        User user = RequestContextHolder.getRequestContext().getUser();
 		
 		//See if the form was submitted
-		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
+		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request) &&
+				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			String subject = PortletRequestUtils.getStringParameter(request, "subject", "");	
 			String[] to = StringUtil.split(PortletRequestUtils.getStringParameter(request, "addresses", ""));
 			Set emailAddress = new HashSet();
@@ -141,8 +143,14 @@ public class SendMailController extends SAbstractController {
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+        User user = RequestContextHolder.getRequestContext().getUser();
 		String [] errors = request.getParameterValues(WebKeys.ERROR_LIST);
 		Map model = new HashMap();
+		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			//Sending mail as guest is not allowed
+			model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.access.denied"));
+			return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
+		}
 		if (errors != null) {
 			model.put(WebKeys.ERROR_LIST, errors);
 			model.put(WebKeys.EMAIL_SENT_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_SENT_ADDRESSES));

@@ -145,7 +145,7 @@ public class AccessControlController extends AbstractBinderController {
 		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			//Cannot do these things as guest
 			model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.access.denied"));
-			return new ModelAndView(WebKeys.VIEW_ACCESS_TO_BINDER, model);
+			return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
 		}
 		if (operation.equals(WebKeys.OPERATION_VIEW_ACCESS)) {
 			return new ModelAndView(WebKeys.VIEW_ACCESS_TO_BINDER, model);
