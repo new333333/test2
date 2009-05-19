@@ -77,7 +77,5 @@ tinyMCE.init(
 
 </script>
 <div align="left">
- <textarea class="ss_style mceEditable" name="mailBody" style="height:200px"><%--
-  --%><c:out value="${body}" /><%--
- --%></textarea>
+ <textarea class="ss_style mceEditable" name="mailBody" style="height:200px">${body}</textarea>
 </div>
