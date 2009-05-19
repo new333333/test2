@@ -108,8 +108,7 @@
 							<ssf:presenceInfo user="${member}" 
 							    optionsDivId="ss_presenceOptions_${member.id}_${ss_namespace}_${componentId}"/>
 						</td>
-						<td><a href="mailto:<c:out value="${member.emailAddress}" 
-						/>"><c:out value="${member.emailAddress}" />&nbsp</a></td>
+						<td><ssf:mailto email="${member.emailAddress}"/></td>
 					</tr>
 				</c:forEach>
 			</c:when>

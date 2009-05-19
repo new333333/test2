@@ -814,6 +814,7 @@ public class ListFolderHelper {
 			Map<String,Object>model, String viewType) throws PortletRequestBindingException {
 		
 		try {
+			bs.getProfileModule().getProfileBinder(); //Check access to user list
 			Collection users = bs.getBinderModule().getTeamMembers(folder, true);
 			model.put(WebKeys.TEAM_MEMBERS, users);
 			model.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
@@ -1619,13 +1620,15 @@ public class ListFolderHelper {
 			model.put(WebKeys.TOOLBAR_TEAM_ADD_URL, adapterUrl.toString());
 		}
 		//View
-		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SHOW_TEAM_MEMBERS);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-		//folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.view"), url);
-		model.put(WebKeys.TOOLBAR_TEAM_VIEW_URL, url.toString());
+		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SHOW_TEAM_MEMBERS);
+			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
+			//folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.view"), url);
+			model.put(WebKeys.TOOLBAR_TEAM_VIEW_URL, url.toString());
+		}
 			
 		//Sendmail
 		if (Validator.isNotNull(user.getEmailAddress()) && 
