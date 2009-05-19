@@ -36,7 +36,16 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:if test="${!empty ssDefinitionEntry.workflowStates}">
-
+<script type="text/javascript">
+function ss_checkForWorkflowStateSelection(obj) {
+	var formObj = ss_findOwningElement(obj, "form");
+	if (formObj.toState.value == "") {
+		alert("<ssf:nlt tag="workflow.selectStatePlease"/>");
+		return false;
+	}
+	return true;
+}
+</script>
 <div class="ss_workflow">
 <table border="0" cellspacing="0" cellpadding="0">
 <tr><th align="left" colspan="4" style="padding:0px 0px 6px 2px;"><ssf:nlt tag="workflow"/></th></tr>
@@ -85,7 +94,8 @@
 		  </c:forEach>
 		  </select><input type="submit" class="ss_submit" name="changeStateBtn" 
 		   style="background: inherit !important;"
-		   value="<ssf:nlt tag="button.ok" text="OK"/>">
+		   value="<ssf:nlt tag="button.ok" text="OK"/>"
+		   onClick="return ss_checkForWorkflowStateSelection(this)">
 		  </form>
 		</c:if>
 		</td>
