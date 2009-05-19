@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.web.servlet.SAbstractController;
@@ -70,6 +71,8 @@ public class ListController extends SAbstractController {
 				binderExists = false;
 			} catch (OperationAccessControlExceptionNoName oace) {
 				authErr = true;
+			} catch (AccessControlException ace) {
+				authErr = true;
 			}
 		} else {
 			// the authentication key is incorrect, make them wait
@@ -81,7 +84,7 @@ public class ListController extends SAbstractController {
 		}
 		
 		response.resetBuffer();
-		response.setContentType("text/xml; charset=" + XmlFileUtil.FILE_ENCODING);
+		response.setContentType("application/rss+xml; charset=" + XmlFileUtil.FILE_ENCODING);
 		response.setHeader("Cache-Control", "private");
 		//use writer to enfoce character set
 		if (authErr) {
