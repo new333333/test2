@@ -101,7 +101,7 @@ public class Datepicker extends TagSupport {
 	    if (!this.calendarDivId.equals("")) this.popupDivId = "";
 	    
 	    User user = RequestContextHolder.getRequestContext().getUser();
-	    GregorianCalendar cal = new GregorianCalendar();
+	    GregorianCalendar cal = new GregorianCalendar(user.getLocale());
 	    cal.setTime(initDate);
 	    if (!ignoreTimeZone) {
 	    	cal.setTimeZone(user.getTimeZone());
@@ -223,6 +223,9 @@ public class Datepicker extends TagSupport {
 				sb.append("'" + dayHeaders[i] + "'");
 				if (i < 6) sb.append(",");
 			}
+			sb.append(");\n");
+			sb.append(varname).append(".setWeekStartDay(");
+			sb.append(cal.getFirstDayOfWeek() - 1);
 			sb.append(");\n");
 
 
