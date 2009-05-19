@@ -719,7 +719,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		
 		// Get the id of the user we should get an access report for.
 		userIdStr = PortletRequestUtils.getStringParameter( request, "userId", "" );
-		userId = Long.getLong( userIdStr );
+		userId = Long.valueOf( userIdStr );
 		
 		// Get a report of what items the given user has access to.
         report = getReportModule().generateAccessReportByUser( userId, null, null, "summary" );
