@@ -116,8 +116,8 @@ public class ViewEntryController extends  SAbstractController {
 				Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
 				if (replyId == null) replyId = entryId;
 		        Long tokenId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "tokenId"));	
-				String toState = PortletRequestUtils.getRequiredStringParameter(request, "toState");
-				getFolderModule().modifyWorkflowState(folderId, replyId, tokenId, toState);
+				String toState = PortletRequestUtils.getStringParameter(request, "toState", "");
+				if (!toState.equals("")) getFolderModule().modifyWorkflowState(folderId, replyId, tokenId, toState);
 				response.setRenderParameter(WebKeys.IS_REFRESH, "1");
 			} else if (formData.containsKey("changeRatingBtn") && WebHelper.isMethodPost(request)) {
 				Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
