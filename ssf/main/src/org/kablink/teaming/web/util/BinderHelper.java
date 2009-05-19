@@ -401,6 +401,8 @@ public class BinderHelper {
         		model.put(WebKeys.USER_PRINCIPAL, user);
         		if (userProperties.getProperties() != null) {
         			model.put(WebKeys.USER_PROPERTIES, userProperties.getProperties());
+        		} else {
+        			model.put(WebKeys.USER_PROPERTIES, new HashMap());
         		}
         		model.put(WebKeys.USER_PROPERTIES_OBJ, userProperties);
     		}
