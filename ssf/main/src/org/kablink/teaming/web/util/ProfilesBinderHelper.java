@@ -332,19 +332,21 @@ public class ProfilesBinderHelper {
 		}
 
 		//The "Who has access" menu
-		qualifiers = new HashMap();
-		qualifiers.put("title", NLT.get("toolbar.menu.title.whoHasAccessFolder"));
-		qualifiers.put("popup", Boolean.TRUE);
-		qualifiers.put("popupWidth", "600");
-		qualifiers.put("popupHeight", "700");
-		adminMenuCreated = true;
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
-		adapterUrl.setParameter(WebKeys.URL_WORKAREA_ID, binder.getWorkAreaId().toString());
-		adapterUrl.setParameter(WebKeys.URL_WORKAREA_TYPE, binder.getWorkAreaType());
-		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ACCESS);
-		folderToolbar.addToolbarMenu("2_whoHasAccess", 
-				NLT.get("toolbar.whoHasAccess"), adapterUrl.toString(), qualifiers);
+		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			qualifiers = new HashMap();
+			qualifiers.put("title", NLT.get("toolbar.menu.title.whoHasAccessFolder"));
+			qualifiers.put("popup", Boolean.TRUE);
+			qualifiers.put("popupWidth", "600");
+			qualifiers.put("popupHeight", "700");
+			adminMenuCreated = true;
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
+			adapterUrl.setParameter(WebKeys.URL_WORKAREA_ID, binder.getWorkAreaId().toString());
+			adapterUrl.setParameter(WebKeys.URL_WORKAREA_TYPE, binder.getWorkAreaType());
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ACCESS);
+			folderToolbar.addToolbarMenu("2_whoHasAccess", 
+					NLT.get("toolbar.whoHasAccess"), adapterUrl.toString(), qualifiers);
+		}
 		
 		//Folder action menu
 		boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);

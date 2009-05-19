@@ -8075,12 +8075,17 @@ function ss_showEmailLinks() {
 	for (var i = 0; i < mailtoElements.length; i++) {
 		var mailtoName = mailtoElements[i].getAttribute("name");
 		var mailtoHost = mailtoElements[i].getAttribute("host");
+		var mailtoNoLink = mailtoElements[i].getAttribute("noLink");
 		var aNode = mailtoElements[i].parentNode;
-		aNode.setAttribute("href", "mailto:"+mailtoName+"@"+mailtoHost);
-		//aNode.removeChild(mailtoElements[i]);
-		spanObj = self.document.createElement("span");
-		spanObj.innerHTML = mailtoName+"@"+mailtoHost;
-		aNode.appendChild(spanObj);
+		if (mailtoNoLink == "true") {
+			aNode.innerHTML = mailtoName+"@"+mailtoHost;
+		} else {
+			aNode.setAttribute("href", "mailto:"+mailtoName+"@"+mailtoHost);
+			//aNode.removeChild(mailtoElements[i]);
+			spanObj = self.document.createElement("span");
+			spanObj.innerHTML = mailtoName+"@"+mailtoHost;
+			aNode.appendChild(spanObj);
+		}
 	}
 }
 dojo.require("dijit.dijit");

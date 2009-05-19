@@ -35,9 +35,17 @@
 <% //mailto link %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${!empty emailName && !empty emailHost}">
+  <c:if test="${!noLink}">
 	<a href=""><ssMailTo 
 	  	name="${emailName}" 
 	  	host="${emailHost}"/></a>
+  </c:if>
+  <c:if test="${noLink}">
+    <span><ssMailTo 
+	  	name="${emailName}" 
+	  	host="${emailHost}"
+	  	noLink="true"/></span>
+  </c:if>
 <script type="text/javascript">
 ss_createOnLoadObj("ss_showEmailLinks", ss_showEmailLinks);
 </script>
