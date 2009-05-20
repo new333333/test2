@@ -250,7 +250,9 @@ public class AddEntryController extends SAbstractController {
 			        	    	
 			        	    	//Create a sub folder, if it does not exist
 			        	    	if (!doesFolderExist) {
-			        	    		lngFolderIdToUse = FolderUtils.createLibraryFolder(folderObj, strFolderName).getId();
+			        	    		Binder lngFolderToUse = FolderUtils.createLibraryFolder(folderObj, strFolderName);
+			        	    		lngFolderIdToUse = lngFolderToUse.getId();
+			        	    		this.getBinderModule().setDefinitionsInherited(lngFolderIdToUse, true);
 			        	    	}
 	        	    		}
 	        	    	}
