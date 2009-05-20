@@ -15,10 +15,12 @@ function preinit() {
 }
 
 function convertURL(url, node, on_save) {
+	//alert("convert url: "+url)
 	return url;
 }
 
 function getImageSrc(str) {
+	//alert("Get src: "+str)
 	var pos = -1;
 
 	if (!str)
@@ -32,6 +34,7 @@ function getImageSrc(str) {
 		if (tinyMCE.getParam('convert_urls'))
 			src = convertURL(src, null, true);
 
+		//alert("src = "+src)
 		return src;
 	}
 
@@ -207,6 +210,7 @@ function insertAction() {
 	var src = formObj.src.value;
 	var srcUrl = "";
 	srcUrl = formObj.srcUrl.value;
+	//alert("Insert action: "+src)
 	var imageClass = " ss_addimage "
 	if (src == '') {
 		src = srcUrl;
@@ -238,7 +242,9 @@ function insertAction() {
 			return;
 	}
 
-	if (elm != null && elm.nodeName == "IMG") {
+	//alert("elm: "+elm+", "+elm.nodeName.toUpperCase())
+	if (elm != null && elm.nodeName.toUpperCase() == "IMG") {
+		//alert("IMG src: "+convertURL(src, tinyMCE.imgElement))
 		setAttrib(elm, 'src', convertURL(src, tinyMCE.imgElement));
 		setAttrib(elm, 'mce_src', src);
 		setAttrib(elm, 'alt');
@@ -287,7 +293,7 @@ function insertAction() {
 		html += makeAttrib('class', getSelectValue(formObj, 'classlist') + imageClass);
 		html += makeAttrib('align', getSelectValue(formObj, 'align'));
 		html += " />";
-
+		//alert("IMG HTML: "+html)
 		tinyMCE.execCommand("mceInsertContent", false, html);
 	}
 
