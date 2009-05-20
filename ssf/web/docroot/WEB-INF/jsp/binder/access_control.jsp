@@ -237,7 +237,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
     type="user"
     clickRoutine="ss_accessSetOwner${renderResponse.namespace}"
     leaveResultsVisible="false"
-    width="100px" singleItem="true"/> 
+    width="250px" singleItem="true"/> 
   </td><td valign="top">
   <span class="ss_bold" id="ss_accessSelectionSpan${renderResponse.namespace}"></span>
   </td></tr>
@@ -267,7 +267,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
     type="group"
     leaveResultsVisible="false"
     clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
-    width="100px" singleItem="true"/> 
+    width="250px" singleItem="true"/> 
   </div>
 </div>
 
@@ -285,7 +285,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
     type="user"
     leaveResultsVisible="false"
     clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
-    width="100px" singleItem="true"/> 
+    width="250px" singleItem="true"/> 
   </div>
 </div>
 
@@ -303,7 +303,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
     type="applicationGroup"
     leaveResultsVisible="false"
     clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
-    width="100px" singleItem="true"/> 
+    width="250px" singleItem="true"/> 
   </div>
 </div>
 
@@ -321,14 +321,14 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
     type="application"
     leaveResultsVisible="false"
     clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
-    width="100px" singleItem="true"/>
+    width="250px" singleItem="true"/>
   </div>
 </div>
 
 <span class="ss_bold"><a href="javascript: ${renderResponse.namespace}accessObj.addClipboardUsers();"><ssf:nlt tag="access.addClipboardUsers"/></a></span><br/>
 
 	<div id="ss_addRolesMenu${renderResponse.namespace}" class="ss_actions_bar5 ss_actions_bar_submenu" >
-		<ul class="ss_actions_bar5 ss_actions_bar_submenu" style="width:250px;">
+		<ul class="ss_actions_bar5 ss_actions_bar_submenu" style="white-space:nowrap;">
 		  <div align="right">
 		    <a href="javascript:;" onClick="ss_hideDiv('ss_addRolesMenu${renderResponse.namespace}');return false;">
 		      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
@@ -406,7 +406,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 <c:forEach var="function" items="${ssFunctions}">
 <jsp:useBean id="function" type="org.kablink.teaming.security.function.Function" />
 <div id="${renderResponse.namespace}ss_operations${function.id}" class="ss_style ss_portlet"
-  style="position:absolute; display:none; width:300px; border:1px solid #000000; 
+  style="position:absolute; display:none; white-space:nowrap; border:1px solid #000000; 
   margin-bottom:10px; padding:4px; background-color:#ffffff;">
   <div align="right">
     <a href="javascript:;" onClick="ss_hideDiv('${renderResponse.namespace}ss_operations${function.id}');return false;">
