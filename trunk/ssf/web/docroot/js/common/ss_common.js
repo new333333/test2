@@ -467,10 +467,15 @@ function ss_openUrlInPortlet(url, popup, width, height) {
 				parent.location.href = url;
 			}
 			return false
-		} else if (self.opener && self.opener != self.window) {
+		} else if ( self.opener !== undefined && self.opener != null ) {
+			// If we are in a popup window.
 			try {
-				self.opener.location.href = url
-				setTimeout('self.window.close();', 200)
+				// Replace the contents of the current window with the new page.
+				self.location.href = url;
+				
+				// The following two lines of code were commented out as part of the fix for bug 492902
+//				self.opener.location.href = url
+//				setTimeout('self.window.close();', 200)
 				return false;
 			} catch (e) {
 				ss_debug('opener is not addressable anymore, it must have been deleted.')
