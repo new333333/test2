@@ -52,7 +52,10 @@ public class LicenseReportController extends AbstractReportController {
 	protected void populateModel(RenderRequest request, Map model)
 	{
 		super.populateModel(request, model);
-		Map formData = request.getParameterMap();
+		Date	originalEndDate	= null;
+		Map		formData;
+
+		formData = request.getParameterMap();
 
 		Date startDate = (Date) model.get(WebKeys.REPORT_START_DATE);
 		Date endDate = (Date) model.get(WebKeys.REPORT_END_DATE);
@@ -60,10 +63,43 @@ public class LicenseReportController extends AbstractReportController {
 		if(endDate != null) {
 			GregorianCalendar cal = new GregorianCalendar();
 			cal.setTime(endDate);
+			
+			// Remember the original end date supplied by the user.
+			originalEndDate = cal.getTime();
+			
+			// Add 1 day to the end date.
 			cal.add(Calendar.DATE, 1);
 			endDate = cal.getTime();
 		}
+		
 		if (formData.containsKey("okBtn")) {
+			
+			// There is a job that runs once a day that counts the number of users in Teaming and writes this information
+			// into the SS_LicenseStats table.  If the end date of the report equals today, do a count right now and
+			// write the count into the SS_LicenseStats table so the information returned to the user is up-to-date.
+			// Is the end date of the report equal to today?
+			if ( originalEndDate != null && currentDate != null )
+			{
+				GregorianCalendar	endCal;
+				Calendar			todayCal;
+				
+				todayCal = GregorianCalendar.getInstance();
+				endCal = new GregorianCalendar();
+				endCal.setTime(  originalEndDate );
+				if ( endCal.get( Calendar.MONTH ) == todayCal.get( Calendar.MONTH ) )
+				{
+					if ( endCal.get( Calendar.DAY_OF_MONTH ) == todayCal.get( Calendar.DAY_OF_MONTH ) )
+					{
+						if ( endCal.get( Calendar.YEAR ) == todayCal.get( Calendar.YEAR ) )
+						{
+							// If we get here then the end date of the report is today.
+							// Count the users in Teaming so the data we return is up-to-date.
+							getLicenseModule().recordCurrentUsage();
+						}
+					}
+				}
+			}
+			
 			model.put(WebKeys.LICENSE_DATA, getReportModule().generateLicenseReport(startDate, endDate));
 			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
 			model.put("releaseInfo", ReleaseInfo.getReleaseInfo());

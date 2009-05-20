@@ -108,6 +108,8 @@ implements LicenseModule, ZoneSchedule {
 
 	protected long countInternalUsers(Long zoneId)
 	{
+		// Find all users that are not disabled and not deleted and who have a password.
+		// If a user has been sync'd from an ldap source they won't have a password.
 		return getCoreDao().countObjects(Principal.class,
 										 (new FilterControls())
 										 	.add(Restrictions.eq("type", "user"))
@@ -115,6 +117,25 @@ implements LicenseModule, ZoneSchedule {
 										 	.add(Restrictions.eq("deleted", Boolean.FALSE))
 										 	.add(Restrictions.notNull("password")), zoneId);
 	}
+	
+	
+	/**
+	 * Count the number of users that have been sync'd from an ldap source.
+	 */
+	protected long countSyncdUsers( Long zoneId )
+	{
+		FilterControls	filterControls;
+		
+		// Find all users that are not disabled and not deleted and who do NOT have a password.
+		// If a user has been sync'd from an ldap source they won't have a password.
+		filterControls = new FilterControls();
+	 	filterControls.add( Restrictions.eq( "type", "user" ) );
+	 	filterControls.add( Restrictions.eq( "disabled", Boolean.FALSE ) );
+	 	filterControls.add( Restrictions.eq( "deleted", Boolean.FALSE ) );
+	 	filterControls.add( Restrictions.isNull( "password" ) );;
+		return getCoreDao().countObjects( Principal.class, filterControls, zoneId );
+	}// end countUsersSyncdFromLdapSource()
+	
 
 	public void recordCurrentUsage()
 	{
