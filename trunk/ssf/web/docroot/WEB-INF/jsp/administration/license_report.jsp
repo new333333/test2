@@ -131,34 +131,37 @@
 --%><c:set var="highWaterDate" value=""/><%--
 --%><c:set var="currentUser" value="0"/><%--
 	--%><c:forEach var="datum" items="${ssLicenseData}" ><%--
-	--%><c:if test="${datum.internalUserCount > highWater}"><%--
-	    --%><c:set var="highWater" value="${datum.internalUserCount}"/><%--
+	--%><c:if test="${(datum.internalUserCount + datum.externalUserCount) > highWater}"><%--
+	    --%><c:set var="highWater" value="${datum.internalUserCount + datum.externalUserCount}"/><%--
 	    --%><c:set var="highWaterDate" value="${datum.snapshotDate}"/><%--
 	--%></c:if><%--
-	--%><c:set var="currentUser" value="${datum.internalUserCount}"/><%--
+	--%><c:set var="currentUser" value="${datum.internalUserCount + datum.externalUserCount}"/><%--
 --%></c:forEach>
 
 <table cellspacing="6" cellpadding="2">
-<tr>
-<td><ssf:nlt tag="license.users.highwater"/></td><td>${highWater} (${highWaterDate})</td>
-</tr>
-<tr>
-<td><ssf:nlt tag="license.current.users"/></td><td>${currentUser}</td>
-</tr>
+	<tr>
+		<td><ssf:nlt tag="license.users.highwater"/></td><td>${highWater} (${highWaterDate})</td>
+	</tr>
+	<tr>
+		<td><ssf:nlt tag="license.current.users"/></td><td>${currentUser}</td>
+	</tr>
 </table>
 <br/>
-<table cellspacing="6" cellpadding="2" syle="border-spacing: 2px;"><tbody>
-<tr>
-<th><ssf:nlt tag="license.table.date"/></th><th><ssf:nlt tag="license.table.registered"/></th><th><ssf:nlt tag="license.table.external"/></th><th><ssf:nlt tag="license.table.check"/></th>
-</tr>
-<c:forEach var="datum" items="${ssLicenseData}" >
-<tr>
-<td><fmt:formatDate value="${datum.snapshotDate}" pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/></td>
-<td style="text-align: right">${datum.internalUserCount}</td>
-<td style="text-align: right">${datum.externalUserCount}</td>
-<td style="text-align: right">${datum.checksum}</td>
-</tr>
-</c:forEach>
+<table cellspacing="6" cellpadding="2" >
+	<tr>
+		<th><ssf:nlt tag="license.table.date"/>&nbsp;</th>
+		<th>&nbsp;<ssf:nlt tag="license.table.localUsers"/>&nbsp;</th>
+		<th>&nbsp;<ssf:nlt tag="license.table.syncdUsers"/>&nbsp;</th>
+		<th>&nbsp;<ssf:nlt tag="license.table.check"/>&nbsp;</th>
+	</tr>
+	<c:forEach var="datum" items="${ssLicenseData}" >
+		<tr>
+			<td><fmt:formatDate value="${datum.snapshotDate}" pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/></td>
+			<td align="center">${datum.internalUserCount}</td>
+			<td align="center">${datum.externalUserCount}</td>
+			<td align="center">${datum.checksum}</td>
+		</tr>
+	</c:forEach>
 </table>
 <br/>
 ${ssLicenseContact}<br/>
