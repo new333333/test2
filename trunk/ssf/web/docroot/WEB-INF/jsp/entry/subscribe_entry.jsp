@@ -33,6 +33,11 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:if test="${empty ssUser.emailAddresses}">
+  <span><ssf:nlt tag="sendMail.noUserEmailAddress"/></span>
+  <br/>
+</c:if>
+<c:if test="${!empty ssUser.emailAddresses}">
 <c:set var="styles" value="${ssSubscription.styles}"/>
 <c:if test="${!empty styles}">
 <jsp:useBean id="styles" type="java.util.Map" />
@@ -117,3 +122,4 @@
 		>${email.value.address}</option>
 	</c:forEach>
    </select>
+</c:if>

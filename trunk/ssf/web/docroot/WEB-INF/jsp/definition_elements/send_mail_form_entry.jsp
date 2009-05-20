@@ -39,6 +39,13 @@
 <div style="padding:15px 0px 15px 0px;">
 <ssf:expandableArea title="${property_caption}">
 
+<c:if test="${empty ssUser.emailAddresses}">
+  <div class="ss_entryContent">
+  <span><ssf:nlt tag="sendMail.noUserEmailAddress"/></span>
+  </div>
+</c:if>
+<c:if test="${!empty ssUser.emailAddresses}">
+
 <% /* User selection. */ %>
 <div class="ss_entryContent">
 	<span class="ss_labelAbove"><ssf:nlt tag="entry.sendMail.toList" /></span>
@@ -89,6 +96,7 @@
     <ssf:nlt tag="entry.sendMail.includeAttachments"/>
   </label></span>
 </div>
+</c:if>
 </ssf:expandableArea>
 </div>
 </div>
