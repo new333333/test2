@@ -69,21 +69,32 @@ public class DigestBasedSoftAuthenticationFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException {
 		//String zoneName = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "zn");
 		String zoneName = WebHelper.getZoneNameByVirtualHost(request);
-		Long userId = RequestUtils.getRequiredLongParameter((HttpServletRequest) request, "ui");
-		String binderId = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "bi"); 		
-		String privateDigest = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "pd"); 
-		
+		Long userId = null;
+		String binderId = "";
+		String privateDigest = "";
 		try {
-			User user = AuthenticationManagerUtil.authenticate(zoneName, userId, binderId, privateDigest, LoginInfo.AUTHENTICATOR_RSS);
-
-			RequestContextUtil.setThreadContext(user);
+			userId = RequestUtils.getRequiredLongParameter((HttpServletRequest) request, "ui");
+			binderId = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "bi"); 		
+			privateDigest = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "pd"); 
+		} catch(Exception e) {
+			logger.warn("RSS: "+e.getLocalizedMessage());
 		}
-		catch(UserDoesNotExistException e) {
-			logger.warn(e.getLocalizedMessage());
-			request.setAttribute(WebKeys.UNAUTHENTICATED_REQUEST, Boolean.TRUE);
-		}
-		catch(DigestDoesNotMatchException e) {
-			logger.warn(e.getLocalizedMessage());
+		
+		if (userId != null && !binderId.equals("") && !privateDigest.equals("")) {
+			try {
+				User user = AuthenticationManagerUtil.authenticate(zoneName, userId, binderId, privateDigest, LoginInfo.AUTHENTICATOR_RSS);
+	
+				RequestContextUtil.setThreadContext(user);
+			}
+			catch(UserDoesNotExistException e) {
+				logger.warn("RSS: "+e.getLocalizedMessage());
+				request.setAttribute(WebKeys.UNAUTHENTICATED_REQUEST, Boolean.TRUE);
+			}
+			catch(DigestDoesNotMatchException e) {
+				logger.warn("RSS: "+e.getLocalizedMessage());
+				request.setAttribute(WebKeys.UNAUTHENTICATED_REQUEST, Boolean.TRUE);
+			}
+		} else {
 			request.setAttribute(WebKeys.UNAUTHENTICATED_REQUEST, Boolean.TRUE);
 		}
 		
