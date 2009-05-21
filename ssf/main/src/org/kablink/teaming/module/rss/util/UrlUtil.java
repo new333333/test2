@@ -61,4 +61,23 @@ public class UrlUtil {
 		
 		return url.toString();
 	}
+	public static String getAtomURL(PortletRequest req, String binderId) {
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		
+		boolean rssEnabled = SPropsUtil.getBoolean("rss.enable", true);
+		if (!rssEnabled) return "";
+		
+		StringBuffer url = new StringBuffer();
+		
+		url.append(WebUrlUtil.getAtomRootURL(req)).
+			append("list").
+			append("?bi=").
+			append(binderId).
+			append("&ui=").
+			append(rc.getUserId()).
+			append("&pd=").
+			append(rc.getUser().getPrivateDigest(binderId));
+		
+		return url.toString();
+	}
 }

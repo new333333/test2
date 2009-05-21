@@ -341,6 +341,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		String permaLink;
 		String webdavUrl;
 		String rssUrl;
+		String atomUrl;
 		String icalUrl;
 		String family;
 		Integer definitionType;
@@ -375,6 +376,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			webdavUrl = SsfsUtil.getLibraryBinderUrl(folder);
 			rssUrl = UrlUtil.getFeedURL(null, id.toString()); // folder only
 			icalUrl = org.kablink.teaming.ical.util.UrlUtil.getICalURL(null, id.toString(), null); // folder only
+			atomUrl = UrlUtil.getAtomURL(null, id.toString()); // folder only
 			folderList.add(new FolderBrief(id,
 					title,
 					family,
@@ -384,7 +386,8 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 					permaLink,
 					webdavUrl,
 					rssUrl,
-					icalUrl));
+					icalUrl,
+					atomUrl));
 		}
 		FolderBrief[] array = new FolderBrief[folderList.size()];
 		return new FolderCollection(binderId, folderList.toArray(array));
