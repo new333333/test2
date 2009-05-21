@@ -77,8 +77,12 @@ public class ICalUtils {
 	}
 
 	public static CalendarOutputter getCalendarOutputter() {
+		return getCalendarOutputter(true);
+	}
+	
+	public static CalendarOutputter getCalendarOutputter(boolean doValidation) {
 		CalendarOutputter	co = new CalendarOutputter();
-		co.setValidating(true);
+		co.setValidating(doValidation);
 		return co;
 	}
 }
