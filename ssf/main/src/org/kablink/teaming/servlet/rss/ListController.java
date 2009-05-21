@@ -59,6 +59,7 @@ public class ListController extends SAbstractController {
 		Binder binder = null;
 		authErr = false;
 		binderExists = true;
+		boolean rss = true;
 		
 		// Test if the user is authenticated or not using the flag stored in
 		// the request. Don't ever make this decision based on the existence
@@ -82,9 +83,17 @@ public class ListController extends SAbstractController {
 			authErr = true;
 			
 		}
-		
+		if (request.getRequestURL().toString().contains("ssf/atom")) {
+			rss = false;
+		}
 		response.resetBuffer();
-		response.setContentType("application/rss+xml; charset=" + XmlFileUtil.FILE_ENCODING);
+		
+		if (rss) {
+			response.setContentType("application/rss+xml; charset=" + XmlFileUtil.FILE_ENCODING);
+		} else {
+			response.setContentType("application/atom+xml; charset=" + XmlFileUtil.FILE_ENCODING);
+		}
+		
 		response.setHeader("Cache-Control", "private");
 		//use writer to enfoce character set
 		if (authErr) {
@@ -92,7 +101,11 @@ public class ListController extends SAbstractController {
 		} else if (!binderExists) {
 			response.getWriter().write(getRssModule().BinderExistenceError(request, response));
 		} else {
-			response.getWriter().write(getRssModule().filterRss(request, response, binder)); 
+			if (rss) {
+				response.getWriter().write(getRssModule().filterRss(request, response, binder)); 
+			} else {
+				response.getWriter().write(getRssModule().filterAtom(request, response, binder));
+			}
 		}
 		response.flushBuffer();
 		return null;
