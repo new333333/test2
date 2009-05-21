@@ -539,7 +539,12 @@ public class Duration implements Cloneable {
    */
   public void setInterval(long millis) {
     if (millis < 0) {
-      throw new IllegalArgumentException("Negative-length interval");
+    	// Bugzilla 505869:  Commented out the following throw.
+    	//    When the DTSTART occurs before the DUE, don't fail with
+    	//    an exception.  Simply assume a 0 length interval.
+    	//
+    	// throw new IllegalArgumentException("Negative-length interval");
+    	millis = 0;
     }
     clear();
 
