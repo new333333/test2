@@ -37,6 +37,7 @@ import java.io.Serializable;
 public class FolderBrief extends BinderBrief implements Serializable {
 
 	private String rssUrl;
+	private String atomUrl;
 	private String icalUrl;
 	// Actually, legitimate webdav URL can be constructed for any type of binder. 
 	// However, since construction of webdav url is rather expensive (because it 
@@ -50,10 +51,11 @@ public class FolderBrief extends BinderBrief implements Serializable {
 
 	public FolderBrief() {}
 
-	public FolderBrief(Long id, String title, String family, Integer definitionType, Timestamp creation, Timestamp modification, String permalink, String webdavUrl, String rssUrl, String icalUrl) {
+	public FolderBrief(Long id, String title, String family, Integer definitionType, Timestamp creation, Timestamp modification, String permalink, String webdavUrl, String rssUrl, String icalUrl, String atomUrl) {
 		super(id, title, family, definitionType, creation, modification, permalink);
 		this.webdavUrl = webdavUrl;
 		this.rssUrl = rssUrl;
+		this.atomUrl = atomUrl;
 		this.icalUrl = icalUrl;
 	}
 
@@ -81,4 +83,11 @@ public class FolderBrief extends BinderBrief implements Serializable {
 		this.rssUrl = rssUrl;
 	}
 	
+	public String getAtomUrl() {
+		return atomUrl;
+	}
+
+	public void setAtomUrl(String atomUrl) {
+		this.atomUrl = atomUrl;
+	}
 }

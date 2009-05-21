@@ -81,6 +81,7 @@ public class WebUrlUtil {
 	private static int adapterWebProtocol 	= -1;
 	private static int servletWebProtocol 	= -1;
 	private static int rssWebProtocol 		= -1;
+	private static int atomWebProtocol 		= -1;
 	private static int icalWebProtocol 		= -1;
 	private static int ssfsWebProtocol 		= -1;
 	private static int simpleURLWebProtocol = -1;
@@ -217,6 +218,14 @@ public class WebUrlUtil {
 		return getRssRootURL(req, ((req != null)? req.isSecure() : false));
 	}
 	
+	public static String getAtomRootURL(HttpServletRequest req) {
+		return getAtomRootURL(req, ((req != null)? req.isSecure() : false));
+	}
+	
+	public static String getAtomRootURL(PortletRequest req) {
+		return getAtomRootURL(req, ((req != null)? req.isSecure() : false));
+	}
+	
 	/**
 	 * Returns URL up to the SSF's iCal root. The returned URL ends
 	 * with a "/" character (e.g. http://abc.com:8080/ssf/ical/).
@@ -256,6 +265,13 @@ public class WebUrlUtil {
 		return getSSFContextRootURL(req, secure, getRssWebProtocol()).append("rss/").toString();
 	}
 	
+	public static String getAtomRootURL(HttpServletRequest req, Boolean secure) {
+		return getSSFContextRootURL(req, secure, getAtomWebProtocol()).append("atom/").toString();
+	}
+	
+	public static String getAtomRootURL(PortletRequest req, Boolean secure) {
+		return getSSFContextRootURL(req, secure, getAtomWebProtocol()).append("atom/").toString();
+	}
 	/**
 	 * Returns URL up to the SSF's iCal root. The returned URL ends
 	 * with a "/" character (e.g. http://abc.com:8080/ssf/ical/).
@@ -699,6 +715,11 @@ public class WebUrlUtil {
 	private static int getRssWebProtocol() {
 		init();
 		return rssWebProtocol;
+	}
+	
+	private static int getAtomWebProtocol() {
+		init();
+		return atomWebProtocol;
 	}
 	
 	private static int getIcalWebProtocol() {
