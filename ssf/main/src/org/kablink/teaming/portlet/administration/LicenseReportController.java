@@ -41,7 +41,8 @@ import javax.portlet.RenderRequest;
 
 import org.dom4j.Document;
 import org.dom4j.Node;
-import org.kablink.teaming.module.shared.MapInputData;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.web.WebKeys;
 
@@ -73,6 +74,7 @@ public class LicenseReportController extends AbstractReportController {
 		}
 		
 		if (formData.containsKey("okBtn")) {
+			DateTimeFormatter	dtf;
 			
 			// There is a job that runs once a day that counts the number of users in Teaming and writes this information
 			// into the SS_LicenseStats table.  If the end date of the report equals today, do a count right now and
@@ -104,11 +106,73 @@ public class LicenseReportController extends AbstractReportController {
 			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
 			model.put("releaseInfo", ReleaseInfo.getReleaseInfo());
 	
+			dtf = DateTimeFormat.forPattern( "yyyy-MM-dd" );
+			dtf = dtf.withOffsetParsed();
+			
 			StringBuffer uids = new StringBuffer();
 			for(Document doc : getLicenseModule().getLicenses()) {
+				Date	tmpDate;
+				String	tmpDateStr;
+				
 				uids.append(getValue(doc, "//KeyInfo/@uid") + " ");
-				model.put(WebKeys.LICENSE_ISSUED, getValue(doc, "//KeyInfo/@issued"));
-				model.put(WebKeys.LICENSE_EFFECTIVE, getValue(doc, "//Dates/@effective") + " - " + getValue(doc, "//Dates/@expiration"));
+				
+				// Get the date issued from the license xml and convert it to a Date object.
+				tmpDate = null;
+				tmpDateStr = getValue( doc, "//KeyInfo/@issued" );
+				try
+				{
+					tmpDate = dtf.parseDateTime( tmpDateStr ).toDate();
+				}
+				catch (Exception ex)
+				{
+					// This should never happen.
+				}
+				if ( tmpDate == null )
+				{
+					// This should never happen.
+					tmpDate = new Date();
+				}
+				model.put( WebKeys.LICENSE_ISSUED, tmpDate );
+				
+				dtf = DateTimeFormat.forPattern( "MM/dd/yyyy" );
+				dtf = dtf.withOffsetParsed();
+				
+				// Get the license start date.
+				tmpDate = null;
+				tmpDateStr = getValue(doc, "//Dates/@effective");
+				try
+				{
+					tmpDate = dtf.parseDateTime( tmpDateStr ).toDate();
+				}
+				catch (Exception ex)
+				{
+					// This should never happen.
+				}
+				if ( tmpDate == null )
+				{
+					// This should never happen.
+					tmpDate = new Date();
+				}
+				model.put(WebKeys.LICENSE_EFFECTIVE_START,  tmpDate );
+
+				// Get the license end date.
+				tmpDate = null;
+				tmpDateStr = getValue(doc, "//Dates/@expiration");
+				try
+				{
+					tmpDate = dtf.parseDateTime( tmpDateStr ).toDate();
+				}
+				catch (Exception ex)
+				{
+					// This should never happen.
+				}
+				if ( tmpDate == null )
+				{
+					// This should never happen.
+					tmpDate = new Date();
+				}
+				model.put(WebKeys.LICENSE_EFFECTIVE_END,  tmpDate );
+
 				model.put(WebKeys.LICENSE_CONTACT, getValue(doc, "//AuditPolicy/ReportContact"));
 				model.put(WebKeys.LICENSE_PRODUCT_TITLE, getValue(doc, "//Product/@title"));
 				model.put(WebKeys.LICENSE_PRODUCT_VERSION, getValue(doc, "//Product/@version"));
