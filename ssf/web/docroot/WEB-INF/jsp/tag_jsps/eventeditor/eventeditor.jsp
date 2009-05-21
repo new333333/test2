@@ -74,6 +74,15 @@
 	</c:otherwise>
 </c:choose>
 
+<%
+	/*
+	 * Bugzilla 488921:  I added the widgetId settings to the <input>'s
+	 * below and modified ssf/web/docroot/js/dojo/dijit/form/DateTextBoxEventEditor.js
+	 * to handle it.  If/when we move to a newer version of dojo, the
+	 * handling of widgetId will most like have to be readdressed.
+	 */
+%>
+
 <div class="ss_event_editor tundra">
 	<table class="ss_style">
 		<tr>
@@ -87,6 +96,7 @@
 					<c:if test="${!empty startDate}">
 						value="<fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
 					</c:if>
+					widgetId="event_start_${prefix}"
 					startDateWidgetId="event_start_${prefix}"
 					startTimeWidgetId="event_start_time_${prefix}"
 					endDateWidgetId="event_end_${prefix}"
@@ -112,6 +122,7 @@
 								</c:if>
 							</c:otherwise>
 						</c:choose>
+						widgetId="event_start_time_${prefix}"
 						startDateWidgetId="event_start_${prefix}"
 						startTimeWidgetId="event_start_time_${prefix}"
 						endDateWidgetId="event_end_${prefix}"
@@ -154,6 +165,7 @@
 						<c:if test="${!empty endDate}">			
 							value="<fmt:formatDate value="${endDate}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
 						</c:if>
+						widgetId="event_end_${prefix}"
 						startDateWidgetId="event_start_${prefix}"
 						startTimeWidgetId="event_start_time_${prefix}"
 						endDateWidgetId="event_end_${prefix}"
@@ -179,6 +191,7 @@
 									</c:if>
 								</c:otherwise>
 							</c:choose>						
+							widgetId="event_end_time_${prefix}"
 							startDateWidgetId="event_start_${prefix}"
 							startTimeWidgetId="event_start_time_${prefix}"
 							endDateWidgetId="event_end_${prefix}"
