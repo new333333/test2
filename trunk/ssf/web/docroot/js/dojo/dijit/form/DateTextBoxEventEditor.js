@@ -8,11 +8,13 @@ dojo.declare(
 	"dijit.form.DateTextBoxEventEditor",
 	dijit.form.DateTextBox,
 	{
+		widgetId: "",
 		startDateWidgetId: "",
 		startTimeWidgetId: "",
 		endDateWidgetId: "",
 		endTimeWidgetId: "",
 
+		widget: "",
 		startDateWidget: "",
 		startTimeWidget: "",
 		endDateWidget: "",
@@ -47,6 +49,9 @@ dojo.declare(
 		},
 		
 		getWidgets: function() {
+			if (!this.widget || this.widget == "") {
+				this.widget = dijit.byId(this.widgetId);
+			}
 			if (!this.startDateWidget || this.startDateWidget == "") {
 				this.startDateWidget = dijit.byId(this.startDateWidgetId);
 			}
