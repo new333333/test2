@@ -76,6 +76,7 @@ Lucene 2.1.1+indexupdater
 MINA (Apache) mina-core.jar 1.1.6
 MINA (Apache) mina-filter-ssl.jar 1.1.6
 MINA (Apache) mina-integration-jmx.jar 1.1.3
+md5crypt.jar 1.0
 mysql-connector-java-5.0.4-bin.jar
 Oracle JDBC driver classes for use with JDK14 10.2.0.3.0
 opensaml 1.0.1 (SAML implementation; used by WSS4J)
