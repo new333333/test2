@@ -823,6 +823,8 @@ public class WebKeys {
     public static final String LICENSE_KEY="ssLicenseKey";
     public static final String LICENSE_ISSUED="ssLicenseIssued";
     public static final String LICENSE_EFFECTIVE="ssLicenseEffective";
+    public static final String LICENSE_EFFECTIVE_START = "ssLicenseEffectiveStart";
+    public static final String LICENSE_EFFECTIVE_END = "ssLicenseEffectiveEnd";
     public static final String LICENSE_USERS="ssLicenseUsers";
     public static final String LICENSE_CONTACT="ssLicenseContact";
     public static final String LICENSE="ssLicense";

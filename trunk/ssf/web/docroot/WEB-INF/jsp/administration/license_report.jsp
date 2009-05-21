@@ -39,137 +39,157 @@
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.report.title.license") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
-<div class="ss_pseudoPortal">
-<div class="ss_style ss_portlet">
-<c:set var="formName">${renderResponse.namespace}fm</c:set>
-<ssf:form titleTag="administration.report.title.license">
+	<div class="ss_pseudoPortal">
+		<div class="ss_style ss_portlet">
+			<c:set var="formName">${renderResponse.namespace}fm</c:set>
 
-<table class="ss_style" width="100%"><tr><td>
-<form class="ss_style ss_form" 
-	action="<ssf:url action="license_report" actionUrl="true"><ssf:param 
-		name="binderId" value="${ssBinder.id}"/><ssf:param 
-		name="binderType" value="${ssBinder.entityType}"/></ssf:url>" 
-	method="post" 
-	name="${formName}">
-<input type="hidden" name="ss_reportType" value="license"/>
-<div class="ss_buttonBarRight">
-    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
-     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="self.window.close();return false;"/>
-</div>
-   <br/>
-   <br/>
-   <span class="ss_bold"><ssf:nlt tag="administration.report.license"/></span>
-   <br/>
-   <br/>
-   <ssf:nlt tag="administration.report.dates"/>
-   <div class="ss_toolbar_color" style="display:inline;"><ssf:datepicker formName="${formName}" showSelectors="true" 
-				 popupDivId="ss_startPopup" id="ss_startDate" initDate="${startDate}"
-				 immediateMode="false" altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
-				 />
-   </div>
-   <div id="ss_startPopup" class="ss_calPopupDiv"></div>
-   <ssf:nlt tag="smallWords.and"/>
-   <div class="ss_toolbar_color" style="display:inline;"><ssf:datepicker formName="${formName}" showSelectors="true" 
-				 popupDivId="ss_endPopup" id="ss_endDate" initDate="${endDate}"
-				 immediateMode="false" altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
-				 />
-   </div>
-   <br/>
-   <div id="ss_endPopup" class="ss_calPopupDiv"></div>
-   <div class="ss_buttonBarLeft">
-    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
-     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="self.window.close();return false;"/>
-   </div>
-</form>
-<c:if test="${not empty ssLicenseKey}">
-<hr>
-<span class="ss_bold"><%= org.kablink.teaming.util.ReleaseInfo.getName() + " " + org.kablink.teaming.util.ReleaseInfo.getVersion() %>
- <ssf:nlt tag="administration.report.title.license"/> <fmt:formatDate value="${ssCurrentDate}" pattern="yyyy-MM-dd HH:mm:ss z" timeZone="${ssUser.timeZone.ID}"/>
-</span><br/>
-<br/>
-<span class="ss_bold"><ssf:nlt tag="license.current"/></span><br/>
-<table cellspacing="6" cellpadding="2">
-<tr>
-<td><ssf:nlt tag="license.product.title"/></td><td>${ssLicenseProductTitle} (${ssLicenseProductVersion})</td>
-</tr>
-<tr>
-<td><ssf:nlt tag="license.key.uid"/></td><td>${ssLicenseKey}</td>
-</tr>
-<tr>
-<td><ssf:nlt tag="license.key.issued"/></td><td>${ssLicenseIssued}</td>
-</tr>
-<tr>
-<td><ssf:nlt tag="license.effective"/></td><td>${ssLicenseEffective}</td>
-</tr>
-<tr>
-<c:if test="${ssLicenseUsers < 0}">
-<td valign="top"><ssf:nlt tag="license.users.registered"/></td><td><ssf:nlt tag="license.users.registered.unlimited"/></td>
-</c:if>
-<c:if test="${ssLicenseUsers >= 0}">
-<td><ssf:nlt tag="license.users.registered"/></td><td>${ssLicenseUsers}</td>
-</c:if>
-</tr>
-<tr>
-<c:if test="${ssLicenseExternalUsers < 0}">
-<td valign="top"><ssf:nlt tag="license.users.external"/></td><td><ssf:nlt tag="license.users.external.unlimited"/></td>
-</c:if>
-<c:if test="${ssLicenseExternalUsers >= 0}">
-<td><ssf:nlt tag="license.users.external"/></td><td>${ssLicenseExternalUsers}</td>
-</c:if>
-</tr>
-</table>
-<br/>
-<br/>
-<span class="ss_bold"><ssf:nlt tag="administration.report.dates"/></span>&nbsp;<fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd HH:mm:ss z" timeZone="${ssUser.timeZone.ID}"/>
-&nbsp;<ssf:nlt tag="smallWords.and"/>&nbsp;<fmt:formatDate value="${endDate}" pattern="yyyy-MM-dd HH:mm:ss z" timeZone="${ssUser.timeZone.ID}"/><br/>
-<c:if test="${not empty ssLicenseData}"><%--
---%><c:set var="highWater" value="-1"/><%--
---%><c:set var="highWaterDate" value=""/><%--
---%><c:set var="currentUser" value="0"/><%--
-	--%><c:forEach var="datum" items="${ssLicenseData}" ><%--
-	--%><c:if test="${(datum.internalUserCount + datum.externalUserCount) > highWater}"><%--
-	    --%><c:set var="highWater" value="${datum.internalUserCount + datum.externalUserCount}"/><%--
-	    --%><c:set var="highWaterDate" value="${datum.snapshotDate}"/><%--
-	--%></c:if><%--
-	--%><c:set var="currentUser" value="${datum.internalUserCount + datum.externalUserCount}"/><%--
---%></c:forEach>
-
-<table cellspacing="6" cellpadding="2">
-	<tr>
-		<td><ssf:nlt tag="license.users.highwater"/></td><td>${highWater} (${highWaterDate})</td>
-	</tr>
-	<tr>
-		<td><ssf:nlt tag="license.current.users"/></td><td>${currentUser}</td>
-	</tr>
-</table>
-<br/>
-<table cellspacing="6" cellpadding="2" >
-	<tr>
-		<th><ssf:nlt tag="license.table.date"/>&nbsp;</th>
-		<th>&nbsp;<ssf:nlt tag="license.table.localUsers"/>&nbsp;</th>
-		<th>&nbsp;<ssf:nlt tag="license.table.syncdUsers"/>&nbsp;</th>
-		<th>&nbsp;<ssf:nlt tag="license.table.check"/>&nbsp;</th>
-	</tr>
-	<c:forEach var="datum" items="${ssLicenseData}" >
-		<tr>
-			<td><fmt:formatDate value="${datum.snapshotDate}" pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/></td>
-			<td align="center">${datum.internalUserCount}</td>
-			<td align="center">${datum.externalUserCount}</td>
-			<td align="center">${datum.checksum}</td>
-		</tr>
-	</c:forEach>
-</table>
-<br/>
-${ssLicenseContact}<br/>
-</c:if>
-</c:if>
-</td></tr></table>
-</ssf:form>
-</div>
-</div>
+			<ssf:form titleTag="administration.report.title.license">
+				<table class="ss_style" width="100%">
+					<tr>
+						<td>
+							<form class="ss_style ss_form" 
+								action="<ssf:url action="license_report" actionUrl="true"><ssf:param 
+									name="binderId" value="${ssBinder.id}"/><ssf:param 
+									name="binderType" value="${ssBinder.entityType}"/></ssf:url>" 
+								method="post" 
+								name="${formName}">
+								<input type="hidden" name="ss_reportType" value="license"/>
+								<div class="ss_buttonBarRight">
+							    	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
+							     	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							    	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+									  onClick="self.window.close();return false;"/>
+								</div>
+							   	<br/>
+							   	<br/>
+							   	<span class="ss_bold"><ssf:nlt tag="administration.report.license"/></span>
+							   	<br/>
+							   	<br/>
+							   	<ssf:nlt tag="administration.report.dates"/>
+							   	<div class="ss_toolbar_color" style="display:inline;"><ssf:datepicker formName="${formName}" showSelectors="true" 
+											 popupDivId="ss_startPopup" id="ss_startDate" initDate="${startDate}"
+											 immediateMode="false" altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
+											 />
+							   	</div>
+							   	<div id="ss_startPopup" class="ss_calPopupDiv"></div>
+							   	<ssf:nlt tag="smallWords.and"/>
+							   	<div class="ss_toolbar_color" style="display:inline;"><ssf:datepicker formName="${formName}" showSelectors="true" 
+											 popupDivId="ss_endPopup" id="ss_endDate" initDate="${endDate}"
+											 immediateMode="false" altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
+											 />
+							   	</div>
+							   	<br/>
+							   	<div id="ss_endPopup" class="ss_calPopupDiv"></div>
+							   	<div class="ss_buttonBarLeft">
+							    	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
+							     	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							    	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+									  onClick="self.window.close();return false;"/>
+							   	</div>
+							</form>
+			
+			<c:if test="${not empty ssLicenseKey}">
+							<hr>
+							<span class="ss_bold"><%= org.kablink.teaming.util.ReleaseInfo.getName() + " " + org.kablink.teaming.util.ReleaseInfo.getVersion() %>
+								<ssf:nlt tag="administration.report.title.license"/>:&nbsp;&nbsp;
+								<fmt:formatDate value="${ssCurrentDate}" timeZone="${ssUser.timeZone.ID}" type="both" timeStyle="short" dateStyle="short"/>
+							</span><br/>
+							<br/>
+							<span class="ss_bold"><ssf:nlt tag="license.current"/></span><br/>
+							<table cellspacing="6" cellpadding="2">
+								<tr>
+									<td><ssf:nlt tag="license.product.title"/></td>
+									<td>${ssLicenseProductTitle} (${ssLicenseProductVersion})</td>
+								</tr>
+								<tr>
+									<td><ssf:nlt tag="license.key.uid"/></td>
+									<td>${ssLicenseKey}</td>
+								</tr>
+								<tr>
+									<td><ssf:nlt tag="license.key.issued"/></td>
+									<td><fmt:formatDate value="${ssLicenseIssued}" timeZone="GMT" type="date" dateStyle="short"/></td>
+								</tr>
+								<tr>
+									<td><ssf:nlt tag="license.effective"/></td>
+									<td>
+										<fmt:formatDate value="${ssLicenseEffectiveStart}" timeZone="GMT" type="date" dateStyle="short"/>
+										&nbsp;-&nbsp;
+										<fmt:formatDate value="${ssLicenseEffectiveEnd}" timeZone="GMT" type="date" dateStyle="short"/>
+									</td>
+								</tr>
+								<tr>
+									<c:if test="${ssLicenseUsers < 0}">
+										<td valign="top"><ssf:nlt tag="license.users.registered"/></td>
+										<td><ssf:nlt tag="license.users.registered.unlimited"/></td>
+									</c:if>
+									<c:if test="${ssLicenseUsers >= 0}">
+										<td><ssf:nlt tag="license.users.registered"/></td><td>${ssLicenseUsers}</td>
+									</c:if>
+								</tr>
+								<tr>
+									<c:if test="${ssLicenseExternalUsers < 0}">
+										<td valign="top"><ssf:nlt tag="license.users.external"/></td>
+										<td><ssf:nlt tag="license.users.external.unlimited"/></td>
+									</c:if>
+									<c:if test="${ssLicenseExternalUsers >= 0}">
+										<td><ssf:nlt tag="license.users.external"/></td>
+										<td>${ssLicenseExternalUsers}</td>
+									</c:if>
+								</tr>
+							</table>
+							<br/>
+							<br/>
+							<span class="ss_bold"><ssf:nlt tag="administration.report.dates"/></span>
+							&nbsp;<fmt:formatDate value="${startDate}" timeZone="${ssUser.timeZone.ID}" type="both" timeStyle="short" dateStyle="short"/>
+							&nbsp;<ssf:nlt tag="smallWords.and"/>&nbsp;<fmt:formatDate value="${endDate}" timeZone="${ssUser.timeZone.ID}" type="both" timeStyle="short" dateStyle="short"/>
+							<br/>
+			<c:if test="${not empty ssLicenseData}"><%--
+						--%><c:set var="highWater" value="-1"/><%--
+						--%><c:set var="highWaterDate" value=""/><%--
+						--%><c:set var="currentUser" value="0"/><%--
+							--%><c:forEach var="datum" items="${ssLicenseData}" ><%--
+							--%><c:if test="${(datum.internalUserCount + datum.externalUserCount) > highWater}"><%--
+							    --%><c:set var="highWater" value="${datum.internalUserCount + datum.externalUserCount}"/><%--
+							    --%><c:set var="highWaterDate" value="${datum.snapshotDate}"/><%--
+							--%></c:if><%--
+							--%><c:set var="currentUser" value="${datum.internalUserCount + datum.externalUserCount}"/><%--
+						--%></c:forEach>
+						
+							<table cellspacing="6" cellpadding="2">
+								<tr>
+									<td><ssf:nlt tag="license.users.highwater"/></td>
+									<td>${highWater}&nbsp;(<fmt:formatDate value="${highWaterDate}" timeZone="${ssUser.timeZone.ID}" type="both" dateStyle="short" timeStyle="short"/>)</td>
+								</tr>
+								<tr>
+									<td><ssf:nlt tag="license.current.users"/></td><td>${currentUser}</td>
+								</tr>
+							</table>
+							<br/>
+							<table cellspacing="6" cellpadding="2" >
+								<tr>
+									<th><ssf:nlt tag="license.table.date"/>&nbsp;</th>
+									<th>&nbsp;<ssf:nlt tag="license.table.localUsers"/>&nbsp;</th>
+									<th>&nbsp;<ssf:nlt tag="license.table.syncdUsers"/>&nbsp;</th>
+									<th>&nbsp;<ssf:nlt tag="license.table.check"/>&nbsp;</th>
+								</tr>
+								<c:forEach var="datum" items="${ssLicenseData}" >
+									<tr>
+										<td><fmt:formatDate value="${datum.snapshotDate}" timeZone="${ssUser.timeZone.ID}" type="date" dateStyle="short"/></td>
+										<td align="center">${datum.internalUserCount}</td>
+										<td align="center">${datum.externalUserCount}</td>
+										<td align="center">${datum.checksum}</td>
+									</tr>
+								</c:forEach>
+							</table>
+							<br/>
+							${ssLicenseContact}<br/>
+			</c:if>
+		</c:if>
+						</td>
+					</tr>
+				</table>
+			</ssf:form>
+		</div>
+	</div>
 </body>
 </html>
