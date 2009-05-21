@@ -136,7 +136,7 @@ var ss_tagConfirmNoPunct = "<ssf:nlt tag="tags.noPunctAllowed"/>";
 	</ssf:ifnotaccessible>
 >
 
-   <ssf:popupPane width="170px" titleTag="tags.manageTags" closeScript="${ssCloseScript}">
+   <ssf:popupPane width="250px" titleTag="tags.manageTags" closeScript="${ssCloseScript}">
 
 	<div style="padding:0px 10px;">
 	 <form class="ss_style ss_form ss_tag_pane_color" 
@@ -147,7 +147,7 @@ var ss_tagConfirmNoPunct = "<ssf:nlt tag="tags.noPunctAllowed"/>";
 			  <jsp:include page="/WEB-INF/jsp/definition_elements/tag_table_view.jsp" />
   			  
   			  <table class="ss_tag_pane_color">
-  			   <tbody><tr><td>
+  			   <tbody><tr><td style="padding-top:10px;">
     				<a class="ss_linkButton" href="javascript:;" title="<ssf:nlt tag="title.closeMenu" />"
       			  	  onClick="ss_hideAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;"
     				>

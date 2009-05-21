@@ -95,7 +95,7 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
 
 		<jsp:include page="/WEB-INF/jsp/definition_elements/tag_table_view.jsp" />
 
-		<input type="submit" value="ok" style="height:10px; width:10px; margin-left: -8000px;"
+		<input type="submit" value="<ssf:nlt tag="button.ok"/>" style="height:10px; width:10px; margin-left: -8000px;"
   		  onClick="ss_tagAdd('${ss_tagViewNamespace}', '${ss_tagDivNumber}', '${ssBinder.id}', 
   		  '${ss_tagObject.entityType}', '${ss_tagObject.id}');return false;"/>
   </form>
