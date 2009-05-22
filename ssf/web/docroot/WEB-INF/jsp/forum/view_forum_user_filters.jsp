@@ -42,7 +42,7 @@
 
 <table width="98%">
  <tbody>
-  <tr><td align="left" width="1%">
+  <tr><td align="left" width="1%" nowrap>
      <div class="ss_link_7">
      	<span><ssf:nlt tag="filter.filter" text="Filter"/>:&nbsp;</span>
   	 </div>
