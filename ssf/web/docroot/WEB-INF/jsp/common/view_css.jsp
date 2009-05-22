@@ -171,6 +171,10 @@ var ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
   <c:if test="${empty ss_windowTitle}"> title="RSS: ${ssBinder.title}" </c:if>
   <c:if test="${!empty ss_windowTitle}"> title="RSS: ${ss_windowTitle}" </c:if>
   href="${ss_toolbar_url_subscribe_rss}" />
+<link rel="alternate" type="application/atom+xml" id="ss_atomLink"
+  <c:if test="${empty ss_windowTitle}"> title="ATOM: ${ssBinder.title}" </c:if>
+  <c:if test="${!empty ss_windowTitle}"> title="ATOM: ${ss_windowTitle}" </c:if>
+  href="${ss_toolbar_url_subscribe_atom}" />
 </c:if>
 <script type="text/javascript">
 
