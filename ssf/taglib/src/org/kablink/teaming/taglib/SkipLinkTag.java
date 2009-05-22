@@ -55,6 +55,8 @@ public class SkipLinkTag extends BodyTagSupport {
 	private String _bodyContent;
 	private String tag = "";
 	private String id = "";
+	private Boolean anchorOnly = false;
+	private Boolean linkOnly = false;
     
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -78,15 +80,21 @@ public class SkipLinkTag extends BodyTagSupport {
 					isAccessible = Boolean.TRUE;
 				}
 			}
+			if (user != null && ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+				//Always make the guest accessible so accessible readers can log in
+				isAccessible = true;
+			}
 			
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 
+			httpReq.setAttribute(WebKeys.SKIP_LINK_ID, id);
+			httpReq.setAttribute(WebKeys.SKIP_LINK_TAG, tag);
+			httpReq.setAttribute(WebKeys.SKIP_LINK_ANCHOR_ONLY, this.anchorOnly);
+			httpReq.setAttribute(WebKeys.SKIP_LINK_LINK_ONLY, this.linkOnly);
+			
 			//Output the top section skip link
-			if (isAccessible == true) {
-				httpReq.setAttribute(WebKeys.SKIP_LINK_ID, id);
-				httpReq.setAttribute(WebKeys.SKIP_LINK_TAG, tag);
-				
+			if (isAccessible == true && !this.anchorOnly) {
 				String jsp = "/WEB-INF/jsp/tag_jsps/skiplink/top.jsp";
 				RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 				ServletRequest req = pageContext.getRequest();
@@ -96,10 +104,10 @@ public class SkipLinkTag extends BodyTagSupport {
 			}
 			
 			 //Body
-			pageContext.getOut().print(_bodyContent);
+			if (this._bodyContent != null) pageContext.getOut().print(_bodyContent);
 			
 			//Output the bottom section skip link
-			if (isAccessible == true) {
+			if (isAccessible == true && !this.linkOnly) {
 				String jsp = "/WEB-INF/jsp/tag_jsps/skiplink/bottom.jsp";
 				RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 				ServletRequest req = pageContext.getRequest();
@@ -116,6 +124,8 @@ public class SkipLinkTag extends BodyTagSupport {
 		finally {
 			this.tag = "";
 			this.id = "";
+			this.anchorOnly = false;
+			this.linkOnly = false;
 		}
 	}
 
@@ -125,6 +135,14 @@ public class SkipLinkTag extends BodyTagSupport {
 
 	public void setId(String id) {
 	    this.id = id;
+	}	
+	
+	public void setAnchorOnly(Boolean value) {
+	    this.anchorOnly = value;
+	}	
+	
+	public void setLinkOnly(Boolean value) {
+	    this.linkOnly = value;
 	}	
 	
 }

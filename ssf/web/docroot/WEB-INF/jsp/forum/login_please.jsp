@@ -40,7 +40,9 @@
 <body class="ss_style_body">
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
 <div class="ss_style ss_portlet ss_content_outer">
+<ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}">
 <jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
+</ssf:skipLink>
 <div class="ss_clear_float"></div>
 </ssf:ifadapter>
 <div align="center">

@@ -56,6 +56,8 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
   <c:set var="ss_sidebarTdStyle" value="ss_view_sidebar"/>
 </c:if>
 
+<ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}"
+  linkOnly="true"/>
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 <jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
@@ -97,6 +99,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
   </ssf:ifnotaccessible>
   <ssf:ifnotaccessible>
 	<td valign="top" class="ss_view_info">
+  </ssf:ifnotaccessible>
 	  <c:if test="${!ss_mashupHideToolbar}">
 	    <jsp:include page="/WEB-INF/jsp/definition_elements/folder_entry_toolbar.jsp" />
 	  </c:if>
@@ -109,6 +112,8 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		    </c:if>
 		    </div>
 		  </c:if>
+<ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}"
+  anchorOnly="true"/>
 	      <div id="ss_folder_type_${ssDefinitionFamily}" class="ss_style_color" >
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 					  configElement="${ssConfigElement}" 
@@ -138,11 +143,12 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		  </c:if>
 		</div>
 	  </div>
+  <ssf:ifnotaccessible>
 	</td>
 	</tr>
 	</tbody>
 	</table>
-	</ssf:ifnotaccessible>
+  </ssf:ifnotaccessible>
 </div>
 <ssf:ifaccessible>
   <c:if test="${!ss_mashupHideSidebar && (empty ss_captive || !ss_captive)}">

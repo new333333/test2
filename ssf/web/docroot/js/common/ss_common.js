@@ -3904,8 +3904,8 @@ function ss_loadEntryFromMenu(obj, id, binderId, entityType, namespace, isDashbo
 		return false;
 	}
 	
-	ss_showForumEntry(obj.href, isDashboard);
 	ss_hideSunburst(id, binderId);
+	ss_showForumEntry(obj.href, isDashboard);
 	return false;
 }
 
@@ -7786,11 +7786,13 @@ function ss_hideSunburst(s_id, s_binderId) {
 		titleObj.className = ss_replaceSubStrAll(cn, "ss_unseen", "")
 	}
 
-		//Hide it
-   		dojo.fadeOut({node: divObj, end: 0, delay: 400, onEnd: function() {
-		    	divObj.style.visibility = "hidden";
-		    	divObj.style.display = "none";
-   		}}).play();
+	//Hide it
+	if (divObj != null) {
+		dojo.fadeOut({node: divObj, end: 0, delay: 400, onEnd: function() {
+			    	divObj.style.visibility = "hidden";
+			    	divObj.style.display = "none";
+		}}).play();
+	}
 
 	ssf_onLayoutChange()
 	ss_setupStatusMessageDiv();

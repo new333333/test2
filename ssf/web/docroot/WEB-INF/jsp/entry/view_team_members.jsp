@@ -81,6 +81,8 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	</script>
 	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
 
+<ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}"
+  linkOnly="true"/>
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 	<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 	<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
@@ -121,6 +123,8 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 			<jsp:include page="/WEB-INF/jsp/forum/whats_new_page.jsp" />
 			</c:if>
 			</div>
+<ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}"
+  anchorOnly="true"/>
   	<c:choose>
   		<c:when test="${ss_showTeamMembers}">
 			<c:if test="${!empty ss_reloadUrl}">

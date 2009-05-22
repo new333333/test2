@@ -50,9 +50,11 @@
 <c:if test="${showAdministrationPage}">
 	<div class="ss_style ss_portlet" style="border:1px solid #CCC;">
 	<div style="border:1px solid #CCC;">
+<ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}">
 	<div id="ss_administrationHeader_${renderResponse.namespace}" style="display:none;">
 		<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 	</div>
+</ssf:skipLink>
 	
 
 	<c:set var="adminTreeName" value="${renderResponse.namespace}_adminDomTree"/>

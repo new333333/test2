@@ -1093,6 +1093,8 @@ public class WebKeys {
     public static final String SHOW_TEAM_INSTANCE_COUNT="ss_showTeamInstanceCount";
     public static final String SKIP_LINK_ID="ssSkipLinkId";
     public static final String SKIP_LINK_TAG="ssSkipLinkTag";
+    public static final String SKIP_LINK_ANCHOR_ONLY="ssSkipLinkAnchorOnly";
+    public static final String SKIP_LINK_LINK_ONLY="ssSkipLinkLinkOnly";
     public static final String SUBSCRIPTION="ssSubscription";
     public static final String TABS="ss_tabs";
     public static final String TAB_ID="ss_tab_id";
