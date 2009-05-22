@@ -33,6 +33,7 @@
 package org.kablink.teaming.module.definition.impl;
 
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -1781,6 +1782,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
     public Map getEntryData(Document definitionTree, InputDataAccessor inputData, Map fileItems) {
 		//access check not needed = have tree already
+        User user = RequestContextHolder.getRequestContext().getUser();
 
     	// entryData will contain the Map of entry data as gleaned from the input data
 		Map entryDataAll = new HashMap();
@@ -1811,6 +1813,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					//There is no title field. See if the title value is passed in anyway
 					if (inputData.exists("title")) {
 						entryData.put("title", inputData.getSingleObject("title"));
+					} else {
+						Element familyProperty = (Element) root.selectSingleNode("//properties/property[@name='family']");
+						if (familyProperty != null) {
+							String family = familyProperty.attributeValue("value", "");
+							if (family.equals(Definition.VIEW_STYLE_MINIBLOG)) {
+						        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, 
+						        		DateFormat.SHORT, user.getLocale());
+						        dateFormat.setTimeZone(user.getTimeZone());
+								String mbTitle = dateFormat.format(new Date());
+								entryData.put("title", mbTitle);
+							}
+						}
 					}
 				}
 				for (Element nextItem: itItems) {
