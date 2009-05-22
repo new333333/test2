@@ -57,6 +57,10 @@ public class IfAccessibleTag extends TagSupport {
 				isAccessible = true;
 			}
 		}
+		if (user != null && ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			//Always make the guest accessible so accessible readers can log in
+			isAccessible = true;
+		}
 		if (this.simple_ui && isAccessible) {
 			// Indicates that the user is in accessible mode.
 			this.simple_ui = false;
