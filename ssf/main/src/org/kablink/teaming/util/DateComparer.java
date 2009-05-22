@@ -42,6 +42,7 @@ import org.kablink.teaming.search.filter.SearchFilterKeys;
 public class DateComparer {
 
 	public static boolean isOverdue(Date date) {
+		if (date == null) return false;
 		DateTime dateTime = new DateTime(date);
 		return dateTime.isBeforeNow();
 	}
