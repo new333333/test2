@@ -39,4 +39,7 @@
 <portletadapter:defineObjects1/>
 <ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
+<c:if test="${!ssSkipLinkLinkOnly}">
 <a name="skipsection_${ssSkipLinkId}" id="skipsection_${ssSkipLinkId}"></a>
+</c:if>
+

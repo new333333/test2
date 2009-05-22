@@ -44,6 +44,8 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 %>
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 
+<ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}"
+  linkOnly="true"/>
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer" 
   style="display:block; margin:2px;">
 	<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
@@ -80,6 +82,8 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		    </c:if>
 		    </div>
 		  </c:if>
+<ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}"
+  anchorOnly="true"/>
 	      <div id="ss_folder_type_${ssDefinitionFamily}" class="ss_style_color" >
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 					  configElement="${ssConfigElement}" 

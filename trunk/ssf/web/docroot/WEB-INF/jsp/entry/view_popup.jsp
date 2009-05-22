@@ -55,6 +55,8 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
   <c:set var="ss_sidebarTdStyle" value="ss_view_sidebar"/>
 </c:if>
 
+<ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}"
+  linkOnly="true"/>
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer" 
   style="display:block;">
 
@@ -104,6 +106,8 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	  <jsp:include page="/WEB-INF/jsp/forum/whats_new_page.jsp" />
 	</c:if>
 	</div>
+<ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}"
+  anchorOnly="true"/>
     <div id="ss_folder_type_${ssDefinitionFamily}" class="ss_style_color">
 		<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 				  configElement="${ssConfigElement}" 

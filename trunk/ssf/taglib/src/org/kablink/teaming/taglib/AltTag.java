@@ -79,6 +79,10 @@ public class AltTag extends BodyTagSupport implements ParamAncestorTag {
 				isAccessible = true;
 			}
 		}
+		if (user != null && ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			//Always make the guest accessible so accessible readers can log in
+			isAccessible = true;
+		}
 		if (this.checkIfTag == null) this.checkIfTag = false;
 		try {
 			if (isAccessible) {

@@ -59,6 +59,8 @@ var ss_entryCount = 0;
 </c:forEach>
 </script>
 
+<ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}"
+  linkOnly="true"/>
 <jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 <c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}" scope="request"/>
 <c:if test="${empty ss_sidebarVisibility}"><c:set var="ss_sidebarVisibility" value="block" scope="request"/></c:if>
@@ -126,6 +128,8 @@ var ss_entryCount = 0;
 										<%@ include file="/WEB-INF/jsp/search/results_navigation.jsp" %>
 									</div>
 																
+<ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}"
+  anchorOnly="true"/>
 									<!-- Search result list -->
 									<%@ include file="/WEB-INF/jsp/search/result_list.jsp" %>
 

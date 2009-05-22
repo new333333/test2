@@ -191,6 +191,8 @@ function ss_loadEntryUrl(url,id) {
 		  <c:set var="ss_sidebarVisibilityHide" value="block"/>
 		  <c:set var="ss_sidebarTdStyle" value="ss_view_sidebar"/>
 		</c:if>
+<ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}"
+  linkOnly="true"/>
 		<div id="ss_portlet_content" class="ss_style ss_portlet">
 		<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 		<div class="ss_actions_bar1_pane ss_sidebarImage">
@@ -227,6 +229,8 @@ function ss_loadEntryUrl(url,id) {
 			<td valign="top" class="ss_view_info">
 		</ssf:ifnotaccessible>
 	
+<ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}"
+  anchorOnly="true"/>
 		<div class="ss_style_color">
 	</c:if>
 	<c:if test="${!ss_viewEntryNavbar}">

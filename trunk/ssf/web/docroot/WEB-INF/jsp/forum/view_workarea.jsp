@@ -76,10 +76,12 @@ var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 </script>
 
 <c:if test="${empty ssBinder}">
+<ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}">
 	<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
     </div>
+</ssf:skipLink>
 
 <div class="ss_style ss_portlet">
 <c:if test="${!empty ssWsDomTree}">
