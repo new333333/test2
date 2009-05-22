@@ -1024,6 +1024,7 @@ public class WebKeys {
     public static final String TOOLBAR_MEETING_URL="ss_toolbar_meeting_url";
     public static final String TOOLBAR_SUBSCRIBE_EMAIL="ss_toolbar_subscribe_email";
     public static final String TOOLBAR_URL_ICAL="ss_toolbar_url_ical";
+    public static final String TOOLBAR_URL_SUBSCRIBE_ATOM="ss_toolbar_url_subscribe_atom";
     public static final String TOOLBAR_URL_SUBSCRIBE_RSS="ss_toolbar_url_subscribe_rss";
     public static final String TOOLBAR_URL_EMAIL_ADDRESSES="ss_toolbar_url_email_addresses";
     public static final String TOOLBAR_URL_SIMPLE_URLS="ss_toolbar_url_simple_urls";

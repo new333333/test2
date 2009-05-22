@@ -1949,6 +1949,10 @@ public class ListFolderHelper {
 		if (rssUrl != null && !rssUrl.equals("")) {
 			model.put(WebKeys.TOOLBAR_URL_SUBSCRIBE_RSS, rssUrl);
 		}
+		String atomUrl = UrlUtil.getAtomURL(request, topFolderId);
+		if (atomUrl != null && !atomUrl.equals("")) {
+			model.put(WebKeys.TOOLBAR_URL_SUBSCRIBE_ATOM, atomUrl);
+		}
 		//  Build the simple URL beans
 		BinderHelper.buildSimpleUrlBeans(bs,  request, folder, model);
 		//   iCalendar

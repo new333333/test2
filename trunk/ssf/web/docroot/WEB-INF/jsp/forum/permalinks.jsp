@@ -75,6 +75,17 @@
     </tr>
   </c:if>
 
+  <c:if test="${!empty ss_toolbar_url_subscribe_atom}">
+    <tr>
+      <td valign="top" nowrap>
+       <span><ssf:nlt tag="permalink.atomUrl"/></span>
+      </td>
+      <td valign="top" nowrap>
+        <span>${ss_toolbar_url_subscribe_atom}</span>
+      </td>
+    </tr>
+  </c:if>
+
   <c:if test="${!empty ss_toolbar_url_webdav}">
     <tr>
       <td valign="top" nowrap>
