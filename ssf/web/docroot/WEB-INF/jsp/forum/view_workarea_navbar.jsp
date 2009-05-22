@@ -489,53 +489,33 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		            	</div>
 		       </td>
 		       <td>
-		       <!-- Find People --> 
-		        <div>     
+		       		<!-- Find People --> 
+		        	<div>     
 		        		<div class="ss_searchtext">
-		                  	<ssf:ifnotaccessible>
-		                  	
-								<span style="padding-left:5px;"><ssf:nlt tag="navigation.findUser"/></span>
-								<div class="ss_global_toolbar_search" id="ss_navbarFindUserButton${renderResponse.namespace}" onMouseOver="this.style.cursor = 'pointer';">
-							  		<ssHelpSpot helpId="navigation_bar/nav_find"
-												offsetY="-2" 
-						            	    	offsetX="4" 
-									    		title="<ssf:nlt tag="helpSpot.navFind"/>">
-									</ssHelpSpot>
-									
-									<form method="post" id="ss_findUserForm${renderResponse.namespace}" 
-					  					name="ss_findUserForm${renderResponse.namespace}" 
-					  					style="display:inline;"
-					  					action="<ssf:url action="findUser" actionUrl="true"/>">
-						  				<ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
-						    			formElement="searchText" 
-						    			type="user"
-						    			singleItem="true"/> 
-									</form>
-		
-								</div>	
-							</ssf:ifnotaccessible>
-		
-		               		<ssf:ifaccessible>
-			  					<span style="padding-left:5px;">
-			  					<ssf:nlt tag="navigation.findUser"/>
-			  					</span>
-			  						<form method="post" id="ss_findUserForm${renderResponse.namespace}" 
-					  					name="ss_findUserForm${renderResponse.namespace}" 
-					  					style="display:inline;"
-					  					action="<ssf:url action="findUser" actionUrl="true"/>">
-						  				<ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
-						    			formElement="searchText" 
-						    			type="user"
-						    			width="70px"
-						    			singleItem="true"/> 
-									</form>
-				 			</ssf:ifaccessible>
+							<span style="padding-left:5px;"><ssf:nlt tag="navigation.findUser"/></span>
+							<div class="ss_global_toolbar_search" id="ss_navbarFindUserButton${renderResponse.namespace}" onMouseOver="this.style.cursor = 'pointer';">
+						  		<ssHelpSpot helpId="navigation_bar/nav_find"
+											offsetY="-2" 
+					            	    	offsetX="4" 
+								    		title="<ssf:nlt tag="helpSpot.navFind"/>">
+								</ssHelpSpot>
+								
+								<form method="post" id="ss_findUserForm${renderResponse.namespace}" 
+				  					name="ss_findUserForm${renderResponse.namespace}" 
+				  					style="display:inline;"
+				  					action="<ssf:url action="findUser" actionUrl="true"/>">
+					  				<ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
+					    			formElement="searchText" 
+					    			type="user"
+					    			singleItem="true"/> 
+								</form>
+	
+							</div>	
 						</div>		
 					</div>				
-					</td>
-		            <td>
+				</td>
+	            <td>
 		            <!-- Find Place -->
-	            	<ssf:ifnotaccessible>
 	            	<div class="ss_searchtext">
 						<span style="padding-left:5px;"><ssf:nlt tag="navigation.findPlace"/></span>
 							<div class="ss_global_toolbar_search" id="ss_navbarFindPlacesButton${renderResponse.namespace}" 
@@ -552,67 +532,24 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 							</form>
 						</div>
 					</div>
-					</ssf:ifnotaccessible>
-					<ssf:ifaccessible>
-					<div class="ss_searchtext">
-			  			<span style="padding-left:5px;">
-			  			<ssf:nlt tag="navigation.findPlace"/>
-			  			</span>
-						<form method="post" id="ss_findPlacesForm${renderResponse.namespace}" 
-					  			name="ss_findPlacesForm${renderResponse.namespace}" 
-					  			style="display:inline;"
-					  			action="<ssf:url windowState="maximized" action="findUser" actionUrl="true"/>">
-						 		<ssf:find 
-						    	formName="ss_findPlacesForm${renderResponse.namespace}" 
-						    	formElement="searchText" 
-						    	type="places"
-						    	singleItem="true"> 
-						  		<ssf:param name="label" useBody="true">
-						    	<ssf:nlt tag="navigation.findPlace"/>
-						  		</ssf:param>
-						 	</ssf:find>
-						</form>
-				    </div>
-					</ssf:ifaccessible>    
 	           </td>     
 	           <td>
 	            <!-- Find Tags -->
 	            <div class="ss_searchtext">                
-	                  <ssf:ifnotaccessible>
-						<span style="padding-left:5px;"><ssf:nlt tag="navigation.findTag"/></span>
-						<div class="ss_global_toolbar_search" id="ss_navbarFindTagsButton${renderResponse.namespace}"
-	     					onMouseOver="this.style.cursor = 'pointer';">
-							<form method="post" id="ss_findTagsForm${renderResponse.namespace}" 
-								name="ss_findTagsForm${renderResponse.namespace}" 
-								style="display:inline;"
-					  			action="<ssf:url action="findUser" actionUrl="true"/>">
-						  		<ssf:find 
-						    	formName="ss_findTagsForm${renderResponse.namespace}" 
-						    	formElement="searchText" 
-						    	type="tags"
-						    	singleItem="true"/> 
-							</form>
-						</div>
-	                  </ssf:ifnotaccessible>				
-					  <ssf:ifaccessible> 
-						<span style="padding-left:5px;">
-							<ssf:nlt tag="navigation.findTag"/>
-						</span>
-							<form method="post" id="ss_findTagsForm${renderResponse.namespace}" 
-					  			name="ss_findTagsForm${renderResponse.namespace}" 
-					  			style="display:inline;"
-					  			action="<ssf:url windowState="maximized" action="findUser" actionUrl="true"/>">
-						  		<ssf:find 
-						    	formName="ss_findTagsForm${renderResponse.namespace}" 
-						    	formElement="searchText" 
-						    	type="tags"
-						    	singleItem="true"> 
-						  		<ssf:param name="label" useBody="true">
-						    	<ssf:nlt tag="navigation.findTag"/>
-						  		</ssf:param>
-						  	</ssf:find>
+					<span style="padding-left:5px;"><ssf:nlt tag="navigation.findTag"/></span>
+					<div class="ss_global_toolbar_search" id="ss_navbarFindTagsButton${renderResponse.namespace}"
+     					onMouseOver="this.style.cursor = 'pointer';">
+						<form method="post" id="ss_findTagsForm${renderResponse.namespace}" 
+							name="ss_findTagsForm${renderResponse.namespace}" 
+							style="display:inline;"
+				  			action="<ssf:url action="findUser" actionUrl="true"/>">
+					  		<ssf:find 
+					    	formName="ss_findTagsForm${renderResponse.namespace}" 
+					    	formElement="searchText" 
+					    	type="tags"
+					    	singleItem="true"/> 
 						</form>
-	                  </ssf:ifaccessible>
+					</div>
 				</div>
 	           </td>
               </tr>
