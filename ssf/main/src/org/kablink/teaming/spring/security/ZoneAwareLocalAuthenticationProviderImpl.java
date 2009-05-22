@@ -90,7 +90,7 @@ public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalA
 		return new SynchNotifiableAuthenticationImpl(principal, credentials, authorities);
 	}
 	
-	public class SynchNotifiableAuthenticationImpl extends UsernamePasswordAuthenticationToken implements SynchNotifiableAuthentication {
+	public static class SynchNotifiableAuthenticationImpl extends UsernamePasswordAuthenticationToken implements SynchNotifiableAuthentication {
 	    public SynchNotifiableAuthenticationImpl(Object principal, Object credentials, GrantedAuthority[] authorities) {
 	    	super(principal, credentials, authorities);
 	    }
