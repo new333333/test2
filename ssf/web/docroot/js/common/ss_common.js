@@ -4351,12 +4351,13 @@ function ssFavorites(namespace) {
 	function setFavoritesList(favList) {
 		var d = dojo.byId("ss_favorites_list" + namespace);
 		var t = '<ul class="ss_favoritesList">';
+		var fid1 = null;
 		for (var i = 0; i < favList.length; i++) {
 			var f = favList[i];
 			if (f.eletype != 'favorite') continue
 			t += '<li id ="ss_favorite_' + f.id + '">';
 			t += '<span style="white-space:nowrap"><input type="checkbox" style="display: none;"/>';
-			t += '<a href="javascript:;" ';
+			t += '<a id ="ss_favorite_link_' + f.id + '" href="javascript:;" ';
 			if (typeof f.hover != "undefined") t += 'title="'+f.hover+'" ';
 			t += 'onClick="ss_treeShowIdNoWS(';
 			t += "'" + f.value + "', this";
@@ -4366,11 +4367,16 @@ function ssFavorites(namespace) {
 			t += ", '" + f.action + "'";
 			t += ');return false;">' + f.name + '</a></span>';
 			t += '</li>';
+			if (fid1 == null) fid1 = f.id;
 		}
 		// Close the list and add a space so the div has something in it
 		// even when empty so a floating div has something to float in.
 		t += '</ul>&nbsp;';
 		d.innerHTML = t;
+		if (fid1 != null) {
+			var fObj = self.document.getElementById("ss_favorite_link_" + fid1);
+			try {fObj.focus();} catch(e){}
+		}
 	}
 
 
@@ -4588,7 +4594,8 @@ function ssTeams(namespace) {
 		ss_hideDiv("ss_myteams_loading" + namespace);
 		var d = dojo.byId("ss_myteams_list" + namespace);
 		d.innerHTML = data;
-		try {d.focus();} catch(e){}
+		var fObj = self.document.getElementById("ss_myTeams_focusId" + namespace);
+		try {fObj.focus();} catch(e){}
 	}
 	this.hide = function() {
 		var fObj = self.document.getElementById("ss_myteams_pane" + namespace);
@@ -5951,14 +5958,19 @@ function ss_showSavedQueriesList(relObj, divId, resultUrl) {
 			try {
 				var divObj = document.getElementById(divId);
 			
-				
+				var ss_savedSearchLinkId = null;
 				var txt = '<div class="ss_popupMenuClose" align="right" style="width:250px;">';
 				txt += '<a href="javascript: ;" ';
 				txt += 'onClick="ss_hideDivNone(this.parentNode.parentNode.id);">'
 				txt += '<img src="' + ss_imagesPath + 'pics/sym_s_delete.gif" border="0"/></a></div>'
 				txt += "<h1>" + ss_savedSearchTitle + "</h1><ul>";
 				for (var queryNo = 0; queryNo < data.length; queryNo++) {
-					txt += "<li><a href=\"" + resultUrl + "&operation=ss_savedQuery&newTab=1&ss_queryName=" + data[queryNo] + "\">"+data[queryNo]+"</a></li>";
+					txt += "<li><a href=\"" + resultUrl + "&operation=ss_savedQuery&newTab=1&ss_queryName=" + data[queryNo] + "\""
+					if (ss_savedSearchLinkId == null) {
+						txt += " id=\"ss_savedSearchLinkId1\" ";
+						ss_savedSearchLinkId = "1";
+					}
+					txt += ">"+data[queryNo]+"</a></li>";
 				}
 				txt += "</ul>";
 				divObj.innerHTML = txt;
@@ -5966,6 +5978,8 @@ function ss_showSavedQueriesList(relObj, divId, resultUrl) {
 				ss_placeOnScreen(divId, relObj, 12, 12);
 				dojo.style(divId, "display", "inline");
 				dojo.style(divId, "visibility", "visible");
+				var fObj = document.getElementById("ss_savedSearchLinkId1");
+				if (fObj != null) fObj.focus();
 	            ss_setOpacity(divId,0);
 	            dojo.fadeIn({node:divId, delay:50}).play();
 				//Signal that the layout changed

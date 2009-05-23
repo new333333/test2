@@ -163,9 +163,6 @@ body.ss_style_body {
 .ss_style a {
   	color: ${ss_style_link_color};
   	text-decoration: none;
-	<ssf:ifnotaccessible>
-  		/* outline: none; */
-	</ssf:ifnotaccessible>  
 	}
 .ss_style a:visited {
   	color: ${ss_style_link_visited_color};
@@ -173,12 +170,7 @@ body.ss_style_body {
 .ss_style a:hover {
   	color: ${ss_style_link_hover_color};
   	text-decoration: none;
-	<ssf:ifaccessible simple_ui="true">
-  		outline: dotted 1px gray;
-	</ssf:ifaccessible>
-	<ssf:ifnotaccessible>
-  		outline: dotted 1px gray;
-	</ssf:ifnotaccessible>
+  	outline: dotted 1px gray;
 	}
 .ss_title_link {
   	text-decoration:underline;
@@ -3465,12 +3457,7 @@ a.ss_searchButton {
 
 a.ss_searchButton:hover img {
     background-position:  left -16px; 
-<ssf:ifaccessible simple_ui="true">
-  outline: dotted 1px gray;
-</ssf:ifaccessible>  
-<ssf:ifnotaccessible>
-  outline: dotted 1px gray;
-</ssf:ifnotaccessible>  
+  	outline: dotted 1px gray;
 }
 /***  NEW LAYOUT SEARCH BUTTON ***/
 a.ss_searchButton2 img {
@@ -3488,12 +3475,7 @@ a.ss_searchButton2 img, a.ss_searchButton:link img , a.ss_searchButton:focus img
 
 a.ss_searchButton2:hover img {
     background-position:  left -16px; 
-<ssf:ifaccessible simple_ui="true">
-  outline: dotted 1px gray;
-</ssf:ifaccessible>  
-<ssf:ifnotaccessible>
-  outline: dotted 1px gray;
-</ssf:ifnotaccessible>  
+    outline: dotted 1px gray;
 }
 
 a.ss_advanced:link, a.ss_advanced:hover, a.ss_advanced:visited, a.ss_advanced:active {
@@ -3505,22 +3487,12 @@ a.ss_parentPointer:hover, a.ss_parentPointer:link, a.ss_parentPointer:hover, a.s
 	color: #333333;
 	text-decoration:underline;
 	margin:0px 0px 0px 0px;
-<ssf:ifaccessible simple_ui="true">
-  outline: dotted 1px gray;
-</ssf:ifaccessible>  
-<ssf:ifnotaccessible>
-  outline: dotted 1px gray;
-</ssf:ifnotaccessible>  
+    outline: dotted 1px gray;
 	}
 a.ss_parentPointer:hover {
 	color: #0000ff;
 	text-decoration:underline;
-<ssf:ifaccessible simple_ui="true">
-  outline: dotted 1px gray;
-</ssf:ifaccessible>  
-<ssf:ifnotaccessible>
-  outline: dotted 1px gray;
-</ssf:ifnotaccessible>  
+    outline: dotted 1px gray;
 }
 a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 	color: purple;
