@@ -52,7 +52,9 @@
    <div class="ss_popup_title"><ssf:nlt tag="${titleTag}"/></div></div>
    </td>
    <td width="40"><div class="ss_popup_top" align="right">
-    <div onClick="${closeScript}" class="ss_popup_close"></div></div>
+    <a href="javascript: ;" onClick="${closeScript};return false;">
+    <img border="0" src="<html:imagesPath/>pics/popup_close_box.gif"/>
+    </a></div>
    </td>
   </tr>
   <tr><td colspan="2">

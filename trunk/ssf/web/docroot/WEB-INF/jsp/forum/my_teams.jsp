@@ -42,12 +42,16 @@
 
 <div>
 <div class="ss_teamsTitle"><ssf:nlt tag="navigation.myTeams"/></div>
-
+<c:set var="tid1" value=""/>
 <ul class="ss_myTeamsList">
 <c:forEach var="binder" items="${ss_myTeams}">
 <jsp:useBean id="binder" type="java.util.Map" />
 <li>
 <a href="<ssf:permalink search="${binder}"/>" 
+<c:if test="${empty tid1}">
+id="ss_myTeams_focusId${renderResponse.namespace}"
+<c:set var="tid1" value="1"/>
+</c:if>
 <c:if test="${!empty binder._entityPath}"> title="<%= ((String)binder.get("_entityPath")).replaceAll("&", "&amp;").replaceAll("\"", "&quot;") %>" </c:if>
 <ssf:ifnotaccessible>
   onClick="return ss_gotoPermalink('${binder._docId}', '${binder._docId}', '${binder._entityType}', '${ss_namespace}', 'yes')"

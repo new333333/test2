@@ -336,14 +336,10 @@ a.ss_new_thread img, a.ss_new_thread:link img , a.ss_new_thread:focus img, a.ss_
 	}	
 a.ss_new_thread:hover img {
 /*    background-position:  left -12px; */
-	<ssf:ifaccessible simple_ui="true">
-  		outline: dotted 1px gray;
-	</ssf:ifaccessible>  
+  	outline: dotted 1px gray;
 	}
 a.ss_new_thread:hover {
-	<ssf:ifaccessible simple_ui="true">
-  		outline: dotted 1px gray;
-	</ssf:ifaccessible>  
+  	outline: dotted 1px gray;
 	}
 .ss_nowrapFixed {
 	white-space:normal!important;
