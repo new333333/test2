@@ -302,7 +302,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		  </c:if>
               <c:if test="${empty ssStandAlone || !ssStandAlone}"> | </c:if>
                 <ssf:ifLoggedIn>
-  				  	  <a href="javascript: ;" onClick="ss_logoff();return false;"><span><ssf:nlt tag="logout"/></span></a><br/>
+  				  	  <a href="javascript: ;" onClick="ss_logoff();return false;"><span><ssf:nlt tag="logout"/></span></a>
 			    </ssf:ifLoggedIn>
 			    <ssf:ifNotLoggedIn>
 				    <form method="post" id="ss_loginForm${renderResponse.namespace}" 
@@ -316,12 +316,18 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
         	
 			<table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
 			<td valign="middle" style="height: 22px; white-space: nowrap;">
-			<a href="javascript: window.print();"><img border="0" 
-    		alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
-    		src="<html:rootPath/>images/pics/masthead/masthead_printer.png" width="23" height="21" align="right" /></a></td>
-			<td><a href="javascript: ss_helpSystem.run();"><img border="0" style="margin-left: 10px; margin-right: 10px;" title="<ssf:nlt tag="navigation.help"/>"
-    		<ssf:alt tag="navigation.help"/> src="<html:rootPath/>images/pics/masthead/mastheadHelp.png" width="19" height="21" hspace="2" /></a></td>
-			</tr></tbody></table><!-- boulder: print button and help button no ka and boulder is png change h & w on printer button -->
+			  <a href="javascript: window.print();"><img border="0" 
+    		  alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
+    		  src="<html:rootPath/>images/pics/masthead/masthead_printer.png" 
+    		  width="23" height="21" align="right" /></a></td>
+			<td valign="middle" style="height: 22px; white-space: nowrap;">
+			  <a href="javascript: ss_helpSystem.run();"><img border="0" 
+			  style="margin-left: 10px; margin-right: 10px;" title="<ssf:nlt tag="navigation.help"/>"
+    		  <ssf:alt tag="navigation.help"/> src="<html:rootPath/>images/pics/masthead/mastheadHelp.png" 
+    		  width="19" height="21" hspace="2" /></a></td>
+			</tr>
+			</tbody>
+			</table><!-- boulder: print button and help button no ka and boulder is png change h & w on printer button -->
 			
         </td>
       </tr>
