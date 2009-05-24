@@ -76,14 +76,14 @@
 	 </tr>
 	</table>
  <c:set var="ss_sidebarStatusTitle" scope="request">
-   <span class="ss_fineprint"><ssf:nlt tag="sidebar.statusPost"/></span>
+   <label for="ss_status_textarea${renderResponse.namespace}">
+     <span class="ss_fineprint"><ssf:nlt tag="sidebar.statusPost"/></span>
+   </label>
  </c:set>
  <c:set var="ss_sidebarStatusTitleInfo"><ssf:nlt tag="sidebar.statusPostInfo"/></c:set>
  <ssf:sidebarPanel titleHTML="${ss_sidebarStatusTitle}" id="ss_miniblog_sidebar" 
     initOpen="true" sticky="true" noColorChange="true" titleInfo="${ss_sidebarStatusTitleInfo}">
 	<ssf:ifLoggedIn>
-		<label for="ss_status_textarea${renderResponse.namespace}"></label>
-
 		<textarea cols="20" rows="2" id="ss_status_textarea${renderResponse.namespace}"
 			wrap="virtual" class="ss_input_myStatus" 
   			onFocus="ss_setStatusBackground(this, 'focus');"
