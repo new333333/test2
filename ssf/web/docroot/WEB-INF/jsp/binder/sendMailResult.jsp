@@ -109,7 +109,10 @@
 
 
 <div class="ss_buttonBarLeft">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" 
+  onClick="self.window.close();return false;">
+<input type="submit" class="ss_submit" name="backBtn" value="<ssf:nlt tag="button.goBack"/>" 
+  onClick="self.window.history.back();return false;" style="padding-left:20px;">
 </div>
 </form>
 </ssf:form>
