@@ -200,6 +200,7 @@ Slider.eventHandlers = {
 	onmousedown:	function (e) {
 		e = Slider.eventHandlers.getEvent(e, this);
 		var s = this.slider;
+		if (e.srcElement.className.toLowerCase().indexOf("handle") < 0) return;
 		if (s.element.focus)
 			s.element.focus();
 
