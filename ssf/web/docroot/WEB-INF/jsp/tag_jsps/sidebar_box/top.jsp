@@ -59,11 +59,11 @@ Boolean noColorChange = ParamUtil.getBoolean(request, "noColorChange", true);
 --%><div class="ss_sidebarMenu" <%--
 --%><c:if test="${!noColorChange}">onmouseover="this.className='ss_mouseOver';" onmouseout="this.className='ss_sidebarMenu';"</c:if><%--
 --%>><%--
-    --%><a href="javascript: ;" <ssf:title tag="sidebar.showHide"/> <%--
+    --%><a href="javascript: ;"  title="${titleInfo}" <%--
         --%><c:if test="${initOpen}">class="ss_menuOpen" </c:if><%--
         --%><c:if test="${!initOpen}">class="ss_menuClosed" </c:if><%--
         --%> onclick="ss_showHideSidebarBox('${renderResponse.namespace}_${divId}', this, ${sticky}, '${divId}');"><%--
-        --%><span title="${titleInfo}">${title}${titleHTML}</span><%--
+        --%><span>${title}${titleHTML}</span><%--
     --%></a><div><img alt="" src="<html:imagesPath/>pics/1pix.gif" height="1" width="180"/></div><%--
 --%><div id="${renderResponse.namespace}_${divId}" style="overflow: hidden; <%--
 --%><c:if test="${initOpen}">visibility: visible; display: block;</c:if><%--
