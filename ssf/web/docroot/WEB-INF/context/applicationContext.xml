@@ -831,11 +831,13 @@
 				<value>aopallianceOpenSessionInViewInterceptor</value>
 				<!-- This must come after open-session-in-view -->
 				<value>aopallianceResolveRequestContextInterceptor</value>
-				<value>aopallianceLogContextInfoUponExceptionInterceptor</value>
+				<value>aopallianceSsfsLogContextInfoUponExceptionInterceptor</value>
 				<value>aopallianceMethodInvocationTraceInterceptor</value>
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="aopallianceSsfsLogContextInfoUponExceptionInterceptor" class="org.kablink.teaming.ssfs.interceptor.LogContextInfoUponExceptionInterceptor"/>
 	
 	<bean id="aopallianceLoggingInterceptor" class="org.kablink.teaming.util.aopalliance.LoggingInterceptor"/>
 	
@@ -846,8 +848,6 @@
 	<bean id="aopallianceMethodInvocationTraceInterceptor" class="org.kablink.teaming.util.aopalliance.MethodInvocationTraceInterceptor"/>
 	
 	<bean id="aopallianceResolveRequestContextInterceptor" class="org.kablink.teaming.util.aopalliance.ResolveRequestContextInterceptor"/>
-
-	<bean id="aopallianceLogContextInfoUponExceptionInterceptor" class="org.kablink.teaming.util.aopalliance.LogContextInfoUponExceptionInterceptor"/>
 
 	<!-- referenced internally when viewing files and sending mail -->
 	<bean id="mimeTypes" class="org.springframework.mail.javamail.ConfigurableMimeFileTypeMap">
@@ -1042,11 +1042,13 @@ text/calendar											  ics
 				<value>aopallianceOpenSessionInViewInterceptor</value>
 				<!-- This must come after open-session-in-view -->
 				<value>aopallianceResolveRequestContextInterceptor</value>
-				<value>aopallianceLogContextInfoUponExceptionInterceptor</value>
+				<value>aopallianceWsLogContextInfoUponExceptionInterceptor</value>
 				<value>loginInfoInterceptor</value>
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="aopallianceWsLogContextInfoUponExceptionInterceptor" class="org.kablink.teaming.remoting.ws.interceptor.LogContextInfoUponExceptionInterceptor"/>
 	
 	<bean id="templateService" parent="wsProxyTemplate">
 		<property name="target">
