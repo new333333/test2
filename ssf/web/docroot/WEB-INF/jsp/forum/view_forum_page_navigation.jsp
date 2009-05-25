@@ -69,12 +69,10 @@
 				    <c:if test="${ssBinder.entityType != 'profiles'}">
 					    <input name="ssGoToEntry" id="ssGoToEntry${renderResponse.namespace}" size="10" 
 					      type="text" class="ss_paginationTextBox" />&nbsp;
-						<a href="javascript: ;" 
+						<a class="ss_tinyButton" href="javascript: ;" 
 						<ssf:title tag="entry.goTo" />
-						onClick="ss_clickGoToEntry_${renderResponse.namespace}('ss_goToEntryForm_${renderResponse.namespace}');return false;">
-						<img src="<html:rootPath/>images/pics/page/go.png"
-						  <ssf:alt tag="entry.goTo"/> 
-						  width="17" height="12" border="0" align="absmiddle" /></a>
+						onClick="ss_clickGoToEntry_${renderResponse.namespace}('ss_goToEntryForm_${renderResponse.namespace}');return false;"
+						><ssf:nlt tag="button.go"/></a>
 					</c:if>
 				    <c:if test="${ssBinder.entityType == 'profiles'}">
 				      <ssf:find type="user"
@@ -198,12 +196,10 @@
 				  onSubmit="return(ss_submitPage_${renderResponse.namespace}(this))">
 			    <input name="ssGoToPage" id="ssGoToPage${renderResponse.namespace}" size="7" type="text" 
 			      class="ss_paginationTextBox" />&nbsp;
-				<a href="javascript: ;" 
+				<a class="ss_tinyButton" href="javascript: ;" 
 				<ssf:title tag="title.goto.page" />
-				onClick="ss_clickGoToPage_${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}'); return false;">
-				<img src="<html:rootPath/>images/pics/page/go.png" 
-  				  <ssf:alt tag="title.goto.page"/>
-				  width="17" height="12" border="0" align="absmiddle" /></a>
+				onClick="ss_clickGoToPage_${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}'); return false;"
+				><ssf:nlt tag="button.go"/></a>
 			</form>
 			</td></tr></tbody></table></div>
 
