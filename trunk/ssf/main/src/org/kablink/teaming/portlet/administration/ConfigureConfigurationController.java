@@ -101,9 +101,15 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				Integer type = PortletRequestUtils.getIntParameter(request, "definitionType");
 				if (type == null)  return;
 				if (type == -1) {
-					Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-					Long configId = getTemplateModule().addTemplateFromBinder(binderId).getId();
-					response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+					Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+					if (binderId == null) {
+						String[] errors = new String[1];
+						errors[0] = NLT.get("error.noBinderSelected");
+						response.setRenderParameter(WebKeys.ERROR_LIST, errors);
+					} else {
+						Long configId = getTemplateModule().addTemplateFromBinder(binderId).getId();
+						response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+					}
 				} else {
 					Map updates = new HashMap();
 					String sVal = PortletRequestUtils.getStringParameter(request, "title", null);

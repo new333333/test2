@@ -40,6 +40,15 @@
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
 <ssf:form titleTag="administration.configure_configurations" >
+<c:if test="${!empty ssErrorList}">
+<br/>
+<span class="ss_bold ss_largerprint ss_errorLabel"><ssf:nlt tag="administration.errors"/></span>
+<ul>
+<c:forEach var="err" items="${ssErrorList}">
+	<li>${err}</li>
+</c:forEach>
+</ul>
+</c:if>
 <%
 String cTreeName = renderResponse.getNamespace() + "_cTree";
 %>
