@@ -578,7 +578,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			      	action="view_ws_listing"
 			      	binderId="${ssUser.workspaceId}"/>"
               	><img src="<html:rootPath/>images/pics/masthead/ss_banner_guy.gif" 
-              	  <ssf:alt tag=""/>  border="0" 
+              	  <ssf:alt tag="navigation.goto.myWorkspace">
+		        			<ssf:param name="value" value="${userTitle}"/></ssf:alt>  border="0" 
               	  style="vertical-align:middle" 
               	 />&nbsp;&nbsp;<c:if test="${ssUser.internalId == guestInternalId}"
               	 ><ssf:nlt tag="navigation.guestWorkspace"/></c:if
