@@ -100,5 +100,10 @@ public class LockFile {
 		}
 		return false;
 	}
+	
+	public void releaseLockIfValid() {
+		if (fileLock.isValid())
+			releaseLock();
+	}
 
 }

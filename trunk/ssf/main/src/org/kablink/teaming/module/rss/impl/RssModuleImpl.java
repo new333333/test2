@@ -163,13 +163,13 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			if (!rfl.getLock()) {
 				logger.info("Couldn't get the RssFeedLock");
 			}
-			deleteFeed(binder);
+			deleteFeed(binder, rfl);
 		} finally {
 			rfl.releaseLock();
 		}
 		
 	}
-	public synchronized void deleteFeed(Binder binder) {
+	public synchronized void deleteFeed(Binder binder, LockFile rfl) {
 
 		// See if the feed exists
 		File rf = new File(getRssPath(binder));
@@ -184,8 +184,11 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		} catch (Exception e) {
 			logger.info("Rss module error: " + e.toString());
 		} 
-		if (rf.exists())
-			FileHelper.deleteRecursively(rf);
+		try {
+			if (rf.exists())
+				rfl.releaseLock();
+				FileHelper.deleteRecursively(rf);
+		} catch (Exception e) {}; //just ignore the error, the feed is gone
 	}
 
 	public synchronized void deleteRssFeed(Binder binder, Collection<Entry> entries) {
@@ -263,7 +266,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	 * @param indexPath
 	 * @return
 	 */
-	private boolean rssFeedInactive(Binder binder) {
+	private boolean rssFeedInactive(Binder binder, LockFile rfl) {
 		// set the pathname to the rss last read timestamp file
 		try {
 			File tf = getRssIndexActivityFile(binder);
@@ -278,7 +281,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			long currentTime = System.currentTimeMillis();
 			long maxInactive = maxInactiveDays * DAYMILLIS;
 			if ((currentTime - lastModified) > maxInactive) {
-				deleteFeed(binder);
+				deleteFeed(binder, rfl);
 				return true;
 			}
 		} catch (Exception e) {
@@ -334,13 +337,13 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			// check to see if this feed has been read from in a month, if yes, 
 			// change the last modified timestamp, otherwise, delete it and 
 			// let the next reader recreate it.
-			if (rssFeedInactive(entry.getParentBinder()))
+			if (rssFeedInactive(entry.getParentBinder(),rfl))
 				return;
 
 			// see if the rss capability has been disabled, if so, delete the feed.
 			boolean rssEnabled = SPropsUtil.getBoolean("rss.enable", true);
 			if (!rssEnabled) {
-				deleteFeed(entry.getParentBinder());
+				deleteFeed(entry.getParentBinder(), rfl);
 				return;
 			}
 			
@@ -384,7 +387,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		} catch (Exception e) {
 			logger.info("Rss module error: " + e.toString());
 		} finally {
-			rfl.releaseLock();
+			rfl.releaseLockIfValid();
 		}
 		SimpleProfiler.stopProfiler("RssModule.updateRssFeed");
 	}
