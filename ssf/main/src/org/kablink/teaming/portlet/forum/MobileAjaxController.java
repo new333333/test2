@@ -157,12 +157,6 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 		
 		//The user is logged in
-		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
-		if (!userProperties.containsKey("acceptedMobileDisclaimer")) {
-			Map model = new HashMap();
-			BinderHelper.setupStandardBeans(this, request, response, model, null, "ss_mobile");
-			return new ModelAndView("mobile/show_disclaimer", model);
-		}
 		if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_FOLDER)) {
 			return ajaxMobileShowFolder(this, request, response);
 			

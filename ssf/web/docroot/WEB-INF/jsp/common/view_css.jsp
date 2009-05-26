@@ -32,7 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
  
-%><%--
+%><%@ page import="org.kablink.teaming.ObjectKeys" %><%--
 
 --%><fmt:setLocale value="${ssUser.locale}" scope="request" /><%--
 --%><fmt:setTimeZone value="${ssUser.timeZone.ID}" scope="request"/><%--
@@ -187,8 +187,10 @@ function ss_defineColorValues() {
 	ss_style_background_color = '${ss_style_background_color}';
 	ss_dashboard_table_border_color = '${ss_dashboard_table_border_color}';
 }
+<c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
+<c:if test="${ssUser.internalId != guestInternalId}">
 ss_startSessionTimoutTimer('${ss_maxInactiveInterval}');
-
+</c:if>
 </script>
 
 <%--

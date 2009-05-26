@@ -254,7 +254,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		} else if (op.equals(WebKeys.OPERATION_VIEW_ERROR_MESSAGE)) {
 			return ajaxViewErrorMessage(request, response);
 		}
-		if (!WebHelper.isUserLoggedIn(request) || op.equals("")) {
+		if (!WebHelper.isUserLoggedIn(request) || (!WebHelper.isUserLoggedIn(request) && op.equals(""))) {
 			//Signal that the user is not logged in. 
 			//  The code on the calling page will output the proper translated message.
 			statusMap.put(WebKeys.AJAX_STATUS_NOT_LOGGED_IN, new Boolean(true));
