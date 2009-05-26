@@ -44,7 +44,7 @@ public class EmailAddress extends ZonedObject implements Serializable {
 	protected String type;
 	protected String address;
 	protected Long zoneId; //hibernate field access
-	protected Principal principal;	
+	protected transient Principal principal;	
 
 	protected EmailAddress() {
 	}
