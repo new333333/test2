@@ -8112,6 +8112,7 @@ function ss_showEmailLinks() {
 
 //Session timeout
 function ss_startSessionTimoutTimer(maxInactiveInterval) {
+	if (typeof maxInactiveInterval == 'undefined' || maxInactiveInterval == '') return;
 	var timeToWarn = parseInt((maxInactiveInterval - 5*60)*1000);
 	setTimeout("ss_resetSessionTimeoutTimer('"+maxInactiveInterval+"');", timeToWarn)
 }
