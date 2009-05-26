@@ -187,6 +187,7 @@ function ss_defineColorValues() {
 	ss_style_background_color = '${ss_style_background_color}';
 	ss_dashboard_table_border_color = '${ss_dashboard_table_border_color}';
 }
+ss_startSessionTimoutTimer('${ss_maxInactiveInterval}');
 
 </script>
 
