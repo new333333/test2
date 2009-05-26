@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean id="springContextUtil" class="org.kablink.teaming.util.SpringContextUtil" />
+
+	<bean id="processorManager" class="org.kablink.teaming.modelprocessor.ProcessorManager">
+		<property name="config">
+			<bean class="org.kablink.teaming.util.DefaultMergeableXmlClassPathConfigFiles">
+				<property name="configFiles">
+					<list>
+						<value>org/kablink/teaming/modelprocessor/processor-mapping.xml</value>
+					</list>		
+				</property>
+				<property name="validating"><value>false</value></property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="myTestProcessor1" class="org.kablink.teaming.modelprocessor.ProcessorManagerTests$MyTestProcessor1" />
+	
+	<bean id="myTestProcessor2" class="org.kablink.teaming.modelprocessor.ProcessorManagerTests$MyTestProcessor2" abstract="true">
+			<property name="greeting"><value>Hello</value></property>
+	</bean>
+	
+</beans>
