@@ -870,6 +870,7 @@ public class WebKeys {
     public static final String MASHUP_SITE_ADMINISTRATOR="ss_mashupSiteAdministrator"; 
     public static final String MASHUP_SHOW_BRANDING="ss_mashupShowBranding"; 
     public static final String MASHUP_STYLE="ss_mashupStyle"; 
+    public static final String MAX_INACTIVE_INTERVAL="ss_maxInactiveInterval"; 
     public static final String MINIBLOG_STATUSES="ss_miniblog_statuses"; 
     public static final String MINIBLOG_PAGE="ss_miniblogPage"; 
     public static final String MINIBLOG_USER="ss_miniblog_user"; 

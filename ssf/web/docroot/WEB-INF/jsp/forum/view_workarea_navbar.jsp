@@ -246,6 +246,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		self.location.href = obj.href;
 	}
 }
+
+ss_startSessionTimoutTimer('${ss_maxInactiveInterval}');
 </script>
 <c:if test="${(!ss_mashupHideMasthead || ss_mashupShowBranding) && (empty ss_captive || !ss_captive)}">
 <div id="ss_top_nav_wrapper">

@@ -345,6 +345,7 @@ public class BinderHelper {
 			model.put(WebKeys.DISPLAY_TYPE, displayType);
 	 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
 	        HttpSession session = ((PortletRequestImpl) request).getHttpServletRequest().getSession();
+	        model.put(WebKeys.MAX_INACTIVE_INTERVAL, session.getMaxInactiveInterval());
 			
 	        //Get the url of the signaling code from the portal (if portal being used)
 	        String portalSignalUrl = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PORTAL_SIGNAL, "");
