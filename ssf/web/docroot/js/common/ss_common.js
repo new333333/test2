@@ -8119,13 +8119,24 @@ function ss_startSessionTimoutTimer(maxInactiveInterval) {
 function ss_resetSessionTimeoutTimer(maxInactiveInterval) {
 	var now = new Date();
 	if (confirm(ss_sessionTimeoutText + "\n  (" + now.toLocaleString() + ")")) {
+		ss_setupStatusMessageDiv();
 		ss_random++;
 		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"", rn:ss_random});
-		ss_fetch_url(url, ss_resetSessionTimeoutTimer2, maxInactiveInterval)
+		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+		ajaxRequest.setData("maxInactiveInterval", maxInactiveInterval);
+		ajaxRequest.setPostRequest(ss_resetSessionTimeoutTimer2);	
+		ajaxRequest.sendRequest();
 	}
 }
-function ss_resetSessionTimeoutTimer2(s, maxInactiveInterval) {
-	ss_startSessionTimoutTimer(maxInactiveInterval);
+function ss_resetSessionTimeoutTimer2(obj) {
+	var maxInactiveInterval = obj.getData("maxInactiveInterval");
+	//See if there was an error
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+		alert(ss_not_logged_in);
+	} else {
+		alert(maxInactiveInterval)
+		ss_startSessionTimoutTimer(maxInactiveInterval);
+	}
 }
 dojo.require("dijit.dijit");
 dojo.require("dojo.fx");
