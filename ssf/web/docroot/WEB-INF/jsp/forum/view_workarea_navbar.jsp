@@ -90,6 +90,11 @@ var ssMyFavorites${renderResponse.namespace} = new ssFavorites('${renderResponse
 var ssMyTeams${renderResponse.namespace} = new ssTeams('${renderResponse.namespace}');
 var ss_displayType = "${ss_displayType}";
 </script>
+<noscript>
+<h1>
+  <span class="ss_errorLabel"><ssf:nlt tag="error.noscript"/></span>
+</h1>
+</noscript>
 <c:if test="${ssUserProperties.debugMode}">
 <!-- Start of debug window -->
 <script type="text/javascript">
