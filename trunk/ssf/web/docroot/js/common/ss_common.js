@@ -8109,6 +8109,23 @@ function ss_showEmailLinks() {
 		}
 	}
 }
+
+//Session timeout
+function ss_startSessionTimoutTimer(maxInactiveInterval) {
+	var timeToWarn = parseInt((maxInactiveInterval - 5*60)*1000);
+	setTimeout("ss_resetSessionTimeoutTimer('"+maxInactiveInterval+"');", timeToWarn)
+}
+function ss_resetSessionTimeoutTimer(maxInactiveInterval) {
+	var now = new Date();
+	if (confirm(ss_sessionTimeoutText + "\n  (" + now.toLocaleString() + ")")) {
+		ss_random++;
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"", rn:ss_random});
+		ss_fetch_url(url, ss_resetSessionTimeoutTimer2, maxInactiveInterval)
+	}
+}
+function ss_resetSessionTimeoutTimer2(s, maxInactiveInterval) {
+	ss_startSessionTimoutTimer(maxInactiveInterval);
+}
 dojo.require("dijit.dijit");
 dojo.require("dojo.fx");
 dojo.require("dojo.io.iframe");

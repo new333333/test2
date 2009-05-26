@@ -140,6 +140,7 @@ var ss_noUsersOnClipboardText = "<ssf:nlt tag="clipboard.noUsers"/>";
 var ss_closeButtonText = "<ssf:nlt tag="button.close"/>";
 var ss_selectAllBtnText = "<ssf:nlt tag="button.selectAll"/>";
 var ss_clearAllBtnText = "<ssf:nlt tag="button.clearAll"/>";
+var ss_sessionTimeoutText = "<ssf:nlt tag="session.timeoutWarning"/>";
 									
 var ss_findButtonClose = "<ssf:nlt tag="button.close"/>";
 var ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
