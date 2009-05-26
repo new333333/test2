@@ -8134,7 +8134,6 @@ function ss_resetSessionTimeoutTimer2(obj) {
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
 	} else {
-		alert(maxInactiveInterval)
 		ss_startSessionTimoutTimer(maxInactiveInterval);
 	}
 }
