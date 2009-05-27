@@ -44,6 +44,7 @@ import javax.servlet.ServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.domain.LoginInfo;
@@ -142,6 +143,7 @@ public class DispatchServer extends GenericServlet {
 				// Once we return from this method, we have no access to our 
 				// logger. Therefore this is our last chance to log the error
 				// on the SSF side. 
+				logContextInfo();
 				logger.warn(e);
 				// By the same reason described above, we pass error information
 				// by returning error code and message in the request object
@@ -152,6 +154,7 @@ public class DispatchServer extends GenericServlet {
 			}
 			catch(AlreadyExistsException e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_ALREADY_EXISTS);				
+				logContextInfo();
 				logger.warn(e);
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;
@@ -174,24 +177,28 @@ public class DispatchServer extends GenericServlet {
 			}
 			catch(LockException e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_LOCK);
+				logContextInfo();
 				logger.warn(e);
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;
 			}
 			catch(TypeMismatchException e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_TYPE_MISMATCH);				
+				logContextInfo();
 				logger.warn(e);
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;
 			}
 			catch(IOException e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);				
+				logContextInfo();
 				logger.error(e.getLocalizedMessage(), e);
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;
 			}
 			catch(ServletException e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);				
+				logContextInfo();
 				logger.error(e.getLocalizedMessage(), e);
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;			
@@ -199,10 +206,12 @@ public class DispatchServer extends GenericServlet {
 			catch(KablinkFileSystemException e) {
 				if(e.isWarning()) {
 					req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.WARNING_GENERAL);		
+					logContextInfo();
 					logger.warn(e);
 				}
 				else {
 					req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);		
+					logContextInfo();
 					logger.error(e.getLocalizedMessage(), e);
 				}
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
@@ -210,12 +219,14 @@ public class DispatchServer extends GenericServlet {
 			}
 			catch(ReservedByAnotherUserException e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.WARNING_GENERAL);				
+				logContextInfo();
 				logger.warn(e);
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;
 			}
 			catch(Exception e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);				
+				logContextInfo();
 				logger.error(e.getLocalizedMessage(), e);
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;
@@ -288,6 +299,18 @@ public class DispatchServer extends GenericServlet {
 		else {
 			throw new ServletException("Invalid operation " + operation);
 		}		
+	}
+	
+	private void logContextInfo() {
+		String zoneName = null;
+		String userName = null;
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		System.out.println(rc.getAuthenticator());//$$$$$
+		if(rc != null) {
+			zoneName = rc.getZoneName();
+			userName = rc.getUserName();
+		}
+		logger.warn("WebDAV request failed for user [" + zoneName + "," + userName + "]");
 	}
 	
 	private KablinkFileSystem getSiteScapeFileSystem() {

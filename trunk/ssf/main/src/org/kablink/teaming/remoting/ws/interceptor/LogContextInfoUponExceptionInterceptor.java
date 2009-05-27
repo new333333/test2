@@ -58,9 +58,9 @@ public class LogContextInfoUponExceptionInterceptor implements MethodInterceptor
 				applicationId = rc.getApplicationId();
 			}
 			if(applicationId != null)
-				logger.warn("Request failed for user [" + zoneName + "," + userName + "," + applicationId + "]");
+				logger.warn("WS request failed for user [" + zoneName + "," + userName + "," + applicationId + "]");
 			else
-				logger.warn("Request failed for user [" + zoneName + "," + userName + "]");
+				logger.warn("WS request failed for user [" + zoneName + "," + userName + "]");
 			throw t;
 		}
 	}
