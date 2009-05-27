@@ -149,8 +149,8 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 <tr>
 	<td style="padding-left: 30px;" colspan="2" align="left" width="100%">
 					<div id="ss_div_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" 
-					  class="ss_border_light" style="visibility:hidden;display:none;">
-						<div align="right">
+					  class="ss_border_light" style="width:400px; visibility:hidden;display:none;">
+						<div align="right" width="100%">
 						<a onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"><img 
 						  border="0" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>icons/close_off.gif"/></a>
 						</div>	
@@ -158,7 +158,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 						  id="ss_iframe_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 						  name="ss_iframe_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 						  src="<html:rootPath/>js/forum/null.html" 
-						  height="100" width="100%" 
+						  height="150" width="95%" 
 						  onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;">xxx</iframe>
 					    <div align="right" style="padding:10px;">
 						  <span class="ss_fineprint"><ssf:nlt tag="file.upload.having_trouble"/></span>
@@ -175,7 +175,8 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 						<iframe <ssf:title tag="entry.AttachFilesByWebBrowse" /> frameborder="0"  
 						  id="ss_iframe_browse${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 							name="ss_iframe_browse${ssDefinitionEntry.id}${ss_attachments_namespace}" 
-							src="<html:rootPath/>js/attachments/entry_attachment_browse.html" height="75%" width="100%">xxx</iframe>
+							src="<html:rootPath/>js/attachments/entry_attachment_browse.html" 
+							height="150" width="95%">xxx</iframe>
 					</div>
 					
 					<div id="ss_div_attach_meeting_records${ssDefinitionEntry.id}${ss_attachments_namespace}" 
