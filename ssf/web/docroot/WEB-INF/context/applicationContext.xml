@@ -831,13 +831,10 @@
 				<value>aopallianceOpenSessionInViewInterceptor</value>
 				<!-- This must come after open-session-in-view -->
 				<value>aopallianceResolveRequestContextInterceptor</value>
-				<value>aopallianceSsfsLogContextInfoUponExceptionInterceptor</value>
 				<value>aopallianceMethodInvocationTraceInterceptor</value>
 			</list>
 		</property>
 	</bean>
-	
-	<bean id="aopallianceSsfsLogContextInfoUponExceptionInterceptor" class="org.kablink.teaming.ssfs.interceptor.LogContextInfoUponExceptionInterceptor"/>
 	
 	<bean id="aopallianceLoggingInterceptor" class="org.kablink.teaming.util.aopalliance.LoggingInterceptor"/>
 	
