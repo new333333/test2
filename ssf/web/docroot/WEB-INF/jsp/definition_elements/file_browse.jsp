@@ -106,7 +106,7 @@ var ${eName}_ok = 1;
   <div class="needed-because-of-ie-bug"><div id="ss_duplicateFileCheck_${eName}" style="display:none; visibility:hidden;" ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
   <input type="file" class="ss_text" 
     name="${eName}" id="${eName}" ${width} 
-    onkeyup="this.click();return false;"
+    onkeyup="if(window.event && window.event.keyCode!=9 && window.event.keyCode!=16)this.click();return false;"
     onchange="ss_ajaxValidate(ss_findEntryForFileUrl, this,'${elementName}_label', 'ss_duplicateFileCheck_${eName}', '${repositoryName}');"
   /><br/>
   <input type="hidden" name="ss_upload_request_uid" />
