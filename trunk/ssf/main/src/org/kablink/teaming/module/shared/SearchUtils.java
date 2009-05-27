@@ -49,6 +49,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
@@ -191,14 +192,18 @@ public class SearchUtils {
     		if (options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
     			descend = (Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND);
     	}
-    	int sortType = SortField.AUTO;
+    	
     	if (isDateField(sortBy)) {
-    		sortType = SortField.STRING;
+    		fields[0] = new SortField(sortBy, SortField.STRING, descend);
+    		return fields;
     	}
     	
-    	fields[0] = new SortField(sortBy, sortType, descend);
+    	User user = RequestContextHolder.getRequestContext().getUser();
+    	Locale locale = user.getLocale();
+    	fields[0] = new SortField(sortBy, locale, descend);
     	return fields;
    	}
+  	
   	public static org.dom4j.Document getInitalSearchDocument(org.dom4j.Document searchFilter, Map options) {
   		if (searchFilter == null) {
   			//Build a null search filter

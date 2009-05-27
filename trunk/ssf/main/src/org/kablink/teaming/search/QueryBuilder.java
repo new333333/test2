@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.apache.lucene.search.SortField;
@@ -277,7 +278,10 @@ public class QueryBuilder {
 					descending = false;
 				else
 					descending = true;
-				fields[i] = new SortField(child.getText(), SortField.STRING, descending);
+				User user = RequestContextHolder.getRequestContext().getUser();
+		    	Locale locale = user.getLocale();
+		    	fields[i] = new SortField(child.getText(), locale, descending);
+				//fields[i] = new SortField(child.getText(), SortField.AUTO, descending);
 			}
 		}
 		so.setSortBy(fields);
