@@ -641,9 +641,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, user.getZoneId()))
 						.add(Restrictions.in("transactionType", activityTypes))
 						.add(Restrictions.ge("startDate", startDate))
-						.add(Restrictions.lt("startDate", endDate))
-						.add(Restrictions.in("startBy", userIdsToReport))
-						.addOrder(Order.asc("startBy"));
+						.add(Restrictions.lt("startDate", endDate));
+					if (!userIdsToReport.isEmpty()) crit.add(Restrictions.in("startBy", userIdsToReport));
+					crit.addOrder(Order.asc("startBy"));
 					auditTrail = crit.list();
 				} catch(Exception e) {
 				}
@@ -879,6 +879,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss aa");
 		
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+		if (activities == null) return report;
 		
 		if (reportType.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
 			Long lastUserId = new Long(-1);
