@@ -101,6 +101,7 @@ var ss_displayType = "${ss_displayType}";
 function ss_turnOffDebugMode() {
 	var url = self.location.href + "&enableDebug=off"
 	self.location.href = url;
+}
 var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
 </script>
 <!-- this needs to be in a style sheet -->

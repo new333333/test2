@@ -185,6 +185,8 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	var searchText;
 	var isMouseOverList = false;
 	var divTopOffset = 2;
+	var lastHrefId = "";
+	var pageRequested = 0;
 	
 	var onAddCallbacks = [];
 	var onDeleteCallbacks = [];
@@ -215,6 +217,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		
 		that._listContainer = dojo.byId(listContainerId);
 		if (that._listContainer) {
+			ss_debug('that._listContainer removed')
 			that._listContainer.parentNode.removeChild(that._listContainer);
 		}
 		
@@ -385,6 +388,15 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 				that.selectItem(liObjs[0], type);
 				return;
 			}
+			if (lastHrefId != '') {
+				var aObj = self.document.getElementById(lastHrefId);
+				if (aObj != null) {
+					aObj.focus();
+				} else {
+					lastHrefId = "";
+					pageRequested = 0;
+				}
+			}
 	 	}
 	 	//Fade the previous selections
 	 	var savedColor = "#000000";
@@ -429,12 +441,18 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 				
 				if (!data || !data.items || data.items.length == 0) {
 					that._clearSearchResultsList();
+					ss_debug('search load nothing');
 					that._listContainer.style.display = "none";
+					pageRequested = 0;
+					lastHrefId = "";
 					return;
 				}
 				
 				that._clearSearchResultsList();
+				ss_debug('search clear results');
 				
+				lastHrefId = "";
+				if (data.items.length > 0) lastHrefId = "id_ss_find_" + data.items[0].id;
 				for (var i = 0; i < data.items.length; i++) {
 					that._addListElement(data.items[i]);
 				}
@@ -442,7 +460,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 				that._addNextPrevToSearchList(data);
 			
 				that.showResultList();
-				
+
 			 	//Show this at full brightness
 			 	that._listContainerInnerDiv.style.color = savedColor;
 				
@@ -462,6 +480,24 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 						setTimeout(function (){that.selectItem0();}, 100);
 						return;
 					}
+					if (lastHrefId != '') {
+						var aObj = self.document.getElementById(lastHrefId);
+						if (aObj != null) {
+							aObj.focus();
+						} else {
+							lastHrefId = "";
+							pageRequested = 0;
+						}
+					}
+				}
+				if (lastHrefId != '' && pageRequested) {
+					var aObj = self.document.getElementById(lastHrefId);
+					if (aObj != null) {
+						aObj.focus();
+					} else {
+						lastHrefId = "";
+						pageRequested = 0;
+					}
 				}
 			},
 			handleAs: "json-comment-filtered",
@@ -474,6 +510,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		liObj.id = "ss_find_id_" + (item.id || item.name);
 		
 		var hrefObj = document.createElement("a");
+		hrefObj.id = "id_ss_find_" + item.id;
 		hrefObj.href = "javascript: //";
 		dojo.connect(hrefObj, "onclick", function(evt) {
 			// in setIdAndValue?? that._hiddenInputSelectedId.value = item.id || item.name;
@@ -646,12 +683,14 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	}
 	
 	this.nextPage = function() {
+		pageRequested = 1;
 		pageNumberBefore = pageNumber;
 		pageNumber++;
 		that.search();
 	}	
 
 	this.prevPage = function() {
+		pageRequested = 1;
 		pageNumberBefore = pageNumber;
 		pageNumber--;
 		if (pageNumber < 0) pageNumber = 0;
@@ -661,6 +700,8 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	this.close = function() {
 		pageNumber = 0;
 		pageNumberBefore = 0;
+		pageRequested = 0;
+		lastHrefId = "";
 
 		// TODO: accessible mode here		
 		var textObj = document.getElementById('ss_combobox_autocomplete_' + that._singlePrefix);
@@ -671,9 +712,12 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	}
 
 	this.blurTextArea = function() {
+		pageRequested = 0;
+		lastHrefId = "";
 		if (!isMouseOverList) {
 			setTimeout(function() { 
-				that._listContainer.style.display = "none";
+				ss_debug('blur hide list')
+				//that._listContainer.style.display = "none";
 			} , 200);
 		}
 	}
