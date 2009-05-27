@@ -63,7 +63,7 @@ public class XSSCheck implements StringCheck {
 	private static final String PATTERN_STR3 = "(?i)<[\\s]*[^>]+\\s(style[\\s]*=[\\s]*\"[^\"]*\"|style[\\s]*=[\\s]*'[^']*')[^>]*>";
 	private static final String PATTERN_STR4 = "(?i)(\\s(?:style[\\s]*=[\\s]*\"[^\"]*\"|style[\\s]*=[\\s]*'[^']*'))";
 	private static final String PATTERN_STR5 = "(?i)((?:url|expression))";
-	private static final String PATTERN_STR6 = "(?i)(<[\\s]*[^>]*[\\s]+)(on[^>\\s]*[\\s]*=[\\s]*(?:\"[^>]*\"|'[^>]*'))([^>]*>)";
+	private static final String PATTERN_STR6 = "(?i)(<[\\s]*[^>]*[\\s]+)(on[^>\\s]*[\\s]*=[\\s]*(?:\"[^\">]*\"|'[^'>]*'))([^>]*>)";
 	
 	private Pattern pattern1;
 	private Pattern pattern2;
