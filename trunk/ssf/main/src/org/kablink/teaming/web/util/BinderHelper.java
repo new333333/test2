@@ -2863,6 +2863,7 @@ public class BinderHelper {
 				Map data = new HashMap(); // Input data
 				data.put(ObjectKeys.FIELD_ENTITY_TITLE, mbTitle);
 				data.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, text);
+				data.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_NONE));
 				Definition def = miniBlog.getDefaultEntryDef();
 				if (def == null) {
 					try {
