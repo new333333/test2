@@ -2135,6 +2135,27 @@ expressed or implied warranty.
 </ssf:expandableArea>
 
 <br/>
+<ssf:expandableArea titleClass="ss_credits_title" title="md5crypt">
+<pre>
+FreeBSD-compatible md5-style password crypt,
+based on crypt-md5.c by Poul-Henning Kamp, which was distributed
+with the following notice:
+
+----------------------------------------------------------------------------
+
+"THE BEER-WARE LICENSE" (Revision 42):
+<phk@login.dknet.dk> wrote this file.  As long as you retain this notice you
+can do whatever you want with this stuff. If we meet some day, and you think
+this stuff is worth it, you can buy me a beer in return.   Poul-Henning Kamp
+
+----------------------------------------------------------------------------
+
+@author Nick Johnson <freebsd@spatula.net>
+@version 1.0
+</pre>
+</ssf:expandableArea>
+
+<br/>
 <br/>
 	<form class="ss_portlet_style ss_form" id="${ssNamespace}_btnForm" 
 	  name="${ssNamespace}_btnForm" method="post" 
