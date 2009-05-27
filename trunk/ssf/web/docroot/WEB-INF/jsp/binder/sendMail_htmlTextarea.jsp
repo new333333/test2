@@ -58,8 +58,7 @@ tinyMCE.init(
   content_css: "<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>",
   relative_urls: false, 
   width: "100%",
-<ssf:ifnotaccessible simple_ui="true">  accessibility_focus: false,</ssf:ifnotaccessible>
-<ssf:ifaccessible simple_ui="true">  accessibility_focus: true,</ssf:ifaccessible>
+  accessibility_focus: true,
   remove_script_host: false,
   entities:  "39,#39,34,quot,38,amp,60,lt,62,gt",
   gecko_spellcheck : true,
