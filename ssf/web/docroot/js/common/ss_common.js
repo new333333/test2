@@ -97,8 +97,8 @@ if (typeof ss_common_loaded == "undefined" ) {
 	var ss_onLayoutChangeList = new Array();
 	var ss_validatorList = new Array();
 	var ss_menuDivClones = new Array();
-	var ss_divToBeHidden = new Array;
-	var ss_divToBeDelayHidden = new Array;
+	var ss_divToBeHidden = new Array();
+	var ss_divToBeDelayHidden = new Array();
 	var ss_onErrorList = new Array();
 	var ss_spannedAreasList = new Array();
 	var ss_active_menulayer = '';
@@ -2316,6 +2316,7 @@ function captureXY(e) {
 	                if (ss_divBeingShown == ss_divToBeHidden[i]) {
 	                	ss_divBeingShown = '';
 	                }
+	                ss_debug('captureXY hiding div ' + ss_divToBeHidden[i])
 	                setTimeout("ss_hideDivToBeHidden('"+i+"');",100);
 	            }
 	        }
@@ -3749,7 +3750,7 @@ function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
 		frameObj.src = url;
 	}
 	
-	divObj.style.width = "300px";
+	divObj.style.width = "400px";
 
 	try {
 		if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
