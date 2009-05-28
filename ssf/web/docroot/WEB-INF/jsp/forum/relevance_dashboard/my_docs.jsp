@@ -35,10 +35,10 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
-<c:if test="${empty ss_myDocs}">
+<c:if test="${empty ss_myDocs && (empty ss_myDocsPage || ss_myDocsPage == '0')}">
 <span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
-<c:if test="${!empty ss_myDocs}">
+<c:if test="${!empty ss_myDocs || ss_myDocsPage > '0'}">
 <div id="ss_para">
 <div id="ss_today">
 <div align="right">
