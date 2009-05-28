@@ -307,6 +307,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 			if (op.equals(WebKeys.OPERATION_UNSEEN_COUNTS)) {
 				return new ModelAndView("forum/unseen_counts", model);
 			} else if (op.equals(WebKeys.OPERATION_CHECK_IF_LOGGED_IN)) {
+				if (RequestContextHolder.getRequestContext() != null) {
+		        	model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
+				}
 				return new ModelAndView("forum/check_if_logged_in_return", model);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_COLUMN_POSITIONS)) {
 				return new ModelAndView("forum/save_column_positions_return", model);
@@ -2677,6 +2680,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxCheckIfLoggedIn(RenderRequest request, RenderResponse response)  throws PortletRequestBindingException { 
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map model = new HashMap();
+        model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 
 		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			//Signal that the user is not logged in. 
