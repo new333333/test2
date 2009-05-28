@@ -67,13 +67,26 @@
 	    </span>
 	  </td>
 	 </tr>
+	 <c:if test="${!empty ssUser.status}">
 	 <tr>
 	  <td colspan="2">
-	  	<div class="ss_input_myStatus">
-	  	  <span id="ss_myStatusTextSrc">${ssUser.status}</span>
-	  	</div>
+  		<table cellspacing="0" cellpadding="0">
+  		  <tr>
+  		    <td valign="top" width="90%">
+			  	<div class="ss_input_myStatus">
+			  	  <span id="ss_myStatusTextSrc">${ssUser.status}</span>
+			  	</div>
+  		    </td>
+	  		<td valign="top" align="right" width="10%">
+	  		  <input type="button" style="padding:0px 2px 0px 2px;"
+	  		    value="<ssf:nlt tag="button.clear"/>" class="ss_inlineButtonSmall"
+	  		    onclick="ss_clearStatus('ss_status_textarea${renderResponse.namespace}');return false;"/>
+	  		</td>
+  		  </tr>
+  		</table>
 	  </td>
 	 </tr>
+	 </c:if>
 	</table>
  <c:set var="ss_sidebarStatusTitle" scope="request">
    <label for="ss_status_textarea${renderResponse.namespace}">
@@ -94,18 +107,8 @@
   		></textarea>
   		
   		<div >
-	  		<table cellspacing="0" cellpadding="0" width="154">
-	  		  <tr>
-	  		    <td>
-		  		  <input type="button" value="<ssf:nlt tag="button.ok"/>" class="ss_inlineButtonSmall"
-		  		    onclick="ss_updateStatusNowId('ss_status_textarea${renderResponse.namespace}');return false;"/>
-	  		    </td>
-		  		<td align="right">
-		  		  <input type="button" value="<ssf:nlt tag="button.clear"/>" class="ss_inlineButtonSmall"
-		  		    onclick="ss_clearStatus('ss_status_textarea${renderResponse.namespace}');return false;"/>
-		  		</td>
-	  		  </tr>
-	  		</table>
+  		  <input type="button" value="<ssf:nlt tag="button.ok"/>" class="ss_inlineButtonSmall"
+  		    onclick="ss_updateStatusNowId('ss_status_textarea${renderResponse.namespace}');return false;"/>
 	  	</div>
 	</ssf:ifLoggedIn> 
  </ssf:sidebarPanel>
