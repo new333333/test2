@@ -105,6 +105,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.Validator;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -925,7 +926,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	        );
  	}
 	public List loadDefinitions(FilterControls filter, Long zoneId) {
-		return loadObjects(new ObjectControls(Definition.class), filter, zoneId);
+		List list = loadObjects(new ObjectControls(Definition.class), filter, zoneId);
+		filterDefinitions(list);
+		return list;
 	}
 	public List loadDefinitions(Long zoneId) {
 		OrderBy order = new OrderBy();
@@ -933,7 +936,21 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		order.addColumn("name");
 		FilterControls filter = new FilterControls();
 		filter.setOrderBy(order);
-		return loadObjects(new ObjectControls(Definition.class), filter, zoneId);
+		List list = loadObjects(new ObjectControls(Definition.class), filter, zoneId);
+		filterDefinitions(list);
+		return list;
+	}
+	
+	private void filterDefinitions(List<Definition> definitions) {
+		if(!ReleaseInfo.isLicenseRequiredEdition()) {
+			for(int i = 0; i < definitions.size();) {
+				Definition def = (Definition) definitions.get(i);
+				if("_mirroredFileEntry".equals(def.getName()) || "_mirroredFileFolder".equals(def.getName()))
+					definitions.remove(i);
+				else
+					i++;
+			}
+		}
 	}
 	
 	// return top level configurations
@@ -941,12 +958,13 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		return (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                public Object doInHibernate(Session session) throws HibernateException {
-	                 	return session.createCriteria(TemplateBinder.class)
+	                 	Criteria criteria = session.createCriteria(TemplateBinder.class)
                  		.add(Expression.isNull("parentBinder"))
                  		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
                  		.addOrder(Order.asc("definitionType"))
-                 		.addOrder(Order.asc("templateTitle"))
-	                 	.list();
+                 		.addOrder(Order.asc("templateTitle"));
+	                 	criteria = filterCriteriaForTemplates(criteria);
+	                 	return criteria.list();
 	                }
 	            }
 	        );
@@ -955,16 +973,25 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		return (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                public Object doInHibernate(Session session) throws HibernateException {
-	                 	return session.createCriteria(TemplateBinder.class)
+	                	Criteria criteria = session.createCriteria(TemplateBinder.class)
                  		.add(Expression.isNull(ObjectKeys.FIELD_ENTITY_PARENTBINDER))
                  		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
                  		.add(Expression.eq("definitionType", type))
-                 		.addOrder(Order.asc(ObjectKeys.FIELD_TEMPLATE_TITLE))
-	                 	.list();
+                 		.addOrder(Order.asc(ObjectKeys.FIELD_TEMPLATE_TITLE));
+	                 	criteria = filterCriteriaForTemplates(criteria);
+	                 	return criteria.list();
 	                }
 	            }
 	        );
 	}
+	
+	private Criteria filterCriteriaForTemplates(Criteria criteria) {
+		if(!ReleaseInfo.isLicenseRequiredEdition()) {
+			criteria.add(Expression.ne("name", "_folder_mirrored_file"));
+		}
+		return criteria;
+	}
+	
 	public TemplateBinder loadTemplate(Long templateId, Long zoneId) {
 		TemplateBinder template = (TemplateBinder)load(TemplateBinder.class, templateId);
         if (template == null) {throw new NoBinderByTheIdException(templateId);}
