@@ -60,9 +60,6 @@ function ss_resizeTopDiv_${renderResponse.namespace}() {
 ss_createOnResizeObj("ss_resizeTopDiv", ss_resizeTopDiv_${renderResponse.namespace});
 ss_createOnLayoutChangeObj("ss_resizeTopDiv", ss_resizeTopDiv_${renderResponse.namespace});
 </script>
- <table width="100%">
- <tr>
- <td>
 <ssf:ifLoggedIn><c:if test="${empty ss_noEnableAccessibleLink && !empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
   <a class="ss_skiplink" href="${ss_accessibleUrl}"><img border="0"
     <ssf:alt tag="accessible.enableAccessibleMode"/> 
@@ -87,7 +84,8 @@ ss_createOnLayoutChangeObj("ss_resizeTopDiv", ss_resizeTopDiv_${renderResponse.n
 
   <c:if test="<%= !reloadCaller %>">
     <c:if test="<%= !isViewEntry %>">
-	 <div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer" style="margin:0px; padding:0px;">
+	 <div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer" 
+   		style="margin:0px 15px 0px 0px; padding:0px;">
 	 <%@ include file="/WEB-INF/jsp/entry/view_newpage.jsp" %>
 	 </div>
     </c:if>
@@ -100,9 +98,6 @@ ss_createOnLayoutChangeObj("ss_resizeTopDiv", ss_resizeTopDiv_${renderResponse.n
   </c:if>
 </c:if>
 </c:if>
- </td>
- </tr>
- </table>
 <ssf:ifadapter>
 </div>
 </body>

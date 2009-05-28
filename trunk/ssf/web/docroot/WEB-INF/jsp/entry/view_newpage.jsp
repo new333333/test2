@@ -57,7 +57,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 
 <ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}"
   linkOnly="true"/>
-<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer" 
+<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet" 
   style="display:block;">
 
 	<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />

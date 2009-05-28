@@ -193,7 +193,7 @@ function ss_loadEntryUrl(url,id) {
 		</c:if>
 <ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}"
   linkOnly="true"/>
-		<div id="ss_portlet_content" class="ss_style ss_portlet">
+		<div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer">
 		<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 		<div class="ss_actions_bar1_pane ss_sidebarImage">
 		<table cellspacing="0" cellpadding="0">
