@@ -771,6 +771,17 @@ public class WebUrlUtil {
 			else
 				rssWebProtocol = WEB_PROTOCOL_CONTEXT_HTTP;
 			
+			prot = SPropsUtil.getString("atom.web.protocol", "context");
+			if(prot.equalsIgnoreCase("http"))
+				atomWebProtocol = WEB_PROTOCOL_HTTP;
+			else if(prot.equalsIgnoreCase("https"))
+				atomWebProtocol = WEB_PROTOCOL_HTTPS;
+			else if(prot.equalsIgnoreCase("context-https"))
+				atomWebProtocol = WEB_PROTOCOL_CONTEXT_HTTPS;
+			else
+				atomWebProtocol = WEB_PROTOCOL_CONTEXT_HTTP;
+			
+			
 			prot = SPropsUtil.getString("ical.web.protocol", "context");
 			if(prot.equalsIgnoreCase("http"))
 				icalWebProtocol = WEB_PROTOCOL_HTTP;
