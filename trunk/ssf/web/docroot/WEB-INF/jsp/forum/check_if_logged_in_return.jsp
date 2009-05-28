@@ -34,11 +34,13 @@
 %>
 <%@ page session="false" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ page import="org.kablink.teaming.ObjectKeys" %>
+<c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
 
 <%@ page contentType="text/xml; charset=UTF-8" %>
 <taconite-root xml:space="preserve">
 <c:choose>
-<c:when test="${!empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
+<c:when test="${!empty ss_ajaxStatus.ss_ajaxNotLoggedIn || ssUser.internalId == guestInternalId}">
 	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
 		<div id="ss_status_message" style="visibility:hidden; display:none;">error</div>
 	</taconite-replace>

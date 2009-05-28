@@ -8115,6 +8115,7 @@ function ss_showEmailLinks() {
 function ss_startSessionTimoutTimer(maxInactiveInterval) {
 	if (typeof maxInactiveInterval == 'undefined' || maxInactiveInterval == '') return;
 	var timeToWarn = parseInt((maxInactiveInterval - 5*60)*1000);
+	if (timeToWarn <= 0) return;
 	setTimeout("ss_resetSessionTimeoutTimer('"+maxInactiveInterval+"');", timeToWarn)
 }
 function ss_resetSessionTimeoutTimer(maxInactiveInterval) {
@@ -8122,7 +8123,7 @@ function ss_resetSessionTimeoutTimer(maxInactiveInterval) {
 	if (confirm(ss_sessionTimeoutText + "\n  (" + now.toLocaleString() + ")")) {
 		ss_setupStatusMessageDiv();
 		ss_random++;
-		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"", rn:ss_random});
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"check_if_logged_in", rn:ss_random});
 		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 		ajaxRequest.setData("maxInactiveInterval", maxInactiveInterval);
 		ajaxRequest.setPostRequest(ss_resetSessionTimeoutTimer2);	
