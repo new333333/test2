@@ -131,7 +131,6 @@ boolean isIE6 = BrowserSniffer.is_ie_6(request);
 	}
 div.ss_input_myStatus {
 	border-color: #9EC8CD;
-	width: 148px;
 	padding: 2px 2px 0px 2px;	
 	}
 textarea.ss_input_myStatus {
