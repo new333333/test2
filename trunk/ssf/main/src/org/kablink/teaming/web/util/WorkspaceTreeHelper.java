@@ -929,8 +929,8 @@ public class WorkspaceTreeHelper {
 			model.put(WebKeys.TOOLBAR_MEETING_URL, adapterUrl.toString());
 		}
 		
-		//Theme
-		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+		//Color themes (removed for now)
+		if (0 == 1 && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
 					NLT.get("ui.availableThemeIds") + "', '" +

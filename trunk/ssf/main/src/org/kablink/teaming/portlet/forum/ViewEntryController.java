@@ -405,7 +405,8 @@ public class ViewEntryController extends  SAbstractController {
 				model.put(WebKeys.FOLDER_ACTIONS_TOOLBAR,  folderActionsToolbar.getToolbar());
 			}
 			
-			if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			//Color themes (removed for now)
+			if (0 == 1 && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 				Map qualifiers = new HashMap();
 				qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
 						NLT.get("ui.availableThemeIds") + "', '" +

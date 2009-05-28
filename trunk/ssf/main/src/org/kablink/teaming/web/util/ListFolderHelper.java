@@ -1994,8 +1994,8 @@ public class ListFolderHelper {
 					adapterUrl.toString(), qualifiers);
         }
 
-		
-		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+		//Color themes (removed for now)
+		if (0 == 1 && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
 					NLT.get("ui.availableThemeIds") + "', '" +

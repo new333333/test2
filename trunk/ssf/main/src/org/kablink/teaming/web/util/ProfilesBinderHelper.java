@@ -370,8 +370,8 @@ public class ProfilesBinderHelper {
 		model.put(WebKeys.PERMALINK, permaLink);
 		model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
 
-		//Color themes
-		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+		//Color themes (removed for now)
+		if (0 == 1 && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
 					NLT.get("ui.availableThemeIds") + "', '" +
