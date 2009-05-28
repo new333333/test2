@@ -62,7 +62,7 @@
 <div id="ss_filterSummary_content">
 	<h4><ssf:nlt tag="searchForm.summary.Title"/></h4>
    <c:if test="${! empty ss_filterMap.searchText}">
-	<p>Text: ${ss_filterMap.searchText}</p>
+	<p><ssf:nlt tag="searchForm.searchText"/>: ${ss_filterMap.searchText}</p>
 	</c:if>
 	<c:if test="${! empty ss_filterMap.additionalFilters}">
 		<c:if test="${!empty ss_filterMap.additionalFilters.workflow}">
