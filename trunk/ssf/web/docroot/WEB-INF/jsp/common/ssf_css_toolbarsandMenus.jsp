@@ -74,6 +74,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 .ss_actions_bar {
 	list-style-type:none;	
+	height: 22px;	
 	padding: 0px 0px 0px 0px;
 	margin: 0px;
 	}
