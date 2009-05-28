@@ -95,6 +95,7 @@ import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.TreeHelper;
@@ -500,7 +501,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			principalEle.addAttribute("principalId", p.getId().toString());
 			principalEle.setText(p.getName());
 		}
-		List<Definition> definitions = getCoreDao().loadObjects(definitionIds, Definition.class, zoneId);
+		List<Definition> definitions = filterDefinitions(getCoreDao().loadObjects(definitionIds, Definition.class, zoneId));
 		for (Definition d:definitions) {
 			Element definitionlEle = exports.addElement("export");
 			definitionlEle.addAttribute("definitionId", d.getId());
@@ -2259,7 +2260,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    	 			ids.add(ObjectKeys.RESERVED_BINDER_ID);
    	 			params.put("binderId", ids);
    	 			params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());
-   	 			return coreDao.loadObjects("from org.kablink.teaming.domain.Definition where binderId in (:binderId) and zoneId=:zoneId", params);
+   	 			return filterDefinitions(coreDao.loadObjects("from org.kablink.teaming.domain.Definition where binderId in (:binderId) and zoneId=:zoneId", params));
    	 		} else {
    	 			FilterControls filter = new FilterControls()
    	 			.add(Restrictions.eq("binderId", binder.getId()));
@@ -2292,7 +2293,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
   	    	params.put("binderId", ids);
    	 		params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());
 
-   	    	return coreDao.loadObjects("from org.kablink.teaming.domain.Definition where binderId in (:binderId) and zoneId=:zoneId  and type=:type", params);
+   	    	return filterDefinitions(coreDao.loadObjects("from org.kablink.teaming.domain.Definition where binderId in (:binderId) and zoneId=:zoneId  and type=:type", params));
   	 	} else {
   	      	FilterControls filter = new FilterControls()
   	      		.add(Restrictions.eq("type", type))
@@ -2503,5 +2504,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
         }
 		SimpleProfiler.stopProfiler("DefinitionModuleImpl.walkDefinition");
     }
+
+	private List<Definition> filterDefinitions(List<Definition> definitions) {
+		if(!ReleaseInfo.isLicenseRequiredEdition()) {
+			for(int i = 0; i < definitions.size();) {
+				Definition def = (Definition) definitions.get(i);
+				if("_mirroredFileEntry".equals(def.getName()) || "_mirroredFileFolder".equals(def.getName()))
+					definitions.remove(i);
+				else
+					i++;
+			}
+		}
+		return definitions;
+	}	
 
 }
