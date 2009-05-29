@@ -225,9 +225,10 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 
 </form>  
 
-<c:if test="${!empty ssReadOnlyFields}">
+<c:if test="${!empty ssReadOnlyFields && empty ss_readOnlyFieldsFootnoteOutput}">
 <br/>
 <br/>
 <span class="ss_smallprint">&#134;&nbsp;&nbsp;<ssf:nlt tag="profile.fieldsSynced"/></span>
+<c:set var="ss_readOnlyFieldsFootnoteOutput" value="1" scope="request"/>
 </c:if>
 
