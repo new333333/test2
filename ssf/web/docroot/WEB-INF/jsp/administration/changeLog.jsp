@@ -72,23 +72,24 @@ function ss_saveChangeLogEntryId(id) {
 <br/>
 <table style="background-color: #eeeeee;" border="1">
 <tr>
-  <td valign="top" width="250">
+  <td valign="top" width="350">
   <span><ssf:nlt tag="changeLog.findFolder"/></span><br/><br/>
 	 <ssf:find formName="ss_changeLogForm" 
 	    formElement="binderId2" 
 	    type="places"
-	    width="140px" 
+	    width="300px" 
 	    binderId="${binderId}"
 	    searchSubFolders="false"
-	    foldersOnly="true"
+	    foldersOnly="false"
 	    singleItem="true"
 	    clickRoutine="ss_saveChangeLogBinderId"
 	    /> 
   </td>
-  <td valign="top" width="250">
+  <td valign="top" width="350">
     <span><ssf:nlt tag="changeLog.findEntry"/></span>
     <div id="ss_changeLogEntryForm">
-      <iframe id="ss_changeLogIframe" title="<ssf:nlt tag="changeLog.findEntry"/>" frameborder="0" style="height:230px; width:200px;"
+      <iframe id="ss_changeLogIframe" title="<ssf:nlt tag="changeLog.findEntry"/>" frameborder="0" 
+        style="height:230px; width:330px; padding-top:9px;"
       src="<ssf:url 
 		adapter="true" 
 		portletName="ss_forum" 

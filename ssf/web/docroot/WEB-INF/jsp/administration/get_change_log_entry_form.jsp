@@ -60,15 +60,16 @@ function ss_saveChangeLogEntryId(id) {
   <span class="ss_fineprint"><ssf:nlt tag="changeLog.selectFolder"/></span>
 </c:if>
 <c:if test="${!empty ssBinderId}">
+<div class="ss_style ss_portlet">
 <form class="ss_portlet_style ss_form" style="background-color: #eeeeee;"
   id="change_logEntryForm" 
   name="change_logEntryForm" method="post" >
 
-  <div id="ss_changeLogEntryForm" style="background-color: #eeeeee;">
+  <div id="ss_changeLogEntryForm" class="ss_searchtext" style="background-color: #eeeeee;">
 	 <ssf:find formName="change_logEntryForm" 
 	    formElement="entryId" 
 	    type="entries"
-	    width="140px" 
+	    width="300px" 
 	    binderId="${ssBinderId}"
 	    searchSubFolders="false"
 	    singleItem="true"
@@ -76,6 +77,7 @@ function ss_saveChangeLogEntryId(id) {
 	    /> 
   </div>
 </form>
+</div>
 </c:if>
 </body>
 </html>

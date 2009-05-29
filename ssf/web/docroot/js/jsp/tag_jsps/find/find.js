@@ -641,7 +641,12 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	this.selectItem = function(obj, entityType) {
 		if (!obj || !obj.id || obj.id == undefined || entityType == undefined) return false;
 		var spanObjs = obj.getElementsByTagName("span");
-		if (spanObjs.length > 0) that._inputObj.value = spanObjs[0].innerHTML;
+		if (spanObjs.length > 0) {
+			//Put the selected item into the textarea not including the (...)
+			var innerText = spanObjs[0].innerHTML;
+			if (innerText.indexOf("(") > 0) innerText = innerText.substr(0, innerText.indexOf("(")-1);
+			that._inputObj.value = innerText;
+		}
 		var id = ss_replaceSubStr(obj.id, 'ss_find_id_', "");
 		if (that._singleClickRoutine != "") {
 			that._callRoutineSingle(id, obj, entityType);
