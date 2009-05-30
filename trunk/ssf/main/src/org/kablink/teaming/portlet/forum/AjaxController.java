@@ -1540,6 +1540,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		model.put(WebKeys.BINDER_ID, binderId);
+		model.put(WebKeys.PROFILES_BINDER_ID, getProfileModule().getProfileBinderId().toString());
 		return new ModelAndView("administration/get_change_log_entry_form", model);
 	}
 	
