@@ -45,7 +45,8 @@
 
 <c:set var="ss_servlet" value="true" scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/view_css.jsp" %>
-
+<c:set var="ss_findType" value="entries"/>
+<c:if test="${ssBinderId == ssProfilesBinderId}"><c:set var="ss_findType" value="user"/></c:if>
 <script type="text/javascript">
 function ss_saveChangeLogEntryId(id) {
 	var formObj = self.parent.document.getElementById('ss_changeLogForm')
@@ -68,7 +69,7 @@ function ss_saveChangeLogEntryId(id) {
   <div id="ss_changeLogEntryForm" class="ss_searchtext" style="background-color: #eeeeee;">
 	 <ssf:find formName="change_logEntryForm" 
 	    formElement="entryId" 
-	    type="entries"
+	    type="${ss_findType}"
 	    width="300px" 
 	    binderId="${ssBinderId}"
 	    searchSubFolders="false"

@@ -937,6 +937,7 @@ public class WebKeys {
     public static final String PROFILE_CONFIG_ENTRY="ssProfileConfigEntry";
     public static final String PROFILE_SHOW_BUSINESSCARD_MINE="ssProfileShowBusinessCardMine";
     public static final String PROFILE_SHOW_BUSINESSCARD_OTHER="ssProfileShowBusinessCardOther";
+    public static final String PROFILES_BINDER_ID="ssProfilesBinderId";
     public static final String ALL_BINDER_DEFINITIONS="ssAllBinderDefinitions";
     public static final String ALL_ENTRY_DEFINITIONS="ssAllEntryDefinitions";
     public static final String ALL_WORKFLOW_DEFINITIONS="ssAllWorkflowDefinitions";
