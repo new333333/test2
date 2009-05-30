@@ -311,31 +311,62 @@
 		var		winHeight;
 		var		winWidth;
 
-		// See if the 'Play Tutorial Window' is already open.  If it is call its playTutorial() function.
-		// Is the "Play Tutorial" window already open?
-		if ( m_playTutorialWnd != null && ((typeof m_playTutorialWnd) != 'undefined' ) && !m_playTutorialWnd.closed )
+		// Create the appropriate url based on the tutorial the user selected.
+		url = 'http://www.brainstorminc.com/cbt/teaming/index.php?category=';
+		if ( tutorialName == 'whatIsTeaming' )
+			url += 'whatisteaming';
+		else if ( tutorialName == 'gettingStarted' )
+			url += 'gettingstarted';
+		else if ( tutorialName == 'gettingInformed' )
+			url += 'gettinginformed';
+		else if ( tutorialName == 'navigation' )
+			url += 'navigation';
+		else if ( tutorialName == 'customizingTeaming' )
+			url += 'customizations';
+		else
 		{
-			// Yes.
-			// Does the 'Play Tutorial' window have a playTutorial() function?
-			if ( m_playTutorialWnd.playTutorial )
-			{
-				// Yes, call it.
-				m_playTutorialWnd.playTutorial( tutorialName );
-
-				// Nothing else to do.
-				return;
-			}
+			// This should never happen.
+			alert( 'Unknown tutorial: ' + tutorialName );
+			return;
 		}
-
-		// As the fix for bug 481238, I removed the ssf:escapeJavaScript tag from the following line.
-		url = '${ss_play_tutorial_base_url}';
-		url += '&ss_tutorial_name=' + encodeURIComponent( tutorialName );
+			
 		winHeight = 900;
-		winWidth = 1250; 
+		winWidth = 900; 
 		m_playTutorialWnd = window.open(
 									url,
 									'PlayTutorialWindow',
 									'height=' + winHeight + ',resizable,scrollbars,width=' + winWidth );
+
+		// The following code is what we used before we started using Brainstorm's videos.
+		// This code can be removed when we are satisfied with the Brainstorm videos.
+		if ( false )
+		{
+			// See if the 'Play Tutorial Window' is already open.  If it is call its playTutorial() function.
+			// Is the "Play Tutorial" window already open?
+			if ( m_playTutorialWnd != null && ((typeof m_playTutorialWnd) != 'undefined' ) && !m_playTutorialWnd.closed )
+			{
+				// Yes.
+				// Does the 'Play Tutorial' window have a playTutorial() function?
+				if ( m_playTutorialWnd.playTutorial )
+				{
+					// Yes, call it.
+					m_playTutorialWnd.playTutorial( tutorialName );
+	
+					// Nothing else to do.
+					return;
+				}
+			}
+	
+			// As the fix for bug 481238, I removed the ssf:escapeJavaScript tag from the following line.
+			url = '${ss_play_tutorial_base_url}';
+			url += '&ss_tutorial_name=' + encodeURIComponent( tutorialName );
+			winHeight = 900;
+			winWidth = 1250; 
+			m_playTutorialWnd = window.open(
+										url,
+										'PlayTutorialWindow',
+										'height=' + winHeight + ',resizable,scrollbars,width=' + winWidth );
+		}
 	}// end startTutorial()
 
 
