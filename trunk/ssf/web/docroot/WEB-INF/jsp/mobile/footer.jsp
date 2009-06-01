@@ -34,6 +34,48 @@
 %>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
 
+<script type="text/javascript">
+function ss_logoff() {
+	var x = '<%= org.kablink.teaming.util.SPropsUtil.getString("sso.proxy.logoff.url","") %>';
+	if (x == null || x == "") {
+		var y = '${ss_logoutUrl}';
+		//alert(y);
+		self.location.href=y;
+	} else {
+		//alert (x);
+		var y = '${ss_logoutUrl}';
+		ss_logoff_from_teaming_then_sso(y);
+	}
+}
+function ss_logoff_from_teaming_then_sso(logoutURL) {
+	callbackRoutine = ss_logoff_from_sso
+	var x;
+
+	if (window.XMLHttpRequest) {
+	x = new XMLHttpRequest();
+	} else if (window.ActiveXObject) {
+	x = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	
+	x.open("GET", logoutURL, true);
+	
+	x.onreadystatechange = function() {
+		if (x.readyState != 4) {
+			return;
+		}
+		if (x.status == 200) {
+			callbackRoutine(x.responseText)        	
+		} else {		
+			callbackRoutine(x.statusText)
+		}
+	}
+	x.send(null);
+	delete x;
+}      
+function ss_logoff_from_sso(s) {
+	self.location.href='<%= org.kablink.teaming.util.SPropsUtil.getString("sso.proxy.logoff.url","") %>';
+}
+</script>
 <div id="footer">
   <ul>
 	<li>
@@ -56,7 +98,7 @@
 		</c:if>
 		
 		<c:if test="${ssUser.internalId != guestInternalId}">
-			<a href="${ss_logoutUrl}"><span><ssf:nlt tag="logout"/></span></a>
+			<a href="javascript: ;" onClick="ss_logoff();return false;"><span><ssf:nlt tag="logout"/></span></a>
 		</c:if>
 	</li>
   </ul>
