@@ -38,19 +38,6 @@
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <div class="ss_photo_sidebar">
-  <div class="ss_blog_sidebar_subhead" style="padding-bottom: 5px;">
-    <c:if test="${ssConfigJspStyle != 'template'}">
-      <a class="ss_linkButton" href="<ssf:url action="${action}" actionUrl="true">
-	    <ssf:param name="operation" value="view_folder_listing"/>
-	    <ssf:param name="binderId" value="${ssBinder.id}"/>
-	    </ssf:url>"
-      ><ssf:nlt tag="photo.showAll"/></a>
-    </c:if>
-    <c:if test="${ssConfigJspStyle == 'template'}">
-      <ssf:nlt tag="photo.showAll"/>
-    </c:if>
-  </div>
-
 	<div class="ss_photo_sidebar_subhead"><ssf:nlt tag="photo.findPage"/>
       <form method="post" name="ss_findWikiPageForm${renderResponse.namespace}"
     	action="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
@@ -90,6 +77,18 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	    action="wipe" initOpen="true">
 	      <div class="ss_blog_sidebar_box">		
 			<table>
+			  <tr>
+			   <td colspan="2">
+			      <a href="<ssf:url action="${action}" actionUrl="true">
+				    <ssf:param name="operation" value="view_folder_listing"/>
+				    <ssf:param name="binderId" value="${ssBinder.id}"/>
+				    </ssf:url>"
+				    <c:if test="${empty ss_yearMonth}">
+				      class="ss_bold" style="background-color:#e5e5e5;" 
+				    </c:if>
+			      ><ssf:nlt tag="button.today"/></a>
+			   </td>
+			  </tr>
 			  <c:forEach var="monthYear" items="${ssBlogMonthHits}">
 		  	  <tr>
 		  	   <td>
