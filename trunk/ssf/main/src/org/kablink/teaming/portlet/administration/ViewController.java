@@ -484,6 +484,7 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("title", NLT.get("administration.credits"));
 		element.addAttribute("image", "bullet");
 		element.addAttribute("id", String.valueOf(nextId++));
+		element.addAttribute( "action", WebKeys.ACTION_VIEW_CREDITS );
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_CREDITS);
 		url.setWindowState(WindowState.MAXIMIZED);

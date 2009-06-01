@@ -152,8 +152,14 @@ function ss_showAdminMenuOption${renderResponse.namespace}(id, obj, action) {
 	features = "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no";
 
 	// If we are opening the "Activity By User" page, give the new window a width and height.
-	if ( action == 'activity_report_by_user' )
+	if ( action == 'activity_report_by_user' ) {
 		features += ',width=900px,height=500px';
+	}
+	
+	// If we are opening the "Activity By User" page, give the new window a width and height.
+	else if ( action == 'view_credits' ) {
+		features += ',width=700px,height=600px';
+	}
 
 	self.window.open( obj.href, "_blank", features );
 	return false;
