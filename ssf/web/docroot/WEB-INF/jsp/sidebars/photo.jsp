@@ -86,7 +86,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				    <c:if test="${empty ss_yearMonth}">
 				      class="ss_bold" style="background-color:#e5e5e5;" 
 				    </c:if>
-			      ><ssf:nlt tag="button.today"/></a>
+			      ><ssf:nlt tag="photo.showCurrentAlbum"/></a>
 			   </td>
 			  </tr>
 			  <c:forEach var="monthYear" items="${ssBlogMonthHits}">
