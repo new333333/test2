@@ -527,7 +527,7 @@ public class SearchFilter {
 		
 		checkCurrent();
 		
-		Element entriesListParent = newFilterTermsBlock(currentFilterTerms, true);
+		Element entriesListParent = newFilterTermsBlock(currentFilterTerms, false);
 		if (listType != null) {
 			entriesListParent.addAttribute(SearchFilterKeys.FilterListType, listType);
 		}

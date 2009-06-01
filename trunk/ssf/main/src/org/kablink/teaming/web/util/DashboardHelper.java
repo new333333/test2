@@ -889,14 +889,21 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     }
 
     private void validateComponentConfig(Map component, Map componentData, String componentId, Binder binder) {
- 		if (component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY)
+    	String componentName = (String)component.get(Dashboard.NAME);
+
+ 		if ((componentName != null)
+ 			&& componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY)
  			/* Only adjusts task accessories right now. */
+ 			&& (binder != null)
  			&& !(binder instanceof TemplateBinder)
  			/* We don't want to make this adjustment to the template when it gets modified, only to
  			 * instances created from the template. */
- 			&& ((componentData.get(AssignedTo) == null) || ((componentData.get(AssignedTo) != null) && ((Set)componentData.get(AssignedTo)).isEmpty()))
- 			&& ((componentData.get(AssignedToGroups) == null) || ((componentData.get(AssignedToGroups) != null) && ((Set)componentData.get(AssignedToGroups)).isEmpty()))
- 			&& ((componentData.get(AssignedToTeams) == null) || ((componentData.get(AssignedToTeams) != null) && ((Set)componentData.get(AssignedToTeams)).isEmpty()))) {
+ 			&& ((componentData.get(AssignedTo) == null) || ((componentData.get(AssignedTo) != null)
+ 					&& (componentData.get(AssignedTo) instanceof Set) && ((Set)componentData.get(AssignedTo)).isEmpty()))
+ 			&& ((componentData.get(AssignedToGroups) == null) || ((componentData.get(AssignedToGroups) != null)
+ 					&& (componentData.get(AssignedToGroups) instanceof Set) && ((Set)componentData.get(AssignedToGroups)).isEmpty()))
+ 			&& ((componentData.get(AssignedToTeams) == null) || ((componentData.get(AssignedToTeams) != null)
+ 					&& ((componentData.get(AssignedToTeams) instanceof Set) && ((Set)componentData.get(AssignedToTeams)).isEmpty())))) {
  	 		/* Check assignees, if there are none, generate a default query using the binder owner as assignee. */
  			SearchFilter searchFilter = new SearchFilter(true);
 
