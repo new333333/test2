@@ -78,7 +78,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 </div>
 
 <div class="ss_entryContent">
-  <c:if test="${empty ssReadOnlyFields['password'] || ss_isBinderAdmin}">
+  <c:if test="${empty ssReadOnlyFields['password']}">
     <c:if test="${!empty ssDefinitionEntry.name && !ss_isBinderAdmin}">
 		<div class="ss_labelAbove">
 			<label for="password_original">
