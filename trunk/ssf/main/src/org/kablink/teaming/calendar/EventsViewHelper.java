@@ -294,7 +294,11 @@ public class EventsViewHelper {
 				for (int recCounter = 0; recCounter < recurrenceDates.length; recCounter++) {
 					// ...and parse their start and end dates in both
 					// ...raw and time zone based formats.
-					String[] recurrenceStartEndTime = recurrenceDates[recCounter].split(" ");
+					String recurrenceDatesInstance = recurrenceDates[recCounter];
+					if ((null == recurrenceDatesInstance) || (0 == recurrenceDatesInstance.length())) {
+						continue;
+					}
+					String[] recurrenceStartEndTime = recurrenceDatesInstance.split(" ");
 					
 					String evStartTime = recurrenceStartEndTime[0];
 					Date evStartDateInTZ = null;
