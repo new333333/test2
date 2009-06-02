@@ -199,8 +199,9 @@ public class ViewFileController extends SAbstractController {
 				catch(Exception e) {
 					String url = WebUrlUtil.getServletRootURL(request, false);
 					url += "errorHandler";
-					
-					String output = "<html><head><script language='javascript'>function submitForm(){ document.errorform.submit(); }</script></head><body onload='javascript:submitForm()'><form name='errorform' action='" + url + "'><input type='hidden' name='ssf-error' value='" + e.getLocalizedMessage() + "'></input></form></body></html>";
+					String eMsg = e.getLocalizedMessage();
+					eMsg = eMsg.replaceAll("\"", "'");
+					String output = "<html><head><script language='javascript'>function submitForm(){ document.errorform.submit(); }</script></head><body onload='javascript:submitForm()'><form name='errorform' action='" + url + "'><input type='hidden' name='ssf-error' value=\"" + eMsg + "\"></input></form></body></html>";
 					
 					response.getOutputStream().print(output);
 					response.getOutputStream().flush();
