@@ -207,9 +207,9 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		Long[] array = new Long[binderIds.size()];
 		return binderIds.toArray(array);
 	}
-	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId) {
+	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId, boolean explodeGroups) {
 		Binder binder = getBinderModule().getBinder(new Long(binderId));
-		SortedSet<Principal> principals = getBinderModule().getTeamMembers(binder, true);
+		SortedSet<Principal> principals = getBinderModule().getTeamMembers(binder, explodeGroups);
 		
 		List<PrincipalBrief> principalList = new ArrayList<PrincipalBrief>();
 		for(Principal p : principals) {

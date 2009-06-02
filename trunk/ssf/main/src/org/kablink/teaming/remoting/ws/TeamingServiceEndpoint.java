@@ -202,8 +202,8 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void binder_setOwner(String accessToken, long binderId, long userId) {
 		getBinderService().binder_setOwner(accessToken, binderId, userId);
 	}
-	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId) {
-		return getBinderService().binder_getTeamMembers(accessToken, binderId);
+	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId, boolean explodeGroups) {
+		return getBinderService().binder_getTeamMembers(accessToken, binderId, explodeGroups);
 	}
 	public void binder_setTeamMembers(String accessToken, long binderId, String[] memberNames) {
 		getBinderService().binder_setTeamMembers(accessToken, binderId, memberNames);
