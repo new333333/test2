@@ -49,7 +49,7 @@
 #end
 
 #if ($ssVisitor.getParam('ssReplyTo'))
-</td><td align="right">
+</td><td style="padding-left: 50px;">
 
 &nbsp;&nbsp;<a href="mailto:${ssVisitor.getParam('ssReplyTo')}?subject=RE: DocId:${ssVisitor.Entity.ParentBinder.Id}:${ssVisitor.Entity.Id}"
 		style="font-size: 11px; color: #3366cc; font-weight:bold;
