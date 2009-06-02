@@ -74,6 +74,7 @@ import org.kablink.teaming.module.mail.EmailPoster;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
 import org.springframework.util.FileCopyUtils;
@@ -141,6 +142,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 	}
 	//override to provide alternate processing 
 	protected void processReply(Folder folder, InternetAddress from, Message msg, Map inputData, Map fileItems, List iCalendars ) throws Exception {
+		inputData = StringCheckUtil.check(inputData);
 		String title = (String)inputData.get(ObjectKeys.FIELD_ENTITY_TITLE);
 		Long parentDocId = getParentDocId(folder, title, msg);
 		FolderEntry entry = getFolderModule().getEntry(folder.getId(), parentDocId);
@@ -159,6 +161,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 	}
 	//override to provide alternate processing 
 	protected void processEntry(Folder folder, InternetAddress from, Message msg, Map inputData, Map fileItems, List iCalendars ) throws Exception {
+		inputData = StringCheckUtil.check(inputData);
 		User fromUser = setUser(folder, from);
 		if (fromUser == null) {
 			fromUser = setAnonymousUser(folder);
