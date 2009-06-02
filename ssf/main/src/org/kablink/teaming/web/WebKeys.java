@@ -1183,6 +1183,7 @@ public class WebKeys {
     public static final String WORKAREA="ssWorkArea";
     public static final String WORKAREA_OPERATIONS="ssWorkAreaOperations";
     public static final String WORKFLOW_CAPTIONS="ssWorkflowCaptions";
+    public static final String WORKFLOW_THREAD_CAPTIONS="ssWorkflowThreadCaptions";
     public static final String WORKFLOW_DEFINITION="ssWorkflowDefinition";
     public static final String WORKFLOW_DEFINITION_STATE_DATA="ssWorkflowDefinitionStateData";
     public static final String WORKFLOW_DEFINITION_MAP="ssWorkflowDefinitionMap";

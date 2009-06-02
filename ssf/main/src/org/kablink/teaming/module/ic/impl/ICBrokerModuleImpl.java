@@ -546,7 +546,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 
 	private String getModelLink(Binder binder, Entry entry) {
 
-		if (entry == null) {
+		if (entry == null && binder != null) {
 			return PermaLinkUtil.getPermalink(binder);
 		} else if (entry != null) {
 			return PermaLinkUtil.getPermalink(entry);
