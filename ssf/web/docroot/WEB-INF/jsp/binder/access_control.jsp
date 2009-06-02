@@ -328,13 +328,13 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 <span class="ss_bold"><a href="javascript: ${renderResponse.namespace}accessObj.addClipboardUsers();"><ssf:nlt tag="access.addClipboardUsers"/></a></span><br/>
 
 	<div id="ss_addRolesMenu${renderResponse.namespace}" class="ss_actions_bar5 ss_actions_bar_submenu" >
-		<ul class="ss_actions_bar5 ss_actions_bar_submenu" style="white-space:nowrap;">
 		  <div align="right">
 		    <a href="javascript:;" onClick="ss_hideDiv('ss_addRolesMenu${renderResponse.namespace}');return false;">
 		      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
 		    </a>
 		  </div>
 		<span class="ss_bold"><ssf:nlt tag="access.addRole"/></span><br/><br/>
+		<ul class="ss_actions_bar5 ss_actions_bar_submenu" style="white-space:nowrap;">
 	    <c:forEach var="function" items="${ssFunctions}">
 	      <c:set var="includeRole" value="1"/>
 	      <c:forEach var="sortedFunction" items="${ss_accessSortedFunctions}">
