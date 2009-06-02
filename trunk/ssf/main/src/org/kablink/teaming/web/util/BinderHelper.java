@@ -2889,6 +2889,7 @@ public class BinderHelper {
 	
 	public static void buildWorkflowSupportBeans(AllModulesInjected bs, List entryList, Map model) {
 		Map captionMap = new HashMap();
+		Map threadMap = new HashMap();
 		Map questionsMap = new HashMap();
 		Map transitionMap = new HashMap();
 		for (int i=0; i<entryList.size(); i++) {
@@ -2904,12 +2905,18 @@ public class BinderHelper {
 					Map trans = bs.getFolderModule().getManualTransitions(entry, ws.getTokenId());
 					transitionMap.put(ws.getTokenId(), trans);
 				} 
+				if (!threadMap.containsKey(ws.getTokenId()) && Validator.isNotNull(ws.getThreadName())) {
+					String threadCaption = WorkflowUtils.getThreadCaption(ws.getDefinition(), ws.getThreadName());
+					if (Validator.isNull(threadCaption)) threadCaption = ws.getThreadName();
+					threadMap.put(ws.getTokenId(), threadCaption);
+				}
 					
 				Map qMap = bs.getFolderModule().getWorkflowQuestions(entry, ws.getTokenId());
 				questionsMap.put(ws.getTokenId(), qMap);
 			}
 		}
 		model.put(WebKeys.WORKFLOW_CAPTIONS, captionMap);
+		model.put(WebKeys.WORKFLOW_THREAD_CAPTIONS, threadMap);
 		model.put(WebKeys.WORKFLOW_QUESTIONS, questionsMap);
 		model.put(WebKeys.WORKFLOW_TRANSITIONS, transitionMap);
 	}

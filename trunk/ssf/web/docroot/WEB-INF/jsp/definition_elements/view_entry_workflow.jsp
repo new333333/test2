@@ -137,7 +137,7 @@ function ss_checkForWorkflowStateSelection(obj) {
         <c:if test="${workflow2.definition.id == workflow.definition.id}">
           <c:if test="${!empty workflow2.threadName}">
 			  <tr>
-			    <td valign="top" style="padding:0px 0px 4px 30px;"><c:out value="${workflow2.threadName}"/></td>
+			    <td valign="top" style="padding:0px 0px 4px 30px;">${ssWorkflowThreadCaptions[workflow2.id]}</td>
 			    <td valign="top" style="padding:0px 0px 4px 30px;">${ssWorkflowCaptions[workflow2.id]}</td>
 			    <c:if test="${!empty ssWorkflowTransitions[workflow2.id]}">
 			      <td valign="top" align="right" style="padding:0px 0px 4px 30px;">
@@ -170,11 +170,11 @@ function ss_checkForWorkflowStateSelection(obj) {
 				  <td style="padding:0px 0px 4px 30px;"></td><td style="padding:0px 0px 4px 30px;"></td>
 				</c:if>
 			  </tr>
-			  <c:if test="${!empty ssWorkflowQuestions[workflow.id]}">
+			  <c:if test="${!empty ssWorkflowQuestions[workflow2.id]}">
 			    <tr>
 			      <td valign="top" colspan="2" style="padding:0px 0px 4px 30px;"></td>
 			      <td valign="top" colspan="2" style="padding:0px 0px 4px 30px;">
-				  <c:forEach var="question" items="${ssWorkflowQuestions[workflow.id]}">
+				  <c:forEach var="question" items="${ssWorkflowQuestions[workflow2.id]}">
 				    <form class="ss_style ss_form" method="post" 
 				      action="<ssf:url adapter="true" 
 				        portletName="ss_forum" 
@@ -183,7 +183,7 @@ function ss_checkForWorkflowStateSelection(obj) {
 						entryId="${ssDefinitionEntry.id}" 
 						actionUrl="true" />" 
 				      style="display:inline; background: inherit !important;">
-				    <input type="hidden" name="tokenId" value="${workflow.id}">
+				    <input type="hidden" name="tokenId" value="${workflow2.id}">
 				    <input type="hidden" name="replyId" value="${ssDefinitionEntry.id}">
 				    <span class="ss_bold"><c:out value="${question.value.workflow_questionText}"/></span><br/>
 				    <select name="${question.key}">
