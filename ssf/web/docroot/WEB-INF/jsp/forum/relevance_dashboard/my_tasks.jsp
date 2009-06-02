@@ -156,7 +156,7 @@
 					title="${path}"
 					><span class="ss_prioValue"">${title}</span></a>
 			</c:if>
-		</span>&nbsp;<img src="<html:rootPath/>images/icons/folder_green_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />
+		</span>&nbsp;<img src="<html:rootPath/>images/icons/folder_green_sm.png" <ssf:alt tag="entry.Folder"/> width="11" height="10" hspace="2" border="0" align="absmiddle" />
 		</div>
 	</li>
 							
