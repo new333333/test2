@@ -263,7 +263,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		{
 			// Parse recipients now, so other recipients can be handled by someone else.
 			String[] parts = recipient.split("@");
-			if(parts.length != 2)  throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " not known");
+			if(parts.length != 2)  throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " not known.");
 			String localPart = parts[0];
 			String hostname = parts[1];
 //			SessionUtil.sessionStartup();
@@ -271,16 +271,16 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 				//no request context
 				Long zoneId = getZoneModule().getZoneIdByVirtualHost(hostname);
 				if (!getZoneModule().getZoneConfig(zoneId).getMailConfig().isSimpleUrlPostingEnabled()) {
-					throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable");
+					throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable.  Simply URL posting is disabled.");
 				}
 				//skip modules to load info, so don't have to worry about user context
 				SimpleName simpleUrl = getCoreDao().loadSimpleNameByEmailAddress(localPart, zoneId);
 				if (simpleUrl == null || !simpleUrl.getBinderType().equals(EntityType.folder.name())) {
-					throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable");
+					throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable.  Target entity is not a folder.");
 				}
 				Binder binder = getCoreDao().loadBinder(simpleUrl.getBinderId(), zoneId);
 				if(!binder.getPostingEnabled()) {
-					throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable");
+					throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable.  Posting disabled on target binder.");
 				}
 				this.recipients.add(new Recipient(recipient, simpleUrl));
 			} finally {
