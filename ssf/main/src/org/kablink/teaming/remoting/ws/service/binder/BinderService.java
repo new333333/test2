@@ -88,7 +88,7 @@ public interface BinderService {
 	
 	public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships);
 
-	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId);	
+	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId, boolean explodeGroups);	
 	public void binder_setTeamMembers(String accessToken, long binderId, String[] memberNames);
 
 	public Subscription binder_getSubscription(String accessToken, long binderId); 
