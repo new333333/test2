@@ -34,7 +34,7 @@
 %>
 <% //File form for attaching files %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${empty property_hide || !property_hide || !empty ssDefinitionEntry}">
+<c:if test="${empty property_hide || !property_hide || (!empty ssDefinitionEntry && !empty ssDefinitionEntry.fileAttachments)}">
  <c:if test='${empty property_number}'>
   <c:set var="property_number" value="1"/>
  </c:if>
