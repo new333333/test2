@@ -53,7 +53,7 @@
 			      href="<ssf:permalink entity="${binder}"/>"
 				  onclick="return ss_gotoPermalink('${binder.id}', '${binder.id}', 'folder', '${ss_namespace}', 'yes');"
 			    ><span>${binder.title} (${binder.parentBinder.title})</span> </a>
-			    &nbsp;<img src="<html:rootPath/>images/icons/folder_green_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />
+			    &nbsp;<img src="<html:rootPath/>images/icons/folder_green_sm.png" <ssf:alt tag="entry.Folder"/> width="11" height="10" hspace="2" border="0" align="absmiddle" />
 			    <c:if test="${ssBinderId == ssUser.workspaceId}">
 			      <img style="padding:4px 0px 0px 2px;" align="texttop"
 		            src="<html:rootPath/>images/pics/delete.gif"
@@ -75,7 +75,7 @@
 			    <a class="ss_link_5"
 			      href="<ssf:permalink entity="${binder}"/>"
 				  onclick="return ss_gotoPermalink('${binder.id}', '${binder.id}', 'workspace', '${ss_namespace}', 'yes');"
-			    ><span>${binder.title} (${binder.parentBinder.title})</span> </a><img src="<html:rootPath/>images/icons/folder_cyan_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />&nbsp;
+			    ><span>${binder.title} (${binder.parentBinder.title})</span> </a><img src="<html:rootPath/>images/icons/folder_cyan_sm.png" <ssf:alt tag="entry.Folder"/> width="11" height="10" hspace="2" border="0" align="absmiddle" />&nbsp;
 			    <c:if test="${ssBinderId == ssUser.workspaceId}">
 			      <img style="padding:4px 0px 0px 2px;" align="texttop" src="<html:rootPath/>images/pics/delete.gif"
 		            onclick="ss_trackedItemsDelete(this, '${binder.id}');" <ssf:alt text="alt.delete"/>/>
