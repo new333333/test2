@@ -83,7 +83,7 @@ opensaml 1.0.1 (SAML implementation; used by WSS4J)
 oro 2.0.8 (needed by velocity)
 Portals Bridges 1.0
 Portlet 1.0
-Quartz 1.6.3 (all)
+Quartz 1.6.5 (all)
 ridl.jar (from OpenOffice 2.0)
 SAAJ 1.2 DO NOT UPGRADE (V1.2 used the ASL1.1, newer versions are from glassfish project which uses cppl and gpl2.0)
 Servlet 2.4/JSP 2.0
