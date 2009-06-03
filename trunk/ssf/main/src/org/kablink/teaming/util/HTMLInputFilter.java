@@ -291,7 +291,8 @@ public class HTMLInputFilter
   public String filter( String input )
   {
     Stack<String> vTagStack = new Stack<String>();
-    String s = input;
+    String decodedInput = decodeEntities(input);
+    String s = decodedInput;
     
     debug( "************************************************" );
     debug( "              INPUT: " + input );
@@ -312,7 +313,11 @@ public class HTMLInputFilter
     debug( "    validateEntites: " + s );
     
     debug( "************************************************\n\n" );
-    return s;
+    if (!s.equals(decodedInput)) {
+    	return s;
+    } else {
+    	return input;
+    }
   }
   
   protected String escapeComments( String s )
