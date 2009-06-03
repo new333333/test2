@@ -762,10 +762,11 @@ public class SearchFilterToSearchBooleanConverter {
 		} else {
 			Iterator itTermValues = filterTerm.selectNodes(SearchFilterKeys.FilterElementValue).iterator();
 			String valueType = filterTerm.attributeValue(SearchFilterKeys.FilterElementValueType);
-			boolean term=true;
+			Element defBlock = null;
+			boolean term = true;
 			while ((itTermValues.hasNext() || valueType != null) && term) {
 				Element termValue = null;
-				try { 
+				try {
 					termValue = (Element) itTermValues.next();
 				} catch (Exception e) {}
 				String value = " ";
@@ -776,7 +777,7 @@ public class SearchFilterToSearchBooleanConverter {
 					checkLanguage(value, block);
 				}
 				
-				if (termValue!= null && termValue.attributeValue(SearchFilterKeys.FilterElementValueType) != null) {
+				if (termValue != null && termValue.attributeValue(SearchFilterKeys.FilterElementValueType) != null) {
 					valueType = termValue.attributeValue(SearchFilterKeys.FilterElementValueType);
 				}
 				
@@ -785,11 +786,15 @@ public class SearchFilterToSearchBooleanConverter {
 					Element child;
 					Element andField = block;
 	    			if (defId != null &&!defId.equals("")) {
-	    				andField = block.addElement(Constants.AND_ELEMENT);
-		    			field = andField.addElement(Constants.FIELD_ELEMENT);
-		    			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.COMMAND_DEFINITION_FIELD);
-		    	    	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-		    	    	child.setText(defId);
+	    				if (defBlock == null) {
+	    					andField = defBlock = block.addElement(Constants.AND_ELEMENT);
+	    					field = andField.addElement(Constants.FIELD_ELEMENT);
+	    					field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.COMMAND_DEFINITION_FIELD);
+	    					child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
+	    					child.setText(defId);
+	    				} else {
+	    					andField = defBlock;
+	    				}
 	    			}
 	    			
 	    			if ("entryAttributes".equals(valueType)) {
@@ -836,7 +841,7 @@ public class SearchFilterToSearchBooleanConverter {
 		    			
 		    	    	field = andField.addElement(Constants.FIELD_ELEMENT);
 		    			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, elementName);
-		    				   
+		    			
 		    			child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 	    				child.setText(value.toString());
 					}
