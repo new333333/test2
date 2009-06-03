@@ -361,7 +361,7 @@ public class ViewController extends  SAbstractController {
 		//Import profiles
 		try {
 			ProfileBinder profiles = getProfileModule().getProfileBinder();
-			if (getProfileModule().testAccess(profiles, ProfileOperation.addEntry)) {
+			if (getProfileModule().testAccess(profiles, ProfileOperation.manageEntries)) {
 				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 				element.addAttribute("title", NLT.get("administration.import.profiles"));
 				element.addAttribute("image", "bullet");

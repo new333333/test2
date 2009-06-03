@@ -613,7 +613,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    //NO transaction
     public void addEntries(Document doc, Map options) {
        ProfileBinder binder = loadProfileBinder();
-       checkAccess(binder, ProfileOperation.addEntry);
+       checkAccess(binder, ProfileOperation.manageEntries);
        //process the document
        Element root = doc.getRootElement();
        List defList = root.selectNodes("/profiles/user");
