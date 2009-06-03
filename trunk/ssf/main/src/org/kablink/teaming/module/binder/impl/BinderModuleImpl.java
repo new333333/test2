@@ -1027,17 +1027,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
        		} catch (Exception e) {
        			return Collections.EMPTY_LIST;
        		}
-	       	Set<Long> ids = getProfileDao().getPrincipalIds(prin);
-	       	if (ids.isEmpty()) return Collections.EMPTY_LIST;
-	       	crit.add(in(Constants.TEAM_MEMBERS_FIELD, LongIdUtil.getIdsAsStringSet(ids)));
-	    	QueryBuilder qb = new QueryBuilder(true);
-	    	SearchObject so = qb.buildQuery(crit.toQuery());
-	    	
-	    	Hits hits = executeLuceneQuery(so, 0, Integer.MAX_VALUE);
-	        if (hits == null) return new ArrayList();
-	    	return SearchUtils.getSearchEntries(hits);	    
        	}
-       	return Collections.EMPTY_LIST;
+       	Set<Long> ids = getProfileDao().getPrincipalIds(prin);
+       	if (ids.isEmpty()) return Collections.EMPTY_LIST;
+       	crit.add(in(Constants.TEAM_MEMBERS_FIELD, LongIdUtil.getIdsAsStringSet(ids)));
+    	QueryBuilder qb = new QueryBuilder(true);
+    	SearchObject so = qb.buildQuery(crit.toQuery());
+    	
+    	Hits hits = executeLuceneQuery(so, 0, Integer.MAX_VALUE);
+        if (hits == null) return new ArrayList();
+    	return SearchUtils.getSearchEntries(hits);	    
     }	
     //inside write transaction    
     public void setPosting(Long binderId, String emailAddress, String password) {
