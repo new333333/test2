@@ -69,7 +69,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
       ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
 <div class="ss_labelAbove"><label for="name"><ssf:nlt tag="__profile_name"/></label></div>
 <c:if test="${empty ssDefinitionEntry.name}">
-  <input type="text" size="40" name="name" id="name" class="ss_text" 
+  <input type="text" size="40" name="name" id="name" class="ss_text" autocomplete="off"
   onchange="ss_ajaxValidate(ss_checkTitleUrl, this, 'name', 'ss_titleCheck2');"/>
 </c:if>
 <c:if test="${!empty ssDefinitionEntry.name}">
@@ -86,12 +86,12 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 			</label>
 		</div>
 		<input type="password" size="40" name="password_original" 
-			id="password_original" class="ss_text" />
+			id="password_original" class="ss_text" autocomplete="off" />
 	</c:if>
 	<div class="ss_labelAbove"><label for="password"><ssf:nlt tag="__profile_password_new"/></label></div>
-	<input type="password" size="40" name="password" id="password" class="ss_text" />
+	<input type="password" size="40" name="password" id="password" class="ss_text" autocomplete="off" />
 	<div class="ss_labelAbove"><label for="password2"><ssf:nlt tag="__profile_password_again"/></label></div>
-	<input type="password" size="40" name="password2" id="password2" class="ss_text" />
+	<input type="password" size="40" name="password2" id="password2" class="ss_text" autocomplete="off" />
   </c:if>
 </div>
 

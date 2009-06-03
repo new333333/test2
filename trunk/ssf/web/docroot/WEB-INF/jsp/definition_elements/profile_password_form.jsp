@@ -44,13 +44,13 @@
 	<div class="ss_labelAbove"><%= caption %></div>
 	<c:if test="${!empty ssDefinitionEntry.password && !ss_isBinderAdmin}">
 		<div class="ss_labelAbove"><ssf:nlt tag="__profile_password_original"/></div>
-		<input type="password" size="40" name="password_original" class="ss_text" />
+		<input type="password" size="40" name="password_original" class="ss_text" autocomplete="off" />
 	</c:if>
 	
 	<div class="ss_labelAbove"><ssf:nlt tag="__profile_password_new"/></div>
-	<input type="password" size="40" name="password" class="ss_text" />
+	<input type="password" size="40" name="password" class="ss_text" autocomplete="off" />
 	<div class="ss_labelAbove"><ssf:nlt tag="__profile_password_again"/></div>
-	<input type="password" size="40" name="password2" class="ss_text" />
+	<input type="password" size="40" name="password2" class="ss_text" autocomplete="off" />
   </c:if>
 </div>
 
