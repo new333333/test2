@@ -1173,17 +1173,23 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	throws AccessControlException, WriteFilesException, PasswordMismatchException {
 		if (inputData.getSingleValue("password") == null || inputData.getSingleValue("password").equals(""))
 			throw new PasswordMismatchException("errorcode.password.cannotBeNull");
+        ProfileBinder binder = loadProfileBinder();
+        checkAccess(binder, ProfileOperation.addEntry);
 		return (User) addIndividualPrincipal(definitionId, inputData, fileItems, options, User.class);
 	}
 	//NO transaction
 	public Application addApplication(String definitionId, 
 			InputDataAccessor inputData, Map fileItems, Map options) 
 	throws AccessControlException, WriteFilesException {
+        ProfileBinder binder = loadProfileBinder();
+        checkAccess(binder, ProfileOperation.manageEntries);
     	return (Application) addIndividualPrincipal(definitionId, inputData, fileItems, options, Application.class);
 	}
     //NO transaction
     public Group addGroup(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
     	throws AccessControlException, WriteFilesException {
+        ProfileBinder binder = loadProfileBinder();
+        checkAccess(binder, ProfileOperation.manageEntries);
     	return (Group) addGroupPrincipal(definitionId, inputData, fileItems, options, Group.class);
     }
 	
@@ -1191,13 +1197,16 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	public ApplicationGroup addApplicationGroup(String definitionId, 
 			InputDataAccessor inputData, Map fileItems, Map options) 
 	throws AccessControlException, WriteFilesException {
+        ProfileBinder binder = loadProfileBinder();
+        checkAccess(binder, ProfileOperation.manageEntries);
     	return (ApplicationGroup) addGroupPrincipal(definitionId, inputData, fileItems, options, ApplicationGroup.class);
 	}
 	
 	protected Entry addIndividualPrincipal(String definitionId, 
 			InputDataAccessor inputData, Map fileItems, Map options, Class clazz) 
 	throws AccessControlException, WriteFilesException {
-        ProfileBinder binder = loadProfileBinder();
+        //Stricter access checking must be done by the caller
+		ProfileBinder binder = loadProfileBinder();
         checkAccess(binder, ProfileOperation.addEntry);
         Definition definition;
         if (!Validator.isNull(definitionId))
@@ -1250,7 +1259,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			InputDataAccessor inputData, Map fileItems, Map options, Class clazz) 
 	throws AccessControlException, WriteFilesException {
         ProfileBinder binder = loadProfileBinder();
-        checkAccess(binder, ProfileOperation.addEntry);
+        checkAccess(binder, ProfileOperation.manageEntries);
         Definition definition;
         if (!Validator.isNull(definitionId))
         	definition = getCoreDao().loadDefinition(definitionId, binder.getZoneId());
