@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.util.stringcheck;
 
+import java.net.URLDecoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -147,7 +148,11 @@ public class XSSCheck implements StringCheck {
 			return input;
 		} else { // mode == MODE_STRIP || mode == MODE_TRUSTED_STRIP
 			String cleanString = htmlInputFilter.filter(sequence.toString());
-			data.put("sequence", cleanString);
+			String decodedString = cleanString;
+			try {
+				decodedString = URLDecoder.decode(cleanString, "UTF-8");
+		    } catch(Exception e) {}
+			data.put("sequence", decodedString);
 			if (!checkIfStringValid(data)) {
 				cleanString = (String)data.get("sequence");
 			}
