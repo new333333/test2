@@ -344,7 +344,7 @@ public class ViewController extends  SAbstractController {
 		//Manage groups
 		try {
 			ProfileBinder profiles = getProfileModule().getProfileBinder();
-			if (getProfileModule().testAccess(profiles, ProfileOperation.addEntry)) {
+			if (getProfileModule().testAccess(profiles, ProfileOperation.manageEntries)) {
 				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 				element.addAttribute("title", NLT.get("administration.manage.groups"));
 				element.addAttribute("image", "bullet");
@@ -563,7 +563,7 @@ public class ViewController extends  SAbstractController {
 		//Manage applications
 		try {
 			ProfileBinder profiles = getProfileModule().getProfileBinder();
-			if (getProfileModule().testAccess(profiles, ProfileOperation.addEntry)) {
+			if (getProfileModule().testAccess(profiles, ProfileOperation.manageEntries)) {
 				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 				element.addAttribute("title", NLT.get("administration.manage.applications"));
 				element.addAttribute("image", "bullet");
@@ -580,7 +580,7 @@ public class ViewController extends  SAbstractController {
 		//Manage application groups
 		try {
 			ProfileBinder profiles = getProfileModule().getProfileBinder();
-			if (getProfileModule().testAccess(profiles, ProfileOperation.addEntry)) {
+			if (getProfileModule().testAccess(profiles, ProfileOperation.manageEntries)) {
 				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 				element.addAttribute("title", NLT.get("administration.manage.application.groups"));
 				element.addAttribute("image", "bullet");
