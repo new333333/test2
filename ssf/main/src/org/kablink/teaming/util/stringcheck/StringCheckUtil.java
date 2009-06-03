@@ -90,12 +90,26 @@ public class StringCheckUtil implements InitializingBean {
 		return input;
 	}
 
+	@SuppressWarnings("unchecked")
 	private Map<String,String[]> checkAll(StringCheck checker, Map<String,String[]> input) throws StringCheckException {
 		Map output = new TreeMap<String, String[]>();
 		
 		String[] value=null,newValue=null;
 		for(String key : input.keySet()) {
-			value = input.get(key);
+			// Bugzilla 509179:
+			//    With inbound email, there are times where the input
+			//    Map contains String's, not String[]'s.  The following
+			//    code deals with handling these in a type safe way.
+			Object ov = input.get(key);
+			if (null == ov) {
+				value = null;
+			} else if (ov instanceof String) {
+				value = new String[]{(String) ov};
+			} else if (ov instanceof String[]) {
+				value = ((String[]) ov);
+			} else {
+				value = null;
+			}
 			if(value != null) {
 				newValue = new String[value.length];
 				for(int i = 0; i < value.length; i++) {
