@@ -95,7 +95,7 @@
 			  	--%><c:otherwise><%--
 				  	--%><c:choose><%--
 				  		--%><c:when test="${!evim.cal_oneDayEvent}"><%--
-			  				--%>"<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" type="date" timeStyle="short" /> - <fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" type="date" timeStyle="short" />", <%--
+			  				--%>"<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" type="date" dateStyle="short" /> - <fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" type="date" dateStyle="short" />", <%--
 					  	--%></c:when><%--
 					  	--%><c:otherwise><%--
 					  		--%>"", <%--
