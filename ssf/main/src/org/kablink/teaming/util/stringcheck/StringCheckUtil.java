@@ -72,7 +72,7 @@ public class StringCheckUtil implements InitializingBean {
 		return getInstance().checkAll(input);
 	}
 	
-	public static Map<String,String[]> check(Map<String,String[]> input) throws StringCheckException {
+	public static Map<String,?> check(Map<String,?> input) throws StringCheckException {
 		return getInstance().checkAll(input);
 	}
 
@@ -83,7 +83,7 @@ public class StringCheckUtil implements InitializingBean {
 		return input;
 	}
 	
-	private Map<String,String[]> checkAll(Map<String,String[]> input) throws StringCheckException {
+	private Map<String,?> checkAll(Map<String,?> input) throws StringCheckException {
 		for(int i = 0; i < checkers.length; i++) {
 			input = checkAll(checkers[i], input);
 		}
@@ -91,31 +91,30 @@ public class StringCheckUtil implements InitializingBean {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<String,String[]> checkAll(StringCheck checker, Map<String,String[]> input) throws StringCheckException {
-		Map output = new TreeMap<String, String[]>();
+	private Map<String,?> checkAll(StringCheck checker, Map<String,?> input) throws StringCheckException {
+		Map output = new TreeMap();
 		
-		String[] value=null,newValue=null;
+		Object value, newValue;
+		
 		for(String key : input.keySet()) {
-			// Bugzilla 509179:
-			//    With inbound email, there are times where the input
-			//    Map contains String's, not String[]'s.  The following
-			//    code deals with handling these in a type safe way.
-			Object ov = input.get(key);
-			if (null == ov) {
-				value = null;
-			} else if (ov instanceof String) {
-				value = new String[]{(String) ov};
-			} else if (ov instanceof String[]) {
-				value = ((String[]) ov);
-			} else {
-				value = null;
+			value = input.get(key);
+			if(value == null) {
+				newValue = null;
 			}
-			if(value != null) {
-				newValue = new String[value.length];
-				for(int i = 0; i < value.length; i++) {
-					newValue[i] = checker.check(value[i]);
-				}
+			else if(value instanceof String) {
+				newValue = checker.check((String)value);
 			}
+			else if(value instanceof String[]) {
+				String[] valueSA = (String[]) value;
+				String[] newValueSA = new String[valueSA.length];
+				for(int i = 0; i < valueSA.length; i++)
+					newValueSA[i] = checker.check(valueSA[i]);
+				newValue = newValueSA;
+			}
+			else {
+				newValue = value;
+			}
+
 			output.put(key, newValue);
 		}	
 		
