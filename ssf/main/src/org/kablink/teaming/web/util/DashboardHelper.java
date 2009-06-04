@@ -924,7 +924,16 @@ public class DashboardHelper extends AbstractAllModulesInjected {
  				if (!componentScope.equals("")) {
  					Dashboard d = getInstance().getDashboardObj(binder, componentScope);
  					/* Save the search filter on the component. */
- 					getInstance().getDashboardModule().modifyComponent(d.getId(), componentId, component);
+ 					try {
+ 						getInstance().getDashboardModule().modifyComponent(d.getId(), componentId, component);
+ 					}
+ 					catch(AccessControlException e) {
+ 						// Bugzilla 506743
+ 						// The user executing this code doesn't have the right to update it. 
+ 						// In this case, instead of aborting the entire request, return normally. 
+ 						// The component will be fixed up later when someone else with appropriate
+ 						// right executes this same code.
+ 					}
  				}
  			}
  		}
