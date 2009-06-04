@@ -114,3 +114,4 @@ create index owningBinder_wfhistory on SS_WorkflowHistory (owningBinderId);
 create index entityTransaction_wfhistory on SS_WorkflowHistory (startDate, entityId, entityType);
 create index entityOwner_wfhistory on SS_WorkflowHistory (entityId, entityType);
 alter table SS_Definitions add unique definition_name(zoneId, name, binderId);
+alter table SS_FolderEntries change description_text description_text mediumtext;
