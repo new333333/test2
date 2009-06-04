@@ -226,6 +226,7 @@ public interface ObjectKeys {
     public static final String MASHUP_TYPE_ENTRY = "entry";
     public static final String MASHUP_TYPE_FOLDER = "folder";
     public static final String MASHUP_TYPE_BINDER_URL = "binderUrl";
+    public static final String MASHUP_TYPE_ENTRY_URL = "entryUrl";
     public static final String MASHUP_TYPE_TABLE = "table";
     public static final String MASHUP_TYPE_TABLE_START = "tableStart";
     public static final String MASHUP_TYPE_TABLE_END = "tableEnd";
