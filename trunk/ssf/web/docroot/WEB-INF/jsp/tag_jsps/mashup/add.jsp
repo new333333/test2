@@ -45,6 +45,10 @@ function ss_selectFolderId${ss_mashupItemId}_${renderResponse.namespace}(id) {
 	var formObj = self.document.forms['${ss_form_form_formName}'];
 	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "folder,folderId="+id;
 }
+function ss_selectBinderId${ss_mashupItemId}_${renderResponse.namespace}(id) {
+	var formObj = self.document.forms['${ss_form_form_formName}'];
+	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "binderUrl,binderId="+id;
+}
 function ss_mashup_addTable${ss_mashupItemId}_${renderResponse.namespace}() {
 	var formObj = self.document.forms['${ss_form_form_formName}'];
 	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "table";
@@ -221,6 +225,11 @@ function ss_mashupSubmit${ss_mashupItemId}() {
 		<br/>
 		
 		<a href="javascript: ;" 
+		  onClick="ss_mashupShowAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}(this, 'BinderUrl');return false;"
+		><ssf:nlt tag="mashup.addBinderUrl"/></a>
+		<br/>
+		
+		<a href="javascript: ;" 
 		  onClick="ss_mashupShowAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}(this, 'Graphic');return false;"
 		><ssf:nlt tag="mashup.addGraphic"/></a>
 		<br/>
@@ -314,6 +323,30 @@ function ss_mashupSubmit${ss_mashupItemId}() {
           <label for="${ss_mashupPropertyName}__numberOfLines">
           	<span><ssf:nlt tag="mashup.numberOfLines"/></span>
           </label>
+          <br/>
+		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
+		    onClick="ss_mashupSubmit${ss_mashupItemId}();return true;"
+		    class="ss_linkButton ss_fineprint" />
+		  <input type="button" value="<ssf:nlt tag="button.cancel"/>" class="ss_linkButton ss_fineprint" 
+		    onClick="ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}();return false"/>
+		</div>
+  </div>
+		
+  <div id="ss_mashupAddBinderUrlDiv_${ss_mashupItemId}_${renderResponse.namespace}"
+	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:401;
+	  	padding:10px;" 
+  >
+  		<div><ssf:nlt tag="mashup.selectBinder"/></div>
+  		<div>
+  		  <ssf:find 
+    		type="places"
+    		width="140px" 
+    		singleItem="true"
+    		foldersOnly="false"
+		    clickRoutine="ss_selectBinderId${ss_mashupItemId}_${renderResponse.namespace}"
+		    accessibilityText="mashup.selectBinder"
+		    />
+          <br/>
           <br/>
 		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
 		    onClick="ss_mashupSubmit${ss_mashupItemId}();return true;"

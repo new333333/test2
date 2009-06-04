@@ -782,6 +782,14 @@ public class DefinitionHelper {
 	        				mashupBinderEntries.put(binder.getId().toString(), 
 	        						folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
 	        			} catch(Exception e) {}
+	        		} else if (ObjectKeys.MASHUP_TYPE_BINDER_URL.equals(type) && 
+	        				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_BINDER_ID) && 
+	        				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_BINDER_ID).equals("")) {
+	        			try {
+	        				Binder binder = bs.getBinderModule().getBinder(
+	        						Long.valueOf((String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_BINDER_ID)));
+	        				mashupBinders.put(binder.getId().toString(), binder);
+	        			} catch(Exception e) {}
 	        		}
 	        		else if ( type != null && type.equals( "utility" ) )
 	        		{
