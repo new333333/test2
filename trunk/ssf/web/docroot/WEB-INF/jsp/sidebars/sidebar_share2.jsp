@@ -36,13 +36,35 @@
 <c:if test="${!ss_searchResultsPage}">
 	<ssf:ifLoggedIn>
 		<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
-			<div class="ss_sideShare">
-			  <ul>
-				<li>
-					<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_share2.jsp" />
-				</li>
-			  </ul>
-			</div>
+					<a href="<ssf:url adapter="true" portletName="ss_forum" 
+						action="__ajax_relevance" actionUrl="false">
+						<ssf:param name="operation" value="share_this_binder" />
+						<ssf:param name="binderId" value="${ssBinder.id}" />
+							<c:if test="${ssBinder.entityType == 'folder' && !empty ssEntry}">
+							  <ssf:param name="entryId" value="${ssEntry.id}" />
+							</c:if>
+						</ssf:url>" 
+	  					onclick="ss_openUrlInWindow(this, '_blank', '550px', '750px');return false;"
+						
+							<c:if test="${ssBinder.entityType == 'workspace'}"> 
+								title="<ssf:nlt tag="relevance.shareThisWorkspace"/>" >
+								<span><ssf:nlt tag="relevance.shareThisWorkspace"/></span>
+							</c:if>
+							<c:if test="${ssBinder.entityType == 'folder' && !empty ssEntry}"> 
+								title="<ssf:nlt tag="relevance.shareThisEntry"/>" >
+								<span><ssf:nlt tag="relevance.shareThisEntry"/></span>
+							</c:if>
+							<c:if test="${ssBinder.entityType == 'folder' && empty ssEntry}">
+		  						<c:if test="${ssDefinitionFamily != 'calendar'}">
+		  							title="<ssf:nlt tag="relevance.shareThisFolder"/>" >
+		  							<span><ssf:nlt tag="relevance.shareThisFolder"/></span>
+		  						</c:if>
+		  						<c:if test="${ssDefinitionFamily == 'calendar'}">
+		  							title="<ssf:nlt tag="relevance.shareThisCalendar"/>" >
+		  							<span><ssf:nlt tag="relevance.shareThisCalendar"/></span>
+		  						</c:if>
+							</c:if>
+					</a>
 		</c:if>
 	</ssf:ifLoggedIn>
 </c:if>

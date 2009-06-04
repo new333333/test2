@@ -57,6 +57,12 @@
   <c:if test="${mashup_attributes['element'] == 'myWorkspace'}">
     <jsp:include page="/WEB-INF/jsp/tag_jsps/mashup/utility/my_workspace.jsp" />
   </c:if>
+  <c:if test="${mashup_attributes['element'] == 'trackThis'}">
+    <jsp:include page="/WEB-INF/jsp/tag_jsps/mashup/utility/track_this.jsp" />
+  </c:if>
+  <c:if test="${mashup_attributes['element'] == 'shareThis'}">
+    <jsp:include page="/WEB-INF/jsp/tag_jsps/mashup/utility/share_this.jsp" />
+  </c:if>
 </c:if>
 
 <c:if test="${ssConfigJspStyle == 'form'}">
@@ -85,6 +91,12 @@
 		  </c:if>
 		  <c:if test="${mashup_attributes['element'] == 'myWorkspace'}">
 		    <span><ssf:nlt tag="mashup.myWorkspace.form"/></span>
+		  </c:if>
+		  <c:if test="${mashup_attributes['element'] == 'trackThis'}">
+		    <span><ssf:nlt tag="mashup.trackThis.form"/></span>
+		  </c:if>
+		  <c:if test="${mashup_attributes['element'] == 'shareThis'}">
+		    <span><ssf:nlt tag="mashup.shareThis.form"/></span>
 		  </c:if>
 	  </div>
 	  <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 

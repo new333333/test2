@@ -33,17 +33,44 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${empty ss_trackThisLink}">
+  <c:set var="ss_trackThisLink" value="0" scope="request"/>
+</c:if>
+<c:set var="ss_trackThisLink" value="${ss_trackThisLink + 1}" scope="request"/>
 <c:if test="${!ss_searchResultsPage}">
 	<ssf:ifLoggedIn>
 		<c:if test="${(empty ssEntry || ssEntry.entityType != 'folderEntry') && 
-				!empty ssBinder && ssBinder.entityType != 'profiles'}">
-			<div class="ss_sideTrack">
-			  <ul>
-				<li>
-					<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_track2.jsp" />
-				</li>
-			  </ul>
-			</div>
+			!empty ssBinder && ssBinder.entityType != 'profiles'}">
+				   <div id="ss_track_this_anchor_div${renderResponse.namespace}${ss_trackThisLink}">
+				   <a href="javascript: ;"   
+	  				onclick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}${ss_trackThisLink}');return false;"
+				 	<c:if test="${ssBinder.entityType == 'workspace'}">
+	  			 		<c:if test="${ssBinder.definitionType != 12}">
+	  						title="<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>" >
+	  						<span><ssf:nlt tag="relevance.trackThisWorkspace"/></span>
+	  					</c:if>
+	  			 		<c:if test="${ssBinder.definitionType == 12}">
+	  						title="<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>" >
+	  						<span><ssf:nlt tag="relevance.trackThisPerson"/></span>
+	  					</c:if>
+				 	</c:if>
+				 	<c:if test="${ssBinder.entityType == 'folder'}">
+	  			 		<c:if test="${ssDefinitionFamily != 'calendar'}">
+	  						title="<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>" >
+	  						<span><ssf:nlt tag="relevance.trackThisFolder"/></span>
+	  					</c:if>
+	  			 		<c:if test="${ssDefinitionFamily == 'calendar'}">
+	  						title="<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>" >
+	  						<span><ssf:nlt tag="relevance.trackThisCalendar"/></span>
+	  					</c:if>
+				 	</c:if>
+				  </a>
+				  </div>
+				
+				  <div id="ss_track_this_ok${renderResponse.namespace}${ss_trackThisLink}" 
+	  				style="position:absolute; display:none; visibility:hidden; z-index:500;
+	         		border:1px solid black; padding:6px; background-color:#FFFFFF; white-space:nowrap;">
+				  </div>
 		</c:if>
 	</ssf:ifLoggedIn>
 </c:if>
