@@ -101,6 +101,7 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
 import org.springframework.transaction.TransactionStatus;
@@ -828,7 +829,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	     * @return
 	     */
 	    protected Group createGroup(Long zoneId, String ssName, Map groupData ) {
-	    	MapInputData groupMods = new MapInputData(groupData);
+	    	MapInputData groupMods = new MapInputData(StringCheckUtil.check(groupData));
 			ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
 			//get default definition to use
 			Group temp = new Group();
@@ -868,7 +869,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		   	List foundEntries = getCoreDao().loadObjects(Arrays.asList(new Long[] {groupId}), Group.class, zoneId, collections);
 		   	Map entries = new HashMap();
 		   	Group g = (Group)foundEntries.get(0);
-		   	entries.put(g, new MapInputData(groupMods));
+		   	entries.put(g, new MapInputData(StringCheckUtil.check(groupMods)));
 		    try {
 		    	PartialLdapSyncResults	syncResults	= null;
 		    	
@@ -1148,7 +1149,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		User profile = getProfileDao().findUserByName(loginName, zone.getName()); 
  		ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
 	            	profile.getParentBinder(), ProfileCoreProcessor.PROCESSOR_KEY);
-		processor.syncEntry(profile, new MapInputData(mods), null);
+		processor.syncEntry(profile, new MapInputData(StringCheckUtil.check(mods)), null);
 	}	
 	/**
 	 * Update users with their own map of updates
@@ -1163,7 +1164,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   	Map entries = new HashMap();
 	   	for (int i=0; i<foundEntries.size(); ++i) {
 	   		User u = (User)foundEntries.get(i);
-	   		entries.put(u, new MapInputData((Map)users.get(u.getId())));
+	   		entries.put(u, new MapInputData(StringCheckUtil.check((Map)users.get(u.getId()))));
 	   	}
 
 	   	try {
@@ -1230,7 +1231,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
 		List newUsers = new ArrayList();
 		for (Iterator i=users.values().iterator(); i.hasNext();) {
-			newUsers.add(new MapInputData((Map)i.next()));
+			newUsers.add(new MapInputData(StringCheckUtil.check((Map)i.next())));
 		}
 		//get default definition to use
 		Definition userDef = pf.getDefaultEntryDef();		
@@ -1286,7 +1287,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		ProfileBinder pf = getProfileDao().getProfileBinder(zone.getZoneId());
 		List newGroups = new ArrayList();
 		for (Iterator i=groups.values().iterator(); i.hasNext();) {
-			newGroups.add(new MapInputData((Map)i.next()));
+			newGroups.add(new MapInputData(StringCheckUtil.check((Map)i.next())));
 		}
 		//get default definition to use
 		Group temp = new Group();
