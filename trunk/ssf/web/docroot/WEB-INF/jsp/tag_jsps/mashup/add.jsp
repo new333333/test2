@@ -49,6 +49,10 @@ function ss_selectBinderId${ss_mashupItemId}_${renderResponse.namespace}(id) {
 	var formObj = self.document.forms['${ss_form_form_formName}'];
 	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "binderUrl,binderId="+id;
 }
+function ss_selectEntryUrlId${ss_mashupItemId}_${renderResponse.namespace}(id) {
+	var formObj = self.document.forms['${ss_form_form_formName}'];
+	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "entryUrl,entryId="+id;
+}
 function ss_mashup_addTable${ss_mashupItemId}_${renderResponse.namespace}() {
 	var formObj = self.document.forms['${ss_form_form_formName}'];
 	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "table";
@@ -230,6 +234,11 @@ function ss_mashupSubmit${ss_mashupItemId}() {
 		<br/>
 		
 		<a href="javascript: ;" 
+		  onClick="ss_mashupShowAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}(this, 'EntryUrl');return false;"
+		><ssf:nlt tag="mashup.addEntryUrl"/></a>
+		<br/>
+		
+		<a href="javascript: ;" 
 		  onClick="ss_mashupShowAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}(this, 'Graphic');return false;"
 		><ssf:nlt tag="mashup.addGraphic"/></a>
 		<br/>
@@ -345,6 +354,30 @@ function ss_mashupSubmit${ss_mashupItemId}() {
     		foldersOnly="false"
 		    clickRoutine="ss_selectBinderId${ss_mashupItemId}_${renderResponse.namespace}"
 		    accessibilityText="mashup.selectBinder"
+		    />
+          <br/>
+          <br/>
+		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
+		    onClick="ss_mashupSubmit${ss_mashupItemId}();return true;"
+		    class="ss_linkButton ss_fineprint" />
+		  <input type="button" value="<ssf:nlt tag="button.cancel"/>" class="ss_linkButton ss_fineprint" 
+		    onClick="ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}();return false"/>
+		</div>
+  </div>
+		
+  <div id="ss_mashupAddEntryUrlDiv_${ss_mashupItemId}_${renderResponse.namespace}"
+	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:401;
+	  	padding:10px;" 
+  >
+  		<div><ssf:nlt tag="mashup.selectEntryUrl"/></div>
+  		<div>
+  		  <ssf:find 
+    		type="entries"
+    		singleItem="true"
+			width="140px" 
+			showFolderTitles="true"
+		    clickRoutine="ss_selectEntryUrlId${ss_mashupItemId}_${renderResponse.namespace}"
+		    accessibilityText="mashup.selectEntryUrl"
 		    />
           <br/>
           <br/>
