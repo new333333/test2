@@ -169,6 +169,7 @@
 								  </div>
 								</c:if>
 								
+								<c:if test="${!empty ssDomTree}">
 								<c:choose>
 									<c:when test="${!empty ss_filterMap.searchFolders}">
 										<c:set var="folderIds" value="${ss_filterMap.searchFolders}" />
@@ -197,6 +198,7 @@
 								 		</c:if>
 								 	> <label for="search_subfolders"><ssf:nlt tag="searchForm.searchSubfolders"/></label>
 								</div>
+								</c:if>
 							</c:if>
 							<div class="ss_additionals">
 							 	<input type="checkbox" name="ss_searchCaseSensitive" id="ss_searchCaseSensitive" 
