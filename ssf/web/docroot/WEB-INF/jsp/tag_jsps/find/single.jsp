@@ -35,14 +35,10 @@
 <% // Find a single element %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="org.kablink.util.ParamUtil" %>
-<%
-	String label = ParamUtil.get(request, "label", "");
-%>
 <c:set var="prefix" value="${renderResponse.namespace}_${ssFindInstanceCode}_${ssFindInstanceCount}" />
-<c:set var="label" value="<%= label %>" />
 
 <ssf:ifaccessible simple_ui="true">
-	<label for="ss_combobox_autocomplete_${prefix}"><span style="display:none;"><ssf:nlt tag="label.selections"/></span></label>
+	<label for="ss_combobox_autocomplete_${prefix}"><span style="display:none;">${accessibilityText}</span></label>
 </ssf:ifaccessible>
 
 <!-- textarea's rows and cols attributes are set to 1. -->
@@ -55,8 +51,8 @@
     style="width: ${ssFindElementWidth};"
     name="${ssFindFormElement}" 
     id="ss_combobox_autocomplete_${prefix}"
-    <c:if test="${!empty label}">
-    	title="${label}"
+    <c:if test="${!empty accessibilityText}">
+    	title="${accessibilityText}"
     </c:if>
 ></textarea>
 
