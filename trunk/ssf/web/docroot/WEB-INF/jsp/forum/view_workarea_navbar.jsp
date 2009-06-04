@@ -427,6 +427,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 							name="binderId" value="${ssBinder.id}"/><ssf:param 
 							name="tabTitle" value="SEARCH FORM"/><ssf:param 
 							name="newTab" value="0"/></ssf:url>"
+							<ssf:alt tag="searchForm.advanced.Title"/>
 							><ssf:nlt tag="navigation.search.advanced"/>
 						</a>
 					</div>
@@ -519,7 +520,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 					  				<ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
 					    			formElement="searchText" 
 					    			type="user"
-					    			singleItem="true"/> 
+					    			singleItem="true"
+					    			accessibilityText='<%= NLT.get("navigation.findUser") %>'/> 
 								</form>
 	
 							</div>	
@@ -540,7 +542,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 					    		formName="ss_findPlacesForm${renderResponse.namespace}" 
 					    		formElement="searchText" 
 					    		type="places"
-					    		singleItem="true"/> 
+					    		singleItem="true"
+					    		accessibilityText='<%= NLT.get("navigation.findPlace") %>'/> 
 							</form>
 						</div>
 					</div>
@@ -559,7 +562,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 					    	formName="ss_findTagsForm${renderResponse.namespace}" 
 					    	formElement="searchText" 
 					    	type="tags"
-					    	singleItem="true"/> 
+					    	singleItem="true"
+					    	accessibilityText='<%= NLT.get("navigation.findTag") %>'/> 
 						</form>
 					</div>
 				</div>
