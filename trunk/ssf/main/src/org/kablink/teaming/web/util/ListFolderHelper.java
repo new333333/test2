@@ -875,7 +875,16 @@ public class ListFolderHelper {
 //			buildBlogBeans(bs, response, folder, options, model, folderEntries, viewType);
 		} else if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
 			//Get the list of all entries to build the archive list
-			model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, folder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE));
+			String wikiHomePageId = (String)folder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE);
+			if (Validator.isNotNull(wikiHomePageId)) {
+				//Check if this is a valid page
+				try {
+					FolderEntry wikiHomePage = bs.getFolderModule().getEntry(folder.getId(), wikiHomePageId);
+				} catch(Exception e) {
+					wikiHomePageId = null;
+				}
+			}
+			model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, wikiHomePageId);
 		} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
 			Date currentDate = EventsViewHelper.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(req));
 			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
@@ -1087,8 +1096,17 @@ public class ListFolderHelper {
 		
 		model.put(WebKeys.FOLDER_ENTRYTAGS, entryCommunityTags);
 		model.put(WebKeys.FOLDER_ENTRYPERSONALTAGS, entryPersonalTags);
-		model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, binder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE));
-		if (model.get(WebKeys.WIKI_HOMEPAGE_ENTRY_ID) == null && !entries.isEmpty()) {
+		String wikiHomePageId = (String)binder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE);
+		if (Validator.isNotNull(wikiHomePageId)) {
+			//Check if this is a valid page
+			try {
+				FolderEntry wikiHomePage = bs.getFolderModule().getEntry(binder.getId(), wikiHomePageId);
+			} catch(Exception e) {
+				wikiHomePageId = null;
+			}
+		}
+		model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, wikiHomePageId);
+		if (Validator.isNull(wikiHomePageId) && !entries.isEmpty()) {
 			model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, ((Map)entries.get(0)).get("_docId"));
 		}
 	}
