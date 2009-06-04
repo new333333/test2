@@ -32,7 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% //Mashup URL view %>
+<% //Mashup Binder URL view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%  
 	Long ss_mashupTableNumber = (Long) request.getAttribute("ss_mashupTableNumber");
@@ -43,16 +43,21 @@
 
 	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
 %>
+<c:set var="mashupBinder" value="${ss_mashupBinders[mashup_attributes['binderId']]}"/>
 <% if (ss_mashupListDepth > 0) { %>
+<c:if test="${!empty mashupBinder}">
 <li>
+</c:if>
 <% } %>
 
 <c:if test="${ssConfigJspStyle != 'form'}">
 <div class="ss_mashup_url_content">
-  <c:if test="${!empty mashup_attributes['title']}">
-    <a 
-    <c:if test="${!empty mashup_attributes['popup']}"> target="_blank" </c:if>
-    href="${mashup_attributes['href']}">${mashup_attributes['title']}</a>
+  <c:if test="${!empty mashupBinder}">
+    <a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+		  action="view_folder_listing" 
+		  folderId="${mashupBinder.id}">
+		  <ssf:param name="newTab" value="1"/>
+		  </ssf:url>"><span>${mashupBinder.title}</span></a>
   </c:if>
 </div>
 </c:if>
@@ -60,7 +65,7 @@
 <c:if test="${ssConfigJspStyle == 'form'}">
 	<script type="text/javascript">
 	//Routine called when "Delete url" is clicked
-	function ss_mashup_deleteUrl${ss_mashupItemId}_${renderResponse.namespace}() {
+	function ss_mashup_deleteBinderUrl${ss_mashupItemId}_${renderResponse.namespace}() {
 		var formObj = self.document.forms['${ss_form_form_formName}'];
 		formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "";
 	}
@@ -68,15 +73,16 @@
 
   <div class="ss_mashup_element">
     <div class="ss_mashup_form_element_header">
-      <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.url"/>: </span>
-      <span>${mashup_attributes['title']}</span>
-      <span class="ss_italic ss_smallprint">(${mashup_attributes['href']})</span>
+      <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.binderUrl"/>: </span>
+      <span>${mashupBinder.title}</span>
     </div>
     <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
       class="ss_linkButton ss_fineprint"
-      onClick="ss_mashup_deleteUrl${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
+      onClick="ss_mashup_deleteBinderUrl${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
   </div>
 </c:if>
 <% if (ss_mashupListDepth > 0) { %>
+<c:if test="${!empty mashupBinder}">
 </li>
+</c:if>
 <% } %>
