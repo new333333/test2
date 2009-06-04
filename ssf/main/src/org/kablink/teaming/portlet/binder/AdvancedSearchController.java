@@ -126,11 +126,13 @@ public class AdvancedSearchController extends AbstractBinderController {
 		}
         
         // this is necessary for the breadcrumbs and places choose
-        Workspace top = getWorkspaceModule().getTopWorkspace();
-		BinderHelper.buildNavigationLinkBeans(this, top, model);
-		model.put(WebKeys.DEFINITION_ENTRY, top);
-
-		model.put(WebKeys.SEARCH_TOP_FOLDER_ID, Collections.singletonList(top.getId().toString()));
+        try {
+        	Workspace top = getWorkspaceModule().getTopWorkspace();
+    		BinderHelper.buildNavigationLinkBeans(this, top, model);
+    		model.put(WebKeys.DEFINITION_ENTRY, top);
+    		model.put(WebKeys.SEARCH_TOP_FOLDER_ID, Collections.singletonList(top.getId().toString()));
+        } catch(AccessControlException e) {}
+        
         Tabs tabs = Tabs.getTabs(request);
 		model.put(WebKeys.TABS, tabs);
 		
@@ -214,9 +216,11 @@ public class AdvancedSearchController extends AbstractBinderController {
 		DefinitionHelper.getDefinition(def, model, "//item[@name='forumView']");
     	model.put(WebKeys.SHOW_SEARCH_RESULTS, true);
     	
-		Workspace ws = getWorkspaceModule().getTopWorkspace();
-		Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
-		model.put(WebKeys.DOM_TREE, tree);
+		try {
+			Workspace ws = getWorkspaceModule().getTopWorkspace();
+			Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+			model.put(WebKeys.DOM_TREE, tree);
+		} catch(AccessControlException e) {}
 	}	
 
 	
