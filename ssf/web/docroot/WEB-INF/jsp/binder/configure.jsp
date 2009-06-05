@@ -235,111 +235,113 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 
 
 <% if (PropsUtil.getBoolean("ssf.allowFolderDefinitionFixups", false)) { %>
-	<script type="text/javascript">
-		// Manage changes to the state of the foler fixups checkbox.
-		function folderFixupsChanged(folderFixupsCB) {
-			// If the folder fixups checkbox is checked...
-			var entryFixupsCB = document.getElementById("entryFixups");
-			if (folderFixupsCB.checked) {
-				// ...enable and uncheck the entry fixups checkbox...
-				entryFixupsCB.disabled =
-				entryFixupsCB.checked  = false;
-				
-			} else {
-				// ...otherwise, disable and uncheck it.
-				entryFixupsCB.checked  = false;
-				entryFixupsCB.disabled = true;
+	<c:if test="${ssBinder.entityType == 'folder'}">
+		<script type="text/javascript">
+			// Manage changes to the state of the foler fixups checkbox.
+			function folderFixupsChanged(folderFixupsCB) {
+				// If the folder fixups checkbox is checked...
+				var entryFixupsCB = document.getElementById("entryFixups");
+				if (folderFixupsCB.checked) {
+					// ...enable and uncheck the entry fixups checkbox...
+					entryFixupsCB.disabled =
+					entryFixupsCB.checked  = false;
+					
+				} else {
+					// ...otherwise, disable and uncheck it.
+					entryFixupsCB.checked  = false;
+					entryFixupsCB.disabled = true;
+				}
 			}
-		}
-
-		
-		// Validates that something is asked to be fixed up. 
-		function validateFixupsForm() {
-			// If nothing is checkced...
-			if ((!(document.getElementById("folderFixups").checked)) &&
-				(!(document.getElementById("entryFixups").checked))) {
-				// ...tell the user and bail.
-				alert("<ssf:nlt tag="binder.configure.folderDefinitionFixups.error.noChecks" text="Nothing checked."/>");
-				return false;
-			}
-
-//! TODO
-			alert("The implementation of this feature is in progress and it cannot be used yet!");
-			return false;
-//! TODO
-
-			// ...otherwise, allow the form to be submitted.
-			return true;
-		}
-	</script>
 	
-	<fieldset class="ss_fieldset">
-		<legend class="ss_legend">
-			<ssf:nlt tag="binder.configure.folderDefinitionFixups.banner" text="Recursively apply"/>
-			<ssf:inlineHelp tag="ihelp.other.folder_definition_fixups"/>
-		</legend>
+			
+			// Validates that something is asked to be fixed up. 
+			function validateFixupsForm() {
+				// If nothing is checkced...
+				if ((!(document.getElementById("folderFixups").checked)) &&
+					(!(document.getElementById("entryFixups").checked))) {
+					// ...tell the user and bail.
+					alert("<ssf:nlt tag="binder.configure.folderDefinitionFixups.error.noChecks" text="Nothing checked."/>");
+					return false;
+				}
 
-		<form
-				name="folderDefinitionFixupsForm"
-				method="post" 
-				onSubmit="return validateFixupsForm() && ss_onSubmit(this);"
-				action="<ssf:url action="folder_definition_fixups" actionUrl="true"><ssf:param 
-					name="binderId"   value="${ssBinder.id}"/><ssf:param 
-					name="binderType" value="${ssBinder.entityIdentifier.entityType}"/></ssf:url>">
-			<table>
-				<tr>
-					<td><input type="checkbox" id="folderFixups" name="folderFixups" onChange="javascript:folderFixupsChanged(this)" value="folderFixups" /></td>
-					<td colspan="2"><ssf:nlt tag="binder.configure.folderDefinitionFixups.folder" text="Fixup Folders"/></td>
-				</tr>
+//! TODO
+				alert("The implementation of this feature is in progress and it cannot be used yet!");
+				return false;
+//! TODO
 
-				<tr>
-					<td />
-					<td><input type="checkbox" id="entryFixups" name="entryFixups" value="entryFixups" disabled /></td>
-					<td><ssf:nlt tag="binder.configure.folderDefinitionFixups.entry" text="Fixup Entries"/></td>
-				</tr>
-
-				<tr>
-					<td colspan="2"/>
-					<td><select name="entryFixupTypes">
-						<% /* Are there any default entry types defined on this folder? */ %>
-    					<c:set var="folderHasDefaultEntryTypes" value=""/>
-						<c:forEach var="item" items="${ssAllEntryDefinitions}">
-							<c:if test="${!empty allDefinitionsMap[item.value.id]}">
-								<% /* Yes! */ %>
-		    					<c:set var="folderHasDefaultEntryTypes" value="true"/>
-							</c:if>
-						</c:forEach>
-
-
-						<% /* Create <options> in the <select> for the default entry    */ %>
-						<% /* types from the folder if there are any or all entry types */ %>
-						<% /* if there aren't.                                          */ %>
-						<c:forEach var="item" items="${ssAllEntryDefinitions}">
-							<c:if test="${item.value.binderId == -1}">
-								<c:if test="${empty folderHasDefaultEntryTypes || !empty allDefinitionsMap[item.value.id]}">
-									<option value="all7_${item.value.id}" <c:if test="${item.value.visibility == 3}">style="text-decoration: line-through;"</c:if>>${item.key}</option>
+				// ...otherwise, allow the form to be submitted.
+				return true;
+			}
+		</script>
+		
+		<fieldset class="ss_fieldset">
+			<legend class="ss_legend">
+				<ssf:nlt tag="binder.configure.folderDefinitionFixups.banner" text="Recursively apply"/>
+				<ssf:inlineHelp tag="ihelp.other.folder_definition_fixups"/>
+			</legend>
+	
+			<form
+					name="folderDefinitionFixupsForm"
+					method="post" 
+					onSubmit="return validateFixupsForm() && ss_onSubmit(this);"
+					action="<ssf:url action="folder_definition_fixups" actionUrl="true"><ssf:param 
+						name="binderId"   value="${ssBinder.id}"/><ssf:param 
+						name="binderType" value="${ssBinder.entityIdentifier.entityType}"/></ssf:url>">
+				<table>
+					<tr>
+						<td><input type="checkbox" id="folderFixups" name="folderFixups" onChange="javascript:folderFixupsChanged(this)" value="folderFixups" /></td>
+						<td colspan="2"><ssf:nlt tag="binder.configure.folderDefinitionFixups.folder" text="Fixup Folders"/></td>
+					</tr>
+	
+					<tr>
+						<td />
+						<td><input type="checkbox" id="entryFixups" name="entryFixups" value="entryFixups" disabled /></td>
+						<td><ssf:nlt tag="binder.configure.folderDefinitionFixups.entry" text="Fixup Entries"/></td>
+					</tr>
+	
+					<tr>
+						<td colspan="2"/>
+						<td><select name="entryFixupTypes">
+							<% /* Are there any default entry types defined on this folder? */ %>
+	    					<c:set var="folderHasDefaultEntryTypes" value=""/>
+							<c:forEach var="item" items="${ssAllEntryDefinitions}">
+								<c:if test="${!empty allDefinitionsMap[item.value.id]}">
+									<% /* Yes! */ %>
+			    					<c:set var="folderHasDefaultEntryTypes" value="true"/>
 								</c:if>
-							</c:if>
-						</c:forEach>
-
-						<c:forEach var="item" items="${ssAllEntryDefinitions}">
-							<c:if test="${item.value.binderId != -1}">
-								<c:if test="${empty folderHasDefaultEntryTypes || !empty allDefinitionsMap[item.value.id]}">
-									<option value="all8_${item.value.id}" <c:if test="${item.value.visibility == 3}">style="text-decoration: line-through;"</c:if>>${item.key}&#134;</option>
+							</c:forEach>
+	
+	
+							<% /* Create <options> in the <select> for the default entry    */ %>
+							<% /* types from the folder if there are any or all entry types */ %>
+							<% /* if there aren't.                                          */ %>
+							<c:forEach var="item" items="${ssAllEntryDefinitions}">
+								<c:if test="${item.value.binderId == -1}">
+									<c:if test="${empty folderHasDefaultEntryTypes || !empty allDefinitionsMap[item.value.id]}">
+										<option value="all7_${item.value.id}" <c:if test="${item.value.visibility == 3}">style="text-decoration: line-through;"</c:if>>${item.key}</option>
+									</c:if>
 								</c:if>
-							</c:if>
-						</c:forEach>
-					</select></td>
-				</tr>
-
-				<tr><td>&nbsp;</td></tr>
-				<tr>
-					<td colspan="3"><input type="submit" class="ss_submit" name="folderDefinitionFixupsBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"></td>
-				</tr>
-			</table>
-		</form>
-	</fieldset>
-	<br>
+							</c:forEach>
+	
+							<c:forEach var="item" items="${ssAllEntryDefinitions}">
+								<c:if test="${item.value.binderId != -1}">
+									<c:if test="${empty folderHasDefaultEntryTypes || !empty allDefinitionsMap[item.value.id]}">
+										<option value="all8_${item.value.id}" <c:if test="${item.value.visibility == 3}">style="text-decoration: line-through;"</c:if>>${item.key}&#134;</option>
+									</c:if>
+								</c:if>
+							</c:forEach>
+						</select></td>
+					</tr>
+	
+					<tr><td>&nbsp;</td></tr>
+					<tr>
+						<td colspan="3"><input type="submit" class="ss_submit" name="folderDefinitionFixupsBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"></td>
+					</tr>
+				</table>
+			</form>
+		</fieldset>
+		<br>
+	</c:if>
 <% } %>
 
 
