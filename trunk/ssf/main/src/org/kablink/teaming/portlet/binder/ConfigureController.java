@@ -66,6 +66,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.FixupFolderDefsException;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
@@ -197,6 +198,40 @@ public class ConfigureController extends AbstractBinderController {
 			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", false);
 			getBinderModule().setDefinitionsInherited(binderId, inherit);
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		} else if (formData.containsKey("folderDefinitionFixupsBtn") && WebHelper.isMethodPost(request)) {
+			// Is one of the folder fixup checkboxes checked?
+			boolean folderFixups = PortletRequestUtils.getBooleanParameter(request, "folderFixups", false);
+			boolean entryFixups  = PortletRequestUtils.getBooleanParameter(request, "entryFixups",  false);
+			if (folderFixups || entryFixups) {
+				// Yes!  If the entry fixup checkbox is checked...
+				String	entryDefinition = null;
+				if (entryFixups) {
+					// ...what's the entry definition to apply to the
+					// ...entries?
+					entryDefinition = PortletRequestUtils.getStringParameter(request, "entryFixupDefinitions");
+				}
+				
+				try {
+					// Can we apply the fixups?
+					BinderHelper.fixupFolderAndEntryDefinitions(
+						request,
+						this,
+						binderId,
+						binderType,
+						folderFixups,
+						entryFixups,
+						entryDefinition);
+				}
+				catch (FixupFolderDefsException ffde) {
+					// No!  Tell the user why.
+					FixupFolderDefsException.FixupExceptionCause fec = ffde.getExceptionCause();
+					String cause;
+					if      (FixupFolderDefsException.FixupExceptionCause.EXCEPTION_PREVIOUS_THREAD_BUSY == fec) cause = "busy";
+					else if (FixupFolderDefsException.FixupExceptionCause.EXCEPTION_CANT_CREATE_THREAD   == fec) cause = "cantStart";
+					else                                                                                         cause = "unknown";
+					response.setRenderParameter(WebKeys.FIXUP_THREAD_ERROR, cause);
+				}
+			}
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			if (binder instanceof TemplateBinder) {
 				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
@@ -230,6 +265,7 @@ public class ConfigureController extends AbstractBinderController {
 					  	binder.getEntityType().equals(EntityType.folder) &&
 					  	simpleNames.size() > 0);
 		}
+		model.put(WebKeys.FIXUP_THREAD_ERROR, PortletRequestUtils.getStringParameter(request, WebKeys.FIXUP_THREAD_ERROR));
 		model.put(WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR));
 		model.put(WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR));
 		model.put(WebKeys.SIMPLE_URL_INVALID_CHARACTERS, PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_INVALID_CHARACTERS));

@@ -104,6 +104,7 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
+import org.kablink.teaming.module.ldap.LdapSyncThread;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
@@ -127,6 +128,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.tree.DomTreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
+import org.kablink.teaming.web.util.FixupFolderDefsThread;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Validator;
@@ -3027,4 +3029,44 @@ public class BinderHelper {
 		return fa;
 	}
 
+	public static void fixupFolderAndEntryDefinitions(PortletRequest request, AllModulesInjected bs, Long binderId, String binderType, boolean folderFixups, boolean entryFixups, String entryDefinition)
+	throws FixupFolderDefsException {
+		// Do we have a fixup thread defined?
+		FixupFolderDefsThread fixFolderDefsThread = FixupFolderDefsThread.getFixupFolderDefsThread(request);
+		if (fixFolderDefsThread != null) {
+			// Yes!  Is it still running?
+			FixupFolderDefsResults fixFolderDefsResults = fixFolderDefsThread.getFixupFolderDefsResults();
+			FixupFolderDefsResults.FixupStatus fixupFolderDefsStatus = fixFolderDefsResults.getStatus();
+			if ((FixupFolderDefsResults.FixupStatus.STATUS_COMPLETED != fixupFolderDefsStatus) &&
+			    (FixupFolderDefsResults.FixupStatus.STATUS_STOP_COLLECTING_RESULTS != fixupFolderDefsStatus)) {
+				// Yes!  Then we can't start another.
+				throw new FixupFolderDefsException(
+					FixupFolderDefsException.FixupExceptionCause.EXCEPTION_PREVIOUS_THREAD_BUSY);
+			}
+			
+			// The most recent fixup thread has completed.  Forget
+			// about it.
+			fixFolderDefsThread.removeFromSession();
+		}
+
+		// If we can create a new fixup thread...
+		fixFolderDefsThread = FixupFolderDefsThread.createFixupFolderDefsThread(
+			request,
+			bs,
+			binderId,
+			binderType,
+			folderFixups,
+			entryFixups,
+			entryDefinition);
+		
+		if (fixFolderDefsThread != null) {
+			// ...run it.
+			fixFolderDefsThread.doFixups();
+		}
+		
+		else {
+			throw new FixupFolderDefsException(
+				FixupFolderDefsException.FixupExceptionCause.EXCEPTION_CANT_CREATE_THREAD);
+		}
+	}
 }
