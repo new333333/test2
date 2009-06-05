@@ -208,8 +208,11 @@ public class RelevanceDashboardHelper {
 				model.put(WebKeys.TYPE3, type3);
 			}
 		}
-		if (type3.equals("")) type3 = ObjectKeys.RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_DEFAULT;
-		
+		if (type3.equals("") && ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			type3 = ObjectKeys.RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_DEFAULT_GUEST;
+		} else if (type3.equals("") && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			type3 = ObjectKeys.RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_DEFAULT;
+		}
 		if (type3.equals(ObjectKeys.RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_TEAMS)) {
 			setupWhatsNewTeamsBeans(bs, binder, model);
 		} else if (type3.equals(ObjectKeys.RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_TRACKED)) {

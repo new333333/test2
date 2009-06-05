@@ -43,7 +43,6 @@
 </c:if>
 
 
-<ssf:ifLoggedIn>
 <script type="text/javascript">
 var ss_relevanceAjaxUrl${renderResponse.namespace};
 var ss_relevanceProfileUrl${renderResponse.namespace};
@@ -153,6 +152,7 @@ if (ss_userDisplayStyle != "accessible") {
 
 	<% /* Only add the other tabs if we are not dealing with a Template Binder. */ %>
 	<c:if test="${usingTemplateBinder == 'false'}">
+	  <ssf:ifLoggedIn>
 		<li <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}">class="ss_tabsCCurrent"</c:if>>
 		<a 
 		  <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
@@ -174,7 +174,7 @@ if (ss_userDisplayStyle != "accessible") {
 		  href="javascript: ;"
 			onclick="ss_selectRelevanceTab(this, 'miniblogs', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
 			<span><ssf:nlt tag="relevance.tab.miniblogs"/></span></a></li>
-	
+	  </ssf:ifLoggedIn>
 		<% /* Add the "Profile" tab */ %>
 		<c:if test="${!empty ssRelevanceDashboardConfigElement}">
 			<c:if test="${empty ssRDCurrentTab}"><c:set var="ssRDCurrentTab" value="profile" scope="request"/></c:if>
@@ -216,4 +216,3 @@ ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
 </c:if>
 </div>
 </div>
-</ssf:ifLoggedIn>

@@ -243,6 +243,7 @@ public interface ObjectKeys {
     public static final String RELEVANCE_DASHBOARD_WHATS_NEW = "whatsNew";
     public static final String RELEVANCE_DASHBOARD_TASKS_VIEW_DEFAULT = "2weeks";
     public static final String RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_DEFAULT = "teams";
+    public static final String RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_DEFAULT_GUEST = "site";
     public static final String RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_TEAMS = "teams";
     public static final String RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_TRACKED = "tracked";
     public static final String RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_SITE = "site";

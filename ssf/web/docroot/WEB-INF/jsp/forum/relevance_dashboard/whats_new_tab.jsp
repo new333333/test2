@@ -37,7 +37,9 @@
 
 <div style="padding-bottom:10px;">
 <c:if test="${empty ss_type3}"><c:set var="ss_type3" value="teams"/></c:if>
+<ssf:ifNotLoggedIn><c:set var="ss_type3" value="site"/></ssf:ifNotLoggedIn>
 <c:if test="${ssBinderId != ssUser.workspaceId && ss_type3 == 'teams'}"><c:set var="ss_type3" value="tracked"/></c:if>
+ <ssf:ifLoggedIn>
   <c:if test="${ssBinderId == ssUser.workspaceId}">
 	  <input type="radio" name="whatsNewType" value="teams"
 	    <c:if test="${ss_type3 == 'teams'}">checked="checked"</c:if>
@@ -46,14 +48,17 @@
 	  	onclick="ss_selectRelevanceTab(null, 'whatsNew', 'teams', '${ssBinderId}', '${renderResponse.namespace}');return false;"
 	  ><span><ssf:nlt tag="relevance.whatsNewTypeTeams"/></span></a>
   </c:if>
-	  
+ </ssf:ifLoggedIn>
+
+ <ssf:ifLoggedIn>	  
   <input type="radio" name="whatsNewType" value="tracked" style="padding-left:20px;"
     <c:if test="${ss_type3 == 'tracked'}">checked="checked"</c:if>
   	onclick="ss_selectRelevanceTab(null, 'whatsNew', 'tracked', '${ssBinderId}', '${renderResponse.namespace}');return false;"
   ><a href="javascript: ;" 
   	onclick="ss_selectRelevanceTab(null, 'whatsNew', 'tracked', '${ssBinderId}', '${renderResponse.namespace}');return false;"
   ><span><ssf:nlt tag="relevance.whatsNewTypeTracked"/></span></a>
-  
+ </ssf:ifLoggedIn>
+   
   <input type="radio" name="whatsNewType" value="site" style="padding-left:20px;"
     <c:if test="${ss_type3 == 'site'}">checked="checked"</c:if>
   	onclick="ss_selectRelevanceTab(null, 'whatsNew', 'site', '${ssBinderId}', '${renderResponse.namespace}');return false;"
