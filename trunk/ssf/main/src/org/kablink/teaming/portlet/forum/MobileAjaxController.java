@@ -143,7 +143,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 	}
 	
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (ReleaseInfo.isLicenseRequiredEdition() && !SPropsUtil.getBoolean("mobile.enabled", false)) {

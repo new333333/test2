@@ -30,29 +30,37 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.portlet.forum;
+package org.kablink.teaming.web.portlet;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
+import java.util.Iterator;
+import java.util.Map;
+
 import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
 
-import org.kablink.teaming.web.portlet.SAbstractController;
-import org.springframework.web.portlet.ModelAndView;
+import org.kablink.teaming.portletadapter.MultipartFileSupport;
+import org.springframework.web.multipart.MultipartFile;
 
+public class ParamsWrappedRenderRequestWithMultipartFileSupport extends
+		ParamsWrappedRenderRequest implements MultipartFileSupport {
 
+	private MultipartFileSupport mfs;
 
-/**
- * @author Peter Hurley
- *
- */
-public class CloseWindowController  extends SAbstractController {
-	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
+	public ParamsWrappedRenderRequestWithMultipartFileSupport(
+			RenderRequest req, Map params) {
+		super(req, params);
+		mfs = (MultipartFileSupport) req;
 	}
-	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
-			RenderResponse response) throws Exception {
- 		
-	    return new ModelAndView("forum/close_window");
+
+	public Iterator getFileNames() {
+		return mfs.getFileNames();
+	}
+
+	public MultipartFile getFile(String name) {
+		return mfs.getFile(name);
+	}
+
+	public Map getFileMap() {
+		return mfs.getFileMap();
 	}
 
 }

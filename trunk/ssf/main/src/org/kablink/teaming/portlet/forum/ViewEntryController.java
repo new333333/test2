@@ -176,7 +176,7 @@ public class ViewEntryController extends  SAbstractController {
 			}
 		}
 	}
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String displayStyle = user.getDisplayStyle();

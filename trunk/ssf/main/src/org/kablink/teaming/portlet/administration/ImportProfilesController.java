@@ -91,7 +91,7 @@ public class ImportProfilesController extends  SAbstractController {
 			response.setRenderParameters(formData);
 	}
 
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 			
 		Binder binder = getProfileModule().getProfileBinder();

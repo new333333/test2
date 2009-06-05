@@ -80,7 +80,7 @@ public class PlayTutorialController extends SAbstractController
 	/**
 	 * 
 	 */
-	public ModelAndView handleRenderRequestInternal(
+	public ModelAndView handleRenderRequestAfterValidation(
 			RenderRequest	request, 
 			RenderResponse	response ) throws Exception
 	{

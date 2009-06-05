@@ -44,6 +44,7 @@ import javax.servlet.http.HttpSession;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.SPropsUtil;
@@ -74,7 +75,7 @@ public class LoginController  extends SAbstractControllerRetry {
 		response.setRenderParameters(request.getParameterMap());
 	}
 	
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 
 		// This controller is used to display the sign-in form used for login. 
@@ -102,7 +103,7 @@ public class LoginController  extends SAbstractControllerRetry {
 		if(Validator.isNotNull(url)) {
 			model.put(WebKeys.URL, url);
 		}
-        HttpSession session = ((PortletRequestImpl) request).getHttpServletRequest().getSession();
+        HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
     	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
     	if(ex != null) {
     		model.put(WebKeys.LOGIN_ERROR, ex.getMessage());

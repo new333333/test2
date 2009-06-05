@@ -239,7 +239,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(request), WebKeys.ACTION_READ_FILE, entity, fileName);
 	}
 
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map<String,Object> model = new HashMap<String,Object>();
 		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");

@@ -77,7 +77,7 @@ public class ManageZonesController extends  SAbstractController {
 		}
 	}
 
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		return new ModelAndView(WebKeys.VIEW_ADMIN_MANAGE_ZONES, WebKeys.ZONE_INFO_LIST, getZoneModule().getZoneInfos());
 	}

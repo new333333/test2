@@ -163,7 +163,7 @@ public class ModifyBinderController extends AbstractBinderController {
 		}
 	}
 
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 		RenderResponse response) throws Exception {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 

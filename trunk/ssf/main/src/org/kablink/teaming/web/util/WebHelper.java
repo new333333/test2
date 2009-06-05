@@ -61,6 +61,7 @@ import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
+import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
 import org.kablink.teaming.portletadapter.portlet.RenderRequestImpl;
 import org.kablink.teaming.runas.RunasCallback;
@@ -132,14 +133,12 @@ public class WebHelper {
 	public static boolean isMethodPost(PortletRequest request) {
 		HttpServletRequest req = null;
 		ActionRequest actionRequest;
-		PortletRequestImpl portletRequest;
 		
 		// The request parameter is actually a ParamsWrappedActionRequest object.  Get the real ActionRequest object.
 		if ( request instanceof ParamsWrappedActionRequest ) {
 			actionRequest = ((ParamsWrappedActionRequest)request).getActionRequest();
-			if ( actionRequest instanceof PortletRequestImpl ) {
-				portletRequest = (PortletRequestImpl) actionRequest;
-				req = portletRequest.getHttpServletRequest();
+			if ( actionRequest instanceof HttpServletRequestReachable ) {
+				req = ((HttpServletRequestReachable)actionRequest).getHttpServletRequest();
 			}
 		}
 		if (req != null) return "post".equals(req.getMethod().toLowerCase());
@@ -508,7 +507,7 @@ public class WebHelper {
 
 	public static void logWarnRequestInfo(RenderRequest request) {
 		if(request instanceof RenderRequestImpl) { 
-			logWarnRequestInfo(((RenderRequestImpl)request).getHttpServletRequest());
+			logWarnRequestInfo(((HttpServletRequestReachable)request).getHttpServletRequest());
 		}
 	}
 

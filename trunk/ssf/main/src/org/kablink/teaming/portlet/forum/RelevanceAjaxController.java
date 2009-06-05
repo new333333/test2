@@ -99,7 +99,7 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		}
 	}
 	
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");

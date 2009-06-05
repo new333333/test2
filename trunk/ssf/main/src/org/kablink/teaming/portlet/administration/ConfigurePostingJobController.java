@@ -99,7 +99,7 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 		
 	}
 
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		HashMap model = new HashMap();
 		MailConfig mConfig = getAdminModule().getMailConfig();

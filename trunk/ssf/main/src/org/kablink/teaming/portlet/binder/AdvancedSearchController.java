@@ -99,7 +99,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		response.setRenderParameters(formData);
 		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
 	}
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, RenderResponse response) throws Exception {
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, RenderResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		//ajax requests
 		if (op.equals(WebKeys.OPERATION_FIND_ENTRY_ATTRIBUTES_WIDGET)) {

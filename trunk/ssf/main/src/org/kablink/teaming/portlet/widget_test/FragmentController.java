@@ -51,7 +51,7 @@ public class FragmentController extends SAbstractController {
 		//There is no action. Just go to the render phase
 	}
 	
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		
 		String path = "widget_test/view_fragment";

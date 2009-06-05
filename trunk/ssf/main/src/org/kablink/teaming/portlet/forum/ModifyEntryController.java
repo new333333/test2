@@ -268,7 +268,7 @@ public class ModifyEntryController extends SAbstractController {
 		response.setRenderParameter(WebKeys.URL_ENTRY_ID, "");
 	}
 	
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 		RenderResponse response) throws Exception {
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 

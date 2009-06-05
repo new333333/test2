@@ -54,7 +54,7 @@ public class UserAccessReportController extends  AbstractReportController
 	/**
 	 * 
 	 */
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception
 	{
 		PortletURL	url;

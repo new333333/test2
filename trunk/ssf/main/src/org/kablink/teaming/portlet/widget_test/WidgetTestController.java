@@ -63,7 +63,7 @@ public class WidgetTestController extends SAbstractController {
 		response.setRenderParameters(request.getParameterMap());
 	}
 	
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
  		PortletPreferences prefs = request.getPreferences();

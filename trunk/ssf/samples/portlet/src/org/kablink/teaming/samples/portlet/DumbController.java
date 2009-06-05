@@ -55,7 +55,7 @@ public class DumbController extends SAbstractController {
 		System.out.println("DumbController (action)");
 	}
 	
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {		
 		// See <module name>Module.java files in individual org.kablink.teaming.module.<module name>
 		// packages for a list of available methods (API) callable from controller.

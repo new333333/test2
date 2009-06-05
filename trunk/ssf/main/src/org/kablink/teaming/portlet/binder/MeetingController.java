@@ -62,7 +62,7 @@ public class MeetingController extends SAbstractController {
 		response.setRenderParameters(request.getParameterMap());
 	}
 
-	public ModelAndView handleRenderRequestInternal(RenderRequest request,
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request,
 			RenderResponse response) throws Exception {
 		String[] errors = request.getParameterValues(WebKeys.ERROR_LIST);
 		Map model = new HashMap();

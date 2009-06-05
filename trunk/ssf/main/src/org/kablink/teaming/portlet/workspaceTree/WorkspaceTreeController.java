@@ -77,7 +77,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			getProfileModule().setSeenIds(null, ids);
 		}
 	}
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		
         User user = RequestContextHolder.getRequestContext().getUser();

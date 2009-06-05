@@ -181,7 +181,7 @@ public class ModifyEntryController extends SAbstractController {
 		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());		
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_ENTRY);
 	}
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 		RenderResponse response) throws Exception {
 
 		Map model = new HashMap();	

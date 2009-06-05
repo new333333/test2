@@ -217,7 +217,7 @@ public class ConfigureLdapController extends  SAbstractController {
 		
 	}
 
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 
 		String timeZone	= null;

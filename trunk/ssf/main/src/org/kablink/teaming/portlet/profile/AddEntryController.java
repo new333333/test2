@@ -54,6 +54,7 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.module.profile.impl.GuestProperties;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
+import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.ReleaseInfo;
@@ -110,7 +111,6 @@ public class AddEntryController extends SAbstractController {
     				String				kaptchaResponse;
     				String				kaptchaExpected;
     				ActionRequest		actionRequest;
-    				PortletRequestImpl	portletRequest;
     				HttpServletRequest	httpServletRequest;
 
     				// Yes
@@ -118,10 +118,9 @@ public class AddEntryController extends SAbstractController {
     				if ( request instanceof ParamsWrappedActionRequest )
     				{
 	    				actionRequest = ((ParamsWrappedActionRequest)request).getActionRequest();
-	    				if ( actionRequest instanceof PortletRequestImpl )
+	    				if ( actionRequest instanceof HttpServletRequestReachable )
 	    				{
-		    				portletRequest = (PortletRequestImpl) actionRequest;
-		    				httpServletRequest = portletRequest.getHttpServletRequest();
+		    				httpServletRequest = ((HttpServletRequestReachable)actionRequest).getHttpServletRequest();
 		    				// Get the text used to create the kaptcha image.  It is stored in the http session.
 		    				kaptchaExpected = (String) httpServletRequest.getSession().getAttribute( com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY );
 		    				
@@ -154,7 +153,7 @@ public class AddEntryController extends SAbstractController {
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 	}
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		//Adding an entry; get the specific definition

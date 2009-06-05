@@ -94,7 +94,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 		} 
 	}
 
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
