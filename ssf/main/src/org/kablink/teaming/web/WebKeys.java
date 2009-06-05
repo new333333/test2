@@ -764,6 +764,7 @@ public class WebKeys {
     public static final String FILTER_TYPE="ss_filterType";
     public static final String FILTER_VALUE_TYPE="ss_filterValueType";
     public static final String FILTER_WORKFLOW_DEF_ID = "ss_workflow_def_id";
+    public static final String FIXUP_THREAD_ERROR ="ss_fixupThreadError";
     public static final String FOLDER = "ssFolder";
     public static final String FOLDER_COLUMNS="folderColumns";
     public static final String FOLDER_COLUMN_POSITIONS="folderColumnPositions";

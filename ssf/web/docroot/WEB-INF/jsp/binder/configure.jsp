@@ -280,28 +280,44 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 				<ssf:inlineHelp tag="ihelp.other.folder_definition_fixups"/>
 			</legend>
 	
+		    <c:if test="${!empty ss_fixupThreadError}">
+				<br/><span class="ss_bold ss_errorLabel">
+					<c:choose>
+						<c:when test="${ss_fixupThreadError == 'busy'}">
+		    				<ssf:nlt tag="binder.configure.folderDefinitionFixups.error.fixupThreadBusy"/>
+						</c:when>
+						<c:when test="${ss_fixupThreadError == 'cantStart'}">
+		    				<ssf:nlt tag="binder.configure.folderDefinitionFixups.error.fixupThreadCantStart"/>
+						</c:when>
+				    	<c:otherwise>
+		    				<ssf:nlt tag="binder.configure.folderDefinitionFixups.error.fixupThreadOther"/>
+				    	</c:otherwise>
+					</c:choose>
+				</span><br/><br/>
+		    </c:if>
+
 			<form
 					name="folderDefinitionFixupsForm"
 					method="post" 
 					onSubmit="return validateFixupsForm() && ss_onSubmit(this);"
-					action="<ssf:url action="folder_definition_fixups" actionUrl="true"><ssf:param 
+					action="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
 						name="binderId"   value="${ssBinder.id}"/><ssf:param 
 						name="binderType" value="${ssBinder.entityIdentifier.entityType}"/></ssf:url>">
 				<table>
 					<tr>
-						<td><input type="checkbox" id="folderFixups" name="folderFixups" onChange="javascript:folderFixupsChanged(this)" value="folderFixups" /></td>
+						<td><input type="checkbox" id="folderFixups" name="folderFixups" onChange="javascript:folderFixupsChanged(this)" value="yes" /></td>
 						<td colspan="2"><ssf:nlt tag="binder.configure.folderDefinitionFixups.folder" text="Fixup Folders"/></td>
 					</tr>
 	
 					<tr>
 						<td />
-						<td><input type="checkbox" id="entryFixups" name="entryFixups" value="entryFixups" disabled /></td>
+						<td><input type="checkbox" id="entryFixups" name="entryFixups" value="yes" disabled /></td>
 						<td><ssf:nlt tag="binder.configure.folderDefinitionFixups.entry" text="Fixup Entries"/></td>
 					</tr>
 	
 					<tr>
 						<td colspan="2"/>
-						<td><select name="entryFixupTypes">
+						<td><select name="entryFixupDefinitions">
 							<% /* Are there any default entry types defined on this folder? */ %>
 	    					<c:set var="folderHasDefaultEntryTypes" value=""/>
 							<c:forEach var="item" items="${ssAllEntryDefinitions}">
@@ -318,7 +334,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 							<c:forEach var="item" items="${ssAllEntryDefinitions}">
 								<c:if test="${item.value.binderId == -1}">
 									<c:if test="${empty folderHasDefaultEntryTypes || !empty allDefinitionsMap[item.value.id]}">
-										<option value="all7_${item.value.id}" <c:if test="${item.value.visibility == 3}">style="text-decoration: line-through;"</c:if>>${item.key}</option>
+										<option value="${item.value.id}" <c:if test="${item.value.visibility == 3}">style="text-decoration: line-through;"</c:if>>${item.key}</option>
 									</c:if>
 								</c:if>
 							</c:forEach>
@@ -326,7 +342,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 							<c:forEach var="item" items="${ssAllEntryDefinitions}">
 								<c:if test="${item.value.binderId != -1}">
 									<c:if test="${empty folderHasDefaultEntryTypes || !empty allDefinitionsMap[item.value.id]}">
-										<option value="all8_${item.value.id}" <c:if test="${item.value.visibility == 3}">style="text-decoration: line-through;"</c:if>>${item.key}&#134;</option>
+										<option value="${item.value.id}" <c:if test="${item.value.visibility == 3}">style="text-decoration: line-through;"</c:if>>${item.key}&#134;</option>
 									</c:if>
 								</c:if>
 							</c:forEach>
