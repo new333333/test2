@@ -68,6 +68,6 @@
     		</c:if>
     		height="95%" width="100%" 
     		onLoad="ss_setWikiIframeSize('${renderResponse.namespace}');" 
-    		frameBorder="0" >xxx</iframe>
+    		frameBorder="0" title="<ssf:nlt tag = "iframe.entry"/>">xxx</iframe>
         </div>
    

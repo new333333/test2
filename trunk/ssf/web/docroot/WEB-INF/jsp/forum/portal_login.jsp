@@ -111,7 +111,8 @@ var ss_transferUrl = self.location.href;
 <body onLoad="ss_startWatcher();">
  <iframe id="iframe_window" name="iframe_window" 
     style="width:100%; height:600px; display:block;"
-    src="${ss_portalLoginUrl}" frameBorder="0" onLoad="ss_loadTargetUrl();">xxx</iframe>
+    src="${ss_portalLoginUrl}" frameBorder="0" onLoad="ss_loadTargetUrl();"
+    title="<ssf:nlt tag="navigation.emptyFrame"/>" role="presentation">xxx</iframe>
 
 </body>
 </html>

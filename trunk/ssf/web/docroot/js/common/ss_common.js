@@ -4051,7 +4051,7 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, viewType,
     	' src="'+url+'"' +
     	' style="height:300px;width:'+(ss_getObjectWidth(tableDivObj)-50)+'px; margin:10px 10px 10px 20px; padding:0px;" frameBorder="0"' +
     	' onLoad="ss_setIframeHeight(\'ss_entry_iframeDiv'+id+random+'\', \'ss_entry_iframe'+id+random+'\', \''+hoverOverId+'\')"' +
-    	'>xxx</iframe>' +
+    	' title="'+ ss_entryFrameTitle +'">xxx</iframe>' +
     	'</div>';
 	tbodyObj.replaceChild(iframeRow, trObj)
 	ss_loadEntryInPlaceLastRowObj = iframeRow;
@@ -8114,8 +8114,10 @@ function ss_showEmailLinks() {
 //Session timeout
 function ss_startSessionTimoutTimer(maxInactiveInterval) {
 	if (typeof maxInactiveInterval == 'undefined' || maxInactiveInterval == '') return;
-	var timeToWarn = parseInt((maxInactiveInterval - 5*60)*1000);
-	if (timeToWarn <= 0) return;
+	var maxInt = parseInt(maxInactiveInterval);
+	
+	if (maxInt > 2000*60 || maxInt <= 0) return;
+	var timeToWarn = parseInt((maxInt - 5*60)*1000);
 	setTimeout("ss_resetSessionTimeoutTimer('"+maxInactiveInterval+"');", timeToWarn)
 }
 function ss_resetSessionTimeoutTimer(maxInactiveInterval) {

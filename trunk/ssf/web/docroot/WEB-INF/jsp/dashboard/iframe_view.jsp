@@ -42,4 +42,5 @@
 	<% ss_height = ss_height.replaceAll("[^0-9]", ""); %>
 	height: <%= ss_height %>px;
   </c:if>
-  margin:0px; padding:0px;" frameBorder="0" >xxx</iframe>
+  margin:0px; padding:0px;" frameBorder="0" 
+  title="<ssf:nlt tag="__dashboard.iframe"/>">xxx</iframe>

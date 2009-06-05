@@ -761,5 +761,6 @@ ss_workarea_showPseudoPortal${renderResponse.namespace}()
 </script>
 <!-- The signaling iframe for signaling the portal to reset the size -->
 <div style="visibility:hidden;position:absolute;">
-<iframe id="ss_signalingIframe" style="height:0px;" src="<html:rootPath/>js/forum/null.html" >xxx</iframe>
+<iframe id="ss_signalingIframe" style="height:0px;" src="<html:rootPath/>js/forum/null.html" 
+title="<ssf:nlt tag = "navigation.emptyFrame"/>" role="presentation" >xxx</iframe>
 </div>
