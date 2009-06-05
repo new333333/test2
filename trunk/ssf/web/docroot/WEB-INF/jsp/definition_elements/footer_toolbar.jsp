@@ -218,9 +218,9 @@ var iFrameFolderAttachmentInvokedOnce${ssFolder.id}${renderResponse.namespace} =
 </script>
 <div id="ss_permalink_display_div" style="display:none; border:1px solid #cecece; margin:0px 10px 10px 0px;">
   <div align="right">
-	<a style="margin-left:15px;"
+	<a style="margin-left:15px;" <ssf:alt tag="alt.hidePermalinks"/>
    	  onClick="ss_hideDivNone('ss_permalink_display_div'); return false;"><img 
-  	  <ssf:alt tag="alt.hide"/> border="0" src="<html:imagesPath/>icons/close_off.gif"/>
+  	   border="0" src="<html:imagesPath/>icons/close_off.gif"/>
   	</a>
   </div>
 <%@ include file="/WEB-INF/jsp/forum/permalinks.jsp" %>
