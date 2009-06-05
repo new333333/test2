@@ -155,7 +155,7 @@ public class ConfigureRolesController extends  SAbstractController {
 			response.setRenderParameters(formData);
 	}
 
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		model.put(WebKeys.ROLE_USERS, request.getParameter(WebKeys.ROLE_USERS));

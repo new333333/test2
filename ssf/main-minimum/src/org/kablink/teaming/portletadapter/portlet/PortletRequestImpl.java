@@ -55,7 +55,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 
-public class PortletRequestImpl implements PortletRequest, MultipartFileSupport {
+public class PortletRequestImpl implements PortletRequest, MultipartFileSupport, HttpServletRequestReachable {
 
 	public static final WindowState ADAPTED = new WindowState("adapted");
 	

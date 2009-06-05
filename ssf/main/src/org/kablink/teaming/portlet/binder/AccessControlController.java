@@ -116,7 +116,7 @@ public class AccessControlController extends AbstractBinderController {
 			response.setRenderParameters(request.getParameterMap());
 		}
 	}
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
 		//navigation links still use binderId

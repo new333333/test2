@@ -188,7 +188,7 @@ public class EditController extends SAbstractController {
 		prefs.store();
 	}
 	
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
         //Make the prefs available to the jsp
 		PortletPreferences prefs= request.getPreferences();

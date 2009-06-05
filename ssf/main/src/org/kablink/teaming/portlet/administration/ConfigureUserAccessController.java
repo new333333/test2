@@ -84,7 +84,7 @@ public class ConfigureUserAccessController extends  SAbstractController {
 		
 	}
 
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		boolean		guestUserHasAddRights;

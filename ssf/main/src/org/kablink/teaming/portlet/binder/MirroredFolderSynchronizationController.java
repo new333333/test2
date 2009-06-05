@@ -71,7 +71,7 @@ public class MirroredFolderSynchronizationController extends  SAbstractControlle
     		response.setRenderParameters(formData);	
 	}
 
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		if (!Validator.isNull(request.getParameter("redirect"))) {
 			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);

@@ -343,7 +343,7 @@ public class AddEntryController extends SAbstractController {
 		//return to view entry
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CLOSE_WINDOW);
 	}
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		
 		Map model = new HashMap();

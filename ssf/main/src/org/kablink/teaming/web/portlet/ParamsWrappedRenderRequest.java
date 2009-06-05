@@ -32,44 +32,40 @@
  */
 package org.kablink.teaming.web.portlet;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.portlet.ActionRequest;
+import javax.portlet.RenderRequest;
 import javax.portlet.PortalContext;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletSession;
 import javax.portlet.WindowState;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
-import org.kablink.teaming.portletadapter.portlet.HttpServletResponseReachable;
+import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 
-public class ParamsWrappedActionRequest implements ActionRequest, HttpServletResponseReachable {
+public class ParamsWrappedRenderRequest implements RenderRequest, HttpServletRequestReachable {
 
-	private ActionRequest req; // the real one
+	private RenderRequest req; // the real one
 	
 	private Map<String, String[]> params; // new validated params map to be used
 
-	public ParamsWrappedActionRequest(ActionRequest req, Map params) {
+	public ParamsWrappedRenderRequest(RenderRequest req, Map params) {
 		this.req = req;
 		this.params = params;
 	}
 	
 	/**
-	 * Return the real ActionRequest object we were created from.
+	 * Return the real RenderRequest object we were created from.
 	 */
-	public ActionRequest getActionRequest()
+	public RenderRequest getRenderRequest()
 	{
 		return req;
-	}// end getActionRequest()
+	}// end getRenderRequest()
 	
 	public Object getAttribute(String arg0) {
 		return req.getAttribute(arg0);
@@ -81,18 +77,6 @@ public class ParamsWrappedActionRequest implements ActionRequest, HttpServletRes
 
 	public String getAuthType() {
 		return req.getAuthType();
-	}
-
-	public String getCharacterEncoding() {
-		return req.getCharacterEncoding();
-	}
-
-	public int getContentLength() {
-		return req.getContentLength();
-	}
-
-	public String getContentType() {
-		return req.getContentType();
 	}
 
 	public String getContextPath() {
@@ -139,9 +123,6 @@ public class ParamsWrappedActionRequest implements ActionRequest, HttpServletRes
 		return req.getPortalContext();
 	}
 
-	public InputStream getPortletInputStream() throws IOException {
-		return req.getPortletInputStream();
-	}
 
 	public PortletMode getPortletMode() {
 		return req.getPortletMode();
@@ -170,11 +151,7 @@ public class ParamsWrappedActionRequest implements ActionRequest, HttpServletRes
 	public Enumeration getPropertyNames() {
 		return req.getPropertyNames();
 	}
-
-	public BufferedReader getReader() throws UnsupportedEncodingException, IOException {
-		return req.getReader();
-	}
-
+	
 	public String getRemoteUser() {
 		return req.getRemoteUser();
 	}
@@ -239,15 +216,11 @@ public class ParamsWrappedActionRequest implements ActionRequest, HttpServletRes
 		req.setAttribute(arg0, arg1);
 	}
 
-	public void setCharacterEncoding(String arg0) throws UnsupportedEncodingException {
-		req.setCharacterEncoding(arg0);
-	}
-
-	public HttpServletResponse getHttpServletResponse() {
-		if(req instanceof HttpServletResponseReachable)
-			return ((HttpServletResponseReachable)req).getHttpServletResponse();
+	public HttpServletRequest getHttpServletRequest() {
+		if(req instanceof HttpServletRequestReachable)
+			return ((HttpServletRequestReachable)req).getHttpServletRequest();
 		else
 			throw new UnsupportedOperationException(); // This shouldn't happen...
 	}
-	
+
 }

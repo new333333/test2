@@ -208,7 +208,7 @@ public class ListFolderController extends  SAbstractController {
 		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
 	}
 	
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
 		String displayType = BinderHelper.getDisplayType(request);

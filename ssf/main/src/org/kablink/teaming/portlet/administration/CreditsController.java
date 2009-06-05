@@ -44,7 +44,7 @@ import org.springframework.web.portlet.ModelAndView;
 public class CreditsController extends  SAbstractController {
 	
 
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		return new ModelAndView("administration/credits", model);

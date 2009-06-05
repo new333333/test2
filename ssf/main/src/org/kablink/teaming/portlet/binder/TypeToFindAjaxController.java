@@ -93,7 +93,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 		response.setRenderParameters(request.getParameterMap());
 	}
 	
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 

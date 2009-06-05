@@ -109,6 +109,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.portlet.forum.ViewController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
 import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
 import org.kablink.teaming.search.SearchUtils;
@@ -346,7 +347,7 @@ public class BinderHelper {
 			String displayType = getDisplayType(request);
 			model.put(WebKeys.DISPLAY_TYPE, displayType);
 	 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
-	        HttpSession session = ((PortletRequestImpl) request).getHttpServletRequest().getSession();
+	        HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
 	        model.put(WebKeys.MAX_INACTIVE_INTERVAL, session.getMaxInactiveInterval());
 			
 	        //Get the url of the signaling code from the portal (if portal being used)

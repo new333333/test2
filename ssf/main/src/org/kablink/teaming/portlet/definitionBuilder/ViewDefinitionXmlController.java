@@ -71,7 +71,7 @@ public class ViewDefinitionXmlController extends SAbstractController {
 		response.setRenderParameter("selectedItem", selectedItem);
 	}
 		
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 			

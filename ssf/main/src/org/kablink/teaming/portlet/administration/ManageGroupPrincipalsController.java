@@ -121,7 +121,7 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 		}
 	}
 
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 			
 		Binder binder = getProfileModule().getProfileBinder();

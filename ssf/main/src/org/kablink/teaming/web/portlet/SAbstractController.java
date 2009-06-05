@@ -37,6 +37,8 @@ import java.util.Map;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,6 +64,7 @@ import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
+import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.mvc.AbstractController;
 
 
@@ -264,6 +267,28 @@ implements AllModulesInjected {
 	protected void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response)
 		throws Exception {
 	    throw new PortletException("This controller does not handle action requests");
+	}
+
+	protected ModelAndView handleRenderRequestInternal(RenderRequest request, RenderResponse response)
+	throws Exception {
+		Map formData = request.getParameterMap();
+		Map newFormData = StringCheckUtil.check(formData);
+		RenderRequest newReq;
+		if(newFormData != formData) {
+			if(request instanceof MultipartFileSupport)
+				newReq = new ParamsWrappedRenderRequestWithMultipartFileSupport(request, newFormData);
+			else
+				newReq = new ParamsWrappedRenderRequest(request, newFormData);
+		}
+		else {
+			newReq = request;
+		}
+		return handleRenderRequestAfterValidation(newReq, response);
+	}
+
+	protected ModelAndView handleRenderRequestAfterValidation(RenderRequest request, RenderResponse response)
+	throws Exception {
+		throw new PortletException("This controller does not handle render requests");
 	}
 
 }

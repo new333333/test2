@@ -67,7 +67,7 @@ public class ViewEntryController extends SAbstractController {
 		response.setRenderParameters(formData);
 		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
 	}
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 			
 		if (request.getWindowState().equals(WindowState.NORMAL)) 

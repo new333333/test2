@@ -101,7 +101,7 @@ public class ViewController  extends SAbstractController {
 		response.setRenderParameters(request.getParameterMap());
 		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
 	}
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		return BinderHelper.CommonPortletDispatch(this, request, response);
 	}

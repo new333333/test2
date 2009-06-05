@@ -35,7 +35,7 @@ package org.kablink.teaming.portletadapter.portlet;
 import javax.portlet.PortletResponse;
 import javax.servlet.http.HttpServletResponse;
 
-public class PortletResponseImpl implements PortletResponse {
+public class PortletResponseImpl implements PortletResponse, HttpServletResponseReachable {
 
 	protected HttpServletResponse res;
 	protected String portletName;

@@ -44,6 +44,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.UserAppConfig;
@@ -121,7 +122,7 @@ public class SsfsUtil {
 	}
 	
 	public static String getMobileUrl(PortletRequest req) {
-		HttpServletRequest httpReq = ((PortletRequestImpl) req).getHttpServletRequest();
+		HttpServletRequest httpReq = ((HttpServletRequestReachable) req).getHttpServletRequest();
 		return getMobileUrl(httpReq);
 	}
 	
@@ -308,7 +309,7 @@ public class SsfsUtil {
 	}
 	
 	public static boolean supportApplets(PortletRequest req) {
-		HttpServletRequest httpReq = ((PortletRequestImpl) req).getHttpServletRequest();
+		HttpServletRequest httpReq = ((HttpServletRequestReachable) req).getHttpServletRequest();
 		return supportApplets(httpReq);
 	}
 	public static boolean supportApplets(HttpServletRequest req) {

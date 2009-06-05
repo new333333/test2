@@ -30,29 +30,12 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.portlet.forum;
+package org.kablink.teaming.portletadapter.portlet;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
+import javax.servlet.http.HttpServletResponse;
 
-import org.kablink.teaming.web.portlet.SAbstractController;
-import org.springframework.web.portlet.ModelAndView;
+public interface HttpServletResponseReachable {
 
-
-
-/**
- * @author Peter Hurley
- *
- */
-public class CloseWindowController  extends SAbstractController {
-	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
-	}
-	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
-			RenderResponse response) throws Exception {
- 		
-	    return new ModelAndView("forum/close_window");
-	}
+	public HttpServletResponse getHttpServletResponse();
 
 }

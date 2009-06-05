@@ -66,7 +66,7 @@ public class EventController extends SAbstractController {
 		response.setRenderParameters(formData);
   }
 
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 		RenderResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 

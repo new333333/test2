@@ -178,7 +178,7 @@ public class AddAttachmentController extends SAbstractController {
 		
 	}
 		
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 		RenderResponse response) throws Exception {
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 		String closeDivFunctionName = PortletRequestUtils.getStringParameter(request, WebKeys.ENTRY_ATTACHMENT_DIV_CLOSE_FUNCTION, "");

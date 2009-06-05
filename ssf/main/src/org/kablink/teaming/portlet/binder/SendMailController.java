@@ -141,7 +141,7 @@ public class SendMailController extends SAbstractController {
 		for (Address email: addrs) addresses[i++] = email.toString();
 		return addresses;
 	}
-	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
 		String [] errors = request.getParameterValues(WebKeys.ERROR_LIST);
