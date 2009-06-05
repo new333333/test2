@@ -203,6 +203,7 @@
        entry="${ssDefinitionEntry}" />
 
  
+	<ssf:ifLoggedIn>
 	<tr>
 		<td align="right">
 			<a href="javascript: ;" onClick="ss_viewMiniBlog('${ssDefinitionEntry.id}', '0', true);return false;"
@@ -229,6 +230,7 @@
 			</span>
 		</td>
 	</tr>
+	</ssf:ifLoggedIn>
 </table>
 
 <c:if test="${pictureCount > 1}">
