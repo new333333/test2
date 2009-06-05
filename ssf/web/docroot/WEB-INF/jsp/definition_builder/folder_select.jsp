@@ -50,7 +50,8 @@
 				  <ssf:param name="operation" value="find_place_form" />
 				  <ssf:param name="binderId" value="${ssBinderId}" />
 				  <ssf:param name="propertyId" value="propertyId_${propertyId}" />
-			    </ssf:url>">xxx</iframe> 
+			    </ssf:url>"
+			    title="<ssf:nlt tag="definition.selectDestinationFolder"/>">xxx</iframe> 
 		</td>
 	</tr>
   </tbody>

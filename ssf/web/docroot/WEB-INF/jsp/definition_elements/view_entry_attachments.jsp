@@ -137,7 +137,8 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 			  id="ss_iframe_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 			  name="ss_iframe_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 			  src="<html:rootPath/>js/forum/null.html" 
-			  height="1" width="1">xxx</iframe>
+			  height="1" width="1"
+			  title="<ssf:nlt tag="entry.AttachFilesByWebDav" />" >xxx</iframe>
 		</div>
 	  </div>
 	  </li>
@@ -154,7 +155,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 						<a onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"><img 
 						  border="0" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>icons/close_off.gif"/></a>
 						</div>	
-						<iframe <ssf:title tag="entry.AttachFilesByApplet" /> frameborder="0" 
+						<iframe title="<ssf:nlt tag="entry.AttachFilesByApplet" />" frameborder="0" 
 						  id="ss_iframe_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 						  name="ss_iframe_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 						  src="<html:rootPath/>js/forum/null.html" 
@@ -172,7 +173,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 						<a onClick="ss_hideAddAttachmentBrowse('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"><img 
 						  border="0" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>icons/close_off.gif"/></a>
 						</div>	
-						<iframe <ssf:title tag="entry.AttachFilesByWebBrowse" /> frameborder="0"  
+						<iframe title="<ssf:nlt tag="entry.AttachFilesByWebBrowse" />" frameborder="0"  
 						  id="ss_iframe_browse${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 							name="ss_iframe_browse${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 							src="<html:rootPath/>js/attachments/entry_attachment_browse.html" 

@@ -128,7 +128,8 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 			  <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; 
 			    display:block; position:relative; left:5px;"
 			    src="<html:rootPath/>js/forum/null.html" height="100" width="100%" 
-			    onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="0" >xxx</iframe>
+			    onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="0" 
+			    title="<ssf:nlt tag = "iframe.entry"/>" >xxx</iframe>
 			  </ssf:box>
 			</div>
 			

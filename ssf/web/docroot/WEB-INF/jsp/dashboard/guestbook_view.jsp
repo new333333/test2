@@ -87,7 +87,8 @@
   name="${ss_namespace}_new_guestbook_entry_iframe"
   src="<html:rootPath/>js/forum/null.html" 
   onLoad="ss_showSignGuestbookIframe('${ss_namespace}', this);" 
-  width="100%" frameBorder="0">xxx</iframe>
+  width="100%" frameBorder="0"
+  title="<ssf:nlt tag="guestbook.addEntry"/>">xxx</iframe>
 </div>
 
 <div id="${ss_divId}">
