@@ -128,4 +128,9 @@ public interface ResourceDriver {
 	 * @return
 	 */
 	public boolean isReadonly();
+	
+	/**
+	 * Returns whether the top-level deletion should be synchronized.
+	 */
+	public boolean getSynchTopDelete();
 }
