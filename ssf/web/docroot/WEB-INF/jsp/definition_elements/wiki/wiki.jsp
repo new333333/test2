@@ -109,7 +109,7 @@
 		<td valign="top">
 		   <%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_folder_listing.jsp" %>
 		</td>
-		<td valign="top" width="200" style="padding-left: 16px;">
+		<td valign="top" width="200" style="padding-left: 6px;">
 		   <div id="ss_sideNav_wrap">
 			  <jsp:include page="/WEB-INF/jsp/sidebars/wiki.jsp" />
 		   </div>

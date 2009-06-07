@@ -196,6 +196,7 @@ Boolean webdavSupportedFooter = new Boolean(org.kablink.teaming.web.util.BinderH
 	--%></div><%--
 
 --%></c:if><%--
+--%><div class="ss_clear"></div><%--
 
 --%></ssf:skipLink><%--
 

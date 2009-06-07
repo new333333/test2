@@ -555,8 +555,12 @@ public class HTMLInputFilter
     m = pattern_decode_entities2.matcher( s );
     while (m.find()) {
       String match = m.group( 1 );
-      int decimal = Integer.decode( match ).intValue();
-      m.appendReplacement( buf, Matcher.quoteReplacement(chr(decimal)));
+      try {
+    	  int decimal = Integer.decode( match ).intValue();
+          m.appendReplacement( buf, Matcher.quoteReplacement(chr(decimal)));
+      } catch(NumberFormatException e) {
+    	  m.appendReplacement( buf, Matcher.quoteReplacement(match));
+      }
     }
     m.appendTail( buf );
     s = buf.toString();

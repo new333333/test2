@@ -731,6 +731,7 @@ function ss_resizeTopDiv(namespace) {
 	var divObj = document.getElementById('ss_pseudoPortalDiv'+namespace);
 	if (ss_origianalTopDivSize == parseInt(divObj.style.width) && 
 		ss_origianalWindowSize == parseInt(ss_getWindowWidth())) return;
+	if (ss_entryViewStyle == "popup" || ss_entryViewStyle == "inline") return;
 	if (divObj.style.width) {
 		if (Math.abs(parseInt(document.body.scrollWidth) - ss_origianalTopDivSize) > ss_topDivMarginOffset ||
 				parseInt(ss_getWindowWidth()) != ss_origianalWindowSize) {

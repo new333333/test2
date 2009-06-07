@@ -118,6 +118,7 @@ var ss_userDisplayStyle = "${ssUser.displayStyle}";
 		ss_userDisplayStyle = "iframe";	
 	<% } %>
 </c:if>
+var ss_entryViewStyle = "${ss_entryViewStyle}";
 
 var ss_1pix = ss_imagesPath + "pics/1pix.gif";
 var ss_forumColorsCssUrl = "<ssf:url webPath="viewCss"><ssf:param 

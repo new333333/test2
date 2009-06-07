@@ -37,7 +37,7 @@
         <div id="ss_wikiEntryDiv${renderResponse.namespace}">
           <iframe id="ss_wikiIframe${renderResponse.namespace}" 
             name="ss_wikiIframe${renderResponse.namespace}" 
-            style="width:99%;"
+            style="width:100%;"
     		<c:if test="${empty ss_wikiHomepageEntryId && empty ssEntryIdToBeShown}">
     		  src="<ssf:url     
 		    		adapter="true" 
@@ -66,7 +66,7 @@
 		    		name="entryViewStyle" value="popup" /><ssf:param 
 		    		name="namespace" value="${renderResponse.namespace}" /></ssf:url>" 
     		</c:if>
-    		height="95%" width="100%" 
+    		height="95%"
     		onLoad="ss_setWikiIframeSize('${renderResponse.namespace}');" 
     		frameBorder="0" title="<ssf:nlt tag = "iframe.entry"/>">xxx</iframe>
         </div>
