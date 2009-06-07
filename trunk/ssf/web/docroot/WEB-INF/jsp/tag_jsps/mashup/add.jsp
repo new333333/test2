@@ -120,6 +120,10 @@ var ss_mashupAttr_graphic${ss_mashupItemId} = "";
 var ss_mashupAttr_graphicTitle${ss_mashupItemId} = "";
 var ss_mashupAttr_listTitle${ss_mashupItemId} = "";
 var ss_mashupAttr_customJsp${ss_mashupItemId} = "";
+var ss_mashupAttr_binderUrlTitle${ss_mashupItemId} = "";
+var ss_mashupAttr_binderUrlPopup${ss_mashupItemId} = false;
+var ss_mashupAttr_entryUrlTitle${ss_mashupItemId} = "";
+var ss_mashupAttr_entryUrlPopup${ss_mashupItemId} = false;
 var ss_mashupAttr_urlTitle${ss_mashupItemId} = "";
 var ss_mashupAttr_urlHref${ss_mashupItemId} = "";
 var ss_mashupAttr_urlPopup${ss_mashupItemId} = false;
@@ -137,6 +141,10 @@ function ss_mashupClearAttrs${ss_mashupItemId}() {
 	ss_mashupAttr_graphicTitle${ss_mashupItemId} = "";
 	ss_mashupAttr_listTitle${ss_mashupItemId} = "";
 	ss_mashupAttr_customJsp${ss_mashupItemId} = "";
+	ss_mashupAttr_binderUrlTitle${ss_mashupItemId} = "";
+	ss_mashupAttr_binderUrlPopup${ss_mashupItemId} = false;
+	ss_mashupAttr_entryUrlTitle${ss_mashupItemId} = "";
+	ss_mashupAttr_entryUrlPopup${ss_mashupItemId} = false;
 	ss_mashupAttr_urlTitle${ss_mashupItemId} = "";
 	ss_mashupAttr_urlHref${ss_mashupItemId} = "";
 	ss_mashupAttr_urlPopup${ss_mashupItemId} = false;
@@ -172,6 +180,18 @@ function ss_mashupBuildAttrs${ss_mashupItemId}() {
 	}
 	if (ss_mashupAttr_customJsp${ss_mashupItemId} != "") {
 		attr += ",customJsp=" + escape(ss_mashupAttr_customJsp${ss_mashupItemId})
+	}
+	if (ss_mashupAttr_binderUrlTitle${ss_mashupItemId} != "") {
+		attr += ",title=" + escape(ss_mashupAttr_binderUrlTitle${ss_mashupItemId})
+	}
+	if (ss_mashupAttr_binderUrlPopup${ss_mashupItemId}) {
+		attr += ",popup=1"
+	}
+	if (ss_mashupAttr_entryUrlTitle${ss_mashupItemId} != "") {
+		attr += ",title=" + escape(ss_mashupAttr_entryUrlTitle${ss_mashupItemId})
+	}
+	if (ss_mashupAttr_entryUrlPopup${ss_mashupItemId}) {
+		attr += ",popup=1"
 	}
 	if (ss_mashupAttr_urlTitle${ss_mashupItemId} != "") {
 		attr += ",title=" + escape(ss_mashupAttr_urlTitle${ss_mashupItemId})
@@ -356,6 +376,21 @@ function ss_mashupSubmit${ss_mashupItemId}() {
 		    accessibilityText="mashup.selectBinder"
 		    />
           <br/>
+          <label for="${ss_mashupPropertyName}__binderUrlTitle">
+          	<span class="ss_labelAbove" style="font-weight:normal !important;"
+          	><ssf:nlt tag="mashup.urlTitle"/></span>
+          </label>
+          <input type="text" name="${ss_mashupPropertyName}__binderUrlTitle" size="40"
+          	id="${ss_mashupPropertyName}__binderUrlTitle"
+            onChange="ss_mashupAttr_binderUrlTitle${ss_mashupItemId} = this.value;"/> 
+          <br/>
+          <input type="checkbox" name="${ss_mashupPropertyName}__binderUrlPopup"
+          	id="${ss_mashupPropertyName}__binderUrlPopup"
+            onChange="ss_mashupAttr_binderUrlPopup${ss_mashupItemId} = this.checked;"/> 
+          <label for="${ss_mashupPropertyName}__binderUrlPopup">
+          	<span class="ss_labelAfter"><ssf:nlt tag="mashup.urlPopup"/></span>
+          </label>
+          <br/>
           <br/>
 		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
 		    onClick="ss_mashupSubmit${ss_mashupItemId}();return true;"
@@ -379,6 +414,21 @@ function ss_mashupSubmit${ss_mashupItemId}() {
 		    clickRoutine="ss_selectEntryUrlId${ss_mashupItemId}_${renderResponse.namespace}"
 		    accessibilityText="mashup.selectEntryUrl"
 		    />
+          <br/>
+          <label for="${ss_mashupPropertyName}__entryUrlTitle">
+          	<span class="ss_labelAbove" style="font-weight:normal !important;"
+          	><ssf:nlt tag="mashup.urlTitle"/></span>
+          </label>
+          <input type="text" name="${ss_mashupPropertyName}__entryUrlTitle" size="40"
+          	id="${ss_mashupPropertyName}__entryUrlTitle"
+            onChange="ss_mashupAttr_entryUrlTitle${ss_mashupItemId} = this.value;"/> 
+          <br/>
+          <input type="checkbox" name="${ss_mashupPropertyName}__entryUrlPopup"
+          	id="${ss_mashupPropertyName}__entryUrlPopup"
+            onChange="ss_mashupAttr_entryUrlPopup${ss_mashupItemId} = this.checked;"/> 
+          <label for="${ss_mashupPropertyName}__entryUrlPopup">
+          	<span class="ss_labelAfter"><ssf:nlt tag="mashup.urlPopup"/></span>
+          </label>
           <br/>
           <br/>
 		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
