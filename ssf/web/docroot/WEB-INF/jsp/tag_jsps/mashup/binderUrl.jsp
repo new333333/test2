@@ -53,11 +53,19 @@
 <c:if test="${ssConfigJspStyle != 'form'}">
 <div class="ss_mashup_url_content">
   <c:if test="${!empty mashupBinder}">
-    <a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+    <a <c:if test="${!empty mashup_attributes['popup']}"> target="_blank" </c:if>
+      href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
 		  action="view_folder_listing" 
 		  folderId="${mashupBinder.id}">
 		  <ssf:param name="newTab" value="1"/>
-		  </ssf:url>"><span>${mashupBinder.title}</span></a>
+		  </ssf:url>">
+	  <c:if test="${empty mashup_attributes['title']}">
+	    <span>${mashupBinder.title}</span>
+	  </c:if>
+	  <c:if test="${!empty mashup_attributes['title']}">
+	    <span>${mashup_attributes['title']}</span>
+	  </c:if>
+	</a>
   </c:if>
 </div>
 </c:if>
@@ -75,6 +83,11 @@
     <div class="ss_mashup_form_element_header">
       <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.binderUrl"/>: </span>
       <span>${mashupBinder.title}</span>
+      <c:if test="${!empty mashup_attributes['title']}">
+        <br/>
+        <span class="ss_bold"><ssf:nlt tag="general.title"/>: </span>
+        <span>${mashup_attributes['title']}</span>
+      </c:if>
     </div>
     <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
       class="ss_linkButton ss_fineprint"
