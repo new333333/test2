@@ -408,7 +408,7 @@ div.ss_editorHints {
 
 /* entry styles: common to entry views and entry forms */
 .ss_entryPopupWrapper {
-	padding: 20px;
+	padding: 20px 6px;
 }
 
 .ss_entryTitle {
@@ -1253,8 +1253,8 @@ li.ss_menu_item_highlighted {
 
 
 table.ss_attachments_list {
-	padding-left: 30px;
-	width: 98%;
+	padding-left: 0px;
+	width: 100%;
 	empty-cells: show;
 	}
 table.ss_attachments_list td.ss_att_title {
@@ -1270,6 +1270,11 @@ table.ss_attachments_list hr.ss_att_divider {
 table.ss_attachments_list td.ss_att_meta, .ss_att_meta {
 	font-size: 10px;
 	white-space: nowrap;
+	padding-left: 5px;
+	color: ${ss_style_metadata_color};
+	}
+.ss_att_meta_wrap {
+	font-size: 10px;
 	padding-left: 5px;
 	color: ${ss_style_metadata_color};
 	}

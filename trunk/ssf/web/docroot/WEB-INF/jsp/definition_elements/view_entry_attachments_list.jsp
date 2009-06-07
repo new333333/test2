@@ -59,6 +59,18 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	String ext = "";
 	if (fn.lastIndexOf(".") >= 0) ext = fn.substring(fn.lastIndexOf("."));
 	boolean editInPlaceSupported = false;
+	String fnBr = "";
+	int cCount = 0;
+	for (int i = 0; i < fn.length(); i++) {
+		String c = String.valueOf(fn.charAt(i));
+		cCount++;
+		if (c.matches("[\\W_]?") || cCount > 15) {
+			fnBr += c + "<wbr/>";
+			cCount = 0;
+		} else {
+			fnBr += c;
+		}
+	}
 %>
   <ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}" browserType="<%=strBrowserType%>">
 <%  editInPlaceSupported = true;  %>
@@ -129,7 +141,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				    	<ssf:title tag="title.open.file">
 					      <ssf:param name="value" value="${selection.fileItem.name}" />
 				    	</ssf:title>
-					><c:out value="${selection.fileItem.name} "/></a>
+					><%= fnBr %></a>
 				</ssf:isFileEditorConfiguredForOS>
 			</ssf:editorTypeToUseForEditInPlace>
 			
@@ -138,7 +150,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						binder="${ssDefinitionEntry.parentBinder}"
 						entity="${ssDefinitionEntry}"
 						fileAttachment="${selection}"/>"
-				><c:out value="${selection.fileItem.name} "/></a>
+				><%= fnBr %></a>
 			</ssf:editorTypeToUseForEditInPlace>
 
 			<c:if test="${selection.currentlyLocked}">
@@ -189,7 +201,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				    <ssf:title tag="title.open.file">
 					    <ssf:param name="value" value="${selection.fileItem.name}" />
 				    </ssf:title>
-					><c:out value="${selection.fileItem.name} "/></a>
+					><%= fnBr %></a>
 			<c:if test="${selection.currentlyLocked}">
 			  <br/>
 			  <img <ssf:alt tag="alt.locked"/> src="<html:imagesPath/>pics/sym_s_caution.gif"/>
@@ -272,11 +284,13 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		</ssf:ifnotaccessible>
 			
 		</td>
-		<td class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-				     value="${selection.modification.date}" type="both" 
-					 timeStyle="short" dateStyle="medium" /></td>
+		<td><span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+				     value="${selection.modification.date}" type="date" 
+					 dateStyle="medium" /></span> <span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+				     value="${selection.modification.date}" type="time" 
+					 timeStyle="short"/></span></td>
 		<td class="ss_att_meta"><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${selection.fileItem.lengthKB}"/>KB</td>
-		<td class="ss_att_meta ss_att_space">${selection.modification.principal.title}</td>
+		<td class="ss_att_meta_wrap ss_att_space">${selection.modification.principal.title}</td>
 		<td class="ss_att_meta" width="15%"></td>
 	</tr>
 	<c:if test="${!empty selection.fileVersions && versionCount > 1}">
@@ -347,11 +361,13 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				<td class="ss_att_meta" width="10%"></td>
 				<td class="ss_att_meta"></td>
 				<td class="ss_att_meta"></td>    
-				<td class="ss_att_meta ss_att_space"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-				     value="${fileVersion.modification.date}" type="both" 
-					 timeStyle="short" dateStyle="medium" /></td>
+				<td class="ss_att_space"><span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+				     value="${fileVersion.modification.date}" type="date" 
+					 dateStyle="medium" /></span> <span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+				     value="${fileVersion.modification.date}" type="time" 
+					 timeStyle="short" /></span></td>
 				<td class="ss_att_meta"><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${fileVersion.fileItem.lengthKB}"/>KB</td>
-				<td width="25%" class="ss_att_meta ss_att_space">${fileVersion.modification.principal.title}</td>
+				<td width="25%" class="ss_att_meta_wrap ss_att_space">${fileVersion.modification.principal.title}</td>
 				<td class="ss_att_meta" width="15%"></td>	
 			  </tr>				
 				
