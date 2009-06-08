@@ -3029,44 +3029,42 @@ public class BinderHelper {
 		return fa;
 	}
 
-	public static void fixupFolderAndEntryDefinitions(PortletRequest request, AllModulesInjected bs, Long binderId, String binderType, boolean folderFixups, boolean entryFixups, String entryDefinition)
-	throws FixupFolderDefsException {
-		// Do we have a fixup thread defined?
+	public static void fixupFolderAndEntryDefinitions(PortletRequest request, AllModulesInjected bs, Long binderId,
+			boolean folderFixups, boolean entryFixups, String entryDefinition) throws FixupFolderDefsException {
+		// Do we already have a fixup thread running?
 		FixupFolderDefsThread fixFolderDefsThread = FixupFolderDefsThread.getFixupFolderDefsThread(request);
-		if (fixFolderDefsThread != null) {
-			// Yes!  Is it still running?
-			FixupFolderDefsResults fixFolderDefsResults = fixFolderDefsThread.getFixupFolderDefsResults();
-			FixupFolderDefsResults.FixupStatus fixupFolderDefsStatus = fixFolderDefsResults.getStatus();
-			if ((FixupFolderDefsResults.FixupStatus.STATUS_COMPLETED != fixupFolderDefsStatus) &&
-			    (FixupFolderDefsResults.FixupStatus.STATUS_STOP_COLLECTING_RESULTS != fixupFolderDefsStatus)) {
-				// Yes!  Then we can't start another.
-				throw new FixupFolderDefsException(
-					FixupFolderDefsException.FixupExceptionCause.EXCEPTION_PREVIOUS_THREAD_BUSY);
-			}
-			
-			// The most recent fixup thread has completed.  Forget
-			// about it.
-			fixFolderDefsThread.removeFromSession();
+		if ((fixFolderDefsThread != null) && fixFolderDefsThread.isFolderFixupInProgress()) {
+			// Yes!  Then we can't start another.
+			throw new FixupFolderDefsException(
+				FixupFolderDefsException.FixupExceptionCause.EXCEPTION_PREVIOUS_THREAD_BUSY);
 		}
 
-		// If we can create a new fixup thread...
+		// If we can't create a new fixup thread...
 		fixFolderDefsThread = FixupFolderDefsThread.createFixupFolderDefsThread(
 			request,
 			bs,
 			binderId,
-			binderType,
 			folderFixups,
 			entryFixups,
 			entryDefinition);
 		
-		if (fixFolderDefsThread != null) {
-			// ...run it.
-			fixFolderDefsThread.doFixups();
-		}
-		
-		else {
+		if (null == fixFolderDefsThread) {
+			// ...tell the user.
 			throw new FixupFolderDefsException(
 				FixupFolderDefsException.FixupExceptionCause.EXCEPTION_CANT_CREATE_THREAD);
 		}
+		
+		// Note that we start the thread via a separate AJAX request so
+		// that we can display a message to the user that it's running.
+	}
+	
+	public static boolean isFolderFixupInProgress(PortletRequest request) {
+		FixupFolderDefsThread fixFolderDefsThread = FixupFolderDefsThread.getFixupFolderDefsThread(request);
+		return ((fixFolderDefsThread != null) && fixFolderDefsThread.isFolderFixupInProgress());
+	}
+	
+	public static boolean isFolderFixupReady(PortletRequest request) {
+		FixupFolderDefsThread fixFolderDefsThread = FixupFolderDefsThread.getFixupFolderDefsThread(request);
+		return ((fixFolderDefsThread != null) && fixFolderDefsThread.isFolderFixupReady());
 	}
 }

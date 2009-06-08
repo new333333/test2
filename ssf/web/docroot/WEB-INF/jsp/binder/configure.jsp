@@ -254,24 +254,52 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 			}
 	
 			
+			// Start the folder fixup process.
+			function startFolderFixups()
+			{
+				var url;
+				var obj;
+
+				
+				// Set up the object that will be used in the AJAX
+				// request.
+				obj = new Object();
+				obj.operation = "startFixupFolderDefs";
+
+				// Build the url used in the AJAX request.
+				url = ss_buildAdapterUrl( ss_AjaxBaseUrl, obj );
+				
+				// Issue the AJAX request.  The function
+				// handleResponseToStartFixup() will be called we get
+				// the response to the request.
+				ss_get_url(url, handleResponseToStartFixup);
+			}
+			function handleResponseToStartFixup(responseData) { 
+				// Nothing to do!
+			}
+
+
 			// Validates that something is asked to be fixed up. 
 			function validateFixupsForm() {
 				// If nothing is checkced...
 				if ((!(document.getElementById("folderFixups").checked)) &&
 					(!(document.getElementById("entryFixups").checked))) {
 					// ...tell the user and bail.
-					alert("<ssf:nlt tag="binder.configure.folderDefinitionFixups.error.noChecks" text="Nothing checked."/>");
+					alert("<ssf:nlt tag="binder.configure.folderDefinitionFixups.warning.noChecks" text="Nothing checked."/>");
 					return false;
 				}
-
-//! TODO
-				alert("The implementation of this feature is in progress and it cannot be used yet!");
-				return false;
-//! TODO
 
 				// ...otherwise, allow the form to be submitted.
 				return true;
 			}
+
+
+			// If we have a thread ready to start fixing folder
+			// definitions...
+			<c:if test="${ss_fixupThreadStatus == 'ready'}">
+				// ...start it.
+				window.setTimer(startFolderFixups(), 100);
+			</c:if>
 		</script>
 		
 		<fieldset class="ss_fieldset">
@@ -280,14 +308,17 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 				<ssf:inlineHelp tag="ihelp.other.folder_definition_fixups"/>
 			</legend>
 	
-		    <c:if test="${!empty ss_fixupThreadError}">
+		    <c:if test="${!empty ss_fixupThreadStatus}">
 				<br/><span class="ss_bold ss_errorLabel">
 					<c:choose>
-						<c:when test="${ss_fixupThreadError == 'busy'}">
+						<c:when test="${ss_fixupThreadStatus == 'busy'}">
 		    				<ssf:nlt tag="binder.configure.folderDefinitionFixups.error.fixupThreadBusy"/>
 						</c:when>
-						<c:when test="${ss_fixupThreadError == 'cantStart'}">
+						<c:when test="${ss_fixupThreadStatus == 'cantStart'}">
 		    				<ssf:nlt tag="binder.configure.folderDefinitionFixups.error.fixupThreadCantStart"/>
+						</c:when>
+						<c:when test="${ss_fixupThreadStatus == 'running' || ss_fixupThreadStatus == 'ready'}">
+		    				<ssf:nlt tag="binder.configure.folderDefinitionFixups.status.fixupThreadRunning"/>
 						</c:when>
 				    	<c:otherwise>
 		    				<ssf:nlt tag="binder.configure.folderDefinitionFixups.error.fixupThreadOther"/>

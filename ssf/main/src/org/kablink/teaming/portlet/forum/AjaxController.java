@@ -146,6 +146,7 @@ import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.upload.FileUploadProgressListener;
 import org.kablink.teaming.web.upload.ProgressListenerSessionResolver;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.FixupFolderDefsThread;
 import org.kablink.teaming.web.util.UserAppConfig;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.ListFolderHelper;
@@ -483,6 +484,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxGetUploadProgressStatus(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_WORKFLOW_APPLET)) {
 			return ajaxGetWorkflowApplet(request, response);
+		} else if (op.equals( WebKeys.OPERATION_START_FIXUP_FOLDER_DEFS )) {
+			return ajaxStartFixupFolderDefs(request, response);
 		}
 		else if ( op.equals( WebKeys.OPERATION_SAVE_USER_TUTORIAL_PANEL_STATE ) )
 		{
@@ -826,6 +829,35 @@ public class AjaxController  extends SAbstractControllerRetry {
 		response.setContentType( "text/json" );
 		return new ModelAndView( "common/json_ajax_return", model );
 	}// end ajaxStartLdapSync()
+	
+	
+	/**
+	 * Handles a request start a fixup folder definitions thread.
+	 *  
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	private ModelAndView ajaxStartFixupFolderDefs( RenderRequest request, RenderResponse response ) throws Exception
+	{
+		// Do we have a thread ready to start?
+		FixupFolderDefsThread fixFolderDefsThread = FixupFolderDefsThread.getFixupFolderDefsThread(request);
+		if ((null != fixFolderDefsThread) && fixFolderDefsThread.isFolderFixupReady()) {
+			// Yes!  Start it.
+			//
+			// Note:  Currently, doing the fixup on a separate thread
+			//    does not work.  When doing the work on a separate
+			//    thread works, replace the call to Thread.run() with a
+			//    call to Thread.start().
+//!			fixFolderDefsThread.start();
+			fixFolderDefsThread.run();
+		}
+
+		// We don't need to return any data for this request.
+		response.setContentType("text/json" );
+		return new ModelAndView("common/json_ajax_return", new HashMap());
+	}
 	
 	
 	/**

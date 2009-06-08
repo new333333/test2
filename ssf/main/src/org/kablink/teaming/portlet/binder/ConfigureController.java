@@ -217,19 +217,17 @@ public class ConfigureController extends AbstractBinderController {
 						request,
 						this,
 						binderId,
-						binderType,
 						folderFixups,
 						entryFixups,
 						entryDefinition);
-				}
-				catch (FixupFolderDefsException ffde) {
+				} catch (FixupFolderDefsException ffde) {
 					// No!  Tell the user why.
 					FixupFolderDefsException.FixupExceptionCause fec = ffde.getExceptionCause();
 					String cause;
 					if      (FixupFolderDefsException.FixupExceptionCause.EXCEPTION_PREVIOUS_THREAD_BUSY == fec) cause = "busy";
 					else if (FixupFolderDefsException.FixupExceptionCause.EXCEPTION_CANT_CREATE_THREAD   == fec) cause = "cantStart";
 					else                                                                                         cause = "unknown";
-					response.setRenderParameter(WebKeys.FIXUP_THREAD_ERROR, cause);
+					response.setRenderParameter(WebKeys.FIXUP_THREAD_STATUS, cause);
 				}
 			}
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
@@ -265,7 +263,16 @@ public class ConfigureController extends AbstractBinderController {
 					  	binder.getEntityType().equals(EntityType.folder) &&
 					  	simpleNames.size() > 0);
 		}
-		model.put(WebKeys.FIXUP_THREAD_ERROR, PortletRequestUtils.getStringParameter(request, WebKeys.FIXUP_THREAD_ERROR));
+
+		String fixFolderDefsStatus = PortletRequestUtils.getStringParameter(request, WebKeys.FIXUP_THREAD_STATUS);
+		if ((null == fixFolderDefsStatus) || (0 == fixFolderDefsStatus.length())) {
+			if (BinderHelper.isFolderFixupReady(request)) {
+				fixFolderDefsStatus = "ready";
+			} else if (BinderHelper.isFolderFixupInProgress(request)) {
+				fixFolderDefsStatus = "running";
+			}
+		}
+		model.put(WebKeys.FIXUP_THREAD_STATUS, fixFolderDefsStatus);
 		model.put(WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR));
 		model.put(WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR));
 		model.put(WebKeys.SIMPLE_URL_INVALID_CHARACTERS, PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_INVALID_CHARACTERS));
