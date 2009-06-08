@@ -61,9 +61,10 @@ public class XSSCheck implements StringCheck {
 	
 	private static final String PATTERN_STR1 = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|style|html|head|body|meta|xml|blink|link|iframe|frame|frameset|ilayer|layer|bgsound|base)(?:[\\s]+[^>]*>|>))";
 	private static final String PATTERN_STR2 = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|meta|blockquote|del|ins|q)[\\s]*[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^\\s]*script[\\s]*:[^>\\s]*))([^>]*>)";
-	private static final String PATTERN_STR3 = "(?i)<[\\s]*[^>]+\\s(style[\\s]*=[\\s]*\"[^\"]*\"|style[\\s]*=[\\s]*'[^']*')[^>]*>";
-	private static final String PATTERN_STR4 = "(?i)(\\s(?:style[\\s]*=[\\s]*\"[^\"]*\"|style[\\s]*=[\\s]*'[^']*'))";
+	private static final String PATTERN_STR3 = "(?i)<[\\s]*[^>]+[\\s]*([^>\\s]*style[\\s]*=[\\s]*([\"'])[^>]*\\2|[^>\\s]*style[\\s]*=[^>\\s]*)[^>]*>";
+	private static final String PATTERN_STR4 = "(?i)(?:[^<>\\s]*style[\\s]*=[\\s]*([\"'])[^>]*\\2|[^>\\s]*style[\\s]*=[^>\\s]*)";
 	private static final String PATTERN_STR5 = "(?i)((?:url|expression))";
+	private static final String PATTERN_STR5a = "(?i)(/\\*[^*]*\\*/)";
 	private static final String PATTERN_STR6 = "(?i)(<[\\s]*[^>]*[\\s]+)(on[^>\\s]*[\\s]*=[\\s]*(?:\"[^\">]*\"|'[^'>]*'))([^>]*>)";
 	
 	private Pattern pattern1;
@@ -71,6 +72,7 @@ public class XSSCheck implements StringCheck {
 	private Pattern pattern3;
 	private Pattern pattern4;
 	private Pattern pattern5;
+	private Pattern pattern5a;
 	private Pattern pattern6;
 	private boolean enable;
 	private String mode;
@@ -84,6 +86,7 @@ public class XSSCheck implements StringCheck {
 		pattern3 = Pattern.compile(PATTERN_STR3);
 		pattern4 = Pattern.compile(PATTERN_STR4);
 		pattern5 = Pattern.compile(PATTERN_STR5);
+		pattern5a = Pattern.compile(PATTERN_STR5a);
 		pattern6 = Pattern.compile(PATTERN_STR6);
 		enable = SPropsUtil.getBoolean("xss.check.enable");
 		mode = SPropsUtil.getString("xss.check.mode");
@@ -187,11 +190,13 @@ public class XSSCheck implements StringCheck {
 		Matcher matcher3 = pattern3.matcher(sequence);
 		while (matcher3.find()) {
 			String tagString = matcher3.group(0);
+			if (matcher3.groupCount() >= 1) tagString = matcher3.group(1);
 			Matcher matcher4 = pattern4.matcher(tagString);
 			if (matcher4.find()) {
 				String styleString = matcher4.group(0);
 				Matcher matcher5 = pattern5.matcher(styleString);
-				if (matcher5.find()) {
+				Matcher matcher5a = pattern5a.matcher(styleString);
+				if (matcher5.find() || matcher5a.find()) {
 					tagString = matcher4.replaceAll(StringPool.BLANK);
 					result = false;
 				}
