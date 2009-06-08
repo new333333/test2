@@ -60,7 +60,7 @@ public class XSSCheck implements StringCheck {
 	private static final String MODE_TRUSTED_STRIP = "trusted.strip";
 	
 	private static final String PATTERN_STR1 = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|style|html|head|body|meta|xml|blink|link|iframe|frame|frameset|ilayer|layer|bgsound|base)(?:[\\s]+[^>]*>|>))";
-	private static final String PATTERN_STR2 = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|meta|blockquote|del|ins|q)[\\s]*[^>]*(?:href|src|cite|scheme)[\\s]*=[\\s]*(?:\"|')[\\s]*[^\\s]*script[\\s]*:[^>]*>)";
+	private static final String PATTERN_STR2 = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|meta|blockquote|del|ins|q)[\\s]*[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^\\s]*script[\\s]*:[^>\\s]*))([^>]*>)";
 	private static final String PATTERN_STR3 = "(?i)<[\\s]*[^>]+\\s(style[\\s]*=[\\s]*\"[^\"]*\"|style[\\s]*=[\\s]*'[^']*')[^>]*>";
 	private static final String PATTERN_STR4 = "(?i)(\\s(?:style[\\s]*=[\\s]*\"[^\"]*\"|style[\\s]*=[\\s]*'[^']*'))";
 	private static final String PATTERN_STR5 = "(?i)((?:url|expression))";
@@ -171,9 +171,16 @@ public class XSSCheck implements StringCheck {
 		}
 		//Check for href="javascript:..." or any *script as src or href, etc
 		Matcher matcher2 = pattern2.matcher(sequence);
-		if (matcher2.find()) {
-			sequence = matcher2.replaceAll(StringPool.BLANK);
+		String lastValue = "";
+		while (matcher2.find()) {
+			String tagStart = matcher2.group(1);
+			String scriptString = matcher2.group(2);
+			String tagEnd = matcher2.group(4);
+			sequence = tagStart + StringPool.BLANK + tagEnd;
+			matcher2 = pattern2.matcher(sequence);
 			result = false;
+			if (lastValue.equals(sequence)) break;
+			lastValue = sequence;
 		}
 		//Check for style="..." in any tag
 		StringBuffer buf = new StringBuffer();
