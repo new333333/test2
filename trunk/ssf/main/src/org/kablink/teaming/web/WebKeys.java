@@ -481,6 +481,7 @@ public class WebKeys {
 	public static final String OPERATION_SHOW_NO_ENTRIES = "show_no_entries";
 	public static final String OPERATION_SHOW_NO_MORE_ENTRIES = "show_no_more_entries";
 	public static final String OPERATION_START_LDAP_SYNC = "startLdapSync";
+	public static final String OPERATION_START_FIXUP_FOLDER_DEFS = "startFixupFolderDefs";
 	public static final String OPERATION_STOP_COLLECTING_LDAP_SYNC_RESULTS = "stopCollectingLdapSyncResults";
 	public static final String OPERATION_FIND_CALENDAR_EVENTS = "find_calendar_events";
 	public static final String OPERATION_STICKY_CALENDAR_DISPLAY_SETTINGS = "sticky_calendar_display_settings";
@@ -764,7 +765,7 @@ public class WebKeys {
     public static final String FILTER_TYPE="ss_filterType";
     public static final String FILTER_VALUE_TYPE="ss_filterValueType";
     public static final String FILTER_WORKFLOW_DEF_ID = "ss_workflow_def_id";
-    public static final String FIXUP_THREAD_ERROR ="ss_fixupThreadError";
+    public static final String FIXUP_THREAD_STATUS ="ss_fixupThreadStatus";
     public static final String FOLDER = "ssFolder";
     public static final String FOLDER_COLUMNS="folderColumns";
     public static final String FOLDER_COLUMN_POSITIONS="folderColumnPositions";

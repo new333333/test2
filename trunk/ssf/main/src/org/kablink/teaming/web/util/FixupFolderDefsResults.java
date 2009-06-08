@@ -45,10 +45,11 @@ import java.util.ArrayList;
  */
 public class FixupFolderDefsResults {
 	public enum FixupStatus {
+		STATUS_ABORTED_BY_ERROR,
 		STATUS_COLLECT_RESULTS,
 		STATUS_COMPLETED,
+		STATUS_READY,
 		STATUS_STOP_COLLECTING_RESULTS,
-		STATUS_ABORTED_BY_ERROR
 	}
 	
 	// Define the maximum number of results we can collect for each area.
@@ -64,11 +65,11 @@ public class FixupFolderDefsResults {
 	/**
 	 * Class constructor
 	 */
-    public FixupFolderDefsResults(String id) {
+    public FixupFolderDefsResults(String id, FixupStatus initialStatus) {
     	super();
     	
-    	m_id = id;
-    	m_status = FixupStatus.STATUS_COLLECT_RESULTS;
+    	m_id        = id;
+    	m_status    = initialStatus;
     	m_errorDesc = null;
     	
     	m_foldersFixed = new PartialFixupFolderDefsResults();
@@ -147,6 +148,16 @@ public class FixupFolderDefsResults {
     }
     
 
+    /**
+     * Calling this method will start collection of fixup
+     * results.
+     */
+    public void collectResults() {
+    	m_status = FixupStatus.STATUS_COLLECT_RESULTS;
+    }
+    
+    
+    
     /**
      * Calling this method will stop all further collection of fixup
      * results.
