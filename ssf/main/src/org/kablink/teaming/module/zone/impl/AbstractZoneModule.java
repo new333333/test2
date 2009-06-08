@@ -49,6 +49,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
+import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.Binder;
@@ -309,7 +310,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				"where className='com.sitescape.team.module.workflow.TimerAction'"); 
 			getCoreDao().executeUpdate("update org.jbpm.instantiation.Delegation set className='org.kablink.teaming.module.workflow.Notify' " +
 				"where className='com.sitescape.team.module.workflow.Notify'"); 
+			//fix up any duplicate definitions
+			fixUpDuplicateDefinitions(top);
 			getCoreDao().executeUpdate("update org.kablink.teaming.domain.Definition set binderId=-1 where binderId is null");
+
 			//add new reserved functions
 			List ids = new ArrayList();
 			//add users who currently have siteAdmin to the new functions
@@ -536,6 +540,51 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getBinderModule().setDefinitions(top.getId(), definitions, workflowAssociations);
    		}
   	}
+ 	/**
+ 	 * Fix up duplicate definitions.  1.0 allowed definitions with the same name
+ 	 * we need to find any definitions with the same name and rename those that are duplicates.
+ 	 * 
+ 	 * @param top
+ 	 */
+ 	private void fixUpDuplicateDefinitions(Workspace top) {
+		
+		OrderBy order = new OrderBy();
+		order.addColumn("name");
+		FilterControls filter = new FilterControls();
+		filter.setOrderBy(order);
+		filter.setZoneCheck(false);
+		
+ 		List<Definition> defs = getCoreDao().loadDefinitions(filter, top.getZoneId());
+ 		List batch = new ArrayList();
+
+ 		String prevName = null;
+		int dupCnt = 1;
+		for ( Definition def : defs )
+		{
+			String name = def.getName();
+			if(name.equals(prevName)){
+				dupCnt+=1;
+			} else {
+				dupCnt = 1;
+			}
+			
+			if(dupCnt > 1)
+			{
+				def.setName(name+"_"+dupCnt);
+				getCoreDao().update(def);
+			}
+
+			prevName = name;
+		}
+		
+		//flush updates
+		getCoreDao().flush();
+		//flush cache
+		for (int i=0; i<batch.size(); ++i) {
+			getCoreDao().evict(batch.get(i));
+		}
+ 	}
+
  	// Must be running inside a transaction set up by the caller 
  	protected void validateZoneTx(Workspace zone) {
  		String superName = SZoneConfig.getAdminUserName(zone.getName());
