@@ -183,8 +183,10 @@ public class Html {
 		StringBuffer sb = new StringBuffer();
 		int x = 0;
 		int y = text.indexOf("<");
+		int loopDetector = 2000;
 
-		while (y != -1) {
+		while (y != -1 && loopDetector > 0) {
+			loopDetector--;
 			//Hemanth
 			//We are trying to strip all the HTML tags except img. We except the HTML to be well-formed.
 			
