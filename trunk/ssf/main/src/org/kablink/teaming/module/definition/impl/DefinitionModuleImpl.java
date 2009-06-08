@@ -352,7 +352,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
     	Definition def = getCoreDao().loadDefinition(defId, zoneId);
     	Binder binder = null;
-    	if (!ObjectKeys.RESERVED_BINDER_ID.equals(def.getBinderId())) binder = getCoreDao().loadBinder(def.getBinderId(), zoneId);
+    	Long binderId = def.getBinderId();
+    	if (binderId != null && ObjectKeys.RESERVED_BINDER_ID.longValue() != binderId.longValue())
+    	{
+    		binder = getCoreDao().loadBinder(def.getBinderId(), zoneId);
+    	}
     	Document doc = def.getDefinition();
     	if (doc == null) return;
     	Map<Long, Principal> principalMap = new HashMap();
