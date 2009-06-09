@@ -50,7 +50,7 @@
 <c:if test="${!empty ssSearchNodes}">
   <c:forEach var="node" items="${ssSearchNodes}">
 	<fieldset class="ss_fieldset">
-	  <legend class="ss_legend">${node.title} (${node.nodeName})</legend>	
+	  <legend class="ss_legend ss_labelLeft">${node.title} (${node.nodeName})</legend>	
 	<table class="ss_style" border="0" cellspacing="3" cellpadding="3">
 	<tr><td valign="top">
 	<c:set var="properties" value="${node.displayProperties}"/>
@@ -59,26 +59,35 @@
 			<c:out value="${property.key}"/>: <c:out value="${property.value}"/><br/>
 		</c:forEach>
 	</c:if>
-	<table class="ss_style" border="0" cellspacing="3" cellpadding="3">
-	<tr><td valign="top">
-	<hr shade=noshade size=1/>
-	<c:if test="${!node.inSynch}">
-		<blink><span style="color:red"><ssf:nlt tag="administration.search.node.synch.false" /></span></blink>
-		<br/><input type="checkbox" name="synchronize${node.nodeName}" <c:if test="${node.accessMode == 'offline'}">disabled</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.synch.synchronize" text="Synchronize it now"/></span>
-	</c:if>
-	<c:if test="${node.inSynch}">
-		<ssf:nlt tag="administration.search.node.synch.true" />
-	</c:if>
-	<br/>
 	<table class="ss_style" border ="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr><td valign="top">
 	<hr shade=noshade size=1/>
-	<span class="ss_labelLeft"><ssf:nlt tag="administration.search.node.accessmode"/></span><br>
-		<input type="radio" name="accessMode${node.nodeName}" value="readwrite" <c:if test="${node.accessMode == 'readwrite'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.accessmode.readwrite" /></span><br>
-		<input type="radio" name="accessMode${node.nodeName}" value="writeonly" <c:if test="${node.accessMode == 'writeonly'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.accessmode.writeonly" /></span><br>
-		<input type="radio" name="accessMode${node.nodeName}" value="noaccess" <c:if test="${node.accessMode == 'noaccess'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.accessmode.noaccess" /></span><br>
+	<span class="ss_labelLeft"><ssf:nlt tag="administration.search.node.usermodeaccess"/></span><br>
+		<input type="radio" name="userModeAccess${node.nodeName}" value="readwrite" <c:if test="${node.userModeAccess == 'readwrite'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.usermodeaccess.readwrite" /></span><br>
+		<input type="radio" name="userModeAccess${node.nodeName}" value="writeonly" <c:if test="${node.userModeAccess == 'writeonly'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.usermodeaccess.writeonly" /></span><br>
+		<input type="radio" name="userModeAccess${node.nodeName}" value="noaccess" <c:if test="${node.userModeAccess == 'noaccess'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.usermodeaccess.noaccess" /></span><br>
 	</td></tr>
 	</table>
+	<table class="ss_style" border="0" cellspacing="3" cellpadding="3" width="100%">
+	<tr><td valign="top">
+	<hr shade=noshade size=1/>
+		<input type="checkbox" name="enableDeferredUpdateLog${node.nodeName}" <c:if test="${node.enableDeferredUpdateLog}">checked</c:if> <span class="ss_labelLeft"><ssf:nlt tag="administration.search.node.deferredupdatelog.enable"/></span>
+	<br/>
+	</td></tr>
+	</table>
+	<table class="ss_style" border="0" cellspacing="3" cellpadding="3" width="100%">
+	<tr><td valign="top">
+	<hr shade=noshade size=1/>
+	<c:if test="${!node.noDeferredUpdateLogRecords}">
+		<span class="ss_labelLeft ss_errorLabel"><ssf:nlt tag="administration.search.node.nodeferredupdatelogrecords.false" /></span>
+		<br/><input type="radio" name="synchronize${node.nodeName}" value="apply"><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.deferredupdatelogrecords.apply"/></span>
+		<br/><input type="radio" name="synchronize${node.nodeName}" value="discard"><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.deferredupdatelogrecords.discard"/></span>
+		<br/><input type="radio" name="synchronize${node.nodeName}" value="donothing" checked><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.deferredupdatelogrecords.donothing"/></span>
+	</c:if>
+	<c:if test="${node.noDeferredUpdateLogRecords}">
+		<span class="ss_labelLeft"><ssf:nlt tag="administration.search.node.nodeferredupdatelogrecords.true" /></span>
+	</c:if>
+	<br/>
 	</td></tr>
 	</table>
 	</td></tr>

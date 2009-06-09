@@ -201,16 +201,23 @@ public interface AdminModule {
 	 * 
 	 * @param indexNodeId
 	 * @param accessMode
-	 * @param inSynch
+	 * @param noDeferredUpdateLogRecords
 	 */
-	public void updateIndexNode(String indexNodeId, String accessMode, Boolean inSynch);
+	public void updateIndexNode(String indexNodeId, String accessMode, Boolean enableDeferredUpdateLog, Boolean noDeferredUpdateLogRecords);
 
 	/**
-	 * Synchronize the Lucene node.
+	 * Apply the deferred update log records to the index node and remove them.
 	 * 
-	 * @param luceneNodeName
+	 * @param indexNode
 	 */
-	public void synchronizeIndexOnNode(IndexNode indexNode);
+	public void applyDeferredUpdateLogRecords(IndexNode indexNode);
+	
+	/**
+	 * Discard and remove the deferred update log records without applying them.
+	 *  
+	 * @param indexNode
+	 */
+	public void discardDeferredUpdateLogRecords(IndexNode indexNode);
 	
 	/**
 	 * Obtain an application-scoped token on behalf of the specified user.
