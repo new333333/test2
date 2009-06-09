@@ -45,9 +45,13 @@
 <html <c:if test="${!empty ssUser && !empty ssUser.locale}"> lang="${ssUser.locale}"</c:if>>
 <head>
 <%-- Variables that can be overridden in the following callout --%><%--
+--%><c:set var="ss_watermark" value="" scope="request"/><%--
+--%><c:set var="licensedEdition" value="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>"/><%--
+--%><c:if test="${licensedEdition}"><%--
 --%><c:set var="ss_watermark" scope="request"><%--
 --%><span style="color:red;font-size:12px;font-family:impact,arial black;">${ssProductName} 2.0 Beta</span><%--
 --%></c:set><%--
+--%></c:if><%--
 --%><jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_head.jsp" />
 <!-- Mimic Internet Explorer 7 (Needed to make dojo work in IE8) -->
 <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" >
