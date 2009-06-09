@@ -55,18 +55,32 @@ public class ManageSearchNodesController extends  SAbstractController {
 			List<IndexNode> nodes = getAdminModule().retrieveIndexNodes();
 			if(nodes != null) {
 				for(IndexNode node : nodes) {
-					// If both synchronize and change-access-mode requests came in, it is
-					// important to execute synchronize first based on the current access
-					// mode, and then change the access mode.
+					String[] userModeAccess = (String[])formData.get("userModeAccess" + node.getNodeName());
+					String newUserModeAccess = null;
+					if(userModeAccess != null && userModeAccess.length > 0) {
+						newUserModeAccess = userModeAccess[0];
+						if(node.getUserModeAccess().equals(newUserModeAccess))
+							newUserModeAccess = null;
+					}
+					
+					String[] enableDeferredUpdateLog = (String[])formData.get("enableDeferredUpdateLog" + node.getNodeName());
+					Boolean newEnableDeferredUpdateLog = Boolean.FALSE;
+					if(enableDeferredUpdateLog != null && enableDeferredUpdateLog.length > 0) {
+						if(enableDeferredUpdateLog[0].equals("on") || enableDeferredUpdateLog[0].equals("true"))
+							newEnableDeferredUpdateLog = Boolean.TRUE;
+					}
+					if(node.getEnableDeferredUpdateLog() == newEnableDeferredUpdateLog.booleanValue())
+						newEnableDeferredUpdateLog = null;
+					
+					if(newUserModeAccess != null || newEnableDeferredUpdateLog != null)
+						getAdminModule().updateIndexNode(node.getId(), newUserModeAccess, newEnableDeferredUpdateLog, null);
+					
 					String[] synchronize = (String[])formData.get("synchronize" + node.getNodeName());
 					if(synchronize != null && synchronize.length > 0) {
-						if(synchronize[0].equals("on") || synchronize[0].equals("true"))
-							getAdminModule().synchronizeIndexOnNode(node);
-					}
-					String[] accessMode = (String[])formData.get("accessMode" + node.getNodeName());
-					if(accessMode != null && accessMode.length > 0) {
-						if(!node.getAccessMode().equals(accessMode[0]))
-							getAdminModule().updateIndexNode(node.getId(), accessMode[0], null);
+						if(synchronize[0].equals("apply"))
+							getAdminModule().applyDeferredUpdateLogRecords(node);
+						else if(synchronize[0].equals("discard"))
+							getAdminModule().discardDeferredUpdateLogRecords(node);
 					}
 				}
 			}

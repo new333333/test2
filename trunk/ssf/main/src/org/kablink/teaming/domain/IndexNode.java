@@ -35,25 +35,30 @@ package org.kablink.teaming.domain;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.kablink.util.StringUtil;
+
 public class IndexNode extends ZonedObject {
 
 	/**
-	 * Both read and write access is allowed for the node.
+	 * End users are allowed both read and write access to the node.
 	 */
-	public static final String ACCESS_MODE_READ_WRITE	= "readwrite";
+	public static final String USER_MODE_ACCESS_READ_WRITE	= "readwrite";
 	/**
-	 * Only write access is allowed for the node.
+	 * End users are allowed only write access to the node.
 	 */
-	public static final String ACCESS_MODE_WRITE_ONLY	= "writeonly";
+	public static final String USER_MODE_ACCESS_WRITE_ONLY	= "writeonly";
 	/**
-	 * Neither read nor write access is allowed for the node.
+	 * End users are allowed no access to the node.
 	 */
-	public static final String ACCESS_MODE_NO_ACCESS	= "noaccess";
+	public static final String USER_MODE_ACCESS_NO_ACCESS	= "noaccess";
 	
 	private String id;
 	private Name name;
-	private String accessMode = "readwrite";
-	private boolean inSynch = true;
+	private boolean noDeferredUpdateLogRecords = true; // column="inSynch"
+	private String accessMode; // (internal use only) contains userModeAccess followed by space followed by 1 or 0
+	
+	private String userModeAccess = USER_MODE_ACCESS_READ_WRITE;
+	private boolean enableDeferredUpdateLog = false;
 	
 	// The following two fields are here for convenience only, and not persistent.
 	private String title;
@@ -81,19 +86,20 @@ public class IndexNode extends ZonedObject {
 		return (name != null)? name.getIndexName() : null;
 	}
 
-	public String getAccessMode() {
-		return accessMode;
+	public String getUserModeAccess() {
+		return userModeAccess;
 	}
-	public void setAccessMode(String accessMode) {
-		this.accessMode = accessMode;
+	public void setUserModeAccess(String accessMode) {
+		this.userModeAccess = accessMode;
+		updateAccessMode();
 	}
 	
-	public boolean isInSynch() {
-		return inSynch;
+	public boolean getNoDeferredUpdateLogRecords() {
+		return noDeferredUpdateLogRecords;
 	}
 
-	public void setInSynch(boolean inSynch) {
-		this.inSynch = inSynch;
+	public void setNoDeferredUpdateLogRecords(boolean noDeferredUpdateLogRecords) {
+		this.noDeferredUpdateLogRecords = noDeferredUpdateLogRecords;
 	}
 
 	public Map<String, String> getDisplayProperties() {
@@ -112,6 +118,35 @@ public class IndexNode extends ZonedObject {
 		this.title = title;
 	}
 	
+	public void setEnableDeferredUpdateLog(boolean enableDeferredUpdateLog) {
+		this.enableDeferredUpdateLog = enableDeferredUpdateLog;
+		updateAccessMode();
+	}
+	
+	private void updateAccessMode() {
+		this.accessMode = userModeAccess + (enableDeferredUpdateLog? " 1" : " 0");
+	}
+	
+	public boolean getEnableDeferredUpdateLog() {
+		return enableDeferredUpdateLog;
+	}
+	
+	// used by Hibernate only
+	private String getAccessMode() {
+		return accessMode;
+	}
+
+	// used by Hibernate only
+	private void setAccessMode(String accessMode) {
+		this.accessMode = accessMode;
+		String[] values = StringUtil.split(accessMode, " ");
+		userModeAccess = values[0];
+		if(values.length > 1 && "1".equals(values[1]))
+			enableDeferredUpdateLog = true;
+		else
+			enableDeferredUpdateLog = false;
+	}
+
 	public static class Name implements Serializable {
 		private String nodeName;
 		private String indexName;
