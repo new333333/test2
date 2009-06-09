@@ -96,6 +96,7 @@ a:hover {
 <br/><span>Ehcache</span>
 <br/><span>ezMorph</span>
 <br/><span>Jackrabbit</span>
+<br/><span>Jakarta Taglibs</span>
 <br/><span>Jasypt</span>
 <br/><span>Joda-Time</span>
 <br/><span>JSon-lib</span>
@@ -146,8 +147,10 @@ a:hover {
 <br/><br/><span class="ss_bold"><a href="http://www.dom4j.org/license.html">dom4j</a></span>
 <br/><br/><span class="ss_bold"><a href="http://easymock.org/License.html">EasyMock</a></span>
 <br/><br/><span class="ss_bold"><a href="http://m2.modularity.net.au/projects/ical4j/license.html">iCal4j</a></span>
+<br/><br/><span class="ss_bold"><a href="http://www.xom.nu/lib/normalizer_license.html">icu4j</a></span>
 <br/><br/><span class="ss_bold"><a href="http://jaxen.codehaus.org/license.html">Jaxen</a></span>
 <br/><br/><span class="ss_bold"><a href="http://contraintes.inria.fr/OADymPPaC/sourceforge/cvs/tra4cp/src/cp-infovis/license-junit.html">Junit</a></span>
+<br/><br/><span class="ss_bold"><a href="http://dev.jquery.com/browser/trunk/jquery/MIT-LICENSE.txt">jQuery</a></span>
 <br/><br/><span class="ss_bold"><a href="http://www.gnu.org/copyleft/gpl.html">MySQL Connector/J</a></span>
 <br/><br/><span class="ss_bold"><a href="https://glassfish.dev.java.net/public/CDDL+GPL.html">SAAJ</a></span>
 <br/><br/><span class="ss_bold"><a href="http://www.slf4j.org/license.html">SLF4J</a></span>
