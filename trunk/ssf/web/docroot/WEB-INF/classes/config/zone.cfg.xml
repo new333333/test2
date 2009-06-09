@@ -4,9 +4,9 @@
 	<!-- Unlike all other elements in the file, the following element is
 	     meaningful only at the top-level. In other words, it does not
 	     apply to individual zone instances. This element is required. -->
-	<defaultZone name="liferay.com"/>
+	<defaultZone name="kablink"/>
 	<!-- Zone specific settings for default zone of liferay.com. -->
-	<zone name="liferay.com">
+	<zone name="kablink">
 		<!-- all new users in this zone will be assigned group membership in these groups -->
 		<defaultGroupsOnAcctCreation>
 			<!-- Example format -->
