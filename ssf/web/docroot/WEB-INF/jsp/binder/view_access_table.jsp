@@ -44,22 +44,28 @@
 </THEAD>
 <TBODY>
 <TR>
-  <TD valign="top">
+  <TD valign="top" width="15%">
     <c:if test="${ssBinder.entityType == 'folder'}"><ssf:nlt tag="access.operation.viewFolder"/></c:if>
     <c:if test="${ssBinder.entityType == 'profiles'}"><ssf:nlt tag="access.operation.viewProfiles"/></c:if>
     <c:if test="${ssBinder.entityType != 'folder' && ssBinder.entityType != 'profiles'}"><ssf:nlt tag="access.operation.viewWorkspace"/></c:if>
   </TD>
-  <TD valign="top" nowrap>
+  <TD valign="top" width="50%">
+    <ul style="margin:0px 0px 0px -25px;">
     <c:forEach var="user" items="${ss_accessSortedUsersAll}">
       <c:if test="${!empty ssOperationMap['readEntries'].ssUsers[user.id]}">
-        <span>${user.title}</span> <span class="ss_smallprint ss_italic">(${user.name})</span><br/>
+        <li style="list-style: square outside none;">
+          <span>${user.title}</span> <span class="ss_smallprint ss_italic">(${user.name})</span>
+        </li>
       </c:if>
     </c:forEach>
+    </ul>
     <c:if test="${empty ssOperationMap['readEntries'].ssUsers}">&nbsp;</c:if>
   </TD>
-  <TD valign="top">
+  <TD valign="top" width="35%">
+     <ul style="margin:0px 0px 0px -25px;">
      <c:forEach var="group" items="${ss_accessSortedGroupsAll}">
       <c:if test="${!empty ssOperationMap['readEntries'].ssGroups[group.id]}">
+        <li style="list-style: square outside none;">
         <a href="<ssf:url
 				adapter="true" 
 				crawlable="true"
@@ -71,9 +77,11 @@
 		     onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">
 		  <span>${group.title}</span> 
 		  <span class="ss_smallprint ss_italic">(${group.name})</span>
-		</a><br/>
+		</a>
+		</li>
       </c:if>
     </c:forEach>
+    </ul>
     <c:if test="${empty ssOperationMap['readEntries'].ssGroups}">&nbsp;</c:if>
   </TD>
 </TR>
@@ -81,18 +89,21 @@
 <c:if test="${ssBinder.entityType == 'folder'}">
 <TR>
   <TD valign="top"><ssf:nlt tag="access.operation.create"/></TD>
-  <TD valign="top" nowrap>
+  <TD valign="top">
+    <ul style="margin:0px 0px 0px -25px;">
     <c:forEach var="user" items="${ss_accessSortedUsersAll}">
       <c:if test="${!empty ssOperationMap['createEntries'].ssUsers[user.id]}">
-        <span>${user.title}</span> <span class="ss_smallprint ss_italic">(${user.name})</span><br/>
+        <li style="list-style: square outside none;"><span>${user.title}</span> <span class="ss_smallprint ss_italic">(${user.name})</span></li>
       </c:if>
     </c:forEach>
+    </ul>
     <c:if test="${empty ssOperationMap['createEntries'].ssUsers}">&nbsp;</c:if>
   </TD>
   <TD valign="top">
+     <ul style="margin:0px 0px 0px -25px;">
      <c:forEach var="group" items="${ss_accessSortedGroupsAll}">
       <c:if test="${!empty ssOperationMap['createEntries'].ssGroups[group.id]}">
-        <a href="<ssf:url
+        <li style="list-style: square outside none;"><a href="<ssf:url
 				adapter="true" 
 				crawlable="true"
 				portletName="ss_forum" 
@@ -103,9 +114,10 @@
 		     onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">
 		  <span>${group.title}</span> 
 		  <span class="ss_smallprint ss_italic">(${group.name})</span>
-		</a><br/>
+		</a></li>
       </c:if>
     </c:forEach>
+    </ul>
     <c:if test="${empty ssOperationMap['createEntries'].ssGroups}">&nbsp;</c:if>
   </TD>
 </TR>
@@ -117,18 +129,21 @@
     <c:if test="${ssBinder.entityType == 'profiles'}"><ssf:nlt tag="access.operation.manageProfiles"/></c:if>
     <c:if test="${ssBinder.entityType != 'folder' && ssBinder.entityType != 'profiles'}"><ssf:nlt tag="access.operation.manageWorkspace"/></c:if>
   </TD>
-  <TD valign="top" nowrap>
+  <TD valign="top">
+    <ul style="margin:0px 0px 0px -25px;">
     <c:forEach var="user" items="${ss_accessSortedUsersAll}">
       <c:if test="${!empty ssOperationMap['binderAdministration'].ssUsers[user.id]}">
-        <span>${user.title}</span> <span class="ss_smallprint ss_italic">(${user.name})</span><br/>
+        <li style="list-style: square outside none;"><span>${user.title}</span> <span class="ss_smallprint ss_italic">(${user.name})</span></li>
       </c:if>
     </c:forEach>
+    </ul>
     <c:if test="${empty ssOperationMap['binderAdministration'].ssUsers}">&nbsp;</c:if>
   </TD>
   <TD valign="top">
+     <ul style="margin:0px 0px 0px -25px;">
      <c:forEach var="group" items="${ss_accessSortedGroupsAll}">
       <c:if test="${!empty ssOperationMap['binderAdministration'].ssGroups[group.id]}">
-        <a href="<ssf:url
+        <li style="list-style: square outside none;"><a href="<ssf:url
 				adapter="true" 
 				crawlable="true"
 				portletName="ss_forum" 
@@ -139,9 +154,10 @@
 		     onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">
 		  <span>${group.title}</span> 
 		  <span class="ss_smallprint ss_italic">(${group.name})</span>
-		</a><br/>
+		</a></li>
       </c:if>
     </c:forEach>
+    </ul>
     <c:if test="${empty ssOperationMap['binderAdministration'].ssGroups}">&nbsp;</c:if>
   </TD>
 </TR>

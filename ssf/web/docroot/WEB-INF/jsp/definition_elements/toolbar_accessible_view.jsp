@@ -112,7 +112,7 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
 	        src="<html:imagesPath/>pics/menudown.gif"/></c:if></span></a>
 		</c:when>
      	<c:when test="${!empty toolbarMenu.value.qualifiers.disabled}">
-		 <span class="ss_toolbar_inactive">&nbsp;&nbsp;&nbsp;&nbsp;${toolbarMenu.value.title}&nbsp;&nbsp;&nbsp;&nbsp;</span>
+		 <span class="ss_toolbar_inactive">${toolbarMenu.value.title}</span>
 		</c:when>
         <c:otherwise>
         </c:otherwise>

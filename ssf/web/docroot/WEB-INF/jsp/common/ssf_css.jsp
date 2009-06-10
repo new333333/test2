@@ -1200,7 +1200,7 @@ table.ss_mouseOverInfo {
   color: ${ss_toolbar_link_hover_color};
 }
 .ss_toolbar_inactive { 
-  color:#999999; 
+  color:#CECECE !important; 
 }
 
 
