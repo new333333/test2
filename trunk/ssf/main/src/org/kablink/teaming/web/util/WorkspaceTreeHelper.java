@@ -120,7 +120,9 @@ public class WorkspaceTreeHelper {
 			//won't work on adapter
 			response.setProperty(RenderResponse.EXPIRATION_CACHE,"0");
 		} catch (UnsupportedOperationException us) {
-			logger.debug("WorkspaceTreeHelper.setBinderPermalink(UnsupportedOperationException):  Ignored");
+			// Commented out as this exception occurs way too often to
+			// log every one.
+			// logger.debug("WorkspaceTreeHelper.setBinderPermalink(UnsupportedOperationException):  Ignored");
 		}
 
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
