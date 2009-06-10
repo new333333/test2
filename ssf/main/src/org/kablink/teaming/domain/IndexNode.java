@@ -55,11 +55,12 @@ public class IndexNode extends ZonedObject {
 	private String id;
 	private Name name;
 	private boolean noDeferredUpdateLogRecords = true; // column="inSynch"
-	private String accessMode; // (internal use only) contains userModeAccess followed by space followed by 1 or 0
 	
-	private String userModeAccess = USER_MODE_ACCESS_READ_WRITE;
-	private boolean enableDeferredUpdateLog = false;
+	private String userModeAccess = USER_MODE_ACCESS_WRITE_ONLY; // initialized to write-only
+	private boolean enableDeferredUpdateLog = true; // initially deferred-update-log is disabled
 	
+	private String accessMode = updateAccessMode(USER_MODE_ACCESS_WRITE_ONLY, true);; // (internal use only) contains userModeAccess followed by space followed by 1 or 0
+
 	// The following two fields are here for convenience only, and not persistent.
 	private String title;
 	private Map<String,String> displayProperties;
@@ -89,8 +90,8 @@ public class IndexNode extends ZonedObject {
 	public String getUserModeAccess() {
 		return userModeAccess;
 	}
-	public void setUserModeAccess(String accessMode) {
-		this.userModeAccess = accessMode;
+	public void setUserModeAccess(String userModeAccess) {
+		this.userModeAccess = userModeAccess;
 		updateAccessMode();
 	}
 	
@@ -124,7 +125,11 @@ public class IndexNode extends ZonedObject {
 	}
 	
 	private void updateAccessMode() {
-		this.accessMode = userModeAccess + (enableDeferredUpdateLog? " 1" : " 0");
+		this.accessMode = updateAccessMode(userModeAccess, enableDeferredUpdateLog);
+	}
+	
+	private String updateAccessMode(String uma, boolean edul) {
+		return uma + (edul? " 1" : " 0");
 	}
 	
 	public boolean getEnableDeferredUpdateLog() {

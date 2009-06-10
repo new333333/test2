@@ -203,7 +203,7 @@ public interface AdminModule {
 	 * @param accessMode
 	 * @param noDeferredUpdateLogRecords
 	 */
-	public void updateIndexNode(String indexNodeId, String accessMode, Boolean enableDeferredUpdateLog, Boolean noDeferredUpdateLogRecords);
+	public void updateIndexNode(String indexNodeId, String userModeAccess, Boolean enableDeferredUpdateLog, Boolean noDeferredUpdateLogRecords);
 
 	/**
 	 * Apply the deferred update log records to the index node and remove them.
