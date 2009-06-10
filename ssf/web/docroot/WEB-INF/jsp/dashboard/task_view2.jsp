@@ -153,7 +153,7 @@
 			<c:if test="${!empty assignment_groups}">
 				<ul>
 					<c:forEach var="assigned" items="${assignment_groups}">
-						<li><ssf:showUser user="${assigned}"/></li>
+						<li><ssf:showGroup group="${assigned}"/></li>
 					</c:forEach>
 				</ul>
 			</c:if>	

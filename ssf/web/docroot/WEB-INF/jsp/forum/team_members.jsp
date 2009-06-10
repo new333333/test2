@@ -36,7 +36,9 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% // This is JSON type AJAX response  %>
 [
-<c:forEach var="user" items="${ssTeamMembers}" varStatus="status">
-	[<c:out value="${user.id}"/>, "<ssf:escapeJavaScript value="${user.title}"/>"]<c:if test="${!status.last}">,</c:if>
+<c:forEach var="user" items="${ssTeamMembers}" varStatus="status"><%--
+--%><c:set var="userType" value=""/><c:if test="${user.entityType == 'group'}"><%--
+--%><c:set var="userType"> (<ssf:nlt tag="__definition_default_group"/>)</c:set></c:if>
+	[<c:out value="${user.id}"/>, "<ssf:escapeJavaScript value="${user.title}"/> ${userType}"]<c:if test="${!status.last}">,</c:if>
 </c:forEach>
 ]

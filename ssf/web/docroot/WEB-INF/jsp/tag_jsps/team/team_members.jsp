@@ -53,8 +53,10 @@ ss_createOnLoadObj("ss_loadTeamMembers_${prefix}", ss_loadTeamMembers_${prefix})
 </script>
 
 <div class="ss_teamMembersPane">
-	<span id="ss_teamMembersLoadLink_${prefix}" onclick="if (window.ss_loadTeamMembersList) ss_loadTeamMembersList('${binderId}', '${prefix}' <c:if test="${appendAll == 'true' || checkOnLoad == 'true'}">, true</c:if>);"
-		onmouseover="this.style.cursor='pointer'; " onmouseout="this.style.cursor='default'; ">
+	<span id="ss_teamMembersLoadLink_${prefix}" 
+		onclick="if (window.ss_loadTeamMembersList) ss_loadTeamMembersList('${binderId}', '${prefix}' <c:if test="${appendAll == 'true' || checkOnLoad == 'true'}">, true</c:if>);"
+		onmouseover="this.style.cursor='pointer'; " 
+		onmouseout="this.style.cursor='default'; ">
 		<img <ssf:alt tag="alt.expand"/> id="ss_teamIcon_${prefix}" src="<html:imagesPath/>pics/sym_s_expand.gif" />
 		<span class="ss_bold"><ssf:nlt tag="sendMail.team" /></span>
 	</span>

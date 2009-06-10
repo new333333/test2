@@ -38,6 +38,7 @@
 
 <c:set var="ssTeamMembersCount" value="${ssDashboard.beans[componentId].ssTeamMembersCount}" scope="request"/>
 <c:set var="ssTeamMembers" value="${ssDashboard.beans[componentId].ssTeamMembers}"  scope="request"/>
+<c:set var="ssTeamMemberGroups" value="${ssDashboard.beans[componentId].ssTeamMemberGroups}"  scope="request"/>
 <div id="${ss_divId}">
 <%@ include file="/WEB-INF/jsp/forum/list_team_members.jsp" %>
 </div>

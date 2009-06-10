@@ -45,11 +45,13 @@
 	<img border="0" src="<html:imagesPath/>pics/group_icon_small.gif" />
 		<span class="${ss_showGroupTitleStyle}"><c:out value="${ss_showGroupGroup.title}" /></span>
 	<a href="javascript: //"
-	onclick="ss_toggleShowDiv('ss_show_group_${ss_showGroupInstanceCount}'); return false;" class="ss_fineprint"><ssf:nlt tag="showGroup.group.members"><ssf:param name="value" value="${fn:length(ss_showGroupGroupMembers)}"/></ssf:nlt></a>
+	onclick="ss_toggleShowDiv('ss_show_group_${ss_showGroupInstanceCount}'); return false;" 
+	class="ss_fineprint"><ssf:nlt tag="showGroup.group.members"><ssf:param 
+	name="value" value="${fn:length(ss_showGroupGroupMembers)}"/></ssf:nlt></a>
 	<div id="ss_show_group_${ss_showGroupInstanceCount}" style="display: none;">
   		<ul>
 			<c:forEach var="member" items="${ss_showGroupGroupMembers}" >
-		 	 <li><ssf:showUser user="${member}" showPresence="${ss_showGroupShowPresence}"/></li>
+		 	 <li>${member.title}</li>
 			</c:forEach>
   		</ul>
 	</div>
@@ -57,6 +59,6 @@
 <c:if test="${ssConfigJspStyle == 'mobile'}">
   <span class="${ss_showGroupTitleStyle}">${ss_showGroupGroup.title}</span>
 	<c:forEach var="member" items="${ss_showGroupGroupMembers}" >
-		<div style="margin-left:2em"><ssf:showUser user="${member}" showPresence="${ss_showGroupShowPresence}"/></div>
+		<div style="margin-left:2em">${member.title}</div>
 	</c:forEach>
 </c:if>

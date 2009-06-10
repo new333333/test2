@@ -51,17 +51,11 @@
 		  src="<html:brandedImagesPath/>icons/group.gif"/> 
 		  <span>${ssBinder.title}</span> 
     </div>
-    <table>
-    <tr>
-    <td valign="top">
-    <div>
-		  <span class="ss_smallprint"><ssf:nlt tag="teamMembersList.count"/>:</span> 
-		  <span class="ss_smallprint ss_bold">${ssTeamMembersCount}</span>		
-	</div>
-	</td>
-	<td valign="top" style="padding-left:40px;">
-	  <c:if test="${!empty ssTeamMemberGroups}">
-	    <span class="ss_smallprint"><ssf:nlt tag="teamMembersList.groupsInTeam"/></span>
+<c:if test="${!empty ssTeamMemberGroups}">
+	<div style="padding:10px 0px 20px 0px;">
+	    <div style="padding-bottom:6px;">
+	      <span class="ss_bold"><ssf:nlt tag="teamMembersList.groupsInTeam"/></span>
+	    </div>
 	    <div style="padding-left:10px;">
 	    <c:forEach var="teamGroup" items="${ssTeamMemberGroups}">
 	    	<a href="<ssf:url
@@ -74,23 +68,28 @@
 					name="groupId" value="${teamGroup.value.id}"/></ssf:url>"
 			    onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">
 			<span class="ss_smallprint">${teamGroup.key}</span>
-			<span class="ss_fineprint ss_light">(<ssf:nlt tag="teamMembersList.members">
-			  <ssf:param name="value" value="${fn:length(teamGroup.value.members)}"/>
-			</ssf:nlt>)</span>
+			<c:if test="${!empty teamGroup.value.members}">
+			  <span class="ss_fineprint ss_light">(<ssf:nlt tag="teamMembersList.members">
+			    <ssf:param name="value" value="${fn:length(teamGroup.value.members)}"/>
+			  </ssf:nlt>)</span>
+			</c:if>
 			 </a><br/>
 	    </c:forEach>
 	    </div>
-	  </c:if>
-	</td>
-	</tr>
-	</table>
+	</div>
+</c:if>
 <c:if test="${ssConfigJspStyle != 'template'}">	
+    <div style="padding-bottom:10px;">
+      <span class="ss_bold"><ssf:nlt tag="team.members"/></span>
+    </div>
 	<table class="ss_buddiesList" cellpadding="0" cellspacing="0">
 	
 		<c:choose>
 			<c:when test="${ssTeamMembersCount > 0}">					
-				<c:forEach var="member" items="${ssTeamMembers}">
-				  <c:set var="hitCount" value="${hitCount + 1}"/>
+				<c:forEach var="teamMember" items="${ssTeamMembers}">
+				  <c:set var="member" value="${teamMember.value}"/>
+				  <c:if test="${member.entityType == 'user'}">
+				    <c:set var="hitCount" value="${hitCount + 1}"/>
 					<tr>
 						<td class="picture">
 							<ssf:buddyPhoto style="ss_thumbnail_small_buddies_list" 
@@ -110,6 +109,7 @@
 						</td>
 						<td><ssf:mailto email="${member.emailAddress}"/></td>
 					</tr>
+				  </c:if>
 				</c:forEach>
 			</c:when>
 			<c:otherwise>

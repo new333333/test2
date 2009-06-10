@@ -43,7 +43,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 
 import javax.portlet.ActionRequest;
 
@@ -61,6 +63,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
@@ -758,16 +761,23 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     		}
     		idData.put(WebKeys.PAGE_SIZE, String.valueOf(pageSize));
     		idData.put(WebKeys.PAGE_NUMBER, String.valueOf(pageNumber));
-   			SortedSet<Principal> users = getBinderModule().getTeamMembers(binder, true);
-   			Object[] usersSet = users.toArray();
-   			List usersPage = new ArrayList(); //use a list so results remain ordered
-   			int iEnd = pageSize*pageNumber + pageSize;
-   			if (iEnd > usersSet.length) iEnd = usersSet.length;
-   			for (int i = pageSize*pageNumber; i < iEnd; i++) {
-   				usersPage.add(usersSet[i]);
-   			}
-   			idData.put(WebKeys.TEAM_MEMBERS, usersPage);
-   			idData.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
+   			
+    		try {
+    			getProfileModule().getProfileBinder(); //Check access to user list
+    			Collection<Principal> usersAndGroups = getBinderModule().getTeamMembers(binder, false);
+    			SortedMap<String, User> teamUsers = new TreeMap();
+    			SortedMap<String, Group> teamGroups = new TreeMap();
+    			for (Principal p : usersAndGroups) {
+    				if (p instanceof User) {
+    					teamUsers.put(p.getTitle(), (User)p);
+    				} else if (p instanceof Group) {
+    					teamGroups.put(p.getTitle(), (Group)p);
+    				}
+    			}
+	   			idData.put(WebKeys.TEAM_MEMBERS, teamUsers);
+	   			idData.put(WebKeys.TEAM_MEMBERS_COUNT, teamUsers.size());
+	   			idData.put(WebKeys.TEAM_MEMBER_GROUPS, teamGroups);
+    		} catch(AccessControlException e) {}
     	}
 	}
 	
