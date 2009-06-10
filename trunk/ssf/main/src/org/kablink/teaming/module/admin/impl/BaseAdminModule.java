@@ -43,7 +43,7 @@ public class BaseAdminModule extends AbstractAdminModule {
 		return null; // No support for nodes
 	}
 	
-	public void updateIndexNode(String indexNodeId, String accessMode, Boolean enableDeferredUpdateLog, Boolean noDeferredUpdateLogRecords) {
+	public void updateIndexNode(String indexNodeId, String userModeAccess, Boolean enableDeferredUpdateLog, Boolean noDeferredUpdateLogRecords) {
 		// Noop
 	}
 	
