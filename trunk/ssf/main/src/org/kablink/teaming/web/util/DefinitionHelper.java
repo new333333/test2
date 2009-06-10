@@ -50,6 +50,8 @@ import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -87,6 +89,8 @@ import org.springframework.core.io.ClassPathResource;
 
 
 public class DefinitionHelper {
+	protected static final Log logger = LogFactory.getLog(Definition.class);
+	
 	private static DefinitionHelper instance; // A singleton instance
 	private DefinitionModule definitionModule;
 	private DefinitionConfigurationBuilder definitionBuilderConfig;
@@ -153,6 +157,7 @@ public class DefinitionHelper {
 		try {
 			return getInstance().getDefinitionModule().getDefinition(id);
 		} catch (NoDefinitionByTheIdException nd) {
+			logger.debug("DefinitionHelper.getDefinition(NoDefinitionByTheIdException):  '" + ((null == id) ? "<null>" : id) + "':  :  Ignored");
 			return null;
 		}
 		
@@ -758,7 +763,9 @@ public class DefinitionHelper {
 	        				FolderEntry entry = bs.getFolderModule().getEntry(null, 
 	        						Long.valueOf((String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID)));
 	        				mashupEntries.put(entry.getId().toString(), entry);
-	        			} catch(Exception e) {}
+	        			} catch(Exception e) {
+	        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + e.getLocalizedMessage() + "'):  1:  Ignored");
+	        			}
 	        		} else if (ObjectKeys.MASHUP_TYPE_FOLDER.equals(type) && 
 	        				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_FOLDER_ID) && 
 	        				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_FOLDER_ID).equals("")) {
@@ -775,13 +782,17 @@ public class DefinitionHelper {
 	        								(String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRIES_TO_SHOW));
 	        						options.put(ObjectKeys.SEARCH_MAX_HITS, entriesToShow);
 	        					}
-	        				} catch(Exception e) {}
+	        				} catch(Exception e) {
+		        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + e.getLocalizedMessage() + "'):  2:  Ignored");
+	        				}
 	        				options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
 	        				options.put(ObjectKeys.SEARCH_SORT_BY, Constants.LASTACTIVITY_FIELD);
 	        				Map folderEntries = bs.getFolderModule().getEntries(binder.getId(), options);
 	        				mashupBinderEntries.put(binder.getId().toString(), 
 	        						folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
-	        			} catch(Exception e) {}
+	        			} catch(Exception e) {
+	        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + e.getLocalizedMessage() + "'):  3:  Ignored");
+	        			}
 	        		} else if (ObjectKeys.MASHUP_TYPE_BINDER_URL.equals(type) && 
 	        				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_BINDER_ID) && 
 	        				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_BINDER_ID).equals("")) {
@@ -789,7 +800,9 @@ public class DefinitionHelper {
 	        				Binder binder = bs.getBinderModule().getBinder(
 	        						Long.valueOf((String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_BINDER_ID)));
 	        				mashupBinders.put(binder.getId().toString(), binder);
-	        			} catch(Exception e) {}
+	        			} catch(Exception e) {
+	        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + e.getLocalizedMessage() + "'):  4:  Ignored");
+	        			}
 	        		} else if (ObjectKeys.MASHUP_TYPE_ENTRY_URL.equals(type) && 
 	        				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ENTRY_ID) && 
 	        				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID).equals("")) {
@@ -797,7 +810,9 @@ public class DefinitionHelper {
 	        				FolderEntry entry = bs.getFolderModule().getEntry(null, 
 	        						Long.valueOf((String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID)));
 	        				mashupEntries.put(entry.getId().toString(), entry);
-	        			} catch(Exception e) {}
+	        			} catch(Exception e) {
+	        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + e.getLocalizedMessage() + "'):  5:  Ignored");
+	        			}
 	        		}
 	        		else if ( type != null && type.equals( "utility" ) )
 	        		{
@@ -941,14 +956,16 @@ public class DefinitionHelper {
 						Definition def = null;
 						try {
 							def = bs.getDefinitionModule().getDefinitionByName(null, false, name);
-						} catch(NoDefinitionByTheIdException e) {}
+						} catch(NoDefinitionByTheIdException e) {
+							logger.debug("DefinitionHelper.getDefaultDefinitions(NoDefinitionByTheIdException):  '" + ((null == name) ? "<null>" : name) + "':  Ignored");
+						}
 						if (def != null) definitions.add(def);
 					}
 				}
 			}
 
 		} catch (Exception ex) {
-			//logger.error("Cannot read startup configuration:", ex);
+			logger.debug("DefinitionHelper.getDefaultDefinitions(Exception:  '" + ex.getLocalizedMessage() + "'):  Cannot read startup configuration:  Ignored");
 		}
 		return definitions;
 	}	
