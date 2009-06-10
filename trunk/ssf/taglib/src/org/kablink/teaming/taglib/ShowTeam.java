@@ -89,7 +89,7 @@ public class ShowTeam extends BodyTagSupport {
 				httpReq.setAttribute(WebKeys.SHOW_TEAM_SHOW_PRESENCE, showPresence);
 				
 
-				Set groupUsers = binderModule.getTeamMembers(team, true);
+				Set groupUsers = binderModule.getTeamMembers(team, false);
 				httpReq.setAttribute(WebKeys.SHOW_TEAM_TEAM_MEMBERS, groupUsers);
 				
 				// Output the presence info

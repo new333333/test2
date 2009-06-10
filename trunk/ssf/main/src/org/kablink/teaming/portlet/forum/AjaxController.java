@@ -1975,7 +1975,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		if (WebHelper.isUserLoggedIn(request)) {
 			try {
 				Binder binder = getBinderModule().getBinder(binderId);
-				model.put(WebKeys.TEAM_MEMBERS, getBinderModule().getTeamMembers(binder, true));
+				model.put(WebKeys.TEAM_MEMBERS, getBinderModule().getTeamMembers(binder, false));
 			} catch (AccessControlException ex) {
 				model.put(WebKeys.TEAM_MEMBERS, Collections.emptyList());
 			}

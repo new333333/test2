@@ -45,11 +45,18 @@
 	<img border="0" src="<html:imagesPath/>trees/people.gif" />
 		<span class="${ss_showTeamTitleStyle}"><c:out value="${ss_showTeamTeam.title}" /></span>
 	<a href="javascript: //"
-	onclick="ss_toggleShowDiv('ss_show_team_${ss_showTeamInstanceCount}'); return false;" class="ss_fineprint"><ssf:nlt tag="showTeam.team.members"><ssf:param name="value" value="${fn:length(ss_showTeamTeamMembers)}"/></ssf:nlt></a>
+	onclick="ss_toggleShowDiv('ss_show_team_${ss_showTeamInstanceCount}'); return false;" 
+	class="ss_fineprint"><ssf:nlt tag="showTeam.team.members"><ssf:param 
+	name="value" value="${fn:length(ss_showTeamTeamMembers)}"/></ssf:nlt></a>
 	<div id="ss_show_team_${ss_showTeamInstanceCount}" style="display: none;">
   		<ul>
 			<c:forEach var="member" items="${ss_showTeamTeamMembers}" >
-		 	 <li><ssf:showUser user="${member}" showPresence="${ss_showTeamShowPresence}"/></li>
+			 <c:if test="${member.entityType == 'user'}">
+		 	   <li><ssf:showUser user="${member}" showPresence="${ss_showTeamShowPresence}"/></li>
+		 	 </c:if>
+			 <c:if test="${member.entityType == 'group'}">
+		 	   <li>${member.title}</li>
+		 	 </c:if>
 			</c:forEach>
   		</ul>
 	</div>
@@ -57,6 +64,13 @@
 <c:if test="${ssConfigJspStyle == 'mobile'}">
   <span class="${ss_showTeamTitleStyle}">${ss_showTeamTeam.title}</span>
 	<c:forEach var="member" items="${ss_showTeamTeamMembers}" >
-		<div style="margin-left:2em"><ssf:showUser user="${member}" showPresence="${ss_showTeamShowPresence}"/></div>
+		<div style="margin-left:2em">
+		  <c:if test="${member.entityType == 'user'}">
+		    <ssf:showUser user="${member}" showPresence="${ss_showTeamShowPresence}"/>
+		   </c:if>
+		   <c:if test="${member.entityType == 'group'}">
+		 	   ${member.title}
+		   </c:if>
+		</div>
 	</c:forEach>
 </c:if>

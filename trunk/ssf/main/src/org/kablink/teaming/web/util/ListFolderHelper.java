@@ -815,12 +815,18 @@ public class ListFolderHelper {
 		
 		try {
 			bs.getProfileModule().getProfileBinder(); //Check access to user list
-			Collection users = bs.getBinderModule().getTeamMembers(folder, true);
-			model.put(WebKeys.TEAM_MEMBERS, users);
-			model.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
 			Collection<Principal> usersAndGroups = bs.getBinderModule().getTeamMembers(folder, false);
+			SortedMap<String, User> teamUsers = new TreeMap();
 			SortedMap<String, Group> teamGroups = new TreeMap();
-			for (Principal p : usersAndGroups) if (p instanceof Group) teamGroups.put(p.getTitle(), (Group)p);
+			for (Principal p : usersAndGroups) {
+				if (p instanceof User) {
+					teamUsers.put(p.getTitle(), (User)p);
+				} else if (p instanceof Group) {
+					teamGroups.put(p.getTitle(), (Group)p);
+				}
+			}
+			model.put(WebKeys.TEAM_MEMBERS, teamUsers);
+			model.put(WebKeys.TEAM_MEMBERS_COUNT, teamUsers.size());
 			model.put(WebKeys.TEAM_MEMBER_GROUPS, teamGroups);
 		} catch (AccessControlException ac) {} //just skip
 		
