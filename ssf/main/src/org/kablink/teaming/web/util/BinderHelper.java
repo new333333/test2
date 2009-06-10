@@ -65,6 +65,8 @@ import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -104,14 +106,12 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
-import org.kablink.teaming.module.ldap.LdapSyncThread;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.portlet.forum.ViewController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
-import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
 import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilterRequestParser;
@@ -136,6 +136,8 @@ import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 
 public class BinderHelper {
+	protected static final Log logger = LogFactory.getLog(Binder.class);
+	
 	public static final String RELEVANCE_DASHBOARD_PORTLET="ss_relevance_dashboard";
 	public static final String BLOG_SUMMARY_PORTLET="ss_blog";
 	public static final String FORUM_PORTLET="ss_forum";
@@ -163,6 +165,7 @@ public class BinderHelper {
 			try {
 				url = URLEncoder.encode(url, "UTF-8");
 			} catch (UnsupportedEncodingException e) {
+				logger.debug("::BinderHelper(UnsupportedEncodingException):  1:  Ignored");
 				url = null;
 			}
 		}
@@ -176,6 +179,7 @@ public class BinderHelper {
 			try {
 				url = URLEncoder.encode(url, "UTF-8");
 			} catch (UnsupportedEncodingException e) {
+				logger.debug("::BinderHelper(UnsupportedEncodingException):  2:  Ignored");
 				url = null;
 			}
 		}
@@ -192,6 +196,7 @@ public class BinderHelper {
  			prefs = request.getPreferences();
  			ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
  		} catch(Exception e) {
+			logger.debug("BinderHelper.CommonPortletDispatch(Exception:  '" + e.getLocalizedMessage() + "'):  1:  Ignored");
  			ss_initialized = "true";
  		}
  		
@@ -231,7 +236,9 @@ public class BinderHelper {
 			model.put(WebKeys.FOLDER_LIST, bs.getBinderModule().getBinders(binderIds));
 			try {
 				response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
-			} catch(Exception e) {}
+			} catch(Exception e) {
+				logger.debug("BinderHelper.CommonPortletDispatch(Exception:  '" + e.getLocalizedMessage() + "'):  2:  Ignored");
+			}
 			return new ModelAndView(WebKeys.VIEW_FORUM, model);
 		} else if (WORKSPACE_PORTLET.equals(displayType) || WELCOME_PORTLET.equals(displayType)) {
 			String id = null;
@@ -240,6 +247,7 @@ public class BinderHelper {
 			try {
 				binder = bs.getWorkspaceModule().getWorkspace(Long.valueOf(id));
 			} catch (Exception ex) {
+				logger.debug("BinderHelper.CommonPortletDispatch(Exception:  '" + ex.getLocalizedMessage() + "'):  3:  Ignored");
 				binder = bs.getWorkspaceModule().getTopWorkspace();				
 			}
 			Document wsTree;
@@ -275,14 +283,18 @@ public class BinderHelper {
  	       	users.add(user);
  			try {
  				users = bs.getProfileModule().getUsersFromPrincipals(ids);
- 			} catch(Exception e) {}
+ 			} catch(Exception e) {
+ 				logger.debug("BinderHelper.CommonPortletDispatch(Exception:  '" + e.getLocalizedMessage() + "'):  4:  Ignored");
+ 			}
  			model.put(WebKeys.USERS, users);
  			//if we list groups, then we have issues when a user appears in multiple groups??
  			//how do we update the correct divs??
  			//so, explode the groups and just show members
 			try {
 				response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
-			} catch(Exception e) {}
+			} catch(Exception e) {
+				logger.debug("BinderHelper.CommonPortletDispatch(Exception:  '" + e.getLocalizedMessage() + "'):  5:  Ignored");
+			}
   			model.put(WebKeys.USER_LIST, LongIdUtil.getIdsAsString(ids));
   			return new ModelAndView(WebKeys.VIEW_PRESENCE, model);				
 		} else if (TOOLBAR_PORTLET.equals(displayType)) {
@@ -394,6 +406,7 @@ public class BinderHelper {
 					Binder binder = bs.getBinderModule().getBinder(binderId);
 					BinderHelper.getBinderAccessibleUrl(bs, binder, null, request, response, model);
 				} catch(Exception e) {
+					logger.debug("BinderHelper.setupStandardBeans(Exception:  '" + e.getLocalizedMessage() + "')");
 					BinderHelper.getBinderAccessibleUrl(bs, null, null, request, response, model);
 				}
 			}
@@ -457,6 +470,7 @@ public class BinderHelper {
 						searchFilter = DocumentHelper.parseText(searchFilterStr);
 					} catch (Exception ignore) {
 						//get rid of it
+						logger.debug("BinderHelper.getSearchFilter(Exception:  '" + ignore.getLocalizedMessage() + "')");
 						searchFilters.remove(searchFilterStr);
 						bs.getProfileModule().setUserProperty(userFolderProperties.getId().getPrincipalId(), userFolderProperties.getId().getBinderId(), ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
 					};
@@ -476,7 +490,9 @@ public class BinderHelper {
 			try {
 				Map.Entry me = (Map.Entry)iter.next();
 				searchFilters.put(me.getKey(), ((Document)me.getValue()).asXML());				
-			} catch (Exception ignore) {};
+			} catch (Exception ignore) {
+				logger.debug("BinderHelper.convertV1Filters(Exception:  '" + ignore.getLocalizedMessage() + "'):  Ignored");
+			};
 		}
 		bs.getProfileModule().setUserProperty(userFolderProperties.getId().getPrincipalId(), userFolderProperties.getId().getBinderId(), ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
 		bs.getProfileModule().setUserProperty(userFolderProperties.getId().getPrincipalId(), userFolderProperties.getId().getBinderId(), ObjectKeys.USER_PROPERTY_SEARCH_FILTERS_V1, null);
@@ -496,7 +512,9 @@ public class BinderHelper {
 					model.put(WebKeys.PAGE_SIZE, "5");						
 				DashboardHelper.getDashboardMap(d, userProperties, model, false);
 				return new ModelAndView(view, model);		
-			} catch (NoObjectByTheIdException no) {}
+			} catch (NoObjectByTheIdException no) {
+				logger.debug("BinderHelper.setupSummaryPortlets(NoObjectByTheIdException):  Ignored");
+			}
 		}
 		return new ModelAndView(WebKeys.VIEW_NOT_CONFIGURED);
 		
@@ -529,7 +547,9 @@ public class BinderHelper {
 		ProfileBinder profileBinder = null;
 		try {
 			profileBinder = bs.getProfileModule().getProfileBinder();
-		} catch(Exception e) {}
+		} catch(Exception e) {
+			logger.debug("BinderHelper.setupMobilePortlet(Exception:  '" + e.getLocalizedMessage() + "'):  Ignored");
+		}
 		if (profileBinder != null) {
 			accessControlMap.put(WebKeys.CAN_VIEW_USER_PROFILES, true);
 		}
@@ -604,7 +624,9 @@ public class BinderHelper {
 					return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
 				}
 			}
-			catch(NoBinderByTheIdException e) {}
+			catch(NoBinderByTheIdException e) {
+				logger.debug("BinderHelper.setupWorkareaPortlet(NoBinderByTheIdException):  Ignored");
+			}
 		}
 		if (binder != null) {
 			if (binder.getEntityType().name().equals(EntityType.folder.name()))
@@ -775,7 +797,11 @@ public class BinderHelper {
 		if (request.getWindowState().equals(WindowState.MAXIMIZED) || getBinderPermaLink(bs, request).equals("")) {
 			User user = RequestContextHolder.getRequestContext().getUser();
 			PortletURL url = response.createActionURL();
-			try {url.setWindowState(WindowState.MAXIMIZED);} catch(Exception e) {};
+			try {
+				url.setWindowState(WindowState.MAXIMIZED);
+			} catch(Exception e) {
+				logger.debug("BinderHelper.setBinderPermaLink(Exception:  '" + e.getLocalizedMessage() + "'):  Ignored");
+			};
 			url.setParameter(WebKeys.ACTION, WebKeys.URL_ACTION_PLACE_HOLDER);
 			url.setParameter(WebKeys.URL_ENTITY_TYPE, WebKeys.URL_ENTITY_TYPE_PLACE_HOLDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, WebKeys.URL_BINDER_ID_PLACE_HOLDER);
@@ -965,6 +991,7 @@ public class BinderHelper {
 		        // Get hostname
 		        hostname = addr.getHostName();
 		    } catch (UnknownHostException e) {
+				logger.debug("BinderHelper.buildSimpleUrlBeans(UnknownHostException):  Using localhost");
 				hostname = "localhost";
 		    }
 		}
@@ -1774,6 +1801,7 @@ public class BinderHelper {
         			miniBlog = null;
         		}
         	} catch (Exception ex) {
+				logger.debug("BinderHelper.updateUserStatus(Exception:  '" + ex.getLocalizedMessage() + "'):  Ignoring miniBlog");
 				miniBlog = null;
         	}
     		userHasMiniBlog = (null != miniBlog); 
@@ -1805,6 +1833,7 @@ public class BinderHelper {
 				}
 			} catch(NoBinderByTheIdException e) {
 				//The miniblog folder doesn't exist anymore,
+				logger.debug("BinderHelper.updateUserStatus(NoBinderByTheIdException):  Ignoring miniBlog");
 				miniBlog = null;
 			}
 			if (null != miniBlog) {
@@ -1903,6 +1932,7 @@ public class BinderHelper {
 					bs.getAdminModule().sendMail(entry, recipients, null, null, null, null, subject, 
 							new Description(body, Description.FORMAT_HTML), incAtt);
 				} catch (Exception e) {
+					logger.debug("BinderHelper.sendMailOnCreate(Exception:  '" + e.getLocalizedMessage() + "'):  Ignored");
 					//TODO Log that mail wasn't sent
 				}
 			}
@@ -2201,7 +2231,9 @@ public class BinderHelper {
 		Boolean searchCaseSensitive = false;
 		try {
 			searchCaseSensitive = PortletRequestUtils.getBooleanParameter(request, WebKeys.SEARCH_FORM_CASE_SENSITIVE);
-		} catch(Exception e) {}
+		} catch(Exception e) {
+			logger.debug("BinderHelper.prepareSearchOptions(Exception:  '" + e.getLocalizedMessage() + "'):  Ignored");
+		}
 		if (searchCaseSensitive == null) searchCaseSensitive = false;
 		options.put(ObjectKeys.SEARCH_CASE_SENSITIVE, searchCaseSensitive);
 		
@@ -2313,6 +2345,7 @@ public class BinderHelper {
 				try {
 					return DocumentHelper.parseText((String)q);
 				} catch (Exception ex) {
+					logger.debug("BinderHelper.getSearchFilter(Exception:  '" + ex.getLocalizedMessage() + "'):  Removed query");
 					queries.remove(queryName);
 					bs.getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES, queries);
 				};
@@ -2417,7 +2450,7 @@ public class BinderHelper {
 			try {
 				binder = binderModule.getBinder(((Place)array[j]).getId());
 			} catch (Exception ex) {
-				//not access or doesn't exist?
+				logger.debug("BinderHelper.sortPlacesInEntriesSearchResults(Exception:  '" + ex.getLocalizedMessage() + "'):  No access or doesn't exist");
 			}
 			int count = ((Place)array[j]).getCount();
 			Map place = new HashMap();
@@ -2862,6 +2895,7 @@ public class BinderHelper {
 					}
 				} catch(NoBinderByTheIdException e) {
 					//The miniblog folder doesn't exist anymore, so try create it again
+					logger.debug("BinderHelper.addMiniBlogEntry(NoBinderByTheIdException):  Calling bs.getProfileModule().addUserMiniBlog(...)");
 					miniBlog = bs.getProfileModule().addUserMiniBlog(user);
 				}
 			}
@@ -2879,7 +2913,9 @@ public class BinderHelper {
 				if (def == null) {
 					try {
 						def = bs.getDefinitionModule().getDefinitionByReservedId(ObjectKeys.DEFAULT_ENTRY_MINIBLOG_DEF);
-					} catch (Exception ex) {}
+					} catch (Exception ex) {
+						logger.debug("BinderHelper.addMiniBlogEntry(Exception:  '" + ex.getLocalizedMessage() + "'):  1:  Ignored");
+					}
 				}
 				if (def != null) {
 					FolderModule folderModule = bs.getFolderModule();
@@ -2888,7 +2924,9 @@ public class BinderHelper {
 					miniBlogId = miniBlog.getId();
 					try {
 						entryId = folderModule.addEntry(miniBlogId, def.getId(), new MapInputData(data), null, null).getId();
-					} catch (Exception ex) {}
+					} catch (Exception ex) {
+						logger.debug("BinderHelper.addMiniBlogEntry(Exception:  '" + ex.getLocalizedMessage() + "'):  2:  Ignored");
+					}
 					if (null != entryId) {
 						// Mark the entry as read
 						bs.getProfileModule().setSeen(user.getId(),folderModule.getEntry(miniBlogId, entryId));

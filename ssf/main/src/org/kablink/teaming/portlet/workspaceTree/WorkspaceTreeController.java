@@ -62,7 +62,11 @@ import org.springframework.web.portlet.ModelAndView;
 public class WorkspaceTreeController extends SAbstractController  {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
-		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
+		try {
+			response.setWindowState(request.getWindowState());
+		} catch(Exception e) {
+			logger.debug("WorkspaceTreeController.handleActionRequestAfterValidation(Exception:  '" + e.getLocalizedMessage() + "'):  Ignored");
+		};
         User user = RequestContextHolder.getRequestContext().getUser();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		

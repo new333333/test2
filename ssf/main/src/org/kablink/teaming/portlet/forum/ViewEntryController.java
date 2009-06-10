@@ -102,7 +102,11 @@ import org.kablink.util.Validator;
 public class ViewEntryController extends  SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
-		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
+		try {
+			response.setWindowState(request.getWindowState());
+		} catch(Exception e) {
+			logger.debug("ViewEntryController.handleActionRequestAfterValidation(Exception:  '" + e.getLocalizedMessage() + "'): 1:  Ignored");
+		};
 		Map formData = request.getParameterMap();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);				
@@ -167,6 +171,7 @@ public class ViewEntryController extends  SAbstractController {
 					response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
 					response.setRenderParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
 				} catch(Exception e) {
+					logger.debug("ViewEntryController.handleActionRequestAfterValidation(Exception:  '" + e.getLocalizedMessage() + "'): 2:  Ignored");
 					response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
 					response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 				}
@@ -233,7 +238,9 @@ public class ViewEntryController extends  SAbstractController {
 					operation = WebKeys.OPERATION_SHOW_NO_MORE_ENTRIES;
 				}
 			}
-		} catch(Exception e) {}
+		} catch(Exception e) {
+			logger.debug("ViewEntryController.handleRenderRequestAfterValidation(Exception:  '" + e.getLocalizedMessage() + "'):  1:  Ignored");
+		}
 
 		//Set up the standard beans
 		BinderHelper.setupStandardBeans(this, request, response, model, folderId);
@@ -304,7 +311,9 @@ public class ViewEntryController extends  SAbstractController {
 						try {
 							folder = getBinderModule().getBinder(folderId);
 							BinderHelper.buildWorkspaceTreeBean(this, folder, model, null);
-						} catch(Exception e) {}
+						} catch(Exception e) {
+							logger.debug("ViewEntryController.handleRenderRequestAfterValidation(Exception:  '" + e.getLocalizedMessage() + "'):  2:  Ignored");
+						}
 						throw nf;
 					}
 					model.put("entryMoved", newFolder);
@@ -314,11 +323,14 @@ public class ViewEntryController extends  SAbstractController {
 						folderId = newFolder.getId();
 					} catch(Exception e) {
 						try {
+							logger.debug("ViewEntryController.handleRenderRequestAfterValidation(Exception:  '" + e.getLocalizedMessage() + "'):  3");
 							Binder folder = getBinderModule().getBinder(folderId);
 							BinderHelper.setupStandardBeans(this, request, response, model, folderId);
 							DefinitionHelper.getDefinitions(folder, model, 
 									(String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
-						} catch(Exception e2) {}
+						} catch(Exception e2) {
+							logger.debug("ViewEntryController.handleRenderRequestAfterValidation(Exception:  '" + e2.getLocalizedMessage() + "'):  4:  Ignored");
+						}
 						throw nf;
 					}
 				} catch(OperationAccessControlExceptionNoName e) {
@@ -442,6 +454,7 @@ public class ViewEntryController extends  SAbstractController {
 
 			}
 		} catch(NoFolderEntryByTheIdException e) {
+			logger.debug("ViewEntryController.handleRenderRequestAfterValidation(NoFolderEntryByTheIdException):  Ignored");
 		} catch(OperationAccessControlExceptionNoName e) {
 			//Access is not allowed
 			if (WebHelper.isUserLoggedIn(request) && 
@@ -578,6 +591,7 @@ public class ViewEntryController extends  SAbstractController {
 							toolbar.addToolbarMenuItem("1_reply", "replies", NLT.getDef(replyDef.getTitle()), 
 									adapterUrl.toString(), qualifiers);
 						} catch (NoDefinitionByTheIdException e) {
+							logger.debug("ViewEntryController.buildEntryToolbar(NoDefinitionByTheIdException):  Ignored");
 							continue;
 						}
 					}

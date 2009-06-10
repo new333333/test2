@@ -58,6 +58,8 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
@@ -80,6 +82,7 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.profile.impl.GuestProperties;
+import org.kablink.teaming.portal.servlet.DispatchServer;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
 import org.kablink.teaming.search.SearchFieldResult;
@@ -99,6 +102,8 @@ import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
 public class WorkspaceTreeHelper {
+	protected static final Log logger = LogFactory.getLog(Workspace.class);
+	
 	public static ModelAndView setupWorkspaceBeans(AllModulesInjected bs, Long binderId, RenderRequest request, 
 			RenderResponse response) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
@@ -114,7 +119,9 @@ public class WorkspaceTreeHelper {
 		try {
 			//won't work on adapter
 			response.setProperty(RenderResponse.EXPIRATION_CACHE,"0");
-		} catch (UnsupportedOperationException us) {}
+		} catch (UnsupportedOperationException us) {
+			logger.debug("WorkspaceTreeHelper.setBinderPermalink(UnsupportedOperationException):  Ignored");
+		}
 
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (operation.equals(WebKeys.OPERATION_RELOAD_LISTING)) {
@@ -296,7 +303,9 @@ public class WorkspaceTreeHelper {
 						String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
 				        RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, request, response, 
 				        		binder.getId(), type, model);
-					} catch (Exception ex) {} //user may have been deleted, but ws left around
+					} catch (Exception ex) {
+        				logger.debug("WorkspaceTreeHelper.setupWorkspaceBeans(Exception:  '" + ex.getLocalizedMessage() + "'):  User may have been deleted, but ws left around:  Ignored");
+					}
 				}
 			}
 
@@ -564,7 +573,9 @@ public class WorkspaceTreeHelper {
 			model.put(WebKeys.TEAM_MEMBERS, teamUsers);
 			model.put(WebKeys.TEAM_MEMBERS_COUNT, teamUsers.size());
 			model.put(WebKeys.TEAM_MEMBER_GROUPS, teamGroups);
-		} catch (AccessControlException ac) {} //just skip
+		} catch (AccessControlException ac) {
+			logger.debug("WorkspaceTreeHelper.getTeamMembers(AccessControlException):  Ignored");
+		}
 		
 		buildWorkspaceToolbar(bs, req, response, model, ws, ws.getId().toString());
 	}
