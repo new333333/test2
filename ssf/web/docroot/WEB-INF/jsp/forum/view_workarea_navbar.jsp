@@ -451,13 +451,14 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 							  	name="newTab" value="1"/></ssf:url>">
 							<!-- The help spot is positioned relative to the position of its parent. -->
 							<!-- That's why I put it in a <span> -->
-							<label for="searchText">
 							<span>&nbsp;
 						  		<ssHelpSpot helpId="navigation_bar/search_button" offsetY="-5" 
 					            	    	offsetX="4" 
 								    		title="<ssf:nlt tag="helpSpot.searchButton"/>">
 								</ssHelpSpot>
 							</span>
+							<label for="searchText">
+							  <span style="display:none;"><ssf:nlt tag="navigation.search"/></span>
 							</label>
 							<input name="searchText" id="searchText" class="ss_combobox_search" type="text" /> 
 							<a href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" >
@@ -521,7 +522,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 					    			formElement="searchText" 
 					    			type="user"
 					    			singleItem="true"
-					    			accessibilityText='<%= NLT.get("navigation.findUser") %>'/> 
+					    			accessibilityText='<%= NLT.get("search.People.alt") %>'/> 
 								</form>
 	
 							</div>	
@@ -543,7 +544,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 					    		formElement="searchText" 
 					    		type="places"
 					    		singleItem="true"
-					    		accessibilityText='<%= NLT.get("navigation.findPlace") %>'/> 
+					    		accessibilityText='<%= NLT.get("search.Places.alt") %>'/> 
 							</form>
 						</div>
 					</div>
@@ -563,7 +564,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 					    	formElement="searchText" 
 					    	type="tags"
 					    	singleItem="true"
-					    	accessibilityText='<%= NLT.get("navigation.findTag") %>'/> 
+					    	accessibilityText='<%= NLT.get("search.Tags.alt") %>'/> 
 						</form>
 					</div>
 				</div>
