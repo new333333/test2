@@ -30,29 +30,52 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.spring.web.portlet.handler;
+package org.kablink.teaming.web.servlet.handler;
 
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import org.kablink.teaming.web.util.WebHelper;
-import org.springframework.web.portlet.ModelAndView;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.context.request.RequestContext;
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.util.Http;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-/**
- * This class extends {@link org.springframework.web.portlet.handler.SimpleMappingExceptionResolver}
- * to add the ability to log additional information about the calling context when an exception
- * is thrown during execution of the handler. This additional information is to be used for
- * diagnosis purpose.  
- * 
- * @author Jong Kim
- *
- */
-public class SimpleMappingExceptionResolver extends org.springframework.web.portlet.handler.SimpleMappingExceptionResolver {
+public class LogContextInfoUponExceptionInterceptor extends HandlerInterceptorAdapter {
 
-	public ModelAndView resolveException(
-			RenderRequest request, RenderResponse response, Object handler, Exception ex) {
-		if(ex != null)
-			WebHelper.logWarnRequestInfo(request);
-		return super.resolveException(request, response, handler, ex);
+	private Log logger = LogFactory.getLog(getClass());
+
+	public boolean preHandle(HttpServletRequest request,
+			HttpServletResponse response, Object handler) throws Exception {
+		logRequestInfo(request, false);
+		return true;
 	}
+
+	public void afterCompletion(HttpServletRequest request,
+			HttpServletResponse response, Object handler, Exception ex)
+			throws Exception {
+		if(ex != null)
+			logRequestInfo(request, true);
+	}
+
+	private void logRequestInfo(HttpServletRequest request, boolean warn) {
+		String url = Http.getCompleteURL(request);
+		String zoneName = null;
+		String userName = null;
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		if(rc != null) {
+			zoneName = rc.getZoneName();
+			userName = rc.getUserName();
+		}
+		if(warn) {
+			logger.warn("Request URL [" + url + "] for user [" + zoneName + "," + userName + "]");
+		}
+		else {
+			if(logger.isDebugEnabled()) {
+				logger.debug("Request URL [" + url + "] for user [" + zoneName + "," + userName + "]");
+			}
+		}
+	}
+
 }

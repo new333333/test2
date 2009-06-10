@@ -19,6 +19,8 @@
 				<ref bean="openSessionInViewInterceptor"/>
 				<!-- Set up and resolve RequestContext -->
 				<ref bean="initRequestContextInterceptor"/>
+				<!-- Log context info upon exception -->
+				<ref bean="logContextInfoUponExceptionInterceptor"/>
 			</list>
 		</property>
 		<property name="urlMap">
@@ -49,13 +51,15 @@
 		<property name="resolve"><value>true</value></property>
 	</bean>
 
+	<bean id="logContextInfoUponExceptionInterceptor" class="org.kablink.teaming.web.servlet.handler.LogContextInfoUponExceptionInterceptor"/>
+
 	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<!--<property name="singleSession"><value>false</value></property>-->
 	</bean>
 
 	<!-- Handler Exception Resolver -->
-	<bean id="handlerExceptionResolver" class="org.kablink.teaming.spring.web.servlet.handler.SimpleMappingExceptionResolver">
+	<bean id="handlerExceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
 		<property name="exceptionMappings">
 			<props>
 				<prop key="org.kablink.teaming.exception.CheckedCodedException">common/servlet.defCodedError</prop>

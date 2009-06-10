@@ -326,6 +326,8 @@
 				<ref bean="portletOpenSessionInViewInterceptor"/>
 				<!-- Set up and resolve request context -->
 				<ref bean="portletInitRequestContextInterceptor"/>
+				<!-- Log context info upon exception -->
+				<ref bean="portletLogContextInfoUponExceptionInterceptor"/>
 				<!-- Synch user if necessary -->
 				<ref bean="portletUserSynchInterceptor"/>
 			</list>
@@ -346,6 +348,8 @@
 				<ref bean="portletOpenSessionInViewInterceptor"/>
 				<!-- Set up and request context -->
 				<ref bean="portletInitRequestContextInterceptor"/>
+				<!-- Log context info upon exception -->
+				<ref bean="portletLogContextInfoUponExceptionInterceptor"/>
 				<!-- Synch user if necessary -->
 				<ref bean="portletUserSynchInterceptor"/>
 			</list>
@@ -353,7 +357,7 @@
 	</bean>
 
 	<!-- Default Exception Handler Bean -->
-    <bean id="portletDefaultExceptionHandlerTemplate" class="org.kablink.teaming.spring.web.portlet.handler.SimpleMappingExceptionResolver" lazy-init="true" abstract="true">
+    <bean id="portletDefaultExceptionHandlerTemplate" class="org.springframework.web.portlet.handler.SimpleMappingExceptionResolver" lazy-init="true" abstract="true">
 		<property name="defaultErrorView"><value>common/defError</value></property>
 		<property name="exceptionMappings">
 			<props>
@@ -377,6 +381,8 @@
 	<bean id="portletInitRequestContextInterceptor" class="org.kablink.teaming.web.portlet.handler.InitRequestContextInterceptor">
 		<property name="resolve"><value>true</value></property>
 	</bean>
+		
+	<bean id="portletLogContextInfoUponExceptionInterceptor" class="org.kablink.teaming.web.portlet.handler.LogContextInfoUponExceptionInterceptor"/>
 		
 	<bean id="portletUserSynchInterceptor" class="org.kablink.teaming.web.portlet.handler.UserSynchInterceptor" depends-on="sPropsUtil">
 		<property name="profileDao"><ref local="profileDao"/></property>

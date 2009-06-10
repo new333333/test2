@@ -504,22 +504,4 @@ public class WebHelper {
 		if(ses == null) return null;
 		return (String) ses.getAttribute(WebKeys.TOKEN_INFO_ID);
 	}
-
-	public static void logWarnRequestInfo(RenderRequest request) {
-		if(request instanceof RenderRequestImpl) { 
-			logWarnRequestInfo(((HttpServletRequestReachable)request).getHttpServletRequest());
-		}
-	}
-
-	public static void logWarnRequestInfo(HttpServletRequest request) {
-		String url = Http.getCompleteURL(request);
-		String zoneName = null;
-		String userName = null;
-		RequestContext rc = RequestContextHolder.getRequestContext();
-		if(rc != null) {
-			zoneName = rc.getZoneName();
-			userName = rc.getUserName();
-		}
-		logger.warn("Request URL [" + url + "] for user [" + zoneName + "," + userName + "]");
-	}
 }
