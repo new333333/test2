@@ -19,7 +19,7 @@
  * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved. 
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -123,6 +123,8 @@ li.ss_actions_bar_separator {
 .ss_actions_bar li a, .ss_actions_bar li a:visited {
 	color: #fff ;
 	display:block;
+	}
+.ss_actions_bar li span {
 	padding:4px 7px;
 	}
 .ss_actions_bar li a:hover{

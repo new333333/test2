@@ -34,20 +34,26 @@ package org.kablink.teaming.web.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.comparator.PrincipalComparator;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
@@ -64,10 +70,14 @@ import org.kablink.teaming.web.WebKeys;
 public class WorkAreaHelper {
 	public static void buildAccessControlTableBeans(AllModulesInjected bs, RenderRequest request, RenderResponse response, 
 			WorkArea wArea, List functions, List membership, Map model, boolean ignoreFormData) {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		
 		Principal binderOwner = wArea.getOwner();
-		Set teamMembers = bs.getProfileModule().getUsersFromPrincipals(wArea.getTeamMemberIds());
+        Comparator c = new PrincipalComparator(user.getLocale());
+		Set teamMembers = new TreeSet(c);
+		bs.getProfileModule().getProfileBinder(); //Check access to user list
+		teamMembers = bs.getBinderModule().getTeamMembers((Binder)wArea, false);
 
 		Set newRoleIds = new HashSet();
 		String[] roleIds = new String[0];
