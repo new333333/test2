@@ -63,11 +63,12 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
         //only real description field is stored as a field
         if ("description".equals(dataElemName)) {
         	Field descField = new Field(Constants.DESC_FIELD, text, Field.Store.YES, Field.Index.TOKENIZED); 
+        	Field descFormatField = new Field(Constants.DESC_FORMAT_FIELD, String.valueOf(val.getFormat()), Field.Store.YES, Field.Index.TOKENIZED); 
          	if (fieldsOnly) {
-         		return new Field[] {descField};
+         		return new Field[] {descField, descFormatField};
          	} else {
         		Field allTextField = BasicIndexUtils.allTextField(text);
-         		return new Field[] {allTextField, descField};
+         		return new Field[] {allTextField, descField, descFormatField};
          	}
         } else if (!fieldsOnly){
          	Field allTextField = BasicIndexUtils.allTextField(text);

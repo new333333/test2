@@ -122,6 +122,7 @@ public class Constants {
 	public static final String NAME_FIELD = "_name";
 	public static final String NAME1_FIELD = "_name1";
 	public static final String DESC_FIELD = "_desc";
+	public static final String DESC_FORMAT_FIELD = "_desc_format";
 	public static final String EVENT_FIELD = "_event";
 	public static final String EVENT_FIELD_START_DATE = "StartDate";
 	public static final String EVENT_FIELD_TIME_ZONE_ID = "TimeZoneID";
