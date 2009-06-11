@@ -203,7 +203,7 @@ table.ss_actions_bar4_pane {
 ul.ss_actions_bar1  {
 	/* height: 22px;	*/
 	}
-ul.ss_actions_bar1 .ss_actions_bar_submenu {
+ul.ss_actions_bar1 .ss_actions_bar_submenu, ul.ss_actions_bar_submenu li {
 	height: auto;
 	padding: 0px !important;
 	}
