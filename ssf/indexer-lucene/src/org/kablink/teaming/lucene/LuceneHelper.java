@@ -139,8 +139,8 @@ public class LuceneHelper {
 				putZonedReader(getNewReader(indexPath), indexPath);
 				break;
 			case (WRITE):
-				closeWriter(indexPath);
-				closeReader(indexPath);
+				closeWriterInternal(indexPath);
+			closeReaderInternal(indexPath);
 				putZonedReader(getNewReader(indexPath), indexPath);
 			}
 			putPrevState(indexPath, READ);
@@ -158,7 +158,7 @@ public class LuceneHelper {
 				putZonedSearcher(getNewSearcher(indexPath), indexPath);
 				break;
 			case (READ):
-				closeReader(indexPath);
+				closeReaderInternal(indexPath);
 			putPrevState(indexPath, SEARCH);
 				putZonedSearcher(getNewSearcher(indexPath), indexPath);
 				break;
@@ -187,12 +187,12 @@ public class LuceneHelper {
 				putZonedWriter(getNewWriter(indexPath, create), indexPath);
 				break;
 			case (READ):
-				closeReader(indexPath);
+				closeReaderInternal(indexPath);
 			putZonedWriter(getNewWriter(indexPath, create), indexPath);
 			}
 			if (forOptimize) {
 				putPrevState(indexPath,SEARCH);
-				closeReader(indexPath);
+				closeReaderInternal(indexPath);
 			} else {
 				putPrevState(indexPath, WRITE);
 			}
@@ -316,31 +316,46 @@ public class LuceneHelper {
 
 	public static void closeAll(String indexPath) {
 		synchronized (LuceneHelper.class) {
-			closeWriter(indexPath);
-			closeReader(indexPath);
-			closeSearcher(indexPath);
+			closeWriterInternal(indexPath);
+			closeReaderInternal(indexPath);
+			closeSearcherInternal(indexPath);
 			putPrevState(indexPath, WRITE);
 		}
 	}
 
-	// needed for searchers that are opened on existing readers.
-	public static void closeSearcher(String indexPath) {
+	// Used internally - the synch lock is taken by the calling method
+	private static void closeSearcherInternal(String indexPath) {
 		try {
 			getZonedSearcher(indexPath).close();
 		} catch (Exception se) {
 		}
 		putZonedSearcher(null,indexPath);
 	}
+	
+	// synch the close
+	public static void closeSearcher(String indexPath) {
+		synchronized (LuceneHelper.class) {
+			closeSearcherInternal(indexPath);
+		}
+	}
 
-	public static void closeReader(String indexPath) {
+	// Used internally - the synch lock is taken by the calling method
+	private static void closeReaderInternal(String indexPath) {
 		try {
 			getZonedReader(indexPath).close();
 		} catch (Exception se) {
 		}
 		putZonedReader(null,indexPath);
 	}
-
-	public static void closeWriter(String indexPath) {
+	// synch the close
+	public static void closeReader(String indexPath) {
+		synchronized (LuceneHelper.class) {
+			closeReaderInternal(indexPath);
+		}
+	}
+	
+	// Used internally - the synch lock is taken by the calling method
+	private static void closeWriterInternal(String indexPath) {
 		try {
 			getZonedWriter(indexPath).close();
 		} catch (Exception se) {
@@ -348,6 +363,13 @@ public class LuceneHelper {
 		putZonedWriter(null,indexPath);
 	}
 
+	// synch the close
+	public static void closeWriter(String indexPath) {
+		synchronized (LuceneHelper.class) {
+			closeWriterInternal(indexPath);
+		}
+	}
+	
 	// unlock the index
 	public static void unlock(String indexPath) {
 		try {
