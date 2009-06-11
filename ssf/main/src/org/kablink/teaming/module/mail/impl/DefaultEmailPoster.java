@@ -61,6 +61,7 @@ import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.PostingDef;
@@ -308,6 +309,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		String[] val = new String[1];
 		val[0] = (String)content;
 		inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, val);			
+		inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_NONE));			
 	}
 	//override to provide alternate processing 
 	protected void processHTML(Folder folder, Object content, Map inputData) {
