@@ -50,6 +50,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper;
 import org.springframework.web.portlet.ModelAndView;
@@ -65,7 +66,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		try {
 			response.setWindowState(request.getWindowState());
 		} catch(Exception e) {
-			logger.debug("WorkspaceTreeController.handleActionRequestAfterValidation(Exception:  '" + e.getLocalizedMessage() + "'):  Ignored");
+			logger.debug("WorkspaceTreeController.handleActionRequestAfterValidation(Exception:  '" + MiscUtil.exToString(e) + "'):  Ignored");
 		};
         User user = RequestContextHolder.getRequestContext().getUser();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");

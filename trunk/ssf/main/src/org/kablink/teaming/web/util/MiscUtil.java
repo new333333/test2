@@ -161,5 +161,34 @@ public final class MiscUtil
 		profileModule = bs.getProfileModule();
 		return profileModule.doesGuestUserHaveAddRightsToProfileBinder();
 	}// end doesGuestUserHaveAddRightsToProfileBinder()
+
 	
+	/**
+	 * Returns a string to display for an exception.
+	 */
+	public static String exToString( Exception e )
+	{
+		String reply;
+		if ( null == e )
+		{
+			reply = "<null>";
+		}
+		else
+		{
+			reply = e.getLocalizedMessage();
+			if (( null == reply ) || reply.equalsIgnoreCase( "null" ))
+			{
+				reply = e.getMessage();
+				if (( null == reply ) || reply.equalsIgnoreCase( "null" ))
+				{
+					reply = e.toString();
+					if (null == reply)
+					{
+						reply = "<message not available>";
+					}
+				}
+			}
+		}
+		return reply;
+	}// end exToString
 }// end MiscUtil

@@ -306,7 +306,7 @@ public class WorkspaceTreeHelper {
 				        RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, request, response, 
 				        		binder.getId(), type, model);
 					} catch (Exception ex) {
-        				logger.debug("WorkspaceTreeHelper.setupWorkspaceBeans(Exception:  '" + ex.getLocalizedMessage() + "'):  User may have been deleted, but ws left around:  Ignored");
+        				logger.debug("WorkspaceTreeHelper.setupWorkspaceBeans(Exception:  '" + MiscUtil.exToString(ex) + "'):  User may have been deleted, but ws left around:  Ignored");
 					}
 				}
 			}
