@@ -34,10 +34,21 @@
 %><%--
 --%><% //Description view %><%--
 --%><%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %><%--
+--%><c:set var="textFormat" value=""/><%--
+--%><c:if test="${!empty ssDefinitionEntry.description.format}"><%--
+--%><c:set var="textFormat" value="${ssDefinitionEntry.description.format}"/><%--
+--%></c:if><%--
 --%><c:if test="${!empty ssDefinitionEntry.description.text}"><%--
     --%><ssf:editable entity="${ssDefinitionEntry}" element="description" aclMap="${ss_accessControlMap}"><%--
-        --%><span><%--
-        --%><ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true">${ssDefinitionEntry.description.text}</ssf:markup><%--
-        --%></span><div class="ss_clear"></div><%--
+		 --%><c:if test="${textFormat == '2'}"><%--
+		   --%><pre>${ssDefinitionEntry.description.text}</pre><%--
+		 --%></c:if><%--
+		 --%><c:if test="${textFormat != '2'}"><%--
+		   --%><span><%--
+		     --%><ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" 
+		     >${ssDefinitionEntry.description.text}</ssf:markup><%--
+		   --%></span>
+		 --%></c:if><%--
+        --%><div class="ss_clear"></div><%--
 --%></ssf:editable><%--
 --%></c:if>
