@@ -47,7 +47,7 @@
 		   --%><span><%--
 		     --%><ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" 
 		     >${ssDefinitionEntry.description.text}</ssf:markup><%--
-		   --%></span>
+		   --%></span><%--
 		 --%></c:if><%--
         --%><div class="ss_clear"></div><%--
 --%></ssf:editable><%--
