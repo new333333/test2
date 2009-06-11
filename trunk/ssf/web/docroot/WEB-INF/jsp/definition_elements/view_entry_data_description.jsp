@@ -34,11 +34,21 @@
 %>
 <% //Description view %>
 <c:if test="${!empty ssDefinitionEntry.description}">
+<c:set var="textFormat" value=""/>
+<c:if test="${!empty ssDefinitionEntry.description.format}">
+  <c:set var="textFormat" value="${ssDefinitionEntry.description.format}"/>
+</c:if>
 <c:if test="${empty ss_element_display_style}">
 <ssf:editable entity="${ssDefinitionEntry}" element="description" aclMap="${ss_accessControlMap}">
- <span>
-   <ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" 
-   >${ssDefinitionEntry.description.text}</ssf:markup></span>
+ <c:if test="${textFormat == '2'}">
+   <pre>${ssDefinitionEntry.description.text}</pre>
+ </c:if>
+ <c:if test="${textFormat != '2'}">
+   <span>
+     <ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" 
+     >${ssDefinitionEntry.description.text}</ssf:markup>
+   </span>
+ </c:if>
  <div class="ss_clear"></div>
 </ssf:editable>
 </c:if>
@@ -50,11 +60,16 @@
     <span class="${ss_element_display_style_caption}"><c:out value="${property_caption}" /></span>
   </td>
   <td valign="top">
+	<c:if test="${textFormat == '2'}">
+	  <pre>${ssDefinitionEntry.description.text}</pre>
+	</c:if>
+    <c:if test="${textFormat != '2'}">
     <ssf:editable entity="${ssDefinitionEntry}" element="description" aclMap="${ss_accessControlMap}">
       <span><ssf:markup type="view" entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" 
       >${ssDefinitionEntry.description.text}</ssf:markup></span>
       <div class="ss_clear"></div>
     </ssf:editable>
+    </c:if>
   </td>
 </tr>
 </c:if>
