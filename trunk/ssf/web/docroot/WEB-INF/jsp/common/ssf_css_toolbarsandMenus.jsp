@@ -224,7 +224,7 @@ ul.ss_actions_bar1 .ss_actions_bar_submenu {
 	}
 ul.ss_actions_bar1 li {
 	margin-top: 1px;
-	padding: 0px;
+	padding: 5px 0px 0px 0px;
 	}
 ul.ss_actions_bar1 li a:hover {
 	text-decoration:none;
