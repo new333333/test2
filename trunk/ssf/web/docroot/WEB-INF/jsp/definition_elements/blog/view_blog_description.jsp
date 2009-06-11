@@ -36,27 +36,37 @@
 <%
 	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
 	String description = "";
+	String descriptionFormat = "";
 	if (thisEntry instanceof DefinableEntity) {
-
 		description = (String) ((DefinableEntity)thisEntry).getDescription().getText();
-		 if (description != null && !description.equals("")) {
+		descriptionFormat = String.valueOf(((DefinableEntity)thisEntry).getDescription().getFormat());
+		if (description != null && !description.equals("")) {
 		%>
 <% //Description view %>
   <div>
-    <span><ssf:markup entity="${ssDefinitionEntry}"><c:out 
-       value="<%= description %>" escapeXml="false"/></ssf:markup></span>
+	<% if ("2".equals(descriptionFormat)) { %>
+	  <pre><c:out value="<%= description %>" escapeXml="false"/></pre>
+	<% } else { %>
+      <span><ssf:markup entity="${ssDefinitionEntry}"><c:out 
+         value="<%= description %>" escapeXml="false"/></ssf:markup></span>
+    <% } %>
     <div class="ss_clear"></div>
   </div>
 <%  	}
  	} else if (thisEntry instanceof Map) {
 		description = (String) ((Map)thisEntry).get("_desc");
+		descriptionFormat = (String) ((Map)thisEntry).get("_desc_format");
 	 if (description != null && !description.equals("")) {	
 	 %>	
 <% //Description view %>
   <div>
-    <span><ssf:markup search="${ssDefinitionEntry}"><c:out 
-       value="<%= description %>" escapeXml="false"/></ssf:markup></span>
-    <div class="ss_clear"></div>
+	<% if ("2".equals(descriptionFormat)) { %>
+	  <pre><c:out value="<%= description %>" escapeXml="false"/></pre>
+	<% } else { %>
+      <span><ssf:markup search="${ssDefinitionEntry}"><c:out 
+         value="<%= description %>" escapeXml="false"/></ssf:markup></span>
+      <div class="ss_clear"></div>
+    <% } %>
   </div>
   <div class="ss_clear"></div>
 

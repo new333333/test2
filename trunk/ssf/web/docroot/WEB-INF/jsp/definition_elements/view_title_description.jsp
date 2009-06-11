@@ -35,6 +35,18 @@
 <% //Description view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${!empty ssDefinitionEntry.description}">
-  <span><ssf:markup entity="${ssDefinitionEntry}">${ssDefinitionEntry.description.text}</ssf:markup></span>
-  <div class="ss_clear"></div>
+ <c:set var="textFormat" value=""/>
+ <c:if test="${!empty ssDefinitionEntry.description.format}">
+  <c:set var="textFormat" value="${ssDefinitionEntry.description.format}"/>
+ </c:if>
+ <c:if test="${textFormat == '2'}">
+   <pre>${ssDefinitionEntry.description.text}</pre>
+ </c:if>
+ <c:if test="${textFormat != '2'}">
+   <span>
+     <ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" 
+     >${ssDefinitionEntry.description.text}</ssf:markup>
+   </span>
+ </c:if>
+ <div class="ss_clear"></div>
 </c:if>
