@@ -196,7 +196,7 @@ public class BinderHelper {
  			prefs = request.getPreferences();
  			ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
  		} catch(Exception e) {
-			logger.debug("BinderHelper.CommonPortletDispatch(Exception:  '" + e.getLocalizedMessage() + "'):  1:  Ignored");
+			logger.debug("BinderHelper.CommonPortletDispatch(Exception:  '" + MiscUtil.exToString(e) + "'):  1:  Ignored");
  			ss_initialized = "true";
  		}
  		
@@ -237,7 +237,7 @@ public class BinderHelper {
 			try {
 				response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
 			} catch(Exception e) {
-				logger.debug("BinderHelper.CommonPortletDispatch(Exception:  '" + e.getLocalizedMessage() + "'):  2:  Ignored");
+				logger.debug("BinderHelper.CommonPortletDispatch(Exception:  '" + MiscUtil.exToString(e) + "'):  2:  Ignored");
 			}
 			return new ModelAndView(WebKeys.VIEW_FORUM, model);
 		} else if (WORKSPACE_PORTLET.equals(displayType) || WELCOME_PORTLET.equals(displayType)) {
@@ -247,7 +247,7 @@ public class BinderHelper {
 			try {
 				binder = bs.getWorkspaceModule().getWorkspace(Long.valueOf(id));
 			} catch (Exception ex) {
-				logger.debug("BinderHelper.CommonPortletDispatch(Exception:  '" + ex.getLocalizedMessage() + "'):  3:  Ignored");
+				logger.debug("BinderHelper.CommonPortletDispatch(Exception:  '" + MiscUtil.exToString(ex) + "'):  3:  Ignored");
 				binder = bs.getWorkspaceModule().getTopWorkspace();				
 			}
 			Document wsTree;
@@ -284,7 +284,7 @@ public class BinderHelper {
  			try {
  				users = bs.getProfileModule().getUsersFromPrincipals(ids);
  			} catch(Exception e) {
- 				logger.debug("BinderHelper.CommonPortletDispatch(Exception:  '" + e.getLocalizedMessage() + "'):  4:  Ignored");
+ 				logger.debug("BinderHelper.CommonPortletDispatch(Exception:  '" + MiscUtil.exToString(e) + "'):  4:  Ignored");
  			}
  			model.put(WebKeys.USERS, users);
  			//if we list groups, then we have issues when a user appears in multiple groups??
@@ -293,7 +293,7 @@ public class BinderHelper {
 			try {
 				response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
 			} catch(Exception e) {
-				logger.debug("BinderHelper.CommonPortletDispatch(Exception:  '" + e.getLocalizedMessage() + "'):  5:  Ignored");
+				logger.debug("BinderHelper.CommonPortletDispatch(Exception:  '" + MiscUtil.exToString(e) + "'):  5:  Ignored");
 			}
   			model.put(WebKeys.USER_LIST, LongIdUtil.getIdsAsString(ids));
   			return new ModelAndView(WebKeys.VIEW_PRESENCE, model);				
@@ -406,7 +406,7 @@ public class BinderHelper {
 					Binder binder = bs.getBinderModule().getBinder(binderId);
 					BinderHelper.getBinderAccessibleUrl(bs, binder, null, request, response, model);
 				} catch(Exception e) {
-					logger.debug("BinderHelper.setupStandardBeans(Exception:  '" + e.getLocalizedMessage() + "')");
+					logger.debug("BinderHelper.setupStandardBeans(Exception:  '" + MiscUtil.exToString(e) + "')");
 					BinderHelper.getBinderAccessibleUrl(bs, null, null, request, response, model);
 				}
 			}
@@ -470,7 +470,7 @@ public class BinderHelper {
 						searchFilter = DocumentHelper.parseText(searchFilterStr);
 					} catch (Exception ignore) {
 						//get rid of it
-						logger.debug("BinderHelper.getSearchFilter(Exception:  '" + ignore.getLocalizedMessage() + "')");
+						logger.debug("BinderHelper.getSearchFilter(Exception:  '" + MiscUtil.exToString(ignore) + "')");
 						searchFilters.remove(searchFilterStr);
 						bs.getProfileModule().setUserProperty(userFolderProperties.getId().getPrincipalId(), userFolderProperties.getId().getBinderId(), ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
 					};
@@ -491,7 +491,7 @@ public class BinderHelper {
 				Map.Entry me = (Map.Entry)iter.next();
 				searchFilters.put(me.getKey(), ((Document)me.getValue()).asXML());				
 			} catch (Exception ignore) {
-				logger.debug("BinderHelper.convertV1Filters(Exception:  '" + ignore.getLocalizedMessage() + "'):  Ignored");
+				logger.debug("BinderHelper.convertV1Filters(Exception:  '" + MiscUtil.exToString(ignore) + "'):  Ignored");
 			};
 		}
 		bs.getProfileModule().setUserProperty(userFolderProperties.getId().getPrincipalId(), userFolderProperties.getId().getBinderId(), ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
@@ -548,7 +548,7 @@ public class BinderHelper {
 		try {
 			profileBinder = bs.getProfileModule().getProfileBinder();
 		} catch(Exception e) {
-			logger.debug("BinderHelper.setupMobilePortlet(Exception:  '" + e.getLocalizedMessage() + "'):  Ignored");
+			logger.debug("BinderHelper.setupMobilePortlet(Exception:  '" + MiscUtil.exToString(e) + "'):  Ignored");
 		}
 		if (profileBinder != null) {
 			accessControlMap.put(WebKeys.CAN_VIEW_USER_PROFILES, true);
@@ -800,7 +800,7 @@ public class BinderHelper {
 			try {
 				url.setWindowState(WindowState.MAXIMIZED);
 			} catch(Exception e) {
-				logger.debug("BinderHelper.setBinderPermaLink(Exception:  '" + e.getLocalizedMessage() + "'):  Ignored");
+				logger.debug("BinderHelper.setBinderPermaLink(Exception:  '" + MiscUtil.exToString(e) + "'):  Ignored");
 			};
 			url.setParameter(WebKeys.ACTION, WebKeys.URL_ACTION_PLACE_HOLDER);
 			url.setParameter(WebKeys.URL_ENTITY_TYPE, WebKeys.URL_ENTITY_TYPE_PLACE_HOLDER);
@@ -1801,7 +1801,7 @@ public class BinderHelper {
         			miniBlog = null;
         		}
         	} catch (Exception ex) {
-				logger.debug("BinderHelper.updateUserStatus(Exception:  '" + ex.getLocalizedMessage() + "'):  Ignoring miniBlog");
+				logger.debug("BinderHelper.updateUserStatus(Exception:  '" + MiscUtil.exToString(ex) + "'):  Ignoring miniBlog");
 				miniBlog = null;
         	}
     		userHasMiniBlog = (null != miniBlog); 
@@ -1932,7 +1932,7 @@ public class BinderHelper {
 					bs.getAdminModule().sendMail(entry, recipients, null, null, null, null, subject, 
 							new Description(body, Description.FORMAT_HTML), incAtt);
 				} catch (Exception e) {
-					logger.debug("BinderHelper.sendMailOnCreate(Exception:  '" + e.getLocalizedMessage() + "'):  Ignored");
+					logger.debug("BinderHelper.sendMailOnCreate(Exception:  '" + MiscUtil.exToString(e) + "'):  Ignored");
 					//TODO Log that mail wasn't sent
 				}
 			}
@@ -2232,7 +2232,7 @@ public class BinderHelper {
 		try {
 			searchCaseSensitive = PortletRequestUtils.getBooleanParameter(request, WebKeys.SEARCH_FORM_CASE_SENSITIVE);
 		} catch(Exception e) {
-			logger.debug("BinderHelper.prepareSearchOptions(Exception:  '" + e.getLocalizedMessage() + "'):  Ignored");
+			logger.debug("BinderHelper.prepareSearchOptions(Exception:  '" + MiscUtil.exToString(e) + "'):  Ignored");
 		}
 		if (searchCaseSensitive == null) searchCaseSensitive = false;
 		options.put(ObjectKeys.SEARCH_CASE_SENSITIVE, searchCaseSensitive);
@@ -2345,7 +2345,7 @@ public class BinderHelper {
 				try {
 					return DocumentHelper.parseText((String)q);
 				} catch (Exception ex) {
-					logger.debug("BinderHelper.getSearchFilter(Exception:  '" + ex.getLocalizedMessage() + "'):  Removed query");
+					logger.debug("BinderHelper.getSearchFilter(Exception:  '" + MiscUtil.exToString(ex) + "'):  Removed query");
 					queries.remove(queryName);
 					bs.getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES, queries);
 				};
@@ -2450,7 +2450,7 @@ public class BinderHelper {
 			try {
 				binder = binderModule.getBinder(((Place)array[j]).getId());
 			} catch (Exception ex) {
-				logger.debug("BinderHelper.sortPlacesInEntriesSearchResults(Exception:  '" + ex.getLocalizedMessage() + "'):  No access or doesn't exist");
+				logger.debug("BinderHelper.sortPlacesInEntriesSearchResults(Exception:  '" + MiscUtil.exToString(ex) + "'):  No access or doesn't exist");
 			}
 			int count = ((Place)array[j]).getCount();
 			Map place = new HashMap();
@@ -2914,7 +2914,7 @@ public class BinderHelper {
 					try {
 						def = bs.getDefinitionModule().getDefinitionByReservedId(ObjectKeys.DEFAULT_ENTRY_MINIBLOG_DEF);
 					} catch (Exception ex) {
-						logger.debug("BinderHelper.addMiniBlogEntry(Exception:  '" + ex.getLocalizedMessage() + "'):  1:  Ignored");
+						logger.debug("BinderHelper.addMiniBlogEntry(Exception:  '" + MiscUtil.exToString(ex) + "'):  1:  Ignored");
 					}
 				}
 				if (def != null) {
@@ -2925,7 +2925,7 @@ public class BinderHelper {
 					try {
 						entryId = folderModule.addEntry(miniBlogId, def.getId(), new MapInputData(data), null, null).getId();
 					} catch (Exception ex) {
-						logger.debug("BinderHelper.addMiniBlogEntry(Exception:  '" + ex.getLocalizedMessage() + "'):  2:  Ignored");
+						logger.debug("BinderHelper.addMiniBlogEntry(Exception:  '" + MiscUtil.exToString(ex) + "'):  2:  Ignored");
 					}
 					if (null != entryId) {
 						// Mark the entry as read

@@ -111,6 +111,7 @@ import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -643,7 +644,9 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	   if (!Validator.isNull(defId)) {
     		   try {
     			   userDef = getDefinitionModule().getDefinition(defId);
-    		   } catch (NoDefinitionByTheIdException nd) {};
+    		   } catch (NoDefinitionByTheIdException nd) {
+    			   logger.debug("ProfileModuleImpl.addEntries(NoDefinitionByTheIdException):  Ignored");
+    		   };
     		   
     	   }
     	   if (userDef == null) defaultUserList.add(user);
@@ -803,7 +806,9 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         if (entry.getWorkspaceId() != null) {
         	try {
         		return (Workspace)getCoreDao().loadBinder(entry.getWorkspaceId(), entry.getZoneId()); 
-        	} catch (Exception ex) {};
+        	} catch (Exception ex) {
+				logger.debug("ProfileModuleImpl.addUserWorkspace(Exception:  '" + MiscUtil.exToString(ex) + "'):  1:  Ignored");
+        	};
         }
 		Workspace ws = null;
 		String wsTitle = entry.getWSTitle();
@@ -833,9 +838,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         		updates.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
   				ws = (Workspace)processor.addBinder(entry.getParentBinder(), userDef, Workspace.class, new MapInputData(updates), null, options);				
   			}
-  		} catch (WriteFilesException wf) {
-   			logger.error("Error create user workspace: ", wf);
-   			
+ 		} catch (Exception e) {
+	  		if (e instanceof WriteFilesException ) {
+	   			logger.error("Error create user workspace: ", e);
+	  		} else {
+				logger.debug("ProfileModuleImpl.addUserWorkspace(Exception:  '" + MiscUtil.exToString(e) + "'):  2:  Ignored");
+	  		}
    		} finally {
    			//	leave new context for indexing
    			RequestContextHolder.setRequestContext(oldCtx);				

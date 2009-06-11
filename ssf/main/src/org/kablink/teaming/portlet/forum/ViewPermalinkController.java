@@ -57,6 +57,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
@@ -97,6 +98,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			response.setRenderParameter("accessException", "true");
 			return;
 		} catch (NoBinderByTheIdException nb) {
+			logger.debug("ViewPermalinkController.handleActionRequestAfterValidation(NoBinderByTheIdException):  Exception rendered to response.");
 			response.setRenderParameters(request.getParameterMap());
 			response.setRenderParameter("noBinderByIdException", "true");
 		}
@@ -113,7 +115,9 @@ public class ViewPermalinkController  extends SAbstractController {
 		DefinableEntity entity = null;
 		try {
 			entityType = EntityIdentifier.EntityType.valueOf(PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, ""));
-		} catch(Exception ignore) {};
+		} catch(Exception ignore) {
+			logger.debug("ViewPermalinkController.ProcessRequest(Exception:  '" + MiscUtil.exToString(ignore) + "'):  Ignored");
+		};
 		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
  		if (Validator.isNotNull(fileId)) return getFileUrlById(request, entityType, binderId, entryId, fileId);
  		if (Validator.isNotNull(fileName)) return getFileUrlByName(request, entityType, binderId, entryId, fileName);

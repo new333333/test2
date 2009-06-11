@@ -49,6 +49,8 @@ import java.util.TreeMap;
 
 import javax.portlet.ActionRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.taglibs.standard.tag.common.core.SetSupport;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -96,6 +98,8 @@ import org.kablink.util.search.Constants;
 
 
 public class DashboardHelper extends AbstractAllModulesInjected {
+	protected static final Log logger = LogFactory.getLog(Dashboard.class);
+	
 	private static DashboardHelper instance; // A singleton instance
 
 
@@ -609,7 +613,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	    			//merge into user list if not config
 	    			try {
 	    				ids.addAll(getBinderModule().getTeamMemberIds(binder.getId(), false));
-	    			} catch (Exception ex) {};  //skip if don't have access
+	    			} catch (Exception ex) {
+        				logger.debug("DashboardHelper.getBuddyListBean(Exception:  '" + MiscUtil.exToString(ex) + "'):  Skip if don't have access:  Ignored");
+	    			};
 	    		}
 	    	}
 			idData.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
@@ -658,7 +664,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		Long topId = null;
 		try {
 			if (!idString.equals("")) topId = Long.valueOf(idString);
-		} catch (Exception ex) {};
+		} catch (Exception ex) {
+			logger.debug("DashboardHelper.getWorkspaceTreeBean(Exception:  '" + MiscUtil.exToString(ex) + "'):  1:  Ignored");
+		};
        	String startPoint = "";
        	if (data.containsKey("start") && data.get("start") instanceof String) {
        		startPoint = (String)data.get("start");
@@ -679,7 +687,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
    				try {
    					topWs = getWorkspaceModule().getWorkspace(topId);
    	   				idData.put(WebKeys.BINDER, topWs);
-   				} catch (Exception ex) {}; //ignore error and continue
+   				} catch (Exception ex) {
+   					logger.debug("DashboardHelper.getWorkspaceTreeBean(Exception:  '" + MiscUtil.exToString(ex) + "'):  2:  Ignored");
+   				};
    			}
    			if (isConfig) {
    				if (topWs != null && !topWs.isZone()) topWs = null;
@@ -708,7 +718,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
    				try {
    					topWs = getWorkspaceModule().getWorkspace(topId);
    	   				idData.put(WebKeys.BINDER, topWs);
-   				} catch (Exception ex) {}; //ignore error and continue
+   				} catch (Exception ex) {
+   					logger.debug("DashboardHelper.getWorkspaceTreeBean(Exception:  '" + MiscUtil.exToString(ex) + "'):  3:  Ignored");
+   				};
    			}
   			if (isConfig) {
    				if (topWs != null && !topWs.isZone()) topWs = null;
@@ -750,7 +762,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     				String resultsCount = (String)data.get(WebKeys.DASHBOARD_SEARCH_RESULTS_COUNT);
     				pageSize = Integer.valueOf(resultsCount);
     				model.put(WebKeys.PAGE_SIZE, resultsCount);
-    			} catch (Exception e) {}
+    			} catch (Exception e) {
+    				logger.debug("DashboardHelper.getTeamMembersBean(Exception:  '" + MiscUtil.exToString(e) + "'):  Ignored");
+    			}
     		}
     		int pageNumber = 0;
     		if (model.containsKey(WebKeys.PAGE_SIZE)) {
@@ -820,7 +834,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			}
     	
 		} catch (Exception ex) {
-			//just skip = assume binder or entry doesn't exist
+			logger.debug("DashboardHelper.getWikiHomepageEntryBean(Exception:  '" + MiscUtil.exToString(ex) + "'):  Just skip = assume binder or entry doesn't exist:  Ignored");
 		}
 		
     }
@@ -846,7 +860,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		Set <Long> folderIds = null;
 		try {
 			folderIds = LongIdUtil.getIdsAsLongSet((String)data.get(SearchFormSavedFolderIdList));
-		} catch(Exception e) {}
+		} catch(Exception e) {
+			logger.debug("DashboardHelper.getSummaryConfigBean(Exception:  '" + MiscUtil.exToString(e) + "'):  Ignored");
+		}
 		if (!folderIds.isEmpty()) {
 			folders = getBinderModule().getBinders(folderIds);		//may have templates		
 			idData.put(WebKeys.FOLDER_LIST, folders);
@@ -866,7 +882,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				try {
 					userIds.add(Long.parseLong((String)data.get(AssignedTo)));
 				} catch (NumberFormatException e) {
-					// ignore
+					logger.debug("DashboardHelper.getSummaryConfigBean(NumberFormatException):  Ignored");
 				}
 			}
 			data.put(AssignedTo, userIds);
@@ -985,6 +1001,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			try {
 				searchQuery = DocumentHelper.parseText((String)data.get(DashboardHelper.SearchFormSavedSearchQuery));
 			} catch (Exception e) {
+				logger.debug("DashboardHelper.getSearchResultsBean(Exception:  '" + MiscUtil.exToString(e) + "'):  Parse error, failover with empty search query");
 				searchQuery = DocumentHelper.createDocument();
 				searchQuery.addElement(SearchFilterKeys.FilterRootName);		
 			}
@@ -1022,7 +1039,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			try {
 				String maxHitsStr = (String)data.get(WebKeys.SEARCH_FORM_MAX_HITS);
 				options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(maxHitsStr));
-			} catch (Exception e) {}
+			} catch (Exception e) {
+				logger.debug("DashboardHelper.getSearchResultsBean(Exception:  '" + MiscUtil.exToString(e) + "'):  1:  Ignored");
+			}
 		}
 		int pageSize = ObjectKeys.SEARCH_MAX_HITS_DEFAULT;
 		if (data.containsKey(WebKeys.DASHBOARD_SEARCH_RESULTS_COUNT)) {
@@ -1030,7 +1049,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				String resultsCount = (String)data.get(WebKeys.DASHBOARD_SEARCH_RESULTS_COUNT);
 				pageSize = Integer.valueOf(resultsCount);
 				model.put(WebKeys.PAGE_SIZE, resultsCount);
-			} catch (Exception e) {}
+			} catch (Exception e) {
+				logger.debug("DashboardHelper.getSearchResultsBean(Exception:  '" + MiscUtil.exToString(e) + "'):  2:  Ignored");
+			}
 		}
 		int pageNumber = 0;
 		if (model.containsKey(WebKeys.PAGE_SIZE)) {
@@ -1214,7 +1235,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						ids.add(Long.parseLong(assignedToSplit[i]));
 					}
 				} catch (NumberFormatException e) {
-					// ignore
+					logger.debug("DashboardHelper.setupAssignees(NumberFormatException):  1. Ignored");
 				}
 			}
 			componentData.put(AssignedTo, ids);
@@ -1230,7 +1251,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				try {
 					ids.add(Long.parseLong(assignedToGroupSplit[i]));
 				} catch (NumberFormatException e) {
-					// ignore
+					logger.debug("DashboardHelper.setupAssignees(NumberFormatException):  2:  Ignored");
 				}
 			}
 			componentData.put(AssignedToGroups, ids);
@@ -1246,7 +1267,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				try {
 					ids.add(Long.parseLong(assignedToTeamSplit[i]));
 				} catch (NumberFormatException e) {
-					// ignore
+					logger.debug("DashboardHelper.setupAssignees(NumberFormatException):  3:  Ignored");
 				}
 			}
 			componentData.put(AssignedToTeams, ids);

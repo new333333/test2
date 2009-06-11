@@ -764,7 +764,7 @@ public class DefinitionHelper {
 	        						Long.valueOf((String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID)));
 	        				mashupEntries.put(entry.getId().toString(), entry);
 	        			} catch(Exception e) {
-	        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + e.getLocalizedMessage() + "'):  1:  Ignored");
+	        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + MiscUtil.exToString(e) + "'):  1:  Ignored");
 	        			}
 	        		} else if (ObjectKeys.MASHUP_TYPE_FOLDER.equals(type) && 
 	        				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_FOLDER_ID) && 
@@ -783,7 +783,7 @@ public class DefinitionHelper {
 	        						options.put(ObjectKeys.SEARCH_MAX_HITS, entriesToShow);
 	        					}
 	        				} catch(Exception e) {
-		        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + e.getLocalizedMessage() + "'):  2:  Ignored");
+		        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + MiscUtil.exToString(e) + "'):  2:  Ignored");
 	        				}
 	        				options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
 	        				options.put(ObjectKeys.SEARCH_SORT_BY, Constants.LASTACTIVITY_FIELD);
@@ -791,7 +791,7 @@ public class DefinitionHelper {
 	        				mashupBinderEntries.put(binder.getId().toString(), 
 	        						folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
 	        			} catch(Exception e) {
-	        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + e.getLocalizedMessage() + "'):  3:  Ignored");
+	        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + MiscUtil.exToString(e) + "'):  3:  Ignored");
 	        			}
 	        		} else if (ObjectKeys.MASHUP_TYPE_BINDER_URL.equals(type) && 
 	        				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_BINDER_ID) && 
@@ -801,7 +801,7 @@ public class DefinitionHelper {
 	        						Long.valueOf((String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_BINDER_ID)));
 	        				mashupBinders.put(binder.getId().toString(), binder);
 	        			} catch(Exception e) {
-	        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + e.getLocalizedMessage() + "'):  4:  Ignored");
+	        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + MiscUtil.exToString(e) + "'):  4:  Ignored");
 	        			}
 	        		} else if (ObjectKeys.MASHUP_TYPE_ENTRY_URL.equals(type) && 
 	        				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ENTRY_ID) && 
@@ -811,7 +811,7 @@ public class DefinitionHelper {
 	        						Long.valueOf((String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID)));
 	        				mashupEntries.put(entry.getId().toString(), entry);
 	        			} catch(Exception e) {
-	        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + e.getLocalizedMessage() + "'):  5:  Ignored");
+	        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + MiscUtil.exToString(e) + "'):  5:  Ignored");
 	        			}
 	        		}
 	        		else if ( type != null && type.equals( "utility" ) )
@@ -965,7 +965,7 @@ public class DefinitionHelper {
 			}
 
 		} catch (Exception ex) {
-			logger.debug("DefinitionHelper.getDefaultDefinitions(Exception:  '" + ex.getLocalizedMessage() + "'):  Cannot read startup configuration:  Ignored");
+			logger.debug("DefinitionHelper.getDefaultDefinitions(Exception:  '" + MiscUtil.exToString(ex) + "'):  Cannot read startup configuration:  Ignored");
 		}
 		return definitions;
 	}	
