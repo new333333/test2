@@ -71,7 +71,7 @@ Liferay portal-client.jar 4.3.0
 Liferay portal-impl.jar 4.3.0
 Liferay portal-kernel.jar 4.3.0
 Liferay portal-service.jar 4.3.0
-Liferay util-java.jar 4.3.0
+Liferay util-java.jar 4.3.0 (needed by util-taglib)
 Log4j 1.2.15 (from spring distribution)
 Lucene 2.1.1+indexupdater
 MINA (Apache) mina-core.jar 1.1.6
