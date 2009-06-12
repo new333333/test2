@@ -36,9 +36,10 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="org.kablink.util.ParamUtil" %>
 <c:set var="prefix" value="${renderResponse.namespace}_${ssFindInstanceCode}_${ssFindInstanceCount}" />
+<c:set var="accessibilityTextNltized"><ssf:nlt tag="${accessibilityText}"/></c:set>
 
 <ssf:ifaccessible simple_ui="true">
-	<label for="ss_combobox_autocomplete_${prefix}"><span style="display:none;">${accessibilityText}</span></label>
+	<label for="ss_combobox_autocomplete_${prefix}"><span style="display:none;">${accessibilityTextNltized}</span></label>
 </ssf:ifaccessible>
 
 <!-- textarea's rows and cols attributes are set to 1. -->
@@ -51,8 +52,8 @@
     style="width: ${ssFindElementWidth};"
     name="${ssFindFormElement}" 
     id="ss_combobox_autocomplete_${prefix}"
-    <c:if test="${!empty accessibilityText}">
-    	title="${accessibilityText}"
+    <c:if test="${!empty accessibilityTextNltized}">
+    	title="${accessibilityTextNltized}"
     </c:if>
 ></textarea>
 
