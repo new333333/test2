@@ -60,7 +60,7 @@
   </script>
  <ssf:sidebarPanel title="login.please" id="ss_login_sidebar"
     initOpen="true" sticky="true">
-  <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}"
+  <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}" autocomplete="off"
     onSubmit="ss_setReturnUrl();return true;"
   >
      <table class="ss_table" border="0" cellpadding="2" width="95%">

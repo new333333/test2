@@ -59,7 +59,8 @@
 	<c:set var="copyrightNotice" value="login.copyright.none" scope="request" />
 </c:if>
 
-<form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}" style="display:inline;">
+<form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}" style="display:inline;"
+  autocomplete="off">
 	<table id="idLoginTable"
 		   border="0"
 		   cellpadding="3"
