@@ -460,7 +460,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 							<label for="searchText">
 							  <span style="display:none;"><ssf:nlt tag="navigation.search"/></span>
 							</label>
-							<input name="searchText" id="searchText" class="ss_combobox_search" type="text" /> 
+							<input name="searchText" id="searchText" class="ss_combobox_search" type="text" 
+							  title="<ssf:nlt tag="navigation.search"/>"/> 
 							<a href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" >
 								<img title="<ssf:nlt tag="alt.search"/>"
 								<ssf:alt tag="alt.search"/> src="<html:rootPath/>images/pics/masthead/search.png" width="19" height="20" border="0" align="absmiddle" />
@@ -522,7 +523,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 					    			formElement="searchText" 
 					    			type="user"
 					    			singleItem="true"
-					    			accessibilityText='<%= NLT.get("search.People.alt") %>'/> 
+					    			accessibilityText='search.People.alt'/> 
 								</form>
 	
 							</div>	
@@ -544,7 +545,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 					    		formElement="searchText" 
 					    		type="places"
 					    		singleItem="true"
-					    		accessibilityText='<%= NLT.get("search.Places.alt") %>'/> 
+					    		accessibilityText='search.Places.alt'/> 
 							</form>
 						</div>
 					</div>
@@ -564,7 +565,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 					    	formElement="searchText" 
 					    	type="tags"
 					    	singleItem="true"
-					    	accessibilityText='<%= NLT.get("search.Tags.alt") %>'/> 
+					    	accessibilityText='search.Tags.alt'/> 
 						</form>
 					</div>
 				</div>
