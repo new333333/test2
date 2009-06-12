@@ -3,7 +3,7 @@
 	<globalConfiguration>
 		<parameter name="adminPassword" value="admin"/>
 		<parameter name="sendXsiTypes" value="true"/>
-		<parameter name="sendMultiRefs" value="true"/>
+		<parameter name="sendMultiRefs" value="false"/>
 		<parameter name="sendXMLDeclaration" value="true"/>
 		<parameter name="axis.sendMinimizedElements" value="true"/>
 		<parameter name="attachments.Directory" value="./ssr-ws/attachments"/>
