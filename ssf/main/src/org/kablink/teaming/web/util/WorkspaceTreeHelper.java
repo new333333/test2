@@ -324,7 +324,7 @@ public class WorkspaceTreeHelper {
 				model.put(WebKeys.SHOW_TEAM_MEMBERS, true);
 				getTeamMembers(bs, formData, request, response, (Workspace)binder, model);
 			} else {
-				Document searchFilter = BinderHelper.getSearchFilter(bs, userFolderProperties);
+				Document searchFilter = BinderHelper.getSearchFilter(bs, binder, userFolderProperties);
 				Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
 				String viewType = DefinitionUtils.getViewType(configDocument);
 				if (viewType == null) viewType = "";

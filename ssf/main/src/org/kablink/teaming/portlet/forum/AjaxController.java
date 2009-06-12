@@ -2052,7 +2052,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 
 				User user = RequestContextHolder.getRequestContext().getUser();
 				UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-				options.putAll(ListFolderHelper.getSearchFilter(this, request, userFolderProperties));
+				options.putAll(ListFolderHelper.getSearchFilter(this, request, binder, userFolderProperties));
 				
 		       	List entries;
 				if (binder instanceof Folder || binder instanceof Workspace) {
@@ -2116,7 +2116,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, end);
 			
 				UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-				options.putAll(ListFolderHelper.getSearchFilter(this, request, userFolderProperties));
+				options.putAll(ListFolderHelper.getSearchFilter(this, request, binder, userFolderProperties));
 				
 				
 		       	List entries;

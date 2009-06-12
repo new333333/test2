@@ -114,6 +114,7 @@ import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
 import org.kablink.teaming.search.SearchUtils;
+import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterRequestParser;
 import org.kablink.teaming.search.filter.SearchFilterToMapConverter;
 import org.kablink.teaming.security.AccessControlException;
@@ -456,13 +457,19 @@ public class BinderHelper {
 		model.put(WebKeys.PRODUCT_CONFERENCING_TITLE, SPropsUtil.getString("product.conferencing.title", ObjectKeys.PRODUCT_CONFERENCING_TITLE_DEFAULT));
 		model.put("releaseInfo", ReleaseInfo.getReleaseInfo());
 	}
-	public static Document getSearchFilter(AllModulesInjected bs, UserProperties userFolderProperties) {
+	public static Document getSearchFilter(AllModulesInjected bs, Binder binder, UserProperties userFolderProperties) {
 		convertV1Filters(bs, userFolderProperties);  //make sure converted
 		//Determine the Search Filter
 		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
+		String searchFilterScope = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE);
 		Document searchFilter = null;
 		if (Validator.isNotNull(searchFilterName)) {
-			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
+			Map searchFilters = null;
+			if (!ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL.equals(searchFilterScope)) {
+				searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
+			} else {
+				searchFilters = (Map)binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS);
+			}
 			if (searchFilters != null) {
 				String searchFilterStr = (String)searchFilters.get(searchFilterName);
 				if (Validator.isNotNull(searchFilterStr)) {
@@ -473,7 +480,7 @@ public class BinderHelper {
 						logger.debug("BinderHelper.getSearchFilter(Exception:  '" + MiscUtil.exToString(ignore) + "')");
 						searchFilters.remove(searchFilterStr);
 						bs.getProfileModule().setUserProperty(userFolderProperties.getId().getPrincipalId(), userFolderProperties.getId().getBinderId(), ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
-					};
+					}
 				}
 			}
 		}		

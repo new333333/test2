@@ -279,7 +279,7 @@ public class ListFolderHelper {
 			model.put(WebKeys.TABS, tab.getTabs());		
 			//check tabs based on operation
 			
-			Map options = getSearchFilter(bs, request, userFolderProperties);
+			Map options = getSearchFilter(bs, request, binder, userFolderProperties);
 			
 			//determine page starts/ counts
 			initPageCounts(bs, request, userProperties.getProperties(), tab, options);
@@ -349,9 +349,9 @@ public class ListFolderHelper {
 			
 	}
 	
-	public static Map getSearchFilter(AllModulesInjected bs, RenderRequest request, UserProperties userFolderProperties) {
+	public static Map getSearchFilter(AllModulesInjected bs, RenderRequest request, Binder binder, UserProperties userFolderProperties) {
 		Map result = new HashMap();
-		result.put(ObjectKeys.SEARCH_SEARCH_FILTER, BinderHelper.getSearchFilter(bs, userFolderProperties));
+		result.put(ObjectKeys.SEARCH_SEARCH_FILTER, BinderHelper.getSearchFilter(bs, binder, userFolderProperties));
 		String searchTitle = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TITLE, "");
 		if (!searchTitle.equals("")) {
 			result.put(ObjectKeys.SEARCH_TITLE, searchTitle);
@@ -560,7 +560,7 @@ public class ListFolderHelper {
        	}
        	
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-		Map options = getSearchFilter(bs, request, userFolderProperties);
+		Map options = getSearchFilter(bs, request, binder, userFolderProperties);
 		options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
        	// options.put(ObjectKeys.SEARCH_EVENT_DAYS, getExtViewDayDates(calStartDateRange, calEndDateRange));
        	options.put(ObjectKeys.SEARCH_EVENT_DAYS, intervalView.getVisibleIntervalRaw());

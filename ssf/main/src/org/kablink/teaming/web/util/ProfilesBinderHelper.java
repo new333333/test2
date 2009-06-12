@@ -103,7 +103,7 @@ public class ProfilesBinderHelper {
 		
 		//determine page starts/ counts
 		initPageCounts(request, userProperties.getProperties(), tab, options);
-		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, BinderHelper.getSearchFilter(bs, userFolderProperties));
+		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, BinderHelper.getSearchFilter(bs, binderObj, userFolderProperties));
 		users = bs.getProfileModule().getUsers(options);
 		ProfileBinder binder = (ProfileBinder)users.get(ObjectKeys.BINDER);
 		model.put(WebKeys.BINDER, binder);
