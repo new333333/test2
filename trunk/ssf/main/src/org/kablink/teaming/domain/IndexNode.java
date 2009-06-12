@@ -87,6 +87,10 @@ public class IndexNode extends ZonedObject {
 		return (name != null)? name.getIndexName() : null;
 	}
 
+	public String toString() {
+		return (name != null)? name.toString() : null;
+	}
+	
 	public String getUserModeAccess() {
 		return userModeAccess;
 	}
@@ -192,6 +196,9 @@ public class IndexNode extends ZonedObject {
 	    	hash = 31*hash + nodeName.hashCode();
 	    	hash = 31*hash + indexName.hashCode();
 	    	return hash;
+		}
+		public String toString() {			
+			return "[" + nodeName + ":" + indexName + "]";
 		}
 	}
 
