@@ -85,18 +85,25 @@ public class ListFolderController extends  SAbstractController {
 		response.setRenderParameters(request.getParameterMap());
 		if (op.equals(WebKeys.OPERATION_SET_DISPLAY_STYLE)) {
 			Map<String,Object> updates = new HashMap<String,Object>();
-			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, 
-					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-			getProfileModule().modifyEntry(user.getId(), new MapInputData(updates));
+			String newDisplayStyle = PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,"");
+			//Only allow "word" characters (such as a-z_0-9 )
+			if (newDisplayStyle.equals("") || !newDisplayStyle.matches("^.*[\\W]+.*$")) {
+				updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, newDisplayStyle);
+				getProfileModule().modifyEntry(user.getId(), new MapInputData(updates));
+			}
 			response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
 		} else if (op.equals(WebKeys.OPERATION_SET_DISPLAY_DEFINITION)) {
-			getProfileModule().setUserProperty(user.getId(), binderId, 
-					ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION, 
-					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
+			String defId = PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,"");
+			//Only allow "word" characters (such as a-z_0-9 )
+			if (defId.equals("") || !defId.matches("^.*[\\W]+.*$")) {
+				getProfileModule().setUserProperty(user.getId(), binderId, 
+						ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION, defId);
+			}
 			response.setRenderParameter(WebKeys.URL_NEW_TAB, "1");
 		} else if (op.equals(WebKeys.OPERATION_SELECT_FILTER)) {
-			getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_USER_FILTER, 
-					PortletRequestUtils.getStringParameter(request, WebKeys.OPERATION_SELECT_FILTER,""));
+			String filterName = PortletRequestUtils.getStringParameter(request, WebKeys.OPERATION_SELECT_FILTER,"");
+			getProfileModule().setUserProperty(user.getId(), binderId, 
+					ObjectKeys.USER_PROPERTY_USER_FILTER, filterName);
 			if (op2.equals("global")) {
 				getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE, 
 						ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL);
@@ -188,7 +195,9 @@ public class ListFolderController extends  SAbstractController {
 		} else if (op.equals(WebKeys.OPERATION_CHANGE_ENTRIES_ON_PAGE)) {
 			//Changes the number or records to be displayed in a page
 			//Getting the new entries per page
-			String newEntriesPerPage = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_ENTRIES_PER_PAGE, "");
+			String newEntriesPerPage = "";
+			Long l_newEntriesPerPage = PortletRequestUtils.getLongParameter(request, WebKeys.PAGE_ENTRIES_PER_PAGE);
+			if (l_newEntriesPerPage != null) newEntriesPerPage = String.valueOf(l_newEntriesPerPage);
 			//Saving the Sort Order information in the User Properties
 			//Changing the user folder paging information from folder/binder level to the user level 
 			//getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.PAGE_ENTRIES_PER_PAGE, newEntriesPerPage);
