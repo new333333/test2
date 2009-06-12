@@ -40,6 +40,7 @@
 		
 <!-- The accessory panel can only be displayed once in a page. -->
 <!-- If the accessory panel has already been loaded then don't display it again. -->
+<c:set var="ss_dashboardComponentNumber" value="0" scope="request"/>
 <c:choose>
 	<c:when test="${empty accessory_panel_loaded}">
 		<c:set var="accessory_panel_loaded" value="true" scope="request"/>
@@ -125,8 +126,11 @@
 		        <br/>
 		        <span class="ss_bold"><ssf:nlt tag="dashboard.componentType"/></span><br>
 		        <c:forEach var="component" items="${ssDashboard.components_list}">
-		           <input type="radio" name="componentName" id="componentName" value="${component}">
-		             <label for="componentName"><ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/></label>
+		           <c:set var="ss_dashboardComponentNumber" value="${ss_dashboardComponentNumber + 1}" scope="request"/>
+		           <input type="radio" name="componentName" id="componentName${ss_dashboardComponentNumber}" 
+		             value="${component}">
+		             <label for="componentName${ss_dashboardComponentNumber}"
+		             ><ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/></label>
 		           <br>
 		        </c:forEach>
 		        <br>
@@ -150,8 +154,11 @@
 		 	  <div class="ss_style" style="margin:10px;">
 		        <span class="ss_bold"><ssf:nlt tag="dashboard.componentType"/></span><br>
 		        <c:forEach var="component" items="${ssDashboard.components_list}">
-		           <input type="radio" name="componentName" id="componentName" value="${component}">
-		             <label for="componentName"><ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/></label>
+		           <c:set var="ss_dashboardComponentNumber" value="${ss_dashboardComponentNumber + 1}" scope="request"/>
+		           <input type="radio" name="componentName" id="componentName${ss_dashboardComponentNumber}" 
+		             value="${component}">
+		             <label for="componentName${ss_dashboardComponentNumber}"
+		             ><ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/></label>
 		           <br>
 		        </c:forEach>
 		        <br>
