@@ -157,6 +157,7 @@ public interface CoreDao {
 	public void replicate(Object obj);
 	public void save(Object obj);
 	public Object saveNewSession(Object obj);
+	public Object saveNewSessionWithoutUpdate(Object obj);
 	public void update(Object obj);
 	public double averageColumn(Class clazz, String column, FilterControls filter, Long zoneId);
 	public long sumColumn(Class clazz, String column, FilterControls filter, Long zoneId);

@@ -1078,14 +1078,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	 * @param obj
 	 */
 	public Object saveNewSession(Object obj) {
-       	SessionFactory sf = getSessionFactory();
-    	Session s = sf.openSession();
-    	try {
-    		s.save(obj);
-    		s.flush();
-    	} finally {
-    		s.close();
-    	}
+		obj = saveNewSessionWithoutUpdate(obj);
     	//attach to current session. This will fail if read only
     	// by that should mean no-one will update it so that is okay
     	try {
@@ -1095,6 +1088,18 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     	return obj;
 		
 	}
+    public Object saveNewSessionWithoutUpdate(Object obj) {
+      	SessionFactory sf = getSessionFactory();
+    	Session s = sf.openSession();
+    	try {
+    		s.save(obj);
+    		s.flush();
+    	} finally {
+    		s.close();
+    	}
+    	return obj;
+    }
+
 	public List loadPostings(Long zoneId) {
     	return loadObjects(new ObjectControls(PostingDef.class), null, zoneId);
 	}
