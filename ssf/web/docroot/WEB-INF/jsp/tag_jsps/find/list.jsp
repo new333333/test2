@@ -121,7 +121,7 @@
 					<c:forEach var="item" items="${ssFindUserList}">
 						<li id="<c:out value="${item.id}"/>" ><c:out value="${item.title}"/>
 							<a href="javascript: ;" 
-								onclick="window['findMultiple${prefix}'].removeValueByElement(this, '<c:out value="${item.id}"/>', '<c:out value="${item.title}"/>'); return false;"
+								onclick="window['findMultiple${prefix}'].removeValueByElement(this, '${item.id}', '<ssf:escapeJavaScript value="${item.title}"/>'); return false;"
 								><img <ssf:alt tag="alt.delete"/> 
 									src="<html:imagesPath/>pics/sym_s_delete.gif"/></a>
 						</li>
