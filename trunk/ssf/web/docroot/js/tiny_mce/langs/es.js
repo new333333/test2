@@ -93,9 +93,9 @@ paste_word_desc:"Pegar desde Word",
 selectall_desc:"Seleccionar todo"
 },
 paste_dlg:{
-text_title:"Use CTRL+V en su teclado para pegar el texto en la ventana.",
-text_linebreaks:"Keep linebreaks",
-word_title:"Use CTRL+V en su teclado para pegar el texto en la ventana."
+text_title:"Utilice CTRL+V en su teclado para pegar el texto en la ventana.",
+text_linebreaks:"Conservar saltos de línea",
+word_title:"Utilice CTRL+V en su teclado para pegar el texto en la ventana."
 },
 table:{
 desc:"Inserta una nueva tabla",
