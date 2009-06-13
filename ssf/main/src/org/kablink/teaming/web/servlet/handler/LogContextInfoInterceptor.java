@@ -30,59 +30,36 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.web.portlet.handler;
+package org.kablink.teaming.web.servlet.handler;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.PortletRequest;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.util.Http;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-public class LogContextInfoUponExceptionInterceptor extends AbstractInterceptor {
+public class LogContextInfoInterceptor extends HandlerInterceptorAdapter {
 
 	private Log logger = LogFactory.getLog(getClass());
-	
-	public boolean preHandleAction(ActionRequest request,
-			ActionResponse response, Object handler) throws Exception {
-		logRequestInfo(request, false, true);
+
+	public boolean preHandle(HttpServletRequest request,
+			HttpServletResponse response, Object handler) throws Exception {
+		logRequestInfo(request, false);
 		return true;
 	}
 
-	public void afterActionCompletion(ActionRequest request,
-			ActionResponse response, Object handler, Exception ex)
+	public void afterCompletion(HttpServletRequest request,
+			HttpServletResponse response, Object handler, Exception ex)
 			throws Exception {
 		if(ex != null)
-			logRequestInfo(request, true, true);
+			logRequestInfo(request, true);
 	}
 
-	public boolean preHandleRender(RenderRequest request,
-			RenderResponse response, Object handler) throws Exception {
-		logRequestInfo(request, false, false);
-		return true;
-	}
-
-	public void afterRenderCompletion(RenderRequest request,
-			RenderResponse response, Object handler, Exception ex)
-			throws Exception {
-		if(ex != null)
-			logRequestInfo(request, true, false);
-	}
-
-	private void logRequestInfo(PortletRequest request, boolean warn, boolean action) {
-		if(request instanceof HttpServletRequestReachable) { 
-			logRequestInfo(((HttpServletRequestReachable)request).getHttpServletRequest(), warn, action);
-		}
-	}
-
-	private void logRequestInfo(HttpServletRequest request, boolean warn, boolean action) {
+	private void logRequestInfo(HttpServletRequest request, boolean warn) {
 		String url = Http.getCompleteURL(request);
 		String zoneName = null;
 		String userName = null;
@@ -92,17 +69,11 @@ public class LogContextInfoUponExceptionInterceptor extends AbstractInterceptor 
 			userName = rc.getUserName();
 		}
 		if(warn) {
-			if(action)
-				logger.warn("Action request URL [" + url + "] for user [" + zoneName + "," + userName + "]");
-			else
-				logger.warn("Render request URL [" + url + "] for user [" + zoneName + "," + userName + "]");
+			logger.warn("Request URL [" + url + "] for user [" + zoneName + "," + userName + "]");
 		}
 		else {
 			if(logger.isDebugEnabled()) {
-				if(action)
-					logger.debug("Action request URL [" + url + "] for user [" + zoneName + "," + userName + "]");
-				else
-					logger.debug("Render request URL [" + url + "] for user [" + zoneName + "," + userName + "]");
+				logger.debug("Request URL [" + url + "] for user [" + zoneName + "," + userName + "]");
 			}
 		}
 	}
