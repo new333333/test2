@@ -382,7 +382,7 @@
 		<property name="resolve"><value>true</value></property>
 	</bean>
 		
-	<bean id="portletLogContextInfoUponExceptionInterceptor" class="org.kablink.teaming.web.portlet.handler.LogContextInfoUponExceptionInterceptor"/>
+	<bean id="portletLogContextInfoUponExceptionInterceptor" class="org.kablink.teaming.web.portlet.handler.LogContextInfoInterceptor"/>
 		
 	<bean id="portletUserSynchInterceptor" class="org.kablink.teaming.web.portlet.handler.UserSynchInterceptor" depends-on="sPropsUtil">
 		<property name="profileDao"><ref local="profileDao"/></property>
