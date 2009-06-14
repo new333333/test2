@@ -2038,6 +2038,7 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
     }
 
     ss_ShowHideDivXY(divId, x, y);
+    ss_setFocusToFirstA(divId)
     var scrollTop = parseInt(dojo.coords(menuObj, true).y - dojo.coords(menuObj, false).y);
     var menuBottom = parseInt(y + parseInt(ss_getObjectHeight(menuObj)));
     var screenBottom = parseInt(scrollTop + ss_getWindowHeight())
@@ -2066,7 +2067,21 @@ function ss_setLayerFlag() {
 
 ss_createOnLoadObj('ss_layerFlag', ss_setLayerFlag);
 
-
+//Routine to set the focus onto the first anchor in a div (for accessibility)
+function ss_setFocusToFirstA(divId) {
+	var divObj = self.document.getElementById(divId);
+	if (divObj != null) {
+		var aElements = divObj.getElementsByTagName("a");
+		if (aElements == null || aElements.length <= 0) return;
+		for (var i = 0; i < aElements.length; i++) {
+			var aObj = aElements.item(i);
+			if (typeof aObj.className == "undefined" || aObj.className != "ss_skiplink") {
+				try {aObj.focus();} catch(e){}
+				return;
+			}
+		}
+	}
+}
 
 //Support for positioning divs at x,y 
 //Enable the event handler
