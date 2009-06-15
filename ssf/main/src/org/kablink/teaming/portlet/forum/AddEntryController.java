@@ -68,6 +68,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -137,6 +138,9 @@ public class AddEntryController extends SAbstractController {
 					entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap, null).getId();
 				} catch(WriteFilesException e) {
 		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
+		    		return;
+				} catch(WriteEntryDataException e) {
+		    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, e.getMessage());
 		    		return;
 				}
 				//Show the parent entry when this operation finishes
@@ -361,7 +365,13 @@ public class AddEntryController extends SAbstractController {
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		String path = WebKeys.VIEW_ADD_ENTRY;
-		String errorMsg = PortletRequestUtils.getStringParameter(request, WebKeys.FILE_PROCESSING_ERRORS, "");
+		String errorMsg = PortletRequestUtils.getStringParameter(request, WebKeys.ENTRY_DATA_PROCESSING_ERRORS, "");
+		String errorMsg2 = PortletRequestUtils.getStringParameter(request, WebKeys.FILE_PROCESSING_ERRORS, "");
+		if (errorMsg.equals("")) {
+			errorMsg = errorMsg2;
+		} else if (!errorMsg.equals("") && !errorMsg2.equals("")) {
+			errorMsg += "<br/>" + errorMsg2;
+		}
 		model.put(WebKeys.FILE_PROCESSING_ERRORS, errorMsg);
 		
 		if (action.equals(WebKeys.ACTION_ADD_FOLDER_ATTACHMENT)) {

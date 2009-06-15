@@ -61,6 +61,7 @@ import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.search.IndexErrors;
@@ -92,7 +93,7 @@ public interface ProfileModule {
 	  * @throws WriteFilesException
 	  */
 	 public Group addGroup(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
-		throws AccessControlException, WriteFilesException;
+		throws AccessControlException, WriteFilesException, WriteEntryDataException;
 	 /**
 	  * Add a new user
 	  * @param definitionId
@@ -104,7 +105,7 @@ public interface ProfileModule {
 	  * @throws WriteFilesException
 	  */
 	 public User addUser(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
-		throws AccessControlException, WriteFilesException;
+		throws AccessControlException, WriteFilesException, WriteEntryDataException;
 	 
 	 /**
 	  * Add a user workspace from the user workspace template
@@ -174,7 +175,7 @@ public interface ProfileModule {
 	 * @throws WriteFilesException
 	 */
 	public void deleteEntry( Long entryId, Map options)
-		throws AccessControlException, WriteFilesException;
+		throws AccessControlException, WriteFilesException, WriteEntryDataException;
 	/**
 	 * Delete a user.
 	 * @param userName
@@ -359,19 +360,21 @@ public interface ProfileModule {
 	 * @param options - additional processing options or null 
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
+	 * @throws WriteEntryDataException
 	 */
 	public void modifyEntry(Long entryId, InputDataAccessor inputData, 
 			   Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options) 
-			throws AccessControlException, WriteFilesException;
+			throws AccessControlException, WriteFilesException, WriteEntryDataException;
 	/**
 	 * Modify existing principal
 	 * @param entryId
 	 * @param inputData
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
+	 * @throws WriteEntryDataException
 	 */
 	public void modifyEntry(Long entryId, InputDataAccessor inputData) 
-		throws AccessControlException, WriteFilesException;
+		throws AccessControlException, WriteFilesException, WriteEntryDataException;
 	  
 	/**
 	 * Update user from information from the portal.
@@ -492,9 +495,10 @@ public interface ProfileModule {
 	  * @return
 	  * @throws AccessControlException
 	  * @throws WriteFilesException
+	  * @throws WriteEntryDataException
 	  */
 	 public ApplicationGroup addApplicationGroup(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
-		throws AccessControlException, WriteFilesException;
+		throws AccessControlException, WriteFilesException, WriteEntryDataException;
 	 
 	 /**
 	  * Add a new application
@@ -505,9 +509,10 @@ public interface ProfileModule {
 	  * @return
 	  * @throws AccessControlException
 	  * @throws WriteFilesException
+	  * @throws WriteEntryDataException
 	  */
 	 public Application addApplication(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
-		throws AccessControlException, WriteFilesException;
+		throws AccessControlException, WriteFilesException, WriteEntryDataException;
 
 	/**
 	 * Return search results for application groups

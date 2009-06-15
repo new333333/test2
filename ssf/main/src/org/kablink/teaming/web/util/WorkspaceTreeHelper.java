@@ -138,6 +138,19 @@ public class WorkspaceTreeHelper {
 			return WebKeys.VIEW_WORKSPACE;
 		}
 
+		String errorMsg = PortletRequestUtils.getStringParameter(request, WebKeys.ENTRY_DATA_PROCESSING_ERRORS, "");
+		String errorMsg2 = PortletRequestUtils.getStringParameter(request, WebKeys.FILE_PROCESSING_ERRORS, "");
+		if (errorMsg.equals("")) {
+			errorMsg = errorMsg2;
+		} else if (!errorMsg.equals("") && !errorMsg2.equals("")) {
+			errorMsg += "<br/>" + errorMsg2;
+		}
+		model.put(WebKeys.FILE_PROCESSING_ERRORS, errorMsg);
+		if (!errorMsg.equals("")) {
+			model.put(WebKeys.ERROR_MESSAGE, errorMsg);
+			return "forum/reload_opener";
+		}
+
 		Binder binder = null;
 		String entryIdString =  PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		Long entryId = null;

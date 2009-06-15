@@ -43,6 +43,7 @@ import java.util.Set;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
+import org.hibernate.HibernateException;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -65,6 +66,7 @@ import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.lucene.Hits;
+import org.kablink.teaming.module.binder.impl.EntryDataErrors.Problem;
 import org.kablink.teaming.module.binder.processor.EntryProcessor;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.FilesErrors;
@@ -107,13 +109,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
 	public Entry addEntry(final Binder binder, Definition def, Class clazz, 
     		final InputDataAccessor inputData, Map fileItems, Map options) 
-    	throws WriteFilesException {
+    	throws WriteFilesException, WriteEntryDataException {
         // This default implementation is coded after template pattern. 
         
         final Map ctx = new HashMap();
         if (options != null) ctx.putAll(options);
         addEntry_setCtx(binder, ctx);
     	Map entryDataAll;
+    	EntryDataErrors entryDataErrors = new EntryDataErrors();
     	
     	SimpleProfiler.startProfiler("addEntry_toEntryData");
         entryDataAll = addEntry_toEntryData(binder, def, inputData, fileItems, ctx);
@@ -186,6 +189,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	else {
         		return entry;
         	}
+        } catch(Exception ex) {
+        	entryDataErrors.addProblem(new Problem(Problem.GENERAL_PROBLEM, ex));
+        	throw new WriteEntryDataException(entryDataErrors);
         } finally {
            	cleanupFiles(fileUploadItems);       	
         }
@@ -430,12 +436,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     public void modifyEntry(final Binder binder, final Entry entry, 
     		final InputDataAccessor inputData, Map fileItems, 
     		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo, Map options)  
-    		throws WriteFilesException {
+    		throws WriteFilesException, WriteEntryDataException {
        final Map ctx = new HashMap();
        if (options != null) ctx.putAll(options);
        modifyEntry_setCtx(entry, ctx);
 
     	Map entryDataAll;
+    	EntryDataErrors entryDataErrors = new EntryDataErrors();
 
     	SimpleProfiler.startProfiler("modifyEntry_toEntryData");
     	entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems, ctx);
@@ -500,7 +507,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    		throw new WriteFilesException(filesErrors);
 	    	}
 	    	
-	    }finally {
+        } catch(Exception ex) {
+        	entryDataErrors.addProblem(new Problem(Problem.GENERAL_PROBLEM, ex));
+        	throw new WriteEntryDataException(entryDataErrors);
+ 	    }finally {
 		    cleanupFiles(fileUploadItems);
 	    }
 	}

@@ -44,6 +44,7 @@ import javax.portlet.RenderResponse;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.SPropsUtil;
@@ -75,7 +76,12 @@ public class WorkspaceTreeController extends SAbstractController  {
 			Map<String,Object> updates = new HashMap<String,Object>();
 			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-			getProfileModule().modifyEntry(user.getId(), new MapInputData(updates));
+			try {
+				getProfileModule().modifyEntry(user.getId(), new MapInputData(updates));
+			} catch(WriteEntryDataException e) {
+	    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, e.getMessage());
+	    		return;
+			}
 		
 		} else if (op.equals(WebKeys.OPERATION_CLEAR_UNSEEN)) {
 			Set<Long> ids = LongIdUtil.getIdsAsLongSet(request.getParameterValues(WebKeys.URL_IDS));
@@ -94,7 +100,10 @@ public class WorkspaceTreeController extends SAbstractController  {
 			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
         	MapInputData  inputData = new MapInputData (updates);
         	updates.put(ObjectKeys.FIELD_USER_DISPLAYSTYLE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
-			getProfileModule().modifyEntry(user.getId(), inputData);
+			try {
+				getProfileModule().modifyEntry(user.getId(), inputData);
+			} catch(WriteEntryDataException e) {
+			}
         }
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		if (binderId == null) return BinderHelper.CommonPortletDispatch(this, request, response);

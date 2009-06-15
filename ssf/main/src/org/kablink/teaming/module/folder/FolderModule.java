@@ -50,6 +50,7 @@ import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.jobs.ScheduleInfo;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.search.IndexErrors;
@@ -101,10 +102,11 @@ public interface FolderModule {
     * @return
     * @throws AccessControlException
     * @throws WriteFilesException
+     * @throws WriteEntryDataException
     */
      public FolderEntry addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems, Map options) 
-    	throws AccessControlException, WriteFilesException;
+    	throws AccessControlException, WriteFilesException, WriteEntryDataException;
      /**
       * Start a workflow on a <code>FolderEntry</code>
       * @param folderId
@@ -126,10 +128,11 @@ public interface FolderModule {
      * @return
      * @throws AccessControlException
      * @throws WriteFilesException
+     * @throws WriteEntryDataException
      */
     public FolderEntry addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems, Map options) 
-    	throws AccessControlException, WriteFilesException;
+    	throws AccessControlException, WriteFilesException, WriteEntryDataException;
     /**
      * Subscribe to an entry.  Multiple styles can be specified and multiple address/style are permitted
      * @param folderId
@@ -391,11 +394,12 @@ public interface FolderModule {
      * @param options  processing options or null
      * @throws AccessControlException
      * @throws WriteFilesException
+     * @throws WriteEntryDataException
      * @throws ReservedByAnotherUserException
      */
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options) 
-    	throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
+    	throws AccessControlException, WriteFilesException, WriteEntryDataException, ReservedByAnotherUserException;
     
     /**
      * Add a file to the entry.
@@ -412,10 +416,11 @@ public interface FolderModule {
      * @param content content of the file as an input stream
      * @throws AccessControlException
      * @throws WriteFilesException
+     * @throws WriteEntryDataException
      * @throws ReservedByAnotherUserException
      */
     public void modifyEntry(Long folderId, Long entryId, String fileDataItemName, String fileName, InputStream content)
-		throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
+		throws AccessControlException, WriteFilesException, WriteEntryDataException, ReservedByAnotherUserException;
     /**
      * Move an entry workflow from the state identified as stateId to a new state.
      * @param folderId

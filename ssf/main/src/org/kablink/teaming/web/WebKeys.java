@@ -726,6 +726,7 @@ public class WebKeys {
     public static final String TEAM_MEMBERS_COUNT="ssTeamMembersCount";
     
     public static final String ENTRIES="ssEntries";
+    public static final String ENTRY_DATA_PROCESSING_ERRORS = "ss_EntryDataProcessingErrors";
     public static final String ENTRY_REPLY_STYLES="ssEntryReplyStyles";
     public static final String ENTRY_SEARCH_COUNT="ssEntrySearchCount";
     public static final String ENTRY_SEARCH_RECORDS_RETURNED="ssEntrySearchRecordReturned";
