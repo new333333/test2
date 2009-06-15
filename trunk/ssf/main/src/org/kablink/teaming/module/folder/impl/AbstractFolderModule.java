@@ -92,6 +92,7 @@ import org.kablink.teaming.jobs.FolderDelete;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.FileModule;
@@ -322,7 +323,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
  
     //no transaction by default
     public FolderEntry addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
-    		Map fileItems, Map options) throws AccessControlException, WriteFilesException {
+    		Map fileItems, Map options) throws AccessControlException, WriteFilesException, WriteEntryDataException {
     	aeCount.incrementAndGet();
 
         Folder folder = loadFolder(folderId);
@@ -346,7 +347,8 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     }
     //no transaction    
 	public FolderEntry addReply(Long folderId, Long parentId, String definitionId, 
-    		InputDataAccessor inputData, Map fileItems, Map options) throws AccessControlException, WriteFilesException {
+    		InputDataAccessor inputData, Map fileItems, Map options) 
+			throws AccessControlException, WriteFilesException, WriteEntryDataException {
     	arCount.incrementAndGet();
         //load parent entry
         FolderEntry entry = loadEntry(folderId, parentId);    	
@@ -389,6 +391,8 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			processor.modifyEntry(folder, entry, inputData, null, null, null, options);
     	} catch (WriteFilesException ex) {
     	    //should never happen   
+    	} catch (WriteEntryDataException ex) {
+    	    //should never happen   
     	}
 	}
  
@@ -396,7 +400,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     //no transaction    
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options) 
-    throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
+    throws AccessControlException, WriteFilesException, WriteEntryDataException, ReservedByAnotherUserException {
         
     	meCount.incrementAndGet();
         FolderEntry entry = loadEntry(folderId, entryId);   	
@@ -424,7 +428,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     
     //no transaction
     public void modifyEntry(Long folderId, Long entryId, String fileDataItemName, String fileName, InputStream content)
-	throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
+	throws AccessControlException, WriteFilesException, WriteEntryDataException, ReservedByAnotherUserException {
     	MultipartFile mf = new SimpleMultipartFile(fileName, content);
     	Map<String, MultipartFile> fileItems = new HashMap<String, MultipartFile>();
     	if(fileDataItemName == null)

@@ -42,6 +42,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.search.IndexErrors;
@@ -59,7 +60,7 @@ public interface EntryProcessor extends BinderProcessor {
  	public Map getBinderEntries(Binder binder, String[] entryTypes, Map options) throws AccessControlException;
     
     public Entry addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Map options)
-    	throws WriteFilesException;
+    	throws WriteFilesException, WriteEntryDataException;
     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, Map options);  
     public Entry copyEntry(Binder binder, Entry entry, Binder destination, Map options);
     public void copyEntries(Binder source, Binder binder, Map options);
@@ -67,7 +68,7 @@ public interface EntryProcessor extends BinderProcessor {
     public void deleteEntryWorkflow(Binder binder, Entry entry, Definition definition);
     public void modifyEntry(Binder binder, Entry entry, InputDataAccessor inputData, Map fileItems, 
     		Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options)
-    	throws WriteFilesException;
+    	throws WriteFilesException, WriteEntryDataException;
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState);
     public void setWorkflowResponse(Binder binder, Entry entry, Long tokenId, InputDataAccessor inputData);
   	public IndexErrors indexEntries(Collection entries);

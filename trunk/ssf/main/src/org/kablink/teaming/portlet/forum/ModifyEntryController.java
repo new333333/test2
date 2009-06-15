@@ -59,6 +59,8 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
@@ -138,8 +140,17 @@ public class ModifyEntryController extends SAbstractController {
 					}
 				}
 			
-				getFolderModule().modifyEntry(folderId, entryId, 
+				try {
+					getFolderModule().modifyEntry(folderId, entryId, 
 						new MapInputData(formData), fileMap, deleteAtts, null, null);
+				} catch(WriteEntryDataException e) {
+		    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, e.getMessage());
+		    		return;
+				} catch(WriteFilesException e) {
+		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
+		    		return;
+				}
+
 								
 				//Force the user's status to be updated.
 				BinderHelper.updateUserStatus(this, request, folderId, entryId);
@@ -231,9 +242,17 @@ public class ModifyEntryController extends SAbstractController {
 					BinderHelper.updateUserStatus(this, request, folderId, entryId);
 				}
 			}
-			getFolderModule().modifyEntry(folderId, entryId, 
-					new MapInputData(inputData), null, null, null, null);
-			setupReloadOpener(response, folderId, entryId);
+			try {
+				getFolderModule().modifyEntry(folderId, entryId, 
+						new MapInputData(inputData), null, null, null, null);
+				setupReloadOpener(response, folderId, entryId);
+			} catch(WriteEntryDataException e) {
+	    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, e.getMessage());
+	    		return;
+			} catch(WriteFilesException e) {
+	    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
+	    		return;
+			}
 
 		} else if (formData.containsKey("cancelBtn")) {
 			//	The user clicked the cancel button
@@ -277,10 +296,24 @@ public class ModifyEntryController extends SAbstractController {
 		model.put(WebKeys.OPERATION, action);
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		
+		String errorMsg = PortletRequestUtils.getStringParameter(request, WebKeys.ENTRY_DATA_PROCESSING_ERRORS, "");
+		String errorMsg2 = PortletRequestUtils.getStringParameter(request, WebKeys.FILE_PROCESSING_ERRORS, "");
+		if (errorMsg.equals("")) {
+			errorMsg = errorMsg2;
+		} else if (!errorMsg.equals("") && !errorMsg2.equals("")) {
+			errorMsg += "<br/>" + errorMsg2;
+		}
+		model.put(WebKeys.FILE_PROCESSING_ERRORS, errorMsg);
+		
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		
+		if (!errorMsg.equals("")) {
+			model.put(WebKeys.ERROR_MESSAGE, errorMsg);
+			String path = "forum/reload_opener";
+			return new ModelAndView(path, model);
+		}
 		String elementToEdit = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ELEMENT_TO_EDIT, "");
 		String path;
 		FolderEntry entry = null;
