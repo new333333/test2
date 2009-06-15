@@ -34,6 +34,7 @@ package org.kablink.teaming.portlet.administration;
 
 import java.util.Map;
 
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.security.AccessControlException;
@@ -45,7 +46,7 @@ import org.kablink.teaming.web.WebKeys;
 public class ManageGroupsController extends ManageGroupPrincipalsController {
 
 	protected void addGroupPrincipal(Long binderId, MapInputData inputData, Map fileMap) 
-	throws AccessControlException, WriteFilesException {
+	throws AccessControlException, WriteFilesException, WriteEntryDataException {
 		getProfileModule().addGroup(null, inputData, fileMap, null);
 	}
 	

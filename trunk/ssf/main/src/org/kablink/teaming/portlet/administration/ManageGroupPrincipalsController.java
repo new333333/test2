@@ -55,6 +55,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
@@ -171,7 +172,7 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 	}
 
 	abstract protected void addGroupPrincipal(Long binderId, MapInputData inputData, Map fileMap)
-	throws AccessControlException, WriteFilesException;
+	throws AccessControlException, WriteFilesException, WriteEntryDataException;
 	
 	abstract protected String allIndividualsGroupName();
 
