@@ -52,6 +52,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoFileByTheNameException;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -84,6 +85,8 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 			getFolderModule().modifyEntry(null, entryId, new EmptyInputData(), null, deletes, null, null);
 			
 		}	catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}	catch(WriteEntryDataException e) {
 			throw new RemotingException(e);
 		}			
 

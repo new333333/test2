@@ -41,6 +41,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -70,6 +71,10 @@ public class ProfileBridge {
 
 			getProfileModule().modifyEntry(user.getId(), new MapInputData(map));
 		} catch (NoUserByTheNameException e) {
+			// The user doesn't exist on the Teaming side.
+			// This is possible, so don't throw an error.
+			logger.warn(e.toString());
+		} catch (WriteEntryDataException e) {
 			// The user doesn't exist on the Teaming side.
 			// This is possible, so don't throw an error.
 			logger.warn(e.toString());

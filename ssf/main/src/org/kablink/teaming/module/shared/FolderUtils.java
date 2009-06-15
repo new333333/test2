@@ -50,6 +50,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -93,7 +94,7 @@ public class FolderUtils {
 	 */
 	public static FolderEntry createLibraryEntry(Folder folder, String fileName,
 			InputStream content, Date modDate, boolean synchToSourceIfMirrored) 
-	throws ConfigurationException, AccessControlException, WriteFilesException {
+	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		if(folder.isLibrary()) {
 			if(folder.isMirrored()) {
 				return createMirroredEntry(folder, fileName, content, modDate, synchToSourceIfMirrored);
@@ -121,7 +122,7 @@ public class FolderUtils {
 	 */
 	public static void modifyLibraryEntry(FolderEntry entry, String fileName,
 			InputStream content, Date modDate, boolean synchToSourceIfMirrored)
-	throws ConfigurationException, AccessControlException, WriteFilesException {
+	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Folder folder = entry.getParentFolder();
 		if(folder.isLibrary()) {
 			if(folder.isMirrored()) {
@@ -151,7 +152,7 @@ public class FolderUtils {
 	 */
 	public static Binder createMirroredFolder(Binder parentBinder, String folderName, 
 			String resourceDriverName, String resourcePath, boolean synchToSource)
-	throws ConfigurationException, AccessControlException, WriteFilesException {
+	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Definition def = getFolderDefinition(parentBinder);
 		if(def == null)
 			throw new ConfigurationException("errorcode.no.folder.definition", (Object[])null);
@@ -183,7 +184,7 @@ public class FolderUtils {
 	 * @throws WriteFilesException
 	 */
 	public static Binder createLibraryFolder(Binder parentBinder, String folderName)
-	throws ConfigurationException, AccessControlException, WriteFilesException {
+	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		if((EntityType.folder == parentBinder.getEntityType()) && parentBinder.isMirrored()) {
 			return createMirroredFolder(parentBinder, folderName, parentBinder.getResourceDriverName(), null, true);
 		}
@@ -193,7 +194,7 @@ public class FolderUtils {
 	}
 	
 	private static Binder createNonMirroredFolder(Binder parentBinder, String folderName)
-	throws ConfigurationException, AccessControlException, WriteFilesException {
+	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Definition def = getFolderDefinition(parentBinder);
 		if(def == null)
 			throw new ConfigurationException("errorcode.no.folder.definition", (Object[])null);
@@ -251,7 +252,7 @@ public class FolderUtils {
 	 * @throws WriteFilesException
 	 */
 	private static FolderEntry createNonMirroredEntry(Folder folder, String fileName, InputStream content, Date modDate)
-	throws ConfigurationException, AccessControlException, WriteFilesException {
+	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Definition def = getFolderEntryDefinition(folder);
 		if(def == null)
 			throw new ConfigurationException("errorcode.no.entry.definition", (Object[])null);
@@ -276,7 +277,7 @@ public class FolderUtils {
 	
 	private static FolderEntry createMirroredEntry(Folder folder, String fileName, 
 			InputStream content, Date modDate, boolean synchToSource)
-	throws ConfigurationException, AccessControlException, WriteFilesException {
+	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Definition def = getFolderEntryDefinition(folder);
 		if(def == null)
 			throw new ConfigurationException("errorcode.no.entry.definition", (Object[])null);
@@ -316,7 +317,7 @@ public class FolderUtils {
 	 */
 	private static void modifyNonMirroredEntry(FolderEntry entry, String fileName, 
 			InputStream content, Date modDate) 
-	throws ConfigurationException, AccessControlException, WriteFilesException {
+	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Folder folder = entry.getParentFolder();
 		
 		Definition def = getFolderEntryDefinition(folder);
@@ -343,7 +344,7 @@ public class FolderUtils {
 	
 	private static void modifyMirroredEntry(FolderEntry entry, String fileName, 
 			InputStream content, Date modDate, boolean synchToSource) 
-	throws ConfigurationException, AccessControlException, WriteFilesException {
+	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Folder folder = entry.getParentFolder();
 		
 		Definition def = getFolderEntryDefinition(folder);

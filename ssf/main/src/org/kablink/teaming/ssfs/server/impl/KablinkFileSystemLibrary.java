@@ -56,6 +56,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.LockIdMismatchException;
 import org.kablink.teaming.module.file.LockedByAnotherUserException;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -752,6 +753,9 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 		catch (WriteFilesException e) {
 			throw new KablinkFileSystemException(e.getLocalizedMessage());
 		}
+		catch (WriteEntryDataException e) {
+			throw new KablinkFileSystemException(e.getLocalizedMessage());
+		}
 	}
 	
 	private void modifyLibraryFolderEntry(FolderEntry entry, String fileName, 
@@ -767,6 +771,9 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} 
 		catch (WriteFilesException e) {
+			throw new KablinkFileSystemException(e.getLocalizedMessage());
+		}
+		catch (WriteEntryDataException e) {
 			throw new KablinkFileSystemException(e.getLocalizedMessage());
 		}
 	}
@@ -866,6 +873,9 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 		catch (WriteFilesException e) {
 			throw new KablinkFileSystemException(e.getLocalizedMessage());
 		}
+		catch (WriteEntryDataException e) {
+			throw new KablinkFileSystemException(e.getLocalizedMessage());
+		}
 	}
 	
 	private String[] getChildrenNames(Map uri, Map objMap) {
@@ -952,6 +962,9 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 		catch (WriteFilesException e) {
 			throw new KablinkFileSystemException(e.getLocalizedMessage());
 		} 
+		catch (WriteEntryDataException e) {
+			throw new KablinkFileSystemException(e.getLocalizedMessage());
+		} 
 	}
 	
 	private InputStream getResource(Map uri, Map objMap) {
@@ -995,6 +1008,9 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 			throw new NoAccessException(e.getLocalizedMessage());
 		} 
 		catch (WriteFilesException e) {
+			throw new KablinkFileSystemException(e.getLocalizedMessage());
+		}
+		catch (WriteEntryDataException e) {
 			throw new KablinkFileSystemException(e.getLocalizedMessage());
 		}
 	}

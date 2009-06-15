@@ -36,6 +36,7 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.Map;
 
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ical.IcalModule;
@@ -78,6 +79,9 @@ public class AttachmentUtilities {
 				new EmptyInputData(), fileItems, null, null, options);
 		}
 		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+		catch(WriteEntryDataException e) {
 			throw new RemotingException(e);
 		}
 	}
