@@ -59,6 +59,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.LockIdMismatchException;
 import org.kablink.teaming.module.file.LockedByAnotherUserException;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -387,6 +388,8 @@ public class KablinkFileSystemInternal implements KablinkFileSystem {
 			throw new NoAccessException(e.getLocalizedMessage());						
 		} catch (WriteFilesException e) {
 			throw new KablinkFileSystemException(e.getLocalizedMessage());
+		} catch (WriteEntryDataException e) {
+			throw new KablinkFileSystemException(e.getLocalizedMessage());
 		}
 	}
 	
@@ -631,6 +634,8 @@ public class KablinkFileSystemInternal implements KablinkFileSystem {
 		} catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} catch (WriteFilesException e) {
+			throw new KablinkFileSystemException(e.getLocalizedMessage(), true);
+		} catch (WriteEntryDataException e) {
 			throw new KablinkFileSystemException(e.getLocalizedMessage(), true);
 		}		
 	}

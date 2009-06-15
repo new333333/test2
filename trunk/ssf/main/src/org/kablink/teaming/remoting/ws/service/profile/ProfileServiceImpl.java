@@ -48,6 +48,7 @@ import org.kablink.teaming.domain.NoFileByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -126,6 +127,8 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 			getProfileModule().modifyEntry(group.getId(), new MapInputData(updates));	
 		}	catch(WriteFilesException e) {
 			throw new RemotingException(e);
+		}	catch(WriteEntryDataException e) {
+			throw new RemotingException(e);
 		}
 
 	}
@@ -139,6 +142,8 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		try {
 			getProfileModule().modifyEntry(group.getId(), new MapInputData(updates));	
 		}	catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}	catch(WriteEntryDataException e) {
 			throw new RemotingException(e);
 		}
 		
@@ -164,6 +169,9 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 			getProfileModule().deleteEntry(new Long(principalId), options);
 		}
 		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+		catch(WriteEntryDataException e) {
 			throw new RemotingException(e);
 		}
 
@@ -241,6 +249,9 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
+		}	
+		catch(WriteEntryDataException e) {
+			throw new RemotingException(e);
 		}
 	}
 	
@@ -249,6 +260,9 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 			return getProfileModule().addUser(user.getDefinitionId(), new ModelInputData(user), null, null).getId().longValue();
 		}
 		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+		catch(WriteEntryDataException e) {
 			throw new RemotingException(e);
 		}
 	}
@@ -260,6 +274,9 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}
+		catch(WriteEntryDataException e) {
+			throw new RemotingException(e);
+		}
 	}
 	
 	public void profile_modifyUser(String accessToken, org.kablink.teaming.remoting.ws.model.User user) {
@@ -267,6 +284,9 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 			getProfileModule().modifyEntry(user.getId(), new ModelInputData(user));
 		}
 		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+		catch(WriteEntryDataException e) {
 			throw new RemotingException(e);
 		}
 	}
@@ -284,6 +304,9 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		}	catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}			
+		catch(WriteEntryDataException e) {
+			throw new RemotingException(e);
+		}
 
 	}
 	

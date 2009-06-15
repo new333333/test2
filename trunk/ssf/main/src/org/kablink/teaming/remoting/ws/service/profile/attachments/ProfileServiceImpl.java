@@ -36,6 +36,7 @@ import java.io.File;
 import java.util.Map;
 
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.remoting.RemotingException;
@@ -58,6 +59,9 @@ public class ProfileServiceImpl extends org.kablink.teaming.remoting.ws.service.
 			getProfileModule().modifyEntry(principalId, new EmptyInputData(), fileItems, null, null, null);
 		}
 		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+		catch(WriteEntryDataException e) {
 			throw new RemotingException(e);
 		}
 	}

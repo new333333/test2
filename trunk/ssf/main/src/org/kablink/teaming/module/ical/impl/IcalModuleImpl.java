@@ -111,6 +111,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -1809,6 +1810,8 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 				} catch (AccessControlException e) {
 					logger.warn("Can not create entry from iCal file.", e);
 				} catch (WriteFilesException e) {
+					logger.warn("Can not create entry from iCal file.", e);
+				} catch (WriteEntryDataException e) {
 					logger.warn("Can not create entry from iCal file.", e);
 				}
 			}			
