@@ -61,19 +61,15 @@ public class LogContextInfoInterceptor extends HandlerInterceptorAdapter {
 
 	private void logRequestInfo(HttpServletRequest request, boolean warn) {
 		String url = Http.getCompleteURL(request);
-		String zoneName = null;
-		String userName = null;
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		if(rc != null) {
-			zoneName = rc.getZoneName();
-			userName = rc.getUserName();
-		}
-		if(warn) {
-			logger.warn("Request URL [" + url + "] for user [" + zoneName + "," + userName + "]");
-		}
-		else {
-			if(logger.isDebugEnabled()) {
-				logger.debug("Request URL [" + url + "] for user [" + zoneName + "," + userName + "]");
+			if(warn) {
+				logger.warn("Request URL [" + url + "] for user " + rc.toString());
+			}
+			else {
+				if(logger.isDebugEnabled()) {
+					logger.debug("Request URL [" + url + "] for user " + rc.toString());
+				}
 			}
 		}
 	}

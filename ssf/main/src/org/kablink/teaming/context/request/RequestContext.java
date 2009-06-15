@@ -306,4 +306,10 @@ public class RequestContext {
 		return (ProfileDao) SpringContextUtil.getBean("profileDao");
 	}
 
+	public String toString() {
+		if(applicationId != null)
+			return "[" + zoneName + "," + userName + "," + applicationId + "]";
+		else 
+			return "[" + zoneName + "," + userName + "]";
+	}
 }
