@@ -169,6 +169,9 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
+		}
+		catch(WriteEntryDataException e) {
+				throw new RemotingException(e);
 		} finally {
 			if(++count == 10000) {
 				logger.info(SimpleProfiler.toStr());
@@ -188,6 +191,9 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}			
+		catch(WriteEntryDataException e) {
+			throw new RemotingException(e);
+		}			
 	}
 
 	public long folder_addReplyWithXML(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName) {
@@ -202,6 +208,9 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 				definitionId, new DomInputData(doc, getIcalModule()), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), options).getId().longValue();
 		}
 		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+		catch(WriteEntryDataException e) {
 			throw new RemotingException(e);
 		}
 	}
@@ -260,6 +269,9 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 				}
 			}
 			catch(WriteFilesException e) {
+				throw new RemotingException(e);
+			}
+			catch(WriteEntryDataException e) {
 				throw new RemotingException(e);
 			}
 		}
@@ -334,6 +346,9 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
+		}
+		catch(WriteEntryDataException e) {
+			throw new RemotingException(e);
 		} finally {
 			if(++count == 10000) {
 				logger.info(SimpleProfiler.toStr());
@@ -354,6 +369,9 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}
+		catch(WriteEntryDataException e) {
+			throw new RemotingException(e);
+		}
 	}
 
 	public void folder_modifyEntry(String accessToken, org.kablink.teaming.remoting.ws.model.FolderEntry entry) {
@@ -364,6 +382,9 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}			
+		catch(WriteEntryDataException e) {
+			throw new RemotingException(e);
+		}
 	}
 
 	public void folder_deleteEntry(String accessToken, long entryId) {
