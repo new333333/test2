@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.dom4j.Element;
+import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Dashboard;
@@ -52,6 +53,8 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.dashboard.DashboardModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.shared.AccessUtils;
+import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.InvokeUtil;
 import org.kablink.teaming.util.ObjectPropertyNotFoundException;
@@ -172,6 +175,34 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
     		d.setProperty(Dashboard.COMPONENTS, components);
     	}
     	components.put(componentId, component);
+    }
+    
+    public void modifyComponentOnlyIfPermitted(String id, String componentId, Map component) {
+    	RequestContext rc = RequestContextHolder.getRequestContext();
+    	Dashboard d = getCoreDao().loadDashboard(id, rc.getZoneId());
+    	try {
+    		checkAccess(d);
+    	}
+    	catch(AccessControlException e) {
+			// Bugzilla 506743
+			// The user executing this code doesn't have the right to update it. 
+			// In this case, instead of aborting the entire request, return normally. 
+			// The component will be fixed up later when someone else with appropriate
+			// right executes this same code.
+    		// Bugzilla 510406
+    		// Return normally from here so that this soft and legitimate failure 
+    		// wouldn't cause the entire Hibernate session to be cleared for this request.
+    		if(logger.isDebugEnabled())
+    			logger.debug("The caller " + rc.toString() + " does not have the right to modify the component " + componentId + " on the dashboard " + id);
+    		return;
+    	}
+		
+    	Map components = (Map) d.getProperty(Dashboard.COMPONENTS);
+    	if (components == null) {
+    		components = new HashMap();
+    		d.setProperty(Dashboard.COMPONENTS, components);
+    	}
+    	components.put(componentId, component);	
     }
     
     public void deleteComponent(String id, String listName, String componentId) {

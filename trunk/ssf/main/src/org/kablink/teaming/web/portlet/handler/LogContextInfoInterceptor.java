@@ -84,25 +84,21 @@ public class LogContextInfoInterceptor extends AbstractInterceptor {
 
 	private void logRequestInfo(HttpServletRequest request, boolean warn, boolean action) {
 		String url = Http.getCompleteURL(request);
-		String zoneName = null;
-		String userName = null;
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		if(rc != null) {
-			zoneName = rc.getZoneName();
-			userName = rc.getUserName();
-		}
-		if(warn) {
-			if(action)
-				logger.warn("Action request URL [" + url + "] for user [" + zoneName + "," + userName + "]");
-			else
-				logger.warn("Render request URL [" + url + "] for user [" + zoneName + "," + userName + "]");
-		}
-		else {
-			if(logger.isDebugEnabled()) {
+			if(warn) {
 				if(action)
-					logger.debug("Action request URL [" + url + "] for user [" + zoneName + "," + userName + "]");
+					logger.warn("Action request URL [" + url + "] for user " + rc.toString());
 				else
-					logger.debug("Render request URL [" + url + "] for user [" + zoneName + "," + userName + "]");
+					logger.warn("Render request URL [" + url + "] for user " + rc.toString());
+			}
+			else {
+				if(logger.isDebugEnabled()) {
+					if(action)
+						logger.debug("Action request URL [" + url + "] for user " + rc.toString());
+					else
+						logger.debug("Render request URL [" + url + "] for user " + rc.toString());
+				}
 			}
 		}
 	}

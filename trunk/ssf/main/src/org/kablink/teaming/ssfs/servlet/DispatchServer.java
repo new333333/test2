@@ -302,15 +302,10 @@ public class DispatchServer extends GenericServlet {
 	}
 	
 	private void logContextInfo() {
-		String zoneName = null;
-		String userName = null;
 		RequestContext rc = RequestContextHolder.getRequestContext();
-		System.out.println(rc.getAuthenticator());//$$$$$
 		if(rc != null) {
-			zoneName = rc.getZoneName();
-			userName = rc.getUserName();
+			logger.warn("WebDAV request failed for user " + rc.toString());
 		}
-		logger.warn("WebDAV request failed for user [" + zoneName + "," + userName + "]");
 	}
 	
 	private KablinkFileSystem getSiteScapeFileSystem() {

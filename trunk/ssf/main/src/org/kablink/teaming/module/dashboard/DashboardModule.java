@@ -59,5 +59,6 @@ public interface DashboardModule {
     public String addComponent(String id, String scope, String listName, Map component);
     public void modifyComponent(String id, String componentId, Map component);
     public void deleteComponent(String id, String listName, String componentId);
-    	 
+    public void modifyComponentOnlyIfPermitted(String id, String componentId, Map component);
+ 
 }
