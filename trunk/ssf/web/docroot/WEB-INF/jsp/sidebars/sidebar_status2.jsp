@@ -74,7 +74,7 @@
   		  <tr>
   		    <td valign="top" width="90%">
 			  	<div class="ss_input_myStatus">
-			  	  <span id="ss_myStatusTextSrc">${ssUser.status}</span>
+			  	  <span id="ss_myStatusTextSrc"><c:out value="${ssUser.status}" escapeXml="true"/></span>
 			  	</div>
   		    </td>
 	  		<td valign="top" align="right" width="10%">
