@@ -274,8 +274,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				def = getCoreDao().loadDefinition(id, null);
 				//see if belong to this binder and zone
 				if (def.getZoneId().equals(zoneId) &&
-						((binder == null && ObjectKeys.RESERVED_BINDER_ID.equals(def.getBinderId())) ||
-								(binder != null && binder.getId().equals(def.getBinderId())))) {
+						( (binder == null &&  ObjectKeys.RESERVED_BINDER_ID.equals(def.getBinderId()) ) ||
+						  (binder == null && binder.getId() == null ) ||
+						  (binder != null && binder.getId().equals(def.getBinderId())))) {
 						if (!type.equals(def.getType())) 
 							throw new DefinitionInvalidException("definition.error.idAlreadyExists", new Object[] {id});
 						if (!replace) return def;

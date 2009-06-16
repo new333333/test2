@@ -312,7 +312,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				"where className='com.sitescape.team.module.workflow.Notify'"); 
 			//fix up any duplicate definitions
 			fixUpDuplicateDefinitions(top);
-			getCoreDao().executeUpdate("update org.kablink.teaming.domain.Definition set binderId=-1 where binderId is null");
+			//getCoreDao().executeUpdate("update org.kablink.teaming.domain.Definition set binderId=-1 where binderId is null");
 
 			//add new reserved functions
 			List ids = new ArrayList();
@@ -572,6 +572,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			{
 				def.setName(name+"_"+dupCnt);
 				getCoreDao().update(def);
+			}
+			
+			if(def.getBinderId() == null ) {
+				def.setBinderId(new Long(-1));
 			}
 
 			prevName = name;
