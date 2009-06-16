@@ -841,17 +841,11 @@ public class AjaxController  extends SAbstractControllerRetry {
 	@SuppressWarnings("unchecked")
 	private ModelAndView ajaxStartFixupFolderDefs( RenderRequest request, RenderResponse response ) throws Exception
 	{
-		// Do we have a thread ready to start?
+		// Do we have a fixup thread ready to start?
 		FixupFolderDefsThread fixFolderDefsThread = FixupFolderDefsThread.getFixupFolderDefsThread(request);
 		if ((null != fixFolderDefsThread) && fixFolderDefsThread.isFolderFixupReady()) {
 			// Yes!  Start it.
-			//
-			// Note:  Currently, doing the fixup on a separate thread
-			//    does not work.  When doing the work on a separate
-			//    thread works, replace the call to Thread.run() with a
-			//    call to Thread.start().
-//!			fixFolderDefsThread.start();
-			fixFolderDefsThread.run();
+			fixFolderDefsThread.startFixups(this);
 		}
 
 		// We don't need to return any data for this request.

@@ -40,7 +40,6 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -60,34 +59,80 @@ public class FixupFolderDefsThread extends Thread {
 	// Define a default ID to use for the thread if we aren't given
 	// one.
 	private static final String DEFAULT_THREAD_ID	= "fixupFolderDefsThreadID_Default";
-	
-	private BinderModule m_binderModule;
+
 	private boolean m_entryFixups;
 	private boolean m_folderFixups;
-	private Definition m_entryDefinition;
 	private FixupFolderDefsResults m_fixupResults;
 	private FixupFolderDefsResults.PartialFixupFolderDefsResults m_entryResults;
 	private FixupFolderDefsResults.PartialFixupFolderDefsResults m_folderResults;
-	private FolderModule m_folderModule;
 	private Long m_rootFolderId;
+	private ModuleAccess m_modules;
 	private PortletSession m_session;
+	private String m_entryDef;
 	private String m_threadId;
+
+	
+	/*
+	 * Inner class used to encapsulate access the the modules used
+	 * for performing the fixup.
+	 */
+	private static class ModuleAccess {
+		public BinderModule m_binderModule;
+		public FolderModule m_folderModule;
+		
+		public ModuleAccess(AllModulesInjected bs) {
+			m_binderModule = bs.getBinderModule();
+			m_folderModule = bs.getFolderModule();
+		}
+	}
+	
+	
+    /**
+	 * Class constructors.
+	 */
+	private FixupFolderDefsThread(PortletSession session, Long rootBinderId, boolean folderFixups, boolean entryFixups, String entryDef) {
+		this(
+			DEFAULT_THREAD_ID,
+			session,
+			rootBinderId,
+			folderFixups,
+			entryFixups,
+			entryDef);
+	}
+	private FixupFolderDefsThread(String threadId, PortletSession session, Long rootBinderId, boolean folderFixups, boolean entryFixups, String entryDef) {
+		// Initialize the super class...
+		super(threadId);
+
+		// ...store the parameters...
+		m_threadId     = threadId;
+		m_session      = session;
+		m_rootFolderId = rootBinderId;
+		m_folderFixups = folderFixups;
+		m_entryFixups  = entryFixups;
+		m_entryDef     = entryDef;
+		
+		// ...and create a FixupFolderDefsResults object to hold the
+		// ...results of the fixup.
+		m_fixupResults  = new FixupFolderDefsResults(threadId, FixupStatus.STATUS_READY);
+		m_entryResults  = m_fixupResults.getEntriesFixed();
+		m_folderResults = m_fixupResults.getFoldersFixed();
+	}
+	
 	
 	/**
 	 * Create an FixupFolderDefsThread object.
 	 */
-	public static FixupFolderDefsThread createFixupFolderDefsThread(PortletRequest request, AllModulesInjected bs, Long rootBinderId, boolean folderFixups, boolean entryFixups, String entryDefinition) {
+	public static FixupFolderDefsThread createFixupFolderDefsThread(PortletRequest request, Long rootBinderId, boolean folderFixups, boolean entryFixups, String entryDef) {
 		return
 			createFixupFolderDefsThread(
 				DEFAULT_THREAD_ID,
 				request,
-				bs,
 				rootBinderId,
 				folderFixups,
 				entryFixups,
-				entryDefinition);
+				entryDef);
 	}
-	public static FixupFolderDefsThread createFixupFolderDefsThread(String threadId, PortletRequest request, AllModulesInjected bs, Long rootBinderId, boolean folderFixups, boolean entryFixups, String entryDefinition) {
+	public static FixupFolderDefsThread createFixupFolderDefsThread(String threadId, PortletRequest request, Long rootBinderId, boolean folderFixups, boolean entryFixups, String entryDef) {
 		FixupFolderDefsThread fixupFolderDefsThread;
 		PortletSession session;
 
@@ -102,30 +147,13 @@ public class FixupFolderDefsThread extends Thread {
 		fixupFolderDefsThread = new FixupFolderDefsThread(
 			threadId,
 			session,
-			bs.getBinderModule(),
-			bs.getFolderModule(),
 			rootBinderId,
 			folderFixups,
 			entryFixups,
-			entryDefinition);
+			entryDef);
 		fixupFolderDefsThread.setPriority(Thread.MIN_PRIORITY);
 		session.setAttribute(threadId, fixupFolderDefsThread, PortletSession.APPLICATION_SCOPE);
 		return fixupFolderDefsThread;
-	}
-	
-	
-	/**
-	 * Return the FixupFolderDefsThread object with a given id.
-	 */
-	public static FixupFolderDefsThread getFixupFolderDefsThread(PortletRequest	request) {
-		return getFixupFolderDefsThread(DEFAULT_THREAD_ID, request);
-	}
-	public static FixupFolderDefsThread getFixupFolderDefsThread(String threadId, PortletRequest request) {
-		PortletSession session = request.getPortletSession(false);
-		if (null == session) {
-			return null;
-		}
-		return ((FixupFolderDefsThread) session.getAttribute(threadId, PortletSession.APPLICATION_SCOPE));
 	}
 	
 	
@@ -145,44 +173,6 @@ public class FixupFolderDefsThread extends Thread {
 	}	
 	
 	
-    /**
-	 * Class constructor. (1 of 1)
-	 */
-	private FixupFolderDefsThread(PortletSession session, BinderModule binderModule, FolderModule folderModule, Long rootBinderId, boolean folderFixups, boolean entryFixups, String entryDefinition) {
-		this(
-			DEFAULT_THREAD_ID,
-			session,
-			binderModule,
-			folderModule,
-			rootBinderId,
-			folderFixups,
-			entryFixups,
-			entryDefinition);
-	}
-	private FixupFolderDefsThread(String threadId, PortletSession session, BinderModule binderModule, FolderModule folderModule, Long rootBinderId, boolean folderFixups, boolean entryFixups, String entryDefinition) {
-		// Initialize the super class...
-		super(threadId);
-
-		// ...store the parameters...
-		m_threadId     = threadId;
-		m_session      = session;
-		m_binderModule = binderModule;
-		m_folderModule = folderModule;
-		m_rootFolderId = rootBinderId;
-		m_folderFixups = folderFixups;
-		m_entryFixups  = entryFixups;
-		if (m_entryFixups) {
-			m_entryDefinition = DefinitionHelper.getDefinition(entryDefinition);
-		}
-		
-		// ...and create a FixupFolderDefsResults object to hold the
-		// ...results of the fixup.
-		m_fixupResults  = new FixupFolderDefsResults(threadId, FixupStatus.STATUS_READY);
-		m_entryResults  = m_fixupResults.getEntriesFixed();
-		m_folderResults = m_fixupResults.getFoldersFixed();
-	}
-	
-	
 	/**
 	 * Return the FixupFolderDefsResults object associated with this
 	 * thread.
@@ -192,6 +182,21 @@ public class FixupFolderDefsThread extends Thread {
 	}
 
 
+	/**
+	 * Return the FixupFolderDefsThread object with a given id.
+	 */
+	public static FixupFolderDefsThread getFixupFolderDefsThread(PortletRequest	request) {
+		return getFixupFolderDefsThread(DEFAULT_THREAD_ID, request);
+	}
+	public static FixupFolderDefsThread getFixupFolderDefsThread(String threadId, PortletRequest request) {
+		PortletSession session = request.getPortletSession(false);
+		if (null == session) {
+			return null;
+		}
+		return ((FixupFolderDefsThread) session.getAttribute(threadId, PortletSession.APPLICATION_SCOPE));
+	}
+	
+	
 	/**
 	 * Returns true if the folder fixup is ready to be run or is
 	 * running.
@@ -222,6 +227,44 @@ public class FixupFolderDefsThread extends Thread {
 	}
 	
 	
+    /*
+     * Recursive method that actually runs the fixup process on a
+     * folder.
+     */
+    @SuppressWarnings("unchecked")
+	private void processFolder(Long folderId) {
+    	// Are we fixing the entries in this folder?
+    	if (m_entryFixups) {
+    		// Yes!  Scan the folder's entries...
+			Map folderEntriesMap = m_modules.m_folderModule.getFullEntries(folderId, null);
+			List<FolderEntry> folderEntries = ((List) folderEntriesMap.get(ObjectKeys.FULL_ENTRIES));
+			for (FolderEntry folderEntry:  folderEntries) {
+				// ...setting the entry definition on each.
+				Long entryId = folderEntry.getId();
+				m_modules.m_folderModule.setEntryDef(folderId, entryId, m_entryDef);
+				m_entryResults.addResult(entryId);
+			}
+    	}
+    	
+    	// Are we recursively fixing the nested folders in this folder?
+    	if (m_folderFixups) {
+    		// Yes!  Scan the nested folders.
+    		Folder folderIn = m_modules.m_folderModule.getFolder(folderId);
+    		List<Folder> folderList = folderIn.getFolders();
+    		for (Folder folder:  folderList) {
+				// Yes!  Mark it has inheriting its parent's
+    			// definitions...
+    			folderId = folder.getId();
+    			m_modules.m_binderModule.setDefinitionsInherited(folderId, true);
+   				m_folderResults.addResult(folderId);
+    				
+   				// ...and process its children recursively.
+       			processFolder(folderId);
+    		}
+    	}
+    }
+    
+    
     /**
      * Remove this FixupFolderDefsThread object from the session.
      */
@@ -254,37 +297,17 @@ public class FixupFolderDefsThread extends Thread {
     }
     
     
-    /*
-     */
-    @SuppressWarnings("unchecked")
-	private void processFolder(Long folderId) {
-    	// Are we fixing the entries in this folder?
-    	if (m_entryFixups) {
-    		// Yes!  Scan the folder's entries...
-			Map folderEntriesMap = m_folderModule.getFullEntries(folderId, null);
-			List<FolderEntry> folderEntries = ((List) folderEntriesMap.get(ObjectKeys.FULL_ENTRIES));
-			for (FolderEntry folderEntry:  folderEntries) {
-				// ...setting the entry definition on each.
-				folderEntry.setEntryDef(m_entryDefinition);
-				m_entryResults.addResult(folderEntry.getId());
-			}
-    	}
-    	
-    	// Are we recursively fixing the nested folders in this folder?
-    	if (m_folderFixups) {
-    		// Yes!  Scan the nested folders.
-    		Folder folderIn = m_folderModule.getFolder(folderId);
-    		List<Folder> folderList = folderIn.getFolders();
-    		for (Folder folder:  folderList) {
-				// Yes!  Mark it has inheriting its parent's
-    			// definitions...
-    			folderId = folder.getId();
-   				m_binderModule.setDefinitionsInherited(folderId, true);
-   				m_folderResults.addResult(folderId);
-    				
-   				// ...and process its children recursively.
-       			processFolder(folderId);
-    		}
-    	}
-    }
+	/**
+	 * Starts the fixup thread to perform the fixups.
+	 * 
+	 * Note:  Currently, doing the fixups on a separate thread does not
+	 *    work.  When doing the work on a separate thread works, we
+	 *    need to replace the call to run() with a call to start().
+	 */
+	public void startFixups(AllModulesInjected bs) {
+		m_modules = new ModuleAccess(bs);
+//!			start();
+			run();
+		m_modules = null;
+	}
 }

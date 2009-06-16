@@ -41,6 +41,7 @@ import java.util.SortedSet;
 
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -455,7 +456,14 @@ public interface FolderModule {
     	throws AccessControlException, ReservedByAnotherUserException,
     	FilesLockedByOtherUsersException;
     
-    /**
+	/**
+	 * Sets the definition of the entry.
+	 * @param entry
+	 * @param def
+	 */
+	public void setEntryDef(Long folderId, Long entryId, String entryDef);
+
+	/**
      * Add a tag to a folderEntry
      * @param binderId
      * @param entryId
