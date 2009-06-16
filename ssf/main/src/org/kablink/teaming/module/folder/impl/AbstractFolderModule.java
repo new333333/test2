@@ -760,6 +760,11 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
  	    loadProcessor(entry.getParentFolder()).indexEntry(entry);
 	}
 	
+    //inside write transaction    
+	public void setEntryDef(Long folderId, Long entryId, String entryDef) {
+		FolderEntry entry = getEntry(folderId, entryId);
+		entry.setEntryDef(definitionModule.getDefinition(entryDef));
+	}
     //inside write transaction    	
 	public void setUserRating(Long folderId, Long entryId, long value) {
 		//getEntry does read check

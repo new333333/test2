@@ -3087,7 +3087,6 @@ public class BinderHelper {
 		// If we can't create a new fixup thread...
 		fixFolderDefsThread = FixupFolderDefsThread.createFixupFolderDefsThread(
 			request,
-			bs,
 			binderId,
 			folderFixups,
 			entryFixups,
