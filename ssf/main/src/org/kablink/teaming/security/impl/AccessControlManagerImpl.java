@@ -155,6 +155,9 @@ public class AccessControlManagerImpl implements AccessControlManager {
 	}
 	//pass the original ownerId in.  Recursive calls need the original
 	private boolean testOperation(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation) {
+		if(isAccessCheckTemporarilyDisabled())
+			return true;
+		
 		Application application = null;
 		if(RequestContextHolder.getRequestContext() != null)
 			application = RequestContextHolder.getRequestContext().getApplication();
@@ -237,4 +240,16 @@ public class AccessControlManagerImpl implements AccessControlManager {
         	}
         }
     }
+	
+	private static final ThreadLocal temporarilyDisableAccessCheckForThisThreadTL = new ThreadLocal();
+	public static void temporarilyDisableAccessCheckForThisThread() {
+		temporarilyDisableAccessCheckForThisThreadTL.set(Boolean.TRUE);
+	}
+	public static void bringAccessCheckBackToNormalForThisThread() {
+		temporarilyDisableAccessCheckForThisThreadTL.set(null);	
+	}
+	public static boolean isAccessCheckTemporarilyDisabled() {
+		Boolean b = (Boolean) temporarilyDisableAccessCheckForThisThreadTL.get();
+		return (b != null && b.equals(Boolean.TRUE));
+	}
 }
