@@ -49,4 +49,12 @@ public class LuceneException extends RuntimeException {
     public LuceneException(Throwable cause) {
         super(cause);
     }
+    public String toString() {
+    	if(getCause() != null) {
+    		return super.toString() + " / " + getCause().toString();
+    	}
+    	else {
+    		return super.toString();
+    	}
+    }
 }
