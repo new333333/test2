@@ -87,6 +87,7 @@ import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.security.impl.AccessControlManagerImpl;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
@@ -678,7 +679,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getProfileModule().indexEntry(guest);
 		}
 		if (guest.getWorkspaceId() == null) {
-			Workspace guestWs = getProfileModule().addUserWorkspace(guest, null);
+			Workspace guestWs = addGuestWorkspace(guest);
 			getAdminModule().setWorkAreaOwner(guestWs, superU.getId(), true);
     		List members = new ArrayList();
     		members.add(guest.getId());
@@ -903,7 +904,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		        		Workspace zone = addZoneTx(name, adminName, virtualHost);
 		        			        		
 		    			User guest = getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zone.getId());
-		    			Workspace guestWs = getProfileModule().addUserWorkspace(guest, null);
+		    			Workspace guestWs = addGuestWorkspace(guest);
 		        		//now change owner to admin
 		        		getAdminModule().setWorkAreaOwner(guestWs, zone.getOwnerId() ,true);
 		        		//do now, with request context set - won't have one if here on zone startup
@@ -1248,5 +1249,15 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		ms.setFunctionId(participantsRole.getId());
 		ms.setMemberIds(members);
 		getCoreDao().save(ms);
+	}
+	
+	private Workspace addGuestWorkspace(User guest) {
+		AccessControlManagerImpl.temporarilyDisableAccessCheckForThisThread();
+		try {
+			return getProfileModule().addUserWorkspace(guest, null);
+		}
+		finally {
+			AccessControlManagerImpl.bringAccessCheckBackToNormalForThisThread();
+		}
 	}
 }
