@@ -839,12 +839,9 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         		updates.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
   				ws = (Workspace)processor.addBinder(entry.getParentBinder(), userDef, Workspace.class, new MapInputData(updates), null, options);				
   			}
- 		} catch (Exception e) {
-	  		if (e instanceof WriteFilesException ) {
-	   			logger.error("Error create user workspace: ", e);
-	  		} else {
-				logger.debug("ProfileModuleImpl.addUserWorkspace(Exception:  '" + MiscUtil.exToString(e) + "'):  2:  Ignored");
-	  		}
+  		} catch (WriteFilesException wf) {
+   			logger.error("Error create user workspace: ", wf);
+   			
    		} finally {
    			//	leave new context for indexing
    			RequestContextHolder.setRequestContext(oldCtx);				
