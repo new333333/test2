@@ -1,5 +1,0 @@
-"product","Conferencing","no description"
-"ICEcore","Novell Teaming","no description"
-"thrdmrk","*","no description"
-"ycc_runlevel","System Services (Runlevel)","no description"
-"euro","&#x20AC;","no description"
