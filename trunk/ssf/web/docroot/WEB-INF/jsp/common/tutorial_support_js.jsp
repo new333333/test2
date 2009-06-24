@@ -331,7 +331,7 @@
 		}
 			
 		winHeight = 900;
-		winWidth = 900; 
+		winWidth = 975; 
 		m_playTutorialWnd = window.open(
 									url,
 									'PlayTutorialWindow',

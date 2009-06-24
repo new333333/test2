@@ -62,7 +62,7 @@ var ${renderResponse.namespace}_savedIndex;
 <tr>
 <td valign="top">
 <input type="checkbox" class="ss_style" id="enabled" name="enabled" <c:if test="${ssScheduleInfo.enabled}">checked</c:if> />
-<span class="ss_labelRight"><ssf:nlt tag="synchronization.schedule.enable"/> </span><ssf:inlineHelp tag="ihelp.synchronization.schedule.enableCheckBox"/>
+<span class="ss_labelRight"><ssf:nlt tag="synchronization.schedule.enable"/> </span><ssf:inlineHelp jsp="workspaces_folders/misc_tools/sync_schedule"/>
 <br/>
 <c:set var="schedule" value="${ssScheduleInfo.schedule}"/>
 <c:set var="schedPrefix" value="sync"/>
