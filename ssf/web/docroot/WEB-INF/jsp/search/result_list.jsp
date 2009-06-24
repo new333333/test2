@@ -449,8 +449,16 @@
 							</div>
 							<div class="ss_clear">&nbsp;</div>
 											
+							<c:set var="createdByText" value='<%= NLT.get("access.folderOwner") %>'/>
+							<c:set var="entryPrincipal" value="${entry._principal}"/>
+							<c:if test="${entry._entityType == 'workspace'}">
+							  <c:set var="createdByText" value='<%= NLT.get("access.workspaceOwner") %>'/>
+							</c:if>
+							<c:if test="${!empty entry._principalOwner}">
+							  <c:set var="entryPrincipal" value="${entry._principalOwner}"/>
+							</c:if>
 							<div id="details_${status.count}" class="ss_entryDetails">
-								<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" />
+								<p><span class="ss_label">${createdByText}</span> <ssf:showUser user="${entryPrincipal}" />
 								   <span style="padding-left: 10px;" class="ss_label"><ssf:nlt tag="entry.modified" />:</span> 
 								   <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" />
 								</p>

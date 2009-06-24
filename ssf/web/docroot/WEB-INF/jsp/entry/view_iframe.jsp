@@ -101,7 +101,9 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	<td valign="top" class="ss_view_info">
   </ssf:ifnotaccessible>
 	  <c:if test="${!ss_mashupHideToolbar}">
-	    <jsp:include page="/WEB-INF/jsp/definition_elements/folder_entry_toolbar.jsp" />
+	    <c:if test="${ss_folderViewStyle != 'blog'}">
+	      <jsp:include page="/WEB-INF/jsp/definition_elements/folder_entry_toolbar.jsp" />
+	    </c:if>
 	  </c:if>
 	  <div align="center">
 	    <div id="ss_folder_wrap">

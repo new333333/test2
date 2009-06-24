@@ -272,9 +272,10 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
     	} else {
     		Element threadEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "parallelThread", threadName);
     		if (threadEle != null) {
-    			String endState = DefinitionUtils.getPropertyValue(threadEle, "endState");
-     			if (!stateName.equals(endState)) return false;
-         		return true;
+    			List endStates = DefinitionUtils.getPropertyValueList(threadEle, "endState");
+    			for (int i = 0; i < endStates.size(); i++) {
+    				if (stateName.equals((String)endStates.get(i))) return true;
+    			}
 			}
 		}
 		return false;

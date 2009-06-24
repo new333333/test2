@@ -276,7 +276,7 @@
 				</td>
 				<td>
 					<ul class="ss_nobullet">
-					<c:forEach var="principal" items='<%= org.kablink.teaming.util.ResolveIds.getPrincipals(entry.get("responsible")) %>' >
+					<c:forEach var="principal" items='<%= org.kablink.teaming.util.ResolveIds.getPrincipals(entry.get("responsible"), false) %>' >
 						<li><ssf:showUser user="${principal}" /></li>
 					</c:forEach>
 					</ul>

@@ -63,7 +63,7 @@
 	    <c:if test="${empty ssDefinitionEntry.title}">
           <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
         </c:if>
-        <span>${ssDefinitionEntry.title}</span>
+        <span><c:out value="${ssDefinitionEntry.title}" escapeXml="true"/></span>
       </a>
       </div>
       </li>
@@ -81,7 +81,7 @@
 	    <c:if test="${empty ssDefinitionEntry.title}">
           <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
         </c:if>
-        <span>${ssDefinitionEntry.title}</span>
+        <span><c:out value="${ssDefinitionEntry.title}" escapeXml="true"/></span>
       </a>
       </div>
       </li>

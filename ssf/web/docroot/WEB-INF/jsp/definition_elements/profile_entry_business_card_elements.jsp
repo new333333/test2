@@ -162,11 +162,11 @@
    <td valign="bottom" align="left">
 	  <div class="ss_entryContent">
 		<c:if test="${empty ssDefinitionEntry.title}">
-		  <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.name}"/></span>
+		  <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.name}" escapeXml="true"/></span>
 		</c:if>
 		<c:if test="${!empty ssDefinitionEntry.title}">
-		  <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.title}"/></span> 
-		  <span class="ss_normalprint ss_light">(<c:out value="${ssDefinitionEntry.name}"/>)</span>
+		  <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.title}" escapeXml="true"/></span> 
+		  <span class="ss_normalprint ss_light">(<c:out value="${ssDefinitionEntry.name}" escapeXml="true"/>)</span>
 		</c:if>
 	  </div>
    </td>
@@ -185,12 +185,12 @@
 	        <ssf:mailto email="${ssDefinitionEntry[element]}"/>
 	    </c:if>    
 	    <c:if test="${element != 'emailAddress' && element != 'mobileEmailAddress' && element != 'txtEmailAddress'}">
-	    	${ssDefinitionEntry[element]}
+	    	<c:out value="${ssDefinitionEntry[element]}" escapeXml="true"/>
 		</c:if>
     </span>
    </c:if>
    <c:if test="${!empty ssDefinitionEntry.customAttributes[element]}">
-    <span class="${ss_element_display_style_item}"><c:out value="${ssDefinitionEntry.customAttributes[element]}"/></span>
+    <span class="${ss_element_display_style_item}"><c:out value="${ssDefinitionEntry.customAttributes[element]}" escapeXml="true"/></span>
    </c:if>
   </td>
  </tr>
@@ -225,7 +225,7 @@
 		<td colspan="2" align="center">
 			<span id="ss_myStatusTextDest" class="ss_normalprint ss_italic">
 			  <c:if test="${!empty ssDefinitionEntry.status}">
-			    ${ssDefinitionEntry.status}
+			    <c:out value="${ssDefinitionEntry.status}" escapeXml="true"/>
 			  </c:if>
 			</span>
 		</td>
@@ -265,16 +265,16 @@
       optionsDivId="ss_presenceOptions2_${renderResponse.namespace}"/>
 
  <c:if test="${empty ssDefinitionEntry.title}">
- <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.name}"/></span>
+ <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.name}" escapeXml="true"/></span>
  </c:if>
  <c:if test="${!empty ssDefinitionEntry.title}">
- <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.title}"/></span> 
- <span class="ss_normalprint ss_light">(<c:out value="${ssDefinitionEntry.name}"/>)</span>
+ <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.title}" escapeXml="true"/></span> 
+ <span class="ss_normalprint ss_light">(<c:out value="${ssDefinitionEntry.name}" escapeXml="true"/>)</span>
  </c:if>
 <br/>
 <span id="ss_myStatusTextDest2" class="ss_normalprint ss_italic">
   <c:if test="${!empty ssDefinitionEntry.status}">
-    ${ssDefinitionEntry.status}
+    <c:out value="${ssDefinitionEntry.status}" escapeXml="true"/>
   </c:if>
 </span>
  </div>

@@ -109,30 +109,36 @@
 		    	name="binderId" value="${ssBinder.id}"/></ssf:url>">
 			  <div class="ss_style" style="margin:10px;">
 		        <span class="ss_bold"><ssf:nlt tag="dashboard.componentScope"/></span><br>
+		 		<table cellspacing="0" cellpadding="0">
 		 		<c:if test="${!ssUser.shared}">
-		        <input type="radio" name="_scope" value="local" id="local" checked="checked" />
-		        	<label for="local"><ssf:nlt tag="dashboard.componentScope.local"/><br></label>
-		        <input type="radio" name="_scope" value="global" id="global"/>
-		        	<label for="global"><ssf:nlt tag="dashboard.componentScope.global"/> <ssf:inlineHelp tag="ihelp.other.global_accessories"/><br></label>
+		        <tr><td valign="top"><input type="radio" name="_scope" value="local" id="local" checked="checked" /></td>
+		        	<td><label for="local"><ssf:nlt tag="dashboard.componentScope.local"/></label></td></tr>
+		        <tr><td valign="top"><input type="radio" name="_scope" value="global" id="global"/></td>
+		        	<td><label for="global"><ssf:nlt tag="dashboard.componentScope.global"/> 
+		        	  <ssf:inlineHelp tag="ihelp.other.global_accessories"/></label></td></tr>
 		        <c:if test="${ssDashboard.sharedModificationAllowed}">
-		          <input type="radio" name="_scope" value="binder" id="binder"/>
-		          	<label for="binder"><ssf:nlt tag="dashboard.componentScope.binder"/> <ssf:inlineHelp tag="ihelp.other.community_accessories"/><br></label>
+		          <tr><td valign="top"><input type="radio" name="_scope" value="binder" id="binder"/></td>
+		          	<td><label for="binder"><ssf:nlt tag="dashboard.componentScope.binder"/> 
+		          	 <ssf:inlineHelp tag="ihelp.other.community_accessories"/></label></td></tr>
 		        </c:if>
 				</c:if>
 		 		<c:if test="${ssUser.shared}">
-		          <input type="radio" name="_scope" value="binder" id="binder" checked/>
-		          	<label for="binder"><ssf:nlt tag="dashboard.componentScope.binder"/> <ssf:inlineHelp tag="ihelp.other.community_accessories"/><br></label>
+		          <tr><td valign="top"><input type="radio" name="_scope" value="binder" id="binder" checked/></td>
+		          	<td><label for="binder"><ssf:nlt tag="dashboard.componentScope.binder"/> 
+		          	 <ssf:inlineHelp tag="ihelp.other.community_accessories"/></label></td></tr>
 				</c:if>
+		        </table>
 		        <br/>
 		        <span class="ss_bold"><ssf:nlt tag="dashboard.componentType"/></span><br>
+		        <table cellspacing="0" cellpadding="0">
 		        <c:forEach var="component" items="${ssDashboard.components_list}">
 		           <c:set var="ss_dashboardComponentNumber" value="${ss_dashboardComponentNumber + 1}" scope="request"/>
-		           <input type="radio" name="componentName" id="componentName${ss_dashboardComponentNumber}" 
-		             value="${component}">
-		             <label for="componentName${ss_dashboardComponentNumber}"
-		             ><ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/></label>
-		           <br>
+		           <tr><td valign="top"><input type="radio" name="componentName" id="componentName${ss_dashboardComponentNumber}" 
+		             value="${component}"></td>
+		             <td><label for="componentName${ss_dashboardComponentNumber}"
+		             ><ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/></label></td></tr>
 		        </c:forEach>
+		        </table>
 		        <br>
 			    <input class="ss_submit" type="submit" name="add_wideTop" 
 			      value="<ssf:nlt tag="button.ok"/>">&nbsp;&nbsp;
@@ -153,14 +159,15 @@
 		         <input type="hidden" name="_scope" value="binder"/>
 		 	  <div class="ss_style" style="margin:10px;">
 		        <span class="ss_bold"><ssf:nlt tag="dashboard.componentType"/></span><br>
+		        <table cellspacing="0" cellpadding="0">
 		        <c:forEach var="component" items="${ssDashboard.components_list}">
 		           <c:set var="ss_dashboardComponentNumber" value="${ss_dashboardComponentNumber + 1}" scope="request"/>
-		           <input type="radio" name="componentName" id="componentName${ss_dashboardComponentNumber}" 
-		             value="${component}">
-		             <label for="componentName${ss_dashboardComponentNumber}"
-		             ><ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/></label>
-		           <br>
+		           <tr><td valign="top"><input type="radio" name="componentName" id="componentName${ss_dashboardComponentNumber}" 
+		             value="${component}"></td>
+		             <td><label for="componentName${ss_dashboardComponentNumber}"
+		             ><ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/></label></td></tr>
 		        </c:forEach>
+		        </table>
 		        <br>
 			    <input class="ss_submit" type="submit" name="add_wideTop" 
 			      value="<ssf:nlt tag="button.ok"/>">&nbsp;&nbsp;

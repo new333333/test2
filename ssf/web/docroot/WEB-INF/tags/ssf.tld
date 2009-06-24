@@ -968,6 +968,12 @@
 	</tag>
 
 	<tag>
+		<name>makeWrapable</name>
+		<tag-class>org.kablink.teaming.taglib.MakeWrapableTag</tag-class>
+		<body-content>JSP</body-content>
+	</tag>
+
+	<tag>
 		<name>markup</name>
 		<tag-class>org.kablink.teaming.taglib.MarkupTag</tag-class>
 		<body-content>JSP</body-content>

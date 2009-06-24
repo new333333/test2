@@ -62,10 +62,16 @@
  </tr>
  <tr>
   <td align="center" colspan="3">
-   <a class="ss_linkButton ss_smallprint" href="javascript: ;" 
-   onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'print_manuals', '', 0, 0, '', '');return false;"><ssf:nlt tag="help.button.viewBooks"/></a>
-  <a class="ss_linkButton ss_smallprint" href="javascript:;" 
-    onClick="ss_helpSystem.hide(); return false;"><ssf:nlt tag="help.button.exit.help"/></a>
+   <table>
+   <tr>
+   <td><a class="ss_linkButton ss_smallprint" href="javascript: ;" 
+     onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'print_manuals', '', 0, 0, '', '');return false;"
+   ><ssf:nlt tag="help.button.viewBooks"/></a></td>
+   <td><a class="ss_linkButton ss_smallprint" href="javascript:;" 
+    onClick="ss_helpSystem.hide(); return false;"><ssf:nlt tag="help.button.exit.help"/></a></td>
+   </td>
+   </tr>
+   </table>
   </td>
  </tr>
 </table>

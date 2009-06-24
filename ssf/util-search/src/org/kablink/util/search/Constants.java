@@ -111,6 +111,9 @@ public class Constants {
 	public static final String MODIFICATIONID_FIELD = "_modificationId";
 	public static final String MODIFICATION_NAME_FIELD = "_modificationName";
 	public static final String MODIFICATION_TITLE_FIELD = "_modificationTitle";
+	public static final String OWNERID_FIELD = "_ownerId";
+	public static final String OWNER_NAME_FIELD = "_ownerName";
+	public static final String OWNER_TITLE_FIELD = "_ownerTitle";
 	public static final String COMMAND_DEFINITION_FIELD = "_commandDef";
 	public static final String ENTRY_DEFINITIONS_FIELD = "_entryDefs";
 	public static final String TITLE_FIELD = "title";

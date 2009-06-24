@@ -70,7 +70,7 @@
 					<c:if test="${empty nextEntry.title}" >
 						--<ssf:nlt tag="entry.noTitle" />--
 					</c:if>
-					<c:out value="${nextEntry.title}" /><img border="0" <ssf:alt/>
+					<c:out value="${nextEntry.title}" escapeXml="true"/><img border="0" <ssf:alt/>
 			  		  style="width:1px;height:14px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
 				  </span>
 				  <br/>
@@ -97,7 +97,7 @@
 					actionUrl="false" />"
   ><span class="ss_bold"><c:if test="${empty ssDefinitionEntry.title}" >
   (<ssf:nlt tag="entry.noTitle" />)</c:if>
-  <c:out value="${ssDefinitionEntry.title}" /></span></a>
+  <c:out value="${ssDefinitionEntry.title}" escapeXml="true" /></span></a>
   <br/>
 
 <c:if test="${ss_showSignatureAfterTitle && !ss_signatureShown}">

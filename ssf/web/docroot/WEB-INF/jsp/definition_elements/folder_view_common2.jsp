@@ -761,7 +761,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 		java.util.Set ids = org.kablink.teaming.util.LongIdUtil.getIdsAsLongSet(sr, ",");
 %>
           	<c:forEach var="user" 
-          	  items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(ids) %>"
+          	  items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(ids, false) %>"
           	>${separator}${user.title}<c:set var="separator" value=", "/>
           	</c:forEach>
 <%

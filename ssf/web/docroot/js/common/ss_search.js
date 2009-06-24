@@ -77,9 +77,9 @@ function ss_addInitializedWorkflow(wfIdValue, stepsValue) {
 	ss_userOptionsCounter++;
 }
 
-function ss_addInitializedEntry(entryId, fieldName, value, valueLabel) {
+function ss_addInitializedEntry(entryId, fieldName, value, valueLabel, valueType) {
 	ss_optionsArray[ss_userOptionsCounter]='entry';
-	ss_addEntry(ss_userOptionsCounter, entryId, fieldName, value, valueLabel);
+	ss_addEntry(ss_userOptionsCounter, entryId, fieldName, value, valueLabel, valueType);
 	ss_userOptionsCounter++;
 }
 
@@ -115,7 +115,6 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	div.id = "block"+ss_userOptionsCounter;
 	
 	var workflowsContainer = document.createElement('div');
-	workflowsContainer.setAttribute("style", "display:inline; float: left;");
 	div.appendChild(workflowsContainer);
 	
 	var remover = document.createElement('img');
@@ -127,16 +126,35 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	var wDiv = document.createElement('div');
 	wDiv.id = "placeholderWorkflow"+orderNo;
 	workflowsContainer.appendChild(wDiv);
-    var stepsLabel = document.createElement('div');
-    stepsLabel.appendChild(document.createTextNode(ss_nlt_searchFormLabelWorkflowState + ":"));
-	stepsLabel.setAttribute("style", "visibility: hidden; display:inline; float: left;");
+	var stepsLabel = document.createElement('div');
 	stepsLabel.id = "workflowSteps"+orderNo+"Label";
     div.appendChild(stepsLabel);
 	var stepsContainer = document.createElement('ul');
 	stepsContainer.id = "workflowSteps"+orderNo;
 	stepsContainer.className = "ss_nobullet";
-	stepsContainer.setAttribute("style", "display:inline; float: left; padding-left: 5px; margin-top: 0px;");
 	div.appendChild(stepsContainer);
+
+    if (typeof stepsValue != "undefined") {
+		var steps = "" + stepsValue;
+		for (var i in steps.split(",")) {
+			var step = steps.split(",")[i];
+			var liObj = document.createElement("li");
+			stepsContainer.appendChild(liObj);
+			var chckboxId = stepsContainer.id + wfIdValue + step;
+			var chkbox = document.createElement("input");
+			chkbox.type = "checkbox";
+			chkbox.value = step;
+			chkbox.id = chckboxId;
+			chkbox.name = "searchWorkflowStep" + orderNo;
+			liObj.appendChild(chkbox);
+			chkbox.checked = true;
+			var label = document.createElement("label");
+			label.setAttribute("style", "padding-left: 5px;");
+			label.appendChild(document.createTextNode(step));
+			liObj.appendChild(label);
+			label.htmlFor =  chckboxId;
+		}
+	}
 	
 	document.getElementById('ss_workflows_options').appendChild(div);
 
@@ -219,7 +237,6 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	var brObj = document.createElement('br');
 	brObj.setAttribute("style", "clear: both; ");
 	div.appendChild(brObj);
-	
 	return findWorkflows;
 }
 
@@ -249,7 +266,7 @@ function ss_getSelectedBinders(url) {
 	return url += "&idChoices=" + encodeURIComponent(value);
  
 }
-function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
+function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
 	div.style.marginBottom = "3px";
@@ -266,41 +283,61 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 
     var fieldsLabelDiv = document.createElement('div');
 	fieldsLabelDiv.id = "entryFields"+orderNo+"Label";
-	fieldsLabelDiv.setAttribute("style", "float: left; display:none;");
-	fieldsLabelDiv.appendChild(document.createTextNode(ss_nlt_searchFormLabelFieldName + ": "));
+	fieldsLabelDiv.setAttribute("style", "display:none;");
 	div.appendChild(fieldsLabelDiv);
-    
-	
+    	
 	var fieldsDiv = document.createElement('div');
 	fieldsDiv.id = "entryFields"+orderNo;
-	fieldsDiv.setAttribute("style", "display:inline;");
 	div.appendChild(fieldsDiv);
 	
     var valueLabelDiv = document.createElement('div');
-	valueLabelDiv.setAttribute("style", "float: left; display:none;");
-	valueLabelDiv.appendChild(document.createTextNode(ss_nlt_searchFormLabelFieldValue + ": "));
+	valueLabelDiv.setAttribute("style", "display:none;");
 	div.appendChild(valueLabelDiv);
 
 
 	var fieldValueDiv = document.createElement('div');
 	fieldValueDiv.id = "entryFieldsValue"+orderNo;
-	fieldValueDiv.setAttribute("style", "display:block;");
 	div.appendChild(fieldValueDiv);
 	
 	var fieldValue2Div = document.createElement('div');
 	fieldValue2Div.id = "entryFieldsValue2"+orderNo;
-	fieldValue2Div.setAttribute("style", "display:inline;");
 	div.appendChild(fieldValue2Div);
 		
 	var fieldValue3Div = document.createElement('div');
 	fieldValue3Div.id = "entryFieldsValue3"+orderNo;
-	fieldValue3Div.setAttribute("style", "display:inline;");
 	div.appendChild(fieldValue3Div);
+
+	var valueOptionValue = "";
+	if (typeof valueType != "undefined" && (valueType == "date" || valueType == "event")) {
+		valueOptionValue = valueLabel;
+	} else {
+		valueOptionValue = value;
+	}
+	if (typeof fieldName != "undefined") {
+		var selectObj = document.createElement("select");
+		selectObj.name = "elementName" + orderNo + "_selected";
+		selectObj.id = "elementName" + orderNo + "_selected";
+		var optionObj = document.createElement("option");
+		optionObj.value = fieldName;
+		optionObj.selected = true;
+		optionObj.innerHTML = fieldName;
+		selectObj.appendChild(optionObj);
+		fieldValue2Div.appendChild(selectObj);
 		
+		if (typeof value != "undefined") {
+			var selectObj = document.createElement("select");
+			selectObj.name = "elementValue" + orderNo + "_selected";
+			selectObj.id = "elementValue" + orderNo + "_selected";
+			var optionObj = document.createElement("option");
+			optionObj.value = valueOptionValue;
+			optionObj.selected = true;
+			optionObj.innerHTML = valueLabel;
+			selectObj.appendChild(optionObj);
+			fieldValue3Div.appendChild(selectObj);
+		}
+	}
 	document.getElementById('ss_entries_options').appendChild(div);
-
-
-
+	
 	var entryInputId = "ss_entry_def_id" + orderNo;
 	
 	var textAreaEntriesObj = document.createElement('textArea');
@@ -326,7 +363,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 			ss_removeAllChildren(fieldValue2Div);
 			ss_removeAllChildren(fieldValue3Div);
 
-            fieldsLabelDiv.style.display = "inline";
+            //fieldsLabelDiv.style.display = "inline";
 			
 			var entryTypeId = findEntries.getSingleId();
 			var fieldsInputId = "elementName" + orderNo;
@@ -348,7 +385,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 				displayArrow: true,
 				searchOnInitialClick: true,
 				clickRoutine: function () {
-				    valueLabelDiv.style.display = "inline";
+				    //valueLabelDiv.style.display = "inline";
 					var fieldValueWidget = dijit.byId("elementValue" + orderNo + "_selected");
 					if (fieldValueWidget && fieldValueWidget.destroy) {
 						fieldValueWidget.destroy();
@@ -450,7 +487,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 							displayArrow: true,
 							searchOnInitialClick: true,
 							clickRoutine: function () {
-							    valueLabelDiv.style.display = "inline";
+							    //valueLabelDiv.style.display = "inline";
 								var fieldValueWidget = dijit.byId("elementValue" + orderNo + "_selected");
 								if (fieldValueWidget && fieldValueWidget.destroy) {
 									fieldValueWidget.destroy();

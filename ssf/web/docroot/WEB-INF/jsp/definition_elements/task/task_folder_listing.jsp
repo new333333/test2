@@ -357,7 +357,7 @@
 						</ssf:ifEntryModifiable>
 					</td>
 					<td class="ss_assigned">
-						<c:set var="assignment" value='<%= org.kablink.teaming.util.ResolveIds.getPrincipals(entry.get("assignment")) %>' />
+						<c:set var="assignment" value='<%= org.kablink.teaming.util.ResolveIds.getPrincipals(entry.get("assignment"), false) %>' />
 						<c:if test="${!empty assignment}">
 							<ul>
 								<c:forEach var="assigned" items="${assignment}">
@@ -366,7 +366,7 @@
 							</ul>
 						</c:if>
 						
-						<c:set var="assignment_groups" value='<%= org.kablink.teaming.util.ResolveIds.getPrincipals(entry.get("assignment_groups")) %>' />
+						<c:set var="assignment_groups" value='<%= org.kablink.teaming.util.ResolveIds.getPrincipals(entry.get("assignment_groups"), false) %>' />
 						<c:if test="${!empty assignment_groups}">
 							<ul>
 								<c:forEach var="assigned" items="${assignment_groups}">

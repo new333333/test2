@@ -369,7 +369,7 @@ function ss_showFolderAddAttachmentDropbox(namespace, binderId, isLibrary) {
 	}
 
 	divObj.style.width = "400px";
-	divObj.style.height = "200px";
+	divObj.style.height = "250px";
 
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();

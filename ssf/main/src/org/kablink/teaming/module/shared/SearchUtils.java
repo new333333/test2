@@ -324,15 +324,24 @@ public class SearchUtils {
   	}
     public static void extendPrincipalsInfo(List<Map> entries, ProfileDao profileDao, String userField) {
     	Set ids = new HashSet();
+    	Set idsOwner = new HashSet();
     	//build list of user ids to load
     	for (Map entry: entries) {
     		if (entry.get(userField) != null)
     			try {
     				ids.add(Long.parseLong((String)entry.get(userField)));
     			} catch (Exception ex) {}
+        		if (entry.get(Constants.OWNERID_FIELD) != null)
+        			try {
+        				idsOwner.add(Long.parseLong((String)entry.get(Constants.OWNERID_FIELD)));
+        			} catch (Exception ex) {}
     	}
     	List<UserPrincipal> principles = profileDao.loadUserPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), false);
 		Map users = new HashMap();
+		for (Principal p:principles) {
+			users.put(p.getId(), p);
+		}
+    	principles = profileDao.loadUserPrincipals(idsOwner, RequestContextHolder.getRequestContext().getZoneId(), false);
 		for (Principal p:principles) {
 			users.put(p.getId(), p);
 		}
@@ -340,8 +349,12 @@ public class SearchUtils {
 		// walk the entries, and stuff in the requested user object.
 		for (int i = 0; i < entries.size(); i++) {
 			HashMap entry = (HashMap)entries.get(i);
-			if (entry.get(userField) != null) {
+			if (entry.get(userField) != null && users.containsKey(Long.parseLong((String)entry.get(userField)))) {
 				entry.put(WebKeys.PRINCIPAL, users.get(Long.parseLong((String)entry.get(userField))));
+	        }        	
+			if (entry.get(Constants.OWNERID_FIELD) != null && 
+					users.containsKey(Long.parseLong((String)entry.get(Constants.OWNERID_FIELD)))) {
+				entry.put(WebKeys.PRINCIPAL_OWNER, users.get(Long.parseLong((String)entry.get(Constants.OWNERID_FIELD))));
 	        }        	
 		}		
 	}

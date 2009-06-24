@@ -38,7 +38,7 @@
 	<td class="ss_table_spacer_right"><c:out value="${property_caption}" />:</td>
 	<td>
 		<ul class="ss_nobullet">
-		<c:forEach var="principal" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals((CustomAttribute) ssDefinitionEntry.getCustomAttribute(property_name)) %>" >
+		<c:forEach var="principal" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals((CustomAttribute) ssDefinitionEntry.getCustomAttribute(property_name), false) %>" >
 			<li><ssf:showUser user="${principal}" /></li>
 		</c:forEach>
 		</ul>

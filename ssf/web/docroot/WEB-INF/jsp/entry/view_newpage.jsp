@@ -99,7 +99,9 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	</c:if>
 	<td valign="top" class="ss_view_info">
 	</ssf:ifnotaccessible>
-		<jsp:include page="/WEB-INF/jsp/definition_elements/folder_entry_toolbar.jsp" />
+	    <c:if test="${ss_folderViewStyle != 'blog'}">
+	      <jsp:include page="/WEB-INF/jsp/definition_elements/folder_entry_toolbar.jsp" />
+	    </c:if>
 		<div id="ss_whatsNewDiv${ss_namespace}">
 		<c:if test="${ss_type == 'whatsNew' || ss_type == 'unseen'}">
 		  <jsp:include page="/WEB-INF/jsp/forum/whats_new_page.jsp" />

@@ -464,6 +464,12 @@ div.ss_entryDescription ol li {
     list-style-position: outside;
     list-style-type: decimal;
 	}
+div.ss_entryDescription a {
+  	color:#5A9A98!important;
+	}
+div.ss_entryDescription a:hover {
+  	text-decoration:underline;
+	}
 
 
 div.ss_editableTab {
@@ -742,6 +748,7 @@ div.ss_send_friend {
   background-color: transparent !important;
   margin:2px;
   padding:2px;
+  white-space:nowrap;
 }
 .ss_helpPanel {
   position:absolute;

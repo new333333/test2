@@ -102,13 +102,15 @@ public class MashupTag extends BodyTagSupport {
 						//Build a map of attributes
 						Map mashupItemAttributes = new HashMap();
 						for (int i = 1; i < mashupItemValues.length; i++) {
-							String[] valueSet = mashupItemValues[i].split("=");
-							if (valueSet.length == 2) {
-								String value1 = valueSet[1];
+							int k = mashupItemValues[i].indexOf("=");
+							if (k > 0) {
+								String a = mashupItemValues[i].substring(0, k);
+								String v = mashupItemValues[i].substring(k+1, mashupItemValues[i].length());
+								String value1 = v;
 								try {
-									value1 = URLDecoder.decode(valueSet[1].replaceAll("\\+", "%2B"), "UTF-8");
+									value1 = URLDecoder.decode(v.replaceAll("\\+", "%2B"), "UTF-8");
 								} catch(Exception e) {}
-								mashupItemAttributes.put(valueSet[0], value1);
+								mashupItemAttributes.put(a, value1);
 							}
 						}
 						httpReq.setAttribute("mashup_id", id);

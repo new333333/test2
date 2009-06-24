@@ -87,7 +87,7 @@
 				<td class="ss_table_data_TD" valign="top">
 				  <%
 				  	String fullName = changeLog.getUserName();
-				  	java.util.List ps = ResolveIds.getPrincipals(changeLog.getUserId().toString());
+				  	java.util.List ps = ResolveIds.getPrincipals(changeLog.getUserId().toString(), false);
 				  	if (!ps.isEmpty()) fullName = ((Principal)ps.get(0)).getTitle();
 				  %>
 				  <%= fullName %> (${changeLog.userName})&nbsp

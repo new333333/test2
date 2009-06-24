@@ -81,9 +81,6 @@
 		</tbody></table>
 	  </c:when>
 	  <c:otherwise>
-	  <c:if test="${!empty data.itemIdCaption}">
-	  	<span class="ss_titlebold"><c:out value="${data.itemIdCaption}"/></span>
-	  </c:if>
 	  <c:if test="${ssDefinition.binderId == -1}">
 		<ssf:buildDefinitionDivs title='<%= NLT.get("definition.select_item") %>'
 		  sourceDocument="${data.sourceDefinition}" 

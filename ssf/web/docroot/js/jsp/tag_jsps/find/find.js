@@ -415,7 +415,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 			searchInProgress = false;
 			return;
 		}
-		var url = that._singleSearchUrl  + "&searchText=" + escape(searchText)
+		var url = that._singleSearchUrl  + "&searchText=" + encodeURI(searchText)
 										+ "&maxEntries=10" 
 										+ "&pageNumber=" + pageNumber 
 										+ "&findType=" + that._singleListType 

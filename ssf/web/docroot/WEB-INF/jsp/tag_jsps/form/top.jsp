@@ -39,6 +39,7 @@
 --%><ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter><%--
 --%>
 <c:if test="${empty ss_formTagTopApplied}">
+<table cellspacing="0" cellpadding="0" width="100%"><tr><td>
 <div class="${ss_formClass}">
     <div class="ss_form_header">
       <c:if test="${!empty ss_title_tag}">
