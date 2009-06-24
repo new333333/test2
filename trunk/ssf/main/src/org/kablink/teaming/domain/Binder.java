@@ -594,9 +594,16 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		this.mirrored = mirrored;
 	}
 	public String getResourcePath() {
-		return resourcePath;
+		if(resourcePath != null && resourcePath.equals("/"))
+			return "";
+		else
+			return resourcePath;
 	}
 	public void setResourcePath(String resourcePath) {
+		if(resourcePath != null && resourcePath.equals("")) {
+			// bugzilla 513609 - To workaround problem with Oracle
+			resourcePath = "/";
+		}
 		this.resourcePath = resourcePath;
 	}
 	
