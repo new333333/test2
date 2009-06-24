@@ -1,0 +1,177 @@
+/* Mashup styles, used on landing pages */
+
+.ss_mashup {
+}
+
+table.ss_mashup {
+  padding: 0px;
+  background: #E3E3E3;
+  text-align:left !important;
+}
+
+.ss_mashup_canvas_view {
+  background: #E3E3E3;
+}
+.ss_mashup_canvas_form {
+  border: 1px silver solid; 
+  padding: 30px;
+}
+
+.ss_mashup_round_top {
+  background: #FFFFFF url(images/mashup/corner_top_right.gif) no-repeat scroll 100% 0;
+  height:4px;
+  overflow:hidden;
+  }
+.ss_mashup_round_top div {
+  background: #FFFFFF url(images/mashup/corner_top_left.gif) no-repeat scroll 0 0;
+  height: 4px;
+  width: 4px;
+  overflow: hidden;
+  }
+
+.ss_mashup_round_bottom {
+  background: #FFFFFF url(images/mashup/corner_bottom_right.gif) no-repeat scroll 100% 0;
+  height:4px;
+  overflow:hidden;
+  }
+.ss_mashup_round_bottom div {
+  background: #FFFFFF url(images/mashup/corner_bottom_left.gif) no-repeat scroll 0 0;
+  height: 4px;
+  width: 4px;
+  overflow: hidden;
+  }
+
+div.ss_mashup_element {
+  padding:6px;
+}
+
+div.ss_mashup_element_content {
+  background-color:#ffffff; 
+}
+
+div.ss_mashup_form_element_header {
+  border:1px solid #cecece; 
+  background-color:#e5e5e5; 
+  padding:6px;
+  }
+  
+div.ss_mashup_list_header_view {
+  border-bottom:1px solid #cecece; 
+  background-color:#ffffff; 
+  padding:6px;
+  font-size: 20px;
+  font-weight:bold;
+  }
+
+div.ss_mashup_list_header_form {
+  border-bottom:1px solid #cecece; 
+  background-color:#ffffff; 
+  padding:6px;
+  }
+div.ss_mashup_list_header_form span {
+  font-size: 12px;
+  font-weight: bold;
+  }
+
+div.ss_mashup_list_content {
+  background: #FFFFFF;
+  padding:2px 6px;
+  }
+
+div.ss_mashup_list_content ul {
+  padding:2px 0px 0px 16px;
+  margin:0px;
+  }
+div.ss_mashup_list_content ul li {
+  list-style-type: square;
+  list-style-image: none;
+  list-style-position: outside;
+  }
+  
+  
+div.ss_mashup_folder_header_form {
+  border-bottom:1px solid #cecece; 
+  background-color:#FFFFFF; 
+  padding:6px;
+  }
+div.ss_mashup_folder_header_form span {
+  font-size: 12px;
+  font-weight: bold;
+}
+div.ss_mashup_folder_header_form a span {
+  font-size: 12px;
+  font-weight: normal;
+}
+  
+div.ss_mashup_folder_header_view {
+  border-bottom:1px solid #cecece; 
+  background-color:#FFFFFF; 
+  padding:6px;
+  }
+div.ss_mashup_folder_header_view span {
+  font-size: 20px;
+  font-weight: bold;
+}
+div.ss_mashup_folder_header_view a span {
+  font-size: 20px;
+  font-weight: bold;
+}
+    
+div.ss_mashup_folder_description {
+  background: #FFFFFF;
+  border-bottom:1px solid #cecece;
+  padding:6px;
+  }
+
+div.ss_mashup_folder_list_closed {
+  background: #FFFFFF;
+  padding:6px;
+  }
+
+div.ss_mashup_folder_list_open {
+  background: #FFFFFF;
+  padding: 0px 6px;
+  }
+div.ss_mashup_folder_list_open_title {
+  background: #FFFFFF;
+  padding:6px;
+  font-size: 16px;
+  font-weight: bold;
+  }
+.ss_mashup_folder_list_open_title {
+  font-size: 16px;
+  }
+
+div.ss_mashup_folder_list_open_entry {
+  background: #FFFFFF;
+  border-bottom:3px solid #cecece;
+  padding:0px 6px 6px 6px;
+  }
+    
+div.ss_mashup_entry_header {
+  background: #FFFFFF;
+  border-bottom:1px solid #cecece; 
+  padding:6px;
+  }
+  
+div.ss_mashup_entry_content {
+  background: #FFFFFF;
+  padding:2px 6px;
+  }
+  
+div.ss_mashup_graphic_header {
+  background: #FFFFFF;
+  border-bottom:1px solid #cecece; 
+  padding:6px;
+  }
+  
+div.ss_mashup_graphic_content {
+  background: #FFFFFF;
+  padding:2px 6px;
+  }
+  
+div.ss_mashup_url_content {
+  background: #FFFFFF;
+  }
+  
+  
