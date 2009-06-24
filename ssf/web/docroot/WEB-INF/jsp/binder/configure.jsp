@@ -194,7 +194,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 <c:if test="${ssBinder.definitionInheritanceSupported}">
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="binder.configure.definitions.inheritance" 
-    text="Definition inheritance"/> <ssf:inlineHelp tag="ihelp.other.inherit_defs"/> </legend>
+    text="Definition inheritance"/> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/inherit_defs"/> </legend>
 <br>
 <c:set var="yes_checked" value=""/>
 <c:set var="no_checked" value=""/>
@@ -305,7 +305,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 		<fieldset class="ss_fieldset">
 			<legend class="ss_legend">
 				<ssf:nlt tag="binder.configure.folderDefinitionFixups.banner" text="Recursively apply"/>
-				<ssf:inlineHelp tag="ihelp.other.folder_definition_fixups"/>
+				<ssf:inlineHelp jsp="workspaces_folders/misc_tools/folder_definition_fixups"/>
 			</legend>
 	
 		    <c:if test="${!empty ss_fixupThreadStatus}">
