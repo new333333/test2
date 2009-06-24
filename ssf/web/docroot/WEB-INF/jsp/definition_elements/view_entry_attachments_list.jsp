@@ -289,7 +289,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					 dateStyle="medium" /></span> <span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${selection.modification.date}" type="time" 
 					 timeStyle="short"/></span></td>
-		<td class="ss_att_meta"><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${selection.fileItem.lengthKB}"/>KB</td>
+		<td class="ss_att_meta"><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${selection.fileItem.lengthKB}"/><ssf:nlt tag="file.sizeKB" text="KB"/></td>
 		<td class="ss_att_meta_wrap ss_att_space">${selection.modification.principal.title}</td>
 		<td class="ss_att_meta" width="15%"></td>
 	</tr>
@@ -366,7 +366,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					 dateStyle="medium" /></span> <span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${fileVersion.modification.date}" type="time" 
 					 timeStyle="short" /></span></td>
-				<td class="ss_att_meta"><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${fileVersion.fileItem.lengthKB}"/>KB</td>
+				<td class="ss_att_meta"><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${fileVersion.fileItem.lengthKB}"/><ssf:nlt tag="file.sizeKB" text="KB"/></td>
 				<td width="25%" class="ss_att_meta_wrap ss_att_space">${fileVersion.modification.principal.title}</td>
 				<td class="ss_att_meta" width="15%"></td>	
 			  </tr>				
