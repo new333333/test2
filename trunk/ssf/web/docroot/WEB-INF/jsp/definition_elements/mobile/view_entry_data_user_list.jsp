@@ -39,7 +39,7 @@
 <c:if test="${empty ss_element_display_style}">
 <div class="ss_entryContent">
 <span class="ss_labelLeft"><c:out value="${property_caption}" /></span><br/>
-<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(userlist_entry.getCustomAttribute(property_name)) %>" >
+<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(userlist_entry.getCustomAttribute(property_name), false) %>" >
 <ssf:showUser user="${selection}" /><br/>
 </c:forEach>
 </div>

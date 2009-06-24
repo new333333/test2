@@ -69,7 +69,7 @@ ${nextEntry.docNumber}.
 <c:if test="${empty nextEntry.title}" >
 --<ssf:nlt tag="entry.noTitle" />--
 </c:if>
-<c:out value="${nextEntry.title}" /><img border="0" <ssf:alt/>
+<c:out value="${nextEntry.title}" escapeXml="true" /><img border="0" <ssf:alt/>
   style="width:1px;height:14px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
 </span>
 <br/>
@@ -94,7 +94,7 @@ ${nextEntry.docNumber}.
 				action="view_folder_entry" entryId="${ssDefinitionEntry.id}" actionUrl="true" ><ssf:param
 				name="namespace" value="${ss_title_namespace}"/></ssf:url>
 			</ssf:param>
-			<c:out value="${ssDefinitionEntry.title}"/>
+			<c:out value="${ssDefinitionEntry.title}" escapeXml="true"/>
 		</ssf:titleLink>
 
 </span>

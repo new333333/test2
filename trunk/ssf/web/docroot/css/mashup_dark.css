@@ -55,10 +55,22 @@ div.ss_mashup_form_element_header {
   padding:6px;
   }
   
-div.ss_mashup_list_header {
+div.ss_mashup_list_header_view {
   border-bottom:1px solid #cecece; 
   background-color:#ffffff; 
   padding:6px;
+  font-size: 20px;
+  font-weight:bold;
+  }
+
+div.ss_mashup_list_header_form {
+  border-bottom:1px solid #cecece; 
+  background-color:#ffffff; 
+  padding:6px;
+  }
+div.ss_mashup_list_header_form span {
+  font-size: 12px;
+  font-weight: bold;
   }
 
 div.ss_mashup_list_content {

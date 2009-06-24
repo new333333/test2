@@ -38,12 +38,25 @@ div.ss_mashup_form_element_header {
   padding:6px;
   }
   
-div.ss_mashup_list_header {
+div.ss_mashup_list_header_view {
   border-top:1px solid #aeaeae; 
   border-right:1px solid #aeaeae; 
   border-left:1px solid #aeaeae; 
   background-color:#cccccc; 
   padding:6px 6px 0px 6px;
+  font-size: 20px;
+  font-weight:bold;
+  }
+div.ss_mashup_list_header_form {
+  border-top:1px solid #aeaeae; 
+  border-right:1px solid #aeaeae; 
+  border-left:1px solid #aeaeae; 
+  background-color:#cccccc; 
+  padding:6px 6px 0px 6px;
+  }
+div.ss_mashup_list_header_form span {
+  font-size: 12px;
+  font-weight:bold;
   }
 
 div.ss_mashup_list_content {
@@ -82,11 +95,11 @@ div.ss_mashup_folder_header_view {
   padding:6px;
   }
 div.ss_mashup_folder_header_view span {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: bold;
 }
 div.ss_mashup_folder_header_view a span {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: bold;
 }
   

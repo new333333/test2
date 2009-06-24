@@ -59,19 +59,25 @@ public class ResolveIds {
 	private static Log logger = LogFactory.getLog(ResolveIds.class);
 	
 	public static List getPrincipals(Object principalIds) {
+		return getPrincipals(principalIds, true);
+	}
+	public static List getPrincipals(Object principalIds, boolean checkActive) {
 		if (principalIds == null) {
 			return Collections.EMPTY_LIST;
 		}
 		if (principalIds.getClass().isAssignableFrom(String.class)) {
-			return getPrincipals((String)principalIds);
+			return getPrincipals((String)principalIds, checkActive);
 		} else if (principalIds.getClass().isAssignableFrom(SearchFieldResult.class)) {
-			return getPrincipals((SearchFieldResult)principalIds);
+			return getPrincipals((SearchFieldResult)principalIds, checkActive);
 		}
 		logger.warn("getPrincipals called with wrong parameter class [" + principalIds.getClass() + "]");
 		return Collections.EMPTY_LIST;
 	}
 	
 	public static List getPrincipals(String principalId) {
+		return getPrincipals(principalId, true);
+	}
+	public static List getPrincipals(String principalId, boolean checkActive) {
 		if (principalId == null) {
 			return Collections.EMPTY_LIST;
 		}		
@@ -79,30 +85,39 @@ public class ResolveIds {
 		try {
 			ids.add(Long.valueOf(principalId));
 		} catch (NumberFormatException ne) {};
-		return getPrincipals(ids);
+		return getPrincipals(ids, checkActive);
 	}
 	
 	public static List getPrincipals(SearchFieldResult principalIds) {
+		return getPrincipals(principalIds, true);
+	}
+	public static List getPrincipals(SearchFieldResult principalIds, boolean checkActive) {
 		if (principalIds == null) {
 			return Collections.EMPTY_LIST;
 		}		
 		Set<String> strIds = principalIds.getValueSet();
 		List ids = stringsToLongs(strIds);
-		return getPrincipals(ids);
+		return getPrincipals(ids, checkActive);
 	}
 	
 	public static List getPrincipals(CustomAttribute attribute) {
+		return getPrincipals(attribute, true);
+	}
+	public static List getPrincipals(CustomAttribute attribute, boolean checkActive) {
 		if ((attribute == null) || (attribute.getValueType() != CustomAttribute.COMMASEPARATEDSTRING)) {
 			return null;
 		}
 		
 		Set<String> strIds = attribute.getValueSet();
 		List ids = stringsToLongs(strIds);
-		return getPrincipals(ids);
+		return getPrincipals(ids, checkActive);
 	}
 	
 
 	public static List getPrincipals(Collection ids) {
+		return getPrincipals(ids, true);
+	}
+	public static List getPrincipals(Collection ids, boolean checkActive) {
 		if (ids == null) {
 			return Collections.EMPTY_LIST;
 		}
@@ -130,7 +145,7 @@ public class ResolveIds {
 				}
 			}
 		}
-		result.addAll(profileDao.loadPrincipals(filteredIds, RequestContextHolder.getRequestContext().getZoneId(), true));
+		result.addAll(profileDao.loadPrincipals(filteredIds, RequestContextHolder.getRequestContext().getZoneId(), checkActive));
 		return result;
 	}
 	

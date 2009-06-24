@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_discussionFolderList" caption="__definition_default_folder_discussion_list" type="5" nextId="18" definitionType="5" databaseId="402883b90cc53079010cc539bf260001" internalId="402883b90cc53079010cc539bf260001"> 
+<definition name="_discussionFolderList" caption="__definition_default_folder_discussion_list" type="5" nextId="19" definitionType="5" databaseId="402883b90cc53079010cc539bf260001" internalId="402883b90cc53079010cc539bf260001"> 
   <item name="folderForm" caption="__folder_form" type="form" id="1"> 
     <properties/>  
     <item name="title" caption="__title" type="data" id="3"> 
@@ -19,12 +19,12 @@
         <property name="height" value=""/>  
         <property name="required" value=""/> 
       </properties> 
-    </item>
-    <item name="folderAttributeList" caption="__attributeList" type="data" category="folderData" display="form" id="17">
-      <properties>
-        <property name="caption" value="__attributeList"/>
-        <property name="name" value="attributes"/>
-      </properties>
+    </item>  
+    <item name="folderAttributeList" caption="__attributeList" type="data" category="folderData" display="form" id="17"> 
+      <properties> 
+        <property name="caption" value="__attributeList"/>  
+        <property name="name" value="attributes"/> 
+      </properties> 
     </item>  
     <item name="folderRemoteApp" caption="__remoteApp" type="data" category="folderData" display="form" id="12"> 
       <properties> 
@@ -43,7 +43,17 @@
         <property name="name" value="iconName"/>  
         <property name="caption" value="__icon"/> 
       </properties> 
-    </item> 
+    </item>  
+    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="18">
+      <properties>
+        <property name="caption" value="__attach_files"/>
+        <property name="name" value="ss_attachFile"/>
+        <property name="width" value="60"/>
+        <property name="number" value=""/>
+        <property name="storage" value="simpleFileRepository"/>
+        <property name="hide" value="true"/>
+      </properties>
+    </item>
   </item>  
   <item name="forumView" caption="__folder_view" id="6"> 
     <item name="folderTitleView" caption="__title" category="folderViewData" display="view" id="15"> 

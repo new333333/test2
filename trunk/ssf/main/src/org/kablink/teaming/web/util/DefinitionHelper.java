@@ -747,10 +747,12 @@ public class DefinitionHelper {
 					if (mashupItemValues.length > 0) {
 						//Build a map of attributes
 						for (int j = 0; j < mashupItemValues.length; j++) {
-							String[] valueSet = mashupItemValues[j].split("=");
-							if (valueSet.length == 2) {
-								attrValue = valueSet[1];
-								mashupItemAttributes.put(valueSet[0], valueSet[1]);
+							int k = mashupItemValues[j].indexOf("=");
+							if (k > 0) {
+								String a = mashupItemValues[j].substring(0, k);
+								String v = mashupItemValues[j].substring(k+1, mashupItemValues[j].length());
+								attrValue = v;
+								mashupItemAttributes.put(a, v);
 							}
 						}
 					}

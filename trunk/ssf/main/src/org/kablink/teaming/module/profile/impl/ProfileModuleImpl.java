@@ -1356,18 +1356,26 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	//RO transaction
 	public Map getApplications(Map searchOptions) {
+		Map result = new HashMap();
 		//does read access check
-		ProfileBinder binder = getProfileBinder();
-        return loadProcessor(binder).getBinderEntries(binder, applicationDocType, searchOptions);
+		try {
+			ProfileBinder binder = getProfileBinder();
+	        result = loadProcessor(binder).getBinderEntries(binder, applicationDocType, searchOptions);
+		} catch(AccessControlException e) {}
+		return result;
 	}
 	//RO transaction
 	public SortedSet<Application> getApplications(Collection<Long> applicationIds) {
-		//does read check
-		ProfileBinder profile = getProfileBinder();
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
        	TreeSet<Application> result = new TreeSet(c);
-       	result.addAll(getProfileDao().loadApplications(applicationIds, profile.getZoneId()));
+       	//does read check
+		try {
+			ProfileBinder profile = getProfileBinder();
+	       	result.addAll(getProfileDao().loadApplications(applicationIds, profile.getZoneId()));
+		} catch(AccessControlException e) {
+			return result;
+		}
  		return result;
 	}
 	

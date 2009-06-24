@@ -351,6 +351,12 @@ public class BuildDefinitionDivs extends TagSupport {
 			
 			Iterator itOperations = operations.elementIterator("operation");
 			
+			//Add a title for the div
+			sb.append("<span class=\"ss_titlebold\">");
+			String itemCaption = rootConfigElement.attributeValue("caption", "");
+			if (!itemCaption.equals("")) sb.append(NLT.getDef(itemCaption));
+			sb.append("</span>\n<br/><br/>\n");
+
 			if (!itOperations.hasNext()) return;  //empty is legal and different then none at all
 			sb.append("<table cellpadding=\"0\" cellspacing=\"0\"><tbody>\n");
 			while (itOperations.hasNext()) {
@@ -375,6 +381,12 @@ public class BuildDefinitionDivs extends TagSupport {
 	private void buildOptionsDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
 		if (this.option.equals("options") && !this.divNames.containsKey("options_"+rootElementId)) {
 			this.divNames.put("options_"+rootElementId, "1");
+
+			//Add a title for the div
+			sb.append("<span class=\"ss_titlebold\">");
+			String itemCaption = rootConfigElement.attributeValue("caption", "");
+			if (!itemCaption.equals("")) sb.append(NLT.getDef(itemCaption));
+			sb.append("</span>\n<br/><br/>\n");
 
 			//Add the list of options
 			Element e_options = rootConfigElement.element("options");
@@ -606,6 +618,11 @@ public class BuildDefinitionDivs extends TagSupport {
 				!this.divNames.containsKey("properties_"+rootElementId)) {
 			this.divNames.put("properties_"+rootElementId, "1");
 			
+			//Add a title for the div
+			sb.append("<span class=\"ss_titlebold\">");
+			String itemCaption = rootConfigElement.attributeValue("caption", "");
+			if (!itemCaption.equals("")) sb.append(NLT.getDef(itemCaption));
+			sb.append("</span>\n<br/><br/>\n");
 			//Add the list of properties
 			Element propertiesConfig = rootConfigElement.element("properties");
 			if (propertiesConfig == null) return;

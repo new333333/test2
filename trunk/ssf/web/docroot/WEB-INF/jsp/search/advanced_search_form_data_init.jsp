@@ -75,7 +75,7 @@ function ss_initSearchOptions() {
 		</c:if>
 		<c:if test="${!empty ss_filterMap.additionalFilters.entry}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.entry}">
-				ss_addInitializedEntry("<ssf:escapeJavaScript value="${block.entryType}"/>", "<ssf:escapeJavaScript value="${block.entryElement}"/>", "<ssf:escapeJavaScript value="${block.entryValuesNotFormatted}"/>", "<ssf:escapeJavaScript value="${block.entryValues}"/>");
+				ss_addInitializedEntry("<ssf:escapeJavaScript value="${block.entryType}"/>", "<ssf:escapeJavaScript value="${block.entryElement}"/>", "<ssf:escapeJavaScript value="${block.entryValuesNotFormatted}"/>", "<ssf:escapeJavaScript value="${block.entryValues}"/>", "<ssf:escapeJavaScript value="${block.valueType}"/>");
 			</c:forEach>
 		</c:if>
 		

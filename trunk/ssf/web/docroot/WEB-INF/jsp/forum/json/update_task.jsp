@@ -88,7 +88,7 @@
 			"priority" : <c:forEach var="priority" items="${ssEntry.customAttributes['priority'].valueSet}" varStatus="loopStatus">
 							<c:if test="${loopStatus.first}">"<ssf:escapeJavaScript value="${priority}" />"</c:if>
 						</c:forEach>,
-			"assigned" : [<c:forEach var="user" items='<%= org.kablink.teaming.util.ResolveIds.getPrincipals(ssEntry.getCustomAttribute("assignment")) %>' varStatus="assignedStatus">
+			"assigned" : [<c:forEach var="user" items='<%= org.kablink.teaming.util.ResolveIds.getPrincipals(ssEntry.getCustomAttribute("assignment"), false) %>' varStatus="assignedStatus">
 							"<ssf:escapeJavaScript value="${user.title}" />"<c:if test="${!assignedStatus.last}">,</c:if>
 						</c:forEach>],
 			statuses : 

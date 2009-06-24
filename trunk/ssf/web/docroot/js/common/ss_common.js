@@ -4544,9 +4544,9 @@ function ssFavorites(namespace) {
 function ss_moveThisTableRow(objToMove, namespace, upDown) {
     var toMove = ss_findOwningElement(objToMove, "tr");
     if (upDown == 'up') {
-	    ss_moveElementUp(toMove);
+	    ss_moveElementUp(toMove, false);
 	} else {
-	    ss_moveElementDown(toMove);
+	    ss_moveElementDown(toMove, false);
 	}
 }
 
@@ -4560,14 +4560,17 @@ function ss_findOwningElement(obj, eleName) {
 	return node;
 }
 
-function ss_moveElementUp(node) {
+function ss_moveElementUp(node, checkTheBox) {
+	if (typeof checkTheBox == "undefined") checkTheBox = true;
 	var prior = node.previousSibling;
 	if (prior) {
 		prior.parentNode.insertBefore(node, prior);
 	}
-	if (node.getElementsByTagName("input").length > 0) node.getElementsByTagName("input")[0].checked = true;
+	if (checkTheBox && node.getElementsByTagName("input").length > 0) 
+		node.getElementsByTagName("input")[0].checked = true;
 }
-function ss_moveElementDown(node) {
+function ss_moveElementDown(node, checkTheBox) {
+	if (typeof checkTheBox == "undefined") checkTheBox = true;
 	var next = node.nextSibling;
 	if (next) {
 		next = next.nextSibling;
@@ -4580,7 +4583,8 @@ function ss_moveElementDown(node) {
 			p.appendChild(node);
 		}
 	}
-	if (node.getElementsByTagName("input").length > 0) node.getElementsByTagName("input")[0].checked = true;
+	if (checkTheBox && node.getElementsByTagName("input").length > 0) 
+		node.getElementsByTagName("input")[0].checked = true;
 }
 
 function ssTeams(namespace) {
@@ -8112,7 +8116,11 @@ function ss_showEmailLinks() {
 	var mailtoElements = document.getElementsByTagName('ssMailTo')
 	for (var i = 0; i < mailtoElements.length; i++) {
 		var mailtoName = mailtoElements[i].getAttribute("name");
+		mailtoName = ss_replaceSubStrAll(mailtoName, "<", "&lt;")
+		mailtoName = ss_replaceSubStrAll(mailtoName, ">", "&gt;")
 		var mailtoHost = mailtoElements[i].getAttribute("host");
+		mailtoHost = ss_replaceSubStrAll(mailtoHost, "<", "&lt;")
+		mailtoHost = ss_replaceSubStrAll(mailtoHost, ">", "&gt;")
 		var mailtoNoLink = mailtoElements[i].getAttribute("noLink");
 		var aNode = mailtoElements[i].parentNode;
 		if (mailtoNoLink == "true") {

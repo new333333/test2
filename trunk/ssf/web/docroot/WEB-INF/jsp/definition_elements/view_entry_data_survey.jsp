@@ -161,7 +161,7 @@
 									<ul class="ss_survey_users_list">
 										<c:set var="users_list" value="${answer.votedUserIds}"/>
 										<jsp:useBean id="users_list" type="java.util.ArrayList" />
-										<c:forEach var="voter" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(users_list) %>" >
+										<c:forEach var="voter" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(users_list, false) %>" >
 											<li><ssf:showUser user="${voter}" /></li>
 										</c:forEach>
 										<c:forEach var="email" items="${answer.votedGuestsEmails}" >

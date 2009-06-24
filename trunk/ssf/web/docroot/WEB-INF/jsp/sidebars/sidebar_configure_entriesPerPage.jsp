@@ -55,7 +55,7 @@
 				    titleId="ss_selectEntriesTitle${renderResponse.namespace}" 
 				    titleClass="ss_compact" menuClass="ss_actions_bar4 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
 				
-					<ul class="ss_actions_bar4 ss_actions_bar_submenu" style="width:150px;">
+					<ul class="ss_actions_bar4 ss_actions_bar_submenu" style="width:175px;">
 						<li>
 							<a href="javascript: ;" onclick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '5');return false;">
 								<ssf:nlt tag="entry.shown"><ssf:param name="value" value="5"/></ssf:nlt>

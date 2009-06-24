@@ -60,15 +60,19 @@
   <div class="ss_mashup_element">
     <div class="ss_mashup_round_top"><div></div></div>
 	<c:if test="${ssConfigJspStyle == 'form' || !empty mashup_attributes['title']}">
-	  <div class="ss_mashup_list_header">
+	  <c:set var="divClass" value="ss_mashup_list_header_form" />
+	  <c:if test="${ssConfigJspStyle != 'form'}">
+		<c:set var="divClass" value="ss_mashup_list_header_view" />
+	  </c:if>
+	  <div class="${divClass}">
 		<c:if test="${ssConfigJspStyle == 'form'}">
-		  <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.list"/>: </span>
+		  <span class="ss_bold"><ssf:nlt tag="mashup.type.list"/>: </span>
 		</c:if>
 		<c:set var="spanClass" value="" />
 		<c:if test="${ssConfigJspStyle != 'form'}">
 		  <c:set var="spanClass" value="ss_largeprint ss_bold" />
 		</c:if>
-		<span class="${spanClass}">${mashup_attributes['title']}</span>
+		<span>${mashup_attributes['title']}</span>
 	  </div>
 	</c:if>
   

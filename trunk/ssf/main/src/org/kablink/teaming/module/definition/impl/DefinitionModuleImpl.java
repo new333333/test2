@@ -2148,10 +2148,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									if (mashupItemValues.length > 0) {
 										//Build a map of attributes
 										for (int j = 0; j < mashupItemValues.length; j++) {
-											String[] valueSet = mashupItemValues[j].split("=");
-											if (valueSet.length == 2) {
-												mashupItemAttributes.put(valueSet[0], valueSet[1]);
-												attrs += ","+valueSet[0]+"="+valueSet[1];
+											int k = mashupItemValues[j].indexOf("=");
+											if (k > 0) {
+												String a = mashupItemValues[j].substring(0, k);
+												String v = mashupItemValues[j].substring(k+1, mashupItemValues[j].length());
+												mashupItemAttributes.put(a, v);
+												attrs += ","+a+"="+v;
 											}
 										}
 									}

@@ -1737,6 +1737,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	// Not in common part, cause files use different dates
         EntityIndexUtils.addCreation(indexDoc, binder.getCreation(), fieldsOnly);
         EntityIndexUtils.addModification(indexDoc, binder.getModification(), fieldsOnly);
+        EntityIndexUtils.addOwner(indexDoc, binder.getOwner(), fieldsOnly);
         
         //index parentBinder - used to locate sub-binders - attachments shouldn't need this
         EntityIndexUtils.addParentBinder(indexDoc, binder, fieldsOnly);

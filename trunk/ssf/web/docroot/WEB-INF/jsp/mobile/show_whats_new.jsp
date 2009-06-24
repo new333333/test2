@@ -51,7 +51,7 @@
 					action="__ajax_mobile" 
 					operation="mobile_show_folder" 
 					actionUrl="false" />"
-			>${ssBinder.title}</a>
+			><c:out value="${ssBinder.title}" escapeXml="true"/></a>
 	      </ssf:param>
 	    </ssf:nlt>
 	  </span>
@@ -108,7 +108,9 @@
 				folderId="${entryWn._binderId}"  entryId="${entryWn._docId}"
 				action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />"
 			  >
-			  	<span><c:if test="${empty entryWn.title}">--<ssf:nlt tag="entry.noTitle"/>--</c:if>${entryWn.title}</span>
+			  	<span><c:if test="${empty entryWn.title}">--<ssf:nlt tag="entry.noTitle"/>--</c:if>
+			  	  <ssf:makeWrapable><c:out value="${entryWn.title}" escapeXml="true"/></ssf:makeWrapable>
+			  	</span>
 			  </a>
 		 
 		  	  <br/>
@@ -121,7 +123,7 @@
 				    operation="mobile_show_workspace"
 				    binderId="${entryWn._principal.workspaceId}" />"
 				  ><span class="ss_mobile_light ss_mobile_small"
-				  >${entryWn._principal.title}</span></a>
+				  ><c:out value="${entryWn._principal.title}" escapeXml="true"/></span></a>
 	
 			  	 <span>
 			    	<fmt:formatDate timeZone="${ssUser.timeZone.ID}"

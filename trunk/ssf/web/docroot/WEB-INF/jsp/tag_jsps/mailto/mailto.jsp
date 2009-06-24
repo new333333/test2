@@ -37,13 +37,13 @@
 <c:if test="${!empty emailName && !empty emailHost}">
   <c:if test="${!noLink}">
 	<a href=""><ssMailTo 
-	  	name="${emailName}" 
-	  	host="${emailHost}"/></a>
+	  	name="<c:out value="${emailName}" escapeXml="true"/>" 
+	  	host="<c:out value="${emailHost}" escapeXml="true"/>"/></a>
   </c:if>
   <c:if test="${noLink}">
     <span><ssMailTo 
-	  	name="${emailName}" 
-	  	host="${emailHost}"
+	  	name="<c:out value="${emailName}" escapeXml="true"/>" 
+	  	host="<c:out value="${emailHost}" escapeXml="true"/>"
 	  	noLink="true"/></span>
   </c:if>
 <script type="text/javascript">
@@ -51,5 +51,5 @@ ss_createOnLoadObj("ss_showEmailLinks", ss_showEmailLinks);
 </script>
 </c:if>
 <c:if test="${empty emailName || empty emailHost}">
-	<a href="mailto:${email}"><span>${email}</span></a>
+	<a href="mailto:${email}"><span><c:out value="${email}" escapeXml="true"/></span></a>
 </c:if>

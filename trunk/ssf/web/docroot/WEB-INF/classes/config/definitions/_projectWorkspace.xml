@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_projectWorkspace" caption="__project_management" type="8" nextId="26" definitionType="8" databaseId="402881831317fb620113180363870017"> 
+<definition name="_projectWorkspace" caption="__project_management" type="8" nextId="27" definitionType="8" databaseId="402881831317fb620113180363870017"> 
   <item name="workspaceForm" caption="__workspace_form" type="form" id="1"> 
     <properties/>  
     <item name="title" caption="__title" type="data" id="2"> 
@@ -87,19 +87,29 @@
         <property name="name" value="iconName"/>  
         <property name="caption" value="__icon"/> 
       </properties> 
-    </item> 
+    </item>  
+    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="26">
+      <properties>
+        <property name="caption" value="__attach_files"/>
+        <property name="name" value="ss_attachFile"/>
+        <property name="width" value="60"/>
+        <property name="number" value=""/>
+        <property name="storage" value="simpleFileRepository"/>
+        <property name="hide" value="true"/>
+      </properties>
+    </item>
   </item>  
   <item name="workspaceView" caption="__workspace_view" id="5"> 
     <properties> 
       <property name="type" value="project"/> 
     </properties>  
-    <item name="workspaceTitleView" caption="__title" category="workspaceViewData" display="view" id="24">
-      <item name="workspaceTitleDescriptionView" caption="__description" category="folderViewData" display="view" id="25">
-        <properties>
-          <property name="caption" value="__description"/>
-        </properties>
-      </item>
-    </item>
+    <item name="workspaceTitleView" caption="__title" category="workspaceViewData" display="view" id="24"> 
+      <item name="workspaceTitleDescriptionView" caption="__description" category="folderViewData" display="view" id="25"> 
+        <properties> 
+          <property name="caption" value="__description"/> 
+        </properties> 
+      </item> 
+    </item>  
     <item name="dashboardCanvas" caption="__dashboard_canvas" id="6"> 
       <properties> 
         <property name="caption" value="__dashboard_canvas"/> 

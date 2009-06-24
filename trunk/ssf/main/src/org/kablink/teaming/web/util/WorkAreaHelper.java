@@ -76,7 +76,7 @@ public class WorkAreaHelper {
 		Principal binderOwner = wArea.getOwner();
         Comparator c = new PrincipalComparator(user.getLocale());
 		Set teamMembers = new TreeSet(c);
-		bs.getProfileModule().getProfileBinder(); //Check access to user list
+		//bs.getProfileModule().getProfileBinder(); //Check access to user list
 		if (wArea instanceof Binder) teamMembers = bs.getBinderModule().getTeamMembers((Binder)wArea, false);
 
 		Set newRoleIds = new HashSet();

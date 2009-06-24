@@ -265,6 +265,17 @@ public class EntityIndexUtils {
         }   
    } 
      
+    public static void addOwner(Document doc, Principal owner, boolean fieldsOnly) {
+        if (owner != null) {
+        	Field ownerIdField = new Field(OWNERID_FIELD, owner.getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+            doc.add(ownerIdField);
+            Field ownerNameField = new Field(OWNER_NAME_FIELD, owner.getName().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+            doc.add(ownerNameField);
+            Field ownerTitleField = new Field(OWNER_TITLE_FIELD, owner.getTitle().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+            doc.add(ownerTitleField);
+        }   
+   } 
+     
     public static void addWorkflow(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	// Add the workflow fields
     	if (entry instanceof WorkflowSupport) {

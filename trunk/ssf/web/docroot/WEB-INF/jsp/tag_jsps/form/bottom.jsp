@@ -41,5 +41,6 @@
  
 <c:if test="${empty ss_formTagBottomApplied}">
 </div>
+</td></tr></table>
 </c:if>
 <c:set var="ss_formTagBottomApplied" value="1"/>

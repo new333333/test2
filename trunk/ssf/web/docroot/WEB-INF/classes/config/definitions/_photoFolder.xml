@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_photoFolder" caption="__definition_default_folder_photo" type="5" nextId="16" definitionType="5" databaseId="402883c6115753d8011157619e350008" internalId="402883c6115753d8011157619e350008"> 
+<definition name="_photoFolder" caption="__definition_default_folder_photo" type="5" nextId="17" definitionType="5" databaseId="402883c6115753d8011157619e350008" internalId="402883c6115753d8011157619e350008"> 
   <item name="folderForm" caption="__folder_form" type="form" id="1" display="form"> 
     <properties/>  
     <item name="title" caption="__title" type="data" id="3"> 
@@ -41,7 +41,17 @@
         <property name="name" value="iconName"/>  
         <property name="caption" value="__icon"/> 
       </properties> 
-    </item> 
+    </item>  
+    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="16">
+      <properties>
+        <property name="caption" value="__attach_files"/>
+        <property name="name" value="ss_attachFile"/>
+        <property name="width" value="60"/>
+        <property name="number" value=""/>
+        <property name="storage" value="simpleFileRepository"/>
+        <property name="hide" value="true"/>
+      </properties>
+    </item>
   </item>  
   <item name="forumView" caption="__folder_view" id="6"> 
     <item name="folderTitleView" caption="__title" category="folderViewData" display="view" id="14"> 
@@ -72,10 +82,10 @@
       <property name="type" value="photo"/> 
     </properties> 
   </item>  
-  <properties>
-    <property name="caption" value="__definition_default_folder_photo"/>
-    <property name="name" value="_photoFolder"/>
-    <property name="family" value="photo"/>
-  </properties>
+  <properties> 
+    <property name="caption" value="__definition_default_folder_photo"/>  
+    <property name="name" value="_photoFolder"/>  
+    <property name="family" value="photo"/> 
+  </properties>  
   <export-mappings/>
 </definition>

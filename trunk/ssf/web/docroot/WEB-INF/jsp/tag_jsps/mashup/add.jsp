@@ -157,47 +157,47 @@ function ss_mashupBuildAttrs${ss_mashupItemId}() {
 	if (ss_mashupAttr_showFolderDescription${ss_mashupItemId}) attr += ",showFolderDescription=1";
 	if (ss_mashupAttr_showEntriesOpened${ss_mashupItemId}) attr += ",showEntriesOpened=1";
 	if (ss_mashupAttr_numberOfLines${ss_mashupItemId} != "") {
-		attr += ",entriesToShow=" + escape(ss_mashupAttr_numberOfLines${ss_mashupItemId});
+		attr += ",entriesToShow=" + ss_encodeMashupString(ss_mashupAttr_numberOfLines${ss_mashupItemId});
 	}
 	if (ss_mashupAttr_numberOfCols${ss_mashupItemId} != "") {
-		attr += ",cols=" + escape(ss_mashupAttr_numberOfCols${ss_mashupItemId})
+		attr += ",cols=" + ss_encodeMashupString(ss_mashupAttr_numberOfCols${ss_mashupItemId})
 	}
 	if (ss_mashupAttr_columnWidths${ss_mashupItemId} != "") {
 		var colWidths = ss_replaceSubStrAll(ss_mashupAttr_columnWidths${ss_mashupItemId}, ",", "|");
-		attr += ",colWidths=" + escape(colWidths);
+		attr += ",colWidths=" + ss_encodeMashupString(colWidths);
 	}
 	if (ss_mashupAttr_graphic${ss_mashupItemId} != "") {
-		attr += ",graphic=" + escape(ss_mashupAttr_graphic${ss_mashupItemId});
+		attr += ",graphic=" + ss_encodeMashupString(ss_mashupAttr_graphic${ss_mashupItemId});
 	}
 	if (ss_mashupAttr_graphicTitle${ss_mashupItemId} != "") {
-		attr += ",title=" + escape(ss_replaceSubStrAll(ss_mashupAttr_graphicTitle${ss_mashupItemId}, ",", " "));
+		attr += ",title=" + ss_encodeMashupString(ss_replaceSubStrAll(ss_mashupAttr_graphicTitle${ss_mashupItemId}, ",", " "));
 	}
 	if (ss_mashupAttr_utilityElement${ss_mashupItemId} != "") {
-		attr += ",element=" + escape(ss_mashupAttr_utilityElement${ss_mashupItemId})
+		attr += ",element=" + ss_encodeMashupString(ss_mashupAttr_utilityElement${ss_mashupItemId})
 	}
 	if (ss_mashupAttr_listTitle${ss_mashupItemId} != "") {
-		attr += ",title=" + escape(ss_mashupAttr_listTitle${ss_mashupItemId})
+		attr += ",title=" + ss_encodeMashupString(ss_mashupAttr_listTitle${ss_mashupItemId})
 	}
 	if (ss_mashupAttr_customJsp${ss_mashupItemId} != "") {
-		attr += ",customJsp=" + escape(ss_mashupAttr_customJsp${ss_mashupItemId})
+		attr += ",customJsp=" + ss_encodeMashupString(ss_mashupAttr_customJsp${ss_mashupItemId})
 	}
 	if (ss_mashupAttr_binderUrlTitle${ss_mashupItemId} != "") {
-		attr += ",title=" + escape(ss_mashupAttr_binderUrlTitle${ss_mashupItemId})
+		attr += ",title=" + ss_encodeMashupString(ss_mashupAttr_binderUrlTitle${ss_mashupItemId})
 	}
 	if (ss_mashupAttr_binderUrlPopup${ss_mashupItemId}) {
 		attr += ",popup=1"
 	}
 	if (ss_mashupAttr_entryUrlTitle${ss_mashupItemId} != "") {
-		attr += ",title=" + escape(ss_mashupAttr_entryUrlTitle${ss_mashupItemId})
+		attr += ",title=" + ss_encodeMashupString(ss_mashupAttr_entryUrlTitle${ss_mashupItemId})
 	}
 	if (ss_mashupAttr_entryUrlPopup${ss_mashupItemId}) {
 		attr += ",popup=1"
 	}
 	if (ss_mashupAttr_urlTitle${ss_mashupItemId} != "") {
-		attr += ",title=" + escape(ss_mashupAttr_urlTitle${ss_mashupItemId})
+		attr += ",title=" + ss_encodeMashupString(ss_mashupAttr_urlTitle${ss_mashupItemId})
 	}
 	if (ss_mashupAttr_urlHref${ss_mashupItemId} != "") {
-		attr += ",href=" + escape(ss_mashupAttr_urlHref${ss_mashupItemId})
+		attr += ",href=" + ss_encodeMashupString(ss_mashupAttr_urlHref${ss_mashupItemId})
 	}
 	if (ss_mashupAttr_urlPopup${ss_mashupItemId}) {
 		attr += ",popup=1"
@@ -210,6 +210,12 @@ function ss_mashupSubmit${ss_mashupItemId}() {
 	var formObj = self.document.forms['${ss_form_form_formName}'];
 	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value += ss_mashupBuildAttrs${ss_mashupItemId}();
 	//alert(formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value)
+}
+function ss_encodeMashupString(text) {
+	var newText = encodeURI(text);
+	newText = ss_replaceSubStrAll(newText, ",", "%2c");
+	newText = ss_replaceSubStrAll(newText, ";", "%3b");
+	return newText;
 }
 
 </script>

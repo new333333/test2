@@ -74,7 +74,7 @@
 										    optionsDivId="ss_presenceOptions_${renderResponse.namespace}"/>
 													
 								</c:if>
-							    <span class="ss_fineprint"><c:out value="${ssDefinitionEntry[element]}"/></span>
+							    <span class="ss_fineprint"><c:out value="${ssDefinitionEntry[element]}" escapeXml="true"/></span>
 							</td>
 						</tr>
 					</c:if>
@@ -82,7 +82,7 @@
 					<c:if test="${!empty ssDefinitionEntry.customAttributes[element]}">
 						<tr>
 							<td valign="top">
-							    <span class="${ss_element_display_style_item}"><c:out value="${ssDefinitionEntry[element]}"/></span>
+							    <span class="${ss_element_display_style_item}"><c:out value="${ssDefinitionEntry[element]}" escapeXml="true"/></span>
 							</td>
 						</tr>
 					</c:if>

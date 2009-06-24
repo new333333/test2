@@ -51,7 +51,7 @@
   </td>
   <td valign="top">
 	<span class="${ss_element_display_style_item}">
-	  <c:out value="${ssDefinitionEntry.name}"/>
+	  <c:out value="${ssDefinitionEntry.name}" escapeXml="true"/>
 	</span>
   </td>
 </tr>

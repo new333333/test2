@@ -40,7 +40,7 @@
 <div class="ss_entryContent">
 <span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
 <ul class="ss_nobullet">
-<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(userlist_folder.getCustomAttribute(property_name)) %>" >
+<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(userlist_folder.getCustomAttribute(property_name), false) %>" >
 <li><ssf:showUser user="${selection}" /></li>
 </c:forEach>
 </ul>
@@ -55,7 +55,7 @@
   </td>
   <td valign="top" align="left">
 	<ul class="ss_nobullet">
-	<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(userlist_folder.getCustomAttribute(property_name)) %>" >
+	<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(userlist_folder.getCustomAttribute(property_name), false) %>" >
  	 <li><ssf:showUser user="${selection}" /></li>
 	</c:forEach>
 	</ul>
