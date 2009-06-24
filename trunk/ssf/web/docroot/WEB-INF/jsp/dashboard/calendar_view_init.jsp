@@ -74,8 +74,16 @@
 									, "${ssBinder.id}_${componentId}"
 									<c:if test="${!empty ssDashboard}">, true</c:if>), 
 	    defaultCalendarId: "<c:choose><c:when test="${defaultCalendarId != ''}">${defaultCalendarId}</c:when><c:otherwise>${ssBinder.id}</c:otherwise></c:choose>",
+	    weekFirstDayDefault:  "${ssUser.weekFirstDayDefault}",
+	    <c:if test="${empty ssUserProperties.calendarFirstDayOfWeek}">
+    		weekFirstDay: "${ssUser.weekFirstDayDefault}",
+	    </c:if>
 	    <c:if test="${!empty ssUserProperties.calendarFirstDayOfWeek}">
 	    	weekFirstDay: "${ssUserProperties.calendarFirstDayOfWeek}",
+	    </c:if>
+	    workDayStartDefault:  ${ssUser.workDayStartDefault},
+	    <c:if test="${empty ssUserProperties.calendarWorkDayStart}">
+	    	workDayStart: ${ssUser.workDayStartDefault},
 	    </c:if>
 	    <c:if test="${!empty ssUserProperties.calendarWorkDayStart}">
 	    	workDayStart: ${ssUserProperties.calendarWorkDayStart},

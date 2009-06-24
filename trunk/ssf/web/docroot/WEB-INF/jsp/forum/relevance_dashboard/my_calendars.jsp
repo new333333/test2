@@ -54,8 +54,16 @@
 					}, 
 					readOnly: true,
 				    defaultCalendarId: "${ssBinder.id}",
+				    weekFirstDayDefault:  "${ssUser.weekFirstDayDefault}",
+				    <c:if test="${empty ssUserProperties.calendarFirstDayOfWeek}">
+			    		weekFirstDay: "${ssUser.weekFirstDayDefault}",
+				    </c:if>
 				    <c:if test="${!empty ssUserProperties.calendarFirstDayOfWeek}">
 				    	weekFirstDay: "${ssUserProperties.calendarFirstDayOfWeek}",
+				    </c:if>
+				    workDayStartDefault:  ${ssUser.workDayStartDefault},
+				    <c:if test="${empty ssUserProperties.calendarWorkDayStart}">
+				    	workDayStart: ${ssUser.workDayStartDefault},
 				    </c:if>
 				    <c:if test="${!empty ssUserProperties.calendarWorkDayStart}">
 				    	workDayStart: ${ssUserProperties.calendarWorkDayStart},
