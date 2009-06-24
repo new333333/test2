@@ -381,6 +381,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 				return entry.getTitle();
 			}
 			StringBuffer buf = new StringBuffer();
+			buf.append("[");
 			buf.append(NLT.get("notify.subject.entry", notify.getLocale()));
 			buf.append(":");
 			if (checkDate(entry.getCreation(), notify.getStartDate()) > 0) {
@@ -390,12 +391,8 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			} else {
 				buf.append(NLT.get("notify.modifiedEntry", notify.getLocale()));
 			} 
-			buf.append(" - ");
-			if (Notify.NotifyType.text.equals(notify.getType())) {
-				buf.append(entry.toString());
-			} else {
-				buf.append(binder.toString() + "/" + entry.toString());				
-			}
+			buf.append("] ");
+			buf.append(entry.getTitle());
 			return buf.toString();
 		}
 	}

@@ -124,8 +124,10 @@ function ss_calendarControl() {
 					(typeof props.containerId!="undefined")?props.containerId:null, 
 					(typeof props.readOnly!="undefined")?props.readOnly:false, 
 					(typeof props.calendarDataProvider!="undefined")?props.calendarDataProvider:null, 
-					(typeof props.weekFirstDay!="undefined")?props.weekFirstDay:1,
-					(typeof props.workDayStart!="undefined")?props.workDayStart:6,
+					(typeof props.weekFirstDayDefault!="undefined")?props.weekFirstDayDefault:1,
+					(typeof props.weekFirstDay!="undefined")?props.weekFirstDay:props.weekFirstDayDefault,
+					(typeof props.workDayStartDefault!="undefined")?props.workDayStartDefault:8,
+					(typeof props.workDayStart!="undefined")?props.workDayStart:props.workDayStartDefault,
 					(typeof props.defaultCalendarId!="undefined")?props.defaultCalendarId:null,
 					(typeof props.viewDatesDescriptionsFieldId!="undefined")?props.viewDatesDescriptionsFieldId:null,
 					(typeof props.viewSelectorHrefIds!="undefined")?props.viewSelectorHrefIds:null,
@@ -144,7 +146,9 @@ function ss_calendarEngine(
 					containerId,
 					readOnly, 
 					calendarDataProvider, 
+					weekFirstDayDefault,
 					weekFirstDay,
+					workDayStartDefault,
 					workDayStart,
 					defaultCalendarId, 
 					viewDatesDescriptionsFieldId, 
@@ -218,7 +222,11 @@ function ss_calendarEngine(
 	
 	var defaultCalendarId = defaultCalendarId;
 	
-	var weekFirstDay = typeof weekFirstDay!=="undefined"?(weekFirstDay - 1):0;
+	var weekFirstDayDefault = typeof weekFirstDayDefault!=="undefined"?(weekFirstDayDefault - 1):0;
+	
+	var weekFirstDay = typeof weekFirstDay!=="undefined"?(weekFirstDay - 1):weekFirstDayDefault;
+	
+	var workDayStartDefault = workDayStartDefault;
 	
 	var workDayStart = workDayStart;
 	
@@ -573,9 +581,24 @@ function ss_calendarEngine(
 	    	if (!gridType) { gridType = this.currentType; }
 	        if (gridType != "") { this.currentType = gridType; }
 	        if (this.currentType == "day") {
-		    	if (!this.firstDayToShow) {
-		    		this.firstDayToShow = this.currentDate;
-		    	}
+				if ((7 == this.gridSize) || (14 == this.gridSize)) {
+					// Bugzilla:  509734:
+					//    For week views, we want to show the week
+					//    starting with the user's first day setting.
+		        	var firstDay = this.currentDate;
+					var firstDayOffset = (firstDay.getDay() - weekFirstDay);
+					if        ( 6  == firstDayOffset) firstDayOffset = (-1);
+					else if ((-6) == firstDayOffset) firstDayOffset =   1;
+					else if  ( 5  == firstDayOffset) firstDayOffset = (-2);
+					else if ((-5) == firstDayOffset) firstDayOffset =   2;
+					this.firstDayToShow = firstDay;
+					this.firstDayToShow.setDate(firstDay.getDate() - firstDayOffset)
+					// alert("firstDayOffset:"+firstDayOffset+"\n" +"firstDay:"+firstDay+"\n"+"this.currentDate:"+this.currentDate+"\n"+"this.firstDayToShow:"+this.firstDayToShow); //!
+				} else {
+		 	   		if (!this.firstDayToShow) {
+			    		this.firstDayToShow = this.currentDate;
+				   	}
+				}
 		    	
 	            dojo.style(dojo.byId("ss_cal_MonthGridMaster" + instanceId), "display", "none");
 	            dojo.style(dojo.byId("ss_cal_DayGridMaster" + instanceId), "display", "block");
@@ -1729,9 +1752,9 @@ function ss_calendarEngine(
 	            case "week":
 					ss_cal_Grid.setGrid({size : 7, incr : 7});
 	
-	                var firstDayToShow = dojo.date.add(ss_cal_Grid.currentDate, "day", -(ss_cal_Grid.currentDate.getDay()));
+					var firstDayOffset = (ss_cal_Grid.currentDate.getDay() - weekFirstDay);
+	                var firstDayToShow = dojo.date.add(ss_cal_Grid.currentDate, "day", -firstDayOffset);
 	                var lastDayToShow = dojo.date.add(firstDayToShow, "day", ss_cal_Grid.gridIncr);
-	                
 	                dayToShow = firstDayToShow;
 	                if (!ss_cal_CalData.getMonthViewInfo(lastDayToShow)) {
 	                	requiredDay = lastDayToShow;
@@ -2503,25 +2526,34 @@ if (!window["ss_calendar_import"]) {
 					ss_calendar_import.cancel();
 				},
 				load: function(textData) {
+					var refreshContent = false;
 				    var data = dojo.fromJson(textData);
 					if (data && data.notLoggedIn) {
 						alert(ss_not_logged_in);
 					} else if (data && data.parseExceptionMsg) {
 						alert(data.parseExceptionMsg);												
 					} else if (data && data.entriesAmountMsg) {
+						var added = data.entryAddedIds.length;
+						var modified = data.entryModifiedIds.length;
 						if (window["ss_calendar_" + prefix]) {
-							for (var i = 0; i < data.entryAddedIds.length; i++) {
+							for (var i = 0; i < added; i++) {
 								window["ss_calendar_" + prefix].refreshEntryEvents(data.entryAddedIds[i]);
 							}
-							for (var i = 0; i < data.entryModifiedIds.length; i++) {
+							for (var i = 0; i < modified; i++) {
 								window["ss_calendar_" + prefix].refreshEntryEvents(data.entryModifiedIds[i]);
 							}							
+						} else if (0 < (added + modified)) {
+							refreshContent = true;
 						}
 						alert(data.entriesAmountMsg);
 					} else {
 						throw "Wrong server response.";
 					}
+					
 					ss_calendar_import.cancel();
+					if (refreshContent) {
+						document.location.reload();
+					}
 				},
 				preventCache: true,
 				form: "ss_calendar_import_form"
@@ -2535,30 +2567,39 @@ if (!window["ss_calendar_import"]) {
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"loadICalendarByURL"});
 			dojo.xhrGet({
 		    	url: url,
-		    	handleAs: "json-comment-filtered",
+		    	handleAs: "json",
 				error: function(err) {
 					alert(ss_not_logged_in);
 					ss_calendar_import.cancel();
 				},
 				load: function(data) {
+					var refreshContent = false;
 					if (data && data.notLoggedIn) {
 						alert(ss_not_logged_in);
 					} else if (data && data.parseExceptionMsg) {
 						alert(data.parseExceptionMsg);						
 					} else if (data && data.entriesAmountMsg) {
+						var added = data.entryAddedIds.length;
+						var modified = data.entryModifiedIds.length;
 						if (window["ss_calendar_" + prefix]) {
-							for (var i = 0; i < data.entryAddedIds.length; i++) {
+							for (var i = 0; i < added; i++) {
 								window["ss_calendar_" + prefix].refreshEntryEvents(data.entryAddedIds[i]);
 							}
-							for (var i = 0; i < data.entryModifiedIds.length; i++) {
+							for (var i = 0; i < modified; i++) {
 								window["ss_calendar_" + prefix].refreshEntryEvents(data.entryModifiedIds[i]);
 							}							
+						} else if (0 < (added + modified)) {
+							refreshContent = true;
 						}
 						alert(data.entriesAmountMsg);
 					} else {
 						throw "Wrong server response.";
 					}
+					
 					ss_calendar_import.cancel();
+					if (refreshContent) {
+						document.location.reload();
+					}
 				},
 				preventCache: true,
 				form: "ss_calendar_importURL_form"
@@ -2587,9 +2628,11 @@ if (!window.ss_calendar_settings) {
 			lang: window.dojo&&dojo.locale?dojo.locale:"en"
 		},
 		
-		configure : function(weekFirstDay, workDayStart) {
-			weekFirstDay = typeof weekFirstDay !== "undefined"?weekFirstDay:1;
-			workDayStart = typeof workDayStart !== "undefined"?workDayStart:6;
+		configure : function(defWeekFirstDay, defWorkDayStart, weekFirstDay, workDayStart) {
+			if (typeof weekFirstDay === "undefined") weekFirstDay = "";
+			if (typeof workDayStart === "undefined") workDayStart = "";
+			weekFirstDay = ((weekFirstDay != "") ? weekFirstDay : defWeekFirstDay);
+			workDayStart = ((workDayStart != "") ? workDayStart : defWorkDayStart);
 			
 			// Build the configuration form
 			var calConfigureDiv = document.getElementById(this.divId);

@@ -39,6 +39,7 @@
 package org.kablink.teaming.domain;
 
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -50,6 +51,7 @@ import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.util.EncryptUtil;
+import org.kablink.teaming.util.NLT;
 import org.kablink.util.Validator;
 
 
@@ -58,6 +60,8 @@ import org.kablink.util.Validator;
  *
  */
 public class User extends UserPrincipal implements IndividualPrincipal {
+	private final static int	WORK_DAY_START_DEFAULT	= 8;	// Original default was 6 in ss_calendar.js.
+	
     protected String firstName="";//set by hibernate access="field"
     protected String middleName="";//set by hibernate access="field"
     protected String lastName="";//set by hibernate access="field"
@@ -95,6 +99,21 @@ public class User extends UserPrincipal implements IndividualPrincipal {
    	}
     public void setLocale(Locale locale) {
     	this.locale = locale;
+    }
+    
+    public int getWeekFirstDayDefault() {
+    	return new GregorianCalendar(getTimeZone(), getLocale()).getFirstDayOfWeek();
+    }
+    public int getWorkDayStartDefault() {
+    	String	wdsS = NLT.get("calendar.settings.workDayStartsAt.Default",String.valueOf(WORK_DAY_START_DEFAULT));
+    	int wds;
+    	try {
+    		wds = Integer.parseInt(wdsS);
+    	}
+    	catch (NumberFormatException e) {
+    		wds = WORK_DAY_START_DEFAULT;
+    	}
+    	return wds;
     }
 
 	public String getTitle() {
