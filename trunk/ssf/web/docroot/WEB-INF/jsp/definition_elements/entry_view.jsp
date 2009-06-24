@@ -71,6 +71,9 @@
 <br/>
 </ssf:ifnotadapter>
 
+<c:if test="${empty ss_entryLinkCounter}"><c:set var="ss_entryLinkCounter" value="0" scope="request"/></c:if>
+<c:set var="ss_entryLinkCounter" value="${ss_entryLinkCounter + 1}" scope="request"/>
+<div id="ss_entryTop${ss_entryLinkCounter}" >
 <c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
@@ -78,5 +81,11 @@
   entry="${ssDefinitionEntry}" />
   
 </div>
-
+</div>
+<script type="text/javascript">
+function ss_focusOnEntry() {
+	ss_setFocusToFirstA("ss_entryTop${ss_entryLinkCounter}");
+}
+ss_createOnLoadObj("ss_focusOnEntry", ss_focusOnEntry);
+</script>
 <%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
