@@ -47,18 +47,18 @@
 //<a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.parentBinder.id}" 
 	action="__ajax_mobile" operation="mobile_show_workspace" 
-	actionUrl="false" />">${ssBinder.parentBinder.title}</a>
+	actionUrl="false" />"><c:out value="${ssBinder.parentBinder.title}" escapeXml="true"/></a>
 <br/>&nbsp;&nbsp;</c:if>
 <c:if test="${!empty ssBinder.parentFolder}">
 //<a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.parentFolder.id}" 
 	action="__ajax_mobile" operation="mobile_show_folder" 
-	actionUrl="false" />">${ssBinder.parentFolder.title}</a>
+	actionUrl="false" />"><c:out value="${ssBinder.parentFolder.title}" escapeXml="true"/></a>
 <br/>&nbsp;&nbsp;</c:if>
 //<a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.id}" 
 	action="__ajax_mobile" operation="mobile_show_folder" 
-	actionUrl="false" />">${ssBinder.title}</a>
+	actionUrl="false" />"><c:out value="${ssBinder.title}" escapeXml="true"/></a>
 </div>
 <br/>
 
@@ -104,7 +104,7 @@
 			    <c:if test="${empty folder.title}">
 			    	(<ssf:nlt tag="workspace.noTitle"/>)
 			    </c:if>
-				<c:out value="${folder.title}"/>
+				<c:out value="${folder.title}" escapeXml="true"/>
 			  </a>
 			</li>
 		  </c:forEach>
@@ -166,7 +166,7 @@
 	    	<c:if test="${empty entry1.title}">
 	    		(<ssf:nlt tag="entry.noTitle"/>)
 	    	</c:if>
-			<c:out value="${entry1.title}"/>
+			<c:out value="${entry1.title}" escapeXml="true"/>
 		  </a>
 	  </td>
 	 </tr>

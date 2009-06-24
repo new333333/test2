@@ -120,7 +120,7 @@
 						    <c:if test="${empty entry.title}">
 						    	(<ssf:nlt tag="entry.noTitle"/>)
 						    </c:if>
-							<c:out value="${entry.title}"/>
+							<c:out value="${entry.title}" escapeXml="true"/>
 							</a>
 						    <c:if test="${!empty entry.binderTitle}">
 							  <div style="padding-left:10px;">
@@ -142,7 +142,7 @@
 						    <c:if test="${empty entry.title}">
 						    	(<ssf:nlt tag="entry.noTitle"/>)
 						    </c:if>
-							<c:out value="${entry.title}"/>
+							<c:out value="${entry.title}" escapeXml="true"/>
 							</a>
 							<div style="padding-left:10px;">
 							<span style="font-size:9px; color:silver;"><a href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -151,7 +151,7 @@
 						    <c:if test="${empty entry.title}">
 						    	(<ssf:nlt tag="entry.noTitle"/>)
 						    </c:if>
-							<c:out value="${entry.title}"/>
+							<c:out value="${entry.title}" escapeXml="true"/>
 							</a></span>
 							</div>
 						    <c:if test="${!empty entry.binderTitle}">
@@ -171,14 +171,14 @@
 							<a href="<ssf:url adapter="true" portletName="ss_forum" 
 							folderId="${entry._docId}" 
 							action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
-							<c:out value="${entry.title}"/>
+							<c:out value="${entry.title}" escapeXml="true"/>
 							</a>
 						</c:if>
 						<c:if test="${entry._entityType == 'workspace'}">
 							<a href="<ssf:url adapter="true" portletName="ss_forum" 
 							folderId="${entry._docId}" 
 							action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
-							<c:out value="${entry.title}"/>
+							<c:out value="${entry.title}" escapeXml="true"/>
 							</a>
 						</c:if>
 					    <c:if test="${!empty entry._extendedTitle}">
@@ -200,7 +200,7 @@
 						<a href="<ssf:url adapter="true" portletName="ss_forum" 
 						folderId="${entry._workspaceId}"
 						action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
-						<c:out value="${entry.title}"/>
+						<c:out value="${entry.title}" escapeXml="true"/>
 						</a>
 					  </td>
 					</tr>

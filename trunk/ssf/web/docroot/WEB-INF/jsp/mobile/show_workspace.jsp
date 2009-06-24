@@ -47,12 +47,12 @@
 //<a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.parentBinder.id}" 
 	action="__ajax_mobile" operation="mobile_show_workspace" 
-	actionUrl="false" />">${ssBinder.parentBinder.title}</a>
+	actionUrl="false" />"><c:out value="${ssBinder.parentBinder.title}" escapeXml="true"/></a>
 <br/>&nbsp;&nbsp;</c:if>
 //<a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.id}" 
 	action="__ajax_mobile" operation="mobile_show_workspace" 
-	actionUrl="false" />">${ssBinder.title}</a>
+	actionUrl="false" />"><c:out value="${ssBinder.title}" escapeXml="true"/></a>
 </div>
 <br/>
 
@@ -159,7 +159,7 @@
 			    <c:if test="${empty workspace.title}">
 			    	(<ssf:nlt tag="workspace.noTitle"/>)
 			    </c:if>
-				<c:out value="${workspace.title}"/>
+				<c:out value="${workspace.title}" escapeXml="true"/>
 			  </a>
 		    </li>
 		  </c:forEach>
@@ -215,7 +215,7 @@
 			    <c:if test="${empty folder.title}">
 			    	(<ssf:nlt tag="workspace.noTitle"/>)
 			    </c:if>
-				<c:out value="${folder.title}"/>
+				<c:out value="${folder.title}" escapeXml="true"/>
 			  </a>
 			</li>
 		  </c:forEach>
