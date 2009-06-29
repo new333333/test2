@@ -143,7 +143,12 @@ function ssEventEditor(prefix, frequency, interval, weekDays, monthDays) {
 			"<label for=\"" +  prefix + "_everyNday" + "\">" + that.locale.days + "</label>" +
 			"";
 	}
-	
+
+	function displayDayInWeek(i) {
+			return " <input type=\"checkbox\" name=\"" + prefix + "_day" + i + "\" id=\"" + prefix + "_day" + i + "\"" +
+			(weekDays[i]?" checked=\"checked\" ":"") + " />" +
+			"<label for=\"" + prefix + "_day" + i + "\"><span class=\"ss_week_day\">" + that.locale.dayNamesShort[i] + "</span></label> ";
+	}	
 	function dispayWeekMask(frequencyContainer) {
 		var html = "" +
 			"<label for=\"" + prefix + "_everyNweek\">" + that.locale.every + "</label> " +
@@ -151,10 +156,11 @@ function ssEventEditor(prefix, frequency, interval, weekDays, monthDays) {
 			"       value=\"" + interval + "\" /> " +
 			"<label for=\"" + prefix + "_everyNweek\">" + that.locale.weeks + " " + that.locale.weeksOccurson + "</label> ";
 		
-		for (var i = 0; i <= 6; i++) {
-			html += " <input type=\"checkbox\" name=\"" + prefix + "_day" + i + "\" id=\"" + prefix + "_day" + i + "\"" +
-			(weekDays[i]?" checked=\"checked\" ":"") + " />" +
-			"<label for=\"" + prefix + "_day" + i + "\"><span class=\"ss_week_day\">" + that.locale.dayNamesShort[i] + "</span></label> ";
+		for (var i = that.locale.weekFirstDayDefault; i <= 6; i++) {
+			html += displayDayInWeek(i);
+		}
+		for (var i = 0; i < that.locale.weekFirstDayDefault; i++) {
+			html += displayDayInWeek(i);
 		}
 			
 		frequencyContainer.innerHTML = html;
