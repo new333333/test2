@@ -11,7 +11,7 @@
 	<property name="main.hibernate.dir" value="${main.project.dir}/hibernate" />
 	<property name="create.dir" value="${basedir}/create" />
 	<property name="update.dir" value="${basedir}/update" />
-	<property name="update.version.dir" value="${basedir}/update-1.0.0-1.1.0" />
+	<property name="update.version.dir" value="${basedir}/update-1.0.0-2.0.0" />
 	<property name="cinternal.dir" value="${create.dir}/internal" />
 	<property name="uinternal.dir" value="${update.dir}/internal" />
 	
@@ -353,7 +353,7 @@
 	     	</schemaupdate>
   	  	<record name="${update.dir}/source-tables-jbpm-${database.type}-temp.sql" action="stop"/>
  		<!-- Make sure to compile the Java code we're about to run. -->
-  		<ant dir=".." target="compile" inheritAll="false" />
+  		<ant dir=".." target="compile" inheritAll="true" />
 		<property file="${project.dir}/tools/sql/ddl-${database.type}.properties"/>
   		<java
   	  			classname="org.kablink.teaming.tools.sql.GenerateCreateTablesUnconstrained"
@@ -379,10 +379,10 @@
 		<move file="${update.dir}/source-tables-jbpm-${database.type}-temp.sql" tofile="${uinternal.dir}/source-tables-jbpm-${database.type}.sql"/> 
 		<echo file="${update.dir}/update-${database.type}.sql" message="${ddl.use.database}${line.separator}"/>
 		<concat destfile="${update.dir}/update-${database.type}.sql" append="true">
-			<fileset file="${basedir}/update-1.0.0-1.1.0/update-${database.type}-pre.sql" />
+			<fileset file="${basedir}/update-1.0.0-2.0.0/update-${database.type}-pre.sql" />
  	  	    <fileset dir="${uinternal.dir}"
   	  	         includes="update-tables-*-${database.type}.sql" />
-			<fileset file="${basedir}/update-1.0.0-1.1.0/update-${database.type}-post.sql" />
+			<fileset file="${basedir}/update-1.0.0-2.0.0/update-${database.type}-post.sql" />
  	  	</concat>
 		<concat destfile="${update.dir}/update-thisbuild-${database.type}.sql" append="true">
 	  	    <fileset dir="${uinternal.dir}"
