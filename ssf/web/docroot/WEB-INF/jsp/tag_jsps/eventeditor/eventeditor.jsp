@@ -448,6 +448,7 @@
 		${prefix}ssEventEditor.locale.weekLast = "<ssf:nlt tag="event.whichweek.last" />";
 		${prefix}ssEventEditor.locale.weekday = "<ssf:nlt tag="calendar.day.names.weekday" />";
 		${prefix}ssEventEditor.locale.weekendday = "<ssf:nlt tag="calendar.day.names.weekendday" />";
+		${prefix}ssEventEditor.locale.weekFirstDayDefault = (Number( ${ssUser.weekFirstDayDefault} ) - 1);
 			
 		${prefix}ssEventEditor.setFrequency();
 	
