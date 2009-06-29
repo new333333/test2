@@ -166,7 +166,10 @@ public class Html {
 			sb.append(text.substring(x, text.length()));
 		}
 
-		return sb.toString().replaceAll("&nbsp;", " ");
+		String reply = sb.toString();
+		reply = reply.replaceAll("&nbsp;", " ");
+		reply = reply.replaceAll("&#39;",  "'");
+		return reply;
 	}
 
 	//This method is similar to the stripHTML, but does not strip the img tag
@@ -227,6 +230,9 @@ public class Html {
 			sb.append(text.substring(x, intTextLength));
 		}
 
-		return sb.toString().replaceAll("&nbsp;", " ");
+		String reply = sb.toString();
+		reply = reply.replaceAll("&nbsp;", " ");
+		reply = reply.replaceAll("&#39;",  "'");
+		return reply;
 	}	
 }
