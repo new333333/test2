@@ -44,10 +44,26 @@ import net.fortuna.ical4j.model.ValidationException;
 import net.fortuna.ical4j.model.property.Summary;
 
 public class ICalUtils {
+	// Bugzilla 508171:
+	//    As of Boulder, Teaming no longer requests that ical4j
+	//    validate iCal files.  The problem is that the ical4j
+	//    validation code is too restrictive with some complicated
+	//    iCals.  For example, if you build an iCal for a task folder
+	//    that contains 4 tasks, 2 with assignees and 2 without, what
+	//    do you use for the METHOD?  The correct thing would be
+	//    METHOD:REQUEST since we have some assignees.  The ical4j
+	//    validation code rejects this because there are VTODO's
+	//    without assignees.  If we use METHOD:PUBLISH, the ical4j
+	//    validation code rejects it because there are VTODO's with
+	//    assignees.  If we put multiple METHOD's, the ical4j
+	//    validation code rejects it because there are multiple
+	//    METHOD's.
+	//
+	//    Solution:  Kill the ical4j validation code!!!
+	private final static boolean VALIDATE_ICALS = false; 
 
 	@SuppressWarnings("unchecked")
 	public static String getSummary(Calendar calendar) {
-		
 		Iterator componentIt = calendar.getComponents().iterator();
 		while (componentIt.hasNext()) {
 			Component component = (Component)componentIt.next();
@@ -60,7 +76,6 @@ public class ICalUtils {
 	}
 	
 	public static String getMethod(Calendar calendar) {
-		
 		Property method = calendar.getProperty(Property.METHOD);
 		if (method != null) {
 			return method.getValue();
@@ -77,10 +92,10 @@ public class ICalUtils {
 	}
 
 	public static CalendarOutputter getCalendarOutputter() {
-		return getCalendarOutputter(true);
+		return getCalendarOutputter(VALIDATE_ICALS);
 	}
 	
-	public static CalendarOutputter getCalendarOutputter(boolean doValidation) {
+	private static CalendarOutputter getCalendarOutputter(boolean doValidation) {
 		CalendarOutputter	co = new CalendarOutputter();
 		co.setValidating(doValidation);
 		return co;
