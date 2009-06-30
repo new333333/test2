@@ -97,7 +97,7 @@ public class TeamingServiceClientWithStub {
 		// Upload files
 		//uploadFolderEntryFiles(85);
 		
-		//getFolderEntries(33);
+		//getFolderEntries(44, 0, 0);
 		
 		//getPrincipal(1);
 		
@@ -489,13 +489,13 @@ public class TeamingServiceClientWithStub {
 		return entry;
 	}
 
-	public static void getFolderEntries(long binderId) throws Exception {
+	public static void getFolderEntries(long binderId, int first, int max) throws Exception {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 
-		FolderEntryCollection result = stub.folder_getEntries(null, binderId);
+		FolderEntryCollection result = stub.folder_getEntries(null, binderId, first, max);
 		FolderEntryBrief[] entries = result.getEntries();
 				
 		System.out.println("Number of entries = " + entries.length);
@@ -795,7 +795,7 @@ public class TeamingServiceClientWithStub {
 		group = stub.profile_getGroupByName(null, "testgroup", false);
 		User testUser = getTestUser();
 		stub.profile_addGroupMember(null, "testgroup", testUser.getName());
-		PrincipalCollection members = stub.profile_getGroupMembers(null, "testgroup");
+		PrincipalCollection members = stub.profile_getGroupMembers(null, "testgroup", 0, 0);
 		PrincipalBrief[] entries = members.getEntries();
 		
 		System.out.println("First = " + members.getFirst());
@@ -805,7 +805,7 @@ public class TeamingServiceClientWithStub {
 			System.out.println("(" + i + ") id=" + entries[i].getId() + ", name=" + entries[i].getName() + ", type=" + entries[i].getType() + ", title=" + entries[i].getTitle() + ", email=" + entries[i].getEmailAddress()); 
 		}
 		stub.profile_removeGroupMember(null, "testgroup", testUser.getName());
-		members = stub.profile_getGroupMembers(null, "testgroup");
+		members = stub.profile_getGroupMembers(null, "testgroup", 0, 0);
 		entries = members.getEntries();
 		System.out.println("First = " + members.getFirst());
 		System.out.println("Count = " + entries.length);

@@ -52,7 +52,7 @@ public interface ProfileService {
 	
 	public void profile_addGroupMember(String accessToken, String groupName, String username);
 	public void profile_removeGroupMember(String accessToken, String groupName, String username);
-	public PrincipalCollection profile_getGroupMembers(String accessToken, String groupName);
+	public PrincipalCollection profile_getGroupMembers(String accessToken, String groupName, int firstRecord, int maxRecords);
 	public void profile_deletePrincipal(String accessToken, long principalId, boolean deleteWorkspace);
 	
 	public long profile_addUserWorkspace(String accessToken, long userId);

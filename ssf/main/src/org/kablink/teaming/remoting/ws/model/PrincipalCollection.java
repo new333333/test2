@@ -32,38 +32,17 @@
  */
 package org.kablink.teaming.remoting.ws.model;
 
-import java.io.Serializable;
+public class PrincipalCollection extends AbstractPageableCollection {
 
-public class PrincipalCollection implements Serializable {
-
-	private int first;
-	private int total;
 	private PrincipalBrief[] entries;
 	
 	public PrincipalCollection() {}
 	
 	public PrincipalCollection(int first, int total, PrincipalBrief[] entries) {
-		setFirst(first);
-		setTotal(total);
+		super(first, total);
 		setEntries(entries);
 	}
 	
-	public int getFirst() {
-		return first;
-	}
-
-	public void setFirst(int first) {
-		this.first = first;
-	}
-
-	public int getTotal() {
-		return total;
-	}
-
-	public void setTotal(int total) {
-		this.total = total;
-	}
-
 	public PrincipalBrief[] getEntries() {
 		return entries;
 	}

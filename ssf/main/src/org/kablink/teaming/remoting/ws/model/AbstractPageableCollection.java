@@ -32,23 +32,35 @@
  */
 package org.kablink.teaming.remoting.ws.model;
 
-public class FolderCollection extends AbstractPageableCollection {
+import java.io.Serializable;
 
-	private FolderBrief[] folders;
+public abstract class AbstractPageableCollection implements Serializable {
 
-	public FolderCollection() {}
-	
-	public FolderCollection(int first, int total, FolderBrief[] folders) {
-		super(first, total);
-		this.folders = folders;
+	private int first; // 0-based offset to the first record
+	private int total; // total number of records available; actual count of records in this collection is derived from the entries field
+
+	public AbstractPageableCollection() {
 	}
 	
-	public FolderBrief[] getFolders() {
-		return folders;
-	}
-
-	public void setFolders(FolderBrief[] folders) {
-		this.folders = folders;
+	public AbstractPageableCollection(int first, int total) {
+		setFirst(first);
+		setTotal(total);	
 	}
 	
+	public int getFirst() {
+		return first;
+	}
+
+	public void setFirst(int first) {
+		this.first = first;
+	}
+
+	public int getTotal() {
+		return total;
+	}
+
+	public void setTotal(int total) {
+		this.total = total;
+	}
+
 }
