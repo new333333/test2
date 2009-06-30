@@ -253,6 +253,10 @@ public abstract class WSClientBase {
 
 		Call call = (Call) service.createCall();
 		
+        // By default, Teaming WS (server-side) has multirefs turned off for better compatibility with other toolkits. 
+		// For more compatible testing, we turn off multirefs on the client side as well.
+        call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+
 		String endpointAddr = getEndpointAddress(serviceName);
 		
 		call.setTargetEndpointAddress(new URL(endpointAddr));

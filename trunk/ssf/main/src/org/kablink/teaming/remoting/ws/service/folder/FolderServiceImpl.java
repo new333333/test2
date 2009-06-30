@@ -45,7 +45,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -311,14 +310,18 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		return entryModel;
 	}
 
-	public FolderEntryCollection folder_getEntries(String accessToken, long binderId) {
+	public FolderEntryCollection folder_getEntries(String accessToken, long binderId, int firstRecord, int maxRecords) {
 		org.kablink.teaming.domain.Binder binder = getBinderModule().getBinder(new Long(binderId));
 
 		List<FolderEntryBrief> entries = new ArrayList<FolderEntryBrief>();
+		int total = 0;
 
 		if (binder instanceof Folder) {
 			Map options = new HashMap();
+	    	options.put(ObjectKeys.SEARCH_OFFSET, new Integer(firstRecord));
+	    	options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(maxRecords));
 			Map folderEntries = getFolderModule().getFullEntries(binder.getId(), options);
+			total = ((Integer)folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
 			List entrylist = (List)folderEntries.get(ObjectKeys.FULL_ENTRIES);
 			Iterator entryIterator = entrylist.listIterator();
 			while (entryIterator.hasNext()) {
@@ -326,9 +329,8 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 				entries.add(toFolderEntryBrief(entry));
 			}
 		}
-		
 		FolderEntryBrief[] array = new FolderEntryBrief[entries.size()];
-		return new FolderEntryCollection(entries.toArray(array));
+		return new FolderEntryCollection(firstRecord, total, entries.toArray(array));
 	}
 
 	public long folder_addEntry(String accessToken, org.kablink.teaming.remoting.ws.model.FolderEntry entry, String attachedFileName) {

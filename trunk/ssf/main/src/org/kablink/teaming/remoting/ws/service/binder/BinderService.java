@@ -88,11 +88,11 @@ public interface BinderService {
 	
 	public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships);
 
-	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId, boolean explodeGroups);	
+	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId, boolean explodeGroups, int firstRecord, int maxRecords);	
 	public void binder_setTeamMembers(String accessToken, long binderId, String[] memberNames);
 
 	public Subscription binder_getSubscription(String accessToken, long binderId); 
 	public void binder_setSubscription(String accessToken, long binderId, Subscription subscription); 
-	public FolderCollection binder_getFolders(String accessToken, long binderId);
+	public FolderCollection binder_getFolders(String accessToken, long binderId, int firstRecord, int maxRecords);
 	   
 }

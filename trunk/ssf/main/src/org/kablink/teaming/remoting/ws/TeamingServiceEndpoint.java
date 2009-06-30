@@ -202,8 +202,8 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void binder_setOwner(String accessToken, long binderId, long userId) {
 		getBinderService().binder_setOwner(accessToken, binderId, userId);
 	}
-	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId, boolean explodeGroups) {
-		return getBinderService().binder_getTeamMembers(accessToken, binderId, explodeGroups);
+	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId, boolean explodeGroups, int firstRecord, int maxRecords) {
+		return getBinderService().binder_getTeamMembers(accessToken, binderId, explodeGroups, firstRecord, maxRecords);
 	}
 	public void binder_setTeamMembers(String accessToken, long binderId, String[] memberNames) {
 		getBinderService().binder_setTeamMembers(accessToken, binderId, memberNames);
@@ -216,8 +216,8 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		getBinderService().binder_setSubscription(accessToken, binderId, subscription);
 	}
 
-	public FolderCollection binder_getFolders(String accessToken, long binderId) {
-		return getBinderService().binder_getFolders(accessToken, binderId);
+	public FolderCollection binder_getFolders(String accessToken, long binderId, int firstRecord, int maxRecords) {
+		return getBinderService().binder_getFolders(accessToken, binderId, firstRecord, maxRecords);
 	}
 	public void binder_deleteTag(String accessToken, long binderId, String tagId) {
 		getBinderService().binder_deleteTag(accessToken, binderId, tagId);
@@ -236,8 +236,8 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getFolderService().folder_getEntry(accessToken, entryId, includeAttachments);
 	}
 
-	public FolderEntryCollection folder_getEntries(String accessToken, long binderId) {
-		return getFolderService().folder_getEntries(accessToken, binderId);
+	public FolderEntryCollection folder_getEntries(String accessToken, long binderId, int firstRecord, int maxRecords) {
+		return getFolderService().folder_getEntries(accessToken, binderId, firstRecord, maxRecords);
 	}
 
 	public FolderEntry folder_getEntryByFileName(String accessToken, long binderId, String fileName, boolean includeAttachments) {
@@ -399,8 +399,8 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void profile_removeGroupMember(String accessToken, String groupName, String userName) {
 		getProfileService().profile_removeGroupMember(accessToken, groupName, userName);
 	}
-	public PrincipalCollection profile_getGroupMembers(String accessToken, String groupName) {
-		return getProfileService().profile_getGroupMembers(accessToken, groupName);
+	public PrincipalCollection profile_getGroupMembers(String accessToken, String groupName, int firstRecord, int maxRecords) {
+		return getProfileService().profile_getGroupMembers(accessToken, groupName, firstRecord, maxRecords);
 	}
 
 	public long profile_addUserWorkspace(String accessToken, long userId) {
