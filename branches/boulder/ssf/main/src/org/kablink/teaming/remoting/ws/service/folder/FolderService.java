@@ -40,7 +40,7 @@ import org.kablink.teaming.remoting.ws.model.Tag;
 
 public interface FolderService {
 
-	public FolderEntryCollection folder_getEntries(String accessToken, long binderId);
+	public FolderEntryCollection folder_getEntries(String accessToken, long binderId, int firstRecord, int maxRecords);
 
 	public FolderEntry folder_getEntry(String accessToken, long entryId, boolean includeAttachments);
 	public FolderEntry folder_getEntryByFileName(String accessToken, long binderId, String fileName, boolean includeAttachments);

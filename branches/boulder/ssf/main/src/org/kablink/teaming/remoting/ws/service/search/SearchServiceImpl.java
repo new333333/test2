@@ -240,8 +240,11 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 		for(Map binder : myTeams) {
 			String binderIdStr = (String) binder.get(Constants.DOCID_FIELD);
 			Long binderId = (binderIdStr != null)? Long.valueOf(binderIdStr) : null;
-			teamList.add(new TeamBrief(binderId, (String) binder.get(Constants.TITLE_FIELD),
-					(String) binder.get(Constants.FAMILY_FIELD),
+			teamList.add(new TeamBrief(binderId, 
+					(String) binder.get(Constants.TITLE_FIELD),
+					(String) binder.get(Constants.ENTITY_FIELD),
+					// family field is searchable but not stored
+					//(String) binder.get(Constants.FAMILY_FIELD),
 					Integer.valueOf((String)binder.get(Constants.DEFINITION_TYPE_FIELD)),
 					new Timestamp((String) binder.get(Constants.CREATOR_NAME_FIELD),(Date) binder.get(Constants.CREATION_DATE_FIELD)),
 					new Timestamp((String) binder.get(Constants.MODIFICATION_NAME_FIELD), (Date) binder.get(Constants.MODIFICATION_DATE_FIELD)),
@@ -281,6 +284,8 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 		}
 		
 		FolderEntryBrief[] array = new FolderEntryBrief[entries.size()];
-		return new FolderEntryCollection(entries.toArray(array));
+		return new FolderEntryCollection(offset, 
+				((Integer)folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue(), 
+				entries.toArray(array));
 	}
 }

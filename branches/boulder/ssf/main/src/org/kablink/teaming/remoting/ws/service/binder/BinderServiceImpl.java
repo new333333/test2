@@ -39,6 +39,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,6 +53,7 @@ import org.kablink.teaming.comparator.BinderComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NoBinderByTheNameException;
@@ -81,7 +83,6 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.search.Constants;
-
 
 public class BinderServiceImpl extends BaseService implements BinderService, BinderServiceInternal {
 	private CoreDao coreDao;
@@ -207,17 +208,28 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		Long[] array = new Long[binderIds.size()];
 		return binderIds.toArray(array);
 	}
-	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId, boolean explodeGroups) {
+	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId, boolean explodeGroups, int firstRecord, int maxRecords) {
 		Binder binder = getBinderModule().getBinder(new Long(binderId));
 		SortedSet<Principal> principals = getBinderModule().getTeamMembers(binder, explodeGroups);
 		
+		int length = principals.size();
+		if(maxRecords > 0)
+			length = Math.min(length - firstRecord, maxRecords);
+		if(length < 0)
+			length = 0;
+
 		List<PrincipalBrief> principalList = new ArrayList<PrincipalBrief>();
-		for(Principal p : principals) {
-			principalList.add(toPrincipalBrief(p));
+		int index = 0;
+		for(Iterator it = principals.iterator(); it.hasNext(); index++) {
+			if(index < firstRecord)
+				continue; // Skip over the first firstRecord records
+			principalList.add(toPrincipalBrief((Principal)it.next()));
 		}
 		
 		PrincipalBrief[] array = new PrincipalBrief[principalList.size()];
-		return new TeamMemberCollection(binder.isTeamMembershipInherited(),
+		return new TeamMemberCollection(firstRecord, 
+				principals.size(), 
+				binder.isTeamMembershipInherited(),
 				principalList.toArray(array));
 	}
 	
@@ -323,13 +335,16 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		getAdminModule().setWorkAreaFunctionMemberships(binder, wfms);
 	}
 	
-	public FolderCollection binder_getFolders(String accessToken, long binderId) {
+	public FolderCollection binder_getFolders(String accessToken, long binderId, int firstRecord, int maxRecords) {
         User user = RequestContextHolder.getRequestContext().getUser();
         // Probably sorting by title isn't as important in web services as in browser UI, 
         // but it wouldn't hurt either.
         Comparator c = new BinderComparator(user.getLocale(),BinderComparator.SortByField.title);
 		Binder binder = getBinderModule().getBinder(binderId);		
-		Map searchResults = getBinderModule().getBinders(binder, new HashMap());
+    	Map options = new HashMap();
+    	options.put(ObjectKeys.SEARCH_OFFSET, new Integer(firstRecord));
+    	options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(maxRecords));
+		Map searchResults = getBinderModule().getBinders(binder, options);
 		List searchBinders = (List)searchResults.get(ObjectKeys.SEARCH_ENTRIES);
 
 		List<FolderBrief> folderList = new ArrayList<FolderBrief>();
@@ -343,7 +358,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		String rssUrl;
 		String atomUrl;
 		String icalUrl;
-		String family;
+		//String family;
 		Integer definitionType;
 		Folder folder;
 		for (int i=0; i<searchBinders.size(); ++i) {
@@ -369,17 +384,25 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			title = (String) search.get(Constants.TITLE_FIELD);
 			creation = new Timestamp((String) search.get(Constants.MODIFICATION_NAME_FIELD), (Date) search.get(Constants.MODIFICATION_DATE_FIELD));
 			modification = new Timestamp((String) search.get(Constants.CREATOR_NAME_FIELD), (Date) search.get(Constants.CREATION_DATE_FIELD));
-			family = (String) search.get(Constants.FAMILY_FIELD);
+			// family field is searchable but not stored, so we can't use it this way
+			//family = (String) search.get(Constants.FAMILY_FIELD);
 			definitionType = Integer.valueOf((String)search.get(Constants.DEFINITION_TYPE_FIELD));
 			permaLink = PermaLinkUtil.getPermalink(search);
-			// Construct webdav url regardless of whether this folder is a library binder or not. 
-			webdavUrl = SsfsUtil.getLibraryBinderUrl(folder);
+			// Construct webdav url only for library folder
+			// Unfortunately, this check doesn't save us the cost of fetching each folder in the first place,
+			// since the information about whether a folder is a library binder or not is not stored in the
+			// search index. So we have to fetch it in order to check it. Too bad...
+			if(folder.isLibrary())
+				webdavUrl = SsfsUtil.getLibraryBinderUrl(folder);
+			else
+				webdavUrl = null;
 			rssUrl = UrlUtil.getFeedURL(null, id.toString()); // folder only
 			icalUrl = org.kablink.teaming.ical.util.UrlUtil.getICalURL(null, id.toString(), null); // folder only
 			atomUrl = UrlUtil.getAtomURL(null, id.toString()); // folder only
 			folderList.add(new FolderBrief(id,
 					title,
-					family,
+					entityType,
+					//family,
 					definitionType,
 					creation,
 					modification,
@@ -390,7 +413,9 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 					atomUrl));
 		}
 		FolderBrief[] array = new FolderBrief[folderList.size()];
-		return new FolderCollection(binderId, folderList.toArray(array));
+		return new FolderCollection(firstRecord, 
+				((Integer)searchResults.get(ObjectKeys.TOTAL_SEARCH_COUNT)).intValue(),
+				folderList.toArray(array));
 	}
 	public void binder_deleteTag(String accessToken, long binderId, String tagId) {
 		getBinderModule().deleteTag(binderId, tagId);

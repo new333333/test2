@@ -53,8 +53,12 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				wsClient.fetchAndPrintXML("TeamingServiceV1", "search_getWorkspaceTreeAsXML", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), (args.length > 3)?args[3]:""});
 			} else if(args[0].equals("getUser")) {
 				wsClient.fetchAndPrintDE("TeamingServiceV1", "profile_getUser", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
+			} else if(args[0].equals("getUserByName")) {
+				wsClient.fetchAndPrintDE("TeamingServiceV1", "profile_getUserByName", new Object[] {null, args[1], Boolean.parseBoolean(args[2])});
 			} else if(args[0].equals("getGroup")) {
 				wsClient.fetchAndPrintDE("TeamingServiceV1", "profile_getGroup", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
+			} else if(args[0].equals("getGroupMembers")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "profile_getGroupMembers", new Object[] {null, args[1], Integer.parseInt(args[2]), Integer.parseInt(args[3])});
 			} else if(args[0].equals("getPrincipals")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "profile_getPrincipals", new Object[] {null, Integer.parseInt(args[1]), Integer.parseInt(args[2])});
 			} else if(args[0].equals("getUsers")) {
@@ -64,9 +68,9 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				}
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "profile_getUsers", new Object[] {null, captive, Integer.parseInt(args[1]), Integer.parseInt(args[2])});
 			} else if(args[0].equals("getFolderEntries")) {
-				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_getEntries", new Object[] {null, Long.parseLong(args[1])});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_getEntries", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])});
 			} else if(args[0].equals("getTeamMembers")) {
-				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getTeamMembers", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getTeamMembers", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4])});
 			} else if(args[0].equals("getTeams")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "search_getTeams", new Object[] {null});
 			} else if(args[0].equals("getUserTeams")) {
@@ -195,7 +199,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				c1.setTime(df.parse((String)args[7]));
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "migration_uploadFolderFileStaged", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], args[6], c1}, null);
 			} else if(args[0].equals("getFolders")) {
-				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getFolders", new Object[] {null, Long.parseLong(args[1])});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getFolders", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])});
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -211,11 +215,13 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("Usage:");
 		System.out.println("getWorkspaceTree <workspace id> <depth> [<page>]");
 		System.out.println("getUser  <user id>  <includeAttachments>");
+		System.out.println("getUserByName  <user name>  <includeAttachments>");
 		System.out.println("getGroup  <group id>  <includeAttachments>");
+		System.out.println("getGroupMembers  <groupName> <first> <max>");
 		System.out.println("getPrincipals <first> <max>");
 		System.out.println("getUsers <first> <max> [<captive>]");
-		System.out.println("getFolderEntries <folder id>"); 
-		System.out.println("getTeamMembers <binder id> <explodeGroups>");
+		System.out.println("getFolderEntries <folder id> <first> <max>"); 
+		System.out.println("getTeamMembers <binder id> <explodeGroups> <first> <max>");
 		System.out.println("getTeams");
 		System.out.println("getUserTeams <user id>");
 		System.out.println("getFolderEntry <entry id> <includeAttachments>");
@@ -253,7 +259,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("migrateFile <folder id> <entry id> <fileDataFieldName> <filename> <modifier> <modDate>");
 		System.out.println("migrateFileStaged <folder id> <entry id> <fileDataFieldName> <fileName> <stagedFileRelativePath> <modifier> <modDate>");
 		System.out.println("synchronize <mirrored folder id>");
-		System.out.println("getFolders <binder id>");
+		System.out.println("getFolders <binder id> <first> <max>");
 		
 		// an example of addZoneUnderPortal invocation - 
 		// addZoneUnderPortal fake-bestbuy www.fake-bestbuy.com mail.fake-bestbuy.com

@@ -32,18 +32,17 @@
  */
 package org.kablink.teaming.remoting.ws.model;
 
-import java.io.Serializable;
-
-public class FolderEntryCollection implements Serializable {
+public class FolderEntryCollection extends AbstractPageableCollection {
 
 	private FolderEntryBrief[] entries;
 
 	public FolderEntryCollection() {}
 	
-	public FolderEntryCollection(FolderEntryBrief[] entries) {
+	public FolderEntryCollection(int first, int total, FolderEntryBrief[] entries) {
+		super(first, total);
 		setEntries(entries);
 	}
-	
+
 	public FolderEntryBrief[] getEntries() {
 		return entries;
 	}
