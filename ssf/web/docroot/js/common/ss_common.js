@@ -1837,6 +1837,9 @@ function ss_getWindowWidth() {
 		//IE 4 compatible
 		myWidth = document.body.clientWidth;
 		myHeight = document.body.clientHeight;
+	} else {
+		var viewport = dijit.getViewport();
+		myWidth = viewport.w;
 	}
 	return myWidth;
 }
@@ -8165,7 +8168,8 @@ function ss_resetSessionTimeoutTimer2(obj) {
 		ss_startSessionTimoutTimer(maxInactiveInterval);
 	}
 }
-dojo.require("dijit.dijit");
+
+dojo.require("dijit.dijit");
 dojo.require("dojo.fx");
 dojo.require("dojo.io.iframe");
 dojo.require("dojox.data.dom");
