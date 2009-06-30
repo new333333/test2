@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<project name="taglib" basedir="." default="compile">
+	<import file="../build-common.xml" />
+	<import file="../deploy-support.xml" />
+	
+	<property name="jar.file" value="kablink-teaming-taglib.jar" />
+
+	<target name="deploy" depends="jar">
+		<antcall target="deploy-jar">
+			<param name="deploy-support.jar.file" value="${jar.file}" />
+		</antcall>
+	</target>
+
+</project>

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<project name="main-minimum" basedir="." default="compile">
+	<import file="../build-common.xml" />
+	<import file="../deploy-support.xml" />
+		
+	<property name="jar.file" value="kablink-teaming-main-minimum.jar" />
+	
+	<!-- This overrides the imported definition -->
+	<path id="project.classpath">
+		<pathelement path="${project.dir}/util/classes" />
+		<fileset dir="../lib" includes="*.jar" />
+	</path>
+
+	<target name="deploy" depends="jar">
+		<antcall target="deploy-jar">
+			<param name="deploy-support.jar.file" value="${jar.file}" />
+		</antcall>
+	</target>
+
+</project>

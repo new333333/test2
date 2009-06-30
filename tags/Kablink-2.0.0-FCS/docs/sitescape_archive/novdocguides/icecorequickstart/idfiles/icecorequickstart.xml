@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="quickstart" pid="quickstart" name="QuickStart" level="0"> <text>Novell Teaming 1.0 Quick Start Guide</text> </target>
+
+ <target id="b20g4u4" pid="b20g4u4" name="Sect1" level="1"> <text>Novell Teaming</text> </target>
+
+ <target id="b9ygnf7" pid="b20g4u4" name="Sect2" level="2"> <text>Explore the Welcome Portlet</text> </target>
+
+ <target id="b9ygpwl" pid="b20g4u4" name="Sect2" level="2"> <text>Find Your Way Using Teaming Navigator</text> </target>
+
+ <target id="b9yh7oz" pid="b20g4u4" name="FormalPara" level="3"> <text>My Workspace -</text> </target>
+
+ <target id="b9yh8ci" pid="b20g4u4" name="FormalPara" level="3"> <text>Favorites -</text> </target>
+
+ <target id="b9yh8jx" pid="b20g4u4" name="FormalPara" level="3"> <text>Quick Search -</text> </target>
+
+ <target id="b9yh8t6" pid="b20g4u4" name="FormalPara" level="3"> <text>Find people, Find Places, Find tags -</text> </target>
+
+ <target id="b9yh90l" pid="b20g4u4" name="FormalPara" level="3"> <text>Workspace Tree -</text> </target>
+
+ <target id="b9yh9cf" pid="b20g4u4" name="FormalPara" level="3"> <text>Help -</text> </target>
+
+ <target id="b9ygxtu" pid="b20g4u4" name="Sect2" level="2"> <text>Set up Your Buddy List</text> </target>
+
+ <target id="b9ygyei" pid="b20g4u4" name="Procedure" level="3" number="1"> <text>Click Add buddies.</text> </target>
+
+ <target id="b9ygyej" pid="b20g4u4" name="Step" level="4" number="1"> <text>Click Add buddies.</text> </target>
+
+ <target id="b9ygyf2" pid="b20g4u4" name="Step" level="4" number="2"> <text>Start typing a name in either the Users or the Groups box. A drop-down list displays matching names. Select a name, and click Apply to add the name to your list.</text> </target>
+
+ <target id="b9ygyf4" pid="b20g4u4" name="Step" level="4" number="3"> <text>Add as many names as you want, clicking Apply after each one.</text> </target>
+
+ <target id="b9ygyf6" pid="b20g4u4" name="Step" level="4" number="4"> <text>To remove a name, click the X icon after the name; then click Apply.</text> </target>
+
+ <target id="b9ygyfe" pid="b20g4u4" name="Step" level="4" number="5"> <text>When you finish, click Close. The new names are displayed in the buddy list.</text> </target>
+
+ <target id="b9yh0or" pid="b20g4u4" name="Sect3" level="3"> <text>Tips for Using Your Buddy List:</text> </target>
+
+ <target id="b9yh3r4" pid="b20g4u4" name="Sect2" level="2"> <text>Add Info and a Photo to Your Personal Workspace</text> </target>
+
+ <target id="b9yh3y4" pid="b20g4u4" name="Procedure" level="3" number="1"> <text>In the Navigator, click  My workspace to go to your personal workspace.</text> </target>
+
+ <target id="b9yh3y5" pid="b20g4u4" name="Step" level="4" number="1"> <text>In the Navigator, click  My workspace to go to your personal workspace.</text> </target>
+
+ <target id="b9yh44k" pid="b20g4u4" name="Step" level="4" number="2"> <text>On the menu bar for your workspace, click Modify Profile.</text> </target>
+
+ <target id="b9yh44n" pid="b20g4u4" name="Step" level="4" number="3"> <text>In the Modify Profile window, fill in any missing information. This information is visible to others and is also used by Novell Teaming and Conferencing to contact you by phone, e-mail, or IM.</text> </target>
+
+ <target id="b9yh44r" pid="b20g4u4" name="Step" level="4" number="4"> <text>Add a picture. Click Browse&#201; to look for a graphics file on your computer; then click OK. The picture is displayed in the Photo box of your profile.</text> </target>
+
+ <target id="b9yh4la" pid="b20g4u4" name="Sect3" level="3"> <text>Tips for Adding Photos to Your Profile:</text> </target>
+
+ <target id="b9yh9yk" pid="b20g4u4" name="Sect2" level="2"> <text>To Add Your First Blog Entry:</text> </target>
+
+ <target id="b9yha2w" pid="b20g4u4" name="Procedure" level="3" number="1"> <text>Click  My workspace to display your personal workspace.</text> </target>
+
+ <target id="b9yha2x" pid="b20g4u4" name="Step" level="4" number="1"> <text>Click  My workspace to display your personal workspace.</text> </target>
+
+ <target id="b9yha4m" pid="b20g4u4" name="Step" level="4" number="2"> <text>Expand you personal workspace tree at the top of your workspace.</text> </target>
+
+ <target id="barbs6a" pid="b20g4u4" name="Step" level="4" number="3"> <text>Click on Blog.</text> </target>
+
+ <target id="b9yhak2" pid="b20g4u4" name="Step" level="4" number="4"> <text>Select the New &#62; Blog Entry menu item.</text> </target>
+
+ <target id="b9yhank" pid="b20g4u4" name="Step" level="4" number="5"> <text>In the Blog Entry form that appears, type in the title of your blog entry in the Title box.</text> </target>
+
+ <target id="b9yhann" pid="b20g4u4" name="Step" level="4" number="6"> <text>In the Description box, type in the content of your blog entry (use the formatting tools in the editor to format your entry).</text> </target>
+
+ <target id="ban5k3d" pid="b20g4u4" name="Step" level="4" number="7"> <text>Under Attachments, you can select a file on your computer to attach to this blog entry. </text> </target>
+
+ <target id="b9yhanq" pid="b20g4u4" name="Step" level="4" number="8"> <text>Click OK to add the entry to your blog.</text> </target>
+
+ <target id="barc23u" pid="b20g4u4" name="Sect2" level="2"> <text>To Comment on Someone Else's Blog Entry:</text> </target>
+
+ <target id="b9yhb5c" pid="b20g4u4" name="Procedure" level="3" number="1"> <text>Navigate to the Blog in which you want to comment.</text> </target>
+
+ <target id="b9yhb5d" pid="b20g4u4" name="Step" level="4" number="1"> <text>Navigate to the Blog in which you want to comment.</text> </target>
+
+ <target id="barc49f" pid="b20g4u4" name="Step" level="4" number="2"> <text>Click Add Comment beneath the blog entry on which you want to comment.</text> </target>
+
+ <target id="b9yhb8l" pid="b20g4u4" name="Step" level="4" number="3"> <text> In the form that appears, type in the title of your blog comment in the Title box.</text> </target>
+
+ <target id="b9yhb8o" pid="b20g4u4" name="Step" level="4" number="4"> <text>Type in your comment in the Description box.</text> </target>
+
+ <target id="b9yhb8r" pid="b20g4u4" name="Step" level="4" number="5"> <text>Click OK. Your comment appears below the blog entry.</text> </target>
+
+ <target id="b9yhbh7" pid="b20g4u4" name="Sect2" level="2"> <text>Work with Teams</text> </target>
+
+ <target id="b9yhc1x" pid="b20g4u4" name="Sect3" level="3"> <text>To Create a Team Workspace:</text> </target>
+
+ <target id="b9yhc47" pid="b20g4u4" name="Procedure" level="4" number="1"> <text> In the Navigator, click on the Team Workspaces link of the workspace tree.</text> </target>
+
+ <target id="b9yhc48" pid="b20g4u4" name="Step" level="5" number="1"> <text> In the Navigator, click on the Team Workspaces link of the workspace tree.</text> </target>
+
+ <target id="b9yhcrt" pid="b20g4u4" name="Step" level="5" number="2"> <text> Under the Team Workspaces tab, click Add a Team Workspace.</text> </target>
+
+ <target id="b9yhcrw" pid="b20g4u4" name="Step" level="5" number="3"> <text> In the Workspace Title field, type in the name for the new workspace.</text> </target>
+
+ <target id="b9yhd8a" pid="b20g4u4" name="Step" level="5" number="4"> <text>Under Team Members, select any Users and Groups you want to add as team members to this workspace. Type a character or two into either field and select the user or group you are want to add from the drop-down list that appears.</text> </target>
+
+ <target id="ban5was" pid="b20g4u4" name="Step" level="5" number="5"> <text>Under Workspace Folders, select the types of folders you want to include in this workspace.</text> </target>
+
+ <target id="ban5xsb" pid="b20g4u4" name="Step" level="5" number="6"> <text>To e-mail your teammates, select the Announce the Creation of this Workspace to the Team option and type in the message you want to send.</text> </target>
+
+ <target id="b9yhcs0" pid="b20g4u4" name="Step" level="5" number="7"> <text>Click OK. The new workspace is added as a sub-workspace.</text> </target>
+
+ <target id="b9yhd12" pid="b20g4u4" name="Sect3" level="3"> <text>To Add Members to a Team Workspace:</text> </target>
+
+ <target id="b9yhd13" pid="b20g4u4" name="Procedure" level="4" number="1"> <text>Navigate to the team workspace.</text> </target>
+
+ <target id="b9yhd14" pid="b20g4u4" name="Step" level="5" number="1"> <text>Navigate to the team workspace.</text> </target>
+
+ <target id="barc7bf" pid="b20g4u4" name="Step" level="5" number="2"> <text>Click Add or Delete Team Members.</text> </target>
+
+ <target id="ban6gcy" pid="b20g4u4" name="Step" level="5" number="3"> <text>In the Add or Delete Team Members window, click in the Users or Groups fields, begin typing the user or group name and select the name from the drop-down list that appears.</text> </target>
+
+ <target id="barc9md" pid="b20g4u4" name="Step" level="5" number="4"> <text>Repeat for each user or group you want to add.</text> </target>
+
+ <target id="barc9ek" pid="b20g4u4" name="Step" level="5" number="5"> <text>Click OK.</text> </target>
+
+ <target id="b9yhd15" pid="b20g4u4" name="Sect3" level="3"> <text>To View Team Members:</text> </target>
+
+ <target id="b9yhd16" pid="b20g4u4" name="Procedure" level="4" number="1"> <text>Select the workspace or folder with which the team is associated.</text> </target>
+
+ <target id="b9yhd17" pid="b20g4u4" name="Step" level="5" number="1"> <text>Select the workspace or folder with which the team is associated.</text> </target>
+
+ <target id="b9yhdtq" pid="b20g4u4" name="Step" level="5" number="2"> <text>On the menu bar, click Team.</text> </target>
+
+ <target id="b9yhdts" pid="b20g4u4" name="Step" level="5" number="3"> <text> Select Show Team Membership.</text> </target>
+
+ <target id="b9yhe5q" pid="b20g4u4" name="Sect2" level="2"> <text>Working with Favorites</text> </target>
+
+ <target id="b9yheeb" pid="b20g4u4" name="Sect3" level="3"> <text>To Add a Place to Favorites:</text> </target>
+
+ <target id="b9yhf14" pid="b20g4u4" name="Procedure" level="4" number="1"> <text>Navigate to the workspace or folder that you want to add.</text> </target>
+
+ <target id="b9yhf15" pid="b20g4u4" name="Step" level="5" number="1"> <text>Navigate to the workspace or folder that you want to add.</text> </target>
+
+ <target id="b9yhf4f" pid="b20g4u4" name="Step" level="5" number="2"> <text>Click  to open the Favorites panel.</text> </target>
+
+ <target id="b9yhf4i" pid="b20g4u4" name="Step" level="5" number="3"> <text>Select Add This Place. The workspace or folder is added at the end of the Favorites list.</text> </target>
+
+ <target id="b9yhfng" pid="b20g4u4" name="Sect2" level="2"> <text>Take Advantage of Tagging</text> </target>
+
+ <target id="ban6z9s" pid="b20g4u4" name="Sect2" level="2"> <text>Advanced Search</text> </target>
+
+ <target id="ban748r" pid="b20g4u4" name="Sect3" level="3"> <text>To Perform an Advanced Search:</text> </target>
+
+ <target id="ban729o" pid="b20g4u4" name="Procedure" level="4" number="1"> <text>In the Search section, click Advanced. The Advanced Search window appears.</text> </target>
+
+ <target id="ban729p" pid="b20g4u4" name="Step" level="5" number="1"> <text>In the Search section, click Advanced. The Advanced Search window appears.</text> </target>
+
+ <target id="ban75mv" pid="b20g4u4" name="Step" level="5" number="2"> <text>In the Text field, type text related to the item for which you are searching.</text> </target>
+
+ <target id="ban76s5" pid="b20g4u4" name="Step" level="5" number="3"> <text>If you know who created (added) the item in Novell Teaming, type the name into the Authors field.</text> </target>
+
+ <target id="ban78ko" pid="b20g4u4" name="Step" level="5" number="4"> <text>If you know that the information is tagged, type the relevant tag into the Tags field.</text> </target>
+
+ <target id="ban790r" pid="b20g4u4" name="Step" level="5" number="5"> <text>Under Places, select the option you want to use:</text> </target>
+
+ <target id="ban7dim" pid="b20g4u4" name="Step" level="5" number="6"> <text>Next to List Results, use the drop-down lists to select the number of items and the number or words (per item) that you want to retrieve for your search. </text> </target>
+
+ <target id="ban7eau" pid="b20g4u4" name="Step" level="5" number="7"> <text>Click Search.</text> </target>
+
+ <target id="ban7gsc" pid="b20g4u4" name="Sect3" level="3"> <text>To Use Additional Advanced Search Options:</text> </target>
+
+ <target id="ban7hhh" pid="b20g4u4" name="Procedure" level="4" number="1"> <text>In the Search section, click Advanced. The Advanced Search tab appears.</text> </target>
+
+ <target id="ban7hhi" pid="b20g4u4" name="Step" level="5" number="1"> <text>In the Search section, click Advanced. The Advanced Search tab appears.</text> </target>
+
+ <target id="ban7ho8" pid="b20g4u4" name="Step" level="5" number="2"> <text>In the top-right corner of the Advanced Search area, click More Options.</text> </target>
+
+ <target id="ban7i1a" pid="b20g4u4" name="Step" level="5" number="3"> <text>The following options are available:</text> </target>
+
+ <target id="b9yhg5l" pid="b20g4u4" name="Sect2" level="2"> <text>Terminology</text> </target>
+
+ <target id="b9yhgfo" pid="b20g4u4" name="FormalPara" level="3"> <text>buddy list -</text> </target>
+
+ <target id="b9yhhqt" pid="b20g4u4" name="FormalPara" level="3"> <text>entry -</text> </target>
+
+ <target id="b9yhhqu" pid="b20g4u4" name="FormalPara" level="3"> <text>folder -</text> </target>
+
+ <target id="b9yhhqv" pid="b20g4u4" name="FormalPara" level="3"> <text>presence -</text> </target>
+
+ <target id="b9yiiuq" pid="b20g4u4" name="FormalPara" level="3"> <text>workspace -</text> </target>
+
+ <target id="b20g58r" pid="b20g58r" name="Sect1" level="1"> <text>Legal Notice</text> </target>
+
+</targets>
