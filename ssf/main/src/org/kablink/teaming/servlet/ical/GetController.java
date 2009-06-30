@@ -79,7 +79,7 @@ public class GetController extends SAbstractController {
 		Long entryId = RequestUtils.getLongParameter(request, "entry");
 		if (entryId != null) {
 			FolderEntry entry  = getFolderModule().getEntry(binderId, entryId);
-			CalendarOutputter calendarOutputter = ICalUtils.getCalendarOutputter(false);
+			CalendarOutputter calendarOutputter = ICalUtils.getCalendarOutputter();
 			Calendar calendar = getIcalModule().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE));
 			calendarOutputter.output(calendar, response.getWriter());
 		} else {
@@ -87,7 +87,7 @@ public class GetController extends SAbstractController {
 			Map entries = getFolderModule().getFullEntries(binderId, null);
 			List folderEntries = (List)entries.get(ObjectKeys.FULL_ENTRIES);
 			
-			CalendarOutputter calendarOutputter = ICalUtils.getCalendarOutputter(false);
+			CalendarOutputter calendarOutputter = ICalUtils.getCalendarOutputter();
 			Calendar calendar = getIcalModule().generate(folder.getTitle(), folderEntries, mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE));
 			calendarOutputter.output(calendar, response.getWriter());
 		}
