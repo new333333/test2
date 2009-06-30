@@ -104,6 +104,16 @@ public class WorkspaceTreeController extends SAbstractController  {
 				getProfileModule().modifyEntry(user.getId(), inputData);
 			} catch(WriteEntryDataException e) {
 			}
+        } else if (user != null && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()) && 
+        		(user.getDisplayStyle() == null || user.getDisplayStyle().equals(""))) {
+			Map<String,Object> updates = new HashMap<String,Object>();
+			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
+        	MapInputData  inputData = new MapInputData (updates);
+        	updates.put(ObjectKeys.FIELD_USER_DISPLAYSTYLE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
+			try {
+				getProfileModule().modifyEntry(user.getId(), inputData);
+			} catch(WriteEntryDataException e) {
+			}
         }
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		if (binderId == null) return BinderHelper.CommonPortletDispatch(this, request, response);

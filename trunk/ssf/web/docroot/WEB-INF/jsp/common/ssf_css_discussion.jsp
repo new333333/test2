@@ -280,7 +280,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding-right:2px;
 	font-weight: 800;
 	color:#777;
-	margin-right:5px
+	margin-right:5px;
 	margin-bottom:2px;
 	}	
 #ss_topic_thread a{

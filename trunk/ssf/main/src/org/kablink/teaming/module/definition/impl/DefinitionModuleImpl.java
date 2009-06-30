@@ -2139,6 +2139,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							String value = "";
 							for (int i = 0; i <= idCounter; i++) {
 								String nextValue = inputData.getSingleValue(nameValue + "__" + String.valueOf(i));
+								if (nextValue != null) nextValue = nextValue.trim();
 								if (nextValue != null && !nextValue.equals("")) {
 									if (!value.equals("")) value = value + ";";
 									String type = nextValue.split(",")[0];

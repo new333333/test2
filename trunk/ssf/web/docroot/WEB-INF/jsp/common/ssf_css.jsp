@@ -3798,6 +3798,14 @@ p.ss_legend {
 .ss_skiplink {
 	display:none !important;
 }
+.ss_skiplinktag {
+	position:absolute;
+	left:-10000px;
+	top:auto;
+	width:1px;
+	height:1px;
+	overflow:hidden;
+}
 
 /* skip link - end */
 
