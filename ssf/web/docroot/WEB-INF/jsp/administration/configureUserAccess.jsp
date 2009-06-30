@@ -96,7 +96,12 @@
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
-<ssf:form titleTag="administration.configure.userAccess.title" >
+<c:set var="licensedEdition" value="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>"/>
+<c:set var="titleTag" value="administration.configure_userAccess"/>
+<c:if test="${licensedEdition}">
+  <c:set var="titleTag" value="administration.configure_userAccessOnly"/>
+</c:if>
+<ssf:form titleTag="${titleTag}" >
 
 	<c:if test="${!empty ssException}">
 	<span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span></br>
