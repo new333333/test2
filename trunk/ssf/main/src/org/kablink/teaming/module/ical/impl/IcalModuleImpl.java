@@ -1513,6 +1513,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	 * @throws IOException
 	 * @throws ParserException
 	 */
+	@SuppressWarnings("unchecked")
 	public void parseEvents(Reader icalData, EventHandler handler)
 		throws IOException, ParserException
 	{
@@ -1795,6 +1796,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 				formData.put("title", new String[] {summary != null ? summary : ""});
 			}
 			
+			@SuppressWarnings("unchecked")
 			private void addOrModifyEntry(Event event, MapInputData inputData) {
 				try {
 					Event eventToUpdate = findEventByUid(folder.getId(), event);
@@ -1821,6 +1823,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		return attendedEntries;
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected Event findEventByUid(Long folderId, Event event) {
 		if (event == null || event.getUid() == null) {
 			return null;
@@ -1866,13 +1869,15 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		return null;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Calendar generate(DefinableEntity entry,
 			Collection events, String defaultTimeZoneId) {
 		Calendar calendar = createICalendar(null);
-		generate(calendar, entry, events, defaultTimeZoneId);
+		generate(0, calendar, entry, events, defaultTimeZoneId);
 		return calendar;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Calendar generate(String calendarName,  List folderEntries, String defaultTimeZoneId) {
 		Calendar calendar = createICalendar(calendarName);
 		
@@ -1881,9 +1886,10 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		}
 		
 		Iterator it = folderEntries.iterator();
+		int attendeesInCalendar = 0;
 		while (it.hasNext()) {
 			DefinableEntity entry = (DefinableEntity)it.next();
-			generate(calendar, entry, entry.getEvents(), defaultTimeZoneId);
+			attendeesInCalendar += generate(attendeesInCalendar, calendar, entry, entry.getEvents(), defaultTimeZoneId);
 		}
 		
 		// Calendar without any components can not exists
@@ -1897,8 +1903,10 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		return calendar;
 	}
 	
-	protected void generate(Calendar calendar, DefinableEntity entry,
+	@SuppressWarnings("unchecked")
+	protected int generate(int attendeesInCalendar, Calendar calendar, DefinableEntity entry,
 			Collection events, String defaultTimeZoneId) {
+		int attendees = 0;
 		if (calendar == null) {
 			throw new InvalidParameterException("'calendar' can't be null.");
 		}
@@ -1908,12 +1916,11 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		}
 
 		if (events == null || events.isEmpty()) {
-			return;
+			return attendees;
 		}
 
 		ComponentType componentType = getComponentType(entry);
 
-		int attendees = 0;
 		Iterator eventsIt = events.iterator();
 		while (eventsIt.hasNext()) {
 			Event event = (Event) eventsIt.next();
@@ -1921,13 +1928,27 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 					componentType);
 		}
 		
-		// If there are no attendees to this event...
-		if (0 == attendees)
-		{
-			// ...we want to issue it as a publish, not a request.
-			calendar.getProperties().remove(Method.REQUEST);
-			calendar.getProperties().add(Method.PUBLISH);
+		// Are there any attendees in the calendar?
+		if (0 == (attendees + attendeesInCalendar)) {
+			// No!  We want to issue it as a publish, not a request.
+			if (calendar.getProperties().contains(Method.REQUEST)) {
+				calendar.getProperties().remove(Method.REQUEST);
+			}
+			if (!calendar.getProperties().contains(Method.PUBLISH)) {
+				calendar.getProperties().add(Method.PUBLISH);
+			}
 		}
+		else {
+			// Yes, there are attendees in the calendar!  We want to
+			// issue it as a request, not a publish.
+			if (!calendar.getProperties().contains(Method.REQUEST)) {
+				calendar.getProperties().add(Method.REQUEST);
+			}
+			if (calendar.getProperties().contains(Method.PUBLISH)) {
+				calendar.getProperties().remove(Method.PUBLISH);
+			}
+		}
+		return attendees;
 	}
 
 	/**
@@ -1961,6 +1982,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	/*
 	 * Returns a count of the number of attendees for the event.
 	 */
+	@SuppressWarnings("unchecked")
 	private int addEventToICalendar(Calendar calendar, DefinableEntity entry,
 			Event event, String defaultTimeZoneId, ComponentType componentType) {
 		// there is probably a bug in iCal4j or in Java: for some time zones
@@ -2152,6 +2174,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 
 	}
 
+	@SuppressWarnings("unchecked")
 	private void addComponentCompleted(VToDo toDo, DefinableEntity entry) {
 		CustomAttribute customAttribute = entry
 				.getCustomAttribute(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
@@ -2198,6 +2221,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		toDo.getProperties().add(completed.toIcalPercentComplete());
 	}
 
+	@SuppressWarnings("unchecked")
 	private void addToDoStatus(VToDo toDo, DefinableEntity entry) {
 		CustomAttribute customAttribute = entry
 				.getCustomAttribute(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
@@ -2235,6 +2259,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		toDo.getProperties().add(status.toIcalStatus());
 	}
 
+	@SuppressWarnings("unchecked")
 	private void addToDoPriority(VToDo toDo, DefinableEntity entry) {
 		CustomAttribute customAttribute = entry
 				.getCustomAttribute(TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME);
