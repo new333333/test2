@@ -233,7 +233,11 @@ public class ViewController extends  SAbstractController {
 		//User access configuration
 		if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
 			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.configure_userAccess"));
+			if (ReleaseInfo.isLicenseRequiredEdition()) {
+				element.addAttribute("title", NLT.get("administration.configure_userAccessOnly"));
+			} else {
+				element.addAttribute("title", NLT.get("administration.configure_userAccess"));
+			}
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
 			url = response.createRenderURL();
