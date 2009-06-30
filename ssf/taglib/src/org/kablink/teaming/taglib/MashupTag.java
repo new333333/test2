@@ -97,7 +97,7 @@ public class MashupTag extends BodyTagSupport {
 			if (value != null && !value.equals("")) {
 				String[] mashupItemValues = value.split(",");
 				if (mashupItemValues.length > 0) {
-					String type = mashupItemValues[0];
+					String type = mashupItemValues[0].trim();
 					if (type != null && !type.equals("")) {
 						//Build a map of attributes
 						Map mashupItemAttributes = new HashMap();

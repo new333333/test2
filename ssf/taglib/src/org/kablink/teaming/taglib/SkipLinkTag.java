@@ -94,7 +94,7 @@ public class SkipLinkTag extends BodyTagSupport {
 			httpReq.setAttribute(WebKeys.SKIP_LINK_LINK_ONLY, this.linkOnly);
 			
 			//Output the top section skip link
-			if (isAccessible == true && !this.anchorOnly) {
+			if (!this.anchorOnly) {
 				String jsp = "/WEB-INF/jsp/tag_jsps/skiplink/top.jsp";
 				RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 				ServletRequest req = pageContext.getRequest();
@@ -107,7 +107,7 @@ public class SkipLinkTag extends BodyTagSupport {
 			if (this._bodyContent != null) pageContext.getOut().print(_bodyContent);
 			
 			//Output the bottom section skip link
-			if (isAccessible == true && !this.linkOnly) {
+			if (!this.linkOnly) {
 				String jsp = "/WEB-INF/jsp/tag_jsps/skiplink/bottom.jsp";
 				RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 				ServletRequest req = pageContext.getRequest();
