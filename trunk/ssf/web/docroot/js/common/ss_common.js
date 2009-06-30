@@ -1837,6 +1837,9 @@ function ss_getWindowWidth() {
 		//IE 4 compatible
 		myWidth = document.body.clientWidth;
 		myHeight = document.body.clientHeight;
+	} else {
+		var viewport = dijit.getViewport();
+		myWidth = viewport.w;
 	}
 	return myWidth;
 }
