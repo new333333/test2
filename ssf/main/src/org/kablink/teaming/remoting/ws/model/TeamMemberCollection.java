@@ -32,20 +32,19 @@
  */
 package org.kablink.teaming.remoting.ws.model;
 
-import java.io.Serializable;
-
-public class TeamMemberCollection implements Serializable {
+public class TeamMemberCollection extends AbstractPageableCollection {
 
 	private boolean inherited;
 	private PrincipalBrief[] principals;
 	
 	public TeamMemberCollection() {}
 	
-	public TeamMemberCollection(boolean inherited, PrincipalBrief[] principals) {
+	public TeamMemberCollection(int first, int total, boolean inherited, PrincipalBrief[] principals) {
+		super(first, total);
 		setInherited(inherited);
 		setPrincipals(principals);
 	}
-	
+
 	public boolean isInherited() {
 		return inherited;
 	}

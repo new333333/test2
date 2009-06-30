@@ -40,34 +40,15 @@ import java.io.Serializable;
  * @author Jong Kim
  *
  */
-public class UserCollection implements Serializable {
+public class UserCollection extends AbstractPageableCollection {
 
-	private int first;
-	private int total;
 	private UserBrief[] users;
 	
 	public UserCollection() {}
 	
 	public UserCollection(int first, int total, UserBrief[] users) {
-		setFirst(first);
-		setTotal(total);
+		super(first, total);
 		setEntries(users);
-	}
-	
-	public int getFirst() {
-		return first;
-	}
-
-	public void setFirst(int first) {
-		this.first = first;
-	}
-
-	public int getTotal() {
-		return total;
-	}
-
-	public void setTotal(int total) {
-		this.total = total;
 	}
 
 	public UserBrief[] getUsers() {

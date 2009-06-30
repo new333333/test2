@@ -61,8 +61,6 @@ import org.kablink.teaming.remoting.ws.model.UserBrief;
 import org.kablink.teaming.remoting.ws.model.UserCollection;
 import org.kablink.teaming.remoting.ws.util.ModelInputData;
 import org.kablink.teaming.web.util.PermaLinkUtil;
-import org.kablink.util.search.Constants;
-
 
 public class ProfileServiceImpl extends BaseService implements ProfileService, ProfileServiceInternal {
 
@@ -148,18 +146,19 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		}
 		
 	}
-	public PrincipalCollection profile_getGroupMembers(String accessToken, String groupName) {
+	public PrincipalCollection profile_getGroupMembers(String accessToken, String groupName, int firstRecord, int maxRecords) {
 		Group group = getProfileModule().getGroup(groupName);
 		List members = group.getMembers();
-		PrincipalBrief[] principals = new PrincipalBrief[members.size()];
-		for(int i=0; i<members.size(); ++i) {
-			principals[i] = toPrincipalBrief((Principal)members.get(i));
-		}
-		PrincipalCollection result = new PrincipalCollection();
-		result.setEntries(principals);
-		result.setFirst(0);
-		result.setTotal(members.size());
-		return result;
+		int length = members.size();
+		if(maxRecords > 0)
+			length = Math.min(length - firstRecord, maxRecords);
+		if(length < 0)
+			length = 0;
+		PrincipalBrief[] principals = new PrincipalBrief[length];
+		for(int i=0; i<length; ++i) {
+			principals[i] = toPrincipalBrief((Principal)members.get(firstRecord + i));
+		}		
+		return new PrincipalCollection(firstRecord, members.size(), principals); 
 	}
 		
 	public void profile_deletePrincipal(String accessToken, long principalId, boolean deleteWorkspace) {

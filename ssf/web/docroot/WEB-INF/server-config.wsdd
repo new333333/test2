@@ -60,6 +60,7 @@
 		<parameter name="wsdlPortType" value="TeamingServiceSoap"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
+		<beanMapping qname="ns:AbstractPageableCollection" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.AbstractPageableCollection"/>
 		<beanMapping qname="ns:AttachmentsField" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.AttachmentsField"/>
 		<beanMapping qname="ns:Attachment" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.AttachmentsField$Attachment"/>
 		<beanMapping qname="ns:AverageRating" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.AverageRating"/>
