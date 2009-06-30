@@ -48,8 +48,9 @@
   				action="${action}">
 	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
 	  				<ssf:param name="ssTaskFilterType" value="CLOSED"/>
-  				</ssf:url>">
-				<input id="taskClosed" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'CLOSED'}">checked="true"</c:if>/> <label for="taskClosed"><ssf:nlt tag="alt.viewClosed"/></label>
+  				</ssf:url>"
+				alt="<ssf:nlt tag="alt.viewClosed"/>">
+					<input id="taskClosed" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'CLOSED'}">checked="true"</c:if>/> <label for="taskClosed"><ssf:nlt tag="alt.viewClosed"/></label>
 			</a>
 		
 			<a class="ss_cal3DaysSelectButton" href="<ssf:url 
@@ -57,8 +58,9 @@
   				action="${action}">
 	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
 	  				<ssf:param name="ssTaskFilterType" value="DAY"/>
-  				</ssf:url>">
-				<input id="taskDay" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'DAY'}">checked="true"</c:if>/> <label for="taskDay"><ssf:nlt tag="alt.viewToday"/></label>
+  				</ssf:url>"
+				alt="<ssf:nlt tag="alt.viewToday"/>">
+					<input id="taskDay" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'DAY'}">checked="true"</c:if>/> <label for="taskDay"><ssf:nlt tag="alt.viewToday"/></label>
 			</a>
 
 			<a class="ss_cal5DaysSelectButton" href="<ssf:url 
@@ -66,8 +68,9 @@
   				action="${action}">
 	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
 	  				<ssf:param name="ssTaskFilterType" value="WEEK"/>
-  				</ssf:url>">
-				<input id="taskWeek" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'WEEK'}">checked="true"</c:if>/> <label for="taskWeek"><ssf:nlt tag="alt.viewWeek"/></label>
+  				</ssf:url>"
+				alt="<ssf:nlt tag="alt.viewWeek"/>">
+					<input id="taskWeek" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'WEEK'}">checked="true"</c:if>/> <label for="taskWeek"><ssf:nlt tag="alt.viewWeek"/></label>
 			</a>
 
 			<a class="ss_cal7DaysSelectButton" href="<ssf:url 
@@ -75,8 +78,9 @@
   				action="${action}">
 	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
 	  				<ssf:param name="ssTaskFilterType" value="MONTH"/>
-  				</ssf:url>">
-				<input id="taskMonth" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'MONTH'}">checked="true"</c:if>/> <label for="taskMonth"><ssf:nlt tag="alt.viewMonth"/></label>
+  				</ssf:url>"
+				alt="<ssf:nlt tag="alt.viewMonth"/>">
+					<input id="taskMonth" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'MONTH'}">checked="true"</c:if>/> <label for="taskMonth"><ssf:nlt tag="alt.viewMonth"/></label>
 			</a>
 
 			<a class="ss_calMonthSelectButton" href="<ssf:url 
@@ -84,8 +88,9 @@
   				action="${action}">
 	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
 	  				<ssf:param name="ssTaskFilterType" value="ACTIVE"/>
-  				</ssf:url>">
-				<input id="taskAllActive" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'ACTIVE'}">checked="true"</c:if>/> <label for="taskAllActive"><ssf:nlt tag="alt.viewAllActive"/></label>
+  				</ssf:url>"
+				alt="<ssf:nlt tag="alt.viewAllActive"/>">
+					<input id="taskAllActive" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'ACTIVE'}">checked="true"</c:if>/> <label for="taskAllActive"><ssf:nlt tag="alt.viewAllActive"/></label>
 			</a>
 			
 			<a class="ss_calMonthSelectButton" href="<ssf:url 
@@ -93,8 +98,9 @@
   				action="${action}">
 	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
 	  				<ssf:param name="ssTaskFilterType" value="ALL"/>
-  				</ssf:url>">
-				<input id="taskAllEntries" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'ALL'}">checked="true"</c:if>/> <label for="taskAllEntries"><ssf:nlt tag="alt.viewAll"/></label>
+  				</ssf:url>"
+				alt="<ssf:nlt tag="alt.viewAll"/>">
+					<input id="taskAllEntries" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'ALL'}">checked="true"</c:if>/> <label for="taskAllEntries"><ssf:nlt tag="alt.viewAll"/></label>
 			</a>			
 		</li>
 	</ul>
