@@ -34,7 +34,12 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<iframe src="${ssDashboard.dashboard.components[ssComponentId].data.url}"
+<c:if test="${empty ss_iframeAccessoryNumber}">
+  <c:set var="ss_iframeAccessoryNumber" value="0" scope="request"/>
+</c:if>
+<c:set var="ss_iframeAccessoryNumber" value="${ss_iframeAccessoryNumber + 1}" scope="request"/>
+<iframe id="ss_iframeAccessory_${ss_iframeAccessoryNumber}" name="ss_iframeAccessory_${ss_iframeAccessoryNumber}"
+  src="${ssDashboard.dashboard.components[ssComponentId].data.url}"
   style="width: 99%;
   <c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.height}">
 	<c:set var="ss_height" value="${ssDashboard.dashboard.components[ssComponentId].data.height}"/>
