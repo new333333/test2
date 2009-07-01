@@ -67,6 +67,8 @@ public interface FolderService {
 	
 	public long folder_addEntry(String accessToken, FolderEntry entry, String attachedFileName);
 	
+	public Long folder_addMicroBlog(String accessToken, String text);
+	
 	public void folder_modifyEntry(String accessToken, FolderEntry entry);
 	
 	public long folder_addReply(String accessToken, long parentEntryId, FolderEntry reply, String attachedFileName);
