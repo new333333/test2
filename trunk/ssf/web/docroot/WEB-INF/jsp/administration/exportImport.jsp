@@ -79,19 +79,33 @@ function onloadCheckForErrors()
 	 
 }// end onloadCheckForErrors()
 
-
-function ss_checkForFileSelected() {
-	var formObj = document.forms['form1']
-	//var formObj = document.form1;
-	if (formObj.imports.value == '') {
-		//alert("hi");
-		//alert(formObj.ssOperation);
-		//if (formObj.ssOperation == 'import'){
-			alert("<ssf:nlt tag="administration.export_import.selectFile"/>")
-		//	return false;
-		//}
+function ss_checkForImportOperation() {
+	var operObj = document.forms['form1'].ssOperation;
+	var importClicked = false;
+	for (var i_oper = 0; i_oper < operObj.length; i_oper++) {
+		if (operObj[i_oper].value == "import") {
+			if (operObj[i_oper].checked) {
+				importClicked = true;
+			}
+			
+			return importClicked;
+		}
 	}
-	return true;
+}
+
+function ss_checkForFileNotSelected() {
+	var formObj = document.forms['form1'];
+	if (formObj.imports.value == '') {
+		return true;
+	}
+	return false;
+}
+
+function ss_checkForm() {
+	if (ss_checkForImportOperation() && ss_checkForFileNotSelected()){
+			alert("<ssf:nlt tag="administration.export_import.selectFile"/>");
+		return false;
+	}
 }
 
 </script>
@@ -122,11 +136,6 @@ function ss_checkForFileSelected() {
 <br/>
 <div class="ss_buttonBarLeft">
 <br/>
-<%--<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>" 
-	  onClick="if (${ssNamespace}_getChanges) {${ssNamespace}_getChanges()};return false;">--%>
-
-<%--<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-	onClick="self.window.close();return false;"/>--%>
 </div>
 <br>
 
@@ -146,7 +155,7 @@ function ss_checkForFileSelected() {
 <div class="ss_buttonBarLeft">
 
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"
-  onclick="return ss_checkForFileSelected();"
+  onclick="return ss_checkForm();"
 />
 
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
