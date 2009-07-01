@@ -2465,13 +2465,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			ActionResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String status = PortletRequestUtils.getStringParameter(request, "status", "");
-    	Pattern p = Pattern.compile("([\\s]*)$");
-    	Matcher m = p.matcher(status);
-    	if (m.find()) {
-			//Trim any trailing whitespace
-    		status = status.substring(0, m.start(0));
-    	}
-		BinderHelper.addMiniBlogEntry(bs, status.replaceAll("&quot;", "\""));
+		BinderHelper.addMiniBlogEntry(bs, status);
 	}
 	
 	private void ajaxSetSidebarVisibility(ActionRequest request, 

@@ -324,6 +324,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getFolderService().folder_addEntry(accessToken, entry, attachedFileName);
 	}
 	
+	public Long folder_addMicroBlog(String accessToken, String text) {
+		return getFolderService().folder_addMicroBlog(accessToken, text);
+	}
+	
 	public long folder_addReply(String accessToken, long parentEntryId, FolderEntry reply, String attachedFileName) {
 		return getFolderService().folder_addReply(accessToken, parentEntryId, reply, attachedFileName);
 	}

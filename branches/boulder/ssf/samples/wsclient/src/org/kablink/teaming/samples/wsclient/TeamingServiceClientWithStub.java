@@ -73,7 +73,8 @@ public class TeamingServiceClientWithStub {
 	public static void main(String[] args) throws Exception {
 		FolderEntry entry;
 		
-		searchFolderEntries();
+		addMicroBlog();
+		//searchFolderEntries();
 		//testApplicationScopedToken();
 		//calendarSync();
 		//checkUsers();
@@ -122,6 +123,41 @@ public class TeamingServiceClientWithStub {
 			e.printStackTrace();
 		}
 */
+	}
+	
+	public static void addMicroBlog() throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		
+		Long id = stub.folder_addMicroBlog(null, "More efficient blog!");
+				
+		if(id != null)
+			System.out.println("Successfully added a micro blog entry. The id is " + id);
+		else
+			System.out.println("Could not add micro blog entry");
+	}
+	
+	public static void addMicroBlog_OldWay_ThisDoesNotWork() throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+
+		User admin = stub.profile_getUserByName(null, "admin", false);
+		DefinitionBrief db = stub.definition_getDefinitionByName(null, "_miniblog_entry");
+		FolderEntry entry = new FolderEntry();
+		entry.setParentBinderId(admin.getMiniBlogId());
+		entry.setTitle(new java.util.Date().toString());
+		Description desc = new Description();
+		desc.setFormat(1);
+		desc.setText("My Status Update");
+		entry.setDescription(desc);
+		
+		long id = stub.folder_addEntry(null, entry, null);
+				
+		System.out.println("Successfully added a micro blog entry. The id is " + id);
 	}
 	
 	private static void callGetTeamsUsingToken(TeamingServiceSoapBindingStub regularStub, long applicationId, long userId) throws Exception {
