@@ -148,6 +148,7 @@ public class TeamingServiceClientWithStub {
 		User admin = stub.profile_getUserByName(null, "admin", false);
 		DefinitionBrief db = stub.definition_getDefinitionByName(null, "_miniblog_entry");
 		FolderEntry entry = new FolderEntry();
+		entry.setDefinitionId(db.getId());
 		entry.setParentBinderId(admin.getMiniBlogId());
 		entry.setTitle(new java.util.Date().toString());
 		Description desc = new Description();
