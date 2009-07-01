@@ -743,6 +743,19 @@ public class WorkspaceTreeHelper {
 					NLT.get("toolbar.menu.siteAdministration"), url);
 		}
 		
+		//Export / Import
+		if (bs.getBinderModule().testAccess(workspace, BinderOperation.export)) {
+			qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_EXPORT_IMPORT);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_SHOW_MENU, "true");
+			toolbar.addToolbarMenuItem("1_administration", "", 
+					NLT.get("toolbar.menu.export_import"), url, qualifiers);
+			//adminMenuCreated=true;	
+		}
+		
 		//if no menu items were added, remove the empty menu
 		if (!adminMenuCreated) toolbar.deleteToolbarMenu("1_administration");
 		

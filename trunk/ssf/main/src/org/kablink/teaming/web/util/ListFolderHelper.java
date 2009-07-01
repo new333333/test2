@@ -106,6 +106,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -1566,6 +1567,21 @@ public class ListFolderHelper {
 						NLT.get("toolbar.menu.synchronize_mirrored_folder.scheduled"), adapterUrl.toString(), qualifiers);
 			}
 		}
+		
+		//Export / Import
+		if (bs.getBinderModule().testAccess(folder, BinderOperation.export)) {
+			
+			qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_EXPORT_IMPORT);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_SHOW_MENU, "true");
+			folderToolbar.addToolbarMenuItem("1_administration", "", 
+					NLT.get("toolbar.menu.export_import"), url, qualifiers);
+			//adminMenuCreated=true;	
+		}
+
 
 		//set email
 		if (bs.getBinderModule().testAccess(folder, BinderOperation.manageMail) &&

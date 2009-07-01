@@ -190,6 +190,7 @@ public class WebKeys {
 	public static final String URL_SECTION_TO_EDIT = "_section";
 	public static final String URL_START_DATE = "ss_startDate";
 	public static final String URL_STATUS_TICKET_ID = "ss_statusId";
+	public static final String URL_SHOW_MENU = "showMenu";
 	public static final String URL_TAB_ID = "tabId";
 	public static final String URL_TAG_COMMUNITY = "cTag";
 	public static final String URL_TAG_PERSONAL = "pTag";
@@ -286,6 +287,7 @@ public class WebKeys {
 	public static final String ACTION_LOGIN = "__login";
 	public static final String ACTION_MODIFY_PROFILE_ENTRY = "modify_profile_entry";
 	public static final String ACTION_VIEW_CHANGELOG="view_change_log";
+	public static final String ACTION_EXPORT_IMPORT="export_import";
 	public static final String ACTION_VIEW_PROFILE_LISTING = "view_profile_listing";
 	public static final String ACTION_VIEW_FOLDER_LISTING = "view_folder_listing";
 	public static final String ACTION_VIEW_SEARCH_RESULTS_LISTING = "view_search_results_listing";
@@ -1246,7 +1248,11 @@ public class WebKeys {
     public static final String VIEW_ADMIN_IMPORT_PROFILES ="administration/importProfiles"; 
     public static final String VIEW_ADMIN_IMPORT_ALL_DEFINITIONS_CONFIRM ="administration/importAllDefinitionsConfirm"; 
     public static final String VIEW_ADMIN_IMPORT_DEFINITIONS ="administration/importDefinitions"; 
-    public static final String VIEW_ADMIN_EXPORT_DEFINITIONS ="administration/exportDefinitions"; 
+    public static final String VIEW_ADMIN_EXPORT_DEFINITIONS ="administration/exportDefinitions";
+    
+    public static final String VIEW_ADMIN_EXPORT_IMPORT="administration/exportImport";
+    public static final String VIEW_ADMIN_UPDATE_EXPORT_IMPORT="administration/updateExportImport";
+    
     public static final String VIEW_ADMIN_MOVE_DEFINITION="administration/moveDefinition";
     public static final String VIEW_ADMIN_MANAGE_APPLICATIONS="administration/manage_applications";
     public static final String VIEW_ADMIN_MANAGE_APPLICATION_GROUPS="administration/manage_application_groups";

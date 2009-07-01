@@ -32,6 +32,11 @@
  */
 package org.kablink.teaming.module.binder.impl;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,14 +49,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.zip.ZipInputStream;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
+import org.apache.tools.zip.ZipEntry;
+import org.apache.tools.zip.ZipOutputStream;
+import org.dom4j.Attribute;
+import org.dom4j.Branch;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.hibernate.NonUniqueObjectException;
+import org.jboss.util.xml.DOMUtils;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.NoObjectByTheIdException;
@@ -66,6 +78,7 @@ import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
@@ -89,11 +102,25 @@ import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.TagObject;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
+import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.definition.export.ElementBuilder;
+import org.kablink.teaming.module.definition.export.ElementBuilderUtil;
+import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.shared.SearchUtils;
+import org.kablink.teaming.module.workspace.WorkspaceModule;
+import org.kablink.teaming.remoting.RemotingException;
+import org.kablink.teaming.remoting.ws.service.binder.BinderService;
+import org.kablink.teaming.remoting.ws.service.binder.BinderServiceImpl;
+import org.kablink.teaming.remoting.ws.service.binder.BinderServiceInternal;
+import org.kablink.teaming.remoting.ws.util.DomInputData;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.search.LuceneReadSession;
@@ -104,11 +131,15 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TagUtil;
+import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
+import org.kablink.teaming.web.util.WebUrlUtil;
+import org.kablink.util.FileUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -188,6 +219,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 				 break;
 	 			case report:
 	 				 getAccessControlManager().checkOperation(binder, WorkAreaOperation.GENERATE_REPORTS);
+	 				 break;
+	 			case export:
+	 				 getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
 	 				 break;
 	  			default:
 	   				throw new NotSupportedException(operation.toString(), "checkAccess");
@@ -1569,5 +1603,565 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	    		return postingEnabled;
 	    	}
 	    });
+	}
+	
+	public void export(Long binderId, Long entityId, OutputStream out, Map options) throws Exception{
+		Binder binder = loadBinder(binderId);
+		checkAccess(binder, BinderOperation.modifyBinder);
+		
+		ZipOutputStream zipOut = new ZipOutputStream(out);
+		
+		//Standard zip encoding is cp437. (needed when chars are outside the ASCII range)
+		zipOut.setEncoding("cp437");
+		
+		if(entityId != null){
+			FolderModule folderModule = (FolderModule) SpringContextUtil.getBean( "folderModule" );
+			processEntry(zipOut, folderModule.getEntry(binderId, entityId), "");
+		}else{
+			BinderModule binderModule = (BinderModule) SpringContextUtil.getBean( "binderModule" );
+			FolderModule folderModule = (FolderModule) SpringContextUtil.getBean( "folderModule" );
+			WorkspaceModule workspaceModule = (WorkspaceModule) SpringContextUtil.getBean( "workspaceModule" );
+						
+			EntityType entType = binderModule.getBinder(binderId).getEntityType();
+			
+			//see if folder
+			if(entType == EntityType.folder){
+				process(zipOut, folderModule.getFolder(binderId), false, options);
+			//see if ws or profiles ws
+			}else if((entType == EntityType.workspace) || (entType == EntityType.profiles)){
+				process(zipOut, workspaceModule.getWorkspace(binderId), true, options);
+			}else{
+				//something's wrong
+			}
+		}
+		zipOut.finish();
+	}
+	
+	private void process(ZipOutputStream zipOut, Binder start, boolean isWorkspace, Map options) throws Exception{
+		if(isWorkspace){	
+			zipOut.putNextEntry(new ZipEntry(start.getTitle() + "\\" + start.getTitle() + ".xml"));
+			XmlFileUtil.writeFile(
+					getWorkspaceAsDoc(null, start.getId(), false, start.getTitle()), 
+					zipOut);
+			zipOut.closeEntry();
+			
+			WorkspaceModule workspaceModule = (WorkspaceModule) SpringContextUtil.getBean( "workspaceModule" );
+			SortedSet<Binder> subWorkspaces = workspaceModule.getWorkspaceTree(start.getId());
+			for(Binder binder : subWorkspaces){
+				processBinder(zipOut, binder, 
+						(binder.getEntityType() == EntityType.workspace) || (binder.getEntityType() == EntityType.profiles),
+						options, start.getTitle());
+			}
+		}else{
+			zipOut.putNextEntry(new ZipEntry(start.getTitle() + "\\" + start.getTitle() + ".xml"));	
+			XmlFileUtil.writeFile(
+					getFolderAsDoc(null, start.getId(), false, start.getTitle()), 
+					zipOut);
+			zipOut.closeEntry();
+			
+			List<Folder> subFolders = ((Folder)start).getFolders();
+		
+			for(Folder fdr : subFolders){
+				processBinder(zipOut, fdr, false, options, start.getTitle());
+			}
+			
+			FolderModule folderModule = (FolderModule) SpringContextUtil.getBean( "folderModule" );
+			Map folderEntries = folderModule.getEntries(start.getId(), options);
+			List searchEntries = (List) folderEntries.get("search_entries");
+			
+			for(int i = 0; i< searchEntries.size(); i++){
+				Map searchEntry = (Map) searchEntries.get(i);
+				Long entryId = Long.valueOf(searchEntry.get("_docId").toString());
+				FolderEntry entry = folderModule.getEntry(start.getId(), entryId);
+				processEntry(zipOut, entry, start.getTitle());
+			}
+		}
+		return;
+	}
+	
+	private void processBinder(ZipOutputStream zipOut, Binder binder, boolean isWorkspace, Map options, String pathName) throws Exception{		
+		if(isWorkspace){	
+			zipOut.putNextEntry(new ZipEntry(pathName + "\\" + binder.getTitle() + "\\" + binder.getTitle() + ".xml"));		
+			XmlFileUtil.writeFile(
+					getWorkspaceAsDoc(null, binder.getId(), false, pathName + "\\" + binder.getTitle()), 
+					zipOut);
+			zipOut.closeEntry();
+			
+			WorkspaceModule workspaceModule = (WorkspaceModule) SpringContextUtil.getBean( "workspaceModule" );
+			SortedSet<Binder> subWorkspaces = workspaceModule.getWorkspaceTree(binder.getId());
+			for(Binder bdr : subWorkspaces){
+				processBinder(zipOut, bdr, 
+						(bdr.getEntityType() == EntityType.workspace) || (bdr.getEntityType() == EntityType.profiles),
+						options, pathName + "\\" + binder.getTitle());
+			}
+		}else{
+			zipOut.putNextEntry(new ZipEntry(pathName + "\\" + binder.getTitle() + "\\" + binder.getTitle() + ".xml"));		
+			XmlFileUtil.writeFile(
+					getFolderAsDoc(null, binder.getId(), false, pathName + "\\" + binder.getTitle()), 
+					zipOut);
+			zipOut.closeEntry();
+			
+			FolderModule folderModule = (FolderModule) SpringContextUtil.getBean( "folderModule" );
+			Set<Folder> subFolders = folderModule.getSubfolders((Folder)binder);
+			
+			for(Folder fdr : subFolders){
+				processBinder(zipOut, fdr, false, options, pathName + "\\" + binder.getTitle());
+			}
+		
+			Map folderEntries = folderModule.getEntries(binder.getId(), options);
+			List searchEntries = (List) folderEntries.get("search_entries");
+			
+			for(int i = 0; i< searchEntries.size(); i++){
+				Map searchEntry = (Map) searchEntries.get(i);
+				Long entryId = Long.valueOf(searchEntry.get("_docId").toString());
+				FolderEntry entry = folderModule.getEntry(binder.getId(), entryId);
+				processEntry(zipOut, entry, pathName + "\\" + binder.getTitle());
+			}
+		}
+		
+		Set<FileAttachment> attachments = binder.getFileAttachments();
+		for(FileAttachment attach : attachments){
+			processFolderAttachment(zipOut, binder, attach, pathName + "\\" + binder.getTitle());
+		}
+		return;
+	}
+	
+	private void processFolderAttachment(ZipOutputStream zipOut, 
+			Binder binder, FileAttachment attachment, String pathName) throws IOException{
+		
+		FileModule fileModule = (FileModule) SpringContextUtil.getBean( "fileModule" );
+		InputStream fileStream = fileModule.readFile(binder.getParentBinder(), binder, attachment);
+		
+		zipOut.putNextEntry(new ZipEntry(pathName + "\\" 
+				+ attachment.getFileItem().getName()));	
+		FileUtil.copy(fileStream, zipOut);
+		zipOut.closeEntry();
+		fileStream.close();
+		
+		return;
+	}
+	
+	private String calcFullId(FolderEntry entry){
+		if(entry.getParentEntry() == null){
+			return entry.getId().toString();
+		}else{
+			return calcFullId(entry.getParentEntry()) + "." + entry.getId();
+		}
+	}
+	
+	private void processEntry(ZipOutputStream zipOut, FolderEntry entry, String pathName) throws Exception{	
+		String fullId = null;
+		
+		if(entry.getParentEntry() == null){
+			fullId = entry.getId().toString();
+		}else{
+			fullId = calcFullId(entry);
+		}
+
+		zipOut.putNextEntry(new ZipEntry(pathName + "\\" + entry.getTitle().replace(':', '+') + "[" + fullId + "].xml"));
+		XmlFileUtil.writeFile(
+				getEntryAsDoc(null, entry.getParentBinder().getId(), entry.getId(), false, pathName + "\\" + entry.getTitle().replace(':', '+') + "[" + fullId + "]"), 
+				zipOut);
+		zipOut.closeEntry();
+		
+		Set<FileAttachment> attachments = entry.getFileAttachments();
+		for(FileAttachment attach : attachments){
+			processEntryAttachment(zipOut, entry, fullId, attach, pathName);
+		}
+		
+		List<FolderEntry> replies = entry.getReplies();
+		for(FolderEntry reply : replies){		
+			processEntryReply(zipOut, reply, fullId, pathName);
+		}
+		
+		return;
+	}
+	
+	private void processEntryReply(ZipOutputStream zipOut, FolderEntry reply, String fullId, String pathName) throws Exception{
+		String newFullId = fullId + "." + reply.getId();
+		
+		zipOut.putNextEntry(new ZipEntry(pathName + "\\" + reply.getTitle().replace(':', '+') + "[" + newFullId + "].xml"));		
+		XmlFileUtil.writeFile(
+				getEntryAsDoc(null, reply.getParentBinder().getId(), reply.getId(), false, pathName + "\\" + reply.getTitle().replace(':', '+') + "[" + fullId + "]"), 
+				zipOut);
+		zipOut.closeEntry();	
+		
+		Set<FileAttachment> attachments = reply.getFileAttachments();
+		for(FileAttachment attach : attachments){
+			processEntryAttachment(zipOut, reply, newFullId, attach, pathName);
+		}
+		
+		List<FolderEntry> reps = reply.getReplies();
+		for(FolderEntry rep : reps){	
+			processEntryReply(zipOut, rep, newFullId, pathName);	
+		}
+		
+		return;
+	}
+	
+	private void processEntryAttachment(ZipOutputStream zipOut, 
+			FolderEntry entry, String fullId, FileAttachment attachment, String pathName) throws IOException{
+		
+		FileModule fileModule = (FileModule) SpringContextUtil.getBean( "fileModule" );
+		InputStream fileStream = fileModule.readFile(entry.getParentBinder(), entry, attachment);
+		
+		zipOut.putNextEntry(new ZipEntry(pathName + "\\" + entry.getTitle().replace(':', '+') + "[" + fullId + "]\\" 
+				+ attachment.getFileItem().getName()));
+		FileUtil.copy(fileStream, zipOut);
+		zipOut.closeEntry();
+		fileStream.close();
+		
+		return;
+	}
+	
+	private Document getEntryAsDoc(String accessToken, long binderId, long entryId, boolean includeAttachments, String pathName) {
+		Long bId = new Long(binderId);
+		Long eId = new Long(entryId);
+		
+		FolderModule folderModule = (FolderModule) SpringContextUtil.getBean( "folderModule" );
+		
+		// Retrieve the raw entry.
+		FolderEntry entry = folderModule.getEntry(bId, eId);
+		Document doc = DocumentHelper.createDocument();	
+		Element entryElem = doc.addElement("entry");
+
+		// Handle structured fields of the entry known at compile time. 
+		addEntityAttributes(entryElem, entry);
+
+		// Handle custom fields driven by corresponding definition. 
+		addCustomElements(entryElem, entry);
+		
+		//new
+		adjustAttachmentUrls(doc, pathName);
+		
+		return doc;
+	}
+	
+	private Document getFolderAsDoc(String accessToken, long folderId, boolean includeAttachments, String pathName) {
+		Long fId = new Long(folderId);		
+		FolderModule folderModule = (FolderModule) SpringContextUtil.getBean( "folderModule" );
+		
+		// Retrieve the raw folder.
+		Folder folder = folderModule.getFolder(fId);
+		
+		Element team = binder_getTeamMembersAsElement(null, folder.getId());
+		//System.out.println("Team members for: " +  folder.getTitle() + " are: " + team.asXML());
+		//System.out.println(folder.getTeamMemberIds().toString());
+		
+		Document doc = DocumentHelper.createDocument();
+		Element folderElem = doc.addElement("folder");
+
+		// Handle structured fields of the folder known at compile time. 
+		addEntityAttributes(folderElem, folder);
+
+		// Handle custom fields driven by corresponding definition. 
+		addCustomElements(folderElem, folder);
+		
+		//teams
+		//System.out.println(team.asXML());
+		folderElem.add(team);
+		//entryElem.addText(teamm);
+		//entryElem.addElement(teamm);
+		
+		//new
+		adjustAttachmentUrls(doc, pathName);
+		
+		return doc;
+	}
+	
+	private Document getWorkspaceAsDoc(String accessToken, long workspaceId, boolean includeAttachments, String pathName) {
+		Long wId = new Long(workspaceId);		
+		WorkspaceModule workspaceModule = (WorkspaceModule) SpringContextUtil.getBean( "workspaceModule" );
+		
+		// Retrieve the raw workspace.
+		Workspace workspace = workspaceModule.getWorkspace(wId);
+		
+		Element team = binder_getTeamMembersAsElement(null, workspace.getId());
+		//System.out.println("Team members for: " +  workspace.getTitle() + " are: " + team.asXML());
+		//System.out.println(workspace.getTeamMemberIds().toString());
+		
+		Document doc = DocumentHelper.createDocument();
+		Element workspaceElem = doc.addElement("workspace");
+
+		// Handle structured fields of the workspace known at compile time. 
+		addEntityAttributes(workspaceElem, workspace);
+
+		// Handle custom fields driven by corresponding definition. 
+		addCustomElements(workspaceElem, workspace);
+		
+		//teams
+		//System.out.println(team.asXML());
+		workspaceElem.add(team);
+		//entryElem.addText(teamm);
+		//entryElem.addElement(teamm);
+		
+		//new
+		adjustAttachmentUrls(doc,pathName);
+		
+		return doc;
+	}
+	
+	private void addEntityAttributes(Element entityElem, DefinableEntity entity) {
+        entityElem.addAttribute("id", entity.getId().toString());
+		entityElem.addAttribute("binderId", entity.getParentBinder().getId().toString());
+		
+		if(entity.getEntryDef() != null) {
+			entityElem.addAttribute("definitionId", entity.getEntryDef().getId());
+		}
+		
+		entityElem.addAttribute("title", entity.getTitle());
+		String entityUrl = "";
+		
+		// if a folder entry
+		if(entity instanceof FolderEntry){
+			entityElem.addAttribute("docNumber", ((FolderEntry) entity).getDocNumber());
+			entityElem.addAttribute("docLevel", String.valueOf(((FolderEntry) entity).getDocLevel()));
+			entityUrl = WebUrlUtil.getEntryViewURL((FolderEntry) entity);
+		}
+		
+		entityElem.addAttribute("href", entityUrl);
+		addRating(entityElem, entity);
+	}
+	
+	private void addRating(Element element, DefinableEntity entity)
+	{
+		if(entity.getAverageRating() != null) {
+			element.addAttribute("averageRating", entity.getAverageRating().getAverage().toString());
+			element.addAttribute("ratingCount", entity.getAverageRating().getCount().toString());
+		}
+	}
+	
+	private void addCustomElements(final Element entityElem, final DefinableEntity entry) {
+		addCustomAttributes(entityElem, entry);
+	}
+	
+	private void addCustomAttributes(final Element entityElem, final DefinableEntity entity) {
+		final ElementBuilder.BuilderContext context = null;
+			
+		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
+			public void visit(Element entityElement, Element flagElement, Map args)
+			{		
+                if (flagElement.attributeValue("apply").equals("true")) {
+                	String fieldBuilder = flagElement.attributeValue("elementBuilder");
+                	String typeValue = entityElement.attributeValue("name");
+  					String nameValue = DefinitionUtils.getPropertyValue(entityElement, "name");									
+					if (Validator.isNull(nameValue)) {nameValue = typeValue;}
+                	ElementBuilderUtil.buildElement(entityElem, entity, typeValue, nameValue, fieldBuilder, context);
+                }
+			}
+			public String getFlagElementName() { return "export"; }
+		};
+		
+		DefinitionModule definitionModule = (DefinitionModule) SpringContextUtil.getBean( "definitionModule" );
+		
+		definitionModule.walkDefinition(entity, visitor, null);
+
+		//see if attachments have been handled
+		Element root = entity.getEntryDef().getDefinition().getRootElement();
+		
+		if (root == null) return;
+		Element attachments = (Element)root.selectSingleNode("//item[@name='attachFiles']");
+		if (attachments != null) return; // already processed
+      	
+		//Force processing of attachments.  Not all forms will have an attachment element,
+    	//but this is the only code that actually sends the files, even if they
+    	//are part of a graphic or file element.  So force attachment processing to pick up all files
+		attachments = (Element)definitionModule.getDefinitionConfig().getRootElement().selectSingleNode("//item[@name='attachFiles']");
+		
+		Element flagElem = (Element) attachments.selectSingleNode("export");
+		
+		ElementBuilderUtil.buildElement(entityElem, entity, "attachFiles", DefinitionUtils.getPropertyValue(attachments, "name"),
+				flagElem.attributeValue("elementBuilder"), context);
+	}
+	
+	private Element binder_getTeamMembersAsElement(String accessToken, long binderId)
+	{
+		Binder binder = getBinder(new Long(binderId));
+		SortedSet<Principal> principals = getTeamMembers(binder, true);
+		Document doc = DocumentHelper.createDocument();
+		Element team = doc.addElement("team");
+		team.addAttribute("inherited", binder.isTeamMembershipInherited()?"true":"false");
+		for(Principal p : principals) {
+			addPrincipalToDocument(team, p);
+		}
+		
+		//return doc.getRootElement().asXML();
+		return team;
+	}
+	
+	private Element addPrincipalToDocument(Branch doc, Principal entry)
+	{
+		Element entryElem = doc.addElement("principal");
+		
+		// Handle structured fields of the entry known at compile time. 
+		entryElem.addAttribute("id", entry.getId().toString());
+		//entryElem.addAttribute("binderId", entry.getParentBinder().getId().toString());
+		//entryElem.addAttribute("definitionId", entry.getEntryDef().getId());
+		entryElem.addAttribute("title", entry.getTitle());
+		//entryElem.addAttribute("emailAddress", entry.getEmailAddress());
+		//entryElem.addAttribute("type", entry.getEntityType().toString());
+		//entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));
+		//entryElem.addAttribute("reserved", Boolean.toString(entry.isReserved()));
+		entryElem.addAttribute("name", entry.getName());
+		if (entry instanceof User) {
+			//entryElem.addAttribute("firstName", ((User)entry).getFirstName());
+			//entryElem.addAttribute("middleName", ((User)entry).getMiddleName());
+			//entryElem.addAttribute("lastName", ((User)entry).getLastName());
+			//entryElem.addAttribute("zonName", ((User)entry).getZonName());
+			//entryElem.addAttribute("status", ((User)entry).getStatus());
+			//SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss aa");
+			//entryElem.addAttribute("statusDate", sdFormat.format(((User)entry).getStatusDate()));
+			//entryElem.addAttribute("skypeId", ((User)entry).getSkypeId());
+			//entryElem.addAttribute("twitterId", ((User)entry).getTwitterId());
+			//entryElem.addAttribute("miniBlogId", Long.toString(((User)entry).getMiniBlogId()));
+		}
+		
+		return entryElem;
+	}
+	
+	private void adjustAttachmentUrls(Document entityDoc, String pathname){
+		//System.out.println("..........................");
+	        
+        /*String xPath = "//attribute[@name='ss_attachFile']";
+        
+        Element ele = (Element) entityDoc.selectSingleNode(xPath);
+	
+        if(ele != null){
+        	System.out.println(ele.toString());
+        	
+        	Iterator iter = ele.elementIterator();
+    		while(iter.hasNext()){
+    			Element nextEle = (Element) iter.next();
+    			System.out.println("-----" + nextEle.toString());
+    			
+    		}
+        }*/
+		
+		String xPath = "//attribute[@name='ss_attachFile']//file//@href";
+        
+        Attribute attr = (Attribute) entityDoc.selectSingleNode(xPath);
+	
+        if(attr != null){
+        	//System.out.println(attr.toString());
+        	
+        	//Iterator iter = attr.elementIterator();
+    		//while(iter.hasNext()){
+//    			Element nextEle = (Element) iter.next();
+    			//System.out.println("-----" + nextEle.toString());
+    			
+    		//}
+        }
+	        
+		//System.out.println("..........................");
+	}
+	
+	public void importZip(Long binderId, InputStream fIn) throws IOException{
+		BinderModule binderModule = (BinderModule) SpringContextUtil.getBean( "binderModule" );
+		Binder binder = binderModule.getBinder(binderId);
+    	
+    	ZipInputStream zIn = new ZipInputStream(fIn);
+    	
+    	java.util.zip.ZipEntry zEntry = zIn.getNextEntry();
+    	
+    	while(zEntry != null){
+    		//System.out.println(zEntry.getName());
+    		
+    		String fileExt = EntityIndexUtils.getFileExtension(zEntry.getName().toLowerCase());
+    		
+    		//System.out.println(fileExt);
+    		
+    		if(fileExt.equals("xml")){
+    			//binder.
+    			//byte[]data = null;
+    			//zIn.read(data);
+    			//System.out.println(zEntry.toString());
+    			//String xmlStr = String.valueOf(data);
+    			String xmlStr = null;
+    			//Document tempDoc = getDocument(zEntry.toString());
+    			
+    			ByteArrayOutputStream output = new ByteArrayOutputStream();
+    			int data = 0;
+    			while( ( data = zIn.read() ) != - 1 )
+    			{
+    			output.write( data );
+    			}
+    			// The ZipEntry is extracted in the output
+    			xmlStr = output.toString();
+    			output.close();
+    		
+    			Document tempDoc = getDocument(xmlStr);
+    			
+    			String defId = getDefinitionId(tempDoc);
+    			 			
+    			String entType = getEntityType(tempDoc);
+    			
+    			//System.out.println(entType);
+    			
+    			if(entType.equals("entry")){
+    				folder_addEntryWithXML(null, binderId, defId, xmlStr, null);
+    			}
+    			
+    		}
+    		zEntry = zIn.getNextEntry();
+    	}
+	}
+	
+	private String getEntityType(Document entity){
+		return entity.getRootElement().getName();
+	}
+	
+	private String getDefinitionId(Document entity){
+		return entity.getRootElement().attributeValue("definitionId").toString();
+	}
+	
+	private long folder_addEntryWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
+		return addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, attachedFileName, null);
+	}
+	
+	private static int count = 0;
+	private static SimpleProfiler profiler = null;
+	
+	private long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName, Map options) {
+
+		FolderModule folderModule = (FolderModule) SpringContextUtil.getBean( "folderModule" );
+		IcalModule iCalModule = (IcalModule) SpringContextUtil.getBean( "icalModule" );
+		
+		Document doc = getDocument(inputDataAsXML);
+		if(profiler == null) {
+			profiler = new SimpleProfiler("webServices");
+			count = 0;
+		}
+		SimpleProfiler.setProfiler(profiler);
+		try {
+			return folderModule.addEntry(new Long(binderId), definitionId, 
+				new DomInputData(doc, iCalModule), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), options).getId().longValue();
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+		catch(WriteEntryDataException e) {
+				throw new RemotingException(e);
+		} finally {
+			if(++count == 10000) {
+				logger.info(SimpleProfiler.toStr());
+				profiler = null;
+				SimpleProfiler.clearProfiler();
+			}
+		}
+	}
+	
+	private Document getDocument(String xml) {
+		// Parse XML string into a document tree.
+		try {
+			return DocumentHelper.parseText(xml);
+		} catch (DocumentException e) {
+			logger.error(e);
+			throw new IllegalArgumentException(e.toString());
+		}
+	}
+	
+	private Map getFileAttachments(String fileUploadDataItemName, String[] fileNames)
+	{
+		return new HashMap();
 	}
 }
