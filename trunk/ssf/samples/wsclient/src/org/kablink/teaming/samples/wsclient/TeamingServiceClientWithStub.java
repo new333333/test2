@@ -139,7 +139,7 @@ public class TeamingServiceClientWithStub {
 			System.out.println("Could not add micro blog entry");
 	}
 	
-	public static void addMicroBlog_OldWay() throws Exception {
+	public static void addMicroBlog_OldWay_ThisDoesNotWork() throws Exception {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
@@ -148,6 +148,7 @@ public class TeamingServiceClientWithStub {
 		User admin = stub.profile_getUserByName(null, "admin", false);
 		DefinitionBrief db = stub.definition_getDefinitionByName(null, "_miniblog_entry");
 		FolderEntry entry = new FolderEntry();
+		entry.setDefinitionId(db.getId());
 		entry.setParentBinderId(admin.getMiniBlogId());
 		entry.setTitle(new java.util.Date().toString());
 		Description desc = new Description();
