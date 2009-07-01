@@ -2877,7 +2877,20 @@ public class BinderHelper {
 		return hmRet;
 	}
 
-	public static void addMiniBlogEntry(AllModulesInjected bs, String text) {
+	public static Long addMiniBlogEntry(AllModulesInjected bs, String text) {
+		if(text == null)
+			return null;
+
+		Long entryId = null;
+
+    	Pattern p = Pattern.compile("([\\s]*)$");
+    	Matcher m = p.matcher(text);
+    	if (m.find()) {
+			//Trim any trailing whitespace
+    		text = text.substring(0, m.start(0));
+    	}
+    	text = text.replaceAll("&quot;", "\"");
+		
         User user = RequestContextHolder.getRequestContext().getUser();
 		if (text.length() > ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH) {
 			text = text.substring(0, ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH);
@@ -2926,7 +2939,6 @@ public class BinderHelper {
 				}
 				if (def != null) {
 					FolderModule folderModule = bs.getFolderModule();
-					Long entryId = null;
 					
 					miniBlogId = miniBlog.getId();
 					try {
@@ -2941,6 +2953,8 @@ public class BinderHelper {
 				}
 			}
 		}
+		
+		return entryId;
 	}
 	
 	public static void buildWorkflowSupportBeans(AllModulesInjected bs, List entryList, Map model) {
