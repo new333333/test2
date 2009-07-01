@@ -103,6 +103,7 @@
 		<help>ihelp.designers.title_field</help>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderTitle" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderText" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderText" />
 	</item>
 
 <!-- shared view items ie)no category -->
@@ -275,6 +276,7 @@
 		<help>ihelp.designers.icon</help>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderIcon" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderIcon" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderIcon" />
 	</item>
 	
 <!--
@@ -303,6 +305,8 @@
 			fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderEntryAttributes"/>
 		<webService apply="true"
 			elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderEntryAttributes"/>
+		<export apply="true"
+			elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderEntryAttributes"/>
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderEntryAttributes" />
 	</item>
 -->
@@ -331,6 +335,7 @@
 		<help>ihelp.designers.event</help>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderEvent" />
 	    <webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderEvent" />
+	    <export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderEvent" />
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderEvent"/>
 	</item>
 
@@ -643,6 +648,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderIcon" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderIcon" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderIcon" />
 	</item>
 
 	<item name="folderRemoteApp" caption="__remoteApp" type="data" multipleAllowed="true" 
@@ -1111,6 +1117,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderName" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderName" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderName" />
 	</item>
 	
 	<item name="profilePassword" caption="__profile_password" type="data" 
@@ -1142,6 +1149,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 
 	<item name="profileLastName" caption="__lastName" type="data" 
@@ -1160,6 +1168,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileMiddleName" caption="__middleName" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
@@ -1177,6 +1186,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	
 	<item name="profileOrganization" caption="__organization" type="data" 
@@ -1195,6 +1205,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileEmailAddress" caption="__emailAddress" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
@@ -1212,6 +1223,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileMobileEmailAddress" caption="__mobileEmailAddress" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
@@ -1229,6 +1241,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileTxtEmailAddress" caption="__txtEmailAddress" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
@@ -1246,6 +1259,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileZonName" caption="__zonName" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
@@ -1263,6 +1277,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileTimeZone" caption="__timeZone" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData"  display="form">
@@ -1276,6 +1291,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileLocale" caption="__locale" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData"  display="form">
@@ -1290,6 +1306,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	<item name="profilePhone" caption="__phone" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
@@ -1307,6 +1324,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileSkypeId" caption="__skypeId" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
@@ -1324,6 +1342,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileTwitterId" caption="__twitterId" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
@@ -1338,6 +1357,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileEntryPicture" caption="__profile_entry_picture" type="data" multipleAllowed="false"
 		category="profileEntryData" display="form">
@@ -1361,6 +1381,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_entry_graphic_form.jsp" />
 		</jsps>
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderGraphic" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderGraphic" />
 	</item>
 
 <!-- Profile entry view-->
@@ -1573,6 +1594,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderIcon" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderIcon" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderGraphic" />
 	</item>
 	
 	<item name="workspaceBranding" caption="__branding" type="data" multipleAllowed="false" 
@@ -1762,6 +1784,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderText" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderText" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderText" />
 		<notify />
 	</item>
 	
@@ -1783,6 +1806,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderDescription" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderDescription" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderDescription" />
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription" />
 	</item>
 	
@@ -1812,6 +1836,7 @@
 		  </args>
 		</index>
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderSelect" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderSelect" />
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderSelect" />
 	</item>
 
@@ -1853,6 +1878,8 @@
 			fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderUserListSelect"/>
 		<webService apply="true"
 			elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderUserListSelect"/>
+		<export apply="true"
+			elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderUserListSelect"/>
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderPrincipalList" />
 	</item>
 
@@ -1912,6 +1939,7 @@
 		  </args>
 		</index>
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderSelect" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderSelect" />
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderRadio"/>
 	</item>
 	
@@ -1946,6 +1974,7 @@
 		<help>ihelp.designers.places</help>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderPlaces" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderPlaces" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderPlaces" />
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderPlaces"/>
 	</item>
 
@@ -1962,6 +1991,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderCheck" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderCheck" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderCheck" />
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderCheck" />
 	</item>
 
@@ -2003,6 +2033,7 @@
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/file_form.jsp" />
 		</jsps>
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderGraphic" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderGraphic" />
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderFile" />
 	</item>
 
@@ -2022,6 +2053,7 @@
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/attach_files_form.jsp" />
 		</jsps>
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderAttachments" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderAttachments" />
 	</item>
 	<item name="description" caption="__description" type="data" multipleAllowed="false" category="commonEntryData" display="form">
 		<properties>
@@ -2040,7 +2072,8 @@
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/textarea_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderDescription" />
-	<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderDescription" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderDescription" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderDescription" />
 		<notify  notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription" />
 	</item>
 	
@@ -2063,6 +2096,7 @@
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/file_form.jsp" />
 		</jsps>
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderFile" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderFile" />
 		<notify  notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderFile"/>
 	</item>
 	
@@ -2087,6 +2121,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderDate" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderDate" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderDate" />
 		<notify velocity="date.vm"/> 
 	</item>
 	
@@ -2111,6 +2146,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderDateTime" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderDate" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderDate" />
 		<notify velocity="date_time.vm"/> 
 	</item>
 	
@@ -2132,6 +2168,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderUserlist" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderUserlist" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderUserlist" />
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderPrincipalList" />
 	</item>
 	
@@ -2152,6 +2189,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderGrouplist" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderGrouplist" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderGrouplist" />
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderPrincipalList" />
 	</item>	
 	
@@ -2172,6 +2210,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderTeamlist" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderTeamlist" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderTeamlist" />
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderPlaces" />
 	</item>		
 
@@ -2189,6 +2228,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderSurvey" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderSurvey" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderSurvey" />
 		<notify velocity="survey.vm" />
 	</item>
 

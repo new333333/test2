@@ -72,6 +72,7 @@
 	<bean id="mirroredFolderSynchronizationController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.MirroredFolderSynchronizationController" />
 
 	<bean id="adminViewChangeLogController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ViewChangeLogController" />
+	<bean id="adminExportImportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ExportImportController" />
 	<bean id="adminConfigureLdapController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureLdapController" />
 	<bean id="adminConfigureUserAccessController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureUserAccessController" />
 	<bean id="adminConfigureRolesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureRolesController" />
@@ -164,6 +165,7 @@
 						<entry key="quota_report"><ref bean="quotaReportController"/></entry>
 						<entry key="user_access_report"><ref bean="userAccessReportController"/></entry>
 						<entry key="view_change_log"><ref bean="adminViewChangeLogController"/></entry>
+						<entry key="export_import"><ref bean="adminExportImportController"/></entry>
 						<entry key="workflow_report"><ref bean="workflowReportController"/></entry>
 						<entry key="configure_ldap"><ref bean="adminConfigureLdapController"/></entry>
 						<entry key="configure_roles"><ref bean="adminConfigureRolesController"/></entry>

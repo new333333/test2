@@ -20,6 +20,7 @@
 	<bean id="adminManageApplicationsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationsController" />
 	<bean id="adminManageApplicationGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationGroupsController" />
 	<bean id="adminViewChangeLogController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ViewChangeLogController" />
+	<bean id="adminExportImportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ExportImportController" />
 	<bean id="accessControlController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.AccessControlController" />
 	<bean id="configureController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ConfigureController" />
 	<bean id="dashboardModifyController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ModifyDashboardController" />
@@ -48,6 +49,7 @@
 						<entry key="configure_search_nodes"><ref bean="adminConfigureSearchNodesController"/></entry>
 						<entry key="configure_configuration"><ref bean="adminConfigureConfigurationController"/></entry>
 						<entry key="configure_user_access"><ref bean="adminConfigureUserAccessController"/></entry>
+						<entry key="export_import"><ref bean="adminExportImportController"/></entry>
 						<entry key="import_definition"><ref bean="adminImportDefinitionController"/></entry>
 						<entry key="get_log_files"><ref bean="adminLogFileController"/></entry>
 						<entry key="import_profiles"><ref bean="adminImportProfilesController"/></entry>

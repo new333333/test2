@@ -33,6 +33,9 @@
 
 package org.kablink.teaming.module.binder;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Map;
 import java.util.List;
@@ -78,6 +81,7 @@ public interface BinderModule {
 		setProperty,	
 		changeEntryTimestamps,
 		manageSimpleName,
+		export
 	}
     /**
      * Add a new <code>Folder</code> or <code>Workspace</code>.  Use definition type to determine which
@@ -470,4 +474,7 @@ public interface BinderModule {
 	 */
 	public void deleteSimpleName(String name);
 
+	public void export(Long binderId, Long entityId, OutputStream out, Map options) throws Exception;
+	
+	public void importZip(Long binderId, InputStream fIn) throws IOException;
 }

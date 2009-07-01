@@ -762,6 +762,26 @@ public class ViewEntryController extends  SAbstractController {
 			adapterUrl.setParameter(WebKeys.URL_FOLDER_ID, folderId);
 			toolbar.addToolbarMenuItem("8_reports", "", NLT.get("toolbar.reports.workflowHistory"), adapterUrl.toString(), qualifiers);
 		}
+		
+		//Export / Import
+		if (getBinderModule().testAccess(entry.getParentBinder(), BinderOperation.export)) {
+			
+			//accessControlEntryMap.put("deleteEntry", new Boolean(true));
+			Map qualifiers = new HashMap();
+			//qualifiers.put("onClick", "return ss_confirmDeleteEntry(this);");
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_EXPORT_IMPORT);
+			url.setParameter(WebKeys.OPERATION, WebKeys.OPERATION_EXPORT);
+			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+			//url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
+			url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+			url.setParameter(WebKeys.URL_SHOW_MENU, "false");
+			
+			//10?
+			toolbar.addToolbarMenu("10_delete", NLT.get("toolbar.menu.export_import"), url, qualifiers);
+			
+			//qualifiers.put("popup", new Boolean(true));
+		}
 
 
 		if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {

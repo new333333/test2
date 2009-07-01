@@ -59,6 +59,7 @@
 	  <xsd:element name="help" type="xsd:string" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="index" type="indexType"  minOccurs="0" maxOccurs="1"/>
       <xsd:element name="webService" type="webServiceType"  minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="export" type="exportType"  minOccurs="0" maxOccurs="1"/>
       <xsd:element name="notify" type="notifyType"  minOccurs="0" maxOccurs="1"/>
    </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
@@ -199,6 +200,14 @@
   </xsd:complexType>
   
  <xsd:complexType name="webServiceType">
+	<xsd:sequence>
+	  <xsd:element name="args" type="optionalArgsType" minOccurs="0" maxOccurs="1"/>
+	</xsd:sequence>
+	<xsd:attribute name="apply" type="xsd:boolean" use="required" />
+	<xsd:attribute name="elementBuilder" type="xsd:string" use="required" />
+  </xsd:complexType>
+  
+   <xsd:complexType name="exportType">
 	<xsd:sequence>
 	  <xsd:element name="args" type="optionalArgsType" minOccurs="0" maxOccurs="1"/>
 	</xsd:sequence>
