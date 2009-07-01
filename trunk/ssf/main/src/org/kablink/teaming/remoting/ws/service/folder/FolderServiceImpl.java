@@ -66,6 +66,7 @@ import org.kablink.teaming.util.DatedMultipartFile;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
+import org.kablink.teaming.web.util.BinderHelper;
 
 
 public class FolderServiceImpl extends BaseService implements FolderService, FolderServiceInternal {
@@ -452,4 +453,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 			throw new NoFileByTheNameException(fileName);
 	}
 
+	public Long folder_addMicroBlog(String accessToken, String text) {
+		return BinderHelper.addMiniBlogEntry(this, text);
+	}
 }
