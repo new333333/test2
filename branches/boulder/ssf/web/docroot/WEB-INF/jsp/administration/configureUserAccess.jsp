@@ -97,11 +97,11 @@
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
 <c:set var="licensedEdition" value="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>"/>
-<c:set var="titleTag" value="administration.configure_userAccess"/>
+<c:set var="titleTag" value='<%= NLT.get("administration.configure_userAccess") %>'/>
 <c:if test="${licensedEdition}">
-  <c:set var="titleTag" value="administration.configure_userAccessOnly"/>
+  <c:set var="titleTag" value='<%= NLT.get("administration.configure_userAccessOnly", NLT.get("administration.configure_userAccess")) %>'/>
 </c:if>
-<ssf:form titleTag="${titleTag}" >
+<ssf:form title="${titleTag}" >
 
 	<c:if test="${!empty ssException}">
 	<span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span></br>

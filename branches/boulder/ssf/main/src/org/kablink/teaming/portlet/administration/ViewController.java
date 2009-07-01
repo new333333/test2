@@ -234,7 +234,7 @@ public class ViewController extends  SAbstractController {
 		if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
 			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			if (ReleaseInfo.isLicenseRequiredEdition()) {
-				element.addAttribute("title", NLT.get("administration.configure_userAccessOnly"));
+				element.addAttribute("title", NLT.get("administration.configure_userAccessOnly", NLT.get("administration.configure_userAccess")));
 			} else {
 				element.addAttribute("title", NLT.get("administration.configure_userAccess"));
 			}
