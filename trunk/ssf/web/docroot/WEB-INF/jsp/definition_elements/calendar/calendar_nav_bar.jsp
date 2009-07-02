@@ -100,7 +100,7 @@
 				</tr>
 			</table></li>
 		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg"><a href="javascript: // " onclick="ss_calendar_settings.configure(${ssUser.weekFirstDayDefault},${ssUser.workDayStartDefault},'${ssUserProperties.calendarFirstDayOfWeek}'<c:if test="${!empty ssUserProperties.calendarWorkDayStart}">, ${ssUserProperties.calendarWorkDayStart}</c:if>);"><img border="0" class="ss_accessory_modify" src="<html:imagesPath/>pics/1pix.gif" 
-				    title="<ssf:nlt tag="calendar.settings.link"/>>" /></a></li>			
+				    title="<ssf:nlt tag="calendar.settings.link"/>" /></a></li>			
 		<li class="ss_calSelectDate ss_calendarNaviBarOption">
 			<form name="ssCalNavBar${prefix}" id="ssCalNavBar${prefix}" action="${goto_form_url}" 
 			  class="ss_toolbar_color"
