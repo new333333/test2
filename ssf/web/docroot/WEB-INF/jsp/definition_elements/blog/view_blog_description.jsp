@@ -43,7 +43,7 @@
 		if (description != null && !description.equals("")) {
 		%>
 <% //Description view %>
-  <div>
+  <div class="ss_entryContent">
 	<% if ("2".equals(descriptionFormat)) { %>
 	  <pre><c:out value="<%= description %>" escapeXml="false"/></pre>
 	<% } else { %>
@@ -59,7 +59,7 @@
 	 if (description != null && !description.equals("")) {	
 	 %>	
 <% //Description view %>
-  <div>
+  <div class="ss_entryContent">
 	<% if ("2".equals(descriptionFormat)) { %>
 	  <pre><c:out value="<%= description %>" escapeXml="false"/></pre>
 	<% } else { %>
