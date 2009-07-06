@@ -108,6 +108,11 @@ function ss_checkForm() {
 	}
 }
 
+function toggleFileInput() {
+	var el = document.getElementById('fileInput');
+	el.style.visibility = (ss_checkForImportOperation() ? 'visible' : 'hidden' );
+}
+
 </script>
 
 <div class="ss_style ss_portlet">
@@ -129,9 +134,9 @@ function ss_checkForm() {
 <br/>
 <br/>
 
-<input type="radio" name="ssOperation" id="ssOperation" value="export" checked><ssf:nlt tag="button.exportFolder"/>
+<input type="radio" name="ssOperation" id="ssOperation" value="export" checked onClick="toggleFileInput()"><ssf:nlt tag="button.exportBinder"/>
 <br/>
-<input type="radio" name="ssOperation" id="ssOperation" value="import" ><ssf:nlt tag="button.importFolder"/>
+<input type="radio" name="ssOperation" id="ssOperation" value="import" onClick="toggleFileInput()"><ssf:nlt tag="button.importBinder"/>
 
 <br/>
 <div class="ss_buttonBarLeft">
@@ -139,8 +144,16 @@ function ss_checkForm() {
 </div>
 <br>
 
+<style>
+#fileInput {
+    visibility: hidden;
+}
+</style>
+
+
 <div class="ss_divider"></div>
 <br>
+<div id="fileInput">
 <label for="imports"><span class="ss_bold"><ssf:nlt tag="administration.export_import.file"/></span></label>
 <br>
 <table class="ss_style" border="0" cellpadding="5" cellspacing="0" width="95%">
@@ -150,6 +163,7 @@ function ss_checkForm() {
 <div class="ss_divider"></div>
 
 <br/>
+</div>
 <div class="ss_formBreak"/>
 
 <div class="ss_buttonBarLeft">
