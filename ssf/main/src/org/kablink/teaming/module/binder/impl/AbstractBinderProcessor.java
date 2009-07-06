@@ -1495,8 +1495,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  		// add this query and list of ids to the lists we'll pass to updateDocs.
     		LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession(null);
     		try {
-    			//ignore acls when updateing acls
-    			luceneSession.updateDocuments(qb.buildQuery(crit.toQuery(), true).getQuery(), field, value);
+    			//ignore acl check in the query when updateing acls
+    			luceneSession.updateDocuments(qb.buildQuery(crit.toQuery(), true, null).getQuery(), field, value);
     		} finally {
     			luceneSession.close();
      	}    		   	
