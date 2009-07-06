@@ -127,5 +127,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/jsp-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/servlet-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/md5crypt.jar"/>
+	<classpathentry kind="lib" path="lib/gwt-servlet.jar"/>
+	<classpathentry kind="lib" path="lib/gwt-user.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
