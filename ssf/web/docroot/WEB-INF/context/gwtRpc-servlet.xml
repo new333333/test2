@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <!-- Maps the request through to a concrete controller instance -->
+    <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <value>
+            /**/gwtTeaming.rpc=gwtRpcController
+            </value>
+        </property>
+    </bean>
+
+    <!-- GwtRpcController wraps our service in order to decode the incoming -->
+    <!-- request then delegates processing of the call to the POJO service -->
+    <!-- and then encodes the return value forwarding the response. -->
+    <bean id="gwtRpcController" class="org.kablink.teaming.gwt.server.GwtRpcController">
+        <property name="remoteService">
+            <bean class="org.kablink.teaming.gwt.server.GwtRpcServiceImpl" />
+        </property>
+    </bean>
+
+</beans>

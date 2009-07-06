@@ -200,6 +200,20 @@
 		</init-param>
 	</servlet>
 
+    <servlet>
+        <servlet-name>gwtRpc</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-value>context/gwtRpc-servlet</param-value>
+		</init-param>
+        <load-on-startup>6</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>gwtRpc</servlet-name>
+        <url-pattern>*.rpc</url-pattern>
+    </servlet-mapping>
+
 	<servlet-mapping>
 		<servlet-name>Kaptcha</servlet-name>
 		<url-pattern>/a/Kaptcha.jpg</url-pattern>
