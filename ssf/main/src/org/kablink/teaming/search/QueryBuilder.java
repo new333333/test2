@@ -107,7 +107,7 @@ public class QueryBuilder {
 	}
 
 	public SearchObject buildQuery(Document domQuery, boolean ignoreAcls) {
-		return buildQuery(domQuery, false, null);
+		return buildQuery(domQuery, ignoreAcls, null);
 	}
 
 	public SearchObject buildQuery(Document domQuery, boolean ignoreAcls, Long asUserId) {
