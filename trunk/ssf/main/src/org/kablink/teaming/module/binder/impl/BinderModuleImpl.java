@@ -33,10 +33,10 @@
 package org.kablink.teaming.module.binder.impl;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -63,7 +63,6 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.hibernate.NonUniqueObjectException;
-import org.jboss.util.xml.DOMUtils;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.NoObjectByTheIdException;
@@ -117,9 +116,6 @@ import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.remoting.RemotingException;
-import org.kablink.teaming.remoting.ws.service.binder.BinderService;
-import org.kablink.teaming.remoting.ws.service.binder.BinderServiceImpl;
-import org.kablink.teaming.remoting.ws.service.binder.BinderServiceInternal;
 import org.kablink.teaming.remoting.ws.util.DomInputData;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
@@ -1614,9 +1610,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		//Standard zip encoding is cp437. (needed when chars are outside the ASCII range)
 		zipOut.setEncoding("cp437");
 		
+		//Binder and entry definitions that we will later export
+		Set defList = new HashSet();
+		
 		if(entityId != null){
 			FolderModule folderModule = (FolderModule) SpringContextUtil.getBean( "folderModule" );
-			processEntry(zipOut, folderModule.getEntry(binderId, entityId), "");
+			processEntry(zipOut, folderModule.getEntry(binderId, entityId), "", defList);
 		}else{
 			BinderModule binderModule = (BinderModule) SpringContextUtil.getBean( "binderModule" );
 			FolderModule folderModule = (FolderModule) SpringContextUtil.getBean( "folderModule" );
@@ -1626,20 +1625,26 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			
 			//see if folder
 			if(entType == EntityType.folder){
-				process(zipOut, folderModule.getFolder(binderId), false, options);
+				process(zipOut, folderModule.getFolder(binderId), false, options, defList);
 			//see if ws or profiles ws
 			}else if((entType == EntityType.workspace) || (entType == EntityType.profiles)){
-				process(zipOut, workspaceModule.getWorkspace(binderId), true, options);
+				process(zipOut, workspaceModule.getWorkspace(binderId), true, options, defList);
 			}else{
 				//something's wrong
 			}
 		}
+		
+		//Export the binder and entry definitions
+		exportDefinitionList(zipOut, defList);
+		
 		zipOut.finish();
 	}
 	
-	private void process(ZipOutputStream zipOut, Binder start, boolean isWorkspace, Map options) throws Exception{
+	private void process(ZipOutputStream zipOut, Binder start, boolean isWorkspace, Map options, Set defList) throws Exception{
+		addBinderDefinitions(defList, start.getDefinitions());
+		
 		if(isWorkspace){	
-			zipOut.putNextEntry(new ZipEntry(start.getTitle() + "\\" + start.getTitle() + ".xml"));
+			zipOut.putNextEntry(new ZipEntry(start.getTitle() + "/" + start.getTitle() + ".xml"));
 			XmlFileUtil.writeFile(
 					getWorkspaceAsDoc(null, start.getId(), false, start.getTitle()), 
 					zipOut);
@@ -1650,10 +1655,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			for(Binder binder : subWorkspaces){
 				processBinder(zipOut, binder, 
 						(binder.getEntityType() == EntityType.workspace) || (binder.getEntityType() == EntityType.profiles),
-						options, start.getTitle());
+						options, start.getTitle(), defList);
 			}
 		}else{
-			zipOut.putNextEntry(new ZipEntry(start.getTitle() + "\\" + start.getTitle() + ".xml"));	
+			zipOut.putNextEntry(new ZipEntry(start.getTitle() + "/" + start.getTitle() + ".xml"));	
 			XmlFileUtil.writeFile(
 					getFolderAsDoc(null, start.getId(), false, start.getTitle()), 
 					zipOut);
@@ -1662,7 +1667,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			List<Folder> subFolders = ((Folder)start).getFolders();
 		
 			for(Folder fdr : subFolders){
-				processBinder(zipOut, fdr, false, options, start.getTitle());
+				processBinder(zipOut, fdr, false, options, start.getTitle(), defList);
 			}
 			
 			FolderModule folderModule = (FolderModule) SpringContextUtil.getBean( "folderModule" );
@@ -1673,17 +1678,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 				Map searchEntry = (Map) searchEntries.get(i);
 				Long entryId = Long.valueOf(searchEntry.get("_docId").toString());
 				FolderEntry entry = folderModule.getEntry(start.getId(), entryId);
-				processEntry(zipOut, entry, start.getTitle());
+				processEntry(zipOut, entry, start.getTitle(), defList);
 			}
 		}
 		return;
 	}
 	
-	private void processBinder(ZipOutputStream zipOut, Binder binder, boolean isWorkspace, Map options, String pathName) throws Exception{		
+	private void processBinder(ZipOutputStream zipOut, Binder binder, boolean isWorkspace, Map options, String pathName, Set defList) throws Exception{		
+		addBinderDefinitions(defList, binder.getDefinitions());
+		
 		if(isWorkspace){	
-			zipOut.putNextEntry(new ZipEntry(pathName + "\\" + binder.getTitle() + "\\" + binder.getTitle() + ".xml"));		
+			zipOut.putNextEntry(new ZipEntry(pathName + "/" + binder.getTitle() + "/" + binder.getTitle() + ".xml"));		
 			XmlFileUtil.writeFile(
-					getWorkspaceAsDoc(null, binder.getId(), false, pathName + "\\" + binder.getTitle()), 
+					getWorkspaceAsDoc(null, binder.getId(), false, pathName + "/" + binder.getTitle()), 
 					zipOut);
 			zipOut.closeEntry();
 			
@@ -1692,12 +1699,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			for(Binder bdr : subWorkspaces){
 				processBinder(zipOut, bdr, 
 						(bdr.getEntityType() == EntityType.workspace) || (bdr.getEntityType() == EntityType.profiles),
-						options, pathName + "\\" + binder.getTitle());
+						options, pathName + "/" + binder.getTitle(), defList);
 			}
 		}else{
-			zipOut.putNextEntry(new ZipEntry(pathName + "\\" + binder.getTitle() + "\\" + binder.getTitle() + ".xml"));		
+			zipOut.putNextEntry(new ZipEntry(pathName + "/" + binder.getTitle() + "/" + binder.getTitle() + ".xml"));		
 			XmlFileUtil.writeFile(
-					getFolderAsDoc(null, binder.getId(), false, pathName + "\\" + binder.getTitle()), 
+					getFolderAsDoc(null, binder.getId(), false, pathName + "/" + binder.getTitle()), 
 					zipOut);
 			zipOut.closeEntry();
 			
@@ -1705,7 +1712,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			Set<Folder> subFolders = folderModule.getSubfolders((Folder)binder);
 			
 			for(Folder fdr : subFolders){
-				processBinder(zipOut, fdr, false, options, pathName + "\\" + binder.getTitle());
+				processBinder(zipOut, fdr, false, options, pathName + "/" + binder.getTitle(), defList);
 			}
 		
 			Map folderEntries = folderModule.getEntries(binder.getId(), options);
@@ -1715,13 +1722,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 				Map searchEntry = (Map) searchEntries.get(i);
 				Long entryId = Long.valueOf(searchEntry.get("_docId").toString());
 				FolderEntry entry = folderModule.getEntry(binder.getId(), entryId);
-				processEntry(zipOut, entry, pathName + "\\" + binder.getTitle());
+				processEntry(zipOut, entry, pathName + "/" + binder.getTitle(), defList);
 			}
 		}
 		
 		Set<FileAttachment> attachments = binder.getFileAttachments();
 		for(FileAttachment attach : attachments){
-			processFolderAttachment(zipOut, binder, attach, pathName + "\\" + binder.getTitle());
+			processFolderAttachment(zipOut, binder, attach, pathName + "/" + binder.getTitle());
 		}
 		return;
 	}
@@ -1732,7 +1739,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		FileModule fileModule = (FileModule) SpringContextUtil.getBean( "fileModule" );
 		InputStream fileStream = fileModule.readFile(binder.getParentBinder(), binder, attachment);
 		
-		zipOut.putNextEntry(new ZipEntry(pathName + "\\" 
+		zipOut.putNextEntry(new ZipEntry(pathName + "/" 
 				+ attachment.getFileItem().getName()));	
 		FileUtil.copy(fileStream, zipOut);
 		zipOut.closeEntry();
@@ -1749,7 +1756,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		}
 	}
 	
-	private void processEntry(ZipOutputStream zipOut, FolderEntry entry, String pathName) throws Exception{	
+	private void processEntry(ZipOutputStream zipOut, FolderEntry entry, String pathName, Set defList) throws Exception{	
 		String fullId = null;
 		
 		if(entry.getParentEntry() == null){
@@ -1758,11 +1765,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			fullId = calcFullId(entry);
 		}
 
-		zipOut.putNextEntry(new ZipEntry(pathName + "\\" + entry.getTitle().replace(':', '+') + "[" + fullId + "].xml"));
+		zipOut.putNextEntry(new ZipEntry(pathName + "/" + entry.getTitle().replace(':', '+') + "[" + fullId + "].xml"));
 		XmlFileUtil.writeFile(
-				getEntryAsDoc(null, entry.getParentBinder().getId(), entry.getId(), false, pathName + "\\" + entry.getTitle().replace(':', '+') + "[" + fullId + "]"), 
+				getEntryAsDoc(null, entry.getParentBinder().getId(), entry.getId(), false, pathName + "/" + entry.getTitle().replace(':', '+') + "[" + fullId + "]"), 
 				zipOut);
 		zipOut.closeEntry();
+		
+		defList.add(entry.getEntryDef());
 		
 		Set<FileAttachment> attachments = entry.getFileAttachments();
 		for(FileAttachment attach : attachments){
@@ -1771,20 +1780,22 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		
 		List<FolderEntry> replies = entry.getReplies();
 		for(FolderEntry reply : replies){		
-			processEntryReply(zipOut, reply, fullId, pathName);
+			processEntryReply(zipOut, reply, fullId, pathName, defList);
 		}
 		
 		return;
 	}
 	
-	private void processEntryReply(ZipOutputStream zipOut, FolderEntry reply, String fullId, String pathName) throws Exception{
+	private void processEntryReply(ZipOutputStream zipOut, FolderEntry reply, String fullId, String pathName, Set defList) throws Exception{
 		String newFullId = fullId + "." + reply.getId();
 		
-		zipOut.putNextEntry(new ZipEntry(pathName + "\\" + reply.getTitle().replace(':', '+') + "[" + newFullId + "].xml"));		
+		zipOut.putNextEntry(new ZipEntry(pathName + "/" + reply.getTitle().replace(':', '+') + "[" + newFullId + "].xml"));		
 		XmlFileUtil.writeFile(
-				getEntryAsDoc(null, reply.getParentBinder().getId(), reply.getId(), false, pathName + "\\" + reply.getTitle().replace(':', '+') + "[" + fullId + "]"), 
+				getEntryAsDoc(null, reply.getParentBinder().getId(), reply.getId(), false, pathName + "/" + reply.getTitle().replace(':', '+') + "[" + fullId + "]"), 
 				zipOut);
 		zipOut.closeEntry();	
+		
+		defList.add(reply.getEntryDef());
 		
 		Set<FileAttachment> attachments = reply.getFileAttachments();
 		for(FileAttachment attach : attachments){
@@ -1793,7 +1804,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		
 		List<FolderEntry> reps = reply.getReplies();
 		for(FolderEntry rep : reps){	
-			processEntryReply(zipOut, rep, newFullId, pathName);	
+			processEntryReply(zipOut, rep, newFullId, pathName, defList);	
 		}
 		
 		return;
@@ -1805,7 +1816,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		FileModule fileModule = (FileModule) SpringContextUtil.getBean( "fileModule" );
 		InputStream fileStream = fileModule.readFile(entry.getParentBinder(), entry, attachment);
 		
-		zipOut.putNextEntry(new ZipEntry(pathName + "\\" + entry.getTitle().replace(':', '+') + "[" + fullId + "]\\" 
+		zipOut.putNextEntry(new ZipEntry(pathName + "/" + entry.getTitle().replace(':', '+') + "[" + fullId + "]/" 
 				+ attachment.getFileItem().getName()));
 		FileUtil.copy(fileStream, zipOut);
 		zipOut.closeEntry();
@@ -1831,7 +1842,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		// Handle custom fields driven by corresponding definition. 
 		addCustomElements(entryElem, entry);
 		
-		//new
+		//attachments
 		adjustAttachmentUrls(doc, pathName);
 		
 		return doc;
@@ -1845,8 +1856,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		Folder folder = folderModule.getFolder(fId);
 		
 		Element team = binder_getTeamMembersAsElement(null, folder.getId());
-		//System.out.println("Team members for: " +  folder.getTitle() + " are: " + team.asXML());
-		//System.out.println(folder.getTeamMemberIds().toString());
 		
 		Document doc = DocumentHelper.createDocument();
 		Element folderElem = doc.addElement("folder");
@@ -1858,12 +1867,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		addCustomElements(folderElem, folder);
 		
 		//teams
-		//System.out.println(team.asXML());
 		folderElem.add(team);
-		//entryElem.addText(teamm);
-		//entryElem.addElement(teamm);
 		
-		//new
+		//attachments
 		adjustAttachmentUrls(doc, pathName);
 		
 		return doc;
@@ -1877,8 +1883,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		Workspace workspace = workspaceModule.getWorkspace(wId);
 		
 		Element team = binder_getTeamMembersAsElement(null, workspace.getId());
-		//System.out.println("Team members for: " +  workspace.getTitle() + " are: " + team.asXML());
-		//System.out.println(workspace.getTeamMemberIds().toString());
 		
 		Document doc = DocumentHelper.createDocument();
 		Element workspaceElem = doc.addElement("workspace");
@@ -1890,12 +1894,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		addCustomElements(workspaceElem, workspace);
 		
 		//teams
-		//System.out.println(team.asXML());
 		workspaceElem.add(team);
-		//entryElem.addText(teamm);
-		//entryElem.addElement(teamm);
 		
-		//new
+		//attachments
 		adjustAttachmentUrls(doc,pathName);
 		
 		return doc;
@@ -1985,7 +1986,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			addPrincipalToDocument(team, p);
 		}
 		
-		//return doc.getRootElement().asXML();
 		return team;
 	}
 	
@@ -1995,64 +1995,45 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		
 		// Handle structured fields of the entry known at compile time. 
 		entryElem.addAttribute("id", entry.getId().toString());
-		//entryElem.addAttribute("binderId", entry.getParentBinder().getId().toString());
-		//entryElem.addAttribute("definitionId", entry.getEntryDef().getId());
 		entryElem.addAttribute("title", entry.getTitle());
-		//entryElem.addAttribute("emailAddress", entry.getEmailAddress());
-		//entryElem.addAttribute("type", entry.getEntityType().toString());
-		//entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));
-		//entryElem.addAttribute("reserved", Boolean.toString(entry.isReserved()));
 		entryElem.addAttribute("name", entry.getName());
-		if (entry instanceof User) {
-			//entryElem.addAttribute("firstName", ((User)entry).getFirstName());
-			//entryElem.addAttribute("middleName", ((User)entry).getMiddleName());
-			//entryElem.addAttribute("lastName", ((User)entry).getLastName());
-			//entryElem.addAttribute("zonName", ((User)entry).getZonName());
-			//entryElem.addAttribute("status", ((User)entry).getStatus());
-			//SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss aa");
-			//entryElem.addAttribute("statusDate", sdFormat.format(((User)entry).getStatusDate()));
-			//entryElem.addAttribute("skypeId", ((User)entry).getSkypeId());
-			//entryElem.addAttribute("twitterId", ((User)entry).getTwitterId());
-			//entryElem.addAttribute("miniBlogId", Long.toString(((User)entry).getMiniBlogId()));
-		}
 		
 		return entryElem;
 	}
 	
-	private void adjustAttachmentUrls(Document entityDoc, String pathname){
-		//System.out.println("..........................");
-	        
-        /*String xPath = "//attribute[@name='ss_attachFile']";
-        
-        Element ele = (Element) entityDoc.selectSingleNode(xPath);
-	
-        if(ele != null){
-        	System.out.println(ele.toString());
-        	
-        	Iterator iter = ele.elementIterator();
-    		while(iter.hasNext()){
-    			Element nextEle = (Element) iter.next();
-    			System.out.println("-----" + nextEle.toString());
-    			
-    		}
-        }*/
-		
+	private void adjustAttachmentUrls(Document entityDoc, String pathName){
 		String xPath = "//attribute[@name='ss_attachFile']//file//@href";
-        
-        Attribute attr = (Attribute) entityDoc.selectSingleNode(xPath);
-	
-        if(attr != null){
-        	//System.out.println(attr.toString());
-        	
-        	//Iterator iter = attr.elementIterator();
-    		//while(iter.hasNext()){
-//    			Element nextEle = (Element) iter.next();
-    			//System.out.println("-----" + nextEle.toString());
-    			
-    		//}
+		
+		List hrefs = entityDoc.selectNodes(xPath);
+		
+		for(Attribute attr: (List<Attribute>)hrefs)
+		{	
+        	File tempFile = new File(attr.getValue());
+        	attr.setValue(pathName + "/" + tempFile.getName());
         }
-	        
-		//System.out.println("..........................");
+	}
+	
+	private void addBinderDefinitions(Set defList, List binderDefList){
+		for(Definition def: (List<Definition>)binderDefList){
+			defList.add(def);
+		}
+	}
+	
+	private void exportDefinitionList(ZipOutputStream zipOut, Set defList) throws Exception{
+		for(Definition def: (Set<Definition>)defList){
+			exportDefinition(zipOut, def);
+		}
+	}
+	
+	private void exportDefinition(ZipOutputStream zipOut, Definition def) throws Exception{
+		String name = def.getName();
+		
+		if (Validator.isNull(name)) 
+			name = def.getTitle();
+		
+		zipOut.putNextEntry(new ZipEntry("__definitions/" + name + ".xml"));
+		XmlFileUtil.writeFile(def.getDefinition(), zipOut);
+		zipOut.closeEntry();
 	}
 	
 	public void importZip(Long binderId, InputStream fIn) throws IOException{
@@ -2064,20 +2045,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	java.util.zip.ZipEntry zEntry = zIn.getNextEntry();
     	
     	while(zEntry != null){
-    		//System.out.println(zEntry.getName());
-    		
     		String fileExt = EntityIndexUtils.getFileExtension(zEntry.getName().toLowerCase());
     		
-    		//System.out.println(fileExt);
-    		
     		if(fileExt.equals("xml")){
-    			//binder.
-    			//byte[]data = null;
-    			//zIn.read(data);
-    			//System.out.println(zEntry.toString());
-    			//String xmlStr = String.valueOf(data);
     			String xmlStr = null;
-    			//Document tempDoc = getDocument(zEntry.toString());
     			
     			ByteArrayOutputStream output = new ByteArrayOutputStream();
     			int data = 0;
@@ -2094,8 +2065,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     			String defId = getDefinitionId(tempDoc);
     			 			
     			String entType = getEntityType(tempDoc);
-    			
-    			//System.out.println(entType);
     			
     			if(entType.equals("entry")){
     				folder_addEntryWithXML(null, binderId, defId, xmlStr, null);
