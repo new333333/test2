@@ -48,9 +48,7 @@ public class ElementBuilderAttachments extends AbstractElementBuilder {
 					Element value = element.addElement("file");
 					value.setText(att.getFileItem().getName());
 					value.addAttribute("href", webUrl);
-					//System.out.println(element.elements().size());
 				}
-				context.handleAttachment(att, webUrl);
 			}
 		}
 		return true;
