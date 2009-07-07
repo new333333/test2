@@ -58,11 +58,9 @@ public class GwtRpcController extends RemoteServiceServlet
 	implements
         Controller, ServletContextAware
 {
-    private ServletContext m_servletContext;
-
-    private RemoteService m_remoteService;
-
-    private Class m_remoteServiceClass;
+    private ServletContext		m_servletContext;
+    private RemoteService		m_remoteService;
+    private Class				m_remoteServiceClass;
 
     /**
      * 
@@ -71,7 +69,7 @@ public class GwtRpcController extends RemoteServiceServlet
     	HttpServletRequest request,
         HttpServletResponse response) throws Exception
     {
-        super.doPost(request, response);
+        super.doPost( request, response );
         return null;
     }// end handleRequest()
     
@@ -80,21 +78,23 @@ public class GwtRpcController extends RemoteServiceServlet
      * 
      */
     @Override
-    public String processCall(String payload) throws SerializationException
+    public String processCall( String payload ) throws SerializationException
     {
         try
         {
-            RPCRequest rpcRequest = RPC.decodeRequest(payload, m_remoteServiceClass);
+            RPCRequest	rpcRequest;
+
+            rpcRequest = RPC.decodeRequest( payload, m_remoteServiceClass );
 
             // delegate work to the spring injected service
-            return RPC.invokeAndEncodeResponse( m_remoteService, rpcRequest.getMethod(), rpcRequest.getParameters());
+            return RPC.invokeAndEncodeResponse( m_remoteService, rpcRequest.getMethod(), rpcRequest.getParameters() );
         }
         catch (IncompatibleRemoteServiceException ex)
         {
             getServletContext().log(
                             "An IncompatibleRemoteServiceException was thrown while processing this call.",
-                            ex);
-            return RPC.encodeResponseForFailure(null, ex);
+                            ex );
+            return RPC.encodeResponseForFailure( null, ex );
         }
     }// end processCall()
     
@@ -112,7 +112,7 @@ public class GwtRpcController extends RemoteServiceServlet
     /**
      * 
      */
-    public void setServletContext(ServletContext servletContext)
+    public void setServletContext( ServletContext servletContext )
     {
         m_servletContext = servletContext;
     }// end setServletContext()
@@ -122,7 +122,7 @@ public class GwtRpcController extends RemoteServiceServlet
      * 
      * @param remoteService
      */
-    public void setRemoteService(RemoteService remoteService)
+    public void setRemoteService( RemoteService remoteService )
     {
         m_remoteService = remoteService;
         m_remoteServiceClass = m_remoteService.getClass();
