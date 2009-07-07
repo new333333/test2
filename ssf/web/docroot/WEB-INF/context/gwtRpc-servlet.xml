@@ -12,12 +12,16 @@
         </property>
     </bean>
 
+	<!-- The GwtRpcServiceImpl class gets called by GwtRpcController to actually handle the gwt rpc request. -->
+    <bean id="gwtRpcService" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.gwt.server.GwtRpcServiceImpl">
+    </bean>
+
     <!-- GwtRpcController wraps our service in order to decode the incoming -->
     <!-- request then delegates processing of the call to the POJO service -->
     <!-- and then encodes the return value forwarding the response. -->
-    <bean id="gwtRpcController" class="org.kablink.teaming.gwt.server.GwtRpcController">
+    <bean id="gwtRpcController" class="org.kablink.teaming.gwt.server.GwtRpcController" depends-on="gwtRpcService">
         <property name="remoteService">
-            <bean class="org.kablink.teaming.gwt.server.GwtRpcServiceImpl" />
+            <ref bean="gwtRpcService"  />
         </property>
     </bean>
 
