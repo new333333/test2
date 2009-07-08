@@ -680,15 +680,24 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	
 				NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), searchInfo.getFilter(), sch);
 				while (ctxSearch.hasMore()) {
+					String	userName;
+					String	fixedUpUserName;
+					
 					Binding bd = (Binding)ctxSearch.next();
-					Attributes lAttrs = ctx.getAttributes(bd.getNameInNamespace());
+					userName = bd.getNameInNamespace();
+					
+					// Fixup the  by replacing all "/" with "\/".
+					fixedUpUserName = fixupName( userName );
+					fixedUpUserName = fixedUpUserName.trim();
+					
+					Attributes lAttrs = ctx.getAttributes( fixedUpUserName );
 					Attribute id=null;
 					id = lAttrs.get(userIdAttribute);
 					if (id == null) continue;
 					//map ldap id to sitescapeName
 					ssName = idToName((String)id.get());
 					if (ssName == null) continue;
-					String relativeName = bd.getNameInNamespace().trim();
+					String relativeName = userName.trim();
 					String dn;
 					if (bd.isRelative() && !"".equals(ctx.getNameInNamespace())) {
 						dn = relativeName + "," + ctx.getNameInNamespace().trim();
@@ -969,9 +978,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	
 				NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), searchInfo.getFilter(), sch);
 				while (ctxSearch.hasMore()) {
+					String groupName;
+					String fixedUpGroupName;
+					
 					Binding bd = (Binding)ctxSearch.next();
-					Attributes lAttrs = ctx.getAttributes(bd.getNameInNamespace());
-					String relativeName = bd.getNameInNamespace().trim();
+					groupName = bd.getNameInNamespace();
+					
+					// Fixup the  by replacing all "/" with "\/".
+					fixedUpGroupName = fixupName( groupName );
+					fixedUpGroupName = fixedUpGroupName.trim();
+					
+					Attributes lAttrs = ctx.getAttributes( fixedUpGroupName );
+					
+					String relativeName = groupName.trim();
 					String dn;
 					if (bd.isRelative() && !"".equals(ctx.getNameInNamespace())) {
 						if(!"".equals(relativeName)) {
@@ -1003,7 +1022,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						if(att != null) {
 							members = att.getAll();
 						} else {
-							NamingEnumeration<NameClassPair> e = ctx.list(relativeName);
+							NamingEnumeration<NameClassPair> e = ctx.list( fixedUpGroupName );
 	
 							LinkedList membersList = new LinkedList();
 							while(e.hasMore()) {
@@ -1029,6 +1048,40 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 		}
 	}
+	
+	/**
+	 * Fixup the given name by replacing all "/" with "\/"
+	 */
+	protected String fixupName( String name )
+	{
+		int		index;
+		int		fromIndex;
+
+		fromIndex = 0;
+		
+		// Find the next '/' in the name.
+		while ( (index = name.indexOf( "/", fromIndex )) >= 0 )
+		{
+			fromIndex = index + 1;
+			
+			if ( index == 0 )
+			{
+				// Add a '\' before the '/'
+				name = "\\" + name;
+				++fromIndex;
+			}
+			else
+			{
+				// Add a '\' before the '/'
+				name = name.substring( 0, index ) + "\\" + name.substring( index );
+				++fromIndex;
+			}
+		}// end while()
+		
+		return name;
+	}// end fixupName()
+	
+	
 	/**
 	 * Initialize context to an ldap server using 
 	 * 
