@@ -2047,7 +2047,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	while(zEntry != null){
     		String fileExt = EntityIndexUtils.getFileExtension(zEntry.getName().toLowerCase());
     		
-    		if(fileExt.equals("xml")){
+    		if(zEntry.getName().startsWith("__definitions/")){
+    			//eventually will need to import in definitions
+    		}
+    		else if(fileExt.equals("xml")){
     			String xmlStr = null;
     			
     			ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -2056,7 +2059,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     			{
     			output.write( data );
     			}
-    			// The ZipEntry is extracted in the output
     			xmlStr = output.toString();
     			output.close();
     		
@@ -2088,7 +2090,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
 	
 	private static int count = 0;
-	private static SimpleProfiler profiler = null;
 	
 	private long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName, Map options) {
 
@@ -2096,11 +2097,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		IcalModule iCalModule = (IcalModule) SpringContextUtil.getBean( "icalModule" );
 		
 		Document doc = getDocument(inputDataAsXML);
-		if(profiler == null) {
-			profiler = new SimpleProfiler("webServices");
-			count = 0;
-		}
-		SimpleProfiler.setProfiler(profiler);
 		try {
 			return folderModule.addEntry(new Long(binderId), definitionId, 
 				new DomInputData(doc, iCalModule), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), options).getId().longValue();
@@ -2113,7 +2109,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		} finally {
 			if(++count == 10000) {
 				logger.info(SimpleProfiler.toStr());
-				profiler = null;
 				SimpleProfiler.clearProfiler();
 			}
 		}
