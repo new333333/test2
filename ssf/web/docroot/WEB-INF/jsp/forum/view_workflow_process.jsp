@@ -46,7 +46,7 @@
 <!--NOVELL_REWRITE_ATTRIBUTE_ON='value'-->
 <c:if test="${ieBrowser == 'true'}">
 <object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" WIDTH = "100%" HEIGHT = "600"  
-  codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
+  codebase="https://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
 </c:if>
 <c:if test="${ieBrowser == 'false'}">
 <applet CODE = "org.kablink.teaming.applets.workflowviewer.WorkflowViewer" 
