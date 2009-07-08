@@ -75,7 +75,7 @@ function ss_showLoadingDropTargetDiv${ssEntryId}${ss_namespace}() {
 			<c:if test="<%= isIE %>">
 			<object id="dropboxobj${ssEntryId}${ss_namespace}" classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" CLASS="dropbox" 
 			  WIDTH = "20" HEIGHT = "20" NAME = "launcher" ALIGN = "middle" VSPACE = "0" HSPACE = "0" 
-			  codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
+			  codebase="https://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
 			</c:if>
 			<c:if test="<%= !isIE %>">
 			<applet CODE = "org.kablink.teaming.applets.droptarget.TopFrame" name="dropboxobj${ssEntryId}${ss_namespace}"
