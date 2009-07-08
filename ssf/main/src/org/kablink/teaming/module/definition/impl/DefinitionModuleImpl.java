@@ -33,6 +33,7 @@
 package org.kablink.teaming.module.definition.impl;
 
 import java.io.InputStream;
+import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -2168,6 +2169,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 										String[] colWidths = new String[colCount];
 										if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_COL_WIDTHS)) {
 											String colWidths2 = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_COL_WIDTHS);
+											try {
+												colWidths2 = URLDecoder.decode(colWidths2, "UTF-8");
+											} catch(Exception e) {}
 											for (int j = 0; j < colCount; j++) {
 												String colWidth = colWidths2;
 												if (colWidths2.indexOf("|") >= 0) {
