@@ -590,7 +590,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		//setup for sorting by age
 		boolean descend = true;
 		String sortBy = AGE;
-		int sortType = SortField.AUTO;
+		int sortType = SortField.STRING;
 		
 		org.dom4j.Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(org.kablink.util.search.Constants.QUERY_ELEMENT);
@@ -705,9 +705,9 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		//String title = "<![CDATA[ " + entry.getTitle() + "]]>";
 		String title = entry.getTitle();
 		ret += "<title>" + title + "</title>\n";
-		ret += "<link>"
+		ret += "<link href=\""
 				+ PermaLinkUtil.getPermalink(entry).replaceAll(
-						"&", "&amp;") + "</link>\n";
+						"&", "&amp;") + "\"/>\n";
 
 		String subtitle = entry.getDescription() == null ? "" : entry
 				.getDescription().getText();
@@ -716,14 +716,13 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		//subtitle = "<![CDATA[ " + subtitle + "]]>";
 		ret += "<subtitle>" + subtitle + "</subtitle>\n";
 
-		ret += "<author>" + entry.getCreation().getPrincipal().getName()
-				+ "</author>\n";
+		ret += "<author><name>" + entry.getCreation().getPrincipal().getName()
+				+ "</name></author>\n";
 
 		Date eDate = entry.getModification().getDate();
 		
 		ret += "<published>" + atomFmt.format(eDate) + "</published>\n";
 
-		ret += "<age>" + new Long(eDate.getTime()).toString() + "</age>\n";
 		ret += "<id>" + PermaLinkUtil.getPermalink(entry).replaceAll(
 				"&", "&amp;") + "</id>\n";
 		ret += "</entry>\n";
