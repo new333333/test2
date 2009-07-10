@@ -30,6 +30,7 @@
 			<fileset dir="${project.dir}/liferay/teaming" includes="kablink-teaming-liferay-hooks.jar" />
 			<fileset dir="${project.dir}/lib" includes="${libraries.current}" />
 			<fileset dir="${project.dir}/lib" includes="jms.jar" />
+			<fileset dir="${project.dir}/gwt" includes="kablink-teaming-gwt.jar" />
 		</copy>
 
 		<copy todir="${temp.dir}/applets">
