@@ -3,7 +3,8 @@
 
 <beans>
 
-	<!-- Handler mapping implementation that maps from URLs to request handler beans -->
+	<!-- Handler mapping implementation that maps from URLs to request handler beans.
+	     WARNING: Do not inherit from simpleUrlHandlerMappingTemplate defined in the parent context. -->
 	<bean id="defaultHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="interceptors">
 			<list>
@@ -14,6 +15,11 @@
 				     functionality could have been implemented as easily with
 				     an interceptor. No real difference. -->
 				<!-- Enable Open-Session-In-View pattern for Hibernate ORM. -->
+				<!-- We reuse the same open-session-in-view interceptor used for regular 
+				     servlet requests (which execute within the context of normal portal
+				     user session), even if RSS requests are not run within such context.
+				     If the implementation diverges further, we may need to define a
+				     separate interceptor. -->
 				<ref bean="openSessionInViewInterceptor"/>
 				<!-- This must come after open-session-in-view -->
 				<ref bean="resolveRequestContextInterceptor"/>
@@ -24,16 +30,6 @@
 				<entry key="/basic.ics"><ref local="getController"/></entry>				
 			</map>
 		</property>
-	</bean>
-
-	<!-- We reuse the same open-session-in-view interceptor used for regular 
-	     servlet requests (which execute within the context of normal portal
-	     user session), even if RSS requests are not run within such context.
-	     If the implementation diverges further, we may need to define a
-	     separate interceptor. -->
-	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
-		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
-		<!--<property name="singleSession"><value>false</value></property>-->
 	</bean>
 
 	<bean id="resolveRequestContextInterceptor" class="org.kablink.teaming.web.servlet.handler.ResolveRequestContextInterceptor"/>

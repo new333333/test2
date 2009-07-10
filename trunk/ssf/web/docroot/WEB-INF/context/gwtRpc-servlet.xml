@@ -4,7 +4,7 @@
 <beans>
 
     <!-- Maps the request through to a concrete controller instance -->
-    <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <bean id="urlMapping" parent="simpleUrlHandlerMappingTemplate">
         <property name="mappings">
             <value>
             /**/gwtTeaming.rpc=gwtRpcController

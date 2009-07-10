@@ -323,7 +323,7 @@
 				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
 				     Put this before other interceptors that might interact
 				     with the database. --> 
-				<ref bean="portletOpenSessionInViewInterceptor"/>
+				<ref bean="openSessionInViewInterceptor"/>
 				<!-- Set up and resolve request context -->
 				<ref bean="portletInitRequestContextInterceptor"/>
 				<!-- Log context info upon exception -->
@@ -345,7 +345,7 @@
 				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
 				     Put this before other interceptors that might interact
 				     with the database. --> 
-				<ref bean="portletOpenSessionInViewInterceptor"/>
+				<ref bean="openSessionInViewInterceptor"/>
 				<!-- Set up and request context -->
 				<ref bean="portletInitRequestContextInterceptor"/>
 				<!-- Log context info upon exception -->
@@ -372,8 +372,9 @@
 	</bean>
 
 	<!-- Used for open-session-in-view pattern -->
-	<bean id="portletOpenSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
+	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<!--<property name="singleSession"><value>false</value></property>-->
 	</bean>
 	
 	<bean id="portletLoginCheckInterceptor" class="org.kablink.teaming.web.portlet.handler.LoginCheckInterceptor"/>
@@ -390,6 +391,35 @@
 	</bean>	
 
 	<bean id="portletUrlToStringHelper" class="org.kablink.teaming.portletadapter.PortletUrlToStringHelper"/>
+
+	<!-- ========================= Servlet Common Infrastructural Beans ======================== -->
+
+	<bean id="simpleUrlHandlerMappingTemplate" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping" lazy-init="true" abstract="true">
+		<property name="interceptors">
+			<list>
+				<!-- We do not need LoginCheckInterceptor here, because
+				     1. Under Liferay, the login filter will redirect unauthenticated 
+				     user to Liferay's login page.
+				     1. Under JBoss Portal, all servlets require authentication first.
+				     So in both cases, by the time these handlers are executed, we
+				     can safely assume that the user has already been authenticated. -->
+				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
+				     Put this before other interceptors that might interact
+				     with the database. --> 
+				<ref bean="openSessionInViewInterceptor"/>
+				<!-- Set up and resolve RequestContext -->
+				<ref bean="initRequestContextInterceptor"/>
+				<!-- Log context info upon exception -->
+				<ref bean="logContextInfoUponExceptionInterceptor"/>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="initRequestContextInterceptor" class="org.kablink.teaming.web.servlet.handler.InitRequestContextInterceptor">
+		<property name="resolve"><value>true</value></property>
+	</bean>
+
+	<bean id="logContextInfoUponExceptionInterceptor" class="org.kablink.teaming.web.servlet.handler.LogContextInfoInterceptor"/>
 
 	<!-- ============================ Indexing/Search Service =========================== -->
 	
