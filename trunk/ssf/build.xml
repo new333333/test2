@@ -125,6 +125,7 @@
 		<ant dir="ssr" target="clean" inheritAll="false"/>
 		<ant dir="simple-url" target="clean" inheritAll="false"/>		
 		<ant dir="mobile" target="clean" inheritAll="false"/>		
+		<ant dir="gwt" target="clean" inheritAll="false"/>
 	</target>
 
 	<target name="compile" depends="init">
@@ -162,6 +163,7 @@
 		<ant dir="tools" target="compile" inheritall="false"/>
 		
 		<ant dir="samples" target="compile" inheritall="false"/>
+		<ant dir="gwt" target="compile" inheritall="false"/>
 	</target>
 
 	<target name="jar" depends="init">
@@ -203,6 +205,7 @@
 		<ant dir="simple-url" target="war" inheritall="false"/>
 		
 		<ant dir="mobile" target="war" inheritall="false"/>
+		<ant dir="gwt" target="jar" inheritall="false"/>
 	</target>
 
 	<target name="deploy" depends="init">
@@ -241,6 +244,8 @@
 		<ant dir="simple-url" target="deploy" inheritall="false"/>
 		
 		<ant dir="mobile" target="deploy" inheritall="false"/>
+
+		<ant dir="gwt" target="deploy" inheritall="false"/>
 	</target>
 
 	<target name="java2html" depends="init">
@@ -272,6 +277,7 @@
 		<ant dir="tools" target="java2html" inheritAll="false"/>
 		<ant dir="simple-url" target="java2html" inheritAll="false"/>
 		<ant dir="mobile" target="java2html" inheritAll="false"/>
+		<ant dir="gwt" target="java2html" inheritAll="false"/>
 	</target>
 
 	<target name="javadoc" depends="init">
@@ -303,6 +309,7 @@
 		<ant dir="tools" target="javadoc" inheritAll="false"/>
 		<ant dir="simple-url" target="javadoc" inheritAll="false"/>
 		<ant dir="mobile" target="javadoc" inheritAll="false"/>
+		<ant dir="gwt" target="javadoc" inheritAll="false"/>
 	</target>
 
 

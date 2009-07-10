@@ -43,4 +43,3 @@ public interface GwtRpcServiceAsync
 {
     public void getTutorialPanelState( AsyncCallback<String> callback );
 }// end GwtRpcServiceAsync
-
