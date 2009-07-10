@@ -3,7 +3,8 @@
 
 <beans> 
 
-	<!-- Handler mapping implementation that maps from URLs to request handler beans -->
+	<!-- Handler mapping implementation that maps from URLs to request handler beans.
+	     WARNING: Do not inherit from simpleUrlHandlerMappingTemplate defined in the parent context. -->
 	<bean id="defaultHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="interceptors">
 			<list>
@@ -20,8 +21,6 @@
 			</map>
 		</property>
 	</bean>
-
-	<!--<bean id="initRequestContextInterceptor" class="org.kablink.teaming.web.servlet.handler.InitRequestContextInterceptor"/>-->
 
 	<!-- Adapted portlets: In order for a portlet to plug into the adapter
 	     environment, it must to be listed here. -->
