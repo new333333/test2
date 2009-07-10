@@ -6,10 +6,19 @@
 		
 	<property name="jar.file" value="kablink-teaming-gwt.jar" />
 
+	<target name="clean">
+		<delete>
+			<fileset dir="." includes="${jar.file}" />
+		</delete>
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="www" />
+			<fileset dir="classes" />
+		</delete>
+	</target>
+	
 	<target name="deploy" depends="jar">
 		<antcall target="deploy-jar">
 			<param name="deploy-support.jar.file" value="${jar.file}" />
 		</antcall>
 	</target>
-
 </project>
