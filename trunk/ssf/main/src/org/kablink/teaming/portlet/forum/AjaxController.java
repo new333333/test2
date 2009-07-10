@@ -1951,6 +1951,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			response.setContentType("text/json");
 			return new ModelAndView("forum/meeting_return", model);	
 		} catch (ICException e) {
+			logger.error(e);
 			model.put(WebKeys.MEETING_ERROR, NLT.get("meeting.start.error"));
 			response.setContentType("text/json");
 			return new ModelAndView("forum/meeting_return", model);	
