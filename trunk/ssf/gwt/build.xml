@@ -6,6 +6,41 @@
 		
 	<property name="jar.file" value="kablink-teaming-gwt.jar" />
 
+	
+	<!-- Define the GWT compiler options. -->
+	<property name="gwt.debug" value="true" />
+	<condition property="gwt.style"  value="PRETTY" else="OBF"><istrue value="${gwt.debug}" /></condition>
+		
+	<!-- Define the platform that we're building on. -->
+	<condition property="build.mac"      value="true" else="false">                                     <os family="mac"     />      </condition>
+	<condition property="build.linux"    value="true" else="false"><and><isfalse value="${build.mac}" /><os family="unix"    /></and></condition>
+	<condition property="build.windows"  value="true" else="false">                                     <os family="windows" />      </condition>
+	
+	<!-- Define the GWT development jar. -->
+	<condition property="gwt.dev.jar" value="gwt-dev-linux.jar"  ><istrue value="${build.linux}"   /></condition>
+	<condition property="gwt.dev.jar" value="gwt-dev-mac.jar"    ><istrue value="${build.mac}"     /></condition>
+	<condition property="gwt.dev.jar" value="gwt-dev-windows.jar"><istrue value="${build.windows}" /></condition>
+
+	<!-- Define the tool directories. -->
+	<property name="gwt.dir" location="../tools/gwt" />
+	<property name="lib.dir" location="../lib"       />
+	
+	<!-- Set the desired classpath. -->
+	<fileset id="gwtjars" dir="${gwt.dir}">
+		<include name="gwt-user.jar"   />
+		<include name="${gwt.dev.jar}" />
+	</fileset>
+	<fileset id="libjars" dir="${lib.dir}">
+		<include name="*jar" />
+	</fileset>
+	<pathconvert property="gwtjars" refid="gwtjars" />
+	<pathconvert property="libjars" refid="libjars" />
+	<path id="classpath">
+		<pathelement location="${src.dir}"  />
+		<pathelement path="${gwtjars}"      />
+		<pathelement path="${libjars}"      />
+	</path>
+	
 	<target name="clean">
 		<delete>
 			<fileset dir="." includes="${jar.file}" />
@@ -16,9 +51,35 @@
 		</delete>
 	</target>
 	
+	<target name="compile" depends="build-common.compile,compile-gwt" />
+	<target name="compile-gwt">
+		<java
+				classpath="src:${gwt.dir}/gwt-user.jar:${gwt.dir}/${gwt.dev.jar}"
+				failonerror="true"
+				classname="com.google.gwt.dev.Compiler"
+				fork="true"
+				maxmemory="256m">
+			<arg value="-war"                               />
+			<arg value="www"                                />
+			<arg value="-style"                             />
+			<arg value="${gwt.style}"                       />
+			<arg value="-ea"                                />
+			<arg value="org.kablink.teaming.gwt.GwtTeaming" />
+		</java> 
+	</target>
+	
 	<target name="deploy" depends="jar">
 		<antcall target="deploy-jar">
 			<param name="deploy-support.jar.file" value="${jar.file}" />
 		</antcall>
+		<antcall target="deploy-gwt"/>
+	</target>
+	<target name="deploy-gwt">
+		<mkdir  dir="${app.server.ssf.dir}/js/gwt"/>
+	    <copy todir="${app.server.ssf.dir}/js/gwt">
+	        <fileset dir="www">
+	        	<include name="**/*"/>
+			</fileset>
+	    </copy>			
 	</target>
 </project>
