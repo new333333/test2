@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="resourceDriverManager" class="com.novell.teaming.fi.connection.impl.ResourceDriverManagerImpl">
+		<property name="allResourceDrivers">
+			<list>
+				<ref local="fileResourceDriver"/>
+				<ref local="slideResourceDriver"/>
+				<ref local="sharepointResourceDriver"/>
+				<ref local="company1.fileResourceDriver"/>
+			</list>
+		</property>
+	</bean>
+	    
+	<!-- File System resource driver. There is no authentication required. -->
+	<bean id="fileResourceDriver" class="com.novell.teaming.fi.connection.file.FileResourceDriver"
+		init-method="initialize" destroy-method="shutdown">
+		<property name="name"><value>fs</value></property>
+		<property name="type"><value>filesystem</value></property>
+		<property name="readonly"><value>${resource.driver.fs.readonly}</value></property>
+		<property name="rootPath"><value>${resource.driver.fs.rootpath}</value></property>
+	</bean>
+	    
+    
+</beans>

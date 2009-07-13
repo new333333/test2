@@ -74,6 +74,7 @@ public class Constants {
 	public static final String TAG_FIELD_TTF = "_tagField_ttf";
 	public static final String ACL_TAG_FIELD_TTF = "_aclTagField_ttf";
 	public static final String READ_ACL_ALL = "all";
+	public static final String READ_ACL_ALL_USERS = "allUsers";
 	public static final String READ_ACL_TEAM = "team";
 	public static final String READ_ACL_BINDER_OWNER = "own";
 	public static final String TAG = "TAG";

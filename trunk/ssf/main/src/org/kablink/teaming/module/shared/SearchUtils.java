@@ -77,6 +77,7 @@ import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.search.filter.SearchFilterToSearchBooleanConverter;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -337,12 +338,14 @@ public class SearchUtils {
         			} catch (Exception ex) {}
     	}
     	List<UserPrincipal> principles = profileDao.loadUserPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), false);
-		Map users = new HashMap();
+    	principles = profileDao.filterInaccessiblePrincipals(principles);
+    	Map users = new HashMap();
 		for (Principal p:principles) {
 			users.put(p.getId(), p);
 		}
     	principles = profileDao.loadUserPrincipals(idsOwner, RequestContextHolder.getRequestContext().getZoneId(), false);
-		for (Principal p:principles) {
+    	principles = profileDao.filterInaccessiblePrincipals(principles);
+    	for (Principal p:principles) {
 			users.put(p.getId(), p);
 		}
 		

@@ -64,6 +64,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.IPrincipal;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
@@ -499,7 +500,7 @@ public class EntityIndexUtils {
    }
     
     public static void addReadAccess(Document doc, Binder binder, boolean fieldsOnly) {
-    	//set entryAcl to all
+    	//set entryAcl to "all" and 
 		doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL, Field.Store.NO, Field.Index.TOKENIZED));
 		//add binder acls
 		addBinderAcls(doc, binder);
@@ -527,6 +528,22 @@ public class EntityIndexUtils {
    		}
    		return pIds.toString().replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), Constants.READ_ACL_TEAM);
     }
+    private static String getUserEntryAccess(User entry) {
+		//get principals given read access 
+     	Set ids = new HashSet();
+     	ids.add(entry.getId());
+     	if (!entry.getId().equals(entry.getCreation().getPrincipal().getId())) 
+     			ids.add(entry.getCreation().getPrincipal().getId());
+     	//Add groups this user is in
+		List memberOf = entry.getMemberOf();
+		for (Iterator i = memberOf.iterator(); i.hasNext();) {
+			ids.add(((Group)i.next()).getId());
+        }
+     	StringBuffer pIds = new StringBuffer(LongIdUtil.getIdsAsString(ids));
+    	//add allUsers
+   		pIds.append(Constants.READ_ACL_ALL_USERS);      			
+   		return pIds.toString();
+    }
     public static void addReadAccess(Document doc, Binder binder, DefinableEntity entry, boolean fieldsOnly) {
 		// Add ACL field. We only need to index ACLs for read access.
     	if (entry instanceof WorkflowSupport) {
@@ -535,6 +552,12 @@ public class EntityIndexUtils {
        		doc.add(new Field(Constants.ENTRY_ACL_FIELD, getWfEntryAccess(wEntry), Field.Store.NO, Field.Index.TOKENIZED));
        		//add binder access
     		addBinderAcls(doc, binder);
+
+    	} else if (entry instanceof User) {
+            		// Add the Entry_ACL field
+           		doc.add(new Field(Constants.ENTRY_ACL_FIELD, getUserEntryAccess((User)entry), Field.Store.NO, Field.Index.TOKENIZED));
+           		//add binder access
+        		addBinderAcls(doc, binder);
 
     	} else {
     		addReadAccess(doc, binder, fieldsOnly);
@@ -550,6 +573,13 @@ public class EntityIndexUtils {
    	   		Element acl = parent.addElement(Constants.ENTRY_ACL_FIELD);
        		acl.setText(getWfEntryAccess(wEntry));
     		addBinderAcls(parent, binder);
+
+    	} else if (entry instanceof User) {
+    		// Add the Entry_ACL field
+   	   		Element acl = parent.addElement(Constants.ENTRY_ACL_FIELD);
+       		acl.setText(getUserEntryAccess((User)entry));
+       		//add binder access
+			addBinderAcls(parent, binder);
 
     	} else {
      		addReadAccess(parent, binder, fieldsOnly);

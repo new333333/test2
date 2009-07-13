@@ -77,6 +77,8 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation ZONE_ADMINISTRATION = new WorkAreaOperation("zoneAdministration", true);
     public final static WorkAreaOperation ADD_GUEST_ACCESS = new WorkAreaOperation("addGuestAccess", true);
     public final static WorkAreaOperation TOKEN_REQUEST = new WorkAreaOperation("tokenRequest", true);
+    public final static WorkAreaOperation ONLY_SEE_GROUP_MEMBERS = new WorkAreaOperation("onlySeeGroupMembers", true);
+    public final static WorkAreaOperation OVERRIDE_ONLY_SEE_GROUP_MEMBERS = new WorkAreaOperation("overrideOnlySeeGroupMembers", true);
 
     private String name;
     private boolean zoneWide=false;

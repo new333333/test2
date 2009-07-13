@@ -49,9 +49,15 @@ import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
+import org.kablink.teaming.security.AccessControlManager;
+import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 
 
 public class ResolveIds {
@@ -146,7 +152,7 @@ public class ResolveIds {
 			}
 		}
 		result.addAll(profileDao.loadPrincipals(filteredIds, RequestContextHolder.getRequestContext().getZoneId(), checkActive));
-		return result;
+		return profileDao.filterInaccessiblePrincipals(result);
 	}
 	
 	public static Map getBinderTitlesAndIcons(Object binderIds) {
