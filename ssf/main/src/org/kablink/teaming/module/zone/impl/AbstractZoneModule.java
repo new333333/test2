@@ -540,6 +540,17 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  			definitions.add(def.getId());
 			getBinderModule().setDefinitions(top.getId(), definitions, workflowAssociations);
    		}
+		if (version.intValue() <= 3) {
+			//add new reserved functions
+			List ids = new ArrayList();
+			//add users who currently have siteAdmin to the new functions
+			WorkAreaOperation siteAdmin = WorkAreaOperation.getInstance("siteAdministration");
+			List<WorkAreaFunctionMembership>wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(top.getId(), top, siteAdmin);
+			for (WorkAreaFunctionMembership wfm:wfms) {
+				ids.addAll(wfm.getMemberIds());				
+			}
+			addGlobalFunctions(zoneConfig, ids);
+		}
   	}
  	/**
  	 * Fix up duplicate definitions.  1.0 allowed definitions with the same name
@@ -1184,58 +1195,84 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	}
 	private void addGlobalFunctions(ZoneConfig zoneConfig, List ids) {
 		Set members = new HashSet(ids);
-
-		Function function = new Function();
-		function.setZoneId(zoneConfig.getZoneId());
-		function.setName(ObjectKeys.ROLE_ZONE_ADMINISTRATION);
-		function.setInternalId(ObjectKeys.FUNCTION_SITE_ADMIN_INTERNALID);
-		function.addOperation(WorkAreaOperation.ZONE_ADMINISTRATION);
-		function.setZoneWide(true);
-		//generate functionId
-		getFunctionManager().addFunction(function);
-
+		Function function;
+		List functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
+		Map functionInternalIds = new HashMap();
+		for (int i = 0; i < functions.size(); i++) {
+			function = (Function)functions.get(i);
+			if (function.getInternalId() != null) functionInternalIds.put(function.getInternalId(), function);
+		}
+		
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_SITE_ADMIN_INTERNALID)) {
+			function = new Function();
+			function.setZoneId(zoneConfig.getZoneId());
+			function.setName(ObjectKeys.ROLE_ZONE_ADMINISTRATION);
+			function.setInternalId(ObjectKeys.FUNCTION_SITE_ADMIN_INTERNALID);
+			function.addOperation(WorkAreaOperation.ZONE_ADMINISTRATION);
+			function.setZoneWide(true);
+			//generate functionId
+			getFunctionManager().addFunction(function);
+			setGlobalWorkareaFunctionMembership(zoneConfig, function, members);
+		}
+		
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ADD_GUEST_ACCESS_INTERNALID)) {
+			function = new Function();
+			function.setZoneId(zoneConfig.getZoneId());
+			function.setName(ObjectKeys.ROLE_ADD_GUEST_ACCESS);
+			function.setInternalId(ObjectKeys.FUNCTION_ADD_GUEST_ACCESS_INTERNALID);
+			function.addOperation(WorkAreaOperation.ADD_GUEST_ACCESS);
+			function.setZoneWide(true);
+			//generate functionId
+			getFunctionManager().addFunction(function);
+			setGlobalWorkareaFunctionMembership(zoneConfig, function, members);
+		}
+		
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_TOKEN_REQUESTER_INTERNALID)) {
+			function = new Function();
+			function.setZoneId(zoneConfig.getZoneId());
+			function.setName(ObjectKeys.ROLE_TOKEN_REQUESTER);
+			function.setInternalId(ObjectKeys.FUNCTION_TOKEN_REQUESTER_INTERNALID);
+			function.addOperation(WorkAreaOperation.TOKEN_REQUEST);
+			function.setZoneWide(true);
+			//generate functionId
+			getFunctionManager().addFunction(function);
+			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+		}
+			
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ONLY_SEE_GROUP_MEMBERS_INTERNALID)) {
+			function = new Function();
+			function.setZoneId(zoneConfig.getZoneId());
+			function.setName(ObjectKeys.ROLE_ONLY_SEE_GROUP_MEMBERS);
+			function.setInternalId(ObjectKeys.FUNCTION_ONLY_SEE_GROUP_MEMBERS_INTERNALID);
+			function.addOperation(WorkAreaOperation.ONLY_SEE_GROUP_MEMBERS);
+			function.setZoneWide(true);
+			//generate functionId
+			getFunctionManager().addFunction(function);
+			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+		}
+			
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_OVERRIDE_ONLY_SEE_GROUP_MEMBERS_INTERNALID)) {
+			function = new Function();
+			function.setZoneId(zoneConfig.getZoneId());
+			function.setName(ObjectKeys.ROLE_OVERRIDE_ONLY_SEE_GROUP_MEMBERS);
+			function.setInternalId(ObjectKeys.FUNCTION_OVERRIDE_ONLY_SEE_GROUP_MEMBERS_INTERNALID);
+			function.addOperation(WorkAreaOperation.OVERRIDE_ONLY_SEE_GROUP_MEMBERS);
+			function.setZoneWide(true);
+			//generate functionId
+			getFunctionManager().addFunction(function);
+			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+		}
+	}
+	
+	private void setGlobalWorkareaFunctionMembership(ZoneConfig zoneConfig, Function function, Set members) {
 		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
-		ms.setWorkAreaId(zoneConfig.getWorkAreaId());
-		ms.setWorkAreaType(zoneConfig.getWorkAreaType());
-		ms.setZoneId(zoneConfig.getZoneId());
-		ms.setFunctionId(function.getId());
-		ms.setMemberIds(members);
-		getCoreDao().save(ms);
-		
-		function = new Function();
-		function.setZoneId(zoneConfig.getZoneId());
-		function.setName(ObjectKeys.ROLE_ADD_GUEST_ACCESS);
-		function.setInternalId(ObjectKeys.FUNCTION_ADD_GUEST_ACCESS_INTERNALID);
-		function.addOperation(WorkAreaOperation.ADD_GUEST_ACCESS);
-		function.setZoneWide(true);
-		//generate functionId
-		getFunctionManager().addFunction(function);
-
-		ms = new WorkAreaFunctionMembership();
-		ms.setWorkAreaId(zoneConfig.getWorkAreaId());
-		ms.setWorkAreaType(zoneConfig.getWorkAreaType());
-		ms.setZoneId(zoneConfig.getZoneId());
-		ms.setFunctionId(function.getId());
-		ms.setMemberIds(members);
-		getCoreDao().save(ms);
-		
-		function = new Function();
-		function.setZoneId(zoneConfig.getZoneId());
-		function.setName(ObjectKeys.ROLE_TOKEN_REQUESTER);
-		function.setInternalId(ObjectKeys.FUNCTION_TOKEN_REQUESTER_INTERNALID);
-		function.addOperation(WorkAreaOperation.TOKEN_REQUEST);
-		function.setZoneWide(true);
-		//generate functionId
-		getFunctionManager().addFunction(function);
-
-		ms = new WorkAreaFunctionMembership();
 		ms.setWorkAreaId(zoneConfig.getWorkAreaId());
 		ms.setWorkAreaType(zoneConfig.getWorkAreaType());
 		ms.setZoneId(zoneConfig.getZoneId());
 		ms.setFunctionId(function.getId());
 		// Do not add default members for this.
 		ms.setMemberIds(new HashSet());
-		getCoreDao().save(ms);
+		getCoreDao().save(ms);		
 	}
 
 	private void setApplicationGlobalRoles(ZoneConfig zoneConfig, ApplicationGroup applicationGroup,

@@ -46,10 +46,14 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.lucene.LanguageTaster;
+import org.kablink.teaming.security.AccessControlManager;
+import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.search.Constants;
@@ -65,6 +69,7 @@ public class QueryBuilder {
 	private static final String FOLDER_PREFIX=Constants.FOLDER_ACL_FIELD + ":";
 	private static final String ENTRY_PREFIX=Constants.ENTRY_ACL_FIELD + ":";
 	private static final String ENTRY_ALL=ENTRY_PREFIX+Constants.READ_ACL_ALL;
+	private static final String ENTRY_ALL_USERS=ENTRY_PREFIX+Constants.READ_ACL_ALL_USERS;
 	private static final String BINDER_OWNER_PREFIX=Constants.BINDER_OWNER_ACL_FIELD + ":";
 
 	private Set userPrincipals;
@@ -96,6 +101,14 @@ public class QueryBuilder {
 
 	protected ProfileDao getProfileDao() {
 		return (ProfileDao)SpringContextUtil.getBean("profileDao");
+	}
+
+	protected AccessControlManager getAccessControlManager() {
+		return (AccessControlManager)SpringContextUtil.getBean("accessControlManager");
+	}
+
+	protected CoreDao getCoreDao() {
+		return (CoreDao)SpringContextUtil.getBean("coreDao");
 	}
 
 	public SearchObject buildQuery(Document domQuery) {
@@ -387,6 +400,12 @@ public class QueryBuilder {
 
 	private String getAclClauseForIds(Set principalIds, Long userId)
 	{
+      	User user = getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());;
+      	WorkArea zone = getCoreDao().loadZoneConfig(user.getZoneId());
+		//check user can see all users
+		boolean canOnlySeeGroupMembers = getAccessControlManager().testOperation(user, zone, WorkAreaOperation.ONLY_SEE_GROUP_MEMBERS);
+		boolean overrideCanOnlySeeGroupMembers = getAccessControlManager().testOperation(user, zone, WorkAreaOperation.OVERRIDE_ONLY_SEE_GROUP_MEMBERS);
+
 		StringBuffer qString = new StringBuffer();
 		
 		/*
@@ -415,6 +434,9 @@ public class QueryBuilder {
 						FOLDER_PREFIX + Constants.READ_ACL_BINDER_OWNER + " AND " +
 						BINDER_OWNER_PREFIX + userId.toString() + ")");
 			}
+			if (!canOnlySeeGroupMembers || overrideCanOnlySeeGroupMembers) {
+				qString.append(" OR (" + ENTRY_ALL_USERS + ")"); //OR (entryAcl:allUsers)
+			}
 			qString.append(" OR (" + idField(principalIds, ENTRY_PREFIX) + ")"); //OR (entryAcl:1 OR entryAcl:2)
 			qString.append(" OR (" + ENTRY_PREFIX + Constants.READ_ACL_TEAM + " AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))
 								"(" + idField(principalIds, TEAM_PREFIX) + "))");
@@ -429,8 +451,12 @@ public class QueryBuilder {
 				qString.append(" OR (" + FOLDER_PREFIX + Constants.READ_ACL_BINDER_OWNER + " AND " + //OR (folderAcl:own AND bOwnerAcl:<user>)
 						BINDER_OWNER_PREFIX + userId.toString() + ")");
 			}
-			qString.append(") AND (");												//) AND (
-			qString.append("(" + ENTRY_ALL + " OR " +						//(entryAcl:all OR entryAcl:1 OR entryAcl:2)
+			qString.append(") AND (");			//) AND (
+			qString.append("(" + ENTRY_ALL);	//(entryAcl:all OR entryAcl:allUsers OR entryAcl:1 OR entryAcl:2)
+			if (!canOnlySeeGroupMembers || overrideCanOnlySeeGroupMembers) {
+				qString.append(" OR " + ENTRY_ALL_USERS);
+			}
+			qString.append(" OR " +	
 						idField(principalIds, ENTRY_PREFIX) + ")");
 			qString.append(" OR ");
 			qString.append("("  + ENTRY_PREFIX + Constants.READ_ACL_TEAM + " AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))

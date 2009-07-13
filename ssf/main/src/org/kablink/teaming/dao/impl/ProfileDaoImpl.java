@@ -58,6 +58,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.LongIdComparator;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.dao.util.FilterControls;
@@ -93,8 +94,13 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.UserPropertiesPK;
 import org.kablink.teaming.domain.Visits;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.security.AccessControlManager;
+import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.Constants;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.Validator;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -455,7 +461,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     
  	public User findUserByName(final String userName, final Long zoneId) 
 	throws NoUserByTheNameException {
-        return (User)getHibernateTemplate().execute(
+        User user = (User)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                  	   //only returns active users
@@ -472,11 +478,14 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                     }
                 }
              );		
+        if (filterInaccessiblePrincipal(user) == null) 
+        	throw new NoUserByTheNameException(userName); 
+        return user;
  	}
 
  	public Principal findPrincipalByName(final String name, final Long zoneId) 
  		throws NoPrincipalByTheNameException {
-        return (Principal)getHibernateTemplate().execute(
+        Principal principal = (Principal)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                  	   //only returns active users
@@ -492,7 +501,10 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                  	   return resolveProxy(session, p);
                     }
                 }
-             );		
+             );
+        if (filterInaccessiblePrincipal(principal) == null) 
+        	throw new NoPrincipalByTheNameException(name); 
+        return principal;
  	}
  	private Principal resolveProxy(Session session, Principal proxy) {
         Principal p = null;
@@ -541,6 +553,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                 }
         );
        
+        if (filterInaccessiblePrincipal(principal) == null) 
+        	throw new NoPrincipalByTheIdException(prinId); 
         return principal;
               
     }
@@ -576,7 +590,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                 		}
                	}
             );
-        return result;
+        return filterInaccessiblePrincipals(result);
         	   	
     }
     private List loadPrincipals(final Collection ids, final Long zoneId, final Class clazz, final boolean cacheable, final boolean checkActive) {
@@ -637,14 +651,14 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
             		}
            	}
         );
-        return result;
+        return filterInaccessiblePrincipals(result);
     	
     }
     private List loadPrincipals(final FilterControls filter, Long zoneId, final Class clazz) throws DataAccessException { 
        	filter.add(ObjectKeys.FIELD_ZONE, zoneId);
     	filter.add(ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE);
     	filter.add(ObjectKeys.FIELD_PRINCIPAL_DISABLED, Boolean.FALSE);
-        return (List)getHibernateTemplate().execute(
+        List result = (List)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                         //sqlqueries, filters and criteria don't help with frontbase problem
@@ -659,6 +673,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                     }
                 }
             );  
+        return filterInaccessiblePrincipals(result);
     }    
   
 	public Group loadGroup(final Long groupId, Long zoneId)  {
@@ -702,6 +717,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     		if (!user.getZoneId().equals(zoneId) || !user.isActive()) {
     			throw new NoUserByTheIdException(userId);
     		}
+            if (filterInaccessiblePrincipal(user) == null) 
+            	throw new NoUserByTheIdException(userId); 
     		return user;
     	} catch (ClassCastException ce) {
    			throw new NoUserByTheIdException(userId);   		
@@ -1182,6 +1199,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                 }
         );
        
+        if (filterInaccessiblePrincipal(principal) == null) 
+        	throw new NoPrincipalByTheIdException(prinId); 
         return principal;
               
     }
@@ -1414,5 +1433,53 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
              );		
  	}
 
+	//If this user cannot see all users, then filter out the ones not allowed
+	public Principal filterInaccessiblePrincipal(Principal principal) {
+		List principals = new ArrayList();
+		principals.add(principal);
+		principals = filterInaccessiblePrincipals(principals);
+		if (principals.isEmpty()) return null;
+		return (Principal)principals.get(0);
+	}
+	public List filterInaccessiblePrincipals(List principals) {
+		User user = null;
+		try {
+			user = RequestContextHolder.getRequestContext().getUser();
+		} catch(Exception e) {}
+		if (user == null) return principals;
+		
+      	WorkArea zone = getCoreDao().loadZoneConfig(user.getZoneId());
+		AccessControlManager accessControlManager = (AccessControlManager)SpringContextUtil.getBean("accessControlManager");
+		try {
+			boolean canOnlySeeGroupMembers = accessControlManager.testOperation(user, zone, WorkAreaOperation.ONLY_SEE_GROUP_MEMBERS);
+			boolean overrideCanOnlySeeGroupMembers = accessControlManager.testOperation(user, zone, WorkAreaOperation.OVERRIDE_ONLY_SEE_GROUP_MEMBERS);
+			if (!canOnlySeeGroupMembers || overrideCanOnlySeeGroupMembers) return principals;
+		} catch(Exception e) {
+			//If any error occurs, just deny access to them all
+			return principals;
+		}
+		
+		//This user does not have the right to see all users, so filter out those not allowed
+		Set groupIds = getAllGroupMembership(user.getId(), RequestContextHolder.getRequestContext().getZoneId());
+		List result = new ArrayList();
+		for (int i = 0; i < principals.size(); i++) {
+			Principal principal = (Principal)principals.get(i);
+			if (principal instanceof User) {
+				List memberOf = principal.getMemberOf();
+				if (memberOf != null) {
+					for (int k = 0; k < memberOf.size(); k++) {
+						if (groupIds.contains(((Group)memberOf.get(k)).getId())) {
+							result.add(principals.get(i));
+							break;
+						}
+					}
+				}
+			} else {
+				result.add(principals.get(i));
+			}
+		}
+		return result;
+	}
+	
 
 }

@@ -205,4 +205,18 @@ public interface ProfileDao {
  	public User findUserByNameDeadOrAlive(String principalName, String zoneName) 
 	throws NoUserByTheNameException, NoWorkspaceByTheNameException;
 
+    /**
+     * Remove any principals that the user is not allowed to see
+     * 
+     * @param List of principals
+     * @return Filtered list of principals
+     */
+ 	public List filterInaccessiblePrincipals(List principals);
+    /**
+     * Check that the user is allowed to see this Principal
+     * 
+     * @param Principal
+     * @return Principal or null
+     */
+ 	public Principal filterInaccessiblePrincipal(Principal principal);
  }

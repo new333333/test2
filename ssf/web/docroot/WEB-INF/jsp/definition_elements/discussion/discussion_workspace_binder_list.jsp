@@ -176,7 +176,7 @@
      				<c:if test="${subBinder._entityType == 'folder'}">
       				  <div id="ss_topic_thread">
         				<div style="padding-left:10px;">
-       						<img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle" <ssf:alt tag="folder"/>/> 
+       						<img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle" alt="" /> 
         					<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"
         					action="view_folder_listing" 
         					binderId="${subBinder._docId}"/>">
