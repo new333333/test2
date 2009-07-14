@@ -51,7 +51,7 @@
 		</delete>
 	</target>
 	
-	<target name="compile" depends="build-common.compile,compile-gwt" />
+	<target name="compile-ignored" depends="build-common.compile,compile-gwt" />
 	<target name="compile-gwt">
 		<java
 				classpath="src:${gwt.dir}/gwt-user.jar:${gwt.dir}/${gwt.dev.jar}"
@@ -68,13 +68,15 @@
 		</java> 
 	</target>
 	
+	<target name="build"/>
+	
 	<target name="deploy" depends="jar">
 		<antcall target="deploy-jar">
 			<param name="deploy-support.jar.file" value="${jar.file}" />
 		</antcall>
 		<antcall target="deploy-gwt"/>
 	</target>
-	<target name="deploy-gwt">
+	<target name="deploy-gwt" depends="compile-gwt">
 		<mkdir  dir="${app.server.ssf.dir}/js/gwt"/>
 	    <copy todir="${app.server.ssf.dir}/js/gwt">
 	        <fileset dir="www">
