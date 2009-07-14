@@ -191,4 +191,25 @@ public final class MiscUtil
 		}
 		return reply;
 	}// end exToString
+	
+	
+	/**
+	 * Is the given name the name of a system user account?
+	 * Currently there are 4 system user accounts: "admin", "guest", "_postingAgent" and "_jobProcessingAgent" 
+	 */
+	public static boolean isSystemUserAccount( String name )
+	{
+		if ( name == null)
+			return false;
+		
+		if ( name.equalsIgnoreCase( "admin" ) || name.equalsIgnoreCase( "guest" ) ||
+			  name.equalsIgnoreCase( "_postingAgent" ) || name.equalsIgnoreCase( "_jobProcessingAgent" ) )
+		{
+			return true;
+		}
+		
+		// If we get here the name is not a system user account.
+		return false;
+	}// end isSystemUserAccount()
+	
 }// end MiscUtil
