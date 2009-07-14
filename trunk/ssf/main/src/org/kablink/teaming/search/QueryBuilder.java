@@ -40,6 +40,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -74,6 +76,8 @@ public class QueryBuilder {
 
 	private Set userPrincipals;
 	private Set applicationPrincipals;
+	
+	private static Log logger = LogFactory.getLog(QueryBuilder.class);
 
 	private QueryBuilder() {
 	}
@@ -155,19 +159,29 @@ public class QueryBuilder {
 		// add acl check to every query. (If it's the superuser doing this query, then this clause
 		// will return the empty string.
 		
-		if (ignoreAcls) return so;
-		
-		String acls = getAclClause();
-		if (acls.length() != 0) {
-			String q = so.getQueryString();
-			if (q.equalsIgnoreCase("(  )"))
-				q = "";
-			if (q.length() > 0)
-				q += "AND ";
-			q += acls;
-			so.setQueryString(q);
+		if (!ignoreAcls) { 
+			String acls = getAclClause();
+			if (acls.length() != 0) {
+				String q = so.getQueryString();
+				if (q.equalsIgnoreCase("(  )"))
+					q = "";
+				if (q.length() > 0)
+					q += "AND ";
+				q += acls;
+				so.setQueryString(q);
+			}
 		}
 		
+		if(logger.isDebugEnabled())
+			logger.debug(org.kablink.teaming.util.Constants.NEWLINE + 
+					"XML query =>" + 
+					org.kablink.teaming.util.Constants.NEWLINE + 
+					domQuery.asXML() + 
+					org.kablink.teaming.util.Constants.NEWLINE + 
+					"Lucene query =>" +
+					org.kablink.teaming.util.Constants.NEWLINE + 
+					so.getQueryString());
+					
 		return so;
 	}
 
