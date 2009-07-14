@@ -100,6 +100,8 @@
 		<ant dir="${project.dir}/simple-url" target="${target}" inheritAll="false" />
 		<!-- mobile component is deployed into its own web app -->
 		<ant dir="${project.dir}/mobile" target="${target}" inheritAll="false" />
+		<!-- gwt component is deployed into its own web app -->
+		<ant dir="${project.dir}/gwt" target="${target}" inheritAll="false" />
 	</target>
 
 	<target name="deploy-standalone-tomcat" depends="init-standalone, clean-app-server">
