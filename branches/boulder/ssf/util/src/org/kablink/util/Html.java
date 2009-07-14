@@ -234,5 +234,19 @@ public class Html {
 		reply = reply.replaceAll("&nbsp;", " ");
 		reply = reply.replaceAll("&#39;",  "'");
 		return reply;
-	}	
+	}
+	
+	/**
+	 * Given a blob of plain text, converts all white space formatting
+	 * (e.g., CR's, LF's, TAB's, ...) to HTML.
+	 */
+	public static String plainTextToHTML(String plainText) {
+		if (null == plainText) {
+			plainText = "";
+		}
+		
+		// TODO:  This needs to be implemented with a real
+		//         implementation.
+		return ("<pre>" + plainText + "</pre>");
+	}
 }
