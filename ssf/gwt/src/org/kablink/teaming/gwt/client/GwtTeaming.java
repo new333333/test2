@@ -75,18 +75,14 @@ public class GwtTeaming implements EntryPoint
           public void onSuccess(String result)
           {
               // display the tutorial panel state in the label:
-              tutorialPanelStateText.setText( result );
+              tutorialPanelStateText.setText( "Tutorial Panel State--> " + result );
           }
       };
 
       tutorialPanelStateText.setText( "!!! Waiting to get the tutorial panel state!!!" );
-      Window.alert( "1" );
       gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
-      Window.alert( "2" );
       gwtRpcService.getTutorialPanelState( callback );
       
-      Window.alert( "3" );
       RootPanel.get().add( tutorialPanelStateText );
-      Window.alert( "4" );
   }// end onModuleLoad()
 }// end GwtTeaming

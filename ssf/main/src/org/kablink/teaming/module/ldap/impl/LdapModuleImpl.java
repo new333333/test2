@@ -102,6 +102,7 @@ import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
 import org.springframework.transaction.TransactionStatus;
@@ -694,9 +695,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					Attribute id=null;
 					id = lAttrs.get(userIdAttribute);
 					if (id == null) continue;
+
 					//map ldap id to sitescapeName
 					ssName = idToName((String)id.get());
 					if (ssName == null) continue;
+
+					// Is the name of this user a name that is used for a Teaming system user account?
+					// Currently there are 4 system user accounts named, "admin", "guest", "_postingAgent" and "_jobProcessingAgent"
+					if ( MiscUtil.isSystemUserAccount( ssName ) )
+					{
+						// Yes, skip this user.  System user accounts cannot be sync'd from ldap.
+						continue;
+					}
+					
 					String relativeName = userName.trim();
 					String dn;
 					if (bd.isRelative() && !"".equals(ctx.getNameInNamespace())) {
