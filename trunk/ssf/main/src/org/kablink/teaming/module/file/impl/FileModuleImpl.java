@@ -608,7 +608,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		if(lock != null ) { // lock exists
 			// Commit any pending changes associated with the lock. In this 
 			// case, we don't care if the lock is effective or expired.
-			commitPendingChanges(binder, entity, fa, lock);
+			try {
+				commitPendingChanges(binder, entity, fa, lock);
+			}
+			catch(Exception e) {
+				// Do not let any error in committing the pending changes to fail "forcible" unlocking of the file. 
+				logger.error("Error during forcible unlock. Unlock will proceed despite of the error.", e);
+			}
 			
 			fa.setFileLock(null); // Clear the lock
 			
