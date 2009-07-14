@@ -44,6 +44,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -98,6 +99,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.CollectionUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -1237,11 +1239,25 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      */
     protected List<User> createUsers(Long zoneId, Map<String, Map> users, PartialLdapSyncResults syncResults ) {
 		//SimpleProfiler.setProfiler(new SimpleProfiler(false));
+		Locale userLocale = null;
+		String language = SPropsUtil.getString("i18n.default.locale.language", "");
+		String country = SPropsUtil.getString("i18n.default.locale.country", "");
+		if (!language.equals("")) {
+			if (!country.equals("")) userLocale = new Locale(language, country);
+			else userLocale = new Locale(language);
+		}
+    	String defaultLocale = "";
+    	if (userLocale != null) defaultLocale = userLocale.toString();
 		
 		ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
 		List newUsers = new ArrayList();
 		for (Iterator i=users.values().iterator(); i.hasNext();) {
-			newUsers.add(new MapInputData(StringCheckUtil.check((Map)i.next())));
+			Map attrs = (Map)i.next();
+			if (!attrs.containsKey(ObjectKeys.FIELD_USER_LOCALE) && !defaultLocale.equals("")) {
+				//Default the locale to what was chosen at install time
+				attrs.put(ObjectKeys.FIELD_USER_LOCALE, defaultLocale);
+			}
+			newUsers.add(new MapInputData(StringCheckUtil.check(attrs)));
 		}
 		//get default definition to use
 		Definition userDef = pf.getDefaultEntryDef();		
