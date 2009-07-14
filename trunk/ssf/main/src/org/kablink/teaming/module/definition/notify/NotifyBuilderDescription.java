@@ -72,7 +72,14 @@ public class NotifyBuilderDescription extends AbstractNotifyBuilder {
     		else 
     			value = obj.getText();
     	}
-    	if (!visitor.isHtml()) value = replaceHtml(value);
+    	if (visitor.isHtml()) {
+    		int	descriptionFormat = obj.getFormat();
+    		if (Description.FORMAT_NONE == descriptionFormat) {
+    			value = Html.plainTextToHTML(value);
+    		}
+    	} else {
+    		value = replaceHtml(value);
+    	}
      	ctx.put("ssDescription_markup", value);
     	super.build(visitor, template, ctx);
     }
