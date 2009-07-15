@@ -46,6 +46,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
+import org.kablink.teaming.context.request.PortletSessionContext;
+import org.kablink.teaming.context.request.RequestContext;
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
@@ -75,6 +79,9 @@ public class LoginFilter  implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 
+		// Clear request context for the thread.
+		RequestContextHolder.setRequestContext(null);
+		
 		try {
 			if(isAtRoot(req) && req.getMethod().equalsIgnoreCase("get")) {
 				// We're at the root URL. Re-direct the client to its workspace.
