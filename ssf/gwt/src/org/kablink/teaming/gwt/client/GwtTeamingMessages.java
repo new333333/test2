@@ -30,61 +30,20 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client;
 
-import org.kablink.teaming.gwt.client.service.GwtRpcService;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import com.google.gwt.i18n.client.Messages;
 
-import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
 
 /**
- * Entry point classes define <code>onModuleLoad()</code>.
+ * This interface is used to retrieve strings from the file GwtTeamingMessages*.properties
+ * @author jwootton
+ *
  */
-public class GwtTeaming implements EntryPoint
-{
-	private GwtTeamingMessages		m_stringMessages = GWT.create( GwtTeamingMessages.class );
-	
-	/**
-	 * This is the entry point method.
-	 */
-	public void onModuleLoad()
-	{
-		final Label 		tutorialPanelStateText = new Label();
-		GwtRpcServiceAsync	gwtRpcService;
-	
-		// create an async callback to handle the result of the request to get the tutorial panel state:
-		AsyncCallback<String> callback = new AsyncCallback<String>()
-		{
-			/**
-			 * 
-			 */
-			public void onFailure(Throwable t)
-			{
-				// display error text if we can't get the tutorial panel state:
-				tutorialPanelStateText.setText( "Failed to get the tutorial panel state" );
-			}
-	
-			/**
-			 * 
-			 * @param result
-			 */
-			public void onSuccess(String result)
-			{
-				// display the tutorial panel state in the label:
-				Window.alert( "1" );
-				tutorialPanelStateText.setText( m_stringMessages.testPanelState( result ) );
-			}
-		};
-	
-		tutorialPanelStateText.setText( m_stringMessages.testWaiting() );
-		gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
-		gwtRpcService.getTutorialPanelState( callback );
-	      
-		RootPanel.get().add( tutorialPanelStateText );
-	}// end onModuleLoad()
-}// end GwtTeaming
+
+public interface GwtTeamingMessages extends Messages {
+
+	String testPanelState( String value );
+	String testWaiting();
+}// end GwtTeamingMessages
