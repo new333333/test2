@@ -48,6 +48,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -88,6 +90,7 @@ import org.kablink.util.Validator;
  *
  */
 public class DefaultEmailFormatter extends CommonDependencyInjection implements EmailFormatter {
+	public static Log logger = LogFactory.getLog(DefaultEmailFormatter.class);
     protected DefinitionModule definitionModule;
     protected MailModule mailModule;
 	protected Map transformers = new HashMap();
@@ -151,7 +154,9 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 				} else {
 					email = new HashSet();
 					addAddresses(email, u, me.getValue(), style);
-					languageMap.put(u.getLocale(), email);
+					if (0 < email.size()) {
+						languageMap.put(u.getLocale(), email);
+					}
 				}
 			} catch (Exception ex) {};
 		}
@@ -179,18 +184,35 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		return languageMap;
 	}
 	private void addAddresses(Set email, User u, String[] types, int style) {
+		String a = null;
+		String uName = u.getName();
 		if (types == null) {  //this happens on a push from the folder
 			if (style == Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION) {
 				//see if there is a text address
-				String a = u.getTxtEmailAddress();
-				if (Validator.isNull(a)) a = u.getEmailAddress();
-				email.add(a);
+				a = u.getTxtEmailAddress();
+				if (Validator.isNull(a)) {
+					a = u.getEmailAddress();
+				}
 			} else {
-				email.add(u.getEmailAddress());
+				a = u.getEmailAddress();
+			}
+			if (Validator.isNull(a)) {
+				logger.debug("DefaultEmailFormatter.addAddresses(User '" + uName + "' ignored, no email address):  1");
+			} else {
+				email.add(a);
 			}
 		} else {
-			for (int i=0;i<types.length;++i) {
-				email.add(u.getEmailAddress(types[i]));
+			int aCount = 0;
+			int tCount = types.length;
+			for (int i=0;i<tCount;++i) {
+				a = u.getEmailAddress(types[i]);
+				if (!Validator.isNull(a)) {
+					aCount += 1;
+					email.add(a);
+				}
+			}
+			if ((0 == aCount) && (0 < tCount)) {
+				logger.debug("DefaultEmailFormatter.addAddresses(User '" + uName + "' ignored, no email address):  2");
 			}
 		}
 		
@@ -342,7 +364,9 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		//separate into languages
 		addAddresses(email, check.getUser(), check.getEmails(), style);
 		Map<Locale, Collection> languageMap = new HashMap();
-		languageMap.put(check.getUser().getLocale(), email);
+		if (0 < email.size()) {
+			languageMap.put(check.getUser().getLocale(), email);
+		}
 		//make a copy so we can alter original
 		List toDo = new ArrayList(checkList);
 		//compare the list of entries each user has access to
@@ -355,7 +379,9 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 				} else {
 					email = new HashSet();
 					addAddresses(email, c.getUser(), c.getEmails(), style);
-					languageMap.put(c.getUser().getLocale(), email);
+					if (0 < email.size()) {
+						languageMap.put(c.getUser().getLocale(), email);
+					}
 				}
 				checkList.remove(c);
 			}
