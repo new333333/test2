@@ -34,6 +34,9 @@ package org.kablink.teaming.module.binder.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -62,6 +65,9 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.QName;
+import org.dom4j.io.SAXReader;
+import org.dom4j.tree.AbstractAttribute;
 import org.hibernate.NonUniqueObjectException;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.InternalException;
@@ -95,6 +101,7 @@ import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.lucene.Hits;
@@ -110,8 +117,10 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
@@ -125,13 +134,21 @@ import org.kablink.teaming.search.QueryBuilder;
 import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.ssfs.CrossContextConstants;
+import org.kablink.teaming.ssfs.NoAccessException;
+import org.kablink.teaming.ssfs.server.KablinkFileSystemException;
+import org.kablink.teaming.util.DatedMultipartFile;
+import org.kablink.teaming.util.DirPath;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TagUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.XmlFileUtil;
+import org.kablink.teaming.util.ZipEntryStream;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.util.WebUrlUtil;
@@ -144,6 +161,8 @@ import org.springframework.orm.hibernate3.HibernateSystemException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import static org.kablink.util.search.Restrictions.between;
@@ -1644,7 +1663,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		addBinderDefinitions(defList, start.getDefinitions());
 		
 		if(isWorkspace){	
-			zipOut.putNextEntry(new ZipEntry(start.getTitle() + "/" + start.getTitle() + ".xml"));
+			zipOut.putNextEntry(new ZipEntry(start.getTitle() + File.separator + start.getTitle() + "{}.xml"));
 			XmlFileUtil.writeFile(
 					getWorkspaceAsDoc(null, start.getId(), false, start.getTitle()), 
 					zipOut);
@@ -1658,7 +1677,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 						options, start.getTitle(), defList);
 			}
 		}else{
-			zipOut.putNextEntry(new ZipEntry(start.getTitle() + "/" + start.getTitle() + ".xml"));	
+			zipOut.putNextEntry(new ZipEntry(start.getTitle() + File.separator + start.getTitle() + "{}.xml"));	
 			XmlFileUtil.writeFile(
 					getFolderAsDoc(null, start.getId(), false, start.getTitle()), 
 					zipOut);
@@ -1688,9 +1707,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		addBinderDefinitions(defList, binder.getDefinitions());
 		
 		if(isWorkspace){	
-			zipOut.putNextEntry(new ZipEntry(pathName + "/" + binder.getTitle() + "/" + binder.getTitle() + ".xml"));		
+			zipOut.putNextEntry(new ZipEntry(pathName + File.separator + binder.getTitle() + File.separator + binder.getTitle() + "{}.xml"));		
 			XmlFileUtil.writeFile(
-					getWorkspaceAsDoc(null, binder.getId(), false, pathName + "/" + binder.getTitle()), 
+					getWorkspaceAsDoc(null, binder.getId(), false, pathName + File.separator + binder.getTitle()), 
 					zipOut);
 			zipOut.closeEntry();
 			
@@ -1699,12 +1718,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			for(Binder bdr : subWorkspaces){
 				processBinder(zipOut, bdr, 
 						(bdr.getEntityType() == EntityType.workspace) || (bdr.getEntityType() == EntityType.profiles),
-						options, pathName + "/" + binder.getTitle(), defList);
+						options, pathName + File.separator + binder.getTitle(), defList);
 			}
 		}else{
-			zipOut.putNextEntry(new ZipEntry(pathName + "/" + binder.getTitle() + "/" + binder.getTitle() + ".xml"));		
+			zipOut.putNextEntry(new ZipEntry(pathName + File.separator + binder.getTitle() + File.separator + binder.getTitle() + "{}.xml"));		
 			XmlFileUtil.writeFile(
-					getFolderAsDoc(null, binder.getId(), false, pathName + "/" + binder.getTitle()), 
+					getFolderAsDoc(null, binder.getId(), false, pathName + File.separator + binder.getTitle()), 
 					zipOut);
 			zipOut.closeEntry();
 			
@@ -1712,7 +1731,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			Set<Folder> subFolders = folderModule.getSubfolders((Folder)binder);
 			
 			for(Folder fdr : subFolders){
-				processBinder(zipOut, fdr, false, options, pathName + "/" + binder.getTitle(), defList);
+				processBinder(zipOut, fdr, false, options, pathName + File.separator + binder.getTitle(), defList);
 			}
 		
 			Map folderEntries = folderModule.getEntries(binder.getId(), options);
@@ -1722,28 +1741,34 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 				Map searchEntry = (Map) searchEntries.get(i);
 				Long entryId = Long.valueOf(searchEntry.get("_docId").toString());
 				FolderEntry entry = folderModule.getEntry(binder.getId(), entryId);
-				processEntry(zipOut, entry, pathName + "/" + binder.getTitle(), defList);
+				processEntry(zipOut, entry, pathName + File.separator + binder.getTitle(), defList);
 			}
 		}
 		
 		Set<FileAttachment> attachments = binder.getFileAttachments();
 		for(FileAttachment attach : attachments){
-			processFolderAttachment(zipOut, binder, attach, pathName + "/" + binder.getTitle());
+			processBinderAttachment(zipOut, binder, attach, pathName + File.separator + binder.getTitle());
 		}
 		return;
 	}
 	
-	private void processFolderAttachment(ZipOutputStream zipOut, 
+	private void processBinderAttachment(ZipOutputStream zipOut, 
 			Binder binder, FileAttachment attachment, String pathName) throws IOException{
 		
+		processAttachment(zipOut, binder.getParentBinder(), binder, 
+				attachment, pathName);
+		
+		/*
 		FileModule fileModule = (FileModule) SpringContextUtil.getBean( "fileModule" );
 		InputStream fileStream = fileModule.readFile(binder.getParentBinder(), binder, attachment);
 		
-		zipOut.putNextEntry(new ZipEntry(pathName + "/" 
+		zipOut.putNextEntry(new ZipEntry(pathName + File.separator 
 				+ attachment.getFileItem().getName()));	
 		FileUtil.copy(fileStream, zipOut);
 		zipOut.closeEntry();
 		fileStream.close();
+		
+		*/
 		
 		return;
 	}
@@ -1764,11 +1789,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		}else{
 			fullId = calcFullId(entry);
 		}
-
-		zipOut.putNextEntry(new ZipEntry(pathName + "/" + entry.getTitle().replace(':', '+') + "[" + fullId + "].xml"));
-		XmlFileUtil.writeFile(
-				getEntryAsDoc(null, entry.getParentBinder().getId(), entry.getId(), false, pathName + "/" + entry.getTitle().replace(':', '+') + "[" + fullId + "]"), 
+		if(!pathName.equals("")){
+			zipOut.putNextEntry(new ZipEntry(pathName + File.separator + entry.getTitle().replace(':', '+') + "[" + fullId + "].xml"));
+			XmlFileUtil.writeFile(
+					getEntryAsDoc(null, entry.getParentBinder().getId(), entry.getId(), false, pathName + File.separator + entry.getTitle().replace(':', '+') + "[" + fullId + "]"), 
+					zipOut);
+		}
+		else{
+			zipOut.putNextEntry(new ZipEntry(entry.getTitle().replace(':', '+') + "[" + fullId + "].xml"));
+			XmlFileUtil.writeFile(
+				getEntryAsDoc(null, entry.getParentBinder().getId(), entry.getId(), false, entry.getTitle().replace(':', '+') + "[" + fullId + "]"), 
 				zipOut);
+		}
 		zipOut.closeEntry();
 		
 		defList.add(entry.getEntryDef());
@@ -1789,10 +1821,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	private void processEntryReply(ZipOutputStream zipOut, FolderEntry reply, String fullId, String pathName, Set defList) throws Exception{
 		String newFullId = fullId + "." + reply.getId();
 		
-		zipOut.putNextEntry(new ZipEntry(pathName + "/" + reply.getTitle().replace(':', '+') + "[" + newFullId + "].xml"));		
-		XmlFileUtil.writeFile(
-				getEntryAsDoc(null, reply.getParentBinder().getId(), reply.getId(), false, pathName + "/" + reply.getTitle().replace(':', '+') + "[" + fullId + "]"), 
+		if(!pathName.equals("")){
+			zipOut.putNextEntry(new ZipEntry(pathName + File.separator + reply.getTitle().replace(':', '+') + "[" + newFullId + "].xml"));
+			XmlFileUtil.writeFile(
+					getEntryAsDoc(null, reply.getParentBinder().getId(), reply.getId(), false, pathName + File.separator + reply.getTitle().replace(':', '+') + "[" + fullId + "]"), 
+					zipOut);
+		}
+		else{
+			zipOut.putNextEntry(new ZipEntry(reply.getTitle().replace(':', '+') + "[" + newFullId + "].xml"));		
+			XmlFileUtil.writeFile(
+				getEntryAsDoc(null, reply.getParentBinder().getId(), reply.getId(), false, reply.getTitle().replace(':', '+') + "[" + fullId + "]"), 
 				zipOut);
+		}
 		zipOut.closeEntry();	
 		
 		defList.add(reply.getEntryDef());
@@ -1813,16 +1853,59 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	private void processEntryAttachment(ZipOutputStream zipOut, 
 			FolderEntry entry, String fullId, FileAttachment attachment, String pathName) throws IOException{
 		
+		processAttachment(zipOut, entry.getParentBinder(), entry, 
+				attachment, pathName + File.separator + entry.getTitle().replace(':', '+') + "[" + fullId + "]");
+		
+		/*
 		FileModule fileModule = (FileModule) SpringContextUtil.getBean( "fileModule" );
 		InputStream fileStream = fileModule.readFile(entry.getParentBinder(), entry, attachment);
 		
-		zipOut.putNextEntry(new ZipEntry(pathName + "/" + entry.getTitle().replace(':', '+') + "[" + fullId + "]/" 
+		zipOut.putNextEntry(new ZipEntry(pathName + File.separator + entry.getTitle().replace(':', '+') + "[" + fullId + "]" + File.separator 
 				+ attachment.getFileItem().getName()));
 		FileUtil.copy(fileStream, zipOut);
 		zipOut.closeEntry();
 		fileStream.close();
-		
+		*/
 		return;
+	}
+	
+	private void processAttachment(ZipOutputStream zipOut, Binder binder, DefinableEntity entity, 
+									FileAttachment attachment, String pathName) throws IOException{
+		FileModule fileModule = (FileModule) SpringContextUtil.getBean( "fileModule" );
+		
+		Set fileVersions = attachment.getFileVersions();		
+		Iterator<VersionAttachment> versionIter = fileVersions.iterator();
+		
+		String fileExt = EntityIndexUtils.getFileExtension(attachment.getFileItem().getName());
+		
+		//latest version
+		
+		VersionAttachment vAttach = versionIter.next();
+		
+		InputStream fileStream = fileModule.readFile(binder, entity, vAttach);
+		
+		zipOut.putNextEntry(new ZipEntry(pathName + File.separator + attachment.getFileItem().getName()));
+		FileUtil.copy(fileStream, zipOut);
+		zipOut.closeEntry();
+		
+		fileStream.close();
+		
+		//older versions, from highest to lowest
+		
+		for(int i = 1; i < fileVersions.size() ; i++){
+			vAttach = versionIter.next();
+			fileStream = fileModule.readFile(binder, entity, vAttach);
+			int versionNum = fileVersions.size() - i; 
+			
+			zipOut.putNextEntry(new ZipEntry(pathName + File.separator + attachment.getFileItem().getName() 
+												+ ".versions" + File.separator + versionNum + "." + fileExt));
+			FileUtil.copy(fileStream, zipOut);
+			zipOut.closeEntry();
+			
+			fileStream.close();
+		}
+		
+		
 	}
 	
 	private Document getEntryAsDoc(String accessToken, long binderId, long entryId, boolean includeAttachments, String pathName) {
@@ -2002,14 +2085,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
 	
 	private void adjustAttachmentUrls(Document entityDoc, String pathName){
-		String xPath = "//attribute[@name='ss_attachFile']//file//@href";
+		String xPath = "//attribute[@type='attachFiles']//file//@href";
 		
 		List hrefs = entityDoc.selectNodes(xPath);
 		
 		for(Attribute attr: (List<Attribute>)hrefs)
 		{	
         	File tempFile = new File(attr.getValue());
-        	attr.setValue(pathName + "/" + tempFile.getName());
+        	attr.setValue(pathName + File.separator + tempFile.getName());
         }
 	}
 	
@@ -2031,7 +2114,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		if (Validator.isNull(name)) 
 			name = def.getTitle();
 		
-		zipOut.putNextEntry(new ZipEntry("__definitions/" + name + ".xml"));
+		zipOut.putNextEntry(new ZipEntry("__definitions" + File.separator + name + ".xml"));
 		XmlFileUtil.writeFile(def.getDefinition(), zipOut);
 		zipOut.closeEntry();
 	}
@@ -2039,42 +2122,53 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public void importZip(Long binderId, InputStream fIn) throws IOException{
 		BinderModule binderModule = (BinderModule) SpringContextUtil.getBean( "binderModule" );
 		Binder binder = binderModule.getBinder(binderId);
-    	
     	ZipInputStream zIn = new ZipInputStream(fIn);
     	
-    	java.util.zip.ZipEntry zEntry = zIn.getNextEntry();
+    	String tempDir = deploy(zIn);
+    	File tempDirFile = new File(tempDir);
     	
-    	while(zEntry != null){
-    		String fileExt = EntityIndexUtils.getFileExtension(zEntry.getName().toLowerCase());
-    		
-    		if(zEntry.getName().startsWith("__definitions/")){
-    			//eventually will need to import in definitions
-    		}
-    		else if(fileExt.equals("xml")){
-    			String xmlStr = null;
-    			
-    			ByteArrayOutputStream output = new ByteArrayOutputStream();
-    			int data = 0;
-    			while( ( data = zIn.read() ) != - 1 )
-    			{
-    			output.write( data );
-    			}
-    			xmlStr = output.toString();
-    			output.close();
-    		
-    			Document tempDoc = getDocument(xmlStr);
-    			
-    			String defId = getDefinitionId(tempDoc);
-    			 			
-    			String entType = getEntityType(tempDoc);
-    			
-    			if(entType.equals("entry")){
-    				folder_addEntryWithXML(null, binderId, defId, xmlStr, null);
-    			}
-    			
-    		}
-    		zEntry = zIn.getNextEntry();
-    	}
+    	importDir(binderId, tempDirFile, tempDir);
+    	deleteDirectory(tempDirFile);
+    	
+	}
+	
+	private void importDir(Long binderId, File currentDir, String tempDir) throws IOException {
+		File[] children = currentDir.listFiles();
+		
+		for(File child: children){
+			if(child.isDirectory())
+				importDir(binderId, child, tempDir);
+			else{
+				String fileExt = EntityIndexUtils.getFileExtension(child.getName().toLowerCase());
+				
+				if(child.getAbsolutePath().startsWith(tempDir + File.separator + "__definitions" + File.separator)){
+	    			//eventually will need to import in definitions
+	    		}else if(fileExt.equals("xml")){
+        			String xmlStr = null;
+        			
+        			FileInputStream input = new FileInputStream(child);
+        			ByteArrayOutputStream output = new ByteArrayOutputStream();
+        			
+        			int data = 0;
+        			while( ( data = input.read() ) != - 1 )
+        			{
+        			output.write( data );
+        			}
+        			
+        			xmlStr = output.toString();
+        			output.close();
+        			input.close();
+        			
+        			Document tempDoc = getDocument(xmlStr);
+        			String defId = getDefinitionId(tempDoc);
+        			String entType = getEntityType(tempDoc);
+        			
+        			if(entType.equals("entry")){
+        				folder_addEntryWithXML(null, binderId, defId, xmlStr, tempDir);
+        			}
+	    		}
+			}
+		}
 	}
 	
 	private String getEntityType(Document entity){
@@ -2085,27 +2179,34 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		return entity.getRootElement().attributeValue("definitionId").toString();
 	}
 	
-	private long folder_addEntryWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
-		return addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, attachedFileName, null);
+	private long folder_addEntryWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML, String tempDir){
+		return addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, null, tempDir);
 	}
 	
 	private static int count = 0;
 	
-	private long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName, Map options) {
+	private long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, Map options, String tempDir) {
 
 		FolderModule folderModule = (FolderModule) SpringContextUtil.getBean( "folderModule" );
 		IcalModule iCalModule = (IcalModule) SpringContextUtil.getBean( "icalModule" );
 		
 		Document doc = getDocument(inputDataAsXML);
-		try {
-			return folderModule.addEntry(new Long(binderId), definitionId, 
-				new DomInputData(doc, iCalModule), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), options).getId().longValue();
+		
+		String[] fileNames = new String[0];
+		
+		try {			
+			long entryId = folderModule.addEntry(new Long(binderId), definitionId, 
+					new DomInputData(doc, iCalModule), null, options).getId().longValue();
+			
+			addFileAttachments(binderId, entryId, doc, tempDir);
+			
+			return entryId;
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}
 		catch(WriteEntryDataException e) {
-				throw new RemotingException(e);
+			throw new RemotingException(e);
 		} finally {
 			if(++count == 10000) {
 				logger.info(SimpleProfiler.toStr());
@@ -2124,8 +2225,228 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		}
 	}
 	
-	private Map getFileAttachments(String fileUploadDataItemName, String[] fileNames)
-	{
-		return new HashMap();
+	private void addFileAttachments(Long binderId, Long entryId, Document entityDoc, String tempDir){		
+		FolderModule folderModule = (FolderModule) SpringContextUtil.getBean( "folderModule" );
+		
+		String xPath = "//attribute[@type='attachFiles']//file";
+		List attachFiles = entityDoc.selectNodes(xPath);
+		
+		int attachFilesCounter = 1;
+		
+		for(Element fileEle: (List<Element>)attachFiles)
+		{	
+			boolean handled = false;
+		
+			String href = unescape(tempDir + File.separator + fileEle.attributeValue("href"));
+			String filename = unescape(fileEle.getText());
+			
+			int numVersions = Integer.valueOf(fileEle.attributeValue("numVersions"));
+			String versionsDir = null;
+			
+			if(numVersions > 1){
+				versionsDir = unescape(tempDir + File.separator + fileEle.attributeValue("href") + ".versions");
+			}
+    
+        	//see if there's a matching attachment of type 'file'	
+        	String fileXPath = "//attribute[@type='file']//value";
+        	List fileList = entityDoc.selectNodes(fileXPath);
+		
+        	for(Element fileListEle: (List<Element>)fileList){
+        		if(fileListEle.getText().equals(filename)){
+        			String name = fileListEle.getParent().attributeValue("name");
+        			addFileVersions(binderId, entryId, name, filename, href, numVersions, versionsDir);
+        			handled = true;
+        			break;
+        		}
+        	}
+        	
+        	//if not yet found, see if there's a matching attachment of type 'graphic'
+        	
+        	if(!handled){
+	        	String graphicXPath = "//attribute[@type='graphic']//value";
+	        
+	        	List graphicList = entityDoc.selectNodes(graphicXPath);
+			
+	        	for(Element graphicListEle: (List<Element>)graphicList){
+	        		if(graphicListEle.getText().equals(filename)){
+	        			String name = graphicListEle.getParent().attributeValue("name");
+	        			addFileVersions(binderId, entryId, name, filename, href, numVersions, versionsDir);
+	        			handled = true;
+	        			break;
+	        		}
+	        	}
+        	}
+        	
+        	//if not yet found, see if there's a match in the rest of the attachments
+        	
+        	if(!handled){
+        		String attachsXPath = "//attribute[@type='attachFiles']//file";
+	        
+	        	List attachsList = entityDoc.selectNodes(attachsXPath);
+			
+	        	for(Element attachsListEle: (List<Element>)attachsList){
+	        		if(attachsListEle.getText().equals(filename)){
+	        			String name = attachsListEle.getParent().attributeValue("name") + "1";
+	        			addFileVersions(binderId, entryId, name, filename, href, numVersions, versionsDir); 
+	        			handled = true;
+	        			break;
+	        		}
+	        	}
+        	}	
+        }
 	}
+	
+	private void addFileVersions(Long binderId, Long entryId, String fileDataItemName, String filename, String href, int numVersions, String versionsDir) {
+		FolderModule folderModule = (FolderModule) SpringContextUtil.getBean( "folderModule" );
+		
+		String fileExt = EntityIndexUtils.getFileExtension(filename);
+		
+		InputStream iStream = null;
+		
+		if(numVersions > 1){
+			for(int i = 1; i < numVersions; i++){
+				try{
+					iStream = new FileInputStream(new File(versionsDir + File.separator + i + "." + fileExt));		
+					folderModule.modifyEntry(binderId, entryId, fileDataItemName, filename, iStream);
+					iStream.close();
+				}catch(Exception e){
+					logger.error(e);
+			        return;
+				}
+			}
+		}
+		
+		try{
+			iStream = new FileInputStream(new File(href));
+			folderModule.modifyEntry(binderId, entryId, fileDataItemName, filename, iStream);
+			iStream.close();
+		}catch(Exception e){
+			logger.error(e);
+	        return;
+		}
+	}
+	
+	/*
+	 * Created: 17 April 1997
+	 * Author: Bert Bos <bert@w3.org>
+	 *
+	 * unescape: http://www.w3.org/International/unescape.java
+	 *
+	 * Copyright © 1997 World Wide Web Consortium, (Massachusetts
+	 * Institute of Technology, European Research Consortium for
+	 * Informatics and Mathematics, Keio University). All Rights Reserved. 
+	 * This work is distributed under the W3C® Software License [1] in the
+	 * hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+	 * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+	 * PURPOSE.
+	 *
+	 * [1] http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231
+	 */
+
+	  private static String unescape(String s) {
+	    StringBuffer sbuf = new StringBuffer () ;
+	    int l  = s.length() ;
+	    int ch = -1 ;
+	    int b, sumb = 0;
+	    for (int i = 0, more = -1 ; i < l ; i++) {
+	      /* Get next byte b from URL segment s */
+	      switch (ch = s.charAt(i)) {
+		case '%':
+		  ch = s.charAt (++i) ;
+		  int hb = (Character.isDigit ((char) ch) 
+			    ? ch - '0'
+			    : 10+Character.toLowerCase((char) ch) - 'a') & 0xF ;
+		  ch = s.charAt (++i) ;
+		  int lb = (Character.isDigit ((char) ch)
+			    ? ch - '0'
+			    : 10+Character.toLowerCase ((char) ch)-'a') & 0xF ;
+		  b = (hb << 4) | lb ;
+		  break ;
+		case '+':
+		  b = ' ' ;
+		  break ;
+		default:
+		  b = ch ;
+	      }
+	      /* Decode byte b as UTF-8, sumb collects incomplete chars */
+	      if ((b & 0xc0) == 0x80) {			// 10xxxxxx (continuation byte)
+		sumb = (sumb << 6) | (b & 0x3f) ;	// Add 6 bits to sumb
+		if (--more == 0) sbuf.append((char) sumb) ; // Add char to sbuf
+	      } else if ((b & 0x80) == 0x00) {		// 0xxxxxxx (yields 7 bits)
+		sbuf.append((char) b) ;			// Store in sbuf
+	      } else if ((b & 0xe0) == 0xc0) {		// 110xxxxx (yields 5 bits)
+		sumb = b & 0x1f;
+		more = 1;				// Expect 1 more byte
+	      } else if ((b & 0xf0) == 0xe0) {		// 1110xxxx (yields 4 bits)
+		sumb = b & 0x0f;
+		more = 2;				// Expect 2 more bytes
+	      } else if ((b & 0xf8) == 0xf0) {		// 11110xxx (yields 3 bits)
+		sumb = b & 0x07;
+		more = 3;				// Expect 3 more bytes
+	      } else if ((b & 0xfc) == 0xf8) {		// 111110xx (yields 2 bits)
+		sumb = b & 0x03;
+		more = 4;				// Expect 4 more bytes
+	      } else /*if ((b & 0xfe) == 0xfc)*/ {	// 1111110x (yields 1 bit)
+		sumb = b & 0x01;
+		more = 5;				// Expect 5 more bytes
+	      }
+	      /* We don't test if the UTF-8 encoding is well-formed */
+	    }
+	    return sbuf.toString() ;
+	  }
+
+	private String deploy(ZipInputStream zipIn) throws IOException {
+		String zoneKey = Utils.getZoneKey();
+		SAXReader reader = new SAXReader(false);
+		reader.setIncludeExternalDTDDeclarations(false);
+		
+		//TO-DO... MAKE sure the directory is unique each time
+		File tempDir = new File("C://import-temp-files-12345");
+		
+		tempDir.mkdirs();
+		java.util.zip.ZipEntry entry = null;
+		try {
+			//load all the files
+			while((entry = zipIn.getNextEntry()) != null) {
+				// extract file to proper extension directory
+				File inflated;
+				String name = entry.getName();
+				inflated = new File(tempDir, name);
+				if (entry.isDirectory()) {
+					inflated.mkdirs();
+					zipIn.closeEntry();
+					continue;
+				} else {
+					inflated.getParentFile().mkdirs();
+					FileOutputStream entryOut = new FileOutputStream(inflated);
+					FileCopyUtils.copy(new ZipEntryStream(zipIn),  entryOut);
+					entryOut.close();
+				}
+				zipIn.closeEntry();
+			}
+		} finally {
+			zipIn.close();
+		}
+		
+		return tempDir.getAbsolutePath();
+	}
+	
+	private boolean deleteDirectory(File path) {
+		if(path.exists()) {
+			File[] files = path.listFiles();
+			
+			for(int i=0; i<files.length; i++) {
+				if(files[i].isDirectory()) {
+					deleteDirectory(files[i]);
+				}
+				else {
+					files[i].delete();
+				}
+			}
+	    }
+		
+	    return(path.delete());
+	}
+
+	  
 }
