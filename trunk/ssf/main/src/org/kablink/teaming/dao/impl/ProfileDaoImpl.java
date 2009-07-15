@@ -1444,7 +1444,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	public List filterInaccessiblePrincipals(List principals) {
 		User user = null;
 		try {
-			user = RequestContextHolder.getRequestContext().getUser();
+			if(RequestContextHolder.getRequestContext() != null)
+				user = RequestContextHolder.getRequestContext().getUser();
 		} catch(Exception e) {}
 		if (user == null) return principals;
 		
