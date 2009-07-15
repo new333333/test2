@@ -97,6 +97,7 @@ import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.TreeHelper;
@@ -2033,7 +2034,23 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						if (inputData.exists(nameValue)) {
 							Object val = inputData.getSingleObject(nameValue);
 							if (val == null) {
-								entryData.put(nameValue, null);
+								//See if there is a default specified
+								String defaultValue = DefinitionUtils.getPropertyValue(nextItem, "default");
+								if (!Validator.isNull(defaultValue)) {
+									String[] vals = defaultValue.split("_");
+									if (vals.length == 1) entryData.put(nameValue, new Locale(vals[0]));
+									else if (vals.length == 2) entryData.put(nameValue, new Locale(vals[0], vals[1]));
+									else if (vals.length >= 3) entryData.put(nameValue, new Locale(vals[0], vals[1], vals[2]));
+								} else {
+									Locale userLocale = null;
+						    		String language = SPropsUtil.getString("i18n.default.locale.language", "");
+						    		String country = SPropsUtil.getString("i18n.default.locale.country", "");
+						    		if (!language.equals("")) {
+						    			if (!country.equals("")) userLocale = new Locale(language, country);
+						    			else userLocale = new Locale(language);
+						    		}
+						    		entryData.put(nameValue, userLocale);
+								}
 							} else if (val instanceof Locale) {
 								entryData.put(nameValue, (Locale)val);
 							} else {
@@ -2045,15 +2062,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									else if (vals.length == 2) entryData.put(nameValue, new Locale(vals[0], vals[1]));
 									else if (vals.length >= 3) entryData.put(nameValue, new Locale(vals[0], vals[1], vals[2]));
 								}
-							}
-						} else {
-							//See if there is a default specified
-							String defaultValue = DefinitionUtils.getPropertyValue(nextItem, "default");
-							if (!Validator.isNull(defaultValue)) {
-								String[] vals = defaultValue.split("_");
-								if (vals.length == 1) entryData.put(nameValue, new Locale(vals[0]));
-								else if (vals.length == 2) entryData.put(nameValue, new Locale(vals[0], vals[1]));
-								else if (vals.length >= 3) entryData.put(nameValue, new Locale(vals[0], vals[1], vals[2]));
 							}
 						}
 					} else if (itemName.equals("file") || itemName.equals("graphic") ||
@@ -2169,6 +2177,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 										String[] colWidths = new String[colCount];
 										if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_COL_WIDTHS)) {
 											String colWidths2 = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_COL_WIDTHS);
+											if (colWidths2 == null) colWidths2 = "";
 											try {
 												colWidths2 = URLDecoder.decode(colWidths2, "UTF-8");
 											} catch(Exception e) {}
@@ -2184,7 +2193,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 										nextValue = ObjectKeys.MASHUP_TYPE_TABLE_START + attrs + ";";
 										for (int j = 0; j < colCount; j++) {
 											nextValue += ObjectKeys.MASHUP_TYPE_TABLE_COL + ",";
-											nextValue += ObjectKeys.MASHUP_ATTR_COL_WIDTH + "=" + colWidths[j] + ";";
+											String w = colWidths[j];
+											if (w == null) w = "";
+											nextValue += ObjectKeys.MASHUP_ATTR_COL_WIDTH + "=" + w + ";";
 										}
 										nextValue += ObjectKeys.MASHUP_TYPE_TABLE_END;
 									} else if (type.equals(ObjectKeys.MASHUP_TYPE_TABLE_END_DELETE)) {
