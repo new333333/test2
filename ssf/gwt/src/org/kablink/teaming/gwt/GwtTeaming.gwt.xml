@@ -19,6 +19,7 @@
       <!-- Specify the application specific style sheet.              -->
       <stylesheet src='GwtTeaming.css' />
 
-	<!-- RPC service servlet declarations                             -->
-<!-- <servlet path="/quote.rpc" class="org.example.gwtwisdom.server.QuoteServiceImpl" /> -->	
+      <!-- Add support for other languages. -->
+	  <!--  <extend-property name="locale" values="es"/> -->	<!-- Spanish -->
+
 </module>
