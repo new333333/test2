@@ -20,6 +20,6 @@
       <stylesheet src='GwtTeaming.css' />
 
       <!-- Add support for other languages. -->
-	  <!--  <extend-property name="locale" values="es"/> -->	<!-- Spanish -->
+	  <extend-property name="locale" values="es"/>	<!-- Spanish -->
 
 </module>
