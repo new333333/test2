@@ -43,6 +43,7 @@ import org.apache.ws.security.WSPasswordCallback;
 import org.apache.ws.security.WSSecurityException;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContext;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.LoginInfo;
@@ -74,6 +75,9 @@ public class PWCallback implements CallbackHandler {
                 Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
                 
         		try {
+        			// Clear request context for the thread.
+        			RequestContextHolder.clear();
+
         			User user = getProfileDao().findUserByName(userName, zoneId);
     				// If we're still here, the user exists.
     				String userEncryptedPassword = user.getPassword();
