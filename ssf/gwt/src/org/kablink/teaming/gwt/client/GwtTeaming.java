@@ -39,6 +39,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -48,13 +49,15 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class GwtTeaming implements EntryPoint
 {
 	private GwtTeamingMessages		m_stringMessages = GWT.create( GwtTeamingMessages.class );
+	private GwtTeamingImageBundle	m_imageBundle = GWT.create( GwtTeamingImageBundle.class );
 	
 	/**
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad()
 	{
-		final Label 		tutorialPanelStateText = new Label();
+		final Label	tutorialPanelStateText = new Label();
+		AbstractImagePrototype warnImg;
 		GwtRpcServiceAsync	gwtRpcService;
 	
 		// create an async callback to handle the result of the request to get the tutorial panel state:
@@ -84,7 +87,10 @@ public class GwtTeaming implements EntryPoint
 		tutorialPanelStateText.setText( m_stringMessages.testWaiting() );
 		gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
 		gwtRpcService.getTutorialPanelState( callback );
+		
+		warnImg = m_imageBundle.warningIcon16(); 
 	      
 		RootPanel.get().add( tutorialPanelStateText );
+		RootPanel.get().add( warnImg.createImage() );
 	}// end onModuleLoad()
 }// end GwtTeaming

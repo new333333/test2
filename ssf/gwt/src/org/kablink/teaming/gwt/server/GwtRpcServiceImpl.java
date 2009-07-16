@@ -104,6 +104,9 @@ public class GwtRpcServiceImpl  implements GwtRpcService, AllModulesInjected
     	userProperties = profileModule.getUserProperties( null );
 		tutorialPanelState = (String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_TUTORIAL_PANEL_STATE );
 
+		if ( tutorialPanelState == null )
+			tutorialPanelState = "Not defined";
+		
     	return tutorialPanelState;
     }// end getTutorialPanelState()
     
