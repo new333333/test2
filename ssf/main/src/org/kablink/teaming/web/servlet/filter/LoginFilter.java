@@ -80,7 +80,7 @@ public class LoginFilter  implements Filter {
 		HttpServletResponse res = (HttpServletResponse) response;
 
 		// Clear request context for the thread.
-		RequestContextHolder.setRequestContext(null);
+		RequestContextHolder.clear();
 		
 		try {
 			if(isAtRoot(req) && req.getMethod().equalsIgnoreCase("get")) {

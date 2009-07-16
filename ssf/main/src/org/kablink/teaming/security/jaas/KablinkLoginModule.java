@@ -41,6 +41,7 @@ import javax.security.auth.spi.LoginModule;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.ServerDetector;
 import org.kablink.util.Validator;
@@ -109,6 +110,9 @@ public class KablinkLoginModule implements LoginModule {
 	}
 
 	public boolean login() throws LoginException {
+		// Clear request context for the thread.
+		RequestContextHolder.clear();
+
 		return loginModule.login();
 	}
 

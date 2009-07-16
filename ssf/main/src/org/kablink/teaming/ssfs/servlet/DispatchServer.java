@@ -86,6 +86,9 @@ public class DispatchServer extends GenericServlet {
 
 			String zoneName = getZoneModule().getZoneNameByVirtualHost(serverName);
 			
+			// Clear request context for the thread.
+			RequestContextHolder.clear();
+
 			// Authenticate the user against SSF user database.
 			try {
 				User user = AuthenticationManagerUtil.authenticate
