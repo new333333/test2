@@ -55,6 +55,7 @@ import org.kablink.teaming.security.authentication.UserDoesNotExistException;
 import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SessionUtil;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.springframework.beans.factory.InitializingBean;
 
 
@@ -120,14 +121,21 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			if (!hadSession) SessionUtil.sessionStartup();	
 			user = doAuthenticate(zoneName, userName, password, passwordAutoSynch, ignorePassword);
 			if (updates != null && !updates.isEmpty()) {
-				Map mods = new HashMap();
-				for (int i = 0; i<userModify.length; ++i) {
-					Object val = updates.get(userModify[i]);
-					if (val != null) {
-						mods.put(userModify[i], val);
-					}					
-				}
-				if (!mods.isEmpty()) getProfileModule().modifyUserFromPortal(user, mods, null);
+   				// We don't want to sync ldap attributes if the user is one of the 4
+   				// system user accounts, "admin", "guest", "_postingAgent" and "_jobProcessingAgent"
+   				// Is the user a system user account?
+   				if ( !MiscUtil.isSystemUserAccount( userName ) )
+   				{
+   					// No
+					Map mods = new HashMap();
+					for (int i = 0; i<userModify.length; ++i) {
+						Object val = updates.get(userModify[i]);
+						if (val != null) {
+							mods.put(userModify[i], val);
+						}					
+					}
+					if (!mods.isEmpty()) getProfileModule().modifyUserFromPortal(user, mods, null);
+   				}
 			}
 			if (user.getWorkspaceId() == null) getProfileModule().addUserWorkspace(user, null);
 			if(authenticatorName != null)
@@ -164,6 +172,17 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		return user;
 	}
 	
+	/**
+	 * 
+	 * @param zoneName
+	 * @param username
+	 * @param password
+	 * @param passwordAutoSynch
+	 * @param ignorePassword
+	 * @return
+	 * @throws PasswordDoesNotMatchException
+	 * @throws UserDoesNotExistException
+	 */
 	protected User doAuthenticate(String zoneName, String username, String password,
 				boolean passwordAutoSynch, boolean ignorePassword)
 			throws PasswordDoesNotMatchException, UserDoesNotExistException {
@@ -185,10 +204,17 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	   		if(!EncryptUtil.encryptPassword(password).equals(user.getPassword())) {
 	   			// Password does not match.
 	   			if(passwordAutoSynch) {
-	   				// Change the user's password to the value passed in. 
-	   				Map updates = new HashMap();
-	   				updates.put("password", password);
-	   				getProfileModule().modifyUserFromPortal(user, updates, null);  				
+	   				// We don't want to sync the password if the user is one of the 4
+	   				// system user accounts, "admin", "guest", "_postingAgent" and "_jobProcessingAgent"
+	   				// Is the user a system user account?
+	   				if ( !MiscUtil.isSystemUserAccount( username ) )
+	   				{
+	   					// No
+		   				// Change the user's password to the value passed in. 
+		   				Map updates = new HashMap();
+		   				updates.put("password", password);
+		   				getProfileModule().modifyUserFromPortal(user, updates, null);
+	   				}
 	   			}
 	   			else {
 	   				// We're not allowed to change the user's password to the value passed in.
