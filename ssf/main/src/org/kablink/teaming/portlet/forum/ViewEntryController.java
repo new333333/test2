@@ -473,6 +473,8 @@ public class ViewEntryController extends  SAbstractController {
 		}
 		
 		if(fe == null) {
+			Document config = getDefinitionModule().getDefinitionConfig();
+			model.put(WebKeys.CONFIG_DEFINITION, config);
 			return new ModelAndView("entry/deleted_entry", model);		
 		} else {
 			if (operation.equals(WebKeys.OPERATION_VIEW_PHOTO)) {
