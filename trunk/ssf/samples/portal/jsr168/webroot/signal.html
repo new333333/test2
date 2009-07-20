@@ -1,4 +1,4 @@
-<%
+<!--
 /**
  * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
@@ -31,5 +31,24 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-%>
-<h1>Hi there</h1>
+-->
+<html>
+<head>
+<script type="text/javascript">
+
+var pieces = self.location.search.substr(1).split(",");
+var height = pieces[0];
+var namespace = pieces[1];
+
+if (parent.parent.window.frames['ss_workareaIframe' + namespace] != null) {
+	eval("parent.parent.ss_setTeamingIframeHeight" + namespace + "('"+height+"')");
+} else {
+	alert('Portal window not found')
+}
+
+</script>
+
+</head>
+<body>
+</body>
+</html>

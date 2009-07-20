@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
- * 
+ *
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
  * obtain a copy of the CPAL at http://www.opensource.org/licenses/cpal_1.0. The
@@ -8,15 +8,15 @@
  * have been added to cover use of software over a computer network and provide
  * for limited attribution for the Original Developer. In addition, Exhibit A has
  * been modified to be consistent with Exhibit B.
- * 
+ *
  * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT
  * WARRANTY OF ANY KIND, either express or implied. See the CPAL for the specific
  * language governing rights and limitations under the CPAL.
- * 
+ *
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
  * (c) 1998-2009 Novell, Inc. All Rights Reserved.
- * 
+ *
  * Attribution Information:
  * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
@@ -26,36 +26,57 @@
  * Display of Attribution Information is required in Larger Works which are
  * defined in the CPAL as a work which combines Covered Code or portions thereof
  * with code not governed by the terms of the CPAL.
- * 
+ *
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.portal.jsr168;
+package org.kablink.teaming.samples.portal.jsr168;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.web.WebKeys;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.mvc.AbstractController;
 
+/**
+ * 
+ * @author Jong Kim
+ *
+ */
 public class TeamingController extends AbstractController {
-	protected Log logger = LogFactory.getLog(getClass());
-	
-	protected void handleActionRequestInternal(ActionRequest request, ActionResponse response)
-	throws Exception {
+
+	protected void handleActionRequestInternal(ActionRequest request,
+			ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 	}
 
-	protected ModelAndView handleRenderRequestInternal(RenderRequest request, RenderResponse response)
-	throws Exception {
-		HashMap model = new HashMap();
-		
-		return new ModelAndView("teaming", model);
+	protected ModelAndView handleRenderRequestInternal(RenderRequest request,
+			RenderResponse response) throws Exception {
+		Map<String,Object> model = new HashMap<String,Object>();
+ 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
+
+  		//Get the URL of the Teaming site
+  		String teamingUrl = "";
+  		
+  		// Note: The following three lines of code are Liferay specific and will have no effect
+  		//       when executed under another portal. It allows one-to-one mapping between Liferay's 
+  		//       company (aka instance) and Teaming's zone or even another Teaming installation.
+  		Long companyId = (Long) request.getAttribute("COMPANY_ID");
+  		if(companyId != null)
+  			teamingUrl = SPropsUtil.getString("teaming.url." + companyId.toString(), "");
+  		
+  		if(teamingUrl.equals(""))
+  			teamingUrl = SPropsUtil.getString("teaming.url", "");
+   		model.put("ssTeamingUrl", teamingUrl);
+
+ 		return new ModelAndView("teaming", model);
 	}
+
 }
