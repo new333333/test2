@@ -82,7 +82,8 @@
   <span class="ss_labelAbove"><label for="_sendMail_subject">
     <ssf:nlt tag="entry.sendMail.subject"/>
   </label></span>
-  <input type="text" size="80" name="_sendMail_subject" value="<ssf:nlt tag='entry.sendMail.newEntry'><ssf:param name="value" value="${ssBinder.title}"/></ssf:nlt>"/>
+  <input type="hidden"         name="_sendMail_subject_default" id="_sendMail_subject_default" value="<ssf:nlt tag='entry.sendMail.newEntry'><ssf:param name="value" value="${ssBinder.title}"/></ssf:nlt>"/>
+  <input type="text" size="80" name="_sendMail_subject"         id="_sendMail_subject"         value="<ssf:nlt tag='entry.sendMail.newEntry'><ssf:param name="value" value="${ssBinder.title}"/></ssf:nlt>"/>
   <br/>
 
   <span class="ss_labelAbove"><label for="_sendMail_body">
