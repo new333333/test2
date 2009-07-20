@@ -1,7 +1,7 @@
-* If you don't already have one, install and set up Liferay. Start Liferay at least once to complete database initialization.
+* If you don't already have one, install and set up Liferay.
 
-* Change app.server.properties
+* Build Teaming portlet application.
 
-* Build and deploy Teaming portlet application.
+* Log into Liferay as admin, go to Plugins Installation page, and install Teaming portlet plugin by uploading Teaming portlet WAR file.
 
-* 
+* Go to Add Application, select Teaming category, and select Teaming application.
