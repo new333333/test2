@@ -74,7 +74,13 @@ public class GetController extends SAbstractController {
 		
 		response.resetBuffer();
 		response.setContentType(MailModule.CONTENT_TYPE_CALENDAR + MailModule.CONTENT_TYPE_CHARSET_SUFFIX + XmlFileUtil.FILE_ENCODING);
-		response.setHeader("Cache-Control", "private");
+		boolean isHttps = request.getScheme().equalsIgnoreCase("https");
+		String cacheControl = "private";
+		if (isHttps) {
+			response.setHeader("Pragma", "public");
+			cacheControl += ", proxy-revalidate, s-maxage=0";
+		}
+		response.setHeader("Cache-Control", cacheControl);
 		
 		Long entryId = RequestUtils.getLongParameter(request, "entry");
 		if (entryId != null) {

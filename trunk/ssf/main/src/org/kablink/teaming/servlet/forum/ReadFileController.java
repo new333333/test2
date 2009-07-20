@@ -84,7 +84,13 @@ public class ReadFileController extends AbstractReadFileController {
 				String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
 				String contentType = getFileTypeMap().getContentType(shortFileName);
 				response.setContentType(contentType);
-				response.setHeader("Cache-Control", "private");
+				boolean isHttps = request.getScheme().equalsIgnoreCase("https");
+				String cacheControl = "private";
+				if (isHttps) {
+					response.setHeader("Pragma", "public");
+					cacheControl += ", proxy-revalidate, s-maxage=0";
+				}
+				response.setHeader("Cache-Control", cacheControl);
 				String attachment = "";
 				if (FileHelper.checkIfAttachment(contentType)) attachment = "attachment; ";
 				response.setHeader("Content-Disposition",
