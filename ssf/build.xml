@@ -65,6 +65,7 @@
 		<antcall target="compile" />
 		<antcall target="jar" />
 		<ant dir="${portal.type}" target="build" inheritAll="false" />
+		<ant dir="samples" target="build" inheritAll="false" />
 	</target>
 
 	<target name="build-all-portal-types" depends="init">
