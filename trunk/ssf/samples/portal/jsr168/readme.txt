@@ -1,3 +1,6 @@
+NOTE: This sample assumes that you're integrating Teaming portlet into Liferay
+Portal, and has been tested against Liferay Portal 5.2.3.
+
 1) If you don't already have Liferay Portal installed, go to Liferay web site 
 (http://www.liferay.com) and download, install and set up Liferay Portal
 (refer to Liferay documentation for details).
@@ -19,6 +22,14 @@ Liferay portal. Alternatively, you can create ssf-ext.properties file in the
 same directory and put that property and the new value in that file (instead 
 of modifying ssf.properties file). This allows your custom values to survive
 future source tree update.
+
+NOTE: The machines hosting Liferay and Teaming must be accessible to each other
+over HTTP/HTTPS. In other word, not only Liferay should be able to access Teaming
+using the teaming.url property value, but also Teaming should be able to access
+Liferay using the hostname and port number in the URL that user entered in the 
+browser to access Liferay Portal. So, it is important NOT to use localhost
+for anything, unless every party involved (ie, browser, Liferay, and Teaming) 
+runs on the same machine. 
 
 6) Build sample Teaming portlet application WAR file as follows.  
 
@@ -49,5 +60,5 @@ installing the new plugin.
 Teaming application to the page. Now, you should see an iFrame window showing
 Teaming's page (most likely a login screen). 
 
-IMPORTANT NOTE: This sample does NOT demonstrate how users can setup and achieve
-SSO between Liferay and Teaming.
+NOTE: This sample does NOT demonstrate how users can setup and achieve SSO 
+between Liferay and Teaming.
