@@ -7743,8 +7743,28 @@ function ss_saveTreeId(obj, treeName, placeId, idChoicesInputId) {
 //checkboxes on designer forms need to be present even if they are unchecked.  Use hidden field. 
 function ss_saveCheckBoxValue(box, hiddenFieldId) {
 	var hiddenField = document.getElementById(hiddenFieldId);
-	if (box.checked) hiddenField.value="true";
+	var cbChecked = box.checked;
+	if (cbChecked) hiddenField.value="true";
 	else hiddenField.value="false";
+
+	// Did the user just check the notify assignee/attendee checkbox on
+	// a task/calendar entry?
+	if (cbChecked &&
+			((hiddenFieldId == "hidden_attendee_notify") ||		// Calendar entry.
+			 (hiddenFieldId == "hidden_assignment_notify"))) {	// Task entry.
+		// Yes!  Can we access the subject, its default and the title?
+		var eSubject        = document.getElementById("_sendMail_subject");
+		var eSubjectDefault = document.getElementById("_sendMail_subject_default");
+		var eTitle          = document.getElementById("title");
+		var sTitle          = ((null == eTitle) ? "" : eTitle.value);
+		if (eSubject && eSubjectDefault && eTitle && sTitle.length) {
+			// Yes!  Does the subject still contain the default?
+			if (eSubject.value == eSubjectDefault.value) {
+				// Yes!  Default the email subject to the title.
+				eSubject.value = sTitle;
+			}
+		}
+	}
 }
 function ss_showAttachmentVersions(prefix, start, end) {
 	if (!document.getElementById) {
