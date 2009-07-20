@@ -316,6 +316,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		String[] val = new String[1];
 		val[0] = (String)content;
 		inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, val);			
+		inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_HTML));			
 	}	
 	//override to provide alternate processing 
 	protected void processICalendar(Folder folder, Object content, List iCalendars) throws IOException {
