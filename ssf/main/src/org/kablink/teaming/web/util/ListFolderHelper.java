@@ -1216,6 +1216,9 @@ public class ListFolderHelper {
 			// Yes!  Do the folder properties contain a display
 			// definition for the folder?
 			String folderDisplayDefId = ((String) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
+			if (Validator.isNull(folderDisplayDefId)) {
+				folderDisplayDefId = folder.getDefaultViewDef().getId();
+			}
 			if (Validator.isNotNull(folderDisplayDefId)) {
 				// Yes!  Scan the views defined on the folder.
 				String folderViewName = null;
