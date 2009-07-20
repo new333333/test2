@@ -72,6 +72,9 @@ public class DigestBasedSoftAuthenticationFilter implements Filter {
 		Long userId = null;
 		String binderId = "";
 		String privateDigest = "";
+		
+		RequestContextHolder.clear();
+
 		try {
 			userId = RequestUtils.getRequiredLongParameter((HttpServletRequest) request, "ui");
 			binderId = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "bi"); 		

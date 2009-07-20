@@ -73,6 +73,8 @@ public class DigestBasedHardAuthenticationFilter implements Filter {
 		String privateDigest = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "pd"); 
 		
 		try {
+			RequestContextHolder.clear();
+			
 			User user = AuthenticationManagerUtil.authenticate(zoneName, userId, binderId, privateDigest, LoginInfo.AUTHENTICATOR_ICAL);
 
 			RequestContextUtil.setThreadContext(user);
