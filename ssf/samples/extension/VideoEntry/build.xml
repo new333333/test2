@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="VideoEntry" basedir=".">
+<project name="VideoEntry" basedir="." default="build">
 	<property name="project.dir" value="${basedir}/../../.." />
 
 	<target name="zip">
@@ -10,5 +10,6 @@
 		/>
 	</target>
 
+	<target name="build" depends="zip"/>
 	
 </project>
