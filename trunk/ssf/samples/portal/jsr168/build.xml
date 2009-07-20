@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="portal-integration-jsr168" basedir="." default="build">
+<project name="portal-jsr168" basedir="." default="build">
 	<!-- This setting will override the value in the properties file -->
 	<property name="web.dir" value="${basedir}/webroot"/>
 	<property name="portal.type" value="liferay"/>
