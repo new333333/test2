@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="backgroundjob" basedir=".">
+<project name="backgroundjob" basedir="." default="build">
 	<property name="project.dir" value="${basedir}/../.." />
 
 	<import file="${project.dir}/build-common.xml"/>
@@ -15,4 +15,5 @@
 		</antcall>
 	</target>
 
+	<target name="build" depends="jar"/>
 </project>

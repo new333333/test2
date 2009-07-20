@@ -3,6 +3,10 @@
 <project name="VideoEntry" basedir="." default="build">
 	<property name="project.dir" value="${basedir}/../../.." />
 
+	<target name="clean">
+		<delete file="${basedir}/VideoEntry.zip" failonerror="false" />
+	</target>
+	
 	<target name="zip">
 		<zip
 			basedir="${basedir}/webapp"

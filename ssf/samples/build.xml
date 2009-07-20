@@ -3,6 +3,7 @@
 <project name="samples" basedir="." default="compile">
 	<target name="clean">
 		<ant dir="extendedws" target="clean" />
+		<ant dir="extension/VideoEntry" target="clean" />
 		<ant dir="portal/jsr168" target="clean" />
 		<ant dir="portlet" target="clean" />
 		<ant dir="remoteapp" target="clean" />
@@ -22,9 +23,13 @@
 	</target>
 	
 	<target name="build">
+		<ant dir="extendedws" target="build" />
 		<ant dir="extension/VideoEntry" target="build" />
 		<ant dir="portal/jsr168" target="build" />
+		<ant dir="portlet" target="build" />
 		<ant dir="remoteapp" target="build" />
 		<ant dir="wsclient" target="build" />
+		<ant dir="backgroundjob" target="build" />
+		<ant dir="module-event-listeners" target="build" />
 	</target>
 </project>
