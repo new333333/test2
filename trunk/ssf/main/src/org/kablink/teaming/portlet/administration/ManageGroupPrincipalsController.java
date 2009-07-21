@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.portlet.administration;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -55,6 +56,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -101,16 +103,35 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 			
 		} else if ((formData.containsKey("applyBtn") || formData.containsKey("okBtn")) && WebHelper.isMethodPost(request)) {
 			Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
-			String title = PortletRequestUtils.getStringParameter(request, "title", "");
-			String description = PortletRequestUtils.getStringParameter(request, "description", "");
-			Set ids = LongIdUtil.getIdsAsLongSet(request.getParameterValues("users"));
-			ids.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
-			SortedSet principals = getProfileModule().getPrincipals(ids);
-			Map updates = new HashMap();
-			updates.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
-			updates.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
-			updates.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals);
-			getProfileModule().modifyEntry( groupId, new MapInputData(updates));
+			Principal group = getProfileModule().getEntry(groupId);
+			if (group!= null && group instanceof Group) {
+				String title = PortletRequestUtils.getStringParameter(request, "title", "");
+				String description = PortletRequestUtils.getStringParameter(request, "description", "");
+				Set ids = LongIdUtil.getIdsAsLongSet(request.getParameterValues("users"));
+				ids.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
+				SortedSet<Principal> principals = getProfileModule().getPrincipals(ids);
+				Map<Long,Principal> changes = new HashMap<Long,Principal>();
+				//Get the list of additions and deletions so we re re-index them later
+				List<Principal> currentMembers = ((Group)group).getMembers();
+				for (Principal p : currentMembers) {
+					if (!principals.contains(p)) changes.put(p.getId(), p);
+				}
+				for (Principal p : principals) {
+					if (!currentMembers.contains(p)) changes.put(p.getId(), p);
+				}
+				Map updates = new HashMap();
+				updates.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
+				updates.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
+				updates.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals);
+				getProfileModule().modifyEntry( groupId, new MapInputData(updates));
+				
+				//After changing the group membership, re-index any user that was added or deleted
+				List<Principal> users = new ArrayList<Principal>();
+				for (Map.Entry<Long,Principal> me : changes.entrySet()) {
+					if (me.getValue() instanceof User) users.add(me.getValue());
+				}
+				// TODO Re-index the list of users and all binders "owned" by them
+			}
 			response.setRenderParameter(WebKeys.URL_ENTRY_ID, groupId.toString());
 
 		} else if (formData.containsKey("deleteBtn") && WebHelper.isMethodPost(request)) {
