@@ -42,8 +42,8 @@ public interface FolderService {
 
 	public FolderEntryCollection folder_getEntries(String accessToken, long binderId, int firstRecord, int maxRecords);
 
-	public FolderEntry folder_getEntry(String accessToken, long entryId, boolean includeAttachments);
-	public FolderEntry folder_getEntryByFileName(String accessToken, long binderId, String fileName, boolean includeAttachments);
+	public FolderEntry folder_getEntry(String accessToken, long entryId, boolean includeAttachments, boolean eventAsIcalString);
+	public FolderEntry folder_getEntryByFileName(String accessToken, long binderId, String fileName, boolean includeAttachments, boolean eventAsIcalString);
 	public void folder_addEntryWorkflow(String accessToken, long entryId, String definitionId);
     public void folder_deleteEntryWorkflow(String accessToken, long entryId, String definitionId);
 	public void folder_modifyWorkflowState(String accessToken, long entryId, long stateId, String toState);

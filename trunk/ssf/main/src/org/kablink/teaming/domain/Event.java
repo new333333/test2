@@ -87,9 +87,6 @@ import org.joda.time.DateTime;
 import org.joda.time.YearMonthDay;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
-import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.dao.util.EnumUserType;
-import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.module.ical.impl.IcalModuleImpl;
 import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.util.cal.CalendarUtil;
@@ -346,6 +343,48 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 		interval = 1;
 		// Everything else gets initialized to 0 or null, which is what we want.
+	}
+	
+	public Event(Calendar dtStart,
+			Duration duration,
+			Integer frequency,
+			Integer interval,
+			Calendar until,
+			Integer count,
+			Integer weekStart,
+			Boolean timeZoneSensitive,
+			TimeZone timeZone,
+			String uid,
+			FreeBusyType freeBusy,
+			int[] bySecond,
+			int[] byMinute,
+			int[] byHour,
+			DayAndPosition[] byDay,
+			int[] byMonthDay,
+			int[] byYearDay,
+			int[] byWeekNo,
+			int[] byMonth) {
+		this(); // It is important to call this base constructor, since it sets up some default.
+		if(dtStart != null) setDtStart(dtStart);
+		if(duration != null) setDuration(duration);
+		if(frequency != null) setFrequency(frequency.intValue());
+		if(interval != null) setInterval(interval.intValue());
+		if(until != null) setUntil(until);
+		if(count != null) setCount(count.intValue());
+		if(weekStart != null) setWeekStart(weekStart.intValue());
+		// Due to some stupidity in earlier implementation and resulting backward compatibility issue, this needs to be negated.
+		if(timeZoneSensitive != null) setTimeZoneSensitive(timeZoneSensitive.booleanValue()); 
+		if(timeZone != null) setTimeZone(timeZone);
+		if(uid != null) setUid(uid);
+		if(freeBusy != null) setFreeBusy(freeBusy);
+		if(bySecond != null) setBySecond(bySecond);
+		if(byMinute != null) setByMinute(byMinute);
+		if(byHour != null) setByHour(byHour);
+		if(byDay != null) setByDay(byDay);
+		if(byMonthDay != null) setByMonthDay(byMonthDay);
+		if(byYearDay != null) setByYearDay(byYearDay);
+		if(byWeekNo != null) setByWeekNo(byWeekNo);
+		if(byMonth != null) setByMonth(byMonth);
 	}
 	
 	/**

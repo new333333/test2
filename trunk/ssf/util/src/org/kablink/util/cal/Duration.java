@@ -124,6 +124,23 @@ public class Duration implements Cloneable {
   /**
    * Construct a <code>Duration</code> object with the specified duration.
    *
+   * @param  w  The number of weeks.
+   * @param  d  The number of days.
+   * @param  h  The number of hours.
+   * @param  m  The number of minutes.
+   * @param  s  The number of seconds.
+   */
+  public Duration(int w, int d, int h, int m, int s) {
+	weeks = w;
+    days = d;
+    hours = h;
+    minutes = m;
+    seconds = s;
+  }
+
+  /**
+   * Construct a <code>Duration</code> object with the specified duration.
+   *
    * @param  d  The number of days.
    * @param  h  The number of hours.
    * @param  m  The number of minutes.

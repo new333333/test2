@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 
 import java.util.Arrays;
+import java.util.TimeZone;
 
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
@@ -44,33 +45,75 @@ import net.fortuna.ical4j.model.ValidationException;
 import org.dom4j.Element;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Event;
+import org.kablink.teaming.domain.Event.FreeBusyType;
 import org.kablink.teaming.ical.util.ICalUtils;
 import org.kablink.teaming.remoting.ws.model.CustomStringField;
-
+import org.kablink.teaming.remoting.ws.model.CustomEventField;
 
 public class ElementBuilderEvent extends AbstractElementBuilder {
 	protected boolean build(Element element, org.kablink.teaming.remoting.ws.model.DefinableEntity entityModel, Object obj, DefinableEntity entity, String dataElemType, String dataElemName) {
 		if (obj instanceof Event) {
 			Event event = (Event) obj;
-			StringWriter writer = new StringWriter();
-			Calendar cal = context.getIcalModule().generate(entity, Arrays.asList(event), null);
-			CalendarOutputter out = ICalUtils.getCalendarOutputter();
-			try {
-				out.output(cal, writer);
-			} catch(IOException e) {
-			} catch(ValidationException e) {
+			if(element != null)
+				element.add(org.dom4j.DocumentHelper.createCDATA(eventToIcalString(entity,event)));
+			if(entityModel != null) {
+				if(entityModel.isEventAsIcalString())
+					entityModel.addCustomStringField(new CustomStringField(dataElemName, dataElemType, eventToIcalString(entity,event)));
+				else
+					entityModel.addCustomEventField(new CustomEventField(dataElemName, dataElemType, eventFromDomainToRemote(event)));
 			}
-			if(element != null)
-				element.add(org.dom4j.DocumentHelper.createCDATA(writer.toString()));
-			if(entityModel != null)
-				entityModel.addCustomStringField(new CustomStringField(dataElemName, dataElemType, writer.toString()));
 		} else {
-			if(element != null)
-				element.setText(obj.toString());
-			if(entityModel != null)
-				entityModel.addCustomStringField(new CustomStringField(dataElemName, dataElemType, obj.toString()));
+			throw new IllegalArgumentException("Unexpected class for event data: " + obj.getClass().getName());
 		}
 		return true;
+	}
+
+	private String eventToIcalString(DefinableEntity entity, Event event) {
+		StringWriter writer = new StringWriter();
+		Calendar cal = context.getIcalModule().generate(entity, Arrays.asList(event), null);
+		CalendarOutputter out = ICalUtils.getCalendarOutputter();
+		try {
+			out.output(cal, writer);
+		} catch(IOException e) {
+			
+		} catch(ValidationException e) {
+		}
+		String result = writer.toString();
+		try {
+			writer.close();
+		} catch (IOException e) {
+		}
+		return result;
+	}
+	
+	private org.kablink.teaming.remoting.ws.model.Event eventFromDomainToRemote(Event event) {
+		org.kablink.teaming.remoting.ws.model.Event remoteModel = new org.kablink.teaming.remoting.ws.model.Event();
+		
+		remoteModel.setDtStart(event.getDtStart());
+		remoteModel.setDuration(org.kablink.teaming.remoting.ws.model.Event.Duration.toRemoteModel(event.getDuration()));
+		remoteModel.setFrequency(event.getFrequency());
+		remoteModel.setInterval(event.getInterval());
+		remoteModel.setUntil(event.getUntil());
+		remoteModel.setCount(event.getCount());
+		remoteModel.setWeekStart(event.getWeekStart());
+		remoteModel.setTimeZoneSensitive(event.isTimeZoneSensitive());
+		TimeZone timeZone = event.getTimeZone();
+		if(timeZone != null)
+			remoteModel.setTimeZone(timeZone.getID());
+		remoteModel.setUid(event.getUid());
+		FreeBusyType freeBusy = event.getFreeBusy();
+		if(freeBusy != null)
+			remoteModel.setFreeBusy(freeBusy.name());
+		remoteModel.setBySecond(event.getBySecond());
+		remoteModel.setByMinute(event.getByMinute());
+		remoteModel.setByHour(event.getByHour());
+		remoteModel.setByDay(org.kablink.teaming.remoting.ws.model.Event.DayAndPosition.toRemoteModel(event.getByDay()));
+		remoteModel.setByMonthDay(event.getByMonthDay());
+		remoteModel.setByYearDay(event.getByYearDay());
+		remoteModel.setByWeekNo(event.getByWeekNo());
+		remoteModel.setByMonth(event.getByMonth());
+		
+		return remoteModel;
 	}
 
 }

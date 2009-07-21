@@ -285,26 +285,30 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		getFolderModule().synchronize(binderId, null);
 	}
 
-	public org.kablink.teaming.remoting.ws.model.FolderEntry folder_getEntryByFileName(String accessToken, long binderId, String fileName, boolean includeAttachments) {
+	public org.kablink.teaming.remoting.ws.model.FolderEntry folder_getEntryByFileName(String accessToken, long binderId, String fileName, boolean includeAttachments, boolean eventAsIcalString) {
 		// Retrieve the raw entry.
 		FolderEntry entry = 
 			getFolderModule().getLibraryFolderEntryByFileName(getFolderModule().getFolder(binderId), fileName);
 
 		org.kablink.teaming.remoting.ws.model.FolderEntry entryModel = 
 			new org.kablink.teaming.remoting.ws.model.FolderEntry(); 
+		
+		entryModel.setEventAsIcalString(eventAsIcalString);
 
 		fillFolderEntryModel(entryModel, entry);
 		
 		return entryModel;
 		
 	}
-	public org.kablink.teaming.remoting.ws.model.FolderEntry folder_getEntry(String accessToken, long entryId, boolean includeAttachments) {
+	public org.kablink.teaming.remoting.ws.model.FolderEntry folder_getEntry(String accessToken, long entryId, boolean includeAttachments, boolean eventAsIcalString) {
 		// Retrieve the raw entry.
 		FolderEntry entry = 
 			getFolderModule().getEntry(null, entryId);
 
 		org.kablink.teaming.remoting.ws.model.FolderEntry entryModel = 
 			new org.kablink.teaming.remoting.ws.model.FolderEntry(); 
+
+		entryModel.setEventAsIcalString(eventAsIcalString);
 
 		fillFolderEntryModel(entryModel, entry);
 		

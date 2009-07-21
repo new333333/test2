@@ -68,11 +68,15 @@
 		<beanMapping qname="ns:BinderBrief" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.BinderBrief"/>
 		<beanMapping qname="ns:CustomBooleanField" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.CustomBooleanField"/>
 		<beanMapping qname="ns:CustomDateField" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.CustomDateField"/>
+		<beanMapping qname="ns:CustomEventField" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.CustomEventField"/>
+		<beanMapping qname="ns:DayAndPosition" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Event$DayAndPosition"/>
 		<beanMapping qname="ns:DefinableEntity" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.DefinableEntity"/>
 		<beanMapping qname="ns:DefinitionBrief" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.DefinitionBrief"/>
 		<beanMapping qname="ns:DefinitionCollection" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.DefinitionCollection"/>
 		<beanMapping qname="ns:Description" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Description"/>
+		<beanMapping qname="ns:Duration" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Event$Duration"/>
 		<beanMapping qname="ns:Entry" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Entry"/>
+		<beanMapping qname="ns:Event" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Event"/>
 		<beanMapping qname="ns:Field" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Field"/>
 		<beanMapping qname="ns:FileVersions" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.FileVersions"/>
 		<beanMapping qname="ns:FileVersion" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.FileVersions$FileVersion"/>

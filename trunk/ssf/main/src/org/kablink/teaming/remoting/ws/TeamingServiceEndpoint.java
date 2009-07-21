@@ -232,16 +232,16 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		
 	/// Folder Service
 	
-	public FolderEntry folder_getEntry(String accessToken, long entryId, boolean includeAttachments) {
-		return getFolderService().folder_getEntry(accessToken, entryId, includeAttachments);
+	public FolderEntry folder_getEntry(String accessToken, long entryId, boolean includeAttachments, boolean eventAsIcalString) {
+		return getFolderService().folder_getEntry(accessToken, entryId, includeAttachments, eventAsIcalString);
 	}
 
 	public FolderEntryCollection folder_getEntries(String accessToken, long binderId, int firstRecord, int maxRecords) {
 		return getFolderService().folder_getEntries(accessToken, binderId, firstRecord, maxRecords);
 	}
 
-	public FolderEntry folder_getEntryByFileName(String accessToken, long binderId, String fileName, boolean includeAttachments) {
-		return getFolderService().folder_getEntryByFileName(accessToken, binderId, fileName, includeAttachments);
+	public FolderEntry folder_getEntryByFileName(String accessToken, long binderId, String fileName, boolean includeAttachments, boolean eventAsIcalString) {
+		return getFolderService().folder_getEntryByFileName(accessToken, binderId, fileName, includeAttachments, eventAsIcalString);
 	}
 	public void folder_addEntryWorkflow(String accessToken, long entryId, String definitionId) {
 		getFolderService().folder_addEntryWorkflow(accessToken, entryId, definitionId);
