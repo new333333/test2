@@ -108,7 +108,7 @@ public class WSTesterServlet extends HttpServlet {
 						String entryId = req.getParameter("entryId");
 						String includeAttachments = req.getParameter("includeAttachments");
 						FolderEntry entry = stub.folder_getEntry(accessToken, 
-								new Long(entryId), Boolean.valueOf(includeAttachments));
+								new Long(entryId), Boolean.valueOf(includeAttachments), false);
 						result = entry.toString();
 					
 					/*

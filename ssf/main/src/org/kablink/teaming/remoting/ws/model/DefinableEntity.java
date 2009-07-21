@@ -46,6 +46,7 @@ public abstract class DefinableEntity implements Serializable {
 	private AverageRating averageRating;
 	private Timestamp creation;
 	private Timestamp modification;
+	private boolean eventAsIcalString;
 	private AttachmentsField attachmentsField;
 	// Using Map as internal representation for convenience and efficiency.
 	// But the public getter/setter must use array representation.
@@ -54,6 +55,7 @@ public abstract class DefinableEntity implements Serializable {
 	private Map<String,CustomLongArrayField> longArrayFieldMap = new HashMap<String,CustomLongArrayField>();
 	private Map<String,CustomStringArrayField> stringArrayFieldMap = new HashMap<String,CustomStringArrayField>();
 	private Map<String,CustomStringField> stringFieldMap = new HashMap<String,CustomStringField>();
+	private Map<String,CustomEventField> eventFieldMap = new HashMap<String,CustomEventField>();
 
 	public Long getParentBinderId() {
 		return parentBinderId;
@@ -121,6 +123,14 @@ public abstract class DefinableEntity implements Serializable {
 
 	public AttachmentsField getAttachmentsField() {
 		return attachmentsField;
+	}
+
+	public boolean isEventAsIcalString() {
+		return eventAsIcalString;
+	}
+
+	public void setEventAsIcalString(boolean eventAsIcalString) {
+		this.eventAsIcalString = eventAsIcalString;
 	}
 
 	public void setAttachmentsField(AttachmentsField attachmentsField) {
@@ -235,6 +245,28 @@ public abstract class DefinableEntity implements Serializable {
 
 	public CustomStringField findCustomStringField(String name) {
 		return this.stringFieldMap.get(name);
+	}
+	
+	public CustomEventField[] getCustomEventFields() {
+		CustomEventField[] array = new CustomEventField[eventFieldMap.size()];
+		return eventFieldMap.values().toArray(array);
+	}
+
+	public void setCustomEventFields(CustomEventField[] eventFields) {
+		this.eventFieldMap = new HashMap<String,CustomEventField>();
+		if(eventFields != null) {
+			for(int i = 0; i < eventFields.length; i++)
+				this.eventFieldMap.put(eventFields[i].getName(), eventFields[i]);
+		}
+	}
+	
+	// Convenience method. Not part of the API. 
+	public void addCustomEventField(CustomEventField eventField) {
+		this.eventFieldMap.put(eventField.getName(), eventField);
+	}
+
+	public CustomEventField findCustomEventField(String name) {
+		return this.eventFieldMap.get(name);
 	}
 	
 }

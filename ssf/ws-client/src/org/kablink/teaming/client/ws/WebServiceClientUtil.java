@@ -125,6 +125,9 @@ public class WebServiceClientUtil {
 		// java.io.IOException: End of physical stream detected when 202 more bytes  expected.
 
 		//stub._setProperty(Call.ATTACHMENT_ENCAPSULATION_FORMAT, Call.ATTACHMENT_ENCAPSULATION_FORMAT_DIME);
+		
+	    // To use MTOM format - I don't know if this actually works.
+		//stub._setProperty(Call.ATTACHMENT_ENCAPSULATION_FORMAT, Call.ATTACHMENT_ENCAPSULATION_FORMAT_MTOM);
 	}
 	
 	/**

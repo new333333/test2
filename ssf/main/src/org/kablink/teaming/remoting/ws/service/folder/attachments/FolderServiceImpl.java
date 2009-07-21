@@ -63,20 +63,20 @@ public class FolderServiceImpl extends org.kablink.teaming.remoting.ws.service.f
 		return xml;
 	}
 
-	public org.kablink.teaming.remoting.ws.model.FolderEntry folder_getEntryByFileName(String accessToken, long binderId, String fileName, boolean includeAttachments) {
+	public org.kablink.teaming.remoting.ws.model.FolderEntry folder_getEntryByFileName(String accessToken, long binderId, String fileName, boolean includeAttachments, boolean eventAsIcalString) {
 		handleAttachments(includeAttachments);
 
-		org.kablink.teaming.remoting.ws.model.FolderEntry entryModel = super.folder_getEntryByFileName(accessToken, binderId, fileName, includeAttachments); 
+		org.kablink.teaming.remoting.ws.model.FolderEntry entryModel = super.folder_getEntryByFileName(accessToken, binderId, fileName, includeAttachments, eventAsIcalString); 
 
 		if (includeAttachments) CalendarHelper.handleEvents(this, getFolderModule().getEntry(null, entryModel.getId()));
 		
 		return entryModel;
 		
 	}
-	public org.kablink.teaming.remoting.ws.model.FolderEntry folder_getEntry(String accessToken, long entryId, boolean includeAttachments) {
+	public org.kablink.teaming.remoting.ws.model.FolderEntry folder_getEntry(String accessToken, long entryId, boolean includeAttachments, boolean eventAsIcalString) {
 		handleAttachments(includeAttachments);
 		
-		org.kablink.teaming.remoting.ws.model.FolderEntry entryModel = super.folder_getEntry(accessToken, entryId, includeAttachments);
+		org.kablink.teaming.remoting.ws.model.FolderEntry entryModel = super.folder_getEntry(accessToken, entryId, includeAttachments, eventAsIcalString);
 
 		if (includeAttachments) CalendarHelper.handleEvents(this, getFolderModule().getEntry(null, entryId));
 		return entryModel;

@@ -73,7 +73,10 @@ public class TeamingServiceClientWithStub {
 	public static void main(String[] args) throws Exception {
 		FolderEntry entry;
 		
-		addMicroBlog();
+		copyFolderEntry(177, 1287, false);
+		//copyFolderEntry(177, 1288, true);
+		
+		//addMicroBlog();
 		//searchFolderEntries();
 		//testApplicationScopedToken();
 		//calendarSync();
@@ -242,7 +245,7 @@ public class TeamingServiceClientWithStub {
     	}
     	for (Element eEle:entries) {
     		Long id = Long.valueOf(eEle.attributeValue("id"));
-    		FolderEntry entry = stub.folder_getEntry(null, id, true);
+    		FolderEntry entry = stub.folder_getEntry(null, id, true, false);
     		WebServiceClientUtil.extractFiles(stub, new File("icals"));
     		System.out.println(entry.getTitle());
     	}
@@ -411,24 +414,24 @@ public class TeamingServiceClientWithStub {
 			File file = new File("C:/junk/junk1/debug.txt");		
 			WebServiceClientUtil.attachFile(stub, file);
 			long testEntryId = stub.folder_addEntry(null, testEntry, "debug1.txt");
-			testEntry = stub.folder_getEntry(null, testEntryId, true);
+			testEntry = stub.folder_getEntry(null, testEntryId, true, false);
 			System.out.println("(WSS) Number of attachments downloaded = " + WebServiceClientUtil.extractFiles(stub, null));
 			checkWorkflow(testEntryId);
 			checkEntryTags(testEntryId);
 			checkEntrySubscriptions(testEntryId);
 			stub.folder_setRating(null, testEntryId, 4);
-			testEntry = stub.folder_getEntry(null, testEntryId, false);
+			testEntry = stub.folder_getEntry(null, testEntryId, false, false);
 			if (!testEntry.getAverageRating().getAverageRating().equals(Double.valueOf(4))) System.out.println("Error unexpected average ");
 			file = new File("C:/junk/junk1/debug.txt");		
 			WebServiceClientUtil.attachFile(stub, file);
 			stub.folder_uploadFile(null, testEntry.getId(), "", "debug2.txt");
-			testEntry = stub.folder_getEntry(null, testEntryId, true);
+			testEntry = stub.folder_getEntry(null, testEntryId, true, false);
 			System.out.println("(WSS) Number of attachments downloaded = " + WebServiceClientUtil.extractFiles(stub, null));
 
 			long copiedEntryId = stub.folder_copyEntry(null, testEntryId, testFolder.getId());
 			Binder testFolder2 = getTestFolder("MyTestingFolder2");
 			stub.folder_moveEntry(null, copiedEntryId, testFolder2.getId());
-			FolderEntry movedEntry = stub.folder_getEntry(null, copiedEntryId, false);
+			FolderEntry movedEntry = stub.folder_getEntry(null, copiedEntryId, false, false);
 			if (!movedEntry.getParentBinderId().equals(Long.valueOf(testFolder2.getId()))) System.out.println("Error - entry not moved");
 			stub.binder_deleteBinder(null, testFolder2.getId(), true);
 			stub.folder_deleteEntry(null, testEntryId);
@@ -442,10 +445,10 @@ public class TeamingServiceClientWithStub {
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
-		FolderEntry	entry = stub.folder_getEntry(null, entryId, false);
+		FolderEntry	entry = stub.folder_getEntry(null, entryId, false, false);
 		DefinitionBrief def = stub.definition_getLocalDefinitionByName(null, entry.getParentBinderId(), "testworkflow", true);
 		stub.folder_addEntryWorkflow(null, entryId, def.getId());
-		entry = stub.folder_getEntry(null, entryId, false);
+		entry = stub.folder_getEntry(null, entryId, false, false);
 		Workflow[] wfs = entry.getWorkflows();
 		boolean found = false;
 		for (int i=0; i<wfs.length; ++i) {
@@ -456,7 +459,7 @@ public class TeamingServiceClientWithStub {
 		}
 		if (!found) System.out.println("Error, expecting state1");
 		stub.folder_modifyWorkflowState(null, entryId, wfs[0].getTokenId(), "state2");
-		entry = stub.folder_getEntry(null, entryId, false);
+		entry = stub.folder_getEntry(null, entryId, false, false);
 		wfs = entry.getWorkflows();
 		found = false;
 		for (int i=0; i<wfs.length; ++i) {
@@ -467,7 +470,7 @@ public class TeamingServiceClientWithStub {
 		}
 		if (!found) System.out.println("Error, expecting state2");
 		stub.folder_setWorkflowResponse(null,  entryId, wfs[0].getTokenId(), "dayquestion", "sundayresponse");
-		entry = stub.folder_getEntry(null, entryId, false);
+		entry = stub.folder_getEntry(null, entryId, false, false);
 		wfs	= entry.getWorkflows();
 		found = false;
 		for (int i=0; i<wfs.length; ++i) {
@@ -486,7 +489,7 @@ public class TeamingServiceClientWithStub {
 		if (!found) System.out.println("Error, expecting itssunday with response sundayresponse");
 		int count = wfs.length;
 		stub.folder_deleteEntryWorkflow(null,  entryId, def.getId());
-		entry = stub.folder_getEntry(null,  entryId, false);
+		entry = stub.folder_getEntry(null,  entryId, false, false);
 		wfs = entry.getWorkflows();
 		if (wfs.length != count-1) System.out.println("Error workflow not deleted");
 		
@@ -501,7 +504,7 @@ public class TeamingServiceClientWithStub {
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialWSSecurity(stub, USERNAME, PASSWORD, true);
 
-		FolderEntry entry = stub.folder_getEntry(null, entryId, includeAttachments);
+		FolderEntry entry = stub.folder_getEntry(null, entryId, includeAttachments, false);
 		
 		System.out.println("(WSS) Entry title: " + entry.getTitle());
 		
@@ -516,7 +519,7 @@ public class TeamingServiceClientWithStub {
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 
-		FolderEntry entry = stub.folder_getEntry(null, entryId, includeAttachments);
+		FolderEntry entry = stub.folder_getEntry(null, entryId, includeAttachments, false);
 		
 		System.out.println("Entry title: " + entry.getTitle());
 		System.out.println("Entry description: " + entry.getDescription().getText());
@@ -873,4 +876,22 @@ public class TeamingServiceClientWithStub {
 		}
 		return testUser;
 	}
+	
+	public static void copyFolderEntry(long entryId, long destinationFolderId, boolean eventAsIcalString) throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+
+		FolderEntry entry = stub.folder_getEntry(null, entryId, false, eventAsIcalString);
+		System.out.println("Successfully fetched the entry");
+		
+		entry.setTitle(entry.getTitle() + " (Copied)");
+		entry.setId(null);
+		entry.setParentBinderId(destinationFolderId);
+		long newEntryId = stub.folder_addEntry(null, entry, null);
+		
+		System.out.println("ID of the newly added entry: " + newEntryId);
+	}
+
 }

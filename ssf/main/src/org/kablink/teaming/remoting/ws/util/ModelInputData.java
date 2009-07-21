@@ -45,6 +45,7 @@ import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.remoting.ws.model.CustomBooleanField;
 import org.kablink.teaming.remoting.ws.model.CustomDateField;
+import org.kablink.teaming.remoting.ws.model.CustomEventField;
 import org.kablink.teaming.remoting.ws.model.CustomLongArrayField;
 import org.kablink.teaming.remoting.ws.model.CustomStringArrayField;
 import org.kablink.teaming.remoting.ws.model.CustomStringField;
@@ -95,16 +96,25 @@ public class ModelInputData implements InputDataAccessor {
 	}
 
 	public Event getEventValue(String key, boolean hasDuration, boolean hasRecurrence) {
-		String textVal = getSingleValue(key);
-		if(textVal != null) {
-			List<Event> events;
-			try {
-				events = getIcalModule().parseEvents(new StringReader(textVal));
-				return events.get(0);
-			} catch (IOException e) {
-				logger.warn(e.toString());
-			} catch (ParserException e) {
-				logger.warn(e.toString());
+		if(entity.isEventAsIcalString()) {
+			String textVal = getSingleValue(key);
+			if(textVal != null) {
+				List<Event> events;
+				try {
+					events = getIcalModule().parseEvents(new StringReader(textVal));
+					return events.get(0);
+				} catch (IOException e) {
+					logger.warn(e.toString());
+				} catch (ParserException e) {
+					logger.warn(e.toString());
+				}
+			}
+		}
+		else {
+			Object val =  getSingleObject(key);
+			if(val != null && val instanceof org.kablink.teaming.remoting.ws.model.Event) {
+				org.kablink.teaming.remoting.ws.model.Event eventVal = (org.kablink.teaming.remoting.ws.model.Event) val;
+				return org.kablink.teaming.remoting.ws.model.Event.toDomainModel(eventVal);
 			}
 		}
 		return null;
@@ -117,13 +127,7 @@ public class ModelInputData implements InputDataAccessor {
 			obj = InvokeUtil.invokeGetter(entity, key);
 			if (obj instanceof String) return StringCheckUtil.check((String)obj);
 			if (obj instanceof String[]) {
-				//need new array
-				String[] oldVals = (String [])obj;
-	    		String[] newVals = new String[oldVals.length];
-		    	for (int i=0; i<oldVals.length; ++i) {
-		    		newVals[i] = StringCheckUtil.check(oldVals[i]);
-		    	}
-		    	return newVals;
+				return doStringCheck((String[])obj);
 			}
 			return obj;
 		}
@@ -141,22 +145,31 @@ public class ModelInputData implements InputDataAccessor {
 	    	if(obj != null) 
 	    		return ((CustomDateField)obj).getValue();
 	    	
+	    	obj = entity.findCustomEventField(key);
+	    	if(obj != null) 
+	    		return ((CustomEventField)obj).getValue();
+	    	
 	    	obj = entity.findCustomLongArrayField(key);
 	    	if(obj != null) 
 	    		return ((CustomLongArrayField)obj).getValues();
 	    	
 	    	obj = entity.findCustomStringArrayField(key);
 	    	if(obj != null) {
-	    		String[] vals = ((CustomStringArrayField)obj).getValues();
-		    	for (int i=0; i<vals.length; ++i) {
-		    		vals[i] = StringCheckUtil.check(vals[i]);
-		    	}
-		    	return vals;
+	    		return doStringCheck(((CustomStringArrayField)obj).getValues());
 	    	}
 		    return null;	    	
 	    }	    	
 	}
 
+	private String[] doStringCheck(String[] strs) {
+		//need new array
+		String[] newVals = new String[strs.length];
+    	for (int i=0; i<strs.length; ++i) {
+    		newVals[i] = StringCheckUtil.check(strs[i]);
+    	}
+    	return newVals;
+	}
+	
 	public String getSingleValue(String key) {
 		Object obj = getSingleObject(key);
 		if(obj != null) {
