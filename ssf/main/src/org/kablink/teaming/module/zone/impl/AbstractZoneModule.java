@@ -1197,13 +1197,16 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		Set members = new HashSet(ids);
 		Function function;
 		List functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
+		Map functionNames = new HashMap();
 		Map functionInternalIds = new HashMap();
 		for (int i = 0; i < functions.size(); i++) {
 			function = (Function)functions.get(i);
+			functionNames.put(function.getName(), function);
 			if (function.getInternalId() != null) functionInternalIds.put(function.getInternalId(), function);
 		}
 		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_SITE_ADMIN_INTERNALID)) {
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_SITE_ADMIN_INTERNALID) && 
+				!functionNames.containsKey(ObjectKeys.ROLE_ZONE_ADMINISTRATION)) {
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());
 			function.setName(ObjectKeys.ROLE_ZONE_ADMINISTRATION);
@@ -1215,7 +1218,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, members);
 		}
 		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ADD_GUEST_ACCESS_INTERNALID)) {
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ADD_GUEST_ACCESS_INTERNALID) && 
+				!functionNames.containsKey(ObjectKeys.ROLE_ADD_GUEST_ACCESS)) {
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());
 			function.setName(ObjectKeys.ROLE_ADD_GUEST_ACCESS);
@@ -1227,7 +1231,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, members);
 		}
 		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_TOKEN_REQUESTER_INTERNALID)) {
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_TOKEN_REQUESTER_INTERNALID) && 
+				!functionNames.containsKey(ObjectKeys.ROLE_TOKEN_REQUESTER)) {
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());
 			function.setName(ObjectKeys.ROLE_TOKEN_REQUESTER);
