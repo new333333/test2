@@ -50,6 +50,7 @@ import org.dom4j.Element;
 import org.kablink.teaming.domain.AverageRating;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
@@ -514,6 +515,21 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 					WebUrlUtil.getFileUrl((String)null, WebKeys.ACTION_READ_FILE, vatt));
 		}
 		return new FileVersions(fa.getFileItem().getName(), versions);
+	}
+	protected String definitionToId(Definition def) {
+		if(def != null)
+			return def.getId();
+		else
+			return null;
+	}
+	protected String[] definitionsToIds(List<Definition> defs) {
+		String[] ids = null;
+		if(defs != null) {
+			ids = new String[defs.size()];
+			for(int i = 0; i < defs.size(); i++)
+				ids[i] = defs.get(i).getId(); 
+		}
+		return null;
 	}
 
 }

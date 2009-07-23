@@ -73,6 +73,8 @@ public class TeamingServiceClientWithStub {
 	public static void main(String[] args) throws Exception {
 		FolderEntry entry;
 		
+		//System.out.println("Test user name: " + getTestUser().getName());
+		
 		copyFolderEntry(177, 1287, false);
 		//copyFolderEntry(177, 1288, true);
 		
@@ -856,7 +858,7 @@ public class TeamingServiceClientWithStub {
 		stub.profile_deletePrincipal(null, testUser.getId(), true);
 		stub.profile_deletePrincipal(null, group.getId(), true);
 	}
-	private static User getTestUser() throws Exception {
+	public static User getTestUser() throws Exception {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
