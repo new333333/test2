@@ -1898,7 +1898,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	//used during export so that all id's are at least 8 digits long,
 	//with leading zeroes
-	private NumberFormat nft = new DecimalFormat("#00000000");
+	private NumberFormat nft = null;
+
+	private NumberFormat getNumberFormat() {
+		if(nft == null) {
+			int paddingSize = SPropsUtil.getInt("ssf.export.id.padding.size", 8);
+			StringBuffer sb = new StringBuffer("#");
+			for(int i = 0; i < paddingSize; i++)
+				sb.append("0");
+			nft = new DecimalFormat(sb.toString());
+		}
+		return nft;
+	}
 	
 	//used during export. file name prefix used to identify xml files
 	//for folders and workspaces
@@ -1907,6 +1918,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public void export(Long binderId, Long entityId, OutputStream out,
 			Map options) throws Exception {
 
+		getNumberFormat();
 		
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.modifyBinder);
@@ -1962,7 +1974,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 		if (isWorkspace) {
 			zipOut.putNextEntry(new ZipEntry(binderPrefix + "w" + nft.format(start.getId()) + File.separator
-					+ binderPrefix + "w" + nft.format(start.getId()) + ".xml"));
+					+ "." + binderPrefix + "w" + nft.format(start.getId()) + ".xml"));
 			XmlFileUtil.writeFile(getWorkspaceAsDoc(null, start.getId(), false,
 					binderPrefix + "w" + nft.format(start.getId())), zipOut);
 			zipOut.closeEntry();
@@ -1981,7 +1993,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			}
 		} else {
 			zipOut.putNextEntry(new ZipEntry(binderPrefix + "f" + nft.format(start.getId()) + File.separator
-					+ binderPrefix + "f" + nft.format(start.getId()) + ".xml"));
+					+ "." + binderPrefix + "f" + nft.format(start.getId()) + ".xml"));
 			XmlFileUtil.writeFile(getFolderAsDoc(null, start.getId(), false,
 					binderPrefix + "f" + nft.format(start.getId())), zipOut);
 			zipOut.closeEntry();
@@ -2017,7 +2029,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 		if (isWorkspace) {
 			zipOut.putNextEntry(new ZipEntry(pathName + File.separator
-					+ binderPrefix + "w" + nft.format(binder.getId()) + File.separator + binderPrefix + "w" + nft.format(binder.getId())
+					+ binderPrefix + "w" + nft.format(binder.getId()) + File.separator + "." + binderPrefix + "w" + nft.format(binder.getId())
 					+ ".xml"));
 			XmlFileUtil.writeFile(getWorkspaceAsDoc(null, binder.getId(),
 					false, pathName + File.separator + binderPrefix + "w" + nft.format(binder.getId())),
@@ -2039,7 +2051,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			}
 		} else {
 			zipOut.putNextEntry(new ZipEntry(pathName + File.separator
-					+ binderPrefix + "f" + nft.format(binder.getId()) + File.separator + binderPrefix + "f" + nft.format(binder.getId())
+					+ binderPrefix + "f" + nft.format(binder.getId()) + File.separator + "." + binderPrefix + "f" + nft.format(binder.getId())
 					+ ".xml"));
 			XmlFileUtil.writeFile(getFolderAsDoc(null, binder.getId(), false,
 					pathName + File.separator + binderPrefix + "f" + nft.format(binder.getId())), zipOut);
@@ -2108,16 +2120,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	private void processEntry(ZipOutputStream zipOut, FolderEntry entry,
 			String pathName, Set defList) throws Exception {
 		String fullId = null;
-
-		// DEBUGGING!!!!
-		// just want to see how workflows are represented in entry def doc
-
-		/*zipOut.putNextEntry(new ZipEntry(entry.getTitle().replace(':', '+')
-				+ "[[" + fullId + "]].xml"));
-		XmlFileUtil.writeFile(entry.getEntryDef().getDefinition(), zipOut);
-		zipOut.closeEntry();
-*/
-		// end DEBUG!
 
 		fullId = calcFullId(entry);
 
@@ -2501,8 +2503,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	//Regex patterns used during import to check whether the xml file is for
 	//folder, workspace, or entry
 	private Pattern entryPattern = Pattern.compile("e[0-9]{8}");
-	private Pattern workspacePattern = Pattern.compile(binderPrefix + "w[0-9]{8}");
-	private Pattern folderPattern = Pattern.compile(binderPrefix + "f[0-9]{8}");
+	private Pattern workspacePattern = Pattern.compile("." + binderPrefix + "w[0-9]{8}");
+	private Pattern folderPattern = Pattern.compile("." + binderPrefix + "f[0-9]{8}");
 	
 	public void importZip(Long binderId, InputStream fIn) throws IOException {
 		FolderModule folderModule = (FolderModule) SpringContextUtil
