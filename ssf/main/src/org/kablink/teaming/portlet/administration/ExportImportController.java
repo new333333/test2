@@ -35,8 +35,6 @@ package org.kablink.teaming.portlet.administration;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import javax.activation.FileTypeMap;
 import javax.portlet.ActionRequest;
@@ -46,15 +44,10 @@ import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.tools.zip.ZipOutputStream;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.io.SAXReader;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.UserProperties;
-import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.portletadapter.portlet.HttpServletResponseReachable;
 import org.kablink.teaming.web.WebKeys;
@@ -71,20 +64,15 @@ public class ExportImportController  extends  SAbstractController {
 
 	private Long binderId;
 	private Map options;
-	private String filename = "backup.zip";
+	private String filename = "export.zip";
 	private FileTypeMap mimeTypes = new ConfigurableMimeFileTypeMap();
-	//private Boolean showMenu = null;
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
-		//System.out.println("action after validation...");
-		
 		response.setRenderParameters(request.getParameterMap());
 		
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.OPERATION, "");
 		
 		if(operation.equals(WebKeys.OPERATION_IMPORT)){
-			//System.out.println("import after validation...");
-			
 			binderId = PortletRequestUtils.getLongParameter(request,  WebKeys.URL_BINDER_ID);
 			
 			Map formData = request.getParameterMap();
@@ -93,27 +81,19 @@ public class ExportImportController  extends  SAbstractController {
 				if (request instanceof MultipartFileSupport) {
 					fileMap = ((MultipartFileSupport) request).getFileMap();
 			    	MultipartFile myFile = (MultipartFile)fileMap.get("imports");
-			    	//SAXReader xIn = new SAXReader();
 			    	InputStream fIn = myFile.getInputStream();
 			    	
-			    	getBinderModule().importZip(binderId, fIn);
-			    	
-			    	
+			    	getBinderModule().importZip(binderId, fIn);	
 				} else {
 					response.setRenderParameters(formData);
 				}
-			
 			} else
 				response.setRenderParameters(formData);
-		}else{
-			//System.out.println("what is happening?");
 		}
 	}
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-	
-		//System.out.println("render internal...");
 		
 		binderId = PortletRequestUtils.getLongParameter(request,  WebKeys.URL_BINDER_ID);
 		HttpServletResponse res = ((HttpServletResponseReachable)response).getHttpServletResponse();		
@@ -130,6 +110,7 @@ public class ExportImportController  extends  SAbstractController {
 						"attachment; filename=\"" + filename + "\"");
 			
 			ZipOutputStream zipOut = new ZipOutputStream(res.getOutputStream());
+			
 			//Standard zip encoding is cp437. (needed when chars are outside the ASCII range)
 			zipOut.setEncoding("cp437");
 			zipOut.finish();
@@ -142,7 +123,6 @@ public class ExportImportController  extends  SAbstractController {
 		if (!entryIdStr.equals("")) entryId = new Long(entryIdStr);
 		
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.OPERATION, "");
-		//System.out.println(operation);
 		
 		boolean showMenu = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_SHOW_MENU, false);
 		
@@ -167,6 +147,7 @@ public class ExportImportController  extends  SAbstractController {
 					entry = getFolderModule().getEntry(binderId, entryId);
 				}catch(NoFolderEntryByTheIdException exc){
 					ZipOutputStream zipOut = new ZipOutputStream(res.getOutputStream());		
+		
 					//Standard zip encoding is cp437. (needed when chars are outside the ASCII range)
 					zipOut.setEncoding("cp437");
 					zipOut.finish();
@@ -179,32 +160,7 @@ public class ExportImportController  extends  SAbstractController {
 			}
 			
 			getBinderModule().export(binderId, entryId, res.getOutputStream(), options);
-		//IMPORTING...
-		}else if(operation.equals(WebKeys.OPERATION_IMPORT)){
-			//System.out.println("You are currently importing...");
-			
-			
-		}else{	
 		}
 		return null;
 	}
-	
-	//adding this from ImportProfilesController.java
-
-	/*
-	
-	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
-			RenderResponse response) throws Exception {
-		System.out.println("render after validation...");	
-		Binder binder = getProfileModule().getProfileBinder();
-		Map model = new HashMap();
-		model.put(WebKeys.BINDER, binder);
-
-		// Pass back any error information.
-		model.put( WebKeys.EXCEPTION, request.getParameter( WebKeys.EXCEPTION ) );
-		
-		return new ModelAndView(WebKeys.VIEW_ADMIN_IMPORT_PROFILES, model);
-	}//end
-	
-	*/
 }
