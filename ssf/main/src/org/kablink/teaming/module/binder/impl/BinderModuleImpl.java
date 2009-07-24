@@ -2776,14 +2776,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 	
-	public long folder_addReplyWithXML(String accessToken, long binderId, long parentId, 
+	private long folder_addReplyWithXML(String accessToken, long binderId, long parentId, 
 		String definitionId, String inputDataAsXML, String tempDir,
 		Map entryIdMap, Map binderIdMap, Long entryId) { 
 			return addReply(accessToken, binderId, parentId, definitionId, 
 				inputDataAsXML, tempDir, entryIdMap, binderIdMap, entryId, null); 
 		  }
 	  
-	protected long addReply(String accessToken, long binderId, long parentId, String definitionId, 
+	private long addReply(String accessToken, long binderId, long parentId, String definitionId, 
 		String inputDataAsXML, String tempDir, Map entryIdMap, Map binderIdMap, Long entryId, Map options) { 
 			
 			FolderModule folderModule = (FolderModule) SpringContextUtil.getBean( "folderModule" ); 
