@@ -898,7 +898,7 @@ public class ListFolderHelper {
 			if (Validator.isNotNull(wikiHomePageId)) {
 				//Check if this is a valid page
 				try {
-					FolderEntry wikiHomePage = bs.getFolderModule().getEntry(folder.getId(), wikiHomePageId);
+					FolderEntry wikiHomePage = bs.getFolderModule().getEntry(folder.getId(), Long.valueOf(wikiHomePageId));
 				} catch(Exception e) {
 					wikiHomePageId = null;
 				}
@@ -1119,7 +1119,7 @@ public class ListFolderHelper {
 		if (Validator.isNotNull(wikiHomePageId)) {
 			//Check if this is a valid page
 			try {
-				FolderEntry wikiHomePage = bs.getFolderModule().getEntry(binder.getId(), wikiHomePageId);
+				FolderEntry wikiHomePage = bs.getFolderModule().getEntry(binder.getId(), Long.valueOf(wikiHomePageId));
 			} catch(Exception e) {
 				wikiHomePageId = null;
 			}
