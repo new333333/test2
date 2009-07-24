@@ -42,6 +42,7 @@ import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -70,7 +71,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 import org.hibernate.NonUniqueObjectException;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.InternalException;
@@ -120,6 +120,7 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.ObjectBuilder;
@@ -137,11 +138,9 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TagUtil;
-import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.util.ZipEntryStream;
 import org.kablink.teaming.web.WebKeys;
@@ -2728,6 +2727,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					.getId().longValue();
 			binderIdMap.put(binderId, newBinderId);
 			
+			//team members
+			addTeamMembers(newBinderId, doc);
+			
 			return newBinderId;
 		} catch (WriteFilesException e) {
 			throw new RemotingException(e);
@@ -3051,4 +3053,43 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return (path.delete());
 	}
 
+	private void binder_setTeamMembers(String accessToken, long binderId, String []memberNames) {
+		ProfileModule profileModule = (ProfileModule) SpringContextUtil.getBean("profileModule");
+		
+		Collection<Principal> principals = profileModule.getPrincipalsByName(Arrays.asList(memberNames));
+		Set<Long>ids = new HashSet();
+		for (Principal p:principals) {
+			ids.add(p.getId());
+		}
+		
+		setTeamMembers(binderId, ids);
+	}
+	
+	private void addTeamMembers(Long binderId, Document entityDoc) {
+		FolderModule folderModule = (FolderModule) SpringContextUtil.getBean("folderModule");
+		
+		String xPath = "//team";
+		Element team = (Element) entityDoc.selectSingleNode(xPath);
+		
+		boolean teamInherited = Boolean.parseBoolean(team.attributeValue("inherited"));
+		
+		Binder binder = loadBinder(binderId);
+		
+		if(teamInherited)
+			binder.setTeamMembershipInherited(true);
+		else{
+			List<String> names = new ArrayList<String>();
+			xPath = "//team//principal";
+			List principals = entityDoc.selectNodes(xPath);
+	
+			for (Element member : (List<Element>) principals) {
+				names.add(member.attributeValue("name"));
+			}
+			
+			String[] namesArray = new String[names.size()];		
+			names.toArray(namesArray);
+			
+			binder_setTeamMembers(null, binderId, namesArray);
+		}
+	}
 }
