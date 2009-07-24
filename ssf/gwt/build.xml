@@ -83,7 +83,6 @@
 				classname="com.google.gwt.dev.Compiler"
 				fork="true">
 			<!-- Compiler JVM arguments. -->
-			<jvmarg value="-client"                  />
 			<jvmarg value="-Xms1024m"                />
 			<jvmarg value="-Xmx1024m"                />
 			<jvmarg value="-Xss16m"                  />
