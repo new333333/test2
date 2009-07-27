@@ -933,6 +933,31 @@ function ss_calendarEngine(
 	        badge.style.left = this.monthGridDayBadgeVOffsets[d] + "%";
 	        badge.style.top = this.monthGridDayBadgeHOffsets[this.monthGridWeeks][w] + "%";
 
+			if (haveAddEntryURL) {
+	            var dateAddEntry = document.createElement("div");
+	            dateAddEntry.className = "ss_cal_monthGridDayBadgeDateAdd";
+			    dateAddEntry.innerHTML = "\u00A0";	// nbsp
+	            (function() {
+					dojo.connect(dateAddEntry, "onclick", function(evt) {
+				    	ss_openUrlInPortlet(url, true);
+						return false;
+	       			});
+	            })();							
+			    badge.appendChild(dateAddEntry);
+			    
+				(function() {
+					dojo.connect(dateAddEntry, "onmouseover", function(evt) {
+						dojo.addClass(evt.target, "ss_cal_monthGridDayBadgeOverHighlight");
+	       			});
+	            })();
+				
+				(function() {
+					dojo.connect(dateAddEntry, "onmouseout", function(evt) {
+						dojo.removeClass(evt.target, "ss_cal_monthGridDayBadgeOverHighlight");
+	       			});
+	            })();
+			}
+
             var changeViewLink = document.createElement("a");
             changeViewLink.href = "javascript: // ;";
             changeViewLink.innerHTML = date.getDate();
