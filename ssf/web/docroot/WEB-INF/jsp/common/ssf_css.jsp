@@ -2668,6 +2668,14 @@ div.ss_cal_monthGridDayBadgeOverHighlight {
   background-color: #E8EFF7;
 }
 
+div.ss_cal_monthGridDayBadgeDateAdd {
+	position: absolute;
+	top: 0%;
+	left: 0%;
+	height: 11px;
+	width: 90%;
+}
+
 /* Highlight for today */
 div.ss_cal_monthGridDayBadgeToday {
   background-color: #E8EFF7;
