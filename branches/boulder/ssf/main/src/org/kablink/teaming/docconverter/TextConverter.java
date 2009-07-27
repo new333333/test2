@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.docconverter;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -113,36 +114,14 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 	}
 
 	// Bugzilla 480931:  View and Edit Buttons for documents are not working.
+	// Bugzilla 524410:  Depending on version of OO, XHTML sometimes cannot be parsed.
 	//
-	// This problem is that when using OpenOffice 3.x to perform the
-	// conversion, includes a reference to an invalid DTD that causes
-	// SAXReader (in getDomDocument()) to choke.
-	//
-	// In researching this, I found the following web site:
-	//      http://www.nabble.com/Error-message-is-not-helpful-td21048983.html
-	// which describes the problem and specifies a corrected DTD to
-	// use.  This resolveEntity() was written to detect references to
-	// the bogus DTD and replace them with the valid DTD.
+	// In researching these issues, I found the following web site:
+	//      http://forums.java.net/jive/thread.jspa?threadID=38493
+	// which describes one solution which is to always replace the
+	// DTD's with references to an empty XML document.
 	public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-		// If this is a reference to the bogus DTD...
-		if (publicId.equals("-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN") &&
-				systemId.equals("http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd")) {
-			// ...replace it with a reference to the valid DTD
-			systemId = "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd";
-		}
-
-		
-		// If our SAXReader had an EntityResolver defined...
-		InputSource is;
-		if (null != docEntityResolver) {
-			// ...use it to construct an InputSource to return...
-			is = docEntityResolver.resolveEntity(publicId, systemId);
-		}
-		else {
-			// ...otherwise, just construct one from scratch.
-			is = new InputSource(systemId);
-		}
-		return is;
+		return new InputSource(new ByteArrayInputStream("<?xml version='1.0' encoding='UTF-8'?>".getBytes()));
 	}
 	
 	protected org.dom4j.Document getDomDocument(File textFile) throws DocumentException {
@@ -150,6 +129,8 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 		SAXReader reader = new SAXReader();
 		
 		// Bugzilla 480931:  View and Edit Buttons for documents are not working.
+		// Bugzilla 524410:  Depending on version of OO, XHTML sometimes cannot be parsed.
+		//
 		// See resolveEntity() in this module for what this does.
 		docEntityResolver = reader.getEntityResolver();
 		reader.setEntityResolver(this);
