@@ -114,7 +114,7 @@
       					<div id="ss_topic_thread" class="">
         				  <div style="padding-left:10px;">
         					<span class="ss_title_th1">
-        					<img src="<html:rootPath/>images/icecore/icons/workspace_disc_sm.png" align="absmiddle" width="14" height="16"<ssf:alt tag="workspace"/>/> 
+        					<img src="<html:rootPath/>images/icecore/icons/workspace_disc_sm.png" align="absmiddle" width="14" height="16" <ssf:alt tag="general.type.workspace"/>/> 
         					<a 
           						<c:if test="${subBinder._entityType == 'workspace'}">
             					  href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
