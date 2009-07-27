@@ -610,4 +610,5 @@ public interface ProfileModule {
 	 */
     public SortedSet<IndividualPrincipal> getIndividualPrincipals(Collection<Long> individualIds);
 
+    public void changePassword(Long userId, String oldPassword, String newPassword);
 }

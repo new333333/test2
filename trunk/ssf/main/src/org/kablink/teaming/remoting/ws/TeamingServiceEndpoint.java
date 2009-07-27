@@ -422,6 +422,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void profile_uploadFile(String accessToken, long principalId, String fileUploadDataItemName, String fileName) {
 		getProfileService().profile_uploadFile(accessToken, principalId, fileUploadDataItemName, fileName);
 	}
+	public void profile_changePassword(String accessToken, Long userId, String oldPassword, String newPassword) {
+		getProfileService().profile_changePassword(accessToken, userId, oldPassword, newPassword);
+	}
 
 	/*
 	public String profile_getPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords) {
@@ -451,8 +454,8 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public Group profile_getGroupByName(String accessToken, String groupName, boolean includeAttachments) {
 		return getProfileService().profile_getGroupByName(accessToken, groupName, includeAttachments);
 	}
-	public long profile_addUser(String accessToken, User user) {
-		return getProfileService().profile_addUser(accessToken, user);
+	public long profile_addUser(String accessToken, User user, String password) {
+		return getProfileService().profile_addUser(accessToken, user, password);
 	}
 	
 	public long profile_addGroup(String accessToken, Group group) {

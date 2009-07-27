@@ -50,6 +50,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.shared.ChainedInputData;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.remoting.RemotingException;
@@ -254,9 +255,16 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		}
 	}
 	
-	public long profile_addUser(String accessToken, org.kablink.teaming.remoting.ws.model.User user) {
+	public long profile_addUser(String accessToken, org.kablink.teaming.remoting.ws.model.User user, String password) {
+		ChainedInputData inputData = new ChainedInputData();
+		inputData.addAccessor(new ModelInputData(user));
+		if(password != null) {
+			Map passwordMap = new HashMap();
+			passwordMap.put("password", password);
+			inputData.addAccessor(new MapInputData(passwordMap));
+		}
 		try {
-			return getProfileModule().addUser(user.getDefinitionId(), new ModelInputData(user), null, null).getId().longValue();
+			return getProfileModule().addUser(user.getDefinitionId(), inputData, null, null).getId().longValue();
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -347,6 +355,11 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		userBrief.setPermaLink(permaLink);
 		
 		return userBrief;
+	}
+	
+	public void profile_changePassword(String accessToken, Long userId,
+			String oldPassword, String newPassword) {
+		getProfileModule().changePassword(userId, oldPassword, newPassword);
 	}
 	
 }

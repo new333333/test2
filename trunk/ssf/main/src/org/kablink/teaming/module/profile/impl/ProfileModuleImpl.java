@@ -107,6 +107,7 @@ import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.survey.Survey;
+import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.web.util.DateHelper;
@@ -1489,5 +1490,23 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 //  	return getAccessControlManager().testOperation(this.getProfileBinder(), WorkAreaOperation.USER_SEE_ALL);        
   }
 
+  public void changePassword(Long userId, String oldPassword, String newPassword) {
+	  if(newPassword == null || newPassword.equals(""))
+		  throw new PasswordMismatchException("errorcode.password.cannotBeNull");
+	  
+	  User user = getUser(userId, true);
+	  ProfileBinder profileBinder = loadProfileBinder();
+	  
+      if (!testAccess(profileBinder, ProfileOperation.manageEntries)) {
+    	  // The user making the call does not have the right to manage profile entries. 
+    	  // In this case, we require that the old password be specified. 
+    	  // Note: This code needs to be kept in synch with the similar check in ModifyEntryController.java.
+    	  if(oldPassword == null || oldPassword.equals("") || !EncryptUtil.encryptPassword(oldPassword).equals(user.getPassword()))
+    		  // The user didn't enter the old/current password or they entered it incorrectly.
+    		  throw new PasswordMismatchException("errorcode.password.invalid");
+      }
+      
+      user.setPassword(newPassword);
+  }
 }
 

@@ -57,7 +57,7 @@ public interface ProfileService {
 	
 	public long profile_addUserWorkspace(String accessToken, long userId);
 	
-	public long profile_addUser(String accessToken, User user);
+	public long profile_addUser(String accessToken, User user, String password);
 	
 	public long profile_addGroup(String accessToken, Group group);
 		
@@ -80,4 +80,5 @@ public interface ProfileService {
 	
 	public void profile_uploadFile(String accessToken, long principalId, String fileUploadDataItemName, String fileName);
 	
+	public void profile_changePassword(String accessToken, Long userId, String oldPassword, String newPassword);
 }

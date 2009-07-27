@@ -120,6 +120,8 @@ public class ModifyEntryController extends SAbstractController {
 		        		return;
 		        	}
 
+		        	// Note: The following code needs to be kept in synch with the similar check in 
+		        	//       ProfileModuleImpl.changePassword() method.
 		        	ProfileBinder binder = getProfileModule().getProfileBinder();
 		            if (!getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
 		            	String passwordOriginal = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD_ORIGINAL);

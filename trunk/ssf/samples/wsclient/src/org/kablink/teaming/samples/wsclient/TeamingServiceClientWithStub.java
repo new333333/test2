@@ -73,9 +73,13 @@ public class TeamingServiceClientWithStub {
 	public static void main(String[] args) throws Exception {
 		FolderEntry entry;
 		
-		//System.out.println("Test user name: " + getTestUser().getName());
+		/*
+		User user = getTestUser();
+		System.out.println("Test user name: " + user.getName());
+		changeUserPassword(user.getId(), "test", "newtest");
+		*/
 		
-		copyFolderEntry(177, 1287, false);
+		//copyFolderEntry(177, 1287, false);
 		//copyFolderEntry(177, 1288, true);
 		
 		//addMicroBlog();
@@ -730,7 +734,7 @@ public class TeamingServiceClientWithStub {
 		testUser.setMiddleName("Anne");
 		testUser.setLastName("Tester");
 		testUser.setEmailAddress("boulder@foo.bar");
-		long testUserId = stub.profile_addUser(null, testUser);
+		long testUserId = stub.profile_addUser(null, testUser, "test");
 		Long wsId = stub.profile_addUserWorkspace(null, testUserId);
 		testUser = stub.profile_getUser(null, testUserId, false);
 		if (!"Jodi Anne Tester".equals(testUser.getTitle())) System.out.println("Title not set");
@@ -873,10 +877,18 @@ public class TeamingServiceClientWithStub {
 			testUser.setMiddleName("Anne");
 			testUser.setLastName("Tester");
 			testUser.setEmailAddress("boulder@foo.bar");
-			long testUserId = stub.profile_addUser(null, testUser);
+			long testUserId = stub.profile_addUser(null, testUser, "test");
 			testUser = stub.profile_getUser(null, testUserId, false);
 		}
 		return testUser;
+	}
+	
+	public static void changeUserPassword(Long userId, String oldPassword, String newPassword) throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		stub.profile_changePassword(null, userId, oldPassword, newPassword);
 	}
 	
 	public static void copyFolderEntry(long entryId, long destinationFolderId, boolean eventAsIcalString) throws Exception {
