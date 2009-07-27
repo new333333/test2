@@ -129,6 +129,8 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 		SAXReader reader = new SAXReader();
 		
 		// Bugzilla 480931:  View and Edit Buttons for documents are not working.
+		// Bugzilla 524410:  Depending on version of OO, XHTML sometimes cannot be parsed.
+		//
 		// See resolveEntity() in this module for what this does.
 		docEntityResolver = reader.getEntityResolver();
 		reader.setEntityResolver(this);
