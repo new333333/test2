@@ -65,7 +65,7 @@ public class XSSCheck implements StringCheck {
 	private static final String PATTERN_STR4 = "(?i)(?:[^<>\\s]*style[\\s]*=[\\s]*([\"'])[^>]*\\1|[^>\\s]*style[\\s]*=[^<>\\s\"']*)";
 	private static final String PATTERN_STR5 = "(?i)((?:url|expression))";
 	private static final String PATTERN_STR5a = "(?i)(/\\*[^*]*\\*/)";
-	private static final String PATTERN_STR6 = "(?i)(<[\\s]*[^>]*[\\s]+)(on[^>\\s]*[\\s]*=[\\s]*(?:([\"'])[^>]*\\3|[^>\\s]*))([^>]*>)";
+	private static final String PATTERN_STR6 = "(?i)(<[\\s]*[^>]*[\\s]+)(on[^>\\s]*[\\s]*=[\\s]*(?:\"[^\">]*\"|'[^'>]*'|[^>\\s]*))([^>]*>)";
 	
 	private Pattern pattern1;
 	private Pattern pattern2;
@@ -210,7 +210,7 @@ public class XSSCheck implements StringCheck {
 		while (matcher6.find()) {
 			buf = new StringBuffer();
 			String start = matcher6.group(1);
-			String end = matcher6.group(4);
+			String end = matcher6.group(3);
 			matcher6.appendReplacement(buf, matcher6.quoteReplacement(start + StringPool.BLANK + end));
 			result = false;
 			matcher6.appendTail(buf);
