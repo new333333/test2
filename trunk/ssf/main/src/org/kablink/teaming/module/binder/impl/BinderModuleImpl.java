@@ -3050,7 +3050,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	private File getTemporaryDirectory() {
-		return new File(TempFileUtil.getTempFileDir(getClass()), UUID.randomUUID().toString());
+		return new File(TempFileUtil.getTempFileDir("import"), UUID.randomUUID().toString());
 	}
 	
 	private String deploy(ZipInputStream zipIn) throws IOException {

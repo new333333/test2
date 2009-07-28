@@ -193,18 +193,18 @@ public class TempFileUtil {
 
 	/**
 	 * This method differs from the rest of the public methods in this class in that
-	 * this method returns a sub-directory under the root temp directory rather than
-	 * returning a temporary file. The purpose is to give the caller a temporary area
-	 * to work in. To avoid namespace collision among different parts of the system,
-	 * the caller must supply its class name and be fully responsible for managing the
-	 * resources within the sub-directory corresponding to that namespace. Only the 
-	 * simple name portion of the class is used for partitioning the namespace.
+	 * this method returns a sub-directory within the temp area rather than returning
+	 * a temporary file. The purpose is to give the caller a temporary area to work in. 
+	 * To avoid namespace collision among different parts of the application and to 
+	 * keep them from stepping over each other, the caller must supply the name of the 
+	 * sub-directory and be fully responsible for managing the resources within it. 
+	 * As such, the sub-directory name must be unique within the application.
 	 *  
 	 * @param caller
 	 * @return
 	 */
-	public static File getTempFileDir(Class caller) {
-		return new File(getTempFileDir(), caller.getSimpleName());
+	public static File getTempFileDir(String subDirName) {
+		return new File(getTempFileDir(), subDirName);
 	}
 	
 	public static void main(String[] args) {
