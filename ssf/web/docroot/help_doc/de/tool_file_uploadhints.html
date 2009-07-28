@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html xml:lang="de" lang="de">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="de" />
+<meta name="Content-Date" content="Mon, 04 Jun 2009 12:00:00 GMT" />
+<meta name="Generator" content="Kablink Documentation" />
+<meta name="Generation-Date" content="Wednesday, July 01, 2009" />
+<meta name="Copyright" content="" />
+
+<link rel="stylesheet" type="text/css" href="css/styles.css" />
+<link rel="stylesheet" type="text/css" href="css/expandable.css" />
+
+<title>Tipps zum Hochladen von Dateien</title>
+</head>
+<body>
+<script type="text/javascript" src="css/expandable.js"></script>
+
+<div class="sect1" id="tool_file_uploadhints">
+
+<h1 class="title"> Tipps zum Hochladen von Dateien</h1>
+
+<p class="para">Wenn Sie Probleme mit dem Hochladen einer Datei haben, weil die Datei zu groß ist, lässt sich das Problem eventuell beheben, indem Sie den von Java-Applets verwendeten Standardarbeitsspeicher erhöhen.  Informationen hierzu erhalten Sie in den folgenden Abschnitten.</p>
+<div class="sect2" id="bipun26">
+
+<h2 class="title"> Erhöhen des Standardarbeitsspeichers für Java-Applets unter Windows</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bipungz">
+<p class="para">Rufen Sie die Systemsteuerung auf (Klicken Sie auf <span class="guimenu">Start</span> &gt; <span class="guimenu">Einstellungen</span> &gt; <span class="guimenu">Systemsteuerung</span>).</p></li>
+<li class="step" id="bipunwc">
+<p class="para">Doppelklicken Sie auf <span class="guimenu">Java</span>.</p>
+<p class="para">Das Java Control Panel wird gestartet.</p></li>
+<li class="step" id="bipuoka">
+<p class="para">Wählen Sie die Registerkarte <span class="guimenu">Java</span> aus.</p></li>
+<li class="step" id="bipuorx">
+<p class="para">Klicken Sie im Abschnitt <span class="guimenu">Java-Applet-Laufzeiteinstellungen</span> auf <span class="guimenu">Anzeigen</span>.</p></li>
+<li class="step" id="bipup4t">
+<p class="para">Fügen Sie für jede Ihrer Java Runtime-Versionen <span class="command">-Xmx256m</span> als Java Runtime-Parameter hinzu.</p></li>
+<li class="step" id="bipupgl">
+<p class="para">Klicken Sie auf <span class="guimenu">OK</span>.</p>
+<p class="para">Nachdem Sie den Standardarbeitsspeicher für Java-Applets erhöht haben, müssen Sie alle Browser beenden und neu starten, damit die Änderung wirksam wird.</p></li></ol>
+</div>
+
+<p class="para">Durch diese Einstellung stehen dem Java-Applet zum Hochladen von Dateien in einen Teaming-Ordner zu Beginn 256 MB Arbeitsspeicher zur Verfügung.  Wenn das Applet weiterhin angibt, dass nicht genügend Arbeitsspeicher zur Ausführung zur Verfügung steht, müssen Sie diesen Wert möglicherweise reduzieren.</p>
+</span>
+
+</div>
+
+<div class="sect2" id="bipunbb">
+
+<h2 class="title"> Erhöhen des Standardarbeitsspeichers für Java-Applets unter Linux</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bjchmyk">
+<p class="para">Suchen Sie die für das Browser-Plugin verwendete JRE oder JDK.</p>
+<p class="para">Der Speicherort der JRE oder JDK ist systemabhängig.</p></li>
+<li class="step" id="bjchn8n">
+<p class="para">Führen Sie im Verzeichnis <span class="filename">bin</span> des JRE bzw. JDK die Datei <span class="filename">ControlPanel</span> aus.</p>
+<p class="para">Das Control Panel wird gestartet.</p></li>
+<li class="step" id="bjchoed">
+<p class="para">Wählen Sie die Registerkarte <span class="guimenu">Java</span> aus.</p></li>
+<li class="step" id="bjchokg">
+<p class="para">Klicken Sie im Abschnitt <span class="guimenu">Java-Applet-Laufzeiteinstellungen</span> auf <span class="guimenu">Anzeigen</span>.</p></li>
+<li class="step" id="bjchor1">
+<p class="para">Fügen Sie für jede Ihrer Java Runtime-Versionen <span class="command">-Xmx256m</span> als Java Runtime-Parameter hinzu.</p></li>
+<li class="step" id="bjchotz">
+<p class="para">Klicken Sie auf <span class="guimenu">OK</span>.</p>
+<p class="para">Nachdem Sie den Standardarbeitsspeicher für Java-Applets erhöht haben, müssen Sie alle Browser beenden und neu starten, damit die Änderung wirksam wird.</p></li></ol>
+</div>
+
+<p class="para">Durch diese Einstellung stehen dem Java-Applet zum Hochladen von Dateien in einen Teaming-Ordner zu Beginn 256 MB Arbeitsspeicher zur Verfügung.  Falls das Applet nach wie vor meldet, dass ihm nicht genügend Arbeitsspeicher zur Verfügung steht, müssen Sie diesen Wert eventuell reduzieren.</p>
+</span>
+
+</div>
+
+</div>
+
+<p class="trademark"> Weitere Informationen hierzu finden Sie unter <a href="./legal.html">Rechtliche Hinweise</a>.</p>
+</body>
+</html>

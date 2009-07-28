@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html xml:lang="ru" lang="ru">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="ru" />
+<meta name="Content-Date" content="Mon, 04 Jun 2009 12:00:00 GMT" />
+<meta name="Generator" content="Kablink Documentation" />
+<meta name="Generation-Date" content="Wednesday, July 01, 2009" />
+<meta name="Copyright" content="Авторские права " />
+
+<link rel="stylesheet" type="text/css" href="css/styles.css" />
+<link rel="stylesheet" type="text/css" href="css/expandable.css" />
+
+<title>Приемы отправки файлов</title>
+</head>
+<body>
+<script type="text/javascript" src="css/expandable.js"></script>
+
+<div class="sect1" id="tool_file_uploadhints">
+
+<h1 class="title"> Приемы отправки файлов</h1>
+
+<p class="para">Если возникают затруднения при отправке файла, т. к. файл слишком велик, можно устранить их, увеличив размер памяти по умолчанию, используемой Java-аплетами. Этот процесс описан в следующих разделах.</p>
+<div class="sect2" id="bipun26">
+
+<h2 class="title"> Увеличение размера памяти по умолчанию в Windows</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bipungz">
+<p class="para">Перейдите к панели управления (щелкните <span class="guimenu">Пуск</span> &gt; <span class="guimenu">Настройка</span> &gt; <span class="guimenu">Панель управления</span>).</p></li>
+<li class="step" id="bipunwc">
+<p class="para">Дважды щелкните <span class="guimenu">Java</span>.</p>
+<p class="para">Запускается панель управления Java.</p></li>
+<li class="step" id="bipuoka">
+<p class="para">Выберите вкладку <span class="guimenu">Java</span>.</p></li>
+<li class="step" id="bipuorx">
+<p class="para">В разделе <span class="guimenu">Java Applet Runtime Settings</span> нажмите кнопку <span class="guimenu">View</span>.</p></li>
+<li class="step" id="bipup4t">
+<p class="para">Для каждой из Ваших версий среды выполнения Java Runtime добавьте <span class="command">-Xmx256m</span> как параметр выполнения Java.</p></li>
+<li class="step" id="bipupgl">
+<p class="para">Нажмите кнопку <span class="guimenu">ОК</span>.</p>
+<p class="para">Чтобы изменения вступили в силу, после увеличения размера памяти по умолчанию для Java-аплетов необходимо закрыть и снова запустить все веб-навигаторы.</p></li></ol>
+</div>
+
+<p class="para">Эта настройка приводит к тому, что аплет, используемый для отправки файлов в папку Teaming, начинает работу с 256 Мб памяти. Если аплет по-прежнему показывает, что для его выполнения недостаточно памяти, может потребоваться уменьшить это число.</p>
+</span>
+
+</div>
+
+<div class="sect2" id="bipunbb">
+
+<h2 class="title"> Увеличение размера памяти по умолчанию в Linux</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bjchmyk">
+<p class="para">Найдите JRE или JDK, используемые подключаемым модулем навигатора.</p>
+<p class="para">Расположение JRE или JDK может различаться в разных системах.</p></li>
+<li class="step" id="bjchn8n">
+<p class="para">В каталоге <span class="filename">bin</span> JRE или JDK запустите файл <span class="filename">ControlPanel</span>.</p>
+<p class="para"> Запускается панель управления.</p></li>
+<li class="step" id="bjchoed">
+<p class="para">Выберите вкладку <span class="guimenu">Java</span>.</p></li>
+<li class="step" id="bjchokg">
+<p class="para">В разделе <span class="guimenu">Java Applet Runtime Settings</span> нажмите кнопку <span class="guimenu">View</span>.</p></li>
+<li class="step" id="bjchor1">
+<p class="para">Для каждой из Ваших версий среды выполнения Java Runtime добавьте <span class="command">-Xmx256m</span> как параметр выполнения Java.</p></li>
+<li class="step" id="bjchotz">
+<p class="para">Нажмите кнопку <span class="guimenu">ОК</span>.</p>
+<p class="para">Чтобы изменения вступили в силу, после увеличения размера памяти по умолчанию для Java-аплетов необходимо закрыть и снова запустить все веб-навигаторы.</p></li></ol>
+</div>
+
+<p class="para">Эта настройка приводит к тому, что аплет, используемый для отправки файлов в папку Teaming, начинает работу с 256 Мб памяти. Если аплет по-прежнему показывает, что для выполнения аплета недостаточно памяти, может потребоваться уменьшить это число.</p>
+</span>
+
+</div>
+
+</div>
+
+<p class="trademark"> Дополнительную информацию см. в <a href="./legal.html">Юридическая информация</a>.</p>
+</body>
+</html>
