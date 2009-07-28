@@ -346,6 +346,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 	
 	public Event(Calendar dtStart,
+			Calendar dtEnd,
 			Duration duration,
 			Integer frequency,
 			Integer interval,
@@ -366,6 +367,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			int[] byMonth) {
 		this(); // It is important to call this base constructor, since it sets up some default.
 		if(dtStart != null) setDtStart(dtStart);
+		if(dtEnd != null) setDtEnd(dtEnd);
 		if(duration != null) setDuration(duration);
 		if(frequency != null) setFrequency(frequency.intValue());
 		if(interval != null) setInterval(interval.intValue());

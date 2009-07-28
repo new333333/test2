@@ -56,7 +56,6 @@
 		<beanMapping qname="ns:DefinitionBrief" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.DefinitionBrief"/>
 		<beanMapping qname="ns:DefinitionCollection" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.DefinitionCollection"/>
 		<beanMapping qname="ns:Description" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Description"/>
-		<beanMapping qname="ns:Duration" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Event$Duration"/>
 		<beanMapping qname="ns:Entry" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Entry"/>
 		<beanMapping qname="ns:Event" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Event"/>
 		<beanMapping qname="ns:Field" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Field"/>
