@@ -56,6 +56,7 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipInputStream;
@@ -143,6 +144,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TagUtil;
+import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.util.ZipEntryStream;
 import org.kablink.teaming.web.WebKeys;
@@ -2568,11 +2570,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		// during import
 		HashMap binderIdMap = new HashMap();
 
-		String tempDir = deploy(zIn);
+		String tempDir = deploy(zIn);//$$$$$
 		File tempDirFile = new File(tempDir);
 
 		importDir(tempDirFile, tempDir, binderId, entryIdMap, binderIdMap);
-		deleteDirectory(tempDirFile);
+		FileUtil.deltree(tempDirFile);
 	}
 
 	private void importDir(File currentDir, String tempDir, Long topBinderId, Map entryIdMap, 
@@ -3047,11 +3049,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return sbuf.toString();
 	}
 
+	private File getTemporaryDirectory() {
+		return new File(TempFileUtil.getTempFileDir(getClass()), UUID.randomUUID().toString());
+	}
+	
 	private String deploy(ZipInputStream zipIn) throws IOException {
-		// TO-DO... MAKE sure the directory is unique each time
-		File tempDir = new File("C://import-temp-files-12345");
+		File tempDir = getTemporaryDirectory();
 
-		deleteDirectory(tempDir);
+		FileUtil.deltree(tempDir);
 		
 		tempDir.mkdirs();
 		java.util.zip.ZipEntry entry = null;
@@ -3080,22 +3085,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 
 		return tempDir.getAbsolutePath();
-	}
-
-	private boolean deleteDirectory(File path) {
-		if (path.exists()) {
-			File[] files = path.listFiles();
-
-			for (int i = 0; i < files.length; i++) {
-				if (files[i].isDirectory()) {
-					deleteDirectory(files[i]);
-				} else {
-					files[i].delete();
-				}
-			}
-		}
-
-		return (path.delete());
 	}
 
 	private void binder_setTeamMembers(String accessToken, long binderId, String []memberNames) {

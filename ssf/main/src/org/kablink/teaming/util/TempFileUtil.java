@@ -50,30 +50,6 @@ public class TempFileUtil {
 	 * Create a temporary file. The created temporary file is set to be deleted
 	 * when the virtual machine terminates.
 	 * 
-	 * @param caller The class object of the caller
-	 * @return
-	 */
-	//public static File createTempFile(Class caller) {
-	//	return createTempFile(getPrefix(caller));
-	//}
-	
-	/**
-	 * Create a temporary file and set its initial content. 
-	 * The created temporary file is set to be deleted when the virtual machine 
-	 * terminates.
-	 * 
-	 * @param caller The class object of the caller
-	 * @param content The initial content of the file 
-	 * @return
-	 */
-	//public static File createTempFileWithContent(Class caller, InputStream content) {
-	//	return createTempFileWithContent(getPrefix(caller), content);
-	//}
-	
-	/**
-	 * Create a temporary file. The created temporary file is set to be deleted
-	 * when the virtual machine terminates.
-	 * 
 	 * @param prefix The prefix string to be used in generating the file's name;
 	 * must be at least three characters long
 	 * @return
@@ -124,27 +100,6 @@ public class TempFileUtil {
 	 */
 	public static File createTempFileWithContent(String prefix, File fileDir, InputStream content) {
 		return createTempFileWithContent(prefix, null, fileDir, true, content);
-	}
-	
-	private static File getTempFileDir() {
-		return new File(getTempFileDirPath(RequestContextHolder.getRequestContext().getUserId()));
-	}
-	
-	private static String getTempFileDirPath() {
-		String filePath = SPropsUtil.getString("temp.dir", "");
-		if(filePath.equals(""))
-			filePath = System.getProperty("java.io.tmpdir");
-		return filePath;
-	}
-	
-	private static String getTempFileDirPath(Long userId) {
-		return getTempFileDirPath() + "/" + userId.toString();
-	}
-	private static String getPrefix(Class caller) {
-		String name = caller.getSimpleName();
-		if(name.length() < 3) // very unlikely scenario
-			name = name + "_" + name;
-		return name;
 	}
 	
 	/**
@@ -211,6 +166,70 @@ public class TempFileUtil {
 		}
 	}
 
+	/**
+	 * Opens a previously created temporary file and returns a stream to it.
+	 * 
+	 * @param fileHandle The name of the file as returned by File.getName().
+	 */
+	public static InputStream openTempFile(String fileHandle) throws UncheckedIOException {
+		try {
+			return new FileInputStream(getTempFileByName(fileHandle));
+		} catch(IOException e) {
+			throw new UncheckedIOException(e);
+		}
+	}
+	
+	/**
+	 * Returns a File object on a previously created temporary file.
+	 * @param fileHandle The name of the file as returned by File.getName().
+	 * @return
+	 */
+	public static File getTempFileByName(String fileHandle) {
+		File junk = new File(fileHandle);
+		fileHandle = junk.getName();
+
+		return new File(getTempFileDirPath(), fileHandle);
+	}
+
+	/**
+	 * This method differs from the rest of the public methods in this class in that
+	 * this method returns a sub-directory under the root temp directory rather than
+	 * returning a temporary file. The purpose is to give the caller a temporary area
+	 * to work in. To avoid namespace collision among different parts of the system,
+	 * the caller must supply its class name and be fully responsible for managing the
+	 * resources within the sub-directory corresponding to that namespace. Only the 
+	 * simple name portion of the class is used for partitioning the namespace.
+	 *  
+	 * @param caller
+	 * @return
+	 */
+	public static File getTempFileDir(Class caller) {
+		return new File(getTempFileDir(), caller.getSimpleName());
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(new File("").getAbsolutePath());
+	}
+	
+	private static File getTempFileDir() {
+		return new File(getTempFileDirPath());
+	}
+	
+	private static String getTempFileDirPath() {
+		return getTempFileDirPathPerUser(RequestContextHolder.getRequestContext().getUserId());
+	}
+	
+	private static String getTempFileDirRootPath() {
+		String filePath = SPropsUtil.getString("temp.dir", "");
+		if(filePath.equals(""))
+			filePath = System.getProperty("java.io.tmpdir");
+		return filePath;
+	}
+	
+	private static String getTempFileDirPathPerUser(Long userId) {
+		return getTempFileDirRootPath() + File.separator + userId.toString();
+	}
+	
 	private static File doCreateTempFile(String prefix, String suffix, File fileDir) throws IOException {
 		try {
 			return File.createTempFile(prefix, suffix, fileDir);
@@ -225,28 +244,4 @@ public class TempFileUtil {
 		}
 	}
 	
-	/*
-	 * Opens a previously created temporary file and returns a stream to it.
-	 * 
-	 * @param fileHandle The name of the file as returned by File.getName().
-	 */
-	public static InputStream openTempFile(String fileHandle) throws UncheckedIOException {
-		try {
-			return new FileInputStream(getTempFileByName(fileHandle));
-		} catch(IOException e) {
-			throw new UncheckedIOException(e);
-		}
-	}
-	
-	public static File getTempFileByName(String fileHandle) {
-		File junk = new File(fileHandle);
-		fileHandle = junk.getName();
-
-		return new File(getTempFileDirPath(RequestContextHolder.getRequestContext().getUserId()),
-				fileHandle);
-	}
-
-	public static void main(String[] args) {
-		System.out.println(new File("").getAbsolutePath());
-	}
 }
