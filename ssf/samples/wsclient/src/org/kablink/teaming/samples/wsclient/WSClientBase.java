@@ -69,7 +69,6 @@ public abstract class WSClientBase {
 			org.kablink.teaming.client.ws.model.DefinitionBrief.class,
 			org.kablink.teaming.client.ws.model.DefinitionCollection.class,
 			org.kablink.teaming.client.ws.model.Description.class,
-			org.kablink.teaming.client.ws.model.Duration.class,
 			org.kablink.teaming.client.ws.model.Entry.class,
 			org.kablink.teaming.client.ws.model.Event.class,
 			org.kablink.teaming.client.ws.model.Field.class,

@@ -37,68 +37,9 @@ import java.util.TimeZone;
 
 public class Event {
 
-	/// free/busy types
-	
-	public static final String FREEBUSYTYPE_FREE 		= "free";
-	public static final String FREEBUSYTYPE_BUSY 		= "busy";
-	public static final String FREEBUSYTYPE_TENTATIVE	= "tentative";
-	public static final String FREEBUSYTYPE_OUTOFOFFICE = "outOfOffice";
-	
-	/// Recurrence types
-
-	/**
-	 * The value of frequency indicating a secondly recurrence.
-	 * @see #setFrequency
-	 */
-	public final static int SECONDLY = 0;
-
-	/**
-	 * The value of frequency indicating a minutely recurrence.
-	 * @see #setFrequency
-	 */
-	public final static int MINUTELY = 1;
-
-	/**
-	 * The value of frequency indicating an hourly recurrence.
-	 * @see #setFrequency
-	 */
-	public final static int HOURLY = 2;
-
-	/**
-	 * The value of frequency indicating a daily recurrence.
-	 * @see #setFrequency
-	 */
-	public final static int DAILY = 3;
-
-	/**
-	 * The value of frequency indicating a weekly recurrence.
-	 * @see #setFrequency
-	 */
-	public final static int WEEKLY = 4;
-
-	/**
-	 * The value of frequency indicating a monthly recurrence.
-	 * @see #setFrequency
-	 */
-	public final static int MONTHLY = 5;
-
-	/**
-	 * The value of frequency indicating a yearly recurrence.
-	 * @see #setFrequency
-	 */
-	public final static int YEARLY = 6;
-
-	/**
-	 * The value of frequency indicating no recurrence.
-	 * @see #setFrequency
-	 */
-	public final static int NO_RECURRENCE = 7;
-
-	/// Properties
-
 	private Calendar dtStart;
 
-	private Duration duration;
+	private Calendar dtEnd;
 
 	private Integer frequency;
 
@@ -148,7 +89,9 @@ public class Event {
 		
 		return new org.kablink.teaming.domain.Event(
 				event.dtStart,
-				Duration.toDomainModel(event.duration),
+				event.dtEnd,
+				//Duration.toDomainModel(event.duration),
+				null,
 				event.frequency,
 				event.interval,
 				event.until,
@@ -179,12 +122,12 @@ public class Event {
 		this.dtStart = dtStart;
 	}
 
-	public Duration getDuration() {
-		return duration;
+	public Calendar getDtEnd() {
+		return dtEnd;
 	}
 
-	public void setDuration(Duration duration) {
-		this.duration = duration;
+	public void setDtEnd(Calendar dtEnd) {
+		this.dtEnd = dtEnd;
 	}
 
 	public Integer getFrequency() {
@@ -323,72 +266,6 @@ public class Event {
 		this.freeBusy = freeBusy;
 	}
 
-	public static class Duration {
-		  private int weeks;
-		  private int days;
-		  private int hours;
-		  private int minutes;
-		  private int seconds;
-		  
-		public static org.kablink.util.cal.Duration toDomainModel(Duration duration) {
-			org.kablink.util.cal.Duration result = null;
-			if(duration != null) {
-				result = new org.kablink.util.cal.Duration(duration.weeks, duration.days, duration.hours, duration.minutes, duration.seconds);
-			}
-			return result;
-		}
-
-		public static Duration toRemoteModel(org.kablink.util.cal.Duration duration) {
-			if(duration == null)
-				return null;
-			else 
-				return new Duration(duration);
-		}
-		
-		public Duration() {
-		}
-		
-		private Duration(org.kablink.util.cal.Duration duration) {
-			weeks = duration.getWeeks();
-			days = duration.getDays();
-			hours = duration.getHours();
-			minutes = duration.getMinutes();
-			seconds = duration.getSeconds();
-		}
-		
-		public int getWeeks() {
-			return weeks;
-		}
-		public void setWeeks(int weeks) {
-			this.weeks = weeks;
-		}
-		public int getDays() {
-			return days;
-		}
-		public void setDays(int days) {
-			this.days = days;
-		}
-		public int getHours() {
-			return hours;
-		}
-		public void setHours(int hours) {
-			this.hours = hours;
-		}
-		public int getMinutes() {
-			return minutes;
-		}
-		public void setMinutes(int minutes) {
-			this.minutes = minutes;
-		}
-		public int getSeconds() {
-			return seconds;
-		}
-		public void setSeconds(int seconds) {
-			this.seconds = seconds;
-		}
-
-	}
-	
 	public static class DayAndPosition {
 		  private int day;
 		  private int position;
