@@ -60,7 +60,10 @@ public class XSSCheck implements StringCheck {
 	private static final String MODE_TRUSTED_STRIP = "trusted.strip";
 	
 	private static final String PATTERN_STR1 = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|style|html|head|body|meta|xml|blink|link|iframe|frame|frameset|ilayer|layer|bgsound|base)(?:[\\s]+[^>]*>|>))";
-	private static final String PATTERN_STR2 = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|meta|blockquote|del|ins|q)[\\s]*[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^\\s]*script[\\s]*:[^>\\s]*))([^>]*>)";
+
+	private static final String PATTERN_STR2 = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|meta|blockquote|del|ins|q)[\\s]*[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^>\\s]*script[\\s]*:[^>\\s]*))([^>]*>)";
+	private static final String PATTERN_STR2a = "(?i)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^>\\s]*script[\\s]*:[^>\\s]*))";
+
 	private static final String PATTERN_STR3 = "(?i)<[\\s]*[^>]+[\\s]*([^>\\s]*style[\\s]*=[\\s]*([\"'])[^>]*\\2|[^>\\s]*style[\\s]*=[^>\\s\"']*)[^>]*>";
 	private static final String PATTERN_STR4 = "(?i)(?:[^<>\\s]*style[\\s]*=[\\s]*([\"'])[^>]*\\1|[^>\\s]*style[\\s]*=[^<>\\s\"']*)";
 	private static final String PATTERN_STR5 = "(?i)((?:url|expression))";
@@ -69,6 +72,7 @@ public class XSSCheck implements StringCheck {
 	
 	private Pattern pattern1;
 	private Pattern pattern2;
+	private Pattern pattern2a;
 	private Pattern pattern3;
 	private Pattern pattern4;
 	private Pattern pattern5;
@@ -83,6 +87,7 @@ public class XSSCheck implements StringCheck {
 	public XSSCheck() {
 		pattern1 = Pattern.compile(PATTERN_STR1);
 		pattern2 = Pattern.compile(PATTERN_STR2);
+		pattern2a = Pattern.compile(PATTERN_STR2a);
 		pattern3 = Pattern.compile(PATTERN_STR3);
 		pattern4 = Pattern.compile(PATTERN_STR4);
 		pattern5 = Pattern.compile(PATTERN_STR5);
@@ -174,19 +179,22 @@ public class XSSCheck implements StringCheck {
 		}
 		//Check for href="javascript:..." or any *script as src or href, etc
 		Matcher matcher2 = pattern2.matcher(sequence);
-		String lastValue = "";
-		while (matcher2.find()) {
-			String tagStart = matcher2.group(1);
-			String scriptString = matcher2.group(2);
-			String tagEnd = matcher2.group(4);
-			sequence = tagStart + StringPool.BLANK + tagEnd;
-			matcher2 = pattern2.matcher(sequence);
-			result = false;
-			if (lastValue.equals(sequence)) break;
-			lastValue = sequence;
-		}
-		//Check for style="..." in any tag
 		StringBuffer buf = new StringBuffer();
+		while (matcher2.find()) {
+			String tagString = matcher2.group(0);
+			Matcher matcher2a = pattern2a.matcher(tagString);
+			if (matcher2a.find()) {
+				String scriptString = matcher2a.group(0);
+				tagString = matcher2a.replaceAll(StringPool.BLANK);
+				result = false;
+			}
+			matcher2.appendReplacement( buf, tagString );
+		}
+		matcher2.appendTail(buf);
+		sequence = buf.toString();
+
+		//Check for style="..." in any tag
+		buf = new StringBuffer();
 		Matcher matcher3 = pattern3.matcher(sequence);
 		while (matcher3.find()) {
 			String tagString = matcher3.group(0);
