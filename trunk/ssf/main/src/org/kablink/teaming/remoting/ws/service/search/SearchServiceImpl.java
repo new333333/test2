@@ -248,8 +248,7 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 					Integer.valueOf((String)binder.get(Constants.DEFINITION_TYPE_FIELD)),
 					new Timestamp((String) binder.get(Constants.CREATOR_NAME_FIELD),(Date) binder.get(Constants.CREATION_DATE_FIELD)),
 					new Timestamp((String) binder.get(Constants.MODIFICATION_NAME_FIELD), (Date) binder.get(Constants.MODIFICATION_DATE_FIELD)),
-					PermaLinkUtil.getPermalink(binder),
-					(String) binder.get(Constants.COMMAND_DEFINITION_FIELD)
+					PermaLinkUtil.getPermalink(binder)
 					)
 			);
 		}
