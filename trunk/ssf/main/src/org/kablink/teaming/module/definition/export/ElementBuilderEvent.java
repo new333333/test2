@@ -45,6 +45,8 @@ import org.dom4j.Element;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.ical.util.ICalUtils;
+import org.kablink.teaming.module.ical.IcalModule;
+import org.kablink.teaming.util.SpringContextUtil;
 
 
 public class ElementBuilderEvent extends AbstractElementBuilder {
@@ -52,7 +54,11 @@ public class ElementBuilderEvent extends AbstractElementBuilder {
 		if (obj instanceof Event) {
 			Event event = (Event) obj;
 			StringWriter writer = new StringWriter();
-			Calendar cal = context.getIcalModule().generate(entity, Arrays.asList(event), null);
+			
+			//the context may not be set, so don't use it
+			IcalModule iCalModule = (IcalModule) SpringContextUtil.getBean("icalModule");
+			
+			Calendar cal = iCalModule.generate(entity, Arrays.asList(event), null);
 			CalendarOutputter out = ICalUtils.getCalendarOutputter();
 			try {
 				out.output(cal, writer);
