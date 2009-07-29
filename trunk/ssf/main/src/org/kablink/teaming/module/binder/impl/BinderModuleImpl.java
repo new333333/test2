@@ -2600,11 +2600,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		// during import
 		HashMap binderIdMap = new HashMap();
 
-		String tempDir = deploy(zIn);//$$$$$
-		File tempDirFile = new File(tempDir);
-
-		importDir(tempDirFile, tempDir, binderId, entryIdMap, binderIdMap);
-		FileUtil.deltree(tempDirFile);
+		String tempDir = deploy(zIn);
+		
+		try{
+			File tempDirFile = new File(tempDir);
+			importDir(tempDirFile, tempDir, binderId, entryIdMap, binderIdMap);
+		}finally{
+			FileUtil.deltree(tempDir);
+		}
 	}
 
 	private void importDir(File currentDir, String tempDir, Long topBinderId, Map entryIdMap, 
