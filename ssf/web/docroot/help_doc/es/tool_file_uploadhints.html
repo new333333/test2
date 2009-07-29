@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html xml:lang="es" lang="es">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="es" />
+<meta name="Content-Date" content="Mon, 04 Jun 2009 12:00:00 GMT" />
+<meta name="Generator" content="Kablink Documentation" />
+<meta name="Generation-Date" content="Wednesday, July 01, 2009" />
+<meta name="Copyright" content="" />
+
+<link rel="stylesheet" type="text/css" href="css/styles.css" />
+<link rel="stylesheet" type="text/css" href="css/expandable.css" />
+
+<title>Sugerencias sobre carga de archivos</title>
+</head>
+<body>
+<script type="text/javascript" src="css/expandable.js"></script>
+
+<div class="sect1" id="tool_file_uploadhints">
+
+<h1 class="title"> Sugerencias sobre carga de archivos</h1>
+
+<p class="para">Si tiene problemas al cargar un archivo porque es demasiado grande, es posible que pueda solucionar el problema aumentando la cantidad por defecto de memoria utilizada por los applets de Java. El proceso se describe en las secciones siguientes. </p>
+<div class="sect2" id="bipun26">
+
+<h2 class="title"> Aumento de la cantidad de memoria por defecto en Windows </h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bipungz">
+<p class="para">Diríjase al Panel de control (haga clic en <span class="guimenu">Inicio</span> &gt; <span class="guimenu">Configuración</span> &gt; <span class="guimenu">Panel de control</span>).</p></li>
+<li class="step" id="bipunwc">
+<p class="para">Haga doble clic en <span class="guimenu">Java.</span></p>
+<p class="para">Se abrirá el Panel de control de Java. </p></li>
+<li class="step" id="bipuoka">
+<p class="para">Seleccione la pestaña <span class="guimenu">Java.</span></p></li>
+<li class="step" id="bipuorx">
+<p class="para">En la sección <span class="guimenu">Config. de tiempo de ejecución de Java Applet,</span> haga clic en <span class="guimenu">Ver.</span></p></li>
+<li class="step" id="bipup4t">
+<p class="para">Para cada versión del entorno de ejecución de Java, añada <span class="command">-Xmx256m</span> como parámetro. </p></li>
+<li class="step" id="bipupgl">
+<p class="para">Haga clic en <span class="guimenu">Aceptar.</span></p>
+<p class="para">Después de aumentar el tamaño por defecto de memoria de los applets de Java, deberá salir de todos los navegadores y reiniciarlos antes de que el cambio surta efecto. </p></li></ol>
+</div>
+
+<p class="para">Este ajuste hace que el applet utilizado para cargar archivos en una carpeta de Teaming se inicie con 256 MB de memoria. Si el applet sigue indicando que no hay memoria suficiente para ejecutar el applet, es posible que tenga que reducir este número. </p>
+</span>
+
+</div>
+
+<div class="sect2" id="bipunbb">
+
+<h2 class="title"> Aumento de la cantidad de memoria por defecto en Linux </h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bjchmyk">
+<p class="para">Localice el JRE o el JDK que se utiliza para el complemento del navegador. </p>
+<p class="para">La ubicación del JRE o del JDK varía en función del sistema. </p></li>
+<li class="step" id="bjchn8n">
+<p class="para">En el directorio <span class="filename">bin</span> del JRE o del JDK, ejecute el archivo <span class="filename">PanelControl.</span></p>
+<p class="para">Se abrirá el Panel de control. </p></li>
+<li class="step" id="bjchoed">
+<p class="para">Seleccione la pestaña <span class="guimenu">Java.</span></p></li>
+<li class="step" id="bjchokg">
+<p class="para">En la sección <span class="guimenu">Config. de tiempo de ejecución de Java Applet,</span> haga clic en <span class="guimenu">Ver.</span></p></li>
+<li class="step" id="bjchor1">
+<p class="para">Para cada versión del entorno de ejecución de Java, añada <span class="command">-Xmx256m</span> como parámetro. </p></li>
+<li class="step" id="bjchotz">
+<p class="para">Haga clic en <span class="guimenu">Aceptar.</span></p>
+<p class="para">Después de aumentar el tamaño por defecto de memoria de los applets de Java, deberá salir de todos los navegadores y reiniciarlos antes de que el cambio surta efecto. </p></li></ol>
+</div>
+
+<p class="para">Este ajuste hace que el applet utilizado para cargar archivos en una carpeta de Teaming se inicie con 256 MB de memoria. Si el applet sigue indicando que no hay memoria suficiente para ejecutar el applet, es posible que tenga que reducir este número. </p>
+</span>
+
+</div>
+
+</div>
+
+<p class="trademark"> Para obtener más información, consulte <a href="./legal.html">Información legal</a>.</p>
+</body>
+</html>
