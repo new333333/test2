@@ -38,6 +38,9 @@ import static org.kablink.util.search.Restrictions.in;
 
 import java.io.File;
 import java.util.List;
+
+import javax.xml.rpc.ServiceException;
+
 import org.apache.axis.EngineConfiguration;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -61,7 +64,7 @@ import org.kablink.util.search.Criteria;
 public class TeamingServiceClientWithStub {
 
 	private static final String TEAMING_SERVICE_ADDRESS_WSS 	= "http://localhost:8080/ssf/ws/TeamingServiceV1";
-	private static final String TEAMING_SERVICE_ADDRESS_BASIC 	= "http://localhost:8080/ssr/secure/ws/TeamingServiceV1";
+	private static final String TEAMING_SERVICE_ADDRESS_BASIC 	= "http://localhost:8079/ssr/secure/ws/TeamingServiceV1";
 	private static final String TEAMING_SERVICE_ADDRESS_TOKEN   = "http://localhost:8080/ssr/token/ws/TeamingServiceV1";
 
 	
@@ -135,10 +138,7 @@ public class TeamingServiceClientWithStub {
 	}
 	
 	public static void addMicroBlog() throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
 		
 		Long id = stub.folder_addMicroBlog(null, "More efficient blog!");
 				
@@ -149,10 +149,7 @@ public class TeamingServiceClientWithStub {
 	}
 	
 	public static void addMicroBlog_OldWay_ThisDoesNotWork() throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		User admin = stub.profile_getUserByName(null, "admin", false);
 		DefinitionBrief db = stub.definition_getDefinitionByName(null, "_miniblog_entry");
@@ -199,11 +196,8 @@ public class TeamingServiceClientWithStub {
 	}
 	
 	public static void testApplicationScopedToken() throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
-		
+		TeamingServiceSoapBindingStub stub = getStub();
+
 		// Non-existing application ID
 		callGetTeamsUsingToken(stub, 12345, 8);
 		
@@ -215,10 +209,8 @@ public class TeamingServiceClientWithStub {
 	}
 	
 	public static void calendarSync() throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
+
 		User testUser = stub.profile_getUserByName(null, "kelly", false);
 		Long wsId = testUser.getWorkspaceId();
 		
@@ -257,10 +249,7 @@ public class TeamingServiceClientWithStub {
     	}
 	}
 	public static void searchFolderEntries() throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
 		
 		// Search for all folder entries with the word "test" in entry title.
     	Criteria crit = new Criteria()
@@ -276,10 +265,8 @@ public class TeamingServiceClientWithStub {
     	}
 	}
 	public static void checkTags(long binderId) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
+
 		Tag[] tags = setupTags(binderId);
 		for (int i=0; i<tags.length; ++i) {
 			stub.binder_setTag(null, tags[i]);			
@@ -293,10 +280,8 @@ public class TeamingServiceClientWithStub {
 		
 	}
 	public static void checkEntryTags(long entryId) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
+
 		Tag[] tags = setupTags(entryId);
 		for (int i=0; i<tags.length; ++i) {
 			stub.folder_setEntryTag(null, tags[i]);			
@@ -327,10 +312,7 @@ public class TeamingServiceClientWithStub {
 		}		
 	}
 	public static void checkBinder() throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		Binder testFolder1 = getTestFolder("MyTestingFolder");
 		Binder testFolder2 = new Binder();
@@ -356,20 +338,16 @@ public class TeamingServiceClientWithStub {
 		}
 	}
 	public static void checkEntrySubscriptions(long entryId) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
+
 		Subscription subscription = setupSubscription(entryId);
 		stub.folder_setSubscription(null, entryId, subscription);
 		subscription = stub.folder_getSubscription(null, entryId);
 		validateSubscription(subscription);
 	}
 	public static void checkBinderSubscriptions(long binderId) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
+
 		Subscription subscription = setupSubscription(binderId);
 		stub.binder_setSubscription(null, binderId, subscription);
 		subscription = stub.binder_getSubscription(null, binderId);
@@ -407,10 +385,8 @@ public class TeamingServiceClientWithStub {
 		
 	}
 	public static void checkEntry()  throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
+
 		Binder testFolder = getTestFolder("MyTestingFolder");
 		try {
 			FolderEntry testEntry = new FolderEntry();
@@ -447,10 +423,8 @@ public class TeamingServiceClientWithStub {
 		
 	}
 	public static void checkWorkflow(long entryId)  throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
+
 		FolderEntry	entry = stub.folder_getEntry(null, entryId, false, false);
 		DefinitionBrief def = stub.definition_getLocalDefinitionByName(null, entry.getParentBinderId(), "testworkflow", true);
 		stub.folder_addEntryWorkflow(null, entryId, def.getId());
@@ -520,10 +494,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static FolderEntry getFolderEntry(long entryId, boolean includeAttachments) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		FolderEntry entry = stub.folder_getEntry(null, entryId, includeAttachments, false);
 		
@@ -536,10 +507,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static void getFolderEntries(long binderId, int first, int max) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		FolderEntryCollection result = stub.folder_getEntries(null, binderId, first, max);
 		FolderEntryBrief[] entries = result.getEntries();
@@ -551,10 +519,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static void addFolderEntryByCopying(FolderEntry entry) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		// We don't have to bother writing the code that copies the entry. 
 		// All we have to do is to nullify the id field of the persistent entry
@@ -573,10 +538,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static void uploadFolderEntryFiles(long entryId) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		File file = new File("C:/junk/junk1/Water lilies.jpg");		
 		WebServiceClientUtil.attachFile(stub, file);
@@ -590,10 +552,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static void modifyFolderEntry(FolderEntry entry) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		entry.setTitle(entry.getTitle() + " (Modified)");
 		entry.getDescription().setText(entry.getDescription().getText() + " (Modified)");
@@ -640,10 +599,7 @@ public class TeamingServiceClientWithStub {
 		System.out.println("ID of the modified entry: " + entry.getId());
 	}
 	public static Binder modifyBinder(Binder binder) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		binder.setTitle(binder.getTitle() + " (Modified)");
 		binder.getDescription().setText(binder.getDescription().getText() + " (Modified)");
@@ -655,10 +611,7 @@ public class TeamingServiceClientWithStub {
 		return binder;
 	}
 	public static Binder uploadBinderFiles(Binder binder) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		File file = new File("C:/junk/junk1/Water lilies.jpg");		
 		WebServiceClientUtil.attachFile(stub, file);
@@ -674,10 +627,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static void deleteFolderEntry(long entryId) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		stub.folder_deleteEntry(null, entryId);
 		
@@ -685,10 +635,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static void getUser(long principalId) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
 		
 		User user = stub.profile_getUser(null, principalId, false);
 		
@@ -696,10 +643,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static void getGroup(long principalId) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
 		
 		Group group = stub.profile_getGroup(null, principalId, false);
 		
@@ -707,10 +651,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static void getPrincipals(int first, int max) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		PrincipalCollection result = stub.profile_getPrincipals(null, first, max);
 		PrincipalBrief[] entries = result.getEntries();
@@ -723,10 +664,7 @@ public class TeamingServiceClientWithStub {
 		}
 	}
 	public static void checkUsers() throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		User testUser = new User();
 		testUser.setName("Jodi");
@@ -755,10 +693,7 @@ public class TeamingServiceClientWithStub {
 		}
 	}
 	public static User uploadUserFile(User user) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		File file = new File("C:/junk/junk1/Water lilies.jpg");		
 		WebServiceClientUtil.attachFile(stub, file);
@@ -775,10 +710,7 @@ public class TeamingServiceClientWithStub {
 	}
 
 	public static FileVersions getEntryFileVersions(long entryId, String fileName) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
 		
 		FileVersions fileVersions = stub.folder_getFileVersions(null, entryId, fileName);
 		
@@ -817,10 +749,8 @@ public class TeamingServiceClientWithStub {
 		return null;
 	}
 	private static Binder getTestFolder(String title) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
+
 		long gblId = getGlobalWorkspace(stub);
 		try {
 			return stub.binder_getBinderByPathName(null, "/Workspaces/Global Workspaces/" + title, false);
@@ -831,10 +761,8 @@ public class TeamingServiceClientWithStub {
 		}
 	}
 	private static void checkGroups() throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
+
 		Group group = new Group();
 		group.setName("testgroup");
 		stub.profile_addGroup(null, group);
@@ -863,10 +791,8 @@ public class TeamingServiceClientWithStub {
 		stub.profile_deletePrincipal(null, group.getId(), true);
 	}
 	public static User getTestUser() throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
+
 		User testUser =null;
 		try {
 			testUser = stub.profile_getUserByName(null, "Jodi", false);
@@ -884,18 +810,13 @@ public class TeamingServiceClientWithStub {
 	}
 	
 	public static void changeUserPassword(Long userId, String oldPassword, String newPassword) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
+
 		stub.profile_changePassword(null, userId, oldPassword, newPassword);
 	}
 	
 	public static void copyFolderEntry(long entryId, long destinationFolderId, boolean eventAsIcalString) throws Exception {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		TeamingServiceSoapBindingStub stub = getStub();
 
 		FolderEntry entry = stub.folder_getEntry(null, entryId, false, eventAsIcalString);
 		System.out.println("Successfully fetched the entry");
@@ -908,4 +829,12 @@ public class TeamingServiceClientWithStub {
 		System.out.println("ID of the newly added entry: " + newEntryId);
 	}
 
+	protected static TeamingServiceSoapBindingStub getStub() throws ServiceException {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		stub._setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		return stub;
+	}
 }
