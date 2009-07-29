@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html xml:lang="ja" lang="ja">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="ja" />
+<meta name="Content-Date" content="Mon, 04 Jun 2009 12:00:00 GMT" />
+<meta name="Generator" content="Kablink Documentation" />
+<meta name="Generation-Date" content="Wednesday, July 01, 2009" />
+<meta name="Copyright" content="" />
+
+<link rel="stylesheet" type="text/css" href="css/styles.css" />
+<link rel="stylesheet" type="text/css" href="css/expandable.css" />
+
+<title>ファイルのアップロードに関するヒント</title>
+</head>
+<body>
+<script type="text/javascript" src="css/expandable.js"></script>
+
+<div class="sect1" id="tool_file_uploadhints">
+
+<h1 class="title"> ファイルのアップロードに関するヒント</h1>
+
+<p class="para">ファイルが大きすぎるためにファイルをアップロードできない場合、Javaアプレットのデフォルト使用メモリ量を増やすと、問題を解決できることがあります。このプロセスについては、次の項で説明します。</p>
+<div class="sect2" id="bipun26">
+
+<h2 class="title"> Windowsでのデフォルトメモリ量の増加</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bipungz">
+<p class="para">［コントロールパネル］に移動します(［<span class="guimenu">スタート</span>］&gt;［<span class="guimenu">設定</span>］&gt;［<span class="guimenu">コントロールパネル</span>］の順にクリックします)。</p></li>
+<li class="step" id="bipunwc">
+<p class="para">［<span class="guimenu">Java</span>］をダブルクリックします。</p>
+<p class="para">Javaコントロールパネルが起動します。</p></li>
+<li class="step" id="bipuoka">
+<p class="para">［<span class="guimenu">Java</span>］タブを選択します。</p></li>
+<li class="step" id="bipuorx">
+<p class="para">［<span class="guimenu">Javaアプレットのランタイム設定</span>］セクションで、［<span class="guimenu">表示</span>］をクリックします。</p></li>
+<li class="step" id="bipup4t">
+<p class="para">Javaランタイムの各バージョンに対して、Javaランタイムパラメータとして「<span class="command">-Xmx256m</span>」を追加します。</p></li>
+<li class="step" id="bipupgl">
+<p class="para">［<span class="guimenu">OK</span>］をクリックします。</p>
+<p class="para">Javaアプレットのデフォルトのメモリサイズを増やしたら、変更を有効するために、すべてのブラウザを終了して再起動する必要があります。</p></li></ol>
+</div>
+
+<p class="para">この設定により、Teamingフォルダにファイルをアップロードするのに使用されるアプレットは、256MBのメモリを使用して起動するようになります。これでもまだアプレットを実行するための十分なメモリがないと表示される場合は、この数値を減らさなければならないことがあります。</p>
+</span>
+
+</div>
+
+<div class="sect2" id="bipunbb">
+
+<h2 class="title"> Linuxでのデフォルトメモリ量の増加</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bjchmyk">
+<p class="para">ブラウザのプラグインに使用しているJREまたはJDKを探します。</p>
+<p class="para">JREまたはJDKの場所は、使用しているシステムに応じて変わります。</p></li>
+<li class="step" id="bjchn8n">
+<p class="para">JREまたはJDKの<span class="filename">bin</span>ディレクトリで、<span class="filename">ControlPanel</span>ファイルを実行します。</p>
+<p class="para">コントロールパネルが起動します。</p></li>
+<li class="step" id="bjchoed">
+<p class="para">［<span class="guimenu">Java</span>］タブを選択します。</p></li>
+<li class="step" id="bjchokg">
+<p class="para">［<span class="guimenu">Javaアプレットのランタイム設定</span>］セクションで、［<span class="guimenu">表示</span>］をクリックします。</p></li>
+<li class="step" id="bjchor1">
+<p class="para">Javaランタイムの各バージョンに対して、Javaランタイムパラメータとして「<span class="command">-Xmx256m</span>」を追加します。</p></li>
+<li class="step" id="bjchotz">
+<p class="para">［<span class="guimenu">OK</span>］をクリックします。</p>
+<p class="para">Javaアプレットのデフォルトのメモリサイズを増やしたら、変更を有効するために、すべてのブラウザを終了して再起動する必要があります。</p></li></ol>
+</div>
+
+<p class="para">この設定により、Teamingフォルダにファイルをアップロードするのに使用されるアプレットは、256MBのメモリを使用して起動するようになります。これでもまだアプレットを実行するための十分なメモリがないとアプレットによって表示される場合は、この数値を減らさなければならないことがあります。</p>
+</span>
+
+</div>
+
+</div>
+
+<p class="trademark"> 詳細については、「<a href="./legal.html">保証と著作権</a>」。</p>
+</body>
+</html>
