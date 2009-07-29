@@ -43,8 +43,8 @@ public class FolderBrief extends BinderBrief implements Serializable {
 
 	public FolderBrief() {}
 
-	public FolderBrief(Long id, String title, String entityType, Integer definitionType, Timestamp creation, Timestamp modification, String permalink, String defaultViewDefinitionId, String webdavUrl, String rssUrl, String icalUrl, String atomUrl) {
-		super(id, title, entityType, definitionType, creation, modification, permalink, defaultViewDefinitionId);
+	public FolderBrief(Long id, String title, String entityType, Integer definitionType, Timestamp creation, Timestamp modification, String permalink, String createdWithDefinitionId, String webdavUrl, String rssUrl, String icalUrl, String atomUrl) {
+		super(id, title, entityType, definitionType, creation, modification, permalink, createdWithDefinitionId);
 		this.webdavUrl = webdavUrl;
 		this.rssUrl = rssUrl;
 		this.atomUrl = atomUrl;
