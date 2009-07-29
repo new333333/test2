@@ -41,6 +41,16 @@ public class Event {
 
 	private Calendar dtEnd;
 
+	/**
+	 * 0 = SECONDLY
+	 * 1 = MINUTELY
+	 * 2 = HOURLY
+	 * 3 = DAILY
+	 * 4 = WEEKLY
+	 * 5 = MONTHLY
+	 * 6 = YEARLY
+	 * 7 = NO_RECURRENCE
+	 */
 	private Integer frequency;
 
 	private Integer interval;
@@ -53,13 +63,19 @@ public class Event {
 	
 	private Boolean timeZoneSensitive;
 	
-	// used only as flag: 
+	// Used only as flag: 
 	// null - all day(s) event
-	// not null - NOT all day(s) event ( equivalent to java.util.TimeZone.getID() )
+	// not null - NOT all day(s) event ( the value should be equivalent to java.util.TimeZone.getID() )
 	private String timeZone;
 	
 	private String uid;
 	
+	/**
+	 * free
+	 * busy
+	 * tentative
+	 * outOfOffice
+	 */
 	private String freeBusy;
 	
 	private int[] bySecond;

@@ -40,15 +40,20 @@ public class FolderBrief extends BinderBrief implements Serializable {
 	private String atomUrl;
 	private String icalUrl;
 	private String webdavUrl; // library folder only
+	
+	private String createdWithDefinitionId; // ID of the definition this binder was originally created with. 
+	private String defaultViewDefinitionId; // ID of the default definition to use for viewing the binder
 
 	public FolderBrief() {}
 
-	public FolderBrief(Long id, String title, String entityType, Integer definitionType, Timestamp creation, Timestamp modification, String permalink, String createdWithDefinitionId, String webdavUrl, String rssUrl, String icalUrl, String atomUrl) {
-		super(id, title, entityType, definitionType, creation, modification, permalink, createdWithDefinitionId);
+	public FolderBrief(Long id, String title, String entityType, Integer definitionType, Timestamp creation, Timestamp modification, String permalink, String createdWithDefinitionId, String defaultViewDefinitionId, String webdavUrl, String rssUrl, String icalUrl, String atomUrl) {
+		super(id, title, entityType, definitionType, creation, modification, permalink);
 		this.webdavUrl = webdavUrl;
 		this.rssUrl = rssUrl;
 		this.atomUrl = atomUrl;
 		this.icalUrl = icalUrl;
+		this.createdWithDefinitionId = createdWithDefinitionId;
+		this.defaultViewDefinitionId = defaultViewDefinitionId;
 	}
 
 	public String getWebdavUrl() {
@@ -82,4 +87,21 @@ public class FolderBrief extends BinderBrief implements Serializable {
 	public void setAtomUrl(String atomUrl) {
 		this.atomUrl = atomUrl;
 	}
+	
+	public String getCreatedWithDefinitionId() {
+		return createdWithDefinitionId;
+	}
+
+	public void setCreatedWithDefinitionId(String createdWithDefinitionId) {
+		this.createdWithDefinitionId = createdWithDefinitionId;
+	}
+
+	public String getDefaultViewDefinitionId() {
+		return defaultViewDefinitionId;
+	}
+
+	public void setDefaultViewDefinitionId(String defaultViewDefinitionId) {
+		this.defaultViewDefinitionId = defaultViewDefinitionId;
+	}
+
 }

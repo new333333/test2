@@ -85,6 +85,7 @@ public class TeamingServiceClientWithStub {
 		//copyFolderEntry(177, 1287, false);
 		//copyFolderEntry(177, 1288, true);
 		
+		//checkBinderSubscriptions(41);
 		//addMicroBlog();
 		//searchFolderEntries();
 		//testApplicationScopedToken();
