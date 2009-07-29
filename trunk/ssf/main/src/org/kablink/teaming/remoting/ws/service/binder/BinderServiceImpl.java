@@ -353,7 +353,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		String title;
 		Timestamp creation;
 		Timestamp modification;
-		String defaultViewDefinitionId;
+		String createdWithDefinitionId;
 		String permaLink;
 		String webdavUrl;
 		String rssUrl;
@@ -385,7 +385,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			title = (String) search.get(Constants.TITLE_FIELD);
 			creation = new Timestamp((String) search.get(Constants.MODIFICATION_NAME_FIELD), (Date) search.get(Constants.MODIFICATION_DATE_FIELD));
 			modification = new Timestamp((String) search.get(Constants.CREATOR_NAME_FIELD), (Date) search.get(Constants.CREATION_DATE_FIELD));
-			defaultViewDefinitionId = (String) search.get(Constants.COMMAND_DEFINITION_FIELD);
+			createdWithDefinitionId = (String) search.get(Constants.COMMAND_DEFINITION_FIELD);
 			// family field is searchable but not stored, so we can't use it this way
 			//family = (String) search.get(Constants.FAMILY_FIELD);
 			definitionType = Integer.valueOf((String)search.get(Constants.DEFINITION_TYPE_FIELD));
@@ -409,7 +409,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 					creation,
 					modification,
 					permaLink,
-					defaultViewDefinitionId,
+					createdWithDefinitionId,
 					webdavUrl,
 					rssUrl,
 					icalUrl,

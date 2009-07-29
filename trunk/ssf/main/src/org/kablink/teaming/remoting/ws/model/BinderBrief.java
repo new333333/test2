@@ -43,11 +43,12 @@ public class BinderBrief implements Serializable {
 	private Timestamp modification;
 	private String permaLink;
 	private Integer definitionType; // Shows what kind binder this is, that is, whether workspace or folder. Corresponds to the constants in Definition.java
-	private String defaultViewDefinitionId;  // ID of the default definition to use for viewing the binder
+	// ID of the definition this binder was originally created with. Not to be confused with the current default definition to use for viewing the binder.
+	private String createdWithDefinitionId;
 
 	public BinderBrief() {}
 
-	public BinderBrief(Long id, String title, String entityType, Integer definitionType, Timestamp creation, Timestamp modification, String permaLink, String defaultViewDefinitionId) {
+	public BinderBrief(Long id, String title, String entityType, Integer definitionType, Timestamp creation, Timestamp modification, String permaLink, String createdWithDefinitionId) {
 		this.id = id;
 		this.title = title;
 		this.entityType = entityType;
@@ -55,7 +56,7 @@ public class BinderBrief implements Serializable {
 		this.creation = creation;
 		this.modification = modification;
 		this.permaLink = permaLink;
-		this.defaultViewDefinitionId = defaultViewDefinitionId;
+		this.createdWithDefinitionId = createdWithDefinitionId;
 	}
 
 	public Timestamp getCreation() {
@@ -95,12 +96,12 @@ public class BinderBrief implements Serializable {
 		this.definitionType = definitionType;
 	}
 
-	public String getDefaultViewDefinitionId() {
-		return defaultViewDefinitionId;
+	public String getCreatedWithDefinitionId() {
+		return createdWithDefinitionId;
 	}
 
-	public void setDefaultViewDefinitionId(String defaultViewDefinitionId) {
-		this.defaultViewDefinitionId = defaultViewDefinitionId;
+	public void setCreatedWithDefinitionId(String createdWithDefinitionId) {
+		this.createdWithDefinitionId = createdWithDefinitionId;
 	}
 
 	public String getEntityType() {
