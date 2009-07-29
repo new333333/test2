@@ -115,7 +115,6 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
-import org.kablink.teaming.module.definition.export.AbstractElementBuilder;
 import org.kablink.teaming.module.definition.export.ElementBuilder;
 import org.kablink.teaming.module.definition.export.ElementBuilderUtil;
 import org.kablink.teaming.module.file.FileModule;
@@ -128,6 +127,7 @@ import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.shared.SearchUtils;
+import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.util.DomInputData;
@@ -2022,6 +2022,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				processEntry(zipOut, entry, binderPrefix + "f" + nft.format(start.getId()), defList);
 			}
 		}
+		
+		String entityLetter = isWorkspace?"w":"f";
+		Set<FileAttachment> attachments = start.getFileAttachments();
+		
+		for (FileAttachment attach : attachments) {
+			processBinderAttachment(zipOut, start, attach, binderPrefix + entityLetter + nft.format(start.getId()));
+		}
+		
 		return;
 	}
 
@@ -2086,6 +2094,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 		String entityLetter = isWorkspace?"w":"f";
 		Set<FileAttachment> attachments = binder.getFileAttachments();
+		
 		for (FileAttachment attach : attachments) {
 			processBinderAttachment(zipOut, binder, attach, pathName
 					+ File.separator + binderPrefix + entityLetter + nft.format(binder.getId()));
@@ -2096,7 +2105,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	private void processBinderAttachment(ZipOutputStream zipOut, Binder binder,
 			FileAttachment attachment, String pathName) throws IOException {
 
-		processAttachment(zipOut, binder.getParentBinder(), binder, attachment,
+		processAttachment(zipOut, binder, binder, attachment,
 				pathName);
 
 		/*
@@ -2511,10 +2520,31 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			
 			addDefinitions(defList, workflowDefinitions);
 			
+			Element allowed = element.addElement("allowed");
+			
 			for(int i = 0; i < workflowDefinitions.size(); i++){
-				if(element != null) {
-					Element value = element.addElement("process");
+				if(allowed != null) {
+					Element value = allowed.addElement("process");
 					value.addAttribute("definitionId", ((Definition)workflowDefinitions.get(i)).getId());
+				}
+			}
+			
+			Map workflowAssociations = ((Binder)entity).getWorkflowAssociations();
+			
+			addDefinitions(defList, new ArrayList(workflowAssociations.values()));
+			
+			Element associated = element.addElement("associated");
+			
+			Iterator keyIter = workflowAssociations.keySet().iterator();
+			
+			while(keyIter.hasNext()){
+				if(associated != null) {
+					Element value = associated.addElement("process");
+					
+					String key = (String) keyIter.next();
+					
+					value.addAttribute("entryDefinitionId", key);
+					value.addAttribute("workflowDefinitionId", ((Definition)workflowAssociations.get(key)).getId());
 				}
 			}
 		}
