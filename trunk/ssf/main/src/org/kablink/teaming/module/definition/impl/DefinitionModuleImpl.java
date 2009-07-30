@@ -1840,7 +1840,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					//Get the form element name (property name)
 					String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
 					if (Validator.isNull(nameValue)) {nameValue = nextItem.attributeValue("name");}
-
+					String nameValuePerUser = nameValue + "." + user.getId();
+					String s_userVersionAllowed = DefinitionUtils.getPropertyValue(nextItem, "userVersionAllowed");
+					boolean userVersionAllowed = false;
+					if (s_userVersionAllowed != null && "true".equals(s_userVersionAllowed)) 
+						userVersionAllowed = true;
+					
 					//We have the element name, see if it has a value in the input data
 					if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
 						if (inputData.exists(nameValue)) {
@@ -1945,6 +1950,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							Date date = inputData.getDateValue(nameValue);
 							if (date != null) {entryData.put(nameValue, date);}
 						}
+						if (userVersionAllowed && inputData.exists(nameValuePerUser)) {
+							//Use the helper routine to parse the date into a date object
+							Date date = inputData.getDateValue(nameValuePerUser);
+							if (date != null) {entryData.put(nameValuePerUser, date);}
+						}
 					} else if (itemName.equals("event")) {
 					    //Ditto for event helper routine
 					    Boolean hasDur = Boolean.FALSE;
@@ -2005,17 +2015,27 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					    	entryData.put(nameValue, inputData.getValues(nameValue));
 						}
 					} else if (itemName.equals("selectbox")) {
+				    	String multiple = DefinitionUtils.getPropertyValue(nextItem, "multipleAllowed");
 						if (inputData.exists(nameValue)) {
-					    	String multiple = DefinitionUtils.getPropertyValue(nextItem, "multipleAllowed");
 					    	if ("true".equals(multiple)) {
 					    		entryData.put(nameValue, inputData.getValues(nameValue));
 					    	} else {
 					    		entryData.put(nameValue, inputData.getSingleValue(nameValue));
 					    	}
 						}
+						if (userVersionAllowed && inputData.exists(nameValuePerUser)) {
+					    	if ("true".equals(multiple)) {
+					    		entryData.put(nameValuePerUser, inputData.getValues(nameValuePerUser));
+					    	} else {
+					    		entryData.put(nameValuePerUser, inputData.getSingleValue(nameValuePerUser));
+					    	}
+						}
 					} else if (itemName.equals("checkbox")) {
 						if (inputData.exists(nameValue)) {
 							entryData.put(nameValue, Boolean.valueOf(GetterUtil.getBoolean(inputData.getSingleValue(nameValue), false)));
+						}
+						if (userVersionAllowed && inputData.exists(nameValuePerUser)) {
+							entryData.put(nameValuePerUser, Boolean.valueOf(GetterUtil.getBoolean(inputData.getSingleValue(nameValuePerUser), false)));
 						}
 					} else if (itemName.equals("profileTimeZone")) {
 						if (inputData.exists(nameValue)) {
@@ -2249,6 +2269,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						}
 					} else {
 						if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getSingleValue(nameValue));
+						if (userVersionAllowed && inputData.exists(nameValuePerUser)) 
+							entryData.put(nameValuePerUser, inputData.getSingleValue(nameValuePerUser));
 					}
 				}
 			}

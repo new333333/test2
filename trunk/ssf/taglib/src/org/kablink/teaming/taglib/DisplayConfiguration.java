@@ -60,6 +60,7 @@ import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.util.DirPath;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
@@ -127,6 +128,7 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 						String formItem = nextItem.attributeValue("formItem", "");
 						String customJsp = null; 
 						Boolean inherit=Boolean.FALSE;
+						Boolean perUserVersionsAllowed = Boolean.FALSE;
 						Element jspEle= (Element)nextItem.selectSingleNode("./jsps/jsp[@name='custom']");
 						if (jspEle != null) {
 							String jspName = jspEle.attributeValue("value");
@@ -177,6 +179,18 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 								if (configJspStyle.equals(Definition.JSP_STYLE_MOBILE)) jspType = "mobileJsp";
 								jspName = DefinitionUtils.getPropertyValue(nextItem, jspType);
 								if (Validator.isNotNull(jspName)) customJsp = DEFAULT_JSP_BASE + jspName;
+							}
+							if ("dataView".equals(nextItem.attributeValue("type"))) { 
+								//See if this element has per-user data
+								Element entryFormItem = (Element)configDefinition.getRootElement().selectSingleNode("item[@type='form']");
+								if (entryFormItem != null) {
+									Element itemEle = (Element)entryFormItem.selectSingleNode(".//item/properties/property[@name='userVersionAllowed']");
+									if (itemEle != null) {
+										if ("true".equals(itemEle.attributeValue("value"))) {
+											perUserVersionsAllowed = true;
+										}
+									}
+								}
 							}
 							String jsp = customJsp;
 							if (Validator.isNull(jsp)) jsp = defaultJsp;
@@ -283,7 +297,30 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 										}
 									}
 								}
-									
+								
+								//See if there are any per-user values to be added to the property map
+								if (perUserVersionsAllowed) {
+									List<Long> perUserIds = new ArrayList<Long>();
+									Iterator<String> itKeys = null;
+									if (this.entryMap != null) {
+										itKeys = this.entryMap.keySet().iterator();
+									} else if (this.entry != null) {
+										itKeys = entry.getCustomAttributes().keySet().iterator();
+									}
+									if (itKeys != null) {
+										while (itKeys.hasNext()) {
+											String key = itKeys.next();
+											String[] keyParts = key.split("\\.");
+											if (keyParts.length == 2 && propertyValue.equals(keyParts[0])) {
+												try {
+													perUserIds.add(Long.valueOf(keyParts[1]));
+												} catch(Exception e) {}
+											}
+										}
+									}
+									req.setAttribute("ss_userVersionPrincipals", ResolveIds.getPrincipals(perUserIds));
+								}
+								
 								//not sure if this is necessary
 //								List<Element> itProperties = nextItem.selectNodes("properties/property");
 //								for (Element property:itProperties) {
