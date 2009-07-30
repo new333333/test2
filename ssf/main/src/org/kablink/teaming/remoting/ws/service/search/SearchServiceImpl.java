@@ -279,7 +279,7 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 				String entryType = (String) result.get(Constants.ENTRY_TYPE_FIELD);
 				String elementName = null;
 				boolean isPrincipal = true;
-				if(Constants.ENTRY_TYPE_ENTRY.equalsIgnoreCase(entryType)) {
+				if(Constants.ENTRY_TYPE_ENTRY.equalsIgnoreCase(entryType) || Constants.ENTRY_TYPE_REPLY.equalsIgnoreCase(entryType)) {
 					entries.add(toFolderEntryBrief(result));
 				}
 			}
