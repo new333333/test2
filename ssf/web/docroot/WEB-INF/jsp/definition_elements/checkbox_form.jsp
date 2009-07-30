@@ -46,9 +46,32 @@
 </c:if>
 <c:set var="required" value=""/>
 <input type="checkbox" name="${property_name}XXX" 
-  id="checkbox_${property_name}XXX" <c:out value="${cb_checked}"/> onClick="ss_saveCheckBoxValue(this, 'hidden_${property_name}');"/> 
+  id="checkbox_${property_name}XXX" <c:out value="${cb_checked}"/> 
+  onClick="ss_saveCheckBoxValue(this, 'hidden_${property_name}');"/> 
  <span class="ss_labelRight"><label for="checkbox_${property_name}XXX">${property_caption}</label></span>
+  <c:if test="${property_userVersionAllowed == 'true'}">
+    <c:set var="property_name_per_user" value="${property_name}.${ssUser.id}"/>
+	<c:if test="${!ssDefinitionEntry.customAttributes[property_name_per_user].value}" >
+	  <c:set var="cb_checked_per_user" value=""/>
+  	  <input type="hidden" name="${property_name_per_user}" id="hidden_${property_name_per_user}" value="off"/> 
+	</c:if>
+	<c:if test="${ssDefinitionEntry.customAttributes[property_name_per_user].value}" >
+  	  <c:set var="cb_checked_per_user" value="checked"/>
+  	  <input type="hidden" name="${property_name_per_user}" id="hidden_${property_name_per_user}" value="on"/> 
+	</c:if>
+    <div class="ss_perUserFormElement">
+	  <input type="checkbox" name="${property_name_per_user}XXX" 
+  	    id="checkbox_${property_name_per_user}XXX" <c:out value="${cb_checked_per_user}"/> 
+  	    onClick="ss_saveCheckBoxValue(this, 'hidden_${property_name_per_user}');"/> 
+ 	  <span class="ss_labelRight"><label for="checkbox_${property_name_per_user}XXX">
+ 	    <ssf:nlt tag="element.perUser.yourVersion">
+ 	    <ssf:param name="value" value="${property_caption}"/>
+ 	    </ssf:nlt></label>
+ 	  </span>
+    </div>
+  </c:if>
 </c:if>
+
 <c:if test="${!empty ssReadOnlyFields[property_name] }">
 	<c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
 	<input type="checkbox" checked DISABLED> &#134;

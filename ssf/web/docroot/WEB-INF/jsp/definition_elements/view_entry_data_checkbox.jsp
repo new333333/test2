@@ -43,6 +43,25 @@
 </c:if>
 <span class="ss_labelRight"><c:out value="${property_caption}" /></span>
 
+<c:if test="${!empty ss_userVersionPrincipals}">
+    <div class="ss_perUserViewElement">
+    <ssf:expandableArea title='<%= NLT.get("element.perUser.viewPersonalVersions") %>' titleClass="ss_fineprint">
+    <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
+      <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.id}"/>
+      <div style="padding-left:10px;">
+		<c:if test="${ssDefinitionEntry.customAttributes[perUserPropertyName].value}" >
+		  <input type="checkbox" checked DISABLED>
+		</c:if>
+		<c:if test="${!ssDefinitionEntry.customAttributes[perUserPropertyName].value}" >
+		  <input type="checkbox" DISABLED>
+		</c:if>
+		<span class="ss_labelRight">${perUserUser.title}</span>
+      </div>
+    </c:forEach>
+    </ssf:expandableArea>
+    </div>
+</c:if>
+
 </div>
 </c:if>
 
@@ -59,6 +78,26 @@
 	</c:if>
 	<c:if test="${!ssDefinitionEntry.customAttributes[property_name].value}" >
 	<input type="checkbox" DISABLED>
+
+<c:if test="${!empty ss_userVersionPrincipals}">
+    <div class="ss_perUserViewElement">
+    <ssf:expandableArea title='<%= NLT.get("element.perUser.viewPersonalVersions") %>' titleClass="ss_fineprint">
+    <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
+      <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.id}"/>
+      <div style="padding-left:10px;">
+		<c:if test="${ssDefinitionEntry.customAttributes[perUserPropertyName].value}" >
+		  <input type="checkbox" checked DISABLED>
+		</c:if>
+		<c:if test="${!ssDefinitionEntry.customAttributes[perUserPropertyName].value}" >
+		  <input type="checkbox" DISABLED>
+		</c:if>
+		<span class="ss_labelRight">${perUserUser.title}</span>
+      </div>
+    </c:forEach>
+    </ssf:expandableArea>
+    </div>
+</c:if>
+
 	</c:if>
   </td>
 </tr>
