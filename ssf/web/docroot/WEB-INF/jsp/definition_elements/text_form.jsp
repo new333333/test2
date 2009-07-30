@@ -62,10 +62,20 @@
 <div class="ss_entryContent">
 <div class="ss_labelAbove"><c:out value="${property_caption}"/><%= required %></div>
 <c:if test="${empty ssReadOnlyFields[property_name]}">
-<input type="text" class="ss_text" name="<%= elementName %>" <%= width %> 
- value="<c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/>"/>
- </c:if>
- <c:if test="${!empty ssReadOnlyFields[property_name]}">
+  <input type="text" class="ss_text" name="<%= elementName %>" <%= width %> 
+   value="<c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/>"/>
+  <c:if test="${property_userVersionAllowed == 'true'}">
+    <c:set var="property_name_per_user" value="${property_name}.${ssUser.id}"/>
+    <div class="ss_labelAbove">
+    <c:if test="${!empty property_caption}">
+    <ssf:nlt tag="element.perUser.yourVersion"><ssf:param name="value" value="${property_caption}"/></ssf:nlt>
+    </c:if>
+    </div>
+    <input type="text" class="ss_text" name="${property_name_per_user}" <%= width %> 
+     value="<c:out value="${ssDefinitionEntry.customAttributes[property_name_per_user].value}"/>"/>
+  </c:if>
+</c:if>
+<c:if test="${!empty ssReadOnlyFields[property_name]}">
  <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/> &#134;
- </c:if>
+</c:if>
 </div>

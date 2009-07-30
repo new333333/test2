@@ -38,6 +38,18 @@
 <span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
 <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}" escapeXml="false"/>
 </div>
+<c:if test="${!empty ss_userVersionPrincipals}">
+    <div style="padding-left:20px;">
+    <ssf:expandableArea title='<%= NLT.get("element.perUser.viewPersonalVersions") %>' titleClass="ss_fineprint">
+    <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
+      <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.id}"/>
+      <div style="padding-left:10px;"><span class="${ss_element_display_style_item}">${perUserUser.title}: <c:out 
+          value="${ssDefinitionEntry.customAttributes[perUserPropertyName].value}" 
+          escapeXml="false"/></span><div>
+    </c:forEach>
+    </ssf:expandableArea>
+    </div>
+</c:if>
 </c:if>
 
 <c:if test="${!empty ss_element_display_style && 
@@ -52,4 +64,20 @@
       escapeXml="false"/></span>
   </td>
 </tr>
+<c:if test="${!empty ss_userVersionPrincipals}">
+<tr>
+  <td class="ss_table_spacer_right" valign="top" align="right">
+  </td>
+  <td valign="top" align="left">
+    <ssf:expandableArea title='<%= NLT.get("element.perUser.viewPersonalVersions") %>' titleClass="ss_fineprint">
+    <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
+      <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.id}"/>
+      <div style="padding-left:10px;"><span class="${ss_element_display_style_item}">${perUserUser.title}: <c:out 
+          value="${ssDefinitionEntry.customAttributes[perUserPropertyName].value}" 
+          escapeXml="false"/></span><div>
+    </c:forEach>
+    </ssf:expandableArea>
+  </td>
+</tr>
+</c:if>
 </c:if>
