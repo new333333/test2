@@ -323,7 +323,10 @@
 				<help>ihelp.designers.recur</help>
 			</property>	
 			<property name="timeZoneSensitiveActive" caption="__time_zone_sensitive_active" type="boolean" default="false"/>
+			<!--
+  			Note: freeBusyActive was removed. See 
 			<property name="freeBusyActive" caption="__free_busy_active" type="boolean" default="false"/>
+			-->
 			<property name="required" caption="__required" type="boolean" default="false" >
 				<help>ihelp.designers.required</help>
 			</property>
@@ -1778,7 +1781,9 @@
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
-			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false"/>
+			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
+				<help>ihelp.designers.user_version</help>
+			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
@@ -1799,6 +1804,9 @@
 			<property name="height" caption="__height_px" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
+			</property>
+			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
+				<help>ihelp.designers.user_version</help>
 			</property>
 		</properties>
 		<jsps>
@@ -1822,6 +1830,9 @@
 			<property name="size" caption="__size" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
+			</property>
+			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
+				<help>ihelp.designers.user_version</help>
 			</property>
 		</properties>
 		<options>
@@ -1926,6 +1937,9 @@
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
+			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
+				<help>ihelp.designers.user_version</help>
+			</property>
 		</properties>
 		<options>
 			<option name="radioSelection" caption="__radio_button_option" />
@@ -1985,6 +1999,9 @@
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
+			</property>
+			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
+				<help>ihelp.designers.user_version</help>
 			</property>
 		</properties>
 		<jsps>
@@ -2115,6 +2132,9 @@
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
+			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
+				<help>ihelp.designers.user_version</help>
+			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/date_form.jsp" />
@@ -2139,6 +2159,9 @@
 			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
+			</property>
+			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
+				<help>ihelp.designers.user_version</help>
 			</property>
 		</properties>
 		<jsps>
