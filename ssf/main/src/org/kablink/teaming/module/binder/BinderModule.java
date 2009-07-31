@@ -301,6 +301,12 @@ public interface BinderModule {
 	 */
     public IndexErrors indexBinder(Long binderId, boolean includeEntries) throws AccessControlException;
     /**
+	 * Index the binder and its attachments and optionally its entries.  Do not index sub-binders
+	 * @param binderId
+	 * @param includeEntries
+	 */
+    public IndexErrors indexBinderIncremental(Long binderId, boolean includeEntries) throws AccessControlException;
+    /**
      * Index a binder and its child binders, including all entries
      * @param binderId
      * @return Set of binderIds indexed

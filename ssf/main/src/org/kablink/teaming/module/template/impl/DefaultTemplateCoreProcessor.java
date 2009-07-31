@@ -87,6 +87,10 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
    		//nothing to do    	    	
     	return new IndexErrors();
     }
+    public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
+   		//nothing to do    	    	
+    	return new IndexErrors();
+    }
 	//nothing to index
 	public Collection indexTree(Binder binder, Collection exclusions) {
 		return indexTree(binder, exclusions, StatusTicket.NULL_TICKET);

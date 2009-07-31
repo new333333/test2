@@ -83,6 +83,7 @@ import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.exception.UncheckedCodedException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceSession;
+import org.kablink.teaming.jobs.BinderReindex;
 import org.kablink.teaming.jobs.DefaultMirroredFolderSynchronization;
 import org.kablink.teaming.jobs.MirroredFolderSynchronization;
 import org.kablink.teaming.jobs.ScheduleInfo;
@@ -118,6 +119,7 @@ import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.StatusTicket;
@@ -1484,25 +1486,47 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      public void indexOwner(Collection<Binder>binders, Long ownerId) {
   		String value = Constants.EMPTY_ACL_FIELD;
  		if (ownerId != null) value = ownerId.toString();
- 		doFieldUpdate(binders, Constants.BINDER_OWNER_ACL_FIELD, value);    		
+ 		doFieldUpdate(binders, Constants.BINDER_OWNER_ACL_FIELD, value);     		
      }
+
      private void executeUpdateQuery(Criteria crit, String field, String value) {
- 		//flush anything that is waiting
-    	 IndexSynchronizationManager.applyChanges();
-		//don't need to add access check to update of acls
- 		//access to entries is not required to update the team acl
- 		QueryBuilder qb = new QueryBuilder(false);
- 		// add this query and list of ids to the lists we'll pass to updateDocs.
-    		LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession(null);
-    		try {
-    			//ignore acls when updateing acls
-    			luceneSession.updateDocuments(qb.buildQuery(crit.toQuery(), true).getQuery(), field, value);
-    		} finally {
-    			luceneSession.close();
-     	}    		   	
-   	 
-     }
-     //this will update the binder, its attachments and entries, and subfolders and entries that inherit
+
+		org.apache.lucene.document.Document doc;
+		List<Long> binders = new ArrayList<Long>();
+		
+		// flush anything that is waiting
+		IndexSynchronizationManager.applyChanges();
+
+		// Get a list of the binders which need to be reindexed
+		LuceneReadSession luceneSessionn = getLuceneSessionFactory()
+				.openReadSession();
+		QueryBuilder qbb = new QueryBuilder(false); 
+		
+		crit.add(conjunction().add(
+				eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER)));
+		Hits hits = luceneSessionn.search(qbb.buildQuery(crit.toQuery(), true)
+				.getQuery());
+		luceneSessionn.close();
+		for (int i = 0; i < hits.length(); i++) {
+			doc = hits.doc(i);
+			String binderId = doc.get(Constants.DOCID_FIELD);
+			if (binderId != null) {
+				try {
+					binders.add(Long.valueOf(doc.get(Constants.DOCID_FIELD)));
+				} catch (Exception ignore) {
+				}
+			}
+		}
+		// Setup the background job for reindexing
+		User user = RequestContextHolder.getRequestContext().getUser();
+		BinderReindex job=null;
+		if (job == null) job = (BinderReindex)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultBinderReindex.class);
+		job.schedule(binders, user); 
+
+	}
+     
+     // this will update the binder, its attachments and entries, and
+		// subfolders and entries that inherit
      private void doFieldUpdate(Binder binder, List<Long>notBinderIds, String field, String value) {
  		// Now, create a query which can be used by the index update method to modify all the
 		// entries, replies, attachments, and binders(workspaces) in the index 
@@ -1580,6 +1604,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	IndexErrors errors = indexBinder(binder, includeEntries, true, null);   
    		return errors;
     }
+    
+    public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries) {
+    	//call overloaded methods
+    	IndexErrors errors = loadIndexTreeIncremental(binder);   
+   		return errors;
+    }
+    
     public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
     	IndexErrors errors = indexBinder(binder, null, null, !deleteIndex, tags);    	
    		return errors;
@@ -1634,7 +1665,47 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
    	}
 
-    //***********************************************************************************************************
+   	private IndexErrors loadIndexTreeIncremental(Binder binder) {
+		IndexErrors errors = new IndexErrors();
+		// load the binder
+		Map params = new HashMap();
+		params.put("pList", binder.getId());
+		List<Binder> binders = getCoreDao()
+				.loadObjects(
+						"from org.kablink.teaming.domain.Binder x where x.id in (:pList) order by x.binderKey.sortKey",
+						params);
+		getCoreDao().bulkLoadCollections(binders);
+		EntityIdentifier entityId = binder.getEntityIdentifier();
+
+		Collection tags = getCoreDao().loadAllTagsByEntity(entityId);
+
+		for (Binder b : binders) {
+			if (b.isDeleted())
+				continue;
+			BinderProcessor processor = (BinderProcessor) getProcessorManager()
+					.getProcessor(b,
+							b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
+
+			IndexErrors binderErrors = null;
+			if (processor instanceof AbstractEntryProcessor) {
+				binderErrors = ((AbstractEntryProcessor) processor)
+						.indexBinderIncremental(b, true, false, tags);
+			} else {
+				binderErrors = processor.indexBinder(b, true, false, tags);
+			}
+			errors.add(binderErrors);
+			getCoreDao().evict(tags);
+			getCoreDao().evict(b);
+		}
+		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt(
+				"lucene.flush.threshhold", 100));
+
+		return errors;
+
+	}
+   	
+   	
+    // ***********************************************************************************************************
     protected Principal getPrincipal(List users, String userId) {
     	Principal p;
     	for (int i=0; i<users.size(); i++) {

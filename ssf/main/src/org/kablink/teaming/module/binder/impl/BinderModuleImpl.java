@@ -506,6 +506,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		checkAccess(binder, BinderOperation.indexBinder);
 		return loadBinderProcessor(binder).indexBinder(binder, includeEntries);
 	}
+    
+    public IndexErrors indexBinderIncremental(Long binderId, boolean includeEntries) {
+		Binder binder = loadBinder(binderId);
+		checkAccess(binder, BinderOperation.indexBinder);
+ 	    return loadBinderProcessor(binder).indexBinderIncremental(binder, includeEntries);
+    }
 
 	// no transaction
 	public void modifyBinder(Long binderId, InputDataAccessor inputData,
