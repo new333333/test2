@@ -119,9 +119,7 @@ public class EventHelper {
         }
         
         String timeZoneSensitive = inputData.getSingleValue("timeZoneSensitive_" + id);
-        if ("true".equals(timeZoneSensitive)) {
-        	event.setTimeZoneSensitive(true);
-        }
+       	event.setTimeZoneSensitive("true".equals(timeZoneSensitive));
         try {
         	String freeBusy = inputData.getSingleValue(prefix + "freeBusy");
         	event.setFreeBusy(Event.FreeBusyType.valueOf(freeBusy));
