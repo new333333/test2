@@ -525,8 +525,26 @@
 				dojo.addClass(document.body, "tundra");
 			}
 		);
+		function checkWidgetHasValue(id,err) {
+			var	eWidget = document.getElementById(id);
+			var	sValue = eWidget.value;
+			if ((null == sValue) || (0 == sValue.length)) {
+				alert(err);
+				window.setTimeout(function(){eWidget.focus();}, 100);
+				return( false );
+			}
+			return( true );
+		}
 		function ${prefix}_onEventFormSubmit() {
-		
+			<c:if test="${required}">
+				if (!(checkWidgetHasValue("event_start_${prefix}", "<ssf:nlt tag="event.error.no.start" />"))) return( false );
+				if (!(checkWidgetHasValue("event_end_${prefix}",   "<ssf:nlt tag="event.error.no.end"   />"))) return( false );
+				if (!(document.getElementById("${prefix}_allDayEvent").checked)) {
+					if (!(checkWidgetHasValue("event_start_time_${prefix}", "<ssf:nlt tag="event.error.no.start.time" />"))) return( false );
+					if (!(checkWidgetHasValue("event_end_time_${prefix}",   "<ssf:nlt tag="event.error.no.end.time"   />"))) return( false );
+				}
+			</c:if>
+
 			var eventTimeZoneSensitiveObj = document.getElementById("timeZoneSensitive_${evid}");
 			var startDateTimeZoneSensitiveObj = document.getElementById("${dateId}_timeZoneSensitive");
 			var endDateTimeZoneSensitiveObj = document.getElementById("${dateId2}_timeZoneSensitive");

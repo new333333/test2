@@ -134,6 +134,7 @@ public class Eventeditor extends TagSupport {
 
 			// any attributes we might want to pass into the jsp go here
 			req.setAttribute("initEvent", initEvent);
+			req.setAttribute("required",required);
 			// these need to be beans because the jsp page will pass them on to
 			// other tags
 			req.setAttribute("evid", id);
