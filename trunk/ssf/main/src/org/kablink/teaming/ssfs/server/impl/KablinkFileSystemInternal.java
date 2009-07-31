@@ -146,7 +146,7 @@ public class KablinkFileSystemInternal implements KablinkFileSystem {
 	
 	public void createDirectory(Map uri) throws NoAccessException, 
 	AlreadyExistsException, TypeMismatchException {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("(createDirectory)");
 	}
 	
 	public InputStream getResource(Map uri) throws NoAccessException, 
@@ -367,13 +367,13 @@ public class KablinkFileSystemInternal implements KablinkFileSystem {
 			boolean recursive) throws  
 			NoAccessException, NoSuchObjectException, AlreadyExistsException, 
 			TypeMismatchException {
-		throw new UnsupportedOperationException(getOriginal(targetUri));
+		throw new UnsupportedOperationException("(copyObject) " + getOriginal(sourceUri) + " to " + getOriginal(targetUri));
 	}
 	
 	public void moveObject(Map sourceUri, Map targetUri, boolean overwrite) 
 	throws NoAccessException, NoSuchObjectException, 
 	AlreadyExistsException, TypeMismatchException {
-		throw new UnsupportedOperationException(getOriginal(targetUri));
+		throw new UnsupportedOperationException("(moveObject) " + getOriginal(sourceUri) + " to " + getOriginal(targetUri));
 	}
 	
 	private void removeResourceInternal(Map uri, Map objMap) throws NoAccessException {

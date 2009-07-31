@@ -227,6 +227,13 @@ public class DispatchServer extends GenericServlet {
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;
 			}
+			catch(UnsupportedOperationException e) {
+				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.WARNING_GENERAL);				
+				logContextInfo();
+				logger.warn(e);
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
+				return;			
+			}
 			catch(Exception e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);				
 				logContextInfo();
