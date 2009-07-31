@@ -68,6 +68,7 @@ public interface BinderProcessor {
     public void indexOwner(Collection<Binder>binders, Long ownerId);
 	public IndexErrors indexBinder(Binder binder, boolean includeEntries);	
 	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags);
+	public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries);
 	public Collection indexTree(Binder binder, Collection exclusions);
     public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket);
     public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors);

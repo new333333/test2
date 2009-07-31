@@ -923,17 +923,31 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
     	IndexErrors errors = super.indexBinder(binder, includeEntries, deleteIndex, tags);
     	if (includeEntries == false) return errors;
-    	IndexErrors entryErrors = indexEntries(binder, deleteIndex);
+    	IndexErrors entryErrors = indexEntries(binder, deleteIndex, false);
     	errors.add(entryErrors);
     	return errors;
     }
+    
+    
+    // This method indexes a binder and it's entries by deleting and reindexing each entry one at a time.
+    public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
+    	IndexErrors errors = super.indexBinder(binder, includeEntries, deleteIndex, tags);
+    	if (includeEntries == false) return errors;
+    	IndexErrors entryErrors = indexEntries(binder, deleteIndex, true);
+    	errors.add(entryErrors);
+    	//force the index to sync
+    	IndexSynchronizationManager.setAutoFlush(true);
+    	IndexSynchronizationManager.applyChanges(0);
+    	return errors;
+    }
+    
     //If called from write transaction, make sure session is flushed cause this bypasses
     //hibernate loading of collections and goes to database directly.
-    protected IndexErrors indexEntries(Binder binder, boolean deleteIndex) {
+    protected IndexErrors indexEntries(Binder binder, boolean deleteIndex, boolean deleteEntries) {
     	IndexErrors errors = new IndexErrors();
     	SimpleProfiler.startProfiler("indexEntries");
     	//may already have been handled with an optimized query
-    	if (deleteIndex) {
+    	if (deleteIndex && !deleteEntries) {
         	SimpleProfiler.startProfiler("indexEntries_preIndex");
     		indexEntries_preIndex(binder);
         	SimpleProfiler.stopProfiler("indexEntries_preIndex");
@@ -972,6 +986,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        			SimpleProfiler.stopProfiler("indexEntries_loadTags");
        			for (int i=0; i<batch.size(); ++i) {
        				Entry entry = (Entry)batch.get(i);
+       				if (deleteEntries) {
+       					IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
+       				}
    					List entryTags = (List)tags.get(entry.getEntityIdentifier());
        				if (indexEntries_validate(binder, entry)) {
        					// 	Create an index document from the entry object. 
