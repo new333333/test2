@@ -8134,6 +8134,30 @@ function updateElementsTextNode(
 	}
 }// end updateElementsTextNode()
 
+// General purpose <INPUT> widget utilities.
+function input_setSelectionRange(input, selectionStart, selectionEnd) {
+  if (input.setSelectionRange) {
+    input.focus();
+    input.setSelectionRange(selectionStart, selectionEnd);
+  }
+  else if (input.createTextRange) {
+    var range = input.createTextRange();
+    range.collapse(true);
+    range.moveEnd('character', selectionEnd);
+    range.moveStart('character', selectionStart);
+    range.select();
+  }
+}
+function input_setCaretToEnd(input) {
+  input_setSelectionRange(input, input.value.length, input.value.length);
+}
+function input_setCaretToBegin(input) {
+  input_setSelectionRange(input, 0, 0);
+}
+function input_setCaretToPos(input, pos) {
+  input_setSelectionRange(input, pos, pos);
+}
+
 //Mailto: replacement routines
 function ss_showEmailLinks() {
 	var mailtoElements = document.getElementsByTagName('ssMailTo')
