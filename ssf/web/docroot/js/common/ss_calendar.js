@@ -169,6 +169,7 @@ function ss_calendarEngine(
 		workDayGridTitle: "Work day",
 		fullDayGridTitle: "Full day",
 		entriesLabel: "entries",
+		minutesShortLabel:  "{0} min",
 		lang: window.dojo&&dojo.locale?dojo.locale:"en"
 	};
 	
@@ -1249,7 +1250,9 @@ function ss_calendarEngine(
 				currBoxOut.style.height = gridY + "px";
 	        }
 	        var duration = Math.floor((((parseInt(currBox.style.height) + 4) / 42) * 60));
-	        currBox.innerHTML = duration + ' min';
+	        var durationLabel = that.locale.minutesShortLabel;
+	        durationLabel = durationLabel.replace("{0}",String(duration));
+	        currBox.innerHTML = durationLabel;
 	        this.currEventData.dur = duration;
 	
 	        if (!dijit.isCollapsed()) { clearSelection(); }
