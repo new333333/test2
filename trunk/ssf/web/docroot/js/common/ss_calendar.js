@@ -174,45 +174,7 @@ function ss_calendarEngine(
 	
 	this.NUMBER_OF_DEFINED_CALENDAR_STYLES = 5;
 	
-	this.template = "<div id=\"ss_cal_DayGridMaster" + instanceId + "\" style=\"display:none;\">" +
-					"  <table class=\"ss_cal_gridTable\">" +
-					"    <tbody>" +
-					"      <tr>" +
-					"        <td class=\"ss_cal_dayGridHourTicksColumn\" style=\"padding-right: 0px;\"><div class=\"ss_cal_gridHeader\"></td>" +
-					"        <td><div width=\"100%\" id=\"ss_cal_dayGridHeader" + instanceId + "\" class=\"ss_cal_gridHeader ss_cal_reserveWidth\"></div></td>" + 
-					"      </tr>" +
-					"      <tr>" +
-					"        <td class=\"ss_cal_dayGridHourTicksColumn\">" + this.locale.allDay + "</td>" +
-					"        <td><div id=\"ss_cal_dayGridAllDay" + instanceId + "\" class=\"ss_cal_dayGridHour ss_cal_dayGridAllDay ss_cal_reserveWidth\"></div></td>" +
-					"      </tr>" +
-					"    </tbody>" +
-					"  </table>" +
-					"  <div class=\"ss_cal_dayGridDivider\"></div>" +
-					"  <div id=\"ss_cal_dayGridWindowOuter" + instanceId + "\" class=\"ss_cal_dayGridWindowOuter\">" +
-					"    <div id=\"ss_cal_dayGridWindowInner" + instanceId + "\" class=\"ss_cal_dayGridWindowInner\" style=\"top: " + (-3 - (workDayStart* 42)) + "px; \">" +
-					"      <table class=\"ss_cal_gridTable\">" +
-					"        <tbody>" +
-					"          <tr>" +
-					"            <td class=\"ss_cal_dayGridHourTicksColumn\"><div id=\"ss_cal_hourHeader" + instanceId + "\" class=\"ss_cal_dayGridHour\"></div></td>" +
-					"            <td><div id=\"ss_cal_dayGridHour" + instanceId + "\" class=\"ss_cal_dayGridHour ss_cal_reserveWidth\"></div></td>" +
-					"          </tr>" +
-					"        </tbody>" +
-					"      </table>" +
-					"    </div>" +
-					"  </div>" +
-					"</div>" +
-					"<div id=\"ss_cal_MonthGridMaster" + instanceId + "\" style=\"position: relative; display: none;\">" +
-					"  <table style=\"width: 100%\" cellpadding=0 cellspacing=0 border=0>" +
-					"    <tbody>" +
-					"      <tr>" +
-					"        <td id=\"ss_cal_monthGridHeader" + instanceId + "\" class=\"ss_cal_gridHeader ss_cal_reserveWidth\"></td>" +
-					"      </tr>" +
-					"      <tr>" +
-					"        <td><div id=\"ss_cal_monthGrid" + instanceId + "\" class=\"ss_cal_monthGrid ss_cal_reserveWidth\"></div></td>" +
-					"      </tr>" +
-					"    </tbody>" +
-					"  </table>" +
-					"</div>";
+	this.templateHTML = null;
 					
 	var instanceId = instanceId;
 	
@@ -281,10 +243,59 @@ function ss_calendarEngine(
 		templateInitialized = false;
 		ss_cal_Events.removeAllEvents();
 	}
-	
+
+	this.getTemplateHTML = function() {
+		// We need to build this after we've initialized rather than
+		// during construction so that the localized strings have been
+		// localized.
+		if (null == that.templateHTML) {
+			that.templateHTML =
+				"<div id=\"ss_cal_DayGridMaster" + instanceId + "\" style=\"display:none;\">" +
+				"  <table class=\"ss_cal_gridTable\">" +
+				"    <tbody>" +
+				"      <tr>" +
+				"        <td class=\"ss_cal_dayGridHourTicksColumn\" style=\"padding-right: 0px;\"><div class=\"ss_cal_gridHeader\"></td>" +
+				"        <td><div width=\"100%\" id=\"ss_cal_dayGridHeader" + instanceId + "\" class=\"ss_cal_gridHeader ss_cal_reserveWidth\"></div></td>" + 
+				"      </tr>" +
+				"      <tr>" +
+				"        <td class=\"ss_cal_dayGridHourTicksColumn\">" + this.locale.allDay + "</td>" +
+				"        <td><div id=\"ss_cal_dayGridAllDay" + instanceId + "\" class=\"ss_cal_dayGridHour ss_cal_dayGridAllDay ss_cal_reserveWidth\"></div></td>" +
+				"      </tr>" +
+				"    </tbody>" +
+				"  </table>" +
+				"  <div class=\"ss_cal_dayGridDivider\"></div>" +
+				"  <div id=\"ss_cal_dayGridWindowOuter" + instanceId + "\" class=\"ss_cal_dayGridWindowOuter\">" +
+				"    <div id=\"ss_cal_dayGridWindowInner" + instanceId + "\" class=\"ss_cal_dayGridWindowInner\" style=\"top: " + (-3 - (workDayStart* 42)) + "px; \">" +
+				"      <table class=\"ss_cal_gridTable\">" +
+				"        <tbody>" +
+				"          <tr>" +
+				"            <td class=\"ss_cal_dayGridHourTicksColumn\"><div id=\"ss_cal_hourHeader" + instanceId + "\" class=\"ss_cal_dayGridHour\"></div></td>" +
+				"            <td><div id=\"ss_cal_dayGridHour" + instanceId + "\" class=\"ss_cal_dayGridHour ss_cal_reserveWidth\"></div></td>" +
+				"          </tr>" +
+				"        </tbody>" +
+				"      </table>" +
+				"    </div>" +
+				"  </div>" +
+				"</div>" +
+				"<div id=\"ss_cal_MonthGridMaster" + instanceId + "\" style=\"position: relative; display: none;\">" +
+				"  <table style=\"width: 100%\" cellpadding=0 cellspacing=0 border=0>" +
+				"    <tbody>" +
+				"      <tr>" +
+				"        <td id=\"ss_cal_monthGridHeader" + instanceId + "\" class=\"ss_cal_gridHeader ss_cal_reserveWidth\"></td>" +
+				"      </tr>" +
+				"      <tr>" +
+				"        <td><div id=\"ss_cal_monthGrid" + instanceId + "\" class=\"ss_cal_monthGrid ss_cal_reserveWidth\"></div></td>" +
+				"      </tr>" +
+				"    </tbody>" +
+				"  </table>" +
+				"</div>";
+		}
+		return( that.templateHTML );
+	}
+		
 	this.createTemplate = function() {
 		var container = dojo.byId(containerId) || document.body;
-		container.innerHTML = that.template;
+		container.innerHTML = that.getTemplateHTML();
 		templateInitialized = true;
 	}
 	
@@ -1113,7 +1124,7 @@ function ss_calendarEngine(
 			this.currDay = dojo.date.add(firstDayOnGrid, "day", dayOffset);
 	        
 	        hourOffset = this.recordHourOffset(this.currDay.getFullYear(), this.currDay.getMonth(), this.currDay.getDate());
-	        this.currDispId = ss_cal_drawCalendarEvent(grid.id, ss_cal_Grid.gridSize, 1, 0, dayOffset, hourOffset, -1, "All day", "", "", false, {calendarId: defaultCalendarId});
+	        this.currDispId = ss_cal_drawCalendarEvent(grid.id, ss_cal_Grid.gridSize, 1, 0, dayOffset, hourOffset, -1, that.locale.allDay, "", "", false, {calendarId: defaultCalendarId});
 	        this.resetGridHeight();
 	        mouseUpHandle = dojo.connect(dojo.body(), "onmouseup", this, "mouseIsUp");       
 	        this.currEventData = {};
