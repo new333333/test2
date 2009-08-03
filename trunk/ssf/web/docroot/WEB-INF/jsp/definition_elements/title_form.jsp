@@ -83,9 +83,16 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
   <div class="needed-because-of-ie-bug"><div id="ss_titleCheck" style="display:none; visibility:hidden;" ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
 </c:if>
 		<input type="text" class="ss_text" name="title" id="title" <%= width %>
-<c:if test='${ssBinderMarker}'>
-	onchange="ss_ajaxValidate(ss_checkTitleUrl, this,'${property_name}_label', 'ss_titleCheck');"
-</c:if>
+<c:choose>
+	<c:when test='${ssBinderMarker}'>
+		onchange="ss_ajaxValidate(ss_checkTitleUrl, this,'${property_name}_label', 'ss_titleCheck');"
+	</c:when>
+	<c:otherwise>
+		<c:if test="${!empty ssDefinitionEntry && ssDefinitionEntry.entityType == 'folderEntry'}">
+			onkeyup="ss_validateEntryTitle(this);"
+		</c:if>
+	</c:otherwise>
+</c:choose>
 		 <c:if test="${empty ssDefinitionEntry.title}">
 		   <c:if test="${empty ssEntryTitle && !empty ssEntry && empty ssDefinitionEntry}">
 		     value="<ssf:nlt tag="reply.re.title"><ssf:param 
@@ -101,6 +108,17 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 		 >
 		</div>
 <script type="text/javascript">
+function ss_validateEntryTitle(eTitle) {
+	var sTitle = eTitle.value;
+	if (256 <= sTitle.length) {
+		eTitle.value = sTitle.substring(0, 255);
+		alert('<ssf:nlt tag="error.titleTooLong.truncated"/>');
+		window.setTimeout(
+			function() {
+				input_setCaretToEnd(eTitle);
+			}, 100 );
+	}
+}
 function ss_focusOnTitle() {
 	var formObj = self.document.getElementById('${ss_form_form_formName}')
 	if (formObj != null) {
