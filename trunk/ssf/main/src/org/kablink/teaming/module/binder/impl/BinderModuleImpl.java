@@ -149,6 +149,7 @@ import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.util.ZipEntryStream;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.FileUtil;
 import org.kablink.util.Validator;
@@ -1931,7 +1932,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.modifyBinder);
-
+		
 		ZipOutputStream zipOut = new ZipOutputStream(out);
 
 		// Standard zip encoding is cp437. (needed when chars are outside the
@@ -2114,16 +2115,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		processAttachment(zipOut, binder, binder, attachment,
 				pathName);
 
-		/*
-		 * FileModule fileModule = (FileModule) SpringContextUtil.getBean(
-		 * "fileModule" ); InputStream fileStream =
-		 * fileModule.readFile(binder.getParentBinder(), binder, attachment);
-		 * 
-		 * zipOut.putNextEntry(new ZipEntry(pathName + File.separator +
-		 * attachment.getFileItem().getName())); FileUtil.copy(fileStream,
-		 * zipOut); zipOut.closeEntry(); fileStream.close();
-		 */
-
 		return;
 	}
 
@@ -2210,17 +2201,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		processAttachment(zipOut, entry.getParentBinder(), entry, attachment,
 				pathName + File.separator + "e" + fullId);
 
-		/*
-		 * FileModule fileModule = (FileModule) SpringContextUtil.getBean(
-		 * "fileModule" ); InputStream fileStream =
-		 * fileModule.readFile(entry.getParentBinder(), entry, attachment);
-		 * 
-		 * zipOut.putNextEntry(new ZipEntry(pathName + File.separator +
-		 * entry.getTitle().replace(':', '+') + "[" + fullId + "]" +
-		 * File.separator + attachment.getFileItem().getName()));
-		 * FileUtil.copy(fileStream, zipOut); zipOut.closeEntry();
-		 * fileStream.close();
-		 */
 		return;
 	}
 
@@ -2290,10 +2270,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		// attachments
 		adjustAttachmentUrls(doc, pathName);
 		
-		
 		//workflows
-		Element workflows = doc.getRootElement().addElement("workflows");
-		addWorkflows(workflows, entry, defList);
+		addWorkflows(doc.getRootElement(), entry, defList);
 
 		return doc;
 	}
@@ -2324,9 +2302,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		// attachments
 		adjustAttachmentUrls(doc, pathName);
 		
+		//binder settings
+		addSettingsList(doc.getRootElement(), folder, defList);
+		
 		//workflows
-		Element workflows = doc.getRootElement().addElement("workflows");
-		addWorkflows(workflows, folder, defList);
+		addWorkflows(doc.getRootElement(), folder, defList);
 
 		return doc;
 	}
@@ -2357,9 +2337,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		// attachments
 		adjustAttachmentUrls(doc, pathName);
 		
+		//binder settings
+		addSettingsList(doc.getRootElement(), workspace, defList);
+		
 		//workflows
-		Element workflows = doc.getRootElement().addElement("workflows");
-		addWorkflows(workflows, workspace, defList);
+		addWorkflows(doc.getRootElement(), workspace, defList);
 
 		return doc;
 	}
@@ -2509,29 +2491,34 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	private void addWorkflows(Element element, DefinableEntity entity,
 			Set defList){
 		
+		Element workflowsEle = element.addElement("workflows");
+		
 		if(entity instanceof FolderEntry){
 			for (WorkflowState workflow: ((FolderEntry)entity).getWorkflowStates()) {
 				if (workflow != null) {
-					if(element != null) {
+					if(workflowsEle != null) {
 						defList.add(workflow.getDefinition());
 						
-						Element value = element.addElement("process");
+						Element value = workflowsEle.addElement("process");
 						value.addAttribute("definitionId", workflow.getDefinition().getId());
+						value.addAttribute("name", workflow.getDefinition().getName());
 						value.addAttribute("state", workflow.getState());
 					}
 				}
 			}
 		}else if(entity instanceof Binder){
+			
+			DefinitionModule definitionModule = (DefinitionModule) SpringContextUtil.getBean("definitionModule");
+			
 			List workflowDefinitions = ((Binder)entity).getWorkflowDefinitions();
 			
-			addDefinitions(defList, workflowDefinitions);
-			
-			Element allowed = element.addElement("allowed");
+			Element allowed = workflowsEle.addElement("allowed");
 			
 			for(int i = 0; i < workflowDefinitions.size(); i++){
 				if(allowed != null) {
 					Element value = allowed.addElement("process");
 					value.addAttribute("definitionId", ((Definition)workflowDefinitions.get(i)).getId());
+					value.addAttribute("name", ((Definition)workflowDefinitions.get(i)).getName());
 				}
 			}
 			
@@ -2539,7 +2526,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			
 			addDefinitions(defList, new ArrayList(workflowAssociations.values()));
 			
-			Element associated = element.addElement("associated");
+			Element associated = workflowsEle.addElement("associated");
 			
 			Iterator keyIter = workflowAssociations.keySet().iterator();
 			
@@ -2550,8 +2537,50 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					String key = (String) keyIter.next();
 					
 					value.addAttribute("entryDefinitionId", key);
-					value.addAttribute("workflowDefinitionId", ((Definition)workflowAssociations.get(key)).getId());
+					
+					Definition entryDef = definitionModule.getDefinition(key);
+					
+					value.addAttribute("entryDefinitionName", entryDef.getName());
+					
+					Definition workflowDef = ((Definition)workflowAssociations.get(key));
+					
+					value.addAttribute("workflowDefinitionId", workflowDef.getId());
+					value.addAttribute("workflowDefinitionName", workflowDef.getName());
 				}
+			}
+		}
+	}
+	
+	private void addSettingsList(Element element, Binder binder, Set defList){
+		
+		Element settingsEle = element.addElement("settings");
+		DefinitionModule definitionModule = (DefinitionModule) SpringContextUtil.getBean("definitionModule");
+		
+		//views
+		
+		List<Definition> viewDefinitions = binder.getViewDefinitions();
+		
+		Element views = settingsEle.addElement("views");
+		
+		for(int i = 0; i < viewDefinitions.size(); i++){
+			if(views != null) {
+				Element value = views.addElement("view");
+				value.addAttribute("definitionId", viewDefinitions.get(i).getId());
+				value.addAttribute("name", viewDefinitions.get(i).getName());
+			}
+		}
+		
+		//entries
+		
+		List<Definition> entryDefinitions = binder.getEntryDefinitions();
+		
+		Element entries = settingsEle.addElement("entries");
+		
+		for(int i = 0; i < entryDefinitions.size(); i++){
+			if(entries != null) {
+				Element value = entries.addElement("entry");
+				value.addAttribute("definitionId", entryDefinitions.get(i).getId());
+				value.addAttribute("name", entryDefinitions.get(i).getName());
 			}
 		}
 	}
@@ -2649,7 +2678,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					//need to check if this xml file is for a folder, workspace,
 					//entry, or just an attachment.
 					//checking by regex-ing the filename.
-					
 					 
 					 //entry?
 					 Matcher m = entryPattern.matcher(child.getName());
@@ -2806,8 +2834,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		IcalModule iCalModule = (IcalModule) SpringContextUtil
 				.getBean("icalModule");
 
+		final Document doc = getDocument(inputDataAsXML);
+		
 		try {
-			Document doc = getDocument(inputDataAsXML);
 			Long newBinderId = binderModule.addBinder(new Long(parentId), definitionId,
 					new DomInputData(doc, iCalModule), new HashMap(), null)
 					.getId().longValue();
@@ -2815,6 +2844,21 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			
 			//team members
 			addTeamMembers(newBinderId, doc);
+			
+			//workflows
+			final Binder binder = loadBinder(newBinderId);
+			
+			getTransactionTemplate().execute(new TransactionCallback() {
+	        	public Object doInTransaction(TransactionStatus status) {
+	        		
+	        		//binder settings
+	        		importSettingsList(doc, binder);
+	        		
+	        		//workflows
+	        		importWorkflows(doc, binder);
+	                return null;
+	        	}
+	        });
 			
 			return newBinderId;
 		} catch (WriteFilesException e) {
@@ -2839,7 +2883,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		IcalModule iCalModule = (IcalModule) SpringContextUtil
 				.getBean("icalModule");
 
-		Document doc = getDocument(inputDataAsXML);
+		final Document doc = getDocument(inputDataAsXML);
 		String[] fileNames = new String[0];
 
 		try {
@@ -2853,6 +2897,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 			// add entry id to entry id map
 			entryIdMap.put(entryId, newEntryId);
+			
+
+			//workflows
+			final FolderEntry entry = folderModule.getEntry(null, newEntryId);
+			importWorkflows(doc, entry);
 
 			return newEntryId;
 		} catch (WriteFilesException e) {
@@ -3164,5 +3213,110 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			
 			binder_setTeamMembers(null, binderId, namesArray);
 		}
+	}
+	
+	private void importWorkflows(Document entityDoc, DefinableEntity entity){
+		
+		DefinitionModule definitionModule = (DefinitionModule) SpringContextUtil.getBean("definitionModule");
+		WorkflowModule workflowModule = (WorkflowModule) SpringContextUtil.getBean("workflowModule");
+		
+		if(entity instanceof FolderEntry){
+		
+			//end all workflows that started upon entry creation
+			
+			Set defaultWorkflows = ((FolderEntry) entity).getWorkflowStates();
+			Iterator iter = defaultWorkflows.iterator();
+			
+			while(iter.hasNext()){
+				((FolderEntry) entity).removeWorkflowState((WorkflowState) iter.next());
+			}
+			
+			//start up the imported workflows
+			
+			String xPath = "//workflows//process";
+			List<Element> workflows = entityDoc.selectNodes(xPath);
+			
+			for(Element process: workflows){
+				String defId = process.attributeValue("definitionId");
+				String state = process.attributeValue("state");
+				Definition def = definitionModule.getDefinition(defId);
+				
+				EntityIdentifier entityIdentifier = new EntityIdentifier(entity.getId(), EntityIdentifier.EntityType.folderEntry);
+				
+				Map options = new HashMap();
+				options.put(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE, state);
+				
+				workflowModule.addEntryWorkflow((FolderEntry) entity, entityIdentifier, def, options);
+	        	
+			}
+		}else if(entity instanceof Binder){
+			
+			List<String> newDefinitionList = new ArrayList<String>();
+			
+			//current binder definitions
+			
+			List<Definition> defs = ((Binder)entity).getDefinitions();
+			
+			for(int i = 0; i < defs.size(); i++){
+				newDefinitionList.add(defs.get(i).getId());
+			}
+			
+			//allowed workflows
+			
+			String xPath = "//workflows//allowed//process";
+			List<Element> workflows = entityDoc.selectNodes(xPath);
+			
+			for(Element process: workflows){
+				String defId = process.attributeValue("definitionId");
+				newDefinitionList.add(defId);
+			}
+			
+			//associated workflows
+			
+			xPath = "//workflows//associated//process";
+			workflows = entityDoc.selectNodes(xPath);
+			
+			Map<String, String> workflowAssociations= new HashMap<String, String>();
+			
+			for(Element process: workflows){
+				String entryDefId = process.attributeValue("entryDefinitionId");
+				String workflowDefId = process.attributeValue("workflowDefinitionId");
+				workflowAssociations.put(entryDefId, workflowDefId);
+			}
+			
+			setDefinitions(entity.getId(), newDefinitionList, workflowAssociations);
+		}
+	}
+	
+	private void importSettingsList(Document entityDoc, Binder binder){
+		
+		DefinitionModule definitionModule = (DefinitionModule) SpringContextUtil.getBean("definitionModule");
+		WorkflowModule workflowModule = (WorkflowModule) SpringContextUtil.getBean("workflowModule");
+			
+		//current binder definitions
+		
+		List<Definition> newDefinitionList = binder.getDefinitions();
+		
+		//views
+		
+		String xPath = "//settings//views//view";
+		List<Element> views = entityDoc.selectNodes(xPath);
+		
+		for(Element view: views){
+			String defId = view.attributeValue("definitionId");
+			newDefinitionList.add(definitionModule.getDefinition(defId));
+		}
+		
+		//entries
+				
+		xPath = "//settings//entries//entry";
+		List<Element> entries = entityDoc.selectNodes(xPath);
+		
+		for(Element entry: entries){
+			String defId = entry.attributeValue("definitionId");
+			newDefinitionList.add(definitionModule.getDefinition(defId));
+		}
+		
+		binder.setDefinitions(newDefinitionList);
 	}
 }
