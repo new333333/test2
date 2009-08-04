@@ -2671,7 +2671,21 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						tempDir + File.separator + "__definitions"
 								+ File.separator)) {
 					
-					// eventually will need to import in definitions
+					//adding definition to top binder locally if it does not already exist
+					
+					DefinitionModule definitionModule = (DefinitionModule) SpringContextUtil.getBean("definitionModule");
+					
+					Binder topBinder = loadBinder(topBinderId);
+					
+					FileInputStream input = new FileInputStream(child);
+							
+					try {
+						definitionModule.addDefinition(input, topBinder, null, null, false);
+					} catch (DocumentException e) {
+						logger.error(e);
+						throw new IllegalArgumentException(e.toString());
+					}
+					
 				
 				} else if (fileExt.equals("xml")) {
 					
