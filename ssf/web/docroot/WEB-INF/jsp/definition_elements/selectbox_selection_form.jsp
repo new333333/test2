@@ -40,11 +40,20 @@
 %>
 <c:if test="${empty ssReadOnlyFields[selectboxName]}">
 <c:set var="checked" value=""/>
+<c:if test="${empty ss_selectbox_per_user_property_name}">
 <c:forEach var="selection" items="${ssDefinitionEntry.customAttributes[selectboxName].valueSet}" >
   <c:if test="${selection == property_name}">
     <c:set var="checked" value="selected=\"selected\""/>
   </c:if>
 </c:forEach>
+</c:if>
+<c:if test="${!empty ss_selectbox_per_user_property_name}">
+<c:forEach var="selection" items="${ssDefinitionEntry.customAttributes[ss_selectbox_per_user_property_name].valueSet}" >
+  <c:if test="${selection == property_name}">
+    <c:set var="checked" value="selected=\"selected\""/>
+  </c:if>
+</c:forEach>
+</c:if>
 
 <option value="<c:out value="${property_name}"/>" ${checked}
 <% // property_name == 'p3' is only for backward compatibility with v1.0 %>
