@@ -608,6 +608,13 @@ public class EventsViewHelper {
 					freqString += " " + NLT.get("event.years", locale);
 				}
 			}
+			else {
+				String tag = ("event.editor.frequency." + freqString);
+				String l10nFreq = NLT.get(tag, locale);
+				if (!(l10nFreq.equalsIgnoreCase(tag))) {
+					freqString = l10nFreq;
+				}
+			}
 			Iterator byDaysIt = bydays.listIterator();
 
 			// format weekly events as comma-separated list of ondays
