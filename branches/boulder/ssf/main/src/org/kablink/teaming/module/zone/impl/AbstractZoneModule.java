@@ -549,6 +549,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  	 */
  	private void fixUpDuplicateDefinitions(Workspace top) {
 		
+ 		String NoNameTitle = "N0_NAME";
+ 		
 		OrderBy order = new OrderBy();
 		order.addColumn("name");
 		FilterControls filter = new FilterControls();
@@ -560,9 +562,21 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 
  		String prevName = null;
 		int dupCnt = 1;
+		int noNameCnt = 1;
 		for ( Definition def : defs )
 		{
 			String name = def.getName();
+			if(name == null) {
+				def.setName(NoNameTitle+"_"+noNameCnt);
+				noNameCnt++;
+				
+				if(def.getBinderId() == null ) {
+					def.setBinderId(new Long(-1));
+				}
+				
+				continue;
+			}
+			
 			if(name.equals(prevName)){
 				dupCnt+=1;
 			} else {
