@@ -72,6 +72,8 @@
 	}
 	
 %>
+<c:set var="original_property_name" value="${property_name}"/>
+<c:set var="original_property_caption" value="${property_caption}"/>
 <c:set var="formType" value="<%= formType %>"/>
 
 <c:if test="${formType == 'task'}">
@@ -91,7 +93,25 @@
   configElement="<%= item %>" 
   configJspStyle="${ssConfigJspStyle}" />
 </select>
+
+  <c:if test="${property_userVersionAllowed == 'true'}">
+	<c:set var="property_name_per_user" value="${original_property_name}.${ssUser.id}"/>
+    <c:set var="ss_selectbox_per_user_property_name" value="${original_property_name}.${ssUser.id}" scope="request"/>
+    <div class="ss_labelAbove">
+    <ssf:nlt tag="element.perUser.yourVersion"><ssf:param name="value" value="${original_property_caption}"/></ssf:nlt>
+    </div>
+	<select name="${property_name_per_user}" <%= multiple %> <%= size %>
+  	  <c:if test="${formType == 'task'}">
+  		onchange="ss_tasks.adjustFormAttributes(this.name);"
+  	  </c:if>>
+	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  		configElement="<%= item %>" 
+  		configJspStyle="${ssConfigJspStyle}" />
+	</select>
+    <c:set var="ss_selectbox_per_user_property_name" value="" scope="request"/>
+  </c:if>
 </c:if>
+
 <c:if test="${!empty ssReadOnlyFields[property_name]}">
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
