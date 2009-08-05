@@ -1080,6 +1080,24 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		return membership;		
 		
 	}
+	
+	public List<Long> getOwnedBinders(final List userIds) {
+		if (userIds == null) return new ArrayList<Long>();
+	    List membership = (List)getHibernateTemplate().execute(
+            new HibernateCallback() {
+                public Object doInHibernate(Session session) throws HibernateException {
+                   	Query query = session.createQuery("select w.id from org.kablink.teaming.domain.Binder w where w.owner in (:pList)")
+                   	.setParameterList("pList", userIds);
+                    return query.list();
+                 }
+            }
+        );
+		return membership;		
+		
+	}
+	
+    //        		Set binderIds = new HashSet(session.createQuery("select w.binderId from org.kablink.teaming.domain.Binder w where w.ownerId in (:pList)")
+//            
 	/**
 	 * Get all groups a principal is a member of, either directly or through nested group
 	 * membership.
@@ -1475,6 +1493,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 						}
 					}
 				}
+				if (user.getId() == principal.getId() && !result.contains(user.getId())) 
+					result.add(principals.get(i));
 			} else {
 				result.add(principals.get(i));
 			}

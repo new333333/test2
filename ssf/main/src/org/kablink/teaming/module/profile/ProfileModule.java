@@ -244,6 +244,14 @@ public interface ProfileModule {
      */
 	public SortedSet<Group> getGroups(Collection<Long> groupIds)
 		throws AccessControlException;
+	
+	/**
+	 * Return List of Binders owned by users in the list
+	 * @param ids
+	 * @return
+	 */
+	public List reindexUserOwnedBinders(List<Principal> userIds);
+	
 	/**
 	 * Return set of principals, sorted by title
 	 * @param ids

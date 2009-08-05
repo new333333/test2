@@ -131,6 +131,12 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 					if (me.getValue() instanceof User) users.add(me.getValue());
 				}
 				// TODO Re-index the list of users and all binders "owned" by them
+				// reindex the profile entry for each user
+				for (Principal user : users) {
+					getProfileModule().indexEntry(user);
+				}
+				// set up a background job that will reindex all of the binders owned by all of these users.
+				getProfileModule().reindexUserOwnedBinders(users);
 			}
 			response.setRenderParameter(WebKeys.URL_ENTRY_ID, groupId.toString());
 

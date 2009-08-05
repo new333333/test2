@@ -89,6 +89,7 @@ import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.UserPropertiesPK;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.jobs.BinderReindex;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
@@ -109,6 +110,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
@@ -400,6 +402,19 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     public Long getEntryWorkspaceId(Long principalId) {
         Principal p = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), false);              
         return  p.getWorkspaceId();
+    }
+    
+    public List reindexUserOwnedBinders(List<Principal> userIds) {
+    	List<Long> binderIds = new ArrayList<Long>();
+    	if (userIds == null) return binderIds;
+    	binderIds = getProfileDao().getOwnedBinders(userIds);
+    	
+    	// Create background job to reindex the list of binders
+    	User user = RequestContextHolder.getRequestContext().getUser();
+		BinderReindex job=null;
+		if (job == null) job = (BinderReindex)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultBinderReindex.class);
+		job.schedule(binderIds, user); 
+    	return binderIds;
     }
 
     //RW transaction
