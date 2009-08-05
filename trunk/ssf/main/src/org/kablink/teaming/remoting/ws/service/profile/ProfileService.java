@@ -80,5 +80,10 @@ public interface ProfileService {
 	
 	public void profile_uploadFile(String accessToken, long principalId, String fileUploadDataItemName, String fileName);
 	
+	public void profile_uploadFileAsByteArray(String accessToken, long principalId, String fileUploadDataItemName, String fileName, byte[] fileContent);
+	
 	public void profile_changePassword(String accessToken, Long userId, String oldPassword, String newPassword);
+	
+	public byte[] profile_getAttachmentAsByteArray(String accessToken, long userId, String attachmentId);
+
 }

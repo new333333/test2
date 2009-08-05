@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.remoting.ws.service.profile;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +64,7 @@ import org.kablink.teaming.remoting.ws.model.UserBrief;
 import org.kablink.teaming.remoting.ws.model.UserCollection;
 import org.kablink.teaming.remoting.ws.util.ModelInputData;
 import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.util.Validator;
 
 public class ProfileServiceImpl extends BaseService implements ProfileService, ProfileServiceInternal {
 
@@ -360,6 +363,38 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 	public void profile_changePassword(String accessToken, Long userId,
 			String oldPassword, String newPassword) {
 		getProfileModule().changePassword(userId, oldPassword, newPassword);
+	}
+	
+	public byte[] profile_getAttachmentAsByteArray(String accessToken,
+			long userId, String attachmentId) {
+		Long uId = Long.valueOf(userId);
+		
+		Principal entry = getProfileModule().getEntry(uId);
+
+		if(!(entry instanceof User))
+			throw new IllegalArgumentException(uId + " does not represent an user. It is " + entry.getClass().getSimpleName());
+
+		return getFileAttachmentAsByteArray(((User) entry).getParentBinder(), entry, attachmentId);
+	}
+	
+	public void profile_uploadFileAsByteArray(String accessToken,
+			long principalId, String fileUploadDataItemName, String fileName,
+			byte[] fileContent) {
+		if (Validator.isNull(fileUploadDataItemName)) fileUploadDataItemName="ss_attachFile1";
+		File originalFile = new File(fileName);
+		fileName = originalFile.getName();
+
+		Map fileItems = wrapFileItemInMap(fileUploadDataItemName, fileName, new ByteArrayInputStream(fileContent));
+		
+		try {
+			getProfileModule().modifyEntry(principalId, new EmptyInputData(), fileItems, null, null, null);
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+		catch(WriteEntryDataException e) {
+			throw new RemotingException(e);
+		}
 	}
 	
 }

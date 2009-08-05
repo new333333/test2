@@ -32,14 +32,15 @@
  */
 package org.kablink.teaming.remoting.ws;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Set;
 
 import org.dom4j.Branch;
@@ -47,6 +48,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.AverageRating;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -76,10 +78,12 @@ import org.kablink.teaming.remoting.ws.model.Timestamp;
 import org.kablink.teaming.remoting.ws.model.Workflow;
 import org.kablink.teaming.remoting.ws.model.FileVersions.FileVersion;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
+import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+import org.springframework.web.multipart.MultipartFile;
 
 
 public class BaseService extends AbstractAllModulesInjected implements ElementBuilder.BuilderContext {
@@ -531,5 +535,19 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		}
 		return null;
 	}
-
+	protected Map wrapFileItemInMap(String elementName, String fileName, InputStream fileContent) {
+		MultipartFile mf = new SimpleMultipartFile(fileName, fileContent); 
+		Map fileItems = new HashMap();	
+		fileItems.put(elementName, mf); // single file item
+		return fileItems;
+	}
+	protected byte[] getFileAttachmentAsByteArray(Binder binder, DefinableEntity entity, String attachmentId) {
+		Attachment att = entity.getAttachment(attachmentId);
+		if(att == null || !(att instanceof FileAttachment))
+			throw new IllegalArgumentException("No such file attachment");
+		FileAttachment fatt = (FileAttachment) att;
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		getFileModule().readFile(binder, entity, fatt, baos);
+		return baos.toByteArray();
+	}
 }

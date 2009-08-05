@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.remoting.ws.service.folder;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -67,6 +68,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.util.Validator;
 
 
 public class FolderServiceImpl extends BaseService implements FolderService, FolderServiceInternal {
@@ -459,5 +461,28 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 
 	public Long folder_addMicroBlog(String accessToken, String text) {
 		return BinderHelper.addMiniBlogEntry(this, text);
+	}
+	
+	public byte[] folder_getAttachmentAsByteArray(String accessToken,
+			long entryId, String attachmentId) {
+		FolderEntry entry = getFolderModule().getEntry(null, entryId);
+		return getFileAttachmentAsByteArray(entry.getParentBinder(), entry, attachmentId);
+	}
+	
+	public void folder_uploadFileAsByteArray(String accessToken, long entryId,
+			String fileUploadDataItemName, String fileName, byte[] fileContent) {
+		if (Validator.isNull(fileUploadDataItemName)) fileUploadDataItemName="ss_attachFile1";
+		File originalFile = new File(fileName);
+		fileName = originalFile.getName();
+
+		try {
+			getFolderModule().modifyEntry(null, entryId, fileUploadDataItemName, fileName, new ByteArrayInputStream(fileContent));
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+		catch(WriteEntryDataException e) {
+			throw new RemotingException(e);
+		}
 	}
 }

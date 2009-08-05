@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.remoting.ws.service.binder;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -52,8 +55,9 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.BinderComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NoBinderByTheNameException;
@@ -82,6 +86,7 @@ import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
 public class BinderServiceImpl extends BaseService implements BinderService, BinderServiceInternal {
@@ -446,6 +451,30 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			return toFileVersions(att);
 		else
 			throw new NoFileByTheNameException(fileName);
+	}
+	
+	public byte[] binder_getAttachmentAsByteArray(String accessToken, long binderId, String attachmentId) {
+		Binder binder = getBinderModule().getBinder(binderId);
+		return getFileAttachmentAsByteArray(binder, binder, attachmentId);
+	}
+	
+	public void binder_uploadFileAsByteArray(String accessToken, long binderId,
+			String fileUploadDataItemName, String fileName, byte[] fileContent) {
+		if (Validator.isNull(fileUploadDataItemName)) fileUploadDataItemName="ss_attachFile1";
+		File originalFile = new File(fileName);
+		fileName = originalFile.getName();
+
+		// Wrap it up in a datastructure expected by our app.
+		Map fileItems = wrapFileItemInMap(fileUploadDataItemName, fileName, new ByteArrayInputStream(fileContent));
+		
+		try {
+			// Finally invoke the business method. 
+			getBinderModule().modifyBinder(new Long(binderId),  
+				new EmptyInputData(), fileItems, null, null);
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
 	}
 
 }
