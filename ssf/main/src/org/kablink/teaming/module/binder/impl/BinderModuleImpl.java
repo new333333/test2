@@ -2716,7 +2716,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 				 	Document tempDoc = getDocument(xmlStr);
 				 	
-				 	String defId = getInternalId(tempDoc);
+				 	String defId = getDatabaseId(tempDoc);
 				 	
 				 	if(defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)
 				 			|| defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)){
@@ -2884,8 +2884,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			.setValue(defId);
 	}
 	
-	private String getInternalId(Document entity) {
-		return entity.getRootElement().attributeValue("internalId")
+	private String getDatabaseId(Document entity) {
+		return entity.getRootElement().attributeValue("databaseId")
 				.toString();
 	}
 
