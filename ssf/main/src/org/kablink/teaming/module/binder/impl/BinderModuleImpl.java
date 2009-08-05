@@ -140,6 +140,7 @@ import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
@@ -2220,29 +2221,50 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 		VersionAttachment vAttach = versionIter.next();
 
-		InputStream fileStream = fileModule.readFile(binder, entity, vAttach);
+		try{
+			InputStream fileStream = fileModule.readFile(binder, entity, vAttach);
 
-		zipOut.putNextEntry(new ZipEntry(pathName + File.separator
+			zipOut.putNextEntry(new ZipEntry(pathName + File.separator
 				+ attachment.getFileItem().getName()));
-		FileUtil.copy(fileStream, zipOut);
-		zipOut.closeEntry();
+			FileUtil.copy(fileStream, zipOut);
+			zipOut.closeEntry();
 
-		fileStream.close();
+			fileStream.close();
+		}catch(NullPointerException npe){
+			logger.error(npe);
+			
+			zipOut.putNextEntry(new ZipEntry(pathName + File.separator
+					+ attachment.getFileItem().getName() + ".error_message.txt"));
+			zipOut.write(NLT.get("export.error.attachment", "Error processing this attachment").getBytes());	
+			zipOut.closeEntry();
+		}
 
 		// older versions, from highest to lowest
 
 		for (int i = 1; i < fileVersions.size(); i++) {
 			vAttach = versionIter.next();
-			fileStream = fileModule.readFile(binder, entity, vAttach);
+			
 			int versionNum = fileVersions.size() - i;
-
-			zipOut.putNextEntry(new ZipEntry(pathName + File.separator
-					+ attachment.getFileItem().getName() + ".versions"
-					+ File.separator + versionNum + "." + fileExt));
-			FileUtil.copy(fileStream, zipOut);
-			zipOut.closeEntry();
-
-			fileStream.close();
+			
+			try{
+				InputStream fileStream = fileModule.readFile(binder, entity, vAttach);
+				
+				zipOut.putNextEntry(new ZipEntry(pathName + File.separator
+						+ attachment.getFileItem().getName() + ".versions"
+						+ File.separator + versionNum + "." + fileExt));
+				FileUtil.copy(fileStream, zipOut);
+				zipOut.closeEntry();
+	
+				fileStream.close();
+			}catch(NullPointerException npe){
+				logger.error(npe);
+				
+				zipOut.putNextEntry(new ZipEntry(pathName + File.separator
+						+ attachment.getFileItem().getName() + ".versions"
+						+ File.separator + versionNum + "." + fileExt + ".error_message.txt"));
+				zipOut.write(NLT.get("export.error.attachment", "Error processing this attachment").getBytes());
+				zipOut.closeEntry();
+			}
 		}
 
 	}
@@ -2677,15 +2699,32 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					
 					Binder topBinder = loadBinder(topBinderId);
 					
-					FileInputStream input = new FileInputStream(child);
-							
-					try {
-						definitionModule.addDefinition(input, topBinder, null, null, false);
-					} catch (DocumentException e) {
-						logger.error(e);
-						throw new IllegalArgumentException(e.toString());
-					}
+					String xmlStr = null;
 					
+					FileInputStream input = new FileInputStream(child);
+					
+					ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+					int data = 0;
+				 	while ((data = input.read()) != -1) {
+					 	output.write(data);
+				 	}
+
+				 	xmlStr = output.toString();
+				 	output.close();
+				 	input.close();
+
+				 	Document tempDoc = getDocument(xmlStr);
+				 	
+				 	String defId = getInternalId(tempDoc);
+				 	
+				 	if(defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)
+				 			|| defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)){
+				 		//don't add definitions if they are for mirrored file entries
+				 		//or mirrored file folders
+					 }else{
+						definitionModule.addDefinition(tempDoc, topBinder, false);
+					 }
 				
 				} else if (fileExt.equals("xml")) {
 					
@@ -2714,6 +2753,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 						 Document tempDoc = getDocument(xmlStr);
 						 String defId = getDefinitionId(tempDoc);
+						 
+						 if(defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)){
+							 setDefinitionId(tempDoc, ObjectKeys.DEFAULT_LIBRARY_ENTRY_DEF);
+							 defId = getDefinitionId(tempDoc); 
+						 }
+						 
 						 String entType = getEntityType(tempDoc);
 						 Long entryId = Long.valueOf(getId(tempDoc));
 						 Long binderId = Long.valueOf(getBinderId(tempDoc));
@@ -2799,6 +2844,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						 
 						 Document tempDoc = getDocument(xmlStr);
 						 String defId = getDefinitionId(tempDoc);
+						 
+						 if(defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)){
+							 setDefinitionId(tempDoc, ObjectKeys.DEFAULT_LIBRARY_FOLDER_DEF);
+							 defId = getDefinitionId(tempDoc); 
+						 }
+						 
 						 String entType = getEntityType(tempDoc);
 						 Long parentId = Long.valueOf(getBinderId(tempDoc));
 						 Long binderId = Long.valueOf(getId(tempDoc));
@@ -2825,6 +2876,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	private String getDefinitionId(Document entity) {
 		return entity.getRootElement().attributeValue("definitionId")
+				.toString();
+	}
+	
+	private void setDefinitionId(Document entity, String defId) {		
+		entity.getRootElement().attribute("definitionId")
+			.setValue(defId);
+	}
+	
+	private String getInternalId(Document entity) {
+		return entity.getRootElement().attributeValue("internalId")
 				.toString();
 	}
 
@@ -3318,7 +3379,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		
 		for(Element view: views){
 			String defId = view.attributeValue("definitionId");
-			newDefinitionList.add(definitionModule.getDefinition(defId));
+			
+			//don't want to include mirrored file folder as an imported view setting
+			
+			if(!defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)){
+				newDefinitionList.add(definitionModule.getDefinition(defId));
+			}
 		}
 		
 		//entries
@@ -3328,7 +3394,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		
 		for(Element entry: entries){
 			String defId = entry.attributeValue("definitionId");
-			newDefinitionList.add(definitionModule.getDefinition(defId));
+			
+			//don't want to include mirrored file entry as an imported allowed entry setting
+			
+			if(!defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)){
+				newDefinitionList.add(definitionModule.getDefinition(defId));
+			}
 		}
 		
 		binder.setDefinitions(newDefinitionList);
