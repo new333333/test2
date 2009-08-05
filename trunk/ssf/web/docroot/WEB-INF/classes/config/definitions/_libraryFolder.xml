@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_libraryFolder" caption="__definition_default_folder_library" type="5" nextId="17" definitionType="5" databaseId="402883c6115753d8011157619e350009"> 
+<definition name="_libraryFolder" caption="__definition_default_folder_library" type="5" nextId="17" definitionType="5" databaseId="402883c6115753d8011157619e350009" internalId="402883c6115753d8011157619e350009"> 
   <item name="folderForm" caption="__folder_form" type="form" id="1"> 
     <properties/>  
     <item name="title" caption="__title" type="data" id="3"> 

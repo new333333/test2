@@ -72,6 +72,10 @@ public interface ObjectKeys {
 	public static final String DEFAULT_APPLICATION_GROUP_DEF="402883b90cc53079010cc539bf26000d";
 	public static final String DEFAULT_ENTRY_MINIBLOG_DEF="402883b51c48633a011c4866de050002";
 	public static final String DEFAULT_WELCOME_WORKSPACE_DEF="402883b51cbdbdc2011cbdfe2857000b";
+	public static final String DEFAULT_MIRRORED_FILE_ENTRY_DEF="402883a41edab1d5011edabc90aa0031";
+	public static final String DEFAULT_MIRRORED_FILE_FOLDER_DEF="402883a41edab1d5011edac394df0032";
+	public static final String DEFAULT_LIBRARY_ENTRY_DEF="402883c6115753d8011157829367000f";
+	public static final String DEFAULT_LIBRARY_FOLDER_DEF="402883c6115753d8011157619e350009";
 
 	//reserved internalIds for templates.
 	//presence is used to distinquish system templates from customer templates
