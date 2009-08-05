@@ -142,9 +142,10 @@
    </select>
  
 <br/><br/>
-  <input type="checkbox" name="disable" id="notifyType_${ssSubscription.id.entityId}_4"
+  <table border="0" cellspacing="0" cellpadding="0">
+  <tr><td valign="top"><input type="checkbox" name="disable" id="notifyType_${ssSubscription.id.entityId}_4"
   <c:if test="${!empty currentStyles['4']}"> checked="checked"</c:if>
-  /><label for="notifyType_${ssSubscription.id.entityId}_4"><ssf:nlt tag="subscribe.disable"/></label> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_disable_notification"/><br/>
+  /></td><td><label for="notifyType_${ssSubscription.id.entityId}_4"><ssf:nlt tag="subscribe.disable"/></label> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_disable_notification"/></td></tr></table><br/>
   
   <br/>
     <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"
