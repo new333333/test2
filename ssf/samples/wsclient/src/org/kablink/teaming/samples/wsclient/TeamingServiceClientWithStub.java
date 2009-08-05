@@ -64,7 +64,7 @@ import org.kablink.util.search.Criteria;
 public class TeamingServiceClientWithStub {
 
 	private static final String TEAMING_SERVICE_ADDRESS_WSS 	= "http://localhost:8080/ssf/ws/TeamingServiceV1";
-	private static final String TEAMING_SERVICE_ADDRESS_BASIC 	= "http://localhost:8079/ssr/secure/ws/TeamingServiceV1";
+	private static final String TEAMING_SERVICE_ADDRESS_BASIC 	= "http://localhost:8080/ssr/secure/ws/TeamingServiceV1";
 	private static final String TEAMING_SERVICE_ADDRESS_TOKEN   = "http://localhost:8080/ssr/token/ws/TeamingServiceV1";
 
 	
@@ -82,13 +82,20 @@ public class TeamingServiceClientWithStub {
 		changeUserPassword(user.getId(), "test", "newtest");
 		*/
 		
+		//copyFileFromUserToEntry();
+		
 		//copyFolderEntry(177, 1287, false);
 		//copyFolderEntry(177, 1288, true);
 		
 		//checkBinderSubscriptions(41);
 		//addMicroBlog();
-		//searchFolderEntries();
+		
+		//searchFolderEntriesAndNoReplies();
+		//searchFolderEntriesAndReplies();
+		//getAllRepliesToSpecificEntry();
+
 		//testApplicationScopedToken();
+		
 		//calendarSync();
 		//checkUsers();
 		//checkGroups();
@@ -249,7 +256,7 @@ public class TeamingServiceClientWithStub {
     		System.out.println(entry.getTitle());
     	}
 	}
-	public static void searchFolderEntries() throws Exception {
+	public static void searchFolderEntriesAndNoReplies() throws Exception {
 		TeamingServiceSoapBindingStub stub = getStub();
 		
 		// Search for all folder entries with the word "test" in entry title.
@@ -262,7 +269,38 @@ public class TeamingServiceClientWithStub {
     	System.out.println("Result size: " + entries.length);
     	for(int i = 0; i < entries.length; i++) {
     		FolderEntryBrief entry = entries[i];
-    		System.out.println("id=" + entry.getId() + ", binderId=" + entry.getBinderId() + ", title=" + entry.getTitle());
+    		System.out.println("id=" + entry.getId() + ", binderId=" + entry.getBinderId() + ", docNumber=" + entry.getDocNumber() + ", docLevel=" + entry.getDocLevel() + ", title=" + entry.getTitle());
+    	}
+	}
+	public static void searchFolderEntriesAndReplies() throws Exception {
+		TeamingServiceSoapBindingStub stub = getStub();
+		
+		// Search for all folder entries and replies with the word "test" in any text field.
+    	Criteria crit = new Criteria()
+			.add(eq(Constants.ALL_TEXT_FIELD, "test"));
+	
+		FolderEntryCollection coll = stub.search_getFolderEntries(null, crit.toQuery().asXML(), 0, -1);
+    	FolderEntryBrief[] entries = coll.getEntries();
+    	System.out.println("Result size: " + entries.length);
+    	for(int i = 0; i < entries.length; i++) {
+    		FolderEntryBrief entry = entries[i];
+    		System.out.println("id=" + entry.getId() + ", binderId=" + entry.getBinderId() + ", docNumber=" + entry.getDocNumber() + ", docLevel=" + entry.getDocLevel() + ", title=" + entry.getTitle());
+    	}
+	}
+	public static void getAllRepliesToSpecificEntry() throws Exception {
+		TeamingServiceSoapBindingStub stub = getStub();
+		
+		// Fetch all replies to a specific entry.
+    	Criteria crit = new Criteria()
+			.add(eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_REPLY))
+			.add(eq(Constants.ENTRY_TOP_ENTRY_ID_FIELD, "129"));
+	
+		FolderEntryCollection coll = stub.search_getFolderEntries(null, crit.toQuery().asXML(), 0, -1);
+    	FolderEntryBrief[] entries = coll.getEntries();
+    	System.out.println("Result size: " + entries.length);
+    	for(int i = 0; i < entries.length; i++) {
+    		FolderEntryBrief entry = entries[i];
+    		System.out.println("id=" + entry.getId() + ", binderId=" + entry.getBinderId() + ", docNumber=" + entry.getDocNumber() + ", docLevel=" + entry.getDocLevel() + ", title=" + entry.getTitle());
     	}
 	}
 	public static void checkTags(long binderId) throws Exception {
@@ -837,5 +875,24 @@ public class TeamingServiceClientWithStub {
 		stub._setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 		return stub;
+	}
+	
+	public static void copyFileFromUserToEntry() throws Exception {
+		TeamingServiceSoapBindingStub stub = getStub();
+
+		User admin = stub.profile_getUser(null, 1, false); 
+		
+		if(admin.getAttachmentsField() != null && admin.getAttachmentsField().getAttachments() != null &&
+				admin.getAttachmentsField().getAttachments().length > 0) {
+			Attachment attachment = admin.getAttachmentsField().getAttachments()[0];
+			// Fetch the first attachment associated with this user's profile.
+			byte[] fileContent = stub.profile_getAttachmentAsByteArray(null, 1, attachment.getId());
+			// Upload the file as an attachment to the specific entry.
+			stub.folder_uploadFileAsByteArray(null, 204, null, attachment.getFileName(), fileContent);
+			System.out.println("Successfully copied");
+		}
+		else {
+			System.out.println("This user doesn't have any attachment");
+		}
 	}
 }

@@ -172,7 +172,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		getBinderService().binder_uploadFile(accessToken, binderId, fileUploadDataItemName, fileName);
 	}
 	
-
+	public void binder_uploadFileAsByteArray(String accessToken, long binderId, String fileUploadDataItemName, String fileName, byte[] fileContent) {
+		getBinderService().binder_uploadFileAsByteArray(accessToken, binderId, fileUploadDataItemName, fileName, fileContent);
+	}
+	
 	/*
 	public long binder_addBinderWithXML(String accessToken, long parentId, String definitionId, String inputDataAsXML) {
 		return getBinderService().binder_addBinderWithXML(accessToken, parentId, definitionId, inputDataAsXML);
@@ -229,7 +232,11 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void binder_setTag(String accessToken, Tag tag) {
 		getBinderService().binder_setTag(accessToken, tag);
 	}
-		
+
+	public byte[] binder_getAttachmentAsByteArray(String accessToken, long binderId, String attachmentId) {
+		return getBinderService().binder_getAttachmentAsByteArray(accessToken, binderId, attachmentId);
+	}
+
 	/// Folder Service
 	
 	public FolderEntry folder_getEntry(String accessToken, long entryId, boolean includeAttachments, boolean eventAsIcalString) {
@@ -281,8 +288,11 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public FileVersions folder_getFileVersions(String accessToken, long entryId, String fileName) {
 		return getFolderService().folder_getFileVersions(accessToken, entryId, fileName);
 	}
-	public void folder_uploadFile(String accessToken,long entryId, String fileUploadDataItemName, String fileName) {
+	public void folder_uploadFile(String accessToken, long entryId, String fileUploadDataItemName, String fileName) {
 		getFolderService().folder_uploadFile(accessToken, entryId, fileUploadDataItemName, fileName);
+	}
+	public void folder_uploadFileAsByteArray(String accessToken,long entryId, String fileUploadDataItemName, String fileName, byte[] fileContent) {
+		getFolderService().folder_uploadFileAsByteArray(accessToken, entryId, fileUploadDataItemName, fileName, fileContent);
 	}
 	public void folder_uploadFileStaged(String accessToken, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath) {
 		getFolderService().folder_uploadFileStaged(accessToken, entryId, fileUploadDataItemName, fileName, stagedFileRelativePath);
@@ -334,6 +344,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 
 	public void folder_modifyEntry(String accessToken, FolderEntry entry) {
 		getFolderService().folder_modifyEntry(accessToken, entry);
+	}
+
+	public byte[] folder_getAttachmentAsByteArray(String accessToken, long entryId, String attachmentId) {
+		return getFolderService().folder_getAttachmentAsByteArray(accessToken, entryId, attachmentId);
 	}
 
 	/// Ical Service
@@ -422,6 +436,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void profile_uploadFile(String accessToken, long principalId, String fileUploadDataItemName, String fileName) {
 		getProfileService().profile_uploadFile(accessToken, principalId, fileUploadDataItemName, fileName);
 	}
+	public void profile_uploadFileAsByteArray(String accessToken, long principalId, String fileUploadDataItemName, String fileName, byte[] fileContent) {
+		getProfileService().profile_uploadFileAsByteArray(accessToken, principalId, fileUploadDataItemName, fileName, fileContent);
+	}
 	public void profile_changePassword(String accessToken, Long userId, String oldPassword, String newPassword) {
 		getProfileService().profile_changePassword(accessToken, userId, oldPassword, newPassword);
 	}
@@ -468,6 +485,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 
 	public void profile_modifyGroup(String accessToken, Group group) {
 		getProfileService().profile_modifyGroup(accessToken, group);
+	}
+
+	public byte[] profile_getAttachmentAsByteArray(String accessToken, long userId, String attachmentId) {
+		return getProfileService().profile_getAttachmentAsByteArray(accessToken, userId, attachmentId);
 	}
 
 	// Search Service

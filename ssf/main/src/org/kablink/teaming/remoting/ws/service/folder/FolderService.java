@@ -61,6 +61,8 @@ public interface FolderService {
 	public FileVersions folder_getFileVersions(String accessToken, long entryId, String fileName);
 	public void folder_uploadFile(String accessToken, long entryId, 
 			String fileUploadDataItemName, String fileName);
+	public void folder_uploadFileAsByteArray(String accessToken, long entryId, 
+			String fileUploadDataItemName, String fileName, byte[] fileContent);
 	public void folder_uploadFileStaged(String accessToken, long entryId, 
 			String fileUploadDataItemName, String fileName, String stagedFileRelativePath);
 	public void folder_synchronizeMirroredFolder(String accessToken, long binderId);
@@ -86,4 +88,6 @@ public interface FolderService {
 	public Tag[] folder_getEntryTags(String accessToken, long entryId);
 	public void folder_setEntryTag(String accessToken, Tag tag);
 	public void folder_setRating(String accessToken, long entryId, long value);
+	public byte[] folder_getAttachmentAsByteArray(String accessToken, long entryId, String attachmentId);
+
 }

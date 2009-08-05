@@ -55,6 +55,7 @@ public interface BinderService {
 	public void binder_moveBinder(String accessToken, long binderId, long destinationId);
 	public void binder_modifyBinder(String accessToken, Binder binder);
 	public void binder_uploadFile(String accessToken, long binderId, String fileUploadDataItemName, String fileName);
+	public void binder_uploadFileAsByteArray(String accessToken, long binderId, String fileUploadDataItemName, String fileName, byte[] fileContent);
 	public void binder_removeFile(String accessToken, long binderId, String fileName);
 	/**
 	 * Returns information about the versions of the file. 
@@ -94,5 +95,6 @@ public interface BinderService {
 	public Subscription binder_getSubscription(String accessToken, long binderId); 
 	public void binder_setSubscription(String accessToken, long binderId, Subscription subscription); 
 	public FolderCollection binder_getFolders(String accessToken, long binderId, int firstRecord, int maxRecords);
-	   
+	public byte[] binder_getAttachmentAsByteArray(String accessToken, long binderId, String attachmentId);
+   
 }
