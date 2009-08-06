@@ -64,7 +64,7 @@ public class LandingPageEditor extends Composite
 		vPanel = new VerticalPanel();
 		
 		// Create a hint
-		hintLabel = new Label( GwtTeaming.m_stringMessages.lpeHint() );
+		hintLabel = new Label( GwtTeaming.getMessages().lpeHint() );
 		hintLabel.addStyleName( "lpeHint" );
 		vPanel.add( hintLabel );
 		

@@ -49,8 +49,26 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class GwtTeaming implements EntryPoint
 {
-	public static final GwtTeamingMessages		m_stringMessages = GWT.create( GwtTeamingMessages.class );
-	public static final GwtTeamingImageBundle	m_imageBundle = GWT.create( GwtTeamingImageBundle.class );
+	private static final GwtTeamingMessages		m_stringMessages = GWT.create( GwtTeamingMessages.class );
+	private static final GwtTeamingImageBundle	m_imageBundle = GWT.create( GwtTeamingImageBundle.class );
+	
+	/**
+	 * Return the object that is used to retrieve images.
+	 */
+	public static GwtTeamingImageBundle getImageBundle()
+	{
+		return m_imageBundle;
+	}// end getImageBundle()
+	
+	
+	/**
+	 * Return the object that is used to retrieve strings.
+	 */
+	public static GwtTeamingMessages getMessages()
+	{
+		return m_stringMessages;
+	}// end GwtTeamingMessages()
+	
 	
 	/**
 	 * This is the entry point method.
