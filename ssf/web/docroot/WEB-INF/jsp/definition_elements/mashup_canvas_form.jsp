@@ -33,6 +33,9 @@
  */
 %>
 <% //div %>
+
+<meta name="gwt:property" content="locale=<%= NLT.get( "Teaming.Lang" ) %>">
+
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="ss_mashupItemId" value="0" scope="request"/>
 <%  
@@ -51,6 +54,9 @@
 	request.setAttribute("ss_mashupListDepth", ss_mashupListDepth);
 %>
 <c:set var="ss_mashupPropertyName" value="${property_name}" scope="request"/>
+
+<script type="text/javascript" src="<html:rootPath />js/gwt/org.kablink.teaming.gwt.GwtTeaming/org.kablink.teaming.gwt.GwtTeaming.nocache.js"></script>
+
 <c:if test="${ssConfigJspStyle == 'form'}">
 <script type="text/javascript">
 function ss_mashup_deleteAll_${renderResponse.namespace}() {
@@ -65,6 +71,8 @@ function ss_mashup_deleteAll_${renderResponse.namespace}() {
 </script>
   <div style="padding: 20px 0px 20px 0px;">
     <div><span class="ss_bold">${property_caption}</span></div>
+
+	<!-- This div holds the checkboxes for hiding/showing the various parts of the page, masthead, sidebar, etc. -->
     <div style="padding:6px 0px 6px 20px;">
       <input type="checkbox" name="${ss_mashupPropertyName}__hideMasthead"
       	id="${ss_mashupPropertyName}__hideMasthead"
@@ -117,7 +125,14 @@ function ss_mashup_deleteAll_${renderResponse.namespace}() {
       </label>
       <br/>
     </div>
+
+	<!-- This div will hold the Landing Page editor implemented in gwt.  See GwtTeaming.java -->
+	<div id="gwtLandingPageEditorDiv">
+	</div>
 </c:if>
+
+<!-- We will only use the following code if we are displaying the landing page. -->
+<c:if test="${ssConfigJspStyle != 'form'}">
 <div 
   <c:if test="${ssConfigJspStyle == 'form'}"> class="ss_mashup_canvas_form" </c:if>
   <c:if test="${ssConfigJspStyle != 'form'}"> class="ss_mashup_canvas_view" </c:if>
@@ -187,4 +202,6 @@ function ss_mashup_deleteAll_${renderResponse.namespace}() {
   <div id="ss_mashupDataValue" style="display:none;">
   ${ssDefinitionEntry.customAttributes[property_name].value}
   </div>
+</c:if>
+
 </c:if>

@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client;
 
+import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
@@ -48,49 +49,66 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class GwtTeaming implements EntryPoint
 {
-	private GwtTeamingMessages		m_stringMessages = GWT.create( GwtTeamingMessages.class );
-	private GwtTeamingImageBundle	m_imageBundle = GWT.create( GwtTeamingImageBundle.class );
+	public static final GwtTeamingMessages		m_stringMessages = GWT.create( GwtTeamingMessages.class );
+	public static final GwtTeamingImageBundle	m_imageBundle = GWT.create( GwtTeamingImageBundle.class );
 	
 	/**
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad()
 	{
-		final Label	tutorialPanelStateText = new Label();
-		AbstractImagePrototype warnImg;
-		GwtRpcServiceAsync	gwtRpcService;
-	
-		// create an async callback to handle the result of the request to get the tutorial panel state:
-		AsyncCallback<String> callback = new AsyncCallback<String>()
-		{
-			/**
-			 * 
-			 */
-			public void onFailure(Throwable t)
-			{
-				// display error text if we can't get the tutorial panel state:
-				tutorialPanelStateText.setText( "Failed to get the tutorial panel state" );
-			}
-	
-			/**
-			 * 
-			 * @param result
-			 */
-			public void onSuccess(String result)
-			{
-				// display the tutorial panel state in the label:
-				Window.alert( "1" );
-				tutorialPanelStateText.setText( m_stringMessages.testPanelState( result ) );
-			}
-		};
-	
-		tutorialPanelStateText.setText( m_stringMessages.testWaiting() );
-		gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
-		gwtRpcService.getTutorialPanelState( callback );
+		RootPanel	rootPanel;
 		
-		warnImg = m_imageBundle.warningIcon16(); 
-	      
-		RootPanel.get().add( tutorialPanelStateText );
-		RootPanel.get().add( warnImg.createImage() );
+		// Are we in the the Landing Page Editor?
+		rootPanel = RootPanel.get( "gwtLandingPageEditorDiv" );
+		if ( rootPanel != null )
+		{
+			LandingPageEditor	lpEditor;
+			
+			// Yes
+			// Create a Landing Page Editor and add it to the page.
+			lpEditor = new LandingPageEditor();
+			rootPanel.add( lpEditor );
+		}
+		
+		if ( false )
+		{
+			final Label	tutorialPanelStateText = new Label();
+			AbstractImagePrototype img;
+			GwtRpcServiceAsync	gwtRpcService;
+		
+			// create an async callback to handle the result of the request to get the tutorial panel state:
+			AsyncCallback<String> callback = new AsyncCallback<String>()
+			{
+				/**
+				 * 
+				 */
+				public void onFailure(Throwable t)
+				{
+					// display error text if we can't get the tutorial panel state:
+					tutorialPanelStateText.setText( "Failed to get the tutorial panel state" );
+				}
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				public void onSuccess(String result)
+				{
+					// display the tutorial panel state in the label:
+					Window.alert( "1" );
+					tutorialPanelStateText.setText( m_stringMessages.testPanelState( result ) );
+				}
+			};
+		
+			tutorialPanelStateText.setText( m_stringMessages.testWaiting() );
+			gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
+			gwtRpcService.getTutorialPanelState( callback );
+			
+			img = m_imageBundle.landingPageEditorGraphic(); 
+		      
+			RootPanel.get().add( tutorialPanelStateText );
+			RootPanel.get().add( img.createImage() );
+		}
 	}// end onModuleLoad()
 }// end GwtTeaming

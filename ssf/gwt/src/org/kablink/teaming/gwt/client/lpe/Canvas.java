@@ -31,29 +31,40 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client;
+package org.kablink.teaming.gwt.client.lpe;
 
-import com.google.gwt.i18n.client.Messages;
-
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 
 /**
- * This interface is used to retrieve strings from the file GwtTeamingMessages*.properties
+ * This widget is used as the canvas in the Landing Page Editor.  This canvas displays the
+ * elements that make up the Landing Page configuration.
  * @author jwootton
  *
  */
-public interface GwtTeamingMessages extends Messages
+public class Canvas extends Composite
 {
-	// lpe stands for Landing Page Editor
-	String lpeCustomJSP();
-	String lpeEntry();
-	String lpeFolder();
-	String lpeGraphic();
-	String lpeHint();
-	String lpeLinkEntry();
-	String lpeLinkFolderWS();
-	String lpeLinkURL();
-	String lpeList();
-	String lpeTable();
-	String testPanelState( String value );
-	String testWaiting();
-}// end GwtTeamingMessages
+	private FlowPanel	m_panel;
+	
+	/**
+	 * 
+	 */
+	public Canvas()
+	{
+		m_panel = new FlowPanel();
+
+		// Associate the panel with its stylesheet.
+		m_panel.addStyleName( "lpeCanvas" );
+		
+		{
+			Label	tmpLabel;
+			
+			tmpLabel = new Label( "This is the canvas" );
+			m_panel.add( tmpLabel );
+		}
+		
+		// All composites must call initWidget() in their constructors.
+		initWidget( m_panel );
+	}// end Canvas()
+}// end Canvas

@@ -44,9 +44,33 @@ import com.google.gwt.user.client.ui.ImageBundle;
  */
 public interface GwtTeamingImageBundle extends ImageBundle
 {
-	/**
-	 * 
-	 */
+	@Resource("org/kablink/teaming/gwt/public/images/lpe_custom_jsp.gif")
+	public AbstractImagePrototype landingPageEditorCustomJsp();
+
+	@Resource("org/kablink/teaming/gwt/public/images/lpe_entry16.png")
+	public AbstractImagePrototype landingPageEditorEntry();
+
+	@Resource("org/kablink/teaming/gwt/public/images/lpe_folder.gif")
+	public AbstractImagePrototype landingPageEditorFolder();
+
+	@Resource("org/kablink/teaming/gwt/public/images/lpe_graphic16.png")
+	public AbstractImagePrototype landingPageEditorGraphic();
+
+	@Resource("org/kablink/teaming/gwt/public/images/lpe_link_entry.gif")
+	public AbstractImagePrototype landingPageEditorLinkEntry();
+
+	@Resource("org/kablink/teaming/gwt/public/images/lpe_link_folder.gif")
+	public AbstractImagePrototype landingPageEditorLinkFolder();
+
+	@Resource("org/kablink/teaming/gwt/public/images/lpe_link_url.gif")
+	public AbstractImagePrototype landingPageEditorLinkUrl();
+
+	@Resource("org/kablink/teaming/gwt/public/images/lpe_list16b.png")
+	public AbstractImagePrototype landingPageEditorList();
+
+	@Resource("org/kablink/teaming/gwt/public/images/lpe_table_16.png")
+	public AbstractImagePrototype landingPageEditorTable();
+
 	@Resource("org/kablink/teaming/gwt/public/images/warn_icon16.gif")
 	public AbstractImagePrototype warningIcon16();
 }// end GwtTeamingImageBundle
