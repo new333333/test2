@@ -31,29 +31,60 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client;
+package org.kablink.teaming.gwt.client.lpe;
 
-import com.google.gwt.i18n.client.Messages;
+import org.kablink.teaming.gwt.client.GwtTeaming;
 
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
- * This interface is used to retrieve strings from the file GwtTeamingMessages*.properties
+ * This widget is the Landing Page Editor.  As its name implies, it is used to edit a 
+ * landing page configuration.
  * @author jwootton
  *
  */
-public interface GwtTeamingMessages extends Messages
+public class LandingPageEditor extends Composite
 {
-	// lpe stands for Landing Page Editor
-	String lpeCustomJSP();
-	String lpeEntry();
-	String lpeFolder();
-	String lpeGraphic();
-	String lpeHint();
-	String lpeLinkEntry();
-	String lpeLinkFolderWS();
-	String lpeLinkURL();
-	String lpeList();
-	String lpeTable();
-	String testPanelState( String value );
-	String testWaiting();
-}// end GwtTeamingMessages
+	private Palette	m_palette;
+	private Canvas		m_canvas;
+	
+	/**
+	 * 
+	 */
+	public LandingPageEditor()
+	{
+		HorizontalPanel	hPanel;
+		VerticalPanel	vPanel;
+		Label			hintLabel;
+		
+		// Create a vertical panel for the hint and the horizontal panel to live in.
+		vPanel = new VerticalPanel();
+		
+		// Create a hint
+		hintLabel = new Label( GwtTeaming.m_stringMessages.lpeHint() );
+		hintLabel.addStyleName( "lpeHint" );
+		vPanel.add( hintLabel );
+		
+		// Create a panel for the palette and canvas to live in.
+		hPanel = new HorizontalPanel();
+		
+		// Create some space between the palette and the canvas.
+		hPanel.setSpacing( 5 );
+		
+		// Create a palette and a canvas.
+		m_palette = new Palette();
+		m_canvas = new Canvas();
+		
+		// Add the palette and canvas to the panel.
+		hPanel.add( m_palette );
+		hPanel.add( m_canvas );
+		
+		vPanel.add( hPanel );
+		
+		// All composites must call initWidget() in their constructors.
+		initWidget( vPanel );
+	}// end LandingPageEditor()
+}// end LandingPageEditor

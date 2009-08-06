@@ -31,29 +31,47 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client;
+package org.kablink.teaming.gwt.client.lpe;
 
-import com.google.gwt.i18n.client.Messages;
-
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 
 /**
- * This interface is used to retrieve strings from the file GwtTeamingMessages*.properties
+ * This class is used as an item in the palette in the landing page editor.
  * @author jwootton
  *
  */
-public interface GwtTeamingMessages extends Messages
+public class PaletteItem extends Composite
 {
-	// lpe stands for Landing Page Editor
-	String lpeCustomJSP();
-	String lpeEntry();
-	String lpeFolder();
-	String lpeGraphic();
-	String lpeHint();
-	String lpeLinkEntry();
-	String lpeLinkFolderWS();
-	String lpeLinkURL();
-	String lpeList();
-	String lpeTable();
-	String testPanelState( String value );
-	String testWaiting();
-}// end GwtTeamingMessages
+	/**
+	 * 
+	 */
+	public PaletteItem( AbstractImagePrototype abstractImg, String text )
+	{
+		FlowPanel	panel;
+		InlineLabel	label;
+		Image		img;
+		
+		// Create a FlowPanel for the palette items to live in.
+		panel = new FlowPanel();
+
+		// Associate the panel with its stylesheet.
+		panel.addStyleName( "lpePaletteItem" );
+
+		// Add the image to this widget
+		img = abstractImg.createImage();
+		img.addStyleName( "lpePaletteItemImg" );
+		panel.add( img );
+		
+		// Add the text to this widget.
+		label = new InlineLabel( text );
+		panel.add( label );
+
+		// All composites must call initWidget() in their constructors.
+		initWidget( panel );
+	}// end Palette()
+
+}// end PaletteItem
