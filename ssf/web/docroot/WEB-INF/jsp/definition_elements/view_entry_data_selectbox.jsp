@@ -97,4 +97,33 @@
 </c:forEach>
 </ul>
 </div>
+  <c:if test="${!empty ss_userVersionPrincipals}">
+    <div class="ss_perUserViewElement">
+    <ssf:expandableArea title='<%= NLT.get("element.perUser.viewPersonalVersions") %>' titleClass="ss_fineprint">
+    <table>
+    <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
+      <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.id}"/>
+      <tr>
+      <td valign="top" style="padding-left:10px;">
+		<span class="ss_bold">${perUserUser.title}</span>
+	  </td>
+	  <td valign="top" style="padding-left:6px;">
+		<ul class="ss_nobullet">
+			<c:forEach var="selection" items="${ssDefinitionEntry.customAttributes[perUserPropertyName].valueSet}" >
+				<%
+				String caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
+											(String) pageContext.getAttribute("selection"));
+				caption = NLT.getDef(caption);
+				%>
+				<c:set var="caption" value="<%= caption %>"/>
+				<li><span class="${ss_element_display_style_item}"><c:out value="${caption}" escapeXml="false"/></span></li>
+			</c:forEach>
+		</ul>
+	  </td>
+      </tr>
+    </c:forEach>
+    </table>
+    </ssf:expandableArea>
+    </div>
+  </c:if>
 </c:if>
