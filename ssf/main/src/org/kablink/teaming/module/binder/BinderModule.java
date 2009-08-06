@@ -44,6 +44,7 @@ import java.util.Set;
 
 import org.dom4j.Document;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SimpleName;
@@ -483,4 +484,6 @@ public interface BinderModule {
 	public void export(Long binderId, Long entityId, OutputStream out, Map options) throws Exception;
 	
 	public void importZip(Long binderId, InputStream fIn) throws IOException;
+	
+	public String filename8BitSingleByteOnly(FileAttachment attachment, boolean _8BitSingleByteOnly);
 }

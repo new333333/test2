@@ -508,12 +508,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		checkAccess(binder, BinderOperation.indexBinder);
 		return loadBinderProcessor(binder).indexBinder(binder, includeEntries);
 	}
-    
-    public IndexErrors indexBinderIncremental(Long binderId, boolean includeEntries) {
+
+	public IndexErrors indexBinderIncremental(Long binderId,
+			boolean includeEntries) {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.indexBinder);
- 	    return loadBinderProcessor(binder).indexBinderIncremental(binder, includeEntries);
-    }
+		return loadBinderProcessor(binder).indexBinderIncremental(binder,
+				includeEntries);
+	}
 
 	// no transaction
 	public void modifyBinder(Long binderId, InputDataAccessor inputData,
@@ -565,7 +567,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 											"type" }, new Object[] {
 											binder.getId(), "f" });
 							filter.setZoneCheck(false); // skip zone, binder
-														// good enough
+							// good enough
 							ObjectControls objs = new ObjectControls(
 									FileAttachment.class, new String[] {
 											"fileItem.name", "owner.ownerId" });
@@ -1043,7 +1045,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		Hits hits = new Hits(0);
 
 		Query soQuery = so.getQuery(); // Get the query into a variable to avoid
-										// doing this very slow operation twice
+		// doing this very slow operation twice
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("Query is in executeSearchQuery: "
@@ -1463,13 +1465,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		List searchBinders = null;
 		if (levels >= 0
 				&& (!domTreeHelper.getPage().equals("") || top.getBinderCount() > maxBucketSize)) { // what
-																									// is
-																									// the
-																									// best
-																									// number
-																									// to
-																									// avoid
-																									// search??
+			// is
+			// the
+			// best
+			// number
+			// to
+			// avoid
+			// search??
 			// do search
 			if (domTreeHelper.getPage().equals("")) {
 				Map options = new HashMap();
@@ -1481,9 +1483,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				int results = (Integer) searchResults
 						.get(ObjectKeys.TOTAL_SEARCH_COUNT);
 				if (results > SPropsUtil.getInt("wsTree.maxBucketSize")) { // just
-																			// to
-																			// get
-																			// started
+					// to
+					// get
+					// started
 					searchResults = buildBinderVirtualTree(current, top,
 							domTreeHelper, results, maxBucketSize);
 					// If no results are returned, the work was completed in
@@ -1763,9 +1765,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				// Create the Lucene query
 				SearchObject searchObject = qb.buildQuery(crit.toQuery());
 				Query query = searchObject.getQuery(); // Get the query into a
-														// variable to avoid
-														// doing this very slow
-														// operation twice
+				// variable to avoid
+				// doing this very slow
+				// operation twice
 				if (logger.isDebugEnabled()) {
 					logger.debug("Query is in executeSearchQuery: "
 							+ query.toString());
@@ -1785,9 +1787,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			if (totalHits > skipLength) {
 				SearchObject searchObject = qb.buildQuery(crit.toQuery());
 				Query query = searchObject.getQuery(); // Get the query into a
-														// variable to avoid
-														// doing this very slow
-														// operation twice
+				// variable to avoid
+				// doing this very slow
+				// operation twice
 				if (logger.isDebugEnabled()) {
 					logger.debug("Query is: " + searchObject.toString());
 				}
@@ -1807,9 +1809,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				}
 				SearchObject searchObject = qb.buildQuery(crit.toQuery());
 				Query query = searchObject.getQuery(); // Get the query into a
-														// variable to avoid
-														// doing this very slow
-														// operation twice
+				// variable to avoid
+				// doing this very slow
+				// operation twice
 				if (logger.isDebugEnabled()) {
 					logger.debug("Query is in executeSearchQuery: "
 							+ query.toString());
@@ -1907,33 +1909,33 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		});
 	}
 
-	//used during export so that all id's are at least 8 digits long,
-	//with leading zeroes
+	// used during export so that all id's are at least 8 digits long,
+	// with leading zeroes
 	private NumberFormat nft = null;
 
 	private NumberFormat getNumberFormat() {
-		if(nft == null) {
-			int paddingSize = SPropsUtil.getInt("ssf.export.id.padding.size", 8);
+		if (nft == null) {
+			int paddingSize = SPropsUtil.getInt("export.id.padding.size", 8);
 			StringBuffer sb = new StringBuffer("#");
-			for(int i = 0; i < paddingSize; i++)
+			for (int i = 0; i < paddingSize; i++)
 				sb.append("0");
 			nft = new DecimalFormat(sb.toString());
 		}
 		return nft;
 	}
-	
-	//used during export. file name prefix used to identify xml files
-	//for folders and workspaces
+
+	// used during export. file name prefix used to identify xml files
+	// for folders and workspaces
 	private String binderPrefix = "bdr_";
-	
+
 	public void export(Long binderId, Long entityId, OutputStream out,
 			Map options) throws Exception {
 
 		getNumberFormat();
-		
+
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.modifyBinder);
-		
+
 		ZipOutputStream zipOut = new ZipOutputStream(out);
 
 		// Standard zip encoding is cp437. (needed when chars are outside the
@@ -1984,10 +1986,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		addDefinitions(defList, start.getDefinitions());
 
 		if (isWorkspace) {
-			zipOut.putNextEntry(new ZipEntry(binderPrefix + "w" + nft.format(start.getId()) + File.separator
-					+ "." + binderPrefix + "w" + nft.format(start.getId()) + ".xml"));
+			zipOut.putNextEntry(new ZipEntry(binderPrefix + "w"
+					+ nft.format(start.getId()) + File.separator + "."
+					+ binderPrefix + "w" + nft.format(start.getId()) + ".xml"));
 			XmlFileUtil.writeFile(getWorkspaceAsDoc(null, start.getId(), false,
-					binderPrefix + "w" + nft.format(start.getId()), defList), zipOut);
+					binderPrefix + "w" + nft.format(start.getId()), defList),
+					zipOut);
 			zipOut.closeEntry();
 
 			WorkspaceModule workspaceModule = (WorkspaceModule) SpringContextUtil
@@ -2000,20 +2004,23 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						binder,
 						(binder.getEntityType() == EntityType.workspace)
 								|| (binder.getEntityType() == EntityType.profiles),
-						options, binderPrefix + "w" + nft.format(start.getId()), defList);
+						options,
+						binderPrefix + "w" + nft.format(start.getId()), defList);
 			}
 		} else {
-			zipOut.putNextEntry(new ZipEntry(binderPrefix + "f" + nft.format(start.getId()) + File.separator
-					+ "." + binderPrefix + "f" + nft.format(start.getId()) + ".xml"));
+			zipOut.putNextEntry(new ZipEntry(binderPrefix + "f"
+					+ nft.format(start.getId()) + File.separator + "."
+					+ binderPrefix + "f" + nft.format(start.getId()) + ".xml"));
 			XmlFileUtil.writeFile(getFolderAsDoc(null, start.getId(), false,
-					binderPrefix + "f" + nft.format(start.getId()), defList), zipOut);
+					binderPrefix + "f" + nft.format(start.getId()), defList),
+					zipOut);
 			zipOut.closeEntry();
 
 			List<Folder> subFolders = ((Folder) start).getFolders();
 
 			for (Folder fdr : subFolders) {
-				processBinder(zipOut, fdr, false, options, binderPrefix + "f" + nft.format(start.getId()),
-						defList);
+				processBinder(zipOut, fdr, false, options, binderPrefix + "f"
+						+ nft.format(start.getId()), defList);
 			}
 
 			FolderModule folderModule = (FolderModule) SpringContextUtil
@@ -2027,17 +2034,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						.toString());
 				FolderEntry entry = folderModule.getEntry(start.getId(),
 						entryId);
-				processEntry(zipOut, entry, binderPrefix + "f" + nft.format(start.getId()), defList);
+				processEntry(zipOut, entry, binderPrefix + "f"
+						+ nft.format(start.getId()), defList);
 			}
 		}
-		
-		String entityLetter = isWorkspace?"w":"f";
+
+		String entityLetter = isWorkspace ? "w" : "f";
 		Set<FileAttachment> attachments = start.getFileAttachments();
-		
+
 		for (FileAttachment attach : attachments) {
-			processBinderAttachment(zipOut, start, attach, binderPrefix + entityLetter + nft.format(start.getId()));
+			processBinderAttachment(zipOut, start, attach, binderPrefix
+					+ entityLetter + nft.format(start.getId()));
 		}
-		
+
 		return;
 	}
 
@@ -2048,11 +2057,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 		if (isWorkspace) {
 			zipOut.putNextEntry(new ZipEntry(pathName + File.separator
-					+ binderPrefix + "w" + nft.format(binder.getId()) + File.separator + "." + binderPrefix + "w" + nft.format(binder.getId())
-					+ ".xml"));
+					+ binderPrefix + "w" + nft.format(binder.getId())
+					+ File.separator + "." + binderPrefix + "w"
+					+ nft.format(binder.getId()) + ".xml"));
 			XmlFileUtil.writeFile(getWorkspaceAsDoc(null, binder.getId(),
-					false, pathName + File.separator + binderPrefix + "w" + nft.format(binder.getId()), defList),
-					zipOut);
+					false, pathName + File.separator + binderPrefix + "w"
+							+ nft.format(binder.getId()), defList), zipOut);
 			zipOut.closeEntry();
 
 			WorkspaceModule workspaceModule = (WorkspaceModule) SpringContextUtil
@@ -2065,15 +2075,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						bdr,
 						(bdr.getEntityType() == EntityType.workspace)
 								|| (bdr.getEntityType() == EntityType.profiles),
-						options, pathName + File.separator + binderPrefix + "w" + nft.format(binder.getId()),
-						defList);
+						options, pathName + File.separator + binderPrefix + "w"
+								+ nft.format(binder.getId()), defList);
 			}
 		} else {
 			zipOut.putNextEntry(new ZipEntry(pathName + File.separator
-					+ binderPrefix + "f" + nft.format(binder.getId()) + File.separator + "." + binderPrefix + "f" + nft.format(binder.getId())
-					+ ".xml"));
+					+ binderPrefix + "f" + nft.format(binder.getId())
+					+ File.separator + "." + binderPrefix + "f"
+					+ nft.format(binder.getId()) + ".xml"));
 			XmlFileUtil.writeFile(getFolderAsDoc(null, binder.getId(), false,
-					pathName + File.separator + binderPrefix + "f" + nft.format(binder.getId()), defList), zipOut);
+					pathName + File.separator + binderPrefix + "f"
+							+ nft.format(binder.getId()), defList), zipOut);
 			zipOut.closeEntry();
 
 			FolderModule folderModule = (FolderModule) SpringContextUtil
@@ -2083,7 +2095,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 			for (Folder fdr : subFolders) {
 				processBinder(zipOut, fdr, false, options, pathName
-						+ File.separator + binderPrefix + "f" + nft.format(binder.getId()), defList);
+						+ File.separator + binderPrefix + "f"
+						+ nft.format(binder.getId()), defList);
 			}
 
 			Map folderEntries = folderModule
@@ -2097,15 +2110,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				FolderEntry entry = folderModule.getEntry(binder.getId(),
 						entryId);
 				processEntry(zipOut, entry, pathName + File.separator
-						+ binderPrefix + "f" + nft.format(binder.getId()), defList);
+						+ binderPrefix + "f" + nft.format(binder.getId()),
+						defList);
 			}
 		}
-		String entityLetter = isWorkspace?"w":"f";
+		String entityLetter = isWorkspace ? "w" : "f";
 		Set<FileAttachment> attachments = binder.getFileAttachments();
-		
+
 		for (FileAttachment attach : attachments) {
 			processBinderAttachment(zipOut, binder, attach, pathName
-					+ File.separator + binderPrefix + entityLetter + nft.format(binder.getId()));
+					+ File.separator + binderPrefix + entityLetter
+					+ nft.format(binder.getId()));
 		}
 		return;
 	}
@@ -2113,8 +2128,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	private void processBinderAttachment(ZipOutputStream zipOut, Binder binder,
 			FileAttachment attachment, String pathName) throws IOException {
 
-		processAttachment(zipOut, binder, binder, attachment,
-				pathName);
+		processAttachment(zipOut, binder, binder, attachment, pathName);
 
 		return;
 	}
@@ -2123,7 +2137,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		if (entry.getParentEntry() == null) {
 			return nft.format(entry.getId());
 		} else {
-			return calcFullId(entry.getParentEntry()) + "_" + nft.format(entry.getId());
+			return calcFullId(entry.getParentEntry()) + "_"
+					+ nft.format(entry.getId());
 		}
 	}
 
@@ -2134,16 +2149,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		fullId = calcFullId(entry);
 
 		if (!pathName.equals("")) {
-			zipOut.putNextEntry(new ZipEntry(pathName + File.separator
-					+ "e" + fullId + ".xml"));
+			zipOut.putNextEntry(new ZipEntry(pathName + File.separator + "e"
+					+ fullId + ".xml"));
 			XmlFileUtil.writeFile(getEntryAsDoc(null, entry.getParentBinder()
 					.getId(), entry.getId(), false, pathName + File.separator
-					+ "e" + fullId, defList),
-					zipOut);
+					+ "e" + fullId, defList), zipOut);
 		} else {
 			zipOut.putNextEntry(new ZipEntry("e" + fullId + ".xml"));
 			XmlFileUtil.writeFile(getEntryAsDoc(null, entry.getParentBinder()
-					.getId(), entry.getId(), false, "e" + fullId, defList), zipOut);
+					.getId(), entry.getId(), false, "e" + fullId, defList),
+					zipOut);
 		}
 		zipOut.closeEntry();
 
@@ -2167,16 +2182,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		String newFullId = fullId + "_" + nft.format(reply.getId());
 
 		if (!pathName.equals("")) {
-			zipOut.putNextEntry(new ZipEntry(pathName + File.separator
-					+ "e" + newFullId +".xml"));
+			zipOut.putNextEntry(new ZipEntry(pathName + File.separator + "e"
+					+ newFullId + ".xml"));
 			XmlFileUtil.writeFile(getEntryAsDoc(null, reply.getParentBinder()
 					.getId(), reply.getId(), false, pathName + File.separator
-					+ "e" + newFullId, defList),
-					zipOut);
+					+ "e" + newFullId, defList), zipOut);
 		} else {
 			zipOut.putNextEntry(new ZipEntry("e" + newFullId + ".xml"));
 			XmlFileUtil.writeFile(getEntryAsDoc(null, reply.getParentBinder()
-					.getId(), reply.getId(), false, "e" + newFullId, defList), zipOut);
+					.getId(), reply.getId(), false, "e" + newFullId, defList),
+					zipOut);
 		}
 		zipOut.closeEntry();
 
@@ -2211,6 +2226,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		FileModule fileModule = (FileModule) SpringContextUtil
 				.getBean("fileModule");
 
+		String fileName = filename8BitSingleByteOnly(attachment, SPropsUtil
+				.getBoolean("export.filename.8bitsinglebyte.only", true));
+
 		Set fileVersions = attachment.getFileVersions();
 		Iterator<VersionAttachment> versionIter = fileVersions.iterator();
 
@@ -2221,21 +2239,23 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 		VersionAttachment vAttach = versionIter.next();
 
-		try{
-			InputStream fileStream = fileModule.readFile(binder, entity, vAttach);
+		try {
+			InputStream fileStream = fileModule.readFile(binder, entity,
+					vAttach);
 
 			zipOut.putNextEntry(new ZipEntry(pathName + File.separator
-				+ attachment.getFileItem().getName()));
+					+ fileName));
 			FileUtil.copy(fileStream, zipOut);
 			zipOut.closeEntry();
 
 			fileStream.close();
-		}catch(NullPointerException npe){
+		} catch (NullPointerException npe) {
 			logger.error(npe);
-			
+
 			zipOut.putNextEntry(new ZipEntry(pathName + File.separator
-					+ attachment.getFileItem().getName() + ".error_message.txt"));
-			zipOut.write(NLT.get("export.error.attachment", "Error processing this attachment").getBytes());	
+					+ fileName + ".error_message.txt"));
+			zipOut.write(NLT.get("export.error.attachment",
+					"Error processing this attachment").getBytes());
 			zipOut.closeEntry();
 		}
 
@@ -2243,26 +2263,28 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 		for (int i = 1; i < fileVersions.size(); i++) {
 			vAttach = versionIter.next();
-			
+
 			int versionNum = fileVersions.size() - i;
-			
-			try{
-				InputStream fileStream = fileModule.readFile(binder, entity, vAttach);
-				
+
+			try {
+				InputStream fileStream = fileModule.readFile(binder, entity,
+						vAttach);
+
 				zipOut.putNextEntry(new ZipEntry(pathName + File.separator
-						+ attachment.getFileItem().getName() + ".versions"
-						+ File.separator + versionNum + "." + fileExt));
+						+ fileName + ".versions" + File.separator + versionNum
+						+ "." + fileExt));
 				FileUtil.copy(fileStream, zipOut);
 				zipOut.closeEntry();
-	
+
 				fileStream.close();
-			}catch(NullPointerException npe){
+			} catch (NullPointerException npe) {
 				logger.error(npe);
-				
+
 				zipOut.putNextEntry(new ZipEntry(pathName + File.separator
-						+ attachment.getFileItem().getName() + ".versions"
-						+ File.separator + versionNum + "." + fileExt + ".error_message.txt"));
-				zipOut.write(NLT.get("export.error.attachment", "Error processing this attachment").getBytes());
+						+ fileName + ".versions" + File.separator + versionNum
+						+ "." + fileExt + ".error_message.txt"));
+				zipOut.write(NLT.get("export.error.attachment",
+						"Error processing this attachment").getBytes());
 				zipOut.closeEntry();
 			}
 		}
@@ -2270,7 +2292,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	private Document getEntryAsDoc(String accessToken, long binderId,
-			long entryId, boolean includeAttachments, String pathName, 
+			long entryId, boolean includeAttachments, String pathName,
 			Set defList) {
 		Long bId = new Long(binderId);
 		Long eId = new Long(entryId);
@@ -2291,8 +2313,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 		// attachments
 		adjustAttachmentUrls(doc, pathName);
-		
-		//workflows
+
+		// workflows
 		addWorkflows(doc.getRootElement(), entry, defList);
 
 		return doc;
@@ -2323,11 +2345,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 		// attachments
 		adjustAttachmentUrls(doc, pathName);
-		
-		//binder settings
+
+		// binder settings
 		addSettingsList(doc.getRootElement(), folder, defList);
-		
-		//workflows
+
+		// workflows
 		addWorkflows(doc.getRootElement(), folder, defList);
 
 		return doc;
@@ -2358,11 +2380,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 		// attachments
 		adjustAttachmentUrls(doc, pathName);
-		
-		//binder settings
+
+		// binder settings
 		addSettingsList(doc.getRootElement(), workspace, defList);
-		
-		//workflows
+
+		// workflows
 		addWorkflows(doc.getRootElement(), workspace, defList);
 
 		return doc;
@@ -2450,24 +2472,28 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		// see if attachments have been handled
 		Element root = entity.getEntryDef().getDefinition().getRootElement();
 
-		if (root != null){
+		if (root != null) {
 			Element attachments = (Element) root
 					.selectSingleNode("//item[@name='attachFiles']");
-			if (attachments == null){
-			
+			if (attachments == null) {
+
 				// Force processing of attachments. Not all forms will have an
 				// attachment element,
-				// but this is the only code that actually sends the files, even if they
-				// are part of a graphic or file element. So force attachment processing
+				// but this is the only code that actually sends the files, even
+				// if they
+				// are part of a graphic or file element. So force attachment
+				// processing
 				// to pick up all files
 				attachments = (Element) definitionModule.getDefinitionConfig()
 						.getRootElement().selectSingleNode(
 								"//item[@name='attachFiles']");
-		
-				Element flagElem = (Element) attachments.selectSingleNode("export");
-		
-				ElementBuilderUtil.buildElement(entityElem, entity, "attachFiles",
-						DefinitionUtils.getPropertyValue(attachments, "name"), flagElem
+
+				Element flagElem = (Element) attachments
+						.selectSingleNode("export");
+
+				ElementBuilderUtil.buildElement(entityElem, entity,
+						"attachFiles", DefinitionUtils.getPropertyValue(
+								attachments, "name"), flagElem
 								.attributeValue("elementBuilder"), context);
 			}
 		}
@@ -2509,99 +2535,117 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			attr.setValue(pathName + File.separator + tempFile.getName());
 		}
 	}
-	
+
 	private void addWorkflows(Element element, DefinableEntity entity,
-			Set defList){
-		
+			Set defList) {
+
 		Element workflowsEle = element.addElement("workflows");
-		
-		if(entity instanceof FolderEntry){
-			for (WorkflowState workflow: ((FolderEntry)entity).getWorkflowStates()) {
+
+		if (entity instanceof FolderEntry) {
+			for (WorkflowState workflow : ((FolderEntry) entity)
+					.getWorkflowStates()) {
 				if (workflow != null) {
-					if(workflowsEle != null) {
+					if (workflowsEle != null) {
 						defList.add(workflow.getDefinition());
-						
+
 						Element value = workflowsEle.addElement("process");
-						value.addAttribute("definitionId", workflow.getDefinition().getId());
-						value.addAttribute("name", workflow.getDefinition().getName());
+						value.addAttribute("definitionId", workflow
+								.getDefinition().getId());
+						value.addAttribute("name", workflow.getDefinition()
+								.getName());
 						value.addAttribute("state", workflow.getState());
 					}
 				}
 			}
-		}else if(entity instanceof Binder){
-			
-			DefinitionModule definitionModule = (DefinitionModule) SpringContextUtil.getBean("definitionModule");
-			
-			List workflowDefinitions = ((Binder)entity).getWorkflowDefinitions();
-			
+		} else if (entity instanceof Binder) {
+
+			DefinitionModule definitionModule = (DefinitionModule) SpringContextUtil
+					.getBean("definitionModule");
+
+			List workflowDefinitions = ((Binder) entity)
+					.getWorkflowDefinitions();
+
 			Element allowed = workflowsEle.addElement("allowed");
-			
-			for(int i = 0; i < workflowDefinitions.size(); i++){
-				if(allowed != null) {
+
+			for (int i = 0; i < workflowDefinitions.size(); i++) {
+				if (allowed != null) {
 					Element value = allowed.addElement("process");
-					value.addAttribute("definitionId", ((Definition)workflowDefinitions.get(i)).getId());
-					value.addAttribute("name", ((Definition)workflowDefinitions.get(i)).getName());
+					value.addAttribute("definitionId",
+							((Definition) workflowDefinitions.get(i)).getId());
+					value
+							.addAttribute("name",
+									((Definition) workflowDefinitions.get(i))
+											.getName());
 				}
 			}
-			
-			Map workflowAssociations = ((Binder)entity).getWorkflowAssociations();
-			
-			addDefinitions(defList, new ArrayList(workflowAssociations.values()));
-			
+
+			Map workflowAssociations = ((Binder) entity)
+					.getWorkflowAssociations();
+
+			addDefinitions(defList,
+					new ArrayList(workflowAssociations.values()));
+
 			Element associated = workflowsEle.addElement("associated");
-			
+
 			Iterator keyIter = workflowAssociations.keySet().iterator();
-			
-			while(keyIter.hasNext()){
-				if(associated != null) {
+
+			while (keyIter.hasNext()) {
+				if (associated != null) {
 					Element value = associated.addElement("process");
-					
+
 					String key = (String) keyIter.next();
-					
+
 					value.addAttribute("entryDefinitionId", key);
-					
+
 					Definition entryDef = definitionModule.getDefinition(key);
-					
-					value.addAttribute("entryDefinitionName", entryDef.getName());
-					
-					Definition workflowDef = ((Definition)workflowAssociations.get(key));
-					
-					value.addAttribute("workflowDefinitionId", workflowDef.getId());
-					value.addAttribute("workflowDefinitionName", workflowDef.getName());
+
+					value.addAttribute("entryDefinitionName", entryDef
+							.getName());
+
+					Definition workflowDef = ((Definition) workflowAssociations
+							.get(key));
+
+					value.addAttribute("workflowDefinitionId", workflowDef
+							.getId());
+					value.addAttribute("workflowDefinitionName", workflowDef
+							.getName());
 				}
 			}
 		}
 	}
-	
-	private void addSettingsList(Element element, Binder binder, Set defList){
-		
+
+	private void addSettingsList(Element element, Binder binder, Set defList) {
+
 		Element settingsEle = element.addElement("settings");
-		DefinitionModule definitionModule = (DefinitionModule) SpringContextUtil.getBean("definitionModule");
-		
-		//views
-		
+		DefinitionModule definitionModule = (DefinitionModule) SpringContextUtil
+				.getBean("definitionModule");
+
+		// views
+
 		List<Definition> viewDefinitions = binder.getViewDefinitions();
-		
+
 		Element views = settingsEle.addElement("views");
-		
-		for(int i = 0; i < viewDefinitions.size(); i++){
-			if(views != null) {
+
+		for (int i = 0; i < viewDefinitions.size(); i++) {
+			if (views != null) {
 				Element value = views.addElement("view");
-				value.addAttribute("definitionId", viewDefinitions.get(i).getId());
+				value.addAttribute("definitionId", viewDefinitions.get(i)
+						.getId());
 				value.addAttribute("name", viewDefinitions.get(i).getName());
 			}
 		}
-		
-		//entries
-		
+
+		// entries
+
 		List<Definition> entryDefinitions = binder.getEntryDefinitions();
-		
+
 		Element entries = settingsEle.addElement("entries");
-		
-		for(int i = 0; i < entryDefinitions.size(); i++){
-			if(entries != null) {
+
+		for (int i = 0; i < entryDefinitions.size(); i++) {
+			if (entries != null) {
 				Element value = entries.addElement("entry");
-				value.addAttribute("definitionId", entryDefinitions.get(i).getId());
+				value.addAttribute("definitionId", entryDefinitions.get(i)
+						.getId());
 				value.addAttribute("name", entryDefinitions.get(i).getName());
 			}
 		}
@@ -2633,19 +2677,21 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		zipOut.closeEntry();
 	}
 
-	//Regex patterns used during import to check whether the xml file is for
-	//folder, workspace, or entry
+	// Regex patterns used during import to check whether the xml file is for
+	// folder, workspace, or entry
 	private Pattern entryPattern = Pattern.compile("e[0-9]{8}");
-	private Pattern workspacePattern = Pattern.compile("." + binderPrefix + "w[0-9]{8}");
-	private Pattern folderPattern = Pattern.compile("." + binderPrefix + "f[0-9]{8}");
-	
+	private Pattern workspacePattern = Pattern.compile("." + binderPrefix
+			+ "w[0-9]{8}");
+	private Pattern folderPattern = Pattern.compile("." + binderPrefix
+			+ "f[0-9]{8}");
+
 	public void importZip(Long binderId, InputStream fIn) throws IOException {
 		FolderModule folderModule = (FolderModule) SpringContextUtil
 				.getBean("folderModule");
 
 		BinderModule binderModule = (BinderModule) SpringContextUtil
 				.getBean("binderModule");
-		
+
 		Binder binder = binderModule.getBinder(binderId);
 		ZipInputStream zIn = new ZipInputStream(fIn);
 
@@ -2658,31 +2704,31 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		HashMap binderIdMap = new HashMap();
 
 		String tempDir = deploy(zIn);
-		
-		try{
+
+		try {
 			File tempDirFile = new File(tempDir);
 			importDir(tempDirFile, tempDir, binderId, entryIdMap, binderIdMap);
-		}finally{
+		} finally {
 			FileUtil.deltree(tempDir);
 		}
 	}
 
-	private void importDir(File currentDir, String tempDir, Long topBinderId, Map entryIdMap, 
-			Map binderIdMap) throws IOException {
-		
+	private void importDir(File currentDir, String tempDir, Long topBinderId,
+			Map entryIdMap, Map binderIdMap) throws IOException {
+
 		SortedMap sortMap = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 		File[] tempChildren = currentDir.listFiles();
-		
-		for(File tempChild: tempChildren){
+
+		for (File tempChild : tempChildren) {
 			sortMap.put(tempChild.getAbsolutePath(), tempChild);
 		}
 
 		Set keys = sortMap.keySet();
 		Iterator keyIter = keys.iterator();
-		
-		while(keyIter.hasNext()){
+
+		while (keyIter.hasNext()) {
 			File child = (File) sortMap.get(keyIter.next());
-			
+
 			if (child.isDirectory())
 				importDir(child, tempDir, topBinderId, entryIdMap, binderIdMap);
 			else {
@@ -2692,179 +2738,195 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				if (child.getAbsolutePath().startsWith(
 						tempDir + File.separator + "__definitions"
 								+ File.separator)) {
-					
-					//adding definition to top binder locally if it does not already exist
-					
-					DefinitionModule definitionModule = (DefinitionModule) SpringContextUtil.getBean("definitionModule");
-					
+
+					// adding definition to top binder locally if it does not
+					// already exist
+
+					DefinitionModule definitionModule = (DefinitionModule) SpringContextUtil
+							.getBean("definitionModule");
+
 					Binder topBinder = loadBinder(topBinderId);
-					
+
 					String xmlStr = null;
-					
+
 					FileInputStream input = new FileInputStream(child);
-					
+
 					ByteArrayOutputStream output = new ByteArrayOutputStream();
 
 					int data = 0;
-				 	while ((data = input.read()) != -1) {
-					 	output.write(data);
-				 	}
+					while ((data = input.read()) != -1) {
+						output.write(data);
+					}
 
-				 	xmlStr = output.toString();
-				 	output.close();
-				 	input.close();
+					xmlStr = output.toString();
+					output.close();
+					input.close();
 
-				 	Document tempDoc = getDocument(xmlStr);
-				 	
-				 	String defId = getDatabaseId(tempDoc);
-				 	
-				 	if(defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)
-				 			|| defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)){
-				 		//don't add definitions if they are for mirrored file entries
-				 		//or mirrored file folders
-					 }else{
-						definitionModule.addDefinition(tempDoc, topBinder, false);
-					 }
-				
+					Document tempDoc = getDocument(xmlStr);
+
+					String defId = getDatabaseId(tempDoc);
+
+					if (defId
+							.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)
+							|| defId
+									.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)) {
+						// don't add definitions if they are for mirrored file
+						// entries
+						// or mirrored file folders
+					} else {
+						definitionModule.addDefinition(tempDoc, topBinder,
+								false);
+					}
+
 				} else if (fileExt.equals("xml")) {
-					
-					//need to check if this xml file is for a folder, workspace,
-					//entry, or just an attachment.
-					//checking by regex-ing the filename.
-					 
-					 //entry?
-					 Matcher m = entryPattern.matcher(child.getName());
-					 boolean result = m.lookingAt();
-					 
-					 if(result){
-						 String xmlStr = null;
 
-						 FileInputStream input = new FileInputStream(child);
-						 ByteArrayOutputStream output = new ByteArrayOutputStream();
+					// need to check if this xml file is for a folder,
+					// workspace,
+					// entry, or just an attachment.
+					// checking by regex-ing the filename.
 
-						 int data = 0;
-						 while ((data = input.read()) != -1) {
-							 output.write(data);
-						 }
+					// entry?
+					Matcher m = entryPattern.matcher(child.getName());
+					boolean result = m.lookingAt();
 
-						 xmlStr = output.toString();
-						 output.close();
-						 input.close();
+					if (result) {
+						String xmlStr = null;
 
-						 Document tempDoc = getDocument(xmlStr);
-						 String defId = getDefinitionId(tempDoc);
-						 
-						 if(defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)){
-							 setDefinitionId(tempDoc, ObjectKeys.DEFAULT_LIBRARY_ENTRY_DEF);
-							 defId = getDefinitionId(tempDoc); 
-						 }
-						 
-						 String entType = getEntityType(tempDoc);
-						 Long entryId = Long.valueOf(getId(tempDoc));
-						 Long binderId = Long.valueOf(getBinderId(tempDoc));
+						FileInputStream input = new FileInputStream(child);
+						ByteArrayOutputStream output = new ByteArrayOutputStream();
 
-						 Long newBinderId = (Long) binderIdMap.get(binderId);
-						 
-						 if(newBinderId == null){
-							 newBinderId = topBinderId;
-						 }
-						 
-						 String parentIdStr = getParentId(tempDoc);
-						 Long parentId = null;
+						int data = 0;
+						while ((data = input.read()) != -1) {
+							output.write(data);
+						}
 
-						 if (parentIdStr != null)
-							 parentId = Long.valueOf(parentIdStr);
-						 
-						 //check actual entity type of the data in the xml file
-						 if (entType.equals("entry")) {
-							 if(parentId == null)
-								 folder_addEntryWithXML(null, newBinderId, defId, xmlStr, tempDir, entryIdMap, 
-									 binderIdMap, entryId);
-							 else {
-								 Long newParentId = (Long) entryIdMap.get(parentId);
-								 folder_addReplyWithXML(null, newBinderId, newParentId, defId, xmlStr, tempDir, entryIdMap, 
-										 binderIdMap, entryId);
-								 }
-						 }
-					 }
-										 
-					 //workspace?
-					 m = workspacePattern.matcher(child.getName());
-					 result = m.lookingAt();
-					 
-					 if(result){
-						 String xmlStr = null;
-						 FileInputStream input = new FileInputStream(child);
-						 ByteArrayOutputStream output = new ByteArrayOutputStream();
-						 int data = 0;
-						 
-						 while ((data = input.read()) != -1) {
-							 output.write(data);
-						 }
+						xmlStr = output.toString();
+						output.close();
+						input.close();
 
-						 xmlStr = output.toString();
-						 output.close();
-						 input.close();
-						 
-						 Document tempDoc = getDocument(xmlStr);
-						 String defId = getDefinitionId(tempDoc);
-						 String entType = getEntityType(tempDoc);
-						 Long parentId = Long.valueOf(getBinderId(tempDoc));
-						 Long binderId = Long.valueOf(getId(tempDoc));
+						Document tempDoc = getDocument(xmlStr);
+						String defId = getDefinitionId(tempDoc);
 
-						 Long newParentId = (Long) binderIdMap.get(parentId);
-						 
-						 if(newParentId == null){
-							 newParentId = topBinderId;
-						 }
-						 
-						//check actual entity type of the data in the xml file
-						 if (entType.equals("workspace")) {
-							 binder_addBinderWithXML(null, newParentId, defId,xmlStr, binderId, binderIdMap);
-						 }
-					 }
+						if (defId
+								.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)) {
+							setDefinitionId(tempDoc,
+									ObjectKeys.DEFAULT_LIBRARY_ENTRY_DEF);
+							defId = getDefinitionId(tempDoc);
+						}
 
-					 //folder?
-					 m = folderPattern.matcher(child.getName());
-					 result = m.lookingAt();
-					 
-					 if(result){
-						 String xmlStr = null;
-						 FileInputStream input = new FileInputStream(child);
-						 ByteArrayOutputStream output = new ByteArrayOutputStream();
-						 int data = 0;
-						 
-						 while ((data = input.read()) != -1) {
-							 output.write(data);
-						 }
+						String entType = getEntityType(tempDoc);
+						Long entryId = Long.valueOf(getId(tempDoc));
+						Long binderId = Long.valueOf(getBinderId(tempDoc));
 
-						 xmlStr = output.toString();
-						 output.close();
-						 input.close();
-						 
-						 Document tempDoc = getDocument(xmlStr);
-						 String defId = getDefinitionId(tempDoc);
-						 
-						 if(defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)){
-							 setDefinitionId(tempDoc, ObjectKeys.DEFAULT_LIBRARY_FOLDER_DEF);
-							 defId = getDefinitionId(tempDoc); 
-						 }
-						 
-						 String entType = getEntityType(tempDoc);
-						 Long parentId = Long.valueOf(getBinderId(tempDoc));
-						 Long binderId = Long.valueOf(getId(tempDoc));
-						 
-						 Long newParentId = (Long) binderIdMap.get(parentId);
-						 
-						 if(newParentId == null){
-							 newParentId = topBinderId;
-						 }
-						 
-						//check actual entity type of the data in the xml file
-						 if (entType.equals("folder")) {
-							 binder_addBinderWithXML(null, newParentId, defId,xmlStr, binderId, binderIdMap);
-						 }
-					 }
+						Long newBinderId = (Long) binderIdMap.get(binderId);
+
+						if (newBinderId == null) {
+							newBinderId = topBinderId;
+						}
+
+						String parentIdStr = getParentId(tempDoc);
+						Long parentId = null;
+
+						if (parentIdStr != null)
+							parentId = Long.valueOf(parentIdStr);
+
+						// check actual entity type of the data in the xml file
+						if (entType.equals("entry")) {
+							if (parentId == null)
+								folder_addEntryWithXML(null, newBinderId,
+										defId, xmlStr, tempDir, entryIdMap,
+										binderIdMap, entryId);
+							else {
+								Long newParentId = (Long) entryIdMap
+										.get(parentId);
+								folder_addReplyWithXML(null, newBinderId,
+										newParentId, defId, xmlStr, tempDir,
+										entryIdMap, binderIdMap, entryId);
+							}
+						}
+					}
+
+					// workspace?
+					m = workspacePattern.matcher(child.getName());
+					result = m.lookingAt();
+
+					if (result) {
+						String xmlStr = null;
+						FileInputStream input = new FileInputStream(child);
+						ByteArrayOutputStream output = new ByteArrayOutputStream();
+						int data = 0;
+
+						while ((data = input.read()) != -1) {
+							output.write(data);
+						}
+
+						xmlStr = output.toString();
+						output.close();
+						input.close();
+
+						Document tempDoc = getDocument(xmlStr);
+						String defId = getDefinitionId(tempDoc);
+						String entType = getEntityType(tempDoc);
+						Long parentId = Long.valueOf(getBinderId(tempDoc));
+						Long binderId = Long.valueOf(getId(tempDoc));
+
+						Long newParentId = (Long) binderIdMap.get(parentId);
+
+						if (newParentId == null) {
+							newParentId = topBinderId;
+						}
+
+						// check actual entity type of the data in the xml file
+						if (entType.equals("workspace")) {
+							binder_addBinderWithXML(null, newParentId, defId,
+									xmlStr, binderId, binderIdMap);
+						}
+					}
+
+					// folder?
+					m = folderPattern.matcher(child.getName());
+					result = m.lookingAt();
+
+					if (result) {
+						String xmlStr = null;
+						FileInputStream input = new FileInputStream(child);
+						ByteArrayOutputStream output = new ByteArrayOutputStream();
+						int data = 0;
+
+						while ((data = input.read()) != -1) {
+							output.write(data);
+						}
+
+						xmlStr = output.toString();
+						output.close();
+						input.close();
+
+						Document tempDoc = getDocument(xmlStr);
+						String defId = getDefinitionId(tempDoc);
+
+						if (defId
+								.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)) {
+							setDefinitionId(tempDoc,
+									ObjectKeys.DEFAULT_LIBRARY_FOLDER_DEF);
+							defId = getDefinitionId(tempDoc);
+						}
+
+						String entType = getEntityType(tempDoc);
+						Long parentId = Long.valueOf(getBinderId(tempDoc));
+						Long binderId = Long.valueOf(getId(tempDoc));
+
+						Long newParentId = (Long) binderIdMap.get(parentId);
+
+						if (newParentId == null) {
+							newParentId = topBinderId;
+						}
+
+						// check actual entity type of the data in the xml file
+						if (entType.equals("folder")) {
+							binder_addBinderWithXML(null, newParentId, defId,
+									xmlStr, binderId, binderIdMap);
+						}
+					}
 				}
 			}
 		}
@@ -2878,15 +2940,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return entity.getRootElement().attributeValue("definitionId")
 				.toString();
 	}
-	
-	private void setDefinitionId(Document entity, String defId) {		
-		entity.getRootElement().attribute("definitionId")
-			.setValue(defId);
+
+	private void setDefinitionId(Document entity, String defId) {
+		entity.getRootElement().attribute("definitionId").setValue(defId);
 	}
-	
+
 	private String getDatabaseId(Document entity) {
-		return entity.getRootElement().attributeValue("databaseId")
-				.toString();
+		return entity.getRootElement().attributeValue("databaseId").toString();
 	}
 
 	private String getId(Document entity) {
@@ -2902,56 +2962,56 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	private long binder_addBinderWithXML(String accessToken, long parentId,
-			String definitionId, String inputDataAsXML, long binderId, Map binderIdMap) {
-		
+			String definitionId, String inputDataAsXML, long binderId,
+			Map binderIdMap) {
+
 		BinderModule binderModule = (BinderModule) SpringContextUtil
 				.getBean("binderModule");
 		IcalModule iCalModule = (IcalModule) SpringContextUtil
 				.getBean("icalModule");
 
 		final Document doc = getDocument(inputDataAsXML);
-		
+
 		try {
-			Long newBinderId = binderModule.addBinder(new Long(parentId), definitionId,
-					new DomInputData(doc, iCalModule), new HashMap(), null)
-					.getId().longValue();
+			Long newBinderId = binderModule.addBinder(new Long(parentId),
+					definitionId, new DomInputData(doc, iCalModule),
+					new HashMap(), null).getId().longValue();
 			binderIdMap.put(binderId, newBinderId);
-			
-			//team members
+
+			// team members
 			addTeamMembers(newBinderId, doc);
-			
-			//workflows
+
+			// workflows
 			final Binder binder = loadBinder(newBinderId);
-			
+
 			getTransactionTemplate().execute(new TransactionCallback() {
-	        	public Object doInTransaction(TransactionStatus status) {
-	        		
-	        		//binder settings
-	        		importSettingsList(doc, binder);
-	        		
-	        		//workflows
-	        		importWorkflows(doc, binder);
-	                return null;
-	        	}
-	        });
-			
+				public Object doInTransaction(TransactionStatus status) {
+
+					// binder settings
+					importSettingsList(doc, binder);
+
+					// workflows
+					importWorkflows(doc, binder);
+					return null;
+				}
+			});
+
 			return newBinderId;
 		} catch (WriteFilesException e) {
 			throw new RemotingException(e);
 		}
 	}
-	
+
 	private long folder_addEntryWithXML(String accessToken, long binderId,
 			String definitionId, String inputDataAsXML, String tempDir,
 			Map entryIdMap, Map binderIdMap, Long entryId) {
 		return addFolderEntry(accessToken, binderId, definitionId,
-				inputDataAsXML, null, tempDir, entryIdMap,
-				binderIdMap, entryId);
+				inputDataAsXML, null, tempDir, entryIdMap, binderIdMap, entryId);
 	}
 
-	private long addFolderEntry(String accessToken, long binderId, String definitionId, 
-			String inputDataAsXML, Map options, String tempDir, Map entryIdMap, 
-			Map binderIdMap, Long entryId) {
+	private long addFolderEntry(String accessToken, long binderId,
+			String definitionId, String inputDataAsXML, Map options,
+			String tempDir, Map entryIdMap, Map binderIdMap, Long entryId) {
 
 		FolderModule folderModule = (FolderModule) SpringContextUtil
 				.getBean("folderModule");
@@ -2972,9 +3032,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 			// add entry id to entry id map
 			entryIdMap.put(entryId, newEntryId);
-			
 
-			//workflows
+			// workflows
 			final FolderEntry entry = folderModule.getEntry(null, newEntryId);
 			importWorkflows(doc, entry);
 
@@ -2985,41 +3044,46 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			throw new RemotingException(e);
 		}
 	}
-	
-	private long folder_addReplyWithXML(String accessToken, long binderId, long parentId, 
-		String definitionId, String inputDataAsXML, String tempDir,
-		Map entryIdMap, Map binderIdMap, Long entryId) { 
-			return addReply(accessToken, binderId, parentId, definitionId, 
-				inputDataAsXML, tempDir, entryIdMap, binderIdMap, entryId, null); 
-		  }
-	  
-	private long addReply(String accessToken, long binderId, long parentId, String definitionId, 
-		String inputDataAsXML, String tempDir, Map entryIdMap, Map binderIdMap, Long entryId, Map options) { 
-			
-			FolderModule folderModule = (FolderModule) SpringContextUtil.getBean( "folderModule" ); 
-			IcalModule iCalModule = (IcalModule) SpringContextUtil.getBean( "icalModule" );
-	  
-			Document doc = getDocument(inputDataAsXML);
-  
-			try { 
-				//add new reply
-				long newEntryId = folderModule.addReply(new Long(binderId), new Long(parentId), definitionId, 
-						new DomInputData(doc, iCalModule), null, options).getId().longValue(); 
-				
-				// add file attachments
-				addFileAttachments(binderId, newEntryId, doc, tempDir);
 
-				// add entry reply id to entry id map
-				entryIdMap.put(entryId, newEntryId);
-
-				return newEntryId;
-			} catch(WriteFilesException e) { 
-				throw new RemotingException(e); 
-			} catch(WriteEntryDataException e) { 
-				throw new RemotingException(e); 
-			} 
+	private long folder_addReplyWithXML(String accessToken, long binderId,
+			long parentId, String definitionId, String inputDataAsXML,
+			String tempDir, Map entryIdMap, Map binderIdMap, Long entryId) {
+		return addReply(accessToken, binderId, parentId, definitionId,
+				inputDataAsXML, tempDir, entryIdMap, binderIdMap, entryId, null);
 	}
-	 
+
+	private long addReply(String accessToken, long binderId, long parentId,
+			String definitionId, String inputDataAsXML, String tempDir,
+			Map entryIdMap, Map binderIdMap, Long entryId, Map options) {
+
+		FolderModule folderModule = (FolderModule) SpringContextUtil
+				.getBean("folderModule");
+		IcalModule iCalModule = (IcalModule) SpringContextUtil
+				.getBean("icalModule");
+
+		Document doc = getDocument(inputDataAsXML);
+
+		try {
+			// add new reply
+			long newEntryId = folderModule.addReply(new Long(binderId),
+					new Long(parentId), definitionId,
+					new DomInputData(doc, iCalModule), null, options).getId()
+					.longValue();
+
+			// add file attachments
+			addFileAttachments(binderId, newEntryId, doc, tempDir);
+
+			// add entry reply id to entry id map
+			entryIdMap.put(entryId, newEntryId);
+
+			return newEntryId;
+		} catch (WriteFilesException e) {
+			throw new RemotingException(e);
+		} catch (WriteEntryDataException e) {
+			throw new RemotingException(e);
+		}
+	}
+
 	private Document getDocument(String xml) {
 		// Parse XML string into a document tree.
 		try {
@@ -3032,7 +3096,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	private void addFileAttachments(Long binderId, Long entryId,
 			Document entityDoc, String tempDir) {
-		
+
 		FolderModule folderModule = (FolderModule) SpringContextUtil
 				.getBean("folderModule");
 
@@ -3042,16 +3106,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		for (Element fileEle : (List<Element>) attachFiles) {
 			boolean handled = false;
 
-			String href = unescape(tempDir + File.separator
-					+ fileEle.attributeValue("href"));
-			String filename = unescape(fileEle.getText());
+			String href = tempDir + File.separator
+					+ fileEle.attributeValue("href");
+			
+			String filename = fileEle.getText();
+			
 			int numVersions = Integer.valueOf(fileEle
 					.attributeValue("numVersions"));
+			
 			String versionsDir = null;
 
 			if (numVersions > 1) {
-				versionsDir = unescape(tempDir + File.separator
-						+ fileEle.attributeValue("href") + ".versions");
+				versionsDir = tempDir + File.separator
+						+ fileEle.attributeValue("href") + ".versions";
 			}
 
 			// see if there's a matching attachment of type 'file'
@@ -3113,10 +3180,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	private void addFileVersions(Long binderId, Long entryId,
 			String fileDataItemName, String filename, String href,
 			int numVersions, String versionsDir) {
-		
+
 		FolderModule folderModule = (FolderModule) SpringContextUtil
 				.getBean("folderModule");
-		
+
 		String fileExt = EntityIndexUtils.getFileExtension(filename);
 		InputStream iStream = null;
 
@@ -3146,84 +3213,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 
-	/*
-	 * Created: 17 April 1997 Author: Bert Bos <bert@w3.org>
-	 * 
-	 * unescape: http://www.w3.org/International/unescape.java
-	 * 
-	 * Copyright © 1997 World Wide Web Consortium, (Massachusetts Institute of
-	 * Technology, European Research Consortium for Informatics and Mathematics,
-	 * Keio University). All Rights Reserved. This work is distributed under the
-	 * W3C® Software License [1] in the hope that it will be useful, but
-	 * WITHOUT ANY WARRANTY; without even the implied warranty of
-	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	 * 
-	 * [1] http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231
-	 */
-
-	private static String unescape(String s) {
-		StringBuffer sbuf = new StringBuffer();
-		int l = s.length();
-		int ch = -1;
-		int b, sumb = 0;
-		for (int i = 0, more = -1; i < l; i++) {
-			/* Get next byte b from URL segment s */
-			switch (ch = s.charAt(i)) {
-			case '%':
-				ch = s.charAt(++i);
-				int hb = (Character.isDigit((char) ch) ? ch - '0'
-						: 10 + Character.toLowerCase((char) ch) - 'a') & 0xF;
-				ch = s.charAt(++i);
-				int lb = (Character.isDigit((char) ch) ? ch - '0'
-						: 10 + Character.toLowerCase((char) ch) - 'a') & 0xF;
-				b = (hb << 4) | lb;
-				break;
-			case '+':
-				b = ' ';
-				break;
-			default:
-				b = ch;
-			}
-			/* Decode byte b as UTF-8, sumb collects incomplete chars */
-			if ((b & 0xc0) == 0x80) { // 10xxxxxx (continuation byte)
-				sumb = (sumb << 6) | (b & 0x3f); // Add 6 bits to sumb
-				if (--more == 0)
-					sbuf.append((char) sumb); // Add char to sbuf
-			} else if ((b & 0x80) == 0x00) { // 0xxxxxxx (yields 7 bits)
-				sbuf.append((char) b); // Store in sbuf
-			} else if ((b & 0xe0) == 0xc0) { // 110xxxxx (yields 5 bits)
-				sumb = b & 0x1f;
-				more = 1; // Expect 1 more byte
-			} else if ((b & 0xf0) == 0xe0) { // 1110xxxx (yields 4 bits)
-				sumb = b & 0x0f;
-				more = 2; // Expect 2 more bytes
-			} else if ((b & 0xf8) == 0xf0) { // 11110xxx (yields 3 bits)
-				sumb = b & 0x07;
-				more = 3; // Expect 3 more bytes
-			} else if ((b & 0xfc) == 0xf8) { // 111110xx (yields 2 bits)
-				sumb = b & 0x03;
-				more = 4; // Expect 4 more bytes
-			} else /* if ((b & 0xfe) == 0xfc) */{ // 1111110x (yields 1 bit)
-				sumb = b & 0x01;
-				more = 5; // Expect 5 more bytes
-			}
-			/* We don't test if the UTF-8 encoding is well-formed */
-		}
-		return sbuf.toString();
-	}
-
 	private File getTemporaryDirectory() {
-		return new File(TempFileUtil.getTempFileDir("import"), UUID.randomUUID().toString());
+		return new File(TempFileUtil.getTempFileDir("import"), UUID
+				.randomUUID().toString());
 	}
-	
+
 	private String deploy(ZipInputStream zipIn) throws IOException {
 		File tempDir = getTemporaryDirectory();
 
 		FileUtil.deltree(tempDir);
-		
+
 		tempDir.mkdirs();
 		java.util.zip.ZipEntry entry = null;
-		
+
 		try {
 			// load all the files
 			while ((entry = zipIn.getNextEntry()) != null) {
@@ -3250,158 +3252,199 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return tempDir.getAbsolutePath();
 	}
 
-	private void binder_setTeamMembers(String accessToken, long binderId, String []memberNames) {
-		ProfileModule profileModule = (ProfileModule) SpringContextUtil.getBean("profileModule");
-		
-		Collection<Principal> principals = profileModule.getPrincipalsByName(Arrays.asList(memberNames));
-		Set<Long>ids = new HashSet();
-		for (Principal p:principals) {
+	private void binder_setTeamMembers(String accessToken, long binderId,
+			String[] memberNames) {
+		ProfileModule profileModule = (ProfileModule) SpringContextUtil
+				.getBean("profileModule");
+
+		Collection<Principal> principals = profileModule
+				.getPrincipalsByName(Arrays.asList(memberNames));
+		Set<Long> ids = new HashSet();
+		for (Principal p : principals) {
 			ids.add(p.getId());
 		}
-		
+
 		setTeamMembers(binderId, ids);
 	}
-	
+
 	private void addTeamMembers(Long binderId, Document entityDoc) {
-		FolderModule folderModule = (FolderModule) SpringContextUtil.getBean("folderModule");
-		
+		FolderModule folderModule = (FolderModule) SpringContextUtil
+				.getBean("folderModule");
+
 		String xPath = "//team";
 		Element team = (Element) entityDoc.selectSingleNode(xPath);
-		
-		boolean teamInherited = Boolean.parseBoolean(team.attributeValue("inherited"));
-		
+
+		boolean teamInherited = Boolean.parseBoolean(team
+				.attributeValue("inherited"));
+
 		Binder binder = loadBinder(binderId);
-		
-		if(teamInherited)
+
+		if (teamInherited)
 			binder.setTeamMembershipInherited(true);
-		else{
+		else {
 			List<String> names = new ArrayList<String>();
 			xPath = "//team//principal";
 			List principals = entityDoc.selectNodes(xPath);
-	
+
 			for (Element member : (List<Element>) principals) {
 				names.add(member.attributeValue("name"));
 			}
-			
-			String[] namesArray = new String[names.size()];		
+
+			String[] namesArray = new String[names.size()];
 			names.toArray(namesArray);
-			
+
 			binder_setTeamMembers(null, binderId, namesArray);
 		}
 	}
-	
-	private void importWorkflows(Document entityDoc, DefinableEntity entity){
-		
-		DefinitionModule definitionModule = (DefinitionModule) SpringContextUtil.getBean("definitionModule");
-		WorkflowModule workflowModule = (WorkflowModule) SpringContextUtil.getBean("workflowModule");
-		
-		if(entity instanceof FolderEntry){
-		
-			//end all workflows that started upon entry creation
-			
+
+	private void importWorkflows(Document entityDoc, DefinableEntity entity) {
+
+		DefinitionModule definitionModule = (DefinitionModule) SpringContextUtil
+				.getBean("definitionModule");
+		WorkflowModule workflowModule = (WorkflowModule) SpringContextUtil
+				.getBean("workflowModule");
+
+		if (entity instanceof FolderEntry) {
+
+			// end all workflows that started upon entry creation
+
 			Set defaultWorkflows = ((FolderEntry) entity).getWorkflowStates();
 			Iterator iter = defaultWorkflows.iterator();
-			
-			while(iter.hasNext()){
-				((FolderEntry) entity).removeWorkflowState((WorkflowState) iter.next());
+
+			while (iter.hasNext()) {
+				((FolderEntry) entity).removeWorkflowState((WorkflowState) iter
+						.next());
 			}
-			
-			//start up the imported workflows
-			
+
+			// start up the imported workflows
+
 			String xPath = "//workflows//process";
 			List<Element> workflows = entityDoc.selectNodes(xPath);
-			
-			for(Element process: workflows){
+
+			for (Element process : workflows) {
 				String defId = process.attributeValue("definitionId");
 				String state = process.attributeValue("state");
 				Definition def = definitionModule.getDefinition(defId);
-				
-				EntityIdentifier entityIdentifier = new EntityIdentifier(entity.getId(), EntityIdentifier.EntityType.folderEntry);
-				
+
+				EntityIdentifier entityIdentifier = new EntityIdentifier(entity
+						.getId(), EntityIdentifier.EntityType.folderEntry);
+
 				Map options = new HashMap();
-				options.put(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE, state);
-				
-				workflowModule.addEntryWorkflow((FolderEntry) entity, entityIdentifier, def, options);
-	        	
+				options
+						.put(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE,
+								state);
+
+				workflowModule.addEntryWorkflow((FolderEntry) entity,
+						entityIdentifier, def, options);
+
 			}
-		}else if(entity instanceof Binder){
-			
+		} else if (entity instanceof Binder) {
+
 			List<String> newDefinitionList = new ArrayList<String>();
-			
-			//current binder definitions
-			
-			List<Definition> defs = ((Binder)entity).getDefinitions();
-			
-			for(int i = 0; i < defs.size(); i++){
+
+			// current binder definitions
+
+			List<Definition> defs = ((Binder) entity).getDefinitions();
+
+			for (int i = 0; i < defs.size(); i++) {
 				newDefinitionList.add(defs.get(i).getId());
 			}
-			
-			//allowed workflows
-			
+
+			// allowed workflows
+
 			String xPath = "//workflows//allowed//process";
 			List<Element> workflows = entityDoc.selectNodes(xPath);
-			
-			for(Element process: workflows){
+
+			for (Element process : workflows) {
 				String defId = process.attributeValue("definitionId");
 				newDefinitionList.add(defId);
 			}
-			
-			//associated workflows
-			
+
+			// associated workflows
+
 			xPath = "//workflows//associated//process";
 			workflows = entityDoc.selectNodes(xPath);
-			
-			Map<String, String> workflowAssociations= new HashMap<String, String>();
-			
-			for(Element process: workflows){
+
+			Map<String, String> workflowAssociations = new HashMap<String, String>();
+
+			for (Element process : workflows) {
 				String entryDefId = process.attributeValue("entryDefinitionId");
-				String workflowDefId = process.attributeValue("workflowDefinitionId");
+				String workflowDefId = process
+						.attributeValue("workflowDefinitionId");
 				workflowAssociations.put(entryDefId, workflowDefId);
 			}
-			
-			setDefinitions(entity.getId(), newDefinitionList, workflowAssociations);
+
+			setDefinitions(entity.getId(), newDefinitionList,
+					workflowAssociations);
 		}
 	}
-	
-	private void importSettingsList(Document entityDoc, Binder binder){
-		
-		DefinitionModule definitionModule = (DefinitionModule) SpringContextUtil.getBean("definitionModule");
-		WorkflowModule workflowModule = (WorkflowModule) SpringContextUtil.getBean("workflowModule");
-			
-		//current binder definitions
-		
+
+	private void importSettingsList(Document entityDoc, Binder binder) {
+
+		DefinitionModule definitionModule = (DefinitionModule) SpringContextUtil
+				.getBean("definitionModule");
+		WorkflowModule workflowModule = (WorkflowModule) SpringContextUtil
+				.getBean("workflowModule");
+
+		// current binder definitions
+
 		List<Definition> newDefinitionList = binder.getDefinitions();
-		
-		//views
-		
+
+		// views
+
 		String xPath = "//settings//views//view";
 		List<Element> views = entityDoc.selectNodes(xPath);
-		
-		for(Element view: views){
+
+		for (Element view : views) {
 			String defId = view.attributeValue("definitionId");
-			
-			//don't want to include mirrored file folder as an imported view setting
-			
-			if(!defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)){
+
+			// don't want to include mirrored file folder as an imported view
+			// setting
+
+			if (!defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)) {
 				newDefinitionList.add(definitionModule.getDefinition(defId));
 			}
 		}
-		
-		//entries
-				
+
+		// entries
+
 		xPath = "//settings//entries//entry";
 		List<Element> entries = entityDoc.selectNodes(xPath);
-		
-		for(Element entry: entries){
+
+		for (Element entry : entries) {
 			String defId = entry.attributeValue("definitionId");
-			
-			//don't want to include mirrored file entry as an imported allowed entry setting
-			
-			if(!defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)){
+
+			// don't want to include mirrored file entry as an imported allowed
+			// entry setting
+
+			if (!defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)) {
 				newDefinitionList.add(definitionModule.getDefinition(defId));
 			}
 		}
-		
+
 		binder.setDefinitions(newDefinitionList);
+	}
+
+	public String filename8BitSingleByteOnly(FileAttachment attachment,
+			boolean _8BitSingleByteOnly) {
+		String fileName = attachment.getFileItem().getName();
+
+		String fileExt = EntityIndexUtils.getFileExtension(attachment
+				.getFileItem().getName());
+
+		if (!_8BitSingleByteOnly) {
+			return fileName;
+		} else {
+			for (int i = 0; i < fileName.length(); i++) {
+				int c = (int) fileName.charAt(i);
+
+				if (c >= 0 && c < 256) {
+					// it's ok
+				} else
+					return attachment.getId() + "." + fileExt;
+			}
+
+			return fileName;
+		}
 	}
 }

@@ -35,19 +35,29 @@ package org.kablink.teaming.module.definition.export;
 import org.dom4j.Element;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.file.FileModule;
+import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.WebUrlUtil;
 
 
 public class ElementBuilderAttachments extends AbstractElementBuilder {
 	protected boolean build(Element element, DefinableEntity entity, String dataElemType, String dataElemName) {
+		
+		BinderModule binderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
+		
 		for (FileAttachment att:entity.getFileAttachments()) {
-			if (att != null && att.getFileItem() != null) {
-				String webUrl = WebUrlUtil.getFileUrl((String)null, WebKeys.ACTION_READ_FILE, att); 
+			if (att != null && att.getFileItem() != null) { 
 				if(element != null) {
 					Element value = element.addElement("file");
 					value.setText(att.getFileItem().getName());
-					value.addAttribute("href", webUrl);
+					
+					String fileName = binderModule.filename8BitSingleByteOnly(att, 
+							SPropsUtil.getBoolean("export.filename.8bitsinglebyte.only", true));
+					value.addAttribute("href", fileName);
+					
 					value.addAttribute("numVersions", String.valueOf(att.getFileVersions().size()));
 				}
 			}
