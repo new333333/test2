@@ -71,6 +71,9 @@ public interface GwtTeamingImageBundle extends ImageBundle
 	@Resource("org/kablink/teaming/gwt/public/images/lpe_table_16.png")
 	public AbstractImagePrototype landingPageEditorTable();
 
+	@Resource("org/kablink/teaming/gwt/public/images/lpe_utility_element.gif")
+	public AbstractImagePrototype landingPageEditorUtilityElement();
+
 	@Resource("org/kablink/teaming/gwt/public/images/warn_icon16.gif")
 	public AbstractImagePrototype warningIcon16();
 }// end GwtTeamingImageBundle

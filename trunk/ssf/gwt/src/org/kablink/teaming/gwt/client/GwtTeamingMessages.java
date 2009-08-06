@@ -54,6 +54,8 @@ public interface GwtTeamingMessages extends Messages
 	String lpeLinkURL();
 	String lpeList();
 	String lpeTable();
+	String lpeUtilityElement();
+	
 	String testPanelState( String value );
 	String testWaiting();
 }// end GwtTeamingMessages

@@ -34,6 +34,8 @@
 package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -53,6 +55,8 @@ public class Palette extends Composite
 	{
 		FlowPanel	panel;
 		PaletteItem	paletteItem;
+		GwtTeamingMessages		messages;
+		GwtTeamingImageBundle	imgBundle;
 		
 		// Create a FlowPanel for the palette items to live in.
 		panel = new FlowPanel();
@@ -60,24 +64,29 @@ public class Palette extends Composite
 		// Associate the panel with its stylesheet.
 		panel.addStyleName( "lpePalette" );
 
+		messages = GwtTeaming.getMessages();
+		imgBundle = GwtTeaming.getImageBundle();
+		
 		// Add the various items to the palette.
-		paletteItem = new PaletteItem( GwtTeaming.m_imageBundle.landingPageEditorTable(), GwtTeaming.m_stringMessages.lpeTable() );
+		paletteItem = new PaletteItem( imgBundle.landingPageEditorTable(), messages.lpeTable() );
 		panel.add( paletteItem );
-		paletteItem = new PaletteItem( GwtTeaming.m_imageBundle.landingPageEditorList(), GwtTeaming.m_stringMessages.lpeList() );
+		paletteItem = new PaletteItem( imgBundle.landingPageEditorList(), messages.lpeList() );
 		panel.add( paletteItem );
-		paletteItem = new PaletteItem( GwtTeaming.m_imageBundle.landingPageEditorEntry(), GwtTeaming.m_stringMessages.lpeEntry() );
+		paletteItem = new PaletteItem( imgBundle.landingPageEditorEntry(), messages.lpeEntry() );
 		panel.add( paletteItem );
-		paletteItem = new PaletteItem( GwtTeaming.m_imageBundle.landingPageEditorFolder(), GwtTeaming.m_stringMessages.lpeFolder() );
+		paletteItem = new PaletteItem( imgBundle.landingPageEditorFolder(), messages.lpeFolder() );
 		panel.add( paletteItem );
-		paletteItem = new PaletteItem( GwtTeaming.m_imageBundle.landingPageEditorGraphic(), GwtTeaming.m_stringMessages.lpeGraphic() );
+		paletteItem = new PaletteItem( imgBundle.landingPageEditorGraphic(), messages.lpeGraphic() );
 		panel.add( paletteItem );
-		paletteItem = new PaletteItem( GwtTeaming.m_imageBundle.landingPageEditorLinkUrl(), GwtTeaming.m_stringMessages.lpeLinkURL() );
+		paletteItem = new PaletteItem( imgBundle.landingPageEditorLinkUrl(), messages.lpeLinkURL() );
 		panel.add( paletteItem );
-		paletteItem = new PaletteItem( GwtTeaming.m_imageBundle.landingPageEditorLinkFolder(), GwtTeaming.m_stringMessages.lpeLinkFolderWS() );
+		paletteItem = new PaletteItem( imgBundle.landingPageEditorLinkFolder(), messages.lpeLinkFolderWS() );
 		panel.add( paletteItem );
-		paletteItem = new PaletteItem( GwtTeaming.m_imageBundle.landingPageEditorLinkEntry(), GwtTeaming.m_stringMessages.lpeLinkEntry() );
+		paletteItem = new PaletteItem( imgBundle.landingPageEditorLinkEntry(), messages.lpeLinkEntry() );
 		panel.add( paletteItem );
-		paletteItem = new PaletteItem( GwtTeaming.m_imageBundle.landingPageEditorCustomJsp(), GwtTeaming.m_stringMessages.lpeCustomJSP() );
+		paletteItem = new PaletteItem( imgBundle.landingPageEditorUtilityElement(), messages.lpeUtilityElement() );
+		panel.add( paletteItem );
+		paletteItem = new PaletteItem( imgBundle.landingPageEditorCustomJsp(), messages.lpeCustomJSP() );
 		panel.add( paletteItem );
 
 		// All composites must call initWidget() in their constructors.
