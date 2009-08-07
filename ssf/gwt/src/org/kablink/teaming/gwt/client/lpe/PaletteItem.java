@@ -33,11 +33,19 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import com.google.gwt.event.dom.client.HasMouseDownHandlers;
+import com.google.gwt.event.dom.client.HasMouseUpHandlers;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
  * This class is used as an item in the palette in the landing page editor.
@@ -45,7 +53,62 @@ import com.google.gwt.user.client.ui.InlineLabel;
  *
  */
 public class PaletteItem extends Composite
+	implements HasMouseDownHandlers
 {
+	private DragProxy m_dragProxy = null;
+	private AbstractImagePrototype m_abstractImg;
+	private String m_text;
+	
+	
+	/**
+	 * The DragProxy class is used to create the object that will be dragged from the palette.
+	 */
+	public static class DragProxy extends PopupPanel
+		implements HasMouseUpHandlers
+	{
+		/**
+		 * 
+		 */
+		public DragProxy( 	AbstractImagePrototype abstractImg, String text )
+		{
+			// Turn off the 'auto-hide' behavior.
+			super( false );
+			
+			FlowPanel	panel;
+			InlineLabel	label;
+			Image		img;
+			
+			// Associate this popup with its stylesheet.
+			addStyleName( "lpeDragProxyPopup" );
+			
+			// Create a FlowPanel for the image and text to live in.
+			panel = new FlowPanel();
+
+			// Associate the panel with its stylesheet.
+			panel.addStyleName( "lpeDragProxy" );
+
+			// Add the image to this widget
+			img = abstractImg.createImage();
+			img.addStyleName( "lpePaletteItemImg" );
+			panel.add( img );
+			
+			// Add the text to this widget.
+			label = new InlineLabel( text );
+			panel.add( label );
+
+			setWidget( panel );
+		}// end DragProxy()
+		
+		/**
+		 * Method to add mouse up handlers to this landing page editor.
+		 */
+		public HandlerRegistration addMouseUpHandler( MouseUpHandler handler )
+		{
+			return addDomHandler( handler, MouseUpEvent.getType() );
+		}// end addMouseUpHandler()
+	}// end DragProxy
+
+	
 	/**
 	 * 
 	 */
@@ -69,9 +132,35 @@ public class PaletteItem extends Composite
 		// Add the text to this widget.
 		label = new InlineLabel( text );
 		panel.add( label );
-
+		
+		m_abstractImg = abstractImg;
+		m_text = text;
+		
 		// All composites must call initWidget() in their constructors.
 		initWidget( panel );
 	}// end Palette()
 
+	
+	/**
+	 * Method to add mouse down handlers to this palette item.
+	 */
+	public HandlerRegistration addMouseDownHandler( MouseDownHandler handler )
+	{
+		return addDomHandler( handler, MouseDownEvent.getType() );
+	}// end addMouseDownHandler()
+	
+	
+	/**
+	 * Return the drag proxy object that should be displayed when the user drags this palette item.
+	 */
+	public DragProxy getDragProxy()
+	{
+		if ( m_dragProxy == null )
+		{
+			// Create a drag proxy that will be displayed when the user drags this palette item.
+			m_dragProxy = new DragProxy( m_abstractImg, m_text );
+		}
+		
+		return m_dragProxy;
+	}// end getDragProxy()
 }// end PaletteItem

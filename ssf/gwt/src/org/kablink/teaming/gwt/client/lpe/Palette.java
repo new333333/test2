@@ -51,7 +51,7 @@ public class Palette extends Composite
 	/**
 	 * 
 	 */
-	public Palette()
+	public Palette( LandingPageEditor lpe )
 	{
 		FlowPanel	panel;
 		PaletteItem	paletteItem;
@@ -70,24 +70,43 @@ public class Palette extends Composite
 		// Add the various items to the palette.
 		paletteItem = new PaletteItem( imgBundle.landingPageEditorTable(), messages.lpeTable() );
 		panel.add( paletteItem );
+		paletteItem.addMouseDownHandler( lpe );
+		
 		paletteItem = new PaletteItem( imgBundle.landingPageEditorList(), messages.lpeList() );
 		panel.add( paletteItem );
+		paletteItem.addMouseDownHandler( lpe );
+		
 		paletteItem = new PaletteItem( imgBundle.landingPageEditorEntry(), messages.lpeEntry() );
 		panel.add( paletteItem );
+		paletteItem.addMouseDownHandler( lpe );
+		
 		paletteItem = new PaletteItem( imgBundle.landingPageEditorFolder(), messages.lpeFolder() );
 		panel.add( paletteItem );
+		paletteItem.addMouseDownHandler( lpe );
+		
 		paletteItem = new PaletteItem( imgBundle.landingPageEditorGraphic(), messages.lpeGraphic() );
 		panel.add( paletteItem );
+		paletteItem.addMouseDownHandler( lpe );
+		
 		paletteItem = new PaletteItem( imgBundle.landingPageEditorLinkUrl(), messages.lpeLinkURL() );
 		panel.add( paletteItem );
+		paletteItem.addMouseDownHandler( lpe );
+		
 		paletteItem = new PaletteItem( imgBundle.landingPageEditorLinkFolder(), messages.lpeLinkFolderWS() );
 		panel.add( paletteItem );
+		paletteItem.addMouseDownHandler( lpe );
+		
 		paletteItem = new PaletteItem( imgBundle.landingPageEditorLinkEntry(), messages.lpeLinkEntry() );
 		panel.add( paletteItem );
+		paletteItem.addMouseDownHandler( lpe );
+		
 		paletteItem = new PaletteItem( imgBundle.landingPageEditorUtilityElement(), messages.lpeUtilityElement() );
 		panel.add( paletteItem );
+		paletteItem.addMouseDownHandler( lpe );
+		
 		paletteItem = new PaletteItem( imgBundle.landingPageEditorCustomJsp(), messages.lpeCustomJSP() );
 		panel.add( paletteItem );
+		paletteItem.addMouseDownHandler( lpe );
 
 		// All composites must call initWidget() in their constructors.
 		initWidget( panel );

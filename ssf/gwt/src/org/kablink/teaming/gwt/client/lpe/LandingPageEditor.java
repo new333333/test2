@@ -34,7 +34,17 @@
 package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.lpe.PaletteItem.DragProxy;
 
+import com.google.gwt.event.dom.client.HasMouseMoveHandlers;
+import com.google.gwt.event.dom.client.HasMouseUpHandlers;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -47,9 +57,14 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  */
 public class LandingPageEditor extends Composite
+	implements MouseDownHandler, MouseMoveHandler, MouseUpHandler, HasMouseMoveHandlers, HasMouseUpHandlers
 {
 	private Palette	m_palette;
 	private Canvas		m_canvas;
+	private boolean	m_dragInProgress;
+	private DragProxy	m_dragProxy;
+	private HandlerRegistration	m_mouseMoveHandlerReg = null;
+	private HandlerRegistration	m_mouseUpHandlerReg = null;
 	
 	/**
 	 * 
@@ -75,7 +90,7 @@ public class LandingPageEditor extends Composite
 		hPanel.setSpacing( 5 );
 		
 		// Create a palette and a canvas.
-		m_palette = new Palette();
+		m_palette = new Palette( this );
 		m_canvas = new Canvas();
 		
 		// Add the palette and canvas to the panel.
@@ -84,7 +99,116 @@ public class LandingPageEditor extends Composite
 		
 		vPanel.add( hPanel );
 		
+		m_dragInProgress = false;
+		
 		// All composites must call initWidget() in their constructors.
 		initWidget( vPanel );
 	}// end LandingPageEditor()
+	
+	
+	/**
+	 * Method to add mouse move handlers to this landing page editor.
+	 */
+	public HandlerRegistration addMouseMoveHandler( MouseMoveHandler handler )
+	{
+		return addDomHandler( handler, MouseMoveEvent.getType() );
+	}// end addMouseMoveHandler()
+
+	
+	/**
+	 * Method to add mouse up handlers to this landing page editor.
+	 */
+	public HandlerRegistration addMouseUpHandler( MouseUpHandler handler )
+	{
+		return addDomHandler( handler, MouseUpEvent.getType() );
+	}// end addMouseUpHandler()
+
+	
+	/**
+	 * Handles the MouseDownEvent.  This will initiate the dragging of an item from the palette.
+	 */
+	public void onMouseDown( MouseDownEvent event )
+	{
+		Object	eventSender;
+		
+		// Is the object that sent this event a PaletteItem object?
+		eventSender = event.getSource();
+		if ( eventSender instanceof PaletteItem )
+		{
+			PaletteItem	paletteItem;
+			
+			// Yes
+			// Get the PaletteItem the user clicked on.
+			paletteItem = (PaletteItem) eventSender;
+			
+			// Get the drag proxy widget we should display and display it.
+			m_dragProxy = paletteItem.getDragProxy();
+
+			// Position the drag proxy widget at the cursor position.
+			m_dragProxy.setPopupPosition( event.getClientX(), event.getClientY() );
+			
+			// Show the drag-proxy widget.
+			m_dragProxy.show();
+			
+			// Register for mouse move events.
+			m_mouseMoveHandlerReg = addMouseMoveHandler( this );
+			
+			// Register for mouse up event.
+			m_mouseUpHandlerReg = m_dragProxy.addMouseUpHandler( this );
+
+			// Remember that the drag process has started.
+			m_dragInProgress = true;
+		}
+	}// end onMouseDown()
+	
+	
+	/**
+	 * Handles the MouseMoveEvent.  If the user is dragging an item from the palette we will update
+	 * the position of the drag proxy.
+	 */
+	public void onMouseMove( MouseMoveEvent event )
+	{
+		// Is the user currently dragging an item from the palette?
+		if ( m_dragInProgress && m_dragProxy != null )
+		{
+			// Yes, update the position of the drag proxy.
+			m_dragProxy.setPopupPosition( event.getClientX(), event.getClientY() );
+		}
+	}// end onMouseMove()
+	
+	
+	/**
+	 * Handle the MouseUpEvent.  If the user is dragging an item from the palette, we will drop the item
+	 * on a drop target.
+	 */
+	public void onMouseUp( MouseUpEvent event )
+	{
+		// Is the user currently dragging an item from the palette?
+		if ( m_dragInProgress )
+		{
+			// Yes
+			m_dragInProgress = false;
+			
+			// Hide the drag proxy widget.
+			if ( m_dragProxy != null )
+			{
+				m_dragProxy.hide();
+				m_dragProxy = null;
+			}
+			
+			// Remove the mouse-move event handler
+			if ( m_mouseMoveHandlerReg != null )
+			{
+				m_mouseMoveHandlerReg.removeHandler();
+				m_mouseMoveHandlerReg = null;
+			}
+
+			// Remove the mouse-up event handler
+			if ( m_mouseUpHandlerReg != null )
+			{
+				m_mouseUpHandlerReg.removeHandler();
+				m_mouseUpHandlerReg = null;
+			}
+		}
+	}// end onMouseUp()
 }// end LandingPageEditor
