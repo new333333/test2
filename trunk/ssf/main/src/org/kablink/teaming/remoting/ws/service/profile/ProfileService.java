@@ -46,7 +46,17 @@ public interface ProfileService {
 
 	public User profile_getUser(String accessToken, long userId, boolean includeAttachments);
 	public User profile_getUserByName(String accessToken, String userName, boolean includeAttachments);
-	
+	/**
+	 * Return an array of User objects that match the specified email address.
+	 * 
+	 * @param accessToken
+	 * @param emailAddress email address to match on, required
+	 * @param emailType optional email type - could be one of the following values - "_primary", "_mobile", or "_text"
+	 * If empty string or null, the match will be performed on all email types, that is, regardless of email type 
+	 * @return
+	 */
+	public User[] profile_getUsersByEmail(String accessToken, String emailAddress, String emailType);
+
 	public Group profile_getGroup(String accessToken, long groupId, boolean includeAttachments);
 	public Group profile_getGroupByName(String accessToken, String groupName, boolean includeAttachments);
 	

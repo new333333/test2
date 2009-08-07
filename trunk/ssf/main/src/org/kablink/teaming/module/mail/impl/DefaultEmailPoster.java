@@ -233,7 +233,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 	protected User setUser(Folder folder, InternetAddress from) {
 		//try to map email address to a user
 		String fromEmail = from.getAddress();	
-		List<Principal> ps = getProfileDao().loadPrincipalByEmail(fromEmail, RequestContextHolder.getRequestContext().getZoneId());
+		List<Principal> ps = getProfileDao().loadPrincipalByEmail(fromEmail, null, RequestContextHolder.getRequestContext().getZoneId());
 		User user = null;
 		for (Principal p:ps) {
             //Make sure it is a user
