@@ -574,13 +574,18 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
         }
 		return result;
     }
-    public List<Principal> loadPrincipalByEmail(final String email, final Long zoneId) {
+    public List<Principal> loadPrincipalByEmail(final String email, final String emailType, final Long zoneId) {
         List result = (List)getHibernateTemplate().execute(
                	new HibernateCallback() {
                 		public Object doInHibernate(Session session) throws HibernateException {
-    	                  	Query q = session.createQuery("select x.principal from org.kablink.teaming.domain.EmailAddress x where " +
-    	                  					"lower(x.address)=:address");
+                			String queryStr = "select x.principal from org.kablink.teaming.domain.EmailAddress x where " +
+          					"lower(x.address)=:address";
+                			if(Validator.isNotNull(emailType))
+                				queryStr += " and x.type=:type";
+    	                  	Query q = session.createQuery(queryStr);
     	                  	q.setParameter("address", email.toLowerCase());
+                			if(Validator.isNotNull(emailType))
+                				q.setParameter("type", emailType);
     	                  	List result = q.list();
     	                  	for (int i=0; i<result.size();) { //check zone here, so index is used
     	                  		if (!((Principal)result.get(i)).getZoneId().equals(zoneId)) result.remove(i);

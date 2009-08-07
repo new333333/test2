@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 
 import org.dom4j.Document;
@@ -619,4 +620,12 @@ public interface ProfileModule {
     public SortedSet<IndividualPrincipal> getIndividualPrincipals(Collection<Long> individualIds);
 
     public void changePassword(Long userId, String oldPassword, String newPassword);
+    
+    /**
+     * Returns a set of users matching the email, sorted by title
+     * @param emailAddress email address, required
+     * @param emailType email type, optional
+     * @return
+     */
+    public SortedSet<User> getUsersByEmail(String emailAddress, String emailType);
 }

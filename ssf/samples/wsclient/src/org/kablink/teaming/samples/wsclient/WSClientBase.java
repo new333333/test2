@@ -53,6 +53,7 @@ import org.dom4j.io.XMLWriter;
 import org.kablink.teaming.client.ws.WebServiceClientUtil;
 
 import org.kablink.teaming.client.ws.model.DefinableEntity;
+import org.kablink.teaming.client.ws.model.User;
 
 public abstract class WSClientBase {
 
@@ -362,6 +363,12 @@ public abstract class WSClientBase {
 		printDefinableEntity(entity);
 	}
 
+	void fetchAndPrintDEArray(String serviceName, String operation, Object[] args) throws Exception {
+		Object deArray = fetch(serviceName, operation, args);
+
+		printDefinableEntityArray(deArray);
+	}
+
 	void fetchAndPrintACK(String serviceName, String operation, Object[] args) throws Exception {
 		fetchAndPrintACK(serviceName, operation, args, null);
 	}
@@ -378,6 +385,23 @@ public abstract class WSClientBase {
 		}
 		else {
 			System.out.println("No entity returned");
+		}
+	}
+	
+	void printDefinableEntityArray(Object array) {
+		if(array != null) {
+			if(array instanceof User[]) {
+				User[] uArray = (User[]) array;
+				System.out.println("Array size is " + uArray.length);
+				for(User u:uArray)
+					printDefinableEntity(u);
+			}
+			else {
+				System.out.println("Unrecognized array type: " + array.getClass().getName()); 
+			}
+		}
+		else {
+			System.out.println("Null array");
 		}
 	}
 	

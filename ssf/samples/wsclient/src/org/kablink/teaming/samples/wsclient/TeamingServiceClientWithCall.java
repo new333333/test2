@@ -55,6 +55,11 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				wsClient.fetchAndPrintDE("TeamingServiceV1", "profile_getUser", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
 			} else if(args[0].equals("getUserByName")) {
 				wsClient.fetchAndPrintDE("TeamingServiceV1", "profile_getUserByName", new Object[] {null, args[1], Boolean.parseBoolean(args[2])});
+			} else if(args[0].equals("getUsersByEmail")) {
+				String emailType = null;
+				if(args.length > 2)
+					emailType = args[2];
+				wsClient.fetchAndPrintDEArray("TeamingServiceV1", "profile_getUsersByEmail", new Object[] {null, args[1], emailType});
 			} else if(args[0].equals("getGroup")) {
 				wsClient.fetchAndPrintDE("TeamingServiceV1", "profile_getGroup", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
 			} else if(args[0].equals("getGroupMembers")) {
@@ -216,6 +221,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("getWorkspaceTree <workspace id> <depth> [<page>]");
 		System.out.println("getUser  <user id>  <includeAttachments>");
 		System.out.println("getUserByName  <user name>  <includeAttachments>");
+		System.out.println("getUsersByEmail  <email address>  [<email type>]");
 		System.out.println("getGroup  <group id>  <includeAttachments>");
 		System.out.println("getGroupMembers  <groupName> <first> <max>");
 		System.out.println("getPrincipals <first> <max>");

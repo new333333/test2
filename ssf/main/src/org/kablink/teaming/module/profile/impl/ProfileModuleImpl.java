@@ -1523,5 +1523,22 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
       
       user.setPassword(newPassword);
   }
+  
+  //RO transaction
+  public SortedSet<User> getUsersByEmail(String emailAddress, String emailType) {
+	  List<Principal> principals = getProfileDao().loadPrincipalByEmail(emailAddress, emailType, RequestContextHolder.getRequestContext().getZoneId());
+      Comparator c = new PrincipalComparator(RequestContextHolder.getRequestContext().getUser().getLocale());
+      TreeSet<User> result = new TreeSet(c);
+	  for(Principal p:principals) {
+		  //Make sure it is a user
+		  try {
+			  User user = (User)getProfileDao().loadUser(p.getId(), RequestContextHolder.getRequestContext().getZoneId());
+			  result.add(user);
+		  }
+		  catch(Exception ignore) {}
+	  }
+	  return result;
+  }
+
 }
 

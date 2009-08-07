@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -244,6 +245,18 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		fillUserModel(userModel, (User) entry);
 		
 		return userModel;
+	}
+	
+	public org.kablink.teaming.remoting.ws.model.User[] profile_getUsersByEmail(String accessToken, String emailAddress, String emailType) {
+		SortedSet<User> users = getProfileModule().getUsersByEmail(emailAddress, emailType);
+		List<org.kablink.teaming.remoting.ws.model.User> list = new ArrayList();
+		org.kablink.teaming.remoting.ws.model.User userModel;
+		for(User user:users) {
+			userModel = new org.kablink.teaming.remoting.ws.model.User();
+			fillUserModel(userModel, user);
+			list.add(userModel);
+		}
+		return list.toArray(new org.kablink.teaming.remoting.ws.model.User[0]);
 	}
 	
 	public long profile_addGroup(String accessToken, org.kablink.teaming.remoting.ws.model.Group group) {
