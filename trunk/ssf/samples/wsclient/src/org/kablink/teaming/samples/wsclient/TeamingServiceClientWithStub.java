@@ -80,6 +80,7 @@ public class TeamingServiceClientWithStub {
 		User user = getTestUser();
 		System.out.println("Test user name: " + user.getName());
 		changeUserPassword(user.getId(), "test", "newtest");
+		System.out.println("Password changed");
 		*/
 		
 		//copyFileFromUserToEntry();
@@ -706,12 +707,12 @@ public class TeamingServiceClientWithStub {
 		TeamingServiceSoapBindingStub stub = getStub();
 
 		User testUser = new User();
-		testUser.setName("Jodi");
+		testUser.setName("jodi");
 		testUser.setFirstName("Jodi");
 		testUser.setMiddleName("Anne");
 		testUser.setLastName("Tester");
 		testUser.setEmailAddress("boulder@foo.bar");
-		long testUserId = stub.profile_addUser(null, testUser, "test");
+		long testUserId = stub.profile_addUser(null, testUser, "changeIt");
 		Long wsId = stub.profile_addUserWorkspace(null, testUserId);
 		testUser = stub.profile_getUser(null, testUserId, false);
 		if (!"Jodi Anne Tester".equals(testUser.getTitle())) System.out.println("Title not set");
@@ -834,15 +835,16 @@ public class TeamingServiceClientWithStub {
 
 		User testUser =null;
 		try {
-			testUser = stub.profile_getUserByName(null, "Jodi", false);
+			testUser = stub.profile_getUserByName(null, "jodi", false);
+			System.out.println("jodi does not exist");
 		} catch (Exception ex) {
 			testUser = new User();
-			testUser.setName("Jodi");
+			testUser.setName("jodi");
 			testUser.setFirstName("Jodi");
 			testUser.setMiddleName("Anne");
 			testUser.setLastName("Tester");
 			testUser.setEmailAddress("boulder@foo.bar");
-			long testUserId = stub.profile_addUser(null, testUser, "test");
+			long testUserId = stub.profile_addUser(null, testUser, "changeIt");
 			testUser = stub.profile_getUser(null, testUserId, false);
 		}
 		return testUser;
