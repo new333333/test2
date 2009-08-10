@@ -130,24 +130,6 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 		if (modificationDate != null) options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modificationDate);
 	}
 
-	protected void getTimestamps(Map options, DefinableEntity entry)
-	{
-		Timestamp creation = entry.getCreation();
-		if(creation != null) {
-			if(creation.getPrincipal() != null)
-				options.put(ObjectKeys.INPUT_OPTION_CREATION_NAME, creation.getPrincipal());
-			if(creation.getDate() != null)
-				options.put(ObjectKeys.INPUT_OPTION_CREATION_DATE, creation.getDate());
-		}
-		Timestamp modification = entry.getModification();
-		if(modification != null) {
-			if(modification.getPrincipal() != null)
-				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, modification.getPrincipal());
-			if(modification.getDate() != null)
-				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modification.getDate());
-		}
-	}
-
 	public long migration_addBinder(String accessToken, org.kablink.teaming.remoting.ws.model.Binder modelBinder) {
 		try {
 			Map options = new HashMap();

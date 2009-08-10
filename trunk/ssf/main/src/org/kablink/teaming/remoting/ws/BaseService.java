@@ -48,6 +48,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.AverageRating;
 import org.kablink.teaming.domain.Binder;
@@ -550,4 +551,23 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		getFileModule().readFile(binder, entity, fatt, baos);
 		return baos.toByteArray();
 	}
+	
+	protected void getTimestamps(Map options, org.kablink.teaming.remoting.ws.model.DefinableEntity entry)
+	{
+		Timestamp creation = entry.getCreation();
+		if(creation != null) {
+			if(creation.getPrincipal() != null)
+				options.put(ObjectKeys.INPUT_OPTION_CREATION_NAME, creation.getPrincipal());
+			if(creation.getDate() != null)
+				options.put(ObjectKeys.INPUT_OPTION_CREATION_DATE, creation.getDate());
+		}
+		Timestamp modification = entry.getModification();
+		if(modification != null) {
+			if(modification.getPrincipal() != null)
+				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, modification.getPrincipal());
+			if(modification.getDate() != null)
+				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modification.getDate());
+		}
+	}
+
 }

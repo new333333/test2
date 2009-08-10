@@ -240,8 +240,10 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 	
 	public long binder_addBinder(String accessToken, org.kablink.teaming.remoting.ws.model.Binder binder) {
 		try {
+			Map options = new HashMap();
+			getTimestamps(options, binder);
 			return getBinderModule().addBinder(binder.getParentBinderId(), binder.getDefinitionId(), 
-					new ModelInputData(binder), new HashMap(), null).getId().longValue();
+					new ModelInputData(binder), new HashMap(), options).getId().longValue();
 		} catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}
