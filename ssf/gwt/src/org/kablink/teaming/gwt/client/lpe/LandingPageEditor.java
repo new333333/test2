@@ -135,29 +135,11 @@ public class LandingPageEditor extends Composite
 		eventSender = event.getSource();
 		if ( eventSender instanceof PaletteItem )
 		{
-			PaletteItem	paletteItem;
-			
 			// Yes
-			// Get the PaletteItem the user clicked on.
-			paletteItem = (PaletteItem) eventSender;
+			startDrag( event );
 			
-			// Get the drag proxy widget we should display and display it.
-			m_dragProxy = paletteItem.getDragProxy();
-
-			// Position the drag proxy widget at the cursor position.
-			m_dragProxy.setPopupPosition( event.getClientX(), event.getClientY() );
-			
-			// Show the drag-proxy widget.
-			m_dragProxy.show();
-			
-			// Register for mouse move events.
-			m_mouseMoveHandlerReg = addMouseMoveHandler( this );
-			
-			// Register for mouse up event.
-			m_mouseUpHandlerReg = m_dragProxy.addMouseUpHandler( this );
-
-			// Remember that the drag process has started.
-			m_dragInProgress = true;
+			// Kill this mouse-down event so text on the page does not get highlighted when the user moves the mouse.
+			event.getNativeEvent().preventDefault();
 		}
 	}// end onMouseDown()
 	
@@ -211,4 +193,39 @@ public class LandingPageEditor extends Composite
 			}
 		}
 	}// end onMouseUp()
+	
+	
+	/**
+	 * 
+	 */
+	private void startDrag( MouseDownEvent event )
+	{
+		PaletteItem	paletteItem;
+		Object		eventSource;
+		
+		eventSource = event.getSource();
+		if ( !(eventSource instanceof PaletteItem) )
+			return;
+		
+		// Get the PaletteItem the user clicked on.
+		paletteItem = (PaletteItem) eventSource;
+		
+		// Get the drag proxy widget we should display and display it.
+		m_dragProxy = paletteItem.getDragProxy();
+
+		// Position the drag proxy widget at the cursor position.
+		m_dragProxy.setPopupPosition( event.getClientX(), event.getClientY() );
+		
+		// Show the drag-proxy widget.
+		m_dragProxy.show();
+		
+		// Register for mouse move events.
+		m_mouseMoveHandlerReg = addMouseMoveHandler( this );
+		
+		// Register for mouse up event.
+		m_mouseUpHandlerReg = m_dragProxy.addMouseUpHandler( this );
+
+		// Remember that the drag process has started.
+		m_dragInProgress = true;
+	}// end startDrag()
 }// end LandingPageEditor
