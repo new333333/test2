@@ -88,6 +88,42 @@ ${property_caption}<c:if test="${property_required}"><span
 		dojo.require("dijit.form.DateTextBox");
 	</script>
 </div>
+
+  <c:if test="${property_userVersionAllowed == 'true'}">
+    <c:set var="property_name_per_user" value="${property_name}.${ssUser.id}"/>
+<div class="ss_entryContent tundra">
+<span class="ss_labelAbove" id='${property_name_per_user}_label'>
+  <ssf:nlt tag="element.perUser.yourVersion"><ssf:param name="value" value="${property_caption}"/></ssf:nlt>
+</span>
+<div id="${property_name_per_user}_error" style="visibility:hidden; display:none;">
+  <span class="ss_formError"><ssf:nlt tag="date.validate.error"/></span>
+</div>
+	
+	<c:set var="initDate" value="<%= new Date() %>"/>
+	<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name_per_user].value}">
+		<c:set var="initDate" value="${ssDefinitionEntry.customAttributes[property_name_per_user].value}"/>
+		<c:set var="property_initialSetting" value="entry"/>
+	</c:if>
+
+	<input type="text" dojoType="dijit.form.DateTextBox" 
+		id="date_${property_name_per_user}_${prefix}" 
+		name="${property_name_per_user}_fullDate" 
+		lang="<ssf:convertLocaleToDojoStyle />" 
+		<c:if test="${property_initialSetting != 'none'}">
+		  value="<fmt:formatDate value="${initDate}" pattern="yyyy-MM-dd" 
+			timeZone="${ssUser.timeZone.ID}"/>"
+		</c:if>
+		<c:if test="${property_initialSetting == 'none'}">
+		  value=""
+		</c:if>
+	/>
+
+		<input type="hidden" name="${property_name_per_user}_timezoneid" value="${ssUser.timeZone.ID}" />
+		<input type="hidden" name="${property_name_per_user}_skipTime" value="false" />
+		<input type="hidden" name="${property_name_per_user}" value="" />
+		
+</div>
+  </c:if>
 </c:if>
 <c:if test="${!empty ssReadOnlyFields[property_name]}">
 
@@ -98,4 +134,17 @@ ${property_caption}<c:if test="${property_required}"><span
 			timeZone="${ssUser.timeZone.ID}"/> &#134;
 </c:if>
 </div>
+
+<c:if test="${property_userVersionAllowed == 'true'}">
+    <c:set var="property_name_per_user" value="${property_name}.${ssUser.id}"/>
+<div class="ss_entryContent">
+<span class="ss_labelAbove"><ssf:nlt tag="element.perUser.yourVersion">
+ 	    <ssf:param name="value" value="${property_caption}"/>
+ 	    </ssf:nlt></span>
+<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name_per_user].value}">
+<fmt:formatDate value="${ssDefinitionEntry.customAttributes[property_name_per_user].value}" pattern="yyyy-MM-dd" 
+			timeZone="${ssUser.timeZone.ID}"/> &#134;
+</c:if>
+</div>
+</c:if>
 </c:if>

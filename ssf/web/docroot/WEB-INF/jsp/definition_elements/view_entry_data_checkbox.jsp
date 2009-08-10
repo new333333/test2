@@ -48,14 +48,14 @@
     <ssf:expandableArea title='<%= NLT.get("element.perUser.viewPersonalVersions") %>' titleClass="ss_fineprint">
     <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
       <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.id}"/>
-      <div style="padding-left:10px;">
+      <div class="ss_perUserViewElement" style="padding-left:10px;">
 		<c:if test="${ssDefinitionEntry.customAttributes[perUserPropertyName].value}" >
 		  <input type="checkbox" checked DISABLED>
 		</c:if>
 		<c:if test="${!ssDefinitionEntry.customAttributes[perUserPropertyName].value}" >
 		  <input type="checkbox" DISABLED>
 		</c:if>
-		<span class="ss_labelRight">${perUserUser.title}</span>
+		<ssf:showUser user="${perUserUser}"/>
       </div>
     </c:forEach>
     </ssf:expandableArea>
@@ -84,14 +84,14 @@
     <ssf:expandableArea title='<%= NLT.get("element.perUser.viewPersonalVersions") %>' titleClass="ss_fineprint">
     <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
       <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.id}"/>
-      <div style="padding-left:10px;">
+      <div class="ss_perUserViewElement" style="padding-left:10px;">
 		<c:if test="${ssDefinitionEntry.customAttributes[perUserPropertyName].value}" >
 		  <input type="checkbox" checked DISABLED>
 		</c:if>
 		<c:if test="${!ssDefinitionEntry.customAttributes[perUserPropertyName].value}" >
 		  <input type="checkbox" DISABLED>
 		</c:if>
-		<span class="ss_labelRight">${perUserUser.title}</span>
+		<ssf:showUser user="${perUserUser}"/>
       </div>
     </c:forEach>
     </ssf:expandableArea>

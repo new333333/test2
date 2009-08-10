@@ -41,12 +41,21 @@
 <c:if test="${!empty ss_userVersionPrincipals}">
     <div class="ss_perUserViewElement">
     <ssf:expandableArea title='<%= NLT.get("element.perUser.viewPersonalVersions") %>' titleClass="ss_fineprint">
+    <table cellspacing="0" cellpadding="0">
     <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
       <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.id}"/>
-      <div style="padding-left:10px;"><span class="${ss_element_display_style_item}">${perUserUser.title}: <c:out 
+      <tr>
+      <td style="padding-left:10px;">
+		<div class="ss_entryContent"><ssf:showUser user="${perUserUser}"/></div>
+	  </td>
+	  <td style="padding-left:10px;">
+      <span class="${ss_element_display_style_item}"><c:out 
           value="${ssDefinitionEntry.customAttributes[perUserPropertyName].value}" 
-          escapeXml="false"/></span></div>
+          escapeXml="false"/></span>
+      </td>
+      </tr>
     </c:forEach>
+    </table>
     </ssf:expandableArea>
     </div>
 </c:if>
@@ -71,12 +80,21 @@
   <td valign="top" align="left">
     <div class="ss_perUserViewElement">
     <ssf:expandableArea title='<%= NLT.get("element.perUser.viewPersonalVersions") %>' titleClass="ss_fineprint">
-    <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
-      <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.id}"/>
-      <div style="padding-left:10px;"><span class="${ss_element_display_style_item}">${perUserUser.title}: <c:out 
-          value="${ssDefinitionEntry.customAttributes[perUserPropertyName].value}" 
-          escapeXml="false"/></span><div>
-    </c:forEach>
+      <table cellspacing="0" cellpadding="0">
+      <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
+        <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.id}"/>
+        <tr>
+        <td style="padding-left:10px;">
+		  <ssf:showUser user="${perUserUser}"/>
+	    </td>
+	    <td style="padding-left:10px;">
+          <span class="${ss_element_display_style_item}"><c:out 
+            value="${ssDefinitionEntry.customAttributes[perUserPropertyName].value}" 
+            escapeXml="false"/></span>
+        </td>
+        </tr>
+      </c:forEach>
+    </table>
     </ssf:expandableArea>
     </div>
   </td>

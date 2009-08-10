@@ -473,12 +473,12 @@ div.ss_entryDescription a:hover {
 
 div.ss_perUserFormElement {
 	padding-left:20px;
-	color: #444
+	color: #444;
 }
 
 div.ss_perUserViewElement {
 	padding-left:20px;
-	color: #444
+	color: #444;
 }
 
 div.ss_editableTab {
