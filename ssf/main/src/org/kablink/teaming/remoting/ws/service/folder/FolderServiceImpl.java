@@ -341,7 +341,9 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	}
 
 	public long folder_addEntry(String accessToken, org.kablink.teaming.remoting.ws.model.FolderEntry entry, String attachedFileName) {
-		return addFolderEntry(accessToken, entry, attachedFileName, null);	
+		HashMap options = new HashMap();
+ 		getTimestamps(options, entry);
+		return addFolderEntry(accessToken, entry, attachedFileName, options);	
 	}
 	protected long addFolderEntry(String accessToken, org.kablink.teaming.remoting.ws.model.FolderEntry entry, String attachedFileName, Map options) {
 		if(profiler == null) {
@@ -368,7 +370,9 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	}
 
 	public long folder_addReply(String accessToken, long parentEntryId, org.kablink.teaming.remoting.ws.model.FolderEntry reply, String attachedFileName) {
-		return addReply(accessToken, parentEntryId, reply, attachedFileName, null);
+		Map options = new HashMap();
+		getTimestamps(options, reply);
+		return addReply(accessToken, parentEntryId, reply, attachedFileName, options);
 	}
 	protected long addReply(String accessToken, long parentEntryId, org.kablink.teaming.remoting.ws.model.FolderEntry reply, String attachedFileName, Map options) {
 		try {
@@ -385,8 +389,10 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 
 	public void folder_modifyEntry(String accessToken, org.kablink.teaming.remoting.ws.model.FolderEntry entry) {
 		try {
+			HashMap options = new HashMap();
+	 		getTimestamps(options, entry);
 			getFolderModule().modifyEntry(entry.getParentBinderId(), entry.getId(), 
-				new ModelInputData(entry), null, null, null, null);
+				new ModelInputData(entry), null, null, null, options);
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
