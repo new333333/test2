@@ -2,8 +2,7 @@
 /* Styles for the drag proxy widget that is used when the user drags an item from the palette in the landing page editor. */
 .lpeDragProxy
 {
-	/* background: #EFEEEC url(images/putty_blend3.png) repeat-x scroll 0 0; */
-	background: #EFEEEC;
+	background: #EFEEEC url(images/putty_blend3.png) repeat-x scroll 0 0;
 	height: 20px;
 	margin: 3px;
 	padding: 3px;
@@ -47,8 +46,7 @@
 /* Styles for the items that are found on the landing page editor palette. */
 .lpePaletteItem
 {
-	/* background: #EFEEEC url(images/putty_blend3.png) repeat-x scroll 0 0; */
-	background: #EFEEEC;
+	background: #EFEEEC url(images/putty_blend3.png) repeat-x scroll 0 0;
 	height: 20px;
 	margin: 3px;
 	padding: 3px;
