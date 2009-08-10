@@ -40,9 +40,31 @@
  <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				      value="${ssDefinitionEntry.customAttributes[property_name].value}" type="date" 
 					  dateStyle="medium" />
-
 </span>
 </div>
+<c:if test="${!empty ss_userVersionPrincipals}">
+    <div class="ss_perUserViewElement">
+    <ssf:expandableArea title='<%= NLT.get("element.perUser.viewPersonalVersions") %>' titleClass="ss_fineprint">
+    <table cellspacing="0" cellpadding="0">
+    <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
+      <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.id}"/>
+      <tr>
+      <td style="padding-left:10px;">
+		<div class="ss_entryContent"><ssf:showUser user="${perUserUser}"/></div>
+	  </td>
+	  <td style="padding-left:10px;">
+		<span class="${ss_element_display_style_item}">
+ 			<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+				      value="${ssDefinitionEntry.customAttributes[perUserPropertyName].value}" type="date" 
+					  dateStyle="medium" />
+		</span>
+      </td>
+      </tr>
+    </c:forEach>
+    </table>
+    </ssf:expandableArea>
+    </div>
+</c:if>
 </c:if>
 
 <c:if test="${!empty ss_element_display_style && 
@@ -59,4 +81,33 @@
 	</span>
   </td>
 </tr>
+<c:if test="${!empty ss_userVersionPrincipals}">
+<tr>
+  <td class="ss_table_spacer_right" valign="top" align="right">
+    <div class="ss_perUserViewElement">
+    <ssf:expandableArea title='<%= NLT.get("element.perUser.viewPersonalVersions") %>' titleClass="ss_fineprint">
+    <table cellspacing="0" cellpadding="0">
+    <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
+      <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.id}"/>
+      <tr>
+      <td style="padding-left:10px;">
+		<div class="ss_entryContent"><ssf:showUser user="${perUserUser}"/></div>
+	  </td>
+	  <td style="padding-left:10px;">
+		<div class="ss_entryContent">
+		<span class="${ss_element_display_style_item}">
+ 			<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+				      value="${ssDefinitionEntry.customAttributes[perUserPropertyName].value}" type="date" 
+					  dateStyle="medium" />
+		</span>
+		</div>
+      </td>
+      </tr>
+    </c:forEach>
+    </table>
+    </ssf:expandableArea>
+    </div>
+  </td>
+</tr>
+</c:if>
 </c:if>
