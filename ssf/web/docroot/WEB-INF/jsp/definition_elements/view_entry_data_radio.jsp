@@ -52,6 +52,38 @@
 <span class="ss_labelRight"><c:out value="${property_caption}" /></span>
 <c:out value="${caption}" escapeXml="false"/>
 </div>
+  <c:if test="${!empty ss_userVersionPrincipals}">
+    <div class="ss_entryContent">
+    <div class="ss_perUserViewElement">
+    <ssf:expandableArea title='<%= NLT.get("element.perUser.viewPersonalVersions") %>' titleClass="ss_fineprint">
+    <table cellspacing="0" cellpadding="0">
+    <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
+      <c:set var="perUserPropertyName1" value="${property_name}.${perUserUser.id}"/>
+      <jsp:useBean id="perUserPropertyName1" type="String" />
+<%
+	caption = "";
+	if(ssDefinitionEntry.getCustomAttributes().get(perUserPropertyName1) != null) {
+		caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
+					(String) ((CustomAttribute) ssDefinitionEntry.getCustomAttributes().get(perUserPropertyName1)).getValue());
+		caption = NLT.getDef(caption);
+	}
+%>
+      <tr>
+      <td style="padding-left:10px;">
+		<div class="ss_entryContent"><ssf:showUser user="${perUserUser}"/></div>
+	  </td>
+	  <td style="padding-left:10px;">
+		<span class="${ss_element_display_style_item}">
+	  		<c:out value="${caption}" escapeXml="false"/>
+		</span>
+      </td>
+      </tr>
+    </c:forEach>
+    </table>
+    </ssf:expandableArea>
+    </div>
+    </div>
+  </c:if>
 </c:if>
 
 <c:if test="${!empty ss_element_display_style && 
@@ -65,5 +97,39 @@
 	  <c:out value="${caption}" escapeXml="false"/>
 	</span>
   </td>
-  </tr>
+</tr>
+  <c:if test="${!empty ss_userVersionPrincipals}">
+    <tr>
+    <td colspan="2">
+    <div class="ss_perUserViewElement">
+    <ssf:expandableArea title='<%= NLT.get("element.perUser.viewPersonalVersions") %>' titleClass="ss_fineprint">
+    <table cellspacing="0" cellpadding="0">
+    <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
+      <c:set var="perUserPropertyName2" value="${property_name}.${perUserUser.id}"/>
+      <jsp:useBean id="perUserPropertyName2" type="String" />
+<%
+	caption = "";
+	if(ssDefinitionEntry.getCustomAttributes().get(perUserPropertyName2) != null) {
+		caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
+					(String) ((CustomAttribute) ssDefinitionEntry.getCustomAttributes().get(perUserPropertyName2)).getValue());
+		caption = NLT.getDef(caption);
+	}
+%>
+      <tr>
+      <td style="padding-left:10px;">
+		<div class="ss_entryContent"><ssf:showUser user="${perUserUser}"/></div>
+	  </td>
+	  <td style="padding-left:10px;">
+		<span class="${ss_element_display_style_item}">
+	  		<c:out value="${caption}" escapeXml="false"/>
+		</span>
+      </td>
+      </tr>
+    </c:forEach>
+    </table>
+    </ssf:expandableArea>
+    </div>
+    </td>
+    </tr>
+  </c:if>
 </c:if>

@@ -34,9 +34,10 @@
 %>
 <% // radio selection %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="radio_property_name" value="${property_name}"/>
 <c:if test="${empty ssReadOnlyFields[radioGroupName]}">
 <c:set var="checked" value=""/>
-<c:if test="${ssDefinitionEntry.customAttributes[radioGroupName].value == property_name}">
+<c:if test="${ssDefinitionEntry.customAttributes[radioGroupName].value == radio_property_name}">
   <c:set var="checked" value="checked"/>
 </c:if>
 <c:if test="${empty ssDefinitionEntry.customAttributes[radioGroupName].value && property_selected}">
@@ -46,8 +47,9 @@
 <td>
 </c:if>
 <input type="radio" name="<c:out value="${radioGroupName}"/>" 
-  value="<c:out value="${property_name}"/>" <c:out value="${checked}"/>
-/>&nbsp;<span class="ss_bold"><c:out value="${property_caption}"/></span><ssf:displayConfiguration 
+  value="<c:out value="${radio_property_name}"/>" <c:out value="${checked}"/>
+/>&nbsp;<span class="ss_bold"><c:out value="${property_caption}"/></span>
+ <ssf:displayConfiguration 
   configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
   configJspStyle="${ssConfigJspStyle}" />
@@ -59,7 +61,7 @@
 </c:if>
 </c:if>
 <c:if test="${!empty ssReadOnlyFields[radioGroupName]}">
-<c:if test="${ssDefinitionEntry.customAttributes[radioGroupName].value == property_name}">
+<c:if test="${ssDefinitionEntry.customAttributes[radioGroupName].value == radio_property_name}">
 <c:out value="${property_caption}"/> &#134;
 </c:if>
  <ssf:displayConfiguration 

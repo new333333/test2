@@ -34,6 +34,9 @@
 %>
 <% // The radio form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
+<c:set var="original_property_name" value="${property_name}"/>
+<c:set var="original_property_caption" value="${property_caption}"/>
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%
 	//Get the form item being displayed
@@ -73,3 +76,26 @@
 </table>
 </c:if>
 </div>
+  <c:if test="${property_userVersionAllowed == 'true'}">
+<%
+	request.setAttribute("radioGroupName", elementName + "." + ssUser.getId().toString());
+%>
+	<c:set var="property_name_per_user" value="${original_property_name}.${ssUser.id}"/>
+	<c:if test="${ss_radioButtonsLayout == 'horizontal'}">
+		<table cellspacing="0" cellpadding="0" class="ss_radio_button_horizontal">
+		<tr>
+	</c:if>
+    	<div class="ss_labelAbove">
+    	<ssf:nlt tag="element.perUser.yourVersion"><ssf:param name="value" value="${original_property_caption}"/></ssf:nlt>
+    	</div>
+		<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  		configElement="<%= item %>" 
+  		configJspStyle="${ssConfigJspStyle}" />
+<%
+	request.setAttribute("radioGroupName", orgRadioGroupName);
+%>
+	<c:if test="${ss_radioButtonsLayout == 'horizontal'}">
+		</tr>
+		</table>
+	</c:if>
+  </c:if>
