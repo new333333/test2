@@ -330,6 +330,9 @@
 			<property name="required" caption="__required" type="boolean" default="false" >
 				<help>ihelp.designers.required</help>
 			</property>
+			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
+				<help>ihelp.designers.field_modification</help>
+			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/event_form.jsp" />
@@ -1781,6 +1784,9 @@
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
+			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
+				<help>ihelp.designers.field_modification</help>
+			</property>
 			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
 				<help>ihelp.designers.user_version</help>
 			</property>
@@ -1805,6 +1811,9 @@
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
+			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
+				<help>ihelp.designers.field_modification</help>
+			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
@@ -1827,6 +1836,9 @@
 			<property name="size" caption="__size" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
+			</property>
+			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
+				<help>ihelp.designers.field_modification</help>
 			</property>
 			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
 				<help>ihelp.designers.user_version</help>
@@ -1878,6 +1890,9 @@
 			<property name="required" caption="__required" type="boolean"
 				default="false">
 				<help>ihelp.designers.required</help>
+			</property>
+			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
+				<help>ihelp.designers.field_modification</help>
 			</property>
 		</properties>
 		<jsps>
@@ -1934,6 +1949,9 @@
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
+			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
+				<help>ihelp.designers.field_modification</help>
+			</property>
 			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
 				<help>ihelp.designers.user_version</help>
 			</property>
@@ -1978,6 +1996,9 @@
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="multipleAllowed" caption="__allow_multiple" type="boolean" default="false"></property>
+			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
+				<help>ihelp.designers.field_modification</help>
+			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/places_form.jsp" />
@@ -1996,6 +2017,9 @@
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
+			</property>
+			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
+				<help>ihelp.designers.field_modification</help>
 			</property>
 			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
 				<help>ihelp.designers.user_version</help>
@@ -2081,6 +2105,9 @@
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
+			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
+				<help>ihelp.designers.field_modification</help>
+			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
@@ -2129,6 +2156,9 @@
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
+			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
+				<help>ihelp.designers.field_modification</help>
+			</property>
 			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
 				<help>ihelp.designers.user_version</help>
 			</property>
@@ -2157,6 +2187,9 @@
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
+			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
+				<help>ihelp.designers.field_modification</help>
+			</property>
 			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
 				<help>ihelp.designers.user_version</help>
 			</property>
@@ -2181,6 +2214,9 @@
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
+			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
+				<help>ihelp.designers.field_modification</help>
+			</property>
 			<property name="includeCreatorOnAdd" caption="__includeCreatorOnAdd" type="boolean" default="false"/>
 		</properties>
 		<jsps>
@@ -2203,6 +2239,9 @@
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
+			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
+				<help>ihelp.designers.field_modification</help>
+			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/grouplist_form.jsp" />
@@ -2223,6 +2262,9 @@
 			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
+			</property>
+			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
+				<help>ihelp.designers.field_modification</help>
 			</property>
 		</properties>
 		<jsps>
@@ -2998,6 +3040,17 @@
 	</item>
 	
 	<item name="modifyAccess" caption="__modifyAccess" category="accessControlsLayout" 
+		  multipleAllowedInParent="false">
+		<properties>
+			<property name="folderDefault" caption="__folderDefault" type="checkbox"/>
+			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="team" caption="__team" type="checkbox" />
+			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
+			<property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList" />
+		</properties>
+	</item>
+	
+	<item name="modifyFieldAccess" caption="__modifyFieldAccess" category="accessControlsLayout" 
 		  multipleAllowedInParent="false">
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox"/>

@@ -778,6 +778,8 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 				nodeString = "item[@name='readAccess']";
 			} else if (WfAcl.AccessType.write.equals(type)) {  
 				nodeString = "item[@name='modifyAccess']";
+			} else if (WfAcl.AccessType.modifyField.equals(type)) {  
+				nodeString = "item[@name='modifyFieldAccess']";
 			} else if (WfAcl.AccessType.delete.equals(type)) {
 				nodeString = "item[@name='deleteAccess']";
 			} else if (WfAcl.AccessType.transitionOut.equals(type)) {

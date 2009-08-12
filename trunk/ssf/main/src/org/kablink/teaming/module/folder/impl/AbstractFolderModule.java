@@ -250,6 +250,9 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			case moveEntry:
 				AccessUtils.modifyCheck(entry);   
 				break;
+			case modifyEntryFields:
+				AccessUtils.modifyFieldCheck(entry);   
+				break;
 			case deleteEntry:
 				AccessUtils.deleteCheck(entry);   		
 				break;
@@ -404,7 +407,12 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         
     	meCount.incrementAndGet();
         FolderEntry entry = loadEntry(folderId, entryId);   	
-		checkAccess(entry, FolderOperation.modifyEntry);
+		try {
+			checkAccess(entry, FolderOperation.modifyEntry);
+		} catch (AccessControlException e) {
+			checkAccess(entry, FolderOperation.modifyEntryFields);
+			inputData.setFieldsOnly(true);
+		}
         Folder folder = entry.getParentFolder();
 		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
 				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))

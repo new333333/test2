@@ -64,9 +64,11 @@ public class ModelInputData implements InputDataAccessor {
 	private static Log logger = LogFactory.getLog(ModelInputData.class);
 	
 	private DefinableEntity entity;
+	private Boolean fieldsOnly;
 	
 	public ModelInputData(DefinableEntity entity) {
 		this.entity = entity;
+		this.fieldsOnly = false;
 	}
 
 	public boolean exists(String key) {
@@ -219,5 +221,12 @@ public class ModelInputData implements InputDataAccessor {
 	
 	public IcalModule getIcalModule() {
 		return (IcalModule) SpringContextUtil.getBean("icalModule");
+	}
+
+	public void setFieldsOnly(Boolean fieldsOnly) {
+		this.fieldsOnly = fieldsOnly;
+	}
+	public boolean isFieldsOnly() {
+		return this.fieldsOnly;
 	}
 }

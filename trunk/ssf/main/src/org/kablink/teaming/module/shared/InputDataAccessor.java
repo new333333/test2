@@ -105,5 +105,11 @@ public interface InputDataAccessor {
 	public int getCount();
 
 	public Survey getSurveyValue(String nameValue);
+	
+	/**
+	 * Mark this as limited to fields only as specified in the definition file
+	 */
+	public void setFieldsOnly(Boolean fieldsOnly);
+	public boolean isFieldsOnly();
 		
 }

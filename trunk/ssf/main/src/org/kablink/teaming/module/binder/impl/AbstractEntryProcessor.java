@@ -600,10 +600,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
    
     protected Map modifyEntry_toEntryData(Entry entry, InputDataAccessor inputData, Map fileItems, Map ctx) {
+        boolean fieldsOnly = false;
         //Call the definition processor to get the entry data to be stored
         Definition def = entry.getEntryDef();
         if (def != null) {
-            Map entryDataAll = getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
+            Map entryDataAll = getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems, fieldsOnly);
              return entryDataAll;
         } else {
            	Map entryDataAll = new HashMap();

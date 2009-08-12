@@ -1789,6 +1789,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     }
 
     public Map getEntryData(Document definitionTree, InputDataAccessor inputData, Map fileItems) {
+    	return getEntryData(definitionTree, inputData, fileItems, false);
+    }
+    public Map getEntryData(Document definitionTree, InputDataAccessor inputData, Map fileItems, boolean fieldsOnly) {
 		//access check not needed = have tree already
         User user = RequestContextHolder.getRequestContext().getUser();
 
@@ -1837,6 +1840,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				}
 				for (Element nextItem: itItems) {
 					String itemName = (String) nextItem.attributeValue("name", "");
+					
 					//Get the form element name (property name)
 					String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
 					if (Validator.isNull(nameValue)) {nameValue = nextItem.attributeValue("name");}
@@ -1845,6 +1849,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					boolean userVersionAllowed = false;
 					if (s_userVersionAllowed != null && "true".equals(s_userVersionAllowed)) 
 						userVersionAllowed = true;
+					String s_fieldModificationAllowed = DefinitionUtils.getPropertyValue(nextItem, "fieldModificationAllowed");
+					boolean fieldModificationAllowed = false;
+					if (s_fieldModificationAllowed != null && "true".equals(s_fieldModificationAllowed)) 
+						fieldModificationAllowed = true;
+					
+					//See if this is a fieldsOnly modification and the definition allows field modification
+					//  If fieldsOnly and element doesn't allow field modification, then skip this element
+					if (inputData.isFieldsOnly() && !fieldModificationAllowed) continue;
 					
 					//We have the element name, see if it has a value in the input data
 					if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {

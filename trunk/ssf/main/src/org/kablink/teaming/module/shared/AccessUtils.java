@@ -324,6 +324,64 @@ public class AccessUtils  {
   		}
     }
 
+     public static void modifyFieldCheck(Entry entry) throws AccessControlException {
+ 		modifyFieldCheck(RequestContextHolder.getRequestContext().getUser(), entry);
+     }
+     public static void modifyFieldCheck(User user, Entry entry) throws AccessControlException {
+    	 if (user.isSuper()) return;
+    	 if (entry instanceof WorkflowSupport)
+    		 modifyFieldCheck(user, entry.getParentBinder(), (WorkflowSupport)entry);
+    	 else 
+    		 modifyFieldCheck(user, entry.getParentBinder(), (Entry)entry);
+    }
+     private static void modifyFieldCheck(User user, Binder binder, Entry entry) {
+        try {
+        	getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.MODIFY_ENTRY_FIELDS);
+        } catch (OperationAccessControlException ex) {
+        	try {
+        		//See if this user has modify right instead
+        		modifyCheck(user, binder, entry);
+        	} catch (OperationAccessControlException ex2) {
+	       		if (user.equals(entry.getCreation().getPrincipal())) 
+	       			getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_MODIFY);
+	       		else throw ex2;
+        	}
+       	}
+     }
+
+     private static void modifyFieldCheck(User user, Binder binder, WorkflowSupport entry) {
+  		if (!entry.hasAclSet()) {
+ 			modifyFieldCheck(user, binder, (Entry)entry);
+ 		} else if (SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) {
+  			//just check entry acl, ignore binder
+  			try {
+  				//check explicit users
+  				checkAccess(user, binder, entry, WfAcl.AccessType.modifyField);
+  			} catch (AccessControlException ex) {
+  				if (entry.isWorkAreaAccess(WfAcl.AccessType.modifyField)) { 		
+  					modifyFieldCheck(user, binder, (Entry)entry);
+  				} else if (entry.isWorkAreaAccess(WfAcl.AccessType.modify)) { 		
+  					modifyCheck(user, binder, (Entry)entry);
+  				} else throw ex;
+  			}
+  			
+  		} else {
+  			//must have READ access to binder AND modify to the entry
+  			if (entry.isWorkAreaAccess(WfAcl.AccessType.modifyField)) {
+  				//optimzation: if pass modify binder check, don't need to do read binder check
+  				// all done if binder access is enough
+  				try {
+ 					modifyFieldCheck(user, binder, (Entry)entry);
+ 					return;
+  				} catch (AccessControlException ex) {} //move on to next checks
+  			}
+  			//see if pass binder READ test
+  			readCheck(user, binder, (Entry)entry);
+  			//This basically AND's the binder and entry, since we already passed the binder
+  			checkAccess(user, binder, entry, WfAcl.AccessType.modifyField);
+   		}
+     }
+
      public static void deleteCheck(Entry entry) throws AccessControlException {
     	 deleteCheck(RequestContextHolder.getRequestContext().getUser(), entry);
      }

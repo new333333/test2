@@ -602,7 +602,8 @@ public class ViewEntryController extends  SAbstractController {
 			}
 		}
 	    
-		if (getFolderModule().testAccess(entry, FolderOperation.modifyEntry)) {
+		if (getFolderModule().testAccess(entry, FolderOperation.modifyEntry) ||
+				getFolderModule().testAccess(entry, FolderOperation.modifyEntryFields)) {
 			if (isEntryReserved && !isLockedByAndLoginUserSame ) {
 				toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), nullPortletUrl, disabledQual);
 				if (entry.isTop()) {
@@ -611,7 +612,10 @@ public class ViewEntryController extends  SAbstractController {
 				}
 			}
 			else {
-				accessControlEntryMap.put("modifyEntry", new Boolean(true));
+				if (getFolderModule().testAccess(entry, FolderOperation.modifyEntry))
+					accessControlEntryMap.put("modifyEntry", new Boolean(true));
+				if (getFolderModule().testAccess(entry, FolderOperation.modifyEntryFields))
+					accessControlEntryMap.put("modifyEntryFields", new Boolean(true));
 				//The "Modify" menu
 				Map qualifiers = new HashMap();
 				qualifiers.put("popup", new Boolean(true));

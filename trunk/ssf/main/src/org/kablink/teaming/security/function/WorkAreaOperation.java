@@ -57,6 +57,7 @@ public class WorkAreaOperation {
     //  Such "view" operations should be controlled by the ACL. (not implemented)
     public final static WorkAreaOperation CREATE_ENTRIES = new WorkAreaOperation("createEntries");
     public final static WorkAreaOperation MODIFY_ENTRIES = new WorkAreaOperation("modifyEntries");    
+    public final static WorkAreaOperation MODIFY_ENTRY_FIELDS = new WorkAreaOperation("modifyEntryFields");    
     public final static WorkAreaOperation DELETE_ENTRIES = new WorkAreaOperation("deleteEntries");    
     public final static WorkAreaOperation READ_ENTRIES = new WorkAreaOperation("readEntries");
     public final static WorkAreaOperation ADD_REPLIES = new WorkAreaOperation("addReplies");

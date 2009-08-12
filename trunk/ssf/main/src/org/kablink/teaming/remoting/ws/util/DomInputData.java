@@ -61,15 +61,18 @@ public class DomInputData implements InputDataAccessor {
 	private Document doc;
 	private Element root;
 	private IcalModule icalModule;
+	private Boolean fieldsOnly;
 	
 	public DomInputData(Document doc, IcalModule icalModule) {
 		this(doc.getRootElement(), icalModule);
 		this.doc = doc;
+		this.fieldsOnly = false;
 	}
 	
 	public DomInputData(Element root, IcalModule icalModule) {
 		this.root = root;
 		this.icalModule = icalModule;
+		this.fieldsOnly = false;
 	}
 
 	public String getSingleValue(String key) {
@@ -148,5 +151,12 @@ public class DomInputData implements InputDataAccessor {
 	}
 	public int getCount() {
 		return root.nodeCount();
+	}
+
+	public void setFieldsOnly(Boolean fieldsOnly) {
+		this.fieldsOnly = fieldsOnly;
+	}
+	public boolean isFieldsOnly() {
+		return this.fieldsOnly;
 	}
 }

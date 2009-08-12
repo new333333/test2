@@ -45,6 +45,7 @@ public class WfAcl {
 		read ,
 		write,
 		modify, 
+		modifyField, 
 		delete, 
 		transitionIn, 
 		transitionOut;
