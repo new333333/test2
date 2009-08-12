@@ -2239,8 +2239,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 		VersionAttachment vAttach = versionIter.next();
 
+		InputStream fileStream = null;
 		try {
-			InputStream fileStream = fileModule.readFile(binder, entity,
+			fileStream = fileModule.readFile(binder, entity,
 					vAttach);
 
 			zipOut.putNextEntry(new ZipEntry(pathName + File.separator
@@ -2249,14 +2250,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			zipOut.closeEntry();
 
 			fileStream.close();
-		} catch (NullPointerException npe) {
-			logger.error(npe);
+		} catch (Exception e) {
+			logger.error(e);
 
 			zipOut.putNextEntry(new ZipEntry(pathName + File.separator
 					+ fileName + ".error_message.txt"));
 			zipOut.write(NLT.get("export.error.attachment",
 					"Error processing this attachment").getBytes());
 			zipOut.closeEntry();
+			if (fileStream != null) fileStream.close();
 		}
 
 		// older versions, from highest to lowest
@@ -2266,8 +2268,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 			int versionNum = fileVersions.size() - i;
 
+			fileStream = null;
 			try {
-				InputStream fileStream = fileModule.readFile(binder, entity,
+				fileStream = fileModule.readFile(binder, entity,
 						vAttach);
 
 				zipOut.putNextEntry(new ZipEntry(pathName + File.separator
@@ -2277,8 +2280,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				zipOut.closeEntry();
 
 				fileStream.close();
-			} catch (NullPointerException npe) {
-				logger.error(npe);
+			} catch (Exception e) {
+				logger.error(e);
 
 				zipOut.putNextEntry(new ZipEntry(pathName + File.separator
 						+ fileName + ".versions" + File.separator + versionNum
@@ -2286,6 +2289,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				zipOut.write(NLT.get("export.error.attachment",
 						"Error processing this attachment").getBytes());
 				zipOut.closeEntry();
+				if (fileStream != null) fileStream.close();
 			}
 		}
 
