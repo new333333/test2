@@ -79,6 +79,9 @@
 	} else if (itemType.equals("user_list") || itemType.equals("userListSelectbox")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_user_list.jsp" %><%
 		
+	} else if (itemType.equals("external_user_list")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_external_user_list.jsp" %><%
+		
 	} else if (itemType.equals("group_list")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_group_list.jsp" %><%
 
