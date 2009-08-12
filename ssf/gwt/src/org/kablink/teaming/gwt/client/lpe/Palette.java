@@ -55,8 +55,6 @@ public class Palette extends Composite
 	{
 		FlowPanel	panel;
 		PaletteItem	paletteItem;
-		GwtTeamingMessages		messages;
-		GwtTeamingImageBundle	imgBundle;
 		
 		// Create a FlowPanel for the palette items to live in.
 		panel = new FlowPanel();
@@ -64,47 +62,44 @@ public class Palette extends Composite
 		// Associate the panel with its stylesheet.
 		panel.addStyleName( "lpePalette" );
 
-		messages = GwtTeaming.getMessages();
-		imgBundle = GwtTeaming.getImageBundle();
-		
 		// Add the various items to the palette.
-		paletteItem = new PaletteItem( imgBundle.landingPageEditorTable(), messages.lpeTable() );
+		paletteItem = new TablePaletteItem();
 		panel.add( paletteItem );
 		paletteItem.addMouseDownHandler( lpe );
 		
-		paletteItem = new PaletteItem( imgBundle.landingPageEditorList(), messages.lpeList() );
+		paletteItem = new ListPaletteItem();
 		panel.add( paletteItem );
 		paletteItem.addMouseDownHandler( lpe );
 		
-		paletteItem = new PaletteItem( imgBundle.landingPageEditorEntry(), messages.lpeEntry() );
+		paletteItem = new EntryPaletteItem();
 		panel.add( paletteItem );
 		paletteItem.addMouseDownHandler( lpe );
 		
-		paletteItem = new PaletteItem( imgBundle.landingPageEditorFolder(), messages.lpeFolder() );
+		paletteItem = new FolderPaletteItem();
 		panel.add( paletteItem );
 		paletteItem.addMouseDownHandler( lpe );
 		
-		paletteItem = new PaletteItem( imgBundle.landingPageEditorGraphic(), messages.lpeGraphic() );
+		paletteItem = new GraphicPaletteItem();
 		panel.add( paletteItem );
 		paletteItem.addMouseDownHandler( lpe );
 		
-		paletteItem = new PaletteItem( imgBundle.landingPageEditorLinkUrl(), messages.lpeLinkURL() );
+		paletteItem = new LinkUrlPaletteItem();
 		panel.add( paletteItem );
 		paletteItem.addMouseDownHandler( lpe );
 		
-		paletteItem = new PaletteItem( imgBundle.landingPageEditorLinkFolder(), messages.lpeLinkFolderWS() );
+		paletteItem = new LinkToFolderPaletteItem();
 		panel.add( paletteItem );
 		paletteItem.addMouseDownHandler( lpe );
 		
-		paletteItem = new PaletteItem( imgBundle.landingPageEditorLinkEntry(), messages.lpeLinkEntry() );
+		paletteItem = new LinkToEntryPaletteItem();
 		panel.add( paletteItem );
 		paletteItem.addMouseDownHandler( lpe );
 		
-		paletteItem = new PaletteItem( imgBundle.landingPageEditorUtilityElement(), messages.lpeUtilityElement() );
+		paletteItem = new UtilityElementPaletteItem();
 		panel.add( paletteItem );
 		paletteItem.addMouseDownHandler( lpe );
 		
-		paletteItem = new PaletteItem( imgBundle.landingPageEditorCustomJsp(), messages.lpeCustomJSP() );
+		paletteItem = new CustomJspPaletteItem();
 		panel.add( paletteItem );
 		paletteItem.addMouseDownHandler( lpe );
 

@@ -34,11 +34,8 @@
 package org.kablink.teaming.gwt.client.lpe;
 
 import com.google.gwt.event.dom.client.HasMouseDownHandlers;
-import com.google.gwt.event.dom.client.HasMouseUpHandlers;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseUpEvent;
-import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
@@ -52,7 +49,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
  * @author jwootton
  *
  */
-public class PaletteItem extends Composite
+public abstract class PaletteItem extends Composite
 	implements HasMouseDownHandlers
 {
 	private DragProxy m_dragProxy = null;
@@ -64,7 +61,6 @@ public class PaletteItem extends Composite
 	 * The DragProxy class is used to create the object that will be dragged from the palette.
 	 */
 	public static class DragProxy extends PopupPanel
-		implements HasMouseUpHandlers
 	{
 		/**
 		 * 
@@ -98,16 +94,8 @@ public class PaletteItem extends Composite
 
 			setWidget( panel );
 		}// end DragProxy()
-		
-		/**
-		 * Method to add mouse up handlers to this landing page editor.
-		 */
-		public HandlerRegistration addMouseUpHandler( MouseUpHandler handler )
-		{
-			return addDomHandler( handler, MouseUpEvent.getType() );
-		}// end addMouseUpHandler()
 	}// end DragProxy
-
+	
 	
 	/**
 	 * 
@@ -138,7 +126,7 @@ public class PaletteItem extends Composite
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( panel );
-	}// end Palette()
+	}// end PaletteItem()
 
 	
 	/**

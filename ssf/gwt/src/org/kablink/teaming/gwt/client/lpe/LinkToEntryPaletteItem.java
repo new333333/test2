@@ -30,60 +30,23 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.lpe;
 
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.ui.FlowPanel;
+import org.kablink.teaming.gwt.client.GwtTeaming;
+
 
 /**
- * This widget is used as the canvas in the Landing Page Editor.  This canvas displays the
- * elements that make up the Landing Page configuration.
- * @author jwootton
- *
+ * 
  */
-public class Canvas extends DropZone
-	implements MouseOutHandler, MouseOverHandler
+public class LinkToEntryPaletteItem extends PaletteItem
 {
-	private FlowPanel	m_panel;
-	
 	/**
 	 * 
 	 */
-	public Canvas( LandingPageEditor lpe )
+	public LinkToEntryPaletteItem()
 	{
-		m_panel = new FlowPanel();
+		super( GwtTeaming.getImageBundle().landingPageEditorLinkEntry(), GwtTeaming.getMessages().lpeLinkEntry() );
+	}// end LinkToEntryPaletteItem()
+}// end LinkToEntryPaletteItem
 
-		// Associate the panel with its stylesheet.
-		m_panel.setStyleName( "lpeCanvas" );
-		
-		// Register this widget for mouse-out and mouse-over events.
-		addMouseOverHandler( this );
-		addMouseOutHandler( this );
-		
-		// Remember the Landing Page Editor this canvas is in.
-		setLandingPageEditor( lpe );
-		
-		// All composites must call initWidget() in their constructors.
-		initWidget( m_panel );
-	}// end Canvas()
-	
-	/**
-	 * Hide the visual clue that was shown in the highlightDropZone() method.
-	 */
-	public void hideDropClue()
-	{
-		m_panel.removeStyleName( "lpeCanvas_highlighted" );
-	}// end hideDropClue()
 
-	
-	/**
-	 * Show a visual clue that will indicate where a widget would be added if it were
-	 * dropped on this Canvas. 
-	 */
-	public void showDropClue()
-	{
-		m_panel.addStyleName( "lpeCanvas_highlighted" );
-	}// end showDropClue()
-}// end Canvas

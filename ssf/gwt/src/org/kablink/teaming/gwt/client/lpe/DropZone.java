@@ -33,57 +33,87 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import com.google.gwt.event.dom.client.HasMouseOutHandlers;
+import com.google.gwt.event.dom.client.HasMouseOverHandlers;
+import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.Composite;
 
 /**
- * This widget is used as the canvas in the Landing Page Editor.  This canvas displays the
- * elements that make up the Landing Page configuration.
+ * 
  * @author jwootton
  *
  */
-public class Canvas extends DropZone
-	implements MouseOutHandler, MouseOverHandler
+public abstract class DropZone extends Composite
+	implements HasMouseOutHandlers, HasMouseOverHandlers, MouseOutHandler, MouseOverHandler
 {
-	private FlowPanel	m_panel;
+	private LandingPageEditor	m_lpe	= null;
 	
 	/**
 	 * 
 	 */
-	public Canvas( LandingPageEditor lpe )
+	public HandlerRegistration addMouseOutHandler( MouseOutHandler handler )
 	{
-		m_panel = new FlowPanel();
-
-		// Associate the panel with its stylesheet.
-		m_panel.setStyleName( "lpeCanvas" );
-		
-		// Register this widget for mouse-out and mouse-over events.
-		addMouseOverHandler( this );
-		addMouseOutHandler( this );
-		
-		// Remember the Landing Page Editor this canvas is in.
-		setLandingPageEditor( lpe );
-		
-		// All composites must call initWidget() in their constructors.
-		initWidget( m_panel );
-	}// end Canvas()
+		return addDomHandler( handler, MouseOutEvent.getType() );
+	}// end addMouseOutHandler()
+	
 	
 	/**
-	 * Hide the visual clue that was shown in the highlightDropZone() method.
+	 * 
 	 */
-	public void hideDropClue()
+	public HandlerRegistration addMouseOverHandler( MouseOverHandler handler )
 	{
-		m_panel.removeStyleName( "lpeCanvas_highlighted" );
-	}// end hideDropClue()
-
+		return addDomHandler( handler, MouseOverEvent.getType() );
+	}// end addMouseOverHandler()
 	
+
 	/**
-	 * Show a visual clue that will indicate where a widget would be added if it were
-	 * dropped on this Canvas. 
+	 * 
 	 */
-	public void showDropClue()
+	public abstract void hideDropClue();
+
+	/**
+	 * 
+	 */
+	public void onMouseOut( MouseOutEvent event )
 	{
-		m_panel.addStyleName( "lpeCanvas_highlighted" );
-	}// end showDropClue()
-}// end Canvas
+		// Is the user currently dragging an item from the palette?
+		if ( m_lpe != null && m_lpe.isPaletteItemDragInProgress() )
+		{
+			// Yes, tell the landing page editor that the cursor is no longer over this drop zone.
+			m_lpe.setDropZone( null );
+		}
+	}// end onMouseOut()
+
+
+	/**
+	 * 
+	 */
+	public void onMouseOver( MouseOverEvent event )
+	{
+		// Is the user currently dragging an item from the palette?
+		if ( m_lpe != null && m_lpe.isPaletteItemDragInProgress() )
+		{
+			// Yes, tell the landing page editor what drop zone the cursor is over.
+			m_lpe.setDropZone( this );
+		}
+	}// end onMouseOver()
+
+
+	/**
+	 * 
+	 */
+	public void setLandingPageEditor( LandingPageEditor lpe )
+	{
+		m_lpe = lpe;
+	}// end setLandingPageEditor()
+
+	/**
+	 * 
+	 */
+	public abstract void showDropClue();
+	
+}// end DropZone()

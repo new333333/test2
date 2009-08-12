@@ -28,6 +28,12 @@
 	width: 650px;
 }
 
+/* Styles for the canvas widget when the user is dragging something over the canvas. */
+.lpeCanvas_highlighted
+{
+	border: 5px solid #4D6D8B;
+}
+
 /* Styles for the landing page editor hint. */
 .lpeHint
 {
