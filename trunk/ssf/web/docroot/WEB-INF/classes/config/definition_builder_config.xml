@@ -2229,6 +2229,20 @@
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderPrincipalList" />
 	</item>
 	
+	<item name="external_user_list" caption="__external_user_list" type="data" category="commonEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__data_name" type="text" value="responsible_external" readonly="true"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/externaluserlist_form.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/externaluserlist_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderExternalUserlist" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderExternalUserlist" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderExternalUserlist" />
+	</item>
+	
 	<item name="group_list" caption="__group_list" type="data" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>

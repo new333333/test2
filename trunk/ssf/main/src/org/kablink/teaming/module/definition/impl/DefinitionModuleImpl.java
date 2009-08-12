@@ -77,6 +77,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
+import org.kablink.teaming.domain.PackedValue;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WorkflowState;
@@ -1994,6 +1995,24 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							Set<Long> ids = LongIdUtil.getIdsAsLongSet(inputData.getValues(nameValue));
 							CommaSeparatedValue v = new CommaSeparatedValue();
 							v.setValue(ids);
+							entryData.put(nameValue, v);
+						}
+					} else if (itemName.equals("external_user_list")) {
+						if (inputData.exists(nameValue)) {
+							String[] values = inputData.getValues(nameValue);
+							int valuesCount = ((null == values) ? 0 : values.length);
+							List<String> valuesList = new ArrayList();
+							for (int i = 0; i < valuesCount; i += 1) {
+								String value = values[i];
+								if (null != value) {
+									value = value.trim();
+									if (0 < value.length()) {
+										valuesList.add(value);
+									}
+								}
+							}
+							PackedValue v = new PackedValue();
+							v.setValue(valuesList.toArray(new String[0]));
 							entryData.put(nameValue, v);
 						}
 					} else if (itemName.equals("places")) {

@@ -29,9 +29,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * <a href="StringUtil.java.html"><b><i>View Source</i></b></a>
@@ -41,7 +45,197 @@ import java.util.List;
  *
  */
 public class StringUtil {
+	protected static final Log logger = LogFactory.getLog(StringUtil.class);
 
+	/**
+	 * Internal tools used by the pack() and unpack() methods.
+	 */
+	private static final class PackTools {
+	   final private static String ENCODING = "UTF-8";
+	   final private static byte[] HEXTABLE = {
+		   (byte) '0',
+		   (byte) '1',
+		   (byte) '2',
+		   (byte) '3',
+		   (byte) '4',
+		   (byte) '5',
+		   (byte) '6',
+		   (byte) '7',
+		   (byte) '8',
+		   (byte) '9',
+		   (byte) 'a',
+		   (byte) 'b',
+		   (byte) 'c',
+		   (byte) 'd',
+		   (byte) 'e',
+		   (byte) 'f'
+	   };
+	   
+	   /**
+	    * Encodes all characters except 0-9, A-Z, and a-z.
+	    * 
+	    * @param strText String to encode
+	    * 
+	    * @return String safe for use in StringUtil.pack().
+	    */
+	   final private static String packEncoder(String strText)
+	   {
+	      if (null == strText) {
+	         return "";
+	      }
+
+	      byte[] srcBytes;
+	      try {
+	         srcBytes = strText.getBytes(ENCODING);
+	      }
+	      catch(UnsupportedEncodingException e) {
+	    	  logger.debug("StringUtil.packEncoder(1):", e);
+	    	  return "UnsupportedEncodingException";
+	      }
+
+	      // The maximum size for the encoded string would be if every byte is
+	      // converted to %dd, (three bytes)
+	      int iSrcLen = srcBytes.length;
+	      byte[] destBytes = new byte[iSrcLen*3];
+
+	      int i;
+	      int iDest;
+	      int iSrc;
+	      for (iSrc = 0, iDest = 0; iSrc < iSrcLen; iSrc += 1)
+	      {
+	         byte b = srcBytes[iSrc];
+	         if ((b >= 0x30 && b <=0x39)||	// 0-9
+	             (b >= 0x41 && b <=0x5a)||	// A-Z
+	             (b >= 0x61 && b <=0x7a)) {	// a-z
+	            destBytes[iDest++] = b;
+	         }
+	         else if (b == 0x20) {			// space
+	            destBytes[iDest++] = 0x2b;	// '+'
+	         }
+	         else {
+	            destBytes[iDest++] = 0x25;	// '%'
+	            i = ((b>>4)&0x000f);
+	            destBytes[iDest++] = HEXTABLE[i];
+	            i = (b&0x000f);
+	            destBytes[iDest++] = HEXTABLE[i];
+
+	         }
+	      }
+
+	      try {
+	         return new String(destBytes, 0, iDest, ENCODING);
+	      }
+	      catch(UnsupportedEncodingException e) {
+	    	  logger.debug("StringUtil.packEncoder(2):", e);
+	    	  return "UnsupportedEncodingException";
+	      }
+	   }
+	   
+	   /**
+	    * Decodes strings returned from packEncoder().
+	    * 
+	    * @param s String to decode
+	    * 
+	    * @return The decoded String
+	    * 
+	    * @see #packEncoder(String)
+	    */
+	   final private static String unpackDecoder(String s)
+	   {
+	      byte[] byContent = s.getBytes();
+	      int iContentLen = byContent.length;
+	      int iOffset = 0;
+
+	      int iSrc;
+	      int iDest;
+	      int iValue;
+	      int iCount;
+
+	      for (iSrc = iOffset, iDest = iOffset, iCount = 0; iCount < iContentLen; iSrc += 1, iDest += 1, iCount += 1) {
+	         switch (byContent[iSrc]) {
+	            //-------------------------------------------------------------
+	            // Replace the '+' with a space (' ')
+	            //-------------------------------------------------------------
+	            case (int) '+':
+	               byContent[iDest] = (byte) ' ';
+	               break;
+
+	            //-------------------------------------------------------------
+	            // Replace the "%uXXXX" or "%XX" with the appropriate byte
+	            // value(s)
+	            //-------------------------------------------------------------
+	            case (int) '%':
+	               if (byContent[iSrc+1] == 'u')
+	               {
+	                  char c;
+	                  int i1 = 0;
+	                  int i2 = 0;
+
+	                  i1 = (Character.digit((char) byContent[iSrc + 2], 16) * 16) + (Character.digit((char) byContent[iSrc + 3], 16));
+	                  i2 = (Character.digit((char) byContent[iSrc + 4], 16) * 16) + (Character.digit((char) byContent[iSrc + 5], 16));
+
+
+	                  c  = (char) ((i1&0x000000FF)<<8);
+	                  c |= (char)  (i2&0x000000FF);
+
+	                  Character ch = new Character(c);
+	                  String ss = ch.toString();
+
+	                  try {
+	                     byte[] b = ss.getBytes(ENCODING);
+
+	                     for (int ii = 0; ii < b.length; ii += 1, iDest += 1) {
+	                        byContent[iDest] = b[ii];
+	                     }
+
+	                     //-------------------------------------------------
+	                     // Need to backup by 1 (since we increment at end
+	                     // of loop)
+	                     //-------------------------------------------------
+	                     iDest -= 1;
+	                  }
+	                  catch(UnsupportedEncodingException e) {
+	                	  logger.debug("StringUtil.unpackDecoder(1):", e);
+	                	  return "UnsupportedEncodingException";
+	                  }
+
+	                  iSrc += 5;
+	                  iCount += 5;
+	               }
+	               else {
+	                  iValue = (Character.digit((char) byContent[iSrc + 1], 16) * 16) + (Character.digit((char) byContent[iSrc + 2], 16));
+	                  iSrc += 2;
+	                  iCount += 2;
+	                  byContent[iDest] = (byte) iValue;
+	               }
+	               break;
+
+	            default:
+	               byContent[iDest] = byContent[iSrc];
+	               break;
+	         }
+	      }
+
+	      //---------------------------------------------------------------------
+	      // XXX we shouldn't assume that the only kind of POST body
+	      // is FORM data encoded using ASCII or ISO Latin/1 ... or
+	      // that the body should always be treated as FORM data.
+	      //---------------------------------------------------------------------
+	      String sContent = null;
+
+	      try {
+	         sContent = new String(byContent, iOffset, iDest-iOffset, ENCODING);
+	      }
+	      catch(UnsupportedEncodingException e) {
+	    	  logger.debug("StringUtil.unpackDecoder(2):", e);
+	    	  return "UnsupportedEncodingException";
+	      }
+
+	      return (sContent);
+	   }
+	   
+	}
+	
 	public static String add(String s, String add) {
 		return add(s, add, StringPool.COMMA);
 	}
@@ -642,5 +836,56 @@ public class StringUtil {
 
 		return sb.toString();
 	}
+	
+   /**
+    * Packs a String array into one string.  Useful for storing an
+    * arbitrary string array as a single string in the database.
+    * 
+    * @param list String array containing the values to pack.
+    *
+    * @return String containing the packed values.
+    */
+   final public static String pack(String[] list) {
+      if (null == list) {
+         return "PP";
+      }
 
+      StringBuffer sb = new StringBuffer("P");
+      for (int i = 0; i < list.length; i += 1) {
+         sb.append(":").append(PackTools.packEncoder(list[i]));
+      }
+
+      return sb.append("P").toString();
+   }
+   
+   /**
+    * Unpacks data packed with the pack().
+    * 
+    * @param s String containing a valid packed string.
+    *
+    * @return String array of values.
+    */
+   final public static String[] unpack(String s)
+   {
+      if (null == s) {
+         return new String[0];
+      }
+      
+	  s = s.trim();
+      if (s.equals("PP")) {
+         return new String[0];
+      }
+      if (!s.startsWith("P:") || !s.endsWith("P")) {
+         return new String[]{s};
+      }
+
+      s = s.substring(2, s.length()-1);   // skip over first :
+      String[] list = split(s, ":");
+      String[] ret = new String[list.length];
+      for (int i = 0; i < list.length; i += 1) {
+         ret[i] = PackTools.unpackDecoder(list[i]);
+      }
+
+      return ret;
+   }
 }

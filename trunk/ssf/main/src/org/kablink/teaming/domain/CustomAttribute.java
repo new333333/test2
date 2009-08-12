@@ -98,6 +98,7 @@ public class CustomAttribute extends ZonedObject {
        	public static final int ATTACHMENT=10;
        	public static final int COMMASEPARATEDSTRING=11;
        	public static final int SURVEY= 12;
+       	public static final int PACKEDSTRING= 14;
    protected String name;//set by hibernate access="field"
    protected AnyOwner owner;
    protected String id;
@@ -419,6 +420,11 @@ public class CustomAttribute extends ZonedObject {
         	 setValue(value.toString());
         	 valueType = COMMASEPARATEDSTRING;
         	 
+         } else if (value instanceof PackedValue) {
+        	 //store as a string
+        	 setValue(value.toString());
+        	 valueType = PACKEDSTRING;
+        	 
          }	else if (value instanceof Document) {
          	clearVals();
          	valueType = XML;
@@ -468,6 +474,12 @@ public class CustomAttribute extends ZonedObject {
     		    else if (description != null)
     		        v1.setValue(description.getText());
     		    return v1;
+    			
+       		case PACKEDSTRING:
+       			PackedValue v2 = new PackedValue();
+    		    if (!Validator.isNull(stringValue))
+    		        v2.setValue(stringValue);
+    		    return v2;
     			
     		case BOOLEAN:
     			return booleanValue;
@@ -530,6 +542,8 @@ public class CustomAttribute extends ZonedObject {
 		if (result instanceof Set) return (Set)result;
 		if (result instanceof CommaSeparatedValue) 
 			return ((CommaSeparatedValue)(result)).getValueSet();
+		if (result instanceof PackedValue) 
+			return ((PackedValue)(result)).getValueSet();
     	Set v = new LinkedHashSet();
     	if (result != null) v.add(result);
     	return v;

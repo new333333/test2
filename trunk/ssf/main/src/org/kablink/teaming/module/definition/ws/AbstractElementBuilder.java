@@ -31,13 +31,13 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.module.definition.ws;
-import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.remoting.ws.model.CustomStringField;
-import org.kablink.teaming.remoting.ws.model.Field;
 import org.kablink.teaming.util.InvokeUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ObjectPropertyNotFoundException;
@@ -47,6 +47,7 @@ import org.kablink.teaming.util.ObjectPropertyNotFoundException;
  * @author Jong Kim
  */
 public abstract class AbstractElementBuilder implements ElementBuilder {
+	protected Log logger = LogFactory.getLog(getClass());
     
 	protected BuilderContext context = null;
     public boolean buildElement(Element element, org.kablink.teaming.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity, String dataElemType, String dataElemName, BuilderContext context) {
@@ -62,7 +63,10 @@ public abstract class AbstractElementBuilder implements ElementBuilder {
 			else 
     			return build(element, entityModel, entity, dataElemType, dataElemName);
 		} catch (Exception e) {
-			element.setText(NLT.get("ws.error.attribute"));
+			logger.debug(e);
+			if(element != null) {
+				element.setText(NLT.get("ws.error.attribute"));
+			}
 			return true;
     	}
     }

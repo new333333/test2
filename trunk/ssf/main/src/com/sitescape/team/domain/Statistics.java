@@ -285,6 +285,7 @@ public class Statistics implements Serializable {
 				attribute.getValueType() == CustomAttribute.LONG ||
 				attribute.getValueType() == CustomAttribute.STRING ||
 				attribute.getValueType() == CustomAttribute.COMMASEPARATEDSTRING ||
+				attribute.getValueType() == CustomAttribute.PACKEDSTRING ||
 				attribute.getValueType() == CustomAttribute.ORDEREDSET ||
 				attribute.getValueType() == CustomAttribute.SET) && 
 				!("file".equals(attributeType) || "graphic".equals(attributeType) ||
@@ -301,6 +302,7 @@ public class Statistics implements Serializable {
 	
 	private boolean isSetValueAttribute(CustomAttribute attribute) {
 		return (attribute.getValueType() == CustomAttribute.COMMASEPARATEDSTRING ||
+				attribute.getValueType() == CustomAttribute.PACKEDSTRING ||
 				attribute.getValueType() == CustomAttribute.ORDEREDSET ||
 				attribute.getValueType() == CustomAttribute.SET);
 	}

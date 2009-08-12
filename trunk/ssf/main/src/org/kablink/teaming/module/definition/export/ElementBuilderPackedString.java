@@ -32,58 +32,14 @@
  */
 package org.kablink.teaming.module.definition.export;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
-import org.kablink.teaming.domain.CustomAttribute;
-import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.util.InvokeUtil;
-import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.ObjectPropertyNotFoundException;
 
-/**
- *
- * @author Brian Kim
+
+/*
+ * 
+ * @author Dennis Foster
  */
-public abstract class AbstractElementBuilder implements ElementBuilder {
-	protected Log logger = LogFactory.getLog(getClass());
-    
-	protected BuilderContext context = null;
-    public boolean buildElement(Element element, DefinableEntity entity, String dataElemType, String dataElemName, BuilderContext context) {
-    	this.context = context;
-    	if(element != null) {
-	    	element.addAttribute("name", dataElemName);
-	    	element.addAttribute("type", dataElemType);
-    	}
-        CustomAttribute attribute = entity.getCustomAttribute(dataElemName);
-		try {
-			if (attribute != null) 
-    			return build(element, entity, dataElemType, dataElemName, attribute);
-			else 
-    			return build(element, entity, dataElemType, dataElemName);
-		} catch (Exception e) {
-			logger.debug(e);
-			if(element != null) {
-				element.setText(NLT.get("export.error.attribute"));
-			}
-			return true;
-    	}
-    }
-	protected boolean build(Element element, DefinableEntity entity, String dataElemType, String dataElemName, CustomAttribute attribute) {
-	   	return build(element, attribute.getValue(), entity, dataElemType, dataElemName);
-	}   
-    protected boolean build(Element element, DefinableEntity entity, String dataElemType, String dataElemName) {
-	   	try {
-	   		return build(element, InvokeUtil.invokeGetter(entity, dataElemName), entity, dataElemType, dataElemName);
-		} catch (ObjectPropertyNotFoundException ex) {
-	   		return false;
-	   	}
-    }
-    
-    protected boolean build(Element element, Object obj, DefinableEntity entity, String dataElemType, String dataElemName) {
-    	return build(element, obj, dataElemType, dataElemName);
-    }
-    
+public class ElementBuilderPackedString extends AbstractElementBuilder {
     protected boolean build(Element element, Object obj, String dataElemType, String dataElemName) {
 	   	if (obj != null) {
 	   		String value = obj.toString();
