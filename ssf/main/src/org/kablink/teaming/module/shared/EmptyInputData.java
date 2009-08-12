@@ -80,4 +80,10 @@ public class EmptyInputData implements InputDataAccessor{
 	public int getCount() {
 		return 0;
 	}
+
+	public void setFieldsOnly(Boolean fieldsOnly) {
+	}
+	public boolean isFieldsOnly() {
+		return false;
+	}
 }

@@ -82,6 +82,7 @@ public interface FolderModule {
 	   deleteEntryWorkflow,
 	   manageTag,
 	   modifyEntry,
+	   modifyEntryFields,
 	   moveEntry,
 	   report,
 	   reserveEntry,

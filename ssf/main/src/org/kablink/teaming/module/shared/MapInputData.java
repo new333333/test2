@@ -46,9 +46,11 @@ import com.liferay.portlet.journal.action.GetStructureAction;
 public class MapInputData implements InputDataAccessor {
 
 	private Map source;
+	private Boolean fieldsOnly;
 	
 	public MapInputData(Map source) {
 		this.source = source;
+		this.fieldsOnly = false;
 	}
 	
 	public String getSingleValue(String key) {
@@ -114,4 +116,10 @@ public class MapInputData implements InputDataAccessor {
 		return source.size();
 	}
 
+	public void setFieldsOnly(Boolean fieldsOnly) {
+		this.fieldsOnly = fieldsOnly;
+	}
+	public boolean isFieldsOnly() {
+		return this.fieldsOnly;
+	}
 }

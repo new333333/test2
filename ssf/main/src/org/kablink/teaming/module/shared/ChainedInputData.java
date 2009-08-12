@@ -42,9 +42,11 @@ import org.kablink.teaming.survey.Survey;
 public class ChainedInputData implements InputDataAccessor {
 
 	private List<InputDataAccessor> chainedAccessors;
+	private Boolean fieldsOnly;
 	
 	public ChainedInputData() {
 		chainedAccessors = new ArrayList<InputDataAccessor>();
+		fieldsOnly = false;
 	}
 	
 	public void addAccessor(InputDataAccessor inputDataAccessor) {
@@ -125,6 +127,13 @@ public class ChainedInputData implements InputDataAccessor {
 				return value;
 		}
 		return null;
+	}
+
+	public void setFieldsOnly(Boolean fieldsOnly) {
+		this.fieldsOnly = fieldsOnly;
+	}
+	public boolean isFieldsOnly() {
+		return this.fieldsOnly;
 	}
 
 }

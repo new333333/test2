@@ -1041,8 +1041,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	public class ElementInputData implements InputDataAccessor {
 		private Element source;
+		private Boolean fieldsOnly;
+
 		public ElementInputData(Element source) {
 			this.source = source;
+			this.fieldsOnly = false;
 		}
 		public String getSingleValue(String key) {
 			Element result = (Element)source.selectSingleNode("./attribute[@name='" + key + "'] | ./property[@name='" + key + "']");
@@ -1087,6 +1090,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			return source.nodeCount();
 		}
 
+		public void setFieldsOnly(Boolean fieldsOnly) {
+			this.fieldsOnly = fieldsOnly;
+		}
+		public boolean isFieldsOnly() {
+			return this.fieldsOnly;
+		}
 	}
 	
     //NO transaction
