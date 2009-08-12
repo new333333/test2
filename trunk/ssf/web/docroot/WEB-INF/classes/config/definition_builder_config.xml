@@ -1805,9 +1805,6 @@
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
-			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
-				<help>ihelp.designers.user_version</help>
-			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
