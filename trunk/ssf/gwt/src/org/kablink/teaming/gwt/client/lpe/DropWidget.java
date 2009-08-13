@@ -30,72 +30,20 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.lpe;
 
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.FlowPanel;
+import org.kablink.teaming.gwt.client.widgets.EditCanceledHandler;
+import org.kablink.teaming.gwt.client.widgets.EditSuccessfulHandler;
+
+import com.google.gwt.user.client.ui.Composite;
+
 
 /**
- * This widget is used as the canvas in the Landing Page Editor.  This canvas displays the
- * elements that make up the Landing Page configuration.
+ * 
  * @author jwootton
  *
  */
-public class Canvas extends DropZone
-	implements MouseOutHandler, MouseOverHandler
+public abstract class DropWidget extends Composite
 {
-	private FlowPanel	m_panel;
-	
-	/**
-	 * 
-	 */
-	public Canvas( LandingPageEditor lpe )
-	{
-		m_panel = new FlowPanel();
-
-		// Associate the panel with its stylesheet.
-		m_panel.setStyleName( "lpeCanvas" );
-		
-		// Register this widget for mouse-out and mouse-over events.
-		addMouseOverHandler( this );
-		addMouseOutHandler( this );
-		
-		// Remember the Landing Page Editor this canvas is in.
-		setLandingPageEditor( lpe );
-		
-		// All composites must call initWidget() in their constructors.
-		initWidget( m_panel );
-	}// end Canvas()
-	
-	/**
-	 * Add the given widget to the canvas.  Use the x and y coordinates to determine where in our list of widgets
-	 * we should add the new widget.
-	 */
-	public void addWidgetToDropZone( DropWidget dropWidget )
-	{
-		Window.alert( "Finish Canvas.addWidgetToDropZone()" );
-		m_panel.add( dropWidget );
-	}// end addWidgetToDropZone()
-	
-	
-	/**
-	 * Hide the visual clue that was shown in the highlightDropZone() method.
-	 */
-	public void hideDropClue()
-	{
-		m_panel.removeStyleName( "lpeCanvas_highlighted" );
-	}// end hideDropClue()
-
-	
-	/**
-	 * Show a visual clue that will indicate where a widget would be added if it were
-	 * dropped on this Canvas. 
-	 */
-	public void showDropClue()
-	{
-		m_panel.addStyleName( "lpeCanvas_highlighted" );
-	}// end showDropClue()
-}// end Canvas
+	public abstract void editProperties( EditSuccessfulHandler onSuccess, EditCanceledHandler onCancel, int xPos, int yPos );
+}// end DropWidget

@@ -30,72 +30,60 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.lpe;
 
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverHandler;
+import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.EditCanceledHandler;
+import org.kablink.teaming.gwt.client.widgets.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
+
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
 
 /**
- * This widget is used as the canvas in the Landing Page Editor.  This canvas displays the
- * elements that make up the Landing Page configuration.
+ * 
  * @author jwootton
  *
  */
-public class Canvas extends DropZone
-	implements MouseOutHandler, MouseOverHandler
+public class TableWidgetDlgBox extends DlgBox
 {
-	private FlowPanel	m_panel;
-	
 	/**
 	 * 
 	 */
-	public Canvas( LandingPageEditor lpe )
+	public TableWidgetDlgBox(
+		EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
+		EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
+		boolean autoHide,
+		boolean modal,
+		int xPos,
+		int yPos,
+		PropertiesObj properties ) // Where properties used in the dialog are read from and saved to.
 	{
-		m_panel = new FlowPanel();
-
-		// Associate the panel with its stylesheet.
-		m_panel.setStyleName( "lpeCanvas" );
-		
-		// Register this widget for mouse-out and mouse-over events.
-		addMouseOverHandler( this );
-		addMouseOutHandler( this );
-		
-		// Remember the Landing Page Editor this canvas is in.
-		setLandingPageEditor( lpe );
-		
-		// All composites must call initWidget() in their constructors.
-		initWidget( m_panel );
-	}// end Canvas()
-	
-	/**
-	 * Add the given widget to the canvas.  Use the x and y coordinates to determine where in our list of widgets
-	 * we should add the new widget.
-	 */
-	public void addWidgetToDropZone( DropWidget dropWidget )
-	{
-		Window.alert( "Finish Canvas.addWidgetToDropZone()" );
-		m_panel.add( dropWidget );
-	}// end addWidgetToDropZone()
+		super( "test", editSuccessfulHandler, editCanceledHandler, autoHide, modal, xPos, yPos, properties );
+	}// end TableWidgetDlgBox()
 	
 	
 	/**
-	 * Hide the visual clue that was shown in the highlightDropZone() method.
+	 * Create all the controls that make up the dialog box.
 	 */
-	public void hideDropClue()
+	public Panel createContent( PropertiesObj properties )
 	{
-		m_panel.removeStyleName( "lpeCanvas_highlighted" );
-	}// end hideDropClue()
-
+		FlowPanel	panel;
+		
+		panel = new FlowPanel();
+		panel.add( new Label( "This is the content" ) );
+		
+		return panel;
+	}// end createContent()
+	
 	
 	/**
-	 * Show a visual clue that will indicate where a widget would be added if it were
-	 * dropped on this Canvas. 
+	 * Get the data from the controls in the dialog box and store the data in the properties obj.
 	 */
-	public void showDropClue()
+	public void getDataFromDlg( PropertiesObj obj )
 	{
-		m_panel.addStyleName( "lpeCanvas_highlighted" );
-	}// end showDropClue()
-}// end Canvas
+		Window.alert( "finish TableWidgetDlgBox.getDataFromDlg()" );
+	}// end getDataFromDlg()
+}// end TableWidgetDlgBox

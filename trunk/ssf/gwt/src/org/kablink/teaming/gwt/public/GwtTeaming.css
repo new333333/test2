@@ -1,3 +1,19 @@
+/* From Lynn's styles. */
+.head4
+{
+	color: black;
+	font-size: 0.85em;
+	font-weight: bold;
+	margin-bottom: 0.2em;
+	margin-top: 0.5em;
+}
+
+/* From Lynn's styles. */
+.instructions
+{
+	color: #4D6D8B;
+	font-size: 0.8em;
+}
 
 /* Styles for the drag proxy widget that is used when the user drags an item from the palette in the landing page editor. */
 .lpeDragProxy
@@ -67,4 +83,38 @@
 	margin-right: 2px;
 	vertical-align: text-bottom;
 	z-index: 130;
+}
+
+/* Styles for dialog boxes */
+.teamingDlgBox
+{
+	background-color: #F6F6F6;
+	border-color: #BABDB6
+	border-style: none sold solid;
+	border-width: medium 2px 2px;
+	margin-left: 1em;
+}
+
+/* Styles for the content of a dialog box. */
+.teamingDlgBoxContent
+{
+	margin: 10px;
+}
+
+/* Styles for the footer of a dialog box. */
+.teamingDlgBoxFooter
+{
+	background-color: #EFEEEC;
+	border-top: 1px solid #BABDB6;
+	margin-top: 0.5em;
+	padding: 0.5em;
+	text-align: right;
+	vertical-align: middle;
+}
+
+/* Styles for the header in a dialog box. */
+.teamingDlgBoxHeader
+{
+	background-color: #C6E7F6;
+	padding: 1px 5px 10px 10px;
 }

@@ -47,6 +47,15 @@ public class GraphicPaletteItem extends PaletteItem
 	{
 		super( GwtTeaming.getImageBundle().landingPageEditorGraphic(), GwtTeaming.getMessages().lpeGraphic() );
 	}// end GraphicPaletteItem()
+
+
+	/**
+	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
+	 */
+	public DropWidget createDropWidget()
+	{
+		return null;
+	}// end createDropWidget()
 }// end GraphicPaletteItem
 
 
