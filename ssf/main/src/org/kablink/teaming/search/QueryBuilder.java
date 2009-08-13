@@ -47,6 +47,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
@@ -399,10 +400,13 @@ public class QueryBuilder {
 	{
 		//KEEP THIS AND getAclClauseForIds IN SYNC WITH ACCESSUTILS.CHECKACCESS 
 		
-		//if this is the super user, but not a remote application, then don't add any acl controls.
+		//if this is the super user or the synchronization agent, but not a remote application, then don't add any acl controls.
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
-		if (user.isSuper() && applicationPrincipals == null) return "";
+		if ((user.isSuper() || 
+				ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(user.getInternalId())) && 
+				applicationPrincipals == null) 
+			return "";
 
 		String clause = getAclClauseForIds(userPrincipals, user.getId());
 		if(applicationPrincipals != null) {
