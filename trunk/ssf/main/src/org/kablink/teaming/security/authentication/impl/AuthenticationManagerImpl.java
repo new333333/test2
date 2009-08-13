@@ -121,8 +121,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			if (!hadSession) SessionUtil.sessionStartup();	
 			user = doAuthenticate(zoneName, userName, password, passwordAutoSynch, ignorePassword);
 			if (updates != null && !updates.isEmpty()) {
-   				// We don't want to sync ldap attributes if the user is one of the 4
-   				// system user accounts, "admin", "guest", "_postingAgent" and "_jobProcessingAgent"
+   				// We don't want to sync ldap attributes if the user is one of the 5
+   				// system user accounts, "admin", "guest", "_postingAgent", "_jobProcessingAgent" and "_synchronizationAgent".
    				// Is the user a system user account?
    				if ( !MiscUtil.isSystemUserAccount( userName ) )
    				{
@@ -204,8 +204,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	   		if(!EncryptUtil.encryptPassword(password).equals(user.getPassword())) {
 	   			// Password does not match.
 	   			if(passwordAutoSynch) {
-	   				// We don't want to sync the password if the user is one of the 4
-	   				// system user accounts, "admin", "guest", "_postingAgent" and "_jobProcessingAgent"
+	   				// We don't want to sync the password if the user is one of the 5
+	   				// system user accounts, "admin", "guest", "_postingAgent", "_jobProcessingAgent" and "_synchronizationAgent".
 	   				// Is the user a system user account?
 	   				if ( !MiscUtil.isSystemUserAccount( username ) )
 	   				{

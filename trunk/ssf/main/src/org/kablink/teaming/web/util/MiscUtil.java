@@ -195,7 +195,7 @@ public final class MiscUtil
 	
 	/**
 	 * This method will return true if the given name is the name of a system user account.
-	 * Currently there are 4 system user accounts: "admin", "guest", "_postingAgent" and "_jobProcessingAgent" 
+	 * Currently there are 5 system user accounts: "admin", "guest", "_postingAgent", "_jobProcessingAgent" and "_synchronizationAgent".
 	 */
 	public static boolean isSystemUserAccount( String name )
 	{
@@ -203,7 +203,8 @@ public final class MiscUtil
 			return false;
 		
 		if ( name.equalsIgnoreCase( "admin" ) || name.equalsIgnoreCase( "guest" ) ||
-			  name.equalsIgnoreCase( "_postingAgent" ) || name.equalsIgnoreCase( "_jobProcessingAgent" ) )
+			  name.equalsIgnoreCase( "_postingAgent" ) || name.equalsIgnoreCase( "_jobProcessingAgent" ) ||
+			  name.equalsIgnoreCase("_synchronizationAgent"))
 		{
 			return true;
 		}

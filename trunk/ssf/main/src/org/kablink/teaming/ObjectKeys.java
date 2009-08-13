@@ -111,6 +111,8 @@ public interface ObjectKeys {
 	public static final String SUPER_USER_INTERNALID="402883b90d0de1f3010d0df5582b000b";
 	//id to run background jobs under - also acts as a super user but cannot loggin as this person
 	public static final String JOB_PROCESSOR_INTERNALID="402883b90d0de1f3010d0df5582b0012";
+	//id to run synchronization agent (teaming connector) under
+	public static final String SYNCHRONIZATION_AGENT_INTERNALID="402883b90d0de1f3010d0df5582b001d";
 	//shared guest account
 	public static final String GUEST_USER_INTERNALID="402883b90d0de1f3010d0df5582b0013";
 	//reserverd internalids for allapplication group

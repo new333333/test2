@@ -665,6 +665,16 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zone.getId());
 			getProfileModule().indexEntry(u);
 		}
+		//make sure synchronization agent exists
+		try {
+			getProfileDao().getReservedUser(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID, zone.getId());
+		} catch (NoUserByTheNameException nu) {
+			//need to add it
+			User u = addSynchronizationAgent(superU.getParentBinder(), new HistoryStamp(superU));
+			//updates cache
+			getProfileDao().getReservedUser(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID, zone.getId());
+			getProfileModule().indexEntry(u);
+		}
 		//make sure guest exists
 		User guest=null;
 		try {
@@ -855,6 +865,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	
     		addPosting(profiles, stamp);
     		addJobProcessor(profiles, stamp); 
+    		addSynchronizationAgent(profiles, stamp);
     		addGuest(profiles, stamp); 
     		Workspace globalRoot = addGlobalRoot(top, stamp);		
     		Workspace teamRoot = addTeamRoot(top, stamp);
@@ -903,6 +914,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		//reload user as side effect after index flush
     		user = getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, top.getId());
     		getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, top.getId());
+    		getProfileDao().getReservedUser(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID, top.getId());
     		getProfileDao().getReservedApplicationGroup(ObjectKeys.ALL_APPLICATIONS_GROUP_INTERNALID, top.getId());
 
     		ScheduleInfo info = getAdminModule().getNotificationSchedule();
@@ -1022,6 +1034,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	}
 	private User addJobProcessor(Binder parent, HistoryStamp stamp) {
 		return addReservedUser(parent, stamp, "_jobProcessingAgent", null, NLT.get("administration.initial.jobProcessor.title"), ObjectKeys.JOB_PROCESSOR_INTERNALID);
+	}
+	private User addSynchronizationAgent(Binder parent, HistoryStamp stamp) {
+		return addReservedUser(parent, stamp, "_synchronizationAgent", null, NLT.get("administration.initial.synchronizationAgent.title"), ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID);
 	}
 	private User addGuest(Binder parent, HistoryStamp stamp) {
 		String guestName= SZoneConfig.getString(parent.getRoot().getName(), "property[@name='guestUser']", "guest");

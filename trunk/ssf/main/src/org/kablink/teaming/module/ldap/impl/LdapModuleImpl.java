@@ -703,7 +703,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					if (ssName == null) continue;
 
 					// Is the name of this user a name that is used for a Teaming system user account?
-					// Currently there are 4 system user accounts named, "admin", "guest", "_postingAgent" and "_jobProcessingAgent"
+					// Currently there are 5 system user accounts named, "admin", "guest", "_postingAgent",
+					// "_jobProcessingAgent" and "_synchronizationAgent".
 					if ( MiscUtil.isSystemUserAccount( ssName ) )
 					{
 						// Yes, skip this user.  System user accounts cannot be sync'd from ldap.

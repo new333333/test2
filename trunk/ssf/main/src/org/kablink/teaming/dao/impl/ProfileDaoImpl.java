@@ -1060,6 +1060,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 			result.remove(getReservedId(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zoneId));
 			result.remove(getReservedId(ObjectKeys.GUEST_USER_INTERNALID, zoneId));
 			result.remove(getReservedId(ObjectKeys.JOB_PROCESSOR_INTERNALID, zoneId));
+			result.remove(getReservedId(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID, zoneId));
 			users.addAll(result);
 		} 
 		users.remove(allId);
