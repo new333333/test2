@@ -834,6 +834,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         RequestContextUtil.setThreadContext(entry).resolve();
  		try {	
   			if (!entry.isReserved() || (!ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(entry.getInternalId()) &&
+  					!ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(entry.getInternalId()) &&
  					!ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId()))) {
   				List templates = getCoreDao().loadTemplates(entry.getZoneId(), Definition.USER_WORKSPACE_VIEW);
 
@@ -886,6 +887,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		Folder miniBlog = null;
  		try {	
   			if (!entry.isReserved() || (!ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(entry.getInternalId()) &&
+  					!ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(entry.getInternalId()) &&
  					!ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId()))) {
 				TemplateBinder miniblogTemplate = getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_MINIBLOG);
 				if (miniblogTemplate != null) {
