@@ -139,6 +139,12 @@ public abstract class PaletteItem extends Composite
 	
 	
 	/**
+	 * Create a widget that should be added when the user drops this palette item.
+	 */
+	public abstract DropWidget createDropWidget();
+	
+
+	/**
 	 * Return the drag proxy object that should be displayed when the user drags this palette item.
 	 */
 	public DragProxy getDragProxy()
@@ -151,4 +157,5 @@ public abstract class PaletteItem extends Composite
 		
 		return m_dragProxy;
 	}// end getDragProxy()
+	
 }// end PaletteItem

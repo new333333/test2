@@ -47,6 +47,15 @@ public class CustomJspPaletteItem extends PaletteItem
 	{
 		super( GwtTeaming.getImageBundle().landingPageEditorCustomJsp(), GwtTeaming.getMessages().lpeCustomJSP() );
 	}// end CustomJspPaletteItem()
+	
+	
+	/**
+	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
+	 */
+	public DropWidget createDropWidget()
+	{
+		return null;
+	}// end createDropWidget()
 }// end CustomJspPaletteItem
 
 

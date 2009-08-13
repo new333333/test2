@@ -47,6 +47,15 @@ public class LinkToEntryPaletteItem extends PaletteItem
 	{
 		super( GwtTeaming.getImageBundle().landingPageEditorLinkEntry(), GwtTeaming.getMessages().lpeLinkEntry() );
 	}// end LinkToEntryPaletteItem()
+
+
+	/**
+	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
+	 */
+	public DropWidget createDropWidget()
+	{
+		return null;
+	}// end createDropWidget()
 }// end LinkToEntryPaletteItem
 
 

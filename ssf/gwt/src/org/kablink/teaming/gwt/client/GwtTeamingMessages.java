@@ -43,6 +43,8 @@ import com.google.gwt.i18n.client.Messages;
  */
 public interface GwtTeamingMessages extends Messages
 {
+	String cancel();
+	
 	// lpe stands for Landing Page Editor
 	String lpeCustomJSP();
 	String lpeEntry();
@@ -55,6 +57,8 @@ public interface GwtTeamingMessages extends Messages
 	String lpeList();
 	String lpeTable();
 	String lpeUtilityElement();
+	
+	String ok();
 	
 	String testPanelState( String value );
 	String testWaiting();

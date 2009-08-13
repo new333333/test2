@@ -30,35 +30,14 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.lpe;
-
-import org.kablink.teaming.gwt.client.GwtTeaming;
-
+package org.kablink.teaming.gwt.client.widgets;
 
 /**
  * 
+ * @author jwootton
+ *
  */
-public class TablePaletteItem extends PaletteItem
+public interface PropertiesObj
 {
-	/**
-	 * 
-	 */
-	public TablePaletteItem()
-	{
-		super( GwtTeaming.getImageBundle().landingPageEditorTable(), GwtTeaming.getMessages().lpeTable() );
-	}// end TablePaletteItem()
-
-
-	/**
-	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
-	 */
-	public DropWidget createDropWidget()
-	{
-		TableDropWidget	tableDropWidget;
-		
-		tableDropWidget = new TableDropWidget();
-
-		return tableDropWidget;
-	}// end createDropWidget()
-}// end TablePaletteItem
-
+	// This interface has no methods.
+}// end PropertiesObj

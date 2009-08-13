@@ -47,6 +47,15 @@ public class LinkUrlPaletteItem extends PaletteItem
 	{
 		super( GwtTeaming.getImageBundle().landingPageEditorLinkUrl(), GwtTeaming.getMessages().lpeLinkURL() );
 	}// end LinkUrlPaletteItem()
+
+
+	/**
+	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
+	 */
+	public DropWidget createDropWidget()
+	{
+		return null;
+	}// end createDropWidget()
 }// end LinkUrlPaletteItem
 
 

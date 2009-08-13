@@ -53,6 +53,12 @@ public abstract class DropZone extends Composite
 	private LandingPageEditor	m_lpe	= null;
 	
 	/**
+	 * This method should add the given widget to this DropZone.
+	 */
+	public abstract void addWidgetToDropZone( DropWidget dropWidget );
+	
+	
+	/**
 	 * 
 	 */
 	public HandlerRegistration addMouseOutHandler( MouseOutHandler handler )

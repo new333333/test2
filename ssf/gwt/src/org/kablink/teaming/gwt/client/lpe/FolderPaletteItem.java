@@ -47,6 +47,15 @@ public class FolderPaletteItem extends PaletteItem
 	{
 		super( GwtTeaming.getImageBundle().landingPageEditorFolder(), GwtTeaming.getMessages().lpeFolder() );
 	}// end FolderPaletteItem()
+
+
+	/**
+	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
+	 */
+	public DropWidget createDropWidget()
+	{
+		return null;
+	}// end createDropWidget()
 }// end FolderPaletteItem
 
 

@@ -47,6 +47,15 @@ public class UtilityElementPaletteItem extends PaletteItem
 	{
 		super( GwtTeaming.getImageBundle().landingPageEditorUtilityElement(), GwtTeaming.getMessages().lpeUtilityElement() );
 	}// end UtilityElementPaletteItem()
+
+
+	/**
+	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
+	 */
+	public DropWidget createDropWidget()
+	{
+		return null;
+	}// end createDropWidget()
 }// end UtilityElementPaletteItem
 
 
