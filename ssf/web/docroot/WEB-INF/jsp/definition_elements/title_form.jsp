@@ -34,6 +34,13 @@
 %>
 <% //Title form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyStyle" value=""/>
+<c:if test="${ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']}">
+  <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
+  <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
+  <c:set var="ss_fieldModifyOnly" value="true"/>
+</c:if>
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%
 	String caption1 = (String) request.getAttribute("property_caption");
@@ -71,7 +78,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 				width = "size=\""+width+"\"";
 			}
 		%>
-		<div class="ss_entryContent">
+		<div class="ss_entryContent ${ss_fieldModifyStyle}">
 		<div class="ss_labelAbove" id="${property_name}_label">
 		<label for="title">
 		  ${property_caption}<c:if test="${property_required}"><span 
@@ -80,9 +87,10 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 		</label>
 		</div>
 <c:if test='${ssBinderMarker}'>
-  <div class="needed-because-of-ie-bug"><div id="ss_titleCheck" style="display:none; visibility:hidden;" ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
+  <div class="needed-because-of-ie-bug"><div id="ss_titleCheck" style="display:none; visibility:hidden;" 
+    ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
 </c:if>
-		<input type="text" class="ss_text" name="title" id="title" <%= width %>
+		<input type="text" class="ss_text" name="title" id="title" <%= width %> ${ss_fieldModifyInputAttribute}
 <c:choose>
 	<c:when test='${ssBinderMarker}'>
 		onchange="ss_ajaxValidate(ss_checkTitleUrl, this,'${property_name}_label', 'ss_titleCheck');"
@@ -129,7 +137,9 @@ function ss_focusOnTitle() {
 		}
 	}
 }
+<c:if test="${empty ss_fieldModifyOnly}">
 ss_createOnLoadObj("ss_focusOnTitle", ss_focusOnTitle);
+</c:if>
 </script>
   </c:otherwise>
 </c:choose>

@@ -36,6 +36,13 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="org.kablink.teaming.util.CalendarHelper" %>
+<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyStyle" value=""/>
+<c:if test="${ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']}">
+  <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
+  <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
+  <c:set var="ss_fieldModifyOnly" value="true"/>
+</c:if>
 <c:if test="${empty ssReadOnlyFields[property_name]}">
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%
@@ -57,7 +64,7 @@
 	dojo.require("dijit.form.TimeTextBox");
 </script>
 	
-<div class="ss_entryContent tundra">
+<div class="ss_entryContent tundra ${ss_fieldModifyStyle}">
 	<span class="ss_labelAbove" id='${property_name}_label'>
 	${property_caption}<c:if test="${property_required}"><span 
 	  id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if></span>
@@ -74,7 +81,7 @@
 	<table class="ss_style" cellpadding="0" border="0">
 		<tr>
 			<td>
-				<input type="text" dojoType="dijit.form.DateTextBox" 
+				<input type="text" dojoType="dijit.form.DateTextBox" ${ss_fieldModifyInputAttribute}
 					id="date_${property_name}_${prefix}" 
 					name="${property_name}_fullDate" 
 					lang="<ssf:convertLocaleToDojoStyle />" 
@@ -88,7 +95,7 @@
 				/>
 			</td>
 			<td>
-				<input type="text" dojoType="dijit.form.TimeTextBox"
+				<input type="text" dojoType="dijit.form.TimeTextBox" ${ss_fieldModifyInputAttribute}
 					id="date_time_${property_name}_${prefix}" 
 					name="${property_name}_0_fullTime" 
 					lang="<ssf:convertLocaleToDojoStyle />" 
@@ -165,7 +172,7 @@
 </c:if>
 
 <c:if test="${!empty ssReadOnlyFields[property_name]}">
-<div class="ss_entryContent">
+<div class="ss_entryContent ${ss_fieldModifyStyle}">
 <span class="ss_labelAbove">${property_caption}</span>
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
 <fmt:formatDate timeZone="${ssUser.timeZone.ID}"

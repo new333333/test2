@@ -61,6 +61,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
@@ -357,6 +358,12 @@ public class ModifyEntryController extends SAbstractController {
 			model.put(WebKeys.BINDER, entry.getParentFolder());
 			model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_FORM);
 			DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@type='form']");
+			
+			Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
+			if (getFolderModule().testAccess(entry, FolderOperation.modifyEntry)) 
+				accessControlMap.put(WebKeys.MODIFY_ENTRY_ALLOWED, true);
+			if (getFolderModule().testAccess(entry, FolderOperation.modifyEntryFields)) 
+				accessControlMap.put(WebKeys.MODIFY_ENTRY_FIELDS_ALLOWED, true);
 
 			//Build the mashup beans
 			Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
