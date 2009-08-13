@@ -35,6 +35,13 @@
 <% //Icon form element %>
 <%@ page import="org.kablink.teaming.util.SPropsUtil" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyStyle" value=""/>
+<c:if test="${ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']}">
+  <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
+  <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
+  <c:set var="ss_fieldModifyOnly" value="true"/>
+</c:if>
 <%
 	String caption = (String) request.getAttribute("property_caption");
 	if (caption == null || caption.equals("")) {
@@ -43,8 +50,12 @@
 		caption = "<b>"+caption+"</b><br>";
 	}
 %>
-<div style="display:inline;"><%= caption %>
-<ul class="ss_icon_list">
+<div class="ss_entryContent ${ss_fieldModifyStyle}">
+<table>
+<tr>
+<td valign="top"><div class=" ${ss_fieldModifyStyle}"><%= caption %></div></td>
+<td valign="top">
+<ul class="ss_icon_list" style="display:inline;">
 <%
 	String iconValue = (String)request.getAttribute("iconValue");
 	String iconListPath = (String)request.getAttribute("iconListPath");
@@ -60,11 +71,14 @@
 
 %>
 <li><label for="<%= iconListValue %>"><span style="display:none;"><ssf:nlt tag="label.iconListValue"/></span></label>
-  <input type="radio" class="ss_text" name="${property_name}" 
+  <input type="radio" class="ss_text" name="${property_name}" ${ss_fieldModifyInputAttribute}
   value="<%= iconListValue %>" id="<%= iconListValue %>" <%= checked %>
-/><img <ssf:alt text="<%= iconListValue %>"/> border="0" src="<html:brandedImagesPath/>.<%= iconListValue %>" /></li>
+/><img <ssf:alt text="<%= iconListValue %>"/> border="0" src="<html:imagesPath/>/<%= iconListValue %>" /></li>
 <%
 	}
 %>
 </ul>
+</td>
+</tr>
+</table>
 </div>

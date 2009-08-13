@@ -34,6 +34,13 @@
 %>
 <% // Places list %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyStyle" value=""/>
+<c:if test="${ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']}">
+  <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
+  <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
+  <c:set var="ss_fieldModifyOnly" value="true"/>
+</c:if>
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%
 	String caption1 = (String) request.getAttribute("property_caption");
@@ -73,7 +80,7 @@
 <c:set var="multipleAllowed" value="<%= multipleAllowed %>"/>
 <c:set var="folderId" value="<%= folderId %>"/>
 <c:set var="folderIds" value="<%= folderIds %>"/>
-<div class="ss_entryContent">
+<div class="ss_entryContent ${ss_fieldModifyStyle}">
 	<div class="ss_labelAbove">${property_caption}<c:if test="${property_required}"><span 
   id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if></div>
   
@@ -103,7 +110,7 @@
 							<input type="checkbox" name="idChoicesRemove_${propertyName}" id="${treeName}${propertyName}del_${folder.key}"
 								<c:if test="${folder.value.deleted}">
 									checked="true"
-								</c:if> value="${folder.key}" />
+								</c:if> value="${folder.key}" ${ss_fieldModifyInputAttribute} />
 							<label for="${treeName}${propertyName}del_${folder.key}">${folder.value.title} (${folder.value.parentTitle})</label>
 			  				<c:if test="${folder.value.deleted}">
 				  				<span class="ss_fineprint ss_light"><ssf:nlt tag="milestone.folder.deleted"/></span>
@@ -113,7 +120,7 @@
 				</ul>
 			</c:if>
 			
-
+		  <c:if test="${empty ss_fieldModifyOnly}">
 			<c:choose>
 				<c:when test="${multipleAllowed}">
 					<ssf:tree 
@@ -132,6 +139,7 @@
 			  				singleSelectName="${propertyName}"/>
 				</c:otherwise>
 			</c:choose>
+		  </c:if>
 
   
 		</c:when>

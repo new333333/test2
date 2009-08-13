@@ -34,6 +34,13 @@
 %>
 <% // radio selection %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyStyle" value=""/>
+<c:if test="${ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']}">
+  <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
+  <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
+  <c:set var="ss_fieldModifyOnly" value="true"/>
+</c:if>
 <c:set var="radio_property_name" value="${property_name}"/>
 <c:if test="${empty ssReadOnlyFields[radioGroupName]}">
 <c:set var="checked" value=""/>
@@ -46,9 +53,9 @@
 <c:if test="${ss_radioButtonsLayout == 'horizontal'}">
 <td>
 </c:if>
-<input type="radio" name="<c:out value="${radioGroupName}"/>" 
+<input type="radio" name="<c:out value="${radioGroupName}"/>" ${ss_fieldModifyInputAttribute}
   value="<c:out value="${radio_property_name}"/>" <c:out value="${checked}"/>
-/>&nbsp;<span class="ss_bold"><c:out value="${property_caption}"/></span>
+/>&nbsp;<span class="ss_bold ${ss_fieldModifyStyle}"><c:out value="${property_caption}"/></span>
  <ssf:displayConfiguration 
   configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 

@@ -34,6 +34,13 @@
 %>
 <% // Group list %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyStyle" value=""/>
+<c:if test="${ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']}">
+  <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
+  <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
+  <c:set var="ss_fieldModifyOnly" value="true"/>
+</c:if>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%
@@ -54,17 +61,17 @@
 	}
 %>
 </c:if>
-<div class="ss_entryContent">
+<div class="ss_entryContent ${ss_fieldModifyStyle}">
 <div class="ss_labelAbove">${property_caption}<c:if test="${property_required}"><span 
   id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if></div>
-<c:if test="${empty ssReadOnlyFields[property_name]}">
+<c:if test="${empty ssReadOnlyFields[property_name] && empty ss_fieldModifyOnly}">
 <ssf:find formName="${formName}" formElement="${property_name}" type="group" 
   userList="<%= groupListSet %>"/>
-  </c:if>
-<c:if test="${!empty ssReadOnlyFields[property_name]}">
+</c:if>
+<c:if test="${!empty ssReadOnlyFields[property_name] || !empty ss_fieldModifyOnly}">
 <c:forEach var="groupItem" items="<%= groupListSet %>">
 	${groupItem.title}<br/>
 </c:forEach>
-&#134;
+<c:if test="${!empty ssReadOnlyFields[property_name]}">&#134;</c:if>
 </c:if>
 </div>
