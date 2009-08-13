@@ -854,7 +854,9 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   				updates.put(ObjectKeys.FIELD_BINDER_NAME, entry.getName());
   				updates.put(ObjectKeys.FIELD_ENTITY_TITLE, wsTitle);
         		updates.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
-  				ws = (Workspace)processor.addBinder(entry.getParentBinder(), userDef, Workspace.class, new MapInputData(updates), null, options);				
+  				ws = (Workspace)processor.addBinder(entry.getParentBinder(), userDef, Workspace.class, new MapInputData(updates), null, options);
+  				// the processor committed transaction, so make sure to get the index changes committed here as well
+  				IndexSynchronizationManager.applyChanges();
   			}
   		} catch (WriteFilesException wf) {
    			logger.error("Error create user workspace: ", wf);

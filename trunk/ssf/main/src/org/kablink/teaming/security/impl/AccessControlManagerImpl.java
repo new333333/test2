@@ -33,8 +33,10 @@
 package org.kablink.teaming.security.impl;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.kablink.teaming.InternalException;
@@ -54,18 +56,31 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembershipManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.util.SPropsUtil;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  *
  * @author Jong Kim
  */
-public class AccessControlManagerImpl implements AccessControlManager {
+public class AccessControlManagerImpl implements AccessControlManager, InitializingBean {
     
     private FunctionManager functionManager;
     private WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
     private CoreDao coreDao;
     private ProfileDao profileDao;
     private LicenseManager licenseManager;
+    private Map synchAgentRights;
+    
+	public void afterPropertiesSet() throws Exception {
+		synchAgentRights = new HashMap();
+		String[] strs = SPropsUtil.getStringArray("synchronization.agent.rights", ",");
+		if(strs != null) {
+			for(String str:strs)
+				synchAgentRights.put(str, str);
+		}
+	}
+	
     public FunctionManager getFunctionManager() {
         return functionManager;
     }
@@ -161,7 +176,9 @@ public class AccessControlManagerImpl implements AccessControlManager {
 		Application application = null;
 		if(RequestContextHolder.getRequestContext() != null)
 			application = RequestContextHolder.getRequestContext().getApplication();
-		if (user.isSuper() && (application == null || application.isTrusted())) return true;
+		if ((user.isSuper() || isSynchronizationWork(user, workAreaOperation)) && 
+				(application == null || application.isTrusted())) 
+			return true;
 		if (!workAreaOperation.equals(WorkAreaOperation.READ_ENTRIES) && !getLicenseManager().validLicense())return false;
 		if (workArea.isFunctionMembershipInherited()) {
 			WorkArea parentWorkArea = workArea.getParentWorkArea();
@@ -251,5 +268,9 @@ public class AccessControlManagerImpl implements AccessControlManager {
 	public static boolean isAccessCheckTemporarilyDisabled() {
 		Boolean b = (Boolean) temporarilyDisableAccessCheckForThisThreadTL.get();
 		return (b != null && b.equals(Boolean.TRUE));
+	}
+	private boolean isSynchronizationWork(User user, WorkAreaOperation workAreaOperation) {
+		return ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(user.getInternalId()) &&
+			(synchAgentRights.get(workAreaOperation.getName()) != null);
 	}
 }
