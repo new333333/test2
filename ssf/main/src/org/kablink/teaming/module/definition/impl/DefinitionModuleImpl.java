@@ -2001,9 +2001,17 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						if (inputData.exists(nameValue)) {
 							String[] values = inputData.getValues(nameValue);
 							int valuesCount = ((null == values) ? 0 : values.length);
+							String value;
+							if (1 == valuesCount) {
+								value = values[0];
+								if (StringUtil.isPackedString(value)) {
+									values = StringUtil.unpack(value);
+									valuesCount = ((null == values) ? 0 : values.length);
+								}
+							}
 							List<String> valuesList = new ArrayList();
 							for (int i = 0; i < valuesCount; i += 1) {
-								String value = values[i];
+								value = values[i];
 								if (null != value) {
 									value = value.trim();
 									if (0 < value.length()) {

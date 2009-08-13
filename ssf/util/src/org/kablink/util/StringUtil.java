@@ -48,27 +48,31 @@ public class StringUtil {
 	protected static final Log logger = LogFactory.getLog(StringUtil.class);
 
 	/**
-	 * Internal tools used by the pack() and unpack() methods.
+	 * Internal tools to pack and unpack strings.
 	 */
 	private static final class PackTools {
-	   final private static String ENCODING = "UTF-8";
-	   final private static byte[] HEXTABLE = {
-		   (byte) '0',
-		   (byte) '1',
-		   (byte) '2',
-		   (byte) '3',
-		   (byte) '4',
-		   (byte) '5',
-		   (byte) '6',
-		   (byte) '7',
-		   (byte) '8',
-		   (byte) '9',
-		   (byte) 'a',
-		   (byte) 'b',
-		   (byte) 'c',
-		   (byte) 'd',
-		   (byte) 'e',
-		   (byte) 'f'
+	   private static final String PACKED_HEAD     = "P:";
+	   private static final String PACKED_TAIL     = "P";
+	   private static final String PACKED_SPLIT    = ":";
+	   private static final String PACKED_EMPTY    = "PP";
+	   private static final String PACKED_ENCODING = "UTF-8";
+	   private static final byte[] HEXTABLE        = {
+		   ((byte) '0'),
+		   ((byte) '1'),
+		   ((byte) '2'),
+		   ((byte) '3'),
+		   ((byte) '4'),
+		   ((byte) '5'),
+		   ((byte) '6'),
+		   ((byte) '7'),
+		   ((byte) '8'),
+		   ((byte) '9'),
+		   ((byte) 'a'),
+		   ((byte) 'b'),
+		   ((byte) 'c'),
+		   ((byte) 'd'),
+		   ((byte) 'e'),
+		   ((byte) 'f'),
 	   };
 	   
 	   /**
@@ -76,21 +80,20 @@ public class StringUtil {
 	    * 
 	    * @param strText String to encode
 	    * 
-	    * @return String safe for use in StringUtil.pack().
+	    * @return String safe for use in StringUtil.PackTools.pack().
 	    */
-	   final private static String packEncoder(String strText)
-	   {
+	   private static String packEncoder(String strText) {
 	      if (null == strText) {
 	         return "";
 	      }
 
 	      byte[] srcBytes;
 	      try {
-	         srcBytes = strText.getBytes(ENCODING);
+	         srcBytes = strText.getBytes(PACKED_ENCODING);
 	      }
 	      catch(UnsupportedEncodingException e) {
-	    	  logger.debug("StringUtil.packEncoder(1):", e);
-	    	  return "UnsupportedEncodingException";
+	    	  logger.debug("StringUtil.PackTools.packEncoder(1) using " + PACKED_ENCODING + ":  ", e);
+	    	  return ("UnsupportedEncodingException using " + PACKED_ENCODING);
 	      }
 
 	      // The maximum size for the encoded string would be if every byte is
@@ -101,8 +104,7 @@ public class StringUtil {
 	      int i;
 	      int iDest;
 	      int iSrc;
-	      for (iSrc = 0, iDest = 0; iSrc < iSrcLen; iSrc += 1)
-	      {
+	      for (iSrc = 0, iDest = 0; iSrc < iSrcLen; iSrc += 1) {
 	         byte b = srcBytes[iSrc];
 	         if ((b >= 0x30 && b <=0x39)||	// 0-9
 	             (b >= 0x41 && b <=0x5a)||	// A-Z
@@ -114,20 +116,20 @@ public class StringUtil {
 	         }
 	         else {
 	            destBytes[iDest++] = 0x25;	// '%'
-	            i = ((b>>4)&0x000f);
+	            i = ((b >> 4) & 0x000f);
 	            destBytes[iDest++] = HEXTABLE[i];
-	            i = (b&0x000f);
+	            i = (b & 0x000f);
 	            destBytes[iDest++] = HEXTABLE[i];
 
 	         }
 	      }
 
 	      try {
-	         return new String(destBytes, 0, iDest, ENCODING);
+	         return new String(destBytes, 0, iDest, PACKED_ENCODING);
 	      }
 	      catch(UnsupportedEncodingException e) {
-	    	  logger.debug("StringUtil.packEncoder(2):", e);
-	    	  return "UnsupportedEncodingException";
+	    	  logger.debug("StringUtil.PackTools.packEncoder(2) using " + PACKED_ENCODING + ":  ", e);
+	    	  return ("UnsupportedEncodingException using " + PACKED_ENCODING);
 	      }
 	   }
 	   
@@ -140,8 +142,7 @@ public class StringUtil {
 	    * 
 	    * @see #packEncoder(String)
 	    */
-	   final private static String unpackDecoder(String s)
-	   {
+	   private static String unpackDecoder(String s) {
 	      byte[] byContent = s.getBytes();
 	      int iContentLen = byContent.length;
 	      int iOffset = 0;
@@ -153,20 +154,15 @@ public class StringUtil {
 
 	      for (iSrc = iOffset, iDest = iOffset, iCount = 0; iCount < iContentLen; iSrc += 1, iDest += 1, iCount += 1) {
 	         switch (byContent[iSrc]) {
-	            //-------------------------------------------------------------
-	            // Replace the '+' with a space (' ')
-	            //-------------------------------------------------------------
-	            case (int) '+':
-	               byContent[iDest] = (byte) ' ';
+	            // Replace the '+' with a space (' ').
+	            case ((int) '+'):
+	               byContent[iDest] = ((byte) ' ');
 	               break;
 
-	            //-------------------------------------------------------------
 	            // Replace the "%uXXXX" or "%XX" with the appropriate byte
 	            // value(s)
-	            //-------------------------------------------------------------
-	            case (int) '%':
-	               if (byContent[iSrc+1] == 'u')
-	               {
+	            case ((int) '%'):
+	               if (byContent[iSrc+1] == 'u') {
 	                  char c;
 	                  int i1 = 0;
 	                  int i2 = 0;
@@ -182,21 +178,19 @@ public class StringUtil {
 	                  String ss = ch.toString();
 
 	                  try {
-	                     byte[] b = ss.getBytes(ENCODING);
+	                     byte[] b = ss.getBytes(PACKED_ENCODING);
 
 	                     for (int ii = 0; ii < b.length; ii += 1, iDest += 1) {
 	                        byContent[iDest] = b[ii];
 	                     }
 
-	                     //-------------------------------------------------
 	                     // Need to backup by 1 (since we increment at end
-	                     // of loop)
-	                     //-------------------------------------------------
+	                     // of loop.)
 	                     iDest -= 1;
 	                  }
 	                  catch(UnsupportedEncodingException e) {
-	                	  logger.debug("StringUtil.unpackDecoder(1):", e);
-	                	  return "UnsupportedEncodingException";
+	                	  logger.debug("StringUtil.PackTools.unpackDecoder(1) using " + PACKED_ENCODING + ":  ", e);
+	                	  return ("UnsupportedEncodingException using " + PACKED_ENCODING);
 	                  }
 
 	                  iSrc += 5;
@@ -206,7 +200,7 @@ public class StringUtil {
 	                  iValue = (Character.digit((char) byContent[iSrc + 1], 16) * 16) + (Character.digit((char) byContent[iSrc + 2], 16));
 	                  iSrc += 2;
 	                  iCount += 2;
-	                  byContent[iDest] = (byte) iValue;
+	                  byContent[iDest] = ((byte) iValue);
 	               }
 	               break;
 
@@ -216,24 +210,80 @@ public class StringUtil {
 	         }
 	      }
 
-	      //---------------------------------------------------------------------
-	      // XXX we shouldn't assume that the only kind of POST body
-	      // is FORM data encoded using ASCII or ISO Latin/1 ... or
-	      // that the body should always be treated as FORM data.
-	      //---------------------------------------------------------------------
 	      String sContent = null;
-
 	      try {
-	         sContent = new String(byContent, iOffset, iDest-iOffset, ENCODING);
+	         sContent = new String(byContent, iOffset, iDest-iOffset, PACKED_ENCODING);
 	      }
 	      catch(UnsupportedEncodingException e) {
-	    	  logger.debug("StringUtil.unpackDecoder(2):", e);
-	    	  return "UnsupportedEncodingException";
+	    	  logger.debug("StringUtil.PackTools.unpackDecoder(2) using " + PACKED_ENCODING + ":  ", e);
+	    	  return ("UnsupportedEncodingException using " + PACKED_ENCODING);
 	      }
 
 	      return (sContent);
 	   }
 	   
+	   /**
+	    * Packs a String array into one string.  Useful for storing an
+	    * arbitrary string array as a single string in the database.
+	    * 
+	    * @param list String array containing the values to pack.
+	    *
+	    * @return String containing the packed values.
+	    */
+	   private static String pack(String[] list) {
+	      if (null == list) {
+	         return PACKED_EMPTY;
+	      }
+
+	      StringBuffer sb = new StringBuffer(PackTools.PACKED_TAIL);
+	      for (int i = 0; i < list.length; i += 1) {
+	         sb.append(PackTools.PACKED_SPLIT).append(PackTools.packEncoder(list[i]));
+	      }
+
+	      return sb.append(PackTools.PACKED_TAIL).toString();
+	   }
+	   
+	   /**
+	    * Unpacks data packed with the pack().
+	    * 
+	    * @param s String containing a valid packed string.
+	    *
+	    * @return String array of values.
+	    */
+	   private static String[] unpack(String s) {
+	      if (null == s) {
+	         return new String[0];
+	      }
+	      
+		  s = s.trim();
+	      if (s.equals(PACKED_EMPTY)) {
+	         return new String[0];
+	      }
+	      if (!(isPackedString(s))) {
+	         return new String[]{s};
+	      }
+
+	      s = s.substring(2, s.length()-1);   // skip over first :
+	      String[] list = split(s, PackTools.PACKED_SPLIT);
+	      String[] ret = new String[list.length];
+	      for (int i = 0; i < list.length; i += 1) {
+	         ret[i] = PackTools.unpackDecoder(list[i]);
+	      }
+
+	      return ret;
+	   }
+	   
+	   /**
+	    * Checks whether s is recognized as a packed string.
+	    * 
+	    * @param s String to check for being packed.
+	    * 
+	    * @return boolean true -> s is packed.  false -> s is not packed.
+	    */
+	   private static boolean isPackedString(String s) {
+		   return
+		   		((null != s) && s.startsWith(PACKED_HEAD) && s.endsWith(PACKED_TAIL));
+	   }
 	}
 	
 	public static String add(String s, String add) {
@@ -837,55 +887,15 @@ public class StringUtil {
 		return sb.toString();
 	}
 	
-   /**
-    * Packs a String array into one string.  Useful for storing an
-    * arbitrary string array as a single string in the database.
-    * 
-    * @param list String array containing the values to pack.
-    *
-    * @return String containing the packed values.
-    */
-   final public static String pack(String[] list) {
-      if (null == list) {
-         return "PP";
-      }
-
-      StringBuffer sb = new StringBuffer("P");
-      for (int i = 0; i < list.length; i += 1) {
-         sb.append(":").append(PackTools.packEncoder(list[i]));
-      }
-
-      return sb.append("P").toString();
-   }
+	public static String pack(String[] list) {
+	   return PackTools.pack(list);
+	}
    
-   /**
-    * Unpacks data packed with the pack().
-    * 
-    * @param s String containing a valid packed string.
-    *
-    * @return String array of values.
-    */
-   final public static String[] unpack(String s)
-   {
-      if (null == s) {
-         return new String[0];
-      }
-      
-	  s = s.trim();
-      if (s.equals("PP")) {
-         return new String[0];
-      }
-      if (!s.startsWith("P:") || !s.endsWith("P")) {
-         return new String[]{s};
-      }
-
-      s = s.substring(2, s.length()-1);   // skip over first :
-      String[] list = split(s, ":");
-      String[] ret = new String[list.length];
-      for (int i = 0; i < list.length; i += 1) {
-         ret[i] = PackTools.unpackDecoder(list[i]);
-      }
-
-      return ret;
-   }
+	public static String[] unpack(String s) {
+	   return PackTools.unpack(s);
+	}
+   
+	public static boolean isPackedString(String s) {
+		return PackTools.isPackedString(s);
+	}
 }

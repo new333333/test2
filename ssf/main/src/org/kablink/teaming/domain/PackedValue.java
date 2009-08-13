@@ -49,8 +49,8 @@ import org.kablink.util.StringUtil;
  * This is used to store lists of arbitrary strings.
  */
 public class PackedValue implements Serializable {
-	private final static long serialVersionUID=1;
-	private Set values=null;
+	private final static long serialVersionUID = 1;
+	private Set values = null;
 	
     public PackedValue() {
     }
@@ -60,7 +60,7 @@ public class PackedValue implements Serializable {
 	}
      public void setValue(String [] value) {
 		this.values = new HashSet();
-	    for (int i=0; i<value.length; ++i) {
+	    for (int i = 0; i < value.length; i += 1) {
 	    	values.add(value[i]);
 	    }	 
 	}
@@ -75,7 +75,9 @@ public class PackedValue implements Serializable {
 		return toString();
 	}
     public String toString() {
-        if ((values == null) || values.isEmpty()) return "";
+        if ((values == null) || values.isEmpty()) {
+        	return "";
+        }
         return StringUtil.pack((String[])values.toArray(new String[0]));
      }
 }
