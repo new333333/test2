@@ -127,6 +127,10 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 						String itemType = nextItem.attributeValue("name", "");
 						String formItem = nextItem.attributeValue("formItem", "");
 						String customJsp = null; 
+						Boolean fieldModificationAllowed = Boolean.FALSE;
+						String s_fieldModificationAllowed = DefinitionUtils.getPropertyValue(nextItem, "fieldModificationAllowed");
+						if (s_fieldModificationAllowed != null && "true".equals(s_fieldModificationAllowed)) 
+							fieldModificationAllowed = true;
 						Boolean inherit=Boolean.FALSE;
 						Boolean perUserVersionsAllowed = Boolean.FALSE;
 						Element jspEle= (Element)nextItem.selectSingleNode("./jsps/jsp[@name='custom']");
@@ -212,6 +216,7 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 								req.setAttribute(WebKeys.CONFIG_ELEMENT, this.configElement);
 								req.setAttribute(WebKeys.CONFIG_JSP_STYLE, this.configJspStyle);
 								req.setAttribute(WebKeys.CONFIG_FALLBACK_JSP, defaultJsp);  //pass to any custom jsps if they cannot handle configStyle
+								req.setAttribute(WebKeys.FIELD_MODIFICATIONS_ALLOWED, fieldModificationAllowed);
 								//Each item property that has a value is added as a "request attribute". 
 								//  The key name is "property_xxx" where xxx is the property name.
 								//At a minimum, make sure the name and caption variables are defined

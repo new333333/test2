@@ -32,6 +32,13 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyStyle" value=""/>
+<c:if test="${ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']}">
+  <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
+  <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
+  <c:set var="ss_fieldModifyOnly" value="true"/>
+</c:if>
 <script type="text/javascript">
 function ss_showMoreFiles${property_name}() {
 	document.getElementById('ss_extraFiles_${property_name}').style.display='block';
@@ -92,7 +99,7 @@ var ${eName}_ok = 1;
 </c:if>
 
 <label for="${eName}">
-	<span class="ss_labelAbove" id="${elementName}_label">${caption}${required}</span>
+	<span class="ss_labelAbove ${ss_fieldModifyStyle}" id="${elementName}_label">${caption}${required}</span>
 </label>
 
 <table cellspacing="0" cellpadding="0">
@@ -104,7 +111,7 @@ var ${eName}_ok = 1;
  </c:if>
  <c:if test='${! empty ssFolder}'>
   <div class="needed-because-of-ie-bug"><div id="ss_duplicateFileCheck_${eName}" style="display:none; visibility:hidden;" ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
-  <input type="file" class="ss_text" 
+  <input type="file" class="ss_text ${ss_fieldModifyStyle}" ${ss_fieldModifyInputAttribute}
     name="${eName}" id="${eName}" ${width} 
     onkeyup="if(window.event && window.event.keyCode!=9 && window.event.keyCode!=16)this.click();return false;"
     onchange="ss_ajaxValidate(ss_findEntryForFileUrl, this,'${elementName}_label', 'ss_duplicateFileCheck_${eName}', '${repositoryName}');"
@@ -113,7 +120,7 @@ var ${eName}_ok = 1;
  </c:if>
  <c:if test='${empty ssFolder}'>
   <label for="${eName}">&nbsp;</label>
-  <input type="file" class="ss_text" name="${eName}" id="${eName}" ${width}/><br/>
+  <input type="file" class="ss_text ${ss_fieldModifyStyle}" ${ss_fieldModifyInputAttribute} name="${eName}" id="${eName}" ${width}/><br/>
  </c:if>
 	<script type="text/javascript">	
 		function ${eName}_onAtatchmentFormSubmit(formObj) {
@@ -154,7 +161,7 @@ var ${eName}_ok = 1;
 <c:if test="${countFb == '1' && ss_fileBrowseOfferMoreFiles == 'true'}">
 <tr>
 <td align="right">
-<div id="ss_extraFilesClick_${property_name}">
+<div id="ss_extraFilesClick_${property_name}" class="${ss_fieldModifyStyle}">
 <a href="javascript: ;" 
 onClick="ss_showMoreFiles${property_name}();return false;"
 ><span class="smallprint"><ssf:nlt tag="entry.attachMore"/></span></a>

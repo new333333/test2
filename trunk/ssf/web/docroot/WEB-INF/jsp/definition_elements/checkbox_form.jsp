@@ -34,6 +34,13 @@
 %>
 <% //Checkbox form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyStyle" value=""/>
+<c:if test="${ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']}">
+  <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
+  <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
+  <c:set var="ss_fieldModifyOnly" value="true"/>
+</c:if>
 <div class="ss_entryContent">
 <c:if test="${empty ssReadOnlyFields[property_name]}">
 <c:if test="${!ssDefinitionEntry.customAttributes[property_name].value}" >
@@ -45,10 +52,12 @@
   <input type="hidden" name="${property_name}" id="hidden_${property_name}" value="on"/> 
 </c:if>
 <c:set var="required" value=""/>
-<input type="checkbox" name="${property_name}XXX" 
+<div class="${ss_fieldModifyStyle}">
+<input type="checkbox" name="${property_name}XXX" ${ss_fieldModifyInputAttribute}
   id="checkbox_${property_name}XXX" <c:out value="${cb_checked}"/> 
   onClick="ss_saveCheckBoxValue(this, 'hidden_${property_name}');"/> 
  <span class="ss_labelRight"><label for="checkbox_${property_name}XXX">${property_caption}</label></span>
+</div>
   <c:if test="${property_userVersionAllowed == 'true'}">
     <c:set var="property_name_per_user" value="${property_name}.${ssUser.id}"/>
 	<c:if test="${!ssDefinitionEntry.customAttributes[property_name_per_user].value}" >
@@ -73,6 +82,7 @@
 </c:if>
 
 <c:if test="${!empty ssReadOnlyFields[property_name] }">
+<div class="${ss_fieldModifyStyle}">
 	<c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
 	<input type="checkbox" checked DISABLED> &#134;
 	</c:if>
@@ -80,5 +90,6 @@
 	<input type="checkbox" DISABLED> &#134;
 	</c:if>
 	 <span class="ss_labelRight">${property_caption}</span>
+</div>
 </c:if>
 </div>

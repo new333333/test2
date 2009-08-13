@@ -750,6 +750,7 @@ public class WebKeys {
     public static final String ENTRY_ATTACHMENT_DIV_CLOSE_FUNCTION = "ssCloseDivFunctionName";
     public static final String FAVORITES_TREE = "ss_favoritesTree";
     public static final String FAVORITES_TREE_DELETE = "ss_favoritesTreeDelete";
+	public static final String FIELD_MODIFICATIONS_ALLOWED = "ss_fieldModificationsAllowed";
     public static final String FILE_HANDLE = "ss_fileHandle";
     public static final String FILE_NAME = "ss_fileName";
     public static final String FILE_VIEW_TYPE_ATTACHMENT_FILE = "ss_viewAttachmentFile";
@@ -887,6 +888,8 @@ public class WebKeys {
     public static final String MOBILE_FAVORITES_LIST="ss_mobileFavoritesList"; 
     public static final String MOBILE_PAGE_SIZE="15"; 
     public static final String MOBILE_URL="ssMobileUrl"; 
+    public static final String MODIFY_ENTRY_ALLOWED="ss_modifyEntryAllowed"; 
+    public static final String MODIFY_ENTRY_FIELDS_ALLOWED="ss_modifyEntryFieldsAllowed"; 
 	public static final String MY_CALENDAR_ENTRIES = "ss_myCalendarEntries";
 	public static final String MY_DOCUMENTS = "ss_myDocs";
 	public static final String MY_DOCUMENTS_FOLDERS = "ss_myDocsFolders";

@@ -34,7 +34,14 @@
 %>
 <% //File form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<div class="ss_entryContent">
+<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyStyle" value=""/>
+<c:if test="${ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']}">
+  <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
+  <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
+  <c:set var="ss_fieldModifyOnly" value="true"/>
+</c:if>
+<div class="ss_entryContent ${ss_fieldModifyStyle}">
 
 <c:set var="count" value="0"/>
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
@@ -56,13 +63,17 @@
 <tr id="${selection.id}">
 <c:if test="${count > 0}">
 <td><a class="ss_inlineButton" 
-onClick="ss_moveThisTableRow(this, '${renderResponse.namespace}', 'down');ss_saveFileOrder(this, '${property_name}__order');"
+<c:if test="${empty ss_fieldModifyOnly}">
+  onClick="ss_moveThisTableRow(this, '${renderResponse.namespace}', 'down');ss_saveFileOrder(this, '${property_name}__order');"
+</c:if>
 ><img alt="<ssf:nlt tag="favorites.movedown"/>" title="<ssf:nlt tag="favorites.movedown"/>" 
 src="<html:imagesPath/>icons/button_move_down.gif" 
 /></a></td>
 
 <td><a class="ss_inlineButton" 
-onClick="ss_moveThisTableRow(this, '${renderResponse.namespace}', 'up');ss_saveFileOrder(this, '${property_name}__order');"
+<c:if test="${empty ss_fieldModifyOnly}">
+  onClick="ss_moveThisTableRow(this, '${renderResponse.namespace}', 'up');ss_saveFileOrder(this, '${property_name}__order');"
+</c:if>
 ><img alt="<ssf:nlt tag="favorites.moveup"/>" title="<ssf:nlt tag="favorites.moveup"/>" 
 src="<html:imagesPath/>icons/button_move_up.gif" 
 /></a></td>

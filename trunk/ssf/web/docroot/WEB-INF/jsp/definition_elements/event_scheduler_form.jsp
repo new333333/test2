@@ -34,6 +34,13 @@
 %>
 <% //Event scheduler widget form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyStyle" value=""/>
+<c:if test="${ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']}">
+  <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
+  <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
+  <c:set var="ss_fieldModifyOnly" value="true"/>
+</c:if>
 
 <script type="text/javascript" src="<html:rootPath />js/timeline/timeline-api.js?bundle=false"></script>
 <script type="text/javascript" src="<html:rootPath />js/common/ss_event.js"></script>
@@ -60,7 +67,7 @@ ssEventScheduler.locale.outOfOffice = "<ssf:nlt tag="event.scheduler.outOfOffice
 </script>
 
 
-<div class="ss_entryContent">
+<div class="ss_entryContent ${ss_fieldModifyStyle}">
 		<a href="javascript: //" onclick="${prefix}scheduler.display();">${property_caption}</a>
 	
 		<div id="${prefix}schedule" class="ss_event_scheduler"></div>
