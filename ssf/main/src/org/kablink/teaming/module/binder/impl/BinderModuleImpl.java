@@ -880,6 +880,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			}
 		}
 		binder.setWorkflowAssociations(wf);
+
+		BinderProcessor processor = loadBinderProcessor(binder);
+		processor.indexBinder(binder, false);
+		
 		return binder;
 	}
 
