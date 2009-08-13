@@ -35,6 +35,13 @@
 <% // The radio form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
+<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyStyle" value=""/>
+<c:if test="${ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']}">
+  <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
+  <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
+  <c:set var="ss_fieldModifyOnly" value="true"/>
+</c:if>
 <c:set var="original_property_name" value="${property_name}"/>
 <c:set var="original_property_caption" value="${property_caption}"/>
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
@@ -59,10 +66,10 @@
 	}
 %>
 <c:set var="ss_radioButtonsLayout" value="${propertyValues_layout[0]}" scope="request"/>
-<div class="ss_entryContent">
+<div class="ss_entryContent ${ss_fieldModifyStyle}">
 <span class="ss_labelAbove"><%= caption %><%= required %></span>
 <c:if test="${ss_radioButtonsLayout == 'horizontal'}">
-<table cellspacing="0" cellpadding="0" class="ss_radio_button_horizontal">
+<table cellspacing="0" cellpadding="0" class="ss_radio_button_horizontal ${ss_fieldModifyStyle}">
 <tr>
 </c:if>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
@@ -80,9 +87,10 @@
 <%
 	request.setAttribute("radioGroupName", elementName + "." + ssUser.getId().toString());
 %>
+	<div class="ss_entryContent">
 	<c:set var="property_name_per_user" value="${original_property_name}.${ssUser.id}"/>
 	<c:if test="${ss_radioButtonsLayout == 'horizontal'}">
-		<table cellspacing="0" cellpadding="0" class="ss_radio_button_horizontal">
+		<table cellspacing="0" cellpadding="0" class="ss_radio_button_horizontal ${ss_fieldModifyStyle}">
 		<tr>
 	</c:if>
     	<div class="ss_labelAbove">
@@ -98,4 +106,5 @@
 		</tr>
 		</table>
 	</c:if>
+	</div>
   </c:if>
