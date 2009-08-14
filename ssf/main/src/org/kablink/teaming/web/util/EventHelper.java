@@ -56,6 +56,14 @@ import org.kablink.util.cal.DayAndPosition;
  *
  */
 public class EventHelper {
+	public static final String ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME = "attendee";
+	public static final String ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME = "attendee_groups";
+	public static final String ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME = "attendee_teams";
+	
+	public final static String CALENDAR_ATTENEE = "attendee";
+	public final static String CALENDAR_ATTENEE_GROUPS = "attendeeGroups";
+	public final static String CALENDAR_ATTENEE_TEAMS = "attendeeTeams";	
+	
     
     // default method assumes duration and recurrence patterns
     static public Event getEventFromMap (InputDataAccessor inputData, String id) {

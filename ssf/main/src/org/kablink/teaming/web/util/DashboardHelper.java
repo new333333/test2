@@ -74,6 +74,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.portlet.binder.AdvancedSearchController;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
@@ -118,9 +119,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 
 	//key in component data used to resolve binders by type
 	public final static String ChooseType = "chooseViewType";
-	public final static String AssignedTo = "assignedTo";
-	public final static String AssignedToGroups = "assignedToGroups";
-	public final static String AssignedToTeams = "assignedToTeams";	
+	public final static String AssignedTo = TaskHelper.TASK_ASSIGNED_TO;
+	public final static String AssignedToGroups = TaskHelper.TASK_ASSIGNED_TO_GROUPS;
+	public final static String AssignedToTeams = TaskHelper.TASK_ASSIGNED_TO_TEAMS;	
 	
 	//Scopes
 	public final static String Local = "local";
@@ -939,7 +940,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
  				searchFilter.addFolderIds(folderIds);
  			}
 
- 			setupAssignees(searchFilter, componentData, binder.getOwner().getId().toString(), "", "");
+ 			SearchUtils.setupAssignees(searchFilter, componentData, binder.getOwner().getId().toString(), "", "", SearchUtils.AssigneeType.TASK);
  			componentData.put(SearchFormSavedSearchQuery, searchFilter.getFilter().asXML());
 
  			/* Try to save this off on the component so we don't do this each time and so
@@ -1210,64 +1211,6 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		getInstance().internSaveComponentData(request, null, d, PORTLET_COMPONENT_ID, DashboardHelper.Portlet);
 	}
 
-	private void setupAssignees(SearchFilter searchFilter, Map componentData,
-		String assignedTo, String assignedToGroup, String assignedToTeam)
-	{
-		List<SearchFilter.Entry> entries = new ArrayList();
-		String[] assignedToSplit = new String[0];
-		if (!"".equals(assignedTo)) {
-			assignedToSplit = assignedTo.trim().split("\\s");
-			Set ids = new HashSet();
-			for (int i = 0; i < assignedToSplit.length; i++) {
-				try {
-					if (SearchFilterKeys.CurrentUserId.equals(assignedToSplit[i])) {
-						ids.add(SearchFilterKeys.CurrentUserId);
-					} else {
-						ids.add(Long.parseLong(assignedToSplit[i]));
-					}
-				} catch (NumberFormatException e) {
-					logger.debug("DashboardHelper.setupAssignees(NumberFormatException):  1. Ignored");
-				}
-			}
-			componentData.put(AssignedTo, ids);
-		}
-		entries.add(new SearchFilter.Entry(null, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME,
-				assignedToSplit, "user_list"));
-
-		String[] assignedToGroupSplit = new String[0];
-		if (!"".equals(assignedToGroup)) {
-			assignedToGroupSplit = assignedToGroup.trim().split("\\s");
-			Set ids = new HashSet();
-			for (int i = 0; i < assignedToGroupSplit.length; i++) {
-				try {
-					ids.add(Long.parseLong(assignedToGroupSplit[i]));
-				} catch (NumberFormatException e) {
-					logger.debug("DashboardHelper.setupAssignees(NumberFormatException):  2:  Ignored");
-				}
-			}
-			componentData.put(AssignedToGroups, ids);
-		}
-		entries.add(new SearchFilter.Entry(null, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME,
-				assignedToGroupSplit, "group_list"));
-
-		String[] assignedToTeamSplit = new String[0];
-		if (!"".equals(assignedToTeam)) {
-			assignedToTeamSplit = assignedToTeam.trim().split("\\s");
-			Set ids = new HashSet();
-			for (int i = 0; i < assignedToTeamSplit.length; i++) {
-				try {
-					ids.add(Long.parseLong(assignedToTeamSplit[i]));
-				} catch (NumberFormatException e) {
-					logger.debug("DashboardHelper.setupAssignees(NumberFormatException):  3:  Ignored");
-				}
-			}
-			componentData.put(AssignedToTeams, ids);
-		}
-		entries.add(new SearchFilter.Entry(null, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME,
-				assignedToTeamSplit, "team_list"));					
-		searchFilter.addEntries(entries, "userGroupTeam");		
-	}
-
 	/*
 	 * No static version because needs a DefinitionModule.
 	 */
@@ -1351,10 +1294,11 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					}
 
 					if (ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY.equals(cName)) {
-						setupAssignees(searchFilter, componentData,
+						SearchUtils.setupAssignees(searchFilter, componentData,
 								PortletRequestUtils.getStringParameter(request, "assignedTo", ""),
 								PortletRequestUtils.getStringParameter(request, "assignedToGroup", ""),
-								PortletRequestUtils.getStringParameter(request, "assignedToTeam", "")
+								PortletRequestUtils.getStringParameter(request, "assignedToTeam", ""),
+								SearchUtils.AssigneeType.TASK
 								);
 					}
 					

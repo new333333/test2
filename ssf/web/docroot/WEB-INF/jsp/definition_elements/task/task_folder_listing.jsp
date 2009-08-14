@@ -51,6 +51,7 @@
 			    	test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}"><ssf:param 
 			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
 			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><ssf:param 
+			    	name="ssFolderModeType" value="${ssFolderModeType}"/><ssf:param
 			    	name="ssTaskFilterType" value="${ssTaskFilterType}"/></ssf:url>"
 			
 				<c:choose>
@@ -86,6 +87,7 @@
 			    	test="${ ssFolderSortBy == 'priority' && ssFolderSortDescend == 'false'}"><ssf:param 
 			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
 			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><ssf:param 
+			    	name="ssFolderModeType" value="${ssFolderModeType}"/><ssf:param
 			    	name="ssTaskFilterType" value="${ssTaskFilterType}"/></ssf:url>"
 				
 				<c:choose>
@@ -121,6 +123,7 @@
 			    	test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}"><ssf:param 
 			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
 			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><ssf:param 
+			    	name="ssFolderModeType" value="${ssFolderModeType}"/><ssf:param
 			    	name="ssTaskFilterType" value="${ssTaskFilterType}"/></ssf:url>"
 				
 				<c:choose>
@@ -155,6 +158,7 @@
 					test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'false'}"><ssf:param 
 					name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
 					name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><ssf:param 
+			    	name="ssFolderModeType" value="${ssFolderModeType}"/><ssf:param
 					name="ssTaskFilterType" value="${ssTaskFilterType}"/></ssf:url>"
 				
 				<c:choose>
@@ -191,6 +195,7 @@
 			    	test="${ ssFolderSortBy == 'assignment' && ssFolderSortDescend == 'false'}"><ssf:param 
 			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
 			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><ssf:param 
+			    	name="ssFolderModeType" value="${ssFolderModeType}"/><ssf:param
 			    	name="ssTaskFilterType" value="${ssTaskFilterType}"/></ssf:url>"
 				
 				<c:choose>
@@ -226,6 +231,7 @@
 					test="${ ssFolderSortBy == 'completed' && ssFolderSortDescend == 'false'}"><ssf:param 
 					name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
 					name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><ssf:param 
+			    	name="ssFolderModeType" value="${ssFolderModeType}"/><ssf:param
 					name="ssTaskFilterType" value="${ssTaskFilterType}"/></ssf:url>"
 				
 				<c:choose>

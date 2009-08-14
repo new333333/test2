@@ -2718,7 +2718,8 @@ a.ss_calDaySelectButton img, a.ss_calDaySelectButtonActive img,
 	a.ss_cal5DaysSelectButton img, a.ss_cal5DaysSelectButtonActive img,
 	a.ss_cal7DaysSelectButton img, a.ss_cal7DaysSelectButtonActive img,
 	a.ss_cal14DaysSelectButton img, a.ss_cal14DaysSelectButtonActive img,
-	a.ss_calMonthSelectButton img, a.ss_calMonthSelectButtonActive img {
+	a.ss_calMonthSelectButton img, a.ss_calMonthSelectButtonActive img,
+	a.ss_calModeSelectButton img, a.ss_calModeSelectButtonActive img {
 	width: 25px;
 	height: 24px;
 	margin: 0px;

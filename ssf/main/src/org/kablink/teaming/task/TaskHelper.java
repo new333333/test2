@@ -47,9 +47,14 @@ import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.ListFolderHelper;
+import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 
 
 public class TaskHelper {
@@ -68,13 +73,14 @@ public class TaskHelper {
 	
 	public static final String TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME = "start_end";
 	
+	public final static String TASK_ASSIGNED_TO = "assignedTo";
+	public final static String TASK_ASSIGNED_TO_GROUPS = "assignedToGroups";
+	public final static String TASK_ASSIGNED_TO_TEAMS = "assignedToTeams";	
+	
 	public enum FilterType {
 		CLOSED, DAY, WEEK, MONTH, ACTIVE, ALL;
 	}
-	
-	
 	public static final FilterType FILTER_TYPE_DEFAULT = FilterType.ALL;
-
 	
 	public static String getTaskCompletedValue(Entry entry) {
 	
@@ -149,6 +155,10 @@ public class TaskHelper {
 		return (FilterType)portletSession.getAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE);
 	}
 	
+	public static ModeType getTaskModeType(PortletSession portletSession) {
+		return ListFolderHelper.getFolderModeType(portletSession);
+	}
+	
 	/**
 	 * Saves given type in session or default type if given is <code>null</code> or unknown.
 	 * 
@@ -168,11 +178,26 @@ public class TaskHelper {
 		return filterType;
 	}
 
+	/**
+	 * Saves given folder mode in session or default mode if given is <code>null</code> or unknown.
+	 * 
+	 * @param portletSession
+	 * @param modeType
+	 * @return
+	 */
+	public static ListFolderHelper.ModeType setTaskFilterType(PortletSession portletSession, ListFolderHelper.ModeType modeType) {
+		return ListFolderHelper.setFolderModeType(portletSession, modeType);
+	}
+	
 	public static SearchFilter buildSearchFilter(FilterType filterType) {
+		return buildSearchFilter(filterType, ListFolderHelper.ModeType.PHYSICAL, null);
+	}
+	public static SearchFilter buildSearchFilter(FilterType filterType, ListFolderHelper.ModeType modeType, Map model) {
 		SearchFilter searchFilter = new SearchFilter(true);
 		
 		DateTimeZone userTimeZone = DateTimeZone.forTimeZone(RequestContextHolder.getRequestContext().getUser().getTimeZone());
 		
+		// Handle the filter type.
 		if (filterType.equals(FilterType.CLOSED)) {
 			searchFilter.addTaskStatuses(new String[] {"s3", "s4"});
 		} else if (filterType.equals(FilterType.ACTIVE)) {
@@ -192,6 +217,19 @@ public class TaskHelper {
 			searchFilter.addTaskEndDate(dateTime.toString("yyyy-MM-dd HH:mm"));
 			searchFilter.addTaskStatuses(new String[] {"s1", "s2"});
 		}
+
+		// If we're only showing tasks assigned to the user...
+		if (ListFolderHelper.ModeType.VIRTUAL == modeType) {
+			// ...handle virtual mode here.
+			User user = RequestContextHolder.getRequestContext().getUser();
+			SearchUtils.setupAssignees(searchFilter, model,
+					String.valueOf(user.getId()),
+					"",	//! Resolve groups user belongs to here.
+					"", //! Resolve teams  user belongs to here.
+					SearchUtils.AssigneeType.TASK
+					);
+		}
+
 		
 		return searchFilter;
 	}
