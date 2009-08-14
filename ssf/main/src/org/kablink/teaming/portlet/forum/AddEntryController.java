@@ -357,6 +357,9 @@ public class AddEntryController extends SAbstractController {
 		model.put(WebKeys.ENTRY_TITLE, title);
 		model.put(WebKeys.OPERATION, action);
 		
+		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
+		accessControlMap.put(WebKeys.MODIFY_ENTRY_ALLOWED, true);
+		
 		String blogReply = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BLOG_REPLY, "");
 		if (!blogReply.equals("")) model.put(WebKeys.FORM_STYLE_COMPACT, true);
 		
