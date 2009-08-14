@@ -33,12 +33,21 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyStyle" value=""/>
+<c:if test="${(!ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']) || 
+			(!ss_accessControlMap['ss_modifyEntryAllowed'] && !ss_fieldModificationsAllowed == 'true')}">
+  <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
+  <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
+  <c:set var="ss_fieldModifyOnly" value="true"/>
+</c:if>
 
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_survey.js"></script>
 
-<div class="ss_entryContent">
+<div class="ss_entryContent ${ss_fieldModifyStyle}">
 	<div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
 
+<c:if test="${empty ss_fieldModifyOnly}">
 	<p>
 		<ssf:nlt tag="survey.view.results.beforeDue"/><br>
 		<input type="radio" checked="true" name="beforeDueTime"  id="${ss_namespace}_${property_name}_viewBeforeDueTime_all" /><label for="${ss_namespace}_${property_name}_viewBeforeDueTime_all"><ssf:nlt tag="survey.view.results.beforeDue.all" /></label>
@@ -88,5 +97,6 @@
 			ssSurvey.addToOnSubmit(ss_survey_${ss_namespace}_${property_name});
 		});
 	</script>
+</c:if>
 
 </div>
