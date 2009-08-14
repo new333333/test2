@@ -90,6 +90,7 @@ import org.kablink.teaming.security.acl.AclControlled;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -1128,8 +1129,16 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
             		searchFilter.appendFilter(userDynamicSearchFilter);
             	}
         	}
+
+        	Binder searchBinder = binder;
+        	if ((options != null) && options.containsKey(ObjectKeys.FOLDER_MODE_TYPE)) {
+        		ListFolderHelper.ModeType mode = ((ListFolderHelper.ModeType) options.get(ObjectKeys.FOLDER_MODE_TYPE));
+        		if ((null != mode) && (ListFolderHelper.ModeType.VIRTUAL == mode)) {
+        			searchBinder = null;
+        		}
+        	}
         	
-        	getBinderEntries_getSearchDocument(binder, entryTypes, searchFilter);
+        	getBinderEntries_getSearchDocument(searchBinder, entryTypes, searchFilter);
 	   		queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), null);
         	SearchUtils.getQueryFields(queryTree, options); 
        	}       	
@@ -1165,7 +1174,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	
     	searchFilter.newCurrentFilterTermsBlock(true);
     	
-   		searchFilter.addFolderId(binder.getId().toString());
+    	if (null != binder) {
+    		searchFilter.addFolderId(binder.getId().toString());
+    	}
    		searchFilter.addDocumentType(Constants.DOC_TYPE_ENTRY);
    		searchFilter.addEntryTypes(entryTypes);
     }

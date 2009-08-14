@@ -227,6 +227,7 @@ public interface ObjectKeys {
     public static final String DASHBOARD_COMPONENT_REMOTE_APPLICATION = "remoteApplication";
     
     public static final String FOLDER_ENTRY_TO_BE_SHOWN = "folder_entry_to_be_shown";
+    public static final String FOLDER_MODE_TYPE = "folderModeType";
     
     public static final String MASHUP_ATTR_COLS = "cols";
     public static final String MASHUP_ATTR_COL_WIDTH = "colWidth";

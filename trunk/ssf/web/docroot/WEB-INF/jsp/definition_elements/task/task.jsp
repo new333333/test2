@@ -41,37 +41,38 @@
 <script type="text/javascript">
 var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 </script>
-
-<table class="ss_statisticTable"><tr>
-<c:set var="colCount" value="0"/>
-<c:if test="${!empty ssBinder &&
-				!empty ssBinder.customAttributes['statistics'] && 
-				!empty ssBinder.customAttributes['statistics'].value && 
-				!empty ssBinder.customAttributes['statistics'].value.value}">		
-	<c:forEach var="definition" items="${ssBinder.customAttributes['statistics'].value.value}">
-		<c:if test="${!empty definition.value}">
-			<c:if test="${!empty definition.value.priority}">
-				<td><ssf:drawStatistic statistic="${definition.value.priority}" style="coloredBar" showLabel="true" showLegend="true" labelAll="true"/></td>
-				<c:set var="colCount" value="${colCount + 1}"/>
+<c:if test="${ ssCurrentFolderModeType != 'VIRTUAL' }">
+	<table class="ss_statisticTable"><tr>
+	<c:set var="colCount" value="0"/>
+	<c:if test="${!empty ssBinder &&
+					!empty ssBinder.customAttributes['statistics'] && 
+					!empty ssBinder.customAttributes['statistics'].value && 
+					!empty ssBinder.customAttributes['statistics'].value.value}">		
+		<c:forEach var="definition" items="${ssBinder.customAttributes['statistics'].value.value}">
+			<c:if test="${!empty definition.value}">
+				<c:if test="${!empty definition.value.priority}">
+					<td><ssf:drawStatistic statistic="${definition.value.priority}" style="coloredBar" showLabel="true" showLegend="true" labelAll="true"/></td>
+					<c:set var="colCount" value="${colCount + 1}"/>
+				</c:if>
+	
+				<c:if test="${!empty definition.value.status}">
+					<td><ssf:drawStatistic statistic="${definition.value.status}" style="coloredBar ss_statusBar" showLabel="true" showLegend="true" labelAll="true"/></td>
+					<c:set var="colCount" value="${colCount + 1}"/>
+				</c:if>
 			</c:if>
-
-			<c:if test="${!empty definition.value.status}">
-				<td><ssf:drawStatistic statistic="${definition.value.status}" style="coloredBar ss_statusBar" showLabel="true" showLegend="true" labelAll="true"/></td>
-				<c:set var="colCount" value="${colCount + 1}"/>
-			</c:if>
-		</c:if>
-	</c:forEach>
+		</c:forEach>
+	</c:if>
+	</tr>
+	<c:if test="${colCount > 0}">
+	<tr>
+	<td colspan="${colCount}" align="right">
+	<input type="button" class="ss_linkButton ss_fineprint" onClick="self.location.reload(true);"
+	 value="<%= NLT.get("task.refreshChart") %>" />
+	</td>
+	</tr>
+	</c:if>
+	</table>
 </c:if>
-</tr>
-<c:if test="${colCount > 0}">
-<tr>
-<td colspan="${colCount}" align="right">
-<input type="button" class="ss_linkButton ss_fineprint" onClick="self.location.reload(true);"
- value="<%= NLT.get("task.refreshChart") %>" />
-</td>
-</tr>
-</c:if>
-</table>
 
 
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />

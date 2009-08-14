@@ -106,7 +106,6 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.web.WebKeys;
-import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -146,6 +145,11 @@ public class ListFolderHelper {
 		"calendar.abbreviation.december"
 	};
 	public static final String[] folderColumns= new String[] {"number", "title", "comments", "size", "download", "html", "state", "author", "date", "rating"};
+
+	public enum ModeType {
+		PHYSICAL, VIRTUAL;
+	}
+	public static final ModeType MODE_TYPE_DEFAULT = ModeType.PHYSICAL;
 
 	static public ModelAndView BuildFolderBeans(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Long binderId) throws Exception {
@@ -2177,10 +2181,15 @@ public class ListFolderHelper {
 		Map folderEntries = new HashMap();
 		
 		String filterTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.TASK_FILTER_TYPE, null);
-		TaskHelper.FilterType filterType = TaskHelper.setTaskFilterType(portletSession, filterTypeParam != null ? TaskHelper.FilterType.valueOf(filterTypeParam) : null);
+		TaskHelper.FilterType filterType = TaskHelper.setTaskFilterType(portletSession, ((filterTypeParam != null) ? TaskHelper.FilterType.valueOf(filterTypeParam) : null));
 		model.put(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
 		
-		options.put(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER, TaskHelper.buildSearchFilter(filterType).getFilter());
+		String modeTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.FOLDER_MODE_TYPE, null);
+		ModeType modeType = setFolderModeType(portletSession, ((modeTypeParam != null) ? ModeType.valueOf(modeTypeParam) : null));
+		model.put(WebKeys.FOLDER_CURRENT_MODE_TYPE, modeType);
+
+		options.put(ObjectKeys.FOLDER_MODE_TYPE, modeType);
+		options.put(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER, TaskHelper.buildSearchFilter(filterType, modeType, model).getFilter());
        	
 		if (binder instanceof Folder) {
 			folderEntries = bs.getFolderModule().getEntries(binderId, options);
@@ -2204,5 +2213,28 @@ public class ListFolderHelper {
     	}
 		
 		return folderEntries;
+	}
+	
+	/**
+	 * Saves given folder mode in session or default mode if given is <code>null</code> or unknown.
+	 * 
+	 * @param portletSession
+	 * @param modeType
+	 * @return
+	 */
+	public static ModeType setFolderModeType(PortletSession portletSession, ModeType modeType) {
+		if (modeType == null) {
+			
+			modeType = getFolderModeType(portletSession);
+			if (modeType == null) {
+				modeType = MODE_TYPE_DEFAULT;
+			}
+		}
+		portletSession.setAttribute(WebKeys.FOLDER_CURRENT_MODE_TYPE, modeType);
+		return modeType;
+	}
+	
+	public static ModeType getFolderModeType(PortletSession portletSession) {
+		return (ModeType)portletSession.getAttribute(WebKeys.FOLDER_CURRENT_MODE_TYPE);
 	}
 }

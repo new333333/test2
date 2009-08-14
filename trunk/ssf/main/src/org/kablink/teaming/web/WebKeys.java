@@ -60,6 +60,8 @@ public class WebKeys {
 	public static final String CALENDAR_FREE_BUSY_INFO = "ssCalendarFreeBusyInfo";
 	public static final String TASK_FILTER_TYPE = "ssTaskFilterType";
 	public static final String TASK_CURRENT_FILTER_TYPE = "ssCurrentTaskFilterType";
+	public static final String FOLDER_MODE_TYPE = "ssFolderModeType";
+	public static final String FOLDER_CURRENT_MODE_TYPE = "ssCurrentFolderModeType";
 	public static final String CALENDAR_PREV_DATE= "ssPrevDate";
 	public static final String CALENDAR_NEXT_DATE= "ssNextDate";
 	public static final String CALENDAR_CURR_DATE= "ssCurrDate";
