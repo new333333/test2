@@ -34,13 +34,13 @@
 %>
 <% // The html editor widget %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyDisabled" value=""/>
 <c:set var="ss_fieldModifyStyle" value=""/>
 <c:if test="${(!ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']) || 
 			(!ss_accessControlMap['ss_modifyEntryAllowed'] && !ss_fieldModificationsAllowed)}">
   <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
   <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
-  <c:set var="ss_fieldModifyOnly" value="true"/>
+  <c:set var="ss_fieldModifyDisabled" value="true"/>
 </c:if>
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%
@@ -100,7 +100,7 @@
   <c:set var="textFormat" value="2"/>
 </c:if>
 <div class="ss_entryContent ${ss_fieldModifyStyle}">
-<c:if test="${empty ssReadOnlyFields[property_name] && (empty ss_fieldModifyOnly || ss_fieldModificationsAllowed)}">
+<c:if test="${empty ssReadOnlyFields[property_name] && (empty ss_fieldModifyDisabled || ss_fieldModificationsAllowed)}">
 
   <span class="ss_labelLeft"><%= caption %><%= required %>   </span>
   	<div class="ss_editorHints" style="padding-left:10px;">
@@ -126,7 +126,7 @@
   </c:if>
   </div>
  </c:if>
- <c:if test="${!empty ssReadOnlyFields[property_name] || (!empty ss_fieldModifyOnly && !ss_fieldModificationsAllowed)}">
+ <c:if test="${!empty ssReadOnlyFields[property_name] || (!empty ss_fieldModifyDisabled && !ss_fieldModificationsAllowed)}">
  <span class="ss_labelLeft"><%= caption %><c:if test="${!empty ssReadOnlyFields[property_name]}"> &#134; </c:if></span>
  <ssf:markup leaveSectionsUnchanged="true"
     entity="${ssDefinitionEntry}">${textValue}</ssf:markup>
