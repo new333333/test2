@@ -39,20 +39,19 @@ import org.kablink.teaming.gwt.client.widgets.EditSuccessfulHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
  * 
  * @author jwootton
  *
  */
-public abstract class DlgBox extends DialogBox
+public abstract class DlgBox extends PopupPanel
 	implements ClickHandler
 {
 	private EditSuccessfulHandler	m_editSuccessfulHandler;	// Handler to call when the user presses Ok.
@@ -65,17 +64,34 @@ public abstract class DlgBox extends DialogBox
 	 * 
 	 */
 	public DlgBox(
-		String	caption,
-		EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
-		EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
 		boolean autoHide,
 		boolean modal,
 		int xPos,
-		int yPos,
-		PropertiesObj properties ) // Where properties used in the dialog are read from and saved to.
+		int yPos )
 	{
 		super( autoHide, modal );
 		
+		// Override the style used for PopupPanel
+		setStyleName( "teamingDlgBox" );
+		
+		setPopupPosition( xPos, yPos );
+	}// end DlgBox()
+	
+	
+	/**
+	 * Get the Composite that holds the widgets that make up the content of the dialog box.
+	 */
+	public abstract Panel createContent( PropertiesObj propertiesObj );
+	
+	/**
+	 * Create the header, content and footer for the dialog box.
+	 */
+	public void createAllDlgContent(
+		String	caption,
+		EditSuccessfulHandler editSuccessfulHandler,// We will call this handler when the user presses the ok button
+		EditCanceledHandler editCanceledHandler, 	// This gets called when the user presses the Cancel button
+		PropertiesObj properties ) 					// Where properties used in the dialog are read from and saved to.
+	{
 		FlowPanel	panel;
 		Panel		content;
 		Panel		header;
@@ -83,9 +99,6 @@ public abstract class DlgBox extends DialogBox
 		
 		panel = new FlowPanel();
 
-		// Associate the panel with its stylesheet.
-		panel.addStyleName( "teamingDlgBox" );
-		
 		// Add the header.
 		header = createHeader( caption );
 		panel.add( header );
@@ -100,29 +113,20 @@ public abstract class DlgBox extends DialogBox
 		panel.add( footer );
 		
 		setWidget( panel );
-		
-		setPopupPosition( xPos, yPos );
-	}// end DlgBox()
-	
-	
-	/**
-	 * Get the Composite that holds the widgets that make up the content of the dialog box.
-	 */
-	public abstract Panel createContent( PropertiesObj propertiesObj );
-	
+	}// end createAllDlgContent()
+
 	
 	/*
 	 * Create the footer panel for this dialog box.
 	 */
 	public Panel createFooter( EditSuccessfulHandler editSuccessfulHandler, EditCanceledHandler editCanceledHandler )
 	{
-		HorizontalPanel	panel;
+		FlowPanel panel;
 		
-		panel = new HorizontalPanel();
-		panel.setHorizontalAlignment( HasHorizontalAlignment.ALIGN_RIGHT );
+		panel = new FlowPanel();
 		
 		// Associate this panel with its stylesheet.
-		panel.addStyleName( "teamingDlgBoxFooter" );
+		panel.setStyleName( "teamingDlgBoxFooter" );
 		
 		// Remember the handlers to call when the user presses ok or cancel.
 		m_editSuccessfulHandler = editSuccessfulHandler;
@@ -130,10 +134,12 @@ public abstract class DlgBox extends DialogBox
 		
 		m_okBtn = new Button( GwtTeaming.getMessages().ok() );
 		m_okBtn.addClickHandler( this );
+		m_okBtn.addStyleName( "teamingButton" );
 		panel.add( m_okBtn );
 		
 		m_cancelBtn = new Button( GwtTeaming.getMessages().cancel() );
 		m_cancelBtn.addClickHandler( this );
+		m_cancelBtn.addStyleName( "teamingButton" );
 		panel.add( m_cancelBtn );
 		
 		return panel;
@@ -149,7 +155,7 @@ public abstract class DlgBox extends DialogBox
 		Label		label;
 		
 		flowPanel = new FlowPanel();
-		flowPanel.addStyleName( "teamingDlgBoxHeader" );
+		flowPanel.setStyleName( "teamingDlgBoxHeader" );
 
 		label = new Label( caption );
 		label.addStyleName( "head4" );

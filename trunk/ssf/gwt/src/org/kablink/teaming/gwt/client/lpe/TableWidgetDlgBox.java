@@ -32,15 +32,24 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
+import java.util.ArrayList;
+
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.widgets.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * 
@@ -48,7 +57,14 @@ import com.google.gwt.user.client.ui.Panel;
  *
  */
 public class TableWidgetDlgBox extends DlgBox
+	implements ChangeHandler
 {
+	private CheckBox		m_showBorderCkBox = null;
+	private ListBox		m_numColsCtrl = null;
+	private ArrayList<TextBox>	m_columnWidths = null;
+	private VerticalPanel	m_mainPanel = null;
+	private FlexTable		m_table = null;
+	
 	/**
 	 * 
 	 */
@@ -59,23 +75,100 @@ public class TableWidgetDlgBox extends DlgBox
 		boolean modal,
 		int xPos,
 		int yPos,
-		PropertiesObj properties ) // Where properties used in the dialog are read from and saved to.
+		TableProperties properties ) // Where properties used in the dialog are read from and saved to.
 	{
-		super( "test", editSuccessfulHandler, editCanceledHandler, autoHide, modal, xPos, yPos, properties );
+		super( autoHide, modal, xPos, yPos );
+		
+		// Create the header, content and footer of this dialog box.
+		createAllDlgContent( GwtTeaming.getMessages().tableProperties(), editSuccessfulHandler, editCanceledHandler, properties ); 
 	}// end TableWidgetDlgBox()
+	
+
+	/**
+	 * Create a text box control for every column.
+	 */
+	public void addColumnWidthControls( TableProperties properties )
+	{
+		int		numCols;
+		int		i;
+		TextBox	txtBox;
+		
+		// Remove all existing text box controls used to specify column width.
+		if ( m_columnWidths != null )
+		{
+			for (i = 0; i < m_columnWidths.size(); ++i)
+			{
+				// Remove the 2 row.  Row 0, contains the "Show border" checkbox and Row 1, contains the "Number of columns" controls.
+				m_table.removeRow( 2 );
+			}
+			
+			m_columnWidths.clear();
+		}
+		
+		// Add a label and text box control for every column
+		numCols = properties.getNumColumnsInt();
+		for (i = 0; i < numCols; ++i)
+		{
+			Label	label;
+
+			// Add the label, "Column X width:"
+			label = new Label( GwtTeaming.getMessages().columnXWidth( i+1 ) );
+			m_table.setWidget( i+2, 0, label );
+			
+			txtBox = new TextBox();
+			txtBox.setVisibleLength( 6 );
+			txtBox.setValue( properties.getColWidthStr( i ) );
+			m_table.setWidget( i+2, 1, txtBox );
+			
+			m_columnWidths.add( i, txtBox );
+		}// end for()
+	}// end addColumnWidthControls()
 	
 	
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
-	public Panel createContent( PropertiesObj properties )
+	public Panel createContent( PropertiesObj props )
 	{
-		FlowPanel	panel;
+		TableProperties properties;
+		Label			label;
 		
-		panel = new FlowPanel();
-		panel.add( new Label( "This is the content" ) );
+		properties = (TableProperties) props;
+
+		m_columnWidths = new ArrayList( 3 );
+
+		m_mainPanel = new VerticalPanel();
+		m_mainPanel.setStyleName( "teamingDlgBoxContent" );
+
+		m_table = new FlexTable();
+		m_table.setCellSpacing( 8 );
 		
-		return panel;
+		// Add a checkbox for "Show border"
+		m_showBorderCkBox = new CheckBox( GwtTeaming.getMessages().showBorder() );
+		m_table.setWidget( 0, 0, m_showBorderCkBox );
+		if ( properties.getShowBorderValue() == true )
+			m_showBorderCkBox.setValue( Boolean.TRUE );
+
+		// Add label and select control for "Number of columns:".
+		label = new Label( GwtTeaming.getMessages().numColumns() );
+		m_table.setWidget( 1, 0, label );
+		m_numColsCtrl = new ListBox( false );
+		m_numColsCtrl.setVisibleItemCount( 1 );
+		m_numColsCtrl.addItem( GwtTeaming.getMessages()._1(), "1" );
+		m_numColsCtrl.addItem( GwtTeaming.getMessages()._2(), "2" );
+		m_numColsCtrl.addItem( GwtTeaming.getMessages()._3(), "3" );
+		m_numColsCtrl.addItem( GwtTeaming.getMessages()._4(), "4" );
+		m_numColsCtrl.addItem( GwtTeaming.getMessages()._5(), "5" );
+		m_numColsCtrl.setSelectedIndex( properties.getNumColumnsInt() - 1 );
+		m_numColsCtrl.addChangeHandler( this );
+		m_table.setWidget( 1, 1, m_numColsCtrl );
+		
+		m_mainPanel.add( m_table );
+		
+		// Add a "Column width" text box for every column.
+		addColumnWidthControls( properties );
+
+		return m_mainPanel;
 	}// end createContent()
 	
 	
@@ -86,4 +179,41 @@ public class TableWidgetDlgBox extends DlgBox
 	{
 		Window.alert( "finish TableWidgetDlgBox.getDataFromDlg()" );
 	}// end getDataFromDlg()
+	
+	
+	/**
+	 * Get the number of columns from the control in the dialog.
+	 */
+	public int getNumColumns()
+	{
+		int selectedIndex;
+		int numColumns = 0;
+		
+		// Get the selected index from the select control.
+		selectedIndex = m_numColsCtrl.getSelectedIndex();
+		if ( selectedIndex >= 0 )
+		{
+			String value;
+			
+			value = m_numColsCtrl.getValue( selectedIndex );
+			numColumns = Integer.parseInt( value );
+		}
+		
+		return numColumns;
+	}// end getNumColumns()
+	
+	
+	/**
+	 * This method gets called when the user changes the number of columns.
+	 */
+	public void onChange( ChangeEvent event )
+	{
+		TableProperties	properties;
+		
+		properties = new TableProperties();
+		properties.setNumColumns( getNumColumns() );
+		
+		// Add a "Column width" text box for every column.
+		addColumnWidthControls( properties );
+	}// end onChange()
 }// end TableWidgetDlgBox
