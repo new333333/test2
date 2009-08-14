@@ -51,12 +51,15 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.CloseWrapperException;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -214,6 +217,10 @@ public class ModifyBinderController extends AbstractBinderController {
 			} else {
 				DefinitionHelper.getDefinition(binderDef, model, "//item[@type='form']");
 			}
+
+			Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
+			accessControlMap.put(WebKeys.MODIFY_ENTRY_ALLOWED, true);
+
 			//Build the mashup beans
 			Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
 			DefinitionHelper.buildMashupBeans(this, binder, configDocument, model, request );
