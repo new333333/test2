@@ -85,14 +85,19 @@
 	z-index: 130;
 }
 
+/* Styles for buttons */
+.teamingButton
+{
+	margin-left: 0.5em;
+}
+
 /* Styles for dialog boxes */
 .teamingDlgBox
 {
 	background-color: #F6F6F6;
-	border-color: #BABDB6
-	border-style: none sold solid;
+	border-color: #BABDB6;
+	border-style: solid solid solid;
 	border-width: medium 2px 2px;
-	margin-left: 1em;
 }
 
 /* Styles for the content of a dialog box. */

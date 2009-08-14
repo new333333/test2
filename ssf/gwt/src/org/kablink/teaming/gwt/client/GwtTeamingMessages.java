@@ -43,7 +43,14 @@ import com.google.gwt.i18n.client.Messages;
  */
 public interface GwtTeamingMessages extends Messages
 {
+	String _1();
+	String _2();
+	String _3();
+	String _4();
+	String _5();
+	
 	String cancel();
+	String columnXWidth( int colNum );
 	
 	// lpe stands for Landing Page Editor
 	String lpeCustomJSP();
@@ -58,7 +65,10 @@ public interface GwtTeamingMessages extends Messages
 	String lpeTable();
 	String lpeUtilityElement();
 	
+	String numColumns();
 	String ok();
+	String showBorder();
+	String tableProperties();
 	
 	String testPanelState( String value );
 	String testWaiting();

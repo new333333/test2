@@ -51,6 +51,7 @@ public class TableDropWidget extends DropWidget
 	private EditSuccessfulHandler	m_editSuccessfulHandler = null;
 	private EditCanceledHandler	m_editCanceledHandler = null;
 	private TableWidgetDlgBox		m_dlgBox = null;
+	private TableProperties		m_properties = null;
 	
 	/**
 	 * 
@@ -62,6 +63,9 @@ public class TableDropWidget extends DropWidget
 		panel = new FlowPanel();
 		panel.addStyleName( "teamingDlgBoxFooter" );	//!!! Remove this
 		panel.add( new Label( "This is the TableDropWidget" ) );
+		
+		// Create an object to hold all of the properties that define a table widget.
+		m_properties = new TableProperties();
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( panel );
@@ -78,7 +82,7 @@ public class TableDropWidget extends DropWidget
 		
 		// Pass in the object that holds all the properties for a TableDropWidget.
 		// properties = new TableDropWidgetProperties();
-		m_dlgBox = new TableWidgetDlgBox( this, this, false, true, xPos, yPos, null );
+		m_dlgBox = new TableWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
 		m_dlgBox.show();
 	}// end editProperties()
 	
