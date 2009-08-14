@@ -34,6 +34,14 @@
 %>
 <% // The user list selectbox form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyStyle" value=""/>
+<c:if test="${(!ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']) || 
+			(!ss_accessControlMap['ss_modifyEntryAllowed'] && !ss_fieldModificationsAllowed == 'true')}">
+  <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
+  <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
+  <c:set var="ss_fieldModifyOnly" value="true"/>
+</c:if>
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%
 	//Get the form item being displayed
@@ -66,10 +74,10 @@
 	}
 %>
 
-<div class="ss_entryContent">
+<div class="ss_entryContent ${ss_fieldModifyStyle}">
 <div class="ss_labelLeft"><%= caption %><%= required %></div>
 <c:if test="${empty ssReadOnlyFields[property_name]}">
-<select 
+<select ${ss_fieldModifyInputAttribute}
   name="<%= elementName %>" <%= multiple %> <%= size %>>
   
 <c:if test="${!empty ssBinder.customAttributes[property_source].valueSet}">

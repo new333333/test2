@@ -35,6 +35,14 @@
 <% // The selectbox form element %>
 <%@ page import="org.kablink.teaming.web.util.DefinitionHelper" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyStyle" value=""/>
+<c:if test="${(!ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']) || 
+			(!ss_accessControlMap['ss_modifyEntryAllowed'] && !ss_fieldModificationsAllowed == 'true')}">
+  <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
+  <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
+  <c:set var="ss_fieldModifyOnly" value="true"/>
+</c:if>
 
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
@@ -80,11 +88,11 @@
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_tasks.js"></script>
 </c:if>
 
-<div class="ss_entryContent">
+<div class="ss_entryContent ${ss_fieldModifyStyle}">
 <div class="ss_labelAbove"><%= caption %><%= required %></div>
 
 <c:if test="${empty ssReadOnlyFields[property_name]}">
-<select 
+<select ${ss_fieldModifyInputAttribute} 
   name="<%= elementName %>" <%= multiple %> <%= size %>
   <c:if test="${formType == 'task'}">
   	onchange="ss_tasks.adjustFormAttributes(this.name);"
@@ -93,10 +101,12 @@
   configElement="<%= item %>" 
   configJspStyle="${ssConfigJspStyle}" />
 </select>
+</div>
 
   <c:if test="${property_userVersionAllowed == 'true'}">
 	<c:set var="property_name_per_user" value="${original_property_name}.${ssUser.id}"/>
     <c:set var="ss_selectbox_per_user_property_name" value="${original_property_name}.${ssUser.id}" scope="request"/>
+	<div class="ss_entryContent>
     <div class="ss_labelAbove">
     <ssf:nlt tag="element.perUser.yourVersion"><ssf:param name="value" value="${original_property_caption}"/></ssf:nlt>
     </div>
@@ -108,13 +118,15 @@
   		configElement="<%= item %>" 
   		configJspStyle="${ssConfigJspStyle}" />
 	</select>
+	</div>
     <c:set var="ss_selectbox_per_user_property_name" value="" scope="request"/>
   </c:if>
 </c:if>
 
 <c:if test="${!empty ssReadOnlyFields[property_name]}">
+<div class="ss_entryContent ${ss_fieldModifyStyle}">
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
   configJspStyle="${ssConfigJspStyle}" />
-</c:if>
 </div>
+</c:if>

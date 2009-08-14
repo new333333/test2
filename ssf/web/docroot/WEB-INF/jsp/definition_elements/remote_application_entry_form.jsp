@@ -34,7 +34,15 @@
 %>
 <% // The remote application form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<div class="ss_entryContent">
+<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyStyle" value=""/>
+<c:if test="${(!ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']) || 
+			(!ss_accessControlMap['ss_modifyEntryAllowed'] && !ss_fieldModificationsAllowed == 'true')}">
+  <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
+  <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
+  <c:set var="ss_fieldModifyOnly" value="true"/>
+</c:if>
+<div class="ss_entryContent ${ss_fieldModifyStyle}">
 <span class="ss_labelAbove">${property_caption}</span>
 <c:if test="${!empty property_remoteApp}">
 <ssf:remoteApplication applicationId="${property_remoteApp}">

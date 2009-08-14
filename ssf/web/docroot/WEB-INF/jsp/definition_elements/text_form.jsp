@@ -34,6 +34,14 @@
 %>
 <% //Text form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyStyle" value=""/>
+<c:if test="${(!ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']) || 
+			(!ss_accessControlMap['ss_modifyEntryAllowed'] && !ss_fieldModificationsAllowed == 'true')}">
+  <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
+  <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
+  <c:set var="ss_fieldModifyOnly" value="true"/>
+</c:if>
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%
 	String elementName = (String) request.getAttribute("property_name");
@@ -59,23 +67,28 @@
 		required = "";
 	}
 %>
-<div class="ss_entryContent">
-<div class="ss_labelAbove"><c:out value="${property_caption}"/><%= required %></div>
 <c:if test="${empty ssReadOnlyFields[property_name]}">
-  <input type="text" class="ss_text" name="<%= elementName %>" <%= width %> 
+  <div class="ss_entryContent ${ss_fieldModifyStyle}">
+  <div class="ss_labelAbove"><c:out value="${property_caption}"/><%= required %></div>
+  <input type="text" class="ss_text" name="<%= elementName %>" <%= width %> ${ss_fieldModifyInputAttribute}
    value="<c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/>"/>
+  </div>
   <c:if test="${property_userVersionAllowed == 'true'}">
     <c:set var="property_name_per_user" value="${property_name}.${ssUser.id}"/>
-    <div class="ss_labelAbove">
-    <c:if test="${!empty property_caption}">
-    <ssf:nlt tag="element.perUser.yourVersion"><ssf:param name="value" value="${property_caption}"/></ssf:nlt>
-    </c:if>
+	<div class="ss_entryContent">
+      <div class="ss_labelAbove">
+      <c:if test="${!empty property_caption}">
+        <ssf:nlt tag="element.perUser.yourVersion"><ssf:param name="value" value="${property_caption}"/></ssf:nlt>
+      </c:if>
+      </div>
+      <input type="text" class="ss_text" name="${property_name_per_user}" <%= width %> 
+       value="<c:out value="${ssDefinitionEntry.customAttributes[property_name_per_user].value}"/>"/>
     </div>
-    <input type="text" class="ss_text" name="${property_name_per_user}" <%= width %> 
-     value="<c:out value="${ssDefinitionEntry.customAttributes[property_name_per_user].value}"/>"/>
   </c:if>
 </c:if>
 <c:if test="${!empty ssReadOnlyFields[property_name]}">
- <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/> &#134;
+  <div class="ss_entryContent ${ss_fieldModifyStyle}">
+  <div class="ss_labelAbove"><c:out value="${property_caption}"/><%= required %></div>
+    <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/> &#134;
+  </div>
 </c:if>
-</div>
