@@ -34,13 +34,13 @@
 %>
 <% //Event widget form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyDisabled" value=""/>
 <c:set var="ss_fieldModifyStyle" value=""/>
 <c:if test="${(!ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']) || 
 			(!ss_accessControlMap['ss_modifyEntryAllowed'] && !ss_fieldModificationsAllowed)}">
   <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
   <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
-  <c:set var="ss_fieldModifyOnly" value="true"/>
+  <c:set var="ss_fieldModifyDisabled" value="true"/>
 </c:if>
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%
@@ -64,7 +64,8 @@
 			<c:set var="ev" value="${ssInitialEvent}" />	
 		</c:when>	
 	</c:choose>
-	<ssf:eventeditor id="${property_name}" 
+	<c:if test="${empty ss_fieldModifyDisabled}">
+	  <ssf:eventeditor id="${property_name}" 
 	         formName="${formName}" 
 	         initEvent="${ev}"
 	         required="${property_required}"
@@ -74,4 +75,8 @@
 	         isFreeBusyActive="${property_freeBusyActive}" 
 	         mobile="false"
 	         />
+	</c:if>
+	<c:if test="${!empty ss_fieldModifyDisabled && !empty ev}">
+		<ssf:eventtext event="${ev}" />
+	</c:if>
 </div>

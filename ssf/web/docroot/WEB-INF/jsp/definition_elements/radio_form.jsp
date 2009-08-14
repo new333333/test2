@@ -35,13 +35,13 @@
 <% // The radio form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
-<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyDisabled" value=""/>
 <c:set var="ss_fieldModifyStyle" value=""/>
 <c:if test="${(!ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']) || 
 			(!ss_accessControlMap['ss_modifyEntryAllowed'] && !ss_fieldModificationsAllowed == 'true')}">
   <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
   <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
-  <c:set var="ss_fieldModifyOnly" value="true"/>
+  <c:set var="ss_fieldModifyDisabled" value="true"/>
 </c:if>
 <c:set var="ss_radioFieldModificationAllowed" value="${ss_fieldModificationsAllowed}" scope="request"/>
 <c:set var="original_property_name" value="${property_name}"/>

@@ -34,13 +34,13 @@
 %>
 <% // Team list %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyDisabled" value=""/>
 <c:set var="ss_fieldModifyStyle" value=""/>
 <c:if test="${(!ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']) || 
 			(!ss_accessControlMap['ss_modifyEntryAllowed'] && !ss_fieldModificationsAllowed == 'true')}">
   <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
   <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
-  <c:set var="ss_fieldModifyOnly" value="true"/>
+  <c:set var="ss_fieldModifyDisabled" value="true"/>
 </c:if>
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%
@@ -70,11 +70,11 @@
 <div class="ss_entryContent ${ss_fieldModifyStyle}">
 <div class="ss_labelAbove">${property_caption}<c:if test="${property_required}"><span 
   id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if></div>
-<c:if test="${empty ssReadOnlyFields[property_name] && empty ss_fieldModifyOnly}">
+<c:if test="${empty ssReadOnlyFields[property_name] && empty ss_fieldModifyDisabled}">
 <ssf:find formName="${formName}" formElement="${property_name}" type="teams" 
 	userList="<%= teamListSet %>"/>
 </c:if>
-<c:if test="${!empty ssReadOnlyFields[property_name] || !empty ss_fieldModifyOnly}">
+<c:if test="${!empty ssReadOnlyFields[property_name] || !empty ss_fieldModifyDisabled}">
 <c:forEach var="teamItem" items="<%= teamListSet %>">
 	${teamItem.title}<br/>
 </c:forEach>

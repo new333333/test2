@@ -32,13 +32,13 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<c:set var="ss_fieldModifyOnly" value=""/>
+<c:set var="ss_fieldModifyDisabled" value=""/>
 <c:set var="ss_fieldModifyStyle" value=""/>
 <c:if test="${(!ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']) || 
 			(!ss_accessControlMap['ss_modifyEntryAllowed'] && !ss_fieldModificationsAllowed)}">
   <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
   <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
-  <c:set var="ss_fieldModifyOnly" value="true"/>
+  <c:set var="ss_fieldModifyDisabled" value="true"/>
 </c:if>
 <script type="text/javascript">
 function ss_showMoreFiles${property_name}() {
