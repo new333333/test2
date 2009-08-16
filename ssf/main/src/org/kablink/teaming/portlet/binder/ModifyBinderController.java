@@ -218,9 +218,6 @@ public class ModifyBinderController extends AbstractBinderController {
 				DefinitionHelper.getDefinition(binderDef, model, "//item[@type='form']");
 			}
 
-			Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
-			accessControlMap.put(WebKeys.MODIFY_ENTRY_ALLOWED, true);
-
 			//Build the mashup beans
 			Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
 			DefinitionHelper.buildMashupBeans(this, binder, configDocument, model, request );

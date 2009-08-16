@@ -36,11 +36,13 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="ss_fieldModifyDisabled" value=""/>
 <c:set var="ss_fieldModifyStyle" value=""/>
-<c:if test="${(!ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']) || 
-			(!ss_accessControlMap['ss_modifyEntryAllowed'] && !ss_fieldModificationsAllowed)}">
-  <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
-  <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
-  <c:set var="ss_fieldModifyDisabled" value="true"/>
+<c:if test="${ss_accessControlMap['ss_modifyEntryRightsSet']}">
+  <c:if test="${(!ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']) || 
+			(!ss_accessControlMap['ss_modifyEntryAllowed'] && !ss_fieldModificationsAllowed == 'true')}">
+    <c:set var="ss_fieldModifyStyle" value="ss_modifyDisabled"/>
+    <c:set var="ss_fieldModifyInputAttribute" value=" disabled='disabled' "/>
+    <c:set var="ss_fieldModifyDisabled" value="true"/>
+  </c:if>
 </c:if>
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%

@@ -360,6 +360,7 @@ public class ModifyEntryController extends SAbstractController {
 			DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@type='form']");
 			
 			Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
+			accessControlMap.put(WebKeys.MODIFY_ENTRY_RIGHTS_SET, true);
 			if (getFolderModule().testAccess(entry, FolderOperation.modifyEntry)) 
 				accessControlMap.put(WebKeys.MODIFY_ENTRY_ALLOWED, true);
 			if (getFolderModule().testAccess(entry, FolderOperation.modifyEntryFields)) 
