@@ -1855,10 +1855,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					if (s_fieldModificationAllowed != null && "true".equals(s_fieldModificationAllowed)) 
 						fieldModificationAllowed = true;
 					
-					//See if this is a fieldsOnly modification and the definition allows field modification
-					//  If fieldsOnly and element doesn't allow field modification, then skip this element
-					if (inputData.isFieldsOnly() && !fieldModificationAllowed) continue;
-					
 					//We have the element name, see if it has a value in the input data
 					if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
 						if (inputData.exists(nameValue)) {
@@ -1872,7 +1868,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
 							MarkupUtil.scanDescriptionForAttachmentFileUrls(description);
 							MarkupUtil.scanDescriptionForICLinks(description);
-							entryData.put(nameValue, description);
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, description);
 						}
 					} else if (itemName.equals("folderBranding") || itemName.equals("workspaceBranding")) {
 						if (inputData.exists(nameValue)) {
@@ -1882,7 +1878,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
 							MarkupUtil.scanDescriptionForAttachmentFileUrls(description);
 							MarkupUtil.scanDescriptionForICLinks(description);
-							entryData.put(nameValue, description.getText());
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, description.getText());
 						}
 					} else if (itemName.equals("folderAttributeList")) {
 						//The values are the names of the attribute sets
@@ -1899,7 +1895,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							}
 							String[] valuesTrimmed = new String[valuesList.size()];
 							for (int i = 0; i < valuesList.size(); i++) valuesTrimmed[i] = valuesList.get(i);
-							entryData.put(nameValue, valuesTrimmed);
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+								entryData.put(nameValue, valuesTrimmed);
 							//Now see if there are any attributes added in a set
 							for (String setName : valuesList) {
 								if (inputData.exists(nameValue+ENTRY_ATTRIBUTES_SET+setName)) {
@@ -1915,16 +1912,20 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									}
 									String[] valuesTrimmed2 = new String[valuesList2.size()];
 									for (int i = 0; i < valuesList2.size(); i++) valuesTrimmed2[i] = valuesList2.get(i);
-									entryData.put(nameValue+ENTRY_ATTRIBUTES_SET+setName, valuesTrimmed2);
+									if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+										entryData.put(nameValue+ENTRY_ATTRIBUTES_SET+setName, valuesTrimmed2);
 								} else {
 									//There aren't any attributes for this set. Clear any old values
-									entryData.put(nameValue+ENTRY_ATTRIBUTES_SET+setName, null);
+									if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+										entryData.put(nameValue+ENTRY_ATTRIBUTES_SET+setName, null);
 								}
 								if (inputData.exists(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName) &&
 										inputData.getSingleValue(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName).equals("on")) {
-									entryData.put(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName, true);
+									if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+										entryData.put(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName, true);
 								} else {
-									entryData.put(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName, false);
+									if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+										entryData.put(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName, false);
 								}
 							}
 						}
@@ -1940,7 +1941,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							}
 							String[] valuesTrimmed = new String[valuesList.size()];
 							for (int i = 0; i < valuesList.size(); i++) valuesTrimmed[i] = valuesList.get(i);
-							entryData.put(nameValue, valuesTrimmed);
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, valuesTrimmed);
 							//Now see if there are any attributes added in a set
 							for (String setName : valuesList) {
 								if (inputData.exists(nameValue+ENTRY_ATTRIBUTES_SET+setName)) {
@@ -1953,7 +1954,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									}
 									String[] valuesTrimmed2 = new String[valuesList2.size()];
 									for (int i = 0; i < valuesList2.size(); i++) valuesTrimmed2[i] = valuesList2.get(i);
-									entryData.put(nameValue+ENTRY_ATTRIBUTES_SET+setName, valuesTrimmed2);
+									if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+										entryData.put(nameValue+ENTRY_ATTRIBUTES_SET+setName, valuesTrimmed2);
 								}
 							}
 						}
@@ -1961,7 +1963,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						if (inputData.exists(nameValue)) {
 							//Use the helper routine to parse the date into a date object
 							Date date = inputData.getDateValue(nameValue);
-							if (date != null) {entryData.put(nameValue, date);}
+							if (date != null) {
+								if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, date);
+							}
 						}
 						if (userVersionAllowed && inputData.exists(nameValuePerUser)) {
 							//Use the helper routine to parse the date into a date object
@@ -1981,13 +1985,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					    Event event = inputData.getEventValue(nameValue, hasDur, hasRecur);
 					    if (event != null) {
 					        event.setName(nameValue);
-					        entryData.put(nameValue, event);
+					        if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, event);
 					    }
 					} else if (itemName.equals("survey")) {
 						if (inputData.exists(nameValue)) {
 							//Use the helper routine to parse the date into a date object
 							Survey survey = inputData.getSurveyValue(nameValue);
-							if (survey != null) entryData.put(nameValue, survey);
+							if (survey != null) {
+								if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, survey);
+							}
 						}
 					} else if (itemName.equals("user_list") || itemName.equals("group_list") ||
 								itemName.equals("team_list") || itemName.equals("userListSelectbox")) {
@@ -1995,7 +2001,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							Set<Long> ids = LongIdUtil.getIdsAsLongSet(inputData.getValues(nameValue));
 							CommaSeparatedValue v = new CommaSeparatedValue();
 							v.setValue(ids);
-							entryData.put(nameValue, v);
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, v);
 						}
 					} else if (itemName.equals("external_user_list")) {
 						if (inputData.exists(nameValue)) {
@@ -2021,7 +2027,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							}
 							PackedValue v = new PackedValue();
 							v.setValue(valuesList.toArray(new String[0]));
-							entryData.put(nameValue, v);
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, v);
 						}
 					} else if (itemName.equals("places")) {
 						Set<Long> longIdsToRemove = new HashSet();
@@ -2041,25 +2047,28 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							CommaSeparatedValue v = new CommaSeparatedValue();
 							longIds.removeAll(longIdsToRemove);
 							v.setValue(longIds);
-							entryData.put(nameValue, v);
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, v);
 						} else if (inputData.exists(nameValue)) {
 							Set<Long> ids = LongIdUtil.getIdsAsLongSet(inputData.getValues(nameValue));
 							ids.removeAll(longIdsToRemove);
 							CommaSeparatedValue v = new CommaSeparatedValue();
 							v.setValue(ids);
-							entryData.put(nameValue, v);
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, v);
 						}
 					} else if (itemName.equals("guestName")) {
 						if (inputData.exists(nameValue)) {
-					    	entryData.put(nameValue, inputData.getValues(nameValue));
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+								entryData.put(nameValue, inputData.getValues(nameValue));
 						}
 					} else if (itemName.equals("selectbox")) {
 				    	String multiple = DefinitionUtils.getPropertyValue(nextItem, "multipleAllowed");
 						if (inputData.exists(nameValue)) {
 					    	if ("true".equals(multiple)) {
-					    		entryData.put(nameValue, inputData.getValues(nameValue));
+					    		if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+					    			entryData.put(nameValue, inputData.getValues(nameValue));
 					    	} else {
-					    		entryData.put(nameValue, inputData.getSingleValue(nameValue));
+					    		if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+					    			entryData.put(nameValue, inputData.getSingleValue(nameValue));
 					    	}
 						}
 						if (userVersionAllowed && inputData.exists(nameValuePerUser)) {
@@ -2071,7 +2080,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						}
 					} else if (itemName.equals("checkbox")) {
 						if (inputData.exists(nameValue)) {
-							entryData.put(nameValue, Boolean.valueOf(GetterUtil.getBoolean(inputData.getSingleValue(nameValue), false)));
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+								entryData.put(nameValue, Boolean.valueOf(GetterUtil.getBoolean(inputData.getSingleValue(nameValue), false)));
 						}
 						if (userVersionAllowed && inputData.exists(nameValuePerUser)) {
 							entryData.put(nameValuePerUser, Boolean.valueOf(GetterUtil.getBoolean(inputData.getSingleValue(nameValuePerUser), false)));
@@ -2080,13 +2090,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						if (inputData.exists(nameValue)) {
 							Object val = inputData.getSingleObject(nameValue);
 							if (val == null) {
-								entryData.put(nameValue, null);
+								if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, null);
 							} else if (val instanceof TimeZone) {
-								entryData.put(nameValue, TimeZoneHelper.fixTimeZone((TimeZone)val));
+								if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+									entryData.put(nameValue, TimeZoneHelper.fixTimeZone((TimeZone)val));
 							} else {
 								String sVal = inputData.getSingleValue(nameValue);
-								if (Validator.isNull(sVal)) entryData.put(nameValue, null);
-								else entryData.put(nameValue, TimeZoneHelper.getTimeZone(sVal));
+								if (Validator.isNull(sVal)) {
+									if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, null);
+								} else {
+									if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+										entryData.put(nameValue, TimeZoneHelper.getTimeZone(sVal));
+								}
 							}
 						}
 					} else if (itemName.equals("profileLocale")) {
@@ -2097,9 +2112,16 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								String defaultValue = DefinitionUtils.getPropertyValue(nextItem, "default");
 								if (!Validator.isNull(defaultValue)) {
 									String[] vals = defaultValue.split("_");
-									if (vals.length == 1) entryData.put(nameValue, new Locale(vals[0]));
-									else if (vals.length == 2) entryData.put(nameValue, new Locale(vals[0], vals[1]));
-									else if (vals.length >= 3) entryData.put(nameValue, new Locale(vals[0], vals[1], vals[2]));
+									if (vals.length == 1) {
+										if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+											entryData.put(nameValue, new Locale(vals[0]));
+									} else if (vals.length == 2) {
+										if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+											entryData.put(nameValue, new Locale(vals[0], vals[1]));
+									} else if (vals.length >= 3) {
+										if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+											entryData.put(nameValue, new Locale(vals[0], vals[1], vals[2]));
+									}
 								} else {
 									Locale userLocale = null;
 						    		String language = SPropsUtil.getString("i18n.default.locale.language", "");
@@ -2108,18 +2130,25 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						    			if (!country.equals("")) userLocale = new Locale(language, country);
 						    			else userLocale = new Locale(language);
 						    		}
-						    		entryData.put(nameValue, userLocale);
+						    		if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, userLocale);
 								}
 							} else if (val instanceof Locale) {
-								entryData.put(nameValue, (Locale)val);
+								if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, (Locale)val);
 							} else {
 								String sVal = inputData.getSingleValue(nameValue);
 								if (Validator.isNull(sVal)) entryData.put(nameValue, null);
 								else {
 									String[] vals = sVal.split("_");
-									if (vals.length == 1) entryData.put(nameValue, new Locale(vals[0]));
-									else if (vals.length == 2) entryData.put(nameValue, new Locale(vals[0], vals[1]));
-									else if (vals.length >= 3) entryData.put(nameValue, new Locale(vals[0], vals[1], vals[2]));
+									if (vals.length == 1) {
+										if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+											entryData.put(nameValue, new Locale(vals[0]));
+									} else if (vals.length == 2) {
+										if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+											entryData.put(nameValue, new Locale(vals[0], vals[1]));
+									} else if (vals.length >= 3) {
+										if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+											entryData.put(nameValue, new Locale(vals[0], vals[1], vals[2]));
+									}
 								}
 							}
 						}
@@ -2290,24 +2319,31 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									value = value + nextValue;
 								}
 							}
-							entryData.put(nameValue, value);
-							entryData.put(nameValue + "__showBranding", showBranding);
-							entryData.put(nameValue + "__hideMasthead", hideMasthead);
-							entryData.put(nameValue + "__hideSidebar", hideSidebar);
-							entryData.put(nameValue + "__hideToolbar", hideToolbar);
-							entryData.put(nameValue + "__hideFooter", hideFooter);
-							entryData.put(nameValue + "__style", mashupStyle);
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) {
+								entryData.put(nameValue, value);
+								entryData.put(nameValue + "__showBranding", showBranding);
+								entryData.put(nameValue + "__hideMasthead", hideMasthead);
+								entryData.put(nameValue + "__hideSidebar", hideSidebar);
+								entryData.put(nameValue + "__hideToolbar", hideToolbar);
+								entryData.put(nameValue + "__hideFooter", hideFooter);
+								entryData.put(nameValue + "__style", mashupStyle);
+							}
 						} else if (!deleteEverything.equals("")) {
-							entryData.put(nameValue, "");
-							entryData.put(nameValue + "__showBranding", showBranding);
-							entryData.put(nameValue + "__hideMasthead", hideMasthead);
-							entryData.put(nameValue + "__hideSidebar", hideSidebar);
-							entryData.put(nameValue + "__hideToolbar", hideToolbar);
-							entryData.put(nameValue + "__hideFooter", hideFooter);
-							entryData.put(nameValue + "__style", mashupStyle);
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) {
+								entryData.put(nameValue, "");
+								entryData.put(nameValue + "__showBranding", showBranding);
+								entryData.put(nameValue + "__hideMasthead", hideMasthead);
+								entryData.put(nameValue + "__hideSidebar", hideSidebar);
+								entryData.put(nameValue + "__hideToolbar", hideToolbar);
+								entryData.put(nameValue + "__hideFooter", hideFooter);
+								entryData.put(nameValue + "__style", mashupStyle);
+							}
 						}
 					} else {
-						if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getSingleValue(nameValue));
+						if (inputData.exists(nameValue)) {
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+								entryData.put(nameValue, inputData.getSingleValue(nameValue));
+						}
 						if (userVersionAllowed && inputData.exists(nameValuePerUser)) 
 							entryData.put(nameValuePerUser, inputData.getSingleValue(nameValuePerUser));
 					}
