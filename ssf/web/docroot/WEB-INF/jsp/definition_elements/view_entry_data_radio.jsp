@@ -74,7 +74,7 @@
 	  </td>
 	  <td style="padding-left:10px;">
 		<span class="${ss_element_display_style_item}">
-	  		<c:out value="${caption}" escapeXml="false"/>
+	  		<c:out value="<%= caption %>" escapeXml="false"/>
 		</span>
       </td>
       </tr>
@@ -109,7 +109,7 @@
       <jsp:useBean id="perUserPropertyName2" type="String" />
 <%
 	caption = "";
-	if(ssDefinitionEntry.getCustomAttributes().get(perUserPropertyName2) != null) {
+	if (ssDefinitionEntry.getCustomAttributes().get(perUserPropertyName2) != null) {
 		caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
 					(String) ((CustomAttribute) ssDefinitionEntry.getCustomAttributes().get(perUserPropertyName2)).getValue());
 		caption = NLT.getDef(caption);
@@ -121,7 +121,7 @@
 	  </td>
 	  <td style="padding-left:10px;">
 		<span class="${ss_element_display_style_item}">
-	  		<c:out value="${caption}" escapeXml="false"/>
+	  		<c:out value="<%= caption %>" escapeXml="false"/>
 		</span>
       </td>
       </tr>
