@@ -6,6 +6,7 @@
 	<definitionFile>config/definitions/_blogEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_comment.xml</definitionFile>		
 	<definitionFile>config/definitions/_calendarEntry.xml</definitionFile>		
+	<definitionFile>config/definitions/_calendar_workflow.xml</definitionFile>
 	<definitionFile>config/definitions/_discussionEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_discussionReply.xml</definitionFile>		
 	<definitionFile>config/definitions/_discussions.xml</definitionFile>		
