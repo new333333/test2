@@ -43,7 +43,7 @@
           <property name="required" value="false"/> 
         </properties> 
       </item>  
-      <item name="selectbox" caption="__selectbox" type="data" category="commonEntryData" id="23"> 
+      <item name="selectbox" caption="__selectbox" type="data" category="commonEntryData" id="23" display="form"> 
         <item name="selectboxSelection" caption="__selection" id="24"> 
           <properties> 
             <property name="name" value="p1"/>  
@@ -79,14 +79,15 @@
             <property name="default" value="false"/> 
           </properties> 
         </item>  
-        <properties> 
-          <property name="name" value="priority"/>  
-          <property name="caption" value="__task_priority"/>  
-          <property name="multipleAllowed" value="false"/>  
-          <property name="size" value="1"/>  
-          <property name="inline" value="false"/>  
-          <property name="required" value="false"/> 
-        </properties> 
+        <properties>
+          <property name="caption" value="__task_priority"/>
+          <property name="name" value="priority"/>
+          <property name="multipleAllowed" value="false"/>
+          <property name="size" value="1"/>
+          <property name="required" value="false"/>
+          <property name="fieldModificationAllowed" value="false"/>
+          <property name="userVersionAllowed" value="true"/>
+        </properties>
       </item>  
       <item name="user_list" caption="__user_list" type="data" category="commonEntryData" id="28"> 
         <properties> 
