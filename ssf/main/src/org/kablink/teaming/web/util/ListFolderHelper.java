@@ -83,6 +83,7 @@ import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -2184,12 +2185,23 @@ public class ListFolderHelper {
 		TaskHelper.FilterType filterType = TaskHelper.setTaskFilterType(portletSession, ((filterTypeParam != null) ? TaskHelper.FilterType.valueOf(filterTypeParam) : null));
 		model.put(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
 		
-		String modeTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.FOLDER_MODE_TYPE, null);
-		ModeType modeType = setFolderModeType(portletSession, ((modeTypeParam != null) ? ModeType.valueOf(modeTypeParam) : null));
+		ModeType modeType;
+		Boolean showModeSelect;
+		Workspace binderWs = BinderHelper.getBinderWorkspace(binder);
+		if (BinderHelper.isBinderUserWorkspace(binderWs) || BinderHelper.isBinderTeamWorkspace(binderWs)) {
+			String modeTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.FOLDER_MODE_TYPE, null);
+			modeType = setFolderModeType(portletSession, ((modeTypeParam != null) ? ModeType.valueOf(modeTypeParam) : null));
+			showModeSelect = Boolean.TRUE;
+		}
+		else {
+			modeType = setFolderModeType(portletSession, ModeType.PHYSICAL);
+			showModeSelect = Boolean.FALSE;
+		}
 		model.put(WebKeys.FOLDER_CURRENT_MODE_TYPE, modeType);
+		model.put(WebKeys.FOLDER_SHOW_MODE_SELECT,  showModeSelect);
 
 		options.put(ObjectKeys.FOLDER_MODE_TYPE, modeType);
-		options.put(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER, TaskHelper.buildSearchFilter(filterType, modeType, model).getFilter());
+		options.put(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER, TaskHelper.buildSearchFilter(filterType, modeType, model, binder).getFilter());
        	
 		if (binder instanceof Folder) {
 			folderEntries = bs.getFolderModule().getEntries(binderId, options);

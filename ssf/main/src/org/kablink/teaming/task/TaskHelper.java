@@ -43,17 +43,18 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
-import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 
 
@@ -190,9 +191,9 @@ public class TaskHelper {
 	}
 	
 	public static SearchFilter buildSearchFilter(FilterType filterType) {
-		return buildSearchFilter(filterType, ListFolderHelper.ModeType.PHYSICAL, null);
+		return buildSearchFilter(filterType, ListFolderHelper.ModeType.PHYSICAL, null, null);
 	}
-	public static SearchFilter buildSearchFilter(FilterType filterType, ListFolderHelper.ModeType modeType, Map model) {
+	public static SearchFilter buildSearchFilter(FilterType filterType, ListFolderHelper.ModeType modeType, Map model, Binder binder) {
 		SearchFilter searchFilter = new SearchFilter(true);
 		
 		DateTimeZone userTimeZone = DateTimeZone.forTimeZone(RequestContextHolder.getRequestContext().getUser().getTimeZone());
@@ -218,16 +219,31 @@ public class TaskHelper {
 			searchFilter.addTaskStatuses(new String[] {"s1", "s2"});
 		}
 
-		// If we're only showing tasks assigned to the user...
+		// Are we only showing tasks assigned to something?
 		if (ListFolderHelper.ModeType.VIRTUAL == modeType) {
-			// ...handle virtual mode here.
-			User user = RequestContextHolder.getRequestContext().getUser();
-			SearchUtils.setupAssignees(searchFilter, model,
-					String.valueOf(user.getId()),
-					"",	//! Resolve groups user belongs to here.
-					"", //! Resolve teams  user belongs to here.
-					SearchUtils.AssigneeType.TASK
-					);
+  		   	String searchAsUser = "";
+  		   	String searchAsTeam = "";
+  		   	
+  		   	// Yes!  If the binder's workspace is a Team workspace...
+   	       	Workspace binderWs = BinderHelper.getBinderWorkspace(binder);
+  		   	if (BinderHelper.isBinderTeamWorkspace(binderWs)) {
+  	  		   	// ...we search for that Team's tasks...
+	   			searchAsTeam = String.valueOf(binderWs.getId());
+  		   	}
+  		   	else {
+  		   		// ...otherwise, we search for owner of the workspace's
+  		   		// ...tasks...
+  		   		searchAsUser = String.valueOf(binderWs.getOwnerId());	// RequestContextHolder.getRequestContext().getUser().getId()
+  		   	}
+
+  		   	// Setup the assignees to search for.
+			SearchUtils.setupAssignees(
+				searchFilter,
+				model,
+				searchAsUser,
+				"",	// No special 'group assignee' setup required.
+				searchAsTeam,
+				SearchUtils.AssigneeType.TASK);
 		}
 
 		
