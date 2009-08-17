@@ -114,7 +114,6 @@ import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
 import org.kablink.teaming.search.SearchUtils;
-import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterRequestParser;
 import org.kablink.teaming.search.filter.SearchFilterToMapConverter;
 import org.kablink.teaming.security.AccessControlException;
@@ -896,6 +895,70 @@ public class BinderHelper {
 		if (!accessControlMap.containsKey(entity.getId())) 
 			accessControlMap.put(entity.getId(), new HashMap());
 		return (Map)accessControlMap.get(entity.getId());
+	}
+
+	/**
+	 * Finds the nearest containing Binder of binder that's a workspace.
+	 * 
+	 * @param binder The Binder whose Workspace is being queried.
+	 * 
+	 * @return The nearest Workspace containing binder.
+	 */
+	static public Workspace getBinderWorkspace(Binder binder) {
+       	Workspace binderWs;
+		if (binder instanceof Workspace) {
+			binderWs = ((Workspace) binder);   				
+		} else  {
+			Folder topFolder = ((Folder) binder).getTopFolder();
+			if (topFolder == null) topFolder = ((Folder) binder);
+			binderWs = ((Workspace) topFolder.getParentBinder());
+		}
+		return binderWs;
+	}
+
+	/**
+	 * Determines whether a binder is a Team workspace.
+	 * 
+	 * @param binder The Binder being queried for being a Team
+	 *                 workspace.
+	 *                 
+	 * @return true -> binder is a Team workspace.  false -> It isn't.
+	 */
+	static public boolean isBinderTeamWorkspace(Binder binder) {
+		// If binder is not a user Workspace...
+		boolean isTeamWs = (!(isBinderUserWorkspace(binder)));
+		if (isTeamWs) {
+			// ...but it is a Workspace...
+			isTeamWs = ((null != binder) && (binder instanceof Workspace));
+			if (isTeamWs) {
+				// ...we consider it a Team workspace if it has any
+				// ...team members assigned to it.
+  		   		Set<Long> teamMemberIds = binder.getTeamMemberIds();
+  		   		int teamMembers = ((null == teamMemberIds) ? 0 : teamMemberIds.size());
+  		   		isTeamWs = (0 < teamMembers);
+			}
+		}
+		return isTeamWs;
+	}
+
+	/**
+	 * Determines whether a binder is a User workspace.
+	 * 
+	 * @param binder The Binder being queried for being a User
+	 *                 workspace.
+	 *                 
+	 * @return true -> binder is a User workspace.  false -> It isn't.
+	 */
+	static public boolean isBinderUserWorkspace(Binder binder) {
+		// If binder is a Workspace...
+		boolean isUserWs = ((null != binder) && (binder instanceof Workspace));
+		if (isUserWs) {
+			// ...we consider it a User workspace if its type is
+			// ...user workspace view.
+  		   	Integer type = binder.getDefinitionType();
+  		   	isUserWs = ((type != null) && (type.intValue() == Definition.USER_WORKSPACE_VIEW));
+		}
+		return isUserWs;
 	}
 	
 	static public void buildWorkspaceTreeBean(AllModulesInjected bs, Binder binder, Map model, DomTreeHelper helper) {

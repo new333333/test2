@@ -2278,10 +2278,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		
 		if (WebHelper.isUserLoggedIn(request)) {
-			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 			Long entryId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
 			
-			FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
+			// We use null for the binderId here because with the
+			// changes to display contained vs. assigned tasks, the
+			// tasks being modified can now come from any folder.
+			FolderEntry entry = getFolderModule().getEntry(null, entryId);
 			String newPriority = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TASK_PRIORITY, "");
 			String newStatus = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TASK_STATUS, "");
 			String newCompleted = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TASK_COMPLETED, "");
@@ -2291,7 +2293,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			TaskHelper.adjustTaskAttributesDependencies(entry, formData, newPriority, newStatus, newCompleted);
 			
 			try {
-				getFolderModule().modifyEntry(binderId, entryId, 
+				getFolderModule().modifyEntry(null, entryId, 
 						new MapInputData(formData), null, null, null, null);
 				
 				model.put(WebKeys.ENTRY, entry);

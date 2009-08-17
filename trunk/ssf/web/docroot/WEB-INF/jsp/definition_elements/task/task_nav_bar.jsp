@@ -106,7 +106,7 @@
 			</a>			
 		</li>
 
-		<% if (SPropsUtil.getBoolean("ssf.enableVirtualTaskAndCalendarFolders", false)) { %>
+		<c:if test="${ !empty ssShowFolderModeSelect && ssShowFolderModeSelect }">
 			<% /* Task Folder:  Mode Options. */ %>
 			<li class="ss_calendarNaviBarOption ss_taskViewOptions">
 				<ssf:nlt tag="task.navi.chooseMode"/>:
@@ -130,6 +130,6 @@
 						<input id="taskVirtual" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_folder_current_mode_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentFolderModeType == 'VIRTUAL'}">checked="true"</c:if>/> <label for="taskVirtual"><ssf:nlt tag="task.navi.mode.alt.virtual"/></label>
 				</a>
 			</li>
-		<% } %>
+		</c:if>
 	</ul>
 </div>
