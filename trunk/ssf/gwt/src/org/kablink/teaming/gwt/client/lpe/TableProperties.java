@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+
 /**
  * This class holds all of the properties needed to define a table widget in a landing page.
  * @author jwootton
@@ -56,6 +57,31 @@ public class TableProperties
 		// Default to 2 columns.
 		setNumColumns( 2 );
 	}// end TableProperties()
+	
+	
+	/**
+	 * 
+	 */
+	public void copy( PropertiesObj props )
+	{
+		if ( props instanceof TableProperties )
+		{
+			TableProperties tableProps;
+			int i;
+			int numCols;
+			
+			tableProps = (TableProperties) props;
+			setShowBorder( tableProps.getShowBorderValue() );
+			
+			numCols = tableProps.getNumColumnsInt();
+			setNumColumns( numCols );
+			
+			for (i = 0; i < numCols; ++i)
+			{
+				setColWidth( i, tableProps.getColWidthInt( i ) );
+			}
+		}
+	}// end copy()
 	
 	
 	/**
