@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html xml:lang="it" lang="it">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="it" />
+<meta name="Content-Date" content="Mon, 04 Jun 2009 12:00:00 GMT" />
+<meta name="Generator" content="Kablink Documentation" />
+<meta name="Generation-Date" content="Wednesday, July 01, 2009" />
+<meta name="Copyright" content="" />
+
+<link rel="stylesheet" type="text/css" href="css/styles.css" />
+<link rel="stylesheet" type="text/css" href="css/expandable.css" />
+
+<title>Suggerimenti per l'upload dei file</title>
+</head>
+<body>
+<script type="text/javascript" src="css/expandable.js"></script>
+
+<div class="sect1" id="tool_file_uploadhints">
+
+<h1 class="title"> Suggerimenti per l'upload dei file</h1>
+
+<p class="para">Qualora l'upload di un file dovesse risultare impossibile a causa delle sue dimensioni eccessive, è possibile risolvere il problema aumentando la quantità di memoria di default utilizzata dalle applet Java. Il processo è descritto nelle seguenti sezioni.</p>
+<div class="sect2" id="bipun26">
+
+<h2 class="title"> Aumento della quantità di memoria su Windows</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bipungz">
+<p class="para">Selezionare il Pannello di controllo (Fare clic su <span class="guimenu">Start</span> &gt; <span class="guimenu">Impostazioni</span> &gt; <span class="guimenu">Pannello di controllo</span>).</p></li>
+<li class="step" id="bipunwc">
+<p class="para">Fare doppio clic su <span class="guimenu">Java</span>.</p>
+<p class="para">Viene avviato il Pannello di controllo Java.</p></li>
+<li class="step" id="bipuoka">
+<p class="para">Selezionare la scheda <span class="guimenu">Java</span>.</p></li>
+<li class="step" id="bipuorx">
+<p class="para">Nella sezione <span class="guimenu">Impostazioni runtime applet Java</span>, fare clic su <span class="guimenu">Visualizza</span>.</p></li>
+<li class="step" id="bipup4t">
+<p class="para">Per ciascuna versione runtime Java, aggiungere <span class="command">-Xmx256m</span> come parametro runtime Java.</p></li>
+<li class="step" id="bipupgl">
+<p class="para">Fare clic su <span class="guimenu">OK</span>.</p>
+<p class="para">Una volta aumentate le dimensioni della memoria di default per le applet Java, chiudere tutti i browser e riavviarli prima che la modifica possa essere applicata.</p></li></ol>
+</div>
+
+<p class="para">Mediante questa impostazione, l'applet utilizzata per effettuare l'upload dei file in una cartella Teaming viene avviata con 256 MB di memoria. Se per l'esecuzione dell'applet la memoria risulta ancora insufficiente, potrebbe essere necessario ridurre il numero specificato.</p>
+</span>
+
+</div>
+
+<div class="sect2" id="bipunbb">
+
+<h2 class="title"> Aumento della quantità di memoria su Linux</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bjchmyk">
+<p class="para">Individuare JRE o JDK utilizzato per il plug-in del browser.</p>
+<p class="para">L'ubicazione di JRE o JDK varia in base al sistema in uso.</p></li>
+<li class="step" id="bjchn8n">
+<p class="para">Nella directory <span class="filename">bin</span> di JRE o JDK, eseguire il file <span class="filename">ControlPanel</span>.</p>
+<p class="para">Viene avviato il Pannello di controllo.</p></li>
+<li class="step" id="bjchoed">
+<p class="para">Selezionare la scheda <span class="guimenu">Java</span>.</p></li>
+<li class="step" id="bjchokg">
+<p class="para">Nella sezione <span class="guimenu">Impostazioni runtime applet Java</span>, fare clic su <span class="guimenu">Visualizza</span>.</p></li>
+<li class="step" id="bjchor1">
+<p class="para">Per ciascuna versione runtime Java, aggiungere <span class="command">-Xmx256m</span> come parametro runtime Java.</p></li>
+<li class="step" id="bjchotz">
+<p class="para">Fare clic su <span class="guimenu">OK</span>.</p>
+<p class="para">Una volta aumentate le dimensioni della memoria di default per le applet Java, chiudere tutti i browser e riavviarli prima che la modifica possa essere applicata.</p></li></ol>
+</div>
+
+<p class="para">Mediante questa impostazione, l'applet utilizzata per effettuare l'upload dei file in una cartella Teaming viene avviata con 256 MB di memoria. Se per l'esecuzione dell'applet la memoria risulta ancora insufficiente, potrebbe essere necessario ridurre il numero specificato.</p>
+</span>
+
+</div>
+
+</div>
+
+<p class="trademark"> Per ulteriori informazioni, vedere <a href="./legal.html">Note legali</a>.</p>
+</body>
+</html>

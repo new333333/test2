@@ -1,0 +1,450 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//Novell//DTD NovDoc XML V1.0//EN" "novdocx.dtd">
+
+<!--========================================================================
+ "Zon Quick Start Guide"
+
+ Copyright © 2006 Novell, Inc. All rights reserved. No part of this publication
+ may be reproduced, photocopied, stored on a retrieval system, or transmitted
+ without the express written consent of the publisher.
+
+ Novell, Inc.
+ 404 Wyman Street, Suite 500
+ Waltham, MA 02451
+ U.S.A.
+ www.novell.com
+
+
+ ESTIMATED PAGE COUNT (based on 200 words per page): 8
+ ESTIMATED HTML PAGE COUNT (number of html pages for novell.com): 3
+
+
+ WORD COUNT
+
+       Count    Doctype    Title
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        1659    chapter    Zon Quick Start Guide
+
+
+ CROSS-REFERENCES
+
+       Count       Type
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           0       xref
+           0       link
+           0       ulink-xrefext
+           0       ulink-xrefexttext
+           1       ulink
+
+
+ URLS REFERENCED IN ULINKS
+
+       URL
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       http://www.novell.com/company/legal/trademarks/tmlist.html
+
+========================================================================-->
+
+<chapter role="quickstart" conformance="none,doc,no,,56" id="quickstart" revision="01/01/03" lang="en" xml:base="zonquickstart.xml">
+ <title>Guida di riferimento rapido per Zon</title>
+ <para>Conferencing</para>
+ <para>1.0</para>
+ <para>Luglio 2007</para>
+ <sect1 id="b20g4u4">
+  <title>
+   Zon
+  </title>
+  <para>Novell Conferencing si basa sulla tecnologia Zon. Il termine &quot;Zon&quot; in questa sede si riferisce a tutte le versioni di Zon, salvo diversa indicazione. Per ulteriori informazioni sulle funzionalit&agrave; di Zon, vedere il Manuale utente e la Guida in linea di Zon.
+  </para>
+  <sect2 id="baq6f78">
+   <title>Avviare il client Zon:
+   </title>
+   <para>In Linux e Windows, fare doppio clic sull'icona Zon sul desktop (qui inserita durante l'installazione).
+   </para>
+   <para>Se l'icona non compare sul desktop, attenersi alla seguente procedura:</para>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <para>In Windows, selezionare Start &gt; <guimenu>Tutti i programmi</guimenu> &gt; Zon <guimenu>Meeting</guimenu> &gt; Zon <guimenu>Meeting</guimenu>.
+     </para>
+    </listitem>
+    <listitem>
+     <para>In Linux, selezionare <guimenu>Computer</guimenu>, fare clic su <guimenu>Altre applicazioni</guimenu>, quindi selezionare l'icona Zon in <guimenu>Nuove applicazioni</guimenu> o <guimenu>Comunica</guimenu>.
+     </para>
+    </listitem>
+   </itemizedlist>
+   <para>Il client Zon si apre per eseguire l'accesso.
+   </para>
+  </sect2>
+  <sect2 id="baq6h99">
+   <title>Accesso:</title>
+   <procedure id="baq6htf">
+    <step id="baq6htg" performance="required">
+     <para>Aprire il client.</para>
+    </step>
+    <step id="baq6hze" performance="required">
+     <para>Nel campo <guimenu>Screen Name</guimenu>, digitare il proprio screen name o selezionarlo dal menu. 
+     </para>
+     <itemizedlist mark="bullet" spacing="normal">
+      <listitem>
+       <para>Lo screen name &egrave; il nome univoco dell'utente registrato. </para>
+      </listitem>
+      <listitem>
+       <para>Zon e altri utenti riconoscono questo utente attraverso il suo screen name.
+       </para>
+      </listitem>
+      <listitem>
+       <para>Gli screen name distinguono le maiuscole dalle minuscole e non devono contenere spazi.</para>
+      </listitem>
+      <listitem>
+       <para>Gli screen name devono essere preferibilmente composti di soli caratteri alfanumerici del set ASCII (ad esempio: mrossi222 e pippoman sono validi; non lo sono mrossi 222 e pippo~man.)</para>
+      </listitem>
+     </itemizedlist>
+     <note>
+      <para>Dopo l'accesso iniziale, il proprio screen name appare nel menu <guimenu>Screen Name</guimenu>.
+      </para>
+     </note>
+    </step>
+    <step id="baq6j5p" performance="required">
+     <para>Nel campo <guimenu>Password</guimenu>, digitare la propria password.
+     </para>
+    </step>
+    <step id="baq6k0g" performance="required">
+     <para>Impostazioni facoltative:</para>
+     <itemizedlist mark="bullet" spacing="normal">
+      <listitem>
+       <para>Per accedere e partecipare direttamente a una riunione, immettere il PIN o l'ID della riunione nel campo <guimenu>PIN riunione</guimenu>.
+       </para>
+      </listitem>
+      <listitem>
+       <para>Per memorizzare la password, selezionare l'opzione <guimenu>Salva password</guimenu>. (Se l'amministratore non ha concesso il diritto all'uso di questa opzione, essa non sar&agrave; visibile.)
+       </para>
+      </listitem>
+      <listitem>
+       <para>Per accedere automaticamente all'avvio di Zon, selezionare l'opzione <guimenu>Accesso automatico</guimenu> (consigliato).
+       </para>
+      </listitem>
+      <listitem>
+       <para>Per tentare di riconnettere il client in assenza di connessione di rete, selezionare l'opzione <guimenu>Riprova pi&ugrave; volte se non si connette</guimenu>(consigliato).
+       </para>
+      </listitem>
+     </itemizedlist>
+    </step>
+    <step id="baq6l52" performance="required">
+     <para>Fare clic su <guimenu>Accedi</guimenu> per eseguire l'accesso.
+     </para>
+     <para>Si apre la finestra principale di Zon, con l'elenco delle riunioni.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq6nma">
+   <title>Impostazione dei dati di contatto</title>
+   <procedure id="baq6ooj">
+    <step id="baq6ook" performance="required">
+     <para>Nella finestra principale, selezionare <guimenu>Opzioni &gt; Modifica informazioni di contatto personali</guimenu>.
+     </para>
+     <para>Si apre la finestra <guimenu>Modifica utente</guimenu>.
+     </para>
+    </step>
+    <step id="baq6osr" performance="required">
+     <para>Modificare i dati personali (vedere la Guida in linea o il Manuale utente di Zon per una descrizione dettagliata di questi campi). 
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq6pi9">
+   <title>Aggiunta di contatti</title>
+   <procedure id="baq6pru">
+    <step id="baq6prv" performance="required">
+     <para>Selezionare <guimenu>Contatti &gt; Gestisci contatti</guimenu>.
+     </para>
+    </step>
+    <step id="baq6qmc" performance="required">
+     <para>Selezionare uno o pi&ugrave; contatti da un gruppo della <guimenu>Rubrica comunit&agrave;</guimenu> della finestra <guimenu>Contatto</guimenu> (premere il tasto CTRL o MAIUSC per selezionare pi&ugrave; contatti). Se la <guimenu>Rubrica comunit&agrave;</guimenu> non &egrave; visibile, significa che l'amministratore non ha concesso il diritto a visualizzarla. In questo caso, utilizzare l'opzione <guimenu>Cerca</guimenu> per trovare i potenziali contatti.
+     </para>
+    </step>
+    <step id="baq6qxy" performance="required">
+     <para>Con il pulsante destro del mouse, fare clic su uno dei contatti selezionati, quindi selezionare <guimenu>Aggiungi ai contatti personali</guimenu>. (&Egrave; possibile visualizzare tutti i contatti personali nella <guimenu>Rubrica personale</guimenu>.)
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq6rli">
+   <title>Aggiunta di un utente esterno all'elenco contatti</title>
+   <procedure id="baq6rqr">
+    <step id="baq6rqs" performance="required">
+     <para>Selezionare <guimenu>Contatti &gt; Gestisci contatti</guimenu>. 
+     </para>
+    </step>
+    <step id="baq6rza" performance="required">
+     <para>Con il pulsante destro del mouse, fare clic su <guimenu>Rubrica personale</guimenu> e selezionare <guimenu>Aggiungi contatto per screen name</guimenu>.
+     </para>
+    </step>
+    <step id="baq6rzc" performance="required">
+     <para>Digitare lo screen name del contatto nella finestra e fare clic su <guimenu>OK</guimenu>.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq6sa8">
+   <title>Modifica delle informazioni di un contatto</title>
+   <procedure id="baq6sqw">
+    <step id="baq6sqx" performance="required">
+     <para>Selezionare <guimenu>Contatti &gt; Gestisci contatti</guimenu>.
+     </para>
+    </step>
+    <step id="baq6szk" performance="required">
+     <para>Nella finestra Gestisci contatti, selezionare il contatto da modificare.</para>
+    </step>
+    <step id="baq6szm" performance="required">
+     <para>Fare clic su <guimenu>Modifica</guimenu>.
+     </para>
+     <para>Si apre la finestra <guimenu>Modifica utente</guimenu>.
+     </para>
+    </step>
+    <step id="baq6szp" performance="required">
+     <para>Modificare le informazioni del contatto (vedere la Guida in linea o il Manuale utente di Zon per una descrizione dettagliata di questi campi). 
+     </para>
+    </step>
+    <step id="baq6szs" performance="required">
+     <para>Fare clic su <guimenu>OK</guimenu>.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq6tyk">
+   <title>Inizio di una riunione immediata</title>
+   <para>&Egrave; possibile iniziare una riunione immediata in ogni momento si desideri tenere una riunione (senza partecipanti prestabiliti n&eacute; un'ora prefissata).</para>
+   <procedure id="baq6vmf">
+    <step id="baq6vmg" performance="required">
+     <para>Nell'elenco delle riunioni, selezionare <guimenu>Riunione personale</guimenu> nella sezione <guimenu>Riunione immediata personale</guimenu>.
+     </para>
+    </step>
+    <step id="baq6vpo" performance="required">
+     <para>Fare clic su <guimenu>Inizia</guimenu>.
+     </para>
+     <para>Si apre la finestra <guimenu>Configurazione della riunione</guimenu>.
+     </para>
+    </step>
+    <step id="baq6vpq" performance="required">
+     <para>Aggiungere i contatti (vedere la sezione Aggiunta di invitati alla riunione pi&ugrave; avanti).</para>
+    </step>
+    <step id="baq6vps" performance="required">
+     <para>Configurare le opzioni della riunione (vedere la Guida in linea o il Manuale utente di Zon per una descrizione dettagliata delle opzioni).
+     </para>
+    </step>
+    <step id="baq6vpv" performance="required">
+     <para>Fare clic su <guimenu>Inizia riunione</guimenu>.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq75i3">
+   <title>Partecipazione ad una riunione</title>
+   <procedure id="baq75lh">
+    <step id="baq75li" performance="required">
+     <para>Selezionare la riunione cui partecipare. </para>
+    </step>
+    <step id="baq75or" performance="required">
+     <para>Fare clic su <guimenu>Partecipa</guimenu>. 
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq6xij">
+   <title>Creazione di una riunione pianificata</title>
+   <para>Una riunione pianificata consiste di partecipanti prestabiliti e avviene ad un'ora prefissata. Se si crea una riunione pianificata specificando l'ora di inizio, l'ora viene indicata negli inviti spediti per e-mail ai partecipanti. &Egrave; possibile iniziare una riunione pianificata in qualsiasi momento, a prescindere dall'ora in cui &egrave; stata fissata.</para>
+   <note>
+    <para>Se un invitato &egrave; designato come moderatore di una riunione pianificata, costui diventer&agrave; anche il moderatore predefinito per iniziare le riunioni, ma non avr&agrave; diritti di modifica delle riunioni stesse.</para>
+   </note>
+   <procedure id="baq6xkw">
+    <step id="baq6xkx" performance="required">
+     <para>Fare clic su <guimenu>Pianifica</guimenu>. Si apre la finestra <guimenu>Configurazione della riunione</guimenu>.
+     </para>
+     <note>
+      <para>I campi ID riunione e PIN riunione restano vuoti finch&eacute; non si pianifica la riunione.</para>
+     </note>
+    </step>
+    <step id="baq6ykx" performance="required">
+     <para>Aggiungere i contatti (vedere la sezione Aggiunta di invitati alla riunione pi&ugrave; avanti).</para>
+    </step>
+    <step id="baq6z77" performance="required">
+     <para>Configurare le opzioni della riunione (vedere la Guida in linea o il Manuale utente di Zon per una descrizione dettagliata delle opzioni).
+     </para>
+    </step>
+    <step id="baq6z7a" performance="required">
+     <para>Fare clic su <guimenu>Pianifica riunione</guimenu>.
+     </para>
+    </step>
+    <step id="baq6zjn" performance="required">
+     <para>Se si sono selezionate le notifiche, si apre una finestra in cui creare gli inviti alla riunione:</para>
+     <itemizedlist mark="bullet" spacing="normal">
+      <listitem>
+       <para>Selezionare <guimenu>Invia messaggio a tutto gli invitati</guimenu> per inviare gli inviti a tutti gli utenti selezionati, anche se hanno gi&agrave; ricevuto in precedenza un invito per e-mail.
+       </para>
+      </listitem>
+      <listitem>
+       <para>Selezionare <guimenu>Invia messaggio solo ai nuovi invitati</guimenu> per inviare gli inviti soltanto ai nuovi utenti appena aggiunti. Se la riunione &egrave; nuova, anche tutti gli invitati saranno nuovi, pertanto tutti riceveranno l'invito.
+       </para>
+      </listitem>
+      <listitem>
+       <para>Selezionare <guimenu>Non inviare un messaggio</guimenu> se non si desidera inviare una notifica per e-mail.
+       </para>
+      </listitem>
+     </itemizedlist>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq70m7">
+   <title>Aggiunta di invitati a una riunione</title>
+   <para>Per aggiungere i contatti a una riunione, aprire la finestra <guimenu>Seleziona contatti</guimenu> dalla finestra <guimenu>Configurazione della riunione</guimenu> e aggiungere gli utenti e i gruppi desiderati. &Egrave; anche possibile invitare un utente non compreso tra i contatti della finestra <guimenu>Configurazione della riunione</guimenu>, vedere la sezione Invito di utenti non compresi tra i contatti pi&ugrave; avanti.
+   </para>
+   <procedure id="baq71x0">
+    <step id="baq71x1" performance="required">
+     <para>Nella finestra <guimenu>Configurazione della riunione</guimenu>, selezionare <guimenu>Mostra contatti</guimenu>.
+     </para>
+    </step>
+    <step id="baq720t" performance="required">
+     <para>Nella finestra <guimenu>Seleziona contatti</guimenu>, selezionare gli utenti e i gruppi da invitare alla riunione (premere i tasti CTRL + MAIUSC per selezionare pi&ugrave; utenti e gruppi).
+     </para>
+    </step>
+    <step id="baq720v" performance="required">
+     <para>Fare clic su <guimenu>Invita alla riunione</guimenu>.
+     </para>
+     <para>La finestra <guimenu>Seleziona contatti</guimenu> si chiude e gli utenti e i gruppi selezionati appaiono nell'elenco <guimenu>Invitati</guimenu> della finestra <guimenu>Configurazione della riunione</guimenu>.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq738b">
+   <title>Invito di utenti non compresi tra i contatti</title>
+   <procedure id="baq73jd">
+    <step id="baq73je" performance="required">
+     <para>Nella finestra <guimenu>Configurazione della riunione</guimenu>, selezionare <guimenu>Invita altri</guimenu>.
+     </para>
+     <para>Si apre una finestra con campi vuoti relativi ai dati del contatto.</para>
+    </step>
+    <step id="baq73n4" performance="required">
+     <para>Completare i campi del nuovo contatto (vedere la sezione <guimenu>Modifica delle informazioni di un contatto</guimenu>).
+     </para>
+    </step>
+    <step id="baq73n6" performance="required">
+     <para>Fare clic su <guimenu>OK</guimenu>.
+     </para>
+     <para>La finestra si chiude e il nuovo contatto appare nell'elenco <guimenu>Invitati</guimenu> della finestra <guimenu>Configurazione della riunione</guimenu>.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq70g2">
+   <title>Inizio di una riunione pianificata</title>
+   <procedure id="baq74gr">
+    <step id="baq74gs" performance="required">
+     <para>Selezionare una riunione pianificata oppure una riunione in cui si funge anche da moderatore designato.</para>
+    </step>
+    <step id="baq74ru" performance="required">
+     <para>Fare clic su <guimenu>Inizia</guimenu>. Si apre la finestra <guimenu>Configurazione della riunione</guimenu>.
+     </para>
+    </step>
+    <step id="baq74lu" performance="required">
+     <para>Aggiungere eventuali altri contatti da invitare alla riunione.</para>
+    </step>
+    <step id="baq74lw" performance="required">
+     <para>Se necessario, modificare le opzioni della riunione (vedere la Guida in linea o il Manuale utente di Zon per una descrizione dettagliata delle opzioni).
+     </para>
+    </step>
+    <step id="baq74lx" performance="required">
+     <para>Fare clic su <guimenu>Inizia riunione</guimenu> in fondo alla finestra.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq79ni">
+   <title>Ricerca delle riunioni comunitarie</title>
+   <procedure id="baq79r5">
+    <step id="baq79r6" performance="required">
+     <para>Fare clic su <guimenu>Trova</guimenu> nella finestra <guimenu>Elenco riunioni</guimenu>. Si apre la finestra <guimenu>Ricerca riunione</guimenu>.
+     </para>
+    </step>
+    <step id="baq79z8" performance="required">
+     <para>Per salvare la ricerca, fare clic su <guimenu>Salva con nome</guimenu>, specificare un nome per la ricerca e fare clic su <guimenu>OK</guimenu>. (Le ricerche salvate appaiono nell'elenco a discesa <guimenu>Nome ricerca</guimenu>.)
+     </para>
+    </step>
+    <step id="baq7ago" performance="required">
+     <para>Selezionare un <guimenu>Intervallo date</guimenu>.
+     </para>
+    </step>
+    <step id="barpq5z" performance="required">
+     <para>Selezionare i <guimenu>Criteri di ricerca</guimenu> desiderati (la selezione di pi&ugrave; criteri restringe i risultati). Vedere la Guida in linea o il Manuale utente di Zon per una descrizione dettagliata di questi criteri.
+     </para>
+    </step>
+    <step id="baq7atv" performance="required">
+     <para>Per configurare la quantit&agrave; di risultati da generare con la ricerca, immettere un valore nel campo Numero di risultati (il valore predefinito &egrave; 100).</para>
+    </step>
+    <step id="baq7dn5" performance="required">
+     <para>Fare clic su <guimenu>Inizia ricerca</guimenu>.
+     </para>
+     <para>I risultati della ricerca appaiono in un gruppo sotto <guimenu>Risultati ricerca comunit&agrave;</guimenu>. Se esistono altri risultati al di l&agrave; del limite specificato, fare clic con il pulsante destro del mouse sul gruppo dei risultati e selezionare <guimenu>Trova altro</guimenu>.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq768h">
+   <title>Partecipazione a una riunione per ID o PIN</title>
+   <para>Il PIN di una riunione &egrave; un identificativo personale che il server utilizza per rappresentare un partecipante specifico in una riunione specifica. L'ID di una riunione &egrave; un identificativo generico che rappresenta soltanto una riunione specifica e non identifica il partecipante.</para>
+   <procedure id="baq76bp">
+    <step id="baq76bq" performance="required">
+     <para>Selezionare <guimenu>Riunioni &gt; Partecipa per ID o PIN riunione</guimenu>.
+     </para>
+     <para>Si apre la finestra <guimenu>Partecipa alla riunione</guimenu>.
+     </para>
+    </step>
+    <step id="baq76eq" performance="required">
+     <para>Digitare l'<guimenu>ID riunione</guimenu> o il <guimenu>PIN</guimenu> nei rispettivi campi della finestra <guimenu>Partecipa alla riunione</guimenu>. Se possibile, &egrave; meglio utilizzare sempre il PIN per partecipare alle riunioni, affinch&eacute; il server possa identificare anche l'utente. &Egrave; necessario specificare il PIN per partecipare a una riunione in cui si funge anche da moderatore.
+     </para>
+    </step>
+    <step id="baq76et" performance="required">
+     <para>Fare clic su <guimenu>OK</guimenu>.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="bata1vm">
+   <title>Condivisione del desktop o di un'applicazione durante una riunione</title>
+   <para>Nel corso di una riunione, &egrave; possibile condividere il desktop o un'applicazione sul proprio computer con tutti i partecipanti. Si pu&ograve; inoltre concedere ad altri partecipanti il controllo remoto del proprio desktop o dell'applicazione (vedere la sezione seguente).</para>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <para>Per condividere il desktop, selezionare <guimenu>Condivisione &gt; Condividi desktop</guimenu>.
+     </para>
+    </listitem>
+    <listitem>
+     <para>Per condividere un'applicazione, selezionare <guimenu>Condivisione &gt; Condividi applicazione</guimenu>, scegliere l'applicazione nella finestra <guimenu>Condividi applicazioni</guimenu> e fare clic su <guimenu>OK</guimenu>.
+     </para>
+    </listitem>
+   </itemizedlist>
+   <para>La sessione condivisa si apre e tutti i partecipanti possono vedere il desktop o l'applicazione condivisa nella scheda <guimenu>Condividi applicazione</guimenu> della finestra <guimenu>Riunione</guimenu>. Il <guimenu>Pannello di controllo Condividi</guimenu> &egrave; un oggetto mobile visualizzato nella porzione superiore destra della finestra. Per chiudere la sessione condivisa, fare clic su <guimenu>Termina condivisione</guimenu> nel <guimenu>Pannello di controllo Condividi</guimenu>.
+   </para>
+  </sect2>
+  <sect2 id="bata8cb">
+   <title>Concessione del controllo remoto ai partecipanti</title>
+   <procedure id="bata8sd">
+    <step id="bata8se" performance="required">
+     <para>Selezionare uno o pi&ugrave; partecipanti.</para>
+    </step>
+    <step id="bata9bd" performance="required">
+     <para>Selezionare <guimenu>Partecipanti &gt; Concedi controllo remoto</guimenu> per concedere ai partecipanti il diritto a controllare a distanza la sessione condivisa (accanto ai nomi dei partecipanti appare la dicitura <guimenu>[Ctrl remoto]</guimenu>).
+     </para>
+     <note>
+      <para>Un partecipante deve fare clic nella finestra condivisa per assumerne il controllo remoto. Se l'utente locale fa clic con il mouse o preme un tasto della tastiera, riassume automaticamente il controllo sulla sessione condivisa.</para>
+     </note>
+    </step>
+   </procedure>
+  </sect2>
+ </sect1>
+ <sect1 role="legalinfo" id="b20g58r">
+  <title>Avviso legale</title>
+  <para>Copyright &copy; 2007 Novell, Inc. Tutti i diritti riservati. Si vietano la riproduzione, la fotocopia e la memorizzazione di questa pubblicazione su un sistema di recupero, cos&igrave; come la sua trasmissione senza la preventiva autorizzazione scritta dell'editore. Per i marchi commerciali Novell, vedere <ulink url="http://www.novell.com/company/legal/trademarks/tmlist.html">l'elenco dei marchi commerciali e di servizio Novell</ulink>. Tutti i marchi commerciali di terzi sono propriet&agrave; dei rispettivi titolari. Un simbolo di marchio (&reg;, ™ e cos&igrave; via) denota un marchio Novell; un asterisco (*) denota un marchio appartenente a terzi.
+  </para>
+ </sect1>
+</chapter>

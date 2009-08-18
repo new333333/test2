@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html xml:lang="zh-cn" lang="zh-cn">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="zh-cn" />
+<meta name="Content-Date" content="Mon, 04 Jun 2009 12:00:00 GMT" />
+<meta name="Generator" content="Kablink Documentation" />
+<meta name="Generation-Date" content="Wednesday, July 01, 2009" />
+<meta name="Copyright" content="" />
+
+<link rel="stylesheet" type="text/css" href="css/styles.css" />
+<link rel="stylesheet" type="text/css" href="css/expandable.css" />
+
+<title>文件上载提示</title>
+</head>
+<body>
+<script type="text/javascript" src="css/expandable.js"></script>
+
+<div class="sect1" id="tool_file_uploadhints">
+
+<h1 class="title"> 文件上载提示</h1>
+
+<p class="para">如果上载文件时由于文件太大而发生问题，则可以通过增加 Java 小程序使用的默认内存量来解决此问题。以下部分说明了此过程。</p>
+<div class="sect2" id="bipun26">
+
+<h2 class="title"> 增加 Windows 的默认内存量</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bipungz">
+<p class="para">导航至控制面板（单击<span class="guimenu">开始</span> &gt; <span class="guimenu">设置</span> &gt; <span class="guimenu">控制面板</span>）。</p></li>
+<li class="step" id="bipunwc">
+<p class="para">双击 <span class="guimenu">Java</span>。</p>
+<p class="para">此时会起动 Java 控制面板。</p></li>
+<li class="step" id="bipuoka">
+<p class="para">选择 <span class="guimenu">Java</span> 选项卡。</p></li>
+<li class="step" id="bipuorx">
+<p class="para">在 <span class="guimenu">Java 小应用程序运行时设置</span>部分中单击<span class="guimenu">查看</span>。</p></li>
+<li class="step" id="bipup4t">
+<p class="para">为每个 Java 运行时版本添加 <span class="command">-Xmx256m</span> 作为 Java 运行时参数。</p></li>
+<li class="step" id="bipupgl">
+<p class="para">单击<span class="guimenu">确定</span>。</p>
+<p class="para">增加 Java 小程序的默认内存大小后，必须退出所有浏览器然后重启动它们，更改才能生效。</p></li></ol>
+</div>
+
+<p class="para">此设置会使得用于将文件上载至 Teaming 文件夹的小程序以 256 MB 内存启动。如果小程序仍然指示没有足够的内存运行，则可能需要减小此数值。</p>
+</span>
+
+</div>
+
+<div class="sect2" id="bipunbb">
+
+<h2 class="title"> 增加 Linux 的默认内存量</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bjchmyk">
+<p class="para">找到用于浏览器插件的 JRE 或 JDK。</p>
+<p class="para">JRE 或 JDK 的位置会因系统的不同而异。</p></li>
+<li class="step" id="bjchn8n">
+<p class="para">在 JRE 或 JDK 的 <span class="filename">bin</span> 目录中，运行 <span class="filename">ControlPanel</span> 文件。</p>
+<p class="para">此时控制面板会起动。</p></li>
+<li class="step" id="bjchoed">
+<p class="para">选择 <span class="guimenu">Java</span> 选项卡。</p></li>
+<li class="step" id="bjchokg">
+<p class="para">在 <span class="guimenu">Java 小应用程序运行时设置</span>部分中单击<span class="guimenu">查看</span>。</p></li>
+<li class="step" id="bjchor1">
+<p class="para">为每个 Java 运行时版本添加 <span class="command">-Xmx256m</span> 作为 Java 运行时参数。</p></li>
+<li class="step" id="bjchotz">
+<p class="para">单击<span class="guimenu">确定</span>。</p>
+<p class="para">增加 Java 小程序的默认内存大小后，必须退出所有浏览器然后重启动它们，更改才能生效。</p></li></ol>
+</div>
+
+<p class="para">此设置会使得用于将文件上载至 Teaming 文件夹的小程序以 256 MB 内存启动。如果小程序仍然指示没有足够的内存运行，则可能需要减小此数值。</p>
+</span>
+
+</div>
+
+</div>
+
+<p class="trademark"> 有关更多信息，请参见 <a href="./legal.html">法律声明</a>.</p>
+</body>
+</html>

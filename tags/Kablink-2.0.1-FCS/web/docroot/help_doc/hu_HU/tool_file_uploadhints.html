@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html xml:lang="hu" lang="hu">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="hu" />
+<meta name="Content-Date" content="Mon, 04 Jun 2009 12:00:00 GMT" />
+<meta name="Generator" content="Kablink Documentation" />
+<meta name="Generation-Date" content="Monday, July 06, 2009" />
+<meta name="Copyright" content="" />
+
+<link rel="stylesheet" type="text/css" href="css/styles.css" />
+<link rel="stylesheet" type="text/css" href="css/expandable.css" />
+
+<title>Fájlfeltöltéssel kapcsolatos javaslatok</title>
+</head>
+<body>
+<script type="text/javascript" src="css/expandable.js"></script>
+
+<div class="sect1" id="tool_file_uploadhints">
+
+<h1 class="title"> Fájlfeltöltéssel kapcsolatos javaslatok</h1>
+
+<p class="para">Ha problémája van a túl nagy fájlok feltöltésével, lehetséges, hogy a Java kisalkalmazások alapértelmezett memóriájának növelésével meg tudja oldani ezt a problémát. A folyamat leírását a következő részek tartalmazzák.</p>
+<div class="sect2" id="bipun26">
+
+<h2 class="title"> Az alapértelmezett memória növelése Windowon</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bipungz">
+<p class="para">Ugorjon a Vezérlőpulthoz (Kattintson a <span class="guimenu">Start</span> &gt; <span class="guimenu">Beállítások</span> &gt; <span class="guimenu">Vezérlőpult</span> menüpontra).</p></li>
+<li class="step" id="bipunwc">
+<p class="para">Kattintson duplán a <span class="guimenu">Java</span> beállításra.</p>
+<p class="para">Elindította a Java Control Panel ablakot.</p></li>
+<li class="step" id="bipuoka">
+<p class="para">Válassza ki a <span class="guimenu">Java</span> lapot.</p></li>
+<li class="step" id="bipuorx">
+<p class="para">A <span class="guimenu">Java Applet Runtime Settings</span> részben, kattintson a <span class="guimenu">View</span> gombra.</p></li>
+<li class="step" id="bipup4t">
+<p class="para">Mindegyik Java Runtime version beállításhoz adja hozza a <span class="command">-Xmx256m</span> paramétert a Java Runtime Parameters cellájában.</p></li>
+<li class="step" id="bipupgl">
+<p class="para">Kattintson az <span class="guimenu">OK</span> gombra.</p>
+<p class="para">Miután megnövelte a Java kisalkalmazások alapértelmezett memóriáját, a változtatások életbe lépéséhez zárjon be minden böngészőt, majd indítsa el azokat újra. </p></li></ol>
+</div>
+
+<p class="para">A beállítások azt eredményezik, hogy a fájlok Teaming mappákba történő feltöltésére használt kisalkalmazás 256 MB memóriával indul. Ha a kisalkalmazás továbbra is kevés memóriát jelez a kisalkalmazás futtatásához, akkor valószínűleg csökkentenie kell ezt a számot .</p>
+</span>
+
+</div>
+
+<div class="sect2" id="bipunbb">
+
+<h2 class="title"> Az alapértelmezett memória mennyiségének növelése Linuxon</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bjchmyk">
+<p class="para">Találja meg a helyét a böngészőhöz használt JRE vagy JDK bővítménynek.</p>
+<p class="para">A JRE vagy JDK helye a használt rendszer függvényében változik.</p></li>
+<li class="step" id="bjchn8n">
+<p class="para">A JRE vagy JDK <span class="filename">bin</span> könyvtárában futtassa a <span class="filename">ControlPanel</span> fájlt.</p>
+<p class="para">Elindította a Control Panel ablakot.</p></li>
+<li class="step" id="bjchoed">
+<p class="para">Válassza ki a <span class="guimenu">Java</span> lapot.</p></li>
+<li class="step" id="bjchokg">
+<p class="para">A <span class="guimenu">Java Applet Runtime Settings</span> részben, kattintson a <span class="guimenu">View</span> gombra.</p></li>
+<li class="step" id="bjchor1">
+<p class="para">Mindegyik Java Runtime version beállításhoz adja hozza a <span class="command">-Xmx256m</span> paramétert a Java Runtime Parameters cellájában.</p></li>
+<li class="step" id="bjchotz">
+<p class="para">Kattintson az <span class="guimenu">OK</span> gombra.</p>
+<p class="para">Miután megnövelte a Java kisalkalmazások alapértelmezett memóriáját, a változtatások életbe lépéséhez zárjon be minden böngészőt, majd indítsa el azokat újra. </p></li></ol>
+</div>
+
+<p class="para">A beállítások azt eredményezik, hogy a fájlok Teaming mappákba történő feltöltésére használt kisalkalmazás 256 MB memóriával indul. Ha a kisalkalmazás továbbra is kevés memóriát jelez a kisalkalmazás futtatásához, akkor valószínűleg csökkentenie kell ezt a számot .</p>
+</span>
+
+</div>
+
+</div>
+
+<p class="trademark"> További információ a <a href="./legal.html">Szerzői jogi megjegyzések</a>.</p>
+</body>
+</html>
