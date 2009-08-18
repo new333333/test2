@@ -32,13 +32,14 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.widgets.EditCanceledHandler;
-import org.kablink.teaming.gwt.client.widgets.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.UIObject;
+import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 
 /**
  * 
@@ -46,85 +47,117 @@ import com.google.gwt.user.client.ui.Label;
  *
  */
 public class TableDropWidget extends DropWidget
-	implements EditSuccessfulHandler, EditCanceledHandler
 {
-	private EditSuccessfulHandler	m_editSuccessfulHandler = null;
-	private EditCanceledHandler	m_editCanceledHandler = null;
-	private TableWidgetDlgBox		m_dlgBox = null;
-	private TableProperties		m_properties = null;
+	private TableProperties	m_properties = null;
+	private FlowPanel			m_mainPanel;
+	private FlexTable			m_flexTable = null;
 	
 	/**
 	 * 
 	 */
 	public TableDropWidget()
 	{
-		FlowPanel panel;
-		
-		panel = new FlowPanel();
-		panel.addStyleName( "teamingDlgBoxFooter" );	//!!! Remove this
-		panel.add( new Label( "This is the TableDropWidget" ) );
+		m_mainPanel = new FlowPanel();
 		
 		// Create an object to hold all of the properties that define a table widget.
 		m_properties = new TableProperties();
 		
 		// All composites must call initWidget() in their constructors.
-		initWidget( panel );
-	}// end TableDropWidget()
+		initWidget( m_mainPanel );
+
+		setStyleName( "lpeDropWidget" );
+}// end TableDropWidget()
 	
-	
+
 	/**
-	 * Invoke the Edit Properties dialog for this widget.
+	 * Return the dialog box used to edit the properties of this widget.
 	 */
-	public void editProperties( EditSuccessfulHandler editSuccessfulHandler, EditCanceledHandler editCanceledHandler, int xPos, int yPos )
+	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
 	{
-		m_editSuccessfulHandler = editSuccessfulHandler;
-		m_editCanceledHandler = editCanceledHandler;
+		DlgBox dlgBox;
 		
 		// Pass in the object that holds all the properties for a TableDropWidget.
 		// properties = new TableDropWidgetProperties();
-		m_dlgBox = new TableWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
-		m_dlgBox.show();
-	}// end editProperties()
+		dlgBox = new TableWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+		
+		return dlgBox;
+	}// end getPropertiesDlgBox()
+	
 	
 	/**
-	 * This method is called when the user presses the cancel button in the properties dialog box.
+	 * Create the appropriate ui based on the given properties.
 	 */
-	public boolean editCanceled()
+	public void updateWidget( PropertiesObj props )
 	{
-		boolean retVal = true;
+		int i;
+		int numColumns;
+		CellFormatter cellFormatter;
 		
-		// Do we have a handler we are supposed to call?
-		if ( m_editCanceledHandler != null )
-			retVal =  m_editCanceledHandler.editCanceled();
-
-		// If the handler returned false, don't close the dialog.
-		if ( retVal )
-			m_dlgBox.hide();
+		// Save the properties that were passed to us.
+		m_properties.copy( props );
 		
-		return retVal;
-	}// end cancelBtnPressed()
-	
-	/**
-	 * This method is called when the user presses the ok button in the properties dialog box.
-	 */
-	public boolean editSuccessful( Object propertiesObj )
-	{
-		boolean retVal = true;
+		numColumns = m_properties.getNumColumnsInt();
 		
-		// Relayout this widget based on the new properties
-		Window.alert( "finish TableDropWidget.editSuccessful()" );
-		
-		// Do we have a handler we are supposed to call?
-		if ( m_editSuccessfulHandler != null )
+		// Have we already created a FlexTable?
+		if ( m_flexTable == null )
 		{
-			// Yes
-			retVal = m_editSuccessfulHandler.editSuccessful( (DropWidget)this );
+			// No
+			m_flexTable = new FlexTable();
+			m_flexTable.addStyleName( "lpeTable" );
+			m_flexTable.setWidth( "100%" );
+			
+			m_mainPanel.add( m_flexTable );
+			
+			// Add 1 row to the table.
+			m_flexTable.insertRow( 0 );
+			
+			// Add the appropriate number of columns to the table.
+			for (i = 0; i < numColumns; ++i)
+			{
+				m_flexTable.addCell( 0 );
+				m_flexTable.setWidget( 0, i, new Label( "cell: " + String.valueOf( i ) ) );
+			}
+		}
+		else
+		{
+			// Do we need to remove columns from the existing table?
+			if ( numColumns < m_flexTable.getCellCount( 0 ) )
+			{
+				// Yes.
+				while ( numColumns < m_flexTable.getCellCount( 0 ) )
+				{
+					m_flexTable.removeCell( 0, m_flexTable.getCellCount( 0 )-1 );
+				}
+			}
+			// Do we need to add columns to the existing table?
+			else if ( numColumns > m_flexTable.getCellCount( 0 ) )
+			{
+				// Yes
+				while( numColumns > m_flexTable.getCellCount( 0 ) )
+				{
+					m_flexTable.addCell( 0 );
+				}
+			}
 		}
 		
-		// If the handler returned false, don't close the dialog.
-		if ( retVal )
-			m_dlgBox.hide();
+		cellFormatter = m_flexTable.getFlexCellFormatter();
+		for (i = 0; i < m_flexTable.getCellCount( 0 ); ++i )
+		{
+			// Set the width of this column.
+			cellFormatter.setWidth( 0, i, m_properties.getColWidthStr( i ) );
+		}
 		
-		return retVal;
-	}// end editSuccessful()
+		// Should we display a border around the table?
+		if ( m_properties.getShowBorderValue() )
+		{
+			// Yes
+			m_flexTable.setBorderWidth( 2 );
+		}
+		else
+		{
+			m_flexTable.setBorderWidth( 0 );
+		}
+	}// end updateWidget()
+	
+	
 }// end TableDropWidget

@@ -39,5 +39,8 @@ package org.kablink.teaming.gwt.client.widgets;
  */
 public interface PropertiesObj
 {
-	// This interface has no methods.
+	/**
+	 * 
+	 */
+	public abstract void copy( PropertiesObj obj );
 }// end PropertiesObj

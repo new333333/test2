@@ -95,9 +95,6 @@ public class LandingPageEditor extends Composite
 		// Create a panel for the palette and canvas to live in.
 		hPanel = new HorizontalPanel();
 		
-		// Create some space between the palette and the canvas.
-		hPanel.setSpacing( 5 );
-		
 		// Create a palette and a canvas.
 		m_palette = new Palette( this );
 		m_canvas = new Canvas( this );
@@ -243,6 +240,8 @@ public class LandingPageEditor extends Composite
 			if ( m_selectedDropZone != null )
 			{
 				DropWidget	dropWidget;
+				int x;
+				int y;
 				
 				// Yes, hide the drop clue.
 				m_selectedDropZone.hideDropClue();
@@ -255,7 +254,9 @@ public class LandingPageEditor extends Composite
 				// our editSuccessful() will be called and we will add the DropWidget to the
 				// selected DropZone.  If the user pressed cancel, our editCanceled() method
 				// will be called.
-				dropWidget.editProperties( this, this, event.getClientX(), event.getClientY() );
+				x = m_canvas.getAbsoluteLeft() + 5;
+				y = m_canvas.getAbsoluteTop() + 5;
+				dropWidget.editProperties( this, this, x, y );
 			}
 		}
 	}// end onMouseUp()

@@ -39,6 +39,7 @@
 {
 	background-color: #FFFFFF;
 	border: 1px solid #999999;
+	margin-left: 5px;
 	min-height: 350px;
 	overfow: auto;
 	width: 650px;
@@ -48,6 +49,13 @@
 .lpeCanvas_highlighted
 {
 	border: 5px solid #4D6D8B;
+}
+
+/* Styles for widgets that can be dropped on a drop zone. */
+.lpeDropWidget
+{
+	margin-top: .5em;
+	margin-bottom: .5em;
 }
 
 /* Styles for the landing page editor hint. */
@@ -83,6 +91,18 @@
 	margin-right: 2px;
 	vertical-align: text-bottom;
 	z-index: 130;
+}
+
+/* Dependent style used to display a border. */
+.lpeShowBorder
+{
+	border: 1px solid #999999;
+}
+
+/* Styles for a table that has been added to the landing page editor. */
+.lpeTable
+{
+	border: 0px;
 }
 
 /* Styles for buttons */

@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
@@ -76,7 +75,6 @@ public class Canvas extends DropZone
 	 */
 	public void addWidgetToDropZone( DropWidget dropWidget )
 	{
-		Window.alert( "Finish Canvas.addWidgetToDropZone()" );
 		m_panel.add( dropWidget );
 	}// end addWidgetToDropZone()
 	

@@ -40,8 +40,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -56,7 +54,6 @@ public abstract class DlgBox extends PopupPanel
 {
 	private EditSuccessfulHandler	m_editSuccessfulHandler;	// Handler to call when the user presses Ok.
 	private EditCanceledHandler	m_editCanceledHandler;		// Handler to call when the user presses Cancel.
-	private PropertiesObj			m_properties;	// Where properties used in the dialog are read from and saved to.
 	private Button		m_okBtn;
 	private Button		m_cancelBtn;
 	
@@ -73,6 +70,8 @@ public abstract class DlgBox extends PopupPanel
 		
 		// Override the style used for PopupPanel
 		setStyleName( "teamingDlgBox" );
+		
+		setAnimationEnabled( true );
 		
 		setPopupPosition( xPos, yPos );
 	}// end DlgBox()
@@ -104,7 +103,6 @@ public abstract class DlgBox extends PopupPanel
 		panel.add( header );
 		
 		// Add the main content of the dialog box.
-		m_properties = properties;
 		content = createContent( properties );
 		panel.add( content );
 		
@@ -168,7 +166,7 @@ public abstract class DlgBox extends PopupPanel
 	/**
 	 * This method will gather up the data from the controls in the dialog box.
 	 */
-	public abstract void getDataFromDlg( PropertiesObj propertiesObj );
+	public abstract PropertiesObj getDataFromDlg();
 	
 	
 	/*
@@ -184,15 +182,17 @@ public abstract class DlgBox extends PopupPanel
 		// Did the user click on ok?
 		if ( source == m_okBtn )
 		{
+			PropertiesObj props;
+			
 			// Yes
 			// Get the data from the controls in the dialog box.
-			getDataFromDlg( m_properties );
+			props = getDataFromDlg();
 			
 			// Do we have a handler we need to call?
 			if ( m_editSuccessfulHandler != null )
 			{
 				// Yes
-				m_editSuccessfulHandler.editSuccessful( m_properties );
+				m_editSuccessfulHandler.editSuccessful( props );
 			}
 			
 			return;

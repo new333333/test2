@@ -98,7 +98,7 @@ public class TableWidgetDlgBox extends DlgBox
 		{
 			for (i = 0; i < m_columnWidths.size(); ++i)
 			{
-				// Remove the 2 row.  Row 0, contains the "Show border" checkbox and Row 1, contains the "Number of columns" controls.
+				// Remove the 2nd row.  Row 0, contains the "Show border" checkbox and Row 1, contains the "Number of columns" controls.
 				m_table.removeRow( 2 );
 			}
 			
@@ -173,11 +173,70 @@ public class TableWidgetDlgBox extends DlgBox
 	
 	
 	/**
+	 * Get the width of the given column that was entered by the user.
+	 */
+	public int getColWidth( int col )
+	{
+		int width;
+		
+		width = 0;
+		
+		// Is the requested column valid?
+		if ( col < m_columnWidths.size() )
+		{
+			String value;
+			TextBox txtBox;
+			
+			// Yes, get the string entered by the user.
+			txtBox = m_columnWidths.get( col );
+			value = txtBox.getValue();
+
+			if ( value != null && value.length() > 0 )
+			{
+				try
+				{
+					width = Integer.parseInt( value );
+				}
+				catch ( NumberFormatException nfEx )
+				{
+					// This should never happen.  The data should be validated before we get to this point.
+				}
+			}
+		}
+		
+		return width;
+	}// end getColWidth()
+	
+	
+	/**
 	 * Get the data from the controls in the dialog box and store the data in the properties obj.
 	 */
-	public void getDataFromDlg( PropertiesObj obj )
+	public PropertiesObj getDataFromDlg()
 	{
-		Window.alert( "finish TableWidgetDlgBox.getDataFromDlg()" );
+		TableProperties	properties;
+		int numColumns;
+		int i;
+		
+		properties = new TableProperties();
+		
+		// Save away the "show border" value.
+		properties.setShowBorder( getShowBorderValue() );
+		
+		// Save away the "number of columns" value.
+		numColumns = getNumColumns();
+		properties.setNumColumns( numColumns );
+		
+		// Save away the "column widths" values.
+		for (i = 0; i < numColumns; ++i)
+		{
+			int width;
+			
+			// Get the width of this column.
+			width = getColWidth( i );
+			properties.setColWidth( i, width );
+		}
+		
+		return properties;
 	}// end getDataFromDlg()
 	
 	
@@ -202,6 +261,14 @@ public class TableWidgetDlgBox extends DlgBox
 		return numColumns;
 	}// end getNumColumns()
 	
+	
+	/**
+	 * Return true if the "show border" checkbox is checked.
+	 */
+	public boolean getShowBorderValue()
+	{
+		return m_showBorderCkBox.getValue().booleanValue();
+	}// end getShowBorderValue()
 	
 	/**
 	 * This method gets called when the user changes the number of columns.
