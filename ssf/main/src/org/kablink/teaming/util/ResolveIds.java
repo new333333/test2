@@ -50,6 +50,7 @@ import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.NoPrincipalByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -152,6 +153,36 @@ public class ResolveIds {
 			}
 		}
 		result.addAll(profileDao.loadPrincipals(filteredIds, RequestContextHolder.getRequestContext().getZoneId(), checkActive));
+		return profileDao.filterInaccessiblePrincipals(result);
+	}
+	
+	public static Set<Long> getPrincipalNamesAsLongIdSet(String []sNames, boolean checkActive) {
+		Set<Long> memberIds = new HashSet<Long>();
+		List<Principal> members = ResolveIds.getPrincipalsByName(LongIdUtil.getNamesAsStringSet(sNames), checkActive);
+		for (Principal p : members) memberIds.add(p.getId());
+		return memberIds;		
+	}
+
+	public static List<Principal> getPrincipalsByName(Collection names, boolean checkActive) {
+		if (names == null) {
+			return Collections.EMPTY_LIST;
+		}
+
+		ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
+		List<Principal> result = new ArrayList();
+		
+		List filteredIds = new ArrayList();
+		Iterator it = names.iterator();
+		while (it.hasNext()) {
+			try {
+				Principal p = profileDao.findPrincipalByName((String)it.next(), RequestContextHolder.getRequestContext().getZoneId());
+				if (checkActive) {
+					if (p.isActive()) result.add(p);
+				} else {
+					result.add(p);
+				}
+			} catch(NoPrincipalByTheNameException e) {}
+		}
 		return profileDao.filterInaccessiblePrincipals(result);
 	}
 	

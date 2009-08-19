@@ -98,6 +98,7 @@ import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.web.WebKeys;
@@ -1997,7 +1998,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						}
 					} else if (itemName.equals("user_list") || itemName.equals("group_list") ||
 								itemName.equals("team_list") || itemName.equals("userListSelectbox")) {
-						if (inputData.exists(nameValue)) {
+						if (inputData.exists(nameValue + ".principalNames")) {
+							Set<Long> ids = ResolveIds.getPrincipalNamesAsLongIdSet(inputData.getValues(nameValue + ".principalNames"), true);
+							CommaSeparatedValue v = new CommaSeparatedValue();
+							v.setValue(ids);
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, v);
+						} else if (inputData.exists(nameValue)) {
 							Set<Long> ids = LongIdUtil.getIdsAsLongSet(inputData.getValues(nameValue));
 							CommaSeparatedValue v = new CommaSeparatedValue();
 							v.setValue(ids);

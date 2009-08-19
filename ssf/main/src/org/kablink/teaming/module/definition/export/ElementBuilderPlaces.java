@@ -57,8 +57,9 @@ public class ElementBuilderPlaces extends ElementBuilderCommaSeparatedLong {
 			for (Iterator iter = binders.entrySet().iterator(); iter.hasNext();) {
 				Map.Entry binderData = (Map.Entry) iter.next();
 				Element value = element.addElement("value");
-				value.addAttribute("id", (String) ((Map) binderData.getValue()).get("id"));
-				value.setText((String) ((Map) binderData.getValue()).get("title"));
+				value.setText((String)((Map) binderData.getValue()).get("id"));
+				value.addAttribute("title", (String)((Map) binderData.getValue()).get("title"));
+				value.addAttribute("pathName", (String)((Map) binderData.getValue()).get("pathName"));
 			}
 		}
 		return true;

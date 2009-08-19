@@ -2456,24 +2456,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 
-	private void addCustomElements(final Element entityElem,
-			final DefinableEntity entry) {
+	private void addCustomElements(final Element entityElem, final DefinableEntity entry) {
 		addCustomAttributes(entityElem, entry);
 	}
 
-	private void addCustomAttributes(final Element entityElem,
-			final DefinableEntity entity) {
+	private void addCustomAttributes(final Element entityElem, final DefinableEntity entity) {
 		final ElementBuilder.BuilderContext context = null;
 
 		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
-			public void visit(Element entityElement, Element flagElement,
-					Map args) {
+			public void visit(Element entityElement, Element flagElement, Map args) {
 				if (flagElement.attributeValue("apply").equals("true")) {
-					String fieldBuilder = flagElement
-							.attributeValue("elementBuilder");
+					String fieldBuilder = flagElement.attributeValue("elementBuilder");
 					String typeValue = entityElement.attributeValue("name");
-					String nameValue = DefinitionUtils.getPropertyValue(
-							entityElement, "name");
+					String nameValue = DefinitionUtils.getPropertyValue(entityElement, "name");
 					if (Validator.isNull(nameValue)) {
 						nameValue = typeValue;
 					}
