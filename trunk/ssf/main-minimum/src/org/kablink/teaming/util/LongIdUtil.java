@@ -139,4 +139,24 @@ public class LongIdUtil {
 		return buf.toString();
 	}
 
+	public static Set<String> getNamesAsStringSet(String []sNames) {
+		Set<String> memberNames = new HashSet<String>();
+		if (sNames != null) {
+			for (int i = 0; i < sNames.length; i++) {
+				memberNames.addAll(getNamesAsStringSet(sNames[i], COMMA_SEPARATOR));
+			}
+		}
+		return memberNames;		
+	}
+
+	public static Set<String> getNamesAsStringSet(String names, String separator) {
+		Set<String> nameSet = new HashSet<String>();
+		if (names == null) return nameSet;
+		String [] sNames = names.split(separator);
+		for (int i = 0; i < sNames.length; i++) {
+			nameSet.add(sNames[i].trim());
+		}
+		return nameSet;
+	}
+
 }

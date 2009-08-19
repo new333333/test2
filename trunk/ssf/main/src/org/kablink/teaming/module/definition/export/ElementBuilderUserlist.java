@@ -34,10 +34,13 @@ package org.kablink.teaming.module.definition.export;
 
 import java.util.Collection;
 
+import org.dom4j.Attribute;
 import org.dom4j.Element;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.module.definition.export.ElementBuilder.BuilderContext;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.web.util.DefinitionHelper;
 
@@ -47,13 +50,33 @@ import org.kablink.teaming.web.util.DefinitionHelper;
  */
 public class ElementBuilderUserlist extends AbstractElementBuilder {
 
+    public boolean buildElement(Element element, DefinableEntity entity, String dataElemType, String dataElemName, BuilderContext context) {
+    	this.context = context;
+    	if(element != null) {
+	    	element.addAttribute("name", dataElemName + ".principalNames");
+	    	element.addAttribute("type", dataElemType);
+    	}
+        CustomAttribute attribute = entity.getCustomAttribute(dataElemName);
+		try {
+			if (attribute != null) 
+    			return build(element, entity, dataElemType, dataElemName, attribute);
+			else 
+    			return build(element, entity, dataElemType, dataElemName);
+		} catch (Exception e) {
+			logger.debug(e);
+			if(element != null) {
+				element.setText(NLT.get("export.error.attribute"));
+			}
+			return true;
+    	}
+    }
 	protected boolean build(Element element, DefinableEntity entity, String dataElemType, String dataElemName, CustomAttribute attribute) {
     	return build(element, entity, attribute);
 	}
 
 	protected boolean build(Element element, DefinableEntity entity, CustomAttribute attribute) {
-	   Collection<Principal> users = ResolveIds.getPrincipals(attribute);
-	   if ((users != null) && !users.isEmpty()) {
+	    Collection<Principal> users = ResolveIds.getPrincipals(attribute);
+	    if ((users != null) && !users.isEmpty()) {
     		for (Principal p:users) {
     			DefinitionHelper.addPrincipalToDocument(element, p);
     		}

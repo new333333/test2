@@ -978,10 +978,11 @@ public class DefinitionHelper {
 		Element entryElem = doc.addElement("value");
 
 		// Handle structured fields of the entry known at compile time.
-		entryElem.setText(entry.getId().toString());
-		entryElem.addAttribute("title", entry.getTitle());
+		entryElem.addAttribute("id", entry.getId().toString());
 		entryElem.addAttribute("name", entry.getName());
+		entryElem.addAttribute("title", entry.getTitle());
 		entryElem.addAttribute("emailAddress", entry.getEmailAddress());
+		entryElem.setText(entry.getName());
 
 		return entryElem;
 	}
