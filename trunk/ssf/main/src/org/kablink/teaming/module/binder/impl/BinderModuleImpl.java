@@ -41,6 +41,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -2409,6 +2410,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 
 		entityElem.addAttribute("title", entity.getTitle());
+		addEntitySignature(entityElem, entity);
+		
 		String entityUrl = "";
 
 		// if a folder entry
@@ -2432,6 +2435,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		addRating(entityElem, entity);
 	}
 
+	private void addEntitySignature(Element entityElem, DefinableEntity entity) {
+		Element signature = entityElem.addElement("signature");
+		Element creation = signature.addElement("creation");
+		addHistoryStamp(creation, entity.getCreation());
+		Element modification = signature.addElement("modification");
+		addHistoryStamp(modification, entity.getModification());
+	}
+	private void addHistoryStamp(Element entityElem, HistoryStamp stamp) {
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    	entityElem.addAttribute("date", sdf.format(stamp.getDate()));
+		DefinitionHelper.addPrincipalToDocument(entityElem, stamp.getPrincipal());
+	}
 	private void addRating(Element element, DefinableEntity entity) {
 		if (entity.getAverageRating() != null) {
 			element.addAttribute("averageRating", entity.getAverageRating()
@@ -2516,21 +2531,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		team.addAttribute("inherited",
 				binder.isTeamMembershipInherited() ? "true" : "false");
 		for (Principal p : principals) {
-			addPrincipalToDocument(team, p);
+			DefinitionHelper.addPrincipalToDocument(team, p);
 		}
 
 		return team;
-	}
-
-	private Element addPrincipalToDocument(Branch doc, Principal entry) {
-		Element entryElem = doc.addElement("principal");
-
-		// Handle structured fields of the entry known at compile time.
-		entryElem.addAttribute("id", entry.getId().toString());
-		entryElem.addAttribute("title", entry.getTitle());
-		entryElem.addAttribute("name", entry.getName());
-
-		return entryElem;
 	}
 
 	private void adjustAttachmentUrls(Document entityDoc, String pathName) {
@@ -2774,16 +2778,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 					String defId = getDatabaseId(tempDoc);
 
-					if (defId
-							.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)
-							|| defId
-									.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)) {
+					if (defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)
+							|| defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)) {
 						// don't add definitions if they are for mirrored file
 						// entries
 						// or mirrored file folders
 					} else {
-						definitionModule.addDefinition(tempDoc, topBinder,
-								false);
+						definitionModule.addDefinition(tempDoc, topBinder, false);
 					}
 
 				} else if (fileExt.equals("xml")) {
@@ -2815,8 +2816,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						Document tempDoc = getDocument(xmlStr);
 						String defId = getDefinitionId(tempDoc);
 
-						if (defId
-								.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)) {
+						if (defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)) {
 							setDefinitionId(tempDoc,
 									ObjectKeys.DEFAULT_LIBRARY_ENTRY_DEF);
 							defId = getDefinitionId(tempDoc);
@@ -2845,8 +2845,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 										defId, xmlStr, tempDir, entryIdMap,
 										binderIdMap, entryId);
 							else {
-								Long newParentId = (Long) entryIdMap
-										.get(parentId);
+								Long newParentId = (Long) entryIdMap.get(parentId);
 								folder_addReplyWithXML(null, newBinderId,
 										newParentId, defId, xmlStr, tempDir,
 										entryIdMap, binderIdMap, entryId);
@@ -3042,8 +3041,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			entryIdMap.put(entryId, newEntryId);
 
 			// workflows
-			final FolderEntry entry = folderModule.getEntry(null, newEntryId);
-			importWorkflows(doc, entry);
+			try {
+				final FolderEntry entry = folderModule.getEntry(null, newEntryId);
+				importWorkflows(doc, entry);
+			} catch(Exception e) {}
 
 			return newEntryId;
 		} catch (WriteFilesException e) {
@@ -3291,7 +3292,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			binder.setTeamMembershipInherited(true);
 		else {
 			List<String> names = new ArrayList<String>();
-			xPath = "//team//principal";
+			xPath = "//team//value";
 			List principals = entityDoc.selectNodes(xPath);
 
 			for (Element member : (List<Element>) principals) {

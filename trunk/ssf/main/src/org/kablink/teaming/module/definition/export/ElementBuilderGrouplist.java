@@ -32,26 +32,33 @@
  */
 package org.kablink.teaming.module.definition.export;
 
+import java.util.Collection;
+
+import org.dom4j.Element;
+import org.kablink.teaming.domain.CustomAttribute;
+import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.util.ResolveIds;
+import org.kablink.teaming.web.util.DefinitionHelper;
+
 /**
  *
  * @author Brian Kim
  */
-public class ElementBuilderGrouplist extends ElementBuilderCommaSeparatedLong {
+public class ElementBuilderGrouplist extends AbstractElementBuilder {
 
-/*	   protected boolean build(Element element, DefinableEntity entity, CustomAttribute attribute) {
-		   Collection<Principal> users = ResolveIds.getPrincipals(attribute);
-		   if ((users != null) && !users.isEmpty()) {
-	    		for (Principal p:users) {
-		    		Element value = element.addElement("value");		    		
-//		    		value.setText(((Principal)iter.next()).getTitle());
-		    		value.setText(p.getId().toString());
-	    		}
-	    	} else {
-	    		element.addElement("value");
-	    	}
-	    	return true;
-	    }
-	    */
-	
+	protected boolean build(Element element, DefinableEntity entity, String dataElemType, String dataElemName, 
+			CustomAttribute attribute) {
+    	return build(element, entity, attribute);
+	}
 
+    protected boolean build(Element element, DefinableEntity entity, CustomAttribute attribute) {
+	   Collection<Principal> users = ResolveIds.getPrincipals(attribute);
+	   if ((users != null) && !users.isEmpty()) {
+    		for (Principal p:users) {
+    			DefinitionHelper.addPrincipalToDocument(element, p);
+    		}
+    	}
+    	return true;
+    }
 }

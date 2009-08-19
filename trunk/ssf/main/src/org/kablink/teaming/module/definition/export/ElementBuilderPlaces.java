@@ -32,25 +32,35 @@
  */
 package org.kablink.teaming.module.definition.export;
 
+import java.util.Iterator;
+import java.util.Map;
+
+import org.dom4j.Element;
+import org.kablink.teaming.domain.CustomAttribute;
+import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.util.ResolveIds;
+
 /**
  *
  * @author Brian Kim
  */
 public class ElementBuilderPlaces extends ElementBuilderCommaSeparatedLong {
 
-/*	   protected boolean build(Element element, DefinableEntity entity, CustomAttribute attribute) {
-			Map binders = ResolveIds.getBinderTitlesAndIcons(attribute);
-			if (!binders.isEmpty()) {
-				for (Iterator iter = binders.entrySet().iterator(); iter.hasNext();) {
-					Map.Entry binderData = (Map.Entry) iter.next();
-					Element value = element.addElement("value");
-					value.setText((String) ((Map) binderData.getValue()).get("id"));
-//					value.setText((String) ((Map) binderData.getValue()).get("title"));
-				}
-			} else {
-				element.addElement("value");
+	protected boolean build(Element element, DefinableEntity entity, String dataElemType, String dataElemName, 
+			CustomAttribute attribute) {
+    	return build(element, entity, attribute);
+	}
+
+    protected boolean build(Element element, DefinableEntity entity, CustomAttribute attribute) {
+		Map binders = ResolveIds.getBinderTitlesAndIcons(attribute);
+		if (!binders.isEmpty()) {
+			for (Iterator iter = binders.entrySet().iterator(); iter.hasNext();) {
+				Map.Entry binderData = (Map.Entry) iter.next();
+				Element value = element.addElement("value");
+				value.addAttribute("id", (String) ((Map) binderData.getValue()).get("id"));
+				value.setText((String) ((Map) binderData.getValue()).get("title"));
 			}
-			return true;
-	    }
-	    */
+		}
+		return true;
+    }
 }

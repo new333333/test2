@@ -52,6 +52,7 @@ import javax.portlet.RenderResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Branch;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -69,6 +70,7 @@ import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
@@ -971,6 +973,18 @@ public class DefinitionHelper {
 		}
 		return definitions;
 	}	
+
+	public static Element addPrincipalToDocument(Branch doc, Principal entry) {
+		Element entryElem = doc.addElement("value");
+
+		// Handle structured fields of the entry known at compile time.
+		entryElem.setText(entry.getId().toString());
+		entryElem.addAttribute("title", entry.getTitle());
+		entryElem.addAttribute("name", entry.getName());
+		entryElem.addAttribute("emailAddress", entry.getEmailAddress());
+
+		return entryElem;
+	}
 
 }
 
