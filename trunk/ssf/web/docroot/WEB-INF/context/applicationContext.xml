@@ -364,6 +364,7 @@
 				<prop key="org.kablink.teaming.exception.CheckedCodedException">common/defCodedError</prop>
 				<prop key="org.kablink.teaming.exception.UncheckedCodedException">common/defCodedError</prop>
 				<prop key="org.kablink.teaming.module.file.WriteFilesException">common/defCodedError</prop>
+				<prop key="org.kablink.teaming.module.binder.impl.WriteEntryDataException">common/defCodedError</prop>
 				<prop key="org.kablink.teaming.web.util.CloseWrapperException">common/defCodedErrorClose</prop>
 				<prop key="javax.portlet.PortletSecurityException">common/notAuthorized</prop>
 				<prop key="javax.portlet.UnavailableException">common/notAvailable</prop>

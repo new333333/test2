@@ -190,6 +190,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	else {
         		return entry;
         	}
+        } catch(WriteFilesException ex) {
+        	throw ex;
         } catch(Exception ex) {
         	entryDataErrors.addProblem(new Problem(Problem.GENERAL_PROBLEM, ex));
         	throw new WriteEntryDataException(entryDataErrors);
@@ -506,8 +508,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	if(filesErrors.getProblems().size() > 0) {
 	    		// At least one error occured during the operation. 
 	    		throw new WriteFilesException(filesErrors);
-	    	}
-	    	
+	    	}	    	
+        } catch(WriteFilesException ex) {
+        	throw ex;
         } catch(Exception ex) {
         	entryDataErrors.addProblem(new Problem(Problem.GENERAL_PROBLEM, ex));
         	throw new WriteEntryDataException(entryDataErrors);
