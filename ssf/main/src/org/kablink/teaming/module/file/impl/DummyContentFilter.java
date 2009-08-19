@@ -32,8 +32,7 @@
  */
 package org.kablink.teaming.module.file.impl;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -46,23 +45,17 @@ import org.springframework.util.FileCopyUtils;
 public class DummyContentFilter implements ContentFilter {
 
 	public void filter(String fileName, InputStream content) throws FilterException, UncheckedIOException {
-		// This dummy filter does not do anything useful. 
-		// A nice real filter to add would be something like a virus scanning filter. 
-		
-		if(fileName.equals("debug.doc")) {
-			throw new FilterException(fileName); // I don't like the file name!
+		// Copy the file content into a byte array.
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try {
+			FileCopyUtils.copy(content, baos);
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
 		}
-		else {
-			// Make a backup copy of the file in my own directory. Sneaky filter...
-			try {
-				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("C:/junk2/" + fileName));
-				FileCopyUtils.copy(content, bos);
-				bos.close();
-			}
-			catch(IOException e) {
-				throw new UncheckedIOException(e);
-			}
-		}
+		// A more realistic filter would run a virus scanner on the data or do something useful...
+		// Instead, this dummy filter simply rejects files that are bigger than 1K in size.
+		if(baos.toByteArray().length > 1024)
+			throw new FilterException(fileName);
 	}
 
 }
