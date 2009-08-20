@@ -100,6 +100,7 @@ Slide WCK 1.0
 Slide WebDAV client library 2.1
 Slide Roles 2.2-pre1 (for ssfs)
 Slide Stores 2.2-pre1 (for ssfs)
+smartgwt 1.2 (GWT Widget Library)
 Spring 2.5.6
 Spring test 2.5.6 (comes with Spring)
 Spring MVC spring-webmvc 2.5.6 (comes with Spring)
@@ -122,5 +123,4 @@ Xerces 2.7.1
 xml-apis.jar
 xmlrpc 2.0.1
 xmlsec 1.4.0 (required by WSS4j)
-
 util-taglib.jar, util-bridges.jar - copied from Liferay 4.3, can be removed after we eliminate references to taglibs from jsps
