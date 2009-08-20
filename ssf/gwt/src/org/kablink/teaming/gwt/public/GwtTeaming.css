@@ -45,17 +45,34 @@
 	width: 650px;
 }
 
+/* Sets the width of the canvas and the drop indicator. */
+.lpeCanvas_width
+{
+	width: 650px;
+}
+
 /* Styles for the canvas widget when the user is dragging something over the canvas. */
 .lpeCanvas_highlighted
 {
-	border: 5px solid #4D6D8B;
+	border: 5px solid #09F;
+}
+
+/* Styles used for the drop indicator that shows the user where a dropped widget will be inserted. */
+.lpeDropIndicator
+{
+	background-color: #09F;
+	height: 3px;
+	position: absolute;
+	z-index: 100;
 }
 
 /* Styles for widgets that can be dropped on a drop zone. */
 .lpeDropWidget
 {
-	margin-top: .5em;
 	margin-bottom: .5em;
+	margin-left: .5em;
+	margin-right: .5em;
+	margin-top: .5em;
 }
 
 /* Styles for the landing page editor hint. */

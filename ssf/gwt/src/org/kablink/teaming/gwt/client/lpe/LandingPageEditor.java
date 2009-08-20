@@ -33,8 +33,6 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import java.util.ArrayList;
-
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.lpe.PaletteItem.DragProxy;
 import org.kablink.teaming.gwt.client.widgets.EditCanceledHandler;
@@ -44,12 +42,12 @@ import com.google.gwt.event.dom.client.HasMouseMoveHandlers;
 import com.google.gwt.event.dom.client.HasMouseUpHandlers;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -200,8 +198,20 @@ public class LandingPageEditor extends Composite
 		// Is the user currently dragging an item from the palette?
 		if ( m_paletteItemDragInProgress && m_paletteItemDragProxy != null )
 		{
+			int mouseX;
+			int mouseY;
+			
 			// Yes, update the position of the drag proxy.
-			m_paletteItemDragProxy.setPopupPosition( event.getClientX()+10, event.getClientY()+10 );
+			mouseX = event.getClientX();
+			mouseY = event.getClientY();
+			m_paletteItemDragProxy.setPopupPosition( mouseX+10, mouseY+10 );
+			
+			// Is the mouse over a drop zone?
+			if ( m_selectedDropZone != null )
+			{
+				// Yes, have the drop zone update the visual drop clue.
+				m_selectedDropZone.showDropClue( event );
+			}
 		}
 	}// end onMouseMove()
 	
@@ -246,6 +256,9 @@ public class LandingPageEditor extends Composite
 				// Yes, hide the drop clue.
 				m_selectedDropZone.hideDropClue();
 				
+				// Let the drop zone figure out where to insert the dropped widget.
+				m_selectedDropZone.setDropLocation( event );
+				
 				// Create a DropWidget that will be added to the drop zone.
 				dropWidget = m_paletteItemBeingDragged.createDropWidget();
 				
@@ -265,7 +278,7 @@ public class LandingPageEditor extends Composite
 	 * Set the DropZone object that will be used on the mouse-up event.  This method will be called by a DropZone object
 	 * when the mouse has moved over the DropZone.
 	 */
-	public void setDropZone( DropZone dropZone )
+	public void setDropZone( DropZone dropZone, MouseEvent mouseEvent )
 	{
 		// Is the user dragging an item from the palette?
 		if ( m_paletteItemDragInProgress )
@@ -284,7 +297,7 @@ public class LandingPageEditor extends Composite
 			{
 				// Yes.
 				// Show the visual drop-zone clue for the new drop zone.
-				dropZone.showDropClue();
+				dropZone.showDropClue( mouseEvent );
 			}
 			
 			// Remember the new selected drop zone.

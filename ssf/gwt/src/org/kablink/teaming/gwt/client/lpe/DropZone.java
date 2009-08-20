@@ -35,91 +35,39 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import com.google.gwt.event.dom.client.HasMouseOutHandlers;
 import com.google.gwt.event.dom.client.HasMouseOverHandlers;
-import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.Composite;
 
 /**
  * 
  * @author jwootton
  *
  */
-public abstract class DropZone extends Composite
-	implements HasMouseOutHandlers, HasMouseOverHandlers, MouseOutHandler, MouseOverHandler
+public interface DropZone extends HasMouseOutHandlers, HasMouseOverHandlers, MouseOutHandler, MouseOverHandler
 {
-	private LandingPageEditor	m_lpe	= null;
 	
 	/**
 	 * This method should add the given widget to this DropZone.
 	 */
-	public abstract void addWidgetToDropZone( DropWidget dropWidget );
+	public void addWidgetToDropZone( DropWidget dropWidget );
 	
 	
 	/**
 	 * 
 	 */
-	public HandlerRegistration addMouseOutHandler( MouseOutHandler handler )
-	{
-		return addDomHandler( handler, MouseOutEvent.getType() );
-	}// end addMouseOutHandler()
+	public void hideDropClue();
+
+	
+	/**
+	 * 
+	 */
+	public void setDropLocation( MouseEvent event );
 	
 	
 	/**
 	 * 
 	 */
-	public HandlerRegistration addMouseOverHandler( MouseOverHandler handler )
-	{
-		return addDomHandler( handler, MouseOverEvent.getType() );
-	}// end addMouseOverHandler()
-	
-
-	/**
-	 * 
-	 */
-	public abstract void hideDropClue();
-
-	/**
-	 * 
-	 */
-	public void onMouseOut( MouseOutEvent event )
-	{
-		// Is the user currently dragging an item from the palette?
-		if ( m_lpe != null && m_lpe.isPaletteItemDragInProgress() )
-		{
-			// Yes, tell the landing page editor that the cursor is no longer over this drop zone.
-			m_lpe.setDropZone( null );
-		}
-	}// end onMouseOut()
-
-
-	/**
-	 * 
-	 */
-	public void onMouseOver( MouseOverEvent event )
-	{
-		// Is the user currently dragging an item from the palette?
-		if ( m_lpe != null && m_lpe.isPaletteItemDragInProgress() )
-		{
-			// Yes, tell the landing page editor what drop zone the cursor is over.
-			m_lpe.setDropZone( this );
-		}
-	}// end onMouseOver()
-
-
-	/**
-	 * 
-	 */
-	public void setLandingPageEditor( LandingPageEditor lpe )
-	{
-		m_lpe = lpe;
-	}// end setLandingPageEditor()
-
-	/**
-	 * 
-	 */
-	public abstract void showDropClue();
+	public void showDropClue( MouseEvent mouseEvent );
 	
 }// end DropZone()
