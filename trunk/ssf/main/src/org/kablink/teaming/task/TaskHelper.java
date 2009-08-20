@@ -52,6 +52,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
+import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
@@ -156,8 +157,8 @@ public class TaskHelper {
 		return (FilterType)portletSession.getAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE);
 	}
 	
-	public static ModeType getTaskModeType(PortletSession portletSession) {
-		return ListFolderHelper.getFolderModeType(portletSession);
+	public static ModeType getTaskModeType(AllModulesInjected bs, Long userId, Long binderId) {
+		return ListFolderHelper.getFolderModeType(bs, userId, binderId);
 	}
 	
 	/**
@@ -186,8 +187,8 @@ public class TaskHelper {
 	 * @param modeType
 	 * @return
 	 */
-	public static ListFolderHelper.ModeType setTaskFilterType(PortletSession portletSession, ListFolderHelper.ModeType modeType) {
-		return ListFolderHelper.setFolderModeType(portletSession, modeType);
+	public static ListFolderHelper.ModeType setTaskModeType(AllModulesInjected bs, Long userId, Long binderId, ListFolderHelper.ModeType modeType) {
+		return ListFolderHelper.setFolderModeType(bs, userId, binderId, modeType);
 	}
 	
 	public static SearchFilter buildSearchFilter(FilterType filterType) {
