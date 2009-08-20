@@ -51,6 +51,7 @@
 	<fileset id="gwtjars" dir="${gwt.dir}">
 		<include name="gwt-user.jar"   />
 		<include name="${gwt.dev.jar}" />
+		<include name="smartgwt.jar"   />
 	</fileset>
 	<fileset id="libjars" dir="${lib.dir}">
 		<include name="*jar" />
@@ -78,7 +79,7 @@
 	<target name="compile-ignored" depends="build-common.compile,compile-gwt" />
 	<target name="compile-gwt">
 		<java
-				classpath="src:${gwt.dir}/gwt-user.jar:${gwt.dir}/${gwt.dev.jar}"
+				classpath="src:${gwt.dir}/gwt-user.jar:${gwt.dir}/${gwt.dev.jar}:${gwt.dir}/smartgwt.jar:"
 				failonerror="true"
 				classname="com.google.gwt.dev.Compiler"
 				fork="true">
