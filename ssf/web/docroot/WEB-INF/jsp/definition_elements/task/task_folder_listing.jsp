@@ -259,6 +259,44 @@
 					</c:if>
 			    </a>
 			</th>
+			<c:if test="${ !empty ssCurrentFolderModeType && ssCurrentFolderModeType == 'VIRTUAL' }">
+				<th>
+					<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+						name="operation" value="save_folder_sort_info"/><ssf:param 
+						name="binderId" value="${ssBinder.id}"/><ssf:param 
+						name="ssFolderSortBy" value="location"/><c:choose><c:when 
+						test="${ ssFolderSortBy == 'location' && ssFolderSortDescend == 'false'}"><ssf:param 
+						name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
+						name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><ssf:param 
+				    	name="ssFolderModeType" value="${ssCurrentFolderModeType}"/><ssf:param
+						name="ssTaskFilterType" value="${ssTaskFilterType}"/></ssf:url>"
+					
+					<c:choose>
+					  <c:when test="${ ssFolderSortBy == 'location' && ssFolderSortDescend == 'false'}">
+					  	<ssf:title tag="title.sort.by.column.desc">
+					  		<ssf:param name="value" value='<%= NLT.get("task.location") %>' />
+					  	</ssf:title>
+					  </c:when>
+					  <c:otherwise>
+					  	<ssf:title tag="title.sort.by.column.asc">
+					  		<ssf:param name="value" value='<%= NLT.get("task.location") %>' />
+					  	</ssf:title>
+					  </c:otherwise>
+					</c:choose>	
+					 >
+	
+				      <div class="ss_title_menu"><ssf:nlt tag="task.location"/> </div>
+				    	<c:if test="${ ssFolderSortBy == 'location' && ssFolderSortDescend == 'true'}">
+							<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+							value='<%= NLT.get("folder.column.Location") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+						</c:if>
+						<c:if test="${ ssFolderSortBy == 'location' && ssFolderSortDescend == 'false'}">
+							<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+							value='<%= NLT.get("folder.column.Location") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+						</c:if>
+				    </a>
+				</th>
+			</c:if>
 		</tr>
 	</thead>
 	<tbody>
@@ -408,6 +446,27 @@
 							</ssf:ifEntryModifiable>
 						</c:if>
 					</td>
+					<c:if test="${ !empty ssCurrentFolderModeType && ssCurrentFolderModeType == 'VIRTUAL' }">
+						<td id="ss_tasks_${renderResponse.namespace}_${entry._docId}_location">
+							<c:set var="path" value=""/>
+				
+							<c:if test="${!empty ssFolderList}">
+								<c:forEach var="folder" items="${ssFolderList}">
+									<c:if test="${folder.id == entry._binderId}">
+										<c:set var="path" value="${folder}"/>
+										<c:set var="title" value="${folder.title} (${folder.parentWorkArea.title})"/>
+									</c:if>
+								</c:forEach>
+							</c:if>
+				
+							<c:if test="${!empty path}">
+					    		<a href="javascript: ;"
+									onclick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
+									title="${path}"
+									><span class="ss_bold">${title}</span></a>
+							</c:if>
+						</td>
+					</c:if>
 				</tr>
 			
 			</c:forEach>

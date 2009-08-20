@@ -777,6 +777,7 @@ public class WebKeys {
     public static final String FOLDER = "ssFolder";
     public static final String FOLDER_COLUMNS="folderColumns";
     public static final String FOLDER_COLUMN_POSITIONS="folderColumnPositions";
+    public static final String FOLDER_MODE_PREF="folderModePreference";
     public static final String FOLDER_DEFINITION_MAP="ssFolderDefinitionMap";
     public static final String FOLDER_ENTRY_WIDTH="folderEntryWidth";
     public static final String FOLDER_ENTRY_TOP="folderEntryTop";

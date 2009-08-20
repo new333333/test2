@@ -2174,27 +2174,31 @@ public class ListFolderHelper {
 
 	private static Map findTaskEntries(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Binder binder, Map model, Map options) throws PortletRequestBindingException {
-		model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Long userId = user.getId();
+		model.put(WebKeys.USER_PRINCIPAL, user);
 		Long binderId = binder.getId();
 		
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 
 		Map folderEntries = new HashMap();
-		
+
+		// What are we filtering for?  (Closed, Today, Week, ...)
 		String filterTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.TASK_FILTER_TYPE, null);
 		TaskHelper.FilterType filterType = TaskHelper.setTaskFilterType(portletSession, ((filterTypeParam != null) ? TaskHelper.FilterType.valueOf(filterTypeParam) : null));
 		model.put(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
-		
+
+		// Are we producing a physical or virtual listing?
 		ModeType modeType;
 		Boolean showModeSelect;
 		Workspace binderWs = BinderHelper.getBinderWorkspace(binder);
 		if (BinderHelper.isBinderUserWorkspace(binderWs) || BinderHelper.isBinderTeamWorkspace(binderWs)) {
 			String modeTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.FOLDER_MODE_TYPE, null);
-			modeType = setFolderModeType(portletSession, ((modeTypeParam != null) ? ModeType.valueOf(modeTypeParam) : null));
+			modeType = setFolderModeType(bs, userId, binderId, ((modeTypeParam != null) ? ModeType.valueOf(modeTypeParam) : null));
 			showModeSelect = Boolean.TRUE;
 		}
 		else {
-			modeType = setFolderModeType(portletSession, ModeType.PHYSICAL);
+			modeType = setFolderModeType(bs, userId, binderId, ModeType.PHYSICAL);
 			showModeSelect = Boolean.FALSE;
 		}
 		model.put(WebKeys.FOLDER_CURRENT_MODE_TYPE, modeType);
@@ -2208,6 +2212,22 @@ public class ListFolderHelper {
 		} else {
 			//a template
 			folderEntries = new HashMap();
+		}
+
+		// If we have any virtual entries...
+		if ((0 < folderEntries.size()) && (ModeType.VIRTUAL == modeType)) {
+			// ...we need to pass information about their binder's too.
+			List<Long> binderIds = new ArrayList<Long>();
+	    	List items = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+	    	if (items != null) {
+		    	Iterator it = items.iterator();
+		    	while (it.hasNext()) {
+		    		Map entry = (Map)it.next();
+		    		String entryBinderId = (String)entry.get(Constants.BINDER_ID_FIELD);
+		    		binderIds.add(Long.valueOf(entryBinderId));
+		    	}
+	    	}
+			model.put(WebKeys.FOLDER_LIST, bs.getBinderModule().getBinders(binderIds));
 		}
 
 		Map<String, Map> cacheEntryDef = new HashMap();
@@ -2234,19 +2254,20 @@ public class ListFolderHelper {
 	 * @param modeType
 	 * @return
 	 */
-	public static ModeType setFolderModeType(PortletSession portletSession, ModeType modeType) {
+	public static ModeType setFolderModeType(AllModulesInjected bs, Long userId, Long binderId, ModeType modeType) {
 		if (modeType == null) {
 			
-			modeType = getFolderModeType(portletSession);
+			modeType = getFolderModeType(bs, userId, binderId);
 			if (modeType == null) {
 				modeType = MODE_TYPE_DEFAULT;
 			}
 		}
-		portletSession.setAttribute(WebKeys.FOLDER_CURRENT_MODE_TYPE, modeType);
+		bs.getProfileModule().setUserProperty(userId, binderId, WebKeys.FOLDER_MODE_PREF, modeType);
 		return modeType;
 	}
 	
-	public static ModeType getFolderModeType(PortletSession portletSession) {
-		return (ModeType)portletSession.getAttribute(WebKeys.FOLDER_CURRENT_MODE_TYPE);
+	public static ModeType getFolderModeType(AllModulesInjected bs, Long userId, Long binderId) {
+		UserProperties userProps = bs.getProfileModule().getUserProperties(userId, binderId);
+		return (ModeType)userProps.getProperty(WebKeys.FOLDER_MODE_PREF);
 	}
 }
