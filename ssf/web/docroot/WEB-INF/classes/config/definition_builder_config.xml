@@ -103,7 +103,7 @@
 		<help>ihelp.designers.title_field</help>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderTitle" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderText" />
-		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderText" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderTitle" />
 	</item>
 
 <!-- shared view items ie)no category -->
