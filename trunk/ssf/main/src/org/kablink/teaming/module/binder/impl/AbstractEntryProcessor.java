@@ -738,7 +738,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected void deleteEntry_preDelete(Binder parentBinder, Entry entry, Map ctx) {
    		if (entry.isTop() && parentBinder.isUniqueTitles()) 
    			getCoreDao().updateTitle(parentBinder, entry, entry.getNormalTitle(), null);		
-    	getReportModule().addAuditTrail(AuditType.delete, entry);
+   		// Make sure that the audit trail's timestamp is identical to the modification time of the entry. 
+    	getReportModule().addAuditTrail(AuditType.delete, entry, entry.getModification().getDate());
     }
         
     //inside write transaction

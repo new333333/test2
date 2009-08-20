@@ -121,6 +121,7 @@ public interface ReportModule {
 	public void addAuditTrail(AuditTrail auditTrail);
 	public void addAuditTrail(AuditTrail.AuditType type, User user, DefinableEntity entity);
 	public void addAuditTrail(AuditTrail.AuditType type, DefinableEntity entity);
+	public void addAuditTrail(AuditTrail.AuditType type, DefinableEntity entity, Date startDate);
 	public void addLoginInfo(LoginInfo loginInfo);
 	public void addStatusInfo(User user);
 	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment);

@@ -350,6 +350,14 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getFolderService().folder_getAttachmentAsByteArray(accessToken, entryId, attachmentId);
 	}
 
+	public long[] folder_getCreatedOrUpdatedEntries(String accessToken, String family, Calendar startTime, Calendar endTime) {
+		return getFolderService().folder_getCreatedOrUpdatedEntries(accessToken, family, startTime, endTime);
+	}
+	
+	public long[] folder_getDeletedEntries(String accessToken, String family, Calendar startTime, Calendar endTime) {
+		return getFolderService().folder_getDeletedEntries(accessToken, family, startTime, endTime);
+	}	
+
 	/// Ical Service
 	
 	public void ical_uploadCalendarEntriesWithXML(String accessToken, long folderId, String iCalDataAsXML) {
@@ -571,6 +579,6 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	}
 	public String admin_getApplicationScopedToken(String accessToken, long applicationId, long userId) {
 		return getAdminService().admin_getApplicationScopedToken(accessToken, applicationId, userId);
-	}	
+	}
 
 }

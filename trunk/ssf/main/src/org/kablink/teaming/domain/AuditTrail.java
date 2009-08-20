@@ -67,6 +67,7 @@ public class AuditTrail extends ZonedObject {
     protected AuditType auditType=AuditType.unknown;
     protected String fileId;
     protected Long applicationId;
+    protected Long createdWithDefinitionId;
     
     protected AuditTrail() {
 		
@@ -85,16 +86,19 @@ public class AuditTrail extends ZonedObject {
 		setStart(start);
 		setEnd(end);
 	}
+	public AuditTrail(AuditType what, User user, DefinableEntity entity) {
+		this(what, user, entity, new Date());
+	}
 	/**
 	 * 
 	 * @param what
 	 * @param user
 	 * @param entity
 	 */
-	public AuditTrail(AuditType what, User user, DefinableEntity entity) {
+	public AuditTrail(AuditType what, User user, DefinableEntity entity, Date startDate) {
 		setAuditType(what);
 		setStartBy(user.getId());
-		setStartDate(new Date());
+		setStartDate(startDate);
 		setEntityId(entity.getEntityIdentifier().getEntityId());
 		setEntityType(entity.getEntityType().name());
 		if (entity instanceof Binder) {
@@ -278,6 +282,12 @@ public class AuditTrail extends ZonedObject {
 	}
 	public void setApplicationId(Long applicationId) {
 		this.applicationId = applicationId;
+	}
+	public Long getCreatedWithDefinitionId() {
+		return createdWithDefinitionId;
+	}
+	public void setCreatedWithDefinitionId(Long createdWithDefinitionId) {
+		this.createdWithDefinitionId = createdWithDefinitionId;
 	}
 	
 }
