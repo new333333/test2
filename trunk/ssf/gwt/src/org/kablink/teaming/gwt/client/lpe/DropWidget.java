@@ -37,6 +37,7 @@ import org.kablink.teaming.gwt.client.widgets.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.widgets.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.user.client.ui.Composite;
 
 
@@ -119,6 +120,50 @@ public abstract class DropWidget extends Composite
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
 	public abstract DlgBox getPropertiesDlgBox( int xPos, int yPos );
+	
+	
+	/**
+	 * This method will return the following values:
+	 * 	-1, the mouse is above this widget
+	 *  -2, the mouse is below this widget
+	 *   1, the mouse is over the top-half of this widget
+	 *   2, the mouse is over the bottom-half of this widget.
+	 */
+	public int getMousePosOverWidget( MouseEvent mouseEvent )
+	{
+		int widgetY;
+		int widgetHeight;
+		int mouseY;
+		
+		widgetY = getAbsoluteTop();
+		widgetHeight = getOffsetHeight();
+		mouseY = mouseEvent.getClientY();
+		
+		// Is the mouse above this widget?
+		if ( mouseY < widgetY )
+		{
+			// Yes
+			return -1;
+		}
+		
+		// Is the mouse below this widget?
+		if ( mouseY > (widgetY + widgetHeight) )
+		{
+			// Yes
+			return -2;
+		}
+		
+		// If we get here the mouse is over the widget.
+		// Is the mouse over the top half of the widget?
+		if ( mouseY <= (widgetY + (widgetHeight/2)) )
+		{
+			// Yes
+			return 1;
+		}
+		
+		// If we get here the mouse is over the bottom-half of the widget.
+		return 2;
+	}// end isMouseOverWidget()
 	
 	
 	/**
