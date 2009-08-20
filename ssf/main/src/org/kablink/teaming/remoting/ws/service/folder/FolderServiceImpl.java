@@ -32,16 +32,21 @@
  */
 package org.kablink.teaming.remoting.ws.service.folder;
 
+import static org.kablink.util.search.Restrictions.between;
+import static org.kablink.util.search.Restrictions.eq;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -69,6 +74,9 @@ import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.util.Validator;
+import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Order;
 
 
 public class FolderServiceImpl extends BaseService implements FolderService, FolderServiceInternal {
@@ -491,4 +499,43 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 			throw new RemotingException(e);
 		}
 	}
+	
+	public long[] folder_getCreatedOrUpdatedEntries(String accessToken,
+			String family, Calendar startTime, Calendar endTime) {
+		Date startDate = (startTime != null) ? startTime.getTime() : new Date(0);
+		if (endTime == null)
+			throw new IllegalArgumentException("End time must be specified");
+		Date endDate = endTime.getTime();
+		Criteria crit = new Criteria();
+		if (family != null) {
+			family = StringCheckUtil.check(family);
+			crit.add(eq(Constants.FAMILY_FIELD, family));
+		}
+		crit.add(eq(Constants.ENTITY_FIELD, "folderEntry"))
+			.add(eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY))
+			.add(eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
+			.add(between(Constants.MODIFICATION_DATE_FIELD, 
+					DateTools .dateToString(startDate, DateTools.Resolution.SECOND), 
+					DateTools.dateToString(endDate, DateTools.Resolution.SECOND)))
+			.addOrder(new Order(Constants.MODIFICATION_DATE_FIELD, true));
+		
+		Document query = crit.toQuery();
+		
+		Map folderEntries = getBinderModule().executeSearchQuery(query, 0, 0);
+		List<Map> entryList = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+		List<Long> ids = new ArrayList<Long>();
+		for(Map entry:entryList) {
+			ids.add(Long.valueOf((String) entry.get(Constants.DOCID_FIELD)));
+		}
+		long[] result = new long[ids.size()];
+		for(int i = 0; i < result.length; i++)
+			result[i] = ids.get(i);
+		return result;
+	}
+
+	public long[] folder_getDeletedEntries(String accessToken, String family,
+			Calendar startTime, Calendar endTime) {
+return null; // TBC
+	}
+
 }

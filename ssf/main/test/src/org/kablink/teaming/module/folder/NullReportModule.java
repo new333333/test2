@@ -199,4 +199,10 @@ public class NullReportModule implements ReportModule {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public void addAuditTrail(AuditType type, DefinableEntity entity,
+			Date startDate) {
+		// TODO Auto-generated method stub
+		
+	}
 }

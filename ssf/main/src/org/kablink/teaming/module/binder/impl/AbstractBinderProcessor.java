@@ -886,7 +886,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         binder.setModification(new HistoryStamp(user));
         binder.incrLogVersion();
     	processChangeLog(binder, ChangeLog.DELETEBINDER);
-    	getReportModule().addAuditTrail(AuditType.delete, binder);
+   		// Make sure that the audit trail's timestamp is identical to the modification time of the binder. 
+    	getReportModule().addAuditTrail(AuditType.delete, binder, binder.getModification().getDate());
     	if ((binder.getDefinitionType() != null) &&
     			binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
     		//remove connection

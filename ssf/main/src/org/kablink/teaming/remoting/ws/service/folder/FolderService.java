@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.remoting.ws.service.folder;
 
+import java.util.Calendar;
+
 import org.kablink.teaming.remoting.ws.model.FileVersions;
 import org.kablink.teaming.remoting.ws.model.FolderEntry;
 import org.kablink.teaming.remoting.ws.model.FolderEntryCollection;
@@ -89,5 +91,27 @@ public interface FolderService {
 	public void folder_setEntryTag(String accessToken, Tag tag);
 	public void folder_setRating(String accessToken, long entryId, long value);
 	public byte[] folder_getAttachmentAsByteArray(String accessToken, long entryId, String attachmentId);
+
+	/**
+	 * Return a list of IDs of the entries of the specific family type that have been added or updated between the start and end times.
+	 * 
+	 * @param accessToken
+	 * @param family string representing a family; if null, the match is performed irrespective of family type 
+	 * @param startTime the start time, inclusive; this argument is optional
+	 * @param endTime the end time, exclusive; this argument is required
+	 * @return
+	 */
+	public long[] folder_getCreatedOrUpdatedEntries(String accessToken, String family, Calendar startTime, Calendar endTime);
+	
+	/**
+	 * Return a list of IDs of the entries of the specific family type that have been deleted between the start and end times.
+	 * 
+	 * @param accessToken
+	 * @param family string representing a family; if null, the match is performed irrespective of family type 
+	 * @param startTime the start time, inclusive; this argument is optional
+	 * @param endTime the end time, exclusive; this argument is required
+	 * @return
+	 */
+	public long[] folder_getDeletedEntries(String accessToken, String family, Calendar startTime, Calendar endTime);
 
 }
