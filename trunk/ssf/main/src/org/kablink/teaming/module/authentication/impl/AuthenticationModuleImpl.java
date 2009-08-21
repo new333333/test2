@@ -54,6 +54,7 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.Authentication;
@@ -273,21 +274,30 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
     	} catch(Exception e) {
     		throw new AuthenticationServiceException("Unable to configure authentication for zone " + zone, e);
     	}
+
     	if(authenticators.containsKey(zone)) {
        		Authentication result = null;
-    		try {
-    			// Perform authentication
-     			result = authenticators.get(zone).authenticate(authentication);
-     			// This is not used for authentication but for synchronization.
-    			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
-    					(String) result.getName(), (String) result.getCredentials(),
-    					(Map) result.getPrincipal(), LoginInfo.AUTHENTICATOR_WEB);
-    			if(result instanceof SynchNotifiableAuthentication)
-    				((SynchNotifiableAuthentication)result).synchDone();
-    			return result;
-    		} catch(AuthenticationException e) {
-    			exc = e;
-    		}
+       		
+        	// Are we dealing with one of Teaming's system accounts such as "admin" or "guest"?
+        	if ( !MiscUtil.isSystemUserAccount( authentication.getName() ) )
+        	{
+        		// No, try to do an ldap authentication.
+	    		try {
+	    			// Perform authentication
+	     			result = authenticators.get(zone).authenticate(authentication);
+	     			// This is not used for authentication but for synchronization.
+	    			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
+	    					(String) result.getName(), (String) result.getCredentials(),
+	    					(Map) result.getPrincipal(), LoginInfo.AUTHENTICATOR_WEB);
+	    			if(result instanceof SynchNotifiableAuthentication)
+	    				((SynchNotifiableAuthentication)result).synchDone();
+	    			return result;
+	    		} catch(AuthenticationException e) {
+	    			exc = e;
+	    		}
+        	}
+        	
+        	// Try to authenticate against the Teaming db.
     		if(SZoneConfig.getAdminUserName(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName())).equals(authentication.getName())) {
     			result = localProviders.get(zone).authenticate(authentication);
     			// This is not used for authentication or synchronization but merely to log the authenticator.
@@ -298,6 +308,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
     			return result;
     		}
     	}
+    	
     	if(exc != null)
     		throw exc;
     	else
