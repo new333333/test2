@@ -55,7 +55,7 @@
 %>
 <c:set var="ss_mashupPropertyName" value="${property_name}" scope="request"/>
 
-<script type="text/javascript" src="<html:rootPath />js/gwt/org.kablink.teaming.gwt.GwtTeaming/org.kablink.teaming.gwt.GwtTeaming.nocache.js"></script>
+<script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
 
 <c:if test="${ssConfigJspStyle == 'form'}">
 <script type="text/javascript">

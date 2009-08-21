@@ -130,5 +130,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/md5crypt.jar"/>
 	<classpathentry kind="lib" path="lib/gwt-servlet.jar"/>
 	<classpathentry kind="lib" path="tools/gwt/gwt-user.jar"/>
+	<classpathentry kind="lib" path="tools/gwt/smartgwt-skins.jar"/>
+	<classpathentry kind="lib" path="tools/gwt/smartgwt.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
