@@ -69,7 +69,6 @@ import org.xml.sax.InputSource;
 
 public abstract class TextConverter extends Converter<String> implements EntityResolver
 {
-	private EntityResolver docEntityResolver;
 	protected final Log logger = LogFactory.getLog(getClass());
 	protected String _nullTransform = "";
 	protected String excludedExtensions = "";
@@ -132,9 +131,7 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 		// Bugzilla 524410:  Depending on version of OO, XHTML sometimes cannot be parsed.
 		//
 		// See resolveEntity() in this module for what this does.
-		docEntityResolver = reader.getEntityResolver();
 		reader.setEntityResolver(this);
-		
 		return reader.read(textFile);	
 	}
 	
