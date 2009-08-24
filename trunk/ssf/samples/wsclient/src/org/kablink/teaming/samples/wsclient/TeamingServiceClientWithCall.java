@@ -33,6 +33,7 @@
 package org.kablink.teaming.samples.wsclient;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -205,6 +206,14 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "migration_uploadFolderFileStaged", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], args[6], c1}, null);
 			} else if(args[0].equals("getFolders")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getFolders", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])});
+			} else if(args[0].equals("getCreatedOrUpdatedEntries")) {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "folder_getCreatedOrUpdatedEntries", 
+						new Object[] {null, args[1], sdf.parse(args[2]), sdf.parse(args[3])});
+			} else if(args[0].equals("getDeletedEntries")) {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "folder_getDeletedEntries", 
+						new Object[] {null, args[1], sdf.parse(args[2]), sdf.parse(args[3])});
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -227,6 +236,8 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("getPrincipals <first> <max>");
 		System.out.println("getUsers <first> <max> [<captive>]");
 		System.out.println("getFolderEntries <folder id> <first> <max>"); 
+		System.out.println("getCreatedOrUpdatedEntries <family> <startDateTime - yyyyMMddHHmm> <endDateTime - yyyyMMddHHmm>"); 
+		System.out.println("getDeletedEntries <family> <startDateTime (yyyyMMddHHmm)> <endDateTime (yyyyMMddHHmm)>"); 
 		System.out.println("getTeamMembers <binder id> <explodeGroups> <first> <max>");
 		System.out.println("getTeams");
 		System.out.println("getUserTeams <user id>");

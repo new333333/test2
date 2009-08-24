@@ -369,6 +369,12 @@ public abstract class WSClientBase {
 		printDefinableEntityArray(deArray);
 	}
 
+	void fetchAndPrintPrimitiveArray(String serviceName, String operation, Object[] args) throws Exception {
+		Object deArray = fetch(serviceName, operation, args);
+
+		printPrimitiveArray(deArray);
+	}
+	
 	void fetchAndPrintACK(String serviceName, String operation, Object[] args) throws Exception {
 		fetchAndPrintACK(serviceName, operation, args, null);
 	}
@@ -395,6 +401,35 @@ public abstract class WSClientBase {
 				System.out.println("Array size is " + uArray.length);
 				for(User u:uArray)
 					printDefinableEntity(u);
+			}
+			else {
+				System.out.println("Unrecognized array type: " + array.getClass().getName()); 
+			}
+		}
+		else {
+			System.out.println("Null array");
+		}
+	}
+	
+	void printPrimitiveArray(Object array) {
+		if(array != null) {
+			if(array instanceof long[]) {
+				long[] lArray = (long[]) array;
+				System.out.println("Array size is " + lArray.length);
+				for(long l:lArray)
+					System.out.println(l);
+			}
+			else if(array instanceof int[]) {
+				int[] iArray = (int[]) array;
+				System.out.println("Array size is " + iArray.length);
+				for(int i:iArray)
+					System.out.println(i);
+			}
+			else if(array instanceof boolean[]) {
+				boolean[] bArray = (boolean[]) array;
+				System.out.println("Array size is " + bArray.length);
+				for(boolean b:bArray)
+					System.out.println(b);
 			}
 			else {
 				System.out.println("Unrecognized array type: " + array.getClass().getName()); 

@@ -61,6 +61,7 @@ import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.HKey;
 import org.kablink.teaming.domain.LicenseStats;
@@ -90,6 +91,8 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.search.Constants;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+
+import com.liferay.util.Validator;
 
 
 public class ReportModuleImpl extends HibernateDaoSupport implements ReportModule {
@@ -1180,6 +1183,25 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				return auditTrail;
 			}});
 	}
+	
+	public List<Long> getDeletedFolderEntryIds(final String family, final Date startDate, final Date endDate) {
+		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				Criteria crit = session.createCriteria(AuditTrail.class)
+					.setProjection(Projections.distinct(Projections.projectionList() 
+                                                          .add(Projections.property("entityId"))))
+				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
+				.add(Restrictions.eq("entityType", EntityIdentifier.EntityType.folderEntry.name()))
+				.add(Restrictions.eq("transactionType", AuditType.delete.name()))
+				.add(Restrictions.ge("startDate", startDate))
+				.add(Restrictions.lt("startDate", endDate));
+				if(Validator.isNotNull(family))
+					crit.add(Restrictions.eq("deletedFolderEntryFamily", family));
+				return crit.list();
+			}});
+		return ids;
+	}
+
 }
 
 class TimeInterval
