@@ -8160,25 +8160,26 @@ function input_setCaretToPos(input, pos) {
 
 //Mailto: replacement routines
 function ss_showEmailLinks() {
-	var mailtoElements = document.getElementsByTagName('ssMailTo')
-	for (var i = 0; i < mailtoElements.length; i++) {
-		var mailtoName = mailtoElements[i].getAttribute("name");
+	var mailtoElements = document.getElementsByTagName('ssmailto')
+	while (mailtoElements != null && mailtoElements.length > 0) {
+		var mailtoName = mailtoElements[0].getAttribute("name");
 		mailtoName = ss_replaceSubStrAll(mailtoName, "<", "&lt;")
 		mailtoName = ss_replaceSubStrAll(mailtoName, ">", "&gt;")
-		var mailtoHost = mailtoElements[i].getAttribute("host");
+		var mailtoHost = mailtoElements[0].getAttribute("host");
 		mailtoHost = ss_replaceSubStrAll(mailtoHost, "<", "&lt;")
 		mailtoHost = ss_replaceSubStrAll(mailtoHost, ">", "&gt;")
-		var mailtoNoLink = mailtoElements[i].getAttribute("noLink");
-		var aNode = mailtoElements[i].parentNode;
+		var mailtoNoLink = mailtoElements[0].getAttribute("noLink");
+		var aNode = mailtoElements[0].parentNode;
 		if (mailtoNoLink == "true") {
 			aNode.innerHTML = mailtoName+"@"+mailtoHost;
 		} else {
 			aNode.setAttribute("href", "mailto:"+mailtoName+"@"+mailtoHost);
-			//aNode.removeChild(mailtoElements[i]);
+			aNode.removeChild(mailtoElements[0]);
 			spanObj = self.document.createElement("span");
 			spanObj.innerHTML = mailtoName+"@"+mailtoHost;
 			aNode.appendChild(spanObj);
 		}
+		mailtoElements = document.getElementsByTagName('ssmailto')
 	}
 }
 
