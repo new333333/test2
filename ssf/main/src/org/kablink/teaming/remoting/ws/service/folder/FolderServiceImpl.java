@@ -533,9 +533,17 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		return result;
 	}
 
-	public long[] folder_getDeletedEntries(String accessToken, String family,
-			Calendar startTime, Calendar endTime) {
-return null; // TBC
+	public long[] folder_getDeletedEntries(String accessToken, String family, Calendar startTime, Calendar endTime) {
+		List<Long> ids = getReportModule().getDeletedFolderEntryIds(family, startTime.getTime(), endTime.getTime());
+		if(ids != null) {
+			long[] result = new long[ids.size()];
+			for(int i = 0; i < result.length; i++)
+				result[i] = ids.get(i);
+			return result;
+		}
+		else {
+			return new long[0];
+		}
 	}
 
 }
