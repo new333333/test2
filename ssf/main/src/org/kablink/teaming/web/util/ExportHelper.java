@@ -44,9 +44,11 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -109,6 +111,7 @@ import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
@@ -147,6 +150,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
@@ -1251,15 +1255,18 @@ public class ExportHelper {
 			String definitionId, String inputDataAsXML, String tempDir,
 			Map entryIdMap, Map binderIdMap, Long entryId) {
 		return addFolderEntry(accessToken, binderId, definitionId,
-				inputDataAsXML, null, tempDir, entryIdMap, binderIdMap, entryId);
+				inputDataAsXML, tempDir, entryIdMap, binderIdMap, entryId);
 	}
 
 	private static long addFolderEntry(String accessToken, long binderId,
-			String definitionId, String inputDataAsXML, Map options,
+			String definitionId, String inputDataAsXML,
 			String tempDir, Map entryIdMap, Map binderIdMap, Long entryId) {
 
 		final Document doc = getDocument(inputDataAsXML);
 		String[] fileNames = new String[0];
+		Map options = new HashMap();
+		//Set the entry creator and modifier fields
+		setSignature(options, doc);
 
 		try {
 			// create new entry
@@ -1269,7 +1276,7 @@ public class ExportHelper {
 
 			// add file attachments
 			addFileAttachments(binderId, newEntryId, doc, tempDir);
-
+			
 			// add entry id to entry id map
 			entryIdMap.put(entryId, newEntryId);
 
@@ -1291,15 +1298,19 @@ public class ExportHelper {
 			long parentId, String definitionId, String inputDataAsXML,
 			String tempDir, Map entryIdMap, Map binderIdMap, Long entryId) {
 		return addReply(accessToken, binderId, parentId, definitionId,
-				inputDataAsXML, tempDir, entryIdMap, binderIdMap, entryId, null);
+				inputDataAsXML, tempDir, entryIdMap, binderIdMap, entryId);
 	}
 
 	private static long addReply(String accessToken, long binderId, long parentId,
 			String definitionId, String inputDataAsXML, String tempDir,
-			Map entryIdMap, Map binderIdMap, Long entryId, Map options) {
+			Map entryIdMap, Map binderIdMap, Long entryId) {
 
 		Document doc = getDocument(inputDataAsXML);
 
+		Map options = new HashMap();
+		//Set the entry creator and modifier fields
+		setSignature(options, doc);
+		
 		try {
 			// add new reply
 			long newEntryId = folderModule.addReply(new Long(binderId),
@@ -1312,6 +1323,12 @@ public class ExportHelper {
 
 			// add entry reply id to entry id map
 			entryIdMap.put(entryId, newEntryId);
+
+			// workflows
+			try {
+				final FolderEntry entry = folderModule.getEntry(null, newEntryId);
+				importWorkflows(doc, entry);
+			} catch(Exception e) {}
 
 			return newEntryId;
 		} catch (WriteFilesException e) {
@@ -1444,6 +1461,46 @@ public class ExportHelper {
 		}
 	}
 
+	private static void setSignature(Map options, Document entityDoc) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Element signature = (Element) entityDoc.selectSingleNode("//signature");
+		if (signature != null) {
+			Element creation = (Element)signature.selectSingleNode("./creation");
+			if (creation != null) {
+				String sDate = creation.attributeValue("date", "");
+				Element value = (Element) creation.selectSingleNode("./value");
+				if (!sDate.equals("") && value != null) {
+					String id = value.attributeValue("id", "");
+					String name = value.attributeValue("name", "");
+					if (!name.equals("")) {
+						List names = new ArrayList();
+						names.add(name);
+						List<Principal> principals = ResolveIds.getPrincipalsByName(names, false);
+						if (!principals.isEmpty()) {
+							Principal p = principals.get(0);
+					    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+					    	Calendar date = Calendar.getInstance();
+					    	try {
+								if (p != null && p instanceof UserPrincipal) {
+									date.setTime(sdf.parse(sDate));
+									//Set the creator of this entity to the original author and
+									// make the current user be the modifier of the entity
+									options.put(ObjectKeys.INPUT_OPTION_CREATION_NAME, p.getName());
+									options.put(ObjectKeys.INPUT_OPTION_CREATION_DATE, date);
+							    	Calendar now = Calendar.getInstance();
+							    	now.setTime(new Date());
+									options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, user.getName());
+									options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, now);
+								}
+							} catch(java.text.ParseException e) {
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	private static File getTemporaryDirectory() {
 		return new File(TempFileUtil.getTempFileDir("import"), UUID
 				.randomUUID().toString());
