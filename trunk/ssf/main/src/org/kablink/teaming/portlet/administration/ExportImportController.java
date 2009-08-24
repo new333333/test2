@@ -161,6 +161,6 @@ public class ExportImportController  extends  SAbstractController {
 			
 			getBinderModule().export(binderId, entryId, res.getOutputStream(), options);
 		}
-		return null;
+		return new ModelAndView("forum/reload_opener", model);
 	}
 }
