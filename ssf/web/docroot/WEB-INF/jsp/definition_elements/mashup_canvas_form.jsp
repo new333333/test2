@@ -36,6 +36,12 @@
 
 <meta name="gwt:property" content="locale=<%= NLT.get( "Teaming.Lang" ) %>">
 
+<% /* Tell SmartGWT where to find its stuff. */ %>
+<script type="text/javascript">
+	var isomorphicDir="<html:rootPath />js/gwt/gwtteaming/sc/";
+	var currentSkin= "Enterprise";
+</script>
+
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="ss_mashupItemId" value="0" scope="request"/>
 <%  

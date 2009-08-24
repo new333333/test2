@@ -12,7 +12,12 @@
 	<path id="project.classpath">
 		<pathelement path="${classpath}" />
 		<pathelement location="${project.dir}/ws-client/kablink-teaming-wsclient.jar"/>
-		<fileset dir="${project.dir}/lib" includes="*.jar" />
+		<pathelement location="${project.dir}/tools/gwt/gwt-user.jar"/>
+		<pathelement location="${project.dir}/tools/gwt/smartgwt.jar"/>
+		<fileset dir="${project.dir}/lib">
+			<include name="*.jar" />
+			<exclude name="gwt-servlet.jar" />
+		</fileset>
 	</path>
 	<taskdef classpathref="project.classpath" resource="net/sf/antcontrib/antcontrib.properties" />
 	<taskdef classpathref="project.classpath" resource="axis-tasks.properties" />
