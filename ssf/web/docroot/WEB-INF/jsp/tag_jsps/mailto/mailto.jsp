@@ -36,12 +36,12 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${!empty emailName && !empty emailHost}">
   <c:if test="${!noLink}">
-	<a href=""><ssMailTo 
+	<a href=""><ssmailto 
 	  	name="<c:out value="${emailName}" escapeXml="true"/>" 
 	  	host="<c:out value="${emailHost}" escapeXml="true"/>"/></a>
   </c:if>
   <c:if test="${noLink}">
-    <span><ssMailTo 
+    <span><ssmailto 
 	  	name="<c:out value="${emailName}" escapeXml="true"/>" 
 	  	host="<c:out value="${emailHost}" escapeXml="true"/>"
 	  	noLink="true"/></span>
