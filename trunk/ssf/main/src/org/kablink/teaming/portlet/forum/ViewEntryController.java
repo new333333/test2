@@ -769,27 +769,6 @@ public class ViewEntryController extends  SAbstractController {
 			toolbar.addToolbarMenuItem("8_reports", "", NLT.get("toolbar.reports.workflowHistory"), adapterUrl.toString(), qualifiers);
 		}
 		
-		//Export / Import
-		if (getBinderModule().testAccess(entry.getParentBinder(), BinderOperation.export)) {
-			
-			//accessControlEntryMap.put("deleteEntry", new Boolean(true));
-			Map qualifiers = new HashMap();
-			//qualifiers.put("onClick", "return ss_confirmDeleteEntry(this);");
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_EXPORT_IMPORT);
-			url.setParameter(WebKeys.OPERATION, WebKeys.OPERATION_EXPORT);
-			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-			//url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
-			url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-			url.setParameter(WebKeys.URL_SHOW_MENU, "false");
-			
-			//10?
-			toolbar.addToolbarMenu("10_delete", NLT.get("toolbar.menu.export_import"), url, qualifiers);
-			
-			//qualifiers.put("popup", new Boolean(true));
-		}
-
-
 		if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
 			if (getBinderModule().testAccess(entry.getParentBinder(), BinderOperation.setProperty)) {
 				Map qualifiers = new HashMap();
@@ -823,7 +802,7 @@ public class ViewEntryController extends  SAbstractController {
 		Map qualifiers = new HashMap();
 		String permaLink = PermaLinkUtil.getPermalink(request, entry);
 		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
-		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.entryPermalink"), permaLink, qualifiers);
+		footerToolbar.addToolbarMenu("1_permalink", NLT.get("toolbar.menu.entryPermalink"), permaLink, qualifiers);
 
 		model.put(WebKeys.PERMALINK, permaLink);
 		model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
@@ -838,7 +817,7 @@ public class ViewEntryController extends  SAbstractController {
 			
 			qualifiers = new HashMap();		
 			qualifiers.put("onClick", "ss_createPopupDiv(this, 'ss_subscription_entry"+entryId+"'); return false;");
-			footerToolbar.addToolbarMenu("subscribe", NLT.get("toolbar.menu.subscribeToEntry"), adapterSubscriptionUrl.toString(), qualifiers);
+			footerToolbar.addToolbarMenu("4_subscribe", NLT.get("toolbar.menu.subscribeToEntry"), adapterSubscriptionUrl.toString(), qualifiers);
 		}
 		
 		String[] contributorIds = collectContributorIds(entry);
@@ -853,7 +832,7 @@ public class ViewEntryController extends  SAbstractController {
 			qualifiers.put("popup", Boolean.TRUE);
 			qualifiers.put("post", Boolean.TRUE);
 			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));			
-			footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
+			footerToolbar.addToolbarMenu("3_sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 		}
 
 		if (getIcBrokerModule().isEnabled() && 
@@ -866,17 +845,30 @@ public class ViewEntryController extends  SAbstractController {
 			qualifiers.put("popup", Boolean.TRUE);
 			qualifiers.put("post", Boolean.TRUE);
 			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
-			footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
+			footerToolbar.addToolbarMenu("6_addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
 		}
 		
 		//   iCalendar
 		if (entry.getEvents() != null && !entry.getEvents().isEmpty()) {
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_showPermalink(this);return false;");
-			footerToolbar.addToolbarMenu("iCalendar", NLT.get("toolbar.menu.iCalendar"), UrlUtil.getICalURL(request, folderId, entryId), qualifiers);
+			footerToolbar.addToolbarMenu("2_iCalendar", NLT.get("toolbar.menu.iCalendar"), UrlUtil.getICalURL(request, folderId, entryId), qualifiers);
 			model.put(WebKeys.TOOLBAR_URL_ICAL, UrlUtil.getICalURL(request, folderId, entryId));
 		}
 		
+		//Export / Import
+		if (entry.isTop() && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			qualifiers = new HashMap();
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_EXPORT_IMPORT);
+			url.setParameter(WebKeys.OPERATION, WebKeys.OPERATION_EXPORT);
+			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+			url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+			url.setParameter(WebKeys.URL_SHOW_MENU, "false");
+			footerToolbar.addToolbarMenu("5_export", NLT.get("toolbar.menu.exportEntry"), url, qualifiers);
+		}
+
+
 		model.put(WebKeys.FOLDER_ENTRY_TOOLBAR,  toolbar.getToolbar());
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 
