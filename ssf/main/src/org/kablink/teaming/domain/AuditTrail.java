@@ -34,6 +34,9 @@ package org.kablink.teaming.domain;
 
 import java.util.Date;
 
+import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.util.Validator;
+
 /**
  * Provide auditting of significant events in the system.
  * @hibernate.class table="SS_AuditTrail"
@@ -67,7 +70,8 @@ public class AuditTrail extends ZonedObject {
     protected AuditType auditType=AuditType.unknown;
     protected String fileId;
     protected Long applicationId;
-    protected Long createdWithDefinitionId;
+    // This field is applicable only if transactionType='delete' and entityType='folderEntry'.
+    protected String deletedFolderEntryFamily;
     
     protected AuditTrail() {
 		
@@ -109,7 +113,13 @@ public class AuditTrail extends ZonedObject {
 			setOwningBinderId(b.getId());
 			setOwningBinderKey(b.getBinderKey().getSortKey());
 		}
-		
+		if(what.equals(AuditType.delete) && (entity instanceof FolderEntry) && entity.getCreatedWithDefinition() != null) {
+        	org.dom4j.Document def = entity.getCreatedWithDefinition().getDefinition();
+        	String family = DefinitionUtils.getFamily(def);
+        	if (Validator.isNotNull(family)) {
+        		setDeletedFolderEntryFamily(family);
+        	}
+		}
 		
 	}
 	/**
@@ -283,11 +293,11 @@ public class AuditTrail extends ZonedObject {
 	public void setApplicationId(Long applicationId) {
 		this.applicationId = applicationId;
 	}
-	public Long getCreatedWithDefinitionId() {
-		return createdWithDefinitionId;
+	public String getDeletedFolderEntryFamily() {
+		return deletedFolderEntryFamily;
 	}
-	public void setCreatedWithDefinitionId(Long createdWithDefinitionId) {
-		this.createdWithDefinitionId = createdWithDefinitionId;
+	public void setDeletedFolderEntryFamily(String deletedFolderEntryFamily) {
+		this.deletedFolderEntryFamily = deletedFolderEntryFamily;
 	}
 	
 }

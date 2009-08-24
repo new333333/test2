@@ -149,6 +149,10 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     public void setEntryDef(Definition entryDef) {
         this.entryDef = entryDef;
     }
+    public Definition getCreatedWithDefinition() {
+    	// returns the original definition with which this entity was created. 
+    	return entryDef;
+    }
     /**
      * @hibernate.many-to-one
      * @return

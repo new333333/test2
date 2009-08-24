@@ -536,12 +536,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
      	return getDefaultViewDef();
      }
      
-     public Definition getCreatedWithDefinition() {
-    	 // Unlike the overriden getEntryDef() above, this returns the original definition
-    	 // with which this binder was created. 
-     	return super.getEntryDef();
-     }
-     
      /**
       * Returning mapping of definition ids to workflows definitions.
       * @return
