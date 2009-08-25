@@ -8,6 +8,7 @@
       <generator class="assigned"/>
 	</id>
 	<property name="upgradeVersion"/>
+	<property name="mobileAccessEnabled" access="field"/>
     <component name="mailConfig" class="org.kablink.teaming.domain.MailConfig">
 		<property name="postingEnabled"/>
 		<property name="simpleUrlPostingEnabled"/>

@@ -76,9 +76,9 @@ public class ConfigureMobileAccessController extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			if (formData.containsKey("enableMobileAccess")) {
-				getAdminModule().getMobileConfig().setMobileAccessEnabled(true);
+				getAdminModule().setMobileAccessEnabled(true);
 			} else {
-				getAdminModule().getMobileConfig().setMobileAccessEnabled(false);
+				getAdminModule().setMobileAccessEnabled(false);
 			}
 		}
 		response.setRenderParameters(formData);
@@ -87,7 +87,7 @@ public class ConfigureMobileAccessController extends  SAbstractController {
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
-		model.put(WebKeys.MOBILE_ACCESS_ENABLED, getAdminModule().getMobileConfig().isMobileAccessEnabled());
+		model.put(WebKeys.MOBILE_ACCESS_ENABLED, getAdminModule().isMobileAccessEnabled());
 
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_MOBILE_ACCESS, model);		
 	}
