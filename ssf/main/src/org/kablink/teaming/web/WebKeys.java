@@ -886,6 +886,7 @@ public class WebKeys {
     public static final String MINIBLOG_PAGE="ss_miniblogPage"; 
     public static final String MINIBLOG_USER="ss_miniblog_user"; 
     public static final String MINIBLOG_USER_ID="ss_miniblog_user_id"; 
+    public static final String MOBILE_ACCESS_ENABLED="ss_mobileAccessEnabled"; 
     public static final String MOBILE_BINDER_LIST="ss_mobileBinderList"; 
     public static final String MOBILE_BINDER_DEF_URL_LIST="ss_mobileBinderDefUrlList"; 
     public static final String MOBILE_ENTRY_MODIFY_URL="ss_mobileEntryModifyUrl"; 
@@ -1249,6 +1250,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_CHANGELOG="administration/changeLog";
     public static final String VIEW_ADMIN_UPDATE_CHANGELOG="administration/updateChangeLog";
     public static final String VIEW_ADMIN_CONFIGURE_LDAP="administration/configureLdap";
+    public static final String VIEW_ADMIN_CONFIGURE_MOBILE_ACCESS="administration/configureMobileAccess";
     public static final String VIEW_ADMIN_CONFIGURE_USER_ACCESS="administration/configureUserAccess";
     public static final String VIEW_ADMIN_CONFIGURE_POSTING_JOB="administration/configurePostingJob";
     public static final String VIEW_ADMIN_CONFIGURE_SEARCH_INDEX="administration/configureSearchIndex";

@@ -7,6 +7,7 @@
 	<bean id="definitionBuilderXmlController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.definitionBuilder.ViewDefinitionXmlController" />
 	<bean id="adminViewController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ViewController" />
 	<bean id="adminConfigureLdapController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureLdapController" />
+	<bean id="adminConfigureMobileAccessController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureMobileAccessController" />
 	<bean id="adminConfigureUserAccessController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureUserAccessController" />
 	<bean id="adminConfigureRolesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureRolesController" />
 	<bean id="adminConfigurePostingJobController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigurePostingJobController" />
@@ -48,6 +49,7 @@
 						<entry key="configure_index"><ref bean="adminConfigureSearchIndexController"/></entry>
 						<entry key="configure_search_nodes"><ref bean="adminConfigureSearchNodesController"/></entry>
 						<entry key="configure_configuration"><ref bean="adminConfigureConfigurationController"/></entry>
+						<entry key="configure_mobile_access"><ref bean="adminConfigureMobileAccessController"/></entry>
 						<entry key="configure_user_access"><ref bean="adminConfigureUserAccessController"/></entry>
 						<entry key="export_import"><ref bean="adminExportImportController"/></entry>
 						<entry key="import_definition"><ref bean="adminImportDefinitionController"/></entry>
