@@ -48,7 +48,7 @@
     <ssf:expandableArea title='<%= NLT.get("element.perUser.viewPersonalVersions") %>' titleClass="ss_fineprint">
     <table cellspacing="0" cellpadding="0">
     <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
-      <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.id}"/>
+      <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.name}"/>
       <tr>
       <td style="padding-left:10px;">
 		<div class="ss_entryContent"><ssf:showUser user="${perUserUser}"/></div>
@@ -85,7 +85,7 @@
     <ssf:expandableArea title='<%= NLT.get("element.perUser.viewPersonalVersions") %>' titleClass="ss_fineprint">
     <table cellspacing="0" cellpadding="0">
     <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
-      <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.id}"/>
+      <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.name}"/>
       <tr>
       <td style="padding-left:10px;">
 		<div class="ss_entryContent"><ssf:showUser user="${perUserUser}"/></div>

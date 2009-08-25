@@ -62,7 +62,7 @@
  <span class="ss_labelRight"><label for="checkbox_${property_name}XXX">${property_caption}</label></span>
 </div>
   <c:if test="${property_userVersionAllowed == 'true'}">
-    <c:set var="property_name_per_user" value="${property_name}.${ssUser.id}"/>
+    <c:set var="property_name_per_user" value="${property_name}.${ssUser.name}"/>
 	<c:if test="${!ssDefinitionEntry.customAttributes[property_name_per_user].value}" >
 	  <c:set var="cb_checked_per_user" value=""/>
   	  <input type="hidden" name="${property_name_per_user}" id="hidden_${property_name_per_user}" value="off"/> 
