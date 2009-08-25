@@ -66,6 +66,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.MailConfig;
+import org.kablink.teaming.domain.MobileConfig;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.TemplateBinder;
@@ -259,6 +260,10 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    				throw new NotSupportedException(operation.toString(), "checkAccess");
 		}
    	}
+  	public MobileConfig getMobileConfig() {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		return new MobileConfig(zoneConfig.getMobileConfig()); 		
+  	}
   	public MailConfig getMailConfig() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return new MailConfig(zoneConfig.getMailConfig()); 		

@@ -39,6 +39,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	public static Integer ZONE_LATEST_VERSION=4;
 	private Integer upgradeVersion=ZONE_LATEST_VERSION; 
 	private AuthenticationConfig authenticationConfig;
+	private MobileConfig mobileConfig;
 	private MailConfig mailConfig;
 	public ZoneConfig()
 	{
@@ -46,6 +47,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	public ZoneConfig(Long zoneId) {
 		this.zoneId = zoneId;
 		this.authenticationConfig = new AuthenticationConfig();
+		this.mobileConfig = new MobileConfig();
 		this.mailConfig = new MailConfig();
 	}
 	public void setZoneId(Long zoneId)
@@ -64,6 +66,12 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     }
     public void setAuthenticationConfig(AuthenticationConfig authenticationConfig) {
     	this.authenticationConfig = authenticationConfig;
+    }
+    public MobileConfig getMobileConfig() {
+    	return mobileConfig;
+    }
+    public void setMobileConfig(MobileConfig mobileConfig) {
+    	this.mobileConfig = mobileConfig;
     }
     public MailConfig getMailConfig() {
     	return mailConfig;

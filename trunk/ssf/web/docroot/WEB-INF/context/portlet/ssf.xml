@@ -74,6 +74,7 @@
 	<bean id="adminViewChangeLogController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ViewChangeLogController" />
 	<bean id="adminExportImportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ExportImportController" />
 	<bean id="adminConfigureLdapController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureLdapController" />
+	<bean id="adminConfigureMobileAccessController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureMobileAccessController" />
 	<bean id="adminConfigureUserAccessController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureUserAccessController" />
 	<bean id="adminConfigureRolesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureRolesController" />
 	<bean id="adminConfigurePostingJobController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigurePostingJobController" />
@@ -172,6 +173,7 @@
 						<entry key="configure_posting_job"><ref bean="adminConfigurePostingJobController"/></entry>
 						<entry key="configure_index"><ref bean="adminConfigureSearchIndexController"/></entry>
 						<entry key="configure_search_nodes"><ref bean="adminConfigureSearchNodesController"/></entry>
+						<entry key="configure_mobile_access"><ref bean="adminConfigureMobileAccessController"/></entry>
 						<entry key="configure_user_access"><ref bean="adminConfigureUserAccessController"/></entry>
 						<entry key="get_log_files"><ref bean="adminLogFileController"/></entry>
 						<entry key="manage_groups"><ref bean="adminManageGroupsController"/></entry>

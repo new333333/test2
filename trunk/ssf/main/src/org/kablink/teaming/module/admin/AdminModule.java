@@ -44,6 +44,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.MailConfig;
+import org.kablink.teaming.domain.MobileConfig;
 import org.kablink.teaming.domain.NoApplicationByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.PostingDef;
@@ -124,6 +125,7 @@ public interface AdminModule {
      * @return ChangeLogs ordered by entity and operationDate
      */
     public List<ChangeLog> getChanges(EntityIdentifier entityIdentifier, String operation);
+    public MobileConfig getMobileConfig();
     public MailConfig getMailConfig();
     public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, String operation);
     /**
