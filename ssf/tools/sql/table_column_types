@@ -1,6 +1,6 @@
 
 ss_attachments fileName filelock_subject filelock_ownerInfo versionName
-ss_audittrail state threadName description
+ss_audittrail state threadName description deletedFolderEntryFamily
 ss_changelogs userName xmlString
 ss_customattributes stringValue description_text xmlValue
 ss_definitions name title
