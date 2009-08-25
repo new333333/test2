@@ -1969,16 +1969,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							}
 						}
 						if (userVersionAllowed && inputData.exists(nameValuePerUser)) {
-							if (inputData.getSingleValue(nameValuePerUser).equals("")) {
-								entryData.put(nameValuePerUser, null);
+							//Use the helper routine to parse the date into a date object
+							Date date = inputData.getDateValue(nameValuePerUser);
+							if (date != null) {
+								entryData.put(nameValuePerUser, date);
 							} else {
-								//Use the helper routine to parse the date into a date object
-								Date date = inputData.getDateValue(nameValuePerUser);
-								if (date != null) {
-									entryData.put(nameValuePerUser, date);
-								} else {
-									entryData.put(nameValuePerUser, null);
-								}
+								entryData.put(nameValuePerUser, null);
 							}
 						}
 					} else if (itemName.equals("event")) {
