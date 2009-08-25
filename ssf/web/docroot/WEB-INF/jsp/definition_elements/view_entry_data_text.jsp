@@ -43,7 +43,8 @@
     <ssf:expandableArea title='<%= NLT.get("element.perUser.viewPersonalVersions") %>' titleClass="ss_fineprint">
     <table cellspacing="0" cellpadding="0">
     <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
-      <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.id}"/>
+      <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.name}"/>
+      <c:if test="${!empty ssDefinitionEntry.customAttributes[perUserPropertyName].value}">
       <tr>
       <td style="padding-left:10px;">
 		<div class="ss_entryContent"><ssf:showUser user="${perUserUser}"/></div>
@@ -54,6 +55,7 @@
           escapeXml="false"/></span>
       </td>
       </tr>
+      </c:if>
     </c:forEach>
     </table>
     </ssf:expandableArea>
@@ -82,7 +84,8 @@
     <ssf:expandableArea title='<%= NLT.get("element.perUser.viewPersonalVersions") %>' titleClass="ss_fineprint">
       <table cellspacing="0" cellpadding="0">
       <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
-        <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.id}"/>
+        <c:set var="perUserPropertyName" value="${property_name}.${perUserUser.name}"/>
+        <c:if test="${!empty ssDefinitionEntry.customAttributes[perUserPropertyName].value}">
         <tr>
         <td style="padding-left:10px;">
 		  <ssf:showUser user="${perUserUser}"/>
@@ -93,6 +96,7 @@
             escapeXml="false"/></span>
         </td>
         </tr>
+        </c:if>
       </c:forEach>
     </table>
     </ssf:expandableArea>

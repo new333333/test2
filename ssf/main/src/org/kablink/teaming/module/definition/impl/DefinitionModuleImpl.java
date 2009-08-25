@@ -1846,7 +1846,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					//Get the form element name (property name)
 					String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
 					if (Validator.isNull(nameValue)) {nameValue = nextItem.attributeValue("name");}
-					String nameValuePerUser = nameValue + "." + user.getId();
+					String nameValuePerUser = nameValue + "." + user.getName();
 					String s_userVersionAllowed = DefinitionUtils.getPropertyValue(nextItem, "userVersionAllowed");
 					boolean userVersionAllowed = false;
 					if (s_userVersionAllowed != null && "true".equals(s_userVersionAllowed)) 
@@ -1969,9 +1969,17 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							}
 						}
 						if (userVersionAllowed && inputData.exists(nameValuePerUser)) {
-							//Use the helper routine to parse the date into a date object
-							Date date = inputData.getDateValue(nameValuePerUser);
-							if (date != null) {entryData.put(nameValuePerUser, date);}
+							if (inputData.getSingleValue(nameValuePerUser).equals("")) {
+								entryData.put(nameValuePerUser, null);
+							} else {
+								//Use the helper routine to parse the date into a date object
+								Date date = inputData.getDateValue(nameValuePerUser);
+								if (date != null) {
+									entryData.put(nameValuePerUser, date);
+								} else {
+									entryData.put(nameValuePerUser, null);
+								}
+							}
 						}
 					} else if (itemName.equals("event")) {
 					    //Ditto for event helper routine

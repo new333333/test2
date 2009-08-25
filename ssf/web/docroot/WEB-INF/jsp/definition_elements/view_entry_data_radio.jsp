@@ -58,7 +58,7 @@
     <ssf:expandableArea title='<%= NLT.get("element.perUser.viewPersonalVersions") %>' titleClass="ss_fineprint">
     <table cellspacing="0" cellpadding="0">
     <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
-      <c:set var="perUserPropertyName1" value="${property_name}.${perUserUser.id}"/>
+      <c:set var="perUserPropertyName1" value="${property_name}.${perUserUser.name}"/>
       <jsp:useBean id="perUserPropertyName1" type="String" />
 <%
 	caption = "";
@@ -105,7 +105,7 @@
     <ssf:expandableArea title='<%= NLT.get("element.perUser.viewPersonalVersions") %>' titleClass="ss_fineprint">
     <table cellspacing="0" cellpadding="0">
     <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
-      <c:set var="perUserPropertyName2" value="${property_name}.${perUserUser.id}"/>
+      <c:set var="perUserPropertyName2" value="${property_name}.${perUserUser.name}"/>
       <jsp:useBean id="perUserPropertyName2" type="String" />
 <%
 	caption = "";

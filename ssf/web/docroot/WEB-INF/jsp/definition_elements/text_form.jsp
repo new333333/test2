@@ -76,7 +76,7 @@
    value="<c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/>"/>
   </div>
   <c:if test="${property_userVersionAllowed == 'true'}">
-    <c:set var="property_name_per_user" value="${property_name}.${ssUser.id}"/>
+    <c:set var="property_name_per_user" value="${property_name}.${ssUser.name}"/>
 	<div class="ss_entryContent">
       <div class="ss_labelAbove">
       <c:if test="${!empty property_caption}">

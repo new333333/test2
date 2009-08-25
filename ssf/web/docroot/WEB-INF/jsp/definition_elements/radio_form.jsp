@@ -90,10 +90,10 @@
   <c:if test="${property_userVersionAllowed == 'true'}">
 	<c:set var="ss_radioFieldModificationAllowed" value="true" scope="request"/>
 <%
-	request.setAttribute("radioGroupName", elementName + "." + ssUser.getId().toString());
+	request.setAttribute("radioGroupName", elementName + "." + ssUser.getName().toString());
 %>
 	<div class="ss_entryContent">
-	<c:set var="property_name_per_user" value="${original_property_name}.${ssUser.id}"/>
+	<c:set var="property_name_per_user" value="${original_property_name}.${ssUser.name}"/>
 	<c:if test="${ss_radioButtonsLayout == 'horizontal'}">
 		<table cellspacing="0" cellpadding="0" class="ss_radio_button_horizontal ${ss_fieldModifyStyle}">
 		<tr>

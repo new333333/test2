@@ -305,7 +305,7 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 								
 								//See if there are any per-user values to be added to the property map
 								if (perUserVersionsAllowed) {
-									List<Long> perUserIds = new ArrayList<Long>();
+									List<String> perUserNames = new ArrayList<String>();
 									Iterator<String> itKeys = null;
 									if (this.entryMap != null) {
 										itKeys = this.entryMap.keySet().iterator();
@@ -318,12 +318,12 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 											String[] keyParts = key.split("\\.");
 											if (keyParts.length == 2 && propertyValue.equals(keyParts[0])) {
 												try {
-													perUserIds.add(Long.valueOf(keyParts[1]));
+													if (entry.getCustomAttribute(key) != null) perUserNames.add(keyParts[1]);
 												} catch(Exception e) {}
 											}
 										}
 									}
-									req.setAttribute("ss_userVersionPrincipals", ResolveIds.getPrincipals(perUserIds));
+									req.setAttribute("ss_userVersionPrincipals", ResolveIds.getPrincipalsByName(perUserNames, true));
 								}
 								
 								//not sure if this is necessary

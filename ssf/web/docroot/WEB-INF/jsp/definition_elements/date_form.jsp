@@ -100,7 +100,7 @@ ${property_caption}<c:if test="${property_required}"><span
 </div>
 
   <c:if test="${property_userVersionAllowed == 'true'}">
-    <c:set var="property_name_per_user" value="${property_name}.${ssUser.id}"/>
+    <c:set var="property_name_per_user" value="${property_name}.${ssUser.name}"/>
 <div class="ss_entryContent tundra">
 <span class="ss_labelAbove" id='${property_name_per_user}_label'>
   <ssf:nlt tag="element.perUser.yourVersion"><ssf:param name="value" value="${property_caption}"/></ssf:nlt>
@@ -110,6 +110,7 @@ ${property_caption}<c:if test="${property_required}"><span
 </div>
 	
 	<c:set var="initDate" value="<%= new Date() %>"/>
+	<c:set var="property_initialSetting" value="none"/>
 	<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name_per_user].value}">
 		<c:set var="initDate" value="${ssDefinitionEntry.customAttributes[property_name_per_user].value}"/>
 		<c:set var="property_initialSetting" value="entry"/>
@@ -146,7 +147,7 @@ ${property_caption}<c:if test="${property_required}"><span
 </div>
 
 <c:if test="${property_userVersionAllowed == 'true'}">
-    <c:set var="property_name_per_user" value="${property_name}.${ssUser.id}"/>
+    <c:set var="property_name_per_user" value="${property_name}.${ssUser.name}"/>
 <div class="ss_entryContent">
 <span class="ss_labelAbove"><ssf:nlt tag="element.perUser.yourVersion">
  	    <ssf:param name="value" value="${property_caption}"/>
