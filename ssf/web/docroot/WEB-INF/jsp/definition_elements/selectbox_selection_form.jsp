@@ -56,8 +56,7 @@
 </c:if>
 
 <option value="<c:out value="${property_name}"/>" ${checked}
-<% // property_name == 'p3' is only for backward compatibility with v1.0 %>
-  	<c:if test="${(property_default || property_name == 'p3') && empty ssDefinitionEntry.customAttributes[selectboxName].valueSet}">
+  	<c:if test="${(property_default) && empty ssDefinitionEntry.customAttributes[selectboxName].valueSet}">
   		selected="selected"
   	</c:if>
   >

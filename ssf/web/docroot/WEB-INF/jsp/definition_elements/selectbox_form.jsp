@@ -108,7 +108,7 @@
   <c:if test="${property_userVersionAllowed == 'true'}">
 	<c:set var="property_name_per_user" value="${original_property_name}.${ssUser.name}"/>
     <c:set var="ss_selectbox_per_user_property_name" value="${original_property_name}.${ssUser.name}" scope="request"/>
-	<div class="ss_entryContent>
+	<div class="ss_entryContent">
     <div class="ss_labelAbove">
     <ssf:nlt tag="element.perUser.yourVersion"><ssf:param name="value" value="${original_property_caption}"/></ssf:nlt>
     </div>
