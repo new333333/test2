@@ -608,6 +608,7 @@
 				<prop key="addPosting">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="updateDefaultDefinitions">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setMailConfigAndSchedules">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setMobileAccessEnabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 	</bean>
