@@ -52,7 +52,7 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class Canvas extends Composite
-	implements DropZone
+//!!!	implements DropZone
 {
 	private FlowPanel	m_panel;
 	private FlowPanel m_dropIndicator;	// Horizontal bar that shows the user where a dropped widget will be inserted.
@@ -78,8 +78,8 @@ public class Canvas extends Composite
 		m_panel.add( m_dropIndicator );
 		
 		// Register this widget for mouse-out and mouse-over events.
-		addMouseOverHandler( this );
-		addMouseOutHandler( this );
+//!!!		addMouseOverHandler( this );
+//!!!		addMouseOutHandler( this );
 		
 		// Remember the Landing Page Editor this canvas is in.
 		m_lpe = lpe;
@@ -229,7 +229,7 @@ public class Canvas extends Composite
 		if ( m_lpe != null && m_lpe.isPaletteItemDragInProgress() )
 		{
 			// Yes, tell the landing page editor that the cursor is no longer over this drop zone.
-			m_lpe.setDropZone( null, event );
+//!!!			m_lpe.setDropZone( null, event );
 		}
 	}// end onMouseOut()
 
@@ -243,7 +243,7 @@ public class Canvas extends Composite
 		if ( m_lpe != null && m_lpe.isPaletteItemDragInProgress() )
 		{
 			// Yes, tell the landing page editor what drop zone the cursor is over.
-			m_lpe.setDropZone( this, event );
+//!!!			m_lpe.setDropZone( this, event );
 		}
 	}// end onMouseOver()
 

@@ -38,7 +38,6 @@ import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 
 /**
@@ -51,12 +50,15 @@ public class TableDropWidget extends DropWidget
 	private TableProperties	m_properties = null;
 	private FlowPanel			m_mainPanel;
 	private FlexTable			m_flexTable = null;
+	private LandingPageEditor	m_lpe = null;
 	
 	/**
 	 * 
 	 */
-	public TableDropWidget()
+	public TableDropWidget( LandingPageEditor lpe )
 	{
+		m_lpe = lpe;
+		
 		m_mainPanel = new FlowPanel();
 		
 		// Create an object to hold all of the properties that define a table widget.
@@ -66,7 +68,7 @@ public class TableDropWidget extends DropWidget
 		initWidget( m_mainPanel );
 
 		setStyleName( "lpeDropWidget" );
-}// end TableDropWidget()
+	}// end TableDropWidget()
 	
 
 	/**
@@ -114,8 +116,11 @@ public class TableDropWidget extends DropWidget
 			// Add the appropriate number of columns to the table.
 			for (i = 0; i < numColumns; ++i)
 			{
+				DropZone	dropZone;
+				
 				m_flexTable.addCell( 0 );
-				m_flexTable.setWidget( 0, i, new Label( "cell: " + String.valueOf( i ) ) );
+				dropZone = new DropZone( m_lpe, "lpeTableDropZone" );
+				m_flexTable.setWidget( 0, i, dropZone );
 			}
 		}
 		else
@@ -135,7 +140,11 @@ public class TableDropWidget extends DropWidget
 				// Yes
 				while( numColumns > m_flexTable.getCellCount( 0 ) )
 				{
+					DropZone dropZone;
+					
 					m_flexTable.addCell( 0 );
+					dropZone = new DropZone( m_lpe, "lpeTableDropZone" );
+					m_flexTable.setWidget( 0, m_flexTable.getCellCount( 0 )-1, dropZone );
 				}
 			}
 		}
@@ -145,17 +154,6 @@ public class TableDropWidget extends DropWidget
 		{
 			// Set the width of this column.
 			cellFormatter.setWidth( 0, i, m_properties.getColWidthStr( i ) );
-		}
-		
-		// Should we display a border around the table?
-		if ( m_properties.getShowBorderValue() )
-		{
-			// Yes
-			m_flexTable.setBorderWidth( 2 );
-		}
-		else
-		{
-			m_flexTable.setBorderWidth( 0 );
 		}
 	}// end updateWidget()
 	
