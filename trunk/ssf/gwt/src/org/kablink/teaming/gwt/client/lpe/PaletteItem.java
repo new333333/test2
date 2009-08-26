@@ -141,7 +141,7 @@ public abstract class PaletteItem extends Composite
 	/**
 	 * Create a widget that should be added when the user drops this palette item.
 	 */
-	public abstract DropWidget createDropWidget();
+	public abstract DropWidget createDropWidget( LandingPageEditor lpe );
 	
 
 	/**

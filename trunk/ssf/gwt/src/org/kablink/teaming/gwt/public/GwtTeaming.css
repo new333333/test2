@@ -40,21 +40,15 @@
 	background-color: #FFFFFF;
 	border: 1px solid #999999;
 	margin-left: 5px;
-	min-height: 350px;
-	overfow: auto;
-	width: 650px;
-}
-
-/* Sets the width of the canvas and the drop indicator. */
-.lpeCanvas_width
-{
+	height: 350px;
+	overflow: auto;
 	width: 650px;
 }
 
 /* Styles for the canvas widget when the user is dragging something over the canvas. */
-.lpeCanvas_highlighted
+.lpeCanvas-highlighted
 {
-	border: 5px solid #09F;
+	background-color: #CDF3FF;
 }
 
 /* Styles used for the drop indicator that shows the user where a dropped widget will be inserted. */
@@ -63,6 +57,7 @@
 	background-color: #09F;
 	height: 3px;
 	position: absolute;
+	width: 100px;
 	z-index: 100;
 }
 
@@ -73,6 +68,22 @@
 	margin-left: .5em;
 	margin-right: .5em;
 	margin-top: .5em;
+}
+
+/* Styles used for a drop zone found in a table. */
+.lpeTableDropZone
+{
+	background-color: #FFFFFF;
+	border: 1px solid #999999;
+	min-height: 50px;
+	overfow: auto;
+	width: 100%;
+}
+
+/* Styles used for a drop zone found in a table. */
+.lpeTableDropZone-highlighted
+{
+	background-color: #CDF3FF;
 }
 
 /* Styles for the landing page editor hint. */

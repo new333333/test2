@@ -33,11 +33,14 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import java.util.Stack;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.lpe.PaletteItem.DragProxy;
 import org.kablink.teaming.gwt.client.widgets.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.widgets.EditSuccessfulHandler;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasMouseMoveHandlers;
 import com.google.gwt.event.dom.client.HasMouseUpHandlers;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -65,11 +68,12 @@ public class LandingPageEditor extends Composite
 				 EditSuccessfulHandler, EditCanceledHandler
 {
 	private Palette		m_palette;
-	private Canvas			m_canvas;
+	private DropZone		m_canvas;
 	private boolean		m_paletteItemDragInProgress;
 	private DragProxy		m_paletteItemDragProxy;
 	private PaletteItem	m_paletteItemBeingDragged = null;
 	private DropZone		m_selectedDropZone = null;
+	private Stack<DropZone>		m_enteredDropZones = null;
 	private HandlerRegistration	m_mouseMoveHandlerReg = null;
 	private HandlerRegistration	m_mouseUpHandlerReg = null;
 	
@@ -81,6 +85,9 @@ public class LandingPageEditor extends Composite
 		HorizontalPanel	hPanel;
 		VerticalPanel	vPanel;
 		Label			hintLabel;
+		
+		// Create a stack that will keep track of when we enter and leave drop zones.
+		m_enteredDropZones = new Stack<DropZone>();
 		
 		// Create a vertical panel for the hint and the horizontal panel to live in.
 		vPanel = new VerticalPanel();
@@ -95,7 +102,7 @@ public class LandingPageEditor extends Composite
 		
 		// Create a palette and a canvas.
 		m_palette = new Palette( this );
-		m_canvas = new Canvas( this );
+		m_canvas = new DropZone( this, "lpeCanvas" );
 		
 		// Add the palette and canvas to the panel.
 		hPanel.add( m_palette );
@@ -159,6 +166,31 @@ public class LandingPageEditor extends Composite
 		return true;
 	}// end editSuccessful()
 	
+	
+	/**
+	 * This method is called by a DropZone when the mouse is entering the DropZone.  We will add the
+	 * DropZone to our stack of drop zones.
+	 */
+	public void enteringDropZone( DropZone dropZone, MouseEvent mouseEvent )
+	{
+		DropZone previousDropZone = null;
+		
+		// Get the DropZone at the top of the stack.
+		if ( !m_enteredDropZones.empty() )
+		{
+			previousDropZone = m_enteredDropZones.peek();
+		}
+		
+		// Make sure we aren't adding the same drop zone twice.
+		if ( dropZone != previousDropZone )
+		{
+			m_enteredDropZones.push( dropZone );
+		}
+		
+		// Remember the active drop zone.
+		setDropZone( dropZone, mouseEvent );
+	}// end enteringDropZone()
+	
 
 	/**
 	 * Return a boolean indicating whether or not the user is currently dragging a palette item.
@@ -169,6 +201,43 @@ public class LandingPageEditor extends Composite
 	}// end isPaletteItemDragInProgress()
 
 	
+	/**
+	 * This method is called by a DropZone when the mouse is leaving the DropZone.
+	 */
+	public void leavingDropZone( DropZone dropZone, MouseEvent mouseEvent )
+	{
+		if ( m_enteredDropZones.empty() )
+		{
+			// This should never happen.
+			GWT.log( "in leavingDropZone(), m_enteredDropZones is empty.", null );
+			return;
+		}
+		
+		// The given drop zone should be the top drop zone in our stack.
+		if ( dropZone != m_enteredDropZones.peek() )
+		{
+			// This should never happen.
+			GWT.log( "in leavingDropZone(), leaving drop zone is not on top of stack.", null );
+			return;
+		}
+		
+		// Remove the given drop zone from the stack.
+		m_enteredDropZones.pop();
+		
+		// Do we have a previously entered drop zone.
+		if ( !m_enteredDropZones.empty() )
+		{
+			// Yes, select it is the active drop zone.
+			setDropZone( m_enteredDropZones.peek(), mouseEvent );
+		}
+		else
+		{
+			// No, set the active drop zone to null.
+			setDropZone( null, mouseEvent );
+		}
+	}// end enteringDropZone()
+	
+
 	/**
 	 * Handles the MouseDownEvent.  This will initiate the dragging of an item from the palette.
 	 */
@@ -200,6 +269,7 @@ public class LandingPageEditor extends Composite
 		{
 			int mouseX;
 			int mouseY;
+			DropZone previousDropZone;
 			
 			// Yes, update the position of the drag proxy.
 			mouseX = event.getClientX();
@@ -246,6 +316,9 @@ public class LandingPageEditor extends Composite
 				m_mouseUpHandlerReg = null;
 			}
 			
+			// Clear the stack of drop zones.
+			m_enteredDropZones.clear();
+			
 			// Did the user drop the palette item on a drop zone?
 			if ( m_selectedDropZone != null )
 			{
@@ -260,7 +333,7 @@ public class LandingPageEditor extends Composite
 				m_selectedDropZone.setDropLocation( event );
 				
 				// Create a DropWidget that will be added to the drop zone.
-				dropWidget = m_paletteItemBeingDragged.createDropWidget();
+				dropWidget = m_paletteItemBeingDragged.createDropWidget( this );
 				
 				// Invoke the Edit Properties dialog for the DropWidget.  If the user
 				// cancels the dialog we won't do anything.  If the user presses ok,
@@ -275,17 +348,16 @@ public class LandingPageEditor extends Composite
 	}// end onMouseUp()
 	
 	/**
-	 * Set the DropZone object that will be used on the mouse-up event.  This method will be called by a DropZone object
-	 * when the mouse has moved over the DropZone.
+	 * Set the DropZone object that will be used on the mouse-up event.
 	 */
-	public void setDropZone( DropZone dropZone, MouseEvent mouseEvent )
+	private void setDropZone( DropZone dropZone, MouseEvent mouseEvent )
 	{
 		// Is the user dragging an item from the palette?
 		if ( m_paletteItemDragInProgress )
 		{
 			// Yes
-			// Do we currently have a selected drop zone?
-			if ( m_selectedDropZone != null )
+			// Do we currently have a selected drop zone that is different from the new drop zone?
+			if ( m_selectedDropZone != null && dropZone != m_selectedDropZone )
 			{
 				// Yes
 				// Hide the visual drop-zone clue.

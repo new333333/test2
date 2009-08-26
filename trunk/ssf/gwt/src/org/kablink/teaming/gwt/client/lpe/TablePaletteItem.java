@@ -52,11 +52,11 @@ public class TablePaletteItem extends PaletteItem
 	/**
 	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
 	 */
-	public DropWidget createDropWidget()
+	public DropWidget createDropWidget( LandingPageEditor lpe )
 	{
 		TableDropWidget	tableDropWidget;
 		
-		tableDropWidget = new TableDropWidget();
+		tableDropWidget = new TableDropWidget( lpe );
 
 		return tableDropWidget;
 	}// end createDropWidget()
