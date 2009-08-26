@@ -81,6 +81,13 @@
 		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 						action="__ajax_mobile" actionUrl="false" 
 						operation="mobile_whats_new" ><ssf:param
+						name="type" value="whatsNewTeams"/></ssf:url>"
+		  ><ssf:nlt tag="mobile.whatsNewTeams"/></a>
+		</li>
+	    <li>
+		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+						action="__ajax_mobile" actionUrl="false" 
+						operation="mobile_whats_new" ><ssf:param
 						name="type" value="whatsNewTracked"/></ssf:url>"
 		  ><ssf:nlt tag="mobile.whatsNewTracked"/></a>
 		</li>

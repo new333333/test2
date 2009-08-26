@@ -35,6 +35,7 @@ package org.kablink.teaming.portlet.forum;
 import static org.kablink.util.search.Restrictions.in;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -80,6 +81,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.search.filter.SearchFilterRequestParser;
@@ -192,9 +194,15 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_SEARCH_RESULTS)) {
 			return ajaxMobileSearchResults(this, request, response);
-		
+			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PEOPLE)) {
 			return ajaxMobileFindPeople(this, request, response);
+			
+		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_FAVORITES)) {
+			return ajaxMobileShowFavorites(this, request, response);
+			
+		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_TEAMS)) {
+			return ajaxMobileShowTeams(this, request, response);
 		}
 		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			return ajaxMobileLogin(this, request, response);
@@ -560,8 +568,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 		if (type.equals(WebKeys.URL_WHATS_NEW)) {
 			BinderHelper.setupWhatsNewBinderBeans(bs, binder, model, String.valueOf(pageNumber));
-		} else if (type.equals(WebKeys.URL_WHATS_NEW_TRACKED)) {
-			BinderHelper.setupWhatsNewBinderBeans(bs, binder, model, String.valueOf(pageNumber));
+		} else if (type.equals(WebKeys.URL_WHATS_NEW_TRACKED)|| type.equals(WebKeys.URL_WHATS_NEW_TEAMS)) {
+			BinderHelper.setupWhatsNewBinderBeans(bs, binder, model, String.valueOf(pageNumber), type);
 		} else if (type.equals(WebKeys.URL_UNSEEN)) {
 			BinderHelper.setupUnseenBinderBeans(bs, binder, model, String.valueOf(pageNumber));
 		}
@@ -765,6 +773,42 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	return new ModelAndView("mobile/show_entry", model);
 }	
 
+	private ModelAndView ajaxMobileShowFavorites(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+		Map model = new HashMap();
+		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
+
+		Object obj = userProperties.get(ObjectKeys.USER_PROPERTY_FAVORITES);
+		Favorites f;
+		if (obj != null && obj instanceof Document) {
+			f = new Favorites((Document)obj);
+			//fixup - have to store as string cause hibernate equals fails
+			getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
+		} else {		
+			f = new Favorites((String)obj);
+		}
+		List<Map> favList = f.getFavoritesList();
+		model.put(WebKeys.MOBILE_FAVORITES_LIST, favList);
+		
+		return new ModelAndView("mobile/show_favorites", model);
+	}
+	
+	private ModelAndView ajaxMobileShowTeams(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+		Map model = new HashMap();
+		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
+
+		List<Long> teamIds = new ArrayList<Long>();
+		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId());
+		model.put(WebKeys.MOBILE_TEAMS_LIST, myTeams);
+		
+		return new ModelAndView("mobile/show_teams", model);
+	}
+	
 	private ModelAndView ajaxMobileAddEntry(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();

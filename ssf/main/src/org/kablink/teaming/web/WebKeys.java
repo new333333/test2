@@ -213,6 +213,7 @@ public class WebKeys {
 	public static final String URL_WORKAREA_TYPE="workAreaType";
 	public static final String URL_WORKFLOW_TYPE = "workflowType";
 	public static final String URL_WHATS_NEW = "whatsNew";
+	public static final String URL_WHATS_NEW_TEAMS = "whatsNewTeams";
 	public static final String URL_WHATS_NEW_TRACKED = "whatsNewTracked";
 	public static final String URL_WHATS_UNREAD = "whatsUnread";
 	public static final String URL_OBJECT_ID="objectId";
@@ -401,12 +402,14 @@ public class WebKeys {
     public static final String OPERATION_MOBILE_FIND_PEOPLE="mobile_find_people"; 
     public static final String OPERATION_MOBILE_LOGIN="mobile_login"; 
     public static final String OPERATION_MOBILE_MODIFY_ENTRY="mobile_modify_entry"; 
+    public static final String OPERATION_MOBILE_SHOW_FAVORITES="mobile_show_favorites"; 
     public static final String OPERATION_MOBILE_SHOW_FOLDER="mobile_show_folder"; 
     public static final String OPERATION_MOBILE_SHOW_ENTRY="mobile_show_entry"; 
     public static final String OPERATION_MOBILE_SHOW_NEXT_ENTRY="mobile_show_next_entry"; 
     public static final String OPERATION_MOBILE_SHOW_PREV_ENTRY="mobile_show_prev_entry"; 
     public static final String OPERATION_MOBILE_SHOW_FRONT_PAGE="mobile_show_front_page"; 
     public static final String OPERATION_MOBILE_SHOW_SEARCH_RESULTS="mobile_show_search_results"; 
+    public static final String OPERATION_MOBILE_SHOW_TEAMS="mobile_show_teams"; 
     public static final String OPERATION_MOBILE_SHOW_WORKSPACE="mobile_show_workspace"; 
     public static final String OPERATION_MOBILE_WHATS_NEW="mobile_whats_new"; 
 	public static final String OPERATION_OPEN_WEBDAV_FILE = "open_webdav_file";
@@ -891,6 +894,7 @@ public class WebKeys {
     public static final String MOBILE_BINDER_DEF_URL_LIST="ss_mobileBinderDefUrlList"; 
     public static final String MOBILE_ENTRY_MODIFY_URL="ss_mobileEntryModifyUrl"; 
     public static final String MOBILE_FAVORITES_LIST="ss_mobileFavoritesList"; 
+    public static final String MOBILE_TEAMS_LIST="ss_mobileTeamsList"; 
     public static final String MOBILE_PAGE_SIZE="15"; 
     public static final String MOBILE_URL="ssMobileUrl"; 
     public static final String MODIFY_ENTRY_ALLOWED="ss_modifyEntryAllowed"; 

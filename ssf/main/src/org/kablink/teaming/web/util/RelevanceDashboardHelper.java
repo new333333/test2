@@ -410,8 +410,10 @@ public class RelevanceDashboardHelper {
 					if (id != null) {
 						Long bId = new Long(id);
 						if (!places.containsKey(id)) {
-							Binder place = bs.getBinderModule().getBinder(bId);
-							places.put(id, place);
+							try {
+								Binder place = bs.getBinderModule().getBinder(bId);
+								places.put(id, place);
+							} catch(Exception e) {}
 						}
 					}
 		    	}
@@ -544,8 +546,10 @@ public class RelevanceDashboardHelper {
 				if (id != null) {
 					Long bId = new Long(id);
 					if (!places.containsKey(id)) {
-						Binder place = bs.getBinderModule().getBinder(bId);
-						places.put(id, place);
+						try {
+							Binder place = bs.getBinderModule().getBinder(bId);
+							places.put(id, place);
+						} catch(Exception e) {}
 					}
 				}
 	    	}

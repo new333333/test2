@@ -46,7 +46,7 @@
 <c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn && !empty ssWsDomTree}">
   <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 
-	<taconite-insert-after contextNodeID="${ss_tree_treeName}temp${ss_tree_id}" parseInBrowser="true">
+	<taconite-replace contextNodeID="${ss_tree_treeName}temp${ss_tree_id}" parseInBrowser="true">
 
 	<c:choose>
 	<c:when test="${ss_tree_select_type == '0'}">	
@@ -92,6 +92,6 @@
 	</c:when>
 	</c:choose>
 
-	</taconite-insert-after>
+	</taconite-replace>
 </c:if>	
 </taconite-root>

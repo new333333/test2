@@ -32,30 +32,52 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<%@ page import="org.kablink.teaming.ObjectKeys" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.HashMap" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("navigation.favorites") %>' scope="request"/>
+<%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
+<%
+	Map entriesSeen = new HashMap();
+%>
+<div id="wrapper">
+<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
+<div id="pagebody">
 
-<c:if test="${!empty ss_mobileFavoritesList}">
-	<div class="pagebody">
-	  <div id="favorites">
-	    <span><ssf:nlt tag="mobile.favoritesAndTeams"/></span>
-	  </div>
-	  <div class="pagebody_border">
+<div class="pagebody">
+	<h3 align="center"><ssf:nlt tag="navigation.favorites"/></h3>
 		<ul>
+		<c:forEach var="favorite" items="${ss_mobileFavoritesList}">
+		 <jsp:useBean id="favorite" type="net.sf.json.JSONObject" />
+		 <% try { %><c:set var="f_eletype" value='<%= favorite.get("eletype") %>'/><% } catch(Exception e) {} %>
+		 <% try { %><c:set var="f_type" value='<%= favorite.get("type") %>'/><% } catch(Exception e) {} %>
+		 <% try { %><c:set var="f_id" value='<%= favorite.get("id") %>'/><% } catch(Exception e) {} %>
+		 <% try { %><c:set var="f_action" value='<%= favorite.get("action") %>'/><% } catch(Exception e) {} %>
+		 <% try { %><c:set var="f_name" value='<%= favorite.get("name") %>'/><% } catch(Exception e) {} %>
+		 <% try { %><c:set var="f_value" value='<%= favorite.get("value") %>'/><% } catch(Exception e) {} %>
+		 <c:if test="${f_eletype == 'favorite'}">
 		  <li>
-			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+			<c:if test="${f_type == 'binder' && f_action == 'view_folder_listing'}">
+			  <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${f_value}" 
 							action="__ajax_mobile" actionUrl="false" 
-							operation="mobile_show_favorites" />">
-				<span><ssf:nlt tag="navigation.favorites"/></span>
-			  </a>
-		  </li>
-		  <li>
+							operation="mobile_show_folder" />"><span>${f_name}</span></a>
+			</c:if>
+			<c:if test="${f_type == 'binder' && empty f_action}">
 			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+			    			folderId="${f_value}" 
 							action="__ajax_mobile" actionUrl="false" 
-							operation="mobile_show_teams" />">
-				<span><ssf:nlt tag="navigation.myTeams"/></span>
-			  </a>
+							operation="mobile_show_workspace" />"><span>${f_name}</span></a>
+			</c:if>
 		  </li>
+		 </c:if>
+		</c:forEach>
 		</ul>
-	  </div>
-	</div>
-</c:if>
+</div>
+<br/>
+
+<%@ include file="/WEB-INF/jsp/mobile/footer.jsp" %>
+</div>
+
+</body>
+</html>
