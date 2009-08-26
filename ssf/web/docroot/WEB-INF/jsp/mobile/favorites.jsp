@@ -34,7 +34,6 @@
 %>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
 
-<c:if test="${!empty ss_mobileFavoritesList}">
 	<div class="pagebody">
 	  <div id="favorites">
 	    <span><ssf:nlt tag="mobile.favoritesAndTeams"/></span>
@@ -55,7 +54,16 @@
 				<span><ssf:nlt tag="navigation.myTeams"/></span>
 			  </a>
 		  </li>
+		  <c:if test="${!empty ss_topWorkspace}">
+		  <li>
+			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+							action="__ajax_mobile" actionUrl="false" 
+							folderId="${ss_topWorkspace.id}"
+							operation="mobile_show_workspace" />">
+				<span>${ss_topWorkspace.title}</span>
+			  </a>
+		  </li>
+		  </c:if>
 		</ul>
 	  </div>
 	</div>
-</c:if>

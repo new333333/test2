@@ -131,6 +131,16 @@
 		    <form method="post"
 			  action="<ssf:url adapter="true" portletName="ss_forum" 
 							action="__ajax_mobile" actionUrl="true" 
+							operation="mobile_find_places" />">
+	    	  <label for="placesSearchText"><ssf:nlt tag="navigation.findPlace"/></label>
+	    	  <br/>
+		      <input name="searchText" id="placesSearchText" type="text" size="15"/>&nbsp;<input type="submit" 
+		        name="okBtn" value="<ssf:nlt tag="button.ok"/>" />
+		    </form><br/>
+	
+		    <form method="post"
+			  action="<ssf:url adapter="true" portletName="ss_forum" 
+							action="__ajax_mobile" actionUrl="true" 
 							operation="mobile_show_search_results" />">
 	    	  <label for="searchText"><ssf:nlt tag="searchForm.button.label"/></label>
 	    	  <br/>
