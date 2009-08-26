@@ -32,30 +32,45 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<%@ page import="org.kablink.teaming.ObjectKeys" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.HashMap" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("navigation.myTeams") %>' scope="request"/>
+<%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
+<%
+	Map entriesSeen = new HashMap();
+%>
+<div id="wrapper">
+<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
+<div id="pagebody">
 
-<c:if test="${!empty ss_mobileFavoritesList}">
-	<div class="pagebody">
-	  <div id="favorites">
-	    <span><ssf:nlt tag="mobile.favoritesAndTeams"/></span>
-	  </div>
-	  <div class="pagebody_border">
+<div class="pagebody">
+	<h3 align="center"><ssf:nlt tag="navigation.myTeams"/></h3>
 		<ul>
-		  <li>
-			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+		<c:forEach var="binder" items="${ss_mobileTeamsList}">
+			<jsp:useBean id="binder" type="java.util.Map" />
+			<li>
+			  <a 
+			  <c:if test="${binder._entityType == 'folder'}">
+			    href="<ssf:url adapter="true" portletName="ss_forum" folderId="${binder._docId}" 
 							action="__ajax_mobile" actionUrl="false" 
-							operation="mobile_show_favorites" />">
-				<span><ssf:nlt tag="navigation.favorites"/></span>
-			  </a>
-		  </li>
-		  <li>
-			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+							operation="mobile_show_folder" />"
+			  </c:if>
+			  <c:if test="${binder._entityType == 'workspace'}">
+			    href="<ssf:url adapter="true" portletName="ss_forum" binderId="${binder._docId}" 
 							action="__ajax_mobile" actionUrl="false" 
-							operation="mobile_show_teams" />">
-				<span><ssf:nlt tag="navigation.myTeams"/></span>
-			  </a>
-		  </li>
+							operation="mobile_show_workspace" />"
+			  </c:if>
+			  >${binder.title}</a>
+			</li>
+		</c:forEach>
 		</ul>
-	  </div>
-	</div>
-</c:if>
+</div>
+<br/>
+
+<%@ include file="/WEB-INF/jsp/mobile/footer.jsp" %>
+</div>
+
+</body>
+</html>

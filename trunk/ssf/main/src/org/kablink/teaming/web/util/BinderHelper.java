@@ -1735,7 +1735,18 @@ public class BinderHelper {
 		
 		List<String> trackedPlaces = new ArrayList<String>();
 		if (type.equals(WebKeys.URL_WHATS_NEW_TRACKED)) {
-			trackedPlaces = SearchUtils.getTrackedPlacesIds(bs, binder);
+			Long userWsId = user.getWorkspaceId();
+			if (userWsId != null) {
+				Binder userWs = bs.getBinderModule().getBinder(userWsId);
+				trackedPlaces = SearchUtils.getTrackedPlacesIds(bs, userWs);
+			}
+		} else if (type.equals(WebKeys.URL_WHATS_NEW_TEAMS)) {
+			Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId());
+			Iterator itTeams = myTeams.iterator();
+			while (itTeams.hasNext()) {
+				Map team = (Map)itTeams.next();
+				trackedPlaces.add((String)team.get(Constants.DOCID_FIELD));
+			}
 		} else {
 			trackedPlaces.add(binder.getId().toString());
 		}
@@ -1754,8 +1765,10 @@ public class BinderHelper {
 				if (id != null) {
 					Long bId = new Long(id);
 					if (!places.containsKey(id)) {
-						Binder place = bs.getBinderModule().getBinder(bId);
-						places.put(id, place);
+						try {
+							Binder place = bs.getBinderModule().getBinder(bId);
+							places.put(id, place);
+						} catch(Exception e) {}
 					}
 				}
 	    	}
