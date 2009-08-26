@@ -46,7 +46,7 @@
 	<c:forEach var="workflow" items="${ssDefinitionEntry.workflowStates}">
 	  <c:if test="${!empty workflow.definition}">
 	      <c:if test="${workflowTitle != lastWorkflowTitle}">
-	        <span>${workflow.definition.title}</span>
+	        <span><ssf:nlt tag="${workflow.definition.title}" checkIfTag="true"/></span>
 	      </c:if>
 	      <c:if test="${empty workflow.threadName}">
 		    <br/><span>${ssWorkflowCaptions[workflow.id]}</span>

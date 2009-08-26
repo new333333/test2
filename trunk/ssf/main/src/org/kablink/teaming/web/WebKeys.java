@@ -400,6 +400,7 @@ public class WebKeys {
     public static final String OPERATION_MOBILE_ADD_ENTRY="mobile_add_entry"; 
     public static final String OPERATION_MOBILE_ADD_REPLY="mobile_add_reply"; 
     public static final String OPERATION_MOBILE_FIND_PEOPLE="mobile_find_people"; 
+    public static final String OPERATION_MOBILE_FIND_PLACES="mobile_find_places"; 
     public static final String OPERATION_MOBILE_LOGIN="mobile_login"; 
     public static final String OPERATION_MOBILE_MODIFY_ENTRY="mobile_modify_entry"; 
     public static final String OPERATION_MOBILE_SHOW_FAVORITES="mobile_show_favorites"; 
@@ -1050,6 +1051,7 @@ public class WebKeys {
     public static final String TOOLBAR_URL_EMAIL_ADDRESSES="ss_toolbar_url_email_addresses";
     public static final String TOOLBAR_URL_SIMPLE_URLS="ss_toolbar_url_simple_urls";
     public static final String TOOLBAR_URL_WEBDAV="ss_toolbar_url_webdav";
+    public static final String TOP_WORKSPACE="ss_topWorkspace";
     public static final String TUTORIAL_NAME = "ss_tutorial_name";
     public static final String TUTORIAL_PANEL_STATE = "ss_tutorial_panel_state";
     public static final String TRACKED_PLACES_PAGE="ss_trackedPlacesPage";

@@ -85,6 +85,7 @@ import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.search.filter.SearchFilterRequestParser;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.LongIdUtil;
@@ -195,7 +196,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_SEARCH_RESULTS)) {
 			return ajaxMobileSearchResults(this, request, response);
 			
-		} else if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PEOPLE)) {
+		} else if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PEOPLE) || 
+				op.equals(WebKeys.OPERATION_MOBILE_FIND_PLACES)) {
 			return ajaxMobileFindPeople(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_FAVORITES)) {
@@ -341,17 +343,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
 
-		Object obj = userProperties.get(ObjectKeys.USER_PROPERTY_FAVORITES);
-		Favorites f;
-		if (obj != null && obj instanceof Document) {
-			f = new Favorites((Document)obj);
-			//fixup - have to store as string cause hibernate equals fails
-			getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
-		} else {		
-			f = new Favorites((String)obj);
-		}
-		List<Map> favList = f.getFavoritesList();
-		model.put(WebKeys.MOBILE_FAVORITES_LIST, favList);
+		try {
+			Workspace topWorkspace = getWorkspaceModule().getTopWorkspace();
+			model.put(WebKeys.TOP_WORKSPACE, topWorkspace);
+		} catch(AccessControlException e) {}
 		
 		Map userQueries = new HashMap();
 		if (userProperties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
@@ -921,7 +916,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
 		Map formData = request.getParameterMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PEOPLE)) {
+		if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PEOPLE) || op.equals(WebKeys.OPERATION_MOBILE_FIND_PLACES)) {
 			String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
 			if (formData.containsKey("okBtn") || !searchText.equals("")) {
 				model.put(WebKeys.SEARCH_TEXT, searchText);
@@ -946,16 +941,27 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				//Add the login name term
 				if (searchText.length()>0) {
 					searchTermFilter.addTitleFilter(searchText);
-					searchTermFilter.addLoginNameFilter(searchText);
+					if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PEOPLE)) {
+						searchTermFilter.addLoginNameFilter(searchText);
+					}
+					if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PLACES)) {
+						searchTermFilter.addPlacesFilter(searchText, false);
+					}
 				}
 			   	
 				//Do a search to find the first few items that match the search text
 				options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
-				Map entries = getProfileModule().getUsers(options);
-				model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
-				model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+				Map entries = null;
 				view = "mobile/find_people";
-
+				if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PEOPLE)) {
+					entries = getProfileModule().getUsers(options);
+					model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
+				} else if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PLACES)) {
+					entries = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
+					model.put(WebKeys.ENTRIES, entries.get(ObjectKeys.SEARCH_ENTRIES));
+					view = "mobile/find_places";
+				}
+				model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 				model.put(WebKeys.PAGE_SIZE, maxEntries);
 				model.put(WebKeys.PAGE_NUMBER, pageNumber);
 
