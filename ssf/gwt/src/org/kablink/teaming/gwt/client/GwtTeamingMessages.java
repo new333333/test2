@@ -65,10 +65,12 @@ public interface GwtTeamingMessages extends Messages
 	String lpeTable();
 	String lpeUtilityElement();
 	
+	String listProperties();
 	String numColumns();
 	String ok();
 	String showBorder();
 	String tableProperties();
+	String title();
 	
 	String testPanelState( String value );
 	String testWaiting();

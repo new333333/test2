@@ -51,6 +51,7 @@ import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -269,11 +270,10 @@ public class LandingPageEditor extends Composite
 		{
 			int mouseX;
 			int mouseY;
-			DropZone previousDropZone;
 			
 			// Yes, update the position of the drag proxy.
-			mouseX = event.getClientX();
-			mouseY = event.getClientY();
+			mouseX = event.getClientX() + Window.getScrollLeft();
+			mouseY = event.getClientY() + Window.getScrollTop();
 			m_paletteItemDragProxy.setPopupPosition( mouseX+10, mouseY+10 );
 			
 			// Is the mouse over a drop zone?

@@ -56,7 +56,7 @@ public class TablePaletteItem extends PaletteItem
 	{
 		TableDropWidget	tableDropWidget;
 		
-		tableDropWidget = new TableDropWidget( lpe );
+		tableDropWidget = new TableDropWidget( lpe, null );
 
 		return tableDropWidget;
 	}// end createDropWidget()

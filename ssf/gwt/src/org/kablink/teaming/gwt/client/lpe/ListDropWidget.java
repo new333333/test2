@@ -45,34 +45,55 @@ import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
  * @author jwootton
  *
  */
-public class TableDropWidget extends DropWidget
+public class ListDropWidget extends DropWidget
 {
-	private TableProperties	m_properties = null;
+	private ListProperties		m_properties = null;
 	private FlowPanel			m_mainPanel;
 	private FlexTable			m_flexTable = null;
 	private LandingPageEditor	m_lpe = null;
+	private DropZone			m_dropZone;
 	
 	/**
 	 * 
 	 */
-	public TableDropWidget( LandingPageEditor lpe, TableProperties properties )
+	public ListDropWidget( LandingPageEditor lpe, ListProperties properties )
 	{
+		CellFormatter cellFormatter;
+
 		m_lpe = lpe;
 		
 		m_mainPanel = new FlowPanel();
+		m_mainPanel.addStyleName( "lpeListDropWidget" );
 		
-		// Create an object to hold all of the properties that define a table widget.
-		m_properties = new TableProperties();
+		// Create an object to hold all of the properties that define a list widget.
+		m_properties = new ListProperties();
 		
 		// If we were passed some properties, make a copy of them.
 		if ( properties != null )
 			m_properties.copy( properties );
 		
+		// Create a FlexTable to hold the title and DropZone.
+		m_flexTable = new FlexTable();
+		m_flexTable.setWidth( "100%" );
+		m_flexTable.insertRow( 0 );
+		m_flexTable.insertRow( 0 );
+		cellFormatter = m_flexTable.getFlexCellFormatter();
+		cellFormatter.setWordWrap( 0, 0, false );
+		cellFormatter.setWidth( 0, 0, "100%" );
+		
+		// Add the title.
+		m_flexTable.setText( 0, 0, "" );
+
+		// Add a DropZone where the user can drop widgets from the palette.
+		m_dropZone = new DropZone( m_lpe, "lpeListDropZone" );
+		m_flexTable.setWidget( 1, 0, m_dropZone );
+		m_mainPanel.add( m_flexTable );
+		
 		// All composites must call initWidget() in their constructors.
 		initWidget( m_mainPanel );
 
 		setStyleName( "lpeDropWidget" );
-	}// end TableDropWidget()
+	}// end ListDropWidget()
 	
 
 	/**
@@ -82,9 +103,8 @@ public class TableDropWidget extends DropWidget
 	{
 		DlgBox dlgBox;
 		
-		// Pass in the object that holds all the properties for a TableDropWidget.
-		// properties = new TableDropWidgetProperties();
-		dlgBox = new TableWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+		// Pass in the object that holds all the properties for a ListDropWidget.
+		dlgBox = new ListWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
 		
 		return dlgBox;
 	}// end getPropertiesDlgBox()
@@ -95,71 +115,17 @@ public class TableDropWidget extends DropWidget
 	 */
 	public void updateWidget( PropertiesObj props )
 	{
-		int i;
-		int numColumns;
-		CellFormatter cellFormatter;
+		String title;
 		
 		// Save the properties that were passed to us.
 		m_properties.copy( props );
 		
-		numColumns = m_properties.getNumColumnsInt();
+		// Get the title.
+		title = m_properties.getTitle();
 		
-		// Have we already created a FlexTable?
-		if ( m_flexTable == null )
-		{
-			// No
-			m_flexTable = new FlexTable();
-			m_flexTable.addStyleName( "lpeTable" );
-			m_flexTable.setWidth( "100%" );
-			
-			m_mainPanel.add( m_flexTable );
-			
-			// Add 1 row to the table.
-			m_flexTable.insertRow( 0 );
-			
-			// Add the appropriate number of columns to the table.
-			for (i = 0; i < numColumns; ++i)
-			{
-				DropZone	dropZone;
-				
-				m_flexTable.addCell( 0 );
-				dropZone = new DropZone( m_lpe, "lpeTableDropZone" );
-				m_flexTable.setWidget( 0, i, dropZone );
-			}
-		}
+		if ( title == null || title.length() == 0 )
+			m_flexTable.setText( 0, 0, "" );
 		else
-		{
-			// Do we need to remove columns from the existing table?
-			if ( numColumns < m_flexTable.getCellCount( 0 ) )
-			{
-				// Yes.
-				while ( numColumns < m_flexTable.getCellCount( 0 ) )
-				{
-					m_flexTable.removeCell( 0, m_flexTable.getCellCount( 0 )-1 );
-				}
-			}
-			// Do we need to add columns to the existing table?
-			else if ( numColumns > m_flexTable.getCellCount( 0 ) )
-			{
-				// Yes
-				while( numColumns > m_flexTable.getCellCount( 0 ) )
-				{
-					DropZone dropZone;
-					
-					m_flexTable.addCell( 0 );
-					dropZone = new DropZone( m_lpe, "lpeTableDropZone" );
-					m_flexTable.setWidget( 0, m_flexTable.getCellCount( 0 )-1, dropZone );
-				}
-			}
-		}
-		
-		cellFormatter = m_flexTable.getFlexCellFormatter();
-		for (i = 0; i < m_flexTable.getCellCount( 0 ); ++i )
-		{
-			// Set the width of this column.
-			cellFormatter.setWidth( 0, i, m_properties.getColWidthStr( i ) );
-		}
+			m_flexTable.setText( 0, 0, title );
 	}// end updateWidget()
-	
-	
-}// end TableDropWidget
+}// end ListDropWidget
