@@ -34,9 +34,13 @@ package org.kablink.teaming.portlet.forum;
 
 import static org.kablink.util.search.Restrictions.in;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -45,12 +49,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
@@ -60,6 +66,10 @@ import net.sf.json.JSONArray;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.calendar.AbstractIntervalView;
+import org.kablink.teaming.calendar.EventsViewHelper;
+import org.kablink.teaming.calendar.OneDayView;
+import org.kablink.teaming.calendar.OneMonthView;
 import org.kablink.teaming.comparator.BinderComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
@@ -88,6 +98,7 @@ import org.kablink.teaming.search.filter.SearchFilterRequestParser;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.CalendarHelper;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
@@ -99,8 +110,10 @@ import org.kablink.teaming.web.tree.FolderConfigHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.Clipboard;
+import org.kablink.teaming.web.util.DashboardHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.Favorites;
+import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.PortletPreferencesUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -115,6 +128,7 @@ import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
 import org.springframework.web.portlet.ModelAndView;
+import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
 /**
  * @author Peter Hurley
@@ -460,6 +474,16 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 		model.put(WebKeys.BINDER, binder);
 
+		if (binder != null) {
+			//See if the user has selected a specific view to use
+			DefinitionHelper.getDefinitions(binder, model);
+		}
+		Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
+		String family = null;
+		if (configDocument != null) family = DefinitionUtils.getFamily(configDocument);
+		if (family == null) family = "";
+		model.put(WebKeys.DEFINITION_FAMILY, family);
+		
       	Integer pageNumber = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER);
       	if (pageNumber == null || pageNumber < 0) pageNumber = 0;
       	int pageSize = Integer.valueOf(WebKeys.MOBILE_PAGE_SIZE).intValue();
@@ -469,7 +493,11 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
       	options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf(pageSize));
       	options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(pageStart));
 
-      	folderEntries = getFolderModule().getEntries(binderId, options);
+      	if (family.equals(Constants.FAMILY_FIELD_CALENDAR)) {
+      		folderEntries = ListFolderHelper.findCalendarEvents(bs, request, response, binder, model);
+      	} else {
+      		folderEntries = getFolderModule().getEntries(binderId, options);
+      	}
       	
       	model.put(WebKeys.SEARCH_TOTAL_HITS, folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 		if (folderEntries != null) {
@@ -989,5 +1017,5 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 		return new ModelAndView("mobile/find_people", model);
 	}
-	
+
 }

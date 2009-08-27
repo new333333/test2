@@ -463,6 +463,22 @@ input, textarea, select {
 }
 .ss_mobile_table tr {
 }
+table.ss_mobile_calendar {
+	width:100%;
+}
+table.ss_mobile_calendar th {
+		background-color: #e5e5e5;
+	padding: 6px 6px 6px 20px;
+	text-align: left;
+}
+table.ss_mobile_calendar td {
+	padding: 6px 6px 6px 20px;
+}
+.ss_mobile_calendar_time {
+	text-align: right;
+	width: 10%;
+	white-space: nowrap;
+}
 
 /********* LOGIN TEXT BOX ************/
 .ss_text_login{

@@ -154,6 +154,7 @@
 	  </div>
 	</c:if>
 
+	<c:if test="${ssDefinitionFamily != 'calendar'}">
 	<table class="table_list">
 	<c:forEach var="entry1" items="${ssFolderEntries}" >
 	<jsp:useBean id="entry1" type="java.util.HashMap" />
@@ -172,6 +173,11 @@
 	 </tr>
 	</c:forEach>
 	</table>
+	</c:if>
+	
+	<c:if test="${ssDefinitionFamily == 'calendar'}">
+		<%@ include file="/WEB-INF/jsp/mobile/show_calendar.jsp" %>
+	</c:if>
 	
 	<table><tr><td>
 	<c:if test="${!empty ss_prevPage}">

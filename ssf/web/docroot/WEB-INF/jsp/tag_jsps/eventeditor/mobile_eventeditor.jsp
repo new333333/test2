@@ -89,11 +89,11 @@
 						name="${dateId}_0_fullTime" 
 						<c:choose>
 							<c:when test="${initEvent.allDayEvent}">
-								value="T08:00:00"
+								value="08:00:00"
 							</c:when>
 							<c:otherwise>
 								<c:if test="${!empty startDate}">
-									value="T<fmt:formatDate value="${startDate}" 
+									value="<fmt:formatDate value="${startDate}" 
 										pattern="HH:mm:ss" timeZone="${timeZoneID}"/>"
 								</c:if>
 							</c:otherwise>
@@ -158,11 +158,11 @@
 							name="${dateId2}_0_fullTime" 
 							<c:choose>
 								<c:when test="${initEvent.allDayEvent}">
-									value="T08:30:00"
+									value="08:30:00"
 								</c:when>
 								<c:otherwise>
 									<c:if test="${!empty endDate}">	
-										value="T<fmt:formatDate value="${endDate}" 
+										value="<fmt:formatDate value="${endDate}" 
 											pattern="HH:mm:ss" timeZone="${timeZoneID}"/>"
 									</c:if>
 								</c:otherwise>
