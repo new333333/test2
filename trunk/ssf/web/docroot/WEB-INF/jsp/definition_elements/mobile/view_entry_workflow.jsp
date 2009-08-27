@@ -49,7 +49,7 @@
 	        <span><ssf:nlt tag="${workflow.definition.title}" checkIfTag="true"/></span>
 	      </c:if>
 	      <c:if test="${empty workflow.threadName}">
-		    <br/><span>${ssWorkflowCaptions[workflow.id]}</span>
+		    <br/><span class="ss_mobile_workflow_state">${ssWorkflowCaptions[workflow.id]}</span>
 	      </c:if>
 	
 	    <c:set var="workflowTitle" value="${workflow.definition.title}"/>
@@ -57,8 +57,8 @@
 	        <% //??? This next check needs to be fixed if multiple of the same workflow porcess is allowed %>
 	        <c:if test="${workflow2.definition.id == workflow.definition.id}">
 	          <c:if test="${!empty workflow2.threadName}">
-				<br/><span class="ss_mobile_light">${workflow2.threadName}</span>
-			    ${ssWorkflowCaptions[workflow2.id]}
+				<br/><span class="ss_mobile_light ss_mobile_workflow_state">${workflow2.threadName}
+			    ${ssWorkflowCaptions[workflow2.id]}</span>
 	    	  </c:if>
 	
 		      <c:if test="${!empty ssWorkflowTransitions[workflow2.id]}">

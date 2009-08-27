@@ -582,7 +582,11 @@ public class BinderHelper {
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
 			adapterUrl.setParameter(WebKeys.OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
 			model.put(WebKeys.URL, adapterUrl);
-			return new ModelAndView("mobile/show_login_form", model);
+			if (bs.getAdminModule().isMobileAccessEnabled()) {
+				return new ModelAndView("mobile/show_login_form", model);
+			} else {
+				return new ModelAndView("mobile/not_supported", model);
+			}
 
 		}
 		return new ModelAndView(view, model);
