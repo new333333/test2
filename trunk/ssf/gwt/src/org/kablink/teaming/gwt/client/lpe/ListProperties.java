@@ -30,36 +30,83 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 
 /**
- * 
+ * This class holds all of the properties needed to define a list widget in a landing page.
+ * @author jwootton
+ *
  */
-public class ListPaletteItem extends PaletteItem
+public class ListProperties
+	implements PropertiesObj
 {
+	private boolean	m_showBorder;
+	private String		m_title;
+	
 	/**
 	 * 
 	 */
-	public ListPaletteItem()
+	public ListProperties()
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorList(), GwtTeaming.getMessages().lpeList() );
-	}// end TablePaletteItem()
-
-
+		m_showBorder = false;
+		m_title = null;
+	}// end ListProperties()
+	
+	
 	/**
-	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
+	 * 
 	 */
-	public DropWidget createDropWidget( LandingPageEditor lpe )
+	public void copy( PropertiesObj props )
 	{
-		ListDropWidget	listDropWidget;
-		
-		listDropWidget = new ListDropWidget( lpe, null );
-
-		return listDropWidget;
-	}// end createDropWidget()
-}// end ListPaletteItem
-
-
+		if ( props instanceof ListProperties )
+		{
+			ListProperties listProps;
+			int i;
+			int numCols;
+			
+			listProps = (ListProperties) props;
+			setShowBorder( listProps.getShowBorderValue() );
+			setTitle( listProps.getTitle() );
+		}
+	}// end copy()
+	
+	
+	/**
+	 * Return the value of the "show border" property
+	 */
+	public boolean getShowBorderValue()
+	{
+		return m_showBorder;
+	}// end getShowBorderValue()
+	
+	
+	/**
+	 * Return the value of the title property
+	 */
+	public String getTitle()
+	{
+		return m_title;
+	}// end getTitle()
+	
+	
+	/**
+	 * 
+	 */
+	public void setShowBorder( boolean show )
+	{
+		m_showBorder = show;
+	}// end setShowBorder()
+	
+	
+	/**
+	 * 
+	 */
+	public void setTitle( String title )
+	{
+		m_title = title;
+	}// end setTitle()
+}// end ListProperties

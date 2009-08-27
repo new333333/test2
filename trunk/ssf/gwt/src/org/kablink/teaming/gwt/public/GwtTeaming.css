@@ -70,6 +70,34 @@
 	margin-top: .5em;
 }
 
+/* Styles for the List Widget */
+.lpeListDropWidget
+{
+	width: 100%;
+}
+
+/* Styles for the title of the List Widget */
+.lpeListDropWidgetTitle
+{
+	background-color: #EFEEEC;
+}
+
+/* Styles used for a drop zone found in a list. */
+.lpeListDropZone
+{
+	background-color: #FFFFFF;
+	border: 1px solid #999999;
+	min-height: 50px;
+	overfow: auto;
+	width: 100%;
+}
+
+/* Styles used for a drop zone found in a list. */
+.lpeListDropZone-highlighted
+{
+	background-color: #CDF3FF;
+}
+
 /* Styles used for a drop zone found in a table. */
 .lpeTableDropZone
 {
