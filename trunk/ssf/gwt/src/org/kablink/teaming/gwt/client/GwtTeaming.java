@@ -81,6 +81,30 @@ public class GwtTeaming implements EntryPoint
 		rootPanel = RootPanel.get( "gwtLandingPageEditorDiv" );
 		if ( rootPanel != null )
 		{
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+			if ( false )
+			{
+				com.smartgwt.client.widgets.menu.Menu menu;
+				com.smartgwt.client.widgets.menu.MenuItem newItem;
+				com.smartgwt.client.widgets.menu.MenuItem openItem;
+				com.smartgwt.client.widgets.menu.MenuItem saveItem;
+				com.smartgwt.client.widgets.menu.MenuButton menuBtn;
+				
+				menu = new com.smartgwt.client.widgets.menu.Menu();
+				menu.setShowShadow( true );
+				menu.setShadowDepth( 10 );
+				
+				newItem = new com.smartgwt.client.widgets.menu.MenuItem( "New" );
+				openItem = new com.smartgwt.client.widgets.menu.MenuItem( "Open" );
+				saveItem = new com.smartgwt.client.widgets.menu.MenuItem( "Save" );
+				
+				menu.setItems( newItem, openItem, saveItem );
+				
+				menuBtn = new com.smartgwt.client.widgets.menu.MenuButton( "File", menu );
+				rootPanel.add( menuBtn );
+			}
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+			
 			LandingPageEditor	lpEditor;
 			
 			// Yes
