@@ -33,11 +33,11 @@
 package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.EditDeleteControl;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 
 /**
@@ -50,7 +50,6 @@ public class TableDropWidget extends DropWidget
 	private TableProperties	m_properties = null;
 	private FlowPanel			m_mainPanel;
 	private FlexTable			m_flexTable = null;
-	private LandingPageEditor	m_lpe = null;
 	
 	/**
 	 * 
@@ -60,6 +59,7 @@ public class TableDropWidget extends DropWidget
 		m_lpe = lpe;
 		
 		m_mainPanel = new FlowPanel();
+		m_mainPanel.addStyleName( "lpeDropWidget" );
 		
 		// Create an object to hold all of the properties that define a table widget.
 		m_properties = new TableProperties();
@@ -68,10 +68,21 @@ public class TableDropWidget extends DropWidget
 		if ( properties != null )
 			m_properties.copy( properties );
 		
+		// Create the widgets that make up this widget.
+		updateWidget( m_properties );
+		
+		// Create an Edit/Delete control and position it at the top/right of this widget.
+		// This control allows the user to edit the properties of this widget and to delete this widget.
+		{
+			EditDeleteControl ctrl;
+			
+			ctrl = new EditDeleteControl( this, this );
+			ctrl.addStyleName( "upperRight" );
+			m_mainPanel.add( ctrl );
+		}
+		
 		// All composites must call initWidget() in their constructors.
 		initWidget( m_mainPanel );
-
-		setStyleName( "lpeDropWidget" );
 	}// end TableDropWidget()
 	
 

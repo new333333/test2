@@ -1,3 +1,18 @@
+/* Styles used with the Edit-Delete control. */
+.editDeleteControl
+{
+	background-color: #EBECA5;
+	border: 1px solid #CCCCCC;
+	padding: 2px;
+}
+
+/* Styles used with the "edit" anchor in the Edit-Delete control. */
+.editDeleteControlAnchor
+{
+	color: #016BA6;
+	text-decoration: none;
+}
+
 /* From Lynn's styles. */
 .head4
 {
@@ -13,6 +28,23 @@
 {
 	color: #4D6D8B;
 	font-size: 0.8em;
+}
+
+/* Styles for the canvas widget used in the landing page editor. */
+.lpeCanvas
+{
+	background-color: #FFFFFF;
+	border: 1px solid #999999;
+	margin-left: 5px;
+	height: 350px;
+	overflow: auto;
+	width: 750px;
+}
+
+/* Styles for the canvas widget when the user is dragging something over the canvas. */
+.lpeCanvas-highlighted
+{
+	background-color: #CDF3FF;
 }
 
 /* Styles for the drag proxy widget that is used when the user drags an item from the palette in the landing page editor. */
@@ -34,23 +66,6 @@
 	padding: 0px;
 }
 
-/* Styles for the canvas widget used in the landing page editor. */
-.lpeCanvas
-{
-	background-color: #FFFFFF;
-	border: 1px solid #999999;
-	margin-left: 5px;
-	height: 350px;
-	overflow: auto;
-	width: 650px;
-}
-
-/* Styles for the canvas widget when the user is dragging something over the canvas. */
-.lpeCanvas-highlighted
-{
-	background-color: #CDF3FF;
-}
-
 /* Styles used for the drop indicator that shows the user where a dropped widget will be inserted. */
 .lpeDropIndicator
 {
@@ -68,6 +83,7 @@
 	margin-left: .5em;
 	margin-right: .5em;
 	margin-top: .5em;
+	position: relative;
 }
 
 /* Styles for the List Widget */
@@ -103,6 +119,7 @@
 {
 	background-color: #FFFFFF;
 	border: 1px solid #999999;
+	height: 100%;
 	min-height: 50px;
 	overfow: auto;
 	width: 100%;
@@ -161,6 +178,12 @@
 	border: 0px;
 }
 
+/* Style used to create a right margin of 5 px. */
+.margin-right-5
+{
+	margin-right: 5px;
+}
+
 /* Styles for buttons */
 .teamingButton
 {
@@ -198,4 +221,12 @@
 {
 	background-color: #C6E7F6;
 	padding: 1px 5px 10px 10px;
+}
+
+/* Styles used to position something in the upper right hand corner of its parent. */
+.upperRight
+{
+	position: absolute;
+	right: 5px;
+	top: 0px;
 }
