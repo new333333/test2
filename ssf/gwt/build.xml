@@ -49,9 +49,10 @@
 	
 	<!-- Set the desired classpath. -->
 	<fileset id="gwtjars" dir="${gwt.dir}">
-		<include name="gwt-user.jar"   />
-		<include name="${gwt.dev.jar}" />
-		<include name="smartgwt.jar"   />
+		<include name="gwt-user.jar"       />
+		<include name="${gwt.dev.jar}"     />
+		<include name="smartgwt.jar"       />
+		<include name="smartgwt-skins.jar" />
 	</fileset>
 	<fileset id="libjars" dir="${lib.dir}">
 		<include name="*jar" />
@@ -78,8 +79,9 @@
 	
 	<target name="compile-ignored" depends="build-common.compile,compile-gwt" />
 	<target name="compile-gwt">
+		<!-- Compile the GWT stuff into www. -->
 		<java
-				classpath="src:${gwt.dir}/gwt-user.jar:${gwt.dir}/${gwt.dev.jar}:${gwt.dir}/smartgwt.jar:"
+				classpath="src:${gwt.dir}/gwt-user.jar:${gwt.dir}/${gwt.dev.jar}:${gwt.dir}/smartgwt.jar:${gwt.dir}/smartgwt-skins.jar:"
 				failonerror="true"
 				classname="com.google.gwt.dev.Compiler"
 				fork="true">
@@ -101,6 +103,13 @@
 			<arg value="-ea"                                />
 			<arg value="org.kablink.teaming.gwt.GwtTeaming" />
 		</java> 
+
+		<!-- Copy our SmartGWT skin(s) into www. -->
+		<copy todir="www/gwtteaming/sc/skins">
+		        <fileset dir="skins">
+		        	<include name="**/*"/>
+			</fileset>
+		</copy>			
 	</target>
 
 	
@@ -115,10 +124,13 @@
 	</target>
 	<target name="deploy-gwt" depends="compile-gwt">
 		<mkdir  dir="${app.server.ssf.dir}/js/gwt"/>
-	    <copy todir="${app.server.ssf.dir}/js/gwt">
-	        <fileset dir="www">
-	        	<include name="**/*"/>
+		<antcall target="deploy-teaming-skins"/>
+	</target>
+	<target name="deploy-teaming-skins">
+		<copy todir="${app.server.ssf.dir}/js/gwt">
+		        <fileset dir="www">
+		        	<include name="**/*"/>
 			</fileset>
-	    </copy>			
+		</copy>			
 	</target>
 </project>

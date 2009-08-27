@@ -34,14 +34,8 @@
 %>
 <% //div %>
 
-<meta name="gwt:property" content="locale=<%= NLT.get( "Teaming.Lang" ) %>">
-
-<% /* Tell SmartGWT where to find its stuff. */ %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<script type="text/javascript">
-	var isomorphicDir="<html:rootPath />js/gwt/gwtteaming/sc/";
-	var currentSkin= "Enterprise";
-</script>
+<%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp"     %>
 
 <c:set var="ss_mashupItemId" value="0" scope="request"/>
 <%  
@@ -60,7 +54,6 @@
 	request.setAttribute("ss_mashupListDepth", ss_mashupListDepth);
 %>
 <c:set var="ss_mashupPropertyName" value="${property_name}" scope="request"/>
-
 <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
 
 <c:if test="${ssConfigJspStyle == 'form'}">
