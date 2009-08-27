@@ -279,6 +279,7 @@ public class WebKeys {
 	public static final String ACTION_ACCESS_CONTROL = "configure_access_control";
 	public static final String ACTION_CLOSE_WINDOW="close_window"; 
 	public static final String ACTION_CONFIGURE_DEFINITIONS = "configure_definitions";
+	public static final String ACTION_CONFIGURE_MOBILE_ACCESS="configure_mobile_access";
 	public static final String ACTION_CONFIGURE_USER_ACCESS="configure_user_access";
 	public static final String ACTION_DEFINITION_BUILDER = "definition_builder";
 	public static final String ACTION_DEFINITION_BUILDER_DEFINITION_TYPE = "definition_type";

@@ -163,7 +163,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		if (ReleaseInfo.isLicenseRequiredEdition() && !SPropsUtil.getBoolean("mobile.enabled", false)) {
+		if (!getAdminModule().isMobileAccessEnabled()) {
 			Map model = new HashMap();
 			return new ModelAndView("mobile/not_supported", model);
 		}

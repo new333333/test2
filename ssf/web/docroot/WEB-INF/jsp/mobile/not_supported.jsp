@@ -34,14 +34,14 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ss_windowTitle" value="Mobile access is not supported" scope="request"/>
+<c:set var="ss_windowTitle" value='<%= NLT.get("mobile.notEnabled") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
 <div id="wrapper">
  <div id="pagebody">
   <div class="pagebody">
 	<div class="maincontent">
-		The Teaming Mobile Interface is not supported in Teaming V2. 
+		<ssf:nlt tag="mobile.notEnabled"/> 
 	</div>
   </div>
  </div>

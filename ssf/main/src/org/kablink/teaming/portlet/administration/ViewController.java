@@ -248,6 +248,20 @@ public class ViewController extends  SAbstractController {
 			elements.put(element.attributeValue("title"), element);
 		}
 		
+		//Mobile access configuration
+		if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+			element.addAttribute("title", NLT.get("administration.configure_mobileAccess"));
+			element.addAttribute("image", "bullet");
+			element.addAttribute("id", String.valueOf(nextId++));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_MOBILE_ACCESS);
+			url.setWindowState(WindowState.MAXIMIZED);
+			url.setPortletMode(PortletMode.VIEW);
+			element.addAttribute("url", url.toString());
+			elements.put(element.attributeValue("title"), element);
+		}
+		
 		//Add user
 		try {
 			ProfileBinder profilesBinder = getProfileModule().getProfileBinder();

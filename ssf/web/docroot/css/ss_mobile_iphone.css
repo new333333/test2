@@ -439,6 +439,9 @@ input, textarea, select {
 	border: solid 1px #CCCCCC;
 	padding: 4px;
 }
+.ss_mobile_workflow_state {
+	padding-left: 10px;
+}
 .ss_mobile_masthead {
 	border: solid 1px black;
 	background-color: #cecece;
