@@ -507,7 +507,7 @@ public class ListFolderHelper {
 		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 	}
 
-	private static Map findCalendarEvents(AllModulesInjected bs, RenderRequest request, 
+	public static Map findCalendarEvents(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Binder binder, Map model) throws PortletRequestBindingException {
 		Map folderEntries = new HashMap();
 		Long binderId = binder.getId();
@@ -582,13 +582,18 @@ public class ListFolderHelper {
 		Map options = getSearchFilter(bs, request, binder, userFolderProperties);
 		options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
        	// options.put(ObjectKeys.SEARCH_EVENT_DAYS, getExtViewDayDates(calStartDateRange, calEndDateRange));
-       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, intervalView.getVisibleIntervalRaw());
+		List intervals = new ArrayList(1);
+		intervals.add(intervalView.getVisibleIntervalRaw());
+       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, intervals);
        	
        	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, formatter.format(calStartDateRange.getTime()));
        	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, formatter.format(calEndDateRange.getTime()));
 
        	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, formatter.format(calStartDateRange.getTime()));
        	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, formatter.format(calEndDateRange.getTime()));
+
+  		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.EVENT_DATES_FIELD);
+  		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
 
        	model.put(WebKeys.CALENDAR_PREV_DATE, prevDate);
        	model.put(WebKeys.CALENDAR_NEXT_DATE, nextDate);

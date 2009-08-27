@@ -75,7 +75,7 @@
 					id="date_time_${property_name}_${prefix}" 
 					name="${property_name}_0_fullTime" 
 					<c:if test="${property_initialSetting != 'none'}">
-					  value="T<fmt:formatDate value="${initDate}" 
+					  value="<fmt:formatDate value="${initDate}" 
 					    pattern="HH:mm:ss" timeZone="${ssUser.timeZone.ID}"/>"
 					</c:if>
 					<c:if test="${property_initialSetting == 'none'}">
