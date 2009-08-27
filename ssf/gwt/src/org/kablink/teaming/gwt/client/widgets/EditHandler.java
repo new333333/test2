@@ -31,48 +31,15 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client;
-
-import com.google.gwt.i18n.client.Messages;
-
+package org.kablink.teaming.gwt.client.widgets;
 
 /**
- * This interface is used to retrieve strings from the file GwtTeamingMessages*.properties
+ * 
  * @author jwootton
  *
  */
-public interface GwtTeamingMessages extends Messages
+public interface EditHandler
 {
-	String _1();
-	String _2();
-	String _3();
-	String _4();
-	String _5();
-	
-	String cancel();
-	String columnXWidth( int colNum );
-	
-	// lpe stands for Landing Page Editor
-	String lpeCustomJSP();
-	String lpeDeleteWidget();
-	String lpeEntry();
-	String lpeFolder();
-	String lpeGraphic();
-	String lpeHint();
-	String lpeLinkEntry();
-	String lpeLinkFolderWS();
-	String lpeLinkURL();
-	String lpeList();
-	String lpeTable();
-	String lpeUtilityElement();
-	
-	String listProperties();
-	String numColumns();
-	String ok();
-	String showBorder();
-	String tableProperties();
-	String title();
-	
-	String testPanelState( String value );
-	String testWaiting();
-}// end GwtTeamingMessages
+	// This method gets called when the user has requested to edit a particular object.
+	public void onEdit();
+}// end EditHandler

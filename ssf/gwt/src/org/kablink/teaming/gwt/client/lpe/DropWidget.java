@@ -32,12 +32,14 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.widgets.DeleteHandler;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditCanceledHandler;
+import org.kablink.teaming.gwt.client.widgets.EditHandler;
 import org.kablink.teaming.gwt.client.widgets.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
@@ -49,11 +51,12 @@ import com.google.gwt.user.client.ui.Composite;
  *
  */
 public abstract class DropWidget extends Composite
-	implements EditSuccessfulHandler, EditCanceledHandler
+	implements EditSuccessfulHandler, EditCanceledHandler, EditHandler, DeleteHandler
 {
 	private DlgBox					m_dlgBox = null;
 	private EditSuccessfulHandler	m_editSuccessfulHandler = null;
 	private EditCanceledHandler	m_editCanceledHandler = null;
+	protected LandingPageEditor	m_lpe = null;
 
 
 	/**
@@ -166,6 +169,34 @@ public abstract class DropWidget extends Composite
 		// If we get here the mouse is over the bottom-half of the widget.
 		return 2;
 	}// end isMouseOverWidget()
+	
+	
+	/**
+	 * This method gets called when the user clicks on the "delete" link.
+	 */
+	public void onDelete()
+	{
+		// Ask the user if they really want to delete this widget.
+		if ( Window.confirm( GwtTeaming.getMessages().lpeDeleteWidget() ) )
+		{
+			// Delete this widget
+			removeFromParent();
+		}
+	}// end onDelete()
+	
+	
+	/**
+	 * This method gets called when the user clicks on the "edit" link.
+	 */
+	public void onEdit()
+	{
+		int x;
+		int y;
+		
+		x = m_lpe.getCanvasLeft() + 5;
+		y = m_lpe.getCanvasTop() + 5;
+		editProperties( null, null, x, y );
+	}// end onEdit()
 	
 	
 	/**

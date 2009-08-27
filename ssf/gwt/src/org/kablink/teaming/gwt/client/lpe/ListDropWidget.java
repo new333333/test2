@@ -33,11 +33,11 @@
 package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.EditDeleteControl;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 
 /**
@@ -50,7 +50,6 @@ public class ListDropWidget extends DropWidget
 	private ListProperties		m_properties = null;
 	private FlowPanel			m_mainPanel;
 	private FlexTable			m_flexTable = null;
-	private LandingPageEditor	m_lpe = null;
 	private DropZone			m_dropZone;
 	
 	/**
@@ -63,7 +62,7 @@ public class ListDropWidget extends DropWidget
 		m_lpe = lpe;
 		
 		m_mainPanel = new FlowPanel();
-		m_mainPanel.addStyleName( "lpeListDropWidget" );
+		m_mainPanel.addStyleName( "lpeDropWidget" );
 		
 		// Create an object to hold all of the properties that define a list widget.
 		m_properties = new ListProperties();
@@ -81,18 +80,26 @@ public class ListDropWidget extends DropWidget
 		cellFormatter.setWordWrap( 0, 0, false );
 		cellFormatter.setWidth( 0, 0, "100%" );
 		
-		// Add the title.
-		m_flexTable.setText( 0, 0, "" );
-
 		// Add a DropZone where the user can drop widgets from the palette.
 		m_dropZone = new DropZone( m_lpe, "lpeListDropZone" );
 		m_flexTable.setWidget( 1, 0, m_dropZone );
 		m_mainPanel.add( m_flexTable );
 		
+		// Create an Edit/Delete control and position it at the top/right of this widget.
+		// This control allows the user to edit the properties of this widget and to delete this widget.
+		{
+			EditDeleteControl ctrl;
+			
+			ctrl = new EditDeleteControl( this, this );
+			ctrl.addStyleName( "upperRight" );
+			m_mainPanel.add( ctrl );
+		}
+		
+		// Update the dynamic parts of this widget
+		updateWidget( m_properties );
+		
 		// All composites must call initWidget() in their constructors.
 		initWidget( m_mainPanel );
-
-		setStyleName( "lpeDropWidget" );
 	}// end ListDropWidget()
 	
 

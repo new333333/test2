@@ -194,6 +194,24 @@ public class LandingPageEditor extends Composite
 	
 
 	/**
+	 * Return the absolute X position of the canvas.
+	 */
+	public int getCanvasLeft()
+	{
+		return m_canvas.getAbsoluteLeft();
+	}// end getCanvasTop()
+	
+	
+	/**
+	 * Return the absolute Y position of the canvas.
+	 */
+	public int getCanvasTop()
+	{
+		return m_canvas.getAbsoluteTop();
+	}// end getCanvasTop()
+	
+	
+	/**
 	 * Return a boolean indicating whether or not the user is currently dragging a palette item.
 	 */
 	public boolean isPaletteItemDragInProgress()
@@ -340,8 +358,8 @@ public class LandingPageEditor extends Composite
 				// our editSuccessful() will be called and we will add the DropWidget to the
 				// selected DropZone.  If the user pressed cancel, our editCanceled() method
 				// will be called.
-				x = m_canvas.getAbsoluteLeft() + 5;
-				y = m_canvas.getAbsoluteTop() + 5;
+				x = getCanvasLeft() + 5;
+				y = getCanvasTop() + 5;
 				dropWidget.editProperties( this, this, x, y );
 			}
 		}
