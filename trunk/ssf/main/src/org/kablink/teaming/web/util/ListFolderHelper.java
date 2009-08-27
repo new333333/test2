@@ -68,6 +68,7 @@ import org.kablink.teaming.calendar.AbstractIntervalView;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.calendar.OneDayView;
 import org.kablink.teaming.calendar.OneMonthView;
+import org.kablink.teaming.calendar.EventsViewHelper.Grid;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
@@ -526,8 +527,15 @@ public class ListFolderHelper {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
 		
-		String gridType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_GRID_TYPE, "");
-		Integer gridSize = PortletRequestUtils.getIntParameter(request, WebKeys.CALENDAR_GRID_SIZE, -1);
+		Grid oldGrid = EventsViewHelper.getCalendarGrid(portletSession, userProperties, binderId.toString());
+		String gridType = "";
+		Integer gridSize = -1;
+		if (oldGrid != null) {
+			gridType = oldGrid.type;
+			gridSize = oldGrid.size;
+		}
+		gridType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_GRID_TYPE, gridType);
+		gridSize = PortletRequestUtils.getIntParameter(request, WebKeys.CALENDAR_GRID_SIZE, gridSize);
 		Map grids = EventsViewHelper.setCalendarGrid(portletSession, userProperties, binderId.toString(), gridType, gridSize);
 		model.put(WebKeys.CALENDAR_GRID_TYPE, ((EventsViewHelper.Grid)grids.get(binderId.toString())).type);
 		model.put(WebKeys.CALENDAR_GRID_SIZE, ((EventsViewHelper.Grid)grids.get(binderId.toString())).size);
