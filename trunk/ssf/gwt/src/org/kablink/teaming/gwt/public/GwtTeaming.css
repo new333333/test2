@@ -4,6 +4,8 @@
 	background-color: #EBECA5;
 	border: 1px solid #CCCCCC;
 	padding: 2px;
+	white-space: nowrap;
+	width: 37px;
 }
 
 /* Styles used with the "edit" anchor in the Edit-Delete control. */
@@ -11,6 +13,19 @@
 {
 	color: #016BA6;
 	text-decoration: none;
+}
+
+/* Styles used with the panel that wraps the edit-delete control. */
+.editDeleteWrapperPanel
+{
+	height: 20px;
+	position: relative;
+}
+
+/* Styles used with the panel that wraps a drop widget. */
+.dropWidgetWrapperPanel
+{
+	margin-top: .5em;
 }
 
 /* From Lynn's styles. */
@@ -82,8 +97,6 @@
 	margin-bottom: .5em;
 	margin-left: .5em;
 	margin-right: .5em;
-	margin-top: .5em;
-	position: relative;
 }
 
 /* Styles for the List Widget */

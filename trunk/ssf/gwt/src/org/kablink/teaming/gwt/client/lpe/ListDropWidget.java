@@ -58,7 +58,11 @@ public class ListDropWidget extends DropWidget
 	public ListDropWidget( LandingPageEditor lpe, ListProperties properties )
 	{
 		CellFormatter cellFormatter;
-
+		FlowPanel wrapperPanel;
+		
+		wrapperPanel = new FlowPanel();
+		wrapperPanel.addStyleName( "dropWidgetWrapperPanel" );
+		
 		m_lpe = lpe;
 		
 		m_mainPanel = new FlowPanel();
@@ -89,17 +93,25 @@ public class ListDropWidget extends DropWidget
 		// This control allows the user to edit the properties of this widget and to delete this widget.
 		{
 			EditDeleteControl ctrl;
+			FlowPanel panel;
 			
 			ctrl = new EditDeleteControl( this, this );
 			ctrl.addStyleName( "upperRight" );
-			m_mainPanel.add( ctrl );
+			
+			// Wrap the edit/delete control in a panel.  We position the edit/delete control on the right
+			// side of the wrapper panel.
+			panel = new FlowPanel();
+			panel.addStyleName( "editDeleteWrapperPanel" );
+			panel.add( ctrl );
+			wrapperPanel.add( panel );
 		}
 		
 		// Update the dynamic parts of this widget
 		updateWidget( m_properties );
 		
 		// All composites must call initWidget() in their constructors.
-		initWidget( m_mainPanel );
+		wrapperPanel.add( m_mainPanel );
+		initWidget( wrapperPanel );
 	}// end ListDropWidget()
 	
 
