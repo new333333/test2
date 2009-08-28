@@ -68,6 +68,7 @@ import org.kablink.teaming.calendar.AbstractIntervalView;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.calendar.OneDayView;
 import org.kablink.teaming.calendar.OneMonthView;
+import org.kablink.teaming.calendar.StartEndDatesView;
 import org.kablink.teaming.calendar.EventsViewHelper.Grid;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
@@ -581,8 +582,15 @@ public class ListFolderHelper {
        		nextDate.add(Calendar.MONTH, 1);
        		prevDate.add(Calendar.MONTH, -1);
        		
-       	} else if (EventsViewHelper.GRID_DAY.equals(strSessGridType)) {
+       	} else if (EventsViewHelper.GRID_DAY.equals(strSessGridType) && strSessGridSize.equals("1")) {
        		intervalView = new OneDayView(currentDate);
+       		setDatesForGridDayView(calStartDateRange, calEndDateRange, strSessGridSize, prevDate, nextDate);
+       	} else if (EventsViewHelper.GRID_DAY.equals(strSessGridType) && !strSessGridSize.equals("1")) {
+       		Calendar cal = Calendar.getInstance();  
+       		cal.setTime(currentDate);
+       		cal.add(Calendar.DATE, Integer.valueOf(strSessGridSize));
+       		Date currentEndDate = cal.getTime();
+       		intervalView = new StartEndDatesView(currentDate, currentEndDate);
        		setDatesForGridDayView(calStartDateRange, calEndDateRange, strSessGridSize, prevDate, nextDate);
        	}
        	
@@ -594,11 +602,13 @@ public class ListFolderHelper {
 		intervals.add(intervalView.getVisibleIntervalRaw());
        	options.put(ObjectKeys.SEARCH_EVENT_DAYS, intervals);
        	
-       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, formatter.format(calStartDateRange.getTime()));
-       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, formatter.format(calEndDateRange.getTime()));
-
-       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, formatter.format(calStartDateRange.getTime()));
-       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, formatter.format(calEndDateRange.getTime()));
+       	if (1 == 0) {
+       		options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, formatter.format(calStartDateRange.getTime()));
+	       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, formatter.format(calEndDateRange.getTime()));
+	
+	       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, formatter.format(calStartDateRange.getTime()));
+	       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, formatter.format(calEndDateRange.getTime()));
+       	}
 
   		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.EVENT_DATES_FIELD);
   		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));

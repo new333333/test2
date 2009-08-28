@@ -305,11 +305,11 @@ public class SearchUtils {
     			finish.addText(eventDay.endDate);
     		}
         			        		
-    		Element orLastActivityDateBoolElement = orEventOrLastActivityOrCreationBoolElement.addElement(Constants.OR_ELEMENT);
         			        		
     		//	See if there is a last activity start date
     		if (options.containsKey(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START) && 
     				options.containsKey(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END)) {
+    			Element orLastActivityDateBoolElement = orEventOrLastActivityOrCreationBoolElement.addElement(Constants.OR_ELEMENT);
     			Element range = orLastActivityDateBoolElement.addElement(Constants.RANGE_ELEMENT);
     			range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.LASTACTIVITY_FIELD);
     			range.addAttribute(Constants.INCLUSIVE_ATTRIBUTE, "true");
@@ -319,11 +319,11 @@ public class SearchUtils {
     			finish.addText((String) options.get(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END));
     		}
 
-    		Element orCreationDateBoolElement = orEventOrLastActivityOrCreationBoolElement.addElement(Constants.OR_ELEMENT);
         			        		
     		//	See if there is a last activity start date
     		if (options.containsKey(ObjectKeys.SEARCH_CREATION_DATE_START) && 
     				options.containsKey(ObjectKeys.SEARCH_CREATION_DATE_END)) {
+    			Element orCreationDateBoolElement = orEventOrLastActivityOrCreationBoolElement.addElement(Constants.OR_ELEMENT);
     			Element range = orCreationDateBoolElement.addElement(Constants.RANGE_ELEMENT);
     			range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.CREATION_DATE_FIELD);
     			range.addAttribute(Constants.INCLUSIVE_ATTRIBUTE, "true");
