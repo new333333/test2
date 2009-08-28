@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 
 /**
@@ -50,6 +51,7 @@ public class ListDropWidget extends DropWidget
 	private ListProperties		m_properties = null;
 	private FlowPanel			m_mainPanel;
 	private FlexTable			m_flexTable = null;
+	private Label				m_title = null;
 	private DropZone			m_dropZone;
 	
 	/**
@@ -57,7 +59,6 @@ public class ListDropWidget extends DropWidget
 	 */
 	public ListDropWidget( LandingPageEditor lpe, ListProperties properties )
 	{
-		CellFormatter cellFormatter;
 		FlowPanel wrapperPanel;
 		
 		wrapperPanel = new FlowPanel();
@@ -77,16 +78,13 @@ public class ListDropWidget extends DropWidget
 		
 		// Create a FlexTable to hold the title and DropZone.
 		m_flexTable = new FlexTable();
+		m_flexTable.addStyleName( "lpeTable" );
 		m_flexTable.setWidth( "100%" );
 		m_flexTable.insertRow( 0 );
-		m_flexTable.insertRow( 0 );
-		cellFormatter = m_flexTable.getFlexCellFormatter();
-		cellFormatter.setWordWrap( 0, 0, false );
-		cellFormatter.setWidth( 0, 0, "100%" );
 		
 		// Add a DropZone where the user can drop widgets from the palette.
 		m_dropZone = new DropZone( m_lpe, "lpeListDropZone" );
-		m_flexTable.setWidget( 1, 0, m_dropZone );
+		m_flexTable.setWidget( 0, 0, m_dropZone );
 		m_mainPanel.add( m_flexTable );
 		
 		// Create an Edit/Delete control and position it at the top/right of this widget.
@@ -102,6 +100,9 @@ public class ListDropWidget extends DropWidget
 			// side of the wrapper panel.
 			panel = new FlowPanel();
 			panel.addStyleName( "editDeleteWrapperPanel" );
+			
+			m_title = new Label();
+			panel.add( m_title );
 			panel.add( ctrl );
 			wrapperPanel.add( panel );
 		}
@@ -143,8 +144,8 @@ public class ListDropWidget extends DropWidget
 		title = m_properties.getTitle();
 		
 		if ( title == null || title.length() == 0 )
-			m_flexTable.setText( 0, 0, "" );
+			m_title.setText( "" );
 		else
-			m_flexTable.setText( 0, 0, title );
+			m_title.setText( title );
 	}// end updateWidget()
 }// end ListDropWidget
