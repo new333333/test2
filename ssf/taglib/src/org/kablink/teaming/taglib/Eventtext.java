@@ -124,6 +124,9 @@ public class Eventtext extends TagSupport {
 			req.setAttribute("repeatString", repeatString);
 			req.setAttribute("allDayEvent", event.isAllDayEvent());
 			req.setAttribute("hasDuration", event.getDuration().getInterval() != 0);
+			long msDuration = event.getDuration().getInterval();
+			Integer durationDays = Integer.valueOf((int)(msDuration + 24*60*60*1000/2)/(24*60*60*1000));
+			req.setAttribute("durationDays", durationDays);
 			req.setAttribute("freeBusy", event.getFreeBusy().name());
 			
 			StringServletResponse res = new StringServletResponse(
