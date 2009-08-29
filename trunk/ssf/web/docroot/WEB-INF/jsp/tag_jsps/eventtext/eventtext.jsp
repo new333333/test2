@@ -39,6 +39,11 @@
 		<c:when test="${(allDayEvent && startString == endString) || !hasDuration}">
 			<ssf:nlt tag="calendar.when" />: ${startString}<br />
 		</c:when>
+		<c:when test="${(allDayEvent && startString != endString)}">
+		    <ssf:nlt tag="calendar.start" text="Start"/>: ${startString}&nbsp;&nbsp;
+		    (<ssf:nlt tag="calendar.allDay"/><c:if test="${durationDays > 1}"> <ssf:nlt tag="event.duration"><ssf:param 
+		    name="value" value="${durationDays}"/></ssf:nlt></c:if>)<br/>
+		</c:when>
 		<c:otherwise>
 		    <ssf:nlt tag="calendar.start" text="Start"/>: ${startString}<br />
 		    <ssf:nlt tag="calendar.end" text="End"/>: ${endString}<br />			

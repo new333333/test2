@@ -744,12 +744,14 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 </ssf:ifLoggedIn>
 <!-- End of myteams pane -->
 
-<c:if test="${!ss_mashupHideMasthead && (empty ss_captive || !ss_captive)}">
+</c:if>
+<c:if test="${!ss_mashupHideMasthead}">
 <div style="padding-bottom:0px;"></div>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 <div style="padding-bottom:2px;"></div>
 </c:if>
 <div class="ss_clear_float"></div>
+<c:if test="${(!ss_mashupHideMasthead || ss_mashupShowBranding) && (empty ss_captive || !ss_captive)}">
 </div>
 </c:if>
 <c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == 'iframe' || 

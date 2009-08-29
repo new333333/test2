@@ -101,5 +101,24 @@ function ss_logoff_from_sso(s) {
 			<a href="javascript: ;" onClick="ss_logoff();return false;"><span><ssf:nlt tag="logout"/></span></a>
 		</c:if>
 	</li>
+	<li>
+	<c:if test="${!empty ssBinder}">
+	  <a href="<ssf:url folderId="${ssBinder.id}" 
+	    action="view_folder_listing"><ssf:param
+		name="captive" value="true"/></ssf:url>"><ssf:nlt tag="mobile.teamingUI"/></a>
+	</c:if>
+	<c:if test="${empty ssBinder}">
+		<c:if test="${ssUser.internalId != guestInternalId}">
+			<c:if test="${!empty ssUser.workspaceId}">
+				<a href="<ssf:url action="view_ws_listing"
+				    binderId="${ssUser.workspaceId}"><ssf:param
+				    name="captive" value="true"/></ssf:url>"><ssf:nlt tag="mobile.teamingUI"/></a>
+			</c:if>
+			<c:if test="${empty ssUser.workspaceId}">
+				<ssf:userTitle user="${ssUser}"/>
+			</c:if>
+		</c:if>
+	</c:if>
+	</li>
   </ul>
 </div>

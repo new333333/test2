@@ -189,7 +189,7 @@
 				</td>
 			</tr>
 	</c:if>
-	<c:if test="${attMap.isTimeZoneSensitiveActive}">
+	<c:if test="${'1' == '0' && attMap.isTimeZoneSensitiveActive}">
 		<tr>
 			<td colspan="4">
 				<input type="checkbox" name="timeZoneSensitive_${evid}"
