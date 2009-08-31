@@ -54,7 +54,11 @@ public class LinkUrlPaletteItem extends PaletteItem
 	 */
 	public DropWidget createDropWidget( LandingPageEditor lpe )
 	{
-		return null;
+		LinkToUrlDropWidget	linkDropWidget;
+		
+		linkDropWidget = new LinkToUrlDropWidget( lpe, null );
+
+		return linkDropWidget;
 	}// end createDropWidget()
 }// end LinkUrlPaletteItem
 
