@@ -65,6 +65,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
+import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
@@ -372,7 +373,16 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				model.put(WebKeys.TABS, tabs);
 				model.put(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
 				model.put(WebKeys.OPERATION, ""); //make sure not set to anyting we don't support
-			} 
+
+				Binder binder = getBinderModule().getBinder(configId);				
+				Definition binderDef = binder.getEntryDef();
+				if (binderDef != null) {
+					Document configDocument = binderDef.getDefinition();
+					String viewType = DefinitionUtils.getViewType(configDocument);
+					if (viewType == null) viewType = "";
+					model.put(WebKeys.VIEW_TYPE, viewType);
+				}
+} 
 		} else if (WebKeys.OPERATION_ADD.equals(operation)) {
 				model.put(WebKeys.OPERATION, operation);
 				String definitionType = PortletRequestUtils.getStringParameter(request, "definitionType", String.valueOf(Definition.FOLDER_VIEW));
@@ -452,7 +462,6 @@ public class ConfigureConfigurationController extends  SAbstractController {
 
 			List<TemplateBinder> configs = getTemplateModule().getTemplates();
 			model.put(WebKeys.BINDER_CONFIGS, configs);
-
 		}
 		return new ModelAndView(path, model);
 		
