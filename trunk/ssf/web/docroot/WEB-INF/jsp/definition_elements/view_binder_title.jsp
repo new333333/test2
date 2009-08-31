@@ -34,6 +34,12 @@
 %>
 <% //Workspace title view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${empty ss_breadcrumbsShowIdRoutine}">
+  <c:set var="ss_breadcrumbsShowIdRoutine" value="ss_treeShowIdNoWS" scope="request" />
+</c:if>
+<c:if test="${empty ss_breadcrumbsTreeName}">
+  <c:set var="ss_breadcrumbsTreeName" value="wsTree" scope="request" />
+</c:if>
 <c:set var="actionVar" value="view_ws_listing"/>
 <c:set var="actionVar2" value="view_folder_listing"/>
 <c:if test="${ssConfigJspStyle != 'template'}">
