@@ -102,9 +102,10 @@
 			<arg value="${gwt.logLevel}"                    />
 			<arg value="-ea"                                />
 			<arg value="org.kablink.teaming.gwt.GwtTeaming" />
-		</java> 
-
-		<!-- Copy our SmartGWT skin(s) into www. -->
+		</java>
+		<antcall target="copy-skins"/>
+	</target>
+	<target name="copy-skins">
 		<copy todir="www/gwtteaming/sc/skins">
 		        <fileset dir="skins">
 		        	<include name="**/*"/>
@@ -124,13 +125,17 @@
 	</target>
 	<target name="deploy-gwt" depends="compile-gwt">
 		<mkdir  dir="${app.server.ssf.dir}/js/gwt"/>
-		<antcall target="deploy-teaming-skins"/>
+		<antcall target="deploy-skins"/>
 	</target>
-	<target name="deploy-teaming-skins">
+	<target name="deploy-skins">
 		<copy todir="${app.server.ssf.dir}/js/gwt">
 		        <fileset dir="www">
 		        	<include name="**/*"/>
 			</fileset>
 		</copy>			
+	</target>
+	<target name="deploy-teaming-skins">
+		<antcall target="copy-skins"/>
+		<antcall target="deploy-skins"/>
 	</target>
 </project>
