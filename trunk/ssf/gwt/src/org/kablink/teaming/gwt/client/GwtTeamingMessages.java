@@ -66,9 +66,14 @@ public interface GwtTeamingMessages extends Messages
 	String lpeTable();
 	String lpeUtilityElement();
 	
+	String linkToUrl();
+	String linkToUrlLabel();
+	String linkToUrlProperties();
+	String linkToUrlUrl( String url );
 	String listProperties();
 	String numColumns();
 	String ok();
+	String openUrlInNewWnd();
 	String showBorder();
 	String tableProperties();
 	String title();

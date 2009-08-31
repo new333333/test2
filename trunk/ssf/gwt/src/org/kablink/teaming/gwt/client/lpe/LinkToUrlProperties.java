@@ -37,24 +37,26 @@ import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 
 /**
- * This class holds all of the properties needed to define a list widget in a landing page.
+ * This class holds all of the properties needed to define a "Link to url" widget in a landing page.
  * @author jwootton
  *
  */
-public class ListProperties
+public class LinkToUrlProperties
 	implements PropertiesObj
 {
-	private boolean	m_showBorder;
 	private String		m_title;
+	private String		m_url;
+	private boolean	m_openInNewWindow;
 	
 	/**
 	 * 
 	 */
-	public ListProperties()
+	public LinkToUrlProperties()
 	{
-		m_showBorder = false;
 		m_title = null;
-	}// end ListProperties()
+		m_url = null;
+		m_openInNewWindow = false;
+	}// end LinkToUrlProperties()
 	
 	
 	/**
@@ -62,24 +64,25 @@ public class ListProperties
 	 */
 	public void copy( PropertiesObj props )
 	{
-		if ( props instanceof ListProperties )
+		if ( props instanceof LinkToUrlProperties )
 		{
-			ListProperties listProps;
+			LinkToUrlProperties linkProps;
 			
-			listProps = (ListProperties) props;
-			setShowBorder( listProps.getShowBorderValue() );
-			setTitle( listProps.getTitle() );
+			linkProps = (LinkToUrlProperties) props;
+			setTitle( linkProps.getTitle() );
+			setUrl( linkProps.getUrl() );
+			setOpenInNewWindow( linkProps.getOpenInNewWindow() );
 		}
 	}// end copy()
 	
-	
+
 	/**
-	 * Return the value of the "show border" property
+	 * Return the value of the "Open the url in a new window" property
 	 */
-	public boolean getShowBorderValue()
+	public boolean getOpenInNewWindow()
 	{
-		return m_showBorder;
-	}// end getShowBorderValue()
+		return m_openInNewWindow;
+	}// getOpenInNewWindow()
 	
 	
 	/**
@@ -92,12 +95,21 @@ public class ListProperties
 	
 	
 	/**
+	 * Return the value of the url property
+	 */
+	public String getUrl()
+	{
+		return m_url;
+	}// end getUrl()
+	
+
+	/**
 	 * 
 	 */
-	public void setShowBorder( boolean show )
+	public void setOpenInNewWindow( boolean value )
 	{
-		m_showBorder = show;
-	}// end setShowBorder()
+		m_openInNewWindow = value;
+	}// end setOpenInNewWindow()
 	
 	
 	/**
@@ -107,4 +119,13 @@ public class ListProperties
 	{
 		m_title = title;
 	}// end setTitle()
-}// end ListProperties
+	
+	
+	/**
+	 * 
+	 */
+	public void setUrl( String url )
+	{
+		m_url = url;
+	}// end setUrl()
+}// end LinkToUrlProperties

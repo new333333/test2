@@ -50,28 +50,29 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author jwootton
  *
  */
-public class ListWidgetDlgBox extends DlgBox
+public class LinkToUrlWidgetDlgBox extends DlgBox
 {
-	private CheckBox		m_showBorderCkBox = null;
-	private TextBox		m_titleTxtBox = null;
+	private TextBox	m_titleTxtBox = null;
+	private TextBox	m_urlTxtBox;
+	private CheckBox	m_newWndCkBox;
 	
 	/**
 	 * 
 	 */
-	public ListWidgetDlgBox(
+	public LinkToUrlWidgetDlgBox(
 		EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
 		EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
 		boolean autoHide,
 		boolean modal,
 		int xPos,
 		int yPos,
-		ListProperties properties ) // Where properties used in the dialog are read from and saved to.
+		LinkToUrlProperties properties ) // Where properties used in the dialog are read from and saved to.
 	{
 		super( autoHide, modal, xPos, yPos );
 		
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().listProperties(), editSuccessfulHandler, editCanceledHandler, properties ); 
-	}// end ListWidgetDlgBox()
+		createAllDlgContent( GwtTeaming.getMessages().linkToUrlProperties(), editSuccessfulHandler, editCanceledHandler, properties ); 
+	}// end LinkToUrlWidgetDlgBox()
 	
 
 	/**
@@ -80,35 +81,48 @@ public class ListWidgetDlgBox extends DlgBox
 	@SuppressWarnings("unchecked")
 	public Panel createContent( PropertiesObj props )
 	{
-		ListProperties properties;
+		LinkToUrlProperties properties;
 		Label			label;
 		VerticalPanel	mainPanel;
 		FlexTable		table;
 		
-		properties = (ListProperties) props;
+		properties = (LinkToUrlProperties) props;
 
 		mainPanel = new VerticalPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
-		// Add a checkbox for "Show border"
-		table = new FlexTable();
-		table.setCellSpacing( 8 );
-		m_showBorderCkBox = new CheckBox( GwtTeaming.getMessages().showBorder() );
-		table.setWidget( 0, 0, m_showBorderCkBox );
-		mainPanel.add( table );
-		if ( properties.getShowBorderValue() == true )
-			m_showBorderCkBox.setValue( Boolean.TRUE );
-
 		// Add label and edit control for "Title"
 		table = new FlexTable();
-		table.setCellSpacing( 8 );
+		table.setCellSpacing( 2 );
 		label = new Label( GwtTeaming.getMessages().title() );
 		table.setWidget( 0, 0, label );
 		m_titleTxtBox = new TextBox();
+		m_titleTxtBox.setVisibleLength( 30 );
 		m_titleTxtBox.setText( properties.getTitle() );
-		table.setWidget( 0, 1, m_titleTxtBox );
+		table.setWidget( 1, 0, m_titleTxtBox );
 		mainPanel.add( table );
 		
+		// Add label and edit control for "URL"
+		table = new FlexTable();
+		table.setCellSpacing( 2 );
+		label = new Label( GwtTeaming.getMessages().linkToUrl() );
+		table.setWidget( 2, 0, label );
+		m_urlTxtBox = new TextBox();
+		m_urlTxtBox.setVisibleLength( 30 );
+		m_urlTxtBox.setText( properties.getUrl() );
+		table.setWidget( 3, 0, m_urlTxtBox );
+		
+		mainPanel.add( table );
+		
+		// Add a checkbox for "Open the URL in a new window"
+		table = new FlexTable();
+		table.setCellSpacing( 4 );
+		m_newWndCkBox = new CheckBox( GwtTeaming.getMessages().openUrlInNewWnd() );
+		table.setWidget( 0, 0, m_newWndCkBox );
+		mainPanel.add( table );
+		if ( properties.getOpenInNewWindow() == true )
+			m_newWndCkBox.setValue( Boolean.TRUE );
+
 		return mainPanel;
 	}// end createContent()
 	
@@ -118,27 +132,29 @@ public class ListWidgetDlgBox extends DlgBox
 	 */
 	public PropertiesObj getDataFromDlg()
 	{
-		ListProperties	properties;
+		LinkToUrlProperties	properties;
 		
-		properties = new ListProperties();
-		
-		// Save away the "show border" value.
-		properties.setShowBorder( getShowBorderValue() );
+		properties = new LinkToUrlProperties();
 		
 		// Save away the title.
 		properties.setTitle( getTitleValue() );
+
+		// Save away the url
+		properties.setUrl( getUrlValue() );
 		
+		// Save away the "open in new window" value.
+		properties.setOpenInNewWindow( getOpenInNewWindowValue() );
 		return properties;
 	}// end getDataFromDlg()
 	
 	
 	/**
-	 * Return true if the "show border" checkbox is checked.
+	 * Return true if the "open in new window" checkbox is checked.
 	 */
-	public boolean getShowBorderValue()
+	public boolean getOpenInNewWindowValue()
 	{
-		return m_showBorderCkBox.getValue().booleanValue();
-	}// end getShowBorderValue()
+		return m_newWndCkBox.getValue().booleanValue();
+	}// end getOpenInNewWindowValue()
 	
 	
 	/**
@@ -149,4 +165,13 @@ public class ListWidgetDlgBox extends DlgBox
 		return m_titleTxtBox.getText();
 	}// end getTitleValue()
 	
-}// end ListWidgetDlgBox
+	
+	/**
+	 * Return the text found in the url edit control.
+	 */
+	public String getUrlValue()
+	{
+		return m_urlTxtBox.getText();
+	}// end getUrlValue()
+	
+}// end LinkToUrlWidgetDlgBox

@@ -100,6 +100,31 @@
 	margin-right: .5em;
 }
 
+/* Styles for the "Link to Url" widget. */
+.lpeLinkToUrlWidget
+{
+	background-color: #E5E5E5;
+	border: 1px solid #AEAEAE;
+	padding: 6px;
+}
+
+/* Styles used for the title in a "link to url" widget */
+.lpeLinkToUrlTitle
+{
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 12px;
+}
+
+/* Styles used for the url in the "link to url" widget */
+.lpeLinkToUrlUrl
+{
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 11px;
+	font-style: italic;
+}
+
 /* Styles for the List Widget */
 .lpeListDropWidget
 {
@@ -118,7 +143,7 @@
 	background-color: #FFFFFF;
 	border: 1px solid #999999;
 	min-height: 50px;
-	overfow: auto;
+	overflow: auto;
 	width: 100%;
 }
 
@@ -135,7 +160,7 @@
 	border: 1px solid #999999;
 	height: 100%;
 	min-height: 50px;
-	overfow: auto;
+	overflow: auto;
 	width: 100%;
 }
 
@@ -190,6 +215,14 @@
 .lpeTable
 {
 	border: 0px;
+}
+
+/* Styles used for the label that identifies a widget, ie Link, Utility Element */
+.lpeWidgetIdentifier
+{
+	font-size: 13px;
+	font-weight: bold;
+	margin-right: .25em;
 }
 
 /* Style used to create a right margin of 5 px. */

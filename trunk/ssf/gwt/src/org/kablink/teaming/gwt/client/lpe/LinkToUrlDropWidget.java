@@ -32,59 +32,36 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditDeleteControl;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.InlineLabel;
 
 /**
  * 
  * @author jwootton
  *
  */
-public class ListDropWidget extends DropWidget
+public class LinkToUrlDropWidget extends DropWidget
 {
-	private ListProperties		m_properties = null;
-	private FlowPanel			m_mainPanel;
-	private FlexTable			m_flexTable = null;
-	private Label				m_title = null;
-	private DropZone			m_dropZone;
+	private LinkToUrlProperties	m_properties = null;
+	private InlineLabel			m_title = null;
+	private InlineLabel			m_url = null;
 	
 	/**
 	 * 
 	 */
-	public ListDropWidget( LandingPageEditor lpe, ListProperties properties )
+	public LinkToUrlDropWidget( LandingPageEditor lpe, LinkToUrlProperties properties )
 	{
 		FlowPanel wrapperPanel;
 		
-		wrapperPanel = new FlowPanel();
-		wrapperPanel.addStyleName( "dropWidgetWrapperPanel" );
-		
 		m_lpe = lpe;
 		
-		m_mainPanel = new FlowPanel();
-		m_mainPanel.addStyleName( "lpeDropWidget" );
-		
-		// Create an object to hold all of the properties that define a list widget.
-		m_properties = new ListProperties();
-		
-		// If we were passed some properties, make a copy of them.
-		if ( properties != null )
-			m_properties.copy( properties );
-		
-		// Create a FlexTable to hold the title and DropZone.
-		m_flexTable = new FlexTable();
-		m_flexTable.addStyleName( "lpeTable" );
-		m_flexTable.setWidth( "100%" );
-		m_flexTable.insertRow( 0 );
-		
-		// Add a DropZone where the user can drop widgets from the palette.
-		m_dropZone = new DropZone( m_lpe, "lpeListDropZone" );
-		m_flexTable.setWidget( 0, 0, m_dropZone );
-		m_mainPanel.add( m_flexTable );
+		wrapperPanel = new FlowPanel();
+		wrapperPanel.addStyleName( "dropWidgetWrapperPanel" );
 		
 		// Create an Edit/Delete control and position it at the top/right of this widget.
 		// This control allows the user to edit the properties of this widget and to delete this widget.
@@ -100,19 +77,48 @@ public class ListDropWidget extends DropWidget
 			panel = new FlowPanel();
 			panel.addStyleName( "editDeleteWrapperPanel" );
 			
-			m_title = new Label();
-			panel.add( m_title );
 			panel.add( ctrl );
 			wrapperPanel.add( panel );
 		}
+		
+		// Create the controls that will hold the title and url
+		{
+			FlowPanel mainPanel;
+			InlineLabel label;
+			
+			mainPanel = new FlowPanel();
+			mainPanel.addStyleName( "lpeDropWidget" );
+			mainPanel.addStyleName( "lpeLinkToUrlWidget" );
+			
+			// Add a label that identifies this widget as a link.
+			label = new InlineLabel( GwtTeaming.getMessages().linkToUrlLabel() );
+			label.addStyleName( "lpeWidgetIdentifier" );
+			mainPanel.add( label );
+			
+			m_title = new InlineLabel();
+			m_title.addStyleName( "lpeLinkToUrlTitle" );
+			mainPanel.add( m_title );
+			
+			m_url = new InlineLabel();
+			m_url.addStyleName( "lpeLinkToUrlUrl" );
+			mainPanel.add( m_url );
+
+			wrapperPanel.add( mainPanel );
+		}
+		
+		// Create an object to hold all of the properties that define a link-to-url widget.
+		m_properties = new LinkToUrlProperties();
+		
+		// If we were passed some properties, make a copy of them.
+		if ( properties != null )
+			m_properties.copy( properties );
 		
 		// Update the dynamic parts of this widget
 		updateWidget( m_properties );
 		
 		// All composites must call initWidget() in their constructors.
-		wrapperPanel.add( m_mainPanel );
 		initWidget( wrapperPanel );
-	}// end ListDropWidget()
+	}// end LinkToUrlDropWidget()
 	
 
 	/**
@@ -122,8 +128,8 @@ public class ListDropWidget extends DropWidget
 	{
 		DlgBox dlgBox;
 		
-		// Pass in the object that holds all the properties for a ListDropWidget.
-		dlgBox = new ListWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+		// Pass in the object that holds all the properties for a LinkToUrlDropWidget.
+		dlgBox = new LinkToUrlWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
 		
 		return dlgBox;
 	}// end getPropertiesDlgBox()
@@ -134,17 +140,28 @@ public class ListDropWidget extends DropWidget
 	 */
 	public void updateWidget( PropertiesObj props )
 	{
-		String title;
-		
 		// Save the properties that were passed to us.
 		m_properties.copy( props );
 		
-		// Get the title.
-		title = m_properties.getTitle();
+		// Update the title
+		{
+			String title;
+			
+			// Get the title.
+			title = m_properties.getTitle();
+			
+			if ( title == null || title.length() == 0 )
+				m_title.setText( "" );
+			else
+				m_title.setText( title );
+		}
 		
-		if ( title == null || title.length() == 0 )
-			m_title.setText( "" );
-		else
-			m_title.setText( title );
+		// Update the url
+		{
+			String url;
+			
+			url = m_properties.getUrl();
+			m_url.setText( GwtTeaming.getMessages().linkToUrlUrl( url ) );
+		}
 	}// end updateWidget()
-}// end ListDropWidget
+}// end LinkToUrlDropWidget
