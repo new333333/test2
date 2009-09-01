@@ -35,25 +35,38 @@
 
 <%@ page import="org.kablink.util.BrowserSniffer" %>
 <div class="ss_style">
+<script type="text/javascript"> 
+		function setModeCheck(eSel) {
+			var mode = eSel.options[eSel.selectedIndex].value;
+			var bChecked = (("creation" == mode) || ("activity" == mode));
+			document.getElementById("ss_calendarEventsTypeChoose${prefix}").checked = bChecked;
+		}
+	</script>
 	<form style="display: inline;">
-<%
-boolean isIE = BrowserSniffer.is_ie(request);
-%>
-	<!-- The help spot is positioned relative to the position of its parent. -->
-	<!-- That's why I put it in a <span> -->
-	<span>
-		<img border="0" src="<html:imagesPath/>pics/1pix.gif" />
+		<%
+			boolean isIE = BrowserSniffer.is_ie(request);
+		%>
+		<!-- The help spot is positioned relative to the position of its parent. -->
+		<!-- That's why I put it in a <span> -->
+		<span>
+			<img border="0" src="<html:imagesPath/>pics/1pix.gif" />
+	
+			<ssHelpSpot helpId="workspaces_folders/misc_tools/calendar_entry_control" offsetX="0" offsetY="-4" 
+			    title="<ssf:nlt tag="helpSpot.calendarEntryControl"/>">
+			</ssHelpSpot>
+		</span>
 
-		<ssHelpSpot helpId="workspaces_folders/misc_tools/calendar_entry_control" offsetX="0" offsetY="-4" 
-		    title="<ssf:nlt tag="helpSpot.calendarEntryControl"/>">
-		</ssHelpSpot>
-	</span>
-
-		<input style="margin: 0px" type="checkbox" id="ss_calendarEventsTypeChoose${prefix}" onclick="ss_calendar_${prefix}.changeEventType();"><label for="ss_calendarEventsTypeChoose${prefix}">&nbsp;<ssf:nlt tag="folder.calendar.show.all.entries.by" />:</label>
-
-		<select id="ss_calendarEventsTypeSelect${prefix}" onclick="ss_calendar_${prefix}.changeEventType();">
-			<option value="creation"><ssf:nlt tag="calendar.viewType.creation"/></option>
-			<option value="activity"><ssf:nlt tag="calendar.viewType.activity"/></option>
-		</select>
+		<input type="hidden" id="ss_calendarEventsTypeChoose${prefix}" />
+		<span class="ss_actions_bar6 ss_actions_bar">
+			<label for="ss_calendarEventsTypeSelect${prefix}"><ssf:nlt tag="calendar.navi.chooseMode"/>:</label>${ssShowFolderModeSelect}
+			<select id="ss_calendarEventsTypeSelect${prefix}" onclick="setModeCheck(this); ss_calendar_${prefix}.changeEventType();">
+				<c:if test="${ !empty ssShowFolderModeSelect && ssShowFolderModeSelect }">
+					<option value="virtual"><ssf:nlt tag="calendar.navi.mode.alt.virtual"/></option>
+				</c:if>
+				<option value="event"><ssf:nlt tag="calendar.navi.mode.alt.physical"/></option>
+				<option value="creation"><ssf:nlt tag="calendar.navi.mode.alt.physical.byCreation"/></option>
+				<option value="activity"><ssf:nlt tag="calendar.navi.mode.alt.physical.byActivity"/></option>
+			</select>
+		</span>
 	</form>
 </div>

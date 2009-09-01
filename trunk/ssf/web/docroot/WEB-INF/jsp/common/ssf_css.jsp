@@ -4028,6 +4028,10 @@ table.ss_tasks_list ul, table.ss_tasks_list li {
 table.ss_tasks_list .ss_due, table.ss_tasks_list .ss_assigned {
 	font-size: 10px;
 }
+table.ss_tasks_list .ss_assigned_virtual {
+	font-size: 10px;
+	background-color: #fef6d4;
+}
 
 table.ss_tasks_list td.ss_overdue, table.ss_tasks_list td.ss_overdue a {
 	color: #CC0000;

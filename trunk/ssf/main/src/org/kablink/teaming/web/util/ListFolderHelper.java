@@ -329,6 +329,11 @@ public class ListFolderHelper {
 					model.put(WebKeys.FOLDER_VIEW_TYPE, viewType);
 				}
 			}
+			else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
+				Workspace binderWs = BinderHelper.getBinderWorkspace(binder);
+				boolean showModeSelect = (BinderHelper.isBinderUserWorkspace(binderWs) || BinderHelper.isBinderTeamWorkspace(binderWs));
+				model.put(WebKeys.FOLDER_SHOW_MODE_SELECT, new Boolean(showModeSelect));
+			}
 	
 			//Checking the Sort Order that has been set. If not using the Default Sort Order
 			BinderHelper.initSortOrder(bs, userFolderProperties, options, viewType);

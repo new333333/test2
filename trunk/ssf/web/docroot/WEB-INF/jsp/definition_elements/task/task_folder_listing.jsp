@@ -400,7 +400,7 @@
 							<c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><a href="javascript: //" <c:if test="${entry.status == status.key}"> class="ss_taskStatus" </c:if><c:if test="${entry.status != status.key}"> class="ss_taskStatus ss_taskStatus_${status.key}_u" </c:if>><img <c:if test="${entry.status == status.key}"> src="<html:imagesPath/>icons/status_${status.key}.gif" </c:if><c:if test="${entry.status != status.key}"> src="<html:imagesPath/>pics/1pix.gif" </c:if> alt="${status.value}" title="${status.value}"></a></c:forEach></c:if>
 						</ssf:ifEntryModifiable>
 					</td>
-					<td class="ss_assigned">
+					<td <c:if test="${ !empty ssCurrentFolderModeType && ssCurrentFolderModeType == 'VIRTUAL' }">class="ss_assigned_virtual"</c:if><c:if test="${ empty ssCurrentFolderModeType || ssCurrentFolderModeType != 'VIRTUAL' }">class="ss_assigned"</c:if>>
 						<c:set var="assignment" value='<%= org.kablink.teaming.util.ResolveIds.getPrincipals(entry.get("assignment"), false) %>' />
 						<c:if test="${!empty assignment}">
 							<ul>
@@ -427,7 +427,7 @@
 								</c:forEach>
 							</ul>
 						</c:if>									
-					</td>
+					
 					<td id="ss_tasks_${renderResponse.namespace}_${entry._docId}_completed">
 						<c:if test="${! empty entry.completed}">
 							<ssf:ifEntryModifiable entryMap = "${entry}">

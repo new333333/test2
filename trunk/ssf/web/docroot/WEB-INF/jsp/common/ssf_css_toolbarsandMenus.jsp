@@ -200,6 +200,16 @@ table.ss_actions_bar4_pane {
 	margin:15px 0 0 0;
 	padding:5px 0 5px 25px;
 	}
+.ss_actions_bar6 {
+	background-color:#72AEB6;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #fff;
+	margin:0;
+	padding: 0 4px;
+    float:right;		
+	}
 ul.ss_actions_bar1  {
 	/* height: 22px;	*/
 	}

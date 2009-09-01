@@ -141,6 +141,8 @@ public class EventsViewHelper {
 	
 	public static final String EVENT_TYPE_EVENT = "event";
 
+	public static final String EVENT_TYPE_VIRTUAL = "virtual";
+	
 	public static final String EVENT_TYPE_DEFAULT = EVENT_TYPE_EVENT;
 
 	
@@ -473,7 +475,8 @@ public class EventsViewHelper {
 	public static void setCalendarDisplayEventType(PortletSession portletSession, String eventType) {
 		if (eventType == null || !(eventType.equals(EVENT_TYPE_EVENT) ||
 				eventType.equals(EVENT_TYPE_ACTIVITY) ||
-				eventType.equals(EVENT_TYPE_CREATION))) {
+				eventType.equals(EVENT_TYPE_CREATION) ||
+				eventType.equals(EVENT_TYPE_VIRTUAL))) {
 			eventType = EVENT_TYPE_DEFAULT;
 		}
 		portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_EVENT_TYPE, eventType);
