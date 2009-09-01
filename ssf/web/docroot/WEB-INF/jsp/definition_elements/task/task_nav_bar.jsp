@@ -114,20 +114,20 @@
 	  				folderId="${ssBinder.id}" 
 	  				action="${action}">
 		  				<ssf:param name="binderId" value="${ssBinder.id}"/>
-		  				<ssf:param name="ssFolderModeType" value="PHYSICAL"/>
-	  				</ssf:url>"
-					alt="<ssf:nlt tag="task.navi.mode.alt.physical"/>">
-						<input id="taskPhysical" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_folder_current_mode_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentFolderModeType == 'PHYSICAL'}">checked="true"</c:if>/> <label for="taskPhysical"><ssf:nlt tag="task.navi.mode.alt.physical"/></label>
-				</a>
-	
-				<a class="ss_calModeSelectButton" href="<ssf:url 
-	  				folderId="${ssBinder.id}" 
-	  				action="${action}">
-		  				<ssf:param name="binderId" value="${ssBinder.id}"/>
 		  				<ssf:param name="ssFolderModeType" value="VIRTUAL"/>
 	  				</ssf:url>"
 					alt="<ssf:nlt tag="task.navi.mode.alt.virtual"/>">
 						<input id="taskVirtual" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_folder_current_mode_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentFolderModeType == 'VIRTUAL'}">checked="true"</c:if>/> <label for="taskVirtual"><ssf:nlt tag="task.navi.mode.alt.virtual"/></label>
+				</a>
+
+				<a class="ss_calModeSelectButton" href="<ssf:url 
+	  				folderId="${ssBinder.id}" 
+	  				action="${action}">
+		  				<ssf:param name="binderId" value="${ssBinder.id}"/>
+		  				<ssf:param name="ssFolderModeType" value="PHYSICAL"/>
+	  				</ssf:url>"
+					alt="<ssf:nlt tag="task.navi.mode.alt.physical"/>">
+						<input id="taskPhysical" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_folder_current_mode_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentFolderModeType == 'PHYSICAL'}">checked="true"</c:if>/> <label for="taskPhysical"><ssf:nlt tag="task.navi.mode.alt.physical"/></label>
 				</a>
 			</li>
 		</c:if>

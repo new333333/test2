@@ -99,7 +99,7 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard)
 	 	if (!options) {
 	 		return;
 	 	}
-		
+
 	 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, mergeObj({operation: "sticky_calendar_display_settings",
 								binderId: binderId, calendarStickyId: stickyId}, options));
 		
@@ -1280,7 +1280,7 @@ function ss_calendarEngine(
 	}
 	
 	var ss_cal_Events = {
-		eventsTypes : ["event", "creation", "activity"],
+		eventsTypes : ["event", "creation", "activity", "virtual"],
 		CONTINUES_LEFT : 0,
 		CONTINUES_RIGHT : 1,
 		CONTINUES_LEFT_AND_RIGHT : 2,
@@ -1292,9 +1292,9 @@ function ss_calendarEngine(
 	    eventData: {},
 	    eventIdsByEntryId: {},
 	    
-	    collisions: {"event": {}, "creation": {}, "activity": {}},
+	    collisions: {"event": {}, "creation": {}, "activity": {}, "virtual": {}},
 	    collisionI: {},
-	    order: {"event": {}, "creation": {}, "activity": {}},// eventType -> date(YYYY/MM/DD) -> events key
+	    order: {"event": {}, "creation": {}, "activity": {}, "virtual": {}},	// eventType -> date(YYYY/MM/DD) -> events key
 	    
 	    monthGridEvents: [],
 		monthEventIds: [],
@@ -1348,9 +1348,9 @@ function ss_calendarEngine(
 		    this.eventData =  {};
 		    this.eventIdsByEntryId = {};
 		    
-		    this.collisions =  {"event": {}, "creation": {}, "activity": {}};
+		    this.collisions =  {"event": {}, "creation": {}, "activity": {}, "virtual": {}};
 		    this.collisionI =  {};
-		    this.order =  {"event": {}, "creation": {}, "activity": {}};
+		    this.order =  {"event": {}, "creation": {}, "activity": {}, "virtual": {}};
 		    
 		    this.monthGridEvents = [];
 			this.monthEventIds = [];
@@ -1889,16 +1889,21 @@ function ss_calendarEngine(
 	    	var ss_calChooseEntryTypes = document.getElementById(eventsTypeChooseId);
 			var ss_calSelectEntryTypes = document.getElementById(eventsTypeSelectId);
 			if (ss_calChooseEntryTypes && ss_calSelectEntryTypes) {
-				if (this.eventsType == 0) {
-					ss_calChooseEntryTypes.checked = false;
-				} else {
-					ss_calChooseEntryTypes.checked = true;
-					if (this.eventsType == 1) {
-						ss_calSelectEntryTypes.selectedIndex = 0;
-					} else {
-						ss_calSelectEntryTypes.selectedIndex = 1;
+				var iSel = ss_calFindOptionByValue(ss_calSelectEntryTypes, newEventTypeName);
+				if ((-1) == iSel) {
+					if ("virtual" == newEventType) {
+						newEventType = "event";
+						iSel = ss_calFindOptionByValue(ss_calSelectEntryTypes, newEventTypeName);
+						if ((-1) == iSel) {
+							iSel = 0;
+						}
 					}
-				}    	
+				}
+				ss_calSelectEntryTypes.selectedIndex = iSel;
+				
+				var mode = ss_calSelectEntryTypes.options[iSel].value;				
+				var bChecked = (("creation" == mode) || ("activity" == mode));
+				ss_calChooseEntryTypes.checked = bChecked;
 			}
 	    },
 	    
@@ -1913,19 +1918,28 @@ function ss_calendarEngine(
 			
 			if (ss_calChooseEntryTypes.checked) {
 				if (ss_calSelectEntryTypes.options[ss_calSelectEntryTypes.selectedIndex].value == this.eventsTypes[1]) {
-					this.eventsType = 1;
+					this.eventsType = 1;	// "creation"
 				} else if (ss_calSelectEntryTypes.options[ss_calSelectEntryTypes.selectedIndex].value == this.eventsTypes[2]) {
-					this.eventsType = 2;
+					this.eventsType = 2;	// "activity"
 				}
 			} else {
-				this.eventsType = 0;
+				if (ss_calSelectEntryTypes.options[ss_calSelectEntryTypes.selectedIndex].value == this.eventsTypes[3]) {
+alert("Warning:  The \"Assigned Events\" feature is not finished yet.");
+					this.eventsType = 3;	// "virtual"
+				} else {
+					this.eventsType = 0;	// "event"
+				}
 			}
 	
 			if (oldEventType != this.eventsType) {
 				if (calendarDataProvider) {
 					calendarDataProvider.stickyCalendarDisplaySettings({eventType : this.eventsTypes[this.eventsType]});
 				}
-				this.redrawAll();			
+				if ((3 == oldEventType) || (3 == this.eventsType)) {
+					document.location.reload();
+				} else {
+					this.redrawAll();
+				}			
 			}
 	    }
 	    
@@ -2754,4 +2768,13 @@ function ss_calendar_formatHour(hour, lang) {
 	var hourS = dojo.date.locale.format(d, {formatLength: 'hourOnly', locale: lang});
 	// next line because dojo.date.format requires to use separators in pattern 
 	return hourS.replace(" ", "").toLowerCase();
+}
+
+function ss_calFindOptionByValue(eSel, value) {
+	for (var i = 0; i < eSel.options.length; i += 1) {
+		if (value == eSel.options[i].value) {
+			return( i );
+		}
+	}
+	return( -1 );
 }

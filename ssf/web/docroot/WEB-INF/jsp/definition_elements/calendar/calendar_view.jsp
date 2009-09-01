@@ -69,11 +69,9 @@
 	<c:if test="${!empty ssEntryToolbar}">
 		<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar5 ss_actions_bar" item="true" />
 	</c:if>
-	<ssf:ifnotaccessible>
-		<ssf:toolbar style="ss_actions_bar5 ss_actions_bar" item="true" skipSeparator="true">
-			<%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_select_events.jsp" %>
-		</ssf:toolbar>
-	</ssf:ifnotaccessible>
+	<ssf:toolbar style="ss_actions_bar5 ss_actions_bar" item="true" skipSeparator="true">
+		<%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_select_events.jsp" %>
+	</ssf:toolbar>
 
 </ssf:toolbar>		    	
 <jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
