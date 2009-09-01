@@ -45,6 +45,13 @@
 </ssf:skipLink>
 <div class="ss_clear_float"></div>
 </ssf:ifadapter>
+<c:if test="${!empty ssMobileUrl && ss_mobileAccessEnabled}">
+<div align="right" style="width:100%;">
+  <a href="${ssMobileUrl}" title="<ssf:nlt tag="mobile.login.info"/>">
+    <span class="ss_fineprint" style="padding-right:10px;"><ssf:nlt tag="mobile.login"/></span>
+  </a>
+</div>
+</c:if>
 <div align="center">
   <c:set var="ss_loginFormStyle" value="login" scope="request"/>
   <jsp:include page="/WEB-INF/jsp/forum/login_form.jsp" />
