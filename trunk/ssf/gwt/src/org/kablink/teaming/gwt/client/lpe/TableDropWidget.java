@@ -36,14 +36,9 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditDeleteControl;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 
 /**
@@ -69,19 +64,6 @@ public class TableDropWidget extends DropWidget
 		
 		m_lpe = lpe;
 		
-		m_mainPanel = new FlowPanel();
-		m_mainPanel.addStyleName( "lpeDropWidget" );
-		
-		// Create an object to hold all of the properties that define a table widget.
-		m_properties = new TableProperties();
-		
-		// If we were passed some properties, make a copy of them.
-		if ( properties != null )
-			m_properties.copy( properties );
-		
-		// Create the widgets that make up this widget.
-		updateWidget( m_properties );
-		
 		// Create an Edit/Delete control and position it at the top/right of this widget.
 		// This control allows the user to edit the properties of this widget and to delete this widget.
 		{
@@ -98,6 +80,19 @@ public class TableDropWidget extends DropWidget
 			panel.add( ctrl );
 			wrapperPanel.add( panel );
 		}
+		
+		m_mainPanel = new FlowPanel();
+		m_mainPanel.addStyleName( "lpeDropWidget" );
+		
+		// Create an object to hold all of the properties that define a table widget.
+		m_properties = new TableProperties();
+		
+		// If we were passed some properties, make a copy of them.
+		if ( properties != null )
+			m_properties.copy( properties );
+		
+		// Create the widgets that make up this widget.
+		updateWidget( m_properties );
 		
 		// All composites must call initWidget() in their constructors.
 		wrapperPanel.add( m_mainPanel );
@@ -188,6 +183,9 @@ public class TableDropWidget extends DropWidget
 		{
 			// Set the width of this column.
 			cellFormatter.setWidth( 0, i, m_properties.getColWidthStr( i ) );
+			
+			// Set the vertical alignment of this cell to "top".
+			cellFormatter.setVerticalAlignment( 0, i, HasVerticalAlignment.ALIGN_TOP );
 		}
 	}// end updateWidget()
 	
