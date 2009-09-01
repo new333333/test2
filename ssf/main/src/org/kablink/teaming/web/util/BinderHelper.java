@@ -397,6 +397,7 @@ public class BinderHelper {
 					loginPostUrl += "?authenticationFailureUrl=" + AUTHENTICATION_FAILURE_URL_MOBILE;
 			}
 			model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
+			model.put(WebKeys.MOBILE_ACCESS_ENABLED, bs.getAdminModule().isMobileAccessEnabled());
 			model.put(WebKeys.LOGOUT_URL, logoutUrl);
 			model.put(WebKeys.LOGIN_POST_URL, loginPostUrl);
 			if (binderId == null) {
