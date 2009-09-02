@@ -31,57 +31,59 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client;
+package org.kablink.teaming.gwt.client.lpe;
 
-import com.google.gwt.i18n.client.Messages;
+import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 
 /**
- * This interface is used to retrieve strings from the file GwtTeamingMessages*.properties
+ * This class holds all of the properties needed to define a "Custom jsp" widget in a landing page.
  * @author jwootton
  *
  */
-public interface GwtTeamingMessages extends Messages
+public class CustomJspProperties
+	implements PropertiesObj
 {
-	String _1();
-	String _2();
-	String _3();
-	String _4();
-	String _5();
+	private String		m_jspName;
 	
-	String cancel();
-	String columnXWidth( int colNum );
+	/**
+	 * 
+	 */
+	public CustomJspProperties()
+	{
+		m_jspName = null;
+	}// end CustomJspProperties()
 	
-	String customJspLabel();
-	String customJspName();
-	String customJspProperties();
 	
-	// lpe stands for Landing Page Editor
-	String lpeCustomJSP();
-	String lpeDeleteWidget();
-	String lpeEntry();
-	String lpeFolder();
-	String lpeGraphic();
-	String lpeHint();
-	String lpeLinkEntry();
-	String lpeLinkFolderWS();
-	String lpeLinkURL();
-	String lpeList();
-	String lpeTable();
-	String lpeUtilityElement();
+	/**
+	 * 
+	 */
+	public void copy( PropertiesObj props )
+	{
+		if ( props instanceof CustomJspProperties )
+		{
+			CustomJspProperties customJspProps;
+			
+			customJspProps = (CustomJspProperties) props;
+			setJspName( customJspProps.getJspName() );
+		}
+	}// end copy()
 	
-	String linkToUrl();
-	String linkToUrlLabel();
-	String linkToUrlProperties();
-	String linkToUrlUrl( String url );
-	String listProperties();
-	String numColumns();
-	String ok();
-	String openUrlInNewWnd();
-	String showBorder();
-	String tableProperties();
-	String title();
+
+	/**
+	 * Return the value of the jsp name property
+	 */
+	public String getJspName()
+	{
+		return m_jspName;
+	}// end getJspName()
 	
-	String testPanelState( String value );
-	String testWaiting();
-}// end GwtTeamingMessages
+
+	/**
+	 * 
+	 */
+	public void setJspName( String name )
+	{
+		m_jspName = name;
+	}// end setJspName()
+}// end CustomJspProperties
