@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 
 /**
@@ -100,6 +101,81 @@ public class TableDropWidget extends DropWidget
 	}// end TableDropWidget()
 	
 
+	/**
+	 * We want the height of every DropZone in this table to be the same.  Figure out how tall the tallest DropZone is
+	 * and make every DropZone that height.
+	 */
+	public void adjustTableHeight()
+	{
+		int maxHeight = 0;
+		int i;
+		int numColumns;
+		Widget widget;
+		
+		numColumns = m_flexTable.getCellCount( 0 );
+
+		// Make the height of all the drop zones in this table 100%
+		for (i = 0; i < numColumns; ++i)
+		{
+			// Get the DropZone for this cell.
+			widget = m_flexTable.getWidget( 0, i );
+			
+			// Is this widget a DropZone
+			if ( widget instanceof DropZone )
+			{
+				DropZone dropZone;
+				
+				// Yes, set the height of the drop zone.
+				dropZone = (DropZone) widget;
+				dropZone.setHeight( "100%" );
+			}
+		}// end for()
+
+		// Calculate the height of the DropZone found in each cell.
+		for (i = 0; i < numColumns; ++i)
+		{
+			// Get the DropZone for this cell.
+			widget = m_flexTable.getWidget( 0, i );
+			
+			// Is this widget a DropZone
+			if ( widget instanceof DropZone )
+			{
+				DropZone dropZone;
+				int height;
+				
+				// Yes, tell the drop zone to adjust the height of all its table widgets
+				dropZone = (DropZone) widget;
+				height = dropZone.adjustHeightOfAllTableWidgets();
+				
+				// Do we have a new tallest cell?
+				if ( height > maxHeight )
+					maxHeight = height;
+			}
+		}// end for()
+		
+		// Make the minimum height 50 pixels.
+		if ( maxHeight < 50 )
+			maxHeight = 50;
+		
+		// Make all of the drop zones the same height
+		for (i = 0; i < numColumns; ++i)
+		{
+			// Get the DropZone for this cell.
+			widget = m_flexTable.getWidget( 0, i );
+			
+			// Is this widget a DropZone
+			if ( widget instanceof DropZone )
+			{
+				DropZone dropZone;
+				
+				// Yes, set the height of the drop zone.
+				dropZone = (DropZone) widget;
+				dropZone.setHeight( String.valueOf( maxHeight ) + "px" );
+			}
+		}// end for()
+	}// end adjustTableHeight()
+	
+	
 	/**
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
