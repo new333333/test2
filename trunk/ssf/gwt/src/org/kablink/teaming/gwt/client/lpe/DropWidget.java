@@ -117,6 +117,9 @@ public abstract class DropWidget extends Composite
 		if ( retVal )
 			m_dlgBox.hide();
 		
+		// Tell the landing page editor to adjust the height of all the table widgets.
+		m_lpe.adjustHeightOfAllTableWidgets();
+		
 		return retVal;
 	}// end editSuccessful()
 
@@ -181,6 +184,9 @@ public abstract class DropWidget extends Composite
 		{
 			// Delete this widget
 			removeFromParent();
+
+			// Tell the landing page editor to adjust the height of all the table widgets.
+			m_lpe.adjustHeightOfAllTableWidgets();
 		}
 	}// end onDelete()
 	

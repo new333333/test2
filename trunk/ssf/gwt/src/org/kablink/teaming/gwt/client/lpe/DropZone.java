@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import java.util.ArrayList;
+
 import com.google.gwt.event.dom.client.HasMouseOutHandlers;
 import com.google.gwt.event.dom.client.HasMouseOverHandlers;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -125,6 +127,41 @@ public class DropZone extends Composite
 	
 	
 	/**
+	 * Adjust the height of all the table widgets so all the DropZones in a table are the same height.
+	 */
+	public int  adjustHeightOfAllTableWidgets()
+	{
+		ArrayList<DropWidget> widgets;
+		int i;
+		
+		// Get all of the widgets from this DropZone
+		widgets = getWidgets();
+		
+		// Go through the list of widgets and have each TableDropWidget adjust its height
+		for (i = 0; i < widgets.size(); ++i)
+		{
+			DropWidget nextWidget;
+			
+			// Get the next widget.
+			nextWidget = widgets.get( i );
+			
+			// Is this widget a TableDropWidget?
+			if ( nextWidget instanceof TableDropWidget )
+			{
+				TableDropWidget tableWidget;
+				
+				// Yes, adjust the height of the table widget.
+				tableWidget = (TableDropWidget) nextWidget;
+				tableWidget.adjustTableHeight();
+			}
+		}// end for()
+		
+		// Get the adjusted height of this drop zone.
+		return getOffsetHeight();
+	}// end adjustHeightOfAllTableWidgets()
+	
+	
+	/**
 	 * If the user dropped a widget at the given mouse position, calculate the widget the dropped widget
 	 * would be inserted before.
 	 */
@@ -208,6 +245,34 @@ public class DropZone extends Composite
 	
 	
 	/**
+	 * Return all the widgets that live in this drop zone.
+	 */
+	public ArrayList<DropWidget> getWidgets()
+	{
+		ArrayList<DropWidget> widgets;
+		int i;
+		
+		widgets = new ArrayList<DropWidget>();
+		for (i = 0; i < m_panel.getWidgetCount(); ++i)
+		{
+			Widget nextWidget;
+			
+			// Get the next widget.
+			nextWidget = m_panel.getWidget( i );
+			
+			// Is this widget a DropWidget?
+			if ( nextWidget instanceof DropWidget )
+			{
+				// Yes, add it to the arraylist.
+				widgets.add( (DropWidget)nextWidget );
+			}
+		}
+
+		return widgets;
+	}// end getWidgets()
+	
+	
+	/**
 	 * Hide the visual clue that was shown in the highlightDropZone() method.
 	 */
 	public void hideDropClue()
@@ -283,6 +348,18 @@ public class DropZone extends Composite
 		// Figure out the widget we would insert a dropped widget before.
 		m_dropBeforeWidget = getDropBeforeWidget( mouseEvent );
 	}// end setDropLocation()
+	
+	
+	/**
+	 * Set the height of this drop zone.
+	 */
+	public void setHeight( String cssHeight )
+	{
+		Element element;
+		
+		element = m_panel.getElement();
+		DOM.setStyleAttribute( element, "height", cssHeight );
+	}// end setHeight()
 	
 	
 	/**

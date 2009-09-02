@@ -137,6 +137,16 @@ public class LandingPageEditor extends Composite
 	
 	
 	/**
+	 * Adjust the height of all the table widgets so all the DropZones in a table are the same height.
+	 */
+	public void adjustHeightOfAllTableWidgets()
+	{
+		// Adjust the height of all TableDropWidgets found in the canvas.
+		m_canvas.adjustHeightOfAllTableWidgets();
+	}// end adjustHeightOfAllTableWidgets()
+	
+	
+	/**
 	 * This method gets called when the user presses cancel in a DropWidget's properties dialog.
 	 */
 	public boolean editCanceled()
