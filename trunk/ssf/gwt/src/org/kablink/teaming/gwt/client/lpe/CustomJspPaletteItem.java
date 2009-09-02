@@ -54,7 +54,7 @@ public class CustomJspPaletteItem extends PaletteItem
 	 */
 	public DropWidget createDropWidget( LandingPageEditor lpe )
 	{
-		return null;
+		return new CustomJspDropWidget( lpe, null );
 	}// end createDropWidget()
 }// end CustomJspPaletteItem
 
