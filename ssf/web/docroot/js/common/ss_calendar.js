@@ -1302,7 +1302,7 @@ function ss_calendarEngine(
 		
 	    addEvents: function(newEvents) {
 			var year, month, day, hours, minutes; 
-	        for (var i = 0; i < newEvents.length; i++) {	        
+	        for (var i = 0; i < newEvents.length; i++) {
 	            var nei = newEvents[i];
 	            // already loaded?
 	            if (this.eventData[nei.eventId]) {
@@ -1355,6 +1355,14 @@ function ss_calendarEngine(
 		    this.monthGridEvents = [];
 			this.monthEventIds = [];
 		    this.dayGridEvents = {};
+	    },
+	    
+	    normalizedEventsType:  function() {
+	    	var et = this.eventsType;
+			if (3 == et) {	// Treat "virtual"...
+				et = 0;		// ...like "event".
+			}
+	    	return( et );
 	    },		
 	    
 	    removeEntryEvents: function(entryId) {
@@ -1547,7 +1555,7 @@ function ss_calendarEngine(
 		
 		getDayEventsInMonthView: function(date) {
 			var key = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate();
-			return this.order[this.eventsTypes[this.eventsType]][key];
+			return this.order[this.eventsTypes[this.normalizedEventsType()]][key];
 		},
 	    
 	    redrawDay: function() {
@@ -1565,10 +1573,10 @@ function ss_calendarEngine(
 				key = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate();
 				fullMonthKey = date.getFullYear() + "/" + fullWithZeros(date.getMonth() ) + "/" + fullWithZeros(date.getDate());
 				
-				if (typeof this.order[this.eventsTypes[this.eventsType]] != "undefined" &&
-					typeof this.order[this.eventsTypes[this.eventsType]][key] != "undefined") {
-					for (var i = 0; i< this.order[this.eventsTypes[this.eventsType]][key].length; i++) {
-		            	var eid = this.order[this.eventsTypes[this.eventsType]][key][i].substr(5);
+				if (typeof this.order[this.eventsTypes[this.normalizedEventsType()]] != "undefined" &&
+					typeof this.order[this.eventsTypes[this.normalizedEventsType()]][key] != "undefined") {
+					for (var i = 0; i< this.order[this.eventsTypes[this.normalizedEventsType()]][key].length; i++) {
+		            	var eid = this.order[this.eventsTypes[this.normalizedEventsType()]][key][i].substr(5);
 		            	var e = this.eventData[eid];
 					
 						var start;
@@ -1924,7 +1932,6 @@ function ss_calendarEngine(
 				}
 			} else {
 				if (ss_calSelectEntryTypes.options[ss_calSelectEntryTypes.selectedIndex].value == this.eventsTypes[3]) {
-alert("Warning:  The \"Assigned Events\" feature is not finished yet.");
 					this.eventsType = 3;	// "virtual"
 				} else {
 					this.eventsType = 0;	// "event"
