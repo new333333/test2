@@ -53,8 +53,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -73,7 +71,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.kablink.teaming.web.util.BinderHelper;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
@@ -114,10 +111,8 @@ import org.kablink.teaming.module.ic.ICException;
 import org.kablink.teaming.module.ic.RecordType;
 import org.kablink.teaming.module.ical.AttendedEntries;
 import org.kablink.teaming.module.ldap.LdapModule;
-import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.module.ldap.LdapSyncThread;
-import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portlet.binder.AccessControlController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -146,10 +141,12 @@ import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.upload.FileUploadProgressListener;
 import org.kablink.teaming.web.upload.ProgressListenerSessionResolver;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.FixupFolderDefsThread;
 import org.kablink.teaming.web.util.UserAppConfig;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.ListFolderHelper;
+import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.WebHelper;
@@ -2116,7 +2113,15 @@ public class AjaxController  extends SAbstractControllerRetry {
 				
 		       	List entries;
 				if (binder instanceof Folder || binder instanceof Workspace) {
-					Document searchFilter = SearchFiltersBuilder.buildFolderListQuery(request, binderIds);
+					ModeType modeType;
+					String eventsType = EventsViewHelper.getCalendarDisplayEventType(portletSession);
+					if ((null != eventsType) && "virtual".equals(eventsType)) {
+						modeType = ModeType.VIRTUAL;
+					}
+					else {
+						modeType = ModeType.PHYSICAL;
+					}
+					Document searchFilter = EventHelper.buildSearchFilterDoc(request, modeType, binderIds, binder);
 					Map retMap = getBinderModule().executeSearchQuery(searchFilter, options);
 					entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
 				} else {

@@ -46,20 +46,17 @@
 		<%
 			boolean isIE = BrowserSniffer.is_ie(request);
 		%>
-		<!-- The help spot is positioned relative to the position of its parent. -->
-		<!-- That's why I put it in a <span> -->
-		<span>
-			<img border="0" src="<html:imagesPath/>pics/1pix.gif" />
-	
-			<ssHelpSpot helpId="workspaces_folders/misc_tools/calendar_entry_control" offsetX="0" offsetY="-4" 
-			    title="<ssf:nlt tag="helpSpot.calendarEntryControl"/>">
-			</ssHelpSpot>
-		</span>
-
 		<input type="hidden" id="ss_calendarEventsTypeChoose${prefix}" />
 		<span class="ss_actions_bar6 ss_actions_bar">
+			<span>
+				<img border="0" src="<html:imagesPath/>pics/1pix.gif" />
+				<ssHelpSpot helpId="workspaces_folders/misc_tools/calendar_entry_control" offsetX="-16" offsetY="-4" 
+				    title="<ssf:nlt tag="helpSpot.calendarEntryControl"/>">
+				</ssHelpSpot>
+			</span>
+
 			<label for="ss_calendarEventsTypeSelect${prefix}"><ssf:nlt tag="calendar.navi.chooseMode"/>:</label>${ssShowFolderModeSelect}
-			<select id="ss_calendarEventsTypeSelect${prefix}" onclick="setModeCheck(this); ss_calendar_${prefix}.changeEventType();">
+			<select id="ss_calendarEventsTypeSelect${prefix}" onchange="setModeCheck(this); ss_calendar_${prefix}.changeEventType();">
 				<c:if test="${ !empty ssShowFolderModeSelect && ssShowFolderModeSelect }">
 					<option value="virtual"><ssf:nlt tag="calendar.navi.mode.alt.virtual"/></option>
 				</c:if>

@@ -37,16 +37,25 @@
 package org.kablink.teaming.web.util;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
+import javax.portlet.PortletRequest;
+
+import org.dom4j.Document;
 import org.joda.time.DateTime;
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.module.shared.SearchUtils;
+import org.kablink.teaming.search.filter.SearchFilter;
+import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.util.cal.DayAndPosition;
 
 
@@ -195,6 +204,64 @@ public class EventHelper {
         return event;
     }
 
+
+	@SuppressWarnings("unchecked")
+	public static Document buildSearchFilterDoc(PortletRequest request, Collection folderIds) {
+		return buildSearchFilter(request, folderIds).getFilter();
+	}
+	@SuppressWarnings("unchecked")
+	public static SearchFilter buildSearchFilter(PortletRequest request, Collection folderIds) {
+		return buildSearchFilter(request, ListFolderHelper.ModeType.PHYSICAL, folderIds, null);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static Document buildSearchFilterDoc(PortletRequest request, ListFolderHelper.ModeType modeType, Collection folderIds, Binder binder) {
+		return buildSearchFilter(request, modeType, folderIds, binder).getFilter();
+	}
+	@SuppressWarnings("unchecked")
+	public static SearchFilter buildSearchFilter(PortletRequest request, ListFolderHelper.ModeType modeType, Collection folderIds, Binder binder) {
+		SearchFilter searchFilter;
+		
+		// Are we only showing events assigned to something?
+		if (ListFolderHelper.ModeType.VIRTUAL == modeType) {
+  		   	String searchAsUser = "";
+  		   	String searchAsTeam = "";
+  		   	
+  		   	// Yes!  If the binder's workspace is a Team workspace...
+  			searchFilter = new SearchFilter(true);
+   	       	Workspace binderWs = BinderHelper.getBinderWorkspace(binder);
+  		   	if (BinderHelper.isBinderTeamWorkspace(binderWs)) {
+  	  		   	// ...we search for that Team's events...
+	   			searchAsTeam = String.valueOf(binderWs.getId());
+  		   	}
+  		   	else {
+  		   		// ...otherwise, we search for owner of the workspace's
+  		   		// ...events...
+  		   		searchAsUser = String.valueOf(binderWs.getOwnerId());
+  		   	}
+
+  		   	// Setup the assignees to search for.
+			SearchUtils.setupAssignees(
+				searchFilter,
+				null,	// null -> No model.
+				searchAsUser,
+				"",	// No special 'group assignee' setup required.
+				searchAsTeam,
+				SearchUtils.AssigneeType.CALENDAR);
+		}
+		else {
+			// No, we are showing physical events!
+			String filterName = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterNameField, "");
+			searchFilter = new SearchFilter();
+			searchFilter.addFilterName(filterName);
+
+			for (Object id : folderIds) {
+				searchFilter.addFolderId((String) id);
+			}
+		}
+		
+		return searchFilter;
+	}
 
 	private static boolean isAllDayEvent(InputDataAccessor inputData, String id) {
 		return inputData.exists("allDayEvent_" + id);
