@@ -32,16 +32,20 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.widgets.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
@@ -49,27 +53,29 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author jwootton
  *
  */
-public class CustomJspWidgetDlgBox extends DlgBox
+public class UtilityElementWidgetDlgBox extends DlgBox
 {
-	private TextBox	m_jspNameTxtBox = null;
+	private HashMap<RadioButton, UtilityElement> m_radioBtns;
 	
 	/**
 	 * 
 	 */
-	public CustomJspWidgetDlgBox(
+	public UtilityElementWidgetDlgBox(
 		EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
 		EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
 		boolean autoHide,
 		boolean modal,
 		int xPos,
 		int yPos,
-		CustomJspProperties properties ) // Where properties used in the dialog are read from and saved to.
+		UtilityElementProperties properties ) // Where properties used in the dialog are read from and saved to.
 	{
 		super( autoHide, modal, xPos, yPos );
+
+		m_radioBtns = new HashMap<RadioButton, UtilityElement>();
 		
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().customJspProperties(), editSuccessfulHandler, editCanceledHandler, properties ); 
-	}// end CustomJspWidgetDlgBox()
+		createAllDlgContent( GwtTeaming.getMessages().utilityElementProperties(), editSuccessfulHandler, editCanceledHandler, properties ); 
+	}// end UtilityElementWidgetDlgBox()
 	
 
 	/**
@@ -78,26 +84,52 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	@SuppressWarnings("unchecked")
 	public Panel createContent( PropertiesObj props )
 	{
-		CustomJspProperties properties;
-		Label			label;
-		VerticalPanel	mainPanel;
-		FlexTable		table;
+		UtilityElementProperties properties;
+		UtilityElement selectedUtilityElement;
+		Label label;
+		VerticalPanel mainPanel;
+		RadioButton radioBtn;
+		RadioButton firstRadioBtn = null;
+		boolean selectedRadioBtn = false;
 		
-		properties = (CustomJspProperties) props;
+		properties = (UtilityElementProperties) props;
+		selectedUtilityElement = properties.getType();
 
 		mainPanel = new VerticalPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
-		// Add label and edit control for "Custom Jsp Name"
-		table = new FlexTable();
-		table.setCellSpacing( 2 );
-		label = new Label( GwtTeaming.getMessages().customJspName() );
-		table.setWidget( 0, 0, label );
-		m_jspNameTxtBox = new TextBox();
-		m_jspNameTxtBox.setVisibleLength( 30 );
-		m_jspNameTxtBox.setText( properties.getJspName() );
-		table.setWidget( 1, 0, m_jspNameTxtBox );
-		mainPanel.add( table );
+		// Add a hint that tells the user to select a utility element.
+		label = new Label( GwtTeaming.getMessages().utilityElementHint() );
+		label.addStyleName( "dlgInstructions" );
+		label.addStyleName( "marginBottom25em" );
+		mainPanel.add( label );
+		
+		// Create a radio button for each of the possible utility elements.
+		for (UtilityElement utilityElement : UtilityElement.values())
+		{
+			radioBtn = new RadioButton( "utilityElements", utilityElement.getLocalizedText() );
+			radioBtn.addStyleName( "marginBottom15em" );
+			mainPanel.add( radioBtn );
+
+			if ( firstRadioBtn == null )
+				firstRadioBtn = radioBtn;
+
+			// Keep a list of the radio buttons and the utility element they are associated with.
+			m_radioBtns.put( radioBtn, utilityElement );
+			
+			if ( selectedUtilityElement != null && selectedUtilityElement.ordinal() == utilityElement.ordinal() )
+			{
+				radioBtn.setValue( true );
+				selectedRadioBtn = true;
+			}
+		}
+		
+		// Did we select a radio button?
+		if ( !selectedRadioBtn )
+		{
+			// No, select the first one in the list.
+			firstRadioBtn.setValue( true );
+		}
 		
 		return mainPanel;
 	}// end createContent()
@@ -108,24 +140,45 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	 */
 	public PropertiesObj getDataFromDlg()
 	{
-		CustomJspProperties	properties;
+		UtilityElementProperties	properties;
 		
-		properties = new CustomJspProperties();
+		properties = new UtilityElementProperties();
 		
-		// Save away the name of the custom jsp.
-		properties.setJspName( getJspName() );
+		// Save away the selected utility element.
+		properties.setType( getSelectedUtilityElement() );
 
 		return properties;
 	}// end getDataFromDlg()
 	
 	
 	/**
-	 * Return the text found in the jsp name edit control.
+	 * Return the selected utility element.
 	 */
-	public String getJspName()
+	public UtilityElement getSelectedUtilityElement()
 	{
-		return m_jspNameTxtBox.getText();
-	}// end getJspName()
-	
-	
-}// end CustomJspWidgetDlgBox
+		Set<Map.Entry<RadioButton, UtilityElement>> set;
+		Iterator<Map.Entry<RadioButton, UtilityElement>> iterator;
+		
+		set = m_radioBtns.entrySet();
+		iterator = set.iterator();
+		
+		// Spin through the list of radio buttons and see which one is selected.
+		while ( iterator.hasNext() )
+		{
+			RadioButton radioBtn;
+			Map.Entry<RadioButton, UtilityElement> nextEntry;
+			
+			// Is this radio button selected?
+			nextEntry = iterator.next();
+			radioBtn = nextEntry.getKey();
+			if ( radioBtn.getValue() )
+			{
+				// Yes, return the utility element associated with the radio button.
+				return nextEntry.getValue();
+			}
+		}
+		
+		// We should never get here but if we do, return "video tutorial" as the selected utility element.
+		return UtilityElement.VIDEO_TUTORIAL; 
+	}// end getSelectedUtilityElement()
+}// end UtilityElementWidgetDlgBox

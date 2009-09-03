@@ -31,67 +31,41 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client;
+package org.kablink.teaming.gwt.client.lpe;
 
-import com.google.gwt.i18n.client.Messages;
+import org.kablink.teaming.gwt.client.GwtTeaming;
 
 
 /**
- * This interface is used to retrieve strings from the file GwtTeamingMessages*.properties
+ * This class defines all the possible types of utility elements.
  * @author jwootton
  *
  */
-public interface GwtTeamingMessages extends Messages
+public enum UtilityElement
 {
-	String _1();
-	String _2();
-	String _3();
-	String _4();
-	String _5();
+	LINK_TO_ADMIN_PAGE( GwtTeaming.getMessages().utilityElementLinkToAdminPage() ),
+	LINK_TO_MYWORKSPACE( GwtTeaming.getMessages().utilityElementLinkToMyWorkspace() ),
+	LINK_TO_SHARE_FOLDER_OR_WORKSPACE( GwtTeaming.getMessages().utilityElementLinkToShareFolderOrWorkspace() ),
+	LINK_TO_TRACK_FOLDER_OR_WORKSPACE( GwtTeaming.getMessages().utilityElementLinkToTrackFolderOrWorkspace() ),
+	SIGNIN_FORM( GwtTeaming.getMessages().utilityElementSignInForm() ),
+	VIDEO_TUTORIAL( GwtTeaming.getMessages().utilityElementVideoTutorials() );
+
+	private final String m_localizedText;
 	
-	String cancel();
-	String columnXWidth( int colNum );
+	/**
+	 * 
+	 */
+	private UtilityElement( String localizedText )
+	{
+		m_localizedText = localizedText;
+	}// end UtilityElement()
 	
-	String customJspLabel();
-	String customJspName();
-	String customJspProperties();
 	
-	// lpe stands for Landing Page Editor
-	String lpeCustomJSP();
-	String lpeDeleteWidget();
-	String lpeEntry();
-	String lpeFolder();
-	String lpeGraphic();
-	String lpeHint();
-	String lpeLinkEntry();
-	String lpeLinkFolderWS();
-	String lpeLinkURL();
-	String lpeList();
-	String lpeTable();
-	String lpeUtilityElement();
-	
-	String linkToUrl();
-	String linkToUrlLabel();
-	String linkToUrlProperties();
-	String linkToUrlUrl( String url );
-	String listProperties();
-	String numColumns();
-	String ok();
-	String openUrlInNewWnd();
-	String showBorder();
-	String tableProperties();
-	String title();
-	
-	String utilityElementHint();
-	String utilityElementLabel();
-	String utilityElementProperties();
-	String utilityElementLinkToAdminPage();
-	String utilityElementLinkToMyWorkspace();
-	String utilityElementLinkToShareFolderOrWorkspace();
-	String utilityElementLinkToTrackFolderOrWorkspace();
-	String utilityElementSignInForm();
-	String utilityElementVideoTutorials();
-	
-	String testPanelState( String value );
-	String testWaiting();
-}// end GwtTeamingMessages
+	/**
+	 * 
+	 */
+	public String getLocalizedText()
+	{
+		return m_localizedText;
+	}// end getLocalizedText()
+}// end UtilityElement

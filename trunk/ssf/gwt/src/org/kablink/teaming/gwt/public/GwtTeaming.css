@@ -1,3 +1,11 @@
+/* Styles used with instructions in a dialog box. */
+.dlgInstructions
+{
+	font-family: Arial,sans-serif;
+	font-size: 1.1em;
+	font-weight: bold;
+}
+
 /* Styles used with the Edit-Delete control. */
 .editDeleteControl
 {
@@ -70,7 +78,6 @@
 	font-family: Arial,sans-serif;
 	font-size: 12px;
 }
-
 
 /* Styles for the "Custom Jsp" widget. */
 .lpeCustomJspWidget
@@ -233,12 +240,41 @@
 	border: 0px;
 }
 
+/* Styles used for the utility element name in a "utility element" widget */
+.lpeUtilityElementName
+{
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 12px;
+}
+
+/* Styles for the "Utility Element" widget. */
+.lpeUtilityElementWidget
+{
+	background-color: #E5E5E5;
+	border: 1px solid #AEAEAE;
+	padding: 6px;
+}
+
+
 /* Styles used for the label that identifies a widget, ie Link, Utility Element */
 .lpeWidgetIdentifier
 {
 	font-size: 13px;
 	font-weight: bold;
 	margin-right: .25em;
+}
+
+/* Style used to create a bottom margin of .10em */
+.marginBottom15em
+{
+	margin-bottom: .15em;
+}
+
+/* Style used to create a bottom margin of .25em */
+.marginBottom25em
+{
+	margin-bottom: .25em;
 }
 
 /* Style used to create a right margin of 5 px. */
