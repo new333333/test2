@@ -31,67 +31,71 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client;
+package org.kablink.teaming.gwt.client.lpe;
 
-import com.google.gwt.i18n.client.Messages;
+import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 
 /**
- * This interface is used to retrieve strings from the file GwtTeamingMessages*.properties
+ * This class holds all of the properties needed to define a "Utility Element" widget in a landing page.
  * @author jwootton
  *
  */
-public interface GwtTeamingMessages extends Messages
+public class UtilityElementProperties
+	implements PropertiesObj
 {
-	String _1();
-	String _2();
-	String _3();
-	String _4();
-	String _5();
+	private UtilityElement		m_utilityElement;
 	
-	String cancel();
-	String columnXWidth( int colNum );
+	/**
+	 * 
+	 */
+	public UtilityElementProperties()
+	{
+		m_utilityElement = UtilityElement.LINK_TO_TRACK_FOLDER_OR_WORKSPACE;
+	}// end UtilityElementProperties()
 	
-	String customJspLabel();
-	String customJspName();
-	String customJspProperties();
 	
-	// lpe stands for Landing Page Editor
-	String lpeCustomJSP();
-	String lpeDeleteWidget();
-	String lpeEntry();
-	String lpeFolder();
-	String lpeGraphic();
-	String lpeHint();
-	String lpeLinkEntry();
-	String lpeLinkFolderWS();
-	String lpeLinkURL();
-	String lpeList();
-	String lpeTable();
-	String lpeUtilityElement();
+	/**
+	 * 
+	 */
+	public void copy( PropertiesObj props )
+	{
+		if ( props instanceof UtilityElementProperties )
+		{
+			UtilityElementProperties utilityElementProps;
+			
+			utilityElementProps = (UtilityElementProperties) props;
+			setType( utilityElementProps.getType() );
+		}
+	}// end copy()
 	
-	String linkToUrl();
-	String linkToUrlLabel();
-	String linkToUrlProperties();
-	String linkToUrlUrl( String url );
-	String listProperties();
-	String numColumns();
-	String ok();
-	String openUrlInNewWnd();
-	String showBorder();
-	String tableProperties();
-	String title();
+
+	/**
+	 * Return the type of utility element
+	 */
+	public UtilityElement getType()
+	{
+		return m_utilityElement;
+	}// end getType()
 	
-	String utilityElementHint();
-	String utilityElementLabel();
-	String utilityElementProperties();
-	String utilityElementLinkToAdminPage();
-	String utilityElementLinkToMyWorkspace();
-	String utilityElementLinkToShareFolderOrWorkspace();
-	String utilityElementLinkToTrackFolderOrWorkspace();
-	String utilityElementSignInForm();
-	String utilityElementVideoTutorials();
 	
-	String testPanelState( String value );
-	String testWaiting();
-}// end GwtTeamingMessages
+	/**
+	 * Return the name of the selected utility element.
+	 */
+	public String getUtilityElementName()
+	{
+		if ( m_utilityElement != null )
+			return m_utilityElement.getLocalizedText();
+		
+		return null;
+	}// end getUtilityElementName()
+	
+
+	/**
+	 * 
+	 */
+	public void setType( UtilityElement utilityElement )
+	{
+		m_utilityElement = utilityElement;
+	}// end setType()
+}// end UtilityElementProperties
