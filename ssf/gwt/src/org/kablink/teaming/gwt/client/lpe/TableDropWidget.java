@@ -59,7 +59,7 @@ public class TableDropWidget extends DropWidget
 	public TableDropWidget( LandingPageEditor lpe, TableProperties properties )
 	{
 		FlowPanel wrapperPanel;
-		
+
 		wrapperPanel = new FlowPanel();
 		wrapperPanel.addStyleName( "dropWidgetWrapperPanel" );
 		
@@ -254,11 +254,14 @@ public class TableDropWidget extends DropWidget
 			}
 		}
 		
+		int width;
+		width = 100 / m_flexTable.getCellCount( 0 );
 		cellFormatter = m_flexTable.getFlexCellFormatter();
 		for (i = 0; i < m_flexTable.getCellCount( 0 ); ++i )
 		{
 			// Set the width of this column.
-			cellFormatter.setWidth( 0, i, m_properties.getColWidthStr( i ) );
+			cellFormatter.setWidth( 0, i, String.valueOf( width ) + "%" );
+//!!!			cellFormatter.setWidth( 0, i, m_properties.getColWidthStr( i ) );
 			
 			// Set the vertical alignment of this cell to "top".
 			cellFormatter.setVerticalAlignment( 0, i, HasVerticalAlignment.ALIGN_TOP );
