@@ -74,14 +74,27 @@ import org.kablink.util.search.Constants;
 
 
 public class SearchUtils {
-	private static class AttrTag {
+	private static class AssigneeAttrTag {
 		String attr;
 		String tag;
-		AttrTag(String attr, String tag) {
+		AssigneeAttrTag(String attr, String tag) {
 			this.attr = attr;
 			this.tag = tag;
 		}
 	}
+	private final static int AT_INDIVIDUAL = 0;
+	private final static int AT_GROUP      = 1;
+	private final static int AT_TEAM       = 2;
+	private final static AssigneeAttrTag[] TASK_ASSIGNEE_ATS = new AssigneeAttrTag[] {
+		new AssigneeAttrTag(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME,        TaskHelper.TASK_ASSIGNED_TO),
+		new AssigneeAttrTag(TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME, TaskHelper.TASK_ASSIGNED_TO_GROUPS),
+		new AssigneeAttrTag(TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME,  TaskHelper.TASK_ASSIGNED_TO_TEAMS),
+	};
+	private final static AssigneeAttrTag[] CALENDAR_ASSIGNEE_ATS = new AssigneeAttrTag[] {
+		new AssigneeAttrTag(EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME,        EventHelper.CALENDAR_ATTENEE),
+		new AssigneeAttrTag(EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME, EventHelper.CALENDAR_ATTENEE_GROUPS),
+		new AssigneeAttrTag(EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME,  EventHelper.CALENDAR_ATTENEE_TEAMS),	
+	};
 	
 	protected static final Log logger = LogFactory.getLog(SearchUtils.class);
 	
@@ -420,104 +433,72 @@ public class SearchUtils {
 
 	public static void setupAssignees(SearchFilter searchFilter, Map componentData,
 			String assignedTo, String assignedToGroup, String assignedToTeam, AssigneeType assigneeType)
-		{
-			boolean allEvents = (AssigneeType.CALENDAR == assigneeType);
-			List<SearchFilter.Entry> entries = new ArrayList<SearchFilter.Entry>();
-			
-			final AttrTag[] taskAT = new AttrTag[] {
-				new AttrTag(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME,        TaskHelper.TASK_ASSIGNED_TO),
-				new AttrTag(TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME, TaskHelper.TASK_ASSIGNED_TO_GROUPS),
-				new AttrTag(TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME,  TaskHelper.TASK_ASSIGNED_TO_TEAMS),
-			};
-			final AttrTag[] calAT;
-			if (allEvents) {
-				calAT = new AttrTag[] {
-					new AttrTag(EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME,        EventHelper.CALENDAR_ATTENEE),
-					new AttrTag(EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME, EventHelper.CALENDAR_ATTENEE_GROUPS),
-					new AttrTag(EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME,  EventHelper.CALENDAR_ATTENEE_TEAMS),	
-				};
-			}
-			else {
-				calAT = null;
-			}
-			
-			// Handle individual assignments.
-			String[] assignedToSplit = new String[0];
-			if (!"".equals(assignedTo)) {
-				assignedToSplit = assignedTo.trim().split("\\s");
-				Set ids = new HashSet();
-				for (int i = 0; i < assignedToSplit.length; i++) {
-					try {
-						if (SearchFilterKeys.CurrentUserId.equals(assignedToSplit[i])) {
-							ids.add(SearchFilterKeys.CurrentUserId);
-						} else {
-							ids.add(Long.parseLong(assignedToSplit[i]));
-						}
-					} catch (NumberFormatException e) {
-						logger.debug("SearchUtils.setupAssignees(NumberFormatException):  1. Ignored");
+	{
+		List<SearchFilter.Entry> entries = new ArrayList<SearchFilter.Entry>();
+		final AssigneeAttrTag[] assigneeATs = ((AssigneeType.TASK == assigneeType) ? TASK_ASSIGNEE_ATS : CALENDAR_ASSIGNEE_ATS);
+		
+		// Handle individual assignments.
+		String[] assignedToSplit = new String[0];
+		if (!"".equals(assignedTo)) {
+			assignedToSplit = assignedTo.trim().split("\\s");
+			Set ids = new HashSet();
+			for (int i = 0; i < assignedToSplit.length; i++) {
+				try {
+					if (SearchFilterKeys.CurrentUserId.equals(assignedToSplit[i])) {
+						ids.add(SearchFilterKeys.CurrentUserId);
+					} else {
+						ids.add(Long.parseLong(assignedToSplit[i]));
 					}
-				}
-				if (null != componentData) {
-					componentData.put(taskAT[0].tag, ids);
-					if (allEvents) {
-						componentData.put(calAT[0].tag, ids);
-					}
+				} catch (NumberFormatException e) {
+					logger.debug("SearchUtils.setupAssignees(NumberFormatException):  1. Ignored");
 				}
 			}
-			entries.add(new SearchFilter.Entry(null, taskAT[0].attr, assignedToSplit, "user_list"));
-			if (allEvents) {
-				entries.add(new SearchFilter.Entry(null, calAT[0].attr, assignedToSplit, "user_list"));
+			if (null != componentData) {
+				componentData.put(assigneeATs[AT_INDIVIDUAL].tag, ids);
 			}
-
-			// Handle group assignments.
-			String[] assignedToGroupSplit = new String[0];
-			if (!"".equals(assignedToGroup)) {
-				assignedToGroupSplit = assignedToGroup.trim().split("\\s");
-				Set ids = new HashSet();
-				for (int i = 0; i < assignedToGroupSplit.length; i++) {
-					try {
-						ids.add(Long.parseLong(assignedToGroupSplit[i]));
-					} catch (NumberFormatException e) {
-						logger.debug("SearchUtils.setupAssignees(NumberFormatException):  2:  Ignored");
-					}
-				}
-				if (null != componentData) {
-					componentData.put(taskAT[1].tag, ids);
-					if (allEvents) {
-						componentData.put(calAT[1].tag, ids);
-					}
-				}
-			}
-			entries.add(new SearchFilter.Entry(null, taskAT[1].attr, assignedToGroupSplit, "group_list"));
-			if (allEvents) {
-				entries.add(new SearchFilter.Entry(null, calAT[1].attr, assignedToGroupSplit, "group_list"));
-			}
-
-			// Handle team assignments.
-			String[] assignedToTeamSplit = new String[0];
-			if (!"".equals(assignedToTeam)) {
-				assignedToTeamSplit = assignedToTeam.trim().split("\\s");
-				Set ids = new HashSet();
-				for (int i = 0; i < assignedToTeamSplit.length; i++) {
-					try {
-						ids.add(Long.parseLong(assignedToTeamSplit[i]));
-					} catch (NumberFormatException e) {
-						logger.debug("SearchUtils.setupAssignees(NumberFormatException):  3:  Ignored");
-					}
-				}
-				if (null != componentData) {
-					componentData.put(taskAT[2].tag, ids);
-					if (allEvents) {
-						componentData.put(calAT[2].tag, ids);
-					}
-				}
-			}
-			entries.add(new SearchFilter.Entry(null, taskAT[2].attr, assignedToTeamSplit, "team_list"));
-			if (allEvents) {
-				entries.add(new SearchFilter.Entry(null, calAT[2].attr, assignedToTeamSplit, "team_list"));
-			}
-			
-			// Store the assignees that we're searching for.
-			searchFilter.addEntries(entries, "userGroupTeam");		
 		}
+		entries.add(new SearchFilter.Entry(null, assigneeATs[AT_INDIVIDUAL].attr,
+					assignedToSplit, "user_list"));
+
+		// Handle group assignments.
+		String[] assignedToGroupSplit = new String[0];
+		if (!"".equals(assignedToGroup)) {
+			assignedToGroupSplit = assignedToGroup.trim().split("\\s");
+			Set ids = new HashSet();
+			for (int i = 0; i < assignedToGroupSplit.length; i++) {
+				try {
+					ids.add(Long.parseLong(assignedToGroupSplit[i]));
+				} catch (NumberFormatException e) {
+					logger.debug("SearchUtils.setupAssignees(NumberFormatException):  2:  Ignored");
+				}
+			}
+			if (null != componentData) {
+				componentData.put(assigneeATs[AT_GROUP].tag, ids);
+			}
+		}
+		entries.add(new SearchFilter.Entry(null, assigneeATs[AT_GROUP].attr,
+					assignedToGroupSplit, "group_list"));
+
+		// Handle team assignments.
+		String[] assignedToTeamSplit = new String[0];
+		if (!"".equals(assignedToTeam)) {
+			assignedToTeamSplit = assignedToTeam.trim().split("\\s");
+			Set ids = new HashSet();
+			for (int i = 0; i < assignedToTeamSplit.length; i++) {
+				try {
+					ids.add(Long.parseLong(assignedToTeamSplit[i]));
+				} catch (NumberFormatException e) {
+					logger.debug("SearchUtils.setupAssignees(NumberFormatException):  3:  Ignored");
+				}
+			}
+			if (null != componentData) {
+				componentData.put(assigneeATs[AT_TEAM].tag, ids);
+			}
+		}
+		entries.add(new SearchFilter.Entry(null, assigneeATs[AT_TEAM].attr,
+					assignedToTeamSplit, "team_list"));
+		
+		// Store the assignees that we're searching for.
+		searchFilter.addEntries(entries, "userGroupTeam");		
+	}
 }

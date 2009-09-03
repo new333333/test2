@@ -60,9 +60,11 @@ import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.search.BasicIndexUtils;
+import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.CalendarHelper;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.util.cal.DayAndPosition;
 import org.kablink.util.search.Constants;
 
@@ -173,10 +175,10 @@ public class EventsViewHelper {
 		return result;
 	}
 	
-	public static Map getEventsBeans(List searchResults, AbstractIntervalView calendarViewRangeDates, 
+	public static Map getEventsBeans(AllModulesInjected bs, Long userId, Long binderId, List searchResults, AbstractIntervalView calendarViewRangeDates, 
 			PortletSession portletSession, boolean onlyTrueEvents) {
 		return getEventsBeans(searchResults, calendarViewRangeDates, 
-				getCalendarDisplayEventType(portletSession), 
+				getCalendarDisplayEventType(bs, userId, binderId), 
 				getCalendarDayViewType(portletSession), onlyTrueEvents);
 	}
 	
@@ -456,30 +458,35 @@ public class EventsViewHelper {
 		}
 		portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
 	}
-	
-	public static String getCalendarDisplayEventType(PortletSession portletSession) {
-		String eventType = null;
-		if (portletSession != null) {
-			eventType = (String) portletSession.getAttribute(WebKeys.CALENDAR_CURRENT_EVENT_TYPE);
-		}
+
+	/**
+	 * Get calendar display event type.
+	 */
+	public static String getCalendarDisplayEventType(AllModulesInjected bs, Long userId, Long binderId) {
+		UserProperties userProps = bs.getProfileModule().getUserProperties(userId, binderId);
+		String eventType = (String)userProps.getProperty(WebKeys.CALENDAR_MODE_PREF);
 		if (eventType == null) {
 			eventType = EVENT_TYPE_DEFAULT;
-			if (portletSession != null) {
-				portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_EVENT_TYPE, eventType);
-			}
+			setCalendarDisplayEventType(bs, userId, binderId, eventType);
 		}
 		
 		return eventType;
 	}
 	
-	public static void setCalendarDisplayEventType(PortletSession portletSession, String eventType) {
-		if (eventType == null || !(eventType.equals(EVENT_TYPE_EVENT) ||
-				eventType.equals(EVENT_TYPE_ACTIVITY) ||
-				eventType.equals(EVENT_TYPE_CREATION) ||
-				eventType.equals(EVENT_TYPE_VIRTUAL))) {
-			eventType = EVENT_TYPE_DEFAULT;
+	/**
+	 * Store calendar display event type.
+	 */
+	public static void setCalendarDisplayEventType(AllModulesInjected bs, Long userId, Long binderId, String eventType) {
+		if (eventType == null) {
+			eventType = getCalendarDisplayEventType(bs, userId, binderId);
+			if (eventType == null || !(eventType.equals(EVENT_TYPE_EVENT) ||
+					eventType.equals(EVENT_TYPE_ACTIVITY) ||
+					eventType.equals(EVENT_TYPE_CREATION) ||
+					eventType.equals(EVENT_TYPE_VIRTUAL))) {
+				eventType = EVENT_TYPE_DEFAULT;
+			}
 		}
-		portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_EVENT_TYPE, eventType);
+		bs.getProfileModule().setUserProperty(userId, binderId, WebKeys.CALENDAR_MODE_PREF, eventType);
 	}
 
 	public static Map setCalendarGrid(PortletSession portletSession, UserProperties userProperties, String stickyComponentId, String gridType, Integer gridSize) {

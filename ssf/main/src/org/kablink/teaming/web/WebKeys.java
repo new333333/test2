@@ -628,6 +628,7 @@ public class WebKeys {
 	public static final String IN_IFRAME_ADD_ENTRY="ssInIFrameAddEntry";
 	public static final String BLOG_REPLY_COUNT="ssBlogReplyCount"; 
     public static final String CALENDAR_IMPORT_TOOLBAR="ssCalendarImportToolbar";
+    public static final String CALENDAR_MODE_PREF="calendarModePreference";
 	public static final String CAN_FORCE_FILE_UNLOCK="ss_canForceFileUnlock";
 	public static final String CAN_VIEW_USER_PROFILES="ss_canViewUserProfiles";
 	public static final String CAPTIVE="ss_captive";

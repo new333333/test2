@@ -206,20 +206,20 @@ public class EventHelper {
 
 
 	@SuppressWarnings("unchecked")
-	public static Document buildSearchFilterDoc(PortletRequest request, Collection folderIds) {
-		return buildSearchFilter(request, folderIds).getFilter();
+	public static Document buildSearchFilterDoc(PortletRequest request, Collection folderIds, SearchUtils.AssigneeType assigneeType) {
+		return buildSearchFilter(request, folderIds, assigneeType).getFilter();
 	}
 	@SuppressWarnings("unchecked")
-	public static SearchFilter buildSearchFilter(PortletRequest request, Collection folderIds) {
-		return buildSearchFilter(request, ListFolderHelper.ModeType.PHYSICAL, folderIds, null);
+	public static SearchFilter buildSearchFilter(PortletRequest request, Collection folderIds, SearchUtils.AssigneeType assigneeType) {
+		return buildSearchFilter(request, ListFolderHelper.ModeType.PHYSICAL, folderIds, null, assigneeType);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static Document buildSearchFilterDoc(PortletRequest request, ListFolderHelper.ModeType modeType, Collection folderIds, Binder binder) {
-		return buildSearchFilter(request, modeType, folderIds, binder).getFilter();
+	public static Document buildSearchFilterDoc(PortletRequest request, ListFolderHelper.ModeType modeType, Collection folderIds, Binder binder, SearchUtils.AssigneeType assigneeType) {
+		return buildSearchFilter(request, modeType, folderIds, binder, assigneeType).getFilter();
 	}
 	@SuppressWarnings("unchecked")
-	public static SearchFilter buildSearchFilter(PortletRequest request, ListFolderHelper.ModeType modeType, Collection folderIds, Binder binder) {
+	public static SearchFilter buildSearchFilter(PortletRequest request, ListFolderHelper.ModeType modeType, Collection folderIds, Binder binder, SearchUtils.AssigneeType assigneeType) {
 		SearchFilter searchFilter;
 		
 		// Are we only showing events assigned to something?
@@ -247,7 +247,7 @@ public class EventHelper {
 				searchAsUser,
 				"",	// No special 'group assignee' setup required.
 				searchAsTeam,
-				SearchUtils.AssigneeType.CALENDAR);
+				assigneeType);
 		}
 		else {
 			// No, we are showing physical events!

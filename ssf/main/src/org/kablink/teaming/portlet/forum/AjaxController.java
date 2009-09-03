@@ -114,6 +114,7 @@ import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.module.ldap.LdapSyncThread;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.portlet.binder.AccessControlController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.SearchFieldResult;
@@ -1613,7 +1614,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		
 		String eventType = PortletRequestUtils.getStringParameter(request, "eventType", "");
 		if (!"".equals(eventType)) {
-			EventsViewHelper.setCalendarDisplayEventType(portletSession, eventType);
+			EventsViewHelper.setCalendarDisplayEventType(this, user.getId(), binderId, eventType);
 		}
 		
 		String gridType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_GRID_TYPE, "");
@@ -2113,23 +2114,36 @@ public class AjaxController  extends SAbstractControllerRetry {
 				
 		       	List entries;
 				if (binder instanceof Folder || binder instanceof Workspace) {
+					boolean virtual;
+					String eventsType = EventsViewHelper.getCalendarDisplayEventType(this, user.getId(), binderId);
 					ModeType modeType;
-					String eventsType = EventsViewHelper.getCalendarDisplayEventType(portletSession);
-					if ((null != eventsType) && "virtual".equals(eventsType)) {
+					virtual = ((null != eventsType) && "virtual".equals(eventsType));
+					if (virtual) {
 						modeType = ModeType.VIRTUAL;
 					}
 					else {
 						modeType = ModeType.PHYSICAL;
 					}
-					Document searchFilter = EventHelper.buildSearchFilterDoc(request, modeType, binderIds, binder);
+					Document searchFilter = EventHelper.buildSearchFilterDoc(request, modeType, binderIds, binder, SearchUtils.AssigneeType.CALENDAR);
 					Map retMap = getBinderModule().executeSearchQuery(searchFilter, options);
 					entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
+					if (virtual) {
+						searchFilter = EventHelper.buildSearchFilterDoc(request, modeType, binderIds, binder, SearchUtils.AssigneeType.TASK);
+						retMap = getBinderModule().executeSearchQuery(searchFilter, options);
+						List taskEntries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
+						int tasks = ((null == taskEntries) ? 0 : taskEntries.size());
+						if (0 < tasks) {
+							for (int i = 0; i < tasks; i += 1) {
+								entries.add(taskEntries.get(i));
+							}
+						}
+					}
 				} else {
 					//a template
 					entries = new ArrayList();
 				}
 				
-				model.putAll(EventsViewHelper.getEventsBeans(entries, calendarViewRangeDates, portletSession, false));
+				model.putAll(EventsViewHelper.getEventsBeans(this, user.getId(), binderId, entries, calendarViewRangeDates, portletSession, false));
 			}
 		} else {
 			model.put(WebKeys.CALENDAR_VIEWBEAN , Collections.EMPTY_LIST);
