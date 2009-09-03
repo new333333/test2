@@ -52,6 +52,7 @@ import org.dom4j.Element;
 import org.kablink.teaming.ObjectExistsException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
@@ -63,6 +64,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -108,7 +110,10 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 				String title = PortletRequestUtils.getStringParameter(request, "title", "");
 				String description = PortletRequestUtils.getStringParameter(request, "description", "");
 				Set ids = LongIdUtil.getIdsAsLongSet(request.getParameterValues("users"));
-				ids.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
+				ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
+				Set groupIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups"));
+				Set gIds = profileDao.explodeGroups(groupIds, RequestContextHolder.getRequestContext().getZoneId());
+				ids.addAll(gIds);
 				SortedSet<Principal> principals = getProfileModule().getPrincipals(ids);
 				Map<Long,Principal> changes = new HashMap<Long,Principal>();
 				//Get the list of additions and deletions so we re re-index them later
@@ -130,7 +135,7 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 				for (Map.Entry<Long,Principal> me : changes.entrySet()) {
 					if (me.getValue() instanceof User) users.add(me.getValue());
 				}
-				// TODO Re-index the list of users and all binders "owned" by them
+				// Re-index the list of users and all binders "owned" by them
 				// reindex the profile entry for each user
 				for (Principal user : users) {
 					getProfileModule().indexEntry(user);
