@@ -1088,7 +1088,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	}
 	
 	public List<Long> getOwnedBinders(final List userIds) {
-		if (userIds == null) return new ArrayList<Long>();
+		if (userIds == null || (userIds.size() < 1)) return new ArrayList<Long>();
 	    List membership = (List)getHibernateTemplate().execute(
             new HibernateCallback() {
                 public Object doInHibernate(Session session) throws HibernateException {
