@@ -16,6 +16,14 @@
         <s:intercept-url pattern="/ws/**" filters="none" />
         <s:intercept-url pattern="/rss/**" filters="none" />
         <s:intercept-url pattern="/ical/**" filters="none" />
+        <s:intercept-url pattern="/css/**" filters="none" />
+        <s:intercept-url pattern="/ext/**" filters="none" />
+        <s:intercept-url pattern="/help/**" filters="none" />
+        <s:intercept-url pattern="/help_doc/**" filters="none" />
+        <s:intercept-url pattern="/i/**" filters="none" />
+        <s:intercept-url pattern="/images/**" filters="none" />
+        <s:intercept-url pattern="/js/**" filters="none" />
+        
         <s:intercept-url pattern="/bitbucket/**" filters="none" />
         <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
         <s:logout logout-url="/s/portalLogout" logout-success-url="/bitbucket" />
