@@ -53,51 +53,28 @@ public class TableDropWidget extends DropWidget
 	private FlowPanel			m_mainPanel;
 	private FlexTable			m_flexTable = null;
 	
+
+	/**
+	 * 
+	 */
+	public TableDropWidget( LandingPageEditor lpe, TableConfig configData )
+	{
+		TableProperties properties;
+		
+		properties = null;
+		if ( configData != null )
+			properties = configData.getProperties();
+		
+		init( lpe, properties );
+	}// end TableDropWidget()
+	
+	
 	/**
 	 * 
 	 */
 	public TableDropWidget( LandingPageEditor lpe, TableProperties properties )
 	{
-		FlowPanel wrapperPanel;
-
-		wrapperPanel = new FlowPanel();
-		wrapperPanel.addStyleName( "dropWidgetWrapperPanel" );
-		
-		m_lpe = lpe;
-		
-		// Create an Edit/Delete control and position it at the top/right of this widget.
-		// This control allows the user to edit the properties of this widget and to delete this widget.
-		{
-			EditDeleteControl ctrl;
-			FlowPanel panel;
-			
-			ctrl = new EditDeleteControl( this, this );
-			ctrl.addStyleName( "upperRight" );
-
-			// Wrap the edit/delete control in a panel.  We position the edit/delete control on the right
-			// side of the wrapper panel.
-			panel = new FlowPanel();
-			panel.addStyleName( "editDeleteWrapperPanel" );
-			panel.add( ctrl );
-			wrapperPanel.add( panel );
-		}
-		
-		m_mainPanel = new FlowPanel();
-		m_mainPanel.addStyleName( "lpeDropWidget" );
-		
-		// Create an object to hold all of the properties that define a table widget.
-		m_properties = new TableProperties();
-		
-		// If we were passed some properties, make a copy of them.
-		if ( properties != null )
-			m_properties.copy( properties );
-		
-		// Create the widgets that make up this widget.
-		updateWidget( m_properties );
-		
-		// All composites must call initWidget() in their constructors.
-		wrapperPanel.add( m_mainPanel );
-		initWidget( wrapperPanel );
+		init( lpe, properties );
 	}// end TableDropWidget()
 	
 
@@ -191,6 +168,54 @@ public class TableDropWidget extends DropWidget
 	}// end getPropertiesDlgBox()
 	
 	
+	/**
+	 * 
+	 */
+	public void init( LandingPageEditor lpe, TableProperties properties )
+	{
+		FlowPanel wrapperPanel;
+
+		wrapperPanel = new FlowPanel();
+		wrapperPanel.addStyleName( "dropWidgetWrapperPanel" );
+		
+		m_lpe = lpe;
+		
+		// Create an Edit/Delete control and position it at the top/right of this widget.
+		// This control allows the user to edit the properties of this widget and to delete this widget.
+		{
+			EditDeleteControl ctrl;
+			FlowPanel panel;
+			
+			ctrl = new EditDeleteControl( this, this );
+			ctrl.addStyleName( "upperRight" );
+
+			// Wrap the edit/delete control in a panel.  We position the edit/delete control on the right
+			// side of the wrapper panel.
+			panel = new FlowPanel();
+			panel.addStyleName( "editDeleteWrapperPanel" );
+			panel.add( ctrl );
+			wrapperPanel.add( panel );
+		}
+		
+		m_mainPanel = new FlowPanel();
+		m_mainPanel.addStyleName( "lpeDropWidget" );
+		
+		// Create an object to hold all of the properties that define a table widget.
+		m_properties = new TableProperties();
+		
+		// If we were passed some properties, make a copy of them.
+		if ( properties != null )
+			m_properties.copy( properties );
+		
+		// Create the widgets that make up this widget.
+		updateWidget( m_properties );
+		
+		// All composites must call initWidget() in their constructors.
+		wrapperPanel.add( m_mainPanel );
+		initWidget( wrapperPanel );
+	}// end init()
+	
+
 	/**
 	 * Create the appropriate ui based on the given properties.
 	 */

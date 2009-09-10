@@ -54,7 +54,45 @@ public class LinkToUrlDropWidget extends DropWidget
 	/**
 	 * 
 	 */
+	public LinkToUrlDropWidget( LandingPageEditor lpe, LinkToUrlConfig configData )
+	{
+		LinkToUrlProperties properties;
+		
+		properties = null;
+		if ( configData != null )
+			properties = configData.getProperties();
+		
+		init( lpe, properties );
+	}// end LinkToUrlDropWidget()
+	
+	
+	/**
+	 * 
+	 */
 	public LinkToUrlDropWidget( LandingPageEditor lpe, LinkToUrlProperties properties )
+	{
+		init( lpe, properties );
+	}// end LinkToUrlDropWidget()
+	
+
+	/**
+	 * Return the dialog box used to edit the properties of this widget.
+	 */
+	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
+	{
+		DlgBox dlgBox;
+		
+		// Pass in the object that holds all the properties for a LinkToUrlDropWidget.
+		dlgBox = new LinkToUrlWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+		
+		return dlgBox;
+	}// end getPropertiesDlgBox()
+	
+	
+	/**
+	 * 
+	 */
+	public void init( LandingPageEditor lpe, LinkToUrlProperties properties )
 	{
 		FlowPanel wrapperPanel;
 		
@@ -118,22 +156,8 @@ public class LinkToUrlDropWidget extends DropWidget
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( wrapperPanel );
-	}// end LinkToUrlDropWidget()
-	
+	}// end init()
 
-	/**
-	 * Return the dialog box used to edit the properties of this widget.
-	 */
-	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
-	{
-		DlgBox dlgBox;
-		
-		// Pass in the object that holds all the properties for a LinkToUrlDropWidget.
-		dlgBox = new LinkToUrlWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
-		
-		return dlgBox;
-	}// end getPropertiesDlgBox()
-	
 	
 	/**
 	 * Create the appropriate ui based on the given properties.

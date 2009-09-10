@@ -30,36 +30,64 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-
-
 /**
- * 
+ * This class represents the configuration data for a Utility Element
+ * @author jwootton
+ *
  */
-public class LinkUrlPaletteItem extends PaletteItem
+public class UtilityElementConfig extends ConfigItem
 {
+	private UtilityElementProperties	m_properties;
+	
 	/**
 	 * 
 	 */
-	public LinkUrlPaletteItem()
+	public UtilityElementConfig( String configStr )
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorLinkUrl(), GwtTeaming.getMessages().lpeLinkURL() );
-	}// end LinkUrlPaletteItem()
-
-
-	/**
-	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
-	 */
-	public DropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		LinkToUrlDropWidget	linkDropWidget;
+		String prefix = "utility,element=";
 		
-		linkDropWidget = new LinkToUrlDropWidget( lpe, (LinkToUrlProperties)null );
-
-		return linkDropWidget;
-	}// end createDropWidget()
-}// end LinkUrlPaletteItem
-
-
+		m_properties = new UtilityElementProperties();
+		
+		// Does the config string start with "utility,element="
+		if ( configStr.startsWith( prefix ) )
+		{
+			String type;
+			int startIndex;
+			int endIndex;
+			
+			// Yes
+			startIndex = prefix.length();
+			endIndex = configStr.length() - 1;	// -1 so we don't include the ';'
+			type = configStr.substring( startIndex, endIndex );
+			
+			if ( type != null )
+			{
+				if ( type.equalsIgnoreCase( "myWorkspace" ) )
+					m_properties.setType( UtilityElement.LINK_TO_MYWORKSPACE );
+				else if ( type.equalsIgnoreCase( "siteAdmin" ) )
+					m_properties.setType( UtilityElement.LINK_TO_ADMIN_PAGE );
+				else if ( type.equalsIgnoreCase( "trackThis" ) )
+					m_properties.setType( UtilityElement.LINK_TO_TRACK_FOLDER_OR_WORKSPACE );
+				else if ( type.equalsIgnoreCase( "shareThis" ) )
+					m_properties.setType( UtilityElement.LINK_TO_SHARE_FOLDER_OR_WORKSPACE );
+				else if ( type.equalsIgnoreCase( "gettingStarted" ) )
+					m_properties.setType( UtilityElement.VIDEO_TUTORIAL );
+				else if ( type.equalsIgnoreCase( "signInForm" ) )
+					m_properties.setType( UtilityElement.SIGNIN_FORM );
+			}
+		}
+		
+	}// end UtilityElementConfig()
+	
+	
+	/**
+	 * 
+	 */
+	public UtilityElementProperties getProperties()
+	{
+		return m_properties;
+	}// end getProperties()
+}// end UtilityElementConfig

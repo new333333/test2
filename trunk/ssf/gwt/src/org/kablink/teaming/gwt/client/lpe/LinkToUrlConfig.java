@@ -30,36 +30,58 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-
-
 /**
- * 
+ * This class represents the configuration data for a Link To Url
+ * @author jwootton
+ *
  */
-public class LinkUrlPaletteItem extends PaletteItem
+public class LinkToUrlConfig extends ConfigItem
 {
+	private LinkToUrlProperties	m_properties;
+	
 	/**
 	 * 
 	 */
-	public LinkUrlPaletteItem()
+	public LinkToUrlConfig( String configStr )
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorLinkUrl(), GwtTeaming.getMessages().lpeLinkURL() );
-	}// end LinkUrlPaletteItem()
-
-
-	/**
-	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
-	 */
-	public DropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		LinkToUrlDropWidget	linkDropWidget;
+		String[] results;
 		
-		linkDropWidget = new LinkToUrlDropWidget( lpe, (LinkToUrlProperties)null );
+		m_properties = new LinkToUrlProperties();
+		
+		// Split the configuration data into its parts.  ie title=xxx, href=xxx, popup=n
+		results = configStr.split( "[,;]" );
+		if ( results != null )
+		{
+			int i;
+			
+			for (i = 0; i < results.length; ++i)
+			{
+				String[] results2;
+				
+				results2 = results[i].split( "=" );
+				if ( results2.length == 2 )
+				{
+					if ( results2[0].equalsIgnoreCase( "title" ) )
+						m_properties.setTitle( results2[1] );
+					else if ( results2[0].equalsIgnoreCase( "href" ) )
+						m_properties.setUrl( results2[1] );
+					else if ( results2[0].equalsIgnoreCase( "popup" ) )
+						m_properties.setOpenInNewWindow( results2[1].equalsIgnoreCase( "1" ) );
+				}
+			}
+		}
+	}// end LinkToUrlConfig()
+	
+	
+	/**
+	 * 
+	 */
+	public LinkToUrlProperties getProperties()
+	{
+		return m_properties;
+	}// end getProperties()
 
-		return linkDropWidget;
-	}// end createDropWidget()
-}// end LinkUrlPaletteItem
-
-
+}// end LinkToUrlConfig

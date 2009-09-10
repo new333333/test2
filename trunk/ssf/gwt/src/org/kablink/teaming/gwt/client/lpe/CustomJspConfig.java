@@ -30,36 +30,54 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-
-
 /**
- * 
+ * This class represents the configuration data for a Custom Jsp
+ * @author jwootton
+ *
  */
-public class LinkUrlPaletteItem extends PaletteItem
+public class CustomJspConfig extends ConfigItem
 {
+	private CustomJspProperties	m_properties;
+	
 	/**
 	 * 
 	 */
-	public LinkUrlPaletteItem()
+	public CustomJspConfig( String configStr )
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorLinkUrl(), GwtTeaming.getMessages().lpeLinkURL() );
-	}// end LinkUrlPaletteItem()
-
-
-	/**
-	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
-	 */
-	public DropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		LinkToUrlDropWidget	linkDropWidget;
+		String[] results;
 		
-		linkDropWidget = new LinkToUrlDropWidget( lpe, (LinkToUrlProperties)null );
+		m_properties = new CustomJspProperties();
+		
+		// Split the configuration data into its parts.  ie customJsp=xxx
+		results = configStr.split( "[,;]" );
+		if ( results != null )
+		{
+			int i;
+			
+			for (i = 0; i < results.length; ++i)
+			{
+				String[] results2;
+				
+				results2 = results[i].split( "=" );
+				if ( results2.length == 2 )
+				{
+					if ( results2[0].equalsIgnoreCase( "customJsp" ) )
+						m_properties.setJspName( results2[1] );
+				}
+			}
+		}
+	}// end CustomJspConfig()
+	
+	
+	/**
+	 * 
+	 */
+	public CustomJspProperties getProperties()
+	{
+		return m_properties;
+	}// end getProperties()
 
-		return linkDropWidget;
-	}// end createDropWidget()
-}// end LinkUrlPaletteItem
-
-
+}// end CustomJspConfig

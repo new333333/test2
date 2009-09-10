@@ -32,34 +32,31 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
+import java.util.ArrayList;
+
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.user.client.Window;
 
 
 /**
- * 
+ * This class wraps a JavaScript object that holds the string that defines the landing page.
+ * @author jwootton
+ *
  */
-public class LinkUrlPaletteItem extends PaletteItem
+public class LandingPageConfig extends JavaScriptObject
 {
 	/**
-	 * 
+	 * Overlay types always have a protected, zero-arg constructors.
 	 */
-	public LinkUrlPaletteItem()
+	protected LandingPageConfig()
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorLinkUrl(), GwtTeaming.getMessages().lpeLinkURL() );
-	}// end LinkUrlPaletteItem()
+	}// end LandingPageConfig()
 
-
+	
 	/**
-	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
+	 * Return the string that holds the landing page configuration.  This class is an
+	 * Overlay on the JavaScript object called m_landingPageConfig.
 	 */
-	public DropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		LinkToUrlDropWidget	linkDropWidget;
-		
-		linkDropWidget = new LinkToUrlDropWidget( lpe, (LinkToUrlProperties)null );
-
-		return linkDropWidget;
-	}// end createDropWidget()
-}// end LinkUrlPaletteItem
-
-
+	public final native String getConfigStr() /*-{ return this.configData; }-*/;
+	
+}// end LandingPageConfig

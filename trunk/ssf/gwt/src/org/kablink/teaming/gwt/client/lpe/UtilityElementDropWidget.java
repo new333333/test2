@@ -54,7 +54,45 @@ public class UtilityElementDropWidget extends DropWidget
 	/**
 	 * 
 	 */
+	public UtilityElementDropWidget( LandingPageEditor lpe, UtilityElementConfig configData )
+	{
+		UtilityElementProperties properties;
+		
+		properties = null;
+		if ( configData != null )
+			properties = configData.getProperties();
+		
+		init( lpe, properties );
+	}// end UtilityElementDropWidget()
+	
+	
+	/**
+	 * 
+	 */
 	public UtilityElementDropWidget( LandingPageEditor lpe, UtilityElementProperties properties )
+	{
+		init( lpe, properties );
+	}// end UtilityElementDropWidget()
+	
+
+	/**
+	 * Return the dialog box used to edit the properties of this widget.
+	 */
+	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
+	{
+		DlgBox dlgBox;
+		
+		// Pass in the object that holds all the properties for a UtilityElementDropWidget.
+		dlgBox = new UtilityElementWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+		
+		return dlgBox;
+	}// end getPropertiesDlgBox()
+	
+	
+	/**
+	 * 
+	 */
+	private void init( LandingPageEditor lpe, UtilityElementProperties properties )
 	{
 		FlowPanel wrapperPanel;
 		
@@ -114,21 +152,7 @@ public class UtilityElementDropWidget extends DropWidget
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( wrapperPanel );
-	}// end UtilityElementDropWidget()
-	
-
-	/**
-	 * Return the dialog box used to edit the properties of this widget.
-	 */
-	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
-	{
-		DlgBox dlgBox;
-		
-		// Pass in the object that holds all the properties for a UtilityElementDropWidget.
-		dlgBox = new UtilityElementWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
-		
-		return dlgBox;
-	}// end getPropertiesDlgBox()
+	}// end init()
 	
 	
 	/**
