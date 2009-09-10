@@ -30,36 +30,15 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-
-
 /**
- * 
+ * This class represents the configuration data for a List
+ * @author jwootton
+ *
  */
-public class LinkUrlPaletteItem extends PaletteItem
+public class ListConfig extends ConfigItem
 {
-	/**
-	 * 
-	 */
-	public LinkUrlPaletteItem()
-	{
-		super( GwtTeaming.getImageBundle().landingPageEditorLinkUrl(), GwtTeaming.getMessages().lpeLinkURL() );
-	}// end LinkUrlPaletteItem()
 
-
-	/**
-	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
-	 */
-	public DropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		LinkToUrlDropWidget	linkDropWidget;
-		
-		linkDropWidget = new LinkToUrlDropWidget( lpe, (LinkToUrlProperties)null );
-
-		return linkDropWidget;
-	}// end createDropWidget()
-}// end LinkUrlPaletteItem
-
-
+}// end ListConfig

@@ -54,7 +54,7 @@ public class UtilityElementPaletteItem extends PaletteItem
 	 */
 	public DropWidget createDropWidget( LandingPageEditor lpe )
 	{
-		return new UtilityElementDropWidget( lpe, null );
+		return new UtilityElementDropWidget( lpe, (UtilityElementProperties)null );
 	}// end createDropWidget()
 }// end UtilityElementPaletteItem
 

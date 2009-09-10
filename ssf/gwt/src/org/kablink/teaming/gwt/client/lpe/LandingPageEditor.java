@@ -83,9 +83,20 @@ public class LandingPageEditor extends Composite
 	 */
 	public LandingPageEditor()
 	{
+		LandingPageConfig lpeConfig;
+		ConfigData		configData;
 		HorizontalPanel	hPanel;
 		VerticalPanel	vPanel;
 		Label			hintLabel;
+		int				i;
+		int				numItems;
+		
+		// Get the configuration data that defines this landing page.
+		lpeConfig = getLandingPageConfig();
+		configData = new ConfigData( lpeConfig.getConfigStr() );
+		
+		// Parse the configuration data.
+		configData.parse();
 		
 		// Create a stack that will keep track of when we enter and leave drop zones.
 		m_enteredDropZones = new Stack<DropZone>();
@@ -104,6 +115,42 @@ public class LandingPageEditor extends Composite
 		// Create a palette and a canvas.
 		m_palette = new Palette( this );
 		m_canvas = new DropZone( this, "lpeCanvas" );
+		
+		// Add items to the canvas that are defined in the configuration.
+		numItems = configData.size();
+		for (i = 0; i < numItems; ++i)
+		{
+			ConfigItem configItem;
+			
+			// Get the next item in the list.
+			configItem = configData.get( i );
+			if ( configItem != null )
+			{
+				DropWidget dropWidget;
+				
+				dropWidget = null;
+				
+				// Create the appropriate widget based on the given ConfigItem.
+				if ( configItem instanceof UtilityElementConfig )
+					dropWidget = new UtilityElementDropWidget( this, (UtilityElementConfig)configItem );
+				else if ( configItem instanceof LinkToUrlConfig )
+					dropWidget = new LinkToUrlDropWidget( this, (LinkToUrlConfig)configItem );
+				else if ( configItem instanceof CustomJspConfig )
+					dropWidget = new CustomJspDropWidget( this, (CustomJspConfig)configItem );
+				else if ( configItem instanceof TableConfig )
+					dropWidget = new TableDropWidget( this, (TableConfig)configItem );
+		//!!!
+		/*
+				else if ( configItem instanceof ListConfig )
+					dropWidget = new ListDropWidget( configItem );
+		*/		
+				
+				m_canvas.addWidgetToDropZone( dropWidget );
+			}
+		}
+		
+		// Adjust the height of all the tables we added.
+		adjustHeightOfAllTableWidgets();
 		
 		// Add the palette and canvas to the panel.
 		hPanel.add( m_palette );
@@ -220,6 +267,14 @@ public class LandingPageEditor extends Composite
 		return m_canvas.getAbsoluteTop();
 	}// end getCanvasTop()
 	
+	
+	/**
+	 * Use JSNI to grab the JavaScript object that holds the landing page configuration data.
+	 */
+	private native LandingPageConfig getLandingPageConfig() /*-{
+		// Return a reference to the JavaScript variable called, m_landingPageConfig.
+		return $wnd.m_landingPageConfig;
+	}-*/;
 	
 	/**
 	 * Return a boolean indicating whether or not the user is currently dragging a palette item.

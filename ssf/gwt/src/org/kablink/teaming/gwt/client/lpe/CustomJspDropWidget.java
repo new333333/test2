@@ -54,7 +54,46 @@ public class CustomJspDropWidget extends DropWidget
 	/**
 	 * 
 	 */
+	public CustomJspDropWidget( LandingPageEditor lpe, CustomJspConfig configData )
+	{
+		CustomJspProperties properties;
+		
+		properties = null;
+		if ( configData != null )
+			properties = configData.getProperties();
+		
+		init( lpe, properties );
+	}// end CustomJspDropWidget()
+	
+	
+	/**
+	 * 
+	 */
 	public CustomJspDropWidget( LandingPageEditor lpe, CustomJspProperties properties )
+	{
+		init( lpe, properties );
+	}// end CustomJspDropWidget()
+	
+
+	/**
+	 * Return the dialog box used to edit the properties of this widget.
+	 */
+	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
+	{
+		DlgBox dlgBox;
+		
+		// Pass in the object that holds all the properties for a CustomJspDropWidget.
+		dlgBox = new CustomJspWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+		
+		return dlgBox;
+	}// end getPropertiesDlgBox()
+	
+	
+	/**
+	 * @param lpe
+	 * @param properties
+	 */
+	public void init( LandingPageEditor lpe, CustomJspProperties properties )
 	{
 		FlowPanel wrapperPanel;
 		
@@ -114,23 +153,9 @@ public class CustomJspDropWidget extends DropWidget
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( wrapperPanel );
-	}// end CustomJspDropWidget()
+	}// end init()
 	
 
-	/**
-	 * Return the dialog box used to edit the properties of this widget.
-	 */
-	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
-	{
-		DlgBox dlgBox;
-		
-		// Pass in the object that holds all the properties for a CustomJspDropWidget.
-		dlgBox = new CustomJspWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
-		
-		return dlgBox;
-	}// end getPropertiesDlgBox()
-	
-	
 	/**
 	 * Create the appropriate ui based on the given properties.
 	 */
