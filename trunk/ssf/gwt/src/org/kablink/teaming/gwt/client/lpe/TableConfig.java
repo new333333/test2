@@ -43,7 +43,7 @@ import java.util.ArrayList;
 public class TableConfig extends ConfigItem
 {
 	private TableProperties	m_properties;
-	private ArrayList<ConfigItem> m_configItems[];
+	private ArrayList<ConfigItem> m_configItems;
 	
 	
 	/**
@@ -51,41 +51,35 @@ public class TableConfig extends ConfigItem
 	 */
 	public TableConfig( String configStr )
 	{
-		String[] results;
-		int index;
+		int i;
+		String[] propsStr;
 		
 		m_properties = new TableProperties();
-		m_configItems = null;
+		m_configItems = new ArrayList<ConfigItem>();
 
-		// Get the string, "tableStart,showBorder=n,colWidths=xxx;"
-		index = configStr.indexOf( ';', 0 );
-		if ( index > 0 )
+		// Split the string "tableStart,showBorder=n,cols=n,colWidths=xxxx" into its parts.
+		propsStr = configStr.split( "[,;]" );
+		
+		// Get the table properties
+		if ( propsStr != null )
 		{
-			String propsStr;
-			
-			propsStr = configStr.substring( 0, index+1 );
-
-			// Get the table properties
-			// Split the configuration data into its parts.  ie showBorder=n cols=n colWidths=xxx
-			results = propsStr.split( "[,;]" );
-			if ( results != null )
+			for (i = 0; i < propsStr.length; ++i)
 			{
-				int i;
+				String[] results2;
 				
-				for (i = 0; i < results.length; ++i)
+				results2 = propsStr[i].split( "=" );
+				if ( results2.length == 2 )
 				{
-					String[] results2;
-					
-					results2 = results[i].split( "=" );
-					if ( results2.length == 2 )
+					if ( results2[0].equalsIgnoreCase( "showBorder" ) )
+						m_properties.setShowBorder( results2[1].equalsIgnoreCase( "1" ) );
+					else if ( results2[0].equalsIgnoreCase( "cols" ) )
+						m_properties.setNumColumns( Integer.valueOf( results2[1] ) );
+					else if ( results2[0].equalsIgnoreCase( "colWidths" ) )
 					{
-						if ( results2[0].equalsIgnoreCase( "showBorder" ) )
-							m_properties.setShowBorder( results2[1].equalsIgnoreCase( "1" ) );
-						else if ( results2[0].equalsIgnoreCase( "cols" ) )
-							m_properties.setNumColumns( Integer.valueOf( results2[1] ) );
+						//!!! Get the individual column widths.
 					}
-				}// end for()
-			}
+				}
+			}// end for()
 		}
 	}// end TableConfig()
 	
@@ -93,27 +87,22 @@ public class TableConfig extends ConfigItem
 	/**
 	 * 
 	 */
-	@SuppressWarnings("unchecked")
-	public void addConfigItem( int col, ConfigItem configItem )
+	public void addChild( ConfigItem configItem )
 	{
-		if ( m_configItems == null )
-		{
-			int i;
-			
-			m_configItems = new ArrayList[m_properties.getNumColumnsInt()];
-			
-			for (i = 0; i < m_configItems.length; ++i)
-			{
-				m_configItems[i] = new ArrayList<ConfigItem>();
-			}
-		}
+		m_configItems.add( configItem );
+	}// end addChild()
+	
+	
+	/**
+	 * 
+	 */
+	public ConfigItem get( int index )
+	{
+		if ( index < m_configItems.size() )
+			return m_configItems.get( index );
 		
-		// Make sure the given col is valid.
-		if ( col < m_configItems.length )
-		{
-			m_configItems[col].add( configItem );
-		}
-	}// end addConfigItem()
+		return null;
+	}// end get()
 	
 	
 	/**
@@ -123,4 +112,13 @@ public class TableConfig extends ConfigItem
 	{
 		return m_properties;
 	}// end getProperties()
+
+
+	/**
+	 * 
+	 */
+	public int numItems()
+	{
+		return m_configItems.size();
+	}// end numItems()
 }// end TableConfig

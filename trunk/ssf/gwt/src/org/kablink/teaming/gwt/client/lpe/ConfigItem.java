@@ -41,5 +41,8 @@ package org.kablink.teaming.gwt.client.lpe;
  */
 public abstract class ConfigItem
 {
-
+	/**
+	 * 
+	 */
+	public abstract void addChild( ConfigItem childItem );
 }// end ConfigItem

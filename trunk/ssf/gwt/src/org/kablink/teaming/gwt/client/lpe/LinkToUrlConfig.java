@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import com.google.gwt.http.client.URL;
+
 /**
  * This class represents the configuration data for a Link To Url
  * @author jwootton
@@ -65,15 +67,24 @@ public class LinkToUrlConfig extends ConfigItem
 				if ( results2.length == 2 )
 				{
 					if ( results2[0].equalsIgnoreCase( "title" ) )
-						m_properties.setTitle( results2[1] );
+						m_properties.setTitle( URL.decodeComponent( results2[1] ) );
 					else if ( results2[0].equalsIgnoreCase( "href" ) )
-						m_properties.setUrl( results2[1] );
+						m_properties.setUrl( URL.decodeComponent( results2[1] ) );
 					else if ( results2[0].equalsIgnoreCase( "popup" ) )
 						m_properties.setOpenInNewWindow( results2[1].equalsIgnoreCase( "1" ) );
 				}
 			}
 		}
 	}// end LinkToUrlConfig()
+	
+	
+	/**
+	 * 
+	 */
+	public void addChild( ConfigItem configItem )
+	{
+		// Nothing to do.
+	}// end addChild()
 	
 	
 	/**

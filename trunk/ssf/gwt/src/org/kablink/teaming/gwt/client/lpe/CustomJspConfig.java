@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import com.google.gwt.http.client.URL;
+
 /**
  * This class represents the configuration data for a Custom Jsp
  * @author jwootton
@@ -65,11 +67,20 @@ public class CustomJspConfig extends ConfigItem
 				if ( results2.length == 2 )
 				{
 					if ( results2[0].equalsIgnoreCase( "customJsp" ) )
-						m_properties.setJspName( results2[1] );
+						m_properties.setJspName( URL.decodeComponent( results2[1] ) );
 				}
 			}
 		}
 	}// end CustomJspConfig()
+	
+	
+	/**
+	 * 
+	 */
+	public void addChild( ConfigItem configItem )
+	{
+		// Nothing to do.
+	}// end addChild()
 	
 	
 	/**
