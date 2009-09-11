@@ -60,6 +60,36 @@ public abstract class DropWidget extends Composite
 
 
 	/**
+	 * Create a DropWidget from the given configuration data.
+	 * @param lpe
+	 * @param configItem
+	 * @return
+	 */
+	public static DropWidget createDropWidget( LandingPageEditor lpe, ConfigItem configItem )
+	{
+		if ( configItem instanceof CustomJspConfig )
+			return new CustomJspDropWidget( lpe, (CustomJspConfig)configItem );
+		
+		if ( configItem instanceof LinkToUrlConfig )
+			return new LinkToUrlDropWidget( lpe, (LinkToUrlConfig)configItem );
+
+		if ( configItem instanceof ListConfig )
+			return new ListDropWidget( lpe, (ListConfig)configItem );
+
+		if ( configItem instanceof TableConfig )
+			return new TableDropWidget( lpe, (TableConfig)configItem );
+
+		if ( configItem instanceof UtilityElementConfig )
+			return new UtilityElementDropWidget( lpe, (UtilityElementConfig)configItem );
+
+		//!!! Add new DropWidgets
+		
+		// If we get here we didn't recognize the type of widget being requested.
+		return null;
+	}// end createDropWidget()
+	
+	
+	/**
 	 * This method is called when the user presses the cancel button in the properties dialog box.
 	 */
 	public boolean editCanceled()

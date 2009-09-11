@@ -33,6 +33,10 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import java.util.ArrayList;
+
+import com.google.gwt.http.client.URL;
+
 /**
  * This class represents the configuration data for a List
  * @author jwootton
@@ -40,5 +44,78 @@ package org.kablink.teaming.gwt.client.lpe;
  */
 public class ListConfig extends ConfigItem
 {
+	private ListProperties m_properties;
+	private ArrayList<ConfigItem> m_configItems;
+	
+	
+	/**
+	 * 
+	 */
+	public ListConfig( String configStr )
+	{
+		int i;
+		String[] propsStr;
+		
+		m_properties = new ListProperties();
+		m_configItems = new ArrayList<ConfigItem>();
 
+		// Split the string "listStart,showBorder=1,title=xxx" into its parts.
+		propsStr = configStr.split( "[,;]" );
+		
+		// Get the list properties
+		if ( propsStr != null )
+		{
+			for (i = 0; i < propsStr.length; ++i)
+			{
+				String[] results2;
+				
+				results2 = propsStr[i].split( "=" );
+				if ( results2.length == 2 )
+				{
+					if ( results2[0].equalsIgnoreCase( "showBorder" ) )
+						m_properties.setShowBorder( results2[1].equalsIgnoreCase( "1" ) );
+					else if ( results2[0].equalsIgnoreCase( "title" ) )
+						m_properties.setTitle( URL.decodeComponent( results2[1] ) );
+				}
+			}// end for()
+		}
+	}// end ListConfig()
+	
+	
+	/**
+	 * 
+	 */
+	public void addChild( ConfigItem configItem )
+	{
+		m_configItems.add( configItem );
+	}// end addChild()
+	
+	
+	/**
+	 * 
+	 */
+	public ConfigItem get( int index )
+	{
+		if ( index < m_configItems.size() )
+			return m_configItems.get( index );
+		
+		return null;
+	}// end get()
+	
+	/**
+	 * 
+	 */
+	public ListProperties getProperties()
+	{
+		return m_properties;
+	}// end getProperties()
+
+
+	/**
+	 * 
+	 */
+	public int numItems()
+	{
+		return m_configItems.size();
+	}// end numItems()
 }// end ListConfig

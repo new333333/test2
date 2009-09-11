@@ -30,36 +30,57 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-
+import java.util.ArrayList;
 
 /**
- * 
+ * This class represents the configuration data for a Table
+ * @author jwootton
+ *
  */
-public class ListPaletteItem extends PaletteItem
+public class TableColConfig extends ConfigItem
 {
+	private ArrayList<ConfigItem> m_configItems;
+	
+	
 	/**
 	 * 
 	 */
-	public ListPaletteItem()
+	public TableColConfig( String configStr )
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorList(), GwtTeaming.getMessages().lpeList() );
-	}// end TablePaletteItem()
-
-
-	/**
-	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
-	 */
-	public DropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		ListDropWidget	listDropWidget;
+		m_configItems = new ArrayList<ConfigItem>();
 		
-		listDropWidget = new ListDropWidget( lpe, (ListProperties)null );
+		//!!! Do we need to get the col width?
+	}// end TableColConfig()
+	
+	
+	/**
+	 * 
+	 */
+	public void addChild( ConfigItem configItem )
+	{
+		m_configItems.add( configItem );
+	}// end addChild()
 
-		return listDropWidget;
-	}// end createDropWidget()
-}// end ListPaletteItem
-
-
+	
+	/**
+	 * 
+	 */
+	public ConfigItem get( int index )
+	{
+		if ( index < m_configItems.size() )
+			return m_configItems.get( index );
+		
+		return null;
+	}// end get()
+	
+	/**
+	 * 
+	 */
+	public int numItems()
+	{
+		return m_configItems.size();
+	}// end numItems()
+}// end TableColConfig

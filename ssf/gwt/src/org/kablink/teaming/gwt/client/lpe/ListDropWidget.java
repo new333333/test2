@@ -53,10 +53,80 @@ public class ListDropWidget extends DropWidget
 	private Label				m_title = null;
 	private DropZone			m_dropZone;
 	
+
+	/**
+	 * 
+	 */
+	public ListDropWidget( LandingPageEditor lpe, ListConfig configData )
+	{
+		ListProperties properties;
+		
+		properties = null;
+		if ( configData != null )
+			properties = configData.getProperties();
+		
+		init( lpe, properties );
+
+		// Create a widget for every child of this list as defined in the ListConfig data.
+		addChildWidgetsFromConfig( configData );
+	}// end ListDropWidget()
+	
+	
 	/**
 	 * 
 	 */
 	public ListDropWidget( LandingPageEditor lpe, ListProperties properties )
+	{
+		init( lpe, properties );
+	}// end ListDropWidget()
+	
+
+	/**
+	 * Create a widget for every child defined in ListConfig and add the children to
+	 * this ListDropWidget.
+	 */
+	public void addChildWidgetsFromConfig( ListConfig configData )
+	{
+		if ( m_dropZone != null )
+		{
+			int i;
+
+			for (i = 0; i < configData.numItems(); ++i)
+			{
+				DropWidget dropWidget;
+				ConfigItem configItem;
+				
+				// Get the next piece of configuration information.
+				configItem = configData.get( i );
+				
+				// Create the appropriate DropWidget based on the configuration data.
+				dropWidget = DropWidget.createDropWidget( m_lpe, configItem );
+				
+				// Add the widget to the col's drop zone.
+				m_dropZone.addWidgetToDropZone( dropWidget );
+			}
+		}
+	}// end addChildWidgetsFromConfig()
+	
+	
+	/**
+	 * Return the dialog box used to edit the properties of this widget.
+	 */
+	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
+	{
+		DlgBox dlgBox;
+		
+		// Pass in the object that holds all the properties for a ListDropWidget.
+		dlgBox = new ListWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+		
+		return dlgBox;
+	}// end getPropertiesDlgBox()
+	
+	
+	/**
+	 * 
+	 */
+	public void init( LandingPageEditor lpe, ListProperties properties )
 	{
 		FlowPanel wrapperPanel;
 		
@@ -112,23 +182,9 @@ public class ListDropWidget extends DropWidget
 		// All composites must call initWidget() in their constructors.
 		wrapperPanel.add( m_mainPanel );
 		initWidget( wrapperPanel );
-	}// end ListDropWidget()
+	}// end init()
 	
 
-	/**
-	 * Return the dialog box used to edit the properties of this widget.
-	 */
-	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
-	{
-		DlgBox dlgBox;
-		
-		// Pass in the object that holds all the properties for a ListDropWidget.
-		dlgBox = new ListWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
-		
-		return dlgBox;
-	}// end getPropertiesDlgBox()
-	
-	
 	/**
 	 * Create the appropriate ui based on the given properties.
 	 */

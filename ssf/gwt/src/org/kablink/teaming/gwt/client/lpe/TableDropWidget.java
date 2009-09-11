@@ -66,6 +66,9 @@ public class TableDropWidget extends DropWidget
 			properties = configData.getProperties();
 		
 		init( lpe, properties );
+		
+		// Create a widget for every child of this table as defined in the TableConfig data.
+		addChildWidgetsFromConfigToTable( configData );
 	}// end TableDropWidget()
 	
 	
@@ -78,6 +81,66 @@ public class TableDropWidget extends DropWidget
 	}// end TableDropWidget()
 	
 
+	/**
+	 * Create a widget for every child defined in TableColConfig and add the children to
+	 * the given col in the table.
+	 */
+	public void addChildWidgetsFromConfigToCell( TableColConfig configData, int col )
+	{
+		// Is the given col valid?
+		if ( col < m_flexTable.getCellCount( 0 ) )
+		{
+			int i;
+			DropZone dropZone;
+			
+			// Yes
+			// Get the DropZone used in the given col.
+			dropZone = (DropZone) m_flexTable.getWidget( 0, col );
+
+			if ( dropZone != null )
+			{
+				for (i = 0; i < configData.numItems(); ++i)
+				{
+					DropWidget dropWidget;
+					ConfigItem configItem;
+					
+					// Get the next piece of configuration information.
+					configItem = configData.get( i );
+					
+					// Create the appropriate DropWidget based on the configuration data.
+					dropWidget = DropWidget.createDropWidget( m_lpe, configItem );
+					
+					// Add the widget to the col's drop zone.
+					dropZone.addWidgetToDropZone( dropWidget );
+				}
+			}
+		}
+	}// end addChildWidgetsFromConfigToCell()
+	
+	
+	/**
+	 * Create a widget for every child of this table as defined in the TableConfig data.
+	 */
+	public void addChildWidgetsFromConfigToTable( TableConfig configData )
+	{
+		int i;
+		
+		for (i = 0; i < configData.numItems(); ++i)
+		{
+			ConfigItem configItem;
+			
+			// Get the next ConfigItem.
+			configItem = configData.get( i );
+			
+			// A TableConfig can only hold TableColConfig items.
+			if ( configItem instanceof TableColConfig )
+			{
+				addChildWidgetsFromConfigToCell( (TableColConfig)configItem, i );
+			}
+		}
+	}// end addChildWidgetsFromConfigToTable()
+	
+	
 	/**
 	 * We want the height of every DropZone in this table to be the same.  Figure out how tall the tallest DropZone is
 	 * and make every DropZone that height.

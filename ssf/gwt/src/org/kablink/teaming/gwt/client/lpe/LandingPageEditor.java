@@ -51,6 +51,7 @@ import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -128,29 +129,13 @@ public class LandingPageEditor extends Composite
 			{
 				DropWidget dropWidget;
 				
-				dropWidget = null;
-				
 				// Create the appropriate widget based on the given ConfigItem.
-				if ( configItem instanceof UtilityElementConfig )
-					dropWidget = new UtilityElementDropWidget( this, (UtilityElementConfig)configItem );
-				else if ( configItem instanceof LinkToUrlConfig )
-					dropWidget = new LinkToUrlDropWidget( this, (LinkToUrlConfig)configItem );
-				else if ( configItem instanceof CustomJspConfig )
-					dropWidget = new CustomJspDropWidget( this, (CustomJspConfig)configItem );
-				else if ( configItem instanceof TableConfig )
-					dropWidget = new TableDropWidget( this, (TableConfig)configItem );
-		//!!!
-		/*
-				else if ( configItem instanceof ListConfig )
-					dropWidget = new ListDropWidget( configItem );
-		*/		
+				dropWidget = DropWidget.createDropWidget( this, configItem );
 				
-				m_canvas.addWidgetToDropZone( dropWidget );
+				if ( dropWidget != null )
+					m_canvas.addWidgetToDropZone( dropWidget );
 			}
 		}
-		
-		// Adjust the height of all the tables we added.
-		adjustHeightOfAllTableWidgets();
 		
 		// Add the palette and canvas to the panel.
 		hPanel.add( m_palette );
@@ -162,6 +147,27 @@ public class LandingPageEditor extends Composite
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( vPanel );
+
+		// Adjust the height of all the tables we added.  We can't do this right now because the browser hasn't
+		// rendered anything yet.  So set a timer to do the work later.
+		{
+			Timer timer;
+			
+			timer = new Timer()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void run()
+				{
+					adjustHeightOfAllTableWidgets();
+				}// end run()
+			};
+			
+			timer.schedule( 500 );
+		}
+		adjustHeightOfAllTableWidgets();
 	}// end LandingPageEditor()
 	
 	

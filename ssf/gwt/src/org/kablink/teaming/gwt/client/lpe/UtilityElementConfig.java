@@ -47,40 +47,57 @@ public class UtilityElementConfig extends ConfigItem
 	 */
 	public UtilityElementConfig( String configStr )
 	{
-		String prefix = "utility,element=";
+		String[] results;
 		
 		m_properties = new UtilityElementProperties();
 		
-		// Does the config string start with "utility,element="
-		if ( configStr.startsWith( prefix ) )
+		// Split the configuration data into its parts.  ie element=xxx
+		results = configStr.split( "[,;]" );
+		if ( results != null )
 		{
-			String type;
-			int startIndex;
-			int endIndex;
+			int i;
 			
-			// Yes
-			startIndex = prefix.length();
-			endIndex = configStr.length() - 1;	// -1 so we don't include the ';'
-			type = configStr.substring( startIndex, endIndex );
-			
-			if ( type != null )
+			for (i = 0; i < results.length; ++i)
 			{
-				if ( type.equalsIgnoreCase( "myWorkspace" ) )
-					m_properties.setType( UtilityElement.LINK_TO_MYWORKSPACE );
-				else if ( type.equalsIgnoreCase( "siteAdmin" ) )
-					m_properties.setType( UtilityElement.LINK_TO_ADMIN_PAGE );
-				else if ( type.equalsIgnoreCase( "trackThis" ) )
-					m_properties.setType( UtilityElement.LINK_TO_TRACK_FOLDER_OR_WORKSPACE );
-				else if ( type.equalsIgnoreCase( "shareThis" ) )
-					m_properties.setType( UtilityElement.LINK_TO_SHARE_FOLDER_OR_WORKSPACE );
-				else if ( type.equalsIgnoreCase( "gettingStarted" ) )
-					m_properties.setType( UtilityElement.VIDEO_TUTORIAL );
-				else if ( type.equalsIgnoreCase( "signInForm" ) )
-					m_properties.setType( UtilityElement.SIGNIN_FORM );
+				String[] results2;
+				
+				results2 = results[i].split( "=" );
+				if ( results2.length == 2 )
+				{
+					if ( results2[0].equalsIgnoreCase( "element" ) )
+					{
+						String type;
+						
+						type = results2[1];
+						if ( type != null )
+						{
+							if ( type.equalsIgnoreCase( "myWorkspace" ) )
+								m_properties.setType( UtilityElement.LINK_TO_MYWORKSPACE );
+							else if ( type.equalsIgnoreCase( "siteAdmin" ) )
+								m_properties.setType( UtilityElement.LINK_TO_ADMIN_PAGE );
+							else if ( type.equalsIgnoreCase( "trackThis" ) )
+								m_properties.setType( UtilityElement.LINK_TO_TRACK_FOLDER_OR_WORKSPACE );
+							else if ( type.equalsIgnoreCase( "shareThis" ) )
+								m_properties.setType( UtilityElement.LINK_TO_SHARE_FOLDER_OR_WORKSPACE );
+							else if ( type.equalsIgnoreCase( "gettingStarted" ) )
+								m_properties.setType( UtilityElement.VIDEO_TUTORIAL );
+							else if ( type.equalsIgnoreCase( "signInForm" ) )
+								m_properties.setType( UtilityElement.SIGNIN_FORM );
+						}
+					}
+				}
 			}
 		}
-		
 	}// end UtilityElementConfig()
+	
+	
+	/**
+	 * 
+	 */
+	public void addChild( ConfigItem configItem )
+	{
+		// Nothing to do.
+	}// end addChild()
 	
 	
 	/**

@@ -41,8 +41,65 @@ import java.util.ArrayList;
  */
 public class ConfigData
 {
-	private ArrayList<ConfigItem>	m_configItems;	// Configuration for each of the items that make up the landing page.
+	private TopLevelConfig m_topLevelConfig;	// Holds all of the ConfigItems that make up the landing page.
 	private String m_configStr;
+	
+
+	/**
+	 * 
+	 */
+	public class TopLevelConfig extends ConfigItem
+	{
+		private ArrayList<ConfigItem> m_configItems;
+		
+		/**
+		 * 
+		 */
+		public TopLevelConfig()
+		{
+			m_configItems = new ArrayList<ConfigItem>();
+		}// end TopLevelConfig()
+		
+		
+		/**
+		 * 
+		 */
+		public void addChild( ConfigItem configItem )
+		{
+			m_configItems.add( configItem );
+		}// end addChild()
+		
+		
+		/**
+		 * 
+		 */
+		public void clear()
+		{
+			m_configItems.clear();
+		}// end clear()
+		
+		
+		/**
+		 * 
+		 */
+		public ConfigItem get( int index )
+		{
+			if ( index < m_configItems.size() )
+				return m_configItems.get( index );
+			
+			return null;
+		}// end get()
+		
+		
+		/**
+		 * 
+		 */
+		public int numItems()
+		{
+			return m_configItems.size();
+		}// end numItems()
+	}// end TopLevelConfig
+	
 	
 	/**
 	 * 
@@ -54,52 +111,111 @@ public class ConfigData
 		if ( m_configStr != null && !m_configStr.endsWith( ";" ) )
 			m_configStr += ";";
 		
-		m_configItems = new ArrayList<ConfigItem>();
+		m_topLevelConfig = new TopLevelConfig();
 	}// end ConfigData()
-
-
+	
+	
 	/**
-	 * For the given string, which defines an item in the landing page,
-	 * create the appropriate subclass of the ConfigItem class.
+	 * 
 	 */
-	public ConfigItem createConfigItem( String configStr )
+	public int addConfigItems( ConfigItem parent, String[] itemData, int startIndex )
 	{
-		String name;
-		ConfigItem configItem = null;
+		int i;
 		
-		// Get the name of this item.
-		name = getConfigItemName( configStr );
+		// Spin through the list of strings and create a ConfigItem object for each one and add the item to the given parent.
+		i = startIndex;
+		while ( i < itemData.length )
+		{
+			String itemName;
+			
+			// Get the name of this item.
+			itemName = getConfigItemName( itemData[i] );
+			
+			if ( itemName != null && itemName.length() > 0 )
+			{
+				ConfigItem configItem;
+				
+				configItem = null;
+				
+				if ( itemName.equalsIgnoreCase( "utility" ) )
+				{
+					configItem = new UtilityElementConfig( itemData[i] );
+					++i;
+				}
+				else if ( itemName.equalsIgnoreCase( "url" ) )
+				{
+					configItem = new LinkToUrlConfig( itemData[i] );
+					++i;
+				}
+				else if ( itemName.equalsIgnoreCase( "customJsp" ) )
+				{
+					configItem = new CustomJspConfig( itemData[i] );
+					++i;
+				}
+				else if ( itemName.equalsIgnoreCase( "tableStart" ) )
+				{
+					configItem = new TableConfig( itemData[i] );
+					
+					// Recursively call ourselves and add items to the TableConfig object we just created.
+					i = addConfigItems( configItem, itemData, i+1 );
+				}
+				else if ( itemName.equalsIgnoreCase( "tableCol" ) )
+				{
+					// Are we adding items to a TableCol object?
+					if ( parent instanceof TableColConfig )
+					{
+						// Yes, this mean we need to start a new TableCol
+						return i;
+					}
+					
+					configItem = new TableColConfig( itemData[i] );
+					
+					// Recursively call ourselves and add items to the TableColConfig object we just created.
+					i = addConfigItems( configItem, itemData, i+1 );
+				}
+				else if ( itemName.equalsIgnoreCase( "tableEnd" ) )
+				{
+					// If this signals the end of a tableCol we want to process this item again because
+					// the tableEnd signals both the end of a tableCol and the end of tableStart.
+					if ( parent instanceof TableColConfig )
+						return i;
+					
+					return i+1;
+				}
+				else if ( itemName.equalsIgnoreCase( "listStart" ) )
+				{
+					configItem = new ListConfig( itemData[i] );
+					
+					// Recursively call ourselves and add items to the ListConfig object we just created.
+					i = addConfigItems( configItem, itemData, i+1 );
+				}
+				else if ( itemName.equalsIgnoreCase( "listEnd" ) )
+				{
+					return i+1;
+				}
+				else
+				{
+					// We don't know what this item is.  Skip it.
+					++i;
+				}
+				
+				if ( configItem != null )
+					parent.addChild( configItem );
+			}
+			else
+				++i;
+		}// end while()
 		
-		if ( name == null || name.length() == 0 )
-			return null;
-		
-		// Create the appropriate ConfigItem class based on the name.
-		if ( name.equalsIgnoreCase( "utility" ) )
-			configItem = new UtilityElementConfig( configStr );
-		else if ( name.equalsIgnoreCase( "url" ) )
-			configItem = new LinkToUrlConfig( configStr );
-		else if ( name.equalsIgnoreCase( "customJsp" ) )
-			configItem = new CustomJspConfig( configStr );
-		else if ( name.equalsIgnoreCase( "tableStart" ) )
-			configItem = new TableConfig( configStr ); 
-//!!!
-/*
-		else if ( name.equalsIgnoreCase( "listStart" ) )
-			configItem = new ListConfig( configStr );
-*/		
-		return configItem;
-	}// end createConfigItem()
-	
-	
+		return i;
+	}// end addConfigItems();
+
+
 	/**
 	 * Return the ConfigItem at the given index.
 	 */
 	public ConfigItem get( int index )
 	{
-		if ( index < size() )
-			return m_configItems.get( index );
-		
-		return null;
+		return m_topLevelConfig.get( index );
 	}// end get()
 	
 	
@@ -124,159 +240,24 @@ public class ConfigData
 	
 	
 	/**
-	 * Get the next string that holds configuration data for an item.
-	 */
-	public String getConfigItemStr( int startIndex, String configStr )
-	{
-		int index;
-		String itemName;
-		String configItemStr;
-		
-		if ( configStr == null )
-			return null;
-		
-		// Is the starting index valid?
-		if ( startIndex >= configStr.length() )
-			return null;
-		
-		// Find the next ';'
-		index = configStr.indexOf( ';', startIndex );
-		
-		if ( index == -1 )
-			return null;
-		
-		if ( startIndex == index )
-			return null;
-		
-		configItemStr = configStr.substring( startIndex, index+1 );
-		
-		// Get the name of this item.
-		itemName = getConfigItemName( configItemStr );
-		
-		if ( itemName != null )
-		{
-			boolean done;
-			int tmpStartIndex;
-			int tmpEndIndex;
-			String nextConfigItemStr;
-			
-			// Are we dealing with a table?
-			if ( itemName.equalsIgnoreCase( "tableStart" ) )
-			{
-				// Yes, find the end of the table configuration by looking for "tableEnd"
-				tmpStartIndex = startIndex + configItemStr.length();
-				configItemStr = "";
-				done = false;
-				while ( !done )
-				{
-					// Get the configuration string for the next item.
-					nextConfigItemStr = getConfigItemStr( tmpStartIndex, configStr );
-					
-					if ( nextConfigItemStr != null )
-					{
-						tmpStartIndex += nextConfigItemStr.length();
-						
-						// Get the name of the next item.
-						itemName = getConfigItemName( nextConfigItemStr );
-						
-						if ( itemName != null )
-						{
-							if ( itemName.equalsIgnoreCase( "tableEnd" ) )
-							{
-								done = true;
-								tmpEndIndex = tmpStartIndex;
-								configItemStr = configStr.substring( startIndex, tmpEndIndex );
-							}
-						}
-					}
-					else
-						done = true;
-				}// end while
-			}
-			// Are we dealing with a list?
-			else if ( itemName.equalsIgnoreCase( "listStart" ) )
-			{
-				// Yes, find the end of the list configuration by looking for "listEnd"
-				tmpStartIndex = startIndex + configItemStr.length();
-				configItemStr = "";
-				done = false;
-				while ( !done )
-				{
-					// Get the configuration string for the next item.
-					nextConfigItemStr = getConfigItemStr( tmpStartIndex, configStr );
-					
-					if ( nextConfigItemStr != null )
-					{
-						tmpStartIndex += nextConfigItemStr.length();
-						
-						// Get the name of the next item.
-						itemName = getConfigItemName( nextConfigItemStr );
-						
-						if ( itemName != null )
-						{
-							if ( itemName.equalsIgnoreCase( "listEnd" ) )
-							{
-								done = true;
-								tmpEndIndex = tmpStartIndex;
-								configItemStr = configStr.substring( startIndex, tmpEndIndex );
-							}
-						}
-					}
-					else
-						done = true;
-				}// end while
-			}
-		}
-		
-		return configItemStr;
-	}// end getConfigItemStr()
-	
-	
-	/**
 	 * Parse the string that holds the configuration data and create a ConfigItem
 	 * for each item that makes up the landing page.
 	 */
 	public void parse()
 	{
 		// Clear our list that holds ConfigItem objects.
-		m_configItems.clear();
+		m_topLevelConfig.clear();
 		
 		if ( m_configStr != null && m_configStr.length() > 0 )
 		{
-			int startIndex;
-			boolean done;
+			String[] results;
 			
-			startIndex = 0;
-			done = false;
-			while ( !done )
+			// Split the configuration data into its parts.  Where each part represents an item.
+			results = m_configStr.split( "[;]" );
+			if ( results != null )
 			{
-				String configItemStr;
-				
-				// Get the substring that holds the configuration for the next item.
-				configItemStr = getConfigItemStr( startIndex, m_configStr );
-				
-				// Did we get a string?
-				if ( configItemStr != null )
-				{
-					ConfigItem configItem;
-
-					// Yes
-					// Create the appropriate ConfigItem object based on the configuration string.
-					configItem = createConfigItem( configItemStr );
-					
-					// Did we get a ConfigItem object?
-					if ( configItem != null )
-						m_configItems.add( configItem );
-					
-					// Move to the next location in the configuration string.  Add 1 to move past the ';'
-					startIndex += configItemStr.length();
-				}
-				else
-				{
-					// No
-					done = true;
-				}
-			}// end while()
+				addConfigItems( m_topLevelConfig, results, 0 );
+			}
 		}
 	}// end parse()
 	
@@ -286,6 +267,6 @@ public class ConfigData
 	 */
 	public int size()
 	{
-		return m_configItems.size();
+		return m_topLevelConfig.numItems();
 	}// end size()
 }// end ConfigData
