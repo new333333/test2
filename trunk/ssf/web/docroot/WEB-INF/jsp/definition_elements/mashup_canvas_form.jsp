@@ -58,6 +58,11 @@
 
 <c:if test="${ssConfigJspStyle == 'form'}">
 <script type="text/javascript">
+// m_landingPageConfig holds the string that defines the content of this landing page and is referenced by the GWT code.
+var m_landingPageConfig = null;
+
+m_landingPageConfig = { configData : '${ssDefinitionEntry.customAttributes[property_name].value}' };
+
 function ss_mashup_deleteAll_${renderResponse.namespace}() {
 	if (confirm("<ssf:nlt tag="mashup.deleteEverythingConfirm"/>")) {
 		var obj = self.document.getElementById("${ss_mashupPropertyName}__deleteEverything");

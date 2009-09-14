@@ -34,7 +34,8 @@
 /* Styles used with the panel that wraps a drop widget. */
 .dropWidgetWrapperPanel
 {
-	margin-top: .5em;
+	padding-top: .5em;
+	padding-bottom: .5em;
 }
 
 /* From Lynn's styles. */
@@ -59,9 +60,10 @@
 {
 	background-color: #FFFFFF;
 	border: 1px solid #999999;
-	height: 350px;
+	height: 500px;
 	margin-left: 5px;
 	overflow: auto;
+	position: relative;
 	width: 850px;
 }
 

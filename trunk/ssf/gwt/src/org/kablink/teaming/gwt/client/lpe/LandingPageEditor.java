@@ -235,6 +235,7 @@ public class LandingPageEditor extends Composite
 	 * This method is called by a DropZone when the mouse is entering the DropZone.  We will add the
 	 * DropZone to our stack of drop zones.
 	 */
+	@SuppressWarnings("unchecked")
 	public void enteringDropZone( DropZone dropZone, MouseEvent mouseEvent )
 	{
 		DropZone previousDropZone = null;
@@ -275,6 +276,15 @@ public class LandingPageEditor extends Composite
 	
 	
 	/**
+	 * Return how much the canvas has been scrolled vertically
+	 */
+	public int getCanvasScrollY()
+	{
+		return m_canvas.getScrollY();
+	}// end getCanvasScrollY()
+	
+	
+	/**
 	 * Use JSNI to grab the JavaScript object that holds the landing page configuration data.
 	 */
 	private native LandingPageConfig getLandingPageConfig() /*-{
@@ -294,6 +304,7 @@ public class LandingPageEditor extends Composite
 	/**
 	 * This method is called by a DropZone when the mouse is leaving the DropZone.
 	 */
+	@SuppressWarnings("unchecked")
 	public void leavingDropZone( DropZone dropZone, MouseEvent mouseEvent )
 	{
 		if ( m_enteredDropZones.empty() )
@@ -439,6 +450,7 @@ public class LandingPageEditor extends Composite
 	/**
 	 * Set the DropZone object that will be used on the mouse-up event.
 	 */
+	@SuppressWarnings("unchecked")
 	private void setDropZone( DropZone dropZone, MouseEvent mouseEvent )
 	{
 		// Is the user dragging an item from the palette?
