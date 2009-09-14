@@ -87,7 +87,7 @@ public class DropZone extends Composite
 		initWidget( m_panel );
 	}// end DropZone()
 	
-
+	
 	/**
 	 * 
 	 */
@@ -165,6 +165,7 @@ public class DropZone extends Composite
 	 * If the user dropped a widget at the given mouse position, calculate the widget the dropped widget
 	 * would be inserted before.
 	 */
+	@SuppressWarnings("unchecked")
 	public DropWidget getDropBeforeWidget( MouseEvent mouseEvent )
 	{
 		int numWidgets;
@@ -211,23 +212,46 @@ public class DropZone extends Composite
 	
 	
 	/**
+	 * Calculate the x position of where the drop clue should be positioned.
+	 */
+	@SuppressWarnings("unchecked")
+	public int getDropClueX( MouseEvent mouseEvent )
+	{
+		return getAbsoluteLeft() - m_lpe.getCanvasLeft();		
+	}// end getDropClueX()
+	
+	
+	/**
 	 * Calculate where the drop clue should be positioned.
 	 */
+	@SuppressWarnings("unchecked")
 	public int getDropClueY( MouseEvent mouseEvent )
 	{
 		DropWidget dropWidget = null;
 		Widget lastWidget;
 		int numWidgets;
+		int canvasY;
+		int scrollY;
+		int yPos;
 		
 		// If the user were to drop a widget at the current mouse position, get the widget we would insert
 		// the dropped widget before.
 		dropWidget = getDropBeforeWidget( mouseEvent );
 
+		// Get the absolute position of the canvas.
+		canvasY = m_lpe.getCanvasTop();
+		
+		scrollY = m_lpe.getCanvasScrollY();
+		
 		// Do we have a DropWidget?
 		if ( dropWidget != null )
 		{
 			// Yes, position the drop clue immediately above the widget.
-			return dropWidget.getAbsoluteTop() - m_dropIndicator.getOffsetHeight();
+			yPos = dropWidget.getAbsoluteTop() - m_dropIndicator.getOffsetHeight() - canvasY + scrollY;
+			if ( yPos < 0 )
+				yPos = 0;
+			
+			return yPos;
 		}
 		
 		// If we get here we don't have a widget we should insert a dropped widget before.
@@ -236,12 +260,26 @@ public class DropZone extends Composite
 		lastWidget = m_panel.getWidget( numWidgets-1 );
 		if ( lastWidget instanceof DropWidget )
 		{
-			return lastWidget.getAbsoluteTop() + lastWidget.getOffsetHeight();
+			return lastWidget.getAbsoluteTop() + lastWidget.getOffsetHeight() - canvasY + scrollY - 5;
 		}
 		
 		// Position the drop clue at the top
 		return 0;
 	}// end getDropClueY()
+	
+	
+	/**
+	 * Return how much this drop zone has been scrolled vertically.
+	 */
+	public int getScrollY()
+	{
+		Element element;
+		int scrollTop;
+		
+		element = m_panel.getElement();
+		scrollTop = DOM.getElementPropertyInt( element, "scrollTop" );
+		return scrollTop;
+	}// end getScrollY()
 	
 	
 	/**
@@ -285,6 +323,7 @@ public class DropZone extends Composite
 	/**
 	 * Is the mouse over this drop zone?
 	 */
+	@SuppressWarnings("unchecked")
 	public boolean isMouseOverDropZone( MouseEvent mouseEvent )
 	{
 		int left;
@@ -343,6 +382,7 @@ public class DropZone extends Composite
 	/**
 	 * This method gets called to let us know where the user wants a widget dropped on this drop zone.
 	 */
+	@SuppressWarnings("unchecked")
 	public void setDropLocation( MouseEvent mouseEvent )
 	{
 		// Figure out the widget we would insert a dropped widget before.
@@ -366,6 +406,7 @@ public class DropZone extends Composite
 	 * Show a visual clue that will indicate where a widget would be added if it were
 	 * dropped on this drop zone. 
 	 */
+	@SuppressWarnings("unchecked")
 	public void showDropClue( MouseEvent mouseEvent )
 	{
 		// Does this drop zone have any widgets?
@@ -377,11 +418,13 @@ public class DropZone extends Composite
 		else
 		{
 			Element element;
+			int width;
 			
 			element = m_dropIndicator.getElement();
 			DOM.setStyleAttribute( element, "top", String.valueOf( getDropClueY( mouseEvent ) ) + "px" );
-			DOM.setStyleAttribute( element, "left", String.valueOf( getAbsoluteLeft() ) + "px" );
-			DOM.setStyleAttribute( element, "width", String.valueOf( getOffsetWidth() ) + "px" );
+			DOM.setStyleAttribute( element, "left", String.valueOf( getDropClueX( mouseEvent ) ) + "px" );
+			width = (int)(getOffsetWidth() * .97);
+			DOM.setStyleAttribute( element, "width", String.valueOf( width ) + "px" );
 			
 			m_dropIndicator.setVisible( true );
 		}
