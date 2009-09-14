@@ -38,11 +38,14 @@ import org.kablink.teaming.gwt.client.widgets.EditSuccessfulHandler;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * 
@@ -56,6 +59,7 @@ public abstract class DlgBox extends PopupPanel
 	private EditCanceledHandler	m_editCanceledHandler;		// Handler to call when the user presses Cancel.
 	private Button		m_okBtn;
 	private Button		m_cancelBtn;
+	private FocusWidget m_focusWidget;	// Widget that should receive the focus when this dialog is shown.
 	
 	/**
 	 * 
@@ -67,6 +71,8 @@ public abstract class DlgBox extends PopupPanel
 		int yPos )
 	{
 		super( autoHide, modal );
+	
+		m_focusWidget = null;
 		
 		// Override the style used for PopupPanel
 		setStyleName( "teamingDlgBox" );
@@ -169,6 +175,12 @@ public abstract class DlgBox extends PopupPanel
 	public abstract PropertiesObj getDataFromDlg();
 	
 	
+	/**
+	 * Get the widget that should receive the focus when this dialog is shown.
+	 */
+	public abstract FocusWidget getFocusWidget();
+	
+	
 	/*
 	 * This method gets called when the user clicks on the ok or cancel button.
 	 */
@@ -210,4 +222,38 @@ public abstract class DlgBox extends PopupPanel
 			}
 		}
 	}// end onClick()
+	
+	
+	/**
+	 * Show this dialog.
+	 */
+	public void show()
+	{
+		// Show this dialog.
+		super.show();
+		
+		// Get the widget that should be given the focus when this dialog is displayed.
+		m_focusWidget = getFocusWidget();
+		
+		// We need to set the focus after the dialog has been shown.  That is why we use a timer. 
+		if ( m_focusWidget != null )
+		{
+			Timer timer;
+			
+			timer = new Timer()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void run()
+				{
+					if ( m_focusWidget != null )
+						m_focusWidget.setFocus( true );
+				}// end run()
+			};
+			
+			timer.schedule( 250 );
+		}
+	}// end show()
 }// end DlgBox

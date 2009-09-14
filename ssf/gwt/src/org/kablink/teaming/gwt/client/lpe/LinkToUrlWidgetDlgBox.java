@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -146,6 +147,15 @@ public class LinkToUrlWidgetDlgBox extends DlgBox
 		properties.setOpenInNewWindow( getOpenInNewWindowValue() );
 		return properties;
 	}// end getDataFromDlg()
+	
+	
+	/**
+	 * Return the widget that should get the focus when the dialog is shown. 
+	 */
+	public FocusWidget getFocusWidget()
+	{
+		return m_titleTxtBox;
+	}// end getFocusWidget()
 	
 	
 	/**

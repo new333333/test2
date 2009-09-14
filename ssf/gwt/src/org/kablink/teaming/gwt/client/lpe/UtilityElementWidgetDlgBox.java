@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.widgets.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.widgets.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
@@ -149,6 +150,15 @@ public class UtilityElementWidgetDlgBox extends DlgBox
 
 		return properties;
 	}// end getDataFromDlg()
+	
+	
+	/**
+	 * Return the widget that should get the focus when the dialog is shown. 
+	 */
+	public FocusWidget getFocusWidget()
+	{
+		return null;
+	}// end getFocusWidget()
 	
 	
 	/**

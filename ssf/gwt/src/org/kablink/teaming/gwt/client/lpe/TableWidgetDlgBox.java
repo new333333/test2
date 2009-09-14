@@ -45,6 +45,7 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
@@ -239,6 +240,15 @@ public class TableWidgetDlgBox extends DlgBox
 		
 		return properties;
 	}// end getDataFromDlg()
+	
+	
+	/**
+	 * Return the widget that should get the focus when the dialog is shown. 
+	 */
+	public FocusWidget getFocusWidget()
+	{
+		return m_numColsCtrl;
+	}// end getFocusWidget()
 	
 	
 	/**
