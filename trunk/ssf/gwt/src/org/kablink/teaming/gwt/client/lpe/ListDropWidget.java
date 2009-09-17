@@ -171,6 +171,7 @@ public class ListDropWidget extends DropWidget
 			panel.addStyleName( "editDeleteWrapperPanel" );
 			
 			m_title = new Label();
+			m_title.addStyleName( "lpeListTitle" );
 			panel.add( m_title );
 			panel.add( ctrl );
 			wrapperPanel.add( panel );
