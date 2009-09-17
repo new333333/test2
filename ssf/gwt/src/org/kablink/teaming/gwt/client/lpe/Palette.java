@@ -33,13 +33,9 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
-import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
 
 /**
  * This widget is used as the palette in the Landing Page Editor.

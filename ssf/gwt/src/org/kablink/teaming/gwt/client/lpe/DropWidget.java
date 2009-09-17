@@ -40,7 +40,6 @@ import org.kablink.teaming.gwt.client.widgets.EditHandler;
 import org.kablink.teaming.gwt.client.widgets.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
-import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 
@@ -167,7 +166,7 @@ public abstract class DropWidget extends Composite
 	 *   1, the mouse is over the top-half of this widget
 	 *   2, the mouse is over the bottom-half of this widget.
 	 */
-	public int getMousePosOverWidget( MouseEvent mouseEvent )
+	public int getMousePosOverWidget( int clientY )
 	{
 		int widgetY;
 		int widgetHeight;
@@ -175,7 +174,7 @@ public abstract class DropWidget extends Composite
 		
 		widgetY = getAbsoluteTop();
 		widgetHeight = getOffsetHeight();
-		mouseY = mouseEvent.getClientY() + Window.getScrollTop();
+		mouseY = clientY + Window.getScrollTop();
 		
 		// Is the mouse above this widget?
 		if ( mouseY < widgetY )

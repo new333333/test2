@@ -45,6 +45,7 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -76,7 +77,7 @@ public class DropZone extends Composite
 		m_dropIndicator.setVisible( false );
 		m_panel.add( m_dropIndicator );
 		
-		// Register this widget for mouse-out, mouse-over events.
+		// Register for mouse-over and mouse-out events.
 		addMouseOverHandler( this );
 		addMouseOutHandler( this );
 		
@@ -165,8 +166,7 @@ public class DropZone extends Composite
 	 * If the user dropped a widget at the given mouse position, calculate the widget the dropped widget
 	 * would be inserted before.
 	 */
-	@SuppressWarnings("unchecked")
-	public DropWidget getDropBeforeWidget( MouseEvent mouseEvent )
+	public DropWidget getDropBeforeWidget( int clientY )
 	{
 		int numWidgets;
 		int i;
@@ -190,7 +190,7 @@ public class DropZone extends Composite
 				dropWidget = (DropWidget) widget;
 				
 				// Is the cursor above the widget.
-				pos = dropWidget.getMousePosOverWidget( mouseEvent );
+				pos = dropWidget.getMousePosOverWidget( clientY );
 				if ( pos == -1 )
 				{
 					// Yes
@@ -214,8 +214,7 @@ public class DropZone extends Composite
 	/**
 	 * Calculate the x position of where the drop clue should be positioned.
 	 */
-	@SuppressWarnings("unchecked")
-	public int getDropClueX( MouseEvent mouseEvent )
+	public int getDropClueX( int clientX )
 	{
 		return getAbsoluteLeft() - m_lpe.getCanvasLeft();		
 	}// end getDropClueX()
@@ -224,8 +223,7 @@ public class DropZone extends Composite
 	/**
 	 * Calculate where the drop clue should be positioned.
 	 */
-	@SuppressWarnings("unchecked")
-	public int getDropClueY( MouseEvent mouseEvent )
+	public int getDropClueY( int clientY )
 	{
 		DropWidget dropWidget = null;
 		Widget lastWidget;
@@ -236,7 +234,7 @@ public class DropZone extends Composite
 		
 		// If the user were to drop a widget at the current mouse position, get the widget we would insert
 		// the dropped widget before.
-		dropWidget = getDropBeforeWidget( mouseEvent );
+		dropWidget = getDropBeforeWidget( clientY );
 
 		// Get the absolute position of the canvas.
 		canvasY = m_lpe.getCanvasTop();
@@ -340,8 +338,8 @@ public class DropZone extends Composite
 		width = getOffsetWidth();
 		
 		// Get the position of the mouse.
-		mouseY = mouseEvent.getClientY();
-		mouseX = mouseEvent.getClientX();
+		mouseY = mouseEvent.getClientY() + Window.getScrollTop();
+		mouseX = mouseEvent.getClientX() + Window.getScrollLeft();
 		
 		// Is the mouse over this drop zone?
 		if ( mouseY >= top && mouseY <= (top + height) && mouseX >= left && (mouseX <= left + width) )
@@ -350,7 +348,7 @@ public class DropZone extends Composite
 		return false;
 	}// end isMouseOverDropZone()
 
-	
+
 	/**
 	 * 
 	 */
@@ -360,7 +358,7 @@ public class DropZone extends Composite
 		if ( m_lpe != null && m_lpe.isPaletteItemDragInProgress() )
 		{
 			// Yes, tell the landing page editor that the cursor is no longer over this drop zone.
-			m_lpe.leavingDropZone( this, event );
+			m_lpe.leavingDropZone( this, event.getClientX(), event.getClientY() );
 		}
 	}// end onMouseOut()
 
@@ -374,7 +372,7 @@ public class DropZone extends Composite
 		if ( m_lpe != null && m_lpe.isPaletteItemDragInProgress() )
 		{
 			// Yes, tell the landing page editor what drop zone the cursor is over.
-			m_lpe.enteringDropZone( this, event );
+			m_lpe.enteringDropZone( this, event.getClientX(), event.getClientY() );
 		}
 	}// end onMouseOver()
 
@@ -382,11 +380,10 @@ public class DropZone extends Composite
 	/**
 	 * This method gets called to let us know where the user wants a widget dropped on this drop zone.
 	 */
-	@SuppressWarnings("unchecked")
-	public void setDropLocation( MouseEvent mouseEvent )
+	public void setDropLocation( int clientX, int clientY )
 	{
 		// Figure out the widget we would insert a dropped widget before.
-		m_dropBeforeWidget = getDropBeforeWidget( mouseEvent );
+		m_dropBeforeWidget = getDropBeforeWidget( clientY );
 	}// end setDropLocation()
 	
 	
@@ -406,8 +403,7 @@ public class DropZone extends Composite
 	 * Show a visual clue that will indicate where a widget would be added if it were
 	 * dropped on this drop zone. 
 	 */
-	@SuppressWarnings("unchecked")
-	public void showDropClue( MouseEvent mouseEvent )
+	public void showDropClue( int clientX, int clientY )
 	{
 		// Does this drop zone have any widgets?
 		if ( m_panel.getWidgetCount() == 1 )
@@ -421,8 +417,8 @@ public class DropZone extends Composite
 			int width;
 			
 			element = m_dropIndicator.getElement();
-			DOM.setStyleAttribute( element, "top", String.valueOf( getDropClueY( mouseEvent ) ) + "px" );
-			DOM.setStyleAttribute( element, "left", String.valueOf( getDropClueX( mouseEvent ) ) + "px" );
+			DOM.setStyleAttribute( element, "top", String.valueOf( getDropClueY( clientY ) ) + "px" );
+			DOM.setStyleAttribute( element, "left", String.valueOf( getDropClueX( clientX ) ) + "px" );
 			width = (int)(getOffsetWidth() * .97);
 			DOM.setStyleAttribute( element, "width", String.valueOf( width ) + "px" );
 			
