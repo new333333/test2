@@ -26,6 +26,7 @@
 /* Styles used with the panel that wraps the edit-delete control. */
 .editDeleteWrapperPanel
 {
+	cursor: default;
 	height: 20px;
 	margin-left: 0.5em;
 	position: relative;
@@ -76,6 +77,7 @@
 /* Styles used for the jsp name in a "custom jsp" widget */
 .lpeCustomJspName
 {
+	cursor: default;
 	color: #333333;
 	font-family: Arial,sans-serif;
 	font-size: 12px;
@@ -126,6 +128,14 @@
 	margin-right: .5em;
 }
 
+/* Styles for the landing page editor hint. */
+.lpeHint
+{
+	color: #4D6D8B;
+	font-size: 0.8em;
+	margin-bottom: 0.5em;
+}
+
 /* Styles for the "Link to Url" widget. */
 .lpeLinkToUrlWidget
 {
@@ -137,6 +147,7 @@
 /* Styles used for the title in a "link to url" widget */
 .lpeLinkToUrlTitle
 {
+	cursor: default;
 	color: #333333;
 	font-family: Arial,sans-serif;
 	font-size: 12px;
@@ -145,6 +156,7 @@
 /* Styles used for the url in the "link to url" widget */
 .lpeLinkToUrlUrl
 {
+	cursor: default;
 	color: #333333;
 	font-family: Arial,sans-serif;
 	font-size: 11px;
@@ -179,27 +191,10 @@
 	background-color: #CDF3FF;
 }
 
-/* Styles used for a drop zone found in a table. */
-.lpeTableDropZone
+/* Styles for the List widget's title. */
+.lpeListTitle
 {
-	background-color: #FFFFFF;
-	border: 1px solid #999999;
-	height: 100%;
-	width: 100%;
-}
-
-/* Styles used for a drop zone found in a table. */
-.lpeTableDropZone-highlighted
-{
-	background-color: #CDF3FF;
-}
-
-/* Styles for the landing page editor hint. */
-.lpeHint
-{
-	color: #4D6D8B;
-	font-size: 0.8em;
-	margin-bottom: 0.5em;
+	cursor: default;
 }
 
 /* Styles for the palette widget used in the landing page editor. */
@@ -242,9 +237,25 @@
 	border: 0px;
 }
 
+/* Styles used for a drop zone found in a table. */
+.lpeTableDropZone
+{
+	background-color: #FFFFFF;
+	border: 1px solid #999999;
+	height: 100%;
+	width: 100%;
+}
+
+/* Styles used for a drop zone found in a table. */
+.lpeTableDropZone-highlighted
+{
+	background-color: #CDF3FF;
+}
+
 /* Styles used for the utility element name in a "utility element" widget */
 .lpeUtilityElementName
 {
+	cursor: default;
 	color: #333333;
 	font-family: Arial,sans-serif;
 	font-size: 12px;
@@ -262,6 +273,7 @@
 /* Styles used for the label that identifies a widget, ie Link, Utility Element */
 .lpeWidgetIdentifier
 {
+	cursor: default;
 	font-size: 13px;
 	font-weight: bold;
 	margin-right: .25em;
