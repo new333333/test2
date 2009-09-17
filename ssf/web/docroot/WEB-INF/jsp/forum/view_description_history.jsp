@@ -33,7 +33,12 @@
  */
 %>
 <%@ page import="org.dom4j.Element" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<ssf:ifadapter>
+<body class="tundra">
+</ssf:ifadapter>
+
 <style type="text/css">
 del { color: red; }
 ins { color: green; }
@@ -249,14 +254,13 @@ function dodiff()
 }
 </script>
 
-
-<ssf:ifadapter>
-<body class="tundra">
-</ssf:ifadapter>
-
-<div class="ss_style ss_portlet">
-<h3><ssf:nlt tag="entry.versionHistory"/></h3>
-<form class="ss_form" method="post" action="<ssf:url     
+<div class="ss_style ss_portlet" style="padding:10px;">
+<ssf:form title='<%= NLT.get("entry.versionHistory") %>'>
+<div style="padding:10px 6px;">
+<span><ssf:nlt tag="entry.version.instructions"/>
+</span>
+</div>
+<form class="ss_style ss_form" method="post" action="<ssf:url     
 		adapter="true" 
 		portletName="ss_forum" 
 		action="view_editable_history" 
@@ -265,18 +269,28 @@ function dodiff()
 		<ssf:param name="operation" value="modifyEntry" />
 		</ssf:url>"
 >
-<table class="ss_style" cellpadding="10" width="100%">
-<th><ssf:nlt tag="entry.Version"/></th><th><ssf:nlt tag="entry.data"/></th>
+<table class="ss_style" cellpadding="6" width="100%">
+<tr>
+<th colspan="2" style="text-align:center;"><ssf:nlt tag="entry.Version"/></th>
+<th><ssf:nlt tag="entry.data"/></th>
+</tr>
+<tr>
+<th style="text-align:center; padding-top:0px; padding-bottom:0px;"><ssf:nlt tag="entry.version.from"/></th>
+<th style="text-align:left; padding-left:8px; padding-top:0px; padding-bottom:0px;"><ssf:nlt tag="entry.version.to"/></th>
+<th style="padding-top:0px; padding-bottom:0px;"></th>
+</tr>
 <c:forEach var="change" items="${ss_changeLogList}">
 <tr>
-<td valign="top" width="10%" nowrap>
+<td valign="top" width="5%" nowrap>
+  <span style="padding-right:10px;">${change.folderEntry.attributes.logVersion}</span>
   <input type="radio" name="item1" 
   value="${change.folderEntry.attributes.logVersion}" onclick="ss_setOne('${change.folderEntry.attributes.logVersion}')"
   <c:if test="${change.folderEntry.attributes.logVersion == item1}"> checked="checked" </c:if> >
-  <input style="padding-left:10px;" type="radio" name="item2" 
+</td>
+<td valign="top" width="5%" nowrap>
+  <input type="radio" name="item2" 
   value="${change.folderEntry.attributes.logVersion}" onclick="ss_setTwo('${change.folderEntry.attributes.logVersion}')"
   <c:if test="${change.folderEntry.attributes.logVersion == item2}"> checked="checked" </c:if> >
-  <span style="padding-left:10px;">${change.folderEntry.attributes.logVersion}</span>
 </td>
 <td valign="top" width="90%">
   <c:set var="modifyDate"><fmt:formatDate timeZone="${ssUser.timeZone.ID}" type="both" value="${change.changeLog.operationDate}"/></c:set>
@@ -291,7 +305,7 @@ function dodiff()
 </tr>
 </c:forEach>
 <tr>
-<td valign="top" nowrap>
+<td colspan="2" valign="top" nowrap>
   <input type="button" name="compareBtn" id="compareBtn" value="<ssf:nlt tag="button.compare"/>" disabled="true" onclick="dodiff();"/>
   &nbsp;&nbsp;&nbsp;
   <input type="button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;"/>
@@ -300,11 +314,8 @@ function dodiff()
 </tr>
 </table>
 </form>
-
 <br/>
 <br/>
-
-</div>
 
 <div id ="diff" style="display:none">
 <h3 id="diff-header"><ssf:nlt tag="entry.comparison">
@@ -315,6 +326,9 @@ function dodiff()
 <h4 id="diff-key"><ssf:nlt tag="entry.comparison.key"/></h4>
 <div id="diff-title" class="ss_largeprint"></div>
 <div id="diff-desc" class="ss_entryContent ss_entryDescription"></div>
+</div>
+
+</ssf:form>
 </div>
 <ssf:ifadapter>
 </body>
