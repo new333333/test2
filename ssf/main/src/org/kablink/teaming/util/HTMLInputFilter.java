@@ -144,6 +144,7 @@ public class HTMLInputFilter
   protected String[] vDisAllowedEntities;
   
   protected boolean vDebug;
+  protected boolean vStripComments;
   
   //Patterns 
   private static final String PATTERN_ESCAPE_COMMENTS = "<!--(.*?)-->";
@@ -202,6 +203,7 @@ public class HTMLInputFilter
 	pattern_validate_entities2 = Pattern.compile( PATTERN_VALIDATE_ENTITIES2, Pattern.DOTALL );
 		
 	vDebug = debug;
+	vStripComments = SPropsUtil.getBoolean("xss.check.strip.comments", STRIP_COMMENTS);
     
 	vAllowed = new HashMap<String,List<String>>();
 
@@ -326,7 +328,7 @@ public class HTMLInputFilter
     StringBuffer buf = new StringBuffer();
     if (m.find()) {
       String match = m.group( 1 ); //(.*?)
-      m.appendReplacement( buf, "<!--" + htmlSpecialChars( match ) + "-->" );
+      m.appendReplacement( buf, Matcher.quoteReplacement("<!--" + htmlSpecialChars( match ) + "-->" ));
     }
     m.appendTail( buf );
     
@@ -504,7 +506,7 @@ public class HTMLInputFilter
     m = pattern_process_tags3.matcher( s );
     if (m.find()) {
       String comment = m.group();
-      if (STRIP_COMMENTS) {
+      if (vStripComments) {
         return "";
       } else {
         return "<" + comment + ">"; 
