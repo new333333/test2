@@ -100,7 +100,7 @@ public class HTMLInputFilter
   /**
    * flag determing whether comments are allowed in input String.
    */
-  protected static final boolean STRIP_COMMENTS = true;
+  protected static final boolean STRIP_COMMENTS = false;
   
   /** regex flag union representing /si modifiers in php **/
   protected static final int REGEX_FLAGS_SI = Pattern.CASE_INSENSITIVE | Pattern.DOTALL;
@@ -274,10 +274,15 @@ public class HTMLInputFilter
   
   public static String htmlSpecialChars( String s )
   {
-    s = s.replaceAll( "&", "&amp;" );
-    s = s.replaceAll( "\"", "&quot;" );
-    s = s.replaceAll( "<", "&lt;" );
-    s = s.replaceAll( ">", "&gt;" );
+	    s = s.replaceAll( "&quot;", "\"" );
+	    s = s.replaceAll( "&lt;", "<" );
+	    s = s.replaceAll( "&gt;", ">" );
+	    s = s.replaceAll( "&amp;", "&" );
+	    
+	    s = s.replaceAll( "&", "&amp;" );
+	    s = s.replaceAll( "\"", "&quot;" );
+	    s = s.replaceAll( "<", "&lt;" );
+	    s = s.replaceAll( ">", "&gt;" );
     return s;
   }
  
