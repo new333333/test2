@@ -96,9 +96,10 @@ public class CustomJspWidgetDlgBox extends DlgBox
 		table.setWidget( 0, 0, label );
 		m_jspNameTxtBox = new TextBox();
 		m_jspNameTxtBox.setVisibleLength( 30 );
-		m_jspNameTxtBox.setText( properties.getJspName() );
 		table.setWidget( 1, 0, m_jspNameTxtBox );
 		mainPanel.add( table );
+
+		init( properties );
 		
 		return mainPanel;
 	}// end createContent()
@@ -137,5 +138,17 @@ public class CustomJspWidgetDlgBox extends DlgBox
 		return m_jspNameTxtBox.getText();
 	}// end getJspName()
 	
+	
+	/**
+	 * Initialize the controls in the dialog with the values from the properties
+	 */
+	public void init( PropertiesObj props )
+	{
+		CustomJspProperties properties;
+		
+		properties = (CustomJspProperties) props;
+
+		m_jspNameTxtBox.setText( properties.getJspName() );
+	}// end init()
 	
 }// end CustomJspWidgetDlgBox

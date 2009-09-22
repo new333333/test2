@@ -47,6 +47,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
  */
 public class CustomJspDropWidget extends DropWidget
 {
+	private static CustomJspWidgetDlgBox m_customJspDlgBox = null;		// For efficiency sake, we only create one dialog box.
 	private CustomJspProperties	m_properties = null;
 	private InlineLabel			m_jspName = null;
 	
@@ -80,12 +81,19 @@ public class CustomJspDropWidget extends DropWidget
 	 */
 	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
 	{
-		DlgBox dlgBox;
+		// Have we already created a dialog?
+		if ( m_customJspDlgBox == null )
+		{
+			// Pass in the object that holds all the properties for a CustomJspDropWidget.
+			m_customJspDlgBox = new CustomJspWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+		}
+		else
+		{
+			m_customJspDlgBox.init( m_properties );
+			m_customJspDlgBox.initHandlers( this, this );
+		}
 		
-		// Pass in the object that holds all the properties for a CustomJspDropWidget.
-		dlgBox = new CustomJspWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
-		
-		return dlgBox;
+		return m_customJspDlgBox;
 	}// end getPropertiesDlgBox()
 	
 	

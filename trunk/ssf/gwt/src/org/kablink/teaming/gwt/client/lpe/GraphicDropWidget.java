@@ -47,6 +47,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
  */
 public class GraphicDropWidget extends DropWidget
 {
+	private static GraphicWidgetDlgBox m_graphicDlgBox = null;		// For efficiency sake, we only create one dialog box.
 	private GraphicProperties	m_properties = null;
 	private InlineLabel		m_graphicName = null;
 	
@@ -80,12 +81,20 @@ public class GraphicDropWidget extends DropWidget
 	 */
 	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
 	{
-		DlgBox dlgBox;
+		// Have we already created a dialog box?
+		if ( m_graphicDlgBox == null )
+		{
+			// No, create one.
+			m_graphicDlgBox = new GraphicWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+		}
+		else
+		{
+			// Yes, update the controls in the dialog with the values from the properties.
+			m_graphicDlgBox.init( m_properties );
+			m_graphicDlgBox.initHandlers( this, this );
+		}
 		
-		// Pass in the object that holds all the properties for a GraphicDropWidget.
-		dlgBox = new GraphicWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
-		
-		return dlgBox;
+		return m_graphicDlgBox;
 	}// end getPropertiesDlgBox()
 	
 	

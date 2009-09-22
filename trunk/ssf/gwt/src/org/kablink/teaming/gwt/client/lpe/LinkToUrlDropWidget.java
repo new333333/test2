@@ -47,6 +47,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
  */
 public class LinkToUrlDropWidget extends DropWidget
 {
+	private static LinkToUrlWidgetDlgBox m_linkToUrlDlgBox = null;		// For efficiency sake, we only create one dialog box.
 	private LinkToUrlProperties	m_properties = null;
 	private InlineLabel			m_title = null;
 	private InlineLabel			m_url = null;
@@ -80,12 +81,19 @@ public class LinkToUrlDropWidget extends DropWidget
 	 */
 	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
 	{
-		DlgBox dlgBox;
+		// Have we already created a dialog?
+		if ( m_linkToUrlDlgBox == null )
+		{
+			// Pass in the object that holds all the properties for a LinkToUrlDropWidget.
+			m_linkToUrlDlgBox = new LinkToUrlWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+		}
+		else
+		{
+			m_linkToUrlDlgBox.init( m_properties );
+			m_linkToUrlDlgBox.initHandlers( this, this );
+		}
 		
-		// Pass in the object that holds all the properties for a LinkToUrlDropWidget.
-		dlgBox = new LinkToUrlWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
-		
-		return dlgBox;
+		return m_linkToUrlDlgBox;
 	}// end getPropertiesDlgBox()
 	
 	
