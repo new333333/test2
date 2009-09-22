@@ -113,8 +113,11 @@ public abstract class DlgBox extends PopupPanel
 		panel.add( content );
 		
 		// Create the footer.
-		footer = createFooter( editSuccessfulHandler, editCanceledHandler );
+		footer = createFooter();
 		panel.add( footer );
+		
+		// Initialize the handlers
+		initHandlers( editSuccessfulHandler, editCanceledHandler );
 		
 		setWidget( panel );
 	}// end createAllDlgContent()
@@ -123,7 +126,7 @@ public abstract class DlgBox extends PopupPanel
 	/*
 	 * Create the footer panel for this dialog box.
 	 */
-	public Panel createFooter( EditSuccessfulHandler editSuccessfulHandler, EditCanceledHandler editCanceledHandler )
+	public Panel createFooter()
 	{
 		FlowPanel panel;
 		
@@ -131,10 +134,6 @@ public abstract class DlgBox extends PopupPanel
 		
 		// Associate this panel with its stylesheet.
 		panel.setStyleName( "teamingDlgBoxFooter" );
-		
-		// Remember the handlers to call when the user presses ok or cancel.
-		m_editSuccessfulHandler = editSuccessfulHandler;
-		m_editCanceledHandler = editCanceledHandler;
 		
 		m_okBtn = new Button( GwtTeaming.getMessages().ok() );
 		m_okBtn.addClickHandler( this );
@@ -179,6 +178,24 @@ public abstract class DlgBox extends PopupPanel
 	 * Get the widget that should receive the focus when this dialog is shown.
 	 */
 	public abstract FocusWidget getFocusWidget();
+	
+	
+	/**
+	 * Initialize the controls in the dialog with the values from the PropertiesObj.
+	 */
+//!!!	public abstract void init( PropertiesObj properties );
+	
+	/**
+	 * Initialize the edit/cancel handlers.
+	 */
+	public void initHandlers(
+		EditSuccessfulHandler editSuccessfulHandler,// We will call this handler when the user presses the ok button
+		EditCanceledHandler editCanceledHandler ) 	// This gets called when the user presses the Cancel button
+	{
+		// Remember the handlers to call when the user presses ok or cancel.
+		m_editSuccessfulHandler = editSuccessfulHandler;
+		m_editCanceledHandler = editCanceledHandler;
+	}// end initHandlers()
 	
 	
 	/*

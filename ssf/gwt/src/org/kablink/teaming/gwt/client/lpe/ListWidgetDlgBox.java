@@ -97,8 +97,6 @@ public class ListWidgetDlgBox extends DlgBox
 		m_showBorderCkBox = new CheckBox( GwtTeaming.getMessages().showBorder() );
 		table.setWidget( 0, 0, m_showBorderCkBox );
 		mainPanel.add( table );
-		if ( properties.getShowBorderValue() == true )
-			m_showBorderCkBox.setValue( Boolean.TRUE );
 
 		// Add label and edit control for "Title"
 		table = new FlexTable();
@@ -106,9 +104,10 @@ public class ListWidgetDlgBox extends DlgBox
 		label = new Label( GwtTeaming.getMessages().title() );
 		table.setWidget( 0, 0, label );
 		m_titleTxtBox = new TextBox();
-		m_titleTxtBox.setText( properties.getTitle() );
 		table.setWidget( 0, 1, m_titleTxtBox );
 		mainPanel.add( table );
+		
+		init( properties );
 		
 		return mainPanel;
 	}// end createContent()
@@ -158,5 +157,19 @@ public class ListWidgetDlgBox extends DlgBox
 	{
 		return m_titleTxtBox.getText();
 	}// end getTitleValue()
+	
+
+	/**
+	 * Initialize the controls in the dialog with the values from the properties
+	 */
+	public void init( PropertiesObj props )
+	{
+		ListProperties properties;
+		
+		properties = (ListProperties) props;
+
+		m_showBorderCkBox.setValue( properties.getShowBorderValue() );
+		m_titleTxtBox.setText( properties.getTitle() );
+	}// end init()
 	
 }// end ListWidgetDlgBox

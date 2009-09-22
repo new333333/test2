@@ -47,6 +47,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
  */
 public class UtilityElementDropWidget extends DropWidget
 {
+	private static UtilityElementWidgetDlgBox m_utilityDlgBox = null;		// For efficiency sake, we only create one dialog box.
 	private UtilityElementProperties	m_properties = null;
 	private InlineLabel				m_utilityElementName = null;
 	
@@ -80,12 +81,19 @@ public class UtilityElementDropWidget extends DropWidget
 	 */
 	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
 	{
-		DlgBox dlgBox;
+		// Have we already created a dialog?
+		if ( m_utilityDlgBox == null )
+		{
+			// Pass in the object that holds all the properties for a UtilityElementDropWidget.
+			m_utilityDlgBox = new UtilityElementWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+		}
+		else
+		{
+			m_utilityDlgBox.init( m_properties );
+			m_utilityDlgBox.initHandlers( this, this );
+		}
 		
-		// Pass in the object that holds all the properties for a UtilityElementDropWidget.
-		dlgBox = new UtilityElementWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
-		
-		return dlgBox;
+		return m_utilityDlgBox;
 	}// end getPropertiesDlgBox()
 	
 	

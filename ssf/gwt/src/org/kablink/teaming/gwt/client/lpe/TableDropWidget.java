@@ -49,6 +49,7 @@ import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
  */
 public class TableDropWidget extends DropWidget
 {
+	private static TableWidgetDlgBox m_tableDlgBox = null;		// For efficiency sake, we only create one dialog box.
 	private TableProperties	m_properties = null;
 	private FlowPanel			m_mainPanel;
 	private FlexTable			m_flexTable = null;
@@ -221,13 +222,19 @@ public class TableDropWidget extends DropWidget
 	 */
 	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
 	{
-		DlgBox dlgBox;
+		// Have we already created a dialog?
+		if ( m_tableDlgBox == null )
+		{
+			// Pass in the object that holds all the properties for a TableDropWidget.
+			m_tableDlgBox = new TableWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+		}
+		else
+		{
+			m_tableDlgBox.init( m_properties );
+			m_tableDlgBox.initHandlers( this, this );
+		}
 		
-		// Pass in the object that holds all the properties for a TableDropWidget.
-		// properties = new TableDropWidgetProperties();
-		dlgBox = new TableWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
-		
-		return dlgBox;
+		return m_tableDlgBox;
 	}// end getPropertiesDlgBox()
 	
 	

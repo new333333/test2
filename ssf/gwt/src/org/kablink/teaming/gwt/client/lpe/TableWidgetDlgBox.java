@@ -42,7 +42,6 @@ import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -148,8 +147,6 @@ public class TableWidgetDlgBox extends DlgBox
 		// Add a checkbox for "Show border"
 		m_showBorderCkBox = new CheckBox( GwtTeaming.getMessages().showBorder() );
 		m_table.setWidget( 0, 0, m_showBorderCkBox );
-		if ( properties.getShowBorderValue() == true )
-			m_showBorderCkBox.setValue( Boolean.TRUE );
 
 		// Add label and select control for "Number of columns:".
 		label = new Label( GwtTeaming.getMessages().numColumns() );
@@ -161,14 +158,12 @@ public class TableWidgetDlgBox extends DlgBox
 		m_numColsCtrl.addItem( GwtTeaming.getMessages()._3(), "3" );
 		m_numColsCtrl.addItem( GwtTeaming.getMessages()._4(), "4" );
 		m_numColsCtrl.addItem( GwtTeaming.getMessages()._5(), "5" );
-		m_numColsCtrl.setSelectedIndex( properties.getNumColumnsInt() - 1 );
 		m_numColsCtrl.addChangeHandler( this );
 		m_table.setWidget( 1, 1, m_numColsCtrl );
 		
 		m_mainPanel.add( m_table );
 		
-		// Add a "Column width" text box for every column.
-		addColumnWidthControls( properties );
+		init( properties );
 
 		return m_mainPanel;
 	}// end createContent()
@@ -280,6 +275,24 @@ public class TableWidgetDlgBox extends DlgBox
 	{
 		return m_showBorderCkBox.getValue().booleanValue();
 	}// end getShowBorderValue()
+	
+
+	/**
+	 * Initialize the controls in the dialog with the values from the properties
+	 */
+	public void init( PropertiesObj props )
+	{
+		TableProperties properties;
+		
+		properties = (TableProperties) props;
+
+		m_showBorderCkBox.setValue( properties.getShowBorderValue() );
+		m_numColsCtrl.setSelectedIndex( properties.getNumColumnsInt() - 1 );
+
+		// Add a "Column width" text box for every column.
+		addColumnWidthControls( properties );
+	}// end init()
+
 	
 	/**
 	 * This method gets called when the user changes the number of columns.

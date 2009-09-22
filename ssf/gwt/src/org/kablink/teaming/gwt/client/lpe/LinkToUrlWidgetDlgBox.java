@@ -99,7 +99,6 @@ public class LinkToUrlWidgetDlgBox extends DlgBox
 		table.setWidget( 0, 0, label );
 		m_titleTxtBox = new TextBox();
 		m_titleTxtBox.setVisibleLength( 30 );
-		m_titleTxtBox.setText( properties.getTitle() );
 		table.setWidget( 1, 0, m_titleTxtBox );
 		mainPanel.add( table );
 		
@@ -110,7 +109,6 @@ public class LinkToUrlWidgetDlgBox extends DlgBox
 		table.setWidget( 2, 0, label );
 		m_urlTxtBox = new TextBox();
 		m_urlTxtBox.setVisibleLength( 30 );
-		m_urlTxtBox.setText( properties.getUrl() );
 		table.setWidget( 3, 0, m_urlTxtBox );
 		
 		mainPanel.add( table );
@@ -121,9 +119,9 @@ public class LinkToUrlWidgetDlgBox extends DlgBox
 		m_newWndCkBox = new CheckBox( GwtTeaming.getMessages().openUrlInNewWnd() );
 		table.setWidget( 0, 0, m_newWndCkBox );
 		mainPanel.add( table );
-		if ( properties.getOpenInNewWindow() == true )
-			m_newWndCkBox.setValue( Boolean.TRUE );
 
+		init( properties );
+		
 		return mainPanel;
 	}// end createContent()
 	
@@ -183,5 +181,20 @@ public class LinkToUrlWidgetDlgBox extends DlgBox
 	{
 		return m_urlTxtBox.getText();
 	}// end getUrlValue()
+	
+
+	/**
+	 * Initialize the controls in the dialog with the values from the properties
+	 */
+	public void init( PropertiesObj props )
+	{
+		LinkToUrlProperties properties;
+		
+		properties = (LinkToUrlProperties) props;
+
+		m_titleTxtBox.setText( properties.getTitle() );
+		m_urlTxtBox.setText( properties.getUrl() );
+		m_newWndCkBox.setValue( properties.getOpenInNewWindow() );
+	}// end init()
 	
 }// end LinkToUrlWidgetDlgBox

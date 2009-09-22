@@ -44,7 +44,6 @@ import org.kablink.teaming.gwt.client.widgets.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.ui.FocusWidget;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -82,18 +81,13 @@ public class UtilityElementWidgetDlgBox extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
-	@SuppressWarnings("unchecked")
 	public Panel createContent( PropertiesObj props )
 	{
 		UtilityElementProperties properties;
-		UtilityElement selectedUtilityElement;
 		VerticalPanel mainPanel;
 		RadioButton radioBtn;
-		RadioButton firstRadioBtn = null;
-		boolean selectedRadioBtn = false;
 		
 		properties = (UtilityElementProperties) props;
-		selectedUtilityElement = properties.getType();
 
 		mainPanel = new VerticalPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
@@ -105,25 +99,11 @@ public class UtilityElementWidgetDlgBox extends DlgBox
 			radioBtn.addStyleName( "marginBottom15em" );
 			mainPanel.add( radioBtn );
 
-			if ( firstRadioBtn == null )
-				firstRadioBtn = radioBtn;
-
 			// Keep a list of the radio buttons and the utility element they are associated with.
 			m_radioBtns.put( radioBtn, utilityElement );
-			
-			if ( selectedUtilityElement != null && selectedUtilityElement.ordinal() == utilityElement.ordinal() )
-			{
-				radioBtn.setValue( true );
-				selectedRadioBtn = true;
-			}
 		}
 		
-		// Did we select a radio button?
-		if ( !selectedRadioBtn )
-		{
-			// No, select the first one in the list.
-			firstRadioBtn.setValue( true );
-		}
+		init( properties );
 		
 		return mainPanel;
 	}// end createContent()
@@ -184,4 +164,66 @@ public class UtilityElementWidgetDlgBox extends DlgBox
 		// We should never get here but if we do, return "video tutorial" as the selected utility element.
 		return UtilityElement.VIDEO_TUTORIAL; 
 	}// end getSelectedUtilityElement()
+	
+	
+	/**
+	 * Initialize the controls on the page with the values from the properties.
+	 */
+	public void init(
+		PropertiesObj props )
+	{
+		UtilityElementProperties properties;
+		RadioButton firstRadioBtn = null;
+		RadioButton radioBtn;
+		Map.Entry<RadioButton, UtilityElement> nextEntry;
+		boolean selectedRadioBtn = false;
+		UtilityElement selectedUtilityElement;
+		Set<Map.Entry<RadioButton, UtilityElement>> set;
+		Iterator<Map.Entry<RadioButton, UtilityElement>> iterator;
+		
+		properties = (UtilityElementProperties) props;
+		selectedUtilityElement = properties.getType();
+
+		set = m_radioBtns.entrySet();
+		iterator = set.iterator();
+		
+		// Unselect every radio button.
+		while ( iterator.hasNext() )
+		{
+			nextEntry = iterator.next();
+			radioBtn = nextEntry.getKey();
+			radioBtn.setValue( false );
+		}
+
+		// Spin through the list of radio buttons and select the appropriate one.
+		iterator = set.iterator();
+		while ( iterator.hasNext() && !selectedRadioBtn )
+		{
+			UtilityElement nextUtilityElement;
+			
+			// Is this radio button selected?
+			nextEntry = iterator.next();
+			radioBtn = nextEntry.getKey();
+			nextUtilityElement = nextEntry.getValue();
+			
+			if ( firstRadioBtn == null )
+				firstRadioBtn = radioBtn;
+
+			// Is this radio button associated with the selected utility element?
+			if ( selectedUtilityElement != null && selectedUtilityElement.ordinal() == nextUtilityElement.ordinal() )
+			{
+				radioBtn.setValue( true );
+				selectedRadioBtn = true;
+			}
+		}
+
+		// Did we select a radio button?
+		if ( !selectedRadioBtn )
+		{
+			// No, select the first one in the list.
+			firstRadioBtn.setValue( true );
+		}
+		
+	}// end init()
+
 }// end UtilityElementWidgetDlgBox

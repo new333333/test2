@@ -120,7 +120,6 @@ public class GraphicWidgetDlgBox extends DlgBox
 		FileAttachments fileAttachments;
 		int numAttachments;
 		int i;
-		int selectedIndex = 0;
 		
 		properties = (GraphicProperties) props;
 
@@ -156,14 +155,7 @@ public class GraphicWidgetDlgBox extends DlgBox
 				fileName = fileAttachments.getFileName( i );
 				fileId = fileAttachments.getFileId( i );
 				m_graphicListBox.addItem( fileName, fileId );
-				
-				// Is this graphic the currently selected graphic?
-				if ( fileId.equalsIgnoreCase( properties.getGraphicId() ) )
-					selectedIndex = i;
 			}
-	
-			// Select the appropriate graphic.
-			m_graphicListBox.setSelectedIndex( selectedIndex );
 		}
 		else
 		{
@@ -182,9 +174,10 @@ public class GraphicWidgetDlgBox extends DlgBox
 		m_showBorderCkBox = new CheckBox( GwtTeaming.getMessages().showBorder() );
 		table.setWidget( 0, 0, m_showBorderCkBox );
 		mainPanel.add( table );
-		if ( properties.getShowBorderValue() == true )
-			m_showBorderCkBox.setValue( Boolean.TRUE );
 
+		// Initialize the controls in the dialog with the values from the properties.
+		init( properties );
+		
 		return mainPanel;
 	}// end createContent()
 	
@@ -282,4 +275,36 @@ public class GraphicWidgetDlgBox extends DlgBox
 		return m_showBorderCkBox.getValue().booleanValue();
 	}// end getShowBorderValue()
 	
+	
+	/**
+	 * Initialize the controls on the page with the values from the properties.
+	 */
+	public void init(
+		PropertiesObj props )
+	{
+		GraphicProperties properties;
+		String fileId;
+		int selectedIndex = 0;
+		int i;
+		
+		properties = (GraphicProperties) props;
+
+		// Select the graphic in the ListBox.
+		for (i = 0; i < m_graphicListBox.getItemCount(); ++i)
+		{
+			fileId = m_graphicListBox.getValue( i );
+			
+			// Is this graphic the currently selected graphic?
+			if ( fileId.equalsIgnoreCase( properties.getGraphicId() ) )
+			{
+				selectedIndex = i;
+				break;
+			}
+		}
+		
+		// Select the appropriate graphic.
+		m_graphicListBox.setSelectedIndex( selectedIndex );
+		
+		m_showBorderCkBox.setValue( properties.getShowBorderValue() );
+	}// end init()
 }// end GraphicWidgetDlgBox

@@ -47,6 +47,7 @@ import com.google.gwt.user.client.ui.Label;
  */
 public class ListDropWidget extends DropWidget
 {
+	private static ListWidgetDlgBox m_listDlgBox = null;		// For efficiency sake, we only create one dialog box.
 	private ListProperties		m_properties = null;
 	private FlowPanel			m_mainPanel;
 	private FlexTable			m_flexTable = null;
@@ -114,12 +115,19 @@ public class ListDropWidget extends DropWidget
 	 */
 	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
 	{
-		DlgBox dlgBox;
+		// Have we already created a dialog?
+		if ( m_listDlgBox == null )
+		{
+			// Pass in the object that holds all the properties for a ListDropWidget.
+			m_listDlgBox = new ListWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+		}
+		else
+		{
+			m_listDlgBox.init( m_properties );
+			m_listDlgBox.initHandlers( this, this );
+		}
 		
-		// Pass in the object that holds all the properties for a ListDropWidget.
-		dlgBox = new ListWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
-		
-		return dlgBox;
+		return m_listDlgBox;
 	}// end getPropertiesDlgBox()
 	
 	
