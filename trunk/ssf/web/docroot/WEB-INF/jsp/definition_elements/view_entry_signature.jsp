@@ -97,6 +97,9 @@
 <table>
 <tr>
 <td valign="top">
+  <c:if test="${property_showPicture}">
+    <div class="ss_replies_indent_picture">
+  </c:if>
   <c:out value="${property_caption}" />
   <c:if test="${property_showPicture}">
 	<a href="<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
@@ -154,6 +157,9 @@
   </c:if>
 </table>
 
+  <c:if test="${property_showPicture}">
+    </div>
+  </c:if>
 </td>
 <td valign="top" style="padding-left:10px;">
 <c:if test="${!empty ssConfigDefinition}">

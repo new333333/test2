@@ -604,7 +604,10 @@ div.ss_replies{
 	border-right: 2px dotted #E9F1F1;
 	}
 div.ss_replies_indent {
-	margin-left:80px;
+	margin-left:60px;
+	}
+div.ss_replies_indent_picture {
+	margin-left:-40px;
 	}
 .ss_topic_replies{
 	padding-left: 10px;
