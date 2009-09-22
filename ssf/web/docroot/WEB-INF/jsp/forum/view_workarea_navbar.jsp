@@ -255,7 +255,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 	}
 }
 </script>
-<c:if test="${(!ss_mashupHideMasthead || ss_mashupShowBranding) && (empty ss_captive || !ss_captive)}">
+<c:if test="${(!ss_mashupHideMasthead || ss_mashupShowBranding || 
+	ss_mashupShowFavoritesAndTeams) && (empty ss_captive || !ss_captive)}">
 <div id="ss_top_nav_wrapper">
 <!-- Begin New Header  -->  
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -339,10 +340,10 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			
         </td>
       </tr>
-    <c:if test="${!ss_mashupHideMasthead || ss_mashupShowBranding}">
+    <c:if test="${!ss_mashupHideMasthead || ss_mashupShowBranding || ss_mashupShowFavoritesAndTeams}">
       <tr>
         <td width="20%" height="19" class="ss_mastheadtoplinks ss_masthead_favorites">
-          <c:if test="${!ss_mashupHideMasthead}">
+          <c:if test="${!ss_mashupHideMasthead || ss_mashupShowFavoritesAndTeams}">
         	<!-- Begin Favorites -->  
         	<div id="ss_navbar_favorites${renderResponse.namespace}" style="display:inline;"></div>
 	      	<ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="-23" offsetY="-2"  
@@ -378,7 +379,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		  </c:if>
 		</td>
         <td height="19" colspan="4" valign="top" align="right" >
-        <c:if test="${!ss_mashupHideMasthead || ss_mashupShowBranding}">
+        <c:if test="${!ss_mashupHideMasthead || ss_mashupShowBranding || ss_mashupShowFavoritesAndTeams}">
 	        <span class="ss_mastheadName">
 	        <c:if test="${!empty ssUser.workspaceId}">
 		        <c:set var="userTitle"><ssf:userTitle user="${ssUser}"/></c:set>
@@ -745,13 +746,14 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <!-- End of myteams pane -->
 
 </c:if>
-<c:if test="${!ss_mashupHideMasthead}">
+<c:if test="${!ss_mashupHideMasthead || ss_mashupShowNavigation}">
 <div style="padding-bottom:0px;"></div>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 <div style="padding-bottom:2px;"></div>
 </c:if>
 <div class="ss_clear_float"></div>
-<c:if test="${(!ss_mashupHideMasthead || ss_mashupShowBranding) && (empty ss_captive || !ss_captive)}">
+<c:if test="${(!ss_mashupHideMasthead || ss_mashupShowBranding || 
+	ss_mashupShowFavoritesAndTeams) && (empty ss_captive || !ss_captive)}">
 </div>
 </c:if>
 <c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == 'iframe' || 

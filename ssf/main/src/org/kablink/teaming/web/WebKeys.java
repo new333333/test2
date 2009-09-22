@@ -886,6 +886,8 @@ public class WebKeys {
     public static final String MASHUP_SHOW_ALTERNATE_TOOLBAR="ss_mashupShowAlternateToolbar"; 
     public static final String MASHUP_SITE_ADMINISTRATOR="ss_mashupSiteAdministrator"; 
     public static final String MASHUP_SHOW_BRANDING="ss_mashupShowBranding"; 
+    public static final String MASHUP_SHOW_FAVORITES_AND_TEAMS="ss_mashupShowFavoritesAndTeams"; 
+    public static final String MASHUP_SHOW_NAVIGATION="ss_mashupShowNavigation"; 
     public static final String MASHUP_STYLE="ss_mashupStyle"; 
     public static final String MAX_INACTIVE_INTERVAL="ss_maxInactiveInterval"; 
     public static final String MINIBLOG_STATUSES="ss_miniblog_statuses"; 

@@ -113,6 +113,20 @@ function ss_mashup_deleteAll_${renderResponse.namespace}() {
       	<span class="ss_labelRight"><ssf:nlt tag="mashup.showBranding"/></span>
       </label>
       <br/>
+      <input type="checkbox" name="${ss_mashupPropertyName}__showFavoritesAndTeams"
+      	id="${ss_mashupPropertyName}__showFavoritesAndTeams"
+        <c:if test="${ss_mashupShowFavoritesAndTeams}">checked</c:if> >
+      <label for="${ss_mashupPropertyName}__showFavoritesAndTeams">
+      	<span class="ss_labelRight"><ssf:nlt tag="mashup.showFavoritesAndTeams"/></span>
+      </label>
+      <br/>
+      <input type="checkbox" name="${ss_mashupPropertyName}__showNavigation"
+      	id="${ss_mashupPropertyName}__showNavigation"
+        <c:if test="${ss_mashupShowNavigation}">checked</c:if> >
+      <label for="${ss_mashupPropertyName}__showNavigation">
+      	<span class="ss_labelRight"><ssf:nlt tag="mashup.showNavigation"/></span>
+      </label>
+      <br/>
       <br/>
       <span class="ss_labelAbove"><ssf:nlt tag="mashup.style"/></span>
       <input type="radio" name="${ss_mashupPropertyName}__style" value="mashup.css"
