@@ -87,7 +87,6 @@ public class UtilityElementWidgetDlgBox extends DlgBox
 	{
 		UtilityElementProperties properties;
 		UtilityElement selectedUtilityElement;
-		Label label;
 		VerticalPanel mainPanel;
 		RadioButton radioBtn;
 		RadioButton firstRadioBtn = null;
@@ -99,12 +98,6 @@ public class UtilityElementWidgetDlgBox extends DlgBox
 		mainPanel = new VerticalPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
-		// Add a hint that tells the user to select a utility element.
-		label = new Label( GwtTeaming.getMessages().utilityElementHint() );
-		label.addStyleName( "dlgInstructions" );
-		label.addStyleName( "marginBottom25em" );
-		mainPanel.add( label );
-		
 		// Create a radio button for each of the possible utility elements.
 		for (UtilityElement utilityElement : UtilityElement.values())
 		{

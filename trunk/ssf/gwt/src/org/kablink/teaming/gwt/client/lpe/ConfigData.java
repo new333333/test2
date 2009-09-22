@@ -193,6 +193,11 @@ public class ConfigData
 				{
 					return i+1;
 				}
+				else if ( itemName.equalsIgnoreCase( "graphic" ) )
+				{
+					configItem = new GraphicConfig( itemData[i] );
+					++i;
+				}
 				else
 				{
 					// We don't know what this item is.  Skip it.

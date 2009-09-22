@@ -36,6 +36,9 @@
 
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp"     %>
+<%@ page import="java.util.SortedSet" %>
+<%@ page import="org.kablink.teaming.domain.FileAttachment" %>
+<%@ page import="org.kablink.teaming.domain.FileItem" %>
 
 <c:set var="ss_mashupItemId" value="0" scope="request"/>
 <%  
@@ -62,6 +65,40 @@
 var m_landingPageConfig = null;
 
 m_landingPageConfig = { configData : '${ssDefinitionEntry.customAttributes[property_name].value}' };
+
+// Create an array of objects where each object holds the name and id of a file attachment.
+<jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Workspace" scope="request" />
+m_fileAttachments = 
+	[
+	<%
+		int i;
+		String seperator;
+		String fileName;
+		String fileId;
+		FileItem fileItem;
+		SortedSet<FileAttachment> attachments;
+		
+        i = 0;
+		attachments = ssBinder.getFileAttachments();
+        for(FileAttachment fileAttachment : attachments)
+        {
+           	// If this is not the first file attachment, add a ',' before we add another file attachment.
+			if ( i != 0 )
+				seperator = ",";
+			else
+				seperator = "";
+			
+           	fileItem = fileAttachment.getFileItem();
+			fileName = fileItem.getName();
+			fileId = fileAttachment.getId();
+	%>
+			<%= seperator %>{ fileName: '<ssf:escapeJavaScript value="<%= fileName %>" />', fileId: '<ssf:escapeJavaScript value="<%= fileId %>" />' }
+	<%
+		   	++i;
+		}// end for()
+	%>
+	];
+
 
 function ss_mashup_deleteAll_${renderResponse.namespace}() {
 	if (confirm("<ssf:nlt tag="mashup.deleteEverythingConfirm"/>")) {

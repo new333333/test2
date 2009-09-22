@@ -30,36 +30,102 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 
 /**
- * 
+ * This class holds all of the properties needed to define a "Graphic" widget in a landing page.
+ * @author jwootton
+ *
  */
-public class GraphicPaletteItem extends PaletteItem
+public class GraphicProperties
+	implements PropertiesObj
 {
+	private boolean m_showBorder;
+	private String m_graphicName;
+	private String m_graphicId;
+	
 	/**
 	 * 
 	 */
-	public GraphicPaletteItem()
+	public GraphicProperties()
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorGraphic(), GwtTeaming.getMessages().lpeGraphic() );
-	}// end GraphicPaletteItem()
-
+		m_showBorder = false;
+		m_graphicName = null;
+		m_graphicId = null;
+	}// end GraphicProperties()
+	
+	
+	/**
+	 * 
+	 */
+	public void copy( PropertiesObj props )
+	{
+		if ( props instanceof GraphicProperties )
+		{
+			GraphicProperties graphicProps;
+			
+			graphicProps = (GraphicProperties) props;
+			m_graphicName = graphicProps.getGraphicName();
+			m_graphicId = graphicProps.getGraphicId();
+			m_showBorder = graphicProps.getShowBorderValue();
+		}
+	}// end copy()
+	
 
 	/**
-	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
+	 * Return the id of the graphic.
 	 */
-	public DropWidget createDropWidget( LandingPageEditor lpe )
+	public String getGraphicId()
 	{
-		GraphicDropWidget	graphicDropWidget;
-		
-		graphicDropWidget = new GraphicDropWidget( lpe, (GraphicProperties)null );
-
-		return graphicDropWidget;
-	}// end createDropWidget()
-}// end GraphicPaletteItem
-
-
+		return m_graphicId;
+	}// end getGraphicId()
+	
+	
+	/**
+	 * Return the name of the graphic.
+	 */
+	public String getGraphicName()
+	{
+		return m_graphicName;
+	}// end getGraphicName()
+	
+	
+	/**
+	 * Return the "show border" property.
+	 */
+	public boolean getShowBorderValue()
+	{
+		return m_showBorder;
+	}// end getShowBorderValue()
+	
+	
+	/**
+	 * 
+	 */
+	public void setGraphicId( String id )
+	{
+		m_graphicId = id;
+	}// end setGraphicId()
+	
+	
+	/**
+	 * 
+	 */
+	public void setGraphicName( String name )
+	{
+		m_graphicName = name;
+	}// end setGraphicName()
+	
+	
+	/**
+	 * 
+	 */
+	public void setShowBorder( boolean showBorder )
+	{
+		m_showBorder = showBorder;
+	}// end setShowBorder()
+}// end GraphicProperties

@@ -30,36 +30,67 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
+package org.kablink.teaming.gwt.client.lpe;
 
 
 /**
- * 
+ * This class represents the configuration data for a Graphic widget
+ * @author jwootton
+ *
  */
-public class GraphicPaletteItem extends PaletteItem
+public class GraphicConfig extends ConfigItem
 {
+	private GraphicProperties	m_properties;
+	
 	/**
 	 * 
 	 */
-	public GraphicPaletteItem()
+	public GraphicConfig( String configStr )
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorGraphic(), GwtTeaming.getMessages().lpeGraphic() );
-	}// end GraphicPaletteItem()
-
-
-	/**
-	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
-	 */
-	public DropWidget createDropWidget( LandingPageEditor lpe )
-	{
-		GraphicDropWidget	graphicDropWidget;
+		String[] results;
 		
-		graphicDropWidget = new GraphicDropWidget( lpe, (GraphicProperties)null );
-
-		return graphicDropWidget;
-	}// end createDropWidget()
-}// end GraphicPaletteItem
-
-
+		m_properties = new GraphicProperties();
+		
+		// Split the configuration data into its parts.  ie showBorder=1 graphic=xxx title=yyy
+		results = configStr.split( "[,;]" );
+		if ( results != null )
+		{
+			int i;
+			
+			for (i = 0; i < results.length; ++i)
+			{
+				String[] results2;
+				
+				results2 = results[i].split( "=" );
+				if ( results2.length == 2 )
+				{
+					if ( results2[0].equalsIgnoreCase( "showBorder" ) )
+						m_properties.setShowBorder( results2[1].equalsIgnoreCase( "1" ) );
+					else if ( results2[0].equalsIgnoreCase( "title" ) )
+						m_properties.setGraphicName( results2[1] );
+					else if ( results2[0].equalsIgnoreCase( "graphic" ) )
+						m_properties.setGraphicId( results2[1] );
+				}
+			}
+		}
+	}// end GraphicConfig()
+	
+	
+	/**
+	 * 
+	 */
+	public void addChild( ConfigItem configItem )
+	{
+		// Nothing to do.
+	}// end addChild()
+	
+	
+	/**
+	 * 
+	 */
+	public GraphicProperties getProperties()
+	{
+		return m_properties;
+	}// end getProperties()
+}// end GraphicConfig
