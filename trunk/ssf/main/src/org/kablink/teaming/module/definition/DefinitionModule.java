@@ -112,6 +112,8 @@ public interface DefinitionModule {
 	public static String MASHUP_HIDE_MASTHEAD = "__hideMasthead";
 	public static String MASHUP_HIDE_SIDEBAR = "__hideSidebar";
 	public static String MASHUP_SHOW_BRANDING = "__showBranding";
+	public static String MASHUP_SHOW_FAVORITES_AND_TEAMS = "__showFavoritesAndTeams";
+	public static String MASHUP_SHOW_NAVIGATION = "__showNavigation";
 	public static String MASHUP_HIDE_TOOLBAR = "__hideToolbar";
 	public static String MASHUP_HIDE_FOOTER = "__hideFooter";
 	public static String MASHUP_STYLE = "__style";

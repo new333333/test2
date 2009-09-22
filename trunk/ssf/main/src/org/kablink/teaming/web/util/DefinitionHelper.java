@@ -838,6 +838,10 @@ public class DefinitionHelper {
     		}
     		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_SHOW_BRANDING);
     		if (attr != null) model.put(WebKeys.MASHUP_SHOW_BRANDING, attr.getValue());
+    		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_SHOW_NAVIGATION);
+    		if (attr != null) model.put(WebKeys.MASHUP_SHOW_NAVIGATION, attr.getValue());
+    		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_SHOW_FAVORITES_AND_TEAMS);
+    		if (attr != null) model.put(WebKeys.MASHUP_SHOW_FAVORITES_AND_TEAMS, attr.getValue());
     		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_HIDE_MASTHEAD);
     		if (attr != null) model.put(WebKeys.MASHUP_HIDE_MASTHEAD, attr.getValue());
     		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_HIDE_SIDEBAR);

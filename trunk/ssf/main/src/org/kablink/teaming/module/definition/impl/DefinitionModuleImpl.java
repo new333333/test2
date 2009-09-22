@@ -2228,6 +2228,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					    }
 					} else if (itemName.equals("mashupCanvas")) {
 						Boolean showBranding = false;
+						Boolean showFavoritesAndTeams = false;
+						Boolean showNavigation = false;
 						Boolean hideMasthead = false;
 						Boolean hideSidebar = false;
 						Boolean hideToolbar = false;
@@ -2235,118 +2237,126 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						String deleteEverything = "";
 						String mashupStyle = "";
 						if (inputData.exists(nameValue + MASHUP_SHOW_BRANDING)) showBranding = true;
+						if (inputData.exists(nameValue + MASHUP_SHOW_FAVORITES_AND_TEAMS)) showFavoritesAndTeams = true;
+						if (inputData.exists(nameValue + MASHUP_SHOW_NAVIGATION)) showNavigation = true;
 						if (inputData.exists(nameValue + MASHUP_HIDE_MASTHEAD)) hideMasthead = true;
 						if (inputData.exists(nameValue + MASHUP_HIDE_SIDEBAR)) hideSidebar = true;
 						if (inputData.exists(nameValue + MASHUP_HIDE_TOOLBAR)) hideToolbar = true;
 						if (inputData.exists(nameValue + MASHUP_HIDE_FOOTER)) hideFooter = true;
 						if (inputData.exists(nameValue + MASHUP_DELETE_EVERYTHING)) deleteEverything = inputData.getSingleValue(nameValue + MASHUP_DELETE_EVERYTHING);
 						if (inputData.exists(nameValue + MASHUP_STYLE)) mashupStyle = inputData.getSingleValue(nameValue + MASHUP_STYLE);
-						if (deleteEverything.equals("") && inputData.exists(nameValue + "__idCounter")) {
-							int idCounter = Integer.valueOf(inputData.getSingleValue(nameValue + "__idCounter"));
+						if (deleteEverything.equals("")) {
 							String value = "";
-							for (int i = 0; i <= idCounter; i++) {
-								String nextValue = inputData.getSingleValue(nameValue + "__" + String.valueOf(i));
-								if (nextValue != null) nextValue = nextValue.trim();
-								if (nextValue != null && !nextValue.equals("")) {
-									if (!value.equals("")) value = value + ";";
-									String type = nextValue.split(",")[0];
-					        		String[] mashupItemValues = nextValue.split(",");
-					        		String attrs = "";
-									Map mashupItemAttributes = new HashMap();
-									if (mashupItemValues.length > 0) {
-										//Build a map of attributes
-										for (int j = 0; j < mashupItemValues.length; j++) {
-											int k = mashupItemValues[j].indexOf("=");
-											if (k > 0) {
-												String a = mashupItemValues[j].substring(0, k);
-												String v = mashupItemValues[j].substring(k+1, mashupItemValues[j].length());
-												mashupItemAttributes.put(a, v);
-												attrs += ","+a+"="+v;
-											}
-										}
-									}
-									if (type == null || type.equals("")) {
-										//Delete empty or badly formed items
-										nextValue = "";
-									} else if (type.equals(ObjectKeys.MASHUP_TYPE_TABLE)) {
-										int colCount = 2;
-										if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_COLS)) 
-											colCount = Integer.valueOf((String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_COLS));
-										String[] colWidths = new String[colCount];
-										if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_COL_WIDTHS)) {
-											String colWidths2 = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_COL_WIDTHS);
-											if (colWidths2 == null) colWidths2 = "";
-											try {
-												colWidths2 = URLDecoder.decode(colWidths2, "UTF-8");
-											} catch(Exception e) {}
-											for (int j = 0; j < colCount; j++) {
-												String colWidth = colWidths2;
-												if (colWidths2.indexOf("|") >= 0) {
-													colWidth = colWidths2.substring(0, colWidths2.indexOf("|"));
-													colWidths2 = colWidths2.substring(colWidths2.indexOf("|")+1, colWidths2.length());
+							if (inputData.exists(nameValue + "__idCounter")) {
+								int idCounter = Integer.valueOf(inputData.getSingleValue(nameValue + "__idCounter"));
+								for (int i = 0; i <= idCounter; i++) {
+									String nextValue = inputData.getSingleValue(nameValue + "__" + String.valueOf(i));
+									if (nextValue != null) nextValue = nextValue.trim();
+									if (nextValue != null && !nextValue.equals("")) {
+										if (!value.equals("")) value = value + ";";
+										String type = nextValue.split(",")[0];
+						        		String[] mashupItemValues = nextValue.split(",");
+						        		String attrs = "";
+										Map mashupItemAttributes = new HashMap();
+										if (mashupItemValues.length > 0) {
+											//Build a map of attributes
+											for (int j = 0; j < mashupItemValues.length; j++) {
+												int k = mashupItemValues[j].indexOf("=");
+												if (k > 0) {
+													String a = mashupItemValues[j].substring(0, k);
+													String v = mashupItemValues[j].substring(k+1, mashupItemValues[j].length());
+													mashupItemAttributes.put(a, v);
+													attrs += ","+a+"="+v;
 												}
-												colWidths[j] = colWidth;
 											}
 										}
-										nextValue = ObjectKeys.MASHUP_TYPE_TABLE_START + attrs + ";";
-										for (int j = 0; j < colCount; j++) {
-											nextValue += ObjectKeys.MASHUP_TYPE_TABLE_COL + ",";
-											String w = colWidths[j];
-											if (w == null) w = "";
-											nextValue += ObjectKeys.MASHUP_ATTR_COL_WIDTH + "=" + w + ";";
+										if (type == null || type.equals("")) {
+											//Delete empty or badly formed items
+											nextValue = "";
+										} else if (type.equals(ObjectKeys.MASHUP_TYPE_TABLE)) {
+											int colCount = 2;
+											if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_COLS)) 
+												colCount = Integer.valueOf((String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_COLS));
+											String[] colWidths = new String[colCount];
+											if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_COL_WIDTHS)) {
+												String colWidths2 = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_COL_WIDTHS);
+												if (colWidths2 == null) colWidths2 = "";
+												try {
+													colWidths2 = URLDecoder.decode(colWidths2, "UTF-8");
+												} catch(Exception e) {}
+												for (int j = 0; j < colCount; j++) {
+													String colWidth = colWidths2;
+													if (colWidths2.indexOf("|") >= 0) {
+														colWidth = colWidths2.substring(0, colWidths2.indexOf("|"));
+														colWidths2 = colWidths2.substring(colWidths2.indexOf("|")+1, colWidths2.length());
+													}
+													colWidths[j] = colWidth;
+												}
+											}
+											nextValue = ObjectKeys.MASHUP_TYPE_TABLE_START + attrs + ";";
+											for (int j = 0; j < colCount; j++) {
+												nextValue += ObjectKeys.MASHUP_TYPE_TABLE_COL + ",";
+												String w = colWidths[j];
+												if (w == null) w = "";
+												nextValue += ObjectKeys.MASHUP_ATTR_COL_WIDTH + "=" + w + ";";
+											}
+											nextValue += ObjectKeys.MASHUP_TYPE_TABLE_END;
+										} else if (type.equals(ObjectKeys.MASHUP_TYPE_TABLE_END_DELETE)) {
+											//This is a request to delete a table
+											// Delete all the way back to the "tableStart"
+											// Only delete empty tables
+											int j = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_TABLE_START + ",");
+											int j2 = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_TABLE_START + ";");
+											if (j2 > j) j = j2;
+											if (j >= 0) {
+												value = value.substring(0, j);
+											} else {
+												value="";
+											}
+											nextValue = "";
+										} else if (type.equals(ObjectKeys.MASHUP_TYPE_LIST)) {
+											nextValue = ObjectKeys.MASHUP_TYPE_LIST_START + attrs + ";";
+											nextValue += ObjectKeys.MASHUP_TYPE_LIST_END;
+										} else if (type.equals(ObjectKeys.MASHUP_TYPE_LIST_END_DELETE)) {
+											//This is a request to delete a list
+											// Delete all the way back to the "listStart"
+											// Only delete empty lists
+											int j = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_LIST_START + ",");
+											int j2 = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_LIST_START + ";");
+											if (j2 > j) j = j2;
+											if (j >= 0) {
+												value = value.substring(0, j);
+											} else {
+												value="";
+											}
+											nextValue = "";
 										}
-										nextValue += ObjectKeys.MASHUP_TYPE_TABLE_END;
-									} else if (type.equals(ObjectKeys.MASHUP_TYPE_TABLE_END_DELETE)) {
-										//This is a request to delete a table
-										// Delete all the way back to the "tableStart"
-										// Only delete empty tables
-										int j = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_TABLE_START + ",");
-										int j2 = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_TABLE_START + ";");
-										if (j2 > j) j = j2;
-										if (j >= 0) {
-											value = value.substring(0, j);
-										} else {
-											value="";
-										}
-										nextValue = "";
-									} else if (type.equals(ObjectKeys.MASHUP_TYPE_LIST)) {
-										nextValue = ObjectKeys.MASHUP_TYPE_LIST_START + attrs + ";";
-										nextValue += ObjectKeys.MASHUP_TYPE_LIST_END;
-									} else if (type.equals(ObjectKeys.MASHUP_TYPE_LIST_END_DELETE)) {
-										//This is a request to delete a list
-										// Delete all the way back to the "listStart"
-										// Only delete empty lists
-										int j = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_LIST_START + ",");
-										int j2 = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_LIST_START + ";");
-										if (j2 > j) j = j2;
-										if (j >= 0) {
-											value = value.substring(0, j);
-										} else {
-											value="";
-										}
-										nextValue = "";
+										value = value + nextValue;
 									}
-									value = value + nextValue;
 								}
 							}
 							if (!inputData.isFieldsOnly() || fieldModificationAllowed) {
 								entryData.put(nameValue, value);
-								entryData.put(nameValue + "__showBranding", showBranding);
-								entryData.put(nameValue + "__hideMasthead", hideMasthead);
-								entryData.put(nameValue + "__hideSidebar", hideSidebar);
-								entryData.put(nameValue + "__hideToolbar", hideToolbar);
-								entryData.put(nameValue + "__hideFooter", hideFooter);
-								entryData.put(nameValue + "__style", mashupStyle);
+								entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_BRANDING, showBranding);
+								entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_FAVORITES_AND_TEAMS, showFavoritesAndTeams);
+								entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_NAVIGATION, showNavigation);
+								entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_MASTHEAD, hideMasthead);
+								entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_SIDEBAR, hideSidebar);
+								entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_TOOLBAR, hideToolbar);
+								entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_FOOTER, hideFooter);
+								entryData.put(nameValue + DefinitionModule.MASHUP_STYLE, mashupStyle);
 							}
 						} else if (!deleteEverything.equals("")) {
 							if (!inputData.isFieldsOnly() || fieldModificationAllowed) {
 								entryData.put(nameValue, "");
-								entryData.put(nameValue + "__showBranding", showBranding);
-								entryData.put(nameValue + "__hideMasthead", hideMasthead);
-								entryData.put(nameValue + "__hideSidebar", hideSidebar);
-								entryData.put(nameValue + "__hideToolbar", hideToolbar);
-								entryData.put(nameValue + "__hideFooter", hideFooter);
-								entryData.put(nameValue + "__style", mashupStyle);
+								entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_BRANDING, showBranding);
+								entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_FAVORITES_AND_TEAMS, showFavoritesAndTeams);
+								entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_NAVIGATION, showNavigation);
+								entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_MASTHEAD, hideMasthead);
+								entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_SIDEBAR, hideSidebar);
+								entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_TOOLBAR, hideToolbar);
+								entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_FOOTER, hideFooter);
+								entryData.put(nameValue + DefinitionModule.MASHUP_STYLE, mashupStyle);
 							}
 						}
 					} else {
