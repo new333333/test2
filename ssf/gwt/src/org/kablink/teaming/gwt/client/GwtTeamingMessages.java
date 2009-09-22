@@ -51,10 +51,17 @@ public interface GwtTeamingMessages extends Messages
 	
 	String cancel();
 	String columnXWidth( int colNum );
-	
+
+	// Strings used with the Custom Jsp widget in the landing page editor.
 	String customJspLabel();
 	String customJspName();
 	String customJspProperties();
+	
+	// Strings used with the Graphic widget in the landing page editor.
+	String graphicLabel();
+	String graphicProperties();
+	String noFileAttachmentsHint();
+	String selectGraphicLabel();
 	
 	// lpe stands for Landing Page Editor
 	String lpeCustomJSP();
@@ -82,6 +89,7 @@ public interface GwtTeamingMessages extends Messages
 	String tableProperties();
 	String title();
 	
+	// Strings used with the Utility Element widget in the landing page editor.
 	String utilityElementHint();
 	String utilityElementLabel();
 	String utilityElementProperties();

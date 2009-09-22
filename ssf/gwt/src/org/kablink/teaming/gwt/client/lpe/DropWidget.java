@@ -81,6 +81,9 @@ public abstract class DropWidget extends Composite
 		if ( configItem instanceof UtilityElementConfig )
 			return new UtilityElementDropWidget( lpe, (UtilityElementConfig)configItem );
 
+		if ( configItem instanceof GraphicConfig )
+			return new GraphicDropWidget( lpe, (GraphicConfig)configItem );
+		
 		//!!! Add new DropWidgets
 		
 		// If we get here we didn't recognize the type of widget being requested.

@@ -128,6 +128,24 @@
 	margin-right: .5em;
 }
 
+/* Styles used for the graphic name in a "graphic" widget */
+.lpeGraphicName
+{
+	cursor: default;
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 12px;
+}
+
+/* Styles for the "Graphic" widget. */
+.lpeGraphicWidget
+{
+	background-color: #E5E5E5;
+	border: 1px solid #AEAEAE;
+	padding: 6px;
+}
+
+
 /* Styles for the landing page editor hint. */
 .lpeHint
 {
