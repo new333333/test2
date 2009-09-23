@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
+	<classpathentry kind="src" path="as-shared/src"/>
+	<classpathentry kind="src" path="as-common/src"/>
 	<classpathentry kind="src" path="tomcat/src"/>
 	<classpathentry kind="src" path="samples/module-event-listeners/src"/>
 	<classpathentry kind="src" path="main-minimum/src"/>
@@ -21,7 +23,6 @@
 	<classpathentry kind="src" path="commons-httpclient-contrib/src"/>
 	<classpathentry kind="src" path="lucene-contrib/src"/>
 	<classpathentry kind="src" path="jboss-portal/src"/>
-	<classpathentry kind="src" path="as-module/src"/>
 	<classpathentry kind="src" path="tools/src"/>
 	<classpathentry kind="src" path="ssfs/src"/>
 	<classpathentry kind="src" path="main/test/src"/>
