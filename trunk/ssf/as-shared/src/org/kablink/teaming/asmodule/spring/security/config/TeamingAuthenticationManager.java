@@ -30,51 +30,34 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.remoting.ws.interceptor;
+package org.kablink.teaming.asmodule.spring.security.config;
 
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
 import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
-import org.kablink.teaming.context.request.RequestContext;
-import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.LoginInfo;
-import org.kablink.teaming.module.report.ReportModule;
+import org.springframework.security.Authentication;
+import org.springframework.security.AuthenticationException;
+import org.springframework.security.config.NamespaceAuthenticationManager;
 
+public class TeamingAuthenticationManager extends NamespaceAuthenticationManager {
 
-public class LoginInfoInterceptor implements MethodInterceptor {
+	protected String authenticator = "unknown";
+	protected String enableKey = null;
 	
-	private ReportModule reportModule;
-
-	protected ReportModule getReportModule() {
-		return reportModule;
+	public void setAuthenticator(String authenticator) {
+		this.authenticator = authenticator;
 	}
 
-	public void setReportModule(ReportModule reportModule) {
-		this.reportModule = reportModule;
+	public void setEnableKey(String enableKey) {
+		this.enableKey = enableKey;
 	}
-
-	public Object invoke(MethodInvocation invocation) throws Throwable {
-		RequestContext rc = RequestContextHolder.getRequestContext();
-		String authenticator = AuthenticationContextHolder.getAuthenticator();
-		if(LoginInfo.AUTHENTICATOR_WS.equals(authenticator) ||
-				LoginInfo.AUTHENTICATOR_REMOTING_T.equals(authenticator)) {	
-			// Message-level authentication is in use, for example, WS with WS-Security
-			// authentication or any remoting with token-based authentication. 
-			// These protocols require authentication to take place for every message
-			// invocation. The fact that you're here means that the authentication has 
-			// already happended and it was successful. So we should report the fact.
-			LoginInfo loginInfo = new LoginInfo(authenticator,
-					RequestContextHolder.getRequestContext().getUserId());
-			
-			if(rc.getApplicationId() != null)
-				loginInfo.setApplicationId(rc.getApplicationId());
-			
-			getReportModule().addLoginInfo(loginInfo);		
+	
+	public Authentication doAuthentication(Authentication authentication) throws AuthenticationException {
+		AuthenticationContextHolder.setAuthenticationContext(authenticator, enableKey);
+		try {
+			return super.doAuthentication(authentication);
 		}
-		return invocation.proceed();
-	}
-
+		finally {
+			AuthenticationContextHolder.clear();
+		}
+    }
+    
 }
-
-
-

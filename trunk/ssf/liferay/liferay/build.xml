@@ -211,7 +211,8 @@
 	<!-- Deploy additional components that are not part of ssf web app -->
 	<target name="deploy-additional-components">
 		<!-- AS core component is deployed into the app server's shared area -->
-		<ant dir="${project.dir}/as-module" target="deploy" inheritAll="false" />
+		<ant dir="${project.dir}/as-common" target="deploy" inheritAll="false" />
+		<ant dir="${project.dir}/as-shared" target="deploy" inheritAll="false" />
 		<!-- portal-module component is deployed directly into Liferay web app -->
 		<ant dir="${project.dir}/portal-module" target="deploy" inheritAll="false" />
 		<!-- liferay component is deployed directly into Liferay web app -->

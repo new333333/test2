@@ -10,7 +10,7 @@
 		<!--<copy file="${jar.file}" todir="${app.server.dir}/server/lib"/>-->
 	
 		<!-- With Tomcat 6.* -->
-		<copy file="${jar.file}" todir="${app.server.dir}/lib"/>
+		<copy file="${jar.file}" todir="${app.server.dir}/lib/ext"/>
 	</target>
 	
 </project>

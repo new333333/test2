@@ -6,6 +6,7 @@
 		<echo message="##### DEPLOY-SUPPORT #####" />
 		<propertycopy name="app.server.dir" from="app.server.${portal.type}.${app.server.type}.dir" />
 		<propertycopy name="app.server.server.dir" from="app.server.${portal.type}.${app.server.type}.server.dir" />
+		<propertycopy name="app.server.common.lib.dir" from="app.server.${portal.type}.${app.server.type}.common.lib.dir" />
 		<propertycopy name="app.server.shared.lib.dir" from="app.server.${portal.type}.${app.server.type}.shared.lib.dir" />
 		<propertycopy name="app.server.lib.dir" from="app.server.${portal.type}.${app.server.type}.lib.dir" />
 		<propertycopy name="app.server.deploy.dir" from="app.server.${portal.type}.${app.server.type}.deploy.dir" />
@@ -48,6 +49,12 @@
 	
 	<target name="deploy-jar-into-portal" depends="deploy-init">
 		<property name="deploy.lib.dir" value="${app.server.lib.dir}" />
+		<mkdir dir="${deploy.lib.dir}"/>
+		<copy file="${deploy-support.jar.file}" todir="${deploy.lib.dir}" />
+	</target>
+	
+	<target name="deploy-jar-into-common" depends="deploy-init">
+		<property name="deploy.lib.dir" value="${app.server.common.lib.dir}" />
 		<mkdir dir="${deploy.lib.dir}"/>
 		<copy file="${deploy-support.jar.file}" todir="${deploy.lib.dir}" />
 	</target>

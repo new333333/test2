@@ -90,6 +90,18 @@ public class BridgeServer {
 		return invokeInternal(contextZoneName, contextUserName, methodObj, bean, methodArgs);		
 	}
 	
+	public static Object invokeBeanWithoutContext(
+			String beanName, String methodName, Class[] methodArgTypes, 
+			final Object[] methodArgs) throws Exception {
+		Object bean = SpringContextUtil.getBean(beanName);
+		
+		Class classObj = bean.getClass();
+
+		Method methodObj = classObj.getMethod(methodName, methodArgTypes);
+
+		return invokeWithoutContextInternal(methodObj, bean, methodArgs);		
+	}
+	
 	private static Object invokeInternal(String contextZoneName, String contextUserName,
 			final Method methodObj, final Object obj, final Object[] methodArgs) 
 	throws Exception {		
@@ -113,6 +125,19 @@ public class BridgeServer {
 					}
 				}
 			}, contextZoneName, contextUserName);	
+		}
+		finally {
+			SessionUtil.sessionStop();
+		}
+	}
+	
+	private static Object invokeWithoutContextInternal(
+			final Method methodObj, final Object obj, final Object[] methodArgs) 
+	throws Exception {		
+		SessionUtil.sessionStartup();	
+		
+		try {
+			return methodObj.invoke(obj, methodArgs);
 		}
 		finally {
 			SessionUtil.sessionStop();

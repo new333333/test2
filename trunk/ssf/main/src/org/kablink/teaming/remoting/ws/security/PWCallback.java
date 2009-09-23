@@ -41,6 +41,7 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.WSPasswordCallback;
 import org.apache.ws.security.WSSecurityException;
+import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -49,9 +50,11 @@ import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.module.authentication.util.AuthenticationAdapter;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.springframework.security.AuthenticationException;
 
 
 /**
@@ -75,62 +78,42 @@ public class PWCallback implements CallbackHandler {
                 Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
                 
         		try {
-        			// Clear request context for the thread.
+        			// Clear request context for the thread just in case.
         			RequestContextHolder.clear();
 
         			User user = getProfileDao().findUserByName(userName, zoneId);
     				// If we're still here, the user exists.
-    				String userEncryptedPassword = user.getPassword();
 
         			String pwType = pc.getPasswordType();
         			if(pwType != null && pwType.equals(WSConstants.PASSWORD_TEXT)) { // wsse:PasswordText
         				String clearPassword = pc.getPassword();
-        				String encryptedPasword = EncryptUtil.encryptPassword(clearPassword);
-        				if(encryptedPasword.equals(userEncryptedPassword)) {
-        					// Encrypted passwords (digest values) match.
-        					// Pass the clear text password (passed in from the client), rather 
-        					// than the encrypted one, back to the WS-Security framework. 
-        					// This hack works around the problem of not having cleartext
-        					// password stored in our database.
-        					pc.setPassword(clearPassword);
+        				
+            			AuthenticationContextHolder.setAuthenticationContext(LoginInfo.AUTHENTICATOR_WS, null);
+            			
+        				try {
+	        				AuthenticationAdapter.authenticate(userName, clearPassword);
         				}
-        				else {
-        					// Invalid password - Encrypted passwords do not match.
-        					// For some reason, if we return normally from this method,
-        					// the wss4j seems to proceed as if the password verification
-        					// was successful, regardless of the password value we set on 
-        					// pc. I've found that the library behaves properly when we
-        					// throw WSSecurityException instead. Couldn't find relevant
-        					// information in the documentation. However, looking at their
-        					// source code, throwing this exception seems like a right thing
-        					// to do.
+        				catch(AuthenticationException e) {
+        					// Authentication failed.
          					throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
         				}
+            			
+        				// If still here, the authentication was successful.
+        				
+            			// This is our only chance to get at that piece of info (ie, user identity) 
+            			// when invoked by WS-Security runtime (as opposed to web framework, etc.).
+        				// So we should set up our request context here.
+            			RequestContext rc = RequestContextUtil.setThreadContext(user);
         			}
-        			else { // Assume wsse:PasswordDigest
-    					// In this case, we assume that the client has passed in an
-    					// Aspen-encrypted password.
-        				pc.setPassword(userEncryptedPassword);
+        			else { // Most likely wsse:PasswordDigest
+        				// As of Teaming 2.1, only wsse:PasswordText is supported.
+        				throw new WSSecurityException(WSSecurityException.UNSUPPORTED_ALGORITHM);
         			}
-        			
-        			// While we are here, let's set up our thread context to the
-        			// "potentially" matching user object (because authentication is 
-        			// still in progress we may not yet know for sure if the client-supplied
-        			// user credential is actually valid). If authentication ultimately
-        			// fails, this request thread will return without executing further,
-        			// meaning the false user object will not be utilized errorneously.
-        			// This is our only chance to get at that piece of info (ie, user 
-        			// identify) when invoked by WS runtime (as opposed to web framework).
-        			RequestContext rc = RequestContextUtil.setThreadContext(user);
-        			// Give it a little more information about how this request came in.
-        			rc.setAuthenticator(LoginInfo.AUTHENTICATOR_WS);
         		}
             	catch(NoUserByTheNameException e) {
-            		// With wsse:PasswordDigest, all we need to do here is not to
-            		// set the password on pc. It does the right thing. 
-            		// However, with wsse:PasswordText, the framework doesn't behave
-            		// the same. To account for both cases we will simply throw this
-            		// exception for now. 
+            		// With wsse:PasswordText, not setting the password on pc is not enough
+            		// for the framework to abort the authentication. Instead, we need to
+            		// throw an exception explicitly from here. 
              		throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
             	}
             } else {
