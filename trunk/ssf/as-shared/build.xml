@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<project name="as-share" basedir="." default="compile">
+	<import file="../build-common.xml" />
+	<import file="../deploy-support.xml" />
+		
+	<property name="jar.file" value="kablink-teaming-asshare.jar" />
+	
+	<target name="build"  depends="jar"/>
+
+	<target name="deploy">
+		<antcall target="deploy-jar-into-shared">
+			<param name="deploy-support.jar.file" value="${jar.file}" />
+		</antcall>
+	</target>
+
+</project>
