@@ -1,9 +1,9 @@
 // JavaScript Document
 var isIE=document.uniqueID;
-String.prototype.trim = function() {
+function taconite_trim(str) {
     //skip leading and trailing whitespace
     //and return everything in between
-    var x=this;
+    var x=str;
     x=x.replace(/^\s*(.*)/, "$1");
     x=x.replace(/(.*?)\s*$/, "$1");
     return x;
@@ -103,7 +103,7 @@ function XhtmlToDOMParser(xml){
 						domElemNode=document.createElement("style");
 						styleSheetPtr=document.styleSheets[document.styleSheets.length-1];
 						for(var i=0;i<rulesArray.length;i++){
-							rulesArray[i]=rulesArray[i].trim();
+							rulesArray[i]=taconite_trim(rulesArray[i]);
 							var rulePart=rulesArray[i].split("{");
 							if(rulePart.length==2) {//Add only if the rule is valid
 								styleSheetPtr.addRule(rulePart[0],rulePart[1],-1);//Append at the end of stylesheet.
@@ -148,8 +148,8 @@ function XhtmlToDOMParser(xml){
 
                 for(var x = 0; x < xmlNode.attributes.length; x++) {
                         attr = xmlNode.attributes[x];
-                        name = attr.name.trim();
-                        value = attr.value.trim();
+                        name = taconite_trim(attr.name);
+                        value = taconite_trim(attr.value);
                         if(!returnAsText){
                                 if(name == "style") {
                                         /* IE workaround */
@@ -157,10 +157,10 @@ function XhtmlToDOMParser(xml){
                                         /* Standards compliant */
                                         domNode.setAttribute(name,value);
                                 }
-                                else if(name.trim().toLowerCase().substring(0, 2) == "on") {
+                                else if(taconite_trim(name).toLowerCase().substring(0, 2) == "on") {
                                         /* IE workaround for event handlers */
                                         domNode.setAttribute("ssf_"+name,value);
-                                        eval("domNode." + name.trim().toLowerCase() + "=function(){" + value + "}");
+                                        eval("domNode." + taconite_trim(name).toLowerCase() + "=function(){" + value + "}");
                                 }
                                 else {
                                         /* Standards compliant */

@@ -25,7 +25,7 @@ function ss_insertICElink(binderId, title, currentBinderId) {
     }
     var pad = "";
     if (linkText.charAt(linkText.length - 1) == " ") { pad = " "; }
-    linkText = linkText.trim();
+    linkText = ss_wikilink_trim(linkText);
 
 	elm = tinyMCE.getParentElement(elm, "a");
 
@@ -132,17 +132,17 @@ function setAttrib(elm, attrib, value) {
 }
 
 function ss_prenormalizeText(t) {
-	t = t.trim();
+	t = ss_wikilink_trim(t);
 	while (t.indexOf("+") >= 0) t = t.replace("\+", "%2B");
 	t = t.replace(/\s+/g, '_');
 	return t;
 }
 
 //trim function
-String.prototype.trim = function() {
+function ss_wikilink_trim(str) {
 	// skip leading and trailing whitespace
 	// and return everything in between
-	var x=this;
+	var x=str;
 	x=x.replace(/^\s*(.*)/, "$1");
 	x=x.replace(/(.*?)\s*$/, "$1");
 	return x;
