@@ -41,6 +41,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.LdapConnectionConfig;
@@ -239,6 +240,17 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	 */
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException
     {
+		String enableKey = AuthenticationContextHolder.getEnableKey();
+		boolean enable = true;
+		if(Validator.isNotNull(enableKey)) {
+			enable = SPropsUtil.getBoolean(enableKey, true);
+		}
+		if(!enable) {
+			if(logger.isDebugEnabled())
+				logger.debug("Rejecting " + getAuthenticator() + " authentication request from " + authentication.getName() + ": It is disabled");
+			throw new AuthenticationServiceException("The service is disabled");
+		}
+		
 		try {
 			boolean hadSession = SessionUtil.sessionActive();
 			try {
@@ -288,7 +300,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	     			// This is not used for authentication but for synchronization.
 	    			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
 	    					(String) result.getName(), (String) result.getCredentials(),
-	    					(Map) result.getPrincipal(), LoginInfo.AUTHENTICATOR_WEB);
+	    					(Map) result.getPrincipal(), getAuthenticator());
 	    			if(result instanceof SynchNotifiableAuthentication)
 	    				((SynchNotifiableAuthentication)result).synchDone();
 	    			return result;
@@ -304,7 +316,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
     			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
     					(String) result.getName(), (String) result.getCredentials(),
     					false, false, true, 
-    					(Map) result.getPrincipal(), LoginInfo.AUTHENTICATOR_WEB);			
+    					(Map) result.getPrincipal(), getAuthenticator());			
     			return result;
     		}
     	}
@@ -313,6 +325,13 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
     		throw exc;
     	else
     		throw new UsernameNotFoundException("No such user " + authentication.getName());
+	}
+	
+	private String getAuthenticator() {
+		String authenticator = AuthenticationContextHolder.getAuthenticator();
+		if(authenticator == null)
+			authenticator = LoginInfo.AUTHENTICATOR_UNKNOWN;
+		return authenticator;
 	}
 	
 	/**

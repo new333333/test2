@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.domain.LoginInfo;
@@ -80,12 +81,14 @@ public class SecurityPropagatingAxisServlet extends org.apache.axis.transport.ht
 							req.getServerName().toLowerCase());
 					// Set a temporary context with fake user ID. 
 					// Pass the zone and the authenticator information down the call stack.
-					RequestContextUtil.setThreadContext(zoneId, Long.valueOf(0)).setAuthenticator(LoginInfo.AUTHENTICATOR_REMOTING_T);
+					RequestContextUtil.setThreadContext(zoneId, Long.valueOf(0));
+					AuthenticationContextHolder.setAuthenticationContext(LoginInfo.AUTHENTICATOR_REMOTING_T, null);
 					
 					super.service(req, res);
 				}
 				finally {
 					RequestContextHolder.clear();
+					AuthenticationContextHolder.clear();
 				}		
 			}
 			else {

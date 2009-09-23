@@ -34,6 +34,7 @@ package org.kablink.teaming.remoting.ws.interceptor;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.LoginInfo;
@@ -70,9 +71,9 @@ public class AccessTokenValidationInterceptor implements MethodInterceptor {
 		}
 		
 		RequestContext rc = RequestContextHolder.getRequestContext();
+		String authenticator = AuthenticationContextHolder.getAuthenticator();
 		if(rc != null &&
-				rc.getAuthenticator() != null &&
-				rc.getAuthenticator().equals(LoginInfo.AUTHENTICATOR_REMOTING_T)) {
+				LoginInfo.AUTHENTICATOR_REMOTING_T.equals(authenticator)) {
 			// token-based remoting
 			if(args == null || args.length < 1) {
 				throw new IllegalArgumentException("No argument in the call");

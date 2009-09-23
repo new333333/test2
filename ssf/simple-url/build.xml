@@ -11,7 +11,7 @@
 	
 	<!-- This overrides the imported definition -->
 	<path id="project.classpath">
-		<pathelement path="${project.dir}/as-module/classes" />
+		<pathelement path="${project.dir}/as-common/classes" />
 		<fileset dir="../lib" includes="*.jar" />
 	</path>
 

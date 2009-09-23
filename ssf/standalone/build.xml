@@ -18,7 +18,17 @@
 
 	<target name="clean-app-server">
 		<delete>
-			<fileset dir="${app.server.shared.lib.dir}" includes="ssf-*.jar" />
+			<fileset dir="${app.server.common.lib.dir}/.." 
+				includes="activation.jar,jtds.jar,kablink*.jar,mail.jar,mysql-connector.jar,ojdbc14.jar" />
+		</delete>		
+		<delete failonerror="false">
+			<fileset dir="${app.server.dir}/common/lib/ext" includes="*.jar" />
+		</delete>
+		<delete failonerror="false">
+			<fileset dir="${app.server.common.lib.dir}" includes="*.jar" />
+		</delete>		
+		<delete failonerror="false">
+			<fileset dir="${app.server.shared.lib.dir}" includes="*.jar" />
 		</delete>		
 		
 		<delete dir="${app.server.ssf.dir}"/>
@@ -91,7 +101,8 @@
 	<!-- Utility to call specified target (as param "target") on additional component projects -->
 	<target name="handle-additional-components" depends="init-standalone">
 		<!-- AS core component is deployed into the app server's shared area -->
-		<ant dir="${project.dir}/as-module" target="${target}" inheritAll="false" />
+		<ant dir="${project.dir}/as-common" target="${target}" inheritAll="false" />
+		<ant dir="${project.dir}/as-shared" target="${target}" inheritAll="false" />
 		<!-- ssfs component is deployed into its own web app -->
 		<ant dir="${project.dir}/ssfs" target="${target}" inheritAll="false" />
 		<!-- ssr component is deployed into its own web app -->
@@ -104,6 +115,12 @@
 		<ant dir="${project.dir}/gwt" target="${target}" inheritAll="false" />
 	</target>
 
+	<target name="move-shared-libraries">
+		<move todir="${tomcat.shared.lib.ext}">
+			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" excludes="${libraries.ssf.shared.excludes}"/>
+		</move>
+	</target>
+	
 	<target name="deploy-standalone-tomcat" depends="init-standalone, clean-app-server">
 		<copy file="${project.dir}/war/ssf.war" todir="temp2"/>
 
@@ -121,6 +138,8 @@
 				
 		<!--<delete dir="temp" />
 		<delete dir="temp2" />-->
+
+		<antcall target="move-shared-libraries"/>
 
 		<antcall target="deploy-additional-components" />
 		

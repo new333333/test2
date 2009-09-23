@@ -9,16 +9,17 @@
 	<!-- Portal Login Support -->
 	<bean id="portalLoginBean" class="org.kablink.teaming.portal.StandaloneLogin"/>
 	
-	<bean id="zoneGrabbingFilter" class="org.kablink.teaming.spring.security.ZoneGrabbingFilter">
+	<!--<bean id="zoneGrabbingFilter" class="org.kablink.teaming.spring.security.ZoneGrabbingFilter">
 		<s:custom-filter position="FIRST"/>
-	</bean>
+	</bean>-->
 	
-	<bean id="_authenticationManager" class="org.springframework.security.config.NamespaceAuthenticationManager">
+	<bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
 		<property name="providerBeanNames">
 			<list>
 				<value>authenticationModule</value>
 			</list>
 		</property>
+		<property name="authenticator"><value>web</value></property>
 	</bean>
 	    
 	<bean id="_anonymousProcessingFilter"

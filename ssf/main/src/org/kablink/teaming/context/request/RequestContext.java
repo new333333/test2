@@ -69,10 +69,6 @@ public class RequestContext {
      */
     private SessionContext sessionCtx; 
     /*
-     * (Optional) Authenticator name.
-     */
-    private String authenticator;
-    /*
      * (Optional) binder ID
      */
     private Long binderId;
@@ -219,15 +215,6 @@ public class RequestContext {
     
     public SessionContext getSessionContext() {
     	return sessionCtx;
-    }
-    
-    public RequestContext setAuthenticator(String authenticator) {
-    	this.authenticator = authenticator;
-    	return this;
-    }
-    
-    public String getAuthenticator() {
-    	return authenticator;
     }
     
     public RequestContext setBinderId(Long binderId) {

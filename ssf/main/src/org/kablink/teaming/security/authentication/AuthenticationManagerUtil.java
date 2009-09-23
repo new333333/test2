@@ -63,7 +63,7 @@ public class AuthenticationManagerUtil {
 			final Map updates, final String authenticatorName)
 			throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		boolean passwordAutoSynch = 
-			SPropsUtil.getBoolean("portal.password.auto.synchronize", true);
+			SPropsUtil.getBoolean("portal.password.auto.synchronize", false);
 		boolean ignorePassword =
 			SPropsUtil.getBoolean("portal.password.ignore", true);
 		boolean createUser = 

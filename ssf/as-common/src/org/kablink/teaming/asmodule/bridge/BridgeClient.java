@@ -48,6 +48,8 @@ public class BridgeClient {
 	
 	private static Method bridgeServerInvokeBeanMethod;
 	
+	private static Method bridgeServerInvokeBeanWithoutContextMethod;
+	
 	private static Object bridgeServer;
 	
 	static {
@@ -60,6 +62,9 @@ public class BridgeClient {
 			
 			bridgeServerInvokeBeanMethod = classObj.getMethod("invokeBean", 
 					new Class[] {String.class, String.class, String.class, String.class, Class[].class, Object[].class});
+			
+			bridgeServerInvokeBeanWithoutContextMethod = classObj.getMethod("invokeBeanWithoutContext", 
+					new Class[] {String.class, String.class, Class[].class, Object[].class});
 			
 			bridgeServer = classObj.newInstance();
 		} catch (ClassNotFoundException e) {
@@ -101,6 +106,22 @@ public class BridgeClient {
 							
 			return bridgeServerInvokeBeanMethod.invoke(bridgeServer,
 					new Object[] {contextZoneName, contextUserName, beanName, methodName, methodArgTypes, methodArgs});
+		}
+		finally {
+			Thread.currentThread().setContextClassLoader(clSave);
+		}
+	}
+		
+	public static Object invokeBeanWithoutContext(String beanName, 
+			String methodName, Class[] methodArgTypes, Object[] methodArgs)
+	throws Exception {
+		ClassLoader clSave = Thread.currentThread().getContextClassLoader();
+		
+		try {
+			Thread.currentThread().setContextClassLoader(BridgeUtil.getClassLoader());
+							
+			return bridgeServerInvokeBeanWithoutContextMethod.invoke(bridgeServer,
+					new Object[] {beanName, methodName, methodArgTypes, methodArgs});
 		}
 		finally {
 			Thread.currentThread().setContextClassLoader(clSave);
