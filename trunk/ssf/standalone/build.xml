@@ -139,10 +139,10 @@
 		<!--<delete dir="temp" />
 		<delete dir="temp2" />-->
 
-		<antcall target="move-shared-libraries"/>
-
 		<antcall target="deploy-additional-components" />
 		
+		<antcall target="move-shared-libraries"/>
+
 		<delete file="${app.server.ssf.dir}/WEB-INF/lib/xercesImpl.jar" />
 	
 		<!-- Delete the following file from SSF web app. This library already exists in
