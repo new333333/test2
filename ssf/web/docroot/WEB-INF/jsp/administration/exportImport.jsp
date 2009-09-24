@@ -33,6 +33,7 @@
  */
 %>
 
+<%@ page import="java.util.ArrayList" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.export_import") %>' scope="request"/>
@@ -111,32 +112,30 @@ function ss_checkForm() {
 function toggleFileInput() {
 	var el = document.getElementById('fileInput');
 	el.style.visibility = (ss_checkForImportOperation() ? 'visible' : 'hidden' );
+	el.style.display = (ss_checkForImportOperation() ? 'block' : 'none' );
+	var el2 = document.getElementById('treeSelection');
+	el2.style.visibility = (ss_checkForImportOperation() ? 'hidden' : 'visible' );
+	el2.style.display = (ss_checkForImportOperation() ? 'none' : 'block' );
 }
 
 </script>
 
 <div class="ss_style ss_portlet">
 
-<%--
-<form class="ss_portlet_style ss_form" 
-  id="ss_exportImportForm" 
-  name="ss_exportImportForm" method="post" 
-  action="<ssf:url action="export_import" actionUrl="true"/>">
-  --%>
-
   <form name="form1" class="ss_style ss_form" method="post" enctype="multipart/form-data" 
 		  action="<ssf:url  
 			action="export_import" 
 			actionUrl="true" ><ssf:param 
 		    name="binderId" value="${binderId}"/></ssf:url>" >
-  <span class="ss_titlebold"><ssf:nlt tag="administration.export_import" /></span>
 
 <br/>
 <br/>
 
-<input type="radio" name="ssOperation" id="ssOperation" value="export" checked onClick="toggleFileInput()"><ssf:nlt tag="button.exportBinder"/>
-<br/>
-<input type="radio" name="ssOperation" id="ssOperation" value="import" onClick="toggleFileInput()"><ssf:nlt tag="button.importBinder"/>
+<input type="radio" name="ssOperation" id="ssOperation" value="export" checked 
+  onClick="toggleFileInput()"><ssf:nlt tag="button.exportBinder"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<input type="radio" name="ssOperation" id="ssOperation" value="import" 
+  onClick="toggleFileInput()"><ssf:nlt tag="button.importBinder"/>
 
 <br/>
 <div class="ss_buttonBarLeft">
@@ -144,26 +143,34 @@ function toggleFileInput() {
 </div>
 <br>
 
-<style>
-#fileInput {
-    visibility: hidden;
-}
-</style>
-
-
 <div class="ss_divider"></div>
 <br>
-<div id="fileInput">
+<div id="treeSelection" style="visibility:visibile; display:block;">
+<span class="ss_bold"><ssf:nlt tag="administration.export_import.tree"/></span>
+<br>
+<table class="ss_style" border="0" cellpadding="5" cellspacing="0" width="95%">
+<tr><td>
+  <ssf:tree treeName="ss_folderTree" treeDocument="${ssFolderDomTree}" 
+    rootOpen="false" 
+    nodeOpen="${ssFolder.parentFolder.id}" 
+    highlightNode="${ssFolder.id}" 
+    multiSelect="<%= new ArrayList() %>" 
+    multiSelectPrefix="id" />
+</td></tr></table>
+</div>
+
+<div id="fileInput" style="visibility:hidden; display:none;">
 <label for="imports"><span class="ss_bold"><ssf:nlt tag="administration.export_import.file"/></span></label>
 <br>
 <table class="ss_style" border="0" cellpadding="5" cellspacing="0" width="95%">
 <tr><td>
 <input type="file" size="80" class="ss_text" name="imports" id="imports"><br>
 </td></tr></table>
+</div>
+
 <div class="ss_divider"></div>
 
 <br/>
-</div>
 <div class="ss_formBreak"/>
 
 <div class="ss_buttonBarLeft">

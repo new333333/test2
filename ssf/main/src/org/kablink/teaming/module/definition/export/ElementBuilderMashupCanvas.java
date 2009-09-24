@@ -36,28 +36,20 @@ import org.dom4j.Element;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.ZoneInfo;
+import org.kablink.teaming.web.util.ExportHelper;
 
 
 /**
  * 
  * @author Brian Kim
  */
-public class ElementBuilderDescription extends AbstractElementBuilder {
+public class ElementBuilderMashupCanvas extends AbstractElementBuilder {
 	protected boolean build(Element element, Object obj, String dataElemType, String dataElemName) {
-		Workspace zone = RequestContextHolder.getRequestContext().getZone();
-		if (obj instanceof Description) {
-			Description desc = (Description) obj;
-			if(element != null) {
-				element.setText(desc.getText());
-				element.addAttribute("format", String.valueOf(desc.getFormat()));
-				element.addAttribute("zoneUUID", String.valueOf(zone.getId()));
-			}
-		} else if (obj != null) {
-			if(element != null) {
-				element.setText(obj.toString());
-				element.addAttribute("format", String.valueOf(Description.FORMAT_NONE));
-				element.addAttribute("zoneUUID", String.valueOf(zone.getId()));
-			}
+		if (obj != null && element != null) {
+			element.setText(obj.toString());
+			ZoneInfo zoneInfo = ExportHelper.getZoneInfo();
+			element.addAttribute("zoneUUID", String.valueOf(zoneInfo.getId()));
 		}
 		return true;
 	}

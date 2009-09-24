@@ -1916,12 +1916,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	public void export(Long binderId, Long entityId, OutputStream out,
-			Map options) throws Exception {
+			Map options, Collection<Long> binderIds) throws Exception {
 
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.modifyBinder);
 		
-		ExportHelper.export(binderId, entityId, out, options);
+		ExportHelper.export(binderId, entityId, out, options, binderIds);
 
 	}
 

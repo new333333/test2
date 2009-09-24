@@ -2664,6 +2664,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/mashup_canvas_form.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/mashup_canvas.jsp" />
 		</jsps>
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderMashupCanvas" />
 	</item>
 	
 	<item name="html" caption="__html" category="generalLayout" display="form">
