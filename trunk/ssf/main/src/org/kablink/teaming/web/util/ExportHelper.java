@@ -115,6 +115,7 @@ import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.TagObject;
@@ -138,6 +139,7 @@ import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
+import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.util.DomInputData;
 import org.kablink.teaming.search.IndexErrors;
@@ -194,6 +196,7 @@ public class ExportHelper {
 	private static TransactionTemplate transactionTemplate = (TransactionTemplate) SpringContextUtil.getBean("transactionTemplate");
 	private static IcalModule iCalModule = (IcalModule) SpringContextUtil.getBean("icalModule");
 	private static ProfileModule profileModule = (ProfileModule) SpringContextUtil.getBean("profileModule");
+	private static ZoneModule zoneModule = (ZoneModule) SpringContextUtil.getBean("zoneModule");
 
 	// used during export so that all id's are at least 8 digits long,
 	// with leading zeroes
@@ -215,7 +218,7 @@ public class ExportHelper {
 	private static String binderPrefix = "b_";
 
 	public static void export(Long binderId, Long entityId, OutputStream out,
-			Map options) throws Exception {
+			Map options, Collection<Long> binderIds) throws Exception {
 
 		getNumberFormat();
 
@@ -239,12 +242,12 @@ public class ExportHelper {
 			// see if folder
 			if (entType == EntityType.folder) {
 				process(zipOut, folderModule.getFolder(binderId), false,
-						options, defList);
+						options, binderIds, defList);
 				// see if ws or profiles ws
 			} else if ((entType == EntityType.workspace)
 					|| (entType == EntityType.profiles)) {
 				process(zipOut, workspaceModule.getWorkspace(binderId), true,
-						options, defList);
+						options, binderIds, defList);
 			} else {
 				// something's wrong
 			}
@@ -257,7 +260,25 @@ public class ExportHelper {
 	}
 
 	private static void process(ZipOutputStream zipOut, Binder start,
-			boolean isWorkspace, Map options, Set defList) throws Exception {
+			boolean isWorkspace, Map options, Collection<Long> binderIds, Set defList) throws Exception {
+		Map<Long,Boolean> binderIdsToExport = new HashMap<Long,Boolean>();
+		SortedSet<Binder> binders = binderModule.getBinders(binderIds);
+		for (Binder binder : binders) {
+			//Mark this binder as having everything exported
+			binderIdsToExport.put(binder.getId(), true);
+			if (!binder.getId().equals(start.getId())) {
+				//Add in all of the parent binders up to start
+				Binder parent = binder.getParentBinder();
+				while (parent != null && !parent.getId().equals(start.getId())) {
+					if (!binderIdsToExport.containsKey(parent.getId())) 
+						binderIdsToExport.put(parent.getId(), false);
+					parent = parent.getParentBinder();
+				}
+			}
+		}
+		//Nothing selected means do everything
+		if (binders.isEmpty()) binderIdsToExport.put(start.getId(), true);
+		
 		addDefinitions(defList, start.getDefinitions());
 
 		if (isWorkspace) {
@@ -272,13 +293,16 @@ public class ExportHelper {
 			SortedSet<Binder> subWorkspaces = workspaceModule
 					.getWorkspaceTree(start.getId());
 			for (Binder binder : subWorkspaces) {
-				processBinder(
+				if (binderIdsToExport.containsKey(binder.getId())) {
+					processBinder(
 						zipOut,
 						binder,
 						(binder.getEntityType() == EntityType.workspace)
 								|| (binder.getEntityType() == EntityType.profiles),
 						options,
+						binderIdsToExport,
 						binderPrefix + "w" + nft.format(start.getId()), defList);
+				}
 			}
 		} else {
 			zipOut.putNextEntry(new ZipEntry(binderPrefix + "f"
@@ -292,37 +316,43 @@ public class ExportHelper {
 			List<Folder> subFolders = ((Folder) start).getFolders();
 
 			for (Folder fdr : subFolders) {
-				processBinder(zipOut, fdr, false, options, binderPrefix + "f"
+				if (binderIdsToExport.containsKey(fdr.getId())) {
+					processBinder(zipOut, fdr, false, options, binderIdsToExport, binderPrefix + "f"
 						+ nft.format(start.getId()), defList);
+				}
 			}
 
-			Map folderEntries = folderModule.getEntries(start.getId(), options);
-			List searchEntries = (List) folderEntries.get("search_entries");
-
-			for (int i = 0; i < searchEntries.size(); i++) {
-				Map searchEntry = (Map) searchEntries.get(i);
-				Long entryId = Long.valueOf(searchEntry.get("_docId")
-						.toString());
-				FolderEntry entry = folderModule.getEntry(start.getId(),
-						entryId);
-				processEntry(zipOut, entry, binderPrefix + "f"
-						+ nft.format(start.getId()), defList);
+			if (binderIdsToExport.containsKey(start.getId())) {
+				Map folderEntries = folderModule.getEntries(start.getId(), options);
+				List searchEntries = (List) folderEntries.get("search_entries");
+	
+				for (int i = 0; i < searchEntries.size(); i++) {
+					Map searchEntry = (Map) searchEntries.get(i);
+					Long entryId = Long.valueOf(searchEntry.get("_docId")
+							.toString());
+					FolderEntry entry = folderModule.getEntry(start.getId(),
+							entryId);
+					processEntry(zipOut, entry, binderPrefix + "f"
+							+ nft.format(start.getId()), defList);
+				}
 			}
 		}
 
-		String entityLetter = isWorkspace ? "w" : "f";
-		Set<FileAttachment> attachments = start.getFileAttachments();
-
-		for (FileAttachment attach : attachments) {
-			processBinderAttachment(zipOut, start, attach, binderPrefix
-					+ entityLetter + nft.format(start.getId()));
+		if (binderIdsToExport.containsKey(start.getId())) {
+			String entityLetter = isWorkspace ? "w" : "f";
+			Set<FileAttachment> attachments = start.getFileAttachments();
+	
+			for (FileAttachment attach : attachments) {
+				processBinderAttachment(zipOut, start, attach, binderPrefix
+						+ entityLetter + nft.format(start.getId()));
+			}
 		}
 
 		return;
 	}
 
 	private static void processBinder(ZipOutputStream zipOut, Binder binder,
-			boolean isWorkspace, Map options, String pathName, Set defList)
+			boolean isWorkspace, Map options, Map<Long,Boolean> binderIdsToExport, String pathName, Set defList)
 			throws Exception {
 		addDefinitions(defList, binder.getDefinitions());
 
@@ -339,13 +369,20 @@ public class ExportHelper {
 			SortedSet<Binder> subWorkspaces = workspaceModule
 					.getWorkspaceTree(binder.getId());
 			for (Binder bdr : subWorkspaces) {
-				processBinder(
+				//See if this binder is having all of the sub binders exported
+				if (binderIdsToExport.get(binder.getId())) binderIdsToExport.put(bdr.getId(), true);
+				//Only export this sub binder if it is on the list
+				if (binderIdsToExport.containsKey(bdr.getId())) {
+					processBinder(
 						zipOut,
 						bdr,
 						(bdr.getEntityType() == EntityType.workspace)
 								|| (bdr.getEntityType() == EntityType.profiles),
-						options, pathName + File.separator + binderPrefix + "w"
+						options, 
+						binderIdsToExport,
+						pathName + File.separator + binderPrefix + "w"
 								+ nft.format(binder.getId()), defList);
+				}
 			}
 		} else {
 			zipOut.putNextEntry(new ZipEntry(pathName + File.separator
@@ -361,9 +398,14 @@ public class ExportHelper {
 					.getSubfolders((Folder) binder);
 
 			for (Folder fdr : subFolders) {
-				processBinder(zipOut, fdr, false, options, pathName
+				//See if this binder is having all of the sub binders exported
+				if (binderIdsToExport.get(binder.getId())) binderIdsToExport.put(fdr.getId(), true);
+				//Only export this sub folder if it is on the list
+				if (binderIdsToExport.containsKey(fdr.getId())) {
+					processBinder(zipOut, fdr, false, options, binderIdsToExport, pathName
 						+ File.separator + binderPrefix + "f"
 						+ nft.format(binder.getId()), defList);
+				}
 			}
 
 			Map folderEntries = folderModule
@@ -658,8 +700,8 @@ public class ExportHelper {
 
 	private static void addEntityAttributes(Element entityElem, DefinableEntity entity) {
 		entityElem.addAttribute("id", entity.getId().toString());
-		entityElem.addAttribute("binderId", entity.getParentBinder().getId()
-				.toString());
+		Binder binder = entity.getParentBinder();
+		if (binder != null) entityElem.addAttribute("binderId", binder.getId().toString());
 
 		if (entity.getEntryDef() != null) {
 			entityElem.addAttribute("definitionId", entity.getEntryDef()
@@ -722,7 +764,7 @@ public class ExportHelper {
 
 		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
 			public void visit(Element entityElement, Element flagElement, Map args) {
-				if (flagElement.attributeValue("apply").equals("true")) {
+				if (flagElement.attributeValue("apply", "").equals("true")) {
 					String fieldBuilder = flagElement.attributeValue("elementBuilder");
 					String typeValue = entityElement.attributeValue("name");
 					String nameValue = DefinitionUtils.getPropertyValue(entityElement, "name");
@@ -1082,7 +1124,7 @@ public class ExportHelper {
 						String parentIdStr = getParentId(tempDoc);
 						Long parentId = null;
 
-						if (parentIdStr != null)
+						if (!Validator.isNull(parentIdStr))
 							parentId = Long.valueOf(parentIdStr);
 
 						// check actual entity type of the data in the xml file
@@ -1121,10 +1163,12 @@ public class ExportHelper {
 						Document tempDoc = getDocument(xmlStr);
 						String defId = getDefinitionId(tempDoc);
 						String entType = getEntityType(tempDoc);
-						Long parentId = Long.valueOf(getBinderId(tempDoc));
+						Long parentId = null;
+						Long newParentId = null;
 						Long binderId = Long.valueOf(getId(tempDoc));
-
-						Long newParentId = (Long) binderIdMap.get(parentId);
+						if (!Validator.isNull(getBinderId(tempDoc))) 
+							parentId = Long.valueOf(getBinderId(tempDoc));
+						newParentId = (Long) binderIdMap.get(parentId);
 
 						if (newParentId == null) {
 							newParentId = topBinderId;
@@ -1191,8 +1235,7 @@ public class ExportHelper {
 	}
 
 	private static String getDefinitionId(Document entity) {
-		return entity.getRootElement().attributeValue("definitionId")
-				.toString();
+		return entity.getRootElement().attributeValue("definitionId", "");
 	}
 
 	private static void setDefinitionId(Document entity, String defId) {
@@ -1200,19 +1243,19 @@ public class ExportHelper {
 	}
 
 	private static String getDatabaseId(Document entity) {
-		return entity.getRootElement().attributeValue("databaseId").toString();
+		return entity.getRootElement().attributeValue("databaseId", "");
 	}
 
 	private static String getId(Document entity) {
-		return entity.getRootElement().attributeValue("id").toString();
+		return entity.getRootElement().attributeValue("id", "");
 	}
 
 	private static String getBinderId(Document entity) {
-		return entity.getRootElement().attributeValue("binderId").toString();
+		return entity.getRootElement().attributeValue("binderId", "");
 	}
 
 	private static String getParentId(Document entity) {
-		return entity.getRootElement().attributeValue("parentId");
+		return entity.getRootElement().attributeValue("parentId", "");
 	}
 
 	private static long binder_addBinderWithXML(String accessToken, long parentId,
@@ -1358,18 +1401,18 @@ public class ExportHelper {
 			boolean handled = false;
 
 			String href = tempDir + File.separator
-					+ fileEle.attributeValue("href");
+					+ fileEle.attributeValue("href", "");
 			
 			String filename = fileEle.getText();
 			
 			int numVersions = Integer.valueOf(fileEle
-					.attributeValue("numVersions"));
+					.attributeValue("numVersions", "0"));
 			
 			String versionsDir = null;
 
 			if (numVersions > 1) {
 				versionsDir = tempDir + File.separator
-						+ fileEle.attributeValue("href") + ".versions";
+						+ fileEle.attributeValue("href", "") + ".versions";
 			}
 
 			// see if there's a matching attachment of type 'file'
@@ -1379,7 +1422,7 @@ public class ExportHelper {
 			for (Element fileListEle : (List<Element>) fileList) {
 				if (fileListEle.getText().equals(filename)) {
 					String name = fileListEle.getParent()
-							.attributeValue("name");
+							.attributeValue("name", "");
 					addFileVersions(binderId, entryId, name, filename, href,
 							numVersions, versionsDir);
 					handled = true;
@@ -1397,7 +1440,7 @@ public class ExportHelper {
 				for (Element graphicListEle : (List<Element>) graphicList) {
 					if (graphicListEle.getText().equals(filename)) {
 						String name = graphicListEle.getParent()
-								.attributeValue("name");
+								.attributeValue("name", "");
 						addFileVersions(binderId, entryId, name, filename,
 								href, numVersions, versionsDir);
 						handled = true;
@@ -1416,7 +1459,7 @@ public class ExportHelper {
 				for (Element attachsListEle : (List<Element>) attachsList) {
 					if (attachsListEle.getText().equals(filename)) {
 						String name = attachsListEle.getParent()
-								.attributeValue("name")
+								.attributeValue("name", "")
 								+ "1";
 						addFileVersions(binderId, entryId, name, filename,
 								href, numVersions, versionsDir);
@@ -1543,13 +1586,14 @@ public class ExportHelper {
 	private static void binder_setTeamMembers(String accessToken, long binderId,
 			String[] memberNames) {
 
-		Collection<Principal> principals = profileModule
-				.getPrincipalsByName(Arrays.asList(memberNames));
 		Set<Long> ids = new HashSet();
-		for (Principal p : principals) {
-			ids.add(p.getId());
+		if (memberNames.length > 0) {
+			Collection<Principal> principals = profileModule
+					.getPrincipalsByName(Arrays.asList(memberNames));
+			for (Principal p : principals) {
+				ids.add(p.getId());
+			}
 		}
-
 		binderModule.setTeamMembers(binderId, ids);
 	}
 
@@ -1558,7 +1602,7 @@ public class ExportHelper {
 		Element team = (Element) entityDoc.selectSingleNode(xPath);
 
 		boolean teamInherited = Boolean.parseBoolean(team
-				.attributeValue("inherited"));
+				.attributeValue("inherited", "false"));
 
 		Binder binder = loadBinder(binderId);
 
@@ -1570,7 +1614,7 @@ public class ExportHelper {
 			List principals = entityDoc.selectNodes(xPath);
 
 			for (Element member : (List<Element>) principals) {
-				names.add(member.attributeValue("name"));
+				names.add(member.attributeValue("name", ""));
 			}
 
 			String[] namesArray = new String[names.size()];
@@ -1600,8 +1644,8 @@ public class ExportHelper {
 			List<Element> workflows = entityDoc.selectNodes(xPath);
 
 			for (Element process : workflows) {
-				String defId = process.attributeValue("definitionId");
-				String state = process.attributeValue("state");
+				String defId = process.attributeValue("definitionId", "");
+				String state = process.attributeValue("state", "");
 				Definition def = definitionModule.getDefinition(defId);
 
 				EntityIdentifier entityIdentifier = new EntityIdentifier(entity
@@ -1634,8 +1678,8 @@ public class ExportHelper {
 			List<Element> workflows = entityDoc.selectNodes(xPath);
 
 			for (Element process : workflows) {
-				String defId = process.attributeValue("definitionId");
-				newDefinitionList.add(defId);
+				String defId = process.attributeValue("definitionId", "");
+				if (!defId.equals("")) newDefinitionList.add(defId);
 			}
 
 			// associated workflows
@@ -1646,10 +1690,9 @@ public class ExportHelper {
 			Map<String, String> workflowAssociations = new HashMap<String, String>();
 
 			for (Element process : workflows) {
-				String entryDefId = process.attributeValue("entryDefinitionId");
-				String workflowDefId = process
-						.attributeValue("workflowDefinitionId");
-				workflowAssociations.put(entryDefId, workflowDefId);
+				String entryDefId = process.attributeValue("entryDefinitionId", "");
+				String workflowDefId = process.attributeValue("workflowDefinitionId", "");
+				if (!entryDefId.equals("")) workflowAssociations.put(entryDefId, workflowDefId);
 			}
 
 			binderModule.setDefinitions(entity.getId(), newDefinitionList,
@@ -1669,12 +1712,12 @@ public class ExportHelper {
 		List<Element> views = entityDoc.selectNodes(xPath);
 
 		for (Element view : views) {
-			String defId = view.attributeValue("definitionId");
+			String defId = view.attributeValue("definitionId", "");
 
 			// don't want to include mirrored file folder as an imported view
 			// setting
 
-			if (!defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)) {
+			if (!defId.equals("") && !defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)) {
 				newDefinitionList.add(definitionModule.getDefinition(defId));
 			}
 		}
@@ -1685,12 +1728,12 @@ public class ExportHelper {
 		List<Element> entries = entityDoc.selectNodes(xPath);
 
 		for (Element entry : entries) {
-			String defId = entry.attributeValue("definitionId");
+			String defId = entry.attributeValue("definitionId", "");
 
 			// don't want to include mirrored file entry as an imported allowed
 			// entry setting
 
-			if (!defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)) {
+			if (!defId.equals("") && !defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)) {
 				newDefinitionList.add(definitionModule.getDefinition(defId));
 			}
 		}
@@ -1731,6 +1774,10 @@ public class ExportHelper {
 		if (binder.isDeleted())
 			throw new NoBinderByTheIdException(binderId);
 		return binder;
+	}
+	
+	public static ZoneInfo getZoneInfo() {
+		return zoneModule.getZoneInfo(RequestContextHolder.getRequestContext().getZoneId());
 	}
 
 }

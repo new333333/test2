@@ -33,7 +33,9 @@
 package org.kablink.teaming.portlet.administration;
 
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import javax.activation.FileTypeMap;
@@ -44,14 +46,18 @@ import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.tools.zip.ZipOutputStream;
+import org.dom4j.Document;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.portletadapter.portlet.HttpServletResponseReachable;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
+import org.kablink.teaming.web.tree.TreeHelper;
+import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -129,18 +135,26 @@ public class ExportImportController  extends  SAbstractController {
 		if (showMenu) {
 			//not ajax request
 			model.put(WebKeys.URL_BINDER_ID, binderId);
+			Document tree = null;
+			try {
+				tree = getBinderModule().getDomBinderTree(binderId, 
+						new WsDomTreeBuilder(null, true, this),0);
+			} catch (AccessControlException ac) {}
+			model.put(WebKeys.FOLDER_DOM_TREE, tree);
+
 			return new ModelAndView(WebKeys.VIEW_ADMIN_EXPORT_IMPORT, model);
 		}
 		
 		//EXPORTING...
-		if(operation.equals(WebKeys.OPERATION_EXPORT)){
+		if (operation.equals(WebKeys.OPERATION_EXPORT)){
 			res.setContentType(mimeTypes.getContentType(filename));
 			res.setHeader("Cache-Control", "private");
 			res.setHeader(
 						"Content-Disposition",
 						"attachment; filename=\"" + filename + "\"");
 			
-			if(entryId != null){
+			Collection<Long> binderIds = new HashSet<Long>();
+			if (entryId != null) {
 				FolderEntry entry = null;
 				
 				try{
@@ -154,12 +168,14 @@ public class ExportImportController  extends  SAbstractController {
 				
 					return null;
 				}
-			}else{
+			} else {
 				UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
 				options = ListFolderHelper.getSearchFilter(this, request, getBinderModule().getBinder(binderId), userFolderProperties);
+				Map formData = request.getParameterMap();
+				binderIds = TreeHelper.getSelectedIds(formData);
 			}
 			
-			getBinderModule().export(binderId, entryId, res.getOutputStream(), options);
+			getBinderModule().export(binderId, entryId, res.getOutputStream(), options, binderIds);
 		}
 		return new ModelAndView("forum/reload_opener", model);
 	}
