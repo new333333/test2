@@ -32,9 +32,12 @@
  */
 package org.kablink.teaming.gwt.server;
 
+import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
@@ -87,6 +90,41 @@ public class GwtRpcServiceImpl  implements GwtRpcService, AllModulesInjected
 	private ZoneModule				m_zoneModule;
 	
 
+	/**
+	 * Return an Entry object for the given entry id
+	 */
+	public GwtFolderEntry getEntry( String entryId )
+	{
+		FolderModule folderModule;
+		FolderEntry entry;
+		GwtFolderEntry folderEntry = null;
+		Binder parentBinder;
+		
+		//!!! Catch exceptions and do appropriate exception handling.
+		try
+		{
+			folderModule = getFolderModule();
+			entry = folderModule.getEntry( null, new Long( entryId ) );
+			
+			// Initialize the data members of the GwtFolderEntry object.
+			folderEntry = new GwtFolderEntry();
+			folderEntry.setEntryId( entryId );
+			if ( entry != null )
+			{
+				folderEntry.setEntryName( entry.getTitle() );
+			
+				parentBinder = entry.getParentBinder();
+				folderEntry.setParentBinderName( parentBinder.getPathName() );
+			}
+		}
+		catch (Exception ex)
+		{
+		}
+		
+		return folderEntry;
+	}// end getEntry()
+	
+	
     /**
      * 
      */

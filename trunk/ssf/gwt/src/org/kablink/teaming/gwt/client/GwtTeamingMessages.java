@@ -57,6 +57,12 @@ public interface GwtTeamingMessages extends Messages
 	String customJspName();
 	String customJspProperties();
 	
+	// Strings used with the Entry widget in the landing page editor
+	String entryLabel();
+	String entryProperties();
+	
+	String findEntry();
+	
 	// Strings used with the Graphic widget in the landing page editor.
 	String graphicLabel();
 	String graphicProperties();
@@ -81,11 +87,13 @@ public interface GwtTeamingMessages extends Messages
 	String linkToUrlLabel();
 	String linkToUrlProperties();
 	String linkToUrlUrl( String url );
+	
 	String listProperties();
 	String numColumns();
 	String ok();
 	String openUrlInNewWnd();
 	String showBorder();
+	String showTitle();
 	String tableProperties();
 	String title();
 	

@@ -51,6 +51,7 @@ public class GwtTeaming implements EntryPoint
 {
 	private static final GwtTeamingMessages		m_stringMessages = GWT.create( GwtTeamingMessages.class );
 	private static final GwtTeamingImageBundle	m_imageBundle = GWT.create( GwtTeamingImageBundle.class );
+	private static final GwtRpcServiceAsync		m_gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
 	
 	/**
 	 * Return the object that is used to retrieve images.
@@ -68,6 +69,15 @@ public class GwtTeaming implements EntryPoint
 	{
 		return m_stringMessages;
 	}// end GwtTeamingMessages()
+	
+	
+	/**
+	 * Return the object used to issue ajax requests.
+	 */
+	public static GwtRpcServiceAsync getRpcService()
+	{
+		return m_gwtRpcService;
+	}// end getRpcService()
 	
 	
 	/**
@@ -117,7 +127,7 @@ public class GwtTeaming implements EntryPoint
 		{
 			final Label	tutorialPanelStateText = new Label();
 			AbstractImagePrototype img;
-			GwtRpcServiceAsync	gwtRpcService;
+			GwtRpcServiceAsync gwtRpcService;
 		
 			// create an async callback to handle the result of the request to get the tutorial panel state:
 			AsyncCallback<String> callback = new AsyncCallback<String>()
@@ -144,7 +154,7 @@ public class GwtTeaming implements EntryPoint
 			};
 		
 			tutorialPanelStateText.setText( m_stringMessages.testWaiting() );
-			gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
+			gwtRpcService = getRpcService();
 			gwtRpcService.getTutorialPanelState( callback );
 			
 			img = m_imageBundle.landingPageEditorGraphic(); 
