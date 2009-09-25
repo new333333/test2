@@ -83,6 +83,13 @@ public interface GwtTeamingMessages extends Messages
 	String lpeTable();
 	String lpeUtilityElement();
 	
+	// Strings used with the "Link to entry" widget
+	String linkToEntryLabel();
+	String linkToEntryTitleLabel();
+	String linkToEntryProperties();
+	String openEntryInNewWnd();
+	
+	// Strings used with the "Link to url" widget
 	String linkToUrl();
 	String linkToUrlLabel();
 	String linkToUrlProperties();

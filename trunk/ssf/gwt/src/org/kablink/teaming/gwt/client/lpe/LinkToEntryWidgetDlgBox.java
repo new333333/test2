@@ -51,42 +51,42 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author jwootton
  *
  */
-public class EntryWidgetDlgBox extends DlgBox
+public class LinkToEntryWidgetDlgBox extends DlgBox
 {
-	private CheckBox		m_showTitleCkBox = null;
-	private TextBox		m_entryTxtBox = null;
+	private TextBox	m_entryTxtBox = null;
+	private TextBox	m_titleTxtBox = null;
+	private CheckBox	m_newWndCkBox = null;
 	
 	/**
 	 * 
 	 */
-	public EntryWidgetDlgBox(
+	public LinkToEntryWidgetDlgBox(
 		EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
 		EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
 		boolean autoHide,
 		boolean modal,
 		int xPos,
 		int yPos,
-		EntryProperties properties ) // Where properties used in the dialog are read from and saved to.
+		LinkToEntryProperties properties ) // Where properties used in the dialog are read from and saved to.
 	{
 		super( autoHide, modal, xPos, yPos );
 		
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().entryProperties(), editSuccessfulHandler, editCanceledHandler, properties ); 
-	}// end EntryWidgetDlgBox()
+		createAllDlgContent( GwtTeaming.getMessages().linkToEntryProperties(), editSuccessfulHandler, editCanceledHandler, properties ); 
+	}// end LinkToEntryWidgetDlgBox()
 	
 
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
-	@SuppressWarnings("unchecked")
 	public Panel createContent( PropertiesObj props )
 	{
-		EntryProperties properties;
-		Label			label;
+		LinkToEntryProperties properties;
+		Label label;
 		VerticalPanel	mainPanel;
 		FlexTable		table;
 		
-		properties = (EntryProperties) props;
+		properties = (LinkToEntryProperties) props;
 
 		mainPanel = new VerticalPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
@@ -97,14 +97,23 @@ public class EntryWidgetDlgBox extends DlgBox
 		label = new Label( GwtTeaming.getMessages().findEntry() );
 		table.setWidget( 0, 0, label );
 		m_entryTxtBox = new TextBox();
+		m_entryTxtBox.setVisibleLength( 30 );
 		table.setWidget( 0, 1, m_entryTxtBox );
 		mainPanel.add( table );
 		
-		// Add a checkbox for "Show title"
+		// Add label and edit control for "Title"
+		label = new Label( GwtTeaming.getMessages().linkToEntryTitleLabel() );
+		table.setWidget( 1, 0, label );
+		m_titleTxtBox = new TextBox();
+		m_titleTxtBox.setVisibleLength( 30 );
+		table.setWidget( 1, 1, m_titleTxtBox );
+		mainPanel.add( table );
+		
+		// Add a checkbox for "Open the entry in a new window"
 		table = new FlexTable();
-		table.setCellSpacing( 8 );
-		m_showTitleCkBox = new CheckBox( GwtTeaming.getMessages().showTitle() );
-		table.setWidget( 0, 0, m_showTitleCkBox );
+		table.setCellSpacing( 4 );
+		m_newWndCkBox = new CheckBox( GwtTeaming.getMessages().openEntryInNewWnd() );
+		table.setWidget( 0, 0, m_newWndCkBox );
 		mainPanel.add( table );
 
 		init( properties );
@@ -118,36 +127,21 @@ public class EntryWidgetDlgBox extends DlgBox
 	 */
 	public PropertiesObj getDataFromDlg()
 	{
-		EntryProperties	properties;
+		LinkToEntryProperties	properties;
 		
-		properties = new EntryProperties();
-		
-		// Save away the "show border" value.
-		properties.setShowTitle( getShowTitleValue() );
+		properties = new LinkToEntryProperties();
 		
 		// Save away the entry id.
 		properties.setEntryId( getEntryIdValue() );
 		
+		// Save away the title.
+		properties.setTitle( getTitleValue() );
+
+		// Save away the "open in new window" value.
+		properties.setOpenInNewWindow( getOpenInNewWindowValue() );
+		
 		return properties;
 	}// end getDataFromDlg()
-	
-	
-	/**
-	 * Return the widget that should get the focus when the dialog is shown. 
-	 */
-	public FocusWidget getFocusWidget()
-	{
-		return m_entryTxtBox;
-	}// end getFocusWidget()
-	
-	
-	/**
-	 * Return true if the "show title" checkbox is checked.
-	 */
-	public boolean getShowTitleValue()
-	{
-		return m_showTitleCkBox.getValue().booleanValue();
-	}// end getShowBorderValue()
 	
 	
 	/**
@@ -160,21 +154,53 @@ public class EntryWidgetDlgBox extends DlgBox
 	
 
 	/**
+	 * Return the widget that should get the focus when the dialog is shown. 
+	 */
+	public FocusWidget getFocusWidget()
+	{
+		return m_entryTxtBox;
+	}// end getFocusWidget()
+	
+	
+	/**
+	 * Return true if the "open in new window" checkbox is checked.
+	 */
+	public boolean getOpenInNewWindowValue()
+	{
+		return m_newWndCkBox.getValue().booleanValue();
+	}// end getOpenInNewWindowValue()
+	
+	
+	/**
+	 * Return the text found in the title edit control.
+	 */
+	public String getTitleValue()
+	{
+		return m_titleTxtBox.getText();
+	}// end getTitleValue()
+	
+	
+	/**
 	 * Initialize the controls in the dialog with the values from the properties
 	 */
 	public void init( PropertiesObj props )
 	{
-		EntryProperties properties;
-		String entryId;
+		LinkToEntryProperties properties;
+		String tmp;
 		
-		properties = (EntryProperties) props;
+		properties = (LinkToEntryProperties) props;
 
-		m_showTitleCkBox.setValue( properties.getShowTitleValue() );
+		tmp = properties.getEntryId();
+		if ( tmp == null )
+			tmp = "";
+		m_entryTxtBox.setText( tmp );
 		
-		entryId = properties.getEntryId();
-		if ( entryId == null )
-			entryId = "";
-		m_entryTxtBox.setText( entryId );
+		tmp = properties.getTitle();
+		if ( tmp == null )
+			tmp = "";
+		m_titleTxtBox.setText( tmp );
+
+		m_newWndCkBox.setValue( properties.getOpenInNewWindow() );
 	}// end init()
 	
-}// end EntryWidgetDlgBox
+}// end LinkToEntryWidgetDlgBox
