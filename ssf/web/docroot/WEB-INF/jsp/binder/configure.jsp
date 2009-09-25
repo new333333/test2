@@ -633,7 +633,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 
 <c:if test="${ssBinder.entityType == 'profiles'}">
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.profileView" text="Profile listing"/> <ssf:inlineHelp tag="ihelp.other.profile_view"/> </legend>
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.profileView" text="Profile listing"/></legend>
 
     <c:forEach var="item" items="${ssAllBinderDefinitions}">
  	      <input type="radio" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if><c:out value="${disabled}"/>>
@@ -647,7 +647,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   <br>
   
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.profileEntryType" text="Profile type"/> <ssf:inlineHelp tag="ihelp.other.profile_type"/> </legend>
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.profileEntryType" text="Profile type"/></legend>
 
     <c:forEach var="item" items="${ssAllEntryDefinitions}">
 	      <input type="checkbox" name="entryDefinition" value="${item.value.id}" id="all6_${item.value.id}" 

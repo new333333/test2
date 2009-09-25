@@ -147,6 +147,11 @@ function toggleFileInput() {
 <br>
 <div id="treeSelection" style="visibility:visibile; display:block;">
 <span class="ss_bold"><ssf:nlt tag="administration.export_import.tree"/></span>
+<div style="padding-left:20px;">
+<span class="ss_fineprint"><ssf:nlt tag="administration.export_import.note1"/></span>
+<br/>
+<span class="ss_fineprint"><ssf:nlt tag="administration.export_import.note2"/></span>
+</div>
 <br>
 <table class="ss_style" border="0" cellpadding="5" cellspacing="0" width="95%">
 <tr><td>
