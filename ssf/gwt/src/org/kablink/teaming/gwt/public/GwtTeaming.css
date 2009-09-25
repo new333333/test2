@@ -128,6 +128,33 @@
 	margin-right: .5em;
 }
 
+/* Styles for the "Entry" widget. */
+.lpeEntryWidget
+{
+	background-color: #E5E5E5;
+	border: 1px solid #AEAEAE;
+	padding: 6px;
+}
+
+/* Styles used for the binder name in a "entry" widget */
+.lpeEntryBinderName
+{
+	cursor: default;
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 12px;
+}
+
+/* Styles used for the entry name in the "entry" widget */
+.lpeEntryName
+{
+	cursor: default;
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 11px;
+	font-style: italic;
+}
+
 /* Styles used for the graphic name in a "graphic" widget */
 .lpeGraphicName
 {

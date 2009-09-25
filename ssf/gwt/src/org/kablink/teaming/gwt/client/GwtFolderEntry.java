@@ -30,25 +30,78 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.service;
+package org.kablink.teaming.gwt.client;
 
-import org.kablink.teaming.gwt.client.GwtFolderEntry;
-
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * This interface defines the methods that can be called when we want to make a remote
- * procedure call.
+ * This class is used in rpc calls and represents a serializable FolderEntry class.
  * @author jwootton
  *
  */
-@RemoteServiceRelativePath("gwtTeaming.rpc")
-public interface GwtRpcService extends RemoteService
+public class GwtFolderEntry implements IsSerializable
 {
-	// Return an Entry object for the given entry id.
-	public GwtFolderEntry getEntry( String entryId );
+	private String m_entryId;
+	private String m_entryName;
+	private String m_parentBinderName;
 	
-	public String getTutorialPanelState();
-}// end GwtRpcService
+	/**
+	 * 
+	 */
+	public GwtFolderEntry()
+	{
+		m_entryId = null;
+		m_entryName = null;
+		m_parentBinderName = null;
+	}// end GwtFolderEntry()
+	
+	
+	/**
+	 * 
+	 */
+	public String getEntryId()
+	{
+		return m_entryId;
+	}// end getEntryId()
+	
+	/**
+	 * 
+	 */
+	public String getEntryName()
+	{
+		return m_entryName;
+	}// end getEntryName()
+	
+	/**
+	 * 
+	 */
+	public String getParentBinderName()
+	{
+		return m_parentBinderName;
+	}// end getParentBinderName()
+
+	/**
+	 * 
+	 */
+	public void setEntryId( String entryId )
+	{
+		m_entryId = entryId;
+	}// end setEntryId()
+	
+	/**
+	 * 
+	 */
+	public void setEntryName( String entryName )
+	{
+		m_entryName = entryName;
+	}// end setEntryName()
+	
+	/**
+	 * 
+	 */
+	public void setParentBinderName( String parentBinderName )
+	{
+		m_parentBinderName = parentBinderName;
+	}// end setParentBinderName()
+}// end GwtFolderEntry

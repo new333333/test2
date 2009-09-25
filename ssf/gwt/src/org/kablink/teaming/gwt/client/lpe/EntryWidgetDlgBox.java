@@ -51,59 +51,60 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author jwootton
  *
  */
-public class ListWidgetDlgBox extends DlgBox
+public class EntryWidgetDlgBox extends DlgBox
 {
-	private CheckBox		m_showBorderCkBox = null;
-	private TextBox		m_titleTxtBox = null;
+	private CheckBox		m_showTitleCkBox = null;
+	private TextBox		m_entryTxtBox = null;
 	
 	/**
 	 * 
 	 */
-	public ListWidgetDlgBox(
+	public EntryWidgetDlgBox(
 		EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
 		EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
 		boolean autoHide,
 		boolean modal,
 		int xPos,
 		int yPos,
-		ListProperties properties ) // Where properties used in the dialog are read from and saved to.
+		EntryProperties properties ) // Where properties used in the dialog are read from and saved to.
 	{
 		super( autoHide, modal, xPos, yPos );
 		
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().listProperties(), editSuccessfulHandler, editCanceledHandler, properties ); 
-	}// end ListWidgetDlgBox()
+		createAllDlgContent( GwtTeaming.getMessages().entryProperties(), editSuccessfulHandler, editCanceledHandler, properties ); 
+	}// end EntryWidgetDlgBox()
 	
 
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
+	@SuppressWarnings("unchecked")
 	public Panel createContent( PropertiesObj props )
 	{
-		ListProperties properties;
+		EntryProperties properties;
 		Label			label;
 		VerticalPanel	mainPanel;
 		FlexTable		table;
 		
-		properties = (ListProperties) props;
+		properties = (EntryProperties) props;
 
 		mainPanel = new VerticalPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
-		// Add label and edit control for "Title"
+		// Add label and edit control for "Entry id"
 		table = new FlexTable();
 		table.setCellSpacing( 8 );
-		label = new Label( GwtTeaming.getMessages().title() );
+		label = new Label( GwtTeaming.getMessages().findEntry() );
 		table.setWidget( 0, 0, label );
-		m_titleTxtBox = new TextBox();
-		table.setWidget( 0, 1, m_titleTxtBox );
+		m_entryTxtBox = new TextBox();
+		table.setWidget( 0, 1, m_entryTxtBox );
 		mainPanel.add( table );
 		
-		// Add a checkbox for "Show border"
+		// Add a checkbox for "Show title"
 		table = new FlexTable();
 		table.setCellSpacing( 8 );
-		m_showBorderCkBox = new CheckBox( GwtTeaming.getMessages().showBorder() );
-		table.setWidget( 0, 0, m_showBorderCkBox );
+		m_showTitleCkBox = new CheckBox( GwtTeaming.getMessages().showTitle() );
+		table.setWidget( 0, 0, m_showTitleCkBox );
 		mainPanel.add( table );
 
 		init( properties );
@@ -117,15 +118,15 @@ public class ListWidgetDlgBox extends DlgBox
 	 */
 	public PropertiesObj getDataFromDlg()
 	{
-		ListProperties	properties;
+		EntryProperties	properties;
 		
-		properties = new ListProperties();
+		properties = new EntryProperties();
 		
 		// Save away the "show border" value.
-		properties.setShowBorder( getShowBorderValue() );
+		properties.setShowTitle( getShowTitleValue() );
 		
-		// Save away the title.
-		properties.setTitle( getTitleValue() );
+		// Save away the entry id.
+		properties.setEntryId( getEntryIdValue() );
 		
 		return properties;
 	}// end getDataFromDlg()
@@ -136,26 +137,26 @@ public class ListWidgetDlgBox extends DlgBox
 	 */
 	public FocusWidget getFocusWidget()
 	{
-		return m_titleTxtBox;
+		return m_entryTxtBox;
 	}// end getFocusWidget()
 	
 	
 	/**
-	 * Return true if the "show border" checkbox is checked.
+	 * Return true if the "show title" checkbox is checked.
 	 */
-	public boolean getShowBorderValue()
+	public boolean getShowTitleValue()
 	{
-		return m_showBorderCkBox.getValue().booleanValue();
+		return m_showTitleCkBox.getValue().booleanValue();
 	}// end getShowBorderValue()
 	
 	
 	/**
-	 * Return the text found in the title edit control.
+	 * Return entry id of the selected entry.
 	 */
-	public String getTitleValue()
+	public String getEntryIdValue()
 	{
-		return m_titleTxtBox.getText();
-	}// end getTitleValue()
+		return m_entryTxtBox.getText();
+	}// end getEntryIdValue()
 	
 
 	/**
@@ -163,12 +164,12 @@ public class ListWidgetDlgBox extends DlgBox
 	 */
 	public void init( PropertiesObj props )
 	{
-		ListProperties properties;
+		EntryProperties properties;
 		
-		properties = (ListProperties) props;
+		properties = (EntryProperties) props;
 
-		m_showBorderCkBox.setValue( properties.getShowBorderValue() );
-		m_titleTxtBox.setText( properties.getTitle() );
+		m_showTitleCkBox.setValue( properties.getShowTitleValue() );
+		m_entryTxtBox.setText( properties.getEntryId() );
 	}// end init()
 	
-}// end ListWidgetDlgBox
+}// end EntryWidgetDlgBox

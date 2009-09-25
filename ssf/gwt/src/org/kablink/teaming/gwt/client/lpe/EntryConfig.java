@@ -30,25 +30,65 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.service;
 
-import org.kablink.teaming.gwt.client.GwtFolderEntry;
-
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+package org.kablink.teaming.gwt.client.lpe;
 
 
 /**
- * This interface defines the methods that can be called when we want to make a remote
- * procedure call.
+ * This class represents the configuration data for an Entry widget
  * @author jwootton
  *
  */
-@RemoteServiceRelativePath("gwtTeaming.rpc")
-public interface GwtRpcService extends RemoteService
+public class EntryConfig extends ConfigItem
 {
-	// Return an Entry object for the given entry id.
-	public GwtFolderEntry getEntry( String entryId );
+	private EntryProperties	m_properties;
 	
-	public String getTutorialPanelState();
-}// end GwtRpcService
+	/**
+	 * 
+	 */
+	public EntryConfig( String configStr )
+	{
+		String[] results;
+		
+		m_properties = new EntryProperties();
+		
+		// Split the configuration data into its parts.  ie entryId=xxx showTitle=x
+		results = configStr.split( "[,;]" );
+		if ( results != null )
+		{
+			int i;
+			
+			for (i = 0; i < results.length; ++i)
+			{
+				String[] results2;
+				
+				results2 = results[i].split( "=" );
+				if ( results2.length == 2 )
+				{
+					if ( results2[0].equalsIgnoreCase( "showTitle" ) )
+						m_properties.setShowTitle( results2[1].equalsIgnoreCase( "1" ) );
+					else if ( results2[0].equalsIgnoreCase( "entryId" ) )
+						m_properties.setEntryId( results2[1] );
+				}
+			}
+		}
+	}// end EntryConfig()
+	
+	
+	/**
+	 * 
+	 */
+	public void addChild( ConfigItem configItem )
+	{
+		// Nothing to do.
+	}// end addChild()
+	
+	
+	/**
+	 * 
+	 */
+	public EntryProperties getProperties()
+	{
+		return m_properties;
+	}// end getProperties()
+}// end EntryConfig
