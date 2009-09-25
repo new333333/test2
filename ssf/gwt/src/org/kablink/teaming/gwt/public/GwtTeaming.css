@@ -181,6 +181,33 @@
 	margin-bottom: 0.5em;
 }
 
+/* Styles used for the entry name in the "link to entry" widget */
+.lpeLinkToEntryName
+{
+	cursor: default;
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 11px;
+	font-style: italic;
+}
+
+/* Styles used for the title in a "link to entry" widget */
+.lpeLinkToEntryTitle
+{
+	cursor: default;
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 12px;
+}
+
+/* Styles for the "Link to Entry" widget. */
+.lpeLinkToEntryWidget
+{
+	background-color: #E5E5E5;
+	border: 1px solid #AEAEAE;
+	padding: 6px;
+}
+
 /* Styles for the "Link to Url" widget. */
 .lpeLinkToUrlWidget
 {
@@ -240,6 +267,12 @@
 .lpeListTitle
 {
 	cursor: default;
+}
+
+/* Style used to give something a left margin of .5em */
+.lpeMarginLeft1Point5
+{
+	margin-left: 1.5em;
 }
 
 /* Styles for the palette widget used in the landing page editor. */

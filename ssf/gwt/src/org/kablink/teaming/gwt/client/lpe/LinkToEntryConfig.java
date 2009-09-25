@@ -30,32 +30,69 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
+import com.google.gwt.http.client.URL;
 
 
 /**
- * 
+ * This class represents the configuration data for a "Link to Entry" widget
+ * @author jwootton
+ *
  */
-public class EntryPaletteItem extends PaletteItem
+public class LinkToEntryConfig extends ConfigItem
 {
+	private LinkToEntryProperties	m_properties;
+	
 	/**
 	 * 
 	 */
-	public EntryPaletteItem()
+	public LinkToEntryConfig( String configStr )
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorEntry(), GwtTeaming.getMessages().lpeEntry() );
-	}// end EntryPaletteItem()
-
-
+		String[] results;
+		
+		m_properties = new LinkToEntryProperties();
+		
+		// Split the configuration data into its parts.  ie entryId=xxx title=xxx popup=1
+		results = configStr.split( "[,;]" );
+		if ( results != null )
+		{
+			int i;
+			
+			for (i = 0; i < results.length; ++i)
+			{
+				String[] results2;
+				
+				results2 = results[i].split( "=" );
+				if ( results2.length == 2 )
+				{
+					if ( results2[0].equalsIgnoreCase( "title" ) )
+						m_properties.setTitle( URL.decodeComponent( results2[1] ) );
+					else if ( results2[0].equalsIgnoreCase( "entryId" ) )
+						m_properties.setEntryId( results2[1] );
+					else if ( results2[0].equalsIgnoreCase( "popup" ) )
+						m_properties.setOpenInNewWindow( results2[1].equalsIgnoreCase( "1" ) );
+				}
+			}
+		}
+	}// end LinkToEntryConfig()
+	
+	
 	/**
-	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
+	 * 
 	 */
-	public DropWidget createDropWidget( LandingPageEditor lpe )
+	public void addChild( ConfigItem configItem )
 	{
-		return new EntryDropWidget( lpe, (EntryProperties) null );
-	}// end createDropWidget()
-}// end EntryPaletteItem
-
-
+		// Nothing to do.
+	}// end addChild()
+	
+	
+	/**
+	 * 
+	 */
+	public LinkToEntryProperties getProperties()
+	{
+		return m_properties;
+	}// end getProperties()
+}// end LinkToEntryConfig

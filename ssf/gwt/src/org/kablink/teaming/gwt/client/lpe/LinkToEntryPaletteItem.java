@@ -54,7 +54,7 @@ public class LinkToEntryPaletteItem extends PaletteItem
 	 */
 	public DropWidget createDropWidget(  LandingPageEditor lpe )
 	{
-		return null;
+		return new LinkToEntryDropWidget( lpe, (LinkToEntryProperties) null );
 	}// end createDropWidget()
 }// end LinkToEntryPaletteItem
 
