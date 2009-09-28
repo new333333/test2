@@ -128,14 +128,6 @@
 	margin-right: .5em;
 }
 
-/* Styles for the "Entry" widget. */
-.lpeEntryWidget
-{
-	background-color: #E5E5E5;
-	border: 1px solid #AEAEAE;
-	padding: 6px;
-}
-
 /* Styles used for the binder name in a "entry" widget */
 .lpeEntryBinderName
 {
@@ -153,6 +145,41 @@
 	font-family: Arial,sans-serif;
 	font-size: 11px;
 	font-style: italic;
+}
+
+/* Styles for the "Entry" widget. */
+.lpeEntryWidget
+{
+	background-color: #E5E5E5;
+	border: 1px solid #AEAEAE;
+	padding: 6px;
+}
+
+/* Styles used for the binder name in a "folder" widget */
+.lpeFolderBinderName
+{
+	cursor: default;
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 12px;
+}
+
+/* Styles used for the folder  name in the "folder" widget */
+.lpeFolderName
+{
+	cursor: default;
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 11px;
+	font-style: italic;
+}
+
+/* Styles for the "Folder" widget. */
+.lpeFolderWidget
+{
+	background-color: #E5E5E5;
+	border: 1px solid #AEAEAE;
+	padding: 6px;
 }
 
 /* Styles used for the graphic name in a "graphic" widget */

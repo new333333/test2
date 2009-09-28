@@ -90,6 +90,9 @@ public abstract class DropWidget extends Composite
 		if ( configItem instanceof LinkToEntryConfig )
 			return new LinkToEntryDropWidget( lpe, (LinkToEntryConfig)configItem );
 		
+		if ( configItem instanceof FolderConfig )
+			return new FolderDropWidget( lpe, (FolderConfig)configItem );
+		
 		//!!! Add new DropWidgets
 		
 		// If we get here we didn't recognize the type of widget being requested.

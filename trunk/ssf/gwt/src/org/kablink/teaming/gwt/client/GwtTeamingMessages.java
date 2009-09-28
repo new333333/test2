@@ -60,8 +60,16 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used with the Entry widget in the landing page editor
 	String entryLabel();
 	String entryProperties();
-	
 	String findEntry();
+	
+	// Strings used with the Folder widget in the landing page editor
+	String findFolderLabel();
+	String folderLabel();
+	String folderProperties();
+	String numEntriesToShow();
+	String showEntriesOpened();
+	String showFolderDesc();
+	String showTitleBar();
 	
 	// Strings used with the Graphic widget in the landing page editor.
 	String graphicLabel();

@@ -54,7 +54,7 @@ public class FolderPaletteItem extends PaletteItem
 	 */
 	public DropWidget createDropWidget( LandingPageEditor lpe )
 	{
-		return null;
+		return new FolderDropWidget( lpe, (FolderProperties) null );
 	}// end createDropWidget()
 }// end FolderPaletteItem
 

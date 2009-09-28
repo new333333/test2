@@ -68,7 +68,6 @@ public class EntryProperties
 		m_parentBinderName = null;
 		
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolderEntry object.
-		// create an async callback to handle the result of the request to get the tutorial panel state:
 		m_folderEntryCallback = new AsyncCallback<GwtFolderEntry>()
 		{
 			/**

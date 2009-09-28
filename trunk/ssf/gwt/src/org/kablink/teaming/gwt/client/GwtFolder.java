@@ -30,25 +30,78 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.service;
+package org.kablink.teaming.gwt.client;
 
-import org.kablink.teaming.gwt.client.GwtFolder;
-import org.kablink.teaming.gwt.client.GwtFolderEntry;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
- * 
+ * This class is used in rpc calls and represents a serializable Folder class.
  * @author jwootton
  *
  */
-public interface GwtRpcServiceAsync
+public class GwtFolder implements IsSerializable
 {
-	// Return an Entry object for the given entry id.
-	public void getEntry( String entryId, AsyncCallback<GwtFolderEntry> callback );
+	private String m_folderId;
+	private String m_folderName;
+	private String m_parentBinderName;
 	
-	// Return a Folder object for the given folder id.
-	public void getFolder( String folderId, AsyncCallback<GwtFolder> callback );
+	/**
+	 * 
+	 */
+	public GwtFolder()
+	{
+		m_folderId = null;
+		m_folderName = null;
+		m_parentBinderName = null;
+	}// end GwtFolder()
 	
-    public void getTutorialPanelState( AsyncCallback<String> callback );
-}// end GwtRpcServiceAsync
+	
+	/**
+	 * 
+	 */
+	public String getFolderId()
+	{
+		return m_folderId;
+	}// end getFolderId()
+	
+	/**
+	 * 
+	 */
+	public String getFolderName()
+	{
+		return m_folderName;
+	}// end getFolderName()
+	
+	/**
+	 * 
+	 */
+	public String getParentBinderName()
+	{
+		return m_parentBinderName;
+	}// end getParentBinderName()
+
+	/**
+	 * 
+	 */
+	public void setFolderId( String folderId )
+	{
+		m_folderId = folderId;
+	}// end setFolderId()
+	
+	/**
+	 * 
+	 */
+	public void setFolderName( String folderName )
+	{
+		m_folderName = folderName;
+	}// end setFolderName()
+	
+	/**
+	 * 
+	 */
+	public void setParentBinderName( String parentBinderName )
+	{
+		m_parentBinderName = parentBinderName;
+	}// end setParentBinderName()
+}// end GwtFolder
