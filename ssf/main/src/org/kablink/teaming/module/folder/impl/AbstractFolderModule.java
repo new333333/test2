@@ -88,6 +88,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Visits;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.jobs.FolderDelete;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.lucene.Hits;
@@ -1186,4 +1187,11 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	public int getAddReplyCount() {
 		return arCount.get();
 	}
+	public Long getZoneEntryId(Long entryId, String zoneUUID) {
+		if (zoneUUID.equals("")) return entryId;
+		List<Long> ids = getCoreDao().findZoneEntityIds(entryId, zoneUUID, EntityType.folderEntry.name());
+		if (ids.isEmpty()) return null;
+		return ids.get(0);
+	}
+
 }

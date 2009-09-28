@@ -200,6 +200,15 @@ public class ViewEntryController extends  SAbstractController {
 			model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.entry.not.imported"));
 			return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
 		}
+		if (!entryId.equals("")) {
+			//See if this id needs to be corrected
+			Long targetEntryId = getFolderModule().getZoneEntryId(Long.valueOf(entryId), zoneUUID);
+			if (targetEntryId == null) {
+				model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.entry.not.imported"));
+				return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
+			}
+			entryId = targetEntryId.toString();
+		}
 		String entryViewType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_TYPE, "entryView");
 		String entryViewStyle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_STYLE, "");
 		String entryViewStyle2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_STYLE2, "");

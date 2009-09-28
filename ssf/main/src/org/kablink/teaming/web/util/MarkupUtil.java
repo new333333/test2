@@ -672,6 +672,11 @@ public class MarkupUtil {
      	return outputBuf.toString();
 	}
 	
+	//Routine to fix up descriptios before exporting them
+	public static String markupStringReplacementForMashupCanvasExport(String inputString) {
+		return DefinitionHelper.fixupMashupCanvasForExport(inputString);
+	}
+
 	//Routine to split a body of text into sections
 	public static List markupSplitBySection(String body) {
 		List bodyParts = new ArrayList();
