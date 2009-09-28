@@ -30,25 +30,76 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.service;
 
-import org.kablink.teaming.gwt.client.GwtFolder;
-import org.kablink.teaming.gwt.client.GwtFolderEntry;
+package org.kablink.teaming.gwt.client.lpe;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
- * 
+ * This class represents the configuration data for a Folder widget
  * @author jwootton
  *
  */
-public interface GwtRpcServiceAsync
+public class FolderConfig extends ConfigItem
 {
-	// Return an Entry object for the given entry id.
-	public void getEntry( String entryId, AsyncCallback<GwtFolderEntry> callback );
+	private FolderProperties	m_properties;
 	
-	// Return a Folder object for the given folder id.
-	public void getFolder( String folderId, AsyncCallback<GwtFolder> callback );
+	/**
+	 * 
+	 */
+	public FolderConfig( String configStr )
+	{
+		String[] results;
+		
+		m_properties = new FolderProperties();
+		
+		// Split the configuration data into its parts.  ie folderId=xxx showTitle=x showFolderDescription=1 showEntriesOpened=1 entriesToShow
+		results = configStr.split( "[,;]" );
+		if ( results != null )
+		{
+			int i;
+			
+			for (i = 0; i < results.length; ++i)
+			{
+				String[] results2;
+				
+				results2 = results[i].split( "=" );
+				if ( results2.length == 2 )
+				{
+					if ( results2[0].equalsIgnoreCase( "folderId" ) )
+						m_properties.setFolderId( results2[1] );
+					else if ( results2[0].equalsIgnoreCase( "showTitle" ) )
+						m_properties.setShowTitle( results2[1].equalsIgnoreCase( "1" ) );
+					else if ( results2[0].equalsIgnoreCase( "showFolderDescription" ) )
+						m_properties.setShowDescValue( results2[1].equalsIgnoreCase( "1" ) );
+					else if ( results2[0].equalsIgnoreCase( "showEntriesOpened" ) )
+						m_properties.setShowEntriesOpenedValue( results2[1].equalsIgnoreCase( "1" ) );
+					else if ( results2[0].equalsIgnoreCase( "entriesToShow" ) )
+					{
+						int numToShow;
+						
+						numToShow = Integer.parseInt( results2[1] );
+						m_properties.setNumEntriesToBeShownValue( numToShow );
+					}
+				}
+			}
+		}
+	}// end FolderConfig()
 	
-    public void getTutorialPanelState( AsyncCallback<String> callback );
-}// end GwtRpcServiceAsync
+	
+	/**
+	 * 
+	 */
+	public void addChild( ConfigItem configItem )
+	{
+		// Nothing to do.
+	}// end addChild()
+	
+	
+	/**
+	 * 
+	 */
+	public FolderProperties getProperties()
+	{
+		return m_properties;
+	}// end getProperties()
+}// end FolderConfig

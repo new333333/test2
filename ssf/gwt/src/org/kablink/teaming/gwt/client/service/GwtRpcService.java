@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.service;
 
+import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -49,6 +50,9 @@ public interface GwtRpcService extends RemoteService
 {
 	// Return an Entry object for the given entry id.
 	public GwtFolderEntry getEntry( String entryId );
+	
+	// Return a Folder object for the given folder id.
+	public GwtFolder getFolder( String folderId );
 	
 	public String getTutorialPanelState();
 }// end GwtRpcService

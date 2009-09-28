@@ -208,6 +208,11 @@ public class ConfigData
 					configItem = new LinkToEntryConfig( itemData[i] );
 					++i;
 				}
+				else if ( itemName.equalsIgnoreCase( "folder" ) )
+				{
+					configItem = new FolderConfig( itemData[i] );
+					++i;
+				}
 				else
 				{
 					// We don't know what this item is.  Skip it.

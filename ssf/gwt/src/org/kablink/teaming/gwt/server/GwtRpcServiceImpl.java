@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.server;
 
+import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 
@@ -123,6 +124,41 @@ public class GwtRpcServiceImpl  implements GwtRpcService, AllModulesInjected
 		
 		return folderEntry;
 	}// end getEntry()
+	
+	
+	/**
+	 * Return a Folder object for the given folder id
+	 */
+	public GwtFolder getFolder( String folderId )
+	{
+		BinderModule binderModule;
+		Binder binder;
+		GwtFolder folder = null;
+		Binder parentBinder;
+		
+		//!!! Catch exceptions and do appropriate exception handling.
+		try
+		{
+			binderModule = getBinderModule();
+			binder = binderModule.getBinder( new Long( folderId ) );
+			
+			// Initialize the data members of the GwtFolder object.
+			folder = new GwtFolder();
+			folder.setFolderId( folderId );
+			if ( binder != null )
+			{
+				folder.setFolderName( binder.getTitle() );
+			
+				parentBinder = binder.getParentBinder();
+				folder.setParentBinderName( parentBinder.getPathName() );
+			}
+		}
+		catch (Exception ex)
+		{
+		}
+		
+		return folder;
+	}// end getFolder()
 	
 	
     /**
