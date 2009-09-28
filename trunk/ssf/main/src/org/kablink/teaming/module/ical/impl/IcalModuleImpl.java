@@ -2085,8 +2085,19 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
     	
     	Iterator it = nodes.iterator();
     	while (it.hasNext()) {
-    		Node node = (Node)it.next();
-    		result.add(node.getStringValue());
+    		Node valueAttribute = (Node)it.next();
+    		Element propertyElement = valueAttribute.getParent();
+    		Element propertiesElement = propertyElement.getParent();
+    		Element itemElement = propertiesElement.getParent();
+    		String itemName = itemElement.attributeValue("name");
+    		String attrFlag;
+    		if      (itemName.equalsIgnoreCase("user_list"))  attrFlag = "u";
+    		else if (itemName.equalsIgnoreCase("group_list")) attrFlag = "g";
+    		else if (itemName.equalsIgnoreCase("team_list"))  attrFlag = "t";
+    		else                                              attrFlag = "x";
+    		String attrName = valueAttribute.getStringValue();
+    		String attrInfo = (attrFlag + "@" + attrName);
+    		result.add(attrInfo);
     	}
     	return result;
 	}
@@ -2098,9 +2109,20 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		// Scan the possible attendee list attributes,
 		Iterator<String> listAttributes = findUserListAttributes(entry.getEntryDef().getDefinition()).iterator();
 		while (listAttributes.hasNext()) {
-			// Skip any attributes that aren't defined on the entry.
-			String attributeName = ((String) listAttributes.next());
-			CustomAttribute customAttribute = entry.getCustomAttribute(attributeName);
+			// Parse the attribute information...
+			String attrInfo = ((String) listAttributes.next());
+			String attrName;
+			boolean isTeamList = (1 == attrInfo.indexOf('@'));
+			if (isTeamList) {
+				attrName = attrInfo.substring(2);
+				isTeamList = ('t' == attrInfo.charAt(0));
+			}
+			else {
+				attrName = attrInfo;
+			}
+			
+			// ...and skip any attributes that aren't defined on the entry.
+			CustomAttribute customAttribute = entry.getCustomAttribute(attrName);
 			if (null == customAttribute) {
 				continue;
 			}
@@ -2108,7 +2130,9 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			// Read and handle this attribute's values.
 			Set<Long>ids = LongIdUtil.getIdsAsLongSet(customAttribute.getValueSet());
 			attendeeIds.addAll(ids);
-			addTeamMembers(attendeeIds, getCoreDao().loadObjects(ids, Binder.class, zoneId), zoneId);
+			if (isTeamList) {
+				addTeamMembers(attendeeIds, getCoreDao().loadObjects(ids, Binder.class, zoneId), zoneId);
+			}
 		}
 
 		// Did we find any attendees in any of the attributes?
