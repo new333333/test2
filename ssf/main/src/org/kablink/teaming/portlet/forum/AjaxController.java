@@ -966,7 +966,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxGetFolderPage(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-		ModelAndView modelAndView = ListFolderHelper.BuildFolderBeans(bs, request, response, binderId);
+		String zoneUUID = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
+		ModelAndView modelAndView = ListFolderHelper.BuildFolderBeans(bs, request, response, binderId, zoneUUID);
 		modelAndView.setView("definition_elements/folder_view_common_page");
 		return modelAndView;
 	}
@@ -974,7 +975,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxGetWikiFolderPage(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-		ModelAndView modelAndView = ListFolderHelper.BuildFolderBeans(bs, request, response, binderId);
+		String zoneUUID = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
+		ModelAndView modelAndView = ListFolderHelper.BuildFolderBeans(bs, request, response, binderId, zoneUUID);
 		modelAndView.setView("definition_elements/wiki/wiki_folder_page_ajax");
 		return modelAndView;
 	}

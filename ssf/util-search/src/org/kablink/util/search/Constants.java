@@ -142,6 +142,7 @@ public class Constants {
 	public static final String WORKFLOW_STATE_FIELD = "_workflowState";
 	public static final String WORKFLOW_STATE_CAPTION_FIELD = "_workflowStateCaption";
 	public static final String BINDER_ID_FIELD = "_binderId";
+	public static final String ZONE_UUID_FIELD = "_zoneUUID";
 	public static final String BINDERS_PARENT_ID_FIELD = "_binderParentId";
 	public static final String ENTRY_PARENT_ID_FIELD = "_entryParentId";
 	public static final String ENTRY_TOP_ENTRY_ID_FIELD = "_entryTopEntryId";

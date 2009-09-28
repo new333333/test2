@@ -152,7 +152,19 @@ public class PermaLinkUtil {
 			adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityType.folder.name());
 		}
 		return adapterUrl.toString();
-
+	}
+	public static String getTitlePermalink(Long binderId, String zoneUUID, String normalizedTitle) {
+		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		adapterUrl.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
+		if (normalizedTitle != null && !normalizedTitle.equals("")) {
+			adapterUrl.setParameter(WebKeys.URL_ENTRY_TITLE, normalizedTitle);
+			adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityType.folderEntry.name());
+		} else {
+			adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityType.folder.name());
+		}
+		return adapterUrl.toString();
 	}
 	private static ProfileModule getProfileModule() {
 		return (ProfileModule) SpringContextUtil.getBean("profileModule");

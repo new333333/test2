@@ -960,7 +960,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	}
     }
     //this is for wiki links where normalize title is used
-    public Set<FolderEntry> getFolderEntryByNormalizedTitle(Long folderId, String title)
+    public Set<FolderEntry> getFolderEntryByNormalizedTitle(Long folderId, String title, String zoneUUID)
 	throws AccessControlException {
    		Set views = new HashSet();
    		Folder folder = null;

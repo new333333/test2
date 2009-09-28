@@ -73,6 +73,7 @@ import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.WorkflowState;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.ical.util.UrlUtil;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
@@ -193,6 +194,12 @@ public class ViewEntryController extends  SAbstractController {
 		
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+		String zoneUUID = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
+		folderId = getBinderModule().getZoneBinderId(folderId, zoneUUID, EntityType.folder.name());
+		if (folderId == null) {
+			model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.entry.not.imported"));
+			return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
+		}
 		String entryViewType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_TYPE, "entryView");
 		String entryViewStyle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_STYLE, "");
 		String entryViewStyle2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_STYLE2, "");
@@ -277,7 +284,7 @@ public class ViewEntryController extends  SAbstractController {
 				entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
 				if (!entryId.equals("")) {
 					model.put(WebKeys.ENTRY_TITLE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_PAGE_TITLE, ""));
-					Set entries = getFolderModule().getFolderEntryByNormalizedTitle(folderId, entryId);
+					Set entries = getFolderModule().getFolderEntryByNormalizedTitle(folderId, entryId, zoneUUID);
 					if (entries.size() == 1) {
 						FolderEntry entry = (FolderEntry)entries.iterator().next();
 						entryId = entry.getId().toString();

@@ -486,4 +486,6 @@ public interface BinderModule {
 	public void importZip(Long binderId, InputStream fIn) throws IOException;
 	
 	public String filename8BitSingleByteOnly(FileAttachment attachment, boolean _8BitSingleByteOnly);
+	
+	public Long getZoneBinderId(Long binderId, String zoneUUID, String entityType);
 }

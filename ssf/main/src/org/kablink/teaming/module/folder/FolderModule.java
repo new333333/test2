@@ -299,7 +299,7 @@ public interface FolderModule {
 	 * @return
 	 * @throws AccessControlException
 	 */
-    public Set<FolderEntry> getFolderEntryByNormalizedTitle(Long folderId, String title)
+    public Set<FolderEntry> getFolderEntryByNormalizedTitle(Long folderId, String title, String zoneUUID)
     	throws AccessControlException;
  	/**
 	 * Search for entries in a folder and additionally return the folderEntry and its tags.
