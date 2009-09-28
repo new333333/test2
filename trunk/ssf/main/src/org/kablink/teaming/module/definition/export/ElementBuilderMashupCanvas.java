@@ -38,6 +38,7 @@ import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.web.util.ExportHelper;
+import org.kablink.teaming.web.util.MarkupUtil;
 
 
 /**
@@ -47,7 +48,7 @@ import org.kablink.teaming.web.util.ExportHelper;
 public class ElementBuilderMashupCanvas extends AbstractElementBuilder {
 	protected boolean build(Element element, Object obj, String dataElemType, String dataElemName) {
 		if (obj != null && element != null) {
-			element.setText(obj.toString());
+			element.setText(MarkupUtil.markupStringReplacementForMashupCanvasExport(obj.toString()));
 			ZoneInfo zoneInfo = ExportHelper.getZoneInfo();
 			element.addAttribute("zoneUUID", String.valueOf(zoneInfo.getId()));
 		}

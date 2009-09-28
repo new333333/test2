@@ -996,16 +996,6 @@ public class BinderHelper {
 
 	}
 	
-	static public Long getZoneEntryId(Long entryId, String zoneUUID) {
-		if (!zoneUUID.equals("")) {
-			ZoneInfo zoneInfo = ExportHelper.getZoneInfo();
-			if (!zoneUUID.equals(zoneInfo.getId())) {
-				//This is a request for a binderId that was imported from a different zone
-			}
-		}
-		return entryId;
-	}
-
 	static public void buildNavigationLinkBeans(AllModulesInjected bs, Binder binder, Map model) {
 		if (binder instanceof TemplateBinder)
 			buildNavigationLinkBeans(bs, (TemplateBinder)binder, model, new ConfigHelper(""));

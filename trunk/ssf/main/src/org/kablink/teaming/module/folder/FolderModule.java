@@ -568,4 +568,6 @@ public interface FolderModule {
 	
 	public ScheduleInfo getSynchronizationSchedule(Long zoneId, Long folderId);	
 	public void setSynchronizationSchedule(ScheduleInfo config, Long folderId);
+	
+	public Long getZoneEntryId(Long entryId, String zoneUUID);
 }

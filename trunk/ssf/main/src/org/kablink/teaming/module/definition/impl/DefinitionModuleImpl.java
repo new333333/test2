@@ -2275,7 +2275,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			if (inputData.exists(nameValue + MASHUP_STYLE)) mashupStyle = inputData.getSingleValue(nameValue + MASHUP_STYLE);
 			if (deleteEverything.equals("")) {
 				String value = "";
-				if (inputData.exists(nameValue + "__idCounter")) {
+				if (!inputData.exists(nameValue + "__idCounter")) {
+					//If there is no idCounter, just assume the value is correct as is
+					if (inputData.exists(nameValue)) value = inputData.getSingleValue(nameValue);
+				} else if (inputData.exists(nameValue + "__idCounter")) {
 					int idCounter = Integer.valueOf(inputData.getSingleValue(nameValue + "__idCounter"));
 					for (int i = 0; i <= idCounter; i++) {
 						String nextValue = inputData.getSingleValue(nameValue + "__" + String.valueOf(i));
