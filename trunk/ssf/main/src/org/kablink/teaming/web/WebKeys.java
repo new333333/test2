@@ -105,6 +105,7 @@ public class WebKeys {
     public static final String URL_ATTRIBUTE = "attr";
     public static final String URL_ATTRIBUTE_ID = "attrId";
     public static final String URL_BINDER_ID="binderId";
+    public static final String URL_ZONE_UUID="zoneUUID";
     public static final String URL_BINDER_PARENT_ID="binderParentId";
     public static final String URL_BINDER_IDS="binderIds";
     public static final String URL_FOLDER_ID = "folderId";

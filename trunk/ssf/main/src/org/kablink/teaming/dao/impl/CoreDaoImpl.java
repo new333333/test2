@@ -68,6 +68,7 @@ import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.SFQuery;
+import org.kablink.teaming.domain.AnyOwner;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
@@ -1239,6 +1240,35 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         );  
 	}
 	
+	public List<Long> findZoneEntityIds(Long entityId, String zoneUUID, String entityType) {
+    	//Load customAttributes
+     	//Cannot criteria query, cause different order-by is specified in mapping files and it appears to take precedence
+       	final String id = zoneUUID + "." + entityId;
+       	final String type = entityType;
+       	final String key = org.kablink.util.search.Constants.ZONE_UUID_FIELD;
+       	return (List<Long>)getHibernateTemplate().execute(
+            new HibernateCallback() {
+                public Object doInHibernate(Session session) throws HibernateException {
+                	List<Long> result = new ArrayList<Long>();
+                	List readObjs = new ArrayList();
+					List objs = session.createQuery("SELECT owner From org.kablink.teaming.domain.CustomAttribute WHERE name='" + key + "' AND stringValue='" + id + "' AND ownerType='" + type + "'")
+			   			.list();
+			       	readObjs.add(objs);
+			      	HashMap tMap;
+			       	for (int i=0; i < objs.size(); ++i) {
+			       		AnyOwner owner = (AnyOwner) objs.get(i);
+			       		if (type.equals(owner.getEntity().getEntityType().name())) {
+			       			result.add(owner.getEntity().getId());
+			       		}
+			       	}
+			       	for (int i=0; i < readObjs.size(); ++i) {
+			       		evict(readObjs.get(i));
+			       	}
+			       	return result;
+                }
+            }
+		);  
+	}	
 	
 	public Tag loadTag(final String tagId, Long zoneId) {
         Tag t =(Tag)getHibernateTemplate().get(Tag.class, tagId);

@@ -1811,8 +1811,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			//Get a list of all of the form items in the definition (i.e., from the "form" section of the definition)
 			Element entryFormItem = (Element)root.selectSingleNode("item[@type='form']");
 			if (entryFormItem != null) {
-				//While going through the entry's elements, keep track of the current form name (needed to process date elements)
-				List<Element> itItems = entryFormItem.selectNodes(".//item[@type='data']");
 				//see if title is generated and save source
 				boolean titleGenerated = false;
 				String titleSource = null;
@@ -1840,538 +1838,563 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						}
 					}
 				}
+				//Before processing the definition items, process any default attributes that aren't in the definition
+				String itemName = "text";
+				String nameValue = "_zoneUUID";
+				//Process this special value
+				processInputDataItem(itemName, nameValue, inputData, entryData,
+			    		fileItems, fileData, null, titleGenerated, titleSource);
+				
+				//While going through the entry's elements, keep track of the current form name (needed to process date elements)
+				List<Element> itItems = entryFormItem.selectNodes(".//item[@type='data']");
 				for (Element nextItem: itItems) {
-					String itemName = (String) nextItem.attributeValue("name", "");
-					
+					itemName = (String) nextItem.attributeValue("name", "");
+										
 					//Get the form element name (property name)
-					String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
+					nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
 					if (Validator.isNull(nameValue)) {nameValue = nextItem.attributeValue("name");}
-					String nameValuePerUser = nameValue + "." + user.getName();
-					String s_userVersionAllowed = DefinitionUtils.getPropertyValue(nextItem, "userVersionAllowed");
-					boolean userVersionAllowed = false;
-					if (s_userVersionAllowed != null && "true".equals(s_userVersionAllowed)) 
-						userVersionAllowed = true;
-					String s_fieldModificationAllowed = DefinitionUtils.getPropertyValue(nextItem, "fieldModificationAllowed");
-					boolean fieldModificationAllowed = false;
-					if (s_fieldModificationAllowed != null && "true".equals(s_fieldModificationAllowed)) 
-						fieldModificationAllowed = true;
 					
-					//We have the element name, see if it has a value in the input data
-					if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
-						if (inputData.exists(nameValue)) {
-							Description description = new Description();
-							description.setText(inputData.getSingleValue(nameValue));
-							String format = inputData.getSingleValue(nameValue + ".format");
-							if (format != null) {
-								description.setFormat(Integer.valueOf(format));
-							}
-							//Deal with any markup language transformations before storing the description
-							MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
-							MarkupUtil.scanDescriptionForAttachmentFileUrls(description);
-							MarkupUtil.scanDescriptionForICLinks(description);
-							if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, description);
-						}
-					} else if (itemName.equals("folderBranding") || itemName.equals("workspaceBranding")) {
-						if (inputData.exists(nameValue)) {
-							Description description = new Description();
-							description.setText(inputData.getSingleValue(nameValue));
-							//Deal with any markup language transformations before storing the description
-							MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
-							MarkupUtil.scanDescriptionForAttachmentFileUrls(description);
-							MarkupUtil.scanDescriptionForICLinks(description);
-							if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, description.getText());
-						}
-					} else if (itemName.equals("folderAttributeList")) {
-						//The values are the names of the attribute sets
-						if (inputData.exists(nameValue)) {
-							String[] values = inputData.getValues(nameValue);
-							List<String> valuesList = new ArrayList();
-							for (int i = 0; i < values.length; i++) {
-								if (!values[i].equals("")) {
-									if (!inputData.exists(nameValue + "__delete__" + values[i]) ||
-											!inputData.getSingleValue(nameValue + "__delete__" + values[i]).equals("on")) {
-										if (!values[i].contains("__")) valuesList.add(values[i]);
-									}
-								}
-							}
-							String[] valuesTrimmed = new String[valuesList.size()];
-							for (int i = 0; i < valuesList.size(); i++) valuesTrimmed[i] = valuesList.get(i);
-							if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-								entryData.put(nameValue, valuesTrimmed);
-							//Now see if there are any attributes added in a set
-							for (String setName : valuesList) {
-								if (inputData.exists(nameValue+ENTRY_ATTRIBUTES_SET+setName)) {
-									String[] values2 = inputData.getValues(nameValue+ENTRY_ATTRIBUTES_SET+setName);
-									List<String> valuesList2 = new ArrayList();
-									for (int i = 0; i < values2.length; i++) {
-										if (!values2[i].equals("")) {
-											if (!inputData.exists(nameValue + "__delete__" + setName + "__" + values2[i]) ||
-													!inputData.getSingleValue(nameValue + "__delete__" + setName + "__" + values2[i]).equals("on")) {
-												if (!values2[i].contains("__")) valuesList2.add(values2[i]);
-											}
-										}
-									}
-									String[] valuesTrimmed2 = new String[valuesList2.size()];
-									for (int i = 0; i < valuesList2.size(); i++) valuesTrimmed2[i] = valuesList2.get(i);
-									if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-										entryData.put(nameValue+ENTRY_ATTRIBUTES_SET+setName, valuesTrimmed2);
-								} else {
-									//There aren't any attributes for this set. Clear any old values
-									if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-										entryData.put(nameValue+ENTRY_ATTRIBUTES_SET+setName, null);
-								}
-								if (inputData.exists(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName) &&
-										inputData.getSingleValue(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName).equals("on")) {
-									if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-										entryData.put(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName, true);
-								} else {
-									if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-										entryData.put(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName, false);
-								}
-							}
-						}
-					} else if (itemName.equals("entryAttributes")) {
-						//The values are the names of the attribute sets
-						if (inputData.exists(nameValue)) {
-							String[] values = inputData.getValues(nameValue);
-							List<String> valuesList = new ArrayList();
-							for (int i = 0; i < values.length; i++) {
-								if (!values[i].equals("")) {
-									valuesList.add(values[i]);
-								}
-							}
-							String[] valuesTrimmed = new String[valuesList.size()];
-							for (int i = 0; i < valuesList.size(); i++) valuesTrimmed[i] = valuesList.get(i);
-							if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, valuesTrimmed);
-							//Now see if there are any attributes added in a set
-							for (String setName : valuesList) {
-								if (inputData.exists(nameValue+ENTRY_ATTRIBUTES_SET+setName)) {
-									String[] values2 = inputData.getValues(nameValue+ENTRY_ATTRIBUTES_SET+setName);
-									List<String> valuesList2 = new ArrayList();
-									for (int i = 0; i < values2.length; i++) {
-										if (!values2[i].equals("")) {
-											valuesList2.add(values2[i]);
-										}
-									}
-									String[] valuesTrimmed2 = new String[valuesList2.size()];
-									for (int i = 0; i < valuesList2.size(); i++) valuesTrimmed2[i] = valuesList2.get(i);
-									if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-										entryData.put(nameValue+ENTRY_ATTRIBUTES_SET+setName, valuesTrimmed2);
-								}
-							}
-						}
-					} else if (itemName.equals("date") || itemName.equals("date_time")) {
-						if (inputData.exists(nameValue)) {
-							//Use the helper routine to parse the date into a date object
-							Date date = inputData.getDateValue(nameValue);
-							if (date != null) {
-								if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, date);
-							}
-						}
-						if (userVersionAllowed && inputData.exists(nameValuePerUser)) {
-							//Use the helper routine to parse the date into a date object
-							Date date = inputData.getDateValue(nameValuePerUser);
-							if (date != null) {
-								entryData.put(nameValuePerUser, date);
-							} else {
-								entryData.put(nameValuePerUser, null);
-							}
-						}
-					} else if (itemName.equals("event")) {
-					    //Ditto for event helper routine
-					    Boolean hasDur = Boolean.FALSE;
-					    if (GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "hasDuration"), false)) {
-					    	hasDur = Boolean.TRUE;
-					    }
-					    Boolean hasRecur = Boolean.FALSE;
-					    if (GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "hasRecurrence"), false)) {
-					    	hasRecur = Boolean.TRUE;
-					    }
-					    Event event = inputData.getEventValue(nameValue, hasDur, hasRecur);
-					    if (event != null) {
-					        event.setName(nameValue);
-					        if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, event);
-					    }
-					} else if (itemName.equals("survey")) {
-						if (inputData.exists(nameValue)) {
-							//Use the helper routine to parse the date into a date object
-							Survey survey = inputData.getSurveyValue(nameValue);
-							if (survey != null) {
-								if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, survey);
-							}
-						}
-					} else if (itemName.equals("user_list") || itemName.equals("group_list") ||
-								itemName.equals("team_list") || itemName.equals("userListSelectbox")) {
-						if (inputData.exists(nameValue + ".principalNames")) {
-							Set<Long> ids = ResolveIds.getPrincipalNamesAsLongIdSet(inputData.getValues(nameValue + ".principalNames"), true);
-							CommaSeparatedValue v = new CommaSeparatedValue();
-							v.setValue(ids);
-							if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, v);
-						} else if (inputData.exists(nameValue)) {
-							Set<Long> ids = LongIdUtil.getIdsAsLongSet(inputData.getValues(nameValue));
-							CommaSeparatedValue v = new CommaSeparatedValue();
-							v.setValue(ids);
-							if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, v);
-						}
-					} else if (itemName.equals("external_user_list")) {
-						if (inputData.exists(nameValue)) {
-							String[] values = inputData.getValues(nameValue);
-							int valuesCount = ((null == values) ? 0 : values.length);
-							String value;
-							if (1 == valuesCount) {
-								value = values[0];
-								if (StringUtil.isPackedString(value)) {
-									values = StringUtil.unpack(value);
-									valuesCount = ((null == values) ? 0 : values.length);
-								}
-							}
-							List<String> valuesList = new ArrayList();
-							for (int i = 0; i < valuesCount; i += 1) {
-								value = values[i];
-								if (null != value) {
-									value = value.trim();
-									if (0 < value.length()) {
-										valuesList.add(value);
-									}
-								}
-							}
-							PackedValue v = new PackedValue();
-							v.setValue(valuesList.toArray(new String[0]));
-							if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, v);
-						}
-					} else if (itemName.equals("places")) {
-						Set<Long> longIdsToRemove = new HashSet();
-						String toRemovePlacesParamName = WebKeys.URL_ID_CHOICES_REMOVE + "_" + nameValue;
-						if (inputData.exists(toRemovePlacesParamName)) {
-							String[] idChoicesToRemove = inputData.getValues(toRemovePlacesParamName);
-							for (int i = 0; i < idChoicesToRemove.length; i++) {
-								try {
-									//	validate as long
-									longIdsToRemove.add(Long.parseLong(idChoicesToRemove[i]));
-								} catch (NumberFormatException ne) {}
-							}
-						}
-
-						if (inputData.exists(WebKeys.URL_ID_CHOICES)) {
-							java.util.Collection<Long> longIds = TreeHelper.getSelectedIds(inputData, nameValue);
-							CommaSeparatedValue v = new CommaSeparatedValue();
-							longIds.removeAll(longIdsToRemove);
-							v.setValue(longIds);
-							if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, v);
-						} else if (inputData.exists(nameValue)) {
-							Set<Long> ids = LongIdUtil.getIdsAsLongSet(inputData.getValues(nameValue));
-							ids.removeAll(longIdsToRemove);
-							CommaSeparatedValue v = new CommaSeparatedValue();
-							v.setValue(ids);
-							if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, v);
-						}
-					} else if (itemName.equals("guestName")) {
-						if (inputData.exists(nameValue)) {
-							if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-								entryData.put(nameValue, inputData.getValues(nameValue));
-						}
-					} else if (itemName.equals("selectbox")) {
-				    	String multiple = DefinitionUtils.getPropertyValue(nextItem, "multipleAllowed");
-						if (inputData.exists(nameValue)) {
-					    	if ("true".equals(multiple)) {
-					    		if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-					    			entryData.put(nameValue, inputData.getValues(nameValue));
-					    	} else {
-					    		if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-					    			entryData.put(nameValue, inputData.getSingleValue(nameValue));
-					    	}
-						}
-						if (userVersionAllowed && inputData.exists(nameValuePerUser)) {
-					    	if ("true".equals(multiple)) {
-					    		entryData.put(nameValuePerUser, inputData.getValues(nameValuePerUser));
-					    	} else {
-					    		entryData.put(nameValuePerUser, inputData.getSingleValue(nameValuePerUser));
-					    	}
-						}
-					} else if (itemName.equals("checkbox")) {
-						if (inputData.exists(nameValue)) {
-							if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-								entryData.put(nameValue, Boolean.valueOf(GetterUtil.getBoolean(inputData.getSingleValue(nameValue), false)));
-						}
-						if (userVersionAllowed && inputData.exists(nameValuePerUser)) {
-							entryData.put(nameValuePerUser, Boolean.valueOf(GetterUtil.getBoolean(inputData.getSingleValue(nameValuePerUser), false)));
-						}
-					} else if (itemName.equals("profileTimeZone")) {
-						if (inputData.exists(nameValue)) {
-							Object val = inputData.getSingleObject(nameValue);
-							if (val == null) {
-								if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, null);
-							} else if (val instanceof TimeZone) {
-								if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-									entryData.put(nameValue, TimeZoneHelper.fixTimeZone((TimeZone)val));
-							} else {
-								String sVal = inputData.getSingleValue(nameValue);
-								if (Validator.isNull(sVal)) {
-									if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, null);
-								} else {
-									if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-										entryData.put(nameValue, TimeZoneHelper.getTimeZone(sVal));
-								}
-							}
-						}
-					} else if (itemName.equals("profileLocale")) {
-						if (inputData.exists(nameValue)) {
-							Object val = inputData.getSingleObject(nameValue);
-							if (val == null) {
-								//See if there is a default specified
-								String defaultValue = DefinitionUtils.getPropertyValue(nextItem, "default");
-								if (!Validator.isNull(defaultValue)) {
-									String[] vals = defaultValue.split("_");
-									if (vals.length == 1) {
-										if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-											entryData.put(nameValue, new Locale(vals[0]));
-									} else if (vals.length == 2) {
-										if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-											entryData.put(nameValue, new Locale(vals[0], vals[1]));
-									} else if (vals.length >= 3) {
-										if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-											entryData.put(nameValue, new Locale(vals[0], vals[1], vals[2]));
-									}
-								} else {
-									Locale userLocale = null;
-						    		String language = SPropsUtil.getString("i18n.default.locale.language", "");
-						    		String country = SPropsUtil.getString("i18n.default.locale.country", "");
-						    		if (!language.equals("")) {
-						    			if (!country.equals("")) userLocale = new Locale(language, country);
-						    			else userLocale = new Locale(language);
-						    		}
-						    		if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, userLocale);
-								}
-							} else if (val instanceof Locale) {
-								if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, (Locale)val);
-							} else {
-								String sVal = inputData.getSingleValue(nameValue);
-								if (Validator.isNull(sVal)) entryData.put(nameValue, null);
-								else {
-									String[] vals = sVal.split("_");
-									if (vals.length == 1) {
-										if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-											entryData.put(nameValue, new Locale(vals[0]));
-									} else if (vals.length == 2) {
-										if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-											entryData.put(nameValue, new Locale(vals[0], vals[1]));
-									} else if (vals.length >= 3) {
-										if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-											entryData.put(nameValue, new Locale(vals[0], vals[1], vals[2]));
-									}
-								}
-							}
-						}
-					} else if (itemName.equals("file") || itemName.equals("graphic") ||
-							itemName.equals("profileEntryPicture")) {
-					    if (fileItems != null && fileItems.containsKey(nameValue)) {
-					    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
-					    	String fileName = myFile.getOriginalFilename();
-					    	if (fileName.equals("")) continue;
-					    	String repositoryName = DefinitionUtils.getPropertyValue(nextItem, "storage");
-					    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
-					    	FileUploadItem fui;
-					    	if (titleGenerated && nameValue.equals(titleSource) &&
-					    			(itemName.equals("file") || itemName.equals("graphic")))
-					    		fui = new FileUploadItem(FileUploadItem.TYPE_TITLE, nameValue, myFile, repositoryName);
-					    	else fui = new FileUploadItem(FileUploadItem.TYPE_FILE, nameValue, myFile, repositoryName);
-						    	//See if there is a scaling request for this graphic file. If yes, pass along the hieght and width
-			    			fui.setMaxWidth(GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "maxWidth"), 0));
-			    			fui.setMaxHeight(GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "maxHeight"), 0));
-					    	// TODO The following piece of code may need a better conditional
-					    	// statement than this, since we probably do not want to generate
-					    	// thumbnails for all graphic-type file uploads. Or do we?
-					    	if (itemName.equals("graphic")) {
-					    		fui.setGenerateThumbnail(true);
-					    		fui.setIsSquareThumbnail(true);
-					    	} else if (itemName.equals("profileEntryPicture")) {
-					    		fui.setGenerateThumbnail(true);
-					    	} else if (fileName.endsWith(".jpg")) {
-					    		fui.setGenerateThumbnail(true);
-					    		fui.setIsSquareThumbnail(true);
-					    	}
-					    	if(inputData.exists(ObjectKeys.PI_SYNCH_TO_SOURCE)) {
-					    		fui.setSynchToRepository(Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.PI_SYNCH_TO_SOURCE)));
-					    	}
-					    	fileData.add(fui);
-					    }
-					} else if (itemName.equals("attachFiles")) {
-					    if (fileItems != null) {
-					    	boolean blnCheckForFileUntilTrue = true;
-					    	int intFileCount = 1;
-					    	while (blnCheckForFileUntilTrue) {
-								String fileEleName = nameValue + Integer.toString(intFileCount);
-								if (fileItems.containsKey(fileEleName)) {
-							    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
-							    	String fileName = myFile.getOriginalFilename();
-							    	if (fileName != null && !fileName.equals("")) {
-								    	// Different repository can be specified for each file uploaded.
-								    	// If not specified, use the statically selected one.
-								    	String repositoryName = null;
-								    	if (inputData.exists(nameValue + "_repos" + Integer.toString(intFileCount)))
-								    		repositoryName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(intFileCount));
-								    	if (repositoryName == null) {
-									    	repositoryName = DefinitionUtils.getPropertyValue(nextItem, "storage");
-									    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
-								    	}
-								    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
-								    	if(inputData.exists(ObjectKeys.PI_SYNCH_TO_SOURCE)) {
-								    		fui.setSynchToRepository(Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.PI_SYNCH_TO_SOURCE)));
-								    	}
-								    	fileData.add(fui);
-							    	}
-							    	intFileCount++;
-								} else {
-									blnCheckForFileUntilTrue = false;
-								}
-					    	}
-					    }
-					} else if (itemName.equals("mashupCanvas")) {
-						Boolean showBranding = false;
-						Boolean showFavoritesAndTeams = false;
-						Boolean showNavigation = false;
-						Boolean hideMasthead = false;
-						Boolean hideSidebar = false;
-						Boolean hideToolbar = false;
-						Boolean hideFooter = false;
-						String deleteEverything = "";
-						String mashupStyle = "";
-						if (inputData.exists(nameValue + MASHUP_SHOW_BRANDING)) showBranding = true;
-						if (inputData.exists(nameValue + MASHUP_SHOW_FAVORITES_AND_TEAMS)) showFavoritesAndTeams = true;
-						if (inputData.exists(nameValue + MASHUP_SHOW_NAVIGATION)) showNavigation = true;
-						if (inputData.exists(nameValue + MASHUP_HIDE_MASTHEAD)) hideMasthead = true;
-						if (inputData.exists(nameValue + MASHUP_HIDE_SIDEBAR)) hideSidebar = true;
-						if (inputData.exists(nameValue + MASHUP_HIDE_TOOLBAR)) hideToolbar = true;
-						if (inputData.exists(nameValue + MASHUP_HIDE_FOOTER)) hideFooter = true;
-						if (inputData.exists(nameValue + MASHUP_DELETE_EVERYTHING)) deleteEverything = inputData.getSingleValue(nameValue + MASHUP_DELETE_EVERYTHING);
-						if (inputData.exists(nameValue + MASHUP_STYLE)) mashupStyle = inputData.getSingleValue(nameValue + MASHUP_STYLE);
-						if (deleteEverything.equals("")) {
-							String value = "";
-							if (inputData.exists(nameValue + "__idCounter")) {
-								int idCounter = Integer.valueOf(inputData.getSingleValue(nameValue + "__idCounter"));
-								for (int i = 0; i <= idCounter; i++) {
-									String nextValue = inputData.getSingleValue(nameValue + "__" + String.valueOf(i));
-									if (nextValue != null) nextValue = nextValue.trim();
-									if (nextValue != null && !nextValue.equals("")) {
-										if (!value.equals("")) value = value + ";";
-										String type = nextValue.split(",")[0];
-						        		String[] mashupItemValues = nextValue.split(",");
-						        		String attrs = "";
-										Map mashupItemAttributes = new HashMap();
-										if (mashupItemValues.length > 0) {
-											//Build a map of attributes
-											for (int j = 0; j < mashupItemValues.length; j++) {
-												int k = mashupItemValues[j].indexOf("=");
-												if (k > 0) {
-													String a = mashupItemValues[j].substring(0, k);
-													String v = mashupItemValues[j].substring(k+1, mashupItemValues[j].length());
-													mashupItemAttributes.put(a, v);
-													attrs += ","+a+"="+v;
-												}
-											}
-										}
-										if (type == null || type.equals("")) {
-											//Delete empty or badly formed items
-											nextValue = "";
-										} else if (type.equals(ObjectKeys.MASHUP_TYPE_TABLE)) {
-											int colCount = 2;
-											if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_COLS)) 
-												colCount = Integer.valueOf((String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_COLS));
-											String[] colWidths = new String[colCount];
-											if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_COL_WIDTHS)) {
-												String colWidths2 = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_COL_WIDTHS);
-												if (colWidths2 == null) colWidths2 = "";
-												try {
-													colWidths2 = URLDecoder.decode(colWidths2, "UTF-8");
-												} catch(Exception e) {}
-												for (int j = 0; j < colCount; j++) {
-													String colWidth = colWidths2;
-													if (colWidths2.indexOf("|") >= 0) {
-														colWidth = colWidths2.substring(0, colWidths2.indexOf("|"));
-														colWidths2 = colWidths2.substring(colWidths2.indexOf("|")+1, colWidths2.length());
-													}
-													colWidths[j] = colWidth;
-												}
-											}
-											nextValue = ObjectKeys.MASHUP_TYPE_TABLE_START + attrs + ";";
-											for (int j = 0; j < colCount; j++) {
-												nextValue += ObjectKeys.MASHUP_TYPE_TABLE_COL + ",";
-												String w = colWidths[j];
-												if (w == null) w = "";
-												nextValue += ObjectKeys.MASHUP_ATTR_COL_WIDTH + "=" + w + ";";
-											}
-											nextValue += ObjectKeys.MASHUP_TYPE_TABLE_END;
-										} else if (type.equals(ObjectKeys.MASHUP_TYPE_TABLE_END_DELETE)) {
-											//This is a request to delete a table
-											// Delete all the way back to the "tableStart"
-											// Only delete empty tables
-											int j = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_TABLE_START + ",");
-											int j2 = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_TABLE_START + ";");
-											if (j2 > j) j = j2;
-											if (j >= 0) {
-												value = value.substring(0, j);
-											} else {
-												value="";
-											}
-											nextValue = "";
-										} else if (type.equals(ObjectKeys.MASHUP_TYPE_LIST)) {
-											nextValue = ObjectKeys.MASHUP_TYPE_LIST_START + attrs + ";";
-											nextValue += ObjectKeys.MASHUP_TYPE_LIST_END;
-										} else if (type.equals(ObjectKeys.MASHUP_TYPE_LIST_END_DELETE)) {
-											//This is a request to delete a list
-											// Delete all the way back to the "listStart"
-											// Only delete empty lists
-											int j = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_LIST_START + ",");
-											int j2 = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_LIST_START + ";");
-											if (j2 > j) j = j2;
-											if (j >= 0) {
-												value = value.substring(0, j);
-											} else {
-												value="";
-											}
-											nextValue = "";
-										}
-										value = value + nextValue;
-									}
-								}
-							}
-							if (!inputData.isFieldsOnly() || fieldModificationAllowed) {
-								entryData.put(nameValue, value);
-								entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_BRANDING, showBranding);
-								entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_FAVORITES_AND_TEAMS, showFavoritesAndTeams);
-								entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_NAVIGATION, showNavigation);
-								entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_MASTHEAD, hideMasthead);
-								entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_SIDEBAR, hideSidebar);
-								entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_TOOLBAR, hideToolbar);
-								entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_FOOTER, hideFooter);
-								entryData.put(nameValue + DefinitionModule.MASHUP_STYLE, mashupStyle);
-							}
-						} else if (!deleteEverything.equals("")) {
-							if (!inputData.isFieldsOnly() || fieldModificationAllowed) {
-								entryData.put(nameValue, "");
-								entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_BRANDING, showBranding);
-								entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_FAVORITES_AND_TEAMS, showFavoritesAndTeams);
-								entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_NAVIGATION, showNavigation);
-								entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_MASTHEAD, hideMasthead);
-								entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_SIDEBAR, hideSidebar);
-								entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_TOOLBAR, hideToolbar);
-								entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_FOOTER, hideFooter);
-								entryData.put(nameValue + DefinitionModule.MASHUP_STYLE, mashupStyle);
-							}
-						}
-					} else {
-						if (inputData.exists(nameValue)) {
-							if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-								entryData.put(nameValue, inputData.getSingleValue(nameValue));
-						}
-						if (userVersionAllowed && inputData.exists(nameValuePerUser)) 
-							entryData.put(nameValuePerUser, inputData.getSingleValue(nameValuePerUser));
-					}
+					//Process the data item depending on its item name
+					processInputDataItem(itemName, nameValue, inputData, entryData,
+				    		fileItems, fileData, nextItem, titleGenerated, titleSource);
 				}
 			}
 		}
 
     	return entryDataAll;
+    }
+    
+    //Routine to process entry data depending on the type of data it is
+    private void processInputDataItem(String itemName, String nameValue, InputDataAccessor inputData, Map entryData,
+    		Map fileItems, List fileData, Element nextItem, boolean titleGenerated, String titleSource) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+		String nameValuePerUser = nameValue + "." + user.getName();
+		String s_userVersionAllowed = "false";
+		if (nextItem != null) DefinitionUtils.getPropertyValue(nextItem, "userVersionAllowed");
+		boolean userVersionAllowed = false;
+		if (s_userVersionAllowed != null && "true".equals(s_userVersionAllowed)) 
+			userVersionAllowed = true;
+		String s_fieldModificationAllowed = "false";
+		if (nextItem != null) DefinitionUtils.getPropertyValue(nextItem, "fieldModificationAllowed");
+		boolean fieldModificationAllowed = false;
+		if (s_fieldModificationAllowed != null && "true".equals(s_fieldModificationAllowed)) 
+			fieldModificationAllowed = true;
+		//We have the element name, see if it has a value in the input data
+		if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
+			if (inputData.exists(nameValue)) {
+				Description description = new Description();
+				description.setText(inputData.getSingleValue(nameValue));
+				String format = inputData.getSingleValue(nameValue + ".format");
+				if (format != null) {
+					description.setFormat(Integer.valueOf(format));
+				}
+				//Deal with any markup language transformations before storing the description
+				MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
+				MarkupUtil.scanDescriptionForAttachmentFileUrls(description);
+				MarkupUtil.scanDescriptionForICLinks(description);
+				MarkupUtil.scanDescriptionForExportTitleUrls(description);
+				if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, description);
+			}
+		} else if (itemName.equals("folderBranding") || itemName.equals("workspaceBranding")) {
+			if (inputData.exists(nameValue)) {
+				Description description = new Description();
+				description.setText(inputData.getSingleValue(nameValue));
+				//Deal with any markup language transformations before storing the description
+				MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
+				MarkupUtil.scanDescriptionForAttachmentFileUrls(description);
+				MarkupUtil.scanDescriptionForICLinks(description);
+				if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, description.getText());
+			}
+		} else if (itemName.equals("folderAttributeList")) {
+			//The values are the names of the attribute sets
+			if (inputData.exists(nameValue)) {
+				String[] values = inputData.getValues(nameValue);
+				List<String> valuesList = new ArrayList();
+				for (int i = 0; i < values.length; i++) {
+					if (!values[i].equals("")) {
+						if (!inputData.exists(nameValue + "__delete__" + values[i]) ||
+								!inputData.getSingleValue(nameValue + "__delete__" + values[i]).equals("on")) {
+							if (!values[i].contains("__")) valuesList.add(values[i]);
+						}
+					}
+				}
+				String[] valuesTrimmed = new String[valuesList.size()];
+				for (int i = 0; i < valuesList.size(); i++) valuesTrimmed[i] = valuesList.get(i);
+				if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+					entryData.put(nameValue, valuesTrimmed);
+				//Now see if there are any attributes added in a set
+				for (String setName : valuesList) {
+					if (inputData.exists(nameValue+ENTRY_ATTRIBUTES_SET+setName)) {
+						String[] values2 = inputData.getValues(nameValue+ENTRY_ATTRIBUTES_SET+setName);
+						List<String> valuesList2 = new ArrayList();
+						for (int i = 0; i < values2.length; i++) {
+							if (!values2[i].equals("")) {
+								if (!inputData.exists(nameValue + "__delete__" + setName + "__" + values2[i]) ||
+										!inputData.getSingleValue(nameValue + "__delete__" + setName + "__" + values2[i]).equals("on")) {
+									if (!values2[i].contains("__")) valuesList2.add(values2[i]);
+								}
+							}
+						}
+						String[] valuesTrimmed2 = new String[valuesList2.size()];
+						for (int i = 0; i < valuesList2.size(); i++) valuesTrimmed2[i] = valuesList2.get(i);
+						if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+							entryData.put(nameValue+ENTRY_ATTRIBUTES_SET+setName, valuesTrimmed2);
+					} else {
+						//There aren't any attributes for this set. Clear any old values
+						if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+							entryData.put(nameValue+ENTRY_ATTRIBUTES_SET+setName, null);
+					}
+					if (inputData.exists(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName) &&
+							inputData.getSingleValue(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName).equals("on")) {
+						if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+							entryData.put(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName, true);
+					} else {
+						if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+							entryData.put(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName, false);
+					}
+				}
+			}
+		} else if (itemName.equals("entryAttributes")) {
+			//The values are the names of the attribute sets
+			if (inputData.exists(nameValue)) {
+				String[] values = inputData.getValues(nameValue);
+				List<String> valuesList = new ArrayList();
+				for (int i = 0; i < values.length; i++) {
+					if (!values[i].equals("")) {
+						valuesList.add(values[i]);
+					}
+				}
+				String[] valuesTrimmed = new String[valuesList.size()];
+				for (int i = 0; i < valuesList.size(); i++) valuesTrimmed[i] = valuesList.get(i);
+				if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, valuesTrimmed);
+				//Now see if there are any attributes added in a set
+				for (String setName : valuesList) {
+					if (inputData.exists(nameValue+ENTRY_ATTRIBUTES_SET+setName)) {
+						String[] values2 = inputData.getValues(nameValue+ENTRY_ATTRIBUTES_SET+setName);
+						List<String> valuesList2 = new ArrayList();
+						for (int i = 0; i < values2.length; i++) {
+							if (!values2[i].equals("")) {
+								valuesList2.add(values2[i]);
+							}
+						}
+						String[] valuesTrimmed2 = new String[valuesList2.size()];
+						for (int i = 0; i < valuesList2.size(); i++) valuesTrimmed2[i] = valuesList2.get(i);
+						if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+							entryData.put(nameValue+ENTRY_ATTRIBUTES_SET+setName, valuesTrimmed2);
+					}
+				}
+			}
+		} else if (itemName.equals("date") || itemName.equals("date_time")) {
+			if (inputData.exists(nameValue)) {
+				//Use the helper routine to parse the date into a date object
+				Date date = inputData.getDateValue(nameValue);
+				if (date != null) {
+					if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, date);
+				}
+			}
+			if (userVersionAllowed && inputData.exists(nameValuePerUser)) {
+				//Use the helper routine to parse the date into a date object
+				Date date = inputData.getDateValue(nameValuePerUser);
+				if (date != null) {
+					entryData.put(nameValuePerUser, date);
+				} else {
+					entryData.put(nameValuePerUser, null);
+				}
+			}
+		} else if (itemName.equals("event")) {
+		    //Ditto for event helper routine
+		    Boolean hasDur = Boolean.FALSE;
+		    if (nextItem != null && GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "hasDuration"), false)) {
+		    	hasDur = Boolean.TRUE;
+		    }
+		    Boolean hasRecur = Boolean.FALSE;
+		    if (nextItem != null && GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "hasRecurrence"), false)) {
+		    	hasRecur = Boolean.TRUE;
+		    }
+		    Event event = inputData.getEventValue(nameValue, hasDur, hasRecur);
+		    if (event != null) {
+		        event.setName(nameValue);
+		        if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, event);
+		    }
+		} else if (itemName.equals("survey")) {
+			if (inputData.exists(nameValue)) {
+				//Use the helper routine to parse the date into a date object
+				Survey survey = inputData.getSurveyValue(nameValue);
+				if (survey != null) {
+					if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, survey);
+				}
+			}
+		} else if (itemName.equals("user_list") || itemName.equals("group_list") ||
+					itemName.equals("team_list") || itemName.equals("userListSelectbox")) {
+			if (inputData.exists(nameValue + ".principalNames")) {
+				Set<Long> ids = ResolveIds.getPrincipalNamesAsLongIdSet(inputData.getValues(nameValue + ".principalNames"), true);
+				CommaSeparatedValue v = new CommaSeparatedValue();
+				v.setValue(ids);
+				if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, v);
+			} else if (inputData.exists(nameValue)) {
+				Set<Long> ids = LongIdUtil.getIdsAsLongSet(inputData.getValues(nameValue));
+				CommaSeparatedValue v = new CommaSeparatedValue();
+				v.setValue(ids);
+				if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, v);
+			}
+		} else if (itemName.equals("external_user_list")) {
+			if (inputData.exists(nameValue)) {
+				String[] values = inputData.getValues(nameValue);
+				int valuesCount = ((null == values) ? 0 : values.length);
+				String value;
+				if (1 == valuesCount) {
+					value = values[0];
+					if (StringUtil.isPackedString(value)) {
+						values = StringUtil.unpack(value);
+						valuesCount = ((null == values) ? 0 : values.length);
+					}
+				}
+				List<String> valuesList = new ArrayList();
+				for (int i = 0; i < valuesCount; i += 1) {
+					value = values[i];
+					if (null != value) {
+						value = value.trim();
+						if (0 < value.length()) {
+							valuesList.add(value);
+						}
+					}
+				}
+				PackedValue v = new PackedValue();
+				v.setValue(valuesList.toArray(new String[0]));
+				if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, v);
+			}
+		} else if (itemName.equals("places")) {
+			Set<Long> longIdsToRemove = new HashSet();
+			String toRemovePlacesParamName = WebKeys.URL_ID_CHOICES_REMOVE + "_" + nameValue;
+			if (inputData.exists(toRemovePlacesParamName)) {
+				String[] idChoicesToRemove = inputData.getValues(toRemovePlacesParamName);
+				for (int i = 0; i < idChoicesToRemove.length; i++) {
+					try {
+						//	validate as long
+						longIdsToRemove.add(Long.parseLong(idChoicesToRemove[i]));
+					} catch (NumberFormatException ne) {}
+				}
+			}
+
+			if (inputData.exists(WebKeys.URL_ID_CHOICES)) {
+				java.util.Collection<Long> longIds = TreeHelper.getSelectedIds(inputData, nameValue);
+				CommaSeparatedValue v = new CommaSeparatedValue();
+				longIds.removeAll(longIdsToRemove);
+				v.setValue(longIds);
+				if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, v);
+			} else if (inputData.exists(nameValue)) {
+				Set<Long> ids = LongIdUtil.getIdsAsLongSet(inputData.getValues(nameValue));
+				ids.removeAll(longIdsToRemove);
+				CommaSeparatedValue v = new CommaSeparatedValue();
+				v.setValue(ids);
+				if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, v);
+			}
+		} else if (itemName.equals("guestName")) {
+			if (inputData.exists(nameValue)) {
+				if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+					entryData.put(nameValue, inputData.getValues(nameValue));
+			}
+		} else if (itemName.equals("selectbox")) {
+	    	String multiple = "";
+	    	if (nextItem != null) DefinitionUtils.getPropertyValue(nextItem, "multipleAllowed");
+			if (inputData.exists(nameValue)) {
+		    	if ("true".equals(multiple)) {
+		    		if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+		    			entryData.put(nameValue, inputData.getValues(nameValue));
+		    	} else {
+		    		if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+		    			entryData.put(nameValue, inputData.getSingleValue(nameValue));
+		    	}
+			}
+			if (userVersionAllowed && inputData.exists(nameValuePerUser)) {
+		    	if ("true".equals(multiple)) {
+		    		entryData.put(nameValuePerUser, inputData.getValues(nameValuePerUser));
+		    	} else {
+		    		entryData.put(nameValuePerUser, inputData.getSingleValue(nameValuePerUser));
+		    	}
+			}
+		} else if (itemName.equals("checkbox")) {
+			if (inputData.exists(nameValue)) {
+				if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+					entryData.put(nameValue, Boolean.valueOf(GetterUtil.getBoolean(inputData.getSingleValue(nameValue), false)));
+			}
+			if (userVersionAllowed && inputData.exists(nameValuePerUser)) {
+				entryData.put(nameValuePerUser, Boolean.valueOf(GetterUtil.getBoolean(inputData.getSingleValue(nameValuePerUser), false)));
+			}
+		} else if (itemName.equals("profileTimeZone")) {
+			if (inputData.exists(nameValue)) {
+				Object val = inputData.getSingleObject(nameValue);
+				if (val == null) {
+					if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, null);
+				} else if (val instanceof TimeZone) {
+					if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+						entryData.put(nameValue, TimeZoneHelper.fixTimeZone((TimeZone)val));
+				} else {
+					String sVal = inputData.getSingleValue(nameValue);
+					if (Validator.isNull(sVal)) {
+						if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, null);
+					} else {
+						if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+							entryData.put(nameValue, TimeZoneHelper.getTimeZone(sVal));
+					}
+				}
+			}
+		} else if (itemName.equals("profileLocale")) {
+			if (inputData.exists(nameValue)) {
+				Object val = inputData.getSingleObject(nameValue);
+				if (val == null) {
+					//See if there is a default specified
+					String defaultValue = "";
+					if (nextItem != null) DefinitionUtils.getPropertyValue(nextItem, "default");
+					if (!Validator.isNull(defaultValue)) {
+						String[] vals = defaultValue.split("_");
+						if (vals.length == 1) {
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+								entryData.put(nameValue, new Locale(vals[0]));
+						} else if (vals.length == 2) {
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+								entryData.put(nameValue, new Locale(vals[0], vals[1]));
+						} else if (vals.length >= 3) {
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+								entryData.put(nameValue, new Locale(vals[0], vals[1], vals[2]));
+						}
+					} else {
+						Locale userLocale = null;
+			    		String language = SPropsUtil.getString("i18n.default.locale.language", "");
+			    		String country = SPropsUtil.getString("i18n.default.locale.country", "");
+			    		if (!language.equals("")) {
+			    			if (!country.equals("")) userLocale = new Locale(language, country);
+			    			else userLocale = new Locale(language);
+			    		}
+			    		if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, userLocale);
+					}
+				} else if (val instanceof Locale) {
+					if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, (Locale)val);
+				} else {
+					String sVal = inputData.getSingleValue(nameValue);
+					if (Validator.isNull(sVal)) entryData.put(nameValue, null);
+					else {
+						String[] vals = sVal.split("_");
+						if (vals.length == 1) {
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+								entryData.put(nameValue, new Locale(vals[0]));
+						} else if (vals.length == 2) {
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+								entryData.put(nameValue, new Locale(vals[0], vals[1]));
+						} else if (vals.length >= 3) {
+							if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+								entryData.put(nameValue, new Locale(vals[0], vals[1], vals[2]));
+						}
+					}
+				}
+			}
+		} else if (itemName.equals("file") || itemName.equals("graphic") ||
+				itemName.equals("profileEntryPicture")) {
+		    if (fileItems != null && fileItems.containsKey(nameValue)) {
+		    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
+		    	String fileName = myFile.getOriginalFilename();
+		    	if (fileName.equals("")) return;
+		    	String repositoryName = "";
+		    	if (nextItem != null) DefinitionUtils.getPropertyValue(nextItem, "storage");
+		    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
+		    	FileUploadItem fui;
+		    	if (titleGenerated && nameValue.equals(titleSource) &&
+		    			(itemName.equals("file") || itemName.equals("graphic")))
+		    		fui = new FileUploadItem(FileUploadItem.TYPE_TITLE, nameValue, myFile, repositoryName);
+		    	else fui = new FileUploadItem(FileUploadItem.TYPE_FILE, nameValue, myFile, repositoryName);
+			    	//See if there is a scaling request for this graphic file. If yes, pass along the hieght and width
+		    	if (nextItem != null) fui.setMaxWidth(GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "maxWidth"), 0));
+		    	if (nextItem != null) fui.setMaxHeight(GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "maxHeight"), 0));
+		    	// TODO The following piece of code may need a better conditional
+		    	// statement than this, since we probably do not want to generate
+		    	// thumbnails for all graphic-type file uploads. Or do we?
+		    	if (itemName.equals("graphic")) {
+		    		fui.setGenerateThumbnail(true);
+		    		fui.setIsSquareThumbnail(true);
+		    	} else if (itemName.equals("profileEntryPicture")) {
+		    		fui.setGenerateThumbnail(true);
+		    	} else if (fileName.endsWith(".jpg")) {
+		    		fui.setGenerateThumbnail(true);
+		    		fui.setIsSquareThumbnail(true);
+		    	}
+		    	if(inputData.exists(ObjectKeys.PI_SYNCH_TO_SOURCE)) {
+		    		fui.setSynchToRepository(Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.PI_SYNCH_TO_SOURCE)));
+		    	}
+		    	fileData.add(fui);
+		    }
+		} else if (itemName.equals("attachFiles")) {
+		    if (fileItems != null) {
+		    	boolean blnCheckForFileUntilTrue = true;
+		    	int intFileCount = 1;
+		    	while (blnCheckForFileUntilTrue) {
+					String fileEleName = nameValue + Integer.toString(intFileCount);
+					if (fileItems.containsKey(fileEleName)) {
+				    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
+				    	String fileName = myFile.getOriginalFilename();
+				    	if (fileName != null && !fileName.equals("")) {
+					    	// Different repository can be specified for each file uploaded.
+					    	// If not specified, use the statically selected one.
+					    	String repositoryName = null;
+					    	if (inputData.exists(nameValue + "_repos" + Integer.toString(intFileCount)))
+					    		repositoryName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(intFileCount));
+					    	if (repositoryName == null) {
+						    	repositoryName = "";
+						    	if (nextItem != null) DefinitionUtils.getPropertyValue(nextItem, "storage");
+						    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
+					    	}
+					    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
+					    	if(inputData.exists(ObjectKeys.PI_SYNCH_TO_SOURCE)) {
+					    		fui.setSynchToRepository(Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.PI_SYNCH_TO_SOURCE)));
+					    	}
+					    	fileData.add(fui);
+				    	}
+				    	intFileCount++;
+					} else {
+						blnCheckForFileUntilTrue = false;
+					}
+		    	}
+		    }
+		} else if (itemName.equals("mashupCanvas")) {
+			Boolean showBranding = false;
+			Boolean showFavoritesAndTeams = false;
+			Boolean showNavigation = false;
+			Boolean hideMasthead = false;
+			Boolean hideSidebar = false;
+			Boolean hideToolbar = false;
+			Boolean hideFooter = false;
+			String deleteEverything = "";
+			String mashupStyle = "";
+			if (inputData.exists(nameValue + MASHUP_SHOW_BRANDING)) showBranding = true;
+			if (inputData.exists(nameValue + MASHUP_SHOW_FAVORITES_AND_TEAMS)) showFavoritesAndTeams = true;
+			if (inputData.exists(nameValue + MASHUP_SHOW_NAVIGATION)) showNavigation = true;
+			if (inputData.exists(nameValue + MASHUP_HIDE_MASTHEAD)) hideMasthead = true;
+			if (inputData.exists(nameValue + MASHUP_HIDE_SIDEBAR)) hideSidebar = true;
+			if (inputData.exists(nameValue + MASHUP_HIDE_TOOLBAR)) hideToolbar = true;
+			if (inputData.exists(nameValue + MASHUP_HIDE_FOOTER)) hideFooter = true;
+			if (inputData.exists(nameValue + MASHUP_DELETE_EVERYTHING)) deleteEverything = inputData.getSingleValue(nameValue + MASHUP_DELETE_EVERYTHING);
+			if (inputData.exists(nameValue + MASHUP_STYLE)) mashupStyle = inputData.getSingleValue(nameValue + MASHUP_STYLE);
+			if (deleteEverything.equals("")) {
+				String value = "";
+				if (inputData.exists(nameValue + "__idCounter")) {
+					int idCounter = Integer.valueOf(inputData.getSingleValue(nameValue + "__idCounter"));
+					for (int i = 0; i <= idCounter; i++) {
+						String nextValue = inputData.getSingleValue(nameValue + "__" + String.valueOf(i));
+						if (nextValue != null) nextValue = nextValue.trim();
+						if (nextValue != null && !nextValue.equals("")) {
+							if (!value.equals("")) value = value + ";";
+							String type = nextValue.split(",")[0];
+			        		String[] mashupItemValues = nextValue.split(",");
+			        		String attrs = "";
+							Map mashupItemAttributes = new HashMap();
+							if (mashupItemValues.length > 0) {
+								//Build a map of attributes
+								for (int j = 0; j < mashupItemValues.length; j++) {
+									int k = mashupItemValues[j].indexOf("=");
+									if (k > 0) {
+										String a = mashupItemValues[j].substring(0, k);
+										String v = mashupItemValues[j].substring(k+1, mashupItemValues[j].length());
+										mashupItemAttributes.put(a, v);
+										attrs += ","+a+"="+v;
+									}
+								}
+							}
+							if (type == null || type.equals("")) {
+								//Delete empty or badly formed items
+								nextValue = "";
+							} else if (type.equals(ObjectKeys.MASHUP_TYPE_TABLE)) {
+								int colCount = 2;
+								if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_COLS)) 
+									colCount = Integer.valueOf((String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_COLS));
+								String[] colWidths = new String[colCount];
+								if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_COL_WIDTHS)) {
+									String colWidths2 = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_COL_WIDTHS);
+									if (colWidths2 == null) colWidths2 = "";
+									try {
+										colWidths2 = URLDecoder.decode(colWidths2, "UTF-8");
+									} catch(Exception e) {}
+									for (int j = 0; j < colCount; j++) {
+										String colWidth = colWidths2;
+										if (colWidths2.indexOf("|") >= 0) {
+											colWidth = colWidths2.substring(0, colWidths2.indexOf("|"));
+											colWidths2 = colWidths2.substring(colWidths2.indexOf("|")+1, colWidths2.length());
+										}
+										colWidths[j] = colWidth;
+									}
+								}
+								nextValue = ObjectKeys.MASHUP_TYPE_TABLE_START + attrs + ";";
+								for (int j = 0; j < colCount; j++) {
+									nextValue += ObjectKeys.MASHUP_TYPE_TABLE_COL + ",";
+									String w = colWidths[j];
+									if (w == null) w = "";
+									nextValue += ObjectKeys.MASHUP_ATTR_COL_WIDTH + "=" + w + ";";
+								}
+								nextValue += ObjectKeys.MASHUP_TYPE_TABLE_END;
+							} else if (type.equals(ObjectKeys.MASHUP_TYPE_TABLE_END_DELETE)) {
+								//This is a request to delete a table
+								// Delete all the way back to the "tableStart"
+								// Only delete empty tables
+								int j = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_TABLE_START + ",");
+								int j2 = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_TABLE_START + ";");
+								if (j2 > j) j = j2;
+								if (j >= 0) {
+									value = value.substring(0, j);
+								} else {
+									value="";
+								}
+								nextValue = "";
+							} else if (type.equals(ObjectKeys.MASHUP_TYPE_LIST)) {
+								nextValue = ObjectKeys.MASHUP_TYPE_LIST_START + attrs + ";";
+								nextValue += ObjectKeys.MASHUP_TYPE_LIST_END;
+							} else if (type.equals(ObjectKeys.MASHUP_TYPE_LIST_END_DELETE)) {
+								//This is a request to delete a list
+								// Delete all the way back to the "listStart"
+								// Only delete empty lists
+								int j = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_LIST_START + ",");
+								int j2 = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_LIST_START + ";");
+								if (j2 > j) j = j2;
+								if (j >= 0) {
+									value = value.substring(0, j);
+								} else {
+									value="";
+								}
+								nextValue = "";
+							}
+							value = value + nextValue;
+						}
+					}
+				}
+				if (!inputData.isFieldsOnly() || fieldModificationAllowed) {
+					entryData.put(nameValue, value);
+					entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_BRANDING, showBranding);
+					entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_FAVORITES_AND_TEAMS, showFavoritesAndTeams);
+					entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_NAVIGATION, showNavigation);
+					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_MASTHEAD, hideMasthead);
+					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_SIDEBAR, hideSidebar);
+					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_TOOLBAR, hideToolbar);
+					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_FOOTER, hideFooter);
+					entryData.put(nameValue + DefinitionModule.MASHUP_STYLE, mashupStyle);
+				}
+			} else if (!deleteEverything.equals("")) {
+				if (!inputData.isFieldsOnly() || fieldModificationAllowed) {
+					entryData.put(nameValue, "");
+					entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_BRANDING, showBranding);
+					entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_FAVORITES_AND_TEAMS, showFavoritesAndTeams);
+					entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_NAVIGATION, showNavigation);
+					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_MASTHEAD, hideMasthead);
+					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_SIDEBAR, hideSidebar);
+					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_TOOLBAR, hideToolbar);
+					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_FOOTER, hideFooter);
+					entryData.put(nameValue + DefinitionModule.MASHUP_STYLE, mashupStyle);
+				}
+			}
+		} else {
+			if (inputData.exists(nameValue)) {
+				if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+					entryData.put(nameValue, inputData.getSingleValue(nameValue));
+			}
+			if (userVersionAllowed && inputData.exists(nameValuePerUser)) 
+				entryData.put(nameValuePerUser, inputData.getSingleValue(nameValuePerUser));
+		}    	
     }
     public List<Definition> getAllDefinitions() {
 		// Controllers need access to definitions.  Allow world read

@@ -155,7 +155,13 @@ public class ListFolderHelper {
 	public static final ModeType MODE_TYPE_DEFAULT = ModeType.PHYSICAL;
 
 	static public ModelAndView BuildFolderBeans(AllModulesInjected bs, RenderRequest request, 
-			RenderResponse response, Long binderId) throws Exception {
+			RenderResponse response, Long binderId, String zoneUUID) throws Exception {
+		binderId = bs.getBinderModule().getZoneBinderId(binderId, zoneUUID, EntityType.folder.name());
+		if (binderId == null) {
+			Map<String,Object> model = new HashMap<String,Object>();
+			model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.folder.not.imported"));
+			return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
+		}
         User user = RequestContextHolder.getRequestContext().getUser();
 		String displayType = BinderHelper.getDisplayType(request);
 		Map formData = request.getParameterMap();
@@ -219,7 +225,7 @@ public class ListFolderHelper {
 		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
 		if (!entryTitle.equals("") && !entryTitle.equals(WebKeys.URL_ENTRY_TITLE_PLACE_HOLDER)) {
 			//This must be a request for a title link
-			Set entries = bs.getFolderModule().getFolderEntryByNormalizedTitle(binderId, entryTitle);
+			Set entries = bs.getFolderModule().getFolderEntryByNormalizedTitle(binderId, entryTitle, zoneUUID);
 			if (entries.size() == 1) {
 				FolderEntry entry = (FolderEntry)entries.iterator().next();
 				entryIdToBeShown = entry.getId().toString();

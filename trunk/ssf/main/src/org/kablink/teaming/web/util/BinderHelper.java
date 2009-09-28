@@ -99,6 +99,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -607,7 +608,7 @@ public class BinderHelper {
 		
 		if (binderId != null) {
 			if (entityType != null && entityType.equals(EntityType.folder.name()))
-				return ListFolderHelper.BuildFolderBeans(bs, request, response, binderId);
+				return ListFolderHelper.BuildFolderBeans(bs, request, response, binderId, "");
 			if (entityType != null && entityType.equals(EntityType.workspace.name()))
 				return WorkspaceTreeHelper.setupWorkspaceBeans(bs, binderId, request, response);
 		}
@@ -641,7 +642,7 @@ public class BinderHelper {
 		}
 		if (binder != null) {
 			if (binder.getEntityType().name().equals(EntityType.folder.name()))
-				return ListFolderHelper.BuildFolderBeans(bs, request, response, binderId);
+				return ListFolderHelper.BuildFolderBeans(bs, request, response, binderId, "");
 			if (binder.getEntityType().name().equals(EntityType.workspace.name()))
 				return WorkspaceTreeHelper.setupWorkspaceBeans(bs, binderId, request, response);
 		}
@@ -993,6 +994,16 @@ public class BinderHelper {
 		
 		model.put(WebKeys.SIDEBAR_CURRENT_WORKSPACE, workspaceBinder);
 
+	}
+	
+	static public Long getZoneEntryId(Long entryId, String zoneUUID) {
+		if (!zoneUUID.equals("")) {
+			ZoneInfo zoneInfo = ExportHelper.getZoneInfo();
+			if (!zoneUUID.equals(zoneInfo.getId())) {
+				//This is a request for a binderId that was imported from a different zone
+			}
+		}
+		return entryId;
 	}
 
 	static public void buildNavigationLinkBeans(AllModulesInjected bs, Binder binder, Map model) {

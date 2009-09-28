@@ -51,9 +51,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.util.FileUploadItem;
@@ -62,6 +64,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.Html;
 import org.kablink.util.Http;
 import org.kablink.util.Validator;
+import org.kablink.util.search.Constants;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -89,6 +92,7 @@ public class MarkupUtil {
 	protected final static Pattern v1AttachmentFileIdPattern = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})");
 	protected final static Pattern titleUrlPattern = Pattern.compile("(\\{\\{titleUrl: ([^\\}]*)\\}\\})");
 	protected final static Pattern titleUrlBinderPattern = Pattern.compile("binderId=([^ ]*)");
+	protected final static Pattern titleUrlZoneUUIDPattern = Pattern.compile("zoneUUID=([^ ]*)");
 	protected final static Pattern titleUrlTitlePattern = Pattern.compile("title=([^ ]*)");
 	protected final static Pattern titleUrlTextPattern = Pattern.compile("text=(.*)$");
 	protected final static Pattern hrefPattern = Pattern.compile("((<a[\\s]href[=\\s]\")([^\":]*)\")");
@@ -270,11 +274,44 @@ public class MarkupUtil {
     	}
 	}
 
+	public static void scanDescriptionForExportTitleUrls(Description description) {
+		if (Validator.isNull(description.getText())) return;
+    	//Scan the text for {{titleUrl: binderId=xxx zoneUUID=xxx title=xxx}}
+		//  Remove the zoneUUID if it is the same as the current zone
+		ZoneInfo zoneInfo = ExportHelper.getZoneInfo();
+		StringBuffer outputBuf = new StringBuffer(description.getText());
+		Matcher matcher = titleUrlPattern.matcher(outputBuf.toString());
+		int loopDetector;
+		matcher = titleUrlPattern.matcher(outputBuf.toString());
+		if (matcher.find()) {
+			loopDetector = 0;
+			outputBuf = new StringBuffer();
+			do {
+				if (loopDetector++ > 2000) {
+					logger.error("Error processing markup [5]: " + description.getText());
+					return;
+				}
+				if (matcher.groupCount() < 2) continue;
+	    		String link = matcher.group();
+		    		
+				String s_zoneUUID = "";
+				Matcher fieldMatcher = titleUrlZoneUUIDPattern.matcher(link);
+				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_zoneUUID = fieldMatcher.group(1).trim();
+		    	if (!s_zoneUUID.equals("") && s_zoneUUID.equals(String.valueOf(zoneInfo.getId()))) {
+		    		link = link.replaceFirst("zoneUUID=" + String.valueOf(zoneInfo.getId()), "");
+		    	}
+    			matcher.appendReplacement(outputBuf, link.toString().replace("$", "\\$"));
+	    	} while (matcher.find());
+			matcher.appendTail(outputBuf);
+			if (!outputBuf.toString().equals(description.getText())) description.setText(outputBuf.toString());
+		}
+	}
+
 	protected interface UrlBuilder {
 		public String getFileUrlByName(String fileName);
 		public String getFileUrlById(String fileId);
 		public String getRelativeTitleUrl(String normalizedTitle, String title);
-		public String getTitleUrl(String binderId, String normalizedTitle, String title);
+		public String getTitleUrl(String binderId, String zoneUUID, String normalizedTitle, String title);
 		public String getRootUrl();
 		public String getRootServletUrl();
 	}
@@ -304,11 +341,14 @@ public class MarkupUtil {
 
 			}
 			public String getRelativeTitleUrl(String normalizedTitle, String title) {
-				return getTitleUrl((String)searchResults.get(org.kablink.util.search.Constants.BINDER_ID_FIELD), normalizedTitle, title);
+				String zoneUUID = (String)searchResults.get(org.kablink.util.search.Constants.ZONE_UUID_FIELD);
+				if (zoneUUID == null) zoneUUID = "";
+				return getTitleUrl((String)searchResults.get(org.kablink.util.search.Constants.BINDER_ID_FIELD), 
+						zoneUUID, normalizedTitle, title);
 			}
-			public String getTitleUrl(String binderId, String normalizedTitle, String title) {
+			public String getTitleUrl(String binderId, String zoneUUID, String normalizedTitle, String title) {
 				if (WebKeys.MARKUP_EXPORT.equals(type) || res == null) {
-					return PermaLinkUtil.getTitlePermalink(Long.valueOf(binderId), normalizedTitle);
+					return PermaLinkUtil.getTitlePermalink(Long.valueOf(binderId), zoneUUID, normalizedTitle);
 				}
 				PortletURL portletURL = portletURL = res.createActionURL();
 				portletURL.setParameter(WebKeys.URL_BINDER_ID, binderId);
@@ -353,14 +393,19 @@ public class MarkupUtil {
 				} catch (Exception ex) {return "";}
 			}
 			public String getRelativeTitleUrl(String normalizedTitle, String title) {
-				return getTitleUrl(entity.getParentBinder().getId().toString(), normalizedTitle, title);
+				CustomAttribute zoneUUIDattr = entity.getCustomAttribute(Constants.ZONE_UUID_FIELD);
+				String zoneUUID = "";
+				if (zoneUUIDattr != null) zoneUUID = (String) zoneUUIDattr.getValue();
+				return getTitleUrl(entity.getParentBinder().getId().toString(), 
+						zoneUUID, normalizedTitle, title);
 			}
-			public String getTitleUrl(String binderId, String normalizedTitle, String title) {
+			public String getTitleUrl(String binderId, String zoneUUID, String normalizedTitle, String title) {
 				if (WebKeys.MARKUP_EXPORT.equals(type) || res == null) {
 					return PermaLinkUtil.getTitlePermalink(Long.valueOf(binderId), normalizedTitle);
 				}
 				PortletURL portletURL = portletURL = res.createActionURL();
 				portletURL.setParameter(WebKeys.URL_BINDER_ID, binderId);
+				if (!zoneUUID.equals("")) portletURL.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
 				if (normalizedTitle != null && !normalizedTitle.equals("")) {
 					portletURL.setParameter(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
 					portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
@@ -497,6 +542,10 @@ public class MarkupUtil {
 					Matcher fieldMatcher = titleUrlBinderPattern.matcher(urlParts);
 					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_binderId = fieldMatcher.group(1).trim();
 			    		
+					String s_zoneUUID = "";
+					fieldMatcher = titleUrlZoneUUIDPattern.matcher(urlParts);
+					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_zoneUUID = fieldMatcher.group(1).trim();
+			    		
 					String normalizedTitle = "";
 					fieldMatcher = titleUrlTitlePattern.matcher(urlParts);
 					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) normalizedTitle = fieldMatcher.group(1).trim();
@@ -504,22 +553,29 @@ public class MarkupUtil {
 					String title = "";
 					fieldMatcher = titleUrlTextPattern.matcher(urlParts); //html stripped on input
 					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) title = fieldMatcher.group(1).trim();
+					if (normalizedTitle.equals("")) normalizedTitle = title;
+					if (title.equals("")) title = normalizedTitle;
 			        	
 					//build the link
 		    		StringBuffer titleLink = new StringBuffer();
 			    	if (type.equals(WebKeys.MARKUP_FORM)) {
 			        	titleLink.append("<a class=\"ss_icecore_link\" rel=\"binderId=");
-			        	titleLink.append(s_binderId).append(" title=").append(Html.stripHtml(normalizedTitle)).append("\">");
+			        	titleLink.append(s_binderId);
+			        	if (!s_zoneUUID.equals("")) titleLink.append(" zoneUUID=" + s_zoneUUID);
+			        	titleLink.append(" title=");
+			        	titleLink.append(Html.stripHtml(normalizedTitle)).append("\">");
 			        	titleLink.append(title).append("</a>");
 			    	} else if (type.equals(WebKeys.MARKUP_VIEW)){
-			    		String webUrl = builder.getTitleUrl(s_binderId, WebHelper.getNormalizedTitle(normalizedTitle), title);
+			    		String webUrl = builder.getTitleUrl(s_binderId, s_zoneUUID, 
+			    				WebHelper.getNormalizedTitle(normalizedTitle), title);
 			    		String showInParent = "false";
 			    		if (normalizedTitle == null || normalizedTitle.equals("")) showInParent = "true";
 			    		titleLink.append("<a href=\"").append(webUrl);
 			    		titleLink.append("\" onClick=\"if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this, "+showInParent+");\">");
 			    		titleLink.append("<span class=\"ss_title_link\">").append(title).append("</span></a>");
 			    	} else {
-			    		String webUrl = builder.getTitleUrl(s_binderId, WebHelper.getNormalizedTitle(normalizedTitle), title);
+			    		String webUrl = builder.getTitleUrl(s_binderId, s_zoneUUID,
+			    				WebHelper.getNormalizedTitle(normalizedTitle), title);
 			    		titleLink.append("<a href=\"").append(webUrl).append("\">").append(title).append("</a>");
 			    		
 			    	}
@@ -566,6 +622,52 @@ public class MarkupUtil {
 		} catch(Exception e) {
 			logger.error("Error processing markup [7]: " + inputString, e);
 			return inputString;
+		}
+     	return outputBuf.toString();
+	}
+	
+	//Routine to fix up descriptios before exporting them
+	public static String markupStringReplacementForExport(String inputString) {
+    	//Fixup the markup {{titleUrl}} with zoneUUID {{titleUrl: binderId=xxx zoneUUID=xxx title=xxx text=xxx}}
+		StringBuffer outputBuf = new StringBuffer(inputString);
+		Matcher matcher = titleUrlPattern.matcher(outputBuf.toString());
+		int loopDetector;
+		if (matcher.find()) {
+			loopDetector = 0;
+			outputBuf = new StringBuffer();
+			do {
+				if (loopDetector++ > 2000) {
+					logger.error("Error processing markup [5]: " + inputString);
+					return outputBuf.toString();
+				}
+				if (matcher.groupCount() < 2) continue;
+				String urlParts = matcher.group(2).trim();
+				String s_binderId = "";
+				Matcher fieldMatcher = titleUrlBinderPattern.matcher(urlParts);
+				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_binderId = fieldMatcher.group(1).trim();
+		    		
+				String s_zoneUUID = "";
+				fieldMatcher = titleUrlZoneUUIDPattern.matcher(urlParts);
+				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_zoneUUID = fieldMatcher.group(1).trim();
+				if (s_zoneUUID.equals("")) {
+					ZoneInfo zoneInfo = ExportHelper.getZoneInfo();
+					s_zoneUUID = String.valueOf(zoneInfo.getId());
+				}
+		    		
+				String normalizedTitle = "";
+				fieldMatcher = titleUrlTitlePattern.matcher(urlParts);
+				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) normalizedTitle = fieldMatcher.group(1).trim();
+		        	
+				String title = "";
+				fieldMatcher = titleUrlTextPattern.matcher(urlParts); //html stripped on input
+				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) title = fieldMatcher.group(1).trim();
+		        	
+				//rebuild the link
+	    		String titleLink = "{{titleUrl: binderId=" + s_binderId + " zoneUUID=" + s_zoneUUID + 
+	    			" title=" + normalizedTitle + " text=" + Html.stripHtml(title) + "}}";
+    			matcher.appendReplacement(outputBuf, titleLink.replace("$", "\\$"));
+	    	} while (matcher.find());
+			matcher.appendTail(outputBuf);
 		}
      	return outputBuf.toString();
 	}

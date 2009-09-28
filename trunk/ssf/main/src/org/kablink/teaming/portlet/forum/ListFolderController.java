@@ -226,6 +226,7 @@ public class ListFolderController extends  SAbstractController {
 			return BinderHelper.CommonPortletDispatch(this, request, response);
 		
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		String zoneUUID = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
 		//If no binder, Default to the user's workspace
 		if (binderId == null) binderId = user.getWorkspaceId();
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
@@ -298,7 +299,7 @@ public class ListFolderController extends  SAbstractController {
 		} else {
 			binderId = (Long) portletSession.getAttribute(WebKeys.LAST_BINDER_VIEWED + namespace, PortletSession.APPLICATION_SCOPE);
 		}
-		return ListFolderHelper.BuildFolderBeans(this, request, response, binderId);
+		return ListFolderHelper.BuildFolderBeans(this, request, response, binderId, zoneUUID);
 		
 	}
 }

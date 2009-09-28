@@ -93,6 +93,7 @@ import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
+import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -709,6 +710,7 @@ public class ExportHelper {
 		}
 
 		entityElem.addAttribute("title", entity.getTitle());
+		addZoneId(entityElem, entity);
 		addEntitySignature(entityElem, entity);
 		
 		String entityUrl = "";
@@ -752,6 +754,23 @@ public class ExportHelper {
 					.getAverage().toString());
 			element.addAttribute("ratingCount", entity.getAverageRating()
 					.getCount().toString());
+		}
+	}
+
+	private static void addZoneId(Element element, DefinableEntity entity) {
+		ZoneInfo zoneInfo = ExportHelper.getZoneInfo();
+		String entityZoneUUID = zoneInfo.getId() + "." + entity.getId().toString();
+		CustomAttribute zoneUUIDs = entity.getCustomAttribute(Constants.ZONE_UUID_FIELD);
+		Set zoneUUIDvalues = new HashSet();
+		if (zoneUUIDs != null) zoneUUIDvalues = zoneUUIDs.getValueSet();
+		if (!zoneUUIDvalues.contains(entityZoneUUID)) zoneUUIDvalues.add(entityZoneUUID);
+		Iterator itZoneUUIDs = zoneUUIDvalues.iterator();
+		while (itZoneUUIDs.hasNext()) {
+			String zoneUUID = (String) itZoneUUIDs.next();
+			Element attributeEle = element.addElement("attribute");
+			attributeEle.addAttribute("name", Constants.ZONE_UUID_FIELD);
+			attributeEle.addAttribute("type", "text");
+			attributeEle.setText(zoneUUID);
 		}
 	}
 
