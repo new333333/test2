@@ -535,7 +535,34 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    public void setStatusDate(Date statusDate) {
 	    User user = RequestContextHolder.getRequestContext().getUser();
 	    user.setStatusDate(statusDate);
-   }  	
+   }  
+
+   //RW transaction
+   public void setDiskQuota(long megabytes) {
+	    User user = RequestContextHolder.getRequestContext().getUser();
+	    user.setDiskQuota(megabytes);
+   }  
+
+   //RW transaction
+   public void resetDiskUsage() {
+	   getProfileDao().resetDiskUsage();
+   }  
+   
+   //RO transaction
+   public long getDiskQuota() {
+	    User user = RequestContextHolder.getRequestContext().getUser();
+	    return user.getDiskQuota();
+   }  
+   
+   //RW transaction
+   public void setDiskQuotas(Collection<Long> entryIds, long megabytes) {
+		//does read check
+     	for (Long id : entryIds) {
+			User user = (User)getProfileDao().loadUser(id, RequestContextHolder.getRequestContext().getZoneId());
+			user.setDiskQuota(megabytes);
+     	}
+	}
+   
    //RO transaction
    public Group getGroup(String name) {
 	  Principal p = getProfileDao().findPrincipalByName(name, RequestContextHolder.getRequestContext().getZoneId());

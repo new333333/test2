@@ -177,6 +177,8 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 			entryElem.addAttribute("skypeId", ((User)entry).getSkypeId());
 			entryElem.addAttribute("twitterId", ((User)entry).getTwitterId());
 			entryElem.addAttribute("miniBlogId", Long.toString(((User)entry).getMiniBlogId()));
+			entryElem.addAttribute("diskQuota", Long.toString(((User)entry).getDiskQuota()));
+			entryElem.addAttribute("diskSpaceUsed", Long.toString(((User)entry).getDiskSpaceUsed()));
 		}
 		
 		return entryElem;
@@ -209,7 +211,8 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		if (user.containsKey(Constants.SKYPEID_FIELD)) entryElem.addAttribute("skypeId", (String) user.get(Constants.SKYPEID_FIELD));
 		if (user.containsKey(Constants.TWITTERID_FIELD)) entryElem.addAttribute("twitterId", (String) user.get(Constants.TWITTERID_FIELD));
 		if (user.containsKey(Constants.MINIBLOGID_FIELD)) entryElem.addAttribute("miniBlogId", (String) user.get(Constants.MINIBLOGID_FIELD));
-
+		if (user.containsKey(Constants.DISKQUOTA_FIELD)) entryElem.addAttribute("diskQuota", (String) user.get(Constants.DISKQUOTA_FIELD));
+		if (user.containsKey(Constants.DISKSPACEUSED_FIELD)) entryElem.addAttribute("diskSpaceUsed", (String) user.get(Constants.DISKSPACEUSED_FIELD));
 
 		return entryElem;
 	}
@@ -308,6 +311,8 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		userModel.setSkypeId(user.getSkypeId());
 		userModel.setTwitterId(user.getTwitterId());
 		userModel.setMiniBlogId(user.getMiniBlogId());
+		userModel.setDiskQuota(user.getDiskQuota());
+		userModel.setDiskSpaceUsed(user.getDiskSpaceUsed());
 	}
 	
 	protected void fillGroupModel(org.kablink.teaming.remoting.ws.model.Group groupModel, Group group) {
