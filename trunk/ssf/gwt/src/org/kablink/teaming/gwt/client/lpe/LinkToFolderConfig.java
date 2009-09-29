@@ -30,32 +30,69 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
+import com.google.gwt.http.client.URL;
 
 
 /**
- * 
+ * This class represents the configuration data for a "link to folder" widget
+ * @author jwootton
+ *
  */
-public class LinkToFolderPaletteItem extends PaletteItem
+public class LinkToFolderConfig extends ConfigItem
 {
+	private LinkToFolderProperties	m_properties;
+	
 	/**
 	 * 
 	 */
-	public LinkToFolderPaletteItem()
+	public LinkToFolderConfig( String configStr )
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorLinkFolder(), GwtTeaming.getMessages().lpeLinkFolderWS() );
-	}// end LinkToFolderPaletteItem()
-
-
+		String[] results;
+		
+		m_properties = new LinkToFolderProperties();
+		
+		// Split the configuration data into its parts.  ie folderId=xxx showTitle=x showFolderDescription=1 showEntriesOpened=1 entriesToShow
+		results = configStr.split( "[,;]" );
+		if ( results != null )
+		{
+			int i;
+			
+			for (i = 0; i < results.length; ++i)
+			{
+				String[] results2;
+				
+				results2 = results[i].split( "=" );
+				if ( results2.length == 2 )
+				{
+					if ( results2[0].equalsIgnoreCase( "title" ) )
+						m_properties.setTitle( URL.decodeComponent( results2[1] ) );
+					else if ( results2[0].equalsIgnoreCase( "binderId" ) )
+						m_properties.setFolderId( results2[1] );
+					else if ( results2[0].equalsIgnoreCase( "popup" ) )
+						m_properties.setOpenInNewWindow( results2[1].equalsIgnoreCase( "1" ) );
+				}
+			}
+		}
+	}// end LinkToFolderConfig()
+	
+	
 	/**
-	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
+	 * 
 	 */
-	public DropWidget createDropWidget( LandingPageEditor lpe )
+	public void addChild( ConfigItem configItem )
 	{
-		return new LinkToFolderDropWidget( lpe, (LinkToFolderProperties) null );
-	}// end createDropWidget()
-}// end LinkToFolderPaletteItem
-
-
+		// Nothing to do.
+	}// end addChild()
+	
+	
+	/**
+	 * 
+	 */
+	public LinkToFolderProperties getProperties()
+	{
+		return m_properties;
+	}// end getProperties()
+}// end LinkToFolderConfig

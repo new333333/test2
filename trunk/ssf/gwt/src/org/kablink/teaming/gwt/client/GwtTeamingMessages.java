@@ -97,6 +97,13 @@ public interface GwtTeamingMessages extends Messages
 	String linkToEntryProperties();
 	String openEntryInNewWnd();
 	
+	// Strings used with the "Link to folder" widget
+	String folderOrWorkspaceLabel();
+	String linkToFolderLabel();
+	String linkToFolderProperties();
+	String linkToFolderTitleLabel();
+	String openFolderInNewWnd();
+	
 	// Strings used with the "Link to url" widget
 	String linkToUrl();
 	String linkToUrlLabel();
