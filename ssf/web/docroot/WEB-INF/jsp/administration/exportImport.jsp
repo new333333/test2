@@ -153,6 +153,11 @@ function toggleFileInput() {
 <span class="ss_fineprint"><ssf:nlt tag="administration.export_import.note2"/></span>
 </div>
 <br>
+<div style="padding-left:10px;">
+<input type="checkbox" name="noSubBinders"/>
+<span><ssf:nlt tag="administration.export_import.thisBinderOnly"/></span>
+</div>
+<br/>
 <table class="ss_style" border="0" cellpadding="5" cellspacing="0" width="95%">
 <tr><td>
   <ssf:tree treeName="ss_folderTree" treeDocument="${ssFolderDomTree}" 

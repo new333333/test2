@@ -148,6 +148,7 @@ import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.LuceneWriteSession;
 import org.kablink.teaming.search.QueryBuilder;
+import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -219,7 +220,7 @@ public class ExportHelper {
 	private static String binderPrefix = "b_";
 
 	public static void export(Long binderId, Long entityId, OutputStream out,
-			Map options, Collection<Long> binderIds) throws Exception {
+			Map options, Collection<Long> binderIds, Boolean noSubBinders) throws Exception {
 
 		getNumberFormat();
 
@@ -243,12 +244,12 @@ public class ExportHelper {
 			// see if folder
 			if (entType == EntityType.folder) {
 				process(zipOut, folderModule.getFolder(binderId), false,
-						options, binderIds, defList);
+						options, binderIds, noSubBinders, defList);
 				// see if ws or profiles ws
 			} else if ((entType == EntityType.workspace)
 					|| (entType == EntityType.profiles)) {
 				process(zipOut, workspaceModule.getWorkspace(binderId), true,
-						options, binderIds, defList);
+						options, binderIds, noSubBinders, defList);
 			} else {
 				// something's wrong
 			}
@@ -261,8 +262,10 @@ public class ExportHelper {
 	}
 
 	private static void process(ZipOutputStream zipOut, Binder start,
-			boolean isWorkspace, Map options, Collection<Long> binderIds, Set defList) throws Exception {
+			boolean isWorkspace, Map options, Collection<Long> binderIds, 
+			Boolean noSubBinders, Set defList) throws Exception {
 		Map<Long,Boolean> binderIdsToExport = new HashMap<Long,Boolean>();
+		binderIdsToExport.put(start.getId(), false);
 		SortedSet<Binder> binders = binderModule.getBinders(binderIds);
 		for (Binder binder : binders) {
 			//Mark this binder as having everything exported
@@ -281,157 +284,87 @@ public class ExportHelper {
 		if (binders.isEmpty()) binderIdsToExport.put(start.getId(), true);
 		
 		addDefinitions(defList, start.getDefinitions());
+		
+		//Get a complete list of all sub-binders
+		List folderIds = new ArrayList();
+		folderIds.add(start.getId().toString());
+		Criteria crit = new Criteria();
+		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
+			.add(in(Constants.ENTRY_ANCESTRY, folderIds));
+		crit.addOrder(Order.asc(Constants.BINDER_ID_FIELD));
+		Map binderMap = binderModule.executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
 
-		if (isWorkspace) {
-			zipOut.putNextEntry(new ZipEntry(binderPrefix + "w"
-					+ nft.format(start.getId()) + File.separator + "."
-					+ binderPrefix + "w" + nft.format(start.getId()) + ".xml"));
-			XmlFileUtil.writeFile(getWorkspaceAsDoc(null, start.getId(), false,
-					binderPrefix + "w" + nft.format(start.getId()), defList),
-					zipOut);
-			zipOut.closeEntry();
+		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
+		List binderIdList = new ArrayList();
 
-			SortedSet<Binder> subWorkspaces = workspaceModule
-					.getWorkspaceTree(start.getId());
-			for (Binder binder : subWorkspaces) {
-				if (binderIdsToExport.containsKey(binder.getId())) {
-					processBinder(
-						zipOut,
-						binder,
-						(binder.getEntityType() == EntityType.workspace)
-								|| (binder.getEntityType() == EntityType.profiles),
-						options,
-						binderIdsToExport,
-						binderPrefix + "w" + nft.format(start.getId()), defList);
-				}
-			}
-		} else {
-			zipOut.putNextEntry(new ZipEntry(binderPrefix + "f"
-					+ nft.format(start.getId()) + File.separator + "."
-					+ binderPrefix + "f" + nft.format(start.getId()) + ".xml"));
-			XmlFileUtil.writeFile(getFolderAsDoc(null, start.getId(), false,
-					binderPrefix + "f" + nft.format(start.getId()), defList),
-					zipOut);
-			zipOut.closeEntry();
+      	for (Iterator iter=binderMapList.iterator(); iter.hasNext();) {
+      		Map entryMap = (Map) iter.next();
+      		Long docId = new Long((String)entryMap.get("_docId"));
+      		binderIdList.add(docId);
+	        if (!noSubBinders && !binderIdsToExport.containsKey(docId)) {
+	        	binderIdsToExport.put(docId, false);
+	        	//All sub-binders should be exported; add these to the list
+	        	ArrayList ancestors = ((SearchFieldResult)entryMap.get(Constants.ENTRY_ANCESTRY)).getValueArray();
+	        	Iterator itAncestors = ancestors.iterator();
+	        	while (itAncestors.hasNext()) {
+	        		Long ancId = Long.valueOf((String)itAncestors.next());
+	        		if (binderIdsToExport.containsKey(ancId) && binderIdsToExport.get(ancId)) {
+	        			binderIdsToExport.put(docId, true);
+	        			break;
+	        		}
+	        	}
+	        }
+      	}
+		
+        //Go through all of the binders and export them
+      	Iterator<Long> itBinders = binderIdsToExport.keySet().iterator();
+      	while (itBinders.hasNext()) {
+      		Long binderId = (Long)itBinders.next();
+			Binder binder = binderModule.getBinder(binderId);
+			if (isWorkspace) {
+				zipOut.putNextEntry(new ZipEntry(binderPrefix + "w"
+						+ nft.format(binderId) + File.separator + "."
+						+ binderPrefix + "w" + nft.format(binderId) + ".xml"));
+				XmlFileUtil.writeFile(getWorkspaceAsDoc(null, binderId, false,
+						binderPrefix + "w" + nft.format(binderId), defList),
+						zipOut);
+				zipOut.closeEntry();
 
-			List<Folder> subFolders = ((Folder) start).getFolders();
-
-			for (Folder fdr : subFolders) {
-				if (binderIdsToExport.containsKey(fdr.getId())) {
-					processBinder(zipOut, fdr, false, options, binderIdsToExport, binderPrefix + "f"
-						+ nft.format(start.getId()), defList);
-				}
-			}
-
-			if (binderIdsToExport.containsKey(start.getId())) {
-				Map folderEntries = folderModule.getEntries(start.getId(), options);
-				List searchEntries = (List) folderEntries.get("search_entries");
+			} else {
+				zipOut.putNextEntry(new ZipEntry(binderPrefix + "f"
+						+ nft.format(binderId) + File.separator + "."
+						+ binderPrefix + "f" + nft.format(binderId) + ".xml"));
+				XmlFileUtil.writeFile(getFolderAsDoc(null, binderId, false,
+						binderPrefix + "f" + nft.format(binderId), defList),
+						zipOut);
+				zipOut.closeEntry();
 	
-				for (int i = 0; i < searchEntries.size(); i++) {
-					Map searchEntry = (Map) searchEntries.get(i);
-					Long entryId = Long.valueOf(searchEntry.get("_docId")
-							.toString());
-					FolderEntry entry = folderModule.getEntry(start.getId(),
-							entryId);
-					processEntry(zipOut, entry, binderPrefix + "f"
-							+ nft.format(start.getId()), defList);
+				//Only output entries if folder is selected (or is a sub-folder being output)
+				if (binderIdsToExport.get(binderId)) {
+					Map folderEntries = folderModule.getEntries(binderId, options);
+					List searchEntries = (List) folderEntries.get("search_entries");
+		
+					for (int i = 0; i < searchEntries.size(); i++) {
+						Map searchEntry = (Map) searchEntries.get(i);
+						Long entryId = Long.valueOf(searchEntry.get("_docId")
+								.toString());
+						FolderEntry entry = folderModule.getEntry(binderId,
+								entryId);
+						processEntry(zipOut, entry, binderPrefix + "f"
+								+ nft.format(binderId), defList);
+					}
 				}
 			}
-		}
 
-		if (binderIdsToExport.containsKey(start.getId())) {
 			String entityLetter = isWorkspace ? "w" : "f";
-			Set<FileAttachment> attachments = start.getFileAttachments();
+			Set<FileAttachment> attachments = binder.getFileAttachments();
 	
 			for (FileAttachment attach : attachments) {
-				processBinderAttachment(zipOut, start, attach, binderPrefix
-						+ entityLetter + nft.format(start.getId()));
+				processBinderAttachment(zipOut, binder, attach, binderPrefix
+						+ entityLetter + nft.format(binderId));
 			}
-		}
+      	}
 
-		return;
-	}
-
-	private static void processBinder(ZipOutputStream zipOut, Binder binder,
-			boolean isWorkspace, Map options, Map<Long,Boolean> binderIdsToExport, String pathName, Set defList)
-			throws Exception {
-		addDefinitions(defList, binder.getDefinitions());
-
-		if (isWorkspace) {
-			zipOut.putNextEntry(new ZipEntry(pathName + File.separator
-					+ binderPrefix + "w" + nft.format(binder.getId())
-					+ File.separator + "." + binderPrefix + "w"
-					+ nft.format(binder.getId()) + ".xml"));
-			XmlFileUtil.writeFile(getWorkspaceAsDoc(null, binder.getId(),
-					false, pathName + File.separator + binderPrefix + "w"
-							+ nft.format(binder.getId()), defList), zipOut);
-			zipOut.closeEntry();
-
-			SortedSet<Binder> subWorkspaces = workspaceModule
-					.getWorkspaceTree(binder.getId());
-			for (Binder bdr : subWorkspaces) {
-				//See if this binder is having all of the sub binders exported
-				if (binderIdsToExport.get(binder.getId())) binderIdsToExport.put(bdr.getId(), true);
-				//Only export this sub binder if it is on the list
-				if (binderIdsToExport.containsKey(bdr.getId())) {
-					processBinder(
-						zipOut,
-						bdr,
-						(bdr.getEntityType() == EntityType.workspace)
-								|| (bdr.getEntityType() == EntityType.profiles),
-						options, 
-						binderIdsToExport,
-						pathName + File.separator + binderPrefix + "w"
-								+ nft.format(binder.getId()), defList);
-				}
-			}
-		} else {
-			zipOut.putNextEntry(new ZipEntry(pathName + File.separator
-					+ binderPrefix + "f" + nft.format(binder.getId())
-					+ File.separator + "." + binderPrefix + "f"
-					+ nft.format(binder.getId()) + ".xml"));
-			XmlFileUtil.writeFile(getFolderAsDoc(null, binder.getId(), false,
-					pathName + File.separator + binderPrefix + "f"
-							+ nft.format(binder.getId()), defList), zipOut);
-			zipOut.closeEntry();
-
-			Set<Folder> subFolders = folderModule
-					.getSubfolders((Folder) binder);
-
-			for (Folder fdr : subFolders) {
-				//See if this binder is having all of the sub binders exported
-				if (binderIdsToExport.get(binder.getId())) binderIdsToExport.put(fdr.getId(), true);
-				//Only export this sub folder if it is on the list
-				if (binderIdsToExport.containsKey(fdr.getId())) {
-					processBinder(zipOut, fdr, false, options, binderIdsToExport, pathName
-						+ File.separator + binderPrefix + "f"
-						+ nft.format(binder.getId()), defList);
-				}
-			}
-
-			Map folderEntries = folderModule
-					.getEntries(binder.getId(), options);
-			List searchEntries = (List) folderEntries.get("search_entries");
-
-			for (int i = 0; i < searchEntries.size(); i++) {
-				Map searchEntry = (Map) searchEntries.get(i);
-				Long entryId = Long.valueOf(searchEntry.get("_docId")
-						.toString());
-				FolderEntry entry = folderModule.getEntry(binder.getId(),
-						entryId);
-				processEntry(zipOut, entry, pathName + File.separator
-						+ binderPrefix + "f" + nft.format(binder.getId()),
-						defList);
-			}
-		}
-		String entityLetter = isWorkspace ? "w" : "f";
-		Set<FileAttachment> attachments = binder.getFileAttachments();
-
-		for (FileAttachment attach : attachments) {
-			processBinderAttachment(zipOut, binder, attach, pathName
-					+ File.separator + binderPrefix + entityLetter
-					+ nft.format(binder.getId()));
-		}
 		return;
 	}
 
