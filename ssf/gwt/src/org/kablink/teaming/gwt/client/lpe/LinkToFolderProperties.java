@@ -33,7 +33,7 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
-import org.kablink.teaming.gwt.client.GwtFolderEntry;
+import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
@@ -43,33 +43,33 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
- * This class holds all of the properties needed to define a "Link to Entry" widget in a landing page.
+ * This class holds all of the properties needed to define a "Link to Folder" widget in a landing page.
  * @author jwootton
  *
  */
-public class LinkToEntryProperties
+public class LinkToFolderProperties
 	implements PropertiesObj
 {
 	private String		m_title;
 	private boolean	m_openInNewWindow;
-	private String m_entryId;
-	private String m_entryName;
-	private AsyncCallback<GwtFolderEntry> m_folderEntryCallback;
+	private String m_folderId;
+	private String m_folderName;
+	private AsyncCallback<GwtFolder> m_folderCallback;
 	private boolean m_rpcInProgress;
 	
 	/**
 	 * 
 	 */
-	public LinkToEntryProperties()
+	public LinkToFolderProperties()
 	{
 		m_title = null;
 		m_openInNewWindow = false;
-		m_entryId = null;
-		m_entryName = null;
+		m_folderId = null;
+		m_folderName = null;
 		m_rpcInProgress = false;
 		
-		// Create the callback that will be used when we issue an ajax call to get a GwtFolderEntry object.
-		m_folderEntryCallback = new AsyncCallback<GwtFolderEntry>()
+		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
+		m_folderCallback = new AsyncCallback<GwtFolder>()
 		{
 			/**
 			 * 
@@ -77,7 +77,7 @@ public class LinkToEntryProperties
 			public void onFailure(Throwable t)
 			{
 				//!!! Do something here.
-				Window.alert( "The request to get the GwtFolderEntry object failed." );
+				Window.alert( "The request to get the GwtFolder object failed." );
 				m_rpcInProgress = false;
 			}// end onFailure()
 	
@@ -85,15 +85,15 @@ public class LinkToEntryProperties
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( GwtFolderEntry gwtFolderEntry )
+			public void onSuccess( GwtFolder gwtFolder )
 			{
-				if ( gwtFolderEntry != null )
-					m_entryName = gwtFolderEntry.getEntryName();
+				if ( gwtFolder != null )
+					m_folderName = gwtFolder.getFolderName();
 				
 				m_rpcInProgress = false;
 			}// end onSuccess()
 		};
-	}// end LinkToEntryProperties()
+	}// end LinkToFolderProperties()
 	
 	
 	/**
@@ -101,54 +101,54 @@ public class LinkToEntryProperties
 	 */
 	public void copy( PropertiesObj props )
 	{
-		if ( props instanceof LinkToEntryProperties )
+		if ( props instanceof LinkToFolderProperties )
 		{
-			LinkToEntryProperties entryProps;
+			LinkToFolderProperties folderProps;
 			
-			entryProps = (LinkToEntryProperties) props;
+			folderProps = (LinkToFolderProperties) props;
 			
-			setEntryId( entryProps.getEntryId() );
-			setEntryName( entryProps.getEntryName() );
-			setTitle( entryProps.getTitle() );
-			setOpenInNewWindow( entryProps.getOpenInNewWindow() );
+			setFolderId( folderProps.getFolderId() );
+			setFolderName( folderProps.getFolderName() );
+			setTitle( folderProps.getTitle() );
+			setOpenInNewWindow( folderProps.getOpenInNewWindow() );
 		}
 	}// end copy()
 	
 
 	/**
-	 * Issue an ajax request to get the entry's name from the server.
+	 * Issue an ajax request to get the folder's name from the server.
 	 */
 	public void getDataFromServer()
 	{
 		GwtRpcServiceAsync rpcService;
 		
-		// Do we have an entry id?
-		if ( m_entryId != null )
+		// Do we have a folder id?
+		if ( m_folderId != null )
 		{
-			// Yes, Issue an ajax request to get the GwtFolderEntry object for the given entry id.
+			// Yes, Issue an ajax request to get the GwtFolder object for the given folder id.
 			m_rpcInProgress = true;
 			rpcService = GwtTeaming.getRpcService();
-			rpcService.getEntry( m_entryId, m_folderEntryCallback );
+			rpcService.getFolder( m_folderId, m_folderCallback );
 		}
 	}// end getDataFromServer()
 	
 	
 	/**
-	 * Return the entry id.
+	 * Return the folder id.
 	 */
-	public String getEntryId()
+	public String getFolderId()
 	{
-		return m_entryId;
-	}// end getEntryId()
+		return m_folderId;
+	}// end getFolderId()
 	
 	
 	/**
-	 * Return the name of the entry.
+	 * Return the name of the folder.
 	 */
-	public String getEntryName()
+	public String getFolderName()
 	{
-		return m_entryName;
-	}// end getEntryName()
+		return m_folderName;
+	}// end getFolderName()
 	
 	
 	/**
@@ -181,27 +181,27 @@ public class LinkToEntryProperties
 	/**
 	 * 
 	 */
-	public void setEntryId( String entryId )
+	public void setFolderId( String folderId )
 	{
-		// Did the entry id change?
-		if ( m_entryId != null && m_entryId.equalsIgnoreCase( entryId ) )
+		// Did the folder id change?
+		if ( m_folderId != null && m_folderId.equalsIgnoreCase( folderId ) )
 		{
 			// Yes
-			// Since we are changing the entry id clear out the entry name and the name of the parent binder.
-			m_entryName = "???";
+			// Since we are changing the folder id clear out the folder name
+			m_folderName = "???";
 		}
 		
-		m_entryId = entryId;
-	}// end setEntryId()
+		m_folderId = folderId;
+	}// end setFolderId()
 	
 	
 	/**
 	 * 
 	 */
-	public void setEntryName( String entryName )
+	public void setFolderName( String folderName )
 	{
-		m_entryName = entryName;
-	}// end setEntryName()
+		m_folderName = folderName;
+	}// end setFolderName()
 	
 	
 	/**
@@ -220,4 +220,4 @@ public class LinkToEntryProperties
 	{
 		m_title = title;
 	}// end setTitle()
-}// end LinkToEntryProperties
+}// end LinkToFolderProperties
