@@ -15,7 +15,8 @@
 	</target>
 	
 	<target name="deploy-jar" depends="deploy-init">
-		<property name="deploy.lib.dir" value="${app.server.ssf.dir}/WEB-INF/lib" />
+		<!--<property name="deploy.lib.dir" value="${app.server.ssf.dir}/WEB-INF/lib" />-->
+		<property name="deploy.lib.dir" value="${app.server.shared.lib.dir}" />
 		<copy file="${deploy-support.jar.file}" todir="${deploy.lib.dir}" />
 	</target>
 	
