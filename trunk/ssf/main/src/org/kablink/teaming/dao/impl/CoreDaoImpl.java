@@ -104,6 +104,7 @@ import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
@@ -1251,8 +1252,14 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                 public Object doInHibernate(Session session) throws HibernateException {
                 	List<Long> result = new ArrayList<Long>();
                 	List readObjs = new ArrayList();
-					List objs = session.createQuery("SELECT owner From org.kablink.teaming.domain.CustomAttribute WHERE name='" + key + "' AND stringValue='" + id + "' AND ownerType='" + type + "'")
+                	List objs = null;
+                	if (type.equals(EntityType.folderEntry.name())) {
+    					objs = session.createQuery("SELECT owner From org.kablink.teaming.domain.CustomAttribute WHERE name='" + key + "' AND stringValue='" + id + "' AND ownerType=folderEntry'")
 			   			.list();
+                	} else {
+    					objs = session.createQuery("SELECT owner From org.kablink.teaming.domain.CustomAttribute WHERE name='" + key + "' AND stringValue='" + id + "' AND (ownerType='folder' OR ownerType='workspace')")
+			   			.list();
+                	}
 			       	readObjs.add(objs);
 			      	HashMap tMap;
 			       	for (int i=0; i < objs.size(); ++i) {
@@ -1260,9 +1267,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 			       		if (type.equals(owner.getEntity().getEntityType().name())) {
 			       			result.add(owner.getEntity().getId());
 			       		}
-			       	}
-			       	for (int i=0; i < readObjs.size(); ++i) {
-			       		evict(readObjs.get(i));
 			       	}
 			       	return result;
                 }

@@ -174,8 +174,8 @@ public class ExportImportController  extends  SAbstractController {
 				Map formData = request.getParameterMap();
 				binderIds = TreeHelper.getSelectedIds(formData);
 			}
-			
-			getBinderModule().export(binderId, entryId, res.getOutputStream(), options, binderIds);
+			Boolean noSubBinders = PortletRequestUtils.getBooleanParameter(request, "noSubBinders", false);
+			getBinderModule().export(binderId, entryId, res.getOutputStream(), options, binderIds, noSubBinders);
 		}
 		return new ModelAndView("forum/reload_opener", model);
 	}

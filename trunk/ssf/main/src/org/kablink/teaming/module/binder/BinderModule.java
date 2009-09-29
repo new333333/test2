@@ -481,7 +481,8 @@ public interface BinderModule {
 	 */
 	public void deleteSimpleName(String name);
 
-	public void export(Long binderId, Long entityId, OutputStream out, Map options, Collection<Long> binderIds) throws Exception;
+	public void export(Long binderId, Long entityId, OutputStream out, Map options, 
+			Collection<Long> binderIds, Boolean noSubBinders) throws Exception;
 	
 	public void importZip(Long binderId, InputStream fIn) throws IOException;
 	
