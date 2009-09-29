@@ -691,6 +691,7 @@ public class WebKeys {
     public static final String DEFINITION_CHOICES="ssDefinitionChoices";
     public static final String DEFINITION_FAMILY="ssDefinitionFamily";
     public static final String DIRECTION="ss_direction";
+    public static final String DISKQUOTA="diskQuota";
     public static final String DISPLAY_STYLE="ss_displayStyle";
     public static final String DISPLAY_STYLE_BLOG="blog";
     public static final String DISPLAY_STYLE_SEARCH="search";

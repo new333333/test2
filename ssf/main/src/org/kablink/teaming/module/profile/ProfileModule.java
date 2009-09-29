@@ -44,6 +44,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.dom4j.Document;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.Binder;
@@ -467,6 +468,26 @@ public interface ProfileModule {
      * @param status
      */
     public void setStatusDate(Date statusDate);
+    /**
+     * Set the disk quota for the current user (in megabytes)
+     * @param megabytes
+     */
+    public void setDiskQuota(long megabytes);   
+    /**
+     * Get the disk quota for the current user (in megabytes)
+     * @return
+     */
+    public long getDiskQuota();
+    /**
+     * Set the diskquota value for a set of users (in megabytes)
+	 * @param entryIds
+	 * @param megabytes
+     */
+    public void setDiskQuotas(Collection<Long> entryIds, long megabytes);
+    /**
+     * Reset the diskspace usage value for all users
+     */
+    public void resetDiskUsage();
 	/**
 	 * Test access to a binder
 	 * @param user

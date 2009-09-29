@@ -220,4 +220,9 @@ public interface ProfileDao {
      * @return Principal or null
      */
  	public Principal filterInaccessiblePrincipal(Principal principal);
+ 	
+ 	/**
+ 	 * Initialize (or reset) the disk space used by each user
+ 	 */
+ 	public void resetDiskUsage();
  }

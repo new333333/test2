@@ -1508,5 +1508,20 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		return result;
 	}
 	
+	//Initialize (or reset) the disk space used by each user
+	public void resetDiskUsage() {
+		getHibernateTemplate().execute(
+				new HibernateCallback() {
+					public Object doInHibernate(Session session) throws HibernateException {
+						String sql ="Update SS_Principals " +
+									"SET diskSpaceUsed = " + 
+									"COALESCE((SELECT SUM(fileLength) FROM SS_Attachments AS b " +
+									"WHERE b.creation_principal = SS_Principals.id),0)";
+						session.createSQLQuery(sql).executeUpdate();
+						return null;
+					}
+				}
+		);    		             		 
+	}
 
 }

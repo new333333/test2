@@ -149,6 +149,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	private static final String FAILED_FILTER_TRANSACTION_CONTINUE 	= "continue";
 	private static final String FAILED_FILTER_TRANSACTION_ABORT 	= "abort";
 	private static final String FAILED_FILTER_TRANSACTION_DEFAULT	= FAILED_FILTER_TRANSACTION_ABORT;
+	private static final Long 	MEGABYTES							= 1024L * 1024L;
 		
 	protected Log logger = LogFactory.getLog(getClass());
 
@@ -1012,9 +1013,17 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
    			}
    		}
    		
-		//System.out.println(changeLog.getXmlNoHeader());
-
-		if(updateMetadata)
+//   	 decrement disk space used for each version as well as the primary
+   		if (SPropsUtil.getBoolean("disk.quotas.enabled", true)) {
+   			for(Iterator i = fAtt.getFileVersionsUnsorted().iterator(); i.hasNext();) {
+   				VersionAttachment v = (VersionAttachment) i.next();
+   				User user = getProfileDao().loadUser(v.getCreation().getPrincipal().getId(), RequestContextHolder.getRequestContext().getZoneName());
+   				user.decrementDiskSpaceUsed(v.getFileItem().getLength());
+   			}
+   		}
+   		
+    	// System.out.println(changeLog.getXmlNoHeader());
+    	if(updateMetadata)
 			writeDeleteMetaDataTransactional(binder, entry, fAtt, changeLog);
 		
 		return changeLog;
@@ -1027,6 +1036,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	       getTransactionTemplate().execute(new TransactionCallback() {
 	       	public Object doInTransaction(TransactionStatus status) {  
 	       		getCoreDao().save(changeLog);
+            	
 				entry.removeAttachment(fAtt);
 				//file names on binders are not registered
 				if (binder.isLibrary() && !binder.equals(entry)) getCoreDao().updateFileName(binder, entry, fAtt.getFileItem().getName(), null);
@@ -1195,7 +1205,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
             		changes = new ChangeLog(entry, ChangeLog.FILEADD);
             	else
             		changes = new ChangeLog(entry, ChangeLog.FILEMODIFY);
-        		ChangeLogUtils.buildLog(changes, fAtt);
+            	
+            	// add the size of the file to the users disk usage
+            	if (SPropsUtil.getBoolean("disk.quotas.enabled", true)) {
+            		User user = RequestContextHolder.getRequestContext().getUser();
+            		user.incrementDiskSpaceUsed(fAtt.getFileItem().getLength());
+            	}
+            	
+            	ChangeLogUtils.buildLog(changes, fAtt);
         		getCoreDao().save(changes);
         		
                  return null;
@@ -1404,6 +1421,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	Long fileSize = null;
     	if(versionName != null)
     		fileSize = Long.valueOf(session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName));
+    	if (fileSize != null) checkQuota(fileSize);
 		updateFileAttachment(fAtt, user, versionName, fileSize, fui.getModDate(), fui.getModifierName());
     }
 
@@ -1526,11 +1544,36 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 						
 		long fileSize = session.getContentLengthVersioned(binder, entry, fui.getOriginalFilename(), versionName);
 		
+		checkQuota(fileSize);
+		
 		fAtt.getFileItem().setLength(fileSize);
 
 		createVersionAttachment(fAtt, versionName);
 
 		return fAtt;
+	}
+	
+	private void checkQuota(long fileSize) throws RepositoryServiceException {
+		// first check properties to see if quotas is enabled on this system
+		if (SPropsUtil.getBoolean("disk.quotas.enabled", false)) {
+			long userQuota = SPropsUtil.getLong("disk.quota.user.default", 100);
+
+			User user = RequestContextHolder.getRequestContext().getUser();
+
+			if (user.getDiskQuota() != 0L)
+				userQuota = user.getDiskQuota();
+
+			if (userQuota == -1L) return;  // -1 = unlimited
+			
+			userQuota = userQuota * MEGABYTES;
+
+			// The spec says to allow a transaction if the user quota wasn't
+			// exceeded when the transaction began.
+			if ((userQuota < user.getDiskSpaceUsed()))
+				// TODO ROY - put this message into the messages catalogue
+				throw new RepositoryServiceException(
+						"Cannot attach file, Disk quota exceeded");
+		}
 	}
 	
 	private String createVersionedWithInputData(RepositorySession session,

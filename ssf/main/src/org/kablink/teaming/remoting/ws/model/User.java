@@ -48,6 +48,8 @@ public class User extends Principal implements Serializable {
 	private String skypeId;
 	private String twitterId;
 	private Long miniBlogId;
+	private Long diskQuota;
+	private Long diskSpaceUsed;
 	private Long workspaceId;
 	
 	public String getFirstName() {
@@ -121,6 +123,24 @@ public class User extends Principal implements Serializable {
 	}
 	public void setMiniBlogId(Long miniBlogId) {
 		this.miniBlogId = miniBlogId;
+	}
+	public Long getDiskQuota() {
+		return diskQuota;
+	}
+	public void setDiskQuota(Long diskQuota) {
+		this.diskQuota = diskQuota;
+	}
+	public Long getDiskSpaceUsed() {
+		return diskSpaceUsed;
+	}
+	public void setDiskSpaceUsed(Long diskSpaceUsed) {
+		this.diskSpaceUsed = diskSpaceUsed;
+	}
+	public void incrementDiskSpaceUsed(Long diskSpace) {
+		this.diskSpaceUsed += diskSpace;
+	}
+	public void decrementDiskSpaceUsed(Long diskSpace) {
+		this.diskSpaceUsed -= diskSpace;
 	}
 	public void setWorkspaceId(Long workspaceId) {
 		this.workspaceId = workspaceId;

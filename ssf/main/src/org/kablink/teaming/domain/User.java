@@ -50,8 +50,11 @@ import java.util.TreeSet;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.Validator;
 
 
@@ -61,6 +64,7 @@ import org.kablink.util.Validator;
  */
 public class User extends UserPrincipal implements IndividualPrincipal {
 	private final static int	WORK_DAY_START_DEFAULT	= 8;	// Original default was 6 in ss_calendar.js.
+	private final static long	MEGABYTES				= 1024L * 1024L;
 	
     protected String firstName="";//set by hibernate access="field"
     protected String middleName="";//set by hibernate access="field"
@@ -79,6 +83,8 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected String status="";
     protected Date statusDate;
     protected Long miniBlogId;
+    protected Long diskQuota;
+    protected Long diskSpaceUsed;
     private SortedSet groupNames; // sorted set of group names; this field is computed
 	public User() {
     }
@@ -318,6 +324,48 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	}
 
 	/**
+     * @hibernate.property
+     */
+	public Long getDiskQuota() {
+		if (diskQuota == null) return 0L;
+		return diskQuota;
+	}
+	/**
+	 * @param diskQuota to set.
+	 */
+	public void setDiskQuota(Long diskQuota) {
+		this.diskQuota = diskQuota;
+	}
+	
+	/**
+     * @hibernate.property
+     */
+	public Long getDiskSpaceUsed() {
+		if (diskSpaceUsed == null) return 0L;
+		return diskSpaceUsed;
+	}
+	/**
+	 * @param diskUsed to set.
+	 */
+
+	public void setDiskSpaceUsed(Long diskSpaceUsed) {
+		this.diskSpaceUsed = diskSpaceUsed;
+	}
+	/**
+	 * @param diskSpace to increment.
+	 */
+
+	public void incrementDiskSpaceUsed(Long diskSpace) {
+		this.diskSpaceUsed += diskSpace;
+	}
+	/**
+	 * @param diskSpace to decrement.
+	 */
+
+	public void decrementDiskSpaceUsed(Long diskSpace) {
+		this.diskSpaceUsed -= diskSpace;
+	}
+	/**
 	 * Returns encrypted password.
 	 * 
 	 * @hibernate.property length="64"
@@ -449,5 +497,29 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     	if (ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(internalId)) return true;
     	return false;
     }
+    
+    public int diskQuotaCheck()  {
+		// first check properties to see if quotas are enabled on this system
+		if (SPropsUtil.getBoolean("disk.quotas.enabled", true)) {
+			long userQuota = SPropsUtil.getLong("disk.quota.user.default", 1);
+
+			//User user = RequestContextHolder.getRequestContext().getUser();
+
+			if (getDiskQuota() != 0L)
+				userQuota = getDiskQuota();
+
+			userQuota = userQuota * MEGABYTES;
+			
+			long highWaterMark = SPropsUtil.getInt("disk.quotas.highwater.percentage", 90);
+			double waterMark = (highWaterMark * userQuota) / 100.0;
+
+			if (getDiskSpaceUsed() > userQuota) {
+				return ObjectKeys.DISKQUOTA_EXCEEDED;
+			} else if (getDiskSpaceUsed() > waterMark) {
+				return ObjectKeys.DISKQUOTA_HIGHWATERMARK_EXCEEDED;
+			}
+		}
+		return ObjectKeys.DISKQUOTA_OK;
+	}
 
 }

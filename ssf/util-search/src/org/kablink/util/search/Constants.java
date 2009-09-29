@@ -192,6 +192,8 @@ public class Constants {
 	public static final String SKYPEID_FIELD = "_skypeId";
 	public static final String TWITTERID_FIELD = "_twitterId";
 	public static final String MINIBLOGID_FIELD = "_miniBlogId";
+	public static final String DISKQUOTA_FIELD = "_diskQuota";
+	public static final String DISKSPACEUSED_FIELD = "_diskSpaceUsed";
 	public static final String ZONNAME_FIELD = "_zonName";
 	public static final String RESERVEDID_FIELD = "_reservedId";
 	public static final String WORKSPACE_ID_FIELD = "_workspaceId";

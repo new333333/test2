@@ -439,6 +439,8 @@ public interface ObjectKeys {
     public static final String FIELD_USER_EMAIL_MOBILE="mobileEmailAddress";
     public static final String FIELD_USER_LOCALE="locale";
     public static final String FIELD_USER_MINIBLOGID="miniBlogId";
+    public static final String FIELD_USER_DISKQUOTA="diskQuota";
+    public static final String FIELD_USER_DISKSPACEUSED="diskSpaceUsed";
     public static final String FIELD_USER_SKYPEID="skypeId";
     public static final String FIELD_USER_TWITTERID="twitterId";
     public static final String FIELD_USER_STATUS="status";
@@ -605,6 +607,9 @@ public interface ObjectKeys {
     public static final String XTAG_WFR_RESPONSEDATE="responseDate";
     public static final String XTAG_WFR_RESPONSE="response";
     
-
+    //Quota related constants
+    public static final	int DISKQUOTA_OK = 1;
+    public static final	int DISKQUOTA_HIGHWATERMARK_EXCEEDED = 2;
+    public static final	int DISKQUOTA_EXCEEDED = 3;
 	
 }
