@@ -1916,17 +1916,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	public void export(Long binderId, Long entityId, OutputStream out,
-			Map options, Collection<Long> binderIds, Boolean noSubBinders) throws Exception {
+			Map options, Collection<Long> binderIds, Boolean noSubBinders, StatusTicket statusTicket) throws Exception {
 
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.modifyBinder);
 		
-		ExportHelper.export(binderId, entityId, out, options, binderIds, noSubBinders);
+		ExportHelper.export(binderId, entityId, out, options, binderIds, noSubBinders, statusTicket);
 
 	}
 
-	public void importZip(Long binderId, InputStream fIn) throws IOException {
-		ExportHelper.importZip(binderId, fIn);
+	public void importZip(Long binderId, InputStream fIn, StatusTicket statusTicket) throws IOException {
+		ExportHelper.importZip(binderId, fIn, statusTicket);
 	}
 
 

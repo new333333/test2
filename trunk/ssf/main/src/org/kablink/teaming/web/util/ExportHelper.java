@@ -220,7 +220,7 @@ public class ExportHelper {
 	private static String binderPrefix = "b_";
 
 	public static void export(Long binderId, Long entityId, OutputStream out,
-			Map options, Collection<Long> binderIds, Boolean noSubBinders) throws Exception {
+			Map options, Collection<Long> binderIds, Boolean noSubBinders, StatusTicket statusTicket) throws Exception {
 
 		getNumberFormat();
 
@@ -244,12 +244,12 @@ public class ExportHelper {
 			// see if folder
 			if (entType == EntityType.folder) {
 				process(zipOut, folderModule.getFolder(binderId), false,
-						options, binderIds, noSubBinders, defList);
+						options, binderIds, noSubBinders, defList, statusTicket);
 				// see if ws or profiles ws
 			} else if ((entType == EntityType.workspace)
 					|| (entType == EntityType.profiles)) {
 				process(zipOut, workspaceModule.getWorkspace(binderId), true,
-						options, binderIds, noSubBinders, defList);
+						options, binderIds, noSubBinders, defList, statusTicket);
 			} else {
 				// something's wrong
 			}
@@ -263,7 +263,7 @@ public class ExportHelper {
 
 	private static void process(ZipOutputStream zipOut, Binder start,
 			boolean isWorkspace, Map options, Collection<Long> binderIds, 
-			Boolean noSubBinders, Set defList) throws Exception {
+			Boolean noSubBinders, Set defList, StatusTicket statusTicket) throws Exception {
 		Map<Long,Boolean> binderIdsToExport = new HashMap<Long,Boolean>();
 		binderIdsToExport.put(start.getId(), false);
 		SortedSet<Binder> binders = binderModule.getBinders(binderIds);
@@ -320,8 +320,14 @@ public class ExportHelper {
       	Iterator<Long> itBinders = binderIdsToExport.keySet().iterator();
       	while (itBinders.hasNext()) {
       		Long binderId = (Long)itBinders.next();
-			Binder binder = binderModule.getBinder(binderId);
-			if (isWorkspace) {
+      		Binder binder = null;
+      		try {
+				binder = binderModule.getBinder(binderId);
+			} catch(Exception e) {
+				continue;
+			}
+			statusTicket.setStatus(NLT.get("administration.export_import.exporting", new String[] {binder.getPathName()}));
+			if (EntityType.workspace.equals(binder.getEntityType())) {
 				zipOut.putNextEntry(new ZipEntry(binderPrefix + "w"
 						+ nft.format(binderId) + File.separator + "."
 						+ binderPrefix + "w" + nft.format(binderId) + ".xml"));
@@ -947,7 +953,7 @@ public class ExportHelper {
 	private static Pattern folderPattern = Pattern.compile("." + binderPrefix
 			+ "f[0-9]{8}");
 
-	public static void importZip(Long binderId, InputStream fIn) throws IOException {
+	public static void importZip(Long binderId, InputStream fIn, StatusTicket statusTicket) throws IOException {
 		Binder binder = binderModule.getBinder(binderId);
 		ZipInputStream zIn = new ZipInputStream(fIn);
 
@@ -963,14 +969,14 @@ public class ExportHelper {
 
 		try {
 			File tempDirFile = new File(tempDir);
-			importDir(tempDirFile, tempDir, binderId, entryIdMap, binderIdMap);
+			importDir(tempDirFile, tempDir, binderId, entryIdMap, binderIdMap, statusTicket);
 		} finally {
 			FileUtil.deltree(tempDir);
 		}
 	}
 
 	private static void importDir(File currentDir, String tempDir, Long topBinderId,
-			Map entryIdMap, Map binderIdMap) throws IOException {
+			Map entryIdMap, Map binderIdMap, StatusTicket statusTicket) throws IOException {
 
 		SortedMap sortMap = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 		File[] tempChildren = currentDir.listFiles();
@@ -986,7 +992,7 @@ public class ExportHelper {
 			File child = (File) sortMap.get(keyIter.next());
 
 			if (child.isDirectory())
-				importDir(child, tempDir, topBinderId, entryIdMap, binderIdMap);
+				importDir(child, tempDir, topBinderId, entryIdMap, binderIdMap, statusTicket);
 			else {
 				String fileExt = EntityIndexUtils.getFileExtension(child
 						.getName().toLowerCase());
@@ -1084,7 +1090,7 @@ public class ExportHelper {
 							if (parentId == null)
 								folder_addEntryWithXML(null, newBinderId,
 										defId, xmlStr, tempDir, entryIdMap,
-										binderIdMap, entryId);
+										binderIdMap, entryId, statusTicket);
 							else {
 								Long newParentId = (Long) entryIdMap.get(parentId);
 								folder_addReplyWithXML(null, newBinderId,
@@ -1129,7 +1135,7 @@ public class ExportHelper {
 						// check actual entity type of the data in the xml file
 						if (entType.equals("workspace")) {
 							binder_addBinderWithXML(null, newParentId, defId,
-									xmlStr, binderId, binderIdMap);
+									xmlStr, binderId, binderIdMap, statusTicket);
 						}
 					}
 
@@ -1174,7 +1180,7 @@ public class ExportHelper {
 						// check actual entity type of the data in the xml file
 						if (entType.equals("folder")) {
 							binder_addBinderWithXML(null, newParentId, defId,
-									xmlStr, binderId, binderIdMap);
+									xmlStr, binderId, binderIdMap, statusTicket);
 						}
 					}
 				}
@@ -1212,7 +1218,7 @@ public class ExportHelper {
 
 	private static long binder_addBinderWithXML(String accessToken, long parentId,
 			String definitionId, String inputDataAsXML, long binderId,
-			Map binderIdMap) {
+			Map binderIdMap, StatusTicket statusTicket) {
 
 		final Document doc = getDocument(inputDataAsXML);
 
@@ -1227,6 +1233,7 @@ public class ExportHelper {
 
 			// workflows
 			final Binder binder = loadBinder(newBinderId);
+			statusTicket.setStatus(NLT.get("administration.export_import.importing", new String[] {binder.getPathName()}));
 
 			transactionTemplate.execute(new TransactionCallback() {
 				public Object doInTransaction(TransactionStatus status) {
@@ -1248,14 +1255,14 @@ public class ExportHelper {
 
 	private static long folder_addEntryWithXML(String accessToken, long binderId,
 			String definitionId, String inputDataAsXML, String tempDir,
-			Map entryIdMap, Map binderIdMap, Long entryId) {
+			Map entryIdMap, Map binderIdMap, Long entryId, StatusTicket statusTicket) {
 		return addFolderEntry(accessToken, binderId, definitionId,
-				inputDataAsXML, tempDir, entryIdMap, binderIdMap, entryId);
+				inputDataAsXML, tempDir, entryIdMap, binderIdMap, entryId, statusTicket);
 	}
 
 	private static long addFolderEntry(String accessToken, long binderId,
 			String definitionId, String inputDataAsXML,
-			String tempDir, Map entryIdMap, Map binderIdMap, Long entryId) {
+			String tempDir, Map entryIdMap, Map binderIdMap, Long entryId, StatusTicket statusTicket) {
 
 		final Document doc = getDocument(inputDataAsXML);
 		String[] fileNames = new String[0];
@@ -1278,6 +1285,7 @@ public class ExportHelper {
 			// workflows
 			try {
 				final FolderEntry entry = folderModule.getEntry(null, newEntryId);
+				statusTicket.setStatus(NLT.get("administration.export_import.importingEntry", new String[] {entry.getTitle()}));
 				importWorkflows(doc, entry);
 			} catch(Exception e) {}
 
