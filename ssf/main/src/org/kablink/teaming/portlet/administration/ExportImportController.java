@@ -61,6 +61,7 @@ import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
@@ -81,10 +82,10 @@ public class ExportImportController  extends  SAbstractController {
 		
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.OPERATION, "");
 		
+		Map formData = request.getParameterMap();
 		if(operation.equals(WebKeys.OPERATION_IMPORT)){
 			binderId = PortletRequestUtils.getLongParameter(request,  WebKeys.URL_BINDER_ID);
 			
-			Map formData = request.getParameterMap();
 			if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 				Map fileMap=null;
 				if (request instanceof MultipartFileSupport) {
@@ -96,13 +97,27 @@ public class ExportImportController  extends  SAbstractController {
 			    	MultipartFile myFile = (MultipartFile)fileMap.get("imports");
 			    	InputStream fIn = myFile.getInputStream();
 			    	
-			    	getBinderModule().importZip(binderId, fIn, statusTicket);	
+					Map reportMap = new HashMap();
+					reportMap.put(ExportHelper.workspaces, new Integer(0));
+					reportMap.put(ExportHelper.folders, new Integer(0));
+					reportMap.put(ExportHelper.entries, new Integer(0));
+			    	getBinderModule().importZip(binderId, fIn, statusTicket, reportMap);	
+					String[] reportData = new String[] {
+							((Integer)reportMap.get(ExportHelper.workspaces)).toString(),
+							((Integer)reportMap.get(ExportHelper.folders)).toString(),
+							((Integer)reportMap.get(ExportHelper.entries)).toString()
+						};
+					statusTicket.setStatus(NLT.get("administration.export_import.importReport", reportData));
 			    	statusTicket.done();
+			    	request.setAttribute("ss_reportData", reportMap);
 				} else {
 					response.setRenderParameters(formData);
 				}
 			} else
 				response.setRenderParameters(formData);
+		}
+		if (formData.containsKey("closeBtn") && WebHelper.isMethodPost(request)) {
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);
 		}
 	}
 
@@ -196,12 +211,22 @@ public class ExportImportController  extends  SAbstractController {
 				binderIds = TreeHelper.getSelectedIds(formData);
 			}
 			Boolean noSubBinders = PortletRequestUtils.getBooleanParameter(request, "noSubBinders", false);
+			Map reportMap = new HashMap();
+			reportMap.put(ExportHelper.workspaces, new Integer(0));
+			reportMap.put(ExportHelper.folders, new Integer(0));
+			reportMap.put(ExportHelper.entries, new Integer(0));
 			getBinderModule().export(binderId, entryId, res.getOutputStream(), options, binderIds, 
-					noSubBinders, statusTicket);
-			statusTicket.setStatus(NLT.get("administration.export_import.finished"));
+					noSubBinders, statusTicket, reportMap);
+			String[] reportData = new String[] {
+					((Integer)reportMap.get(ExportHelper.workspaces)).toString(),
+					((Integer)reportMap.get(ExportHelper.folders)).toString(),
+					((Integer)reportMap.get(ExportHelper.entries)).toString()
+				};
+			statusTicket.setStatus(NLT.get("administration.export_import.exportReport", reportData));
 			statusTicket.done();
 			return null;
 		}
-		return new ModelAndView("forum/reload_opener", model);
+		model.put("ss_reportData", request.getAttribute("ss_reportData"));
+		return new ModelAndView("administration/exportImport_summary", model);
 	}
 }
