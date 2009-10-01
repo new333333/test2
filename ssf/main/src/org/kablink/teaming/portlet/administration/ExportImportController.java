@@ -54,6 +54,8 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.portletadapter.portlet.HttpServletResponseReachable;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.TreeHelper;
@@ -62,6 +64,7 @@ import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
+import org.kablink.teaming.web.util.WebStatusTicket;
 import org.springframework.mail.javamail.ConfigurableMimeFileTypeMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.ModelAndView;
@@ -85,11 +88,16 @@ public class ExportImportController  extends  SAbstractController {
 			if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 				Map fileMap=null;
 				if (request instanceof MultipartFileSupport) {
+					// Create a status ticket
+					StatusTicket statusTicket = WebStatusTicket.newStatusTicket(
+							PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none"), request);
+					
 					fileMap = ((MultipartFileSupport) request).getFileMap();
 			    	MultipartFile myFile = (MultipartFile)fileMap.get("imports");
 			    	InputStream fIn = myFile.getInputStream();
 			    	
-			    	getBinderModule().importZip(binderId, fIn);	
+			    	getBinderModule().importZip(binderId, fIn, statusTicket);	
+			    	statusTicket.done();
 				} else {
 					response.setRenderParameters(formData);
 				}
@@ -105,10 +113,22 @@ public class ExportImportController  extends  SAbstractController {
 		HttpServletResponse res = ((HttpServletResponseReachable)response).getHttpServletResponse();		
 		Map<String,Object> model = new HashMap<String,Object>();
 		
+		// Create a status ticket
+		String statusWindow = PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_WINDOW, "");
+		String statusTicketId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none");
+		if (!statusWindow.equals("")) {
+			//This is the status window frame; start it
+			model.put(WebKeys.URL_BINDER_ID, binderId);
+			model.put("ss_statusWindow", true);
+			return new ModelAndView(WebKeys.VIEW_ADMIN_EXPORT_IMPORT, model);
+		}
+		StatusTicket statusTicket = WebStatusTicket.newStatusTicket(statusTicketId, request);
+
 		try{
 			//Set up the standard beans
 			BinderHelper.setupStandardBeans(this, request, response, model, binderId);
 		}catch(NoBinderByTheIdException exc){
+			statusTicket.setStatus(exc.getLocalizedMessage());
 			res.setContentType(mimeTypes.getContentType(filename));
 			res.setHeader("Cache-Control", "private");
 			res.setHeader(
@@ -160,6 +180,7 @@ public class ExportImportController  extends  SAbstractController {
 				try{
 					entry = getFolderModule().getEntry(binderId, entryId);
 				}catch(NoFolderEntryByTheIdException exc){
+			    	statusTicket.setStatus(exc.getLocalizedMessage());
 					ZipOutputStream zipOut = new ZipOutputStream(res.getOutputStream());		
 		
 					//Standard zip encoding is cp437. (needed when chars are outside the ASCII range)
@@ -175,7 +196,11 @@ public class ExportImportController  extends  SAbstractController {
 				binderIds = TreeHelper.getSelectedIds(formData);
 			}
 			Boolean noSubBinders = PortletRequestUtils.getBooleanParameter(request, "noSubBinders", false);
-			getBinderModule().export(binderId, entryId, res.getOutputStream(), options, binderIds, noSubBinders);
+			getBinderModule().export(binderId, entryId, res.getOutputStream(), options, binderIds, 
+					noSubBinders, statusTicket);
+			statusTicket.setStatus(NLT.get("administration.export_import.finished"));
+			statusTicket.done();
+			return null;
 		}
 		return new ModelAndView("forum/reload_opener", model);
 	}

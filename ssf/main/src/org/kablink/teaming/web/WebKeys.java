@@ -194,6 +194,7 @@ public class WebKeys {
 	public static final String URL_SECTION_TO_EDIT = "_section";
 	public static final String URL_START_DATE = "ss_startDate";
 	public static final String URL_STATUS_TICKET_ID = "ss_statusId";
+	public static final String URL_STATUS_WINDOW = "statusWindow";
 	public static final String URL_SHOW_MENU = "showMenu";
 	public static final String URL_TAB_ID = "tabId";
 	public static final String URL_TAG_COMMUNITY = "cTag";
@@ -867,6 +868,7 @@ public class WebKeys {
     public static final String LOGIN_POST_URL="ss_loginPostUrl";
     public static final String LOGOUT_URL="ss_logoutUrl";
     public static final String AJAX_STATUS="ss_ajaxStatus";
+    public static final String AJAX_STATUS_COMPLETED="ss_ajaxStatusCompleted";
     public static final String AJAX_STATUS_NOT_LOGGED_IN="ss_ajaxNotLoggedIn";
     public static final String NAMESPACE="ss_namespace";
     public static final String NAMESPACE_RELEVANCE_DASHBOARD="ss_relevanceDashboardNamespace";

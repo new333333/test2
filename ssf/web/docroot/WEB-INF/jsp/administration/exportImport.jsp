@@ -43,7 +43,6 @@
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
 
-<ssf:form titleTag="administration.export_import">
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
 <script type="text/javascript">
 function ss_saveExportImportBinderId(id) {
@@ -118,15 +117,92 @@ function toggleFileInput() {
 	el2.style.display = (ss_checkForImportOperation() ? 'none' : 'block' );
 }
 
+var ss_exportTimeout = null;
+var ss_exportStatusTicket = ss_random++;
+var ss_checkStatusUrl = "<ssf:url 
+	adapter="true" 
+	portletName="ss_forum" 
+	action="__ajax_request" 
+	actionUrl="false" >
+	<ssf:param name="operation" value="check_status" />
+	</ssf:url>";
+
+var ss_statusSeen = 0;
+function ss_getOperationStatus()
+{
+	ss_startSpinner();
+	ss_showSpinnerImg();
+	ss_setupStatusMessageDiv();
+	if (self.document.getElementById("ss_status_message").innerHTML == "completed") {
+		if (ss_statusSeen != 0) {
+			ss_exportingDone();
+			return
+		}
+	}
+	if (typeof self.document.getElementById("ss_operation_status") != "undefined" && 
+			self.document.getElementById("ss_operation_status") != null &&
+			typeof self.document.getElementById("ss_operation_status").innerHTML != "undefined" &&
+			self.document.getElementById("ss_operation_status").innerHTML != null &&
+			self.document.getElementById("ss_operation_status").innerHTML != "") ss_statusSeen = 1;
+	
+	var ajaxRequest = new ss_AjaxRequest(ss_checkStatusUrl); //Create AjaxRequest object
+	ajaxRequest.addKeyValue("ss_statusId",ss_exportStatusTicket);
+	ajaxRequest.addKeyValue("ss_rn",rn++);
+	ajaxRequest.sendRequest();  //Send the request
+	ss_exportTimeout = setTimeout(ss_getOperationStatus, 500);
+}
+
+function ss_submitExportForm() {
+	var formObj = document.forms['form1'];
+	formObj.btnClicked.value = ss_buttonSelected;
+	if (ss_buttonSelected == 'okBtn') {
+		formObj.action = '<ssf:url action="export_import" actionUrl="true" binderId="${binderId}"></ssf:url>&ss_statusId='+ss_exportStatusTicket
+		ss_statusSeen = 0;
+		ss_exportTimeout = setTimeout(ss_getOperationStatus, 500);
+		return true;
+	} else {
+		formObj.action = '<ssf:url action="export_import" actionUrl="true" binderId="${binderId}"></ssf:url>'
+		if (ss_exportTimeout) { clearTimeout(ss_exportTimeout); }
+		return true;
+	}
+}
+
+function ss_startStatusWindow() {
+	var iframeObj = self.document.getElementById("ss_statusFrame");
+	if (iframeObj.src != "<html:rootPath/>js/forum/null.html") {
+		iframeObj.src = '<ssf:url action="export_import" actionUrl="true" binderId="${binderId}"></ssf:url>&statusWindow=true&ss_statusId='+ss_exportStatusTicket+'&ss_random='+rn++
+	}
+}
+
+function ss_startReportingStatus() {
+	ss_startSpinner();
+	ss_hideSpinnerImg();
+	ss_statusSeen = 0;
+	ss_exportTimeout = setTimeout(ss_getOperationStatus, 500);
+}
+
+function ss_exportingDone() {
+	if(ss_exportTimeout) { clearTimeout(ss_exportTimeout); }
+	ss_hideSpinnerImg();
+}
+
 </script>
 
-<div class="ss_style ss_portlet">
+<c:if test="${ss_statusWindow}">
+<script type="text/javascript">
+	var rn = Math.round(Math.random()*999999);
+	ss_startReportingStatus();
+</script>
+</c:if>
 
-  <form name="form1" class="ss_style ss_form" method="post" enctype="multipart/form-data" 
-		  action="<ssf:url  
-			action="export_import" 
-			actionUrl="true" ><ssf:param 
-		    name="binderId" value="${binderId}"/></ssf:url>" >
+<c:if test="${!ss_statusWindow}">
+<ssf:form titleTag="administration.export_import">
+<div class="ss_style ss_portlet">
+<form name="form1" id="form1" class="ss_style ss_form" 
+    method="post" 
+    enctype="multipart/form-data" 
+	onSubmit="return ss_submitExportForm();"
+>
 
 <br/>
 <br/>
@@ -186,7 +262,7 @@ function toggleFileInput() {
 <div class="ss_buttonBarLeft">
 
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"
-  onclick="return ss_checkForm();"
+  onclick="ss_buttonSelect('okBtn');ss_startStatusWindow();"
 />
 
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
@@ -194,7 +270,12 @@ function toggleFileInput() {
 
 </div>
 </div>
+<input type="hidden" name="btnClicked"/>
 </form>
+
+<iframe id="ss_statusFrame" style="width:200px;height:200px;visibility:hidden;"
+  src="<html:rootPath/>js/forum/null.html"
+>xxx</iframe>
 
 </div>
 <script type="text/javascript">
@@ -203,6 +284,7 @@ var rn = Math.round(Math.random()*999999);
 </script>
 
 </ssf:form>
+</c:if>
 </div>
 </div>
 </body>

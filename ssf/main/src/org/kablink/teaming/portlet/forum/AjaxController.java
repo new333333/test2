@@ -133,6 +133,7 @@ import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
+import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -2716,8 +2717,13 @@ public class AjaxController  extends SAbstractControllerRetry {
 	
 	private ModelAndView ajaxCheckStatus(RenderRequest request, RenderResponse response)  throws PortletRequestBindingException { 
 		Map model = new HashMap();
+		Map statusMap = new HashMap();
+		model.put(WebKeys.AJAX_STATUS, statusMap);
 		model.put("status", true);
-		model.put("ss_operation_status", WebStatusTicket.findStatusTicket(PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_STATUS_TICKET_ID), request).getStatus());
+		StatusTicket statusTicket = WebStatusTicket.findStatusTicket(
+				PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_STATUS_TICKET_ID), request);
+		if (statusTicket.isDone()) statusMap.put(WebKeys.AJAX_STATUS_COMPLETED, "true");
+		model.put("ss_operation_status", statusTicket.getStatus());
 		response.setContentType("text/xml");
 		return new ModelAndView("common/check_status", model);	
 	}

@@ -44,6 +44,7 @@ public class WebStatusTicket implements StatusTicket {
 	private PortletSession session;
 	private String id;
 	private String status;
+	private Boolean doneFlag = false;
 
 	/**
 	 * Allocate a new status ticket and bind it with the user session.
@@ -94,6 +95,11 @@ public class WebStatusTicket implements StatusTicket {
 	
 	public void done() {
 		session.removeAttribute(id);
+		doneFlag = true;
+	}
+	
+	public boolean isDone() {
+		return doneFlag;
 	}
 
 	public String getId() {
@@ -110,5 +116,6 @@ public class WebStatusTicket implements StatusTicket {
 	
 	private static WebStatusTicket completedTicket = new WebStatusTicket(null, "__COMPLETE__") {
 			public String getStatus() { return NLT.get("status.complete", "Completed"); }
+			public boolean isDone() {return true;}
 	};
 }

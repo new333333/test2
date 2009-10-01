@@ -63,11 +63,19 @@ public interface StatusTicket {
 	 */
 	public void done();
 	
+	/**
+	 * Ticket is done?
+	 * 
+	 * @return
+	 */
+	public boolean isDone();
+	
 	public static final StatusTicket NULL_TICKET = new StatusTicket()
 	{
 		public String getId() { return "__NULL__"; }
 		public void setStatus(String status) {}
 		public String getStatus() { return ""; }
 		public void done() {}
+		public boolean isDone() { return false; }
 	};
 }
