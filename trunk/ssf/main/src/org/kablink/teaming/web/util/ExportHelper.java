@@ -199,6 +199,10 @@ public class ExportHelper {
 	private static IcalModule iCalModule = (IcalModule) SpringContextUtil.getBean("icalModule");
 	private static ProfileModule profileModule = (ProfileModule) SpringContextUtil.getBean("profileModule");
 	private static ZoneModule zoneModule = (ZoneModule) SpringContextUtil.getBean("zoneModule");
+	
+	public static final String workspaces = "workspaces";
+	public static final String folders = "folders";
+	public static final String entries = "entries";
 
 	// used during export so that all id's are at least 8 digits long,
 	// with leading zeroes
@@ -220,7 +224,8 @@ public class ExportHelper {
 	private static String binderPrefix = "b_";
 
 	public static void export(Long binderId, Long entityId, OutputStream out,
-			Map options, Collection<Long> binderIds, Boolean noSubBinders, StatusTicket statusTicket) throws Exception {
+			Map options, Collection<Long> binderIds, Boolean noSubBinders, 
+			StatusTicket statusTicket, Map reportMap) throws Exception {
 
 		getNumberFormat();
 
@@ -244,12 +249,12 @@ public class ExportHelper {
 			// see if folder
 			if (entType == EntityType.folder) {
 				process(zipOut, folderModule.getFolder(binderId), false,
-						options, binderIds, noSubBinders, defList, statusTicket);
+						options, binderIds, noSubBinders, defList, statusTicket, reportMap);
 				// see if ws or profiles ws
 			} else if ((entType == EntityType.workspace)
 					|| (entType == EntityType.profiles)) {
 				process(zipOut, workspaceModule.getWorkspace(binderId), true,
-						options, binderIds, noSubBinders, defList, statusTicket);
+						options, binderIds, noSubBinders, defList, statusTicket, reportMap);
 			} else {
 				// something's wrong
 			}
@@ -263,7 +268,7 @@ public class ExportHelper {
 
 	private static void process(ZipOutputStream zipOut, Binder start,
 			boolean isWorkspace, Map options, Collection<Long> binderIds, 
-			Boolean noSubBinders, Set defList, StatusTicket statusTicket) throws Exception {
+			Boolean noSubBinders, Set defList, StatusTicket statusTicket, Map reportMap) throws Exception {
 		Map<Long,Boolean> binderIdsToExport = new HashMap<Long,Boolean>();
 		binderIdsToExport.put(start.getId(), false);
 		SortedSet<Binder> binders = binderModule.getBinders(binderIds);
@@ -335,6 +340,8 @@ public class ExportHelper {
 						binderPrefix + "w" + nft.format(binderId), defList),
 						zipOut);
 				zipOut.closeEntry();
+				Integer count = (Integer)reportMap.get(workspaces);
+				reportMap.put(workspaces, ++count);
 
 			} else {
 				zipOut.putNextEntry(new ZipEntry(binderPrefix + "f"
@@ -344,6 +351,9 @@ public class ExportHelper {
 						binderPrefix + "f" + nft.format(binderId), defList),
 						zipOut);
 				zipOut.closeEntry();
+				Integer count = (Integer)reportMap.get(folders);
+				reportMap.put(folders, ++count);
+
 	
 				//Only output entries if folder is selected (or is a sub-folder being output)
 				if (binderIdsToExport.get(binderId)) {
@@ -358,6 +368,9 @@ public class ExportHelper {
 								entryId);
 						processEntry(zipOut, entry, binderPrefix + "f"
 								+ nft.format(binderId), defList);
+
+						count = (Integer)reportMap.get(entries);
+						reportMap.put(entries, ++count);
 					}
 				}
 			}
@@ -953,7 +966,8 @@ public class ExportHelper {
 	private static Pattern folderPattern = Pattern.compile("." + binderPrefix
 			+ "f[0-9]{8}");
 
-	public static void importZip(Long binderId, InputStream fIn, StatusTicket statusTicket) throws IOException {
+	public static void importZip(Long binderId, InputStream fIn, StatusTicket statusTicket,
+			Map reportMap) throws IOException {
 		Binder binder = binderModule.getBinder(binderId);
 		ZipInputStream zIn = new ZipInputStream(fIn);
 
@@ -969,14 +983,15 @@ public class ExportHelper {
 
 		try {
 			File tempDirFile = new File(tempDir);
-			importDir(tempDirFile, tempDir, binderId, entryIdMap, binderIdMap, statusTicket);
+			importDir(tempDirFile, tempDir, binderId, entryIdMap, binderIdMap, statusTicket, reportMap);
 		} finally {
 			FileUtil.deltree(tempDir);
 		}
 	}
 
 	private static void importDir(File currentDir, String tempDir, Long topBinderId,
-			Map entryIdMap, Map binderIdMap, StatusTicket statusTicket) throws IOException {
+			Map entryIdMap, Map binderIdMap, StatusTicket statusTicket,
+			Map reportMap) throws IOException {
 
 		SortedMap sortMap = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 		File[] tempChildren = currentDir.listFiles();
@@ -992,7 +1007,7 @@ public class ExportHelper {
 			File child = (File) sortMap.get(keyIter.next());
 
 			if (child.isDirectory())
-				importDir(child, tempDir, topBinderId, entryIdMap, binderIdMap, statusTicket);
+				importDir(child, tempDir, topBinderId, entryIdMap, binderIdMap, statusTicket, reportMap);
 			else {
 				String fileExt = EntityIndexUtils.getFileExtension(child
 						.getName().toLowerCase());
@@ -1087,11 +1102,14 @@ public class ExportHelper {
 
 						// check actual entity type of the data in the xml file
 						if (entType.equals("entry")) {
-							if (parentId == null)
+							if (parentId == null) {
 								folder_addEntryWithXML(null, newBinderId,
 										defId, xmlStr, tempDir, entryIdMap,
 										binderIdMap, entryId, statusTicket);
-							else {
+							
+								Integer count = (Integer)reportMap.get(entries);
+								reportMap.put(entries, ++count);
+							} else {
 								Long newParentId = (Long) entryIdMap.get(parentId);
 								folder_addReplyWithXML(null, newBinderId,
 										newParentId, defId, xmlStr, tempDir,
@@ -1136,6 +1154,8 @@ public class ExportHelper {
 						if (entType.equals("workspace")) {
 							binder_addBinderWithXML(null, newParentId, defId,
 									xmlStr, binderId, binderIdMap, statusTicket);
+							Integer count = (Integer)reportMap.get(workspaces);
+							reportMap.put(workspaces, ++count);
 						}
 					}
 
@@ -1181,6 +1201,9 @@ public class ExportHelper {
 						if (entType.equals("folder")) {
 							binder_addBinderWithXML(null, newParentId, defId,
 									xmlStr, binderId, binderIdMap, statusTicket);
+							Integer count = (Integer)reportMap.get(folders);
+							reportMap.put(folders, ++count);
+
 						}
 					}
 				}

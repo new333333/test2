@@ -482,9 +482,10 @@ public interface BinderModule {
 	public void deleteSimpleName(String name);
 
 	public void export(Long binderId, Long entityId, OutputStream out, Map options, 
-			Collection<Long> binderIds, Boolean noSubBinders, StatusTicket statusTicket) throws Exception;
+			Collection<Long> binderIds, Boolean noSubBinders, StatusTicket statusTicket, 
+			Map reportMap) throws Exception;
 	
-	public void importZip(Long binderId, InputStream fIn, StatusTicket statusTicket) throws IOException;
+	public void importZip(Long binderId, InputStream fIn, StatusTicket statusTicket, Map reportMap) throws IOException;
 	
 	public String filename8BitSingleByteOnly(FileAttachment attachment, boolean _8BitSingleByteOnly);
 	
