@@ -6,6 +6,13 @@
 	font-weight: bold;
 }
 
+/* Styles used with the panel that wraps a drop widget. */
+.dropWidgetWrapperPanel
+{
+	padding-top: .5em;
+	padding-bottom: .5em;
+}
+
 /* Styles used with the Edit-Delete control. */
 .editDeleteControl
 {
@@ -32,11 +39,37 @@
 	position: relative;
 }
 
-/* Styles used with the panel that wraps a drop widget. */
-.dropWidgetWrapperPanel
+/* Styles for the "search results" in a "find" control. */
+.findSearchResults
 {
-	padding-top: .5em;
-	padding-bottom: .5em;
+	border-color: #BABDB6;
+	border-style: solid solid solid;
+	border-width: medium 2px 2px;
+}
+
+/* Styles for the "search results" in a "find" control. */
+.findSearchResultsContent
+{
+	background-color: white;
+	height: 200px;
+}
+
+/* Styles for the footer of the "search results" in a "find" control. */
+.findSearchResultsFooter
+{
+	background-color: #EFEEEC;
+	border-top: 1px solid #BABDB6;
+	height: 15px;
+	margin-top: 0.5em;
+	padding: 0.5em;
+	vertical-align: middle;
+}
+
+/* Styles used to position the previous and next images in the "search results" footer. */
+.findSearchResultsFooterImages
+{
+	text-align: center; 
+	vertical-align: middle;
 }
 
 /* From Lynn's styles. */
