@@ -80,6 +80,18 @@ public interface GwtTeamingImageBundle extends ImageBundle
 	@Resource("org/kablink/teaming/gwt/public/images/lpe_utility_element.gif")
 	public AbstractImagePrototype landingPageEditorUtilityElement();
 
+	@Resource("org/kablink/teaming/gwt/public/images/next_16.gif")
+	public AbstractImagePrototype next16();
+
+	@Resource("org/kablink/teaming/gwt/public/images/next_disabled_16.gif")
+	public AbstractImagePrototype nextDisabled16();
+
+	@Resource("org/kablink/teaming/gwt/public/images/previous_16.gif")
+	public AbstractImagePrototype previous16();
+
+	@Resource("org/kablink/teaming/gwt/public/images/previous_disabled_16.gif")
+	public AbstractImagePrototype previousDisabled16();
+
 	@Resource("org/kablink/teaming/gwt/public/images/warn_icon16.gif")
 	public AbstractImagePrototype warningIcon16();
 }// end GwtTeamingImageBundle
