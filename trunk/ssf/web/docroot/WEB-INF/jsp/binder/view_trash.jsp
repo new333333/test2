@@ -32,21 +32,10 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% // Folder level toolbar %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${trashMode == 'workspace'}" >
+Workspace (ID:  ${ssBinder.id}) trash:  ...this needs to be implemented...
+</c:if>
 
-<ssf:toolbar style="ss_actions_bar1 ss_actions_bar">
- <% // Folder toolbar %>
- <c:if test="${!empty ss_whatsNewToolbar}">
-   <ssf:toolbar toolbar="${ss_whatsNewToolbar}" style="ss_actions_bar1 ss_actions_bar" item="true" />			
- </c:if>
- <c:if test="${!empty ssFolderToolbar}">
-  <ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar" item="true" />
- </c:if>
- <c:if test="${!empty ssEmailSubscriptionToolbar}">
-  <ssf:toolbar toolbar="${ssEmailSubscriptionToolbar}" style="ss_actions_bar1 ss_actions_bar" item="true" />
- </c:if>
- <c:if test="${!empty ssTrashToolbar}">
-  <ssf:toolbar toolbar="${ssTrashToolbar}" style="ss_actions_bar1 ss_actions_bar" item="true" />
- </c:if>
-</ssf:toolbar>
+<c:if test="${trashMode == 'folder'}" >
+Folder (ID:  ${ssBinder.id}) trash:  ...this needs to be implemented...
+</c:if>

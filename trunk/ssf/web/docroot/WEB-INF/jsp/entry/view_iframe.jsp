@@ -117,10 +117,16 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 <ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}"
   anchorOnly="true"/>
 	      <div id="ss_folder_type_${ssDefinitionFamily}" class="ss_style_color" >
-			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-					  configElement="${ssConfigElement}" 
-					  configJspStyle="${ssConfigJspStyle}" 
-					  entry="${ssBinder}" />
+			<c:if test="${showTrash}">
+				<c:set var="trashMode" value="folder" scope="request"/>
+				<%@ include file="/WEB-INF/jsp/binder/view_trash.jsp" %>
+			</c:if>
+			<c:if test="${!showTrash}">
+				<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+						  configElement="${ssConfigElement}" 
+						  configJspStyle="${ssConfigJspStyle}" 
+						  entry="${ssBinder}" />
+			</c:if>
 		  </div>
 		  <% // Footer toolbar %>
 		  <c:if test="${!ss_mashupHideFooter}">

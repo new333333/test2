@@ -32,21 +32,24 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% // Folder level toolbar %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.SPropsUtil" %>
+<%@ page import="org.kablink.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<ssf:toolbar style="ss_actions_bar1 ss_actions_bar">
- <% // Folder toolbar %>
- <c:if test="${!empty ss_whatsNewToolbar}">
-   <ssf:toolbar toolbar="${ss_whatsNewToolbar}" style="ss_actions_bar1 ss_actions_bar" item="true" />			
- </c:if>
- <c:if test="${!empty ssFolderToolbar}">
-  <ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar" item="true" />
- </c:if>
- <c:if test="${!empty ssEmailSubscriptionToolbar}">
-  <ssf:toolbar toolbar="${ssEmailSubscriptionToolbar}" style="ss_actions_bar1 ss_actions_bar" item="true" />
- </c:if>
- <c:if test="${!empty ssTrashToolbar}">
-  <ssf:toolbar toolbar="${ssTrashToolbar}" style="ss_actions_bar1 ss_actions_bar" item="true" />
- </c:if>
-</ssf:toolbar>
+<c:if test="${!ss_searchResultsPage}">
+	<c:if test="${ss_toolbar_trash_show}">
+		<div class="ss_leftNav ss_sideTrash">
+		  <ul>
+			<li>
+				  <a href="javascript: //;"
+				    onclick="return ss_treeShowId('${ssBinder.id}',this,'view_folder_listing','&showTrash=true');"
+				    title="<%= NLT.get("sidebar.trash.info").replaceAll("\"", "&QUOT;") %>"
+				  >
+				    <span><ssf:nlt tag="profile.abv.element.trash"/></span>
+				  </a>
+			</li>
+		  </ul>
+		</div>
+	</c:if>
+</c:if>

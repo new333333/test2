@@ -46,6 +46,7 @@ public class Folder extends Binder {
     protected String entryRootKey;
     protected Folder topFolder;
     protected int nextEntryNumber=1;
+	protected Boolean preDeleted;
     
     //We don't maintain a list of entries because it is to big and expensive to 
     //maintain.
@@ -213,5 +214,16 @@ public class Folder extends Binder {
     	if (definitionType != null)
     		return processorKey+"_"+definitionType.toString();
     	return processorKey;
+    }
+    
+    /**
+     * @hibernate.property
+     * @return
+     */
+    public Boolean isPreDeleted() {
+    	return ((null != preDeleted) && preDeleted);
+    }
+    public void setPreDeleted(Boolean preDeleted) {
+    	this.preDeleted = preDeleted;
     }
 }

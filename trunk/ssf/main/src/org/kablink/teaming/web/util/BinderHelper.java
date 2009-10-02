@@ -597,6 +597,10 @@ public class BinderHelper {
 
 	protected static ModelAndView setupWorkareaPortlet(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, PortletPreferences prefs, Map model, String view) throws Exception {
+		Boolean showTrash = ((Boolean) model.get(WebKeys.URL_SHOW_TRASH));
+		if (null == showTrash) {
+			showTrash = Boolean.FALSE;
+		}
         User user = RequestContextHolder.getRequestContext().getUser();
 		String namespace = response.getNamespace();
         if (PortletAdapterUtil.isRunByAdapter(request)) {
@@ -608,9 +612,9 @@ public class BinderHelper {
 		
 		if (binderId != null) {
 			if (entityType != null && entityType.equals(EntityType.folder.name()))
-				return ListFolderHelper.BuildFolderBeans(bs, request, response, binderId, "");
+				return ListFolderHelper.BuildFolderBeans(bs, request, response, binderId, "", showTrash);
 			if (entityType != null && entityType.equals(EntityType.workspace.name()))
-				return WorkspaceTreeHelper.setupWorkspaceBeans(bs, binderId, request, response);
+				return WorkspaceTreeHelper.setupWorkspaceBeans(bs, binderId, request, response, showTrash);
 		}
 
 		//This is the default workarea view. Show the user's workspace
@@ -642,9 +646,9 @@ public class BinderHelper {
 		}
 		if (binder != null) {
 			if (binder.getEntityType().name().equals(EntityType.folder.name()))
-				return ListFolderHelper.BuildFolderBeans(bs, request, response, binderId, "");
+				return ListFolderHelper.BuildFolderBeans(bs, request, response, binderId, "", showTrash);
 			if (binder.getEntityType().name().equals(EntityType.workspace.name()))
-				return WorkspaceTreeHelper.setupWorkspaceBeans(bs, binderId, request, response);
+				return WorkspaceTreeHelper.setupWorkspaceBeans(bs, binderId, request, response, showTrash);
 		}
 		try {
 			binder = bs.getWorkspaceModule().getTopWorkspace();

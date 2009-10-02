@@ -226,17 +226,20 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
         --%><c:if test="${toolbarMenu.value.qualifiers.showSpinner}"><%--
             --%><c:set var="spin" value="ss_startSpinner();"/><%--
         --%></c:if><%--
-
        --%><c:choose><%--
         
             --%><c:when test="${!empty toolbarMenu.value.url}"><%--
                 --%><c:if test="${empty toolbarMenu.value.qualifiers.folder || (!empty toolbarMenu.value.qualifiers.folder && isWebdavSupported)}"><%--
 	                --%><c:if test="${!empty toolbarMenu.value.qualifiers.highlight}"><%--
-						--%><li class="ss_navbar_inline"><%--
+						--%><li class="ss_navbar_inline"<%--
 	                --%></c:if><%--
 	                --%><c:if test="${empty toolbarMenu.value.qualifiers.highlight}"><%--
-						--%><li><%--
+						--%><li<%--
 	                --%></c:if><%--
+	                	--%><c:if test="${!empty toolbarMenu.value.qualifiers.icon && !empty toolbarMenu.value.qualifiers.iconFloatRight}"><%--
+	                		--%> class="ss_toolbar_iconfloatright" <%--
+		                --%></c:if><%--
+	                --%>><%--
 
 --%><%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view_helpspots.jsp" %><%--
 
@@ -290,6 +293,9 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
                     --%><c:if test="${toolbarMenu.value.qualifiers.selected}"><%--
                         --%> class="ss_bold ss_selected"<%--
                     --%></c:if><%--
+                	--%><c:if test="${!empty toolbarMenu.value.qualifiers.icon && !empty toolbarMenu.value.qualifiers.iconFloatRight}"><%--
+                		--%> class="ss_toolbar_iconfloatright" <%--
+	                --%></c:if><%--
                     --%>><%--
                     --%><c:if test="${!empty toolbarMenu.value.qualifiers.icon}"><%--
                         --%><img border="0" <%--

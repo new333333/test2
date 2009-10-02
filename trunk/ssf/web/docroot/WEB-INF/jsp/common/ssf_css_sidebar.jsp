@@ -318,6 +318,18 @@ textarea.ss_input_myStatus {
     padding: 7px 0 7px 30px;
 	margin-bottom: 3px;
     }
+.ss_sideTrash li a {
+    color: #666666;
+    display: block;
+	border-style: solid;
+	border-color: #9EC8CD;
+	border-width: 1px;
+	background-color: #FFFFFF;
+    background: url("<html:rootPath/>images/pics/sidebar/sidebar_trash.png") 8px 5px;
+    background-repeat: no-repeat !important;
+    padding: 7px 0 7px 30px;
+	margin-bottom: 3px;
+    }
 .ss_sideMeet li a {
     color: #666666;
     display: block;
@@ -330,7 +342,7 @@ textarea.ss_input_myStatus {
     padding: 7px 0 7px 30px;
 	margin-bottom: 3px;
     }      
-.ss_sideEmail li a:hover, .ss_sideMeet li a:hover, .ss_clipBd li a:hover {
+.ss_sideEmail li a:hover, .ss_sideMeet li a:hover, .ss_clipBd li a:hover, .ss_sideTrash li a:hover {
     color: #333333;
 	background-color: #CCFFFF;	
      }          

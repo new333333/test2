@@ -67,6 +67,7 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     // including both effective and expired locks. 
     protected String postedBy;
     protected boolean subscribed=false;
+	protected Boolean preDeleted;
     public FolderEntry() {
         super();
     }
@@ -300,4 +301,14 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     	this.subscribed = subscribed;
     }
     
+    /**
+     * @hibernate.property
+     * @return
+     */
+    public Boolean isPreDeleted() {
+    	return ((null != preDeleted) && preDeleted);
+    }
+    public void setPreDeleted(Boolean preDeleted) {
+    	this.preDeleted = preDeleted;
+    }
 }

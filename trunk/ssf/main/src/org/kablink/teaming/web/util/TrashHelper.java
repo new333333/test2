@@ -1,4 +1,3 @@
-<%
 /**
  * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
@@ -31,22 +30,8 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-%>
-<% // Folder level toolbar %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+package org.kablink.teaming.web.util;
 
-<ssf:toolbar style="ss_actions_bar1 ss_actions_bar">
- <% // Folder toolbar %>
- <c:if test="${!empty ss_whatsNewToolbar}">
-   <ssf:toolbar toolbar="${ss_whatsNewToolbar}" style="ss_actions_bar1 ss_actions_bar" item="true" />			
- </c:if>
- <c:if test="${!empty ssFolderToolbar}">
-  <ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar" item="true" />
- </c:if>
- <c:if test="${!empty ssEmailSubscriptionToolbar}">
-  <ssf:toolbar toolbar="${ssEmailSubscriptionToolbar}" style="ss_actions_bar1 ss_actions_bar" item="true" />
- </c:if>
- <c:if test="${!empty ssTrashToolbar}">
-  <ssf:toolbar toolbar="${ssTrashToolbar}" style="ss_actions_bar1 ss_actions_bar" item="true" />
- </c:if>
-</ssf:toolbar>
+public class TrashHelper {
+	public static final String[] trashColumns= new String[] {"name", "deleted", "deletedBy", "location"};
+}
