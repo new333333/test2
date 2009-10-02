@@ -32,12 +32,22 @@
  */
 package org.kablink.teaming.gwt.server;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
+import org.kablink.teaming.gwt.client.GwtSearchCriteria;
+import org.kablink.teaming.gwt.client.GwtSearchResults;
+import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -59,7 +69,17 @@ import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.search.filter.SearchFilter;
+import org.kablink.teaming.search.filter.SearchFilterKeys;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.util.search.Constants;
+import org.springframework.web.portlet.ModelAndView;
 
 
 
@@ -91,6 +111,234 @@ public class GwtRpcServiceImpl  implements GwtRpcService, AllModulesInjected
 	private ZoneModule				m_zoneModule;
 	
 
+	/**
+	 * This method is meant to search for applications or entries or groups or places or tags or teams or users.
+	 */
+	@SuppressWarnings("unchecked")
+	private GwtSearchResults doSearch( GwtSearchCriteria searchCriteria )
+	{
+		Map options;
+		List searchTerms;
+		SearchFilter searchTermFilter;
+		String searchText;
+		Integer startingCount;
+		Integer maxResults;
+		GwtSearchResults searchResults = null;
+		
+		// Make sure we are dealing with the right search type.
+		switch ( searchCriteria.getSearchType() )
+		{
+		case APPLICATION:
+		case APPLICATION_GROUP:
+		case COMMUNITY_TAGS:
+		case ENTRIES:
+		case GROUP:
+		case PERSONAL_TAGS:
+		case PLACES:
+		case TAG:
+		case TEAMS:
+		case USER:
+			break;
+			
+		default:
+			return null;
+		}
+		
+		maxResults = new Integer( searchCriteria.getMaxResults() );
+		startingCount = new Integer( searchCriteria.getPageNumber() ) * maxResults;
+		
+		options = new HashMap();
+		options.put( ObjectKeys.SEARCH_MAX_HITS, maxResults );
+		options.put( ObjectKeys.SEARCH_OFFSET, startingCount );
+		options.put( ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD );
+		options.put( ObjectKeys.SEARCH_SORT_DESCEND, new Boolean( false ) );
+		
+		searchText = searchCriteria.getSearchText();
+	    searchText = searchText.replaceAll(" \\*", "\\*").trim();
+
+		searchTermFilter = new SearchFilter();
+		
+	    // Set up the search filter.
+		switch ( searchCriteria.getSearchType() )
+		{
+		case ENTRIES:
+			String binderId;
+			
+			//Add the title term
+			if ( searchText.length() > 0 )
+				searchTermFilter.addTitleFilter( searchText );
+
+			searchTerms = new ArrayList();
+			searchTerms.add( EntityIdentifier.EntityType.folderEntry.name() );
+			searchTermFilter.addAndNestedTerms( SearchFilterKeys.FilterTypeEntityTypes, SearchFilterKeys.FilterEntityType, searchTerms );
+			searchTermFilter.addAndFilter( SearchFilterKeys.FilterTypeTopEntry );
+			
+			//Add terms to search this folder
+			binderId = searchCriteria.getBinderId();
+			if ( binderId != null && !binderId.equals( "" ) )
+			{
+				if ( searchCriteria.getSearchSubfolders() == false )
+				{
+					searchTermFilter.addAndFolderId( binderId );
+				}
+				else
+				{
+					searchTermFilter.addAncestryId( binderId );
+				}
+			}
+			break;
+
+		case PLACES:
+			searchTermFilter.addPlacesFilter( searchText, searchCriteria.getFoldersOnly() );
+			break;
+			
+		case TAG:
+			//!!! Get code from ajaxFind() in TypeToFindAjaxController.java
+			break;
+		
+		case TEAMS:
+			searchTermFilter.addTeamFilter();
+			break;
+			
+		default:
+			//Add the login name term
+			if ( searchText.length() > 0 )
+			{
+				searchTermFilter.addTitleFilter( searchText );
+				searchTermFilter.addLoginNameFilter( searchText );
+			}
+			break;
+		}// end switch()
+
+		try
+		{
+			Map retMap;
+
+			searchResults = new GwtSearchResults();
+		
+			options.put( ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter() );
+			
+			// Perform the search based on the search type.
+			switch ( searchCriteria.getSearchType() )
+			{
+			case APPLICATION:
+				Map appEntries;
+				
+				appEntries = getProfileModule().getApplications( options );
+				break;
+				
+			case APPLICATION_GROUP:
+				Map appGroupEntries;
+				
+				appGroupEntries = getProfileModule().getApplicationGroups( options );
+				break;
+				
+			case ENTRIES:
+				List placesWithCounters;
+				List entries;
+				Map foldersMap;
+				Integer count;
+				
+				retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options );
+				entries = (List)retMap.get( ObjectKeys.SEARCH_ENTRIES );
+				placesWithCounters = BinderHelper.sortPlacesInEntriesSearchResults( getBinderModule(), entries );
+				foldersMap = BinderHelper.prepareFolderList( placesWithCounters, false );
+				BinderHelper.extendEntriesInfo( entries, foldersMap );
+				
+				// Add the search results to the GwtSearchResults object.
+				count = (Integer) retMap.get( ObjectKeys.SEARCH_COUNT_TOTAL );
+				searchResults.setCountTotal( count.intValue() );
+//				searchResults.setResults( entries );
+				break;
+
+			case GROUP:
+				//!!! Finish, grab code from ajaxFind() in TypeToFindAjaxController.java
+				break;
+				
+			case PLACES:
+				List placesEntries;
+				
+				retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options );
+				placesEntries = (List)retMap.get( ObjectKeys.SEARCH_ENTRIES );
+				break;
+
+			case COMMUNITY_TAGS:
+			case PERSONAL_TAGS:
+			case TAG:
+				//!!! Finish, grab code from ajaxFild() in TypeToFindAjaxController.java
+				break;
+			
+			case TEAMS:
+				List teamsEntries;
+
+				retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options );
+
+				teamsEntries = (List)retMap.get( ObjectKeys.SEARCH_ENTRIES );
+				break;
+				
+			case USER:
+				Map userEntries;
+				List resultList;
+				
+				userEntries = getProfileModule().getUsers(options);
+				
+				resultList = (List)userEntries.get( ObjectKeys.SEARCH_ENTRIES );
+				if ( searchCriteria.getAddCurrentUser() && searchCriteria.getPageNumber() == 0 && (searchText.equals("") || searchText.equals("*")))
+				{
+					// add relative option "current user" and "me"
+					Map currentUserPlaceholder = new HashMap();
+					currentUserPlaceholder.put("title", NLT.get("searchForm.currentUserTitle"));
+					currentUserPlaceholder.put("_docId", SearchFilterKeys.CurrentUserId);
+					resultList.add(0, currentUserPlaceholder);
+				}
+				break;
+				
+			default:
+				searchResults = null;
+			}// end switch()
+		}
+		catch( AccessControlException e )
+		{
+			//!!! What to do here?
+			searchResults = null;
+		}
+		
+		return searchResults;
+	}// end doSearch()
+	
+	
+	/**
+	 * Execute a search based on the given search criteria.
+	 */
+	public GwtSearchResults executeSearch( GwtSearchCriteria searchCriteria )
+	{
+		GwtSearchResults searchResults;
+		
+		switch ( searchCriteria.getSearchType() )
+		{
+		case APPLICATION:
+		case APPLICATION_GROUP:
+		case COMMUNITY_TAGS:
+		case ENTRIES:
+		case GROUP:
+		case PERSONAL_TAGS:
+		case PLACES:
+		case TAG:
+		case TEAMS:
+		case USER:
+			searchResults = doSearch( searchCriteria );
+			break;
+				
+		default:
+			//!!! Finish.
+			searchResults = null;
+			break;
+		}
+		
+		return searchResults;
+	}// end executeSearch()
+	
+	
 	/**
 	 * Return an Entry object for the given entry id
 	 */

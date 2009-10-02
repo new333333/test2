@@ -35,16 +35,21 @@ package org.kablink.teaming.gwt.client.widgets;
 
 
 
+import java.util.List;
+import java.util.Map;
+
+import org.kablink.teaming.gwt.client.GwtSearchCriteria;
+import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -66,7 +71,7 @@ public class FindCtrl extends Composite
 	/**
 	 * This widget is used to hold search results.
 	 */
-	public class SearchResults extends Composite
+	public class SearchResultsWidget extends Composite
 	{
 		FlowPanel m_mainPanel;
 		Image m_prevDisabledImg;
@@ -77,7 +82,7 @@ public class FindCtrl extends Composite
 		/**
 		 * 
 		 */
-		public SearchResults()
+		public SearchResultsWidget()
 		{
 			FlowPanel footer;
 			FlowPanel contentPanel;
@@ -95,7 +100,7 @@ public class FindCtrl extends Composite
 			
 			// All composites must call initWidget() in their constructors.
 			initWidget( m_mainPanel );
-		}// end SearchResults()
+		}// end SearchResultsWidget()
 
 
 		/**
@@ -138,6 +143,7 @@ public class FindCtrl extends Composite
 			abstractImg = GwtTeaming.getImageBundle().previous16();
 			m_prevImg = abstractImg.createImage();
 			imgPanel.add( m_prevImg );
+			m_prevImg.setVisible( false );
 			
 			// Add the next images to the footer.
 			abstractImg = GwtTeaming.getImageBundle().nextDisabled16();
@@ -146,23 +152,31 @@ public class FindCtrl extends Composite
 			abstractImg = GwtTeaming.getImageBundle().next16();
 			m_nextImg = abstractImg.createImage();
 			imgPanel.add( m_nextImg );
+			m_nextImg.setVisible( false );
 			
 			return panel;
 		}// end createFooter()
-	}// end SearchResults
+	}// end SearchResultsWidget
+	
+	
 	
 	
 	private TextBox m_txtBox;
-	private SearchResults m_searchResults;
+	private SearchResultsWidget m_searchResultsWidget;
 	private Object m_selectedObj = null;
 	private OnSelectHandler m_onSelectHandler;
+	private AsyncCallback<GwtSearchResults> m_searchResultsCallback;
 	private Timer m_timer;
+	private GwtSearchCriteria m_searchCriteria;
+	private boolean m_searchInProgress = false;
+	private String m_prevSearchString = null;
 	
 	/**
 	 * 
 	 */
 	public FindCtrl(
-		OnSelectHandler onSelectHandler ) // We will call this handler when the user selects an item from the search results.
+		OnSelectHandler onSelectHandler,  // We will call this handler when the user selects an item from the search results.
+		GwtSearchCriteria.SearchType searchType )
 	{
 		FlowPanel mainPanel;
 
@@ -176,9 +190,9 @@ public class FindCtrl extends Composite
 		mainPanel.add( m_txtBox );
 		
 		// Create a widget where the search results will live.
-		m_searchResults = new SearchResults();
+		m_searchResultsWidget = new SearchResultsWidget();
 		hideSearchResults();
-		mainPanel.add( m_searchResults );
+		mainPanel.add( m_searchResultsWidget );
 
 		// Register a preview-event handler.  We do this so we can see the mouse-down event
 		// and close the search results.
@@ -187,9 +201,70 @@ public class FindCtrl extends Composite
 		// Remember the handler we should call when the user selects an item from the search results.
 		m_onSelectHandler = onSelectHandler;
 		
+		// Create the callback that will be used when we issue an ajax call to do a search.
+		m_searchResultsCallback = new AsyncCallback<GwtSearchResults>()
+		{
+			/**
+			 * 
+			 */
+			public void onFailure(Throwable t)
+			{
+				//!!! Do something here.
+				Window.alert( "The request to get execute a search failed." );
+				m_searchInProgress = false;
+			}// end onFailure()
+	
+			/**
+			 * 
+			 * @param result
+			 */
+			public void onSuccess( GwtSearchResults gwtSearchResults )
+			{
+				if ( gwtSearchResults != null )
+				{
+					List<Map<String,String>> results;
+					
+					Window.alert( "count total: " + gwtSearchResults.getCountTotal() );
+					results = gwtSearchResults.getResults();
+					if ( results != null )
+					{
+						Window.alert( "Found " + results.size() + "items." );
+					}
+				}
+				
+				m_searchInProgress = false;
+			}// end onSuccess()
+		};
+		m_searchInProgress = false;
+		
+		m_searchCriteria = new GwtSearchCriteria();
+		m_searchCriteria.setSearchType( searchType );
+		m_searchCriteria.setMaxResults( 10 );
+		m_searchCriteria.setPageNumber( 0 );
+
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
 	}// end FindCtrl()
+	
+	
+	/**
+	 * 
+	 */
+	public void executeSearch( String searchString )
+	{
+		GwtRpcServiceAsync rpcService;
+		
+		// Do we have an search string?
+		if ( searchString != null )
+		{
+			// Yes, Issue an ajax request do search for the specified type of object.
+			m_searchInProgress = true;
+			m_searchCriteria.setSearchText( searchString );
+			
+			rpcService = GwtTeaming.getRpcService();
+			rpcService.executeSearch( m_searchCriteria, m_searchResultsCallback );
+		}
+	}// end executeSearch()
 	
 	
 	/**
@@ -215,10 +290,7 @@ public class FindCtrl extends Composite
 	 */
 	public void hideSearchResults()
 	{
-		Element element;
-		
-		element = m_searchResults.getElement();
-		DOM.setStyleAttribute( element, "display", "none" );
+		m_searchResultsWidget.setVisible( false );
 	}// end hideSearchResults()
 	
 	
@@ -257,18 +329,26 @@ public class FindCtrl extends Composite
 	{
 		String tmp;
 		
-		// Is there anything in the text box?
+		// Get the search criteria the user entered.
 		tmp = m_txtBox.getText();
-		if ( tmp != null && tmp.length() > 0 )
+		
+		// Did the search string change?
+		if ( m_prevSearchString == null || tmp == null || !m_prevSearchString.equalsIgnoreCase( tmp ) )
 		{
 			// Yes
+			m_prevSearchString = tmp;
+			
 			// Show the search-results widget.
 			showSearchResults();
-		}
-		else
-		{
-			// No, hide the search-results widget.
-			hideSearchResults();
+	
+			if ( tmp == null )
+				tmp = "";
+			
+			// Append the wildcard character '*'.
+			tmp += "*";
+			
+			// Issue an ajax request to do a search based on the text entered by the user.
+			executeSearch( tmp );
 		}
 	}// end onKeyUp()
 	
@@ -325,6 +405,7 @@ public class FindCtrl extends Composite
 			searchString = "";
 		
 		m_txtBox.setText( searchString );
+		m_prevSearchString = searchString;
 	}// end setInitialSearchString()
 	
 	
@@ -333,9 +414,6 @@ public class FindCtrl extends Composite
 	 */
 	public void showSearchResults()
 	{
-		Element element;
-		
-		element = m_searchResults.getElement();
-		DOM.setStyleAttribute( element, "display", "block" );
+		m_searchResultsWidget.setVisible( true );
 	}// end showSearchResults()		
 }// end FindCtrl
