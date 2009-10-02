@@ -30,34 +30,66 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.service;
 
-import org.kablink.teaming.gwt.client.GwtFolder;
-import org.kablink.teaming.gwt.client.GwtFolderEntry;
-import org.kablink.teaming.gwt.client.GwtSearchCriteria;
-import org.kablink.teaming.gwt.client.GwtSearchResults;
+package org.kablink.teaming.gwt.client;
 
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import java.util.List;
+import java.util.Map;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This interface defines the methods that can be called when we want to make a remote
- * procedure call.
+ * This class is used to hold the results of a search.
  * @author jwootton
  *
  */
-@RemoteServiceRelativePath("gwtTeaming.rpc")
-public interface GwtRpcService extends RemoteService
+public class GwtSearchResults
+	implements IsSerializable
 {
-	// Do a search given the criteria found in the GwtSearchCriteria object.
-	public GwtSearchResults executeSearch( GwtSearchCriteria searchCriteria );
+	private int m_countTotal = 0;	// The total number of items found by the search.
+	private List<Map<String, String>> m_results = null;
 	
-	// Return an Entry object for the given entry id.
-	public GwtFolderEntry getEntry( String entryId );
+	/**
+	 * 
+	 */
+	public GwtSearchResults()
+	{
+	}// end GwtSearchResults()
 	
-	// Return a Folder object for the given folder id.
-	public GwtFolder getFolder( String folderId );
 	
-	public String getTutorialPanelState();
-}// end GwtRpcService
+	/**
+	 * Return the total number of items found by the search.
+	 */
+	public int getCountTotal()
+	{
+		return m_countTotal;
+	}// end getCountTotal()
+	
+	
+	/**
+	 * Return the list of items found by the search.
+	 */
+	public List<Map<String, String>> getResults()
+	{
+		return m_results;
+	}// end getResults()
+	
+	
+	/**
+	 * 
+	 */
+	public void setCountTotal( int total )
+	{
+		m_countTotal = total;
+	}// end setCountTotal()
+	
+	
+	/**
+	 * 
+	 */
+	public void setResults( List<Map> results )
+	{
+		//m_results = results;
+	}// end setResults()
+	
+}// end GwtSearchResults

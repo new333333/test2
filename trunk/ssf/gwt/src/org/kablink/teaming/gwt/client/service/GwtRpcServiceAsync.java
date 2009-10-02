@@ -34,6 +34,8 @@ package org.kablink.teaming.gwt.client.service;
 
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
+import org.kablink.teaming.gwt.client.GwtSearchCriteria;
+import org.kablink.teaming.gwt.client.GwtSearchResults;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -44,6 +46,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface GwtRpcServiceAsync
 {
+	// Do a search given the criteria found in the GwtSearchCriteria object.
+	public void executeSearch( GwtSearchCriteria searchCriteria, AsyncCallback<GwtSearchResults> callback );
+	
 	// Return an Entry object for the given entry id.
 	public void getEntry( String entryId, AsyncCallback<GwtFolderEntry> callback );
 	

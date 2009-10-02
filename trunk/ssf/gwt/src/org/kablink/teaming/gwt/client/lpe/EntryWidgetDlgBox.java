@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
+import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditCanceledHandler;
@@ -105,7 +106,7 @@ public class EntryWidgetDlgBox extends DlgBox
 		cellFormatter.setAlignment( 0, 0, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP );
 		label = new Label( GwtTeaming.getMessages().findEntry() );
 		table.setWidget( 0, 0, label );
-		m_findCtrl = new FindCtrl( this );
+		m_findCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.ENTRIES );
 		table.setWidget( 0, 1, m_findCtrl );
 		mainPanel.add( table );
 		
