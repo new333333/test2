@@ -155,7 +155,7 @@ public class ListFolderHelper {
 	public static final ModeType MODE_TYPE_DEFAULT = ModeType.PHYSICAL;
 
 	static public ModelAndView BuildFolderBeans(AllModulesInjected bs, RenderRequest request, 
-			RenderResponse response, Long binderId, String zoneUUID) throws Exception {
+			RenderResponse response, Long binderId, String zoneUUID, boolean showTrash) throws Exception {
 		binderId = bs.getBinderModule().getZoneBinderId(binderId, zoneUUID, EntityType.folder.name());
 		if (binderId == null) {
 			Map<String,Object> model = new HashMap<String,Object>();
@@ -199,6 +199,7 @@ public class ListFolderHelper {
 		}
 		
 		Map<String,Object> model = new HashMap<String,Object>();
+		model.put(WebKeys.URL_SHOW_TRASH, new Boolean(showTrash));
 		String view = BinderHelper.getViewListingJsp(bs, null);;
 		
 		//Set up the standard beans
@@ -1445,6 +1446,7 @@ public class ListFolderHelper {
 		Toolbar footerToolbar = new Toolbar();
 		Toolbar whatsNewToolbar = new Toolbar();
 		Toolbar emailSubscriptionToolbar = new Toolbar();
+		Toolbar trashToolbar = new Toolbar();
 		
 		boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
 		boolean isAppletSupported = SsfsUtil.supportApplets(request);
@@ -1655,7 +1657,7 @@ public class ListFolderHelper {
 			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.accessControl"), url, qualifiers);
 		}
 
-		//The "Subsrciptions" menu
+		//The "Subscriptions" menu
 		if (!user.isShared()) {
 			qualifiers = new HashMap();
 			qualifiers.put("title", NLT.get("toolbar.menu.title.emailSubscriptions"));
@@ -2005,6 +2007,22 @@ public class ListFolderHelper {
 			model.put(WebKeys.TOOLBAR_SENDMAIL_IDS, contributorIds);
 		}
 
+		// trash
+//!		...when do we NOT want to show access to the trash?...
+		{
+			// Show the trash sidebar widget...
+			model.put(WebKeys.TOOLBAR_TRASH_SHOW, Boolean.TRUE);
+			
+			// ...and add trash to the menu bar.
+			qualifiers = new HashMap();
+			qualifiers.put("title", NLT.get("toolbar.menu.title.trash"));
+			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.trashMenu");
+			qualifiers.put("icon", "trash.png");
+			qualifiers.put("iconFloatRight", "true");
+			qualifiers.put("onClick", "ss_treeShowId('"+forumId+"',this,'view_folder_listing','&showTrash=true');return false;");
+			trashToolbar.addToolbarMenu("1_trash", NLT.get("toolbar.menu.trash"), "javascript: //;", qualifiers);	
+		}
+
 		// start meeting
 		if (bs.getIcBrokerModule().isEnabled() && 
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
@@ -2110,6 +2128,7 @@ public class ListFolderHelper {
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 		model.put(WebKeys.WHATS_NEW_TOOLBAR,  whatsNewToolbar.getToolbar());
 		model.put(WebKeys.EMAIL_SUBSCRIPTION_TOOLBAR,  emailSubscriptionToolbar.getToolbar());
+		model.put(WebKeys.TRASH_TOOLBAR,  trashToolbar.getToolbar());
 	}
 	
 

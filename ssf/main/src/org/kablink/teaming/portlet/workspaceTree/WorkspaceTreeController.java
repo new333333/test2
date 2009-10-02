@@ -118,7 +118,8 @@ public class WorkspaceTreeController extends SAbstractController  {
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		if (binderId == null) return BinderHelper.CommonPortletDispatch(this, request, response);
 		
-		return WorkspaceTreeHelper.setupWorkspaceBeans(this, binderId, request, response);
+		boolean showTrash = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_SHOW_TRASH, false);
+		return WorkspaceTreeHelper.setupWorkspaceBeans(this, binderId, request, response, showTrash);
 
 	}
 }

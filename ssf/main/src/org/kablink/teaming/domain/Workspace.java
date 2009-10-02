@@ -54,6 +54,7 @@ import org.kablink.util.Validator;
  */
 public class Workspace extends Binder  {
 	protected String searchTitle; //set by hibernate acccess=field
+	protected Boolean preDeleted;
     public Workspace() {
     }
     public Workspace(Workspace workspace) {
@@ -137,5 +138,17 @@ public class Workspace extends Binder  {
     		return getDefs(definitionType);
     	else
     		return getDefs(Definition.WORKSPACE_VIEW);
+    }
+    
+    /**
+     * @hibernate.property
+     * @return
+     */
+    public Boolean isPreDeleted() {
+    	return ((null != preDeleted) && preDeleted);
+    	
+    }
+    public void setPreDeleted(Boolean preDeleted) {
+    	this.preDeleted = preDeleted;
     }
 }

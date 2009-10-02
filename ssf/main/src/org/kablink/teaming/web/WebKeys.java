@@ -192,6 +192,7 @@ public class WebKeys {
 	public static final String URL_SEARCH_NODE_NAME = "searchNodeName";
 	public static final String URL_SECTION_PLACEHOLDER = "ss_sectionPlaceholder";
 	public static final String URL_SECTION_TO_EDIT = "_section";
+    public static final String URL_SHOW_TRASH="showTrash";
 	public static final String URL_START_DATE = "ss_startDate";
 	public static final String URL_STATUS_TICKET_ID = "ss_statusId";
 	public static final String URL_STATUS_WINDOW = "statusWindow";
@@ -480,6 +481,7 @@ public class WebKeys {
 	public static final String OPERATION_USER_LIST_SEARCH = "user_list_search";
 	public static final String OPERATION_WORKSPACE_TREE = "workspace_tree";
 	public static final String OPERATION_SUBSCRIBE="subscribe";
+	public static final String OPERATION_TRASH="trash";
 	public static final String OPERATION_SAVE_FOLDER_SORT_INFO="save_folder_sort_info";
 	public static final String OPERATION_SAVE_FOLDER_PAGE_INFO="save_folder_page_info";
 	public static final String OPERATION_SAVE_FOLDER_GOTOPAGE_INFO="save_folder_goto_page_info";
@@ -1049,10 +1051,12 @@ public class WebKeys {
     public static final String TOOLBAR_TEAM_VIEW_URL="ss_toolbar_team_view_url";
     public static final String TOOLBAR_THEME_IDS="ss_toolbar_theme_ids";
     public static final String TOOLBAR_THEME_NAMES="ss_toolbar_theme_names";
+    public static final String TOOLBAR_TRASH_SHOW="ss_toolbar_trash_show";
     public static final String TOOLBAR_MEETING_IDS="ss_toolbar_meeting_ids";
     public static final String TOOLBAR_MEETING_POST="ss_toolbar_meeting_post";
     public static final String TOOLBAR_MEETING_URL="ss_toolbar_meeting_url";
     public static final String TOOLBAR_SUBSCRIBE_EMAIL="ss_toolbar_subscribe_email";
+    public static final String TOOLBAR_TRASH="ss_toolbar_trash";
     public static final String TOOLBAR_URL_ICAL="ss_toolbar_url_ical";
     public static final String TOOLBAR_URL_SUBSCRIBE_ATOM="ss_toolbar_url_subscribe_atom";
     public static final String TOOLBAR_URL_SUBSCRIBE_RSS="ss_toolbar_url_subscribe_rss";
@@ -1060,6 +1064,7 @@ public class WebKeys {
     public static final String TOOLBAR_URL_SIMPLE_URLS="ss_toolbar_url_simple_urls";
     public static final String TOOLBAR_URL_WEBDAV="ss_toolbar_url_webdav";
     public static final String TOP_WORKSPACE="ss_topWorkspace";
+    public static final String TRASH_TOOLBAR = "ssTrashToolbar";
     public static final String TUTORIAL_NAME = "ss_tutorial_name";
     public static final String TUTORIAL_PANEL_STATE = "ss_tutorial_panel_state";
     public static final String TRACKED_PLACES_PAGE="ss_trackedPlacesPage";

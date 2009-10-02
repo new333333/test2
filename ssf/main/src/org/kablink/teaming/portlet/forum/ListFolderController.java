@@ -44,7 +44,6 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
-import javax.servlet.http.HttpServletRequest;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -65,6 +64,7 @@ import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.ProfilesBinderHelper;
 import org.kablink.teaming.web.util.Tabs;
+import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper;
 import org.springframework.web.portlet.ModelAndView;
@@ -76,7 +76,9 @@ import org.springframework.web.portlet.ModelAndView;
  */
 public class ListFolderController extends  SAbstractController {
 	
+	@SuppressWarnings("unchecked")
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
+		boolean showTrash = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_SHOW_TRASH, false);
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		Long binderId= PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
@@ -115,7 +117,13 @@ public class ListFolderController extends  SAbstractController {
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_COLUMNS)) {
 			if (formData.containsKey("okBtn")) {
 				Map columns = new LinkedHashMap();
-				String[] columnNames = ListFolderHelper.folderColumns;
+				String[] columnNames;
+				if (showTrash) {
+					columnNames = TrashHelper.trashColumns;
+				}
+				else {
+					columnNames = ListFolderHelper.folderColumns;
+				}
 				for (int i = 0; i < columnNames.length; i++) {
 					columns.put(columnNames[i], PortletRequestUtils.getStringParameter(request, columnNames[i], ""));
 				}
@@ -205,7 +213,6 @@ public class ListFolderController extends  SAbstractController {
 			response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
 		} else if (op.equals(WebKeys.OPERATION_GO_TO_ENTRY)) {
 			response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
-			String entryNumber = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_GOTOENTRY, "");
 			//Get the entryId from the entry number and add it to the request
 			Long entryId = null;
 			if (entryId != null) response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
@@ -219,6 +226,7 @@ public class ListFolderController extends  SAbstractController {
 	
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		boolean showTrash = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_SHOW_TRASH, false);
         User user = RequestContextHolder.getRequestContext().getUser();
 		String displayType = BinderHelper.getDisplayType(request);
 		if (request.getWindowState().equals(WindowState.NORMAL) &&
@@ -255,7 +263,7 @@ public class ListFolderController extends  SAbstractController {
 					return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
 				}
 				if (parentBinder.getEntityType().name().equals(EntityIdentifier.EntityType.workspace.name())) {
-					return WorkspaceTreeHelper.setupWorkspaceBeans(this, parentBinderId, request, response);
+					return WorkspaceTreeHelper.setupWorkspaceBeans(this, parentBinderId, request, response, showTrash);
 				}
 				binderId = parentBinderId;
 			}
@@ -271,7 +279,7 @@ public class ListFolderController extends  SAbstractController {
 			try {
 				Binder binder = getBinderModule().getBinder(binderId);
 				if (binder.getEntityType().name().equals(EntityIdentifier.EntityType.workspace.name())) {
-					return WorkspaceTreeHelper.setupWorkspaceBeans(this, binderId, request, response);
+					return WorkspaceTreeHelper.setupWorkspaceBeans(this, binderId, request, response, showTrash);
 				} else if (binder.getEntityType().name().equals(EntityIdentifier.EntityType.profiles.name())) {
 					return ProfilesBinderHelper.setupProfilesBinderBeans(this, binderId, request, response);
 				}
@@ -299,8 +307,8 @@ public class ListFolderController extends  SAbstractController {
 		} else {
 			binderId = (Long) portletSession.getAttribute(WebKeys.LAST_BINDER_VIEWED + namespace, PortletSession.APPLICATION_SCOPE);
 		}
-		return ListFolderHelper.BuildFolderBeans(this, request, response, binderId, zoneUUID);
 		
+		return ListFolderHelper.BuildFolderBeans(this, request, response, binderId, zoneUUID, showTrash);
 	}
 }
 

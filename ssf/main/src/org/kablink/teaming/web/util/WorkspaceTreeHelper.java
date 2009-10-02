@@ -105,8 +105,9 @@ public class WorkspaceTreeHelper {
 	protected static final Log logger = LogFactory.getLog(Workspace.class);
 	
 	public static ModelAndView setupWorkspaceBeans(AllModulesInjected bs, Long binderId, RenderRequest request, 
-			RenderResponse response) throws Exception {
+			RenderResponse response, boolean showTrash) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
+		model.put(WebKeys.URL_SHOW_TRASH, new Boolean(showTrash));
  		String view = setupWorkspaceBeans(bs, binderId, request, response, model);
  		return new ModelAndView(view, model);
 	}
@@ -114,6 +115,7 @@ public class WorkspaceTreeHelper {
 			RenderResponse response, Map model) throws Exception {
 		model.put(WebKeys.WORKSPACE_BEANS_SETUP, true);
         User user = RequestContextHolder.getRequestContext().getUser();
+        String targetJSP = WebKeys.VIEW_WORKSPACE;
 
 		BinderHelper.setBinderPermaLink(bs, request, response);
 		try {
@@ -428,7 +430,7 @@ public class WorkspaceTreeHelper {
 			return WebKeys.VIEW_NO_DEFINITION;
 		}
 		
-		return WebKeys.VIEW_WORKSPACE;
+		return targetJSP;
 	}
 	
 	protected static void getShowWorkspace(AllModulesInjected bs, Map formData, 
@@ -604,6 +606,7 @@ public class WorkspaceTreeHelper {
 		Toolbar dashboardToolbar = new Toolbar();
 		Toolbar folderActionsToolbar = new Toolbar();
 		Toolbar whatsNewToolbar = new Toolbar();
+		Toolbar trashToolbar = new Toolbar();
 		Map qualifiers;
 		AdaptedPortletURL adapterUrl;
 
@@ -962,6 +965,22 @@ public class WorkspaceTreeHelper {
 			model.put(WebKeys.TOOLBAR_SENDMAIL_URL, adapterUrl.toString());
 		}
 
+		// trash
+//!		...when do we NOT want to show this?...
+		{
+			// Show the trash sidebar widget...
+			model.put(WebKeys.TOOLBAR_TRASH_SHOW, Boolean.TRUE);
+			
+			// ...and add trash to the menu bar.
+			qualifiers = new HashMap();
+			qualifiers.put("title", NLT.get("toolbar.menu.title.trash"));
+			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.trashMenu");
+			qualifiers.put("icon", "trash.png");
+			qualifiers.put("iconFloatRight", "true");
+			qualifiers.put("onClick", "ss_treeShowId('"+forumId+"',this,'view_folder_listing','&showTrash=true');return false;");
+			trashToolbar.addToolbarMenu("1_trash", NLT.get("toolbar.menu.trash"), "javascript: //;", qualifiers);	
+		}
+
 		// start meeting
 		if (bs.getIcBrokerModule().isEnabled() && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
@@ -1024,6 +1043,7 @@ public class WorkspaceTreeHelper {
 		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
 		model.put(WebKeys.WHATS_NEW_TOOLBAR,  whatsNewToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_ACTIONS_TOOLBAR,  folderActionsToolbar.getToolbar());
+		model.put(WebKeys.TRASH_TOOLBAR,  trashToolbar.getToolbar());
 	}
 	
 	private static String[] collectContributorIds(Workspace workspace) {

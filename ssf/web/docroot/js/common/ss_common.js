@@ -537,7 +537,7 @@ function ss_showPermalink(obj, namespace) {
 }
 //Routine to go to a binder when it is clicked
 // id can be a number or a string ending in "_1234" where 1234 is the id
-function ss_treeShowId(id, obj, action) {
+function ss_treeShowId(id, obj, action, addParam) {
 	var binderId = id;
 	//See if the id is formatted (e.g., "ss_favorites_xxx")
 	if (binderId.indexOf("_") >= 0) {
@@ -549,6 +549,10 @@ function ss_treeShowId(id, obj, action) {
 	var url = ss_baseBinderUrl;
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
+	if (addParam && ("&" == addParam.charAt(0))) {
+		url += addParam;
+	}
+
 	//console.log(url);
 	self.location.href = url;
 	return false;

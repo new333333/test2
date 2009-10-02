@@ -1198,7 +1198,15 @@ table.ss_mouseOverInfo {
   background-color: ${ss_toolbar_background_color};
   color: ${ss_toolbar_text_color};
   }
-  
+
+span.ss_toolbar_iconfloatright {
+	padding-top: 0px   !important;
+	position: absolute !important;
+	right:16px         !important;
+}  
+li.ss_toolbar_iconfloatright {
+	padding-top: 2px !important;
+}
 .ss_toolbar_menu {
   position: absolute;
   visibility: hidden;

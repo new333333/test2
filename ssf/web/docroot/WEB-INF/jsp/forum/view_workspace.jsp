@@ -113,8 +113,10 @@ if (typeof ss_workarea_showId == "undefined")
 	ss_workarea_showId = ss_workarea_showId${renderResponse.namespace};
 </script>
 
-<!-- Include the javascript needed to play a tutorial video. -->
-<jsp:include page="/WEB-INF/jsp/common/tutorial_support_js.jsp" />
+<c:if test="${!showTrash}">
+	<!-- Include the javascript needed to play a tutorial video. -->
+	<jsp:include page="/WEB-INF/jsp/common/tutorial_support_js.jsp" />
+</c:if>
 
 <c:if test="${showWorkspacePage}">
 	<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
@@ -177,12 +179,20 @@ if (typeof ss_workarea_showId == "undefined")
 	  </td>
 	</c:if>
 	<td valign="top" class="ss_view_info">
-		<!-- Include "Video Tutorials" ui. -->
-		<jsp:include page="/WEB-INF/jsp/common/tutorial_support.jsp" />
+		<c:if test="${!showTrash}">
+			<!-- Include "Video Tutorials" ui. -->
+			<jsp:include page="/WEB-INF/jsp/common/tutorial_support.jsp" />
+		</c:if>
 
 <ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}"
   anchorOnly="true"/>
 		<div class="ss_tab_canvas">
+			<c:if test="${showTrash}">
+				<c:set var="trashMode" value="workspace" scope="request"/>
+				<%@ include file="/WEB-INF/jsp/binder/view_trash.jsp" %>
+			</c:if>
+
+			<c:if test="${!showTrash}">
 			<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
 				<div class="ss_style_color">				
 					<div class="ss_content_inner">
@@ -223,6 +233,7 @@ if (typeof ss_workarea_showId == "undefined")
 					</div>
 
 				</div>
+		  </c:if>
 
 		  <% // Footer toolbar %>
 		  <c:if test="${!ss_mashupHideFooter}">
@@ -254,8 +265,10 @@ if (typeof ss_workarea_showId == "undefined")
 <script type="text/javascript">
 	ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initShowFolderDiv('${renderResponse.namespace}'));
 
-	// Add initTutorial() as a function to be called when the page is loaded.
-	ss_createOnLoadObj( 'initTutorial', initTutorial );
+	<c:if test="${!showTrash}">
+		// Add initTutorial() as a function to be called when the page is loaded.
+		ss_createOnLoadObj( 'initTutorial', initTutorial );
+	</c:if>
 </script>
 </c:if>
 	
