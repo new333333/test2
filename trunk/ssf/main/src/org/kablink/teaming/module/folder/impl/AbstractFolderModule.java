@@ -1127,6 +1127,8 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 				logger.error(ex);
 			}
 		}
+		if(folders != null && folders.size() > 0)
+			logger.info("Successfully cleaned up " + folders.size() + " folders");
 	}
 
 

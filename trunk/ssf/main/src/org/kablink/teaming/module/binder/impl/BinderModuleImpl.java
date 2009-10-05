@@ -132,6 +132,8 @@ import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.util.DomInputData;
+import org.kablink.teaming.runasync.RunAsyncCallback;
+import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.search.LuceneReadSession;
@@ -177,6 +179,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		BinderModule {
 
 	private TransactionTemplate transactionTemplate;
+	private RunAsyncManager runAsyncManager;
 
 	protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
@@ -184,6 +187,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
 		this.transactionTemplate = transactionTemplate;
+	}
+
+	protected RunAsyncManager getRunAsyncManager() {
+		return runAsyncManager;
+	}
+
+	public void setRunAsyncManager(RunAsyncManager runAsyncManager) {
+		this.runAsyncManager = runAsyncManager;
 	}
 
 	/*
@@ -684,75 +695,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// no transaction
-	public void deleteBinder(Long binderId, final boolean deleteMirroredSource,
-			final Map options) {
-		final Binder top = loadBinder(binderId);
-		checkAccess(top, BinderOperation.deleteBinder);
-		Map params = new HashMap();
-		params.put("deleted", Boolean.FALSE);
-		// get list of ids, so don't have to load large trees all at once
-		List<Object[]> objs = getCoreDao()
-				.loadObjects(
-						"select x.id,x.binderKey.sortKey from org.kablink.teaming.domain.Binder x where x.binderKey.sortKey like '"
-								+ top.getBinderKey().getSortKey()
-								+ "%' and deleted=:deleted order by x.binderKey.sortKey desc",
-						params);
-		// convert to list of ids
-		List<Long> ids = new ArrayList();// maintain order, bottom up
-		for (Object row[] : objs) {
-			ids.add((Long) row[0]);
-		}
-		ids.remove(top.getId());
-		for (Long id : ids) {
-			try {
-				final Binder child = getCoreDao().loadBinder(id,
-						top.getZoneId());
-				if (child.isDeleted())
-					continue;
-				checkAccess(child, BinderOperation.deleteBinder);
-				// determine if need to deleted mirrored for this binder, or if
-				// parent will take care of it
-				boolean deleteMirroredSourceForChildren = deleteMirroredSource;
-				if (top.isMirrored() && deleteMirroredSource)
-					deleteMirroredSourceForChildren = false;
-				if (deleteMirroredSourceForChildren == true) {
-					// top is not mirrored; see if a parent is
-					Binder parent = child.getParentBinder();
-					while (parent != top) {
-						if (parent.isMirrored()) {
-							deleteMirroredSourceForChildren = false;
-							break;
-						}
-						parent = parent.getParentBinder();
-					}
-				}
-				final boolean doMirrored = deleteMirroredSourceForChildren;
-				getTransactionTemplate().execute(new TransactionCallback() {
-					public Object doInTransaction(TransactionStatus status) {
-						loadBinderProcessor(child).deleteBinder(child,
-								doMirrored, options);
-						return null;
-					}
-				});
-				// get updates commited, this is needed if their is another
-				// transaction wrapping the call to delete binder
-				// This is the case with delete user workspace !!
-				getCoreDao().flush();
-
-				getCoreDao().evict(child); // update commited
-
-			} catch (NoObjectByTheIdException musthavebeendeleted) {
-				continue;
-			}
-		}
-		getTransactionTemplate().execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				loadBinderProcessor(top).deleteBinder(top,
-						deleteMirroredSource, options);
-				return null;
-			}
-		});
-
+	public void deleteBinder(Long binderId, boolean deleteMirroredSource,
+			Map options) {
+		deleteBinderPhase1(binderId, deleteMirroredSource, options);		
+		deleteBinderPhase2();
 	}
 
 	// inside write transaction
@@ -1961,5 +1907,91 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		List<Long> ids = getCoreDao().findZoneEntityIds(binderId, zoneUUID, entityType);
 		if (ids.isEmpty()) return null;
 		return ids.get(0);
+	}
+	
+	// no transaction
+	protected void deleteBinderPhase1(Long binderId, final boolean deleteMirroredSource,
+			final Map options) {
+		final Binder top = loadBinder(binderId);
+		checkAccess(top, BinderOperation.deleteBinder);
+		Map params = new HashMap();
+		params.put("deleted", Boolean.FALSE);
+		// get list of ids, so don't have to load large trees all at once
+		List<Object[]> objs = getCoreDao()
+				.loadObjects(
+						"select x.id,x.binderKey.sortKey from org.kablink.teaming.domain.Binder x where x.binderKey.sortKey like '"
+								+ top.getBinderKey().getSortKey()
+								+ "%' and deleted=:deleted order by x.binderKey.sortKey desc",
+						params);
+		// convert to list of ids
+		List<Long> ids = new ArrayList();// maintain order, bottom up
+		for (Object row[] : objs) {
+			ids.add((Long) row[0]);
+		}
+		ids.remove(top.getId());
+		for (Long id : ids) {
+			try {
+				final Binder child = getCoreDao().loadBinder(id,
+						top.getZoneId());
+				if (child.isDeleted())
+					continue;
+				checkAccess(child, BinderOperation.deleteBinder);
+				// determine if need to deleted mirrored for this binder, or if
+				// parent will take care of it
+				boolean deleteMirroredSourceForChildren = deleteMirroredSource;
+				if (top.isMirrored() && deleteMirroredSource)
+					deleteMirroredSourceForChildren = false;
+				if (deleteMirroredSourceForChildren == true) {
+					// top is not mirrored; see if a parent is
+					Binder parent = child.getParentBinder();
+					while (parent != top) {
+						if (parent.isMirrored()) {
+							deleteMirroredSourceForChildren = false;
+							break;
+						}
+						parent = parent.getParentBinder();
+					}
+				}
+				final boolean doMirrored = deleteMirroredSourceForChildren;
+				getTransactionTemplate().execute(new TransactionCallback() {
+					public Object doInTransaction(TransactionStatus status) {
+						loadBinderProcessor(child).deleteBinder(child,
+								doMirrored, options);
+						return null;
+					}
+				});
+				// get updates commited, this is needed if their is another
+				// transaction wrapping the call to delete binder
+				// This is the case with delete user workspace !!
+				getCoreDao().flush();
+
+				getCoreDao().evict(child); // update commited
+
+			} catch (NoObjectByTheIdException musthavebeendeleted) {
+				continue;
+			}
+		}
+		getTransactionTemplate().execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				loadBinderProcessor(top).deleteBinder(top,
+						deleteMirroredSource, options);
+				return null;
+			}
+		});
+
+	}
+
+	protected void deleteBinderPhase2() {
+		if(SPropsUtil.getBoolean("binder.delete.immediate", true)) {
+			// Initiate the phase 2 of the process needed for deleting a binder hierarchy. 
+			// This part is executed asynchronously and we do not check its outcome.
+			getRunAsyncManager().execute(new RunAsyncCallback() {
+				public Object doAsynchronously() throws Exception {
+			    	FolderModule folderModule = (FolderModule)SpringContextUtil.getBean("folderModule");
+			    	folderModule.cleanupFolders();
+			    	return null;
+				}
+			});
+		}
 	}
 }

@@ -304,6 +304,8 @@
 		</property>
 	</bean>
 
+	<bean id="runAsyncManager" class="org.kablink.teaming.runasync.RunAsyncManager" depends-on="sPropsUtil" />
+
 	<!-- ========================= Portlet Common Infrastructural Beans ======================== -->
 	
 	<bean id="localeResolver" class="org.kablink.teaming.portletadapter.support.UserLocaleResolver" />	
@@ -699,6 +701,7 @@
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.binder.impl.BinderModuleImpl">
 				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
+				<property name="runAsyncManager"><ref local="runAsyncManager"/></property>
 			</bean>
 		</property>
 		<!-- addBinder, modifyBinder, setTeamMembers, setTeamMembershipInherited, deleteBinder, copyBinder provide transaction semantics at a finer
