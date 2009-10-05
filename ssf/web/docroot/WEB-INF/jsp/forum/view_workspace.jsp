@@ -188,6 +188,15 @@ if (typeof ss_workarea_showId == "undefined")
   anchorOnly="true"/>
 		<div class="ss_tab_canvas">
 			<c:if test="${showTrash}">
+				<div class="ss_style_color">				
+					<div class="ss_content_inner">
+						<div id="ss_whatsNewDiv${ss_namespace}">
+							<c:if test="${ss_type == 'whatsNew' || ss_type == 'unseen'}">
+								<jsp:include page="/WEB-INF/jsp/forum/whats_new_page.jsp" />
+							</c:if>
+						</div>
+					</div>
+				</div>
 				<c:set var="trashMode" value="workspace" scope="request"/>
 				<%@ include file="/WEB-INF/jsp/binder/view_trash.jsp" %>
 			</c:if>

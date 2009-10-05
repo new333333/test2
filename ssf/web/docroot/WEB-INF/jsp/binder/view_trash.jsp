@@ -32,10 +32,12 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<c:if test="${trashMode == 'workspace'}" >
-Workspace (ID:  ${ssBinder.id}) trash:  ...this needs to be implemented...
-</c:if>
+<div id="ss_trashDiv${ss_namespace}">
+	<c:if test="${trashMode == 'workspace'}" >
+		Workspace (ID:  ${ssBinder.id}) trash:  ...this needs to be implemented...
+	</c:if>
 
-<c:if test="${trashMode == 'folder'}" >
-Folder (ID:  ${ssBinder.id}) trash:  ...this needs to be implemented...
-</c:if>
+	<c:if test="${trashMode == 'folder'}" >
+	Folder (ID:  ${ssBinder.id}) trash:  ...this needs to be implemented...
+	</c:if>
+</div>

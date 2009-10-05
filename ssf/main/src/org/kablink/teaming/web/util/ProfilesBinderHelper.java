@@ -198,7 +198,7 @@ public class ProfilesBinderHelper {
 	}		
 
 	protected static Map getSearchAndPagingModels(Map userEntries, Map options) {
-		return BinderHelper.getSearchAndPagingModels(userEntries, options);
+		return BinderHelper.getSearchAndPagingModels(userEntries, options, false);
 	}
 	
 	//This method returns a HashMap with Keys referring to the Previous Page Keys,

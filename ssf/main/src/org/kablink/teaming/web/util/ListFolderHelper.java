@@ -356,7 +356,7 @@ public class ListFolderHelper {
 				model.put(WebKeys.SHOW_TEAM_MEMBERS, true);
 				view = getTeamMembers(bs, formData, request, response, (Folder)binder, options, model, viewType);
 			} else {
-				view = getShowFolder(bs, formData, request, response, (Folder)binder, options, model, viewType);
+				view = getShowFolder(bs, formData, request, response, (Folder)binder, options, model, viewType, showTrash);
 			}
 			
 			model.put(WebKeys.URL_TAB_ID, String.valueOf(tab.getTabId()));
@@ -381,8 +381,18 @@ public class ListFolderHelper {
 		}
 			
 	}
-	
-	public static Map getSearchFilter(AllModulesInjected bs, RenderRequest request, Binder binder, UserProperties userFolderProperties) {
+
+	/**
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binder
+	 * @param userFolderProperties
+	 * @param searchTrash
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static Map getSearchFilter(AllModulesInjected bs, RenderRequest request, Binder binder, UserProperties userFolderProperties, boolean searchTrash) {
 		Map result = new HashMap();
 		result.put(ObjectKeys.SEARCH_SEARCH_FILTER, BinderHelper.getSearchFilter(bs, binder, userFolderProperties));
 		String searchTitle = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TITLE, "");
@@ -392,6 +402,11 @@ public class ListFolderHelper {
 		
 		return result;
 	}
+	public static Map getSearchFilter(AllModulesInjected bs, RenderRequest request, Binder binder, UserProperties userFolderProperties) {
+		return getSearchFilter(bs, request, binder, userFolderProperties, false);
+	}
+	
+	@SuppressWarnings("unchecked")
 	protected static void initPageCounts(AllModulesInjected bs, RenderRequest request, 
 			Map userProperties, Tabs.TabEntry tab, Map options) {
 		Map tabOptions = tab.getData();
@@ -730,106 +745,115 @@ public class ListFolderHelper {
 		cal.add(Calendar.MILLISECOND, -1);
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected static String getShowFolder(AllModulesInjected bs, Map formData, RenderRequest req, 
 			RenderResponse response, Folder folder, Map options, 
-			Map<String,Object>model, String viewType) throws Exception {
+			Map<String,Object>model, String viewType, boolean showTrash) throws Exception {
 		Map folderEntries = null;
 		Long folderId = folder.getId();
 		User user = RequestContextHolder.getRequestContext().getUser();
 		List pinnedFolderEntries = new ArrayList();
-					
-		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
-			folderEntries = bs.getFolderModule().getFullEntries(folderId, options);
-			
-			//Get the WebDAV URLs
-			buildWebDAVURLs(bs, req, folderEntries, model, folder);
-			
-			//Get the list of all entries to build the archive list
-			buildBlogBeans(bs, response, folder, options, model, folderEntries, viewType);
-		} else {
-			String strUserDisplayStyle = user.getDisplayStyle();
-			if (strUserDisplayStyle == null) { strUserDisplayStyle = ""; }
-			
-			boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
-			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && (!accessible_simple_ui ||
-					!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle))) {
-				// do it with ajax
-			} else if (viewType.equals(Definition.VIEW_STYLE_TASK) && (!accessible_simple_ui ||
-					!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle))) {
-				folderEntries = findTaskEntries(bs, req, response, (Binder) folder, model, options);
-			} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && accessible_simple_ui &&
-					ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
-				folderEntries = findCalendarEvents(bs, req, response, (Binder) folder, model);
-			} else {
-				folderEntries = bs.getFolderModule().getEntries(folderId, options);
-			}
-			if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
-				buildWikiBeans(bs, response, folder, options, model, folderEntries);
-				//Get the pages bean
-				buildBlogPageBeans(bs, response, folder, model, viewType);
-
-			}
-			if (viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
+		
+		if (showTrash) {
+			folderEntries = TrashHelper.getTrashEntries(bs, folder, options);
+		}
+		
+		else {
+			if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
+				folderEntries = bs.getFolderModule().getFullEntries(folderId, options);
+				
+				//Get the WebDAV URLs
+				buildWebDAVURLs(bs, req, folderEntries, model, folder);
+				
 				//Get the list of all entries to build the archive list
 				buildBlogBeans(bs, response, folder, options, model, folderEntries, viewType);
-			}
-			if (viewType.equals(Definition.VIEW_STYLE_MILESTONE)) {
-				//Get the list of all entries to build the archive list
-				loadFolderStatisticsForPlacesAttributes(bs, response, folder, options, model, folderEntries);
-			}			
-			if (viewType.equals(Definition.VIEW_STYLE_DISCUSSION)) {
-				Integer offset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
-				if (offset == null || offset == 0) {
-					//See if there are any pinned entries (show on first page only)
-					UserProperties userFolderProperties = 
-						bs.getProfileModule().getUserProperties(user.getId(), folder.getId());
-					Map properties = userFolderProperties.getProperties();
-					Map pinnedEntriesMap = new HashMap();
-					model.put(WebKeys.PINNED_ENTRIES, pinnedEntriesMap);
-					String pinnedEntries = "";
-					if (properties.containsKey(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES)) {
-						pinnedEntries = (String)properties.get(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES);
-					}
-					if (!pinnedEntries.equals("")) {
-						if (pinnedEntries.lastIndexOf(",") == pinnedEntries.length()-1) 
-							pinnedEntries = pinnedEntries.substring(0,pinnedEntries.length()-1);
-						String[] peArray = pinnedEntries.split(",");
-						List peSet = new ArrayList();
-						for (int i = 0; i < peArray.length; i++) {
-							String pe = peArray[i];
-							if (!pe.equals("")) {
-								peSet.add(Long.valueOf(pe));
+			} else {
+				String strUserDisplayStyle = user.getDisplayStyle();
+				if (strUserDisplayStyle == null) { strUserDisplayStyle = ""; }
+				
+				boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
+				if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && (!accessible_simple_ui ||
+						!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle))) {
+					// do it with ajax
+				} else if (viewType.equals(Definition.VIEW_STYLE_TASK) && (!accessible_simple_ui ||
+						!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle))) {
+					folderEntries = findTaskEntries(bs, req, response, (Binder) folder, model, options);
+				} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && accessible_simple_ui &&
+						ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
+					folderEntries = findCalendarEvents(bs, req, response, (Binder) folder, model);
+				} else {
+					folderEntries = bs.getFolderModule().getEntries(folderId, options);
+				}
+				if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
+					buildWikiBeans(bs, response, folder, options, model, folderEntries);
+					//Get the pages bean
+					buildBlogPageBeans(bs, response, folder, model, viewType);
+	
+				}
+				if (viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
+					//Get the list of all entries to build the archive list
+					buildBlogBeans(bs, response, folder, options, model, folderEntries, viewType);
+				}
+				if (viewType.equals(Definition.VIEW_STYLE_MILESTONE)) {
+					//Get the list of all entries to build the archive list
+					loadFolderStatisticsForPlacesAttributes(bs, response, folder, options, model, folderEntries);
+				}			
+				if (viewType.equals(Definition.VIEW_STYLE_DISCUSSION)) {
+					Integer offset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
+					if (offset == null || offset == 0) {
+						//See if there are any pinned entries (show on first page only)
+						UserProperties userFolderProperties = 
+							bs.getProfileModule().getUserProperties(user.getId(), folder.getId());
+						Map properties = userFolderProperties.getProperties();
+						Map pinnedEntriesMap = new HashMap();
+						model.put(WebKeys.PINNED_ENTRIES, pinnedEntriesMap);
+						String pinnedEntries = "";
+						if (properties.containsKey(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES)) {
+							pinnedEntries = (String)properties.get(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES);
+						}
+						if (!pinnedEntries.equals("")) {
+							if (pinnedEntries.lastIndexOf(",") == pinnedEntries.length()-1) 
+								pinnedEntries = pinnedEntries.substring(0,pinnedEntries.length()-1);
+							String[] peArray = pinnedEntries.split(",");
+							List peSet = new ArrayList();
+							for (int i = 0; i < peArray.length; i++) {
+								String pe = peArray[i];
+								if (!pe.equals("")) {
+									peSet.add(Long.valueOf(pe));
+								}
 							}
+							SortedSet<FolderEntry> pinnedFolderEntriesSet = bs.getFolderModule().getEntries(peSet);
+							List pinnedFolderEntriesList = new ArrayList();
+							for (FolderEntry entry : pinnedFolderEntriesSet) {
+								org.apache.lucene.document.Document indexDoc = 
+									bs.getFolderModule().buildIndexDocumentFromEntry(entry.getParentBinder(), entry, null);
+								pinnedFolderEntriesList.add(indexDoc);
+								pinnedEntriesMap.put(entry.getId().toString(), entry);
+							}
+							pinnedFolderEntries = SearchUtils.getSearchEntries(pinnedFolderEntriesList);
+							bs.getFolderModule().getEntryPrincipals(pinnedFolderEntries);
 						}
-						SortedSet<FolderEntry> pinnedFolderEntriesSet = bs.getFolderModule().getEntries(peSet);
-						List pinnedFolderEntriesList = new ArrayList();
-						for (FolderEntry entry : pinnedFolderEntriesSet) {
-							org.apache.lucene.document.Document indexDoc = 
-								bs.getFolderModule().buildIndexDocumentFromEntry(entry.getParentBinder(), entry, null);
-							pinnedFolderEntriesList.add(indexDoc);
-							pinnedEntriesMap.put(entry.getId().toString(), entry);
-						}
-						pinnedFolderEntries = SearchUtils.getSearchEntries(pinnedFolderEntriesList);
-						bs.getFolderModule().getEntryPrincipals(pinnedFolderEntries);
 					}
 				}
+				// viewType == task is pure ajax solution (view AjaxController)
 			}
-			// viewType == task is pure ajax solution (view AjaxController)
 		}
-
-		model.putAll(getSearchAndPagingModels(folderEntries, options));
+	
+		model.putAll(getSearchAndPagingModels(folderEntries, options, showTrash));
 		if (folderEntries != null) {
 			List folderEntriesList = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 			if (!pinnedFolderEntries.isEmpty()) folderEntriesList.addAll(0, pinnedFolderEntries);
 			model.put(WebKeys.FOLDER_ENTRIES, folderEntriesList);
 		}
 		
-		if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) ||
-				viewType.equals(Definition.VIEW_STYLE_TASK)) {
-			// all in Ajax
-		} else if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
-			//This is a blog view, so get the extra blog beans
-			getBlogEntries(bs, folder, folderEntries, model, req, response);
+		if (!showTrash) {
+			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) ||
+					viewType.equals(Definition.VIEW_STYLE_TASK)) {
+				// all in Ajax
+			} else if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
+				//This is a blog view, so get the extra blog beans
+				getBlogEntries(bs, folder, folderEntries, model, req, response);
+			}
 		}
 		
 		String type = PortletRequestUtils.getStringParameter(req, WebKeys.URL_TYPE, "");
@@ -859,8 +883,8 @@ public class ListFolderHelper {
 		return BinderHelper.getViewListingJsp(bs, viewType);
 	}
 	
-	protected static Map getSearchAndPagingModels(Map folderEntries, Map options) {
-		return BinderHelper.getSearchAndPagingModels(folderEntries, options);
+	protected static Map getSearchAndPagingModels(Map folderEntries, Map options, boolean showTrash) {
+		return BinderHelper.getSearchAndPagingModels(folderEntries, options, showTrash);
 	}	
 	
 	protected static String getTeamMembers(AllModulesInjected bs, Map formData, RenderRequest req, 
@@ -2008,20 +2032,7 @@ public class ListFolderHelper {
 		}
 
 		// trash
-//!		...when do we NOT want to show access to the trash?...
-		{
-			// Show the trash sidebar widget...
-			model.put(WebKeys.TOOLBAR_TRASH_SHOW, Boolean.TRUE);
-			
-			// ...and add trash to the menu bar.
-			qualifiers = new HashMap();
-			qualifiers.put("title", NLT.get("toolbar.menu.title.trash"));
-			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.trashMenu");
-			qualifiers.put("icon", "trash.png");
-			qualifiers.put("iconFloatRight", "true");
-			qualifiers.put("onClick", "ss_treeShowId('"+forumId+"',this,'view_folder_listing','&showTrash=true');return false;");
-			trashToolbar.addToolbarMenu("1_trash", NLT.get("toolbar.menu.trash"), "javascript: //;", qualifiers);	
-		}
+		TrashHelper.buildTrashToolbar(forumId, model, qualifiers, trashToolbar);
 
 		// start meeting
 		if (bs.getIcBrokerModule().isEnabled() && 

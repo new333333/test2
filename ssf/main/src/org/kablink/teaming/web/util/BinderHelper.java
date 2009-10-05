@@ -2845,7 +2845,7 @@ public class BinderHelper {
 		}
 	}
 
-	public static Map getSearchAndPagingModels(Map entries, Map options) {
+	public static Map getSearchAndPagingModels(Map entries, Map options, boolean showTrash) {
 		Map model = new HashMap();
 		
 		if (entries == null) {
@@ -3156,6 +3156,10 @@ public class BinderHelper {
 		}
 		//End - Determine the Sort Order
 		
+	}
+	public static void initSortOrder(AllModulesInjected bs, 
+			UserProperties userFolderProperties, Map options) {
+		initSortOrder(bs, userFolderProperties, options, null);
 	}
 	
 	public static boolean isBinderNameLegal(String name) {
