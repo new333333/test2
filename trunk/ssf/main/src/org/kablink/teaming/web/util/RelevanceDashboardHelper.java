@@ -231,7 +231,7 @@ public class RelevanceDashboardHelper {
 			try {
 				if (!model.containsKey(WebKeys.WORKSPACE_BEANS_SETUP)) {
 					model.put(WebKeys.WORKSPACE_BEANS_SETUP, true);
-					WorkspaceTreeHelper.setupWorkspaceBeans(bs, binder.getId(), request, response, model);
+					WorkspaceTreeHelper.setupWorkspaceBeans(bs, binder.getId(), request, response, model, false);
 				}
 			} catch(Exception e) {}
 		} else {

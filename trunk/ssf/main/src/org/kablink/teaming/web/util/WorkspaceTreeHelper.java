@@ -107,12 +107,12 @@ public class WorkspaceTreeHelper {
 	public static ModelAndView setupWorkspaceBeans(AllModulesInjected bs, Long binderId, RenderRequest request, 
 			RenderResponse response, boolean showTrash) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
-		model.put(WebKeys.URL_SHOW_TRASH, new Boolean(showTrash));
- 		String view = setupWorkspaceBeans(bs, binderId, request, response, model);
+ 		String view = setupWorkspaceBeans(bs, binderId, request, response, model, showTrash);
  		return new ModelAndView(view, model);
 	}
 	public static String setupWorkspaceBeans(AllModulesInjected bs, Long binderId, RenderRequest request, 
-			RenderResponse response, Map model) throws Exception {
+			RenderResponse response, Map model, boolean showTrash) throws Exception {
+		model.put(WebKeys.URL_SHOW_TRASH, new Boolean(showTrash));
 		model.put(WebKeys.WORKSPACE_BEANS_SETUP, true);
         User user = RequestContextHolder.getRequestContext().getUser();
         String targetJSP = WebKeys.VIEW_WORKSPACE;
@@ -346,7 +346,7 @@ public class WorkspaceTreeHelper {
 				if (viewType.equals(Definition.VIEW_STYLE_DISCUSSION_WORKSPACE)) {
 					getShowDiscussionWorkspace(bs, formData, request, response, (Workspace)binder, searchFilter, model);					
 				} else {
-					getShowWorkspace(bs, formData, request, response, (Workspace)binder, searchFilter, model);
+					getShowWorkspace(bs, formData, request, response, (Workspace)binder, searchFilter, model, showTrash);
 				}
 			}
 			Map tagResults = TagUtil.uniqueTags(bs.getBinderModule().getTags(binder));
@@ -433,22 +433,34 @@ public class WorkspaceTreeHelper {
 		return targetJSP;
 	}
 	
+	@SuppressWarnings({ "unchecked" })
 	protected static void getShowWorkspace(AllModulesInjected bs, Map formData, 
 			RenderRequest req, RenderResponse response, Workspace ws, 
-			Document searchFilter, Map<String,Object>model) throws PortletRequestBindingException {
+			Document searchFilter, Map<String,Object>model, boolean showTrash) throws Exception {
 		Document wsTree;
+		Long wsId = ws.getId();
 
 		Long top = PortletRequestUtils.getLongParameter(req, WebKeys.URL_OPERATION2);
 		if ((top != null) && (!ws.isRoot())) {
-			wsTree = bs.getBinderModule().getDomBinderTree(top, ws.getId(), new WsDomTreeBuilder(ws, true, bs));
+			wsTree = bs.getBinderModule().getDomBinderTree(top, wsId, new WsDomTreeBuilder(ws, true, bs));
 		} else {
-			wsTree = bs.getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, bs),1);
+			wsTree = bs.getBinderModule().getDomBinderTree(wsId, new WsDomTreeBuilder(ws, true, bs),1);
 		}
 		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 		
 		//Get the info for the "add a team" button
 		buildAddTeamButton(bs, req, response, ws, model);
-		buildWorkspaceToolbar(bs, req, response, model, ws, ws.getId().toString());
+		buildWorkspaceToolbar(bs, req, response, model, ws, wsId.toString());
+		
+		if (showTrash) {
+			Map options = TrashHelper.buildTrashBeans(bs, req, response, wsId, model);
+			Map trashEntries = TrashHelper.getTrashEntries(bs, ws, options);
+			model.putAll(ListFolderHelper.getSearchAndPagingModels(trashEntries, options, showTrash));
+			if (trashEntries != null) {
+				List trashEntriesList = (List) trashEntries.get(ObjectKeys.SEARCH_ENTRIES);
+				model.put(WebKeys.FOLDER_ENTRIES, trashEntriesList);
+			}
+		}
 	}
 	
 	protected static void getShowDiscussionWorkspace(AllModulesInjected bs, Map formData, 
@@ -966,20 +978,7 @@ public class WorkspaceTreeHelper {
 		}
 
 		// trash
-//!		...when do we NOT want to show this?...
-		{
-			// Show the trash sidebar widget...
-			model.put(WebKeys.TOOLBAR_TRASH_SHOW, Boolean.TRUE);
-			
-			// ...and add trash to the menu bar.
-			qualifiers = new HashMap();
-			qualifiers.put("title", NLT.get("toolbar.menu.title.trash"));
-			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.trashMenu");
-			qualifiers.put("icon", "trash.png");
-			qualifiers.put("iconFloatRight", "true");
-			qualifiers.put("onClick", "ss_treeShowId('"+forumId+"',this,'view_folder_listing','&showTrash=true');return false;");
-			trashToolbar.addToolbarMenu("1_trash", NLT.get("toolbar.menu.trash"), "javascript: //;", qualifiers);	
-		}
+		TrashHelper.buildTrashToolbar(forumId, model, qualifiers, trashToolbar);
 
 		// start meeting
 		if (bs.getIcBrokerModule().isEnabled() && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {

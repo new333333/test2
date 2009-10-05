@@ -32,6 +32,108 @@
  */
 package org.kablink.teaming.web.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.workspace.WorkspaceModule;
+import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.web.WebKeys;
+
 public class TrashHelper {
 	public static final String[] trashColumns= new String[] {"name", "deleted", "deletedBy", "location"};
+	
+	/**
+	 * When required, builds the Trash toolbar for a binder.
+	 * 
+	 * @param binderId
+	 * @param model
+	 * @param qualifiers
+	 * @param trashToolbar
+	 */
+	@SuppressWarnings("unchecked")
+	public static void buildTrashToolbar(String binderId, Map model, Map qualifiers, Toolbar trashToolbar) {
+//!		...when do we NOT want to show access to the trash?...
+		
+		// Show the trash sidebar widget...
+		model.put(WebKeys.TOOLBAR_TRASH_SHOW, Boolean.TRUE);
+		
+		// ...and add trash to the menu bar.
+		qualifiers = new HashMap();
+		qualifiers.put("title", NLT.get("toolbar.menu.title.trash"));
+		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.trashMenu");
+		qualifiers.put("icon", "trash.png");
+		qualifiers.put("iconFloatRight", "true");
+		qualifiers.put("onClick", "ss_treeShowId('"+binderId+"',this,'view_folder_listing','&showTrash=true');return false;");
+		trashToolbar.addToolbarMenu("1_trash", NLT.get("toolbar.menu.trash"), "javascript: //;", qualifiers);	
+	}
+
+	/**
+	 * Builds the beans for display the trash from either a folder or
+	 * workspace binder.
+	 *  
+	 * @param bs
+	 * @param request
+	 * @param response
+	 * @param binderId
+	 * @param zoneUUID
+	 * @param model
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public static Map buildTrashBeans(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, Long binderId, Map model) throws Exception{
+		// Access the binder...
+		Binder binder = bs.getBinderModule().getBinder(binderId);
+		
+		// ...store the tabs...
+		Tabs.TabEntry tab= BinderHelper.initTabs(request, binder);
+		model.put(WebKeys.TABS, tab.getTabs());
+
+		
+		// Access the user properties... 
+		UserProperties userProperties       = ((UserProperties) model.get(WebKeys.USER_PROPERTIES_OBJ));
+		UserProperties userFolderProperties = ((UserProperties) model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ));
+
+		// ...initialize the page counts and sort order.
+		Map options = ListFolderHelper.getSearchFilter(bs, request, binder, userFolderProperties, true);
+		ListFolderHelper.initPageCounts(bs, request, userProperties.getProperties(), tab, options);
+		BinderHelper.initSortOrder(bs, userFolderProperties, options);
+		return options;
+	}
+	
+	/**
+	 * Returns the trash entries for the given binder.
+	 * 
+	 * @param bs
+	 * @param binder
+	 * @param options
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static Map getTrashEntries(AllModulesInjected bs, Binder binder, Map options) {
+//!		...this needs to be implemented...
+		Map trashEntries = null;
+		if (binder instanceof Folder) {
+			Folder folder = ((Folder) binder);
+			Long folderId = folder.getId();
+			FolderModule fm = bs.getFolderModule();
+			trashEntries = fm.getEntries(folderId, options);
+		}
+		else if (binder instanceof Workspace) {
+			Workspace ws = ((Workspace) binder);
+			BinderModule bm = bs.getBinderModule();
+			trashEntries = bm.getBinders(ws, options);
+		}
+		return trashEntries;
+	}
 }
