@@ -32,15 +32,22 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.GwtFolder;
+import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.widgets.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.widgets.FindCtrl;
+import org.kablink.teaming.gwt.client.widgets.OnSelectHandler;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -52,10 +59,12 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  */
 public class LinkToFolderWidgetDlgBox extends DlgBox
+	implements OnSelectHandler
 {
-	private TextBox	m_folderTxtBox = null;
 	private TextBox	m_titleTxtBox = null;
 	private CheckBox	m_newWndCkBox = null;
+	private FindCtrl m_findCtrl = null;
+	private String m_folderId = null;
 	
 	/**
 	 * 
@@ -85,20 +94,23 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 		Label label;
 		VerticalPanel	mainPanel;
 		FlexTable		table;
+		HTMLTable.CellFormatter cellFormatter;
 		
 		properties = (LinkToFolderProperties) props;
 
 		mainPanel = new VerticalPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
-		// Add label and edit control for "Folder id"
+		// Add label and find control for "Folder id"
 		table = new FlexTable();
 		table.setCellSpacing( 8 );
+		cellFormatter = table.getCellFormatter();
+		cellFormatter.setAlignment( 0, 0, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP );
 		label = new Label( GwtTeaming.getMessages().folderOrWorkspaceLabel() );
 		table.setWidget( 0, 0, label );
-		m_folderTxtBox = new TextBox();
-		m_folderTxtBox.setVisibleLength( 30 );
-		table.setWidget( 0, 1, m_folderTxtBox );
+		m_findCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.PLACES );
+		m_findCtrl.setSearchForFoldersOnly( true );
+		table.setWidget( 0, 1, m_findCtrl );
 		mainPanel.add( table );
 		
 		// Add label and edit control for "Title"
@@ -149,7 +161,7 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 	 */
 	public String getFolderIdValue()
 	{
-		return m_folderTxtBox.getText();
+		return m_folderId;
 	}// end getFolderIdValue()
 	
 
@@ -158,7 +170,7 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 	 */
 	public FocusWidget getFocusWidget()
 	{
-		return m_folderTxtBox;
+		return m_findCtrl.getFocusWidget();
 	}// end getFocusWidget()
 	
 	
@@ -190,11 +202,15 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 		
 		properties = (LinkToFolderProperties) props;
 
-		tmp = properties.getFolderId();
-		if ( tmp == null )
-			tmp = "";
-		m_folderTxtBox.setText( tmp );
+		// Hide the search-results widget.
+		m_findCtrl.hideSearchResults();
 		
+		// Populate the find control's text box with the name of the selected folder.
+		m_findCtrl.setInitialSearchString( properties.getFolderName() );
+		
+		// Remember the entry id that was passed to us.
+		m_folderId = properties.getFolderId();
+
 		tmp = properties.getTitle();
 		if ( tmp == null )
 			tmp = "";
@@ -202,5 +218,24 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 
 		m_newWndCkBox.setValue( properties.getOpenInNewWindow() );
 	}// end init()
+	
+
+	/**
+	 * This method gets called when the user selects an item from the search results in the "find" control.
+	 */
+	public void onSelect( Object selectedObj )
+	{
+		// Make sure we are dealing with a GwtFolder object.
+		if ( selectedObj instanceof GwtFolder )
+		{
+			GwtFolder gwtFolder;
+			
+			gwtFolder = (GwtFolder) selectedObj;
+			m_folderId = gwtFolder.getFolderId();
+			
+			// Hide the search-results widget.
+			m_findCtrl.hideSearchResults();
+		}
+	}// end onSelect()
 	
 }// end LinkToFolderWidgetDlgBox

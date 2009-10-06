@@ -568,6 +568,15 @@ public class FindCtrl extends Composite
 	
 	
 	/**
+	 * Set the search criteria for whether or not we are searching only for folders.
+	 */
+	public void setSearchForFoldersOnly( boolean value )
+	{
+		m_searchCriteria.setFoldersOnly( value );
+	}// end setSearchForFoldersOnly()
+	
+	
+	/**
 	 * Show the search results. 
 	 */
 	public void showSearchResults()
