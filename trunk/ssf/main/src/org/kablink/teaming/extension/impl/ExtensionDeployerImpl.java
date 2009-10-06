@@ -59,13 +59,19 @@ import org.dom4j.DocumentException;
 import org.dom4j.QName;
 import org.dom4j.io.SAXReader;
 import org.dom4j.tree.AbstractAttribute;
+import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
+import org.kablink.teaming.dao.util.FilterControls;
+import org.kablink.teaming.dao.util.ObjectControls;
+import org.kablink.teaming.dao.util.OrderBy;
+import org.kablink.teaming.domain.ExtensionInfo;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.extension.ExtensionDeployer;
 import org.kablink.teaming.extension.ZoneClassManager;
+import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.template.TemplateModule;
@@ -96,6 +102,8 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 	private TemplateModule templateModule;
 	private DefinitionModule definitionModule;
 	private ZoneClassManager zoneClassManager;
+	private AdminModule adminModule;
+	
 	public void setTemplateModule(TemplateModule templateModule) {
 		this.templateModule = templateModule;
 	}
@@ -117,7 +125,16 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 	}
 	public void setZoneClassManager(ZoneClassManager zoneClassManager) {
 		this.zoneClassManager = zoneClassManager;
-	} 
+	}
+	
+	public void setAdminModule(AdminModule adminModule) {
+		this.adminModule = adminModule;
+	}
+
+	public AdminModule getAdminModule() {
+		return adminModule;
+	}
+
 	/**
 	 * Called on a timer.  Need to handle all zones
 	 *
@@ -313,6 +330,29 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		}
 		//Now move libraries into classpath
 		getZoneClassManager().addExtensionLibs(extensionDir);
+		
+		//Add the extension info to database
+		ExtensionInfo extInfo = new ExtensionInfo();
+		extInfo.setName(extension.getName());
+		extInfo.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
+		
+		List extList = findExtensions(RequestContextHolder.getRequestContext().getZoneId());
+		if (extList.contains(extInfo)) {
+			//Extension already exists, then lets update existing extension
+			List foundList = findExtensions(extension.getName(), RequestContextHolder.getRequestContext().getZoneId());
+			if(foundList.size() > 0)
+			{
+				ExtensionInfo foundExtInfo = (ExtensionInfo) foundList.get(0);
+				//TODO update the found object
+
+				
+				updateExtension(foundExtInfo);
+
+			}
+		} else {
+			addExtension(extInfo);
+		}
+		
 		logger.info("Extension deployed successfully from " + extension.getPath());
 	}
 
@@ -355,6 +395,60 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 			}
 		}
 	}
+	
 
+	public void remove(File extension) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean removeExtension(ExtensionInfo ext) {
+		
+		// TODO call remove
+		deleteExtension(ext);
+		
+		return false;
+	}
+	
+	public void addExtension(ExtensionInfo extension) {
+		getAdminModule().addExtension(extension);
+	}
+
+	public boolean deleteExtension(ExtensionInfo extension) {
+		
+		boolean retValue = true;
+		
+		//TODO remove extension
+		getAdminModule().deleteExtension(extension.getId());
+		return retValue;
+	}
+
+	public List findExtensions(Long zoneId) {
+		OrderBy order = new OrderBy();
+		order.addColumn("name");
+		FilterControls filter = new FilterControls();
+		filter.setOrderBy(order);
+		return getCoreDao().loadObjects(ExtensionInfo.class, filter, zoneId);
+	}
+
+	public ExtensionInfo getExtension(String id)
+			throws NoObjectByTheIdException {
+		ExtensionInfo extension = null;
+		
+		Object obj = getCoreDao().load(ExtensionInfo.class, id);
+		if(obj != null && obj instanceof ExtensionInfo)
+		{
+			return (ExtensionInfo) obj;
+		}
+		return extension;
+	}
+
+	public void updateExtension(ExtensionInfo extension) {
+		getAdminModule().modifyExtension(extension);
+	}
+	public List findExtensions(String name, Long zoneId) {
+		return getCoreDao().loadObjects(new ObjectControls(ExtensionInfo.class), new FilterControls("name", name), zoneId);
+	}
+	
 }
 

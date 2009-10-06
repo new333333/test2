@@ -37,6 +37,10 @@ package org.kablink.teaming.extension;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+
+import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.teaming.domain.ExtensionInfo;
 
 /**
  * 
@@ -52,5 +56,21 @@ public interface ExtensionDeployer {
 	 * @param full - deploy into database and disk or just disk
 	 */
 	public void deploy(File extension, boolean full) throws IOException;
+	
+	public void remove(File extension);
+	
+	public boolean removeExtension(ExtensionInfo ext);
+	
+    public void addExtension(ExtensionInfo extension);
+    
+    public boolean deleteExtension(ExtensionInfo extension);
+    
+    public void updateExtension(ExtensionInfo extension);
+    
+    public ExtensionInfo getExtension(String id) throws NoObjectByTheIdException;
+   
+    public List findExtensions(Long zoneId);
+
+	public List findExtensions(String name, Long zoneId);
 
 }
