@@ -36,6 +36,7 @@ import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
+import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -60,4 +61,7 @@ public interface GwtRpcService extends RemoteService
 	public GwtFolder getFolder( String folderId );
 	
 	public String getTutorialPanelState();
+	public ExtensionInfoClient[] getExtensionInfo();
+	public ExtensionInfoClient[] removeExtension(String id);
+
 }// end GwtRpcService

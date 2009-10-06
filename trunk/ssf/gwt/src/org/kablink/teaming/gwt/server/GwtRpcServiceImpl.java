@@ -38,18 +38,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.ExtensionInfo;
+import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
+import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
-
-import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
@@ -72,7 +74,9 @@ import org.kablink.util.search.Constants;
 public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 	implements GwtRpcService
 {
-	/**
+
+
+/**
 	 * This method is meant to search for applications or entries or groups or places or tags or teams or users.
 	 */
 	@SuppressWarnings("unchecked")
@@ -419,5 +423,52 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 		
     	return tutorialPanelState;
     }// end getTutorialPanelState()
+    
+    
+    public ExtensionInfoClient[] getExtensionInfo()
+    {
+    	List<ExtensionInfo> extList =  new ArrayList<ExtensionInfo>(); 
+    	AdminModule adminModule;
+    	
+    	adminModule = getAdminModule();
+    	if(adminModule == null)
+    	{
+    		ExtensionInfoClient[] infoArray = new ExtensionInfoClient[0];
+        	return infoArray;
+    	}
+
+    	extList = adminModule.getExtensionManager().getExtensions();
+    	ArrayList<ExtensionInfoClient> list = new ArrayList<ExtensionInfoClient>();
+
+    	for(ExtensionInfo info: extList){
+        	ExtensionInfoClient client = new ExtensionInfoClient();
+        	
+        	client.setId(info.getId());
+        	client.setName(info.getName());
+        	client.setDescription("Descriptions "+info.getZoneId());
+        	
+        	list.add(client);
+    	}
+
+    	ExtensionInfoClient[] infoArray = new ExtensionInfoClient[list.size()];
+    	list.toArray(infoArray);
+    	
+    	return infoArray;
+    	
+    }
+
+    public ExtensionInfoClient[] removeExtension(String id)
+    {
+    	AdminModule adminModule;
+    	adminModule = getAdminModule();
+    	if(adminModule == null) {
+    		//Throw an exception
+    		getExtensionInfo();
+    	}
+    		
+    	adminModule.getExtensionManager().removeExtensions(id);
+    	return getExtensionInfo();
+    }
+
     
 }// end GwtRpcServiceImpl
