@@ -589,7 +589,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				continue;
 			}
 			
-			if(name.equals(prevName)){
+			if(name.equalsIgnoreCase(prevName)){
 				dupCnt+=1;
 			} else {
 				dupCnt = 1;
