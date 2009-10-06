@@ -32,15 +32,22 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.GwtFolderEntry;
+import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.widgets.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.widgets.FindCtrl;
+import org.kablink.teaming.gwt.client.widgets.OnSelectHandler;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -52,10 +59,12 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  */
 public class LinkToEntryWidgetDlgBox extends DlgBox
+	implements OnSelectHandler
 {
-	private TextBox	m_entryTxtBox = null;
+	private FindCtrl m_findCtrl = null;
 	private TextBox	m_titleTxtBox = null;
 	private CheckBox	m_newWndCkBox = null;
+	private String m_entryId = null;
 	
 	/**
 	 * 
@@ -85,20 +94,22 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 		Label label;
 		VerticalPanel	mainPanel;
 		FlexTable		table;
+		HTMLTable.CellFormatter cellFormatter;
 		
 		properties = (LinkToEntryProperties) props;
 
 		mainPanel = new VerticalPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
-		// Add label and edit control for "Entry id"
+		// Add label and find control for "Entry id"
 		table = new FlexTable();
 		table.setCellSpacing( 8 );
+		cellFormatter = table.getCellFormatter();
+		cellFormatter.setAlignment( 0, 0, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP );
 		label = new Label( GwtTeaming.getMessages().findEntry() );
 		table.setWidget( 0, 0, label );
-		m_entryTxtBox = new TextBox();
-		m_entryTxtBox.setVisibleLength( 30 );
-		table.setWidget( 0, 1, m_entryTxtBox );
+		m_findCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.ENTRIES );
+		table.setWidget( 0, 1, m_findCtrl );
 		mainPanel.add( table );
 		
 		// Add label and edit control for "Title"
@@ -107,7 +118,6 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 		m_titleTxtBox = new TextBox();
 		m_titleTxtBox.setVisibleLength( 30 );
 		table.setWidget( 1, 1, m_titleTxtBox );
-		mainPanel.add( table );
 		
 		// Add a checkbox for "Open the entry in a new window"
 		table = new FlexTable();
@@ -149,7 +159,8 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 	 */
 	public String getEntryIdValue()
 	{
-		return m_entryTxtBox.getText();
+		// m_entryId will always hold the id of the selected entry.
+		return m_entryId;
 	}// end getEntryIdValue()
 	
 
@@ -158,7 +169,7 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 	 */
 	public FocusWidget getFocusWidget()
 	{
-		return m_entryTxtBox;
+		return m_findCtrl.getFocusWidget();
 	}// end getFocusWidget()
 	
 	
@@ -190,10 +201,14 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 		
 		properties = (LinkToEntryProperties) props;
 
-		tmp = properties.getEntryId();
-		if ( tmp == null )
-			tmp = "";
-		m_entryTxtBox.setText( tmp );
+		// Hide the search-results widget.
+		m_findCtrl.hideSearchResults();
+
+		// Populate the find control's text box with the name of the selected entry.
+		m_findCtrl.setInitialSearchString( properties.getEntryName() );
+		
+		// Remember the entry id that was passed to us.
+		m_entryId = properties.getEntryId();
 		
 		tmp = properties.getTitle();
 		if ( tmp == null )
@@ -202,5 +217,24 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 
 		m_newWndCkBox.setValue( properties.getOpenInNewWindow() );
 	}// end init()
+	
+
+	/**
+	 * This method gets called when the user selects an item from the search results in the "find" control.
+	 */
+	public void onSelect( Object selectedObj )
+	{
+		// Make sure we are dealing with a GwtFolderEntry object.
+		if ( selectedObj instanceof GwtFolderEntry )
+		{
+			GwtFolderEntry gwtFolderEntry;
+			
+			gwtFolderEntry = (GwtFolderEntry) selectedObj;
+			m_entryId = gwtFolderEntry.getEntryId();
+			
+			// Hide the search-results widget.
+			m_findCtrl.hideSearchResults();
+		}
+	}// end onSelect()
 	
 }// end LinkToEntryWidgetDlgBox
