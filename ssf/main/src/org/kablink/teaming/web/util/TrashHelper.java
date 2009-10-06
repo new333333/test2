@@ -44,13 +44,12 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 
 public class TrashHelper {
-	public static final String[] trashColumns= new String[] {"name", "deleted", "deletedBy", "location"};
+	public static final String[] trashColumns= new String[] {"title", "date", "author", "location"};
 	
 	/**
 	 * When required, builds the Trash toolbar for a binder.
@@ -75,6 +74,42 @@ public class TrashHelper {
 		qualifiers.put("iconFloatRight", "true");
 		qualifiers.put("onClick", "ss_treeShowId('"+binderId+"',this,'view_folder_listing','&showTrash=true');return false;");
 		trashToolbar.addToolbarMenu("1_trash", NLT.get("toolbar.menu.trash"), "javascript: //;", qualifiers);	
+	}
+
+	/**
+	 * Build the menu bar within the trash viewer.
+	 * 
+	 * @param model
+	 */
+	@SuppressWarnings("unchecked")
+	public static void buildTrashViewToolbar(Map model) {
+		Toolbar trashViewToolbar = new Toolbar();
+
+		Map qualifiers = new HashMap();
+		qualifiers.put("title", NLT.get("toolbar.menu.title.trashRestore"));
+		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.trashRestore");
+		qualifiers.put("onClick", "ss_trashRestore();return false;");
+		trashViewToolbar.addToolbarMenu("1_trashRestore", NLT.get("toolbar.menu.trash.restore"), "javascript: //;", qualifiers);	
+		
+		qualifiers = new HashMap();
+		qualifiers.put("title", NLT.get("toolbar.menu.title.trashRestoreAll"));
+		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.trashRestoreAll");
+		qualifiers.put("onClick", "ss_trashRestoreAll();return false;");
+		trashViewToolbar.addToolbarMenu("2_trashRestoreAll", NLT.get("toolbar.menu.trash.restoreAll"), "javascript: //;", qualifiers);	
+		
+		qualifiers = new HashMap();
+		qualifiers.put("title", NLT.get("toolbar.menu.title.trashPurge"));
+		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.trashPurge");
+		qualifiers.put("onClick", "ss_trashPurge();return false;");
+		trashViewToolbar.addToolbarMenu("3_trashPurge", NLT.get("toolbar.menu.trash.purge"), "javascript: //;", qualifiers);	
+		
+		qualifiers = new HashMap();
+		qualifiers.put("title", NLT.get("toolbar.menu.title.trashPurgeAll"));
+		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.trashPurgeAll");
+		qualifiers.put("onClick", "ss_trashPurgeAll();return false;");
+		trashViewToolbar.addToolbarMenu("4_trashPurgeAll", NLT.get("toolbar.menu.trash.purgeAll"), "javascript: //;", qualifiers);	
+		
+		model.put(WebKeys.TRASH_VIEW_TOOLBAR, trashViewToolbar.getToolbar());
 	}
 
 	/**
