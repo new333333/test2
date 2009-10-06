@@ -611,6 +611,21 @@ public class ViewController extends  SAbstractController {
 				elements.put(element.attributeValue("title"), element);
 			}
 		} catch(AccessControlException e) {}
+		
+		
+		//Manage Extensions
+		if (getAdminModule().testAccess(AdminOperation.manageExtensions)) {
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+			element.addAttribute("title", NLT.get("administration.manage.extensions"));
+			element.addAttribute("image", "bullet");
+			element.addAttribute("id", String.valueOf(nextId++));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_EXTENSIONS);
+			url.setWindowState(WindowState.MAXIMIZED);
+			url.setPortletMode(PortletMode.VIEW);
+			element.addAttribute("url", url.toString());
+			elements.put(element.attributeValue("title"), element);
+		}
 	
 		for (Iterator iter=elements.entrySet().iterator(); iter.hasNext(); ) {
 			Map.Entry me = (Map.Entry)iter.next();
