@@ -755,6 +755,7 @@ public class ListFolderHelper {
 		List pinnedFolderEntries = new ArrayList();
 		
 		if (showTrash) {
+			TrashHelper.buildTrashViewToolbar(model);
 			folderEntries = TrashHelper.getTrashEntries(bs, folder, options);
 		}
 		

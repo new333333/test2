@@ -453,6 +453,7 @@ public class WorkspaceTreeHelper {
 		buildWorkspaceToolbar(bs, req, response, model, ws, wsId.toString());
 		
 		if (showTrash) {
+			TrashHelper.buildTrashViewToolbar(model);
 			Map options = TrashHelper.buildTrashBeans(bs, req, response, wsId, model);
 			Map trashEntries = TrashHelper.getTrashEntries(bs, ws, options);
 			model.putAll(ListFolderHelper.getSearchAndPagingModels(trashEntries, options, showTrash));

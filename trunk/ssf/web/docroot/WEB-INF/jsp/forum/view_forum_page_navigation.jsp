@@ -50,40 +50,42 @@
 		<tr>
 			<td valign="middle" align="center" width="25%">
 			<div class="ss_goBox">
-			  <table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
-				<tbody>
-				<tr>
-				<td class="ss_page_IE2" valign="middle" align="right">
-			      <span>
-			        <label for="ssGoToEntry${renderResponse.namespace}"><ssf:nlt tag="entry.goTo"/></label>
-			      </span>
-			    </td>
-			    <td valign="middle" class="ss_paginationGo ss_page_IE">
-			      <form name="ss_goToEntryForm_${renderResponse.namespace}" style="display:inline;"
-			        id="ss_goToEntryForm_${renderResponse.namespace}" method="post" 
-				    action="<ssf:url action="view_folder_entry" 
-				    actionUrl="true"><ssf:param 
-					name="binderId" value="${ssFolder.id}"/><ssf:param 
-					name="entryViewStyle" value="full"/><ssf:param 
-					name="operation" value="go_to_entry"/></ssf:url>" >
-				    <c:if test="${ssBinder.entityType != 'profiles'}">
-					    <input name="ssGoToEntry" id="ssGoToEntry${renderResponse.namespace}" size="10" 
-					      type="text" class="ss_paginationTextBox" />&nbsp;
-						<a class="ss_tinyButton" href="javascript: ;" 
-						<ssf:title tag="entry.goTo" />
-						onClick="ss_clickGoToEntry_${renderResponse.namespace}('ss_goToEntryForm_${renderResponse.namespace}');return false;"
-						><ssf:nlt tag="button.go"/></a>
-					</c:if>
-				    <c:if test="${ssBinder.entityType == 'profiles'}">
-				      <ssf:find type="user"
-					    width="60px" 
-					    singleItem="true"/> 
-				    </c:if>
-				  </form>
-			    </td>
-			    </tr>
-			    </tbody>
-			  </table>
+			  <c:if test="${empty ssForumPageNav_HideGoBox || 'true' != ssForumPageNav_HideGoBox}">
+				  <table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
+					<tbody>
+					<tr>
+					<td class="ss_page_IE2" valign="middle" align="right">
+				      <span>
+				        <label for="ssGoToEntry${renderResponse.namespace}"><ssf:nlt tag="entry.goTo"/></label>
+				      </span>
+				    </td>
+				    <td valign="middle" class="ss_paginationGo ss_page_IE">
+				      <form name="ss_goToEntryForm_${renderResponse.namespace}" style="display:inline;"
+				        id="ss_goToEntryForm_${renderResponse.namespace}" method="post" 
+					    action="<ssf:url action="view_folder_entry" 
+					    actionUrl="true"><ssf:param 
+						name="binderId" value="${ssFolder.id}"/><ssf:param 
+						name="entryViewStyle" value="full"/><ssf:param 
+						name="operation" value="go_to_entry"/></ssf:url>" >
+					    <c:if test="${ssBinder.entityType != 'profiles'}">
+						    <input name="ssGoToEntry" id="ssGoToEntry${renderResponse.namespace}" size="10" 
+						      type="text" class="ss_paginationTextBox" />&nbsp;
+							<a class="ss_tinyButton" href="javascript: ;" 
+							<ssf:title tag="entry.goTo" />
+							onClick="ss_clickGoToEntry_${renderResponse.namespace}('ss_goToEntryForm_${renderResponse.namespace}');return false;"
+							><ssf:nlt tag="button.go"/></a>
+						</c:if>
+					    <c:if test="${ssBinder.entityType == 'profiles'}">
+					      <ssf:find type="user"
+						    width="60px" 
+						    singleItem="true"/> 
+					    </c:if>
+					  </form>
+				    </td>
+				    </tr>
+				    </tbody>
+				  </table>
+			  </c:if>
 			</div>
 		
 			</td>
