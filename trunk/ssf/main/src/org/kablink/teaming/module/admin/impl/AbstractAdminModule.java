@@ -64,6 +64,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.ExtensionInfo;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
@@ -72,6 +73,7 @@ import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.extension.ExtensionManager;
 import org.kablink.teaming.jobs.EmailNotification;
 import org.kablink.teaming.jobs.EmailPosting;
 import org.kablink.teaming.jobs.ScheduleInfo;
@@ -80,6 +82,7 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.dashboard.DashboardModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.module.extension.ExtensionModule;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ical.IcalModule;
@@ -101,6 +104,7 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
@@ -196,6 +200,34 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	public void setReportModule(ReportModule reportModule) {
 		this.reportModule = reportModule;
 	}
+	private ExtensionManager extensionManager;
+	public ExtensionManager getExtensionManager() {
+		return extensionManager;
+	}
+	public void setExtensionManager(ExtensionManager extensionManager) {
+		this.extensionManager = extensionManager;
+	}
+
+	public void deleteExtension(String id){
+		checkAccess(AdminOperation.manageExtensions);
+		
+		Object obj = getCoreDao().load(ExtensionInfo.class, id);
+		if(obj != null && obj instanceof ExtensionInfo)
+		{
+			coreDao.delete(obj);
+		}
+	}
+	
+	public void addExtension(ExtensionInfo extension) {
+		checkAccess(AdminOperation.manageExtensions);
+		
+		coreDao.save(extension);
+	}
+	public void modifyExtension(ExtensionInfo extension) {
+		checkAccess(AdminOperation.manageExtensions);
+		
+		coreDao.save(extension);
+	}
 	/**
    	 * Use operation so we can keep the logic out of application
 	 * and easisly change the required rights
@@ -255,6 +287,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    				if (getAccessControlManager().testOperation(top, WorkAreaOperation.GENERATE_REPORTS)) break;
  				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    				break;
+			case manageExtensions:
+				break;
 			default:
    				throw new NotSupportedException(operation.toString(), "checkAccess");
 		}
@@ -448,7 +482,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		} catch (Exception ex) {
 			logger.error("Cannot read startup configuration:", ex);
 		}
-	}	
+	}
 	public void addFunction(String name, Set<WorkAreaOperation> operations) {
 		checkAccess(AdminOperation.manageFunction);
 		Function function = new Function();
@@ -914,5 +948,4 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		
 		getAccessTokenManager().destroyApplicationScopedToken(new AccessToken(token));
 	}
-
 }

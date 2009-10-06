@@ -32,7 +32,6 @@
  */
 
 package org.kablink.teaming.module.admin;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +41,13 @@ import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.ExtensionInfo;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.NoApplicationByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.PostingDef;
+import org.kablink.teaming.extension.ExtensionManager;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.Function;
@@ -66,7 +67,8 @@ public interface AdminModule {
 		manageTemplate,
 		report,
 		manageFunctionMembership,
-		manageErrorLogs
+		manageErrorLogs,
+		manageExtensions
 	}
 	/**
 	 * The method name to be called is used as the operation.   This
@@ -239,5 +241,10 @@ public interface AdminModule {
 	 * @param token
 	 */
 	public void destroyApplicationScopedToken(String token);
-
+	
+	public ExtensionManager getExtensionManager();
+	public void deleteExtension(String extensionId);
+	public void addExtension(ExtensionInfo extension);
+	public void modifyExtension(ExtensionInfo extension);
+	
  }
