@@ -203,6 +203,9 @@ public class EntryWidgetDlgBox extends DlgBox
 			
 			gwtFolderEntry = (GwtFolderEntry) selectedObj;
 			m_entryId = gwtFolderEntry.getEntryId();
+			
+			// Hide the search-results widget.
+			m_findCtrl.hideSearchResults();
 		}
 	}// end onSelect()
 	

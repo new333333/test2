@@ -30,66 +30,27 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client;
-
-import java.util.ArrayList;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+
 /**
- * This class is used to hold the results of a search.
+ * This class is used as the base class for all Teaming items that are used in rpc requests.
  * @author jwootton
  *
  */
-public class GwtSearchResults
-	implements IsSerializable
+public abstract class GwtTeamingItem implements IsSerializable
 {
-	private int m_countTotal = 0;	// The total number of items found by the search.
-	private ArrayList<GwtTeamingItem> m_results = null;
+	/**
+	 * 
+	 */
+	public abstract String getSecondaryDisplayText();
 	
 	/**
 	 * 
 	 */
-	public GwtSearchResults()
-	{
-	}// end GwtSearchResults()
+	public abstract String getShortDisplayName();
+
 	
-	
-	/**
-	 * Return the total number of items found by the search.
-	 */
-	public int getCountTotal()
-	{
-		return m_countTotal;
-	}// end getCountTotal()
-	
-	
-	/**
-	 * Return the list of items found by the search.
-	 */
-	public ArrayList<GwtTeamingItem> getResults()
-	{
-		return m_results;
-	}// end getResults()
-	
-	
-	/**
-	 * 
-	 */
-	public void setCountTotal( int total )
-	{
-		m_countTotal = total;
-	}// end setCountTotal()
-	
-	
-	/**
-	 * 
-	 */
-	public void setResults( ArrayList<GwtTeamingItem> results )
-	{
-		// Save away the results of a search.
-		m_results = results;
-	}// end setResults()
-	
-}// end GwtSearchResults
+}// end GwtTeamingItem()
