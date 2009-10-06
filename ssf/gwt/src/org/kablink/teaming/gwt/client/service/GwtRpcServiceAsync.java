@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.service;
 
+import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
+
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
@@ -56,4 +58,7 @@ public interface GwtRpcServiceAsync
 	public void getFolder( String folderId, AsyncCallback<GwtFolder> callback );
 	
     public void getTutorialPanelState( AsyncCallback<String> callback );
+	public void getExtensionInfo( AsyncCallback<ExtensionInfoClient[]> callback );
+	public void removeExtension(String id, AsyncCallback<ExtensionInfoClient[]> callback);
+
 }// end GwtRpcServiceAsync

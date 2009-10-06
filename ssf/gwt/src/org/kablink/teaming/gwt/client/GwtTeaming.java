@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client;
 
+import org.kablink.teaming.gwt.client.admin.ExtensionsConfig;
 import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
@@ -122,6 +123,20 @@ public class GwtTeaming implements EntryPoint
 			lpEditor = new LandingPageEditor();
 			rootPanel.add( lpEditor );
 		}
+
+		// Are we in the the Landing Page Editor?
+		rootPanel = RootPanel.get( "gwtExtensionsConfigDiv" );
+		if ( rootPanel != null )
+		{
+			ExtensionsConfig cfgExtension;
+			
+			// Yes
+			// Create a Landing Page Editor and add it to the page.
+			cfgExtension = new ExtensionsConfig();
+			rootPanel.add( cfgExtension );
+		}
+		
+		
 		
 		if ( false )
 		{
