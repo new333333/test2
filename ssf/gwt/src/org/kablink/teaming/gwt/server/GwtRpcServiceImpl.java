@@ -162,16 +162,11 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 			break;
 		
 		case TEAMS:
-			searchTermFilter.addTeamFilter();
+			//!!! Get code from ajaxFind() in TypeToFindAjaxController.java
 			break;
 			
 		default:
-			//Add the login name term
-			if ( searchText.length() > 0 )
-			{
-				searchTermFilter.addTitleFilter( searchText );
-				searchTermFilter.addLoginNameFilter( searchText );
-			}
+			//!!! Get code from ajaxFind() in TypeToFindAjaxController.java
 			break;
 		}// end switch()
 
@@ -187,18 +182,15 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 			switch ( searchCriteria.getSearchType() )
 			{
 			case APPLICATION:
-				Map appEntries;
-				
-				appEntries = getProfileModule().getApplications( options );
+				//!!! Get code from ajaxFind() in TypeToFindAjaxController.java
 				break;
 				
 			case APPLICATION_GROUP:
-				Map appGroupEntries;
-				
-				appGroupEntries = getProfileModule().getApplicationGroups( options );
+				//!!! Get code from ajaxFind() in TypeToFindAjaxController.java
 				break;
 				
 			case ENTRIES:
+			{
 				List placesWithCounters;
 				List entries;
 				ArrayList<GwtTeamingItem> results;
@@ -242,17 +234,42 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 				}
 				searchResults.setResults( results);
 				break;
+			}
 
 			case GROUP:
 				//!!! Finish, grab code from ajaxFind() in TypeToFindAjaxController.java
 				break;
 				
 			case PLACES:
+			{
 				List placesEntries;
+				ArrayList<GwtTeamingItem> results;
+				Iterator it;
 				
 				retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options );
 				placesEntries = (List)retMap.get( ObjectKeys.SEARCH_ENTRIES );
+
+				// Create a GwtFolder item for each search result.
+				results = new ArrayList( placesEntries.size() );
+				it = placesEntries.iterator();
+				while ( it.hasNext() )
+				{
+					Map<String,String> entry;
+					GwtFolder folder;
+					String folderId;
+
+					// Get the next folder in the search results.
+					entry = (Map) it.next();
+
+					// Pull information about this folder from the search results.
+					folderId = entry.get( "_docId" );
+					folder = getFolder( folderId );
+					if ( folder != null )
+						results.add( folder );
+				}
+				searchResults.setResults( results);
 				break;
+			}
 
 			case COMMUNITY_TAGS:
 			case PERSONAL_TAGS:
@@ -261,28 +278,11 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 				break;
 			
 			case TEAMS:
-				List teamsEntries;
-
-				retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options );
-
-				teamsEntries = (List)retMap.get( ObjectKeys.SEARCH_ENTRIES );
+				//!!! Get code from ajaxFind() in TypeToFindAjaxController.java
 				break;
 				
 			case USER:
-				Map userEntries;
-				List resultList;
-				
-				userEntries = getProfileModule().getUsers(options);
-				
-				resultList = (List)userEntries.get( ObjectKeys.SEARCH_ENTRIES );
-				if ( searchCriteria.getAddCurrentUser() && searchCriteria.getPageNumber() == 0 && (searchText.equals("") || searchText.equals("*")))
-				{
-					// add relative option "current user" and "me"
-					Map currentUserPlaceholder = new HashMap();
-					currentUserPlaceholder.put("title", NLT.get("searchForm.currentUserTitle"));
-					currentUserPlaceholder.put("_docId", SearchFilterKeys.CurrentUserId);
-					resultList.add(0, currentUserPlaceholder);
-				}
+				//!!! Get code from ajaxFind() in TypeToFindAjaxController.java
 				break;
 				
 			default:

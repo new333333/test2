@@ -32,10 +32,15 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.GwtFolder;
+import org.kablink.teaming.gwt.client.GwtFolderEntry;
+import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.widgets.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.widgets.FindCtrl;
+import org.kablink.teaming.gwt.client.widgets.OnSelectHandler;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.ui.CheckBox;
@@ -52,13 +57,15 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  */
 public class FolderWidgetDlgBox extends DlgBox
+	implements OnSelectHandler
 {
 	private CheckBox m_showTitleCkBox = null;
 	private CheckBox m_showDescCkBox = null;
 	private CheckBox m_showEntriesOpenedCkBox = null;
-	private TextBox m_folderTxtBox = null;
 	private TextBox m_numEntriesToShowTxtBox;
-	
+	private FindCtrl m_findCtrl = null;
+	private String m_folderId = null;
+
 	/**
 	 * 
 	 */
@@ -100,9 +107,9 @@ public class FolderWidgetDlgBox extends DlgBox
 		// Add controls for the folder.
 		label = new Label( GwtTeaming.getMessages().findFolderLabel() );
 		table.setWidget( 0, 0, label );
-		m_folderTxtBox = new TextBox();
-		m_folderTxtBox.setVisibleLength( 30 );
-		table.setWidget( 1, 0, m_folderTxtBox );
+		m_findCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.PLACES );
+		m_findCtrl.setSearchForFoldersOnly( true );
+		table.setWidget( 1, 0, m_findCtrl );
 
 		// Add controls for "Number of entries to show"
 		label = new Label( GwtTeaming.getMessages().numEntriesToShow() );
@@ -166,7 +173,7 @@ public class FolderWidgetDlgBox extends DlgBox
 	 */
 	public FocusWidget getFocusWidget()
 	{
-		return m_folderTxtBox;
+		return m_findCtrl.getFocusWidget();
 	}// end getFocusWidget()
 	
 	
@@ -175,7 +182,7 @@ public class FolderWidgetDlgBox extends DlgBox
 	 */
 	public String getFolderIdValue()
 	{
-		return m_folderTxtBox.getText();
+		return m_folderId;
 	}// end getFolderIdValue()
 	
 
@@ -234,13 +241,36 @@ public class FolderWidgetDlgBox extends DlgBox
 		m_showDescCkBox.setValue( properties.getShowDescValue() );
 		m_showEntriesOpenedCkBox.setValue( properties.getShowEntriesOpenedValue() );
 		
-		value = properties.getFolderId();
-		if ( value == null )
-			value = "";
-		m_folderTxtBox.setText( value );
+		// Hide the search-results widget.
+		m_findCtrl.hideSearchResults();
+		
+		// Populate the find control's text box with the name of the selected folder.
+		m_findCtrl.setInitialSearchString( properties.getFolderName() );
+		
+		// Remember the entry id that was passed to us.
+		m_folderId = properties.getFolderId();
 
 		num = properties.getNumEntriesToBeShownValue();
 		m_numEntriesToShowTxtBox.setText( String.valueOf( num ) );
 	}// end init()
+	
+
+	/**
+	 * This method gets called when the user selects an item from the search results in the "find" control.
+	 */
+	public void onSelect( Object selectedObj )
+	{
+		// Make sure we are dealing with a GwtFolder object.
+		if ( selectedObj instanceof GwtFolder )
+		{
+			GwtFolder gwtFolder;
+			
+			gwtFolder = (GwtFolder) selectedObj;
+			m_folderId = gwtFolder.getFolderId();
+			
+			// Hide the search-results widget.
+			m_findCtrl.hideSearchResults();
+		}
+	}// end onSelect()
 	
 }// end FolderWidgetDlgBox
