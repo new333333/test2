@@ -52,6 +52,7 @@
 		<property name="icalModule"><ref bean="icalModule"/></property>
 		<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
 		<property name="reportModule"><ref bean="reportModule"/></property>
+		<property name="extensionManager"><ref bean="extensionManager" /></property>
 	</bean>
 	
 	<!-- ============================== Services ============================= -->

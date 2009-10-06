@@ -603,6 +603,7 @@
 				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
 				<prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="modify*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addExtension">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addDefaultTemplate">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addTemplate">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addTemplateFromBinder">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
@@ -1294,17 +1295,20 @@ text/calendar											  ics
 			</bean>
 		</property>
 	</bean>		
-	<!-- ==============================Extension Module ==================== -->
-	
+
+	<!-- ==============================Extension Support ==================== -->
+	<bean id="extensionManager" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.extension.impl.ExtensionManagerImpl">
+	</bean>
+
 	<!-- Extension deployer -->
 	<bean id="extDeployer"  parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.extension.impl.ExtensionDeployerImpl" depends-on="zoneConfig">
 		<property name="templateModule"><ref bean="templateModule"/></property>
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
 		<property name="zoneClassManager"><ref bean="zoneClassManager"/></property>
-
+		<property name="adminModule"><ref bean="adminModule"/></property>
 	</bean>
-	<bean id="zoneClassManager" class="org.kablink.teaming.extension.impl.ZoneClassManagerImpl"/>
-
+	<bean id="zoneClassManager" class="org.kablink.teaming.extension.impl.ZoneClassManagerImpl" depends-on="zoneConfig"/>
+	
 	<!-- Scheduler for non-stateful jobs -->
 	<bean id="timer" class="org.springframework.scheduling.timer.TimerFactoryBean">
 		<property name="scheduledTimerTasks">

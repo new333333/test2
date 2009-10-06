@@ -62,6 +62,7 @@
 	<bean id="creditsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.CreditsController" />
 	<bean id="clipboardController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ClipboardController" />
 	<bean id="manageDefinitionsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageDefinitionsController" />
+    <bean id="extensionsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ExtensionsController" />
 
 	<bean id="folderAjaxController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.AjaxController" />
 	<bean id="dashboardAjaxController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.DashboardAjaxController" />
@@ -182,6 +183,7 @@
 						<entry key="manage_zones"><ref bean="adminManageZonesController"/></entry>
 						<entry key="configure_configuration"><ref bean="adminConfigureConfigurationController"/></entry>
 						<entry key="manage_definitions"><ref bean="manageDefinitionsController"/></entry>
+						<entry key="manage_extensions"><ref bean="extensionsController"/></entry>
 
 					</map>
 				</entry>
