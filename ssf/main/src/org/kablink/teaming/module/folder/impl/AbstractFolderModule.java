@@ -1104,7 +1104,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     
     //called by scheduler to complete folder deletions
     //no transaction
-    public void cleanupFolders() {
+    public synchronized void cleanupFolders() {
 		FilterControls fc = new FilterControls();
 		fc.add("deleted", Boolean.TRUE);
 		ObjectControls objs = new ObjectControls(Folder.class, new String[] {"id"});
