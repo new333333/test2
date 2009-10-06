@@ -40,7 +40,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author jwootton
  *
  */
-public class GwtFolderEntry implements IsSerializable
+public class GwtFolderEntry extends GwtTeamingItem
+	implements IsSerializable
 {
 	private String m_entryId;
 	private String m_entryName;
@@ -81,6 +82,32 @@ public class GwtFolderEntry implements IsSerializable
 		return m_parentBinderName;
 	}// end getParentBinderName()
 
+
+	/**
+	 * Return the name of the parent binder.
+	 */
+	public String getSecondaryDisplayText()
+	{
+		String name;
+		
+		name = "";
+		
+		if ( m_parentBinderName != null )
+			name += " (" + m_parentBinderName + ")";
+		
+		return name;
+	}// end getSecondaryDisplayText()
+	
+	
+	/**
+	 * Return the name that should be displayed when this entry is displayed.
+	 */
+	public String getShortDisplayName()
+	{
+		return m_entryName;
+	}// end getShortDisplayName()
+	
+	
 	/**
 	 * 
 	 */

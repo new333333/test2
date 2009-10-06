@@ -35,27 +35,33 @@ package org.kablink.teaming.gwt.client.widgets;
 
 
 
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.TextBox;
 
 
@@ -66,33 +72,99 @@ import com.google.gwt.user.client.ui.TextBox;
  *
  */
 public class FindCtrl extends Composite
-	implements KeyUpHandler, Event.NativePreviewHandler
+	implements KeyUpHandler, Event.NativePreviewHandler, OnSelectHandler
 {
 	/**
-	 * This widget is used to hold search results.
+	 * This widget is used to hold an item from a search result.
 	 */
-	public class SearchResultsWidget extends Composite
+	public class SearchResultItemWidget extends Composite
+		implements HasClickHandlers
 	{
-		FlowPanel m_mainPanel;
-		Image m_prevDisabledImg;
-		Image m_prevImg;
-		Image m_nextDisabledImg;
-		Image m_nextImg;
+		private GwtTeamingItem m_item;
 		
 		/**
 		 * 
 		 */
-		public SearchResultsWidget()
+		public SearchResultItemWidget( GwtTeamingItem item )
+		{
+			FlowPanel panel;
+			Anchor anchor;
+			InlineLabel secondaryText;
+			
+			m_item = item;
+			
+			panel = new FlowPanel();
+			panel.addStyleName( "findSearchResultItemWidget" );
+			
+			// Add the name of the item as an anchor.
+			anchor = new Anchor( item.getShortDisplayName() );
+			anchor.setWordWrap( false );
+			anchor.addStyleName( "noTextDecoration" );
+			anchor.addStyleName( "bold" );
+			panel.add( anchor );
+			
+			// Add any additional information about this item.
+			secondaryText = new InlineLabel( item.getSecondaryDisplayText() );
+			secondaryText.addStyleName( "fontSize75em" );
+			secondaryText.setWordWrap( false );
+			panel.add( secondaryText );
+			
+			// All composites must call initWidget() in their constructors.
+			initWidget( panel );
+		}// end SearchResultItemWidget()
+		
+		
+		/**
+		 * 
+		 */
+		public HandlerRegistration addClickHandler( ClickHandler handler )
+		{
+			return addDomHandler( handler, ClickEvent.getType() );
+		}// end addClickHandler()
+		
+		
+		/**
+		 * Return the GwtTeamingItem that is associated with this object.
+		 */
+		public GwtTeamingItem getTeamingItem()
+		{
+			return m_item;
+		}// end getTeamingItem()
+	}// end SearchResultItemWidget
+	
+	
+	/**
+	 * This widget is used to hold search results.
+	 */
+	public class SearchResultsWidget extends Composite
+		implements ClickHandler
+	{
+		private OnSelectHandler m_onSelectHandler;
+		private FlowPanel m_mainPanel;
+		private FlowPanel m_contentPanel;
+		private Image m_prevDisabledImg;
+		private Image m_prevImg;
+		private Image m_nextDisabledImg;
+		private Image m_nextImg;
+		private int m_searchCountTotal;	// Total number of items found by a search.
+		
+		
+		/**
+		 * 
+		 */
+		public SearchResultsWidget( OnSelectHandler onSelectHandler )
 		{
 			FlowPanel footer;
-			FlowPanel contentPanel;
+
+			// Remember the OnSelectHandler we need to call when the user selects an item from the list of search results.
+			m_onSelectHandler = onSelectHandler;
 			
 			m_mainPanel = new FlowPanel();
 			m_mainPanel.addStyleName( "findSearchResults" );
 			
 			// Create the panel that will hold the content.
-			contentPanel = createContentPanel();
-			m_mainPanel.add( contentPanel );
+			m_contentPanel = createContentPanel();
+			m_mainPanel.add( m_contentPanel );
 			
 			// Create the footer
 			footer = createFooter();
@@ -103,6 +175,48 @@ public class FindCtrl extends Composite
 		}// end SearchResultsWidget()
 
 
+		/**
+		 * Add the given search results to the list of search results.
+		 */
+		public void addSearchResults( GwtSearchResults searchResults )
+		{
+			ArrayList<GwtTeamingItem> results;
+
+			// Clear any results we may be currently displaying.
+			clearCurrentContent();
+			
+			m_searchCountTotal = searchResults.getCountTotal();
+//			Window.alert( "count total: " + m_searchCountTotal );
+			results = searchResults.getResults();
+			if ( results != null )
+			{
+				int i;
+				SearchResultItemWidget widget;
+				GwtTeamingItem item;
+				
+				for (i = 0; i < results.size(); ++i)
+				{
+					item = results.get( i );
+					widget = new SearchResultItemWidget( item );
+					widget.addClickHandler( this );
+					
+					m_contentPanel.add( widget );
+				}// end for()
+			}
+			
+		}// end addSearchResults()
+		
+		
+		/**
+		 * Remove any search results we may be displaying. 
+		 */
+		public void clearCurrentContent()
+		{
+			m_contentPanel.clear();
+			m_searchCountTotal = 0;
+		}// end clearCurrentContent()
+		
+		
 		/**
 		 * Create the panel where the search results will live.
 		 */
@@ -156,6 +270,30 @@ public class FindCtrl extends Composite
 			
 			return panel;
 		}// end createFooter()
+		
+		
+		/**
+		 * This method gets called when the user clicks on an item from the list of search results.
+		 */
+		public void onClick( ClickEvent clickEvent )
+		{
+			// If we have an OnSelectHandler, call it.
+			if ( m_onSelectHandler != null )
+			{
+				GwtTeamingItem selectedItem;
+				
+				// Get the item selected by the user.
+				if ( clickEvent.getSource() instanceof SearchResultItemWidget )
+				{
+					SearchResultItemWidget tmp;
+					
+					tmp = (SearchResultItemWidget) clickEvent.getSource();
+					selectedItem = tmp.getTeamingItem();
+					
+					m_onSelectHandler.onSelect( selectedItem );
+				}
+			}
+		}// end onClick()
 	}// end SearchResultsWidget
 	
 	
@@ -190,7 +328,7 @@ public class FindCtrl extends Composite
 		mainPanel.add( m_txtBox );
 		
 		// Create a widget where the search results will live.
-		m_searchResultsWidget = new SearchResultsWidget();
+		m_searchResultsWidget = new SearchResultsWidget( this );
 		hideSearchResults();
 		mainPanel.add( m_searchResultsWidget );
 
@@ -222,14 +360,8 @@ public class FindCtrl extends Composite
 			{
 				if ( gwtSearchResults != null )
 				{
-					List<Map<String,String>> results;
-					
-					Window.alert( "count total: " + gwtSearchResults.getCountTotal() );
-					results = gwtSearchResults.getResults();
-					if ( results != null )
-					{
-						Window.alert( "Found " + results.size() + "items." );
-					}
+					// Add the search results to the search results widget.
+					m_searchResultsWidget.addSearchResults( gwtSearchResults );
 				}
 				
 				m_searchInProgress = false;
@@ -397,6 +529,32 @@ public class FindCtrl extends Composite
 	
 	
 	/**
+	 * This method gets called when the user clicks on an item from a search result.
+	 */
+	public void onSelect( Object obj )
+	{
+		// Make sure we were handed a GwtTeamingItem.
+		if ( obj instanceof GwtTeamingItem )
+		{
+			String name;
+			GwtTeamingItem selectedItem;
+			
+			selectedItem = (GwtTeamingItem) obj;
+			
+			// Get the name of the selected item.
+			name = selectedItem.getShortDisplayName();
+			
+			// Put the name of the selected item in the text box.
+			m_txtBox.setText( name );
+			
+			// If we were passed an OnSelectHandler, call it.
+			if ( m_onSelectHandler != null )
+				m_onSelectHandler.onSelect( selectedItem );
+		}
+	}// end onSelect()
+	
+	
+	/**
 	 * 
 	 */
 	public void setInitialSearchString( String searchString )
@@ -414,6 +572,8 @@ public class FindCtrl extends Composite
 	 */
 	public void showSearchResults()
 	{
+		// Make the search results widget as wide as the text box.  We subtract 4 because of the border around the search results widget.
+		m_searchResultsWidget.setWidth( m_txtBox.getOffsetWidth()-4 + "px" );
 		m_searchResultsWidget.setVisible( true );
 	}// end showSearchResults()		
 }// end FindCtrl

@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +42,7 @@ import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
+import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 
 import org.kablink.teaming.ObjectKeys;
@@ -56,6 +58,7 @@ import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.util.search.Constants;
 
@@ -194,6 +197,8 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 			case ENTRIES:
 				List placesWithCounters;
 				List entries;
+				ArrayList<GwtTeamingItem> results;
+				Iterator it;
 				Map foldersMap;
 				Integer count;
 				
@@ -206,7 +211,32 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 				// Add the search results to the GwtSearchResults object.
 				count = (Integer) retMap.get( ObjectKeys.SEARCH_COUNT_TOTAL );
 				searchResults.setCountTotal( count.intValue() );
-//				searchResults.setResults( entries );
+				
+				// Create a GwtFolderEntry item for each search result.
+				results = new ArrayList( entries.size() );
+				it = entries.iterator();
+				while ( it.hasNext() )
+				{
+					Map<String,String> entry;
+					GwtFolderEntry folderEntry;
+					String entryId;
+					String entryName;
+					String parentBinderName;
+
+					// Get the next entry in the search results.
+					entry = (Map) it.next();
+
+					// Pull information about this entry from the search results.
+					folderEntry = new GwtFolderEntry();
+					entryId = entry.get( "_docId" );
+					folderEntry.setEntryId( entryId );
+					entryName = entry.get( "title" );
+					folderEntry.setEntryName( entryName );
+					parentBinderName = entry.get( WebKeys.BINDER_PATH_NAME );
+					folderEntry.setParentBinderName( parentBinderName );
+					results.add( folderEntry );
+				}
+				searchResults.setResults( results);
 				break;
 
 			case GROUP:
