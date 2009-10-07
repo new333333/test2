@@ -50,6 +50,7 @@ import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -72,7 +73,7 @@ import com.google.gwt.user.client.ui.TextBox;
  *
  */
 public class FindCtrl extends Composite
-	implements KeyUpHandler, Event.NativePreviewHandler, OnSelectHandler
+	implements ClickHandler, Event.NativePreviewHandler, KeyUpHandler, OnSelectHandler
 {
 	/**
 	 * This widget is used to hold an item from a search result.
@@ -146,7 +147,8 @@ public class FindCtrl extends Composite
 		private Image m_prevImg;
 		private Image m_nextDisabledImg;
 		private Image m_nextImg;
-		private int m_searchCountTotal;	// Total number of items found by a search.
+		private int m_searchCountTotal = 0;	// Total number of items found by a search.
+		private int m_displayCount = 0;		// Total number of items currently being displayed from a search.
 		
 		
 		/**
@@ -176,25 +178,45 @@ public class FindCtrl extends Composite
 
 
 		/**
+		 * Add a click handler that will get called when the user clicks on the "next" image.
+		 */
+		public HandlerRegistration addClickHandlerOnNextImg( ClickHandler clickHandler )
+		{
+			return m_nextImg.addClickHandler( clickHandler );
+		}// end addClickHandlerOnNextImg()
+		
+		
+		/**
+		 * Add a click handler that will get called when the user clicks on the "previous" image.
+		 */
+		public HandlerRegistration addClickHandlerOnPrevImg( ClickHandler clickHandler )
+		{
+			return m_prevImg.addClickHandler( clickHandler );
+		}// end addClickHandlerOnPrevImg()
+		
+		
+		/**
 		 * Add the given search results to the list of search results.
 		 */
-		public void addSearchResults( GwtSearchResults searchResults )
+		public void addSearchResults( GwtSearchCriteria searchCriteria, GwtSearchResults searchResults )
 		{
 			ArrayList<GwtTeamingItem> results;
+			int position;
 
 			// Clear any results we may be currently displaying.
 			clearCurrentContent();
 			
+			m_displayCount = 0;
 			m_searchCountTotal = searchResults.getCountTotal();
-//			Window.alert( "count total: " + m_searchCountTotal );
 			results = searchResults.getResults();
 			if ( results != null )
 			{
 				int i;
 				SearchResultItemWidget widget;
 				GwtTeamingItem item;
-				
-				for (i = 0; i < results.size(); ++i)
+
+				m_displayCount = results.size();
+				for (i = 0; i < m_displayCount; ++i)
 				{
 					item = results.get( i );
 					widget = new SearchResultItemWidget( item );
@@ -203,7 +225,41 @@ public class FindCtrl extends Composite
 					m_contentPanel.add( widget );
 				}// end for()
 			}
+
+			// Figure out the position of the last result within the total number of results.
+			position = (searchCriteria.getPageNumber() * searchCriteria.getMaxResults()) + m_displayCount;
 			
+			// Hide the previous and next images
+			m_prevImg.setVisible( false );
+			m_nextImg.setVisible( false );
+			
+			// Do we need to show the "prev" image?
+			if ( position > searchCriteria.getMaxResults() )
+			{
+				// Yes
+				m_prevDisabledImg.setVisible( false );
+				m_prevImg.setVisible( true );
+			}
+			else
+			{
+				// No
+				m_prevDisabledImg.setVisible( true );
+				m_prevImg.setVisible( false );
+			}
+			
+			// Do we need to show the "next" image?
+			if ( m_searchCountTotal > position )
+			{
+				// Yes
+				m_nextDisabledImg.setVisible( false );
+				m_nextImg.setVisible( true );
+			}
+			else
+			{
+				// No
+				m_nextDisabledImg.setVisible( true );
+				m_nextImg.setVisible( false );
+			}
 		}// end addSearchResults()
 		
 		
@@ -214,6 +270,11 @@ public class FindCtrl extends Composite
 		{
 			m_contentPanel.clear();
 			m_searchCountTotal = 0;
+			m_displayCount = 0;
+			m_prevImg.setVisible( false );
+			m_nextImg.setVisible( false );
+			m_prevDisabledImg.setVisible( true );
+			m_nextDisabledImg.setVisible( true );
 		}// end clearCurrentContent()
 		
 		
@@ -256,18 +317,22 @@ public class FindCtrl extends Composite
 			imgPanel.add( m_prevDisabledImg );
 			abstractImg = GwtTeaming.getImageBundle().previous16();
 			m_prevImg = abstractImg.createImage();
+			m_prevImg.addStyleName( "cursorPointer" );
+			DOM.setElementAttribute( m_prevImg.getElement(), "id", "viewPreviousPageOfResults" );
 			imgPanel.add( m_prevImg );
 			m_prevImg.setVisible( false );
-			
+
 			// Add the next images to the footer.
 			abstractImg = GwtTeaming.getImageBundle().nextDisabled16();
 			m_nextDisabledImg = abstractImg.createImage();
 			imgPanel.add( m_nextDisabledImg );
 			abstractImg = GwtTeaming.getImageBundle().next16();
 			m_nextImg = abstractImg.createImage();
+			m_nextImg.addStyleName( "cursorPointer" );
+			DOM.setElementAttribute( m_nextImg.getElement(), "id", "viewNextPageOfResults" );
 			imgPanel.add( m_nextImg );
 			m_nextImg.setVisible( false );
-			
+
 			return panel;
 		}// end createFooter()
 		
@@ -331,6 +396,10 @@ public class FindCtrl extends Composite
 		m_searchResultsWidget = new SearchResultsWidget( this );
 		hideSearchResults();
 		mainPanel.add( m_searchResultsWidget );
+		
+		// Add handlers that will be called when the user clicks on the "previous" or "next" images.
+		m_searchResultsWidget.addClickHandlerOnPrevImg( this );
+		m_searchResultsWidget.addClickHandlerOnNextImg( this );
 
 		// Register a preview-event handler.  We do this so we can see the mouse-down event
 		// and close the search results.
@@ -361,7 +430,7 @@ public class FindCtrl extends Composite
 				if ( gwtSearchResults != null )
 				{
 					// Add the search results to the search results widget.
-					m_searchResultsWidget.addSearchResults( gwtSearchResults );
+					m_searchResultsWidget.addSearchResults( m_searchCriteria, gwtSearchResults );
 				}
 				
 				m_searchInProgress = false;
@@ -382,20 +451,17 @@ public class FindCtrl extends Composite
 	/**
 	 * 
 	 */
-	public void executeSearch( String searchString )
+	public void executeSearch()
 	{
 		GwtRpcServiceAsync rpcService;
-		
-		// Do we have an search string?
-		if ( searchString != null )
-		{
-			// Yes, Issue an ajax request do search for the specified type of object.
-			m_searchInProgress = true;
-			m_searchCriteria.setSearchText( searchString );
-			
-			rpcService = GwtTeaming.getRpcService();
-			rpcService.executeSearch( m_searchCriteria, m_searchResultsCallback );
-		}
+
+		// Clear any results we may be currently displaying.
+		m_searchResultsWidget.clearCurrentContent();
+
+		// Issue an ajax request do search for the specified type of object.
+		m_searchInProgress = true;
+		rpcService = GwtTeaming.getRpcService();
+		rpcService.executeSearch( m_searchCriteria, m_searchResultsCallback );
 	}// end executeSearch()
 	
 	
@@ -455,6 +521,42 @@ public class FindCtrl extends Composite
 
 	
 	/**
+	 * This method gets called when the user clicks on the "previous" or "next" image in the search results window.
+	 */
+	public void onClick( ClickEvent clickEvent )
+	{
+		// Make sure we are receiving this event because the user clicked on an image.
+		if ( clickEvent.getSource() instanceof Image )
+		{
+			Image img;
+			String id;
+			
+			// Get the id of the image that was clicked on.
+			img = (Image) clickEvent.getSource();
+			id = DOM.getElementAttribute( img.getElement(), "id" );
+			
+			if ( id != null )
+			{
+				// Did the user click on next?
+				if ( id.equalsIgnoreCase( "viewNextPageOfResults" ) )
+				{
+					// Yes, increment the page number and do another search.
+					m_searchCriteria.incrementPageNumber();
+					executeSearch();
+				}
+				// Did the user click on prev?
+				else if ( id.equalsIgnoreCase( "viewPreviousPageOfResults" ) )
+				{
+					// Yes, decrement the page number and do another search.
+					m_searchCriteria.decrementPageNumber();
+					executeSearch();
+				}
+			}
+		}
+	}// end onClick()
+
+	
+	/**
 	 * Handles the KeyUpEvent
 	 */
 	public void onKeyUp( KeyUpEvent event )
@@ -480,7 +582,9 @@ public class FindCtrl extends Composite
 			tmp += "*";
 			
 			// Issue an ajax request to do a search based on the text entered by the user.
-			executeSearch( tmp );
+			m_searchCriteria.setPageNumber( 0 );
+			m_searchCriteria.setSearchText( tmp );
+			executeSearch();
 		}
 	}// end onKeyUp()
 	

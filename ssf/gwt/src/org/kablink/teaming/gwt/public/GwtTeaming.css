@@ -4,6 +4,12 @@
 	font-weight: bold;
 }
 
+/* */
+.cursorPointer
+{
+	cursor: pointer;
+}
+
 /* Styles used with instructions in a dialog box. */
 .dlgInstructions
 {
