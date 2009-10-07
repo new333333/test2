@@ -52,6 +52,9 @@ public interface GwtTeamingMessages extends Messages
 	String cancel();
 	String columnXWidth( int colNum );
 
+	// Strings used in the "find" name-completion control
+	String nOfn( int value1, int value2, int value3 );
+
 	// Strings used with the Custom Jsp widget in the landing page editor.
 	String customJspLabel();
 	String customJspName();
