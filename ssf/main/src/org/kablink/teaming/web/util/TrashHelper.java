@@ -92,16 +92,16 @@ public class TrashHelper {
 		trashViewToolbar.addToolbarMenu("1_trashRestore", NLT.get("toolbar.menu.trash.restore"), "javascript: //;", qualifiers);	
 		
 		qualifiers = new HashMap();
-		qualifiers.put("title", NLT.get("toolbar.menu.title.trashRestoreAll"));
-		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.trashRestoreAll");
-		qualifiers.put("onClick", "ss_trashRestoreAll();return false;");
-		trashViewToolbar.addToolbarMenu("2_trashRestoreAll", NLT.get("toolbar.menu.trash.restoreAll"), "javascript: //;", qualifiers);	
-		
-		qualifiers = new HashMap();
 		qualifiers.put("title", NLT.get("toolbar.menu.title.trashPurge"));
 		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.trashPurge");
 		qualifiers.put("onClick", "ss_trashPurge();return false;");
-		trashViewToolbar.addToolbarMenu("3_trashPurge", NLT.get("toolbar.menu.trash.purge"), "javascript: //;", qualifiers);	
+		trashViewToolbar.addToolbarMenu("2_trashPurge", NLT.get("toolbar.menu.trash.purge"), "javascript: //;", qualifiers);	
+		
+		qualifiers = new HashMap();
+		qualifiers.put("title", NLT.get("toolbar.menu.title.trashRestoreAll"));
+		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.trashRestoreAll");
+		qualifiers.put("onClick", "ss_trashRestoreAll();return false;");
+		trashViewToolbar.addToolbarMenu("3_trashRestoreAll", NLT.get("toolbar.menu.trash.restoreAll"), "javascript: //;", qualifiers);	
 		
 		qualifiers = new HashMap();
 		qualifiers.put("title", NLT.get("toolbar.menu.title.trashPurgeAll"));

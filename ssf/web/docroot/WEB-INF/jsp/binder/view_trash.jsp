@@ -76,15 +76,82 @@
 			<div id="ss_topic_box">
 				<div id="ss_topic_box_h1">
 					<ul class="ss_horizontal ss_nobullet">
-						<li>
-							<div class="ss_treeWidget">
-								<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" binderId="${ssUser.workspaceId}" action="view_ws_listing"/>">
-									<span>${ssUser.title} (${ssUser.name})</span>
-			    		  		</a>
-								&nbsp;&gt;&gt;&nbsp;&nbsp;
-							</div>
-						</li>
-						<li><div class="ss_treeWidget">${ssBinder.title}</div></li>
+						<li><div class="ss_treeWidget"><ssf:nlt tag="trash.titlebar.Caption"/>:&nbsp;&nbsp;</div></li>
+						<c:if test="${trashMode == 'workspace'}" >
+							<li>
+								<div class="ss_treeWidget">
+									<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" binderId="${ssBinder.id}" action="view_ws_listing"/>">
+										<span>${ssBinder.title}</span>
+				    		  		</a>
+								</div>
+							</li>
+						</c:if>
+
+						<c:if test="${trashMode == 'folder'}" >
+							<c:set var="parentBinder" value="${ssBinder}"/>
+							<c:set var="action" value="view_ws_listing"/>
+							<jsp:useBean id="parentBinder" type="org.kablink.teaming.domain.Binder" />
+							<%
+								Stack parentTree = new Stack();
+								while (parentBinder != null) {
+									parentTree.push(parentBinder);
+									if (parentBinder.getEntityType().equals(org.kablink.teaming.domain.EntityIdentifier.EntityType.workspace)) {
+										break;
+									}
+									parentBinder = parentBinder.getParentBinder();
+								}
+								while (!parentTree.empty()) {
+									Binder nextBinder = ((Binder) parentTree.pop());
+							%>
+								<c:set var="nextBinder" value="<%= nextBinder %>"/>
+								<li>
+								<c:if test="${nextBinder.entityType == 'folder' && !empty ssNavigationLinkTree[nextBinder.id]}">
+									<table cellpadding="0" cellspacing="0">
+										<tr>
+											<td valign="top">
+												<ssf:tree
+													treeName="ss_binderTitle${nextBinder.id}${renderResponse.namespace}" 
+													treeDocument="${ssNavigationLinkTree[nextBinder.id]}" 
+													topId="${nextBinder.id}"
+													rootOpen="false" 
+													showImages="false"
+													showIdRoutine="${ss_breadcrumbsShowIdRoutine}" 
+													namespace="${renderResponse.namespace}"
+													highlightNode="${nextBinder.id}"
+													titleClass="" />
+											</td>
+											<%
+												if (!parentTree.empty()) {
+											%>
+													<td valign="top">
+														<div class="ss_topic_box_h1 ss_treeWidget">&nbsp;&gt;&gt;&nbsp;&nbsp;</div>
+													</td>
+											<%
+												}
+											%>
+										</tr>
+									</table>
+								</c:if>
+								<c:if test="${nextBinder.entityType != 'folder' || empty ssNavigationLinkTree[nextBinder.id]}">
+									<div class="ss_treeWidget">
+										<a href="<ssf:url crawlable="true"
+											adapter="true" portletName="ss_forum"
+											folderId="${nextBinder.id}" 
+											action="${action}"/>">
+											<c:if test="${empty nextBinder.title}">
+												<span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
+											</c:if>
+											<span>${nextBinder.title}</span>
+										</a>
+										<%  if (!parentTree.empty()) {  %>&nbsp;&gt;&gt;&nbsp;&nbsp;<%  }  %>
+									</div>
+								</c:if>
+								</li>
+								<c:set var="action" value="view_folder_listing"/>
+							<%
+								}
+							%>
+						</c:if>
 					</ul>
 					<div class="ss_clear"></div>
 				</div>
