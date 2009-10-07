@@ -52,6 +52,8 @@ alter table SS_Principals add column timeout integer;
 alter table SS_Principals add column trusted bit;
 alter table SS_Principals add column maxIdleTime integer;
 alter table SS_Principals add column sameAddrPolicy bit;
+alter table SS_Principals add column diskSpaceUsed bigint;
+alter table SS_Principals add column diskQuota bigint;
 alter table SS_Ratings add column zoneId bigint;
 alter table SS_SeenMap add column zoneId bigint;
 create table SS_SharedEntity (id char(32) not null, referer bigint, zoneId bigint, sharedDate datetime, accessId bigint, accessType bigint, entityType varchar(16), entityId bigint, primary key (id)) ENGINE=InnoDB;
