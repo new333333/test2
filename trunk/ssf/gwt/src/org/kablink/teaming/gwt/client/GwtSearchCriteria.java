@@ -86,6 +86,18 @@ public class GwtSearchCriteria
 	/**
 	 * 
 	 */
+	public int decrementPageNumber()
+	{
+		if ( m_pageNumber > 0 )
+			--m_pageNumber;
+		
+		return m_pageNumber;
+	}// end incrementPageNumber()
+	
+	
+	/**
+	 * 
+	 */
 	public boolean getAddCurrentUser()
 	{
 		return m_addCurrentUser;
@@ -153,6 +165,16 @@ public class GwtSearchCriteria
 	{
 		return m_searchType;
 	}// end getSearchType()
+	
+	
+	/**
+	 * 
+	 */
+	public int incrementPageNumber()
+	{
+		++m_pageNumber;
+		return m_pageNumber;
+	}// end incrementPageNumber()
 	
 	
 	/**
