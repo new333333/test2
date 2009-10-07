@@ -332,26 +332,26 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		getZoneClassManager().addExtensionLibs(extensionDir);
 		
 		//Add the extension info to database
-		ExtensionInfo extInfo = new ExtensionInfo();
-		extInfo.setName(extension.getName());
-		extInfo.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
-		
-		List extList = findExtensions(RequestContextHolder.getRequestContext().getZoneId());
-		if (extList.contains(extInfo)) {
-			//Extension already exists, then lets update existing extension
-			List foundList = findExtensions(extension.getName(), RequestContextHolder.getRequestContext().getZoneId());
-			if(foundList.size() > 0)
-			{
-				ExtensionInfo foundExtInfo = (ExtensionInfo) foundList.get(0);
-				//TODO update the found object
-
-				
-				updateExtension(foundExtInfo);
-
-			}
-		} else {
-			addExtension(extInfo);
-		}
+//		ExtensionInfo extInfo = new ExtensionInfo();
+//		extInfo.setName(extension.getName());
+//		extInfo.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
+//		
+//		List extList = findExtensions(RequestContextHolder.getRequestContext().getZoneId());
+//		if (extList.contains(extInfo)) {
+//			//Extension already exists, then lets update existing extension
+//			List foundList = findExtensions(extension.getName(), RequestContextHolder.getRequestContext().getZoneId());
+//			if(foundList.size() > 0)
+//			{
+//				ExtensionInfo foundExtInfo = (ExtensionInfo) foundList.get(0);
+//				//TODO update the found object
+//
+//				
+//				updateExtension(foundExtInfo);
+//
+//			}
+//		} else {
+//			addExtension(extInfo);
+//		}
 		
 		logger.info("Extension deployed successfully from " + extension.getPath());
 	}
