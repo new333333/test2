@@ -245,11 +245,16 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 				List placesEntries;
 				ArrayList<GwtTeamingItem> results;
 				Iterator it;
+				Integer count;
 				
 				retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options );
-				placesEntries = (List)retMap.get( ObjectKeys.SEARCH_ENTRIES );
 
+				// Add the search results to the GwtSearchResults object.
+				count = (Integer) retMap.get( ObjectKeys.SEARCH_COUNT_TOTAL );
+				searchResults.setCountTotal( count.intValue() );
+				
 				// Create a GwtFolder item for each search result.
+				placesEntries = (List)retMap.get( ObjectKeys.SEARCH_ENTRIES );
 				results = new ArrayList( placesEntries.size() );
 				it = placesEntries.iterator();
 				while ( it.hasNext() )

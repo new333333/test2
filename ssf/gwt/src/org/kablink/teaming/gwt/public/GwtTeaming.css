@@ -63,7 +63,7 @@
 .findSearchResultsContent
 {
 	background-color: white;
-	height: 200px;
+	height: 245px;
 	overflow: auto;
 }
 
@@ -479,9 +479,21 @@
 }
 
 /* Style used to create a bottom margin of .25em */
-.marginBottom25em
+.marginBottomPoint25em
 {
 	margin-bottom: .25em;
+}
+
+/* Style used to create a left margin of .25em */
+.marginLeftPoint25em
+{
+	margin-left: .25em;
+}
+
+/* Style used to create a right margin of .25em */
+.marginRightPoint25em
+{
+	margin-right: .25em;
 }
 
 /* Style used to create a right margin of 5 px. */

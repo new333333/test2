@@ -109,7 +109,7 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 		label = new Label( GwtTeaming.getMessages().folderOrWorkspaceLabel() );
 		table.setWidget( 0, 0, label );
 		m_findCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.PLACES );
-		m_findCtrl.setSearchForFoldersOnly( true );
+		m_findCtrl.setSearchForFoldersOnly( false );
 		table.setWidget( 0, 1, m_findCtrl );
 		mainPanel.add( table );
 		

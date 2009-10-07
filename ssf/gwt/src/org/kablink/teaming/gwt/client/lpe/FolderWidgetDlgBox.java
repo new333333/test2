@@ -46,6 +46,9 @@ import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -94,6 +97,7 @@ public class FolderWidgetDlgBox extends DlgBox
 		Label			label;
 		VerticalPanel	mainPanel;
 		FlexTable		table;
+		HTMLTable.CellFormatter cellFormatter;
 		
 		properties = (FolderProperties) props;
 
@@ -106,17 +110,22 @@ public class FolderWidgetDlgBox extends DlgBox
 
 		// Add controls for the folder.
 		label = new Label( GwtTeaming.getMessages().findFolderLabel() );
+		cellFormatter = table.getCellFormatter();
+		cellFormatter.setAlignment( 0, 0, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP );
 		table.setWidget( 0, 0, label );
 		m_findCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.PLACES );
 		m_findCtrl.setSearchForFoldersOnly( true );
-		table.setWidget( 1, 0, m_findCtrl );
+		table.setWidget( 0, 1, m_findCtrl );
+		mainPanel.add( table );
 
 		// Add controls for "Number of entries to show"
+		table = new FlexTable();
+		table.setCellSpacing( 8 );
 		label = new Label( GwtTeaming.getMessages().numEntriesToShow() );
-		table.setWidget( 2, 0, label );
+		table.setWidget( 0, 0, label );
 		m_numEntriesToShowTxtBox = new TextBox();
 		m_numEntriesToShowTxtBox.setVisibleLength( 2 );
-		table.setWidget( 3, 0, m_numEntriesToShowTxtBox );
+		table.setWidget( 0, 1, m_numEntriesToShowTxtBox );
 		mainPanel.add( table );
 		
 		// Add a checkbox for "Show title"

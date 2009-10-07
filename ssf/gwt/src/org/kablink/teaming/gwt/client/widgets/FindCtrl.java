@@ -147,6 +147,7 @@ public class FindCtrl extends Composite
 		private Image m_prevImg;
 		private Image m_nextDisabledImg;
 		private Image m_nextImg;
+		private InlineLabel m_nOfnLabel;
 		private int m_searchCountTotal = 0;	// Total number of items found by a search.
 		private int m_displayCount = 0;		// Total number of items currently being displayed from a search.
 		
@@ -202,6 +203,8 @@ public class FindCtrl extends Composite
 		{
 			ArrayList<GwtTeamingItem> results;
 			int position;
+			int value1;
+			String nOfn;
 
 			// Clear any results we may be currently displaying.
 			clearCurrentContent();
@@ -229,6 +232,13 @@ public class FindCtrl extends Composite
 			// Figure out the position of the last result within the total number of results.
 			position = (searchCriteria.getPageNumber() * searchCriteria.getMaxResults()) + m_displayCount;
 			
+			// Construct the string n - n of n based on the number of items found in the search.
+			value1 = (searchCriteria.getPageNumber() * searchCriteria.getMaxResults()) + 1;
+			if ( m_searchCountTotal == 0 )
+				value1 = 0;
+			nOfn = GwtTeaming.getMessages().nOfn( value1, position, m_searchCountTotal );
+			m_nOfnLabel.setText( nOfn );
+
 			// Hide the previous and next images
 			m_prevImg.setVisible( false );
 			m_nextImg.setVisible( false );
@@ -321,6 +331,13 @@ public class FindCtrl extends Composite
 			DOM.setElementAttribute( m_prevImg.getElement(), "id", "viewPreviousPageOfResults" );
 			imgPanel.add( m_prevImg );
 			m_prevImg.setVisible( false );
+			
+			// Add a label that we'll use to display 4-10 of 128
+			m_nOfnLabel = new InlineLabel();
+			m_nOfnLabel.addStyleName( "marginLeftPoint25em" );
+			m_nOfnLabel.addStyleName( "marginRightPoint25em" );
+			m_nOfnLabel.addStyleName( "marginBottomPoint25em" );
+			imgPanel.add( m_nOfnLabel );
 
 			// Add the next images to the footer.
 			abstractImg = GwtTeaming.getImageBundle().nextDisabled16();
