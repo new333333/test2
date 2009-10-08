@@ -203,6 +203,7 @@ public class ExportHelper {
 	public static final String workspaces = "workspaces";
 	public static final String folders = "folders";
 	public static final String entries = "entries";
+	public static final String files = "files";
 
 	// used during export so that all id's are at least 8 digits long,
 	// with leading zeroes
@@ -240,7 +241,7 @@ public class ExportHelper {
 
 		if (entityId != null) {
 			processEntry(zipOut, folderModule.getEntry(binderId, entityId), "",
-					defList);
+					defList, reportMap);
 		} else {
 
 			EntityType entType = binderModule.getBinder(binderId)
@@ -367,7 +368,7 @@ public class ExportHelper {
 						FolderEntry entry = folderModule.getEntry(binderId,
 								entryId);
 						processEntry(zipOut, entry, binderPrefix + "f"
-								+ nft.format(binderId), defList);
+								+ nft.format(binderId), defList, reportMap);
 
 						count = (Integer)reportMap.get(entries);
 						reportMap.put(entries, ++count);
@@ -380,7 +381,7 @@ public class ExportHelper {
 	
 			for (FileAttachment attach : attachments) {
 				processBinderAttachment(zipOut, binder, attach, binderPrefix
-						+ entityLetter + nft.format(binderId));
+						+ entityLetter + nft.format(binderId), reportMap);
 			}
       	}
 
@@ -388,9 +389,9 @@ public class ExportHelper {
 	}
 
 	private static void processBinderAttachment(ZipOutputStream zipOut, Binder binder,
-			FileAttachment attachment, String pathName) throws IOException {
+			FileAttachment attachment, String pathName, Map reportMap) throws IOException {
 
-		processAttachment(zipOut, binder, binder, attachment, pathName);
+		processAttachment(zipOut, binder, binder, attachment, pathName, reportMap);
 
 		return;
 	}
@@ -405,7 +406,7 @@ public class ExportHelper {
 	}
 
 	private static void processEntry(ZipOutputStream zipOut, FolderEntry entry,
-			String pathName, Set defList) throws Exception {
+			String pathName, Set defList, Map reportMap) throws Exception {
 		String fullId = null;
 
 		fullId = calcFullId(entry);
@@ -428,19 +429,19 @@ public class ExportHelper {
 
 		Set<FileAttachment> attachments = entry.getFileAttachments();
 		for (FileAttachment attach : attachments) {
-			processEntryAttachment(zipOut, entry, fullId, attach, pathName);
+			processEntryAttachment(zipOut, entry, fullId, attach, pathName, reportMap);
 		}
 
 		List<FolderEntry> replies = entry.getReplies();
 		for (FolderEntry reply : replies) {
-			processEntryReply(zipOut, reply, fullId, pathName, defList);
+			processEntryReply(zipOut, reply, fullId, pathName, defList, reportMap);
 		}
 
 		return;
 	}
 
 	private static void processEntryReply(ZipOutputStream zipOut, FolderEntry reply,
-			String fullId, String pathName, Set defList) throws Exception {
+			String fullId, String pathName, Set defList, Map reportMap) throws Exception {
 		String newFullId = fullId + "_" + nft.format(reply.getId());
 
 		if (!pathName.equals("")) {
@@ -461,12 +462,12 @@ public class ExportHelper {
 
 		Set<FileAttachment> attachments = reply.getFileAttachments();
 		for (FileAttachment attach : attachments) {
-			processEntryAttachment(zipOut, reply, newFullId, attach, pathName);
+			processEntryAttachment(zipOut, reply, newFullId, attach, pathName, reportMap);
 		}
 
 		List<FolderEntry> reps = reply.getReplies();
 		for (FolderEntry rep : reps) {
-			processEntryReply(zipOut, rep, newFullId, pathName, defList);
+			processEntryReply(zipOut, rep, newFullId, pathName, defList, reportMap);
 		}
 
 		return;
@@ -474,16 +475,16 @@ public class ExportHelper {
 
 	private static void processEntryAttachment(ZipOutputStream zipOut,
 			FolderEntry entry, String fullId, FileAttachment attachment,
-			String pathName) throws IOException {
+			String pathName, Map reportMap) throws IOException {
 
 		processAttachment(zipOut, entry.getParentBinder(), entry, attachment,
-				pathName + File.separator + "e" + fullId);
+				pathName + File.separator + "e" + fullId, reportMap);
 
 		return;
 	}
 
 	private static void processAttachment(ZipOutputStream zipOut, Binder binder,
-			DefinableEntity entity, FileAttachment attachment, String pathName)
+			DefinableEntity entity, FileAttachment attachment, String pathName, Map reportMap)
 			throws IOException {
 
 		String fileName = filename8BitSingleByteOnly(attachment, SPropsUtil
@@ -510,6 +511,8 @@ public class ExportHelper {
 			zipOut.closeEntry();
 
 			fileStream.close();
+			Integer count = (Integer)reportMap.get(files);
+			reportMap.put(files, ++count);
 		} catch (Exception e) {
 			logger.error(e);
 			logger.error(NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
@@ -542,6 +545,8 @@ public class ExportHelper {
 				zipOut.closeEntry();
 
 				fileStream.close();
+				Integer count = (Integer)reportMap.get(files);
+				reportMap.put(files, ++count);
 			} catch (Exception e) {
 				logger.error(e);
 				logger.error(NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
@@ -698,7 +703,7 @@ public class ExportHelper {
 	private static void addHistoryStamp(Element entityElem, HistoryStamp stamp) {
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     	entityElem.addAttribute("date", sdf.format(stamp.getDate()));
-		DefinitionHelper.addPrincipalToDocument(entityElem, stamp.getPrincipal());
+		addPrincipalToDocument(entityElem, stamp.getPrincipal());
 	}
 	private static void addRating(Element element, DefinableEntity entity) {
 		if (entity.getAverageRating() != null) {
@@ -805,7 +810,7 @@ public class ExportHelper {
 		team.addAttribute("inherited",
 				binder.isTeamMembershipInherited() ? "true" : "false");
 		for (Principal p : principals) {
-			DefinitionHelper.addPrincipalToDocument(team, p);
+			addPrincipalToDocument(team, p);
 		}
 
 		return team;
@@ -968,6 +973,7 @@ public class ExportHelper {
 
 	public static void importZip(Long binderId, InputStream fIn, StatusTicket statusTicket,
 			Map reportMap) throws IOException {
+		Map<String, Principal> nameCache = new HashMap();
 		Binder binder = binderModule.getBinder(binderId);
 		ZipInputStream zIn = new ZipInputStream(fIn);
 
@@ -983,7 +989,7 @@ public class ExportHelper {
 
 		try {
 			File tempDirFile = new File(tempDir);
-			importDir(tempDirFile, tempDir, binderId, entryIdMap, binderIdMap, statusTicket, reportMap);
+			importDir(tempDirFile, tempDir, binderId, entryIdMap, binderIdMap, statusTicket, reportMap, nameCache);
 		} finally {
 			FileUtil.deltree(tempDir);
 		}
@@ -991,7 +997,7 @@ public class ExportHelper {
 
 	private static void importDir(File currentDir, String tempDir, Long topBinderId,
 			Map entryIdMap, Map binderIdMap, StatusTicket statusTicket,
-			Map reportMap) throws IOException {
+			Map reportMap, Map<String, Principal> nameCache) throws IOException {
 
 		SortedMap sortMap = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 		File[] tempChildren = currentDir.listFiles();
@@ -1007,7 +1013,7 @@ public class ExportHelper {
 			File child = (File) sortMap.get(keyIter.next());
 
 			if (child.isDirectory())
-				importDir(child, tempDir, topBinderId, entryIdMap, binderIdMap, statusTicket, reportMap);
+				importDir(child, tempDir, topBinderId, entryIdMap, binderIdMap, statusTicket, reportMap, nameCache);
 			else {
 				String fileExt = EntityIndexUtils.getFileExtension(child
 						.getName().toLowerCase());
@@ -1036,7 +1042,7 @@ public class ExportHelper {
 					output.close();
 					input.close();
 
-					Document tempDoc = getDocument(xmlStr);
+					Document tempDoc = getDocument(xmlStr, nameCache);
 
 					String defId = getDatabaseId(tempDoc);
 
@@ -1075,7 +1081,7 @@ public class ExportHelper {
 						output.close();
 						input.close();
 
-						Document tempDoc = getDocument(xmlStr);
+						Document tempDoc = getDocument(xmlStr, nameCache);
 						String defId = getDefinitionId(tempDoc);
 
 						if (defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)) {
@@ -1105,7 +1111,7 @@ public class ExportHelper {
 							if (parentId == null) {
 								folder_addEntryWithXML(null, newBinderId,
 										defId, xmlStr, tempDir, entryIdMap,
-										binderIdMap, entryId, statusTicket);
+										binderIdMap, entryId, statusTicket, reportMap, nameCache);
 							
 								Integer count = (Integer)reportMap.get(entries);
 								reportMap.put(entries, ++count);
@@ -1113,7 +1119,7 @@ public class ExportHelper {
 								Long newParentId = (Long) entryIdMap.get(parentId);
 								folder_addReplyWithXML(null, newBinderId,
 										newParentId, defId, xmlStr, tempDir,
-										entryIdMap, binderIdMap, entryId);
+										entryIdMap, binderIdMap, entryId, reportMap, nameCache);
 							}
 						}
 					}
@@ -1136,7 +1142,7 @@ public class ExportHelper {
 						output.close();
 						input.close();
 
-						Document tempDoc = getDocument(xmlStr);
+						Document tempDoc = getDocument(xmlStr, nameCache);
 						String defId = getDefinitionId(tempDoc);
 						String entType = getEntityType(tempDoc);
 						Long parentId = null;
@@ -1153,7 +1159,7 @@ public class ExportHelper {
 						// check actual entity type of the data in the xml file
 						if (entType.equals("workspace")) {
 							binder_addBinderWithXML(null, newParentId, defId,
-									xmlStr, binderId, binderIdMap, statusTicket);
+									xmlStr, binderId, binderIdMap, statusTicket, nameCache);
 							Integer count = (Integer)reportMap.get(workspaces);
 							reportMap.put(workspaces, ++count);
 						}
@@ -1177,7 +1183,7 @@ public class ExportHelper {
 						output.close();
 						input.close();
 
-						Document tempDoc = getDocument(xmlStr);
+						Document tempDoc = getDocument(xmlStr, nameCache);
 						String defId = getDefinitionId(tempDoc);
 
 						if (defId
@@ -1200,7 +1206,7 @@ public class ExportHelper {
 						// check actual entity type of the data in the xml file
 						if (entType.equals("folder")) {
 							binder_addBinderWithXML(null, newParentId, defId,
-									xmlStr, binderId, binderIdMap, statusTicket);
+									xmlStr, binderId, binderIdMap, statusTicket, nameCache);
 							Integer count = (Integer)reportMap.get(folders);
 							reportMap.put(folders, ++count);
 
@@ -1241,9 +1247,9 @@ public class ExportHelper {
 
 	private static long binder_addBinderWithXML(String accessToken, long parentId,
 			String definitionId, String inputDataAsXML, long binderId,
-			Map binderIdMap, StatusTicket statusTicket) {
+			Map binderIdMap, StatusTicket statusTicket, Map<String, Principal> nameCache) {
 
-		final Document doc = getDocument(inputDataAsXML);
+		final Document doc = getDocument(inputDataAsXML, nameCache);
 
 		try {
 			Long newBinderId = binderModule.addBinder(new Long(parentId),
@@ -1252,7 +1258,7 @@ public class ExportHelper {
 			binderIdMap.put(binderId, newBinderId);
 
 			// team members
-			addTeamMembers(newBinderId, doc);
+			addTeamMembers(newBinderId, doc, nameCache);
 
 			// workflows
 			final Binder binder = loadBinder(newBinderId);
@@ -1278,20 +1284,23 @@ public class ExportHelper {
 
 	private static long folder_addEntryWithXML(String accessToken, long binderId,
 			String definitionId, String inputDataAsXML, String tempDir,
-			Map entryIdMap, Map binderIdMap, Long entryId, StatusTicket statusTicket) {
+			Map entryIdMap, Map binderIdMap, Long entryId, StatusTicket statusTicket,
+			Map reportMap, Map<String, Principal> nameCache) {
 		return addFolderEntry(accessToken, binderId, definitionId,
-				inputDataAsXML, tempDir, entryIdMap, binderIdMap, entryId, statusTicket);
+				inputDataAsXML, tempDir, entryIdMap, binderIdMap, entryId, statusTicket, 
+				reportMap, nameCache);
 	}
 
 	private static long addFolderEntry(String accessToken, long binderId,
-			String definitionId, String inputDataAsXML,
-			String tempDir, Map entryIdMap, Map binderIdMap, Long entryId, StatusTicket statusTicket) {
+			String definitionId, String inputDataAsXML, String tempDir, Map entryIdMap, 
+			Map binderIdMap, Long entryId, StatusTicket statusTicket, Map reportMap,
+			Map<String, Principal> nameCache) {
 
-		final Document doc = getDocument(inputDataAsXML);
+		final Document doc = getDocument(inputDataAsXML, nameCache);
 		String[] fileNames = new String[0];
 		Map options = new HashMap();
 		//Set the entry creator and modifier fields
-		setSignature(options, doc);
+		setSignature(options, doc, nameCache);
 
 		try {
 			// create new entry
@@ -1300,7 +1309,7 @@ public class ExportHelper {
 					options).getId().longValue();
 
 			// add file attachments
-			addFileAttachments(binderId, newEntryId, doc, tempDir);
+			addFileAttachments(binderId, newEntryId, doc, tempDir, reportMap);
 			
 			// add entry id to entry id map
 			entryIdMap.put(entryId, newEntryId);
@@ -1322,20 +1331,22 @@ public class ExportHelper {
 
 	private static long folder_addReplyWithXML(String accessToken, long binderId,
 			long parentId, String definitionId, String inputDataAsXML,
-			String tempDir, Map entryIdMap, Map binderIdMap, Long entryId) {
+			String tempDir, Map entryIdMap, Map binderIdMap, Long entryId, Map reportMap, 
+			Map<String, Principal> nameCache) {
 		return addReply(accessToken, binderId, parentId, definitionId,
-				inputDataAsXML, tempDir, entryIdMap, binderIdMap, entryId);
+				inputDataAsXML, tempDir, entryIdMap, binderIdMap, entryId, reportMap, nameCache);
 	}
 
 	private static long addReply(String accessToken, long binderId, long parentId,
 			String definitionId, String inputDataAsXML, String tempDir,
-			Map entryIdMap, Map binderIdMap, Long entryId) {
+			Map entryIdMap, Map binderIdMap, Long entryId, Map reportMap, 
+			Map<String, Principal> nameCache) {
 
-		Document doc = getDocument(inputDataAsXML);
+		Document doc = getDocument(inputDataAsXML, nameCache);
 
 		Map options = new HashMap();
 		//Set the entry creator and modifier fields
-		setSignature(options, doc);
+		setSignature(options, doc, nameCache);
 		
 		try {
 			// add new reply
@@ -1345,7 +1356,7 @@ public class ExportHelper {
 					.longValue();
 
 			// add file attachments
-			addFileAttachments(binderId, newEntryId, doc, tempDir);
+			addFileAttachments(binderId, newEntryId, doc, tempDir, reportMap);
 
 			// add entry reply id to entry id map
 			entryIdMap.put(entryId, newEntryId);
@@ -1364,10 +1375,12 @@ public class ExportHelper {
 		}
 	}
 
-	private static Document getDocument(String xml) {
+	private static Document getDocument(String xml, Map nameCache) {
 		// Parse XML string into a document tree.
 		try {
-			return DocumentHelper.parseText(xml);
+			Document doc = DocumentHelper.parseText(xml);
+			buildNameCache(doc, nameCache);
+			return doc;
 		} catch (DocumentException e) {
 			logger.error(e);
 			throw new IllegalArgumentException(e.toString());
@@ -1375,7 +1388,7 @@ public class ExportHelper {
 	}
 
 	private static void addFileAttachments(Long binderId, Long entryId,
-			Document entityDoc, String tempDir) {
+			Document entityDoc, String tempDir, Map reportMap) {
 
 		String xPath = "//attribute[@type='attachFiles']//file";
 		List attachFiles = entityDoc.selectNodes(xPath);
@@ -1407,7 +1420,7 @@ public class ExportHelper {
 					String name = fileListEle.getParent()
 							.attributeValue("name", "");
 					addFileVersions(binderId, entryId, name, filename, href,
-							numVersions, versionsDir);
+							numVersions, versionsDir, reportMap);
 					handled = true;
 					break;
 				}
@@ -1425,7 +1438,7 @@ public class ExportHelper {
 						String name = graphicListEle.getParent()
 								.attributeValue("name", "");
 						addFileVersions(binderId, entryId, name, filename,
-								href, numVersions, versionsDir);
+								href, numVersions, versionsDir, reportMap);
 						handled = true;
 						break;
 					}
@@ -1445,7 +1458,7 @@ public class ExportHelper {
 								.attributeValue("name", "")
 								+ "1";
 						addFileVersions(binderId, entryId, name, filename,
-								href, numVersions, versionsDir);
+								href, numVersions, versionsDir, reportMap);
 						handled = true;
 						break;
 					}
@@ -1456,7 +1469,7 @@ public class ExportHelper {
 
 	private static void addFileVersions(Long binderId, Long entryId,
 			String fileDataItemName, String filename, String href,
-			int numVersions, String versionsDir) {
+			int numVersions, String versionsDir, Map reportMap) {
 
 		String fileExt = EntityIndexUtils.getFileExtension(filename);
 		InputStream iStream = null;
@@ -1469,6 +1482,8 @@ public class ExportHelper {
 					folderModule.modifyEntry(binderId, entryId,
 							fileDataItemName, filename, iStream);
 					iStream.close();
+					Integer count = (Integer)reportMap.get(files);
+					reportMap.put(files, ++count);
 				} catch (Exception e) {
 					logger.error(e);
 					return;
@@ -1481,52 +1496,117 @@ public class ExportHelper {
 			folderModule.modifyEntry(binderId, entryId, fileDataItemName,
 					filename, iStream);
 			iStream.close();
+			Integer count = (Integer)reportMap.get(files);
+			reportMap.put(files, ++count);
 		} catch (Exception e) {
 			logger.error(e);
 			return;
 		}
 	}
 
-	private static void setSignature(Map options, Document entityDoc) {
+	private static void setSignature(Map options, Document entityDoc, Map<String, Principal> nameCache) {
 		User user = RequestContextHolder.getRequestContext().getUser();
+		String zoneUUID = entityDoc.getRootElement().attributeValue("zoneUUID", "");
 		Element signature = (Element) entityDoc.selectSingleNode("//signature");
 		if (signature != null) {
 			Element creation = (Element)signature.selectSingleNode("./creation");
 			if (creation != null) {
 				String sDate = creation.attributeValue("date", "");
-				Element value = (Element) creation.selectSingleNode("./value");
+				Element value = (Element) creation.selectSingleNode("./principal");
 				if (!sDate.equals("") && value != null) {
-					String id = value.attributeValue("id", "");
 					String name = value.attributeValue("name", "");
-					if (!name.equals("")) {
+					String emailAdr = value.attributeValue("emailAddress", "");
+					if (!emailAdr.equals("")) {
 						List names = new ArrayList();
-						names.add(name);
-						List<Principal> principals = ResolveIds.getPrincipalsByName(names, false);
-						if (!principals.isEmpty()) {
-							Principal p = principals.get(0);
-					    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-					    	Calendar date = Calendar.getInstance();
-					    	try {
-								if (p != null && p instanceof UserPrincipal) {
-									date.setTime(sdf.parse(sDate));
-									//Set the creator of this entity to the original author and
-									// make the current user be the modifier of the entity
-									options.put(ObjectKeys.INPUT_OPTION_CREATION_NAME, p.getName());
-									options.put(ObjectKeys.INPUT_OPTION_CREATION_DATE, date);
-							    	Calendar now = Calendar.getInstance();
-							    	now.setTime(new Date());
-									options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, user.getName());
-									options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, now);
-								}
-							} catch(java.text.ParseException e) {
+						names.add(emailAdr);
+						Principal p = matchPrincipal(name, emailAdr, zoneUUID, nameCache);
+				    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+				    	Calendar date = Calendar.getInstance();
+				    	try {
+							if (p != null && p instanceof UserPrincipal) {
+								date.setTime(sdf.parse(sDate));
+								//Set the creator of this entity to the original author and
+								// make the current user be the modifier of the entity
+								options.put(ObjectKeys.INPUT_OPTION_CREATION_NAME, p.getName());
+								options.put(ObjectKeys.INPUT_OPTION_CREATION_DATE, date);
+						    	Calendar now = Calendar.getInstance();
+						    	now.setTime(new Date());
+								options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, user.getName());
+								options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, now);
 							}
-						}
+						} catch(java.text.ParseException e) {}
 					}
 				}
 			}
 		}
 	}
 	
+	private static Document buildNameCache(Document doc, Map nameCache) {
+		String zoneUUID = doc.getRootElement().attributeValue("zoneUUID", "");
+		List<Element> principalElements = doc.selectNodes("//principal");
+		for (Element pEle : principalElements) {
+			String name = pEle.attributeValue("name", "");
+			String emailAdr = pEle.attributeValue("emailAddress", "");
+			Principal p = matchPrincipal(name, emailAdr, zoneUUID, nameCache);
+			fixUpPrincipal(pEle, p);
+		}
+		return doc;
+	}
+	
+	private static void fixUpPrincipal(Element pEle, Principal p) {
+		if (p == null) return;
+		if (!p.getName().equals(pEle.getText())) pEle.setText(p.getName());
+		
+		Element parent = pEle.getParent();
+		if (parent.getName().equals("attribute")) {
+			List<Element> values = parent.selectNodes("./value");
+			for (Element value : values) {
+				if (pEle.getText().equals(value.getText())) {
+					value.setText(p.getName());
+					break;
+				}
+			}
+		}
+	}
+	
+	private static Principal matchPrincipal(String name, String emailAdr, String zoneUUID, 
+			Map<String, Principal> nameCache) {
+		if (nameCache != null && nameCache.containsKey(name)) return nameCache.get(name);
+		Principal result = null;
+		if (Validator.isNull(zoneUUID) || getZoneInfo().getId().equals(zoneUUID)) {
+			//Importing into the same zone, just use this name as is
+			List names = new ArrayList();
+			names.add(name);
+			List<Principal> principals = ResolveIds.getPrincipalsByName(names, false);
+			if (!principals.isEmpty()) {
+				result = principals.get(0);
+			}
+		} else {
+			if (!Validator.isNull(emailAdr)) {
+				List names = new ArrayList();
+				names.add(emailAdr);
+				List<Principal> principals = ResolveIds.findPrincipalByEmailAdr(names, false);
+				if (!principals.isEmpty()) result = principals.get(0);
+				for (Principal p : principals) {
+					if (p.getName().equals(name)) {
+						result = p;
+						break;
+					}
+				}
+			} else {
+				//There is no email address, try looking for this name directly
+				List names = new ArrayList();
+				names.add(name);
+				List<Principal> principals = ResolveIds.getPrincipalsByName(names, false);
+				if (!principals.isEmpty()) {
+					result = principals.get(0);
+				}
+			}
+		}
+		//Cache the result for faster lookup later
+		if (result != null && nameCache != null) nameCache.put(name, result);
+		return result;
+	}
 	private static File getTemporaryDirectory() {
 		return new File(TempFileUtil.getTempFileDir("import"), UUID
 				.randomUUID().toString());
@@ -1566,21 +1646,8 @@ public class ExportHelper {
 		return tempDir.getAbsolutePath();
 	}
 
-	private static void binder_setTeamMembers(String accessToken, long binderId,
-			String[] memberNames) {
-
-		Set<Long> ids = new HashSet();
-		if (memberNames.length > 0) {
-			Collection<Principal> principals = profileModule
-					.getPrincipalsByName(Arrays.asList(memberNames));
-			for (Principal p : principals) {
-				ids.add(p.getId());
-			}
-		}
-		binderModule.setTeamMembers(binderId, ids);
-	}
-
-	private static void addTeamMembers(Long binderId, Document entityDoc) {
+	private static void addTeamMembers(Long binderId, Document entityDoc, Map<String, Principal> nameCache) {
+		String zoneUUID = entityDoc.getRootElement().attributeValue("zoneUUID", "");
 		String xPath = "//team";
 		Element team = (Element) entityDoc.selectSingleNode(xPath);
 
@@ -1589,22 +1656,36 @@ public class ExportHelper {
 
 		Binder binder = loadBinder(binderId);
 
-		if (teamInherited)
+		if (teamInherited) {
 			binder.setTeamMembershipInherited(true);
-		else {
+		} else {
 			List<String> names = new ArrayList<String>();
-			xPath = "//team//value";
+			xPath = "//team//principal";
 			List principals = entityDoc.selectNodes(xPath);
+			Set<Long> ids = new HashSet();
 
 			for (Element member : (List<Element>) principals) {
-				names.add(member.attributeValue("name", ""));
+				String name = member.attributeValue("name", "");
+				String emailAdr = member.attributeValue("emailAddress", "");
+				Principal p = matchPrincipal(name, emailAdr, zoneUUID, nameCache);
+				if (p != null) ids.add(p.getId());
 			}
 
-			String[] namesArray = new String[names.size()];
-			names.toArray(namesArray);
-
-			binder_setTeamMembers(null, binderId, namesArray);
+			binderModule.setTeamMembers(binderId, ids);
 		}
+	}
+
+	public static Element addPrincipalToDocument(Branch doc, Principal entry) {
+		Element entryElem = doc.addElement("principal");
+
+		// Handle structured fields of the entry known at compile time.
+		entryElem.addAttribute("id", entry.getId().toString());
+		entryElem.addAttribute("name", entry.getName());
+		entryElem.addAttribute("title", entry.getTitle());
+		entryElem.addAttribute("emailAddress", entry.getEmailAddress());
+		entryElem.setText(entry.getName());
+
+		return entryElem;
 	}
 
 	private static void importWorkflows(Document entityDoc, DefinableEntity entity) {

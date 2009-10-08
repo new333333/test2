@@ -57,6 +57,7 @@
 <ssf:param name="value" value="${ss_reportData.workspaces}"/>
 <ssf:param name="value" value="${ss_reportData.folders}"/>
 <ssf:param name="value" value="${ss_reportData.entries}"/>
+<ssf:param name="value" value="${ss_reportData.files}"/>
 </ssf:nlt>
 <br/>
 <br/>

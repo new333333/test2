@@ -42,6 +42,7 @@ import org.kablink.teaming.module.definition.export.ElementBuilder.BuilderContex
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.ExportHelper;
 
 /**
  *
@@ -79,6 +80,7 @@ public class ElementBuilderGrouplist extends AbstractElementBuilder {
 	   if ((users != null) && !users.isEmpty()) {
     		for (Principal p:users) {
     			DefinitionHelper.addPrincipalToDocument(element, p);
+    			ExportHelper.addPrincipalToDocument(element, p);
     		}
     	}
     	return true;
