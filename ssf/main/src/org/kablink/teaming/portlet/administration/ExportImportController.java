@@ -101,11 +101,13 @@ public class ExportImportController  extends  SAbstractController {
 					reportMap.put(ExportHelper.workspaces, new Integer(0));
 					reportMap.put(ExportHelper.folders, new Integer(0));
 					reportMap.put(ExportHelper.entries, new Integer(0));
+					reportMap.put(ExportHelper.files, new Integer(0));
 			    	getBinderModule().importZip(binderId, fIn, statusTicket, reportMap);	
 					String[] reportData = new String[] {
 							((Integer)reportMap.get(ExportHelper.workspaces)).toString(),
 							((Integer)reportMap.get(ExportHelper.folders)).toString(),
-							((Integer)reportMap.get(ExportHelper.entries)).toString()
+							((Integer)reportMap.get(ExportHelper.entries)).toString(),
+							((Integer)reportMap.get(ExportHelper.files)).toString()
 						};
 					statusTicket.setStatus(NLT.get("administration.export_import.importReport", reportData));
 			    	statusTicket.done();
@@ -215,12 +217,14 @@ public class ExportImportController  extends  SAbstractController {
 			reportMap.put(ExportHelper.workspaces, new Integer(0));
 			reportMap.put(ExportHelper.folders, new Integer(0));
 			reportMap.put(ExportHelper.entries, new Integer(0));
+			reportMap.put(ExportHelper.files, new Integer(0));
 			getBinderModule().export(binderId, entryId, res.getOutputStream(), options, binderIds, 
 					noSubBinders, statusTicket, reportMap);
 			String[] reportData = new String[] {
 					((Integer)reportMap.get(ExportHelper.workspaces)).toString(),
 					((Integer)reportMap.get(ExportHelper.folders)).toString(),
-					((Integer)reportMap.get(ExportHelper.entries)).toString()
+					((Integer)reportMap.get(ExportHelper.entries)).toString(),
+					((Integer)reportMap.get(ExportHelper.files)).toString()
 				};
 			statusTicket.setStatus(NLT.get("administration.export_import.exportReport", reportData));
 			statusTicket.done();

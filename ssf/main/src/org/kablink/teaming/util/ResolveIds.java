@@ -186,6 +186,32 @@ public class ResolveIds {
 		return profileDao.filterInaccessiblePrincipals(result);
 	}
 	
+	public static List<Principal> findPrincipalByEmailAdr(Collection names, boolean checkActive) {
+		if (names == null) {
+			return Collections.EMPTY_LIST;
+		}
+
+		ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
+		List<Principal> result = new ArrayList();
+		
+		List filteredIds = new ArrayList();
+		Iterator it = names.iterator();
+		while (it.hasNext()) {
+			try {
+				List<Principal> pList = profileDao.loadPrincipalByEmail((String)it.next(), null, RequestContextHolder.getRequestContext().getZoneId());
+				if (pList != null && pList.size() > 0) {
+					Principal p = pList.get(0);
+					if (checkActive) {
+						if (p.isActive()) result.add(p);
+					} else {
+						result.add(p);
+					}
+				}
+			} catch(NoPrincipalByTheNameException e) {}
+		}
+		return profileDao.filterInaccessiblePrincipals(result);
+	}
+	
 	public static Map getBinderTitlesAndIcons(Object binderIds) {
 		if (binderIds == null) {
 			return Collections.EMPTY_MAP;
