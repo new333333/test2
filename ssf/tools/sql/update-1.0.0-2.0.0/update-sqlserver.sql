@@ -52,8 +52,6 @@ alter table SS_Principals add timeout int;
 alter table SS_Principals add trusted tinyint;
 alter table SS_Principals add maxIdleTime int;
 alter table SS_Principals add sameAddrPolicy tinyint;
-alter table SS_Principals add diskSpaceUsed numeric(19,0);
-alter table SS_Principals add diskQuota numeric(19,0);
 alter table SS_Ratings add zoneId numeric(19,0);
 alter table SS_SeenMap add zoneId numeric(19,0);
 create table SS_SharedEntity (id char(32) not null, referer numeric(19,0) null, zoneId numeric(19,0) null, sharedDate datetime null, accessId numeric(19,0) null, accessType numeric(19,0) null, entityType varchar(16) null, entityId numeric(19,0) null, primary key (id));
