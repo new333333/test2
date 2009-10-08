@@ -6,3 +6,6 @@ alter table SS_Forums add preDeleted tinyint;
 alter table SS_Attachments add relevanceUUID nvarchar(256);
 alter table SS_Principals add diskSpaceUsed numeric(19,0);
 alter table SS_Principals add diskQuota numeric(19,0);
+alter table SS_ZoneConfig add diskQuotasEnabled tinyint;
+alter table SS_ZoneConfig add diskQuotaUserDefault numeric(19,0);
+alter table SS_ZoneConfig add diskQuotasHighwaterPercentage numeric(19,0);

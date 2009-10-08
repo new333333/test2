@@ -6,3 +6,6 @@ alter table SS_Forums add preDeleted bit;
 alter table SS_Attachments add column relevanceUUID varchar(256);
 alter table SS_Principals add column diskSpaceUsed bigint;
 alter table SS_Principals add column diskQuota bigint;
+alter table SS_ZoneConfig add column diskQuotasEnabled bit;
+alter table SS_ZoneConfig add column diskQuotaUserDefault integer;
+alter table SS_ZoneConfig add column diskQuotasHighwaterPercentage integer;
