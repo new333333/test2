@@ -53,6 +53,8 @@ public abstract class Attachment extends PersistentTimestampObject
     protected AnyOwner owner;
     protected String name;
     protected char type;
+    protected String relevanceUUID;
+    
     public Attachment() {
     }
     public Attachment(String name) {
@@ -97,6 +99,20 @@ public abstract class Attachment extends PersistentTimestampObject
     }
     public void setName(String name) {
         this.name = name;
+    } 	
+    /**
+     * Return the relevance UUID for this attachment.  May be 
+     * <code>null</code> which implies the attachment has not been
+     * added to the relevance search repository yet.
+     * 
+     * @hibernate.property length="256"
+     * @return
+     */
+    public String getRelevanceUUID() {
+        return relevanceUUID;
+    }
+    public void setRelevanceUUID(String relevanceUUID) {
+        this.relevanceUUID = relevanceUUID;
     } 	
     /**
      * @override
