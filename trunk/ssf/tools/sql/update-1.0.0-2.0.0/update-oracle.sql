@@ -52,8 +52,6 @@ alter table SS_Principals add timeout number(10,0);
 alter table SS_Principals add trusted number(1,0);
 alter table SS_Principals add maxIdleTime number(10,0);
 alter table SS_Principals add sameAddrPolicy number(1,0);
-alter table SS_Principals add diskSpaceUsed number(19,0);
-alter table SS_Principals add diskQuota number(19,0);
 alter table SS_Ratings add zoneId number(19,0);
 alter table SS_SeenMap add zoneId number(19,0);
 create table SS_SharedEntity (id char(32) not null, referer number(19,0), zoneId number(19,0), sharedDate timestamp, accessId number(19,0), accessType number(19,0), entityType varchar2(16 char), entityId number(19,0), primary key (id));
