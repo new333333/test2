@@ -32,12 +32,16 @@
  */
 package org.kablink.teaming.web.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.UserProperties;
@@ -47,6 +51,7 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.util.search.Constants;
 
 public class TrashHelper {
 	public static final String[] trashColumns= new String[] {"title", "date", "author", "location"};
@@ -155,7 +160,7 @@ public class TrashHelper {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static Map getTrashEntries(AllModulesInjected bs, Binder binder, Map options) {
+	public static Map getTrashEntries(AllModulesInjected bs, Map<String,Object>model, Binder binder, Map options) {
 //!		...this needs to be implemented...
 		Map trashEntries = null;
 		if (binder instanceof Folder) {
@@ -169,6 +174,30 @@ public class TrashHelper {
 			BinderModule bm = bs.getBinderModule();
 			trashEntries = bm.getBinders(ws, options);
 		}
+		
+		// We need to pass information about the trash entries binder's too.
+		List<Long> binderIds = new ArrayList<Long>();
+    	List items = (List) trashEntries.get(ObjectKeys.SEARCH_ENTRIES);
+    	if (items != null) {
+	    	Iterator it = items.iterator();
+	    	while (it.hasNext()) {
+	    		Map entry = (Map)it.next();
+	    		String docType = ((String) entry.get(Constants.DOC_TYPE_FIELD));
+	    		String binderIdAttr;
+	    		if (Constants.DOC_TYPE_ENTRY.equals(docType)) {
+	    			binderIdAttr = Constants.BINDER_ID_FIELD;
+	    		}
+	    		else {
+	    			binderIdAttr = Constants.BINDERS_PARENT_ID_FIELD;
+	    		}
+	    		String entryBinderId = ((String) entry.get(binderIdAttr));
+	    		if ((null != entryBinderId) && (0 < entryBinderId.length())) {
+	    			binderIds.add(Long.valueOf(entryBinderId));
+	    		}
+	    	}
+    	}
+		model.put(WebKeys.FOLDER_LIST, bs.getBinderModule().getBinders(binderIds));
+		
 		return trashEntries;
 	}
 }
