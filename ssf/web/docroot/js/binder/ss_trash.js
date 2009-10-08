@@ -60,3 +60,9 @@ function ss_trashRestoreAll() {
 function ss_trashSelectAll() {
 	alert("ss_trashSelectAll(...this needs to be implemented...)");
 }
+
+/*
+ */
+function ss_trashSelectOne(entryId) {
+	alert("ss_trashSelectOne(entryId:  " + entryId + ":  ...this needs to be implemented...)");
+}

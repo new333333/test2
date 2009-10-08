@@ -32,7 +32,11 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% /* Trash Listing. */ %>
+<% /* Trash Listing.                                             */ %>
+<% /* -------------                                              */ %>
+<% /* Note:  The implementation of this JSP was heavily based on */ %>
+<% /*        folder_view_common2.jsp.                            */ %>
+
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssBinder"               type="org.kablink.teaming.domain.Binder" scope="request" />
 <jsp:useBean id="ssUserFolderProperties" type="java.util.Map"                     scope="request" />
@@ -63,8 +67,8 @@
 
 <nobr><center>
 	<br />
-	<c:if test="${trashMode == 'workspace'}" >Workspace (ID:  ${ssBinder.id}) trash:  ...this needs to be implemented...</c:if>
-	<c:if test="${trashMode == 'folder'}"    >Folder (ID:  ${ssBinder.id}) trash:  ...this needs to be implemented...</c:if>
+	<c:if test="${trashMode == 'workspace'}">Workspace (ID:  ${ssBinder.id}) trash:  ...this feature is still being implemented...</c:if>
+	<c:if test="${trashMode == 'folder'}"   >Folder (ID:  ${ssBinder.id}) trash:  ...this feature is still being implemented...</c:if>
 	<br />- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 </center></nobr>
 
@@ -196,14 +200,14 @@
 					<!-- Trash Listing:  Header -->
 					<ssf:slidingTableRow style="${slidingTableRowStyle}" headerRow="true">
 						<!-- Trash Listing Header Column:  Select All -->
-						<ssf:slidingTableColumn  style="${slidingTableColStyle}" width="4%">
+						<ssf:slidingTableColumn  style="${slidingTableColStyle}" width="3%">
 							<div class="ss_title_menu"><input type="checkbox" id="trash_selectAllCB" style="margin: 0;" onChange="ss_trashSelectAll()" /></div>
 						</ssf:slidingTableColumn>
 
 
 						<!-- Trash Listing Header Column:  Title -->
 						<c:if test="${!empty ssFolderColumns['title']}">
-						    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="26%">
+						    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="27%">
 							    <a
 									href="<ssf:url action="${action}" actionUrl="true">
 										<ssf:param name="showTrash"      value="true"                  />
@@ -273,21 +277,21 @@
 									<c:choose>
 										<c:when test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}">
 											<ssf:title tag="title.sort.by.column.asc">
-												<ssf:param name="value" value='<%= NLT.get("folder.column.LastActivity") %>' />
+												<ssf:param name="value" value='<%= NLT.get("trash.column.LastActivity") %>' />
 											</ssf:title>
 										</c:when>
 										<c:otherwise>
 											<ssf:title tag="title.sort.by.column.desc">
-												<ssf:param name="value" value='<%= NLT.get("folder.column.LastActivity") %>' />
+												<ssf:param name="value" value='<%= NLT.get("trash.column.LastActivity") %>' />
 											</ssf:title>
 										</c:otherwise>
 									</c:choose>
 								>
-									<ssf:nlt tag="folder.column.LastActivity"/>
+									<ssf:nlt tag="trash.column.LastActivity"/>
 									<c:if test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}">
 										<img
 											<ssf:alt tag="title.sorted.by.column.desc">
-												<ssf:param name="value" value='<%= NLT.get("folder.column.LastActivity") %>' />
+												<ssf:param name="value" value='<%= NLT.get("trash.column.LastActivity") %>' />
 											</ssf:alt>
 											border="0"
 											src="<html:imagesPath/>pics/menudown.gif"/>
@@ -295,7 +299,7 @@
 									<c:if test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'false'}">
 										<img
 											<ssf:alt tag="title.sorted.by.column.asc">
-												<ssf:param name="value" value='<%= NLT.get("folder.column.LastActivity") %>' />
+												<ssf:param name="value" value='<%= NLT.get("trash.column.LastActivity") %>' />
 											</ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 									</c:if>
 								</a>
@@ -410,36 +414,119 @@
 
 					<!-- Trash Listing:  Data Rows-->
 					<c:forEach var="entry1" items="${ssFolderEntries}">
-						<c:set var="folderLineId" value="folderLine_${entry1._docId}"/>;
+						<c:set var="folderLineId" value="folderLine_${entry1._docId}"/>
 						<jsp:useBean id="entry1" type="java.util.HashMap" />
 						<%  
 							if (!folderEntriesSeen.contains(entry1.get("_docId"))) {
 								folderEntriesSeen.add(entry1.get("_docId"));
-								String seenStyle = "";
-								String seenStyleAuthor = "";
-								String seenStyleFine = "class=\"ss_fineprint\"";
-								String seenStyleTitle = seenStyle;
-								String seenStyleTitle2 = "class=\"ss_noUnderlinePlus\"";
-								boolean hasFile = false;
-								boolean oneFile = false;
-								if (entry1.containsKey("_fileID")) {
-									String srFileID = entry1.get("_fileID").toString();
-									hasFile = true;
-									if (!srFileID.contains(",")) {
-										oneFile = true;
-									}
+								String docType = entry1.get("_docType").toString();
+								String deletedById;
+								if ("entry".equalsIgnoreCase(docType)) {
+									deletedById = String.valueOf(((org.kablink.teaming.domain.User) entry1.get("_principal")).getId());
 								}
+								else {
+									deletedById = entry1.get("_modificationId").toString();
+								}
+								List deletedByUsers = org.kablink.teaming.util.ResolveIds.getPrincipals(deletedById, false);
+								org.kablink.teaming.domain.User deletedByUser = ((org.kablink.teaming.domain.User) deletedByUsers.get(0));
 						%>
-						<c:set var="seenStyleburst" value=""/>
-						<c:set var="hasFile2" value="<%= hasFile %>"/>
-						<c:set var="oneFile2" value="<%= oneFile %>"/>
+						<c:if test="${entry1._docType == 'entry'}">
+							<c:set var="entry1_locationBinderId" value="${entry1._binderId}"     />
+							<c:set var="entry1_deletedById"      value="${entry1._principal.id}" />
+							<c:set var="entry1_deletedDate_raw"  value="${entry1._lastActivity}" />
+							<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry1_deletedDate_raw}" type="both" timeStyle="short" dateStyle="short" var="entry1_deletedDate" />							
+						</c:if>
+						<c:if test="${entry1._docType != 'entry'}">
+							<c:set var="entry1_locationBinderId" value="${entry1._binderParentId}" />
+							<c:set var="entry1_deletedById"      value="${entry1._modificationId}" />
+							<fmt:parseDate                                   value="${entry1._modificationYearMonth}01" type="date" pattern="yyyyMMdd" var="entry1_deletedDate_raw" />
+							<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry1_deletedDate_raw}"          type="date" dateStyle="short"  var="entry1_deletedDate"     />							
+						</c:if>
+
+
+						<!-- Trash Listing Data:  Row -->
 						<ssf:slidingTableRow
 								style="${slidingTableRowStyle}" 
 								oddStyle="${slidingTableRowOddStyle}"
 								evenStyle="${slidingTableRowEvenStyle}"
 								id="${folderLineId}">
-							<!-- Trash List Data:  Row -->
-<!-- ...row data goes here... -->
+							<!-- Trash Listing Data Column:  Select Row -->
+							<ssf:slidingTableColumn  style="${slidingTableColStyle}" width="4%">
+								<div class="ss_title_menu"><input type="checkbox" id="trash_selectOneCB_${entry1._docId}" style="margin: 0;" onChange="ss_trashSelectOne('${entry1._docId}')" /></div>
+							</ssf:slidingTableColumn>
+
+
+							<!-- Trash Listing Data Column:  Title -->
+							<c:if test="${!empty ssFolderColumns['title']}">
+								<ssf:slidingTableColumn style="${slidingTableColStyle}">
+									<a
+										class="ss_new_thread"
+										href="<ssf:url
+												crawlable="true"
+												adapter="true"
+												portletName="ss_forum"
+												binderId="${ssBinder.id}"
+												action="view_folder_entry"
+												entryId="${entry1._docId}"
+												actionUrl="true"> 
+											<ssf:param name="entryViewStyle"  value="${ss_entryViewStyle}"  />
+											<ssf:param name="entryViewStyle2" value="${ss_entryViewStyle2}" />
+										</ssf:url>" 
+    
+										<c:if test="${ssUser.displayStyle != 'iframe'}">
+											onClick="ss_loadEntry(this,'${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
+										</c:if>
+									>
+										<span>
+											<c:if test="${empty entry1.title}"> 
+												--<ssf:nlt tag="entry.noTitle" />--
+											</c:if>
+											<c:out value="${entry1.title}"/>
+										</span>
+									</a>
+								</ssf:slidingTableColumn>
+ 							</c:if>
+
+
+							<!-- Trash Listing Data Column:  Date -->
+							<c:if test="${!empty ssFolderColumns['date']}">
+								<ssf:slidingTableColumn  style="${slidingTableColStyle}">
+									<span>${entry1_deletedDate}</span>
+								</ssf:slidingTableColumn>
+							</c:if>
+
+
+							<!-- Trash Listing Data Column:  Author -->
+							<c:if test="${!empty ssFolderColumns['author']}">
+								<ssf:slidingTableColumn  style="${slidingTableColStyle}">
+									<ssf:showUser user='<%= deletedByUser %>' /> 
+								</ssf:slidingTableColumn>
+							</c:if>
+
+
+							<!-- Trash Listing Data Column:  Location -->
+							<c:if test="${!empty ssFolderColumns['location']}">
+								<ssf:slidingTableColumn  style="${slidingTableColStyle}">
+									<c:set var="path" value=""/>
+						
+									<c:if test="${!empty ssFolderList}">
+										<c:forEach var="folder" items="${ssFolderList}">
+											<c:if test="${folder.id == entry1_locationBinderId}">
+												<c:set var="path" value="${folder}"/>
+												<c:if test="${entry1._docType == 'entry'}"><c:set var="title" value="${folder.title} (${folder.parentWorkArea.title})" /></c:if>
+												<c:if test="${entry1._docType != 'entry'}"><c:set var="title" value="${folder.title}"                                  /></c:if>
+											</c:if>
+										</c:forEach>
+									</c:if>
+						
+									<c:if test="${!empty path}">
+							    		<a href="javascript: ;"
+											onclick="return ss_gotoPermalink('${entry1_locationBinderId}', '${entry1_locationBinderId}', 'folder', '${ss_namespace}', 'yes');"
+											title="${path}"
+											><span>${title}</span></a>
+									</c:if>
+								</ssf:slidingTableColumn>
+							</c:if>
 						</ssf:slidingTableRow>
 						<%
 							}
@@ -447,6 +534,20 @@
 					</c:forEach>
 				</ssf:slidingTable>
 			</div>
+
+			<!-- Hover hints for each entry. -->
+			<c:if test="${!empty ssFolderEntries}">
+				<c:forEach var="entry2" items="${ssFolderEntries}" >
+					<div id="ss_folderEntryTitle_${entry2._docId}" class="ss_hover_over" style="visibility:hidden; display:none;">
+						<span class="ss_style" >
+							<ssf:textFormat formatAction="limitedDescription" textMaxWords="folder.preview.wordCount">
+								<ssf:markup search="${entry2}">${entry2._desc}</ssf:markup>
+							</ssf:textFormat>
+						</span>
+						<div class="ss_clear"></div>
+					</div>
+				</c:forEach>
+			</c:if>
 		</div>
 	</div>
 </div>

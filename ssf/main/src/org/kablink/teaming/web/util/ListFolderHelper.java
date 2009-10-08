@@ -756,7 +756,7 @@ public class ListFolderHelper {
 		
 		if (showTrash) {
 			TrashHelper.buildTrashViewToolbar(model);
-			folderEntries = TrashHelper.getTrashEntries(bs, folder, options);
+			folderEntries = TrashHelper.getTrashEntries(bs, model, folder, options);
 		}
 		
 		else {
