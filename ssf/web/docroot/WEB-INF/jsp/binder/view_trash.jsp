@@ -73,6 +73,38 @@
 </center></nobr>
 
 <script type="text/javascript" src="<html:rootPath/>js/binder/ss_trash.js"></script>
+<script type="text/javascript">
+	<% /* Store the namespace for use in ss_trash.js. */ %> 
+	var g_namespace = "${ss_namespace}";
+
+	
+	<% /* Store information about the trashed entries that we're */ %>
+	<% /* dealing with on this page.                             */ %> 
+	var	g_trashEntries = new Array();
+	var	trashEntry;
+	<c:forEach var="entry3" items="${ssFolderEntries}">
+		trashEntry = new SSTrashEntry();
+		trashEntry.m_docId = Number(${entry3._docId});
+		trashEntry.m_docType = "${entry3._docType}";
+		trashEntry.m_entityType = "${entry3._entityType}";
+		trashEntry.m_title = "${entry3.title}";
+		<c:if test="${entry3._docType == 'entry'}">
+			trashEntry.m_locationBinderId = Number(${entry3._binderId});
+		</c:if>
+		<c:if test="${entry3._docType != 'entry'}">
+			trashEntry.m_locationBinderId = Number(${entry3._binderParentId});
+		</c:if>
+		g_trashEntries[g_trashEntries.length] = trashEntry;
+	</c:forEach>
+	var g_trashEntriesCount = g_trashEntries.length;
+
+
+	<% /* Store the localized error messages that might need to */ %>
+	<% /* display while running this page.                      */ %>
+	var g_trashErrors = new Array();
+	g_trashErrors["trash.error.NoItemsSelected"] = "<ssf:nlt tag='trash.error.NoItemsSelected'/>";
+</script>
+
 <div id="ss_trashDiv${ss_namespace}" align="center">
 	<div id="ss_folder_wrap">
 		<div id="ss_folder_type_file" class="ss_style_color">
@@ -138,10 +170,12 @@
 								</c:if>
 								<c:if test="${nextBinder.entityType != 'folder' || empty ssNavigationLinkTree[nextBinder.id]}">
 									<div class="ss_treeWidget">
-										<a href="<ssf:url crawlable="true"
-											adapter="true" portletName="ss_forum"
-											folderId="${nextBinder.id}" 
-											action="${action}"/>">
+										<a href="<ssf:url
+												crawlable="true"
+												adapter="true"
+												portletName="ss_forum"
+												folderId="${nextBinder.id}" 
+												action="${action}"/>">
 											<c:if test="${empty nextBinder.title}">
 												<span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
 											</c:if>
@@ -201,7 +235,7 @@
 					<ssf:slidingTableRow style="${slidingTableRowStyle}" headerRow="true">
 						<!-- Trash Listing Header Column:  Select All -->
 						<ssf:slidingTableColumn  style="${slidingTableColStyle}" width="3%">
-							<div class="ss_title_menu"><input type="checkbox" id="trash_selectAllCB" style="margin: 0;" onChange="ss_trashSelectAll()" /></div>
+							<div class="ss_title_menu"><input type="checkbox" id="trash_selectAllCB" style="margin: 0px; padding: 0px;" onClick="ss_trashSelectAll(this); return(true);" onMouseOver="return(true);" onMouseOut="return(true);"/></div>
 						</ssf:slidingTableColumn>
 
 
@@ -451,32 +485,65 @@
 								evenStyle="${slidingTableRowEvenStyle}"
 								id="${folderLineId}">
 							<!-- Trash Listing Data Column:  Select Row -->
-							<ssf:slidingTableColumn  style="${slidingTableColStyle}" width="4%">
-								<div class="ss_title_menu"><input type="checkbox" id="trash_selectOneCB_${entry1._docId}" style="margin: 0;" onChange="ss_trashSelectOne('${entry1._docId}')" /></div>
+							<ssf:slidingTableColumn  style="${slidingTableColStyle}">
+								<div class="ss_title_menu"><input type="checkbox" id="trash_selectOneCB_${entry1._docType}_${entry1._docId}" style="margin: 0px; padding: 0px;" onClick="ss_trashSelectOne(this, ${entry1._docId}, '${entry1._docType}'); return(true);" onMouseOver="return(true);" onMouseOut="return(true);" /></div>
 							</ssf:slidingTableColumn>
 
 
 							<!-- Trash Listing Data Column:  Title -->
 							<c:if test="${!empty ssFolderColumns['title']}">
 								<ssf:slidingTableColumn style="${slidingTableColStyle}">
-									<a
-										class="ss_new_thread"
-										href="<ssf:url
-												crawlable="true"
-												adapter="true"
-												portletName="ss_forum"
-												binderId="${ssBinder.id}"
-												action="view_folder_entry"
-												entryId="${entry1._docId}"
-												actionUrl="true"> 
-											<ssf:param name="entryViewStyle"  value="${ss_entryViewStyle}"  />
-											<ssf:param name="entryViewStyle2" value="${ss_entryViewStyle2}" />
-										</ssf:url>" 
-    
-										<c:if test="${ssUser.displayStyle != 'iframe'}">
-											onClick="ss_loadEntry(this,'${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
+									<c:if test="${entry1._docType == 'entry'}">
+										<img
+											alt="<ssf:nlt tag="trash.alt.entryIcon" />"
+											title="<ssf:nlt tag="trash.alt.entryIcon" />"
+											border="0" height="12" width="12" style="margin: 0px; padding: 0px;"
+											src="<html:imagesPath/>pics/entry_icon.gif"/>
+									</c:if>
+									<c:if test="${entry1._docType != 'entry'}">
+										<c:if test="${entry1._entityType == 'workspace'}">
+											<img
+												alt="<ssf:nlt tag="trash.alt.workspaceIcon" />"
+												title="<ssf:nlt tag="trash.alt.workspaceIcon" />"
+												border="0" height="12" width="12" style="margin: 0px; padding: 0px;"
+												src="<html:imagesPath/>icons/folder_workspace.gif"/>
 										</c:if>
-									>
+										<c:if test="${entry1._entityType != 'workspace'}">
+											<img
+												alt="<ssf:nlt tag="trash.alt.folderIcon" />"
+												title="<ssf:nlt tag="trash.alt.folderIcon" />"
+												border="0" height="12" width="12" style="margin: 0px; padding: 0px;"
+												src="<html:imagesPath/>icons/folder_blue.gif"/>
+										</c:if>
+									</c:if>
+
+									<c:if test="${entry1._docType == 'entry'}">
+										<a
+											class="ss_new_thread"
+											href="<ssf:url
+													crawlable="true"
+													adapter="true"
+													portletName="ss_forum"
+													binderId="${ssBinder.id}"
+													action="view_folder_entry"
+													entryId="${entry1._docId}"
+													actionUrl="true"> 
+												<ssf:param name="entryViewStyle"  value="${ss_entryViewStyle}"  />
+												<ssf:param name="entryViewStyle2" value="${ss_entryViewStyle2}" />
+											</ssf:url>" 
+	    
+											<c:if test="${ssUser.displayStyle != 'iframe'}">
+												onClick="ss_loadEntry(this,'${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
+											</c:if>
+										>
+									</c:if>
+									<c:if test="${entry1._docType != 'entry'}">
+							    		<a href="javascript: ;"
+											onclick="return ss_gotoPermalink('${entry1._docId}', '${entry1._docId}', 'folder', '${ss_namespace}', 'yes');"
+											title="${entry1.title}"
+										>
+									</c:if>
+
 										<span>
 											<c:if test="${empty entry1.title}"> 
 												--<ssf:nlt tag="entry.noTitle" />--

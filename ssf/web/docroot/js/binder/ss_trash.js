@@ -32,37 +32,160 @@
  */
 
 /*
+ * Called when the selects 'Purge' from the trash viewer's menu bar.
  */
 function ss_trashPurge() {
+	// If we don't have any trash entries...
+	if (0 == g_trashEntriesCount) {
+		// ...there's nothing to purge.  Bail!
+		return;
+	}
+	
+	// Have any entries been selected to purge?
+	var checkedEntries = getCheckedTrashEntries();
+	var count = ((null == checkedEntries) ? 0 : checkedEntries.length);
+	if (0 == count) {
+		// No!  Tell the user about the problem and bail.
+		alert(g_trashErrors["trash.error.NoItemsSelected"]);
+		return;
+	}
+	
 	alert("ss_trashPurge(...this needs to be implemented...)");
 }
 
 /*
+ * Called when the selects 'Purge All' from the trash viewer's menu
+ * bar.
  */
 function ss_trashPurgeAll() {
+	// If we don't have any trash entries...
+	if (0 == g_trashEntriesCount) {
+		// ...there's nothing to purge.  Bail!
+		return;
+	}
+	
 	alert("ss_trashPurgeAll(...this needs to be implemented...)");
 }
 
 /*
+ * Called when the selects 'Restore' from the trash viewer's menu bar.
  */
 function ss_trashRestore() {
+	// If we don't have any trash entries...
+	if (0 == g_trashEntriesCount) {
+		// ...there's nothing to restore.  Bail!
+		return;
+	}
+	
+	// Have any entries been selected to restore?
+	var checkedEntries = getCheckedTrashEntries();
+	var count = ((null == checkedEntries) ? 0 : checkedEntries.length);
+	if (0 == count) {
+		// No!  Tell the user about the problem and bail.
+		alert(g_trashErrors["trash.error.NoItemsSelected"]);
+		return;
+	}
+	
 	alert("ss_trashRestore(...this needs to be implemented...)");
 }
 
 /*
+ * Called when the selects 'Restore All' from the trash viewer's menu
+ * bar.
  */
 function ss_trashRestoreAll() {
+	// If we don't have any trash entries...
+	if (0 == g_trashEntriesCount) {
+		// ...there's nothing to restore.  Bail!
+		return;
+	}
+	
 	alert("ss_trashRestoreAll(...this needs to be implemented...)");
 }
 
 /*
+ * Called when the user checks/unchecks the 'Select All' checkbox in
+ * the trash viewer's menu bar.
  */
-function ss_trashSelectAll() {
-	alert("ss_trashSelectAll(...this needs to be implemented...)");
+function ss_trashSelectAll(eCBox) {
+	// If we don't have any trash entries...
+	if (0 == g_trashEntriesCount) {
+		// ...there's nothing to select.  Bail!
+		return;
+	}
+	
+	var bChecked = eCBox.checked;
+	for (var i = 0; i < g_trashEntriesCount; i += 1) {
+		eCBox = g_trashEntries[i].getCheckbox();
+		eCBox.checked = bChecked;
+	}
 }
 
 /*
+ * Called when the user checks/unchecks an individual item's checkbox
+ * in the trash viewer.
  */
-function ss_trashSelectOne(entryId) {
-	alert("ss_trashSelectOne(entryId:  " + entryId + ":  ...this needs to be implemented...)");
+function ss_trashSelectOne(eCBox, docId, docType) {
+	var bChecked = eCBox.checked;
+	eCBox = getTrashEntryByDoc(docId, docType).getCheckbox();
+	eCBox.checked = bChecked;
+}
+
+/*
+ * Returns an Array of those SSTrashEntry's whose selection checkbox
+ * is checked.
+ */	
+function getCheckedTrashEntries() {
+	var reply = new Array();
+	var trashEntry;
+	var eCBox;
+	for (var i = 0; i < g_trashEntriesCount; i += 1) {
+		trashEntry = g_trashEntries[i];
+		eCBox = trashEntry.getCheckbox();
+		if (eCBox.checked) {
+			reply[reply.length] = trashEntry;
+		}
+	}
+	return(reply);
+}
+
+/*
+ * Searches for an SSTrashEntry whose ID is docId and whose type is
+ * docType.  If one is found, it's returned.  Otherwise, null is
+ * returned. 
+ */
+function getTrashEntryByDoc(docId, docType) {
+	var docId   = Number(docId);
+	var docType = String(docType);
+	var trashEntry;
+	for (var i = 0; i < g_trashEntriesCount; i += 1) {
+		trashEntry = g_trashEntries[i];
+		if ((trashEntry.m_docId == docId) && (trashEntry.m_docType == docType)) {
+			return(trashEntry);
+		}
+	}
+	return(null);
+}
+
+/*
+ * Constructor method for SSTrashEntry objects.
+ */
+function SSTrashEntry() {
+	/*
+	 * Returns the checkbox ID for this SSTrashEntry's selection
+	 * checkbox.
+	 */
+	this.getCheckboxId = function() {
+		var sCBox = ("trash_selectOneCB_" + String(this.m_docType) + "_" + String(this.m_docId));
+		return(sCBox);
+	}
+
+	/*
+	 * Returns the HTML DOM element for this SSTrashEntry's selection
+	 * checkbox.
+	 */	
+	this.getCheckbox = function() {
+		var eCBox = document.getElementById(this.getCheckboxId());
+		return(eCBox);
+	}
 }
