@@ -1,41 +1,404 @@
-/* The px -> em translation was done by using this chart:
-	 2px	0.15em
-	 5px	0.38em
-	 9px	0.69em	xx-small
-	10px	0.83em	x-small
-	11px	0.90em
-	12px	0.92
-	13px	1.0em	small
-	16px	1.2em
-	25px	1.6em
-  (based off the 13px == 1em == small equivalence, since ALA uses
-   "small" as its paragraph-size font)
-  and tweaking the result a bit (e.g. shifting 0.85em font sizes to 0.90
-  and 0.77em font sizes to 0.83em) */
+/*
+	iPhone Style Sheet 
+*/
 
-	/*  General rules */
-
-	/*  Establish general layout parameters */
-
-/* Reduce margin slightly
-   Drop border (it looks redundant when the spacing is small)
-   Specify only generic font family, not specific screen font,
-    because the handheld is likely to set a more readable default */ 
-body {
-	font-size: 0.83em;
-	letter-spacing: 0.07em;
-	font-family:  Helvetica, sans-serif;
+body { 
+	background:url(images/mobile/stripes.png) repeat; 
+	margin: 0; 
 	}
-a:hover {
-	color: #000000;
-	text-decoration: none;
-	outline: solid 1px gray;
-	background-color: #e5e5e5;
-}
 
-/* Reduce margin and border sizes slightly
-   Use keyword for border-width above 3px
-   Relax width to 'auto' and set max-width instead */
+a { 
+	color: #1C5894; text-decoration: none; 
+	}
+label { 
+	font-weight: bold; font-size: .9em;
+	}
+textarea { 
+	font-size: 1em; width: 275px;
+	}
+select { 
+	font-size: 1em;
+	}
+input[type=button], input[type=submit], input[type=reset] { 
+	font-size: 1em;
+	}
+	
+span.pad-left20 {
+	padding-left: 10px;
+	}	
+
+.font-red {
+	font-color: red;
+	}
+
+/* colors 
+
+#7abcba - light teal
+
+*/
+
+#login-pg, #home-pg, #myws-pg, #blog-pg { 
+	position: relative; 
+	font-family: Arial, Helvetica, sans-serif;
+	}
+
+#contentDetail { 
+	padding: 0 20px; 
+	}
+
+.header { 
+	color: white; 
+	font-size: 16px;
+	text-align: center;
+	padding-top: 10px;
+	background-color: #5b9b99; 
+	font-weight: bold; 
+	height: 40px;
+	width: 100%; 
+	}
+		
+.search { 
+	position: relative;
+	top: -6px;
+	right: 4px;
+	font-size: .8em;
+	font-weight: bold; 
+	padding: 6px;
+	background-color: #4e8583;
+	border: 1px solid #7abcba;
+	white-space:nowrap;
+	}
+
+.homelink { 
+	position: relative;
+	top: -6px;
+	left: 4px;
+	font-size: .8em;
+	font-weight: bold; 
+	padding: 6px;
+	background-color: #4e8583;
+	border: 1px solid #7abcba;
+	white-space:nowrap;
+	}
+
+.backlink { 
+	position: relative;
+	top: -6px;
+	left: 4px;
+	padding: 3px 8px 0px 8px;
+	vertical-align: middle;
+	background-color: #4e8583;
+	border: 1px solid #7abcba;
+	white-space:nowrap;
+	}
+	
+.action-dialog { 
+	position: absolute; 
+	display: none;
+	top: 0px; 
+	left: 0px;
+	padding: 10px;
+	width: 100%;
+	border-top: 4px solid #1C5894;
+	border-bottom: 4px solid #1C5894;
+	background: #e8e9e6 url(images/mobile/putty_blend3.png) repeat-x;
+	background-position: bottom;
+	}
+
+.search	a, .homelink a { 
+	color: #e1eaea;
+	}
+	
+#actions { 
+	position: relative; 
+	top: 0px; 
+	left: 0px; 
+	padding: 5px;
+	background-color: #c3c5c0;
+	background-image: url(images/mobile/level_one_pattern4.gif);
+	background-repeat: repeat-x;
+	border-bottom: 1px solid #1C5894;
+	white-space:nowrap;
+	}
+#actions a {
+	font-size: 1em; 
+	font-weight: bold; 
+	padding: 4px;
+	margin-right: 8px;
+	}
+		
+.dialog-head { 
+	font-size: .95em;
+	font-weight: bold;
+	text-transform: uppercase;
+	margin-bottom: .5em;
+	}
+.dialog-content { 
+	margin-bottom: .3em;
+	}
+
+.menu-spacer { 
+	border-top: 1px solid #d2d5d1;
+	margin-top: 5px;
+	height: 5px;
+	line-height:.5em;
+	}
+.menu-item {padding-left: .5em;}
+.menu-item a { font-size: 1em; line-height: 2em;}
+.menu-curlevel {font-weight: bold;}	
+
+#micro-blog	a { 
+	color: black;
+	} 
+		
+#micro-blog-date {
+	padding-left: 20px;
+	color: #949691;	
+	}
+	
+#micro-blog-clear {
+	margin-left: 2em; 
+	}
+	
+#micro-blog-buttons {
+	margin-top: .3em; 
+	}
+
+#categoryTable {
+	table-layout:fixed;
+	width: 100%;
+	}
+#categoryTable td {
+	text-align: center;
+	padding: 4px;
+	width: 30%;
+	background-color: transparent;
+	}
+.category {
+	position: absolute;
+	top: 40px;
+	width: 100%;
+	height: 28px;
+	text-align: center;
+	background-color: #fff;
+	}
+.category-on {
+	font-size: 16px;
+	font-weight: bold;
+	background-color: #fff;
+	}	
+.category-off {
+	font-size: 14px;
+	font-weight: bold;
+	background:url(images/mobile/stripes.png) repeat;
+	}
+	
+.content {
+	position: absolute; 
+	top: 40px;
+	width: 100%;
+	}
+
+.userid {
+	background-color: #fef7e4;  /* #fffae4; #fff2e5; */
+	border-bottom: 1px solid #e2e5e1; /* #d2d5d1; */
+	}
+.username {
+	font-size: 20px;
+	padding: 5px;
+	}
+.phone, .email {
+	font-size: 15px;
+	color: #666;
+	padding-top: 5px;
+	}
+.userid-clear {
+	clear: both;
+	height: 0px;
+	}
+.userid img {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	width: 25%;
+	float: left;
+	margin-right: 5px;
+	}	
+
+.ws-title {
+	font-size: 1em;
+	font-weight: bold;
+	padding: 5px;
+	background-color: #c3c5c0;
+	background-image: url(images/mobile/level_one_pattern4.gif);
+	background-repeat: repeat-x;
+	border-bottom: 1px solid #1C5894;
+	white-space:nowrap;
+	}
+
+
+/*  my links styles */
+.my-item {
+	font-size: 1.2em;
+	background-color: #fff;
+	padding: 3px 10px 3px 20px;
+	background:url(images/mobile/putty_blend4.png) repeat-x bottom;
+	border-bottom: 1px solid #e2e5e1; /* #d2d5d1; */
+	}
+
+.my-item img { 
+	vertical-align: middle;
+	margin-right: 5px;
+	}
+
+/*  folder styles */
+.folders {
+	position: relative;
+	}
+.folder-content {
+	background-color: #fff;
+	}
+	
+.folder-head {
+	clear: both; 
+	color: #000;
+	font-size: 1em;
+	vertical-align: middle;
+	padding: 5px 5px 5px 10px;
+	letter-spacing: 1px;
+	background-color: #ffe59b; /* #ffe086;  #d8e3e5; */
+	background-image:url(images/mobile/HeaderBlend_med_yellow.png);
+	}
+.folder-item {
+	font-size: 1.1em;
+	background-color: #fff;
+	padding: 6px 4px 6px 25px;
+	border-bottom: 1px solid #d2d5d1;
+	}
+.folder-item-subtext {
+	font-size: 10px;
+	color:#999;
+	}
+
+/*  footer styles */
+.footer-nav				{ position: fixed; top: 400px; height: 60px; background-color:#000; width: 100%; margin: 5px 0 0 0; }
+	.footer-but-title	{ color: #7abcba; font-size: 10px; }
+	#footer-but1		{ position: absolute; left: 0px; top: 5px; width: 80px; text-align: center;}
+	#footer-but2		{ position: absolute; left: 80px; top: 5px; width: 80px; text-align: center;}
+	#footer-but3		{ position: absolute; left: 160px; top: 5px; width: 80px; text-align: center;}
+	#footer-but4		{ position: absolute; left: 240px; top: 5px; width: 80px; text-align: center;}
+
+.footerbar				{ position: absolute; left: 0px; bottom: 0px; height: 40px; background-color:#eceeec; width: 100%; margin: 10px 0 0 0; }
+.footerbar #logo		{ position: relative; top: 8px; left: 8px; }
+.footerbar .copyright	{ position: relative; top: -8px; left: 40px; width: 250px; color: #666; }
+
+
+/* Entry styles - Blog, Recent, etc */
+
+.entry {
+	position: relative;
+	border-bottom: 1px solid #e2e5e1; /* #d2d5d1; */
+	padding: 10px 10px 10px 25px;
+	background:url(images/mobile/putty_blend4.png) repeat-x bottom;
+	}
+.entry-title {
+	font-size: 20px;
+	padding-top: 5px;
+	padding-right: 20px;
+	}
+.entry-content {
+	font-size: 16px;
+	color: #666;
+	padding-top: 8px;
+	}
+
+.entry-author {
+	font-size: 12px;
+	text-transform: uppercase;
+	padding-top: 2px;
+	padding-right: 10px;
+	}
+.entry-date {
+	font-size: 12px;
+	color: #666;
+	}
+.entry-type {
+	font-size: 12px;
+	color: #666;
+	background-color: #fef7e4;
+	padding: 3px;
+	}
+.entry-comment-label {
+	position: absolute;
+	right: 6px;
+	top: 10px;
+	color: #000;
+	font-size: 12px;
+	font-weight: bold;
+	text-align: center;
+	padding: 5px 8px;
+	background:url(images/mobile/comments_22.png) no-repeat center;
+	}
+.entry a.mk-comment, a.remove-action {
+	font-size:12px;
+	padding: 3px 10px 3px 0px;
+	}	
+
+.comment {
+	position: relative;
+	border-bottom: 1px solid #e2e5e1; /* #d2d5d1; */
+	padding: 5px 5px 5px 40px;
+	}
+.comment2 {
+	position: relative;
+	border-bottom: 1px solid #e2e5e1;
+	padding: 5px 5px 5px 65px;
+	}
+
+.comment .entry-title, .comment2 .entry-title {
+	font-size: 16px;
+	color: #666;
+	padding-top: 5px;
+	white-space: nowrap;
+	width: 95%;
+	overflow: hidden;
+	}
+.comment .entry-title span, .comment2 .entry-title span {
+	font-size: 16px;
+	font-weight: bold;
+	color: #000;
+	padding-right: 5px;
+	}
+.comment-bg {
+	font-size: 16px;
+	color: #666;
+	background-color: #fef8dc; /* #fffae4; #FEF6D4; */
+	padding: 10px;
+	}
+.comment img {
+	position: absolute;
+	top: 6px;
+	left: 6px;
+	}	
+.comment2 img {
+	position: absolute;
+	top: 10px;
+	left: 40px;
+	}	
+	
+/*  iPhone Specific CSS3 */
+
+.roundcorner {
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px
+	}
+.roundcornerLG {
+	-webkit-border-radius: 40px;
+	-moz-border-radius: 40px
+	}
+	
+/* ********************************** */
+
 #wrapper {
 	margin: 3px auto;
 	border: 1px solid #CCC;
@@ -62,7 +425,7 @@ a:hover {
 	}
 #header {
 	overflow: hidden;
-	background:url(images/mobile/header.png) repeat-x left top;
+	background-color: #5B9B99;
 	height: 24px;
 	font-size: .9em;
 	 -moz-border-radius-topleft: 5px;

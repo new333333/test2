@@ -37,8 +37,15 @@
   <c:set var="ss_windowTitle" value="${ssBinder.title}" scope="request"/>
 </c:if>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-<div id="wrapper">
+
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
+
+<div class="content">
+
+<%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
+
+</div>
+
 
 <div id="pagebody">
 
@@ -230,8 +237,6 @@
 
 </div>
 <%@ include file="/WEB-INF/jsp/mobile/footer.jsp" %>
-
-</div>
 
 </body>
 </html>

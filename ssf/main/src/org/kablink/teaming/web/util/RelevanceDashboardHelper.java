@@ -642,7 +642,7 @@ public class RelevanceDashboardHelper {
 		}
 	}
 	
-	private static void setupMiniblogsBean(AllModulesInjected bs, Binder binder, Map model) {
+	public static void setupMiniblogsBean(AllModulesInjected bs, Binder binder, Map model) {
 		//What activities have been happening?
 		if (binder != null) {
 			String page = "0";

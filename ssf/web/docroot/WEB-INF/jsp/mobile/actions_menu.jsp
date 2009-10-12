@@ -32,24 +32,27 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% //mailto link %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${!empty emailName && !empty emailHost}">
-  <c:if test="${!noLink}">
-	<a href=""><ssmailto 
-	  	name="<c:out value="${emailName}" escapeXml="true"/>" 
-	  	host="<c:out value="${emailHost}" escapeXml="true"/>"></ssmailto></a>
-  </c:if>
-  <c:if test="${noLink}">
-    <span><ssmailto 
-	  	name="<c:out value="${emailName}" escapeXml="true"/>" 
-	  	host="<c:out value="${emailHost}" escapeXml="true"/>"
-	  	noLink="true"></ssmailto></span>
-  </c:if>
-<script type="text/javascript">
-ss_createOnLoadObj("ss_showEmailLinks", ss_showEmailLinks);
-</script>
-</c:if>
-<c:if test="${empty emailName || empty emailHost}">
-	<a href="mailto:${email}"><span><c:out value="${email}" escapeXml="true"/></span></a>
-</c:if>
+
+<div id="actions-menu" class="action-dialog" style="display:none; z-index:2;">
+    <div class="dialog-head">
+      <span><ssf:nlt tag="mobile.actions"/></span>
+    </div>
+    <div class="dialog-content">
+      <c:forEach var="action" items="${ss_actions}">
+        <c:if test="${empty action.spacer}">
+		  <div class="menu-item homelink-menu">
+		    <a href="${action.url}" <c:if test="${!empty action.onclick}">onClick="${action.onclick}" </c:if>
+		    >${action.title}</a>
+		  </div>
+		</c:if>
+		<c:if test="${!empty action.spacer}">
+		  <div class="menu-spacer"> </div>
+		</c:if>
+      </c:forEach>
+    </div>
+
+	<div id="actions-button">
+	  <input id="actions-menu-close" type="button" value="<ssf:nlt tag="button.close"/>" name="actionsmenuclose"/>
+	</div>
+</div>
+

@@ -63,6 +63,7 @@ import javax.portlet.WindowState;
 
 import net.sf.json.JSONArray;
 
+import org.apache.commons.lang.Validate;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
@@ -118,6 +119,7 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.PortletPreferencesUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.ProfilesBinderHelper;
+import org.kablink.teaming.web.util.RelevanceDashboardHelper;
 import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebStatusTicket;
@@ -312,6 +314,16 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			//The miniblog form was submitted. Go process it
 			String text = PortletRequestUtils.getStringParameter(request, "miniblogText", "");
 			BinderHelper.addMiniBlogEntry(bs, text);
+		} else if (formData.containsKey("whatsNewBtn") && WebHelper.isMethodPost(request)) {
+			//User clicked on a Whats New option
+			String type = PortletRequestUtils.getStringParameter(request, "whats_new", "");
+			UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
+			String savedType = (String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_WHATS_NEW_TYPE);
+			if (savedType == null) savedType = "";
+			if (!type.equals("") && !type.equals(savedType)) {
+				//Remember the last type of results
+				bs.getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_MOBILE_WHATS_NEW_TYPE, type);
+			}
 		} else if (formData.containsKey("acceptBtn") && WebHelper.isMethodPost(request)) {
 			//User clicked "I Accept"
 			getProfileModule().setUserProperty( null, "acceptedMobileDisclaimer", true );
@@ -352,32 +364,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	
 	private ModelAndView ajaxMobileFrontPage(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		Map model = new HashMap();
-		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
+		String view = BinderHelper.setupMobileFrontPageBeans(bs, request, response, model, "mobile/show_front_page");
 
-		try {
-			Workspace topWorkspace = getWorkspaceModule().getTopWorkspace();
-			model.put(WebKeys.TOP_WORKSPACE, topWorkspace);
-		} catch(AccessControlException e) {}
-		
-		Map userQueries = new HashMap();
-		if (userProperties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
-			userQueries = (Map)userProperties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
-		}
-		
-		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
-		ProfileBinder profileBinder = null;
-		try {
-			profileBinder = getProfileModule().getProfileBinder();
-		} catch(Exception e) {}
-		if (profileBinder != null) {
-			accessControlMap.put(WebKeys.CAN_VIEW_USER_PROFILES, true);
-		}
-
-		model.put("ss_UserQueries", userQueries);
-		return new ModelAndView("mobile/show_front_page", model);
+		return new ModelAndView(view, model);
 	}
 
 	private ModelAndView ajaxMobileSearchResults(AllModulesInjected bs, RenderRequest request, 
@@ -1017,5 +1007,5 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 		return new ModelAndView("mobile/find_people", model);
 	}
-
+	
 }

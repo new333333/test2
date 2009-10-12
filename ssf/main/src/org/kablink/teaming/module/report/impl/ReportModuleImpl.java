@@ -344,7 +344,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					//If there is a user object in this table, it must be ok to see activities for this user
 					user = userMap.get(userId);
 				} else if (!userMap.containsKey(userId)) {
-					user = getProfileDao().loadPrincipal(userId, zoneId, true);
+					try {
+						user = getProfileDao().loadPrincipal(userId, zoneId, true);
+					} catch(Exception e) {}
 					userMap.put(userId, null);
 					if (user != null) {
 						//See if the current user has access to this user's workspace
