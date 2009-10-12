@@ -666,16 +666,25 @@ public class RelevanceDashboardHelper {
 			for (Long id:trackedPeople) {
 				userIds[count++] = id;
 			}
+			model.put(WebKeys.SEARCH_TOTAL_HITS, 0);
 			if (userIds.length > 0) {
 				GregorianCalendar start = new GregorianCalendar();
 			    //get activities over last 2 weeks
 				start.add(java.util.Calendar.HOUR_OF_DAY, -24*14);
+				int pageSize = Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
 				List activities = bs.getReportModule().getUsersStatuses(userIds, start.getTime(), 
 						new java.util.Date(), 
-						pageStart + Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
-				if (activities != null && activities.size() > pageStart) {
-					model.put(WebKeys.ACTIVITIES, activities.subList(pageStart, activities.size()));
+						pageStart + pageSize + 1);
+				if (activities == null) activities = new ArrayList();
+				model.put(WebKeys.SEARCH_TOTAL_HITS, activities.size());
+				if (activities.size() > pageStart) {
+					activities = activities.subList(pageStart, activities.size());
 				}
+				if (activities.size() > pageSize) {
+					//There are more pages after this one; just show this page
+					activities = activities.subList(0, pageSize);
+				}
+				model.put(WebKeys.ACTIVITIES, activities);
 			}
 		}
 	}

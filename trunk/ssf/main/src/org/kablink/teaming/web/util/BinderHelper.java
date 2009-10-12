@@ -600,6 +600,7 @@ public class BinderHelper {
       	if (pageNumber == null || pageNumber < 0) pageNumber = 0;
       	int pageSize = SPropsUtil.getInt("relevance.mobile.whatsNewPageSize");
       	int pageStart = pageNumber.intValue() * pageSize;
+      	int pageEnd = pageStart + pageSize;
       	String nextPage = "";
       	String prevPage = "";
 		Map options = new HashMap();		
@@ -617,6 +618,22 @@ public class BinderHelper {
 		} else if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_MICROBLOG)) {
 			RelevanceDashboardHelper.setupMiniblogsBean(bs, myWorkspaceBinder, model);
 		}
+      	//Get the total records found by the search
+      	Integer totalRecords = (Integer)model.get(WebKeys.SEARCH_TOTAL_HITS);
+      	//Get the records returned (which may be more than the page size)
+      	List results = (List)model.get(WebKeys.WHATS_NEW_BINDER);
+      	if (totalRecords.intValue() < pageStart) {
+      		if (pageNumber > 0) prevPage = String.valueOf(pageNumber - 1);
+      	} else if (totalRecords.intValue() >= pageEnd) {
+      		nextPage = String.valueOf(pageNumber + 1);
+      		if (pageNumber > 0) prevPage = String.valueOf(pageNumber - 1);
+      	} else {
+      		if (pageNumber > 0) prevPage = String.valueOf(pageNumber - 1);
+      	}
+		model.put(WebKeys.TAB_ID, String.valueOf(model.get(WebKeys.URL_TAB_ID)));
+		model.put(WebKeys.PAGE_NUMBER, pageNumber);
+		model.put(WebKeys.NEXT_PAGE, nextPage);
+		model.put(WebKeys.PREV_PAGE, prevPage);
 		
 		//Setup the actions menu list
 		List actions = new ArrayList();
@@ -1833,6 +1850,7 @@ public class BinderHelper {
 		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
 		model.put(WebKeys.WHATS_NEW_BINDER, results.get(ObjectKeys.SEARCH_ENTRIES));
+		model.put(WebKeys.SEARCH_TOTAL_HITS, results.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 
 		Map places = new HashMap();
     	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
