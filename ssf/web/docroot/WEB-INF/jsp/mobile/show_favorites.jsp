@@ -43,11 +43,10 @@
 %>
 <div id="wrapper">
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
-<div id="pagebody">
 
 <div class="pagebody">
 	<h3 align="center"><ssf:nlt tag="navigation.favorites"/></h3>
-		<ul>
+	<ul>
 		<c:forEach var="favorite" items="${ss_mobileFavoritesList}">
 		 <jsp:useBean id="favorite" type="net.sf.json.JSONObject" />
 		 <% try { %><c:set var="f_eletype" value='<%= favorite.get("eletype") %>'/><% } catch(Exception e) {} %>
@@ -72,7 +71,7 @@
 		  </li>
 		 </c:if>
 		</c:forEach>
-		</ul>
+	</ul>
 </div>
 <br/>
 
