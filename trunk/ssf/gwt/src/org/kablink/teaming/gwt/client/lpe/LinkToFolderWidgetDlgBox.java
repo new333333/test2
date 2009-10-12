@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.OnSelectHandler;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -139,12 +140,22 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 	 */
 	public PropertiesObj getDataFromDlg()
 	{
+		String folderId;
+		
 		LinkToFolderProperties	properties;
 		
 		properties = new LinkToFolderProperties();
 		
 		// Save away the folder id.
-		properties.setFolderId( getFolderIdValue() );
+		// Did the user select a folder?
+		folderId = getFolderIdValue();
+		if ( folderId == null || folderId.length() == 0 )
+		{
+			// No, tell them they need to
+			Window.alert( GwtTeaming.getMessages().pleaseSelectAFolderOrWorkspace() );
+			return null;
+		}
+		properties.setFolderId( folderId );
 		
 		// Save away the title.
 		properties.setTitle( getTitleValue() );
