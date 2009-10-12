@@ -43,15 +43,6 @@ import com.google.gwt.i18n.client.Messages;
  */
 public interface GwtTeamingMessages extends Messages
 {
-	String _1();
-	String _2();
-	String _3();
-	String _4();
-	String _5();
-	
-	String cancel();
-	String columnXWidth( int colNum );
-
 	// Strings used in the "find" name-completion control
 	String nOfn( int value1, int value2, int value3 );
 
@@ -112,14 +103,29 @@ public interface GwtTeamingMessages extends Messages
 	String linkToUrlLabel();
 	String linkToUrlProperties();
 	String linkToUrlUrl( String url );
-	
-	String listProperties();
-	String numColumns();
-	String ok();
 	String openUrlInNewWnd();
+	
+	// Strings used in the "List" widget properties dialog
+	String listProperties();
+	
+	// Strings used with the "table" widget
+	String columnXWidth( int colNum );
+	String invalidColumnWidth( int colNum );
+	String invalidTotalTableWidth();
+	String numColumns();
+	String tableProperties();
+
+	// Misc strings
+	String _1();
+	String _2();
+	String _3();
+	String _4();
+	String _5();
+	String cancel();
+	String ok();
+	String percent();
 	String showBorder();
 	String showTitle();
-	String tableProperties();
 	String title();
 	
 	// Strings used with the Utility Element widget in the landing page editor.

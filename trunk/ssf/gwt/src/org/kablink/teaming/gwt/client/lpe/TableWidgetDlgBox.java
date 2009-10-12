@@ -42,6 +42,10 @@ import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -57,7 +61,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  */
 public class TableWidgetDlgBox extends DlgBox
-	implements ChangeHandler
+	implements ChangeHandler, KeyPressHandler
 {
 	private CheckBox		m_showBorderCkBox = null;
 	private ListBox		m_numColsCtrl = null;
@@ -116,9 +120,13 @@ public class TableWidgetDlgBox extends DlgBox
 			m_table.setWidget( i+2, 0, label );
 			
 			txtBox = new TextBox();
-			txtBox.setVisibleLength( 6 );
+			txtBox.setVisibleLength( 3 );
 			txtBox.setValue( properties.getColWidthStr( i ) );
+			txtBox.addKeyPressHandler( this );
 			m_table.setWidget( i+2, 1, txtBox );
+			
+			label = new Label( GwtTeaming.getMessages().percent() );
+			m_table.setWidget( i+2, 2, label );
 			
 			m_columnWidths.add( i, txtBox );
 		}// end for()
@@ -213,6 +221,7 @@ public class TableWidgetDlgBox extends DlgBox
 		TableProperties	properties;
 		int numColumns;
 		int i;
+		int totalWidth = 0;
 		
 		properties = new TableProperties();
 		
@@ -230,7 +239,28 @@ public class TableWidgetDlgBox extends DlgBox
 			
 			// Get the width of this column.
 			width = getColWidth( i );
-			properties.setColWidth( i, width );
+			
+			// Is the width valid?  Width must be 1-99
+			if ( width > 0 && width < 100 )
+			{
+				// Yes
+				properties.setColWidth( i, width );
+				totalWidth += width;
+			}
+			else
+			{
+				// No, tell the user about the problem.
+				Window.alert( GwtTeaming.getMessages().invalidColumnWidth( i+1 ) );
+				return null;
+			}
+		}
+		
+		// Is the total width entered by the user valid?
+		if ( totalWidth > 100 )
+		{
+			// No, tell the user about the problem.
+			Window.alert( GwtTeaming.getMessages().invalidTotalTableWidth() );
+			return null;
 		}
 		
 		return properties;
@@ -307,4 +337,35 @@ public class TableWidgetDlgBox extends DlgBox
 		// Add a "Column width" text box for every column.
 		addColumnWidthControls( properties );
 	}// end onChange()
+	
+	
+	/**
+	 * This method gets called when the user types in the "column width" text box.
+	 * We only allow the user to enter numbers.
+	 */
+	public void onKeyPress( KeyPressEvent event )
+	{
+        int keyCode;
+
+        // Get the key the user pressed
+        keyCode = event.getCharCode();
+        
+        if ( (!Character.isDigit(event.getCharCode())) && (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
+            && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
+            && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
+            && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN))
+        {
+        	TextBox txtBox;
+        	Object source;
+        	
+        	// Make sure we are dealing with a text box.
+        	source = event.getSource();
+        	if ( source instanceof TextBox )
+        	{
+        		// Suppress the current keyboard event.
+        		txtBox = (TextBox) source;
+        		txtBox.cancelKey();
+        	}
+        }
+	}// end onKeyPress()
 }// end TableWidgetDlgBox
