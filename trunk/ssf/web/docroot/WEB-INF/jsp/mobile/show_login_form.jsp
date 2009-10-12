@@ -37,43 +37,51 @@
 <c:set var="ss_windowTitle" value='<%= NLT.get("login.please") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
-<div id="wrapper" class="header">
-  <div id="header">
-    <ul>
-    </ul>
-  </div>
-  <div class="ss_text_login" id="ss_fieldset_login">
-  <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}" autocomplete="off">
-     <table class="ss_table" border="0" cellpadding="2">
-      <tr>
-        <td width="67%"><h4><ssf:nlt tag="login.please"/></h4></td>
-      </tr>
-      <tr>
-        <td valign="top">
-          <label for="j_username"><span><ssf:nlt tag="login.name"/></span><br/></label>
-          <input type="text" style="width:150px;" name="j_username" id="j_username"/>
-        </td>
-      </tr>
-      <tr>
-        <td valign="top">
-          <label for="j_password"><span><ssf:nlt tag="login.password"/></span><br/></label>
-          <input type="password" style="width:150px;" name="j_password" id="j_password"/>
-        </td>
-      </tr>
-    </table>
-    <br/>
-    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
-    <input type="hidden" name="spring-security-redirect" value="${ssUrl}"/>
-  </form>
-  </div>
-	<script type="text/javascript">
-		var formObj = self.document.getElementById('loginForm');
-		formObj.j_username.focus();
-	</script>
-    <br/>
-    <br/>
-    <br/>
+<div>
+  <img height="225" width="320" src="<html:imagesPath/>mobile/login_MobileTeaming.png"/>
 </div>
 
+<div>
+  <div id="contentDetail" style="display: block;">
+    <div class="loginDetail">
+      <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}" autocomplete="off">
+        <table border="0" cellspacing="5">
+          <tr>
+            <td valign="top">
+              <label for="j_username"><span><ssf:nlt tag="login.name"/></span></label>
+            </td>
+            <td valign="top">
+               <input type="text" style="width:160px;" name="j_username" id="j_username"/>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">
+              <label for="j_password"><span><ssf:nlt tag="login.password"/></span></label>
+            </td>
+            <td valign="top">
+              <input type="password" style="width:160px;" name="j_password" id="j_password"/>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">
+            </td>
+            <td valign="top">
+              <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="login"/>"/>
+            </td>
+          </tr>
+        </table>
+        
+        <input type="hidden" name="spring-security-redirect" value="${ssUrl}"/>
+      </form>
+    </div>
+  </div>
+</div>
+  
+  
+  
+<script type="text/javascript">
+	var formObj = self.document.getElementById('loginForm');
+	formObj.j_username.focus();
+</script>
 </body>
 </html>
