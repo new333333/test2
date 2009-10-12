@@ -414,6 +414,7 @@ public class WebKeys {
     public static final String OPERATION_MOBILE_SHOW_NEXT_ENTRY="mobile_show_next_entry"; 
     public static final String OPERATION_MOBILE_SHOW_PREV_ENTRY="mobile_show_prev_entry"; 
     public static final String OPERATION_MOBILE_SHOW_FRONT_PAGE="mobile_show_front_page"; 
+    public static final String OPERATION_MOBILE_SHOW_RECENT_PLACES="mobile_show_recent_places"; 
     public static final String OPERATION_MOBILE_SHOW_SEARCH_RESULTS="mobile_show_search_results"; 
     public static final String OPERATION_MOBILE_SHOW_TEAMS="mobile_show_teams"; 
     public static final String OPERATION_MOBILE_SHOW_WORKSPACE="mobile_show_workspace"; 

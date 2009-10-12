@@ -84,6 +84,7 @@
   	 %>
 	</c:if>
 
+	<c:if test="${!empty ssBinder}">
 	   <div class="menu-curlevel" style="padding-left: ${navPadding}px;">
 	  	<a 
 		  <c:if test="${ssBinder.entityType == 'folder'}">
@@ -108,7 +109,8 @@
 	  	  <c:out value="${ssBinder.title}" />
 		</a>
 	  </div>
-   </div>
+	</c:if>
+  </div>
 
 	<div>
 	  <input id="hierarchy-cancel" type="button" value="<ssf:nlt tag="button.close"/>" name="hierarchyhCancel"/>

@@ -558,7 +558,13 @@ public class BinderHelper {
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.TOP_WORKSPACE, topBinder);
-		
+
+		Tabs.TabEntry tab;
+		try {
+			tab = BinderHelper.initTabs(request, binder);
+			model.put(WebKeys.TABS, tab.getTabs());		
+		} catch (Exception e1) {}
+
 		Map userQueries = new HashMap();
 		if (userProperties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
 			userQueries = (Map)userProperties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
@@ -615,6 +621,7 @@ public class BinderHelper {
 		//Setup the actions menu list
 		List actions = new ArrayList();
 		addActionsHome(request, actions);
+		addActionsRecentPlaces(request, actions);
 		addActionsSpacer(request, actions);
 		addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
@@ -629,6 +636,16 @@ public class BinderHelper {
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
 		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
+		action.put("url", adapterUrl.toString());
+		actions.add(action);
+	}
+
+	public static void addActionsRecentPlaces(RenderRequest request, List actions) {
+		Map action = new HashMap();
+		action.put("title", NLT.get("sidebar.history"));
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_RECENT_PLACES);
 		action.put("url", adapterUrl.toString());
 		actions.add(action);
 	}

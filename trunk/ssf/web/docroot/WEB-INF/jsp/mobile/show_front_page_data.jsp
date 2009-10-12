@@ -162,7 +162,10 @@
 	  		<c:forEach var="activity" items="${ss_activities}">
 	    	<div class="entry">
 	    	  <div class="entry-title">
-		    	<ssf:showUser user="${activity.user}" titleStyle="ss_link_1"/>
+		    	<a href="<ssf:url adapter="true" portletName="ss_forum" 
+				  folderId="${activity.user.workspaceId}"
+				  action="__ajax_mobile" 
+				  operation="mobile_show_workspace" />" >${activity.user.title}</a>
 		      </div>
 		  	  <div>
 			  	<span class="entry-date">

@@ -185,6 +185,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_ENTRY)) {
 			return ajaxMobileShowEntry(this, request, response);
 			
+		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_RECENT_PLACES)) {
+			return ajaxMobileShowRecentPlaces(this, request, response);
+			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_NEXT_ENTRY)) {
 			return ajaxMobileShowNextEntry(this, request, response);
 			
@@ -442,6 +445,14 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.NEXT_PAGE, nextPage);
 		model.put(WebKeys.PREV_PAGE, prevPage);
 
+		//Setup the actions menu list
+		List actions = new ArrayList();
+		BinderHelper.addActionsHome(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsSpacer(request, actions);
+		BinderHelper.addActionsLogout(request, actions);
+		model.put("ss_actions", actions);
+		
 		return new ModelAndView("mobile/show_search_results", model);
 	}
 
@@ -463,6 +474,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			return ajaxMobileShowWorkspace(this, request, response);
 		}
 		model.put(WebKeys.BINDER, binder);
+
+		Tabs.TabEntry tab= BinderHelper.initTabs(request, binder);
+		model.put(WebKeys.TABS, tab.getTabs());		
 
 		if (binder != null) {
 			//See if the user has selected a specific view to use
@@ -551,6 +565,15 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		if (!folders.isEmpty()) {
 			model.put(WebKeys.FOLDERS, folders);
 		}
+
+		//Setup the actions menu list
+		List actions = new ArrayList();
+		BinderHelper.addActionsHome(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsSpacer(request, actions);
+		BinderHelper.addActionsLogout(request, actions);
+		model.put("ss_actions", actions);
+		
 		return new ModelAndView("mobile/show_folder", model);
 	}
 
@@ -592,6 +615,15 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.PREV_PAGE, prevPage);
 
 		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
+
+		//Setup the actions menu list
+		List actions = new ArrayList();
+		BinderHelper.addActionsHome(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsSpacer(request, actions);
+		BinderHelper.addActionsLogout(request, actions);
+		model.put("ss_actions", actions);
+		
 		return new ModelAndView("mobile/show_whats_new", model);
 	}
 
@@ -613,6 +645,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		if (binder == null) {
 			return new ModelAndView("mobile/show_workspace", model);
 		}
+
+		Tabs.TabEntry tab= BinderHelper.initTabs(request, binder);
+		model.put(WebKeys.TABS, tab.getTabs());		
+
 		//See if this is a user workspace
 		if (binder != null && binder.getDefinitionType() != null && 
 				Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType()) {
@@ -666,6 +702,15 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.NEXT_PAGE, nextPage);
 		model.put(WebKeys.PREV_PAGE, prevPage);
 		model.put(WebKeys.FOLDERS, folders);
+
+		//Setup the actions menu list
+		List actions = new ArrayList();
+		BinderHelper.addActionsHome(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsSpacer(request, actions);
+		BinderHelper.addActionsLogout(request, actions);
+		model.put("ss_actions", actions);
+		
 		return new ModelAndView("mobile/show_workspace", model);
 	}
 
@@ -681,6 +726,15 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.ENTRY_ID, entryId);
+
+		//Setup the actions menu list
+		List actions = new ArrayList();
+		BinderHelper.addActionsHome(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsSpacer(request, actions);
+		BinderHelper.addActionsLogout(request, actions);
+		model.put("ss_actions", actions);
+		
 		return new ModelAndView("mobile/show_no_entry", model);
 	}
 	private ModelAndView ajaxMobileShowPrevEntry(AllModulesInjected bs, RenderRequest request, 
@@ -695,6 +749,15 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.ENTRY_ID, entryId);
+
+		//Setup the actions menu list
+		List actions = new ArrayList();
+		BinderHelper.addActionsHome(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsSpacer(request, actions);
+		BinderHelper.addActionsLogout(request, actions);
+		model.put("ss_actions", actions);
+		
 		return new ModelAndView("mobile/show_no_entry", model);
 	}
 	private ModelAndView ajaxMobileShowEntry(AllModulesInjected bs, RenderRequest request, 
@@ -709,6 +772,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	Binder binder = getBinderModule().getBinder(binderId);
 	BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 	model.put(WebKeys.BINDER, binder);
+	model.put(WebKeys.TABS, Tabs.getTabs(request));
 	User user = RequestContextHolder.getRequestContext().getUser();
 	
 	FolderEntry entry = null;
@@ -783,9 +847,35 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		entries.add(entry);
 		BinderHelper.buildWorkflowSupportBeans(this, entries, model);
 	}
+
+	//Setup the actions menu list
+	List actions = new ArrayList();
+	BinderHelper.addActionsHome(request, actions);
+	BinderHelper.addActionsRecentPlaces(request, actions);
+	BinderHelper.addActionsSpacer(request, actions);
+	BinderHelper.addActionsLogout(request, actions);
+	model.put("ss_actions", actions);
+	
 	return new ModelAndView("mobile/show_entry", model);
 }	
 
+	private ModelAndView ajaxMobileShowRecentPlaces(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Map model = new HashMap();
+	    Tabs tabs = Tabs.getTabs(request);
+		model.put(WebKeys.TABS, tabs);		
+
+		//Setup the actions menu list
+		List actions = new ArrayList();
+		BinderHelper.addActionsHome(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsSpacer(request, actions);
+		BinderHelper.addActionsLogout(request, actions);
+		model.put("ss_actions", actions);
+		
+		return new ModelAndView("mobile/show_recent_places", model);
+	}
 	private ModelAndView ajaxMobileShowFavorites(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -804,6 +894,14 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 		List<Map> favList = f.getFavoritesList();
 		model.put(WebKeys.MOBILE_FAVORITES_LIST, favList);
+
+		//Setup the actions menu list
+		List actions = new ArrayList();
+		BinderHelper.addActionsHome(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsSpacer(request, actions);
+		BinderHelper.addActionsLogout(request, actions);
+		model.put("ss_actions", actions);
 		
 		return new ModelAndView("mobile/show_favorites", model);
 	}
@@ -818,6 +916,14 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		List<Long> teamIds = new ArrayList<Long>();
 		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId());
 		model.put(WebKeys.MOBILE_TEAMS_LIST, myTeams);
+		
+		//Setup the actions menu list
+		List actions = new ArrayList();
+		BinderHelper.addActionsHome(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsSpacer(request, actions);
+		BinderHelper.addActionsLogout(request, actions);
+		model.put("ss_actions", actions);
 		
 		return new ModelAndView("mobile/show_teams", model);
 	}
@@ -1005,6 +1111,15 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				
 			}
 		}
+
+		//Setup the actions menu list
+		List actions = new ArrayList();
+		BinderHelper.addActionsHome(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsSpacer(request, actions);
+		BinderHelper.addActionsLogout(request, actions);
+		model.put("ss_actions", actions);
+		
 		return new ModelAndView("mobile/find_people", model);
 	}
 	
