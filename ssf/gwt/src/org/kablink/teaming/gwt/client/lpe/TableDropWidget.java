@@ -350,13 +350,20 @@ public class TableDropWidget extends DropWidget
 		}
 		
 		int width;
-		width = 100 / m_flexTable.getCellCount( 0 );
+		String widthStr;
+		
 		cellFormatter = m_flexTable.getFlexCellFormatter();
 		for (i = 0; i < m_flexTable.getCellCount( 0 ); ++i )
 		{
-			// Set the width of this column.
-			cellFormatter.setWidth( 0, i, String.valueOf( width ) + "%" );
-//!!!			cellFormatter.setWidth( 0, i, m_properties.getColWidthStr( i ) );
+			// Get the width of this column.
+			width = m_properties.getColWidthInt( i );
+			
+			// IE does not allow a width of 0%.  If the width is 0 set it to 1.
+			if ( width == 0 )
+				width = 1;
+			
+			widthStr = String.valueOf( width ) + "%";
+			cellFormatter.setWidth( 0, i, widthStr );
 			
 			// Set the vertical alignment of this cell to "top".
 			cellFormatter.setVerticalAlignment( 0, i, HasVerticalAlignment.ALIGN_TOP );

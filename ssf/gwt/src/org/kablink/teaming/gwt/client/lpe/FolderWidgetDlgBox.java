@@ -33,7 +33,6 @@
 package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.GwtFolder;
-import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -43,6 +42,9 @@ import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.OnSelectHandler;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -60,7 +62,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  */
 public class FolderWidgetDlgBox extends DlgBox
-	implements OnSelectHandler
+	implements KeyPressHandler, OnSelectHandler
 {
 	private CheckBox m_showTitleCkBox = null;
 	private CheckBox m_showDescCkBox = null;
@@ -124,6 +126,7 @@ public class FolderWidgetDlgBox extends DlgBox
 		label = new Label( GwtTeaming.getMessages().numEntriesToShow() );
 		table.setWidget( 0, 0, label );
 		m_numEntriesToShowTxtBox = new TextBox();
+		m_numEntriesToShowTxtBox.addKeyPressHandler( this );
 		m_numEntriesToShowTxtBox.setVisibleLength( 2 );
 		table.setWidget( 0, 1, m_numEntriesToShowTxtBox );
 		mainPanel.add( table );
@@ -201,10 +204,23 @@ public class FolderWidgetDlgBox extends DlgBox
 	public int getNumEntriesToShowValue()
 	{
 		String txt;
+		int numEntries;
 		
-		// Do validation!!!
+		numEntries = 0;
 		txt = m_numEntriesToShowTxtBox.getText();
-		return Integer.parseInt( txt );
+		if ( txt != null && txt.length() > 0 )
+		{
+			try
+			{
+				numEntries = Integer.parseInt( txt );
+			}
+			catch ( NumberFormatException nfEx )
+			{
+				// This should never happen.  The data should be validated before we get to this point.
+			}
+		}
+		
+		return numEntries;
 	}// end getNumEntriesToShowValue()
 	
 	
@@ -264,6 +280,37 @@ public class FolderWidgetDlgBox extends DlgBox
 	}// end init()
 	
 
+	/**
+	 * This method gets called when the user types in the "number of entries to show" text box.
+	 * We only allow the user to enter numbers.
+	 */
+	public void onKeyPress( KeyPressEvent event )
+	{
+        int keyCode;
+
+        // Get the key the user pressed
+        keyCode = event.getCharCode();
+        
+        if ( (!Character.isDigit(event.getCharCode())) && (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
+            && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
+            && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
+            && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN))
+        {
+        	TextBox txtBox;
+        	Object source;
+        	
+        	// Make sure we are dealing with a text box.
+        	source = event.getSource();
+        	if ( source instanceof TextBox )
+        	{
+        		// Suppress the current keyboard event.
+        		txtBox = (TextBox) source;
+        		txtBox.cancelKey();
+        	}
+        }
+	}// end onKeyPress()
+
+	
 	/**
 	 * This method gets called when the user selects an item from the search results in the "find" control.
 	 */

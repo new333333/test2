@@ -216,11 +216,18 @@ public abstract class DlgBox extends PopupPanel
 			// Get the data from the controls in the dialog box.
 			props = getDataFromDlg();
 			
-			// Do we have a handler we need to call?
-			if ( m_editSuccessfulHandler != null )
+			// If getDataFromDlg() returns null it means that the data entered by the user
+			// is not valid.  getDataFromDlg() will notify the user of problems.
+			// Is the data valid?
+			if ( props != null )
 			{
 				// Yes
-				m_editSuccessfulHandler.editSuccessful( props );
+				// Do we have a handler we need to call?
+				if ( m_editSuccessfulHandler != null )
+				{
+					// Yes
+					m_editSuccessfulHandler.editSuccessful( props );
+				}
 			}
 			
 			return;
