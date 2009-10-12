@@ -542,6 +542,10 @@ public class FindCtrl extends Composite
 	 */
 	public void onClick( ClickEvent clickEvent )
 	{
+		// If there is already a search in progress, ignore the click.
+		if ( m_searchInProgress )
+			return;
+		
 		// Make sure we are receiving this event because the user clicked on an image.
 		if ( clickEvent.getSource() instanceof Image )
 		{

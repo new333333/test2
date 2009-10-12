@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -158,6 +159,7 @@ public class FolderWidgetDlgBox extends DlgBox
 	public PropertiesObj getDataFromDlg()
 	{
 		FolderProperties	properties;
+		String folderId;
 		
 		properties = new FolderProperties();
 		
@@ -171,7 +173,15 @@ public class FolderWidgetDlgBox extends DlgBox
 		properties.setShowEntriesOpenedValue( getShowEntriesOpenedValue() );
 		
 		// Save away the folder id.
-		properties.setFolderId( getFolderIdValue() );
+		// Did the user select a folder?
+		folderId = getFolderIdValue();
+		if ( folderId == null || folderId.length() == 0 )
+		{
+			// No, tell them they need to
+			Window.alert( GwtTeaming.getMessages().pleaseSelectAFolder() );
+			return null;
+		}
+		properties.setFolderId( folderId );
 		
 		// Save away the number of entries to show.
 		properties.setNumEntriesToBeShownValue( getNumEntriesToShowValue() );

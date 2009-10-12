@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.OnSelectHandler;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -138,11 +139,21 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 	public PropertiesObj getDataFromDlg()
 	{
 		LinkToEntryProperties	properties;
+		String entryId;
 		
 		properties = new LinkToEntryProperties();
 		
 		// Save away the entry id.
-		properties.setEntryId( getEntryIdValue() );
+		// Did the user select an entry?
+		entryId = getEntryIdValue();
+		if ( entryId == null || entryId.length() == 0 )
+		{
+			// No, tell them they need to
+			Window.alert( GwtTeaming.getMessages().pleaseSelectAnEntry() );
+			return null;
+		}
+		
+		properties.setEntryId( entryId );
 		
 		// Save away the title.
 		properties.setTitle( getTitleValue() );
