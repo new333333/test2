@@ -569,6 +569,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//Setup the actions menu list
 		List actions = new ArrayList();
 		BinderHelper.addActionsHome(request, actions);
+		BinderHelper.addActionsWhatsNew(request, actions, binder.getId());
+		BinderHelper.addActionsWhatsUnseen(request, actions, binder.getId());
 		BinderHelper.addActionsRecentPlaces(request, actions);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
@@ -706,6 +708,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//Setup the actions menu list
 		List actions = new ArrayList();
 		BinderHelper.addActionsHome(request, actions);
+		BinderHelper.addActionsWhatsNew(request, actions, binder.getId());
+		BinderHelper.addActionsWhatsUnseen(request, actions, binder.getId());
 		BinderHelper.addActionsRecentPlaces(request, actions);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);

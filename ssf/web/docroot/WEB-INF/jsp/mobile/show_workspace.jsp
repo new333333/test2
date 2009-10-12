@@ -42,204 +42,61 @@
 
 <div class="content">
 
-<%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
-
-</div>
-
-<div id="pagebody">
-
-<div class="ss_mobile_breadcrumbs">
-<c:if test="${!empty ssBinder.parentBinder}">
-//<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	folderId="${ssBinder.parentBinder.id}" 
-	action="__ajax_mobile" operation="mobile_show_workspace" 
-	actionUrl="false" />"><c:out value="${ssBinder.parentBinder.title}" escapeXml="true"/></a>
-<br/>&nbsp;&nbsp;</c:if>
-//<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	folderId="${ssBinder.id}" 
-	action="__ajax_mobile" operation="mobile_show_workspace" 
-	actionUrl="false" />"><c:out value="${ssBinder.title}" escapeXml="true"/></a>
-</div>
-<br/>
-
-<div class="maincontent background_light">
-  <div id="menu">
-    <ul>
-      <li>
-        <a href="<ssf:url adapter="true" portletName="ss_forum" 
-					action="__ajax_mobile" actionUrl="false" 
-					binderId="${ssBinder.id}"
-					operation="mobile_whats_new" ><ssf:param
-					name="type" value="whatsNew"/></ssf:url>">
-          <span class="ss_bold"><ssf:nlt tag="toolbar.menu.whatsNew"/></span>
-        </a>
-	  </li>
-	  <li>
-        <a href="<ssf:url adapter="true" portletName="ss_forum" 
-					action="__ajax_mobile" actionUrl="false" 
-					binderId="${ssBinder.id}"
-					operation="mobile_whats_new" ><ssf:param
-					name="type" value="unseen"/></ssf:url>">
-          <span class="ss_bold"><ssf:nlt tag="toolbar.menu.whatsUnseen"/></span>
-        </a>
-      </li>
-    </ul>
-  </div>
-</div>
+  <%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
 
 <c:if test="${ssBinder.definitionType == '12' && !empty ssWorkspaceCreator}">
  <%-- This is a user workspace --%>
- <div class="linewrap">
-   <c:if test="${!empty ssWorkspaceCreator.customAttributes['picture']}">
-    <p align="center">
-	  <c:set var="selections" value="${ssWorkspaceCreator.customAttributes['picture'].value}" />
-	  <c:set var="pictureCount" value="0"/>
-	  <c:forEach var="selection" items="${selections}">
-	   <c:if test="${pictureCount == 0}">
-		<img 
-		  align="middle" id="ss_profilePicture"
-		  border="0" 
-		  src="<ssf:fileUrl webPath="readScaledFile" file="${selection}"/>"
-		  alt="${property_caption}" />
-	   </c:if>
-	   <c:set var="pictureCount" value="${pictureCount + 1}"/>
-	  </c:forEach>
-	</p>
-   </c:if>
-   <p align="center">
-    <div align="center">
-	 <table cellspacing="0" cellpadding="0">
-	 <c:if test="${!empty ssWorkspaceCreator.phone}">
-	  <tr>
-	   <td valign="top" align="center">
-	     <span>${ssWorkspaceCreator.phone}</span>
-	    <span class="ss_mobile_small ss_mobile_light">(<ssf:nlt tag="profile.abv.element.phone"/>)</span>
-	   </td>
-	  </tr>
-	 </c:if>
-	 <c:if test="${!empty ssWorkspaceCreator.emailAddress}">
-	  <tr>
-	   <td valign="top" align="center">
-	     <span><a href="mailto://${ssWorkspaceCreator.emailAddress}">${ssWorkspaceCreator.emailAddress}</a></span>
-	    <span class="ss_mobile_small ss_mobile_light">(<ssf:nlt tag="profile.abv.element.emailAddress"/>)</span>
-	   </td>
-	  </tr>
-	 </c:if>
-	 <c:if test="${!empty ssWorkspaceCreator.mobileEmailAddress}">
-	  <tr>
-	   <td valign="top" align="center">
-	     <span>${ssWorkspaceCreator.mobileEmailAddress}</span>
-	    <span class="ss_mobile_small ss_mobile_light">(<ssf:nlt tag="profile.abv.element.mobileEmailAddress"/>)</span>
-	   </td>
-	  </tr>
-	 </c:if>
-	 <c:if test="${!empty ssWorkspaceCreator.txtEmailAddress}">
-	  <tr>
-	   <td valign="top" align="center">
-	     <span>${ssWorkspaceCreator.txtEmailAddress}</span>
-	    <span class="ss_mobile_small ss_mobile_light">(<ssf:nlt tag="profile.abv.element.txtEmailAddress"/>)</span>
-	   </td>
-	  </tr>
-	 </c:if>
-	 </table> 
-	</div>
-   </p>
- </div>
-</c:if>
-<c:if test="${ssBinder.definitionType != '12' || empty ssWorkspaceCreator}">
-<br/>
+
+<c:set var="ssProfileUser" value="${ssWorkspaceCreator}" scope="request"/>
+<%@ include file="/WEB-INF/jsp/mobile/user_profile.jsp" %>
+
 </c:if>
 
 <c:if test="${!empty ssWorkspaces}">
-	<div class="pagebody">
-	  <div id="favorites">
-	    <span><ssf:nlt tag="mobile.workspaces"/></span>
-	  </div>
-	  <div class="pagebody_border">
-		<ul>
-		  <c:forEach var="workspace" items="${ssWorkspaces}" >
-			<li>
-			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+  <div class="folders">
+    <div class="folder-head">
+      <img class="margin5r" src="<html:imagesPath/>mobile/folder16.gif"/>
+      <ssf:nlt tag="mobile.workspaces"/>
+    </div>
+    
+	<c:forEach var="workspace" items="${ssWorkspaces}" >
+      <div class="folder-item">
+		<a href="<ssf:url adapter="true" portletName="ss_forum" 
 				folderId="${workspace.id}" 
 				action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
-			    <c:if test="${empty workspace.title}">
-			    	(<ssf:nlt tag="workspace.noTitle"/>)
-			    </c:if>
-				<c:out value="${workspace.title}" escapeXml="true"/>
-			  </a>
-		    </li>
-		  </c:forEach>
-		</ul>
-		<c:if test="${!empty ss_nextPage || !empty ss_prevPage}">
-		<table>
-		<tr>
-		  <td>
-			<c:if test="${!empty ss_prevPage}">
-			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-				folderId="${ssBinder.id}" 
-				action="__ajax_mobile" 
-				operation="mobile_show_workspace" 
-				actionUrl="false" ><ssf:param name="pageNumber" value="${ss_prevPage}"/></ssf:url>"
-			  ><img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_.gif"/></a>
-			</c:if>
-			<c:if test="${empty ss_prevPage}">
-			  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_g.gif"/>
-			</c:if>
-		  </td>
-		  <td style="padding-left:20px;">
-			<c:if test="${!empty ss_nextPage}">
-			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-				folderId="${ssBinder.id}" 
-				action="__ajax_mobile" 
-				operation="mobile_show_workspace" 
-				actionUrl="false" ><ssf:param name="pageNumber" value="${ss_nextPage}"/></ssf:url>"
-			  ><img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_.gif"/></a>
-			</c:if>
-			<c:if test="${empty ss_nextPage}">
-			  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_g.gif"/>
-			</c:if>
-		  </td>
-		</tr>
-		</table>
-		</c:if>
+		  <c:if test="${empty workspace.title}">
+		    (<ssf:nlt tag="workspace.noTitle"/>)
+		  </c:if>
+		  <c:out value="${workspace.title}" escapeXml="true"/>
+		</a>
 	  </div>
-	</div>
+	</c:forEach>
+  </div>
 </c:if>
-
+	
 <c:if test="${!empty ssFolders}">
-	<div class="pagebody">
-	  <div id="favorites">
-	    <span><ssf:nlt tag="mobile.folders"/></span>
-	  </div>
-	  <div class="pagebody_border">
-		<ul>
-		  <c:forEach var="folder" items="${ssFolders}" >
-			<li>
-			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+  <div class="folders">
+    <div class="folder-head">
+      <img class="margin5r" src="<html:imagesPath/>mobile/folder16.gif"/>
+      <ssf:nlt tag="mobile.folders"/>
+    </div>
+	<c:forEach var="folder" items="${ssFolders}" >
+      <div class="folder-item">
+		<a href="<ssf:url adapter="true" portletName="ss_forum" 
 				folderId="${folder.id}" 
 				action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
-			    <c:if test="${empty folder.title}">
-			    	(<ssf:nlt tag="workspace.noTitle"/>)
-			    </c:if>
-				<c:out value="${folder.title}" escapeXml="true"/>
-			  </a>
-			</li>
-		  </c:forEach>
-		</ul>
+		  <c:if test="${empty folder.title}">
+		    (<ssf:nlt tag="folder.noTitle"/>)
+		  </c:if>
+		  <c:out value="${folder.title}" escapeXml="true"/>
+		</a>
 	  </div>
-	</div>
+	</c:forEach>
+	
+  </div>
 </c:if>
 
-<div class="ss_mobile_breadcrumbs ss_mobile_small">
-<c:if test="${!empty ssBinder.parentBinder}">
-<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	folderId="${ssBinder.parentBinder.id}" 
-	action="__ajax_mobile" operation="mobile_show_workspace" 
-	actionUrl="false" />"><ssf:nlt tag="mobile.returnToParentWorkspace"/></a>
-</c:if>
 </div>
-
-<%@ include file="/WEB-INF/jsp/mobile/footer.jsp" %>
 
 </body>
 </html>

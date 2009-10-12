@@ -638,6 +638,8 @@ public class BinderHelper {
 		//Setup the actions menu list
 		List actions = new ArrayList();
 		addActionsHome(request, actions);
+		addActionsWhatsNew(request, actions, null);
+		addActionsWhatsUnseen(request, actions, null);
 		addActionsRecentPlaces(request, actions);
 		addActionsSpacer(request, actions);
 		addActionsLogout(request, actions);
@@ -663,6 +665,30 @@ public class BinderHelper {
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
 		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_RECENT_PLACES);
+		action.put("url", adapterUrl.toString());
+		actions.add(action);
+	}
+
+	public static void addActionsWhatsNew(RenderRequest request, List actions, Long binderId) {
+		Map action = new HashMap();
+		action.put("title", NLT.get("toolbar.menu.whatsNew"));
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+		if (binderId != null) adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_WHATS_NEW);
+		adapterUrl.setParameter(WebKeys.URL_TYPE, WebKeys.URL_WHATS_NEW);
+		action.put("url", adapterUrl.toString());
+		actions.add(action);
+	}
+
+	public static void addActionsWhatsUnseen(RenderRequest request, List actions, Long binderId) {
+		Map action = new HashMap();
+		action.put("title", NLT.get("toolbar.menu.whatsUnseen"));
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+		if (binderId != null) adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_WHATS_NEW);
+		adapterUrl.setParameter(WebKeys.URL_TYPE, WebKeys.URL_UNSEEN);
 		action.put("url", adapterUrl.toString());
 		actions.add(action);
 	}
