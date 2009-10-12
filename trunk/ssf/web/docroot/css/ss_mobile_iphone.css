@@ -53,7 +53,6 @@ span.pad-left20 {
 	padding-top: 10px;
 	background-color: #5b9b99; 
 	font-weight: bold; 
-	height: 40px;
 	width: 100%; 
 	}
 		
@@ -194,8 +193,6 @@ span.pad-left20 {
 	}
 	
 .content {
-	position: absolute; 
-	top: 40px;
 	width: 100%;
 	}
 
@@ -397,7 +394,16 @@ span.pad-left20 {
 	-moz-border-radius: 40px
 	}
 	
-/* ********************************** */
+
+
+
+
+
+
+
+
+
+/* **************** Old stuff to be deleted when new look is done ****************** */
 
 #wrapper {
 	margin: 3px auto;

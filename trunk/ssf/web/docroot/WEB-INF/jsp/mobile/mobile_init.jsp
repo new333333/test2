@@ -45,13 +45,18 @@
 <head>
 <meta http-equiv="Content-Script-Type" content="text/javascript"/>
 <meta http-equiv="Content-Style-Type" content="text/css"/>
-<meta name = "viewport" content = "width = 320"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="user-scalable=no; width=device-width; initial-scale=1.0; 
+	maximum-scale=1.0; minimum-scale=1.0; " name="viewport"/>
+<meta content="black" name="apple-mobile-web-app-status-bar-style"/>
+
 <jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_mobile_head.jsp" />
 <c:if test="${!empty ss_windowTitle}"><title>${ss_windowTitle}</title></c:if>
 <script type="text/javascript" src="<html:rootPath/>js/jquery/jquery-1.3.2.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/jquery/ui.core.js"></script>
 <script type="text/javascript" 
   src="<html:rootPath/>js/common/ss_mobile.js?startTime=<%= org.kablink.teaming.util.ReleaseInfo.getStartTime() %>"></script>
+<link href="<html:rootPath/>css/ss_mobile_common.css" rel="stylesheet" type="text/css" />
 <%
 	if (1 == 0 && isWap) {
 %>
