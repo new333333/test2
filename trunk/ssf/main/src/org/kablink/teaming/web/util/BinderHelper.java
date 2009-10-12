@@ -530,37 +530,50 @@ public class BinderHelper {
 
 	protected static ModelAndView setupMobilePortlet(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, PortletPreferences prefs, Map model, String view) {
+		view = BinderHelper.setupMobileFrontPageBeans(bs, request, response, model, view);
+
+		return new ModelAndView(view, model);
+	}
+
+	public static String setupMobileFrontPageBeans(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, Map model, String view) {
         User user = RequestContextHolder.getRequestContext().getUser();
-		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
-		//This is the portlet view; get the configured list of folders to show
-		Map userProperties = (Map) model.get(WebKeys.USER_PROPERTIES);
-		//where stored as string[] which causes unnecessary sql updates cause arrays always appear dirty to hibernate
-		Object mobileBinderIds = userProperties.get(ObjectKeys.USER_PROPERTY_MOBILE_BINDER_IDS);
-		Set<Long>binderIds = null;
-		if (mobileBinderIds instanceof String) {
-			binderIds = LongIdUtil.getIdsAsLongSet((String)mobileBinderIds);
-		} else if (mobileBinderIds instanceof String[]) {
-			binderIds = LongIdUtil.getIdsAsLongSet((String[])mobileBinderIds);
-			bs.getProfileModule().setUserProperty(null,ObjectKeys.USER_PROPERTY_MOBILE_BINDER_IDS, LongIdUtil.getIdsAsString((String[])mobileBinderIds));
-		} else {
-			binderIds = new HashSet();
+		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+			adapterUrl.setParameter(WebKeys.OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
+			model.put(WebKeys.URL, adapterUrl);
+			if (bs.getAdminModule().isMobileAccessEnabled()) {
+				return "mobile/show_login_form";
+			} else {
+				return "mobile/not_supported";
+			}
 		}
-
-		model.put(WebKeys.MOBILE_BINDER_LIST, bs.getBinderModule().getBinders(binderIds));
-		Map unseenCounts = new HashMap();
-		unseenCounts = bs.getFolderModule().getUnseenCounts(binderIds);
-		model.put(WebKeys.LIST_UNSEEN_COUNTS, unseenCounts);
-
+		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
+		Long binderId = user.getWorkspaceId();
+		if (binderId == null) binderId = bs.getWorkspaceModule().getTopWorkspace().getId();
+		Binder topBinder = bs.getWorkspaceModule().getTopWorkspace();
+		Binder myWorkspaceBinder = bs.getBinderModule().getBinder(user.getWorkspaceId());
+		Binder binder = bs.getBinderModule().getBinder(binderId);
+		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
+		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.TOP_WORKSPACE, topBinder);
+		
+		Map userQueries = new HashMap();
+		if (userProperties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
+			userQueries = (Map)userProperties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
+		}
+		model.put("ss_UserQueries", userQueries);
+		
 		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
 		ProfileBinder profileBinder = null;
 		try {
 			profileBinder = bs.getProfileModule().getProfileBinder();
-		} catch(Exception e) {
-			logger.debug("BinderHelper.setupMobilePortlet(Exception:  '" + MiscUtil.exToString(e) + "'):  Ignored");
-		}
+		} catch(Exception e) {}
 		if (profileBinder != null) {
 			accessControlMap.put(WebKeys.CAN_VIEW_USER_PROFILES, true);
 		}
+
 
 		Object obj = userProperties.get(ObjectKeys.USER_PROPERTY_FAVORITES);
 		Favorites f;
@@ -574,25 +587,64 @@ public class BinderHelper {
 		List<Map> favList = f.getFavoritesList();
 		model.put(WebKeys.MOBILE_FAVORITES_LIST, favList);
 		
-		Map userQueries = new HashMap();
-		if (userProperties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
-			userQueries = (Map)userProperties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
-		}
-		model.put("ss_UserQueries", userQueries);
-		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
-			adapterUrl.setParameter(WebKeys.OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
-			model.put(WebKeys.URL, adapterUrl);
-			if (bs.getAdminModule().isMobileAccessEnabled()) {
-				return new ModelAndView("mobile/show_login_form", model);
-			} else {
-				return new ModelAndView("mobile/not_supported", model);
-			}
+		String type = (String)userProperties.get(ObjectKeys.USER_PROPERTY_MOBILE_WHATS_NEW_TYPE);
+		if (type == null || type.equals("")) type = ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE;
+		model.put("ss_whatsNewType", type);
+      	Integer pageNumber = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER, 0);
+      	if (pageNumber == null || pageNumber < 0) pageNumber = 0;
+      	int pageSize = SPropsUtil.getInt("relevance.mobile.whatsNewPageSize");
+      	int pageStart = pageNumber.intValue() * pageSize;
+      	String nextPage = "";
+      	String prevPage = "";
+		Map options = new HashMap();		
+      	options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf(pageSize));
+      	options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(pageStart));
+		model.put(WebKeys.PAGE_NUMBER, pageNumber.toString());
+		model.put(WebKeys.NEXT_PAGE, nextPage);
+		model.put(WebKeys.PREV_PAGE, prevPage);
+		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 
+		if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED) || 
+				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS) ||
+				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE)) {
+			BinderHelper.setupWhatsNewBinderBeans(bs, topBinder, model, String.valueOf(pageNumber), type);
+		} else if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_MICROBLOG)) {
+			RelevanceDashboardHelper.setupMiniblogsBean(bs, myWorkspaceBinder, model);
 		}
-		return new ModelAndView(view, model);
 		
+		//Setup the actions menu list
+		List actions = new ArrayList();
+		addActionsHome(request, actions);
+		addActionsSpacer(request, actions);
+		addActionsLogout(request, actions);
+		model.put("ss_actions", actions);
+		
+		return view;
+	}
+
+	//Routines to add mobile actions
+	public static void addActionsHome(RenderRequest request, List actions) {
+		Map action = new HashMap();
+		action.put("title", NLT.get("mobile.goHome"));
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
+		action.put("url", adapterUrl.toString());
+		actions.add(action);
+	}
+
+	public static void addActionsLogout(RenderRequest request, List actions) {
+		Map action = new HashMap();
+		action.put("title", NLT.get("logout"));
+		action.put("url", "javascript: ;");
+		action.put("onclick", "ss_logoff();return false;");
+		actions.add(action);
+	}
+
+	public static void addActionsSpacer(RenderRequest request, List actions) {
+		Map action = new HashMap();
+		action.put("spacer", true);
+		actions.add(action);
 	}
 
 	protected static ModelAndView setupWorkareaPortlet(AllModulesInjected bs, RenderRequest request, 

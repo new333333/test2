@@ -34,38 +34,28 @@
 %>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
 
-<div id="header">
-  <ul>
-	<li>
-		<a href="<ssf:url adapter="true" portletName="ss_forum" 
-			action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
-			><img src="<html:rootPath/>css/images/mobile/home_icon.png" 
-			 <ssf:alt tag=""/> width="14" height="15" 
-			 hspace="3" border="0" align="bottom" /><ssf:nlt tag="mobile.returnToTop"/></a>
-	</li>
-	<li>
-		<c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
-		<c:if test="${ssUser.internalId == guestInternalId}">
-		  <c:if test='<%= !org.kablink.teaming.util.SPropsUtil.getBoolean("form.login.auth.disallowed",false) %>' >
-		    <a href="<ssf:url action="__ajax_mobile" actionUrl="false" 
-							operation="mobile_login" />"
-		    >
-		    <span><ssf:nlt tag="login"/></span>
-		    </a>
-		  </c:if>
-		</c:if>
-		
-		<c:if test="${ssUser.internalId != guestInternalId}">
-			<c:if test="${!empty ssUser.workspaceId}">
-				<a href="<ssf:url adapter="true" portletName="ss_forum" 
-				    action="__ajax_mobile"
-				    operation="mobile_show_workspace"
-				    binderId="${ssUser.workspaceId}" />"><ssf:userTitle user="${ssUser}"/></a>
-			</c:if>
-			<c:if test="${empty ssUser.workspaceId}">
-				<ssf:userTitle user="${ssUser}"/>
-			</c:if>
-		</c:if>
-	</li>
-  </ul>
+<div class="header">
+<table cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td valign="top" align="left" width="1%">
+  <div class="homelink">
+	<a href="<ssf:url adapter="true" portletName="ss_forum" 
+		action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
+	><ssf:nlt tag="mobile.returnToTop"/></a>
+  </div>
+</td>
+<td valign="top" align="center">
+  <c:if test="${empty ssBinder}">${ssProductTitle}</c:if>
+  <c:if test="${!empty ssBinder && empty ssEntry}">${ssBinder.title}</c:if>
+  <c:if test="${!empty ssEntry}">${ssEntry.title}</c:if>
+</td>
+<td valign="top" align="right" width="1%">
+  <div class="search">
+	<a href="#"><ssf:nlt tag="navigation.search"/></a>
+  </div>
+</td>
+</tr>
+</table>
+
 </div>
+

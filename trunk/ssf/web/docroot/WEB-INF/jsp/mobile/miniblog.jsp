@@ -34,29 +34,34 @@
 %>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
 
-<div class="pagebody">
-  <div id="miniblog">
-    <span><label for="miniblogText"><ssf:nlt tag="miniblog"/></label></span>
-  </div>
-  <div class="pagebody_border">
-    <div class="maincontent">
-		<form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
-			folderId="${ssBinder.id}"
-			action="__ajax_mobile" 
-			operation="mobile_show_front_page" 
-			actionUrl="true" />">
-			
-		  <!-- necessary cols attribute is set to 20 for Blackberry and is overridden by CSS -->
-			
- 		  <textarea rows="2" cols="20" style="width:150px !important;" name="miniblogText" id="miniblogText"></textarea>
-		  <input type="submit" name="miniblogBtn" value="<ssf:nlt tag="button.ok"/>"/>
-		  <c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">
-		    <div style="padding-left:10px;"><span class="ss_mobile_small"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+  <div id="micro-blog-edit" class="action-dialog" style="display: none;z-index:2;">
+    <div class="dialog-head">
+      <span><label for="miniblogText"><ssf:nlt tag="miniblog"/></label></span>
+      <span id="micro-blog-date">
+        <c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">
+          <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 		        value="${ssUser.statusDate}" type="both" 
-			    timeStyle="short" dateStyle="short" /></span></div>
-		    <div style="padding-left:10px;"><span class="ss_mobile_small">${ssUser.status}</span></div>
-		  </c:if>
-		</form>
-	</div>
+			    timeStyle="short" dateStyle="short" />
+        </c:if>
+      </span>
+    </div>
+	<form id="microblogForm" method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
+		folderId="${ssBinder.id}"
+		action="__ajax_mobile" 
+		operation="mobile_show_front_page" 
+		actionUrl="true" />">
+			
+	  <!-- necessary "cols" attribute is set to 20 for Blackberry and is overridden by CSS -->
+			
+      <textarea id="micro-blog-text" rows="5" cols="20" name="miniblogText"
+      ><c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">${ssUser.status}</c:if></textarea>
+      <div id="micro-blog-buttons">
+        <input id="micro-blog-post" type="submit" value="<ssf:nlt tag="button.post"/>" name="miniblogBtn"/>
+        <input id="micro-blog-cancel" type="button" value="<ssf:nlt tag="button.cancel"/>" name="PostBlogCancel"/>
+        <input id="micro-blog-clear" type="reset" value="<ssf:nlt tag="button.clear"/>" name="ClearBlog"
+          onclick="ss_clearStatusMobile('micro-blog-text');return false;"/>
+      </div>
+    </form>
   </div>
-</div>
+
+

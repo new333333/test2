@@ -37,8 +37,6 @@
 <c:set var="ss_windowTitle" value='<%= NLT.get("mobile.frontPage") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
-<div id="wrapper">
 <%@ include file="/WEB-INF/jsp/mobile/show_front_page_data.jsp" %>
-</div>
 </body>
 </html>

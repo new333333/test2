@@ -35,12 +35,13 @@
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
 
 	<c:if test="${!empty ss_UserQueries}">
-	  <div class="pagebody">
-	    <div id="saved_searches">
-	      <span><ssf:nlt tag="searchResult.savedSearchTitle"/></span>
-	    </div>
-	    <div class="pagebody_border">
-		  <ul>
+	  <div style="padding-top:20px;"> </div>
+	  <div class="menu-spacer"> </div>
+      <div class="dialog-head">
+        <span><ssf:nlt tag="searchResult.savedSearchTitle" /></span>
+      </div>
+	  <div class="dialog-content">
+		  <ul style="margin: 0px;">
 		    <c:forEach var="query" items="${ss_UserQueries}" varStatus="status">
 		      <li>
 		        <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${binder.id}" 
@@ -50,6 +51,5 @@
 			  </li>
 		    </c:forEach>
 		  </ul>
-	    </div>
 	  </div>
  	</c:if>

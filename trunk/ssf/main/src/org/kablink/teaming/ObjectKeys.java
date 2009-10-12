@@ -611,5 +611,12 @@ public interface ObjectKeys {
     public static final	int DISKQUOTA_OK = 1;
     public static final	int DISKQUOTA_HIGHWATERMARK_EXCEEDED = 2;
     public static final	int DISKQUOTA_EXCEEDED = 3;
+    
+    //Mobile related constants
+	public static final String USER_PROPERTY_MOBILE_WHATS_NEW_TYPE = "mobile_whats_new_type";
+    public static final String MOBILE_WHATS_NEW_VIEW_TEAMS = "teams";
+    public static final String MOBILE_WHATS_NEW_VIEW_TRACKED = "tracked";
+    public static final String MOBILE_WHATS_NEW_VIEW_SITE = "site";
+    public static final String MOBILE_WHATS_NEW_VIEW_MICROBLOG = "microblog";
 	
 }

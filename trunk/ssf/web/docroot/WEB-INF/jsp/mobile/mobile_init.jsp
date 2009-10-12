@@ -48,12 +48,16 @@
 <meta name = "viewport" content = "width = 320"/>
 <jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_mobile_head.jsp" />
 <c:if test="${!empty ss_windowTitle}"><title>${ss_windowTitle}</title></c:if>
+<script type="text/javascript" src="<html:rootPath/>js/jquery/jquery-1.3.2.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.core.js"></script>
+<script type="text/javascript" 
+  src="<html:rootPath/>js/common/ss_mobile.js?startTime=<%= org.kablink.teaming.util.ReleaseInfo.getStartTime() %>"></script>
 <%
-	if (isWap) {
+	if (1 == 0 && isWap) {
 %>
 <link href="<html:rootPath/>css/ss_mobile_wap.css" rel="stylesheet" type="text/css" />
 <%
-	} else if (isIPhone) {
+	} else if (1 == 1 || isIPhone) {
 %>
 <link href="<html:rootPath/>css/ss_mobile_iphone.css" rel="stylesheet" type="text/css" />
 <%

@@ -32,24 +32,68 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% //mailto link %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${!empty emailName && !empty emailHost}">
-  <c:if test="${!noLink}">
-	<a href=""><ssmailto 
-	  	name="<c:out value="${emailName}" escapeXml="true"/>" 
-	  	host="<c:out value="${emailHost}" escapeXml="true"/>"></ssmailto></a>
-  </c:if>
-  <c:if test="${noLink}">
-    <span><ssmailto 
-	  	name="<c:out value="${emailName}" escapeXml="true"/>" 
-	  	host="<c:out value="${emailHost}" escapeXml="true"/>"
-	  	noLink="true"></ssmailto></span>
-  </c:if>
+<%@ page import="org.kablink.teaming.ObjectKeys" %>
+
 <script type="text/javascript">
-ss_createOnLoadObj("ss_showEmailLinks", ss_showEmailLinks);
+function ss_logoff() {
+	var x = '<%= org.kablink.teaming.util.SPropsUtil.getString("sso.proxy.logoff.url","") %>';
+	if (x == null || x == "") {
+		var y = '${ss_logoutUrl}';
+		//alert(y);
+		self.location.href=y;
+	} else {
+		//alert (x);
+		var y = '${ss_logoutUrl}';
+		ss_logoff_from_teaming_then_sso(y);
+	}
+}
+function ss_logoff_from_teaming_then_sso(logoutURL) {
+	callbackRoutine = ss_logoff_from_sso
+	var x;
+
+	if (window.XMLHttpRequest) {
+	x = new XMLHttpRequest();
+	} else if (window.ActiveXObject) {
+	x = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	
+	x.open("GET", logoutURL, true);
+	
+	x.onreadystatechange = function() {
+		if (x.readyState != 4) {
+			return;
+		}
+		if (x.status == 200) {
+			callbackRoutine(x.responseText)        	
+		} else {		
+			callbackRoutine(x.statusText)
+		}
+	}
+	x.send(null);
+	delete x;
+}      
+function ss_logoff_from_sso(s) {
+	self.location.href='<%= org.kablink.teaming.util.SPropsUtil.getString("sso.proxy.logoff.url","") %>';
+}
 </script>
-</c:if>
-<c:if test="${empty emailName || empty emailHost}">
-	<a href="mailto:${email}"><span><c:out value="${email}" escapeXml="true"/></span></a>
-</c:if>
+
+<div id="actions">
+  <a class="hierarchy-a actionimg">
+    <img align="absmiddle" src="<html:imagesPath/>mobile/nl_browse_hierarchy_16.gif"/>
+  </a>
+  
+  <a class="micro-blog-a" href="#"><ssf:nlt tag="miniblog"/></a>
+  
+  <c:if test="${!empty ss_actions}">
+    <a class="actions-a" href="#"><ssf:nlt tag="mobile.actions"/></a>
+  </c:if>
+  
+</div>
+
+<%@ include file="/WEB-INF/jsp/mobile/search.jsp" %>
+
+<%@ include file="/WEB-INF/jsp/mobile/navigation.jsp" %>
+
+<%@ include file="/WEB-INF/jsp/mobile/miniblog.jsp" %>
+
+<%@ include file="/WEB-INF/jsp/mobile/actions_menu.jsp" %>
