@@ -44,8 +44,14 @@ import com.google.gwt.user.client.ui.ImageBundle;
  */
 public interface GwtTeamingImageBundle extends ImageBundle
 {
+	@Resource("org/kablink/teaming/gwt/public/images/edit_10.png")
+	public AbstractImagePrototype edit10();
+
 	@Resource("org/kablink/teaming/gwt/public/images/edit_16.gif")
 	public AbstractImagePrototype edit16();
+
+	@Resource("org/kablink/teaming/gwt/public/images/delete_10.png")
+	public AbstractImagePrototype delete10();
 
 	@Resource("org/kablink/teaming/gwt/public/images/delete_16.gif")
 	public AbstractImagePrototype delete16();

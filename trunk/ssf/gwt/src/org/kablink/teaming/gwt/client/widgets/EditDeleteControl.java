@@ -81,7 +81,7 @@ public class EditDeleteControl extends Composite
 			m_editAnchor.addClickHandler( this );
 			m_editAnchor.addStyleName( "editDeleteControlAnchor" );
 			
-			abstractImg = GwtTeaming.getImageBundle().edit16();
+			abstractImg = GwtTeaming.getImageBundle().edit10();
 			img = abstractImg.createImage();
 			img.addStyleName( "margin-right-5" );
 			
@@ -98,7 +98,7 @@ public class EditDeleteControl extends Composite
 			m_deleteAnchor.addClickHandler( this );
 			m_deleteAnchor.addStyleName( "editDeleteControlAnchor" );
 			
-			abstractImg = GwtTeaming.getImageBundle().delete16();
+			abstractImg = GwtTeaming.getImageBundle().delete10();
 			img = abstractImg.createImage();
 
 			// Add the delete image to the anchor.
