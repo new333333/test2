@@ -58,6 +58,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.report.ReportModule;
+import org.kablink.teaming.module.report.ReportModule.UserQuotaOption;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.util.LongIdUtil;
@@ -104,6 +105,9 @@ public class ReportDownloadController extends  SAbstractController {
 		columnNames.put(ReportModule.SIZE, "report.columns.size");
 		columnNames.put(ReportModule.ACTIVITY_TYPE, "report.columns.activityType");
 		columnNames.put(ReportModule.ACTIVITY_DATE, "report.columns.activityDate");
+		columnNames.put(ReportModule.DISK_SPACE_USED, "report.columns.diskspaceused");
+		columnNames.put(ReportModule.DISKQUOTA, "report.columns.diskquota");
+		columnNames.put(ReportModule.CREATIONDATE, "report.columns.creationDate");
 	}
 
 	static private boolean isUserColumn(String column) {
@@ -210,6 +214,17 @@ public class ReportDownloadController extends  SAbstractController {
 					columns = new String[] {ReportModule.USER_ID, ReportModule.BINDER_TITLE, ReportModule.SIZE};
 					break;
 				}
+			} else if ("userDiskUsage".equals(reportType)) {
+				String userQuotaOption = ServletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_USER_QUOTA_OPTION);
+				ReportModule.UserQuotaOption option = ReportModule.UserQuotaOption.valueOf(userQuotaOption);
+				report = getReportModule().generateUserDiskUsageReport(option);
+				columns = new String[] {ReportModule.USER_ID, ReportModule.SIZE, ReportModule.CREATIONDATE};
+			} else if ("exceededDiskQuota".equals(reportType)) {
+				report = getReportModule().generateExceededDiskQuotaReport();
+				columns = new String[] {ReportModule.USER_ID, ReportModule.DISK_SPACE_USED, ReportModule.DISKQUOTA};
+			} else if ("exceededHighWaterDiskQuota".equals(reportType)) {
+				report = getReportModule().generateExceededHighWaterDiskQuotaReport();
+				columns = new String[] {ReportModule.USER_ID, ReportModule.DISK_SPACE_USED, ReportModule.DISKQUOTA};
 			} else if ("activityByUser".equals(reportType)) {
 				hasUsers = true;
 				String type = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_FLAVOR, ReportModule.REPORT_TYPE_SUMMARY);

@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.module.report.impl;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,6 +50,8 @@ import java.util.TreeMap;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
@@ -58,6 +62,8 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.dao.util.FilterControls;
+import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -1169,7 +1175,123 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 
 		return report;
 	}
+	
+	public List<Map<String,Object>> generateExceededDiskQuotaReport() {
+		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+		
+		
+		List results = null;
+		results = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				List l = null;
+				try {
+					Query q = session.createQuery("SELECT s." + ObjectKeys.FIELD_ID + ", s." + 
+							ObjectKeys.FIELD_USER_DISKSPACEUSED + ", s." + 
+							ObjectKeys.FIELD_USER_DISKQUOTA + 
+							" FROM org.kablink.teaming.domain.Principal s WHERE s." + 
+							ObjectKeys.FIELD_ZONE + " = " + RequestContextHolder.getRequestContext().getZoneId() +
+							" AND s." + ObjectKeys.FIELD_USER_DISKQUOTA + " IS NOT NULL " +
+							" AND (s." + ObjectKeys.FIELD_USER_DISKSPACEUSED + " >= s." + ObjectKeys.FIELD_USER_DISKQUOTA + " * 1024 * 1024 )");
+					l = q.list();
+					
+				} catch(Exception e) {
+					System.out.println("Unable to query for quotas: " +  e.getMessage());
+				}
+				return l;
+			}});
+		
+		for(int i=0; i< results.size(); i++) {
+			Object[] result = (Object[]) results.get(i);
+			HashMap<String,Object> row = new HashMap<String,Object>();
+				row.put(ReportModule.USER_ID, (Long)result[0]);
+				row.put(ReportModule.DISK_SPACE_USED, (Long)result[1]);
+				row.put(ReportModule.DISKQUOTA, (Long)result[2] * 1024 * 1024);
 
+				report.add(row);
+			}
+
+		return report;
+	}
+	
+	public List<Map<String,Object>> generateExceededHighWaterDiskQuotaReport() {
+		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+		
+		final int highWaterPercentage = Integer.valueOf(SPropsUtil.getInt("disk.quotas.highwater.percentage", 90));
+		
+		List results = null;
+		results = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				List l = null;
+				try {
+					Query q = session.createQuery("SELECT s." + ObjectKeys.FIELD_ID + ", s." + 
+							ObjectKeys.FIELD_USER_DISKSPACEUSED + ", s." + 
+							ObjectKeys.FIELD_USER_DISKQUOTA + 
+							" FROM org.kablink.teaming.domain.Principal s WHERE s." + 
+							ObjectKeys.FIELD_ZONE + " = " + RequestContextHolder.getRequestContext().getZoneId() +
+							" AND s." + ObjectKeys.FIELD_USER_DISKQUOTA + " IS NOT NULL " +
+							" AND (s." + ObjectKeys.FIELD_USER_DISKSPACEUSED + " >= s." + ObjectKeys.FIELD_USER_DISKQUOTA + " * 1024 * 1024 " +
+							" * " + highWaterPercentage + " / 100 )");
+					l = q.list();
+					
+				} catch(Exception e) {
+					System.out.println("Unable to query for quotas: " +  e.getMessage());
+				}
+				return l;
+			}});
+		
+		for(int i=0; i< results.size(); i++) {
+			Object[] result = (Object[]) results.get(i);
+			HashMap<String,Object> row = new HashMap<String,Object>();
+				row.put(ReportModule.USER_ID, (Long)result[0]);
+				row.put(ReportModule.DISK_SPACE_USED, (Long)result[1]);
+				row.put(ReportModule.DISKQUOTA, (Long)result[2] * 1024 * 1024);
+
+				report.add(row);
+			}
+
+		return report;
+	}
+
+	public List<Map<String,Object>> generateUserDiskUsageReport(final UserQuotaOption option) {
+		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+		List results = null;
+		results = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				String orderBy = "modification_date ASC";
+				if ( option != UserQuotaOption.Age) { 
+					orderBy = "fileLength DESC"; 
+				}
+				
+				List l = null;
+				try {
+					String sql ="Select creation_principal, fileLength, modification_date " +
+					" FROM SS_Attachments " + 
+					"WHERE creation_principal = " + RequestContextHolder.getRequestContext().getUser().getId() + 
+					" AND zoneId = " + RequestContextHolder.getRequestContext().getZoneId() +
+					" AND repositoryName != \'" + ObjectKeys.FI_ADAPTER + "\'" + 
+					" ORDER BY " + orderBy;
+					
+					SQLQuery s = session.createSQLQuery(sql);
+					l = s.list();
+					
+				} catch(Exception e) {
+					System.out.println("Unable to query for quotas: " +  e.getMessage());
+				}
+				return l;
+			}});
+		
+		for(int i=0; i< results.size(); i++) {
+			Object[] result = (Object[]) results.get(i);
+			HashMap<String,Object> row = new HashMap<String,Object>();
+				row.put(ReportModule.USER_ID, ((BigDecimal)result[0]).longValue());
+				row.put(ReportModule.SIZE, ((BigDecimal)result[1]).longValue());
+				row.put(ReportModule.CREATIONDATE, (Date)result[2]);
+
+				report.add(row);
+			}
+
+		return report;
+	}
 	@SuppressWarnings("unchecked")
 	public List<LicenseStats> generateLicenseReport(final Date startDate, final Date endDate) {
 		getAdminModule().checkAccess(AdminOperation.report);

@@ -440,6 +440,9 @@ public interface ObjectKeys {
     public static final String FIELD_USER_LOCALE="locale";
     public static final String FIELD_USER_MINIBLOGID="miniBlogId";
     public static final String FIELD_USER_DISKQUOTA="diskQuota";
+    public static final String FIELD_CREATION_PRINCIPAL="creation_principal";
+    public static final String FIELD_FILE_LENGTH="fileLength";
+    public static final String FIELD_MODIFICATION_DATE="modification_date";
     public static final String FIELD_USER_DISKSPACEUSED="diskSpaceUsed";
     public static final String FIELD_USER_SKYPEID="skypeId";
     public static final String FIELD_USER_TWITTERID="twitterId";

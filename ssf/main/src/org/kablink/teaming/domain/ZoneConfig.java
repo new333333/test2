@@ -40,6 +40,9 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Integer upgradeVersion=ZONE_LATEST_VERSION; 
 	private AuthenticationConfig authenticationConfig;
 	private Boolean mobileAccessEnabled; // access="field"
+	private Boolean diskQuotasEnabled;
+	private Integer diskQuotaUserDefault;
+	private Integer diskQuotasHighwaterPercentage;
 	private MailConfig mailConfig;
 	public ZoneConfig()
 	{
@@ -74,6 +77,40 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	}
 	public void setMobileAccessEnabled(boolean mobileAccessEnabled) {
 		this.mobileAccessEnabled = Boolean.valueOf(mobileAccessEnabled);
+	}
+	
+	public Boolean isDiskQuotaEnabled() {
+		if (diskQuotasEnabled != null)
+			return diskQuotasEnabled.booleanValue();
+		else
+			return false; // default value
+	}
+	
+	public void setDiskQuotasEnabled(Boolean diskQuotasEnabled) {
+		this.diskQuotasEnabled = Boolean.valueOf(diskQuotasEnabled);
+	}
+	
+	public Integer getDiskQuotasHighwaterPercentage() {
+		if (diskQuotasHighwaterPercentage != null)
+			return diskQuotasHighwaterPercentage.intValue();
+		else
+			return 90; // default value
+	}
+	
+	public void setDiskQuotasHighwaterPercentage(
+			Integer diskQuotasHighwaterPercentage) {
+		this.diskQuotasHighwaterPercentage = diskQuotasHighwaterPercentage;
+	}
+	
+	public Integer getDiskQuotaUserDefault() {
+		if (diskQuotaUserDefault != null)
+			return diskQuotaUserDefault.intValue();
+		else
+			return 100; // default value in Megabytes
+	}
+	
+	public void setDiskQuotaUserDefault(Integer diskQuotaUserDefault) {
+		this.diskQuotaUserDefault = diskQuotaUserDefault;
 	}
 	
 	public MailConfig getMailConfig() {

@@ -79,6 +79,9 @@ public interface ReportModule {
 	public static final String ACTIVITY_TYPE = "activity_type";
 	public static final String ACTIVITY_ENTRY_ID = "activity_entry_id";
 	public static final String ACTIVITY_ENTITY_TYPE = "activity_entity_type";
+	public static final String DISKQUOTA = "disk_quota";
+	public static final String DISK_SPACE_USED = "disk_space_used";
+	public static final String CREATIONDATE = "creation_date";
 	
 	public static final Integer USER_ID_INDEX = 0;
 	public static final Integer LAST_LOGIN_INDEX = 1;
@@ -117,6 +120,7 @@ public interface ReportModule {
 	};
 	
 	public enum QuotaOption { UsersOnly, WorkspacesOnly, UsersAndWorkspaces };
+	public enum UserQuotaOption {FileLength, Age};
 	
 	public void addAuditTrail(AuditTrail auditTrail);
 	public void addAuditTrail(AuditTrail.AuditType type, User user, DefinableEntity entity);
@@ -137,6 +141,9 @@ public interface ReportModule {
 	public List<Map<String,Object>> generateWorkflowStateReport(Collection ids, Date startDate, Date endDate);
 	public List<Map<String,Object>> generateWorkflowStateCountReport(Collection ids);
 	public List<Map<String, Object>> generateQuotaReport(QuotaOption option, Long threshold);
+	public List<Map<String, Object>> generateExceededDiskQuotaReport();
+	public List<Map<String, Object>> generateExceededHighWaterDiskQuotaReport();
+	public List<Map<String, Object>> generateUserDiskUsageReport(UserQuotaOption option);
 	public List<Map<String, Object>> generateAccessReportByUser(final Long userId, final Date startDate, final Date endDate, final String reportType);
 
 	public List<LicenseStats> generateLicenseReport(Date startDate, Date endDate);
