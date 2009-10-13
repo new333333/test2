@@ -184,14 +184,14 @@ $(document).ready(function(){
 
 
 	$(".search").click(function () {
- 	$("#search-dialog").slideDown("fast");
+ 	$("#search-dialog").slideDown("normal");
  });
 	$("#search-ok, #search-cancel").click(function () {
  	$("#search-dialog").slideUp("normal");
  });
 
 	$(".hierarchy-a").click(function () {
- 	$("#hierarchy-dialog").slideDown("fast");
+ 	$("#hierarchy-dialog").slideDown("normal");
  });
 	$("#hierarchy-ok, #hierarchy-cancel").click(function () {
  	$("#hierarchy-dialog").slideUp("normal");
@@ -203,13 +203,13 @@ $(document).ready(function(){
 //toggle dialog content/edit
 
 	$(".actions-a").click(function () {
- 	$("#actions-menu").slideDown("fast");
+ 	$("#actions-menu").slideDown("normal");
  });
 	$("#actions-menu-close").click(function () {
  	$("#actions-menu").slideUp("normal");
  });
 	$(".micro-blog-a").click(function () {
- 	$("#micro-blog-edit").slideDown("fast");
+ 	$("#micro-blog-edit").slideDown("normal");
  });
 	$("#micro-blog-post, #micro-blog-cancel").click(function () {
  	$("#micro-blog-edit").slideUp("normal");

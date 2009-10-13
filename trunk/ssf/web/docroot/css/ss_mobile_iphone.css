@@ -94,7 +94,7 @@ span.pad-left20 {
 .action-dialog { 
 	position: absolute; 
 	display: none;
-	top: 0px; 
+	top: 38px; 
 	left: 0px;
 	padding: 10px;
 	width: 100%;
