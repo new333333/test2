@@ -30,9 +30,10 @@
 {
 	background-color: #EBECA5;
 	border: 1px solid #CCCCCC;
-	padding: 2px;
+	padding: 1px;
+	padding-right: 4px;
 	white-space: nowrap;
-	width: 37px;
+	width: 25px;
 }
 
 /* Styles used with the "edit" anchor in the Edit-Delete control. */
@@ -46,7 +47,7 @@
 .editDeleteWrapperPanel
 {
 	cursor: default;
-	height: 20px;
+	height: 15px;
 	margin-left: 0.5em;
 	position: relative;
 }
