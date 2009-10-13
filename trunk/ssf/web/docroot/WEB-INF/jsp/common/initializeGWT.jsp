@@ -41,17 +41,21 @@
 
 <meta name="gwt:property" content="locale=<%= NLT.get( "Teaming.Lang" ) %>">
 
+
 <% /* Tell SmartGWT where to find its stuff. */ %>
 <script type="text/javascript">
-	var isomorphicDir="<html:rootPath />js/gwt/gwtteaming/sc/";
-	var currentSkin= "<%= smartGwtSkin %>";
+	<% /* When we start using SmartGWT, uncomment the following 2 lines. */ %>
+	// var isomorphicDir="<html:rootPath />js/gwt/gwtteaming/sc/";
+	// var currentSkin= "<%= smartGwtSkin %>";
 </script>
-<script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/initsc.js"                ></script>
-<script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_Core.js"      ></script>
-<script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_Foundation.js"></script>
-<script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_Containers.js"></script>
-<script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_Forms.js"     ></script>
-<script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_Grids.js"     ></script>
+
+<% /* When we start using SmartGWT uncomment the following 6 lines. */ %>
+<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/initsc.js"                ></script> -->
+<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_Core.js"      ></script> -->
+<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_Foundation.js"></script> -->
+<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_Containers.js"></script> -->
+<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_Forms.js"     ></script> -->
+<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_Grids.js"     ></script> -->
 
 <% /* Optional SmartGWT components, uncomment as needed. */ %>
 <!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_Calendar.js"      ></script> -->
@@ -62,4 +66,5 @@
 <!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_RichTextEditor.js"></script> -->
 <!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_SalesForce.js"    ></script> -->
 
-<script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/skins/<%= smartGwtSkin %>/load_skin.js"></script>
+<% /* When we start using SmartGWT uncomment the following line. */ %>
+<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/skins/<%= smartGwtSkin %>/load_skin.js"></script> -->
