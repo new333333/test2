@@ -42,7 +42,7 @@
 <div style="padding-top:15px;">
 <hr width="80%"></hr>
 <c:if test="${!empty property_caption}">
-<span class="ss_bold">${property_caption}</span>
+<span class="entry-caption">${property_caption}</span>
 <br/>
 </c:if>
 

@@ -32,23 +32,8 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% //Description view %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${!empty ssDefinitionEntry.description.text}">
-<c:set var="textFormat" value=""/>
-<c:if test="${!empty ssDefinitionEntry.description.format}">
-  <c:set var="textFormat" value="${ssDefinitionEntry.description.format}"/>
-</c:if>
+<% //Text view %>
 <div class="entry-content">
- <c:if test="${textFormat == '2'}">
-   <pre>${ssDefinitionEntry.description.text}</pre>
- </c:if>
- <c:if test="${textFormat != '2'}">
-   <span>
-     <ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" 
-     >${ssDefinitionEntry.description.text}</ssf:markup>
-   </span>
- </c:if>
- <div class="ss_clear"></div>
+  <div class="entry-caption"><c:out value="${property_caption}" /></div>
+  <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}" escapeXml="false"/>
 </div>
-</c:if>

@@ -34,8 +34,8 @@
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<div class="ss_entryContent">
-	<div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
+<div class="entry-content">
+	<div class="entry-caption"><c:out value="${property_caption}"/></div>
 	<div>
 	  <span><ssf:nlt tag="mobile.noSurveyView"/></span>
 	</div>

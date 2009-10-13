@@ -37,8 +37,8 @@
 <jsp:useBean id="grouplist_entry" type="org.kablink.teaming.domain.Entry" />
 
 <c:if test="${empty ss_element_display_style}">
-<div class="ss_entryContent">
-<span class="ss_labelLeft"><c:out value="${property_caption}" /></span><br/>
+<div class="entry-content">
+<span class="entry-caption"><c:out value="${property_caption}" /></span><br/>
 <c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(grouplist_entry.getCustomAttribute(property_name)) %>" >
 <ssf:showGroup group="${selection}" /><br/>
 </c:forEach>
@@ -49,7 +49,7 @@
     ss_element_display_style == 'tableAlignLeft'}">
 <tr>
   <td class="ss_table_spacer_right" valign="top" align="right">
-    <span class="ss_mobile_light"><c:out value="${property_caption}" /></span>
+    <span class="entry-caption"><c:out value="${property_caption}" /></span>
   </td>
   <td valign="top" align="left">
 	<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(grouplist_entry.getCustomAttribute(property_name)) %>" >

@@ -33,29 +33,13 @@
  */
 %>
 <% //Textarea view %>
-<c:if test="${empty ss_element_display_style}">
-<div class="ss_entryContent">
+<div class="entry-content">
 <c:if test="${!empty property_caption}">
- <div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
+ <div class="entry-caption"><c:out value="${property_caption}"/></div>
 </c:if>
- <div class="ss_mobile_description">
+ <div>
 <span><ssf:markup entity="${ssDefinitionEntry}">${ssDefinitionEntry.customAttributes[property_name].value.text}</ssf:markup></span>
-<div class="ss_clear"></div>
+<div style="clear: both;"></div>
  </div>
 </div>
-</c:if>
 
-<c:if test="${!empty ss_element_display_style && 
-    ss_element_display_style == 'tableAlignLeft'}">
-<tr>
-  <td class="ss_table_spacer_right" valign="top" align="right">
-    <span class="${ss_element_display_style_caption}"><c:out value="${property_caption}" /></span>
-  </td>
-  <td valign="top">
-    <div class="ss_entryContent ss_mobile_description">
-     <span><ssf:markup type="view" entity="${ssDefinitionEntry}">${ssDefinitionEntry.customAttributes[property_name].value.text}</ssf:markup></span>
-     <div class="ss_clear"></div>
-    </div>
-  </td>
-</tr>
-</c:if>

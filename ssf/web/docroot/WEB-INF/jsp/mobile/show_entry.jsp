@@ -37,41 +37,35 @@
   <c:set var="ss_windowTitle" value="${ssEntry.title}" scope="request"/>
 </c:if>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-<div id="wrapper">
+
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
 
-<div id="pagebody">
-	<div class="ss_mobile_breadcrumbs">
-	//<a href="<ssf:url adapter="true" portletName="ss_forum" 
-		folderId="${ssBinder.id}" 
-		action="__ajax_mobile" operation="mobile_show_folder" 
-		actionUrl="false" />">${ssBinder.title}</a>
-	</div>
-	
-	<div align="right">
-	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+<div class="content">
+
+<%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
+
+  <div class="folders">
+    <div class="folder-content">
+
+	  <div align="right">
+	    <a href="<ssf:url adapter="true" portletName="ss_forum" 
 						folderId="${ssBinder.id}" 
 						entryId="${ssEntry.id}"
 						action="__ajax_mobile" 
 						operation="mobile_show_prev_entry" 
 						actionUrl="false" />">
-	    <span class="ss_mobile_small"><ssf:nlt tag="nav.prevEntry"/></span>
-	  </a>&nbsp;&nbsp;&nbsp;<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	      <span class="ss_mobile_small"><ssf:nlt tag="nav.prevEntry"/></span>
+	    </a>&nbsp;&nbsp;&nbsp;<a href="<ssf:url adapter="true" portletName="ss_forum" 
 						folderId="${ssBinder.id}" 
 						entryId="${ssEntry.id}"
 						action="__ajax_mobile" 
 						operation="mobile_show_next_entry" 
 						actionUrl="false" />">
-	    <span class="ss_mobile_small"><ssf:nlt tag="nav.nextEntry"/></span>
-	  </a>
-	</div>
+	      <span class="ss_mobile_small"><ssf:nlt tag="nav.nextEntry"/></span>
+	    </a>
+	  </div>
 	
 	<c:if test="${!empty ssEntry}">
-		<div class="pagebody">
-		  <div id="favorites">
-		    <span>${ssEntry.title}</span>
-		  </div>
-		  <div class="pagebody_border">
 			<div align="center">
 			  <table>
 			  <tr>
@@ -123,7 +117,10 @@
 			</tr>
 			</table>
 			</div>
-	
+			
+		<div class="entry">
+		  <div class="entry-comment-label">${ssEntry.totalReplyCount}</div>
+
 	  		<div style="padding: 4px 6px;">
 			  <c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
 			  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
@@ -131,20 +128,9 @@
 				configJspStyle="mobile" 
 				entry="${ssEntry}" />
 			</div>
-		  </div>
 		</div>
 	</c:if> 
-	
-	<div class="ss_mobile_breadcrumbs ss_mobile_small">
-	<a href="<ssf:url adapter="true" portletName="ss_forum" 
-		folderId="${ssBinder.id}"
-		action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />"
-		><ssf:nlt tag="mobile.returnToParentFolder"/></a>
-	</div>
-
-</div>
-
-<%@ include file="/WEB-INF/jsp/mobile/footer.jsp" %>
+  </div>	
 </div>
 
 </body>
