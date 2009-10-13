@@ -338,7 +338,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		if (searchText) {
 			text = searchText;
 		}
-		if (text.trim() != lastText.trim()) {
+		if (ss_trim(text) != ss_trim(lastText)) {
 			pageNumber = 0;
 			pageNumberBefore = 0;
 		}

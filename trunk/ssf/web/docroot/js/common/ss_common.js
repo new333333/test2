@@ -6304,8 +6304,8 @@ function ssEditAppConfig(menuDIV) {
 			sID = String( eTR.n_id );
 			
 			eSELECT             = document.getElementById("extensionSELECT_" + sID);
-			dataA[dataA.length] = eSELECT.options[eSELECT.selectedIndex].text.trim();
-			dataA[dataA.length] = document.getElementById("applicationINPUT_" + sID).value.trim();
+			dataA[dataA.length] = ss_trim(eSELECT.options[eSELECT.selectedIndex].text);
+			dataA[dataA.length] = ss_trim(document.getElementById("applicationINPUT_" + sID).value);
 		}
 		
 		
@@ -6739,8 +6739,8 @@ function ssEditAppConfig(menuDIV) {
 		if ((null == ext1) || (null == ext2)) {
 			return(ext1 == ext2);
 		}
-		ext1 = ext1.trim();
-		ext2 = ext2.trim();
+		ext1 = ss_trim(ext1);
+		ext2 = ss_trim(ext2);
 		if ((0 == ext1.length) || (0 == ext2.length)) {
 			return(ext1 == ext2);
 		}
@@ -6989,7 +6989,7 @@ function ssEditAppConfig(menuDIV) {
 
 			// Does this row contain an application?			
 			eINPUT1 = document.getElementById("applicationINPUT_" + sID1);
-			sAPP1   = eINPUT1.value.trim();
+			sAPP1   = ss_trim(eINPUT1.value);
 			if ((null == sAPP1) || (0 == sAPP1.length)) {
 				// No!  Tell the user about the problem and bail.
 				alert(this.strings['sidebar.appConfig.Error.ApplicationMissing']);
@@ -8241,6 +8241,15 @@ function ss_resetSessionTimeoutTimer2(obj) {
 		ss_startSessionTimoutTimer(maxInactiveInterval);
 	}
 }
+function ss_trim(str) {
+    //skip leading and trailing whitespace
+    //and return everything in between
+    var x=str;
+    x=x.replace(/^\s*(.*)/, "$1");
+    x=x.replace(/(.*?)\s*$/, "$1");
+    return x;
+};
+
 dojo.require("dijit.dijit");
 dojo.require("dojo.fx");
 dojo.require("dojo.io.iframe");
