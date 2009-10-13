@@ -599,8 +599,11 @@ public class FindCtrl extends Composite
 			if ( tmp == null )
 				tmp = "";
 			
-			// Append the wildcard character '*'.
-			tmp += "*";
+			if ( tmp.length() > 0 )
+			{
+				// Append the wildcard character '*'.
+				tmp += "*";
+			}
 			
 			// Issue an ajax request to do a search based on the text entered by the user.
 			m_searchCriteria.setPageNumber( 0 );
