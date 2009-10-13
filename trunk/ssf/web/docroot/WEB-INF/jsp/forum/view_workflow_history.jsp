@@ -139,14 +139,24 @@
 				
 				<td class="ss_table_data_TD" valign="top">
 				  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
-					  ${workflow.value.attributes.threadCaption}&nbsp
+					  <c:if test="${!empty workflow.value.attributes.threadCaption}">
+					    ${workflow.value.attributes.threadCaption}&nbsp
+					  </c:if>
+					  <c:if test="${empty workflow.value.attributes.threadCaption}">
+					    ${workflow.value.attributes.thread}&nbsp
+					  </c:if>
 					<br>
 				  </c:forEach>
 				</td>
 				
 				<td class="ss_table_data_TD" valign="top">
 				  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
-					  ${workflow.value.attributes.stateCaption}&nbsp
+					  <c:if test="${!empty workflow.value.attributes.stateCaption}">
+					    ${workflow.value.attributes.stateCaption}&nbsp
+					  </c:if>
+					  <c:if test="${empty workflow.value.attributes.stateCaption}">
+					    ${workflow.value.attributes.name}&nbsp
+					  </c:if>
 					<br>
 				  </c:forEach>
 				</td>
