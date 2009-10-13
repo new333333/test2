@@ -89,6 +89,7 @@ import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.UserPropertiesPK;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.jobs.BinderReindex;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -126,6 +127,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
 	private static final int DEFAULT_MAX_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
+	private final static long MEGABYTES = 1024L * 1024L;
 	private String[] userDocType = {Constants.ENTRY_TYPE_USER};
 	private String[] groupDocType = {Constants.ENTRY_TYPE_GROUP};
 	private String[] applicationDocType = {Constants.ENTRY_TYPE_APPLICATION};
@@ -561,6 +563,34 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			User user = (User)getProfileDao().loadUser(id, RequestContextHolder.getRequestContext().getZoneId());
 			user.setDiskQuota(megabytes);
      	}
+	}
+   
+   public int checkDiskQuota()  {  
+		// first check properties to see if quotas are enabled on this system
+   	ZoneConfig zoneConf = getCoreDao().loadZoneConfig(
+				RequestContextHolder.getRequestContext()
+				.getZoneId());
+   	if (zoneConf.isDiskQuotaEnabled()) {
+   		User user = RequestContextHolder.getRequestContext().getUser();
+			long userQuota = zoneConf.getDiskQuotaUserDefault();
+
+			//User user = RequestContextHolder.getRequestContext().getUser();
+
+			if (getDiskQuota() != 0L)
+				userQuota = getDiskQuota();
+
+			userQuota = userQuota * MEGABYTES;
+			
+			long highWaterMark = zoneConf.getDiskQuotasHighwaterPercentage();
+			double waterMark = (highWaterMark * userQuota) / 100.0;
+
+			if (user.getDiskSpaceUsed() > userQuota) {
+				return ObjectKeys.DISKQUOTA_EXCEEDED;
+			} else if (user.getDiskSpaceUsed() > waterMark) {
+				return ObjectKeys.DISKQUOTA_HIGHWATERMARK_EXCEEDED;
+			}
+		}
+		return ObjectKeys.DISKQUOTA_OK;
 	}
    
    //RO transaction

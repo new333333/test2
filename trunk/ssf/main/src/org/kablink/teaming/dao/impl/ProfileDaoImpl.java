@@ -1516,7 +1516,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 						String sql ="Update SS_Principals " +
 									"SET diskSpaceUsed = " + 
 									"COALESCE((SELECT SUM(fileLength) FROM SS_Attachments AS b " +
-									"WHERE b.creation_principal = SS_Principals.id),0)";
+									"WHERE b.creation_principal = SS_Principals.id " + 
+									"AND b.repositoryName != \'" + ObjectKeys.FI_ADAPTER + "\'),0)";
 						session.createSQLQuery(sql).executeUpdate();
 						return null;
 					}

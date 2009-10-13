@@ -64,7 +64,7 @@ import org.kablink.util.Validator;
  */
 public class User extends UserPrincipal implements IndividualPrincipal {
 	private final static int	WORK_DAY_START_DEFAULT	= 8;	// Original default was 6 in ss_calendar.js.
-	private final static long	MEGABYTES				= 1024L * 1024L;
+	
 	
     protected String firstName="";//set by hibernate access="field"
     protected String middleName="";//set by hibernate access="field"
@@ -498,28 +498,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     	return false;
     }
     
-    public int diskQuotaCheck()  {
-		// first check properties to see if quotas are enabled on this system
-		if (SPropsUtil.getBoolean("disk.quotas.enabled", true)) {
-			long userQuota = SPropsUtil.getLong("disk.quota.user.default", 1);
 
-			//User user = RequestContextHolder.getRequestContext().getUser();
-
-			if (getDiskQuota() != 0L)
-				userQuota = getDiskQuota();
-
-			userQuota = userQuota * MEGABYTES;
-			
-			long highWaterMark = SPropsUtil.getInt("disk.quotas.highwater.percentage", 90);
-			double waterMark = (highWaterMark * userQuota) / 100.0;
-
-			if (getDiskSpaceUsed() > userQuota) {
-				return ObjectKeys.DISKQUOTA_EXCEEDED;
-			} else if (getDiskSpaceUsed() > waterMark) {
-				return ObjectKeys.DISKQUOTA_HIGHWATERMARK_EXCEEDED;
-			}
-		}
-		return ObjectKeys.DISKQUOTA_OK;
-	}
 
 }

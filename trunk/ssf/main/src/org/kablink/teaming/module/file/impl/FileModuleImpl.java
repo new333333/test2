@@ -76,6 +76,7 @@ import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.FileAttachment.FileLock;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -1014,9 +1015,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
    		}
    		
 //   	 decrement disk space used for each version as well as the primary
-   		if (SPropsUtil.getBoolean("disk.quotas.enabled", true)) {
+   		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(
+				RequestContextHolder.getRequestContext()
+				.getZoneId());
+   		if (zoneConf.isDiskQuotaEnabled()) {
    			for(Iterator i = fAtt.getFileVersionsUnsorted().iterator(); i.hasNext();) {
    				VersionAttachment v = (VersionAttachment) i.next();
+   				if (v.getRepositoryName().equalsIgnoreCase(ObjectKeys.FI_ADAPTER)) break;
    				User user = getProfileDao().loadUser(v.getCreation().getPrincipal().getId(), RequestContextHolder.getRequestContext().getZoneName());
    				user.decrementDiskSpaceUsed(v.getFileItem().getLength());
    			}
@@ -1207,7 +1212,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
             		changes = new ChangeLog(entry, ChangeLog.FILEMODIFY);
             	
             	// add the size of the file to the users disk usage
-            	if (SPropsUtil.getBoolean("disk.quotas.enabled", true)) {
+            	ZoneConfig zoneConf = getCoreDao().loadZoneConfig(
+        				RequestContextHolder.getRequestContext()
+        				.getZoneId());
+            	if (zoneConf.isDiskQuotaEnabled() && !fAtt.getRepositoryName().equalsIgnoreCase(ObjectKeys.FI_ADAPTER)) {
             		User user = RequestContextHolder.getRequestContext().getUser();
             		user.incrementDiskSpaceUsed(fAtt.getFileItem().getLength());
             	}
@@ -1555,8 +1563,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	private void checkQuota(long fileSize) throws RepositoryServiceException {
 		// first check properties to see if quotas is enabled on this system
-		if (SPropsUtil.getBoolean("disk.quotas.enabled", false)) {
-			long userQuota = SPropsUtil.getLong("disk.quota.user.default", 100);
+		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(
+				RequestContextHolder.getRequestContext()
+				.getZoneId());
+		if (zoneConf.isDiskQuotaEnabled()) {
+			long userQuota = zoneConf.getDiskQuotaUserDefault();
 
 			User user = RequestContextHolder.getRequestContext().getUser();
 

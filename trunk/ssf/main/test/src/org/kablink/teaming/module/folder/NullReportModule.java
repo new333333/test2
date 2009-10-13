@@ -49,6 +49,7 @@ import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.module.report.ReportModule;
+import org.kablink.teaming.module.report.ReportModule.UserQuotaOption;
 
 public class NullReportModule implements ReportModule {
 
@@ -127,6 +128,19 @@ public class NullReportModule implements ReportModule {
 	public List<Map<String,Object>> generateQuotaReport(QuotaOption option, Long threshold) {
 		return null;
 	}
+	
+	public List<Map<String,Object>> generateExceededDiskQuotaReport() {
+		return null;
+	}
+	
+	public List<Map<String,Object>> generateExceededHighWaterDiskQuotaReport() {
+		return null;
+	}
+	
+	public List<Map<String,Object>> generateUserDiskUsageReport(final UserQuotaOption option){
+		return null;
+	}
+	
 	public boolean testAccess(FolderEntry entry, String operation) {
 		// TODO Auto-generated method stub
 		return false;
