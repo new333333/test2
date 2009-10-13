@@ -40,9 +40,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("sidebar.history") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-<%
-	Map entriesSeen = new HashMap();
-%>
+
 <c:set var="ss_pageTitle" value='<%= NLT.get("sidebar.history") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
 

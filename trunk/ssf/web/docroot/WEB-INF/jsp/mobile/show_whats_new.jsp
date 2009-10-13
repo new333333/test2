@@ -34,16 +34,26 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ss_windowTitle" value='<%= NLT.get("toolbar.menu.whatsNew") %>' scope="request"/>
+<c:set var="ss_windowTitle" value='<%= NLT.get("mobile.whatsNew") %>' scope="request"/>
+<c:set var="ss_pageTitle2" value="mobile.whatsNewIn" />
+<c:if test="${ss_type == 'unseen'}">
+  <c:set var="ss_windowTitle" value='<%= NLT.get("mobile.whatsUnread") %>' scope="request"/>
+  <c:set var="ss_pageTitle2" value="mobile.whatsUnreadIn" />
+</c:if>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-<div id="wrapper">
-<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
-<div id="pagebody">
 
-<div class="pagebody">
-  <div id="favorites">
-	  <span>
-	    <ssf:nlt tag="mobile.whatsNewIn">
+<c:set var="ss_pageTitle" value="${ss_windowTitle}" scope="request"/>
+<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
+
+<div class="content">
+
+<%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
+
+  <div class="folders">
+    <div class="folder-content">
+      <div class="folder-head">
+	   <span>
+	    <ssf:nlt tag="${ss_pageTitle2}">
 	      <ssf:param name="value" useBody="true">
 	        <a href="<ssf:url adapter="true" 
 	        		portletName="ss_forum" 
@@ -54,10 +64,10 @@
 			><c:out value="${ssBinder.title}" escapeXml="true"/></a>
 	      </ssf:param>
 	    </ssf:nlt>
-	  </span>
-  </div>
-  <div class="pagebody_border">
-    
+	   </span>      
+	  </div>
+
+
 	  <div style="padding:10px 20px 14px 0px;" align="right">
 		<c:if test="${ss_pageNumber > '0'}">
 			<a href="<ssf:url 
@@ -100,10 +110,10 @@
 		<c:if test="${empty ss_whatsNewBinder && (empty ss_pageNumber || ss_pageNumber <= '0')}">
 		  <span style="padding:10px;" class="ss_italic"><ssf:nlt tag="whatsnew.noEntriesFound"/></span>
 		</c:if>
-		<ul>
-	      <c:forEach var="entryWn" items="${ss_whatsNewBinder}">
+
+	    <c:forEach var="entryWn" items="${ss_whatsNewBinder}">
 	    	<jsp:useBean id="entryWn" type="java.util.Map" />
-	    	<li>
+			<div class="folder-item">
 			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				folderId="${entryWn._binderId}"  entryId="${entryWn._docId}"
 				action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />"
@@ -162,9 +172,8 @@
 		  	    </div>
 			  </c:if>
 		
-	    	</li>
+	    	</div>
           </c:forEach>
-        </ul>
   
 	  <div style="padding:14px 0px 10px 20px;">
 		<c:if test="${ss_pageNumber > '0'}">
@@ -201,25 +210,8 @@
 				<ssf:alt tag=""/> />
 		</c:if>
 	  </div>
-  </div>
-</div>  
-
-  <div class="ss_mobile_breadcrumbs ss_mobile_small">
-	  <c:if test="${ssBinder.entityIdentifier.entityType == 'folder'}">
-		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-			action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false"
-			binderId="${ssBinder.id}" />"
-			><ssf:nlt tag="mobile.currentFolder"/></a>
-	  </c:if>
-	  <c:if test="${ssBinder.entityIdentifier.entityType == 'workspace'}">
-		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-			action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false"
-			binderId="${ssBinder.id}" />"
-			><ssf:nlt tag="mobile.currentWorkspace"/></a>
-	  </c:if>
-  </div>
-</div>  
-<%@ include file="/WEB-INF/jsp/mobile/footer.jsp" %>
+    </div>
+  </div>  
 
 </div>
 </body>
