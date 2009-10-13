@@ -52,7 +52,7 @@
 
 <c:if test="${!empty ss_thisWasTurnedOff}">
 <c:if test="${!empty ssDefinitionEntry.modification.principal && 
-  ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
+  ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}"> 
 <table style="padding-left: 12px;" cellspacing="0" cellpadding="0">
  <tr>
   <td>

@@ -35,9 +35,7 @@
 <% //View a mobile entry %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<div id="wrapper">
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
   configJspStyle="${ssConfigJspStyle}" 
   entry="${ssDefinitionEntry}" />
-</div>

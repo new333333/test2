@@ -55,8 +55,8 @@
 
 <% if (0 < externalUserListSet.size()) { %>
 	<c:if test="${empty ss_element_display_style}">
-		<div class="ss_entryContent">
-			<span class="ss_labelLeft"><c:out value="${property_caption}" /></span><br/>
+		<div class="entry-content">
+			<span class="entry-caption"><c:out value="${property_caption}" /></span><br/>
 			<c:forEach var="selection" items="<%= externalUserListSet %>" >
 				<img
 					border="0"
@@ -69,7 +69,7 @@
 	<c:if test="${!empty ss_element_display_style && ss_element_display_style == 'tableAlignLeft'}">
 		<tr>
 			<td class="ss_table_spacer_right" valign="top" align="right">
-				<span class="ss_mobile_light"><c:out value="${property_caption}" /></span>
+				<span class="entry-caption"><c:out value="${property_caption}" /></span>
 			</td>
 			<td valign="top" align="left">
 				<c:forEach var="selection" items="<%= externalUserListSet %>" >

@@ -32,23 +32,21 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% //Description view %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${!empty ssDefinitionEntry.description.text}">
-<c:set var="textFormat" value=""/>
-<c:if test="${!empty ssDefinitionEntry.description.format}">
-  <c:set var="textFormat" value="${ssDefinitionEntry.description.format}"/>
-</c:if>
+<% //Selectbox view %>
+<%@ page import="org.kablink.teaming.web.util.DefinitionHelper" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+
 <div class="entry-content">
- <c:if test="${textFormat == '2'}">
-   <pre>${ssDefinitionEntry.description.text}</pre>
- </c:if>
- <c:if test="${textFormat != '2'}">
-   <span>
-     <ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" 
-     >${ssDefinitionEntry.description.text}</ssf:markup>
-   </span>
- </c:if>
- <div class="ss_clear"></div>
+<span class="entry-caption"><c:out value="${property_caption}" /></span>
+
+<c:forEach var="selection" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}" >
+<%
+	String caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
+											(String) pageContext.getAttribute("selection"));
+	caption = NLT.getDef(caption);
+%>
+<c:set var="caption" value="<%= caption %>"/>
+<div><c:out value="${caption}" escapeXml="false"/></div>
+</c:forEach>
+
 </div>
-</c:if>

@@ -36,14 +36,16 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <div>
 <c:if test="${!empty ssDefinitionEntry.creation.principal}">
+  <span class="entry-author">
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	    action="__ajax_mobile"
 	    operation="mobile_show_workspace"
 	    binderId="${ssDefinitionEntry.creation.principal.workspaceId}" />"
-	  ><span class="ss_mobile_small">${ssDefinitionEntry.creation.principal.title}</span></a>
+	  >${ssDefinitionEntry.creation.principal.title}</a>
+  </span>
   <c:if test="${!empty ssDefinitionEntry.postedBy}">
     <br/>
-    <span class="ss_mobile_small ss_mobile_light" style="padding-left:4px;">
+    <span class="entry-author" style="padding-left:4px;">
       (<ssf:nlt tag="entry.postedBy"/>&nbsp;<c:out value="${ssDefinitionEntry.postedBy}"/>)
     </span>
   </c:if>

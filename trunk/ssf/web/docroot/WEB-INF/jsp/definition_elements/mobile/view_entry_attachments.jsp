@@ -42,9 +42,9 @@ if (isIECheck) strBrowserType = "ie";
 %>
 <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
   <br/>
-  <div class="ss_entryContent">
+  <div class="entry-content">
 	<c:if test="${!empty property_caption}">
-	  <strong>${property_caption}</strong>
+	  <span class="entry-caption">${property_caption}</span>
 	  <br/>
 	</c:if>
 	

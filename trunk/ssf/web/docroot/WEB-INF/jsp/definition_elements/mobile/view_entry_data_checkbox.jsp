@@ -32,23 +32,14 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% //Description view %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${!empty ssDefinitionEntry.description.text}">
-<c:set var="textFormat" value=""/>
-<c:if test="${!empty ssDefinitionEntry.description.format}">
-  <c:set var="textFormat" value="${ssDefinitionEntry.description.format}"/>
-</c:if>
+<% //checkbox view %>
 <div class="entry-content">
- <c:if test="${textFormat == '2'}">
-   <pre>${ssDefinitionEntry.description.text}</pre>
- </c:if>
- <c:if test="${textFormat != '2'}">
-   <span>
-     <ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" 
-     >${ssDefinitionEntry.description.text}</ssf:markup>
-   </span>
- </c:if>
- <div class="ss_clear"></div>
-</div>
+<c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
+<input type="checkbox" checked DISABLED>
 </c:if>
+<c:if test="${!ssDefinitionEntry.customAttributes[property_name].value}" >
+<input type="checkbox" DISABLED>
+</c:if>
+<span class="entry-caption"><c:out value="${property_caption}" /></span>
+
+</div>

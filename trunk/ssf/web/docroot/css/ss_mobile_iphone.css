@@ -308,6 +308,11 @@ span.pad-left20 {
 	color: #666;
 	padding-top: 8px;
 	}
+.entry-caption {
+	font-size: 16px;
+	color: #000;
+	padding-top: 8px;
+	}
 
 .entry-author {
 	font-size: 12px;

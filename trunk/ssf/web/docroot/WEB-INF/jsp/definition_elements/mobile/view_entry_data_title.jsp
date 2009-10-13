@@ -37,7 +37,6 @@
 <jsp:useBean id="title_entry" type="org.kablink.teaming.domain.FolderEntry" />
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <% //Title view %>
-<div class="ss_entryContent">
   <c:if test="${empty ss_title_breadcrumbs_seen && 
                     ssDefinitionEntry.entityType == 'folderEntry' && 
                     !empty ssDefinitionEntry.parentEntry}">
@@ -81,6 +80,8 @@
 	</div>
   </c:if>
   <c:set var="ss_title_breadcrumbs_seen" value="1" scope="request"/>
+
+<div class="entry-title">
   <%
 	  if (!ssSeenMap.checkIfSeen(title_entry)) {
 		%><img border="0" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
@@ -100,8 +101,8 @@
   <c:out value="${ssDefinitionEntry.title}" escapeXml="true" /></span></a>
   <br/>
 
+</div>
 <c:if test="${ss_showSignatureAfterTitle && !ss_signatureShown}">
   <%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_signature2.jsp" %>
   <c:set var="ss_signatureShown" value="true" scope="request"/>
 </c:if>
-</div>

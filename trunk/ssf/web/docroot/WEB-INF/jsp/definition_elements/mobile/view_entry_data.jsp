@@ -49,19 +49,19 @@
 		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" %><%
 
 	} else if (itemType.equals("text")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_text.jsp" %><%
+		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_text.jsp" %><%
 		
 	} else if (itemType.equals("htmlEditorTextarea")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_html_textarea.jsp" %><%
+		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_html_textarea.jsp" %><%
 		
 	} else if (itemType.equals("checkbox")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_checkbox.jsp" %><%
+		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_checkbox.jsp" %><%
 		
 	} else if (itemType.equals("selectbox")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_selectbox.jsp" %><%
+		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_selectbox.jsp" %><%
 		
 	} else if (itemType.equals("radio")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_radio.jsp" %><%
+		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_radio.jsp" %><%
 		
 	} else if (itemType.equals("date")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_date.jsp" %><%
