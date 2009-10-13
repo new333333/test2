@@ -44,199 +44,157 @@
 
 <%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
 
-</div>
-
-
-<div id="pagebody">
-
-<div class="ss_mobile_breadcrumbs">
-<c:if test="${empty ssBinder.parentFolder && !empty ssBinder.parentBinder}">
-//<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	folderId="${ssBinder.parentBinder.id}" 
-	action="__ajax_mobile" operation="mobile_show_workspace" 
-	actionUrl="false" />"><c:out value="${ssBinder.parentBinder.title}" escapeXml="true"/></a>
-<br/>&nbsp;&nbsp;</c:if>
-<c:if test="${!empty ssBinder.parentFolder}">
-//<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	folderId="${ssBinder.parentFolder.id}" 
-	action="__ajax_mobile" operation="mobile_show_folder" 
-	actionUrl="false" />"><c:out value="${ssBinder.parentFolder.title}" escapeXml="true"/></a>
-<br/>&nbsp;&nbsp;</c:if>
-//<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	folderId="${ssBinder.id}" 
-	action="__ajax_mobile" operation="mobile_show_folder" 
-	actionUrl="false" />"><c:out value="${ssBinder.title}" escapeXml="true"/></a>
-</div>
-<br/>
-
-<div class="maincontent background_light">
-  <div id="menu">
-    <ul>
-      <li>
-        <a href="<ssf:url adapter="true" portletName="ss_forum" 
-					action="__ajax_mobile" actionUrl="false" 
-					binderId="${ssBinder.id}"
-					operation="mobile_whats_new" ><ssf:param
-					name="type" value="whatsNew"/></ssf:url>">
-          <span class="ss_bold"><ssf:nlt tag="toolbar.menu.whatsNew"/></span>
-        </a>
-	  </li>
-	  <li>
-        <a href="<ssf:url adapter="true" portletName="ss_forum" 
-					action="__ajax_mobile" actionUrl="false" 
-					binderId="${ssBinder.id}"
-					operation="mobile_whats_new" ><ssf:param
-					name="type" value="unseen"/></ssf:url>">
-          <span class="ss_bold"><ssf:nlt tag="toolbar.menu.whatsUnseen"/></span>
-        </a>
-      </li>
-    </ul>
-  </div>
-</div>
-
-<br/>
-
-<c:if test="${!empty ssFolders}">
-	<div class="pagebody">
-	  <div id="favorites">
-	    <span><ssf:nlt tag="mobile.folders"/></span>
-	  </div>
-	  <div class="pagebody_border">
-		<ul>
-		  <c:forEach var="folder" items="${ssFolders}" >
-			<li>
-			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+  <c:if test="${!empty ssFolders}">
+  <div class="folders">
+    <div class="folder-head">
+      <img class="margin5r" src="<html:imagesPath/>mobile/folder16.gif"/>
+      <ssf:nlt tag="mobile.folders"/>
+    </div>
+	<c:forEach var="folder" items="${ssFolders}" >
+      <div class="folder-item">
+		<a href="<ssf:url adapter="true" portletName="ss_forum" 
 				folderId="${folder.id}" 
 				action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
-			    <c:if test="${empty folder.title}">
-			    	(<ssf:nlt tag="workspace.noTitle"/>)
-			    </c:if>
-				<c:out value="${folder.title}" escapeXml="true"/>
-			  </a>
-			</li>
-		  </c:forEach>
-		</ul>
+		  <c:if test="${empty folder.title}">
+		    (<ssf:nlt tag="folder.noTitle"/>)
+		  </c:if>
+		  <c:out value="${folder.title}" escapeXml="true"/>
+		</a>
 	  </div>
-	</div>
-</c:if>
-
-<div class="pagebody">
-  <div id="favorites">
-    <span><ssf:nlt tag="mobile.entries"/></span>
+	</c:forEach>
+	
   </div>
-  <div class="pagebody_border">
-	<c:if test="${!empty ss_mobileBinderDefUrlList}">
-	  <div align="center">
-	  <form name="addEntryForm" 
+  </c:if>
+
+  <div class="folders">
+    <div class="folder-head">
+      <img class="margin5r" src="<html:imagesPath/>mobile/folder16.gif"/>
+      <ssf:nlt tag="mobile.entries"/>
+    </div>
+    
+
+	<div class="folder-content" width="100%">
+	  <div class="entry">
+		<table cellspacing="0" cellpadding="0" width="95%">
+		<tr>
+		<td valign="middle" width="10%"> </td>
+		<td valign="middle" width="80%" align="center" nowrap>
+	 	<c:if test="${!empty ss_mobileBinderDefUrlList}">
+	  	<div align="center">
+	  	  <form name="addEntryForm" 
 	  		action="<ssf:url adapter="true" portletName="ss_forum" 
 				binderId="${ssBinder.id}" 
 				action="__ajax_mobile" 
 				operation="mobile_add_entry" 
 				actionUrl="true" />" 
 			method="post">
-	  <table>
-	  <tr>
-	  <td valign="top">
-	  <label for="url"><span style="display:none;"><ssf:nlt tag="label.selectOption"/></span></label>
-	  <select name="url" id="url" size="1">
-	    <c:if test="${fn:length(ss_mobileBinderDefUrlList) == 1}">
-		  <c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
-		    <option value="${def.url}"><ssf:nlt tag="button.add"/>: ${def.title}</option>
-		  </c:forEach>
-	    </c:if>
-	    <c:if test="${fn:length(ss_mobileBinderDefUrlList) > 1}">
-	      <option value="">--<ssf:nlt tag="mobile.add"/>--</option>
-		  <c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
-		    <option value="${def.url}">${def.title}</option>
-		  </c:forEach>
+	  		<label for="url"><span style="display:none;"><ssf:nlt tag="label.selectOption"/></span></label>
+	  		<select name="url" id="url" size="1">
+	    	  <c:if test="${fn:length(ss_mobileBinderDefUrlList) == 1}">
+		  	    <c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
+		    	  <option value="${def.url}"><ssf:nlt tag="button.add"/>: ${def.title}</option>
+		  	    </c:forEach>
+	    	  </c:if>
+	    	  <c:if test="${fn:length(ss_mobileBinderDefUrlList) > 1}">
+	      		<option value="">--<ssf:nlt tag="mobile.add"/>--</option>
+		  		<c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
+		    	  <option value="${def.url}">${def.title}</option>
+		  		</c:forEach>
+			  </c:if>
+	  		</select>
+	  		<input type="submit" name="goBtn" value="<ssf:nlt tag="button.ok"/>"/>
+	  	  </form>
+	  	</div>
+	 	</c:if>
+		</td>
+		
+		<td valign="middle" width="10%" nowrap>
+	<c:if test="${ssDefinitionFamily != 'calendar'}">
+		<table cellspacing="0" cellpadding="0"><tr>
+		<td>
+		<c:if test="${!empty ss_prevPage}">
+	    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+		  folderId="${ssBinder.id}" 
+		  action="__ajax_mobile" 
+		  operation="mobile_show_folder" 
+		  actionUrl="false" ><ssf:param name="pageNumber" value="${ss_prevPage}"/></ssf:url>"
+	    ><img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_.gif"/></a>
 		</c:if>
-	  </select>
-	  </td>
-	  <td valign="top">
-	  <input type="submit" name="goBtn" value="<ssf:nlt tag="button.ok"/>"/>
-	  </td>
-	  </tr>
-	  </table>  
-	  </form>
-	  </div>
+		<c:if test="${empty ss_prevPage}">
+	  	<img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_g.gif"
+	  		<ssf:alt tag=""/> />
+		</c:if>
+		</td><td style="padding-left:20px;">
+		<c:if test="${!empty ss_nextPage}">
+	  	<a href="<ssf:url adapter="true" portletName="ss_forum" 
+			folderId="${ssBinder.id}" 
+			action="__ajax_mobile" 
+			operation="mobile_show_folder" 
+			actionUrl="false" ><ssf:param name="pageNumber" value="${ss_nextPage}"/></ssf:url>"
+	  	><img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_.gif"/></a>
+		</c:if>
+		<c:if test="${empty ss_nextPage}">
+	  		<img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_g.gif"
+	  		<ssf:alt tag=""/> />
+		</c:if>
+		</tr></table>
 	</c:if>
 
+		</td></tr>
+		</table>
+	  </div>
+
 	<c:if test="${ssDefinitionFamily != 'calendar'}">
-	<table class="table_list">
-	<c:forEach var="entry1" items="${ssFolderEntries}" >
-	<jsp:useBean id="entry1" type="java.util.HashMap" />
-	 <tr>
- 	  <td class="col1" valign="top" align="right">${entry1._docNum}.</td>
-	  <td>
-		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-			folderId="${ssBinder.id}"  entryId="${entry1._docId}"
-			action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />">
-	    	<c:if test="${empty entry1.title}">
-	    		(<ssf:nlt tag="entry.noTitle"/>)
-	    	</c:if>
-			<c:out value="${entry1.title}" escapeXml="true"/>
-		  </a>
-	  </td>
-	 </tr>
-	</c:forEach>
-	</table>
+	    <c:forEach var="entryFol" items="${ssFolderEntries}">
+	    	<jsp:useBean id="entryFol" type="java.util.Map" />
+			<div class="entry">
+			  <div class="entry-title">
+			    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				  folderId="${entryFol._binderId}"  entryId="${entryFol._docId}"
+				  action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />"
+			    >
+			  	  <span><c:if test="${empty entryFol.title}">--<ssf:nlt tag="entry.noTitle"/>--</c:if>
+			  	    <ssf:makeWrapable><c:out value="${entryFol.title}" escapeXml="true"/></ssf:makeWrapable>
+			  	  </span>
+			    </a>
+			  </div>
+			  <c:if test="${!empty entryFol._totalReplyCount}">
+			    <div class="entry-comment-label">${entryFol._totalReplyCount}</div>
+			  </c:if>
+			  
+			  <div>
+				<span class="entry-author"><img src="<html:rootPath/>images/pics/sym_s_gray_dude.gif" 
+			  	    width="11" height="10" hspace="2" border="0" style="vertical-align:middle" 
+			  	    <ssf:alt tag=""/> /><a href="<ssf:url adapter="true" portletName="ss_forum" 
+				    action="__ajax_mobile"
+				    operation="mobile_show_workspace"
+				    binderId="${entryFol._principal.workspaceId}" />"
+				  ><c:out value="${entryFol._principal.title}" escapeXml="true"/></a></span>
+				<span class="entry-date"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+		          	value="${entryFol._modificationDate}" type="both" 
+			      	timeStyle="short" dateStyle="medium" />
+			    </span>
+			  </div>
+		 
+		  	  
+			  <c:if test="${!empty entryFol._desc}">
+			    <div class="entry-content">
+			    	<ssf:textFormat 
+			      	  formatAction="limitedDescription" 
+			          textMaxWords="10"><ssf:markup search="${entryFol}">${entryFol._desc}</ssf:markup></ssf:textFormat>
+		  	    </div>
+			  </c:if>
+		
+	    	</div>
+		</c:forEach>
 	</c:if>
-	
 	<c:if test="${ssDefinitionFamily == 'calendar'}">
 		<%@ include file="/WEB-INF/jsp/mobile/show_calendar.jsp" %>
 	</c:if>
-	
-	<table><tr><td>
-	<c:if test="${!empty ss_prevPage}">
-	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-		folderId="${ssBinder.id}" 
-		action="__ajax_mobile" 
-		operation="mobile_show_folder" 
-		actionUrl="false" ><ssf:param name="pageNumber" value="${ss_prevPage}"/></ssf:url>"
-	  ><img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_.gif"/></a>
-	</c:if>
-	<c:if test="${empty ss_prevPage}">
-	  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_g.gif"
-	  	<ssf:alt tag=""/> />
-	</c:if>
-	</td><td style="padding-left:20px;">
-	<c:if test="${!empty ss_nextPage}">
-	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-		folderId="${ssBinder.id}" 
-		action="__ajax_mobile" 
-		operation="mobile_show_folder" 
-		actionUrl="false" ><ssf:param name="pageNumber" value="${ss_nextPage}"/></ssf:url>"
-	  ><img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_.gif"/></a>
-	</c:if>
-	<c:if test="${empty ss_nextPage}">
-	  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_g.gif"
-	  	<ssf:alt tag=""/> />
-	</c:if>
-
-	</td></tr>
-	</table>
-
-  </div>
-</div>
-
-<div class="ss_mobile_breadcrumbs ss_mobile_small">
-<c:if test="${empty ssBinder.parentFolder && !empty ssBinder.parentBinder}">
-<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	folderId="${ssBinder.parentBinder.id}" 
-	action="__ajax_mobile" operation="mobile_show_workspace" 
-	actionUrl="false" />"><ssf:nlt tag="mobile.returnToParentWorkspace"/></a>
-<br/>
-</c:if>
-<c:if test="${!empty ssBinder.parentFolder}">
-<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	folderId="${ssBinder.parentFolder.id}" 
-	action="__ajax_mobile" operation="mobile_show_folder" 
-	actionUrl="false" />"><ssf:nlt tag="mobile.returnToParentFolder"/></a>
-</c:if>
-</div>
+		
+	</div>
 
 </div>
-<%@ include file="/WEB-INF/jsp/mobile/footer.jsp" %>
 
 </body>
 </html>
