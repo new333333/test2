@@ -45,7 +45,9 @@ import javax.portlet.RenderResponse;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.domain.ChangeLog;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -61,6 +63,7 @@ public class EntryWorkflowHistoryController extends  SAbstractController {
 	}
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		Long folderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_FOLDER_ID);
 		Long entityId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTITY_ID);
 		String viewPath = "forum/view_workflow_history";
 		Map model = new HashMap();
@@ -78,6 +81,12 @@ public class EntryWorkflowHistoryController extends  SAbstractController {
 		model.put(WebKeys.CHANGE_LOG_LIST, changeList);
 		model.put(WebKeys.CHANGE_LOGS, changes);
 		model.put(WebKeys.ENTITY_ID, entityId);
+		if (entityId != null && "folderEntry".equals(entityType)) {
+			try {
+				FolderEntry entry = getFolderModule().getEntry(folderId, entityId);
+				model.put(WebKeys.ENTRY, entry);
+			} catch(Exception e) {}
+		}
 
 		return new ModelAndView(viewPath, model);
 	} 
