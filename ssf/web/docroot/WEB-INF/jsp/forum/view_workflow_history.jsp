@@ -43,6 +43,7 @@
 </ssf:ifadapter>
 
 <div class="ss_style ss_portlet">
+<ssf:form titleTag="entry.workflowHistory">
 <form class="ss_form" method="post" action="<ssf:url     
 		adapter="true" 
 		portletName="ss_forum" 
@@ -52,12 +53,13 @@
 		<ssf:param name="operation" value="modifyEntry" />
 		</ssf:url>"
 >
-<table width="75%" border="0" align="center" cellpadding="0" cellspacing="0" class="ss_table_wrap">
-  <tr>
-    <td class="ss_form_header"><div height="267"><ssf:nlt tag="entry.workflowHistory"/></div>
 	 <div class="ss_formButton">
-	 	<input type="button" name="Button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;"/>
+	 	<input type="button" name="Button" value="<ssf:nlt tag="button.close"/>" 
+	 	  onClick="self.window.close();return false;"/>
 	 </div>
+	 <c:if test="${!empty ssEntry}">
+	   <div class="ss_bold ss_largerprint">${ssEntry.title}</div>
+	 </c:if>
 	 <br/>
     	<table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
     		<tr>
@@ -156,17 +158,9 @@
 	 <div class="ss_formButton">
 	 	<input type="button" name="Button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;"/>
 	 </div>	 
-<tr>
-<td valign="top" nowrap>
-</td>
-<td></td>
-</tr>
-</table>
 </body>
 </form>
-
-<br/>
-<br/>
+</ssf:form>
 
 </div>
 
