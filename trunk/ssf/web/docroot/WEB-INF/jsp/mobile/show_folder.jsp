@@ -47,7 +47,6 @@
   <c:if test="${!empty ssFolders}">
   <div class="folders">
     <div class="folder-head">
-      <img class="margin5r" src="<html:imagesPath/>mobile/folder16.gif"/>
       <ssf:nlt tag="mobile.folders"/>
     </div>
 	<c:forEach var="folder" items="${ssFolders}" >
@@ -68,8 +67,7 @@
 
   <div class="folders">
     <div class="folder-head">
-      <img class="margin5r" src="<html:imagesPath/>mobile/folder16.gif"/>
-      <ssf:nlt tag="mobile.entries"/>
+       <ssf:nlt tag="mobile.entries"/>
     </div>
     
 
