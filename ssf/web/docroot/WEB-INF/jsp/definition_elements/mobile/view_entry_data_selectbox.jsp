@@ -37,7 +37,7 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 
 <div class="entry-content">
-<span class="entry-caption"><c:out value="${property_caption}" /></span>
+<div class="entry-caption"><c:out value="${property_caption}" /></div>
 
 <c:forEach var="selection" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}" >
 <%
@@ -46,7 +46,7 @@
 	caption = NLT.getDef(caption);
 %>
 <c:set var="caption" value="<%= caption %>"/>
-<div><c:out value="${caption}" escapeXml="false"/></div>
+<div class="entry-element"><c:out value="${caption}" escapeXml="false"/></div>
 </c:forEach>
 
 </div>

@@ -32,20 +32,26 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% //User_list view %>
-<c:set var="userlist_entry" value="${ssDefinitionEntry}"/>
-<jsp:useBean id="userlist_entry" type="org.kablink.teaming.domain.Entry" />
+<% //File view %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
+<%
+boolean isIECheck = BrowserSniffer.is_ie(request);
+String strBrowserType = "nonie";
+if (isIECheck) strBrowserType = "ie";
+%>
 
-<div class="entry-content">
-<div class="entry-caption"><c:out value="${property_caption}" /></div>
-  <c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(userlist_entry.getCustomAttribute(property_name), false) %>" >
-    <div class="entry-element"><ssf:showUser user="${selection}" /></div>
-  </c:forEach>
-</div>
-
-
-
-
-
-
+<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
+  <div class="entry-content">
+    <div class="entry-caption"><c:out value="${property_caption}" /></div>
+    <c:set var="selections" value="${ssDefinitionEntry.customAttributes[property_name].valueSet}" />
+    <c:forEach var="selection" items="${selections}">
+      <div class="entry-element">
+        <a target="_blank" 
+          href="<ssf:fileUrl file="${selection}"/>" 
+        >${selection.fileItem.name}
+        </a>
+      </div>
+    </c:forEach>
+  </div>
+</c:if>
 

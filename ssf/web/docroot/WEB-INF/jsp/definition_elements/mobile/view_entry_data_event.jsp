@@ -32,20 +32,20 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% //User_list view %>
-<c:set var="userlist_entry" value="${ssDefinitionEntry}"/>
-<jsp:useBean id="userlist_entry" type="org.kablink.teaming.domain.Entry" />
-
+<% //Event view %>
 <div class="entry-content">
 <div class="entry-caption"><c:out value="${property_caption}" /></div>
-  <c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(userlist_entry.getCustomAttribute(property_name), false) %>" >
-    <div class="entry-element"><ssf:showUser user="${selection}" /></div>
-  </c:forEach>
+<div class="entry-element">
+<c:choose>
+<c:when test="${empty ssDefinitionEntry.customAttributes[property_name]}" >
+<span class="ss_gray"><ssf:nlt tag="__family_unspecified" /></span>
+</c:when>
+<c:otherwise>
+<c:set var="ev" value="${ssDefinitionEntry.customAttributes[property_name].value}" />
+<jsp:useBean id="ev" type="org.kablink.teaming.domain.Event"  />
+<ssf:eventtext event="<%= ev %>" />
+</c:otherwise>
+</c:choose>
 </div>
-
-
-
-
-
-
+</div>
 

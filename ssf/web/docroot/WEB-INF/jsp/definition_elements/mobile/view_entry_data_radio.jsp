@@ -49,6 +49,6 @@
 <% //Radio view %>
 <div class="entry-content">
   <div class="entry-caption"><c:out value="${property_caption}" /></div>
-  <div><c:out value="${caption}" escapeXml="false"/></div>
+  <div class="entry-element"><c:out value="${caption}" escapeXml="false"/></div>
 </div>
 

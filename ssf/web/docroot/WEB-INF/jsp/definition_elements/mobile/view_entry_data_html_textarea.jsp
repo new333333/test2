@@ -37,9 +37,9 @@
 <c:if test="${!empty property_caption}">
  <div class="entry-caption"><c:out value="${property_caption}"/></div>
 </c:if>
- <div>
-<span><ssf:markup entity="${ssDefinitionEntry}">${ssDefinitionEntry.customAttributes[property_name].value.text}</ssf:markup></span>
-<div style="clear: both;"></div>
+ <div class="entry-element">
+  <span><ssf:markup entity="${ssDefinitionEntry}">${ssDefinitionEntry.customAttributes[property_name].value.text}</ssf:markup></span>
+  <div style="clear: both;"></div>
  </div>
 </div>
 

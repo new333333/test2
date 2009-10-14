@@ -54,31 +54,15 @@
 </c:if>
 
 <% if (0 < externalUserListSet.size()) { %>
-	<c:if test="${empty ss_element_display_style}">
 		<div class="entry-content">
-			<span class="entry-caption"><c:out value="${property_caption}" /></span><br/>
+			<div class="entry-caption"><c:out value="${property_caption}" /></div>
 			<c:forEach var="selection" items="<%= externalUserListSet %>" >
-				<img
+				<div class="entry-element">
+				  <img
 					border="0"
 					src="<html:imagesPath/>pics/sym_s_white_dude.gif"
-					alt="<ssf:nlt tag="presence.none"/>"/> <c:out value="${selection}" /><br/>
+					alt="<ssf:nlt tag="presence.none"/>"/> <c:out value="${selection}" />
+				</div>
 			</c:forEach>
 		</div>
-	</c:if>
-	
-	<c:if test="${!empty ss_element_display_style && ss_element_display_style == 'tableAlignLeft'}">
-		<tr>
-			<td class="ss_table_spacer_right" valign="top" align="right">
-				<span class="entry-caption"><c:out value="${property_caption}" /></span>
-			</td>
-			<td valign="top" align="left">
-				<c:forEach var="selection" items="<%= externalUserListSet %>" >
-					<img
-						border="0"
-						src="<html:imagesPath/>pics/sym_s_white_dude.gif"
-						alt="<ssf:nlt tag="presence.none"/>"/> <c:out value="${selection}" /><br/>
-				</c:forEach>
-			</td>
-		</tr>
-	</c:if>
 <% } %>

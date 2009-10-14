@@ -180,6 +180,7 @@
 			    	<ssf:textFormat 
 			      	  formatAction="limitedDescription" 
 			          textMaxWords="10"><ssf:markup search="${entryFol}">${entryFol._desc}</ssf:markup></ssf:textFormat>
+		  	    <div style="clear: both;"></div>
 		  	    </div>
 			  </c:if>
 		

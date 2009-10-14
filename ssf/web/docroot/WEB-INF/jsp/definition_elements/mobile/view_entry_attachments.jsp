@@ -44,10 +44,10 @@ if (isIECheck) strBrowserType = "ie";
   <br/>
   <div class="entry-content">
 	<c:if test="${!empty property_caption}">
-	  <span class="entry-caption">${property_caption}</span>
-	  <br/>
+	  <div class="entry-caption">${property_caption}</div>
 	</c:if>
 	
+	<div class="entry-element">
 	<table cellpadding="0" cellspacing="0">
 	  <tbody>
 		<c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" >
@@ -83,6 +83,7 @@ if (isIECheck) strBrowserType = "ie";
 		</c:forEach>
 	  </tbody>
 	</table>
+	</div>
   </div>
 </c:if>
 

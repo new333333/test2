@@ -168,7 +168,7 @@
 			      	  formatAction="limitedDescription" 
 			          textMaxWords="10"><ssf:markup search="${entryWn}">${entryWn._desc}</ssf:markup></ssf:textFormat>
 			        </span>
-			        <div class="ss_clear"></div>
+			        <div style="clear: both;"></div>
 		  	    </div>
 			  </c:if>
 		

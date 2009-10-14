@@ -36,7 +36,7 @@
 
 <div class="entry-content">
 	<div class="entry-caption"><c:out value="${property_caption}"/></div>
-	<div>
+	<div class="entry-element">
 	  <span><ssf:nlt tag="mobile.noSurveyView"/></span>
 	</div>
 
