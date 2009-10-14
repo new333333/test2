@@ -104,6 +104,12 @@ public abstract class DropWidget extends Composite
 	
 	
 	/**
+	 * Create a configuration string that represents this widget and that can be stored in the db.
+	 */
+	public abstract String createConfigString();
+	
+	
+	/**
 	 * This method is called when the user presses the cancel button in the properties dialog box.
 	 */
 	public boolean editCanceled()

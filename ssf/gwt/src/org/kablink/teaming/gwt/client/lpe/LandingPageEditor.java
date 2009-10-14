@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -198,6 +199,41 @@ public class LandingPageEditor extends Composite
 		// Adjust the height of all TableDropWidgets found in the canvas.
 		m_canvas.adjustHeightOfAllTableWidgets();
 	}// end adjustHeightOfAllTableWidgets()
+	
+	
+	/**
+	 * Create the configuration string that will be stored in the db.
+	 */
+	public String createConfigString()
+	{
+		String configStr;
+		ArrayList<DropWidget> dropWidgets;
+		int i;
+		
+		configStr = "";
+		
+		// Get the list of widgets that are on the canvas.
+		dropWidgets = m_canvas.getWidgets();
+		
+		// Spin through the list of widgets and ask each widget to generate its configuration string.
+		if ( dropWidgets != null )
+		{
+			for (i = 0; i < dropWidgets.size(); ++i)
+			{
+				DropWidget nextWidget;
+				String nextConfigStr;
+				
+				// Get the next widget in the list.
+				nextWidget = dropWidgets.get( i );
+				
+				// Get the configuration string for this widget.
+				nextConfigStr = nextWidget.createConfigString(); 
+				configStr += nextConfigStr;
+			}// end for()
+		}
+		
+		return configStr;
+	}// end createConfigString()
 	
 	
 	/**

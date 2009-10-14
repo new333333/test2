@@ -77,6 +77,35 @@ public class LinkToUrlProperties
 	
 
 	/**
+	 * Return the properties as a string that can be stored in the db.
+	 */
+	public String createConfigString()
+	{
+		String str;
+		
+		// The string should look like: "url,title=something,href=something,popup=1;"
+		str = "url,title=";
+		if ( m_title != null )
+			str += m_title;
+		str += ",";
+		
+		str += "href=";
+		if ( m_url != null )
+			str += m_url;
+		str += ",";
+		
+		str += "popup=";
+		if ( m_openInNewWindow )
+			str += "1";
+		else
+			str += "0";
+		str += ";";
+
+		return str;
+	}// end createConfigString()
+	
+	
+	/**
 	 * Return the value of the "Open the url in a new window" property
 	 */
 	public boolean getOpenInNewWindow()

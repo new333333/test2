@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import java.util.ArrayList;
 
+import com.google.gwt.http.client.URL;
+
 /**
  * This class represents the configuration data for a Table
  * @author jwootton
@@ -76,7 +78,36 @@ public class TableConfig extends ConfigItem
 						m_properties.setNumColumns( Integer.valueOf( results2[1] ) );
 					else if ( results2[0].equalsIgnoreCase( "colWidths" ) )
 					{
-						//!!! Get the individual column widths.
+						String[] results3;
+						
+						// Get the individual column widths.
+						if ( results2[1] != null )
+						{
+							String tmp;
+
+							tmp = URL.decodeComponent( results2[1] );
+							results3 = tmp.split( "[|]" );
+							if ( results3 != null )
+							{
+								int j;
+								
+								for (j = 0; j < results3.length; ++j)
+								{
+									int width;
+
+									width = 0;
+									try
+									{
+										width = Integer.parseInt( results3[j] );
+									}
+									catch (NumberFormatException nfe)
+									{
+										// Nothing to do.
+									}
+									m_properties.setColWidth( j, width );
+								}// end for()
+							}
+						}
 					}
 				}
 			}// end for()
