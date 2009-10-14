@@ -43,24 +43,35 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
  */
 public enum UtilityElement
 {
-	LINK_TO_ADMIN_PAGE( GwtTeaming.getMessages().utilityElementLinkToAdminPage() ),
-	LINK_TO_MYWORKSPACE( GwtTeaming.getMessages().utilityElementLinkToMyWorkspace() ),
-	LINK_TO_SHARE_FOLDER_OR_WORKSPACE( GwtTeaming.getMessages().utilityElementLinkToShareFolderOrWorkspace() ),
-	LINK_TO_TRACK_FOLDER_OR_WORKSPACE( GwtTeaming.getMessages().utilityElementLinkToTrackFolderOrWorkspace() ),
-	SIGNIN_FORM( GwtTeaming.getMessages().utilityElementSignInForm() ),
-	VIDEO_TUTORIAL( GwtTeaming.getMessages().utilityElementVideoTutorials() );
+	LINK_TO_ADMIN_PAGE( GwtTeaming.getMessages().utilityElementLinkToAdminPage(), "siteAdmin" ),
+	LINK_TO_MYWORKSPACE( GwtTeaming.getMessages().utilityElementLinkToMyWorkspace(), "myWorkspace" ),
+	LINK_TO_SHARE_FOLDER_OR_WORKSPACE( GwtTeaming.getMessages().utilityElementLinkToShareFolderOrWorkspace(), "shareThis" ),
+	LINK_TO_TRACK_FOLDER_OR_WORKSPACE( GwtTeaming.getMessages().utilityElementLinkToTrackFolderOrWorkspace(), "trackThis" ),
+	SIGNIN_FORM( GwtTeaming.getMessages().utilityElementSignInForm(), "signInForm" ),
+	VIDEO_TUTORIAL( GwtTeaming.getMessages().utilityElementVideoTutorials(), "gettingStarted" );
 
 	private final String m_localizedText;
+	private final String m_identifier;
 	
 	/**
 	 * 
 	 */
-	private UtilityElement( String localizedText )
+	private UtilityElement( String localizedText, String identifier )
 	{
 		m_localizedText = localizedText;
+		m_identifier = identifier;
 	}// end UtilityElement()
 	
 	
+	/**
+	 * 
+	 */
+	public String getIdentifier()
+	{
+		return m_identifier;
+	}// end getIdentifier()
+	
+
 	/**
 	 * 
 	 */
@@ -68,4 +79,5 @@ public enum UtilityElement
 	{
 		return m_localizedText;
 	}// end getLocalizedText()
+	
 }// end UtilityElement

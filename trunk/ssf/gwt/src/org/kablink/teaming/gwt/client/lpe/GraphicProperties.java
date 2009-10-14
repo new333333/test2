@@ -77,6 +77,35 @@ public class GraphicProperties
 	
 
 	/**
+	 * Return the properties as a string that can be stored in the db.
+	 */
+	public String createConfigString()
+	{
+		String str;
+		
+		// The string should look like: "graphic,showBorder=1,graphic=ff80808222665e02012266c5a98d0015,title=StrongBad2.GIF;"
+		str = "graphic,showBorder=";
+		if ( m_showBorder )
+			str += "1";
+		else
+			str += "0";
+		str += ",";
+		
+		str += "graphic=";
+		if ( m_graphicId != null )
+			str += m_graphicId;
+		str += ",";
+
+		str += "title=";
+		if ( m_graphicName != null )
+			str += m_graphicName;
+		str += ";";
+
+		return str;
+	}// end createConfigString()
+	
+	
+	/**
 	 * Return the id of the graphic.
 	 */
 	public String getGraphicId()

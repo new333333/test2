@@ -71,6 +71,19 @@ public class UtilityElementProperties
 	
 
 	/**
+	 * Return the properties as a string that can be stored in the db.
+	 */
+	public String createConfigString()
+	{
+		String str;
+		
+		str = "utility,element=" + m_utilityElement.getIdentifier() + ";";
+		
+		return str;
+	}// end createConfigString()
+	
+	
+	/**
 	 * Return the type of utility element
 	 */
 	public UtilityElement getType()

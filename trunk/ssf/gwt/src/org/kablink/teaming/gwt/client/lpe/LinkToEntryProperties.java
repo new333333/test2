@@ -116,6 +116,35 @@ public class LinkToEntryProperties
 	
 
 	/**
+	 * Return the properties as a string that can be stored in the db.
+	 */
+	public String createConfigString()
+	{
+		String str;
+		
+		// The string should look like: "entryUrl,entryId=some id,title=some title,popup=1;"
+		str = "entryUrl,entryId=";
+		if ( m_entryId != null )
+			str += m_entryId;
+		str += ",";
+		
+		str += "title=";
+		if ( m_title != null )
+			str += m_title;
+		str += ",";
+		
+		str += "popup=";
+		if ( m_openInNewWindow )
+			str += "1";
+		else
+			str += "0";
+		str += ";";
+		
+		return str;
+	}// end createConfigString()
+	
+	
+	/**
 	 * Issue an ajax request to get the entry's name from the server.
 	 */
 	public void getDataFromServer()

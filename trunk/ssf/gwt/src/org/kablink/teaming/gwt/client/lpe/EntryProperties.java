@@ -118,6 +118,30 @@ public class EntryProperties
 	
 
 	/**
+	 * Return the properties as a string that can be stored in the db.
+	 */
+	public String createConfigString()
+	{
+		String str;
+		
+		// The string should look like: "entry,entryId=some id,showTitle=1;"
+		str = "entry,entryId=";
+		if ( m_entryId != null )
+			str += m_entryId;
+		str += ",";
+		
+		str += "showTitle=";
+		if ( m_showTitle )
+			str += "1";
+		else
+			str += "0";
+		str += ";";
+		
+		return str;
+	}// end createConfigString()
+	
+	
+	/**
 	 * Return the name of the binder the entry lives in.
 	 */
 	public String getBinderName()

@@ -127,6 +127,46 @@ public class FolderProperties
 	
 
 	/**
+	 * Return the properties as a string that can be stored in the db.
+	 */
+	public String createConfigString()
+	{
+		String str;
+		
+		// The string should look like: "folder,folderId=some id,showTitle=1,showFolderDescription=1,showEntriesOpened=1,entriesToShow=2;"
+		str = "folder,folderId=";
+		if ( m_folderId != null )
+			str += m_folderId;
+		str += ",";
+		
+		str += "showTitle=";
+		if ( m_showTitle )
+			str += "1";
+		else
+			str += "0";
+		str += ",";
+		
+		str += "showFolderDescription=";
+		if ( m_showDesc )
+			str += "1";
+		else
+			str += "0";
+		str += ",";
+
+		str += "showEntriesOpened=";
+		if ( m_showEntriesOpened )
+			str += "1";
+		else
+			str += "0";
+		str += ",";
+
+		str += "entriesToShow=" + String.valueOf( m_numEntriesToBeShown ) + ";";
+
+		return str;
+	}// end createConfigString()
+	
+	
+	/**
 	 * Issue an ajax request to get the folder's name from the server.
 	 */
 	public void getDataFromServer()

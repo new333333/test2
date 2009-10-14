@@ -85,6 +85,44 @@ public class TableProperties
 	
 	
 	/**
+	 * Return the properties as a string that can be stored in the db.
+	 */
+	public String createConfigString()
+	{
+		String str;
+		int i;
+		
+		// The string should look like: "tableStart,showBorder=1,cols=3,colWidths=33%7C33%7C33;"
+		str = "tableStart,showBorder=";
+		if ( m_showBorder )
+			str += "1,";
+		else
+			str += "0,";
+		str += ",";
+		
+		str += "cols=" + getNumColumnsStr() + ",";
+		
+		str += "colWidths=";
+		for (i = 0; i < getNumColumnsInt(); ++i)
+		{
+			String colWidth;
+			
+			colWidth = getColWidthStr( i );
+			if ( colWidth != null )
+			{
+				if ( i > 0 )
+					str += "|";
+				
+				str += colWidth;
+			}
+		}
+		str += ";";
+
+		return str;
+	}// end createConfigString()
+	
+	
+	/**
 	 * Return the width of the given column as an int.
 	 */
 	public int getColWidthInt( int col )
@@ -117,16 +155,7 @@ public class TableProperties
 		width = getColWidthInt( col );
 		
 		return String.valueOf( width );
-	}// end getColWidth()
-	
-	
-	/**
-	 * Return the value of the "show border" property
-	 */
-	public boolean getShowBorderValue()
-	{
-		return m_showBorder;
-	}// end getShowBorderValue()
+	}// end getColWidthStr()
 	
 	
 	/**
@@ -145,6 +174,15 @@ public class TableProperties
 	{
 		return( m_colWidths.length );
 	}// end getNumColumnsInt()
+	
+	
+	/**
+	 * Return the value of the "show border" property
+	 */
+	public boolean getShowBorderValue()
+	{
+		return m_showBorder;
+	}// end getShowBorderValue()
 	
 	
 	/**

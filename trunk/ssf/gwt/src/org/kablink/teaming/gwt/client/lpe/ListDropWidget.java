@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
+import java.util.ArrayList;
+
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditDeleteControl;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
@@ -108,6 +110,42 @@ public class ListDropWidget extends DropWidget
 			}
 		}
 	}// end addChildWidgetsFromConfig()
+	
+	
+	/**
+	 * Create a configuration string that represents this widget and that can be stored in the db.
+	 */
+	public String createConfigString()
+	{
+		String configStr;
+		ArrayList<DropWidget> childWidgets;
+		DropWidget nextWidget;
+		int i;
+		
+		// Get the configuration string for the properties of this widget.
+		configStr = m_properties.createConfigString();
+		
+		// Get the list of widgets that are children of this widget.
+		childWidgets = m_dropZone.getWidgets();
+		
+		// Spin through the list of child widgets and get the configuration string from each one.
+		if ( childWidgets != null )
+		{
+			for (i = 0; i < childWidgets.size(); ++i)
+			{
+				String nextConfigStr;
+				
+				nextWidget = childWidgets.get( i );
+				
+				nextConfigStr = nextWidget.createConfigString(); 
+				configStr += nextConfigStr;
+			}
+		}
+
+		configStr += "listEnd;";
+		
+		return configStr;
+	}// end createConfigString()
 	
 	
 	/**

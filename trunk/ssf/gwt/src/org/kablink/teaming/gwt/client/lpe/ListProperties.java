@@ -74,6 +74,30 @@ public class ListProperties
 	
 	
 	/**
+	 * Return the properties as a string that can be stored in the db.
+	 */
+	public String createConfigString()
+	{
+		String str;
+		
+		// The string should look like: "listStart,showBorder=1,title=something;"
+		str = "listStart,showBorder=";
+		if ( m_showBorder )
+			str += "1";
+		else
+			str += "0";
+		str += ",";
+		
+		str += "title=";
+		if ( m_title != null )
+			str += m_title;
+		str += ";";
+
+		return str;
+	}// end createConfigString()
+	
+	
+	/**
 	 * Return the value of the "show border" property
 	 */
 	public boolean getShowBorderValue()

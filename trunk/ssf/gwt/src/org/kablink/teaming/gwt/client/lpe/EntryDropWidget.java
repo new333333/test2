@@ -79,6 +79,15 @@ public class EntryDropWidget extends DropWidget
 	
 
 	/**
+	 * Create a configuration string that represents this widget and that can be stored in the db.
+	 */
+	public String createConfigString()
+	{
+		return m_properties.createConfigString();
+	}// end createConfigString()
+	
+	
+	/**
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
 	public DlgBox getPropertiesDlgBox( int xPos, int yPos )

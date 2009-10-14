@@ -43,4 +43,11 @@ public interface PropertiesObj
 	 * 
 	 */
 	public abstract void copy( PropertiesObj obj );
+	
+	/**
+	 * Create the string that represents the properties.  This string, along with the string
+	 * from other property objects will be stored in the db.  For example, UtilityElementProperties
+	 * class would return a string like the following "utility,element=myWorkspace;"
+	 */
+	public abstract String createConfigString();
 }// end PropertiesObj

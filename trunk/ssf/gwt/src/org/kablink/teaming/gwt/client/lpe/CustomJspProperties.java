@@ -71,6 +71,24 @@ public class CustomJspProperties
 	
 
 	/**
+	 * Return the properties as a string that can be stored in the db.
+	 */
+	public String createConfigString()
+	{
+		String str;
+		
+		// The string should look like: "customJsp,customJsp=some jsp name;"
+		str = "customJsp,customJsp=";
+		if ( m_jspName != null )
+			str += m_jspName;
+		
+		str += ";";
+		
+		return str;
+	}// end createConfigString()
+	
+	
+	/**
 	 * Return the value of the jsp name property
 	 */
 	public String getJspName()

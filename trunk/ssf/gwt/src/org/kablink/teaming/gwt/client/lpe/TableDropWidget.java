@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
+import java.util.ArrayList;
+
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditDeleteControl;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
@@ -218,6 +220,64 @@ public class TableDropWidget extends DropWidget
 	
 	
 	/**
+	 * Create a configuration string that represents this widget and that can be stored in the db.
+	 */
+	public String createConfigString()
+	{
+		String configStr;
+		ArrayList<DropWidget> childWidgets;
+		DropWidget nextWidget;
+		Widget widget;
+		int i;
+		int numColumns;
+		
+		// Get the configuration string for the properties of this table.
+		configStr = m_properties.createConfigString();
+		
+		numColumns = m_flexTable.getCellCount( 0 );
+
+		// For every cell, get the widgets that live in that cell.
+		for (i = 0; i < numColumns; ++i)
+		{
+			// Get the DropZone for this cell.
+			widget = m_flexTable.getWidget( 0, i );
+			
+			// Is this widget a DropZone
+			if ( widget instanceof DropZone )
+			{
+				DropZone dropZone;
+				
+				// Yes, get all the widgets that live in this DropZone.
+				dropZone = (DropZone) widget;
+				childWidgets = dropZone.getWidgets();
+				
+				// Spin through the list of child widgets and get the configuration string from each one.
+				if ( childWidgets != null )
+				{
+					int j;
+					
+					for (j = 0; j < childWidgets.size(); ++j)
+					{
+						String nextConfigStr;
+						
+						configStr += "tableCol,colWidth=" + m_properties.getColWidthStr( j ) + ";";
+						
+						// Append the configuration string for the next widget.
+						nextWidget = childWidgets.get( j );
+						nextConfigStr = nextWidget.createConfigString();
+						configStr += nextConfigStr;
+					}
+				}
+			}
+		}// end for()
+
+		configStr += "tableEnd;";
+		
+		return configStr;
+	}// end createConfigString()
+	
+	
+	/**
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
 	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
@@ -273,12 +333,8 @@ public class TableDropWidget extends DropWidget
 		// Create an object to hold all of the properties that define a table widget.
 		m_properties = new TableProperties();
 		
-		// If we were passed some properties, make a copy of them.
-		if ( properties != null )
-			m_properties.copy( properties );
-		
 		// Create the widgets that make up this widget.
-		updateWidget( m_properties );
+		updateWidget( properties );
 		
 		// All composites must call initWidget() in their constructors.
 		wrapperPanel.add( m_mainPanel );
