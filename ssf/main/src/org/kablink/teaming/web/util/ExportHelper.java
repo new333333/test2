@@ -724,7 +724,9 @@ public class ExportHelper {
 
 	private static void addZoneId(Element element, DefinableEntity entity) {
 		ZoneInfo zoneInfo = ExportHelper.getZoneInfo();
-		String entityZoneUUID = zoneInfo.getId() + "." + entity.getId().toString();
+		String zoneInfoId = zoneInfo.getId();
+		if (Validator.isNull(zoneInfoId)) zoneInfoId = "";
+		String entityZoneUUID = zoneInfoId + "." + entity.getId().toString();
 		CustomAttribute zoneUUIDs = entity.getCustomAttribute(Constants.ZONE_UUID_FIELD);
 		Set zoneUUIDvalues = new HashSet();
 		if (zoneUUIDs != null) zoneUUIDvalues = zoneUUIDs.getValueSet();

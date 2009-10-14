@@ -405,7 +405,7 @@ public class MarkupUtil {
 				}
 				PortletURL portletURL = portletURL = res.createActionURL();
 				portletURL.setParameter(WebKeys.URL_BINDER_ID, binderId);
-				if (!zoneUUID.equals("")) portletURL.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
+				if (Validator.isNotNull(zoneUUID)) portletURL.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
 				if (normalizedTitle != null && !normalizedTitle.equals("")) {
 					portletURL.setParameter(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
 					portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);

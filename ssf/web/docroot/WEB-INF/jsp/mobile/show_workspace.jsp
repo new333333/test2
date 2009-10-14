@@ -44,58 +44,30 @@
 
   <%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
 
+<div class="folder-content">
+
 <c:if test="${ssBinder.definitionType == '12' && !empty ssWorkspaceCreator}">
  <%-- This is a user workspace --%>
 
 <c:set var="ssProfileUser" value="${ssWorkspaceCreator}" scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/user_profile.jsp" %>
 
+<%@ include file="/WEB-INF/jsp/definition_elements/mobile/workspace_binder_list.jsp" %>
+
 </c:if>
 
-<c:if test="${!empty ssWorkspaces}">
-  <div class="folders">
-    <div class="folder-head">
-      <img class="margin5r" src="<html:imagesPath/>mobile/folder16.gif"/>
-      <ssf:nlt tag="mobile.workspaces"/>
-    </div>
-    
-	<c:forEach var="workspace" items="${ssWorkspaces}" >
-      <div class="folder-item">
-		<a href="<ssf:url adapter="true" portletName="ss_forum" 
-				folderId="${workspace.id}" 
-				action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
-		  <c:if test="${empty workspace.title}">
-		    (<ssf:nlt tag="workspace.noTitle"/>)
-		  </c:if>
-		  <c:out value="${workspace.title}" escapeXml="true"/>
-		</a>
-	  </div>
-	</c:forEach>
-  </div>
-</c:if>
-	
-<c:if test="${!empty ssFolders}">
-  <div class="folders">
-    <div class="folder-head">
-      <img class="margin5r" src="<html:imagesPath/>mobile/folder16.gif"/>
-      <ssf:nlt tag="mobile.folders"/>
-    </div>
-	<c:forEach var="folder" items="${ssFolders}" >
-      <div class="folder-item">
-		<a href="<ssf:url adapter="true" portletName="ss_forum" 
-				folderId="${folder.id}" 
-				action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
-		  <c:if test="${empty folder.title}">
-		    (<ssf:nlt tag="folder.noTitle"/>)
-		  </c:if>
-		  <c:out value="${folder.title}" escapeXml="true"/>
-		</a>
-	  </div>
-	</c:forEach>
-	
-  </div>
+<c:if test="${ssBinder.definitionType != '12' || empty ssWorkspaceCreator}">
+ <%-- This is a regular workspace --%>
+ <c:set var="ssDefinitionEntry" value="${ssBinder}" scope="request" />
+
+<ssf:displayConfiguration 
+	configDefinition="${ssConfigDefinition}" 
+	configElement="${ssConfigElement}" 
+	configJspStyle="mobile" 
+	entry="${ssDefinitionEntry}" />
 </c:if>
 
+</div>
 </div>
 
 </body>

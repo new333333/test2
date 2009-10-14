@@ -462,6 +462,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Binder binder = getBinderModule().getBinder(binderId);
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
+		UserProperties userProperties = (UserProperties)model.get(WebKeys.USER_PROPERTIES_OBJ);
+		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
 		Map options = new HashMap();		
 		Map folderEntries = null;
 		
@@ -488,7 +490,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		if (family == null) family = "";
 		model.put(WebKeys.DEFINITION_FAMILY, family);
 		
-      	Integer pageNumber = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER);
+		//Build the mashup beans
+		DefinitionHelper.buildMashupBeans(bs, binder, configDocument, model, request );
+
+		Integer pageNumber = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER);
       	if (pageNumber == null || pageNumber < 0) pageNumber = 0;
       	int pageSize = Integer.valueOf(WebKeys.MOBILE_PAGE_SIZE).intValue();
       	int pageStart = pageNumber.intValue() * pageSize;
@@ -538,6 +543,12 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.MOBILE_BINDER_DEF_URL_LIST, defTitleUrlList);
 		}
 
+		if (binder != null) {
+			DashboardHelper.getDashboardMap(binder, userProperties.getProperties(), model);
+			//See if the user has selected a specific view to use
+			DefinitionHelper.getDefinitions(binder, model, 
+					(String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
+		}
 		List folders = new ArrayList();
 		List folderIds = new ArrayList();
 		folderIds.add(binderId.toString());
@@ -634,6 +645,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
+		UserProperties userProperties = (UserProperties)model.get(WebKeys.USER_PROPERTIES_OBJ);
+		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
 		Workspace binder;
 		List wsList = new ArrayList();
 		List workspaces = new ArrayList();
@@ -647,6 +660,14 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		if (binder == null) {
 			return new ModelAndView("mobile/show_workspace", model);
 		}
+
+		//See if the user has selected a specific view to use
+		String userDefaultDef = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
+		DefinitionHelper.getDefinitions(binder, model, userDefaultDef);
+
+		//Build the mashup beans
+		Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
+		DefinitionHelper.buildMashupBeans(bs, binder, configDocument, model, request );
 
 		Tabs.TabEntry tab= BinderHelper.initTabs(request, binder);
 		model.put(WebKeys.TABS, tab.getTabs());		

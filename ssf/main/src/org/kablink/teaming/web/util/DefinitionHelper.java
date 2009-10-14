@@ -735,6 +735,8 @@ public class DefinitionHelper {
     		return;
     	}
 		ZoneInfo zoneInfo = ExportHelper.getZoneInfo();
+		String zoneInfoId = zoneInfo.getId();
+		if (zoneInfoId == null) zoneInfoId = "";
     	
     	Iterator it = nodes.iterator();
     	while (it.hasNext()) {
@@ -772,7 +774,7 @@ public class DefinitionHelper {
 	        				if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ZONE_UUID)) {
 	        					zoneUUID = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ZONE_UUID);
 	        				}
-	        				if (!zoneInfo.getId().equals(zoneUUID))
+	        				if (!zoneInfoId.equals(zoneUUID))
 	        					entryId = bs.getFolderModule().getZoneEntryId(entryId, zoneUUID);
 	        				if (entryId == null) continue;
 	        				FolderEntry entry = bs.getFolderModule().getEntry(null, entryId);
@@ -789,7 +791,7 @@ public class DefinitionHelper {
 	        				if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ZONE_UUID)) {
 	        					zoneUUID = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ZONE_UUID);
 	        				}
-	        				if (!zoneInfo.getId().equals(zoneUUID))
+	        				if (!zoneInfoId.equals(zoneUUID))
 	        						binderId = bs.getBinderModule().getZoneBinderId(binderId, zoneUUID, EntityType.folder.name());
 	        				if (binderId == null) continue;
 	        				Binder binder = bs.getBinderModule().getBinder(binderId);
@@ -818,12 +820,12 @@ public class DefinitionHelper {
 	        				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_BINDER_ID) && 
 	        				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_BINDER_ID).equals("")) {
 	        			try {
-	        				Long binderId = Long.valueOf((String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_FOLDER_ID));
+	        				Long binderId = Long.valueOf((String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_BINDER_ID));
 	        				String zoneUUID = "";
 	        				if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ZONE_UUID)) {
 	        					zoneUUID = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ZONE_UUID);
 	        				}
-	        				if (!zoneInfo.getId().equals(zoneUUID))
+	        				if (!zoneInfoId.equals(zoneUUID))
 	        					binderId = bs.getBinderModule().getZoneBinderId(binderId, zoneUUID, EntityType.folder.name());
 	        				if (binderId == null) continue;
 	        				Binder binder = bs.getBinderModule().getBinder(binderId);
@@ -840,7 +842,7 @@ public class DefinitionHelper {
 	        				if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ZONE_UUID)) {
 	        					zoneUUID = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ZONE_UUID);
 	        				}
-	        				if (!zoneInfo.getId().equals(zoneUUID))
+	        				if (!zoneInfoId.equals(zoneUUID))
 	        					entryId = bs.getFolderModule().getZoneEntryId(entryId, zoneUUID);
 	        				if (entryId == null) continue;
 	        				FolderEntry entry = bs.getFolderModule().getEntry(null, entryId);
@@ -915,6 +917,8 @@ public class DefinitionHelper {
 	
 	public static String fixupMashupCanvasForExport(String mashupValue) {
 		ZoneInfo zoneInfo = ExportHelper.getZoneInfo();
+		String zoneInfoId = zoneInfo.getId();
+		if (zoneInfoId == null) zoneInfoId = "";
 		Map mashupEntries = new HashMap();
 		Map mashupBinders = new HashMap();
 		Map mashupBinderEntries = new HashMap();
@@ -940,22 +944,22 @@ public class DefinitionHelper {
     				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ENTRY_ID) &&
     				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID).equals("") &&
     				!mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ZONE_UUID)) {
-    			mashupValues[i] = mashupValues[i].replaceFirst(",", ",zoneUUID="+zoneInfo.getId()+",");
+    			mashupValues[i] = mashupValues[i].replaceFirst(",", ",zoneUUID="+zoneInfoId+",");
     		} else if (ObjectKeys.MASHUP_TYPE_FOLDER.equals(type) && 
     				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_FOLDER_ID) && 
     				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_FOLDER_ID).equals("") &&
     				!mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ZONE_UUID)) {
-    			mashupValues[i] = mashupValues[i].replaceFirst(",", ",zoneUUID="+zoneInfo.getId()+",");
+    			mashupValues[i] = mashupValues[i].replaceFirst(",", ",zoneUUID="+zoneInfoId+",");
     		} else if (ObjectKeys.MASHUP_TYPE_BINDER_URL.equals(type) && 
     				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_BINDER_ID) && 
     				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_BINDER_ID).equals("") &&
     				!mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ZONE_UUID)) {
-    			mashupValues[i] = mashupValues[i].replaceFirst(",", ",zoneUUID="+zoneInfo.getId()+",");
+    			mashupValues[i] = mashupValues[i].replaceFirst(",", ",zoneUUID="+zoneInfoId+",");
     		} else if (ObjectKeys.MASHUP_TYPE_ENTRY_URL.equals(type) && 
     				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ENTRY_ID) && 
     				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID).equals("") &&
     				!mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ZONE_UUID)) {
-    			mashupValues[i] = mashupValues[i].replaceFirst(",", ",zoneUUID="+zoneInfo.getId()+",");
+    			mashupValues[i] = mashupValues[i].replaceFirst(",", ",zoneUUID="+zoneInfoId+",");
     		}
     	}
     	String result = "";

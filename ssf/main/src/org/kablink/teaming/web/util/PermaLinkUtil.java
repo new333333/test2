@@ -45,6 +45,7 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
 
@@ -157,7 +158,7 @@ public class PermaLinkUtil {
 		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-		adapterUrl.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
+		if (Validator.isNotNull(zoneUUID)) adapterUrl.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
 		if (normalizedTitle != null && !normalizedTitle.equals("")) {
 			adapterUrl.setParameter(WebKeys.URL_ENTRY_TITLE, normalizedTitle);
 			adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityType.folderEntry.name());

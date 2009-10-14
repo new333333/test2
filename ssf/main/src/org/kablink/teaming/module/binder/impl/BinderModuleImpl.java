@@ -1903,7 +1903,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	public Long getZoneBinderId(Long binderId, String zoneUUID, String entityType) {
-		if (zoneUUID.equals("")) return binderId;
+		if (Validator.isNull(zoneUUID)) return binderId;
 		List<Long> ids = getCoreDao().findZoneEntityIds(binderId, zoneUUID, entityType);
 		if (ids.isEmpty()) return null;
 		return ids.get(0);

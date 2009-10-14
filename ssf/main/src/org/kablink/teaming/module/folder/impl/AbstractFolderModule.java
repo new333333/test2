@@ -1190,7 +1190,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 		return arCount.get();
 	}
 	public Long getZoneEntryId(Long entryId, String zoneUUID) {
-		if (zoneUUID.equals("")) return entryId;
+		if (Validator.isNull(zoneUUID)) return entryId;
 		List<Long> ids = getCoreDao().findZoneEntityIds(entryId, zoneUUID, EntityType.folderEntry.name());
 		if (ids.isEmpty()) return null;
 		return ids.get(0);
