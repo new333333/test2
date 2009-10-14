@@ -167,8 +167,7 @@
 				    action="__ajax_mobile"
 				    operation="mobile_show_workspace"
 				    binderId="${entryWn._principal.workspaceId}" />"
-				  ><span class="ss_mobile_light ss_mobile_small"
-				  ><c:out value="${entryWn._principal.title}" escapeXml="true"/></span></a>
+				  ><c:out value="${entryWn._principal.title}" escapeXml="true"/></a>
 				</span>
 	
 			  	<span class="entry-date">
@@ -190,18 +189,16 @@
 	     			<a href="<ssf:url adapter="true" portletName="ss_forum" 
 						folderId="${entryWn._binderId}" 
 						action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />"
-					 >
-			  		 <span>${title}</span></a>
+					 >${title}</a>
 				</c:if>
 				</span>
 			  </div>
 			
 			  <c:if test="${!empty entryWn._desc}">
 			    <div class="entry-content">
-			    	<span style="border:#cecece solid 1px;"><ssf:textFormat 
+			    	<ssf:textFormat 
 			      	  formatAction="limitedDescription" 
 			          textMaxWords="20"><ssf:markup search="${entryWn}">${entryWn._desc}</ssf:markup></ssf:textFormat>
-			        </span>
 		  	    </div>
 			  </c:if>
 		

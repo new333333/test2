@@ -39,32 +39,47 @@
 <c:if test="${ssEntry == ssDefinitionEntry}" >
   <c:if test="${!empty ssFolderEntryDescendants}">
 
-<div style="padding-top:15px;">
-<hr width="80%"></hr>
-<c:if test="${!empty property_caption}">
-<span class="entry-caption">${property_caption}</span>
-<br/>
-</c:if>
+<div class="folder-head">
+  <img class="margin5r" align="absmiddle" src="<html:imagesPath/>mobile/comments_16.png"/>
+  <c:if test="${!empty property_caption}">
+    <span class="entry-caption">${property_caption}</span>
+  </c:if>
+  <c:if test="${empty property_caption}">
+    <ssf:nlt tag="mobile.comments"/>
+  </c:if>
+  (<span class="font-red">${ssDefinitionEntry.totalReplyCount}</span>)
+</div>
+
 
 <c:forEach var="reply" items="${ssFolderEntryDescendants}">
   <jsp:useBean id="reply" type="org.kablink.teaming.domain.Entry" />
-  <div style="padding-bottom:16px;">
+  <c:if test="${ssEntry == reply.parentEntry}">
+    <c:set var="commentClass" value="comment"/>
+    <c:set var="commentImg" value="comments_22.png"/>
+  </c:if>
+  <c:if test="${ssEntry != reply.parentEntry}">
+    <c:set var="commentClass" value="comment2"/>
+    <c:set var="commentImg" value="comments_16.png"/>
+  </c:if>
+  <div class="${commentClass}">
+    <img class="comment-img" src="<html:imagesPath/>mobile/${commentImg}"/>
 
-  <c:if test="${!empty reply.entryDef}">
+	<c:set var="ss_showSignatureAfterTitle" value="false" scope="request"/>
+	<c:set var="ss_signatureShown" value="false" scope="request"/>
+    <c:if test="${!empty reply.entryDef}">
  	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 		configElement='<%= (Element) reply.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name=\'entryView\' or @name=\'profileEntryView\' or @name=\'fileEntryView\']") %>' 
 		configJspStyle="${ssConfigJspStyle}" 
 		processThisItem="false" 
 		entry="<%= reply %>" />
-  </c:if>
-  <c:if test="${empty reply.entryDef}">
+    </c:if>
+    <c:if test="${empty reply.entryDef}">
  	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 		configElement="${ssConfigElement}" 
 		configJspStyle="${ssConfigJspStyle}" 
 		processThisItem="false" 
 		entry="<%= reply %>" />
-  </c:if>
- 
+    </c:if>
   </div>
 
 </c:forEach>
