@@ -204,6 +204,9 @@ public class ExportHelper {
 	public static final String folders = "folders";
 	public static final String entries = "entries";
 	public static final String files = "files";
+	
+	//Export version number. Used to distinguish between export file formats 
+	public static final String exportVersion = "1";
 
 	// used during export so that all id's are at least 8 digits long,
 	// with leading zeroes
@@ -667,6 +670,7 @@ public class ExportHelper {
 		}
 
 		entityElem.addAttribute("title", entity.getTitle());
+		addExportVersion(entityElem, entity);
 		addZoneId(entityElem, entity);
 		addEntitySignature(entityElem, entity);
 		
@@ -712,6 +716,10 @@ public class ExportHelper {
 			element.addAttribute("ratingCount", entity.getAverageRating()
 					.getCount().toString());
 		}
+	}
+
+	private static void addExportVersion(Element element, DefinableEntity entity) {
+		element.addAttribute("exportVersion", exportVersion);
 	}
 
 	private static void addZoneId(Element element, DefinableEntity entity) {
