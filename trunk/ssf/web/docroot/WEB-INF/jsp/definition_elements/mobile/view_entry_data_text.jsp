@@ -35,5 +35,8 @@
 <% //Text view %>
 <div class="entry-content">
   <div class="entry-caption"><c:out value="${property_caption}" /></div>
-  <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}" escapeXml="false"/>
+  <div class="entry-element">
+    <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}" escapeXml="false"/>
+    <div style="clear:both;"></div>
+  </div>
 </div>

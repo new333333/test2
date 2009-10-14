@@ -64,16 +64,16 @@
 		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_radio.jsp" %><%
 		
 	} else if (itemType.equals("date")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_date.jsp" %><%
+		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_date.jsp" %><%
 	
 	} else if (itemType.equals("date_time")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_date_time.jsp" %><%
+		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_date_time.jsp" %><%
 		
 	} else if (itemType.equals("file")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_file.jsp" %><%
+		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_file.jsp" %><%
 		
 	} else if (itemType.equals("graphic")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_graphic.jsp" %><%
+		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_graphic.jsp" %><%
 		
 	} else if (itemType.equals("user_list") || itemType.equals("userListSelectbox")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_user_list.jsp" %><%
@@ -91,9 +91,10 @@
 		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_survey.jsp" %><%
 
 	} else if (itemType.equals("event")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_event.jsp" %><%
+		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_event.jsp" %><%
+	
 	} else if (itemType.equals("places")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_places.jsp" %><%
+		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_places.jsp" %><%
 
 	} else if (itemType.equals("entryAttributes")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/entry_attributes_view.jsp" %><%

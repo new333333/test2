@@ -36,28 +36,15 @@
 <c:set var="grouplist_entry" value="${ssDefinitionEntry}"/>
 <jsp:useBean id="grouplist_entry" type="org.kablink.teaming.domain.Entry" />
 
-<c:if test="${empty ss_element_display_style}">
 <div class="entry-content">
-<span class="entry-caption"><c:out value="${property_caption}" /></span><br/>
-<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(grouplist_entry.getCustomAttribute(property_name)) %>" >
-<ssf:showGroup group="${selection}" /><br/>
+<div class="entry-caption"><c:out value="${property_caption}" /></div>
+<c:forEach var="selection" 
+    items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(grouplist_entry.getCustomAttribute(property_name)) %>" >
+  <div class="entry-element">
+    <ssf:showGroup group="${selection}" />
+  </div>
 </c:forEach>
 </div>
-</c:if>
-
-<c:if test="${!empty ss_element_display_style && 
-    ss_element_display_style == 'tableAlignLeft'}">
-<tr>
-  <td class="ss_table_spacer_right" valign="top" align="right">
-    <span class="entry-caption"><c:out value="${property_caption}" /></span>
-  </td>
-  <td valign="top" align="left">
-	<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(grouplist_entry.getCustomAttribute(property_name)) %>" >
- 	 <ssf:showGroup group="${selection}" /><br/>
-	</c:forEach>
-  </td>
-</tr>
-</c:if>
 
 
 

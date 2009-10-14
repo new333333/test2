@@ -32,20 +32,17 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% //User_list view %>
-<c:set var="userlist_entry" value="${ssDefinitionEntry}"/>
-<jsp:useBean id="userlist_entry" type="org.kablink.teaming.domain.Entry" />
+<% //Graphic view %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
+<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
 <div class="entry-content">
 <div class="entry-caption"><c:out value="${property_caption}" /></div>
-  <c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(userlist_entry.getCustomAttribute(property_name), false) %>" >
-    <div class="entry-element"><ssf:showUser user="${selection}" /></div>
-  </c:forEach>
+<c:set var="selections" value="${ssDefinitionEntry.customAttributes[property_name].value}" />
+<c:forEach var="selection" items="${selections}">
+  <div class="entry-element">
+    <img border="0" src="<ssf:fileUrl webPath="readScaledFile" file="${selection}"/>" alt="${property_caption}" />
+  </div>
+</c:forEach>
 </div>
-
-
-
-
-
-
-
+</c:if>
