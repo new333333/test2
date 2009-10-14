@@ -32,4 +32,4 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% //Accessory panel. Accessories are not implemented in mobile UI. %>
+<% //Folder list. Folder lists are handled by the wrapper jsp. Don't show them again. %>

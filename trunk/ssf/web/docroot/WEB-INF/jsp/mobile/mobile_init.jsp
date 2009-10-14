@@ -56,6 +56,10 @@
 <script type="text/javascript" src="<html:rootPath/>js/jquery/ui.core.js"></script>
 <script type="text/javascript" 
   src="<html:rootPath/>js/common/ss_mobile.js?startTime=<%= org.kablink.teaming.util.ReleaseInfo.getStartTime() %>"></script>
+
+<c:if test="${!empty ss_mashupCss}">
+  <link href="<html:rootPath/>${ss_mashupCss}" rel="stylesheet" type="text/css" />
+</c:if>
 <link href="<html:rootPath/>css/ss_mobile_common.css" rel="stylesheet" type="text/css" />
 <%
 	if (1 == 0 && isWap) {

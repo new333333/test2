@@ -743,6 +743,7 @@
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_folder_title.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_binder_title.jsp" />
 		</jsps>
 	</item>
 	
@@ -800,6 +801,7 @@
 	<item name="folderList" caption="__folder_listing" category="folderViewData"  display="view">
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/folder_list.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/folder_list.jsp" />
 		</jsps>
 	</item>
 		
@@ -1651,6 +1653,7 @@
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_workspace_title.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_binder_title.jsp" />
 		</jsps>
 	</item>
 	
@@ -1680,12 +1683,14 @@
 		</option_entry_data>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_workspace_data.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_workspace_data.jsp" />
 		</jsps>
 	</item>
 	
 	<item name="workspaceBinderList" caption="__workspace_binder_list" category="workspaceViewData" display="view">
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/workspace_binder_list.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/workspace_binder_list.jsp" />
 		</jsps>
 	</item>
 		

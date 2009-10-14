@@ -1242,6 +1242,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}
 	
 	public List<Long> findZoneEntityIds(Long entityId, String zoneUUID, String entityType) {
+    	if (Validator.isNull(zoneUUID)) return new ArrayList<Long>();
     	//Load customAttributes
      	//Cannot criteria query, cause different order-by is specified in mapping files and it appears to take precedence
        	final String id = zoneUUID + "." + entityId;

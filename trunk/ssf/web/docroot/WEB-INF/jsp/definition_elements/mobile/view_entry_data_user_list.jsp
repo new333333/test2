@@ -34,7 +34,7 @@
 %>
 <% //User_list view %>
 <c:set var="userlist_entry" value="${ssDefinitionEntry}"/>
-<jsp:useBean id="userlist_entry" type="org.kablink.teaming.domain.Entry" />
+<jsp:useBean id="userlist_entry" type="org.kablink.teaming.domain.DefinableEntity" />
 
 <div class="entry-content">
 <div class="entry-caption"><c:out value="${property_caption}" /></div>

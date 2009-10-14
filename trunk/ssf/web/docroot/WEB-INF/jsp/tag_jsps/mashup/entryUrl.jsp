@@ -54,13 +54,12 @@
 <div class="ss_mashup_url_content">
   <c:if test="${!empty mashupEntry}">
     <a <c:if test="${!empty mashup_attributes['popup']}"> target="_blank" </c:if>
-      href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
-		  action="view_folder_entry" 
-		  folderId="${mashupEntry.parentBinder.id}"
-		  entryId="${mashupEntry.id}">
-		  <ssf:param name="entryViewStyle" value="full"/>
-		  <ssf:param name="newTab" value="1"/>
-		  </ssf:url>">
+      href="<ssf:url adapter="true" portletName="ss_forum" 
+						    action="view_permalink"
+						    binderId="${mashupEntry.parentBinder.id}"
+						    entryId="${mashupEntry.id}">
+						    <ssf:param name="entityType" value="folderEntry" />
+							</ssf:url>">
 	  <c:if test="${empty mashup_attributes['title']}">
 	    <span>${mashupEntry.title}</span>
 	  </c:if>
