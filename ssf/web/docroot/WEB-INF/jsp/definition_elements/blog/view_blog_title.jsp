@@ -71,7 +71,7 @@
 		if ("reply".equals(entryType) && ((FolderEntry)thisEntry).getDocNumber() != null) {
 			int i = docNumber.indexOf(".");
 			if (i > 0) {
-				docNumber = docNumber.subSequence(i+1, docNumber.length()) + ". ";
+				docNumber = docNumber.subSequence(i+1, docNumber.length()) + " ";
 			}
 		}
 		if (!ssSeenMap.checkIfSeen((FolderEntry)thisEntry)) seen = false;
