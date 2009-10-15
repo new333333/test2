@@ -33,14 +33,12 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-<div id="wrapper">
+<div class="entry">
 
-<table class="ss_style" cellpadding="10" width="100%"><tr><td>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 	configElement="${ssConfigElement}" 
 	configJspStyle="mobile" 
 	processThisItem="true" />
-</td></tr></table>
 
 </div>
 

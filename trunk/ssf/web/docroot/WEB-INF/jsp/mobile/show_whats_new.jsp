@@ -111,9 +111,10 @@
 		  <span style="padding:10px;" class="ss_italic"><ssf:nlt tag="whatsnew.noEntriesFound"/></span>
 		</c:if>
 
-	    <c:forEach var="entryWn" items="${ss_whatsNewBinder}">
-	    	<jsp:useBean id="entryWn" type="java.util.Map" />
-			<div class="folder-item">
+        <c:forEach var="entryWn" items="${ss_whatsNewBinder}">
+	      <jsp:useBean id="entryWn" type="java.util.Map" />
+	      <div class="entry">
+			<div class="entry-title">
 			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				folderId="${entryWn._binderId}"  entryId="${entryWn._docId}"
 				action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />"
@@ -122,28 +123,24 @@
 			  	  <ssf:makeWrapable><c:out value="${entryWn.title}" escapeXml="true"/></ssf:makeWrapable>
 			  	</span>
 			  </a>
-		 
-		  	  <br/>
-		  	  <div style="padding-left:14px;">
-			  	  <img src="<html:rootPath/>images/pics/sym_s_gray_dude.gif" 
-			  	    width="11" height="10" hspace="2" border="0" style="vertical-align:middle" 
-			  	    <ssf:alt tag=""/> />
-				  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+			</div>
+			
+			<div>
+				 <span class="entry-author"><a href="<ssf:url adapter="true" portletName="ss_forum" 
 				    action="__ajax_mobile"
 				    operation="mobile_show_workspace"
 				    binderId="${entryWn._principal.workspaceId}" />"
-				  ><span class="ss_mobile_light ss_mobile_small"
-				  ><c:out value="${entryWn._principal.title}" escapeXml="true"/></span></a>
+				 ><c:out value="${entryWn._principal.title}" escapeXml="true"/></a></span>
 	
-			  	 <span>
+			  	 <span class="entry-date">
 			    	<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 		          	value="${entryWn._modificationDate}" type="both" 
 			      	timeStyle="short" dateStyle="medium" />
 			  	 </span>
 		   
-		  	  </div>
+		  	</div>
 		  
-		  	  <div style="padding-left:14px;">
+		  	<div class="entry-type">
 				<c:set var="path" value=""/>
 				<c:if test="${!empty ss_whatsNewBinderFolders[entryWn._binderId]}">
 				  <c:set var="path" value="${ss_whatsNewBinderFolders[entryWn._binderId]}"/>
@@ -160,20 +157,20 @@
 					 >
 			  		 <span>${title}</span></a>
 				</c:if>
-			  </div>
+			</div>
 			
 			  <c:if test="${!empty entryWn._desc}">
-			    <div style="padding-left:14px;">
+			    <div class="entry-content">
 			    	<span style="border:#cecece solid 1px;"><ssf:textFormat 
 			      	  formatAction="limitedDescription" 
-			          textMaxWords="10"><ssf:markup search="${entryWn}">${entryWn._desc}</ssf:markup></ssf:textFormat>
+			          textMaxWords="20"><ssf:markup search="${entryWn}">${entryWn._desc}</ssf:markup></ssf:textFormat>
 			        </span>
 			        <div style="clear: both;"></div>
 		  	    </div>
 			  </c:if>
 		
-	    	</div>
-          </c:forEach>
+	      </div>
+        </c:forEach>
   
 	  <div style="padding:14px 0px 10px 20px;">
 		<c:if test="${ss_pageNumber > '0'}">

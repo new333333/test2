@@ -177,8 +177,8 @@
 			  	</span>
 		  	  </div>
 		  
-		  	  <div>
-		  	    <span class="entry-type">
+		  	  <div class="entry-type">
+		  	    <span>
 				<c:set var="path" value=""/>
 				<c:if test="${!empty ss_whatsNewBinderFolders[entryWn._binderId]}">
 				  <c:set var="path" value="${ss_whatsNewBinderFolders[entryWn._binderId]}"/>
