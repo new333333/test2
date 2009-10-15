@@ -149,13 +149,10 @@ public class WebHelper {
 		HttpServletRequest req = null;
 		ActionRequest actionRequest;
 		
-		// The request parameter is actually a ParamsWrappedActionRequest object.  Get the real ActionRequest object.
-		if ( request instanceof ParamsWrappedActionRequest ) {
-			actionRequest = ((ParamsWrappedActionRequest)request).getActionRequest();
-			if ( actionRequest instanceof HttpServletRequestReachable ) {
-				req = ((HttpServletRequestReachable)actionRequest).getHttpServletRequest();
-			}
+		if(request instanceof HttpServletRequestReachable) {
+			req = ((HttpServletRequestReachable)request).getHttpServletRequest();
 		}
+		
 		return req;
 	}
 	
