@@ -76,4 +76,4 @@
 	
   </div>
 </c:if>
- 
+<c:set var="ss_mobileBinderListShown" value="true" scope="request"/>
