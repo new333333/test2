@@ -47,7 +47,7 @@
   <div class="folders">
     <div class="folder-content">
 
-	  <div align="right" style="padding-right:8px;">
+	  <div class="folder-head" align="right" style="padding-right:8px;">
 	    <a href="<ssf:url adapter="true" portletName="ss_forum" 
 						folderId="${ssBinder.id}" 
 						entryId="${ssEntry.id}"

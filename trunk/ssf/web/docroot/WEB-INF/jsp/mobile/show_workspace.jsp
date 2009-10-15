@@ -65,6 +65,11 @@
 	configElement="${ssConfigElement}" 
 	configJspStyle="mobile" 
 	entry="${ssDefinitionEntry}" />
+	
+<c:if test="${empty ss_mobileBinderListShown}">
+  <%@ include file="/WEB-INF/jsp/definition_elements/mobile/workspace_binder_list.jsp" %>
+</c:if>
+
 </c:if>
 
 </div>
