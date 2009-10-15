@@ -77,7 +77,10 @@
   </div>
 </div>
   
-  
+<div class="footerbar">
+<img id="logo" src="<html:imagesPath/>mobile/N_logo_22.png"/>
+<div class="copyright">Copyright Novell, Inc. 2000-2009. All rights reserved.</div>
+</div>  
   
 <script type="text/javascript">
 	var formObj = self.document.getElementById('loginForm');
