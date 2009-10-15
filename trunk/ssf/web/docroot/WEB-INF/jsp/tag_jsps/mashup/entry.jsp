@@ -72,11 +72,10 @@
 		  <c:set var="spanClass" value="ss_largeprint ss_bold" />
 		</c:if>
 		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
-		  action="view_folder_entry" 
-		  folderId="${mashupEntry.parentBinder.id}"
+		  action="view_permalink" 
+		  binderId="${mashupEntry.parentBinder.id}"
 		  entryId="${mashupEntry.id}">
-		  <ssf:param name="entryViewStyle" value="full"/>
-		  <ssf:param name="newTab" value="1"/>
+		  <ssf:param name="entityType" value="folderEntry"/>
 		  </ssf:url>"><span class="${spanClass}">${mashupEntry.title}</span></a>
 		  <c:if test="${ssConfigJspStyle == 'form'}">
 		    <span class="ss_italic ss_smallprint">(${mashupEntry.parentBinder.pathName})</span>

@@ -39,6 +39,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -49,6 +50,7 @@ import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
@@ -61,6 +63,7 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
+import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -104,6 +107,9 @@ public class ViewPermalinkController  extends SAbstractController {
 		}
 	}
 	protected String processRequest(ActionRequest request) {
+		HttpServletRequest httpReq = WebHelper.getHttpServletRequest(request);
+		boolean isMobile = false;
+		if (httpReq != null) isMobile = BrowserSniffer.is_mobile(httpReq);
 		//binderId is not longer required on all entries
 		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
@@ -123,36 +129,55 @@ public class ViewPermalinkController  extends SAbstractController {
  		if (Validator.isNotNull(fileName)) return getFileUrlByName(request, entityType, binderId, entryId, fileName);
 
 		if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) { //folderEntry
-			//entries move so the binderId may not be valid
-			if (Validator.isNotNull(entryId)) {
+			if (isMobile && Validator.isNotNull(entryId)) {
 				entity = getFolderModule().getEntry(null, Long.valueOf(entryId));
 				url.setParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());
 				url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+				url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MOBILE_AJAX);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_ENTRY);
 			} else {
-				entity = getBinderModule().getBinder(Long.valueOf(binderId));				
-				url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
-				url.setParameter(WebKeys.URL_ENTRY_TITLE, entryTitle);
+				//entries move so the binderId may not be valid
+				if (Validator.isNotNull(entryId)) {
+					entity = getFolderModule().getEntry(null, Long.valueOf(entryId));
+					url.setParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());
+					url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+				} else {
+					entity = getBinderModule().getBinder(Long.valueOf(binderId));				
+					url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
+					url.setParameter(WebKeys.URL_ENTRY_TITLE, entryTitle);
+				}
+				boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
+				User user = RequestContextHolder.getRequestContext().getUser();
+				String displayStyle = user.getDisplayStyle();
+				if (ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE.equals(displayStyle) || 
+						(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) && accessible_simple_ui)) {
+					url.setParameter(WebKeys.URL_ACTION, "view_folder_entry");
+				} else {
+					url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");
+				}
+				url.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, WebKeys.URL_ENTRY_VIEW_STYLE_FULL);
 			}
-			boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
-			User user = RequestContextHolder.getRequestContext().getUser();
-			String displayStyle = user.getDisplayStyle();
-			if (ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE.equals(displayStyle) || 
-					(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) && accessible_simple_ui)) {
-				url.setParameter(WebKeys.URL_ACTION, "view_folder_entry");
-			} else {
-				url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");
-			}
-			url.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, WebKeys.URL_ENTRY_VIEW_STYLE_FULL);
 		} else	if (entityType.isBinder() || entityType.equals(EntityIdentifier.EntityType.none)) {
 			entity = getBinderModule().getBinder(Long.valueOf(binderId));
 			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 			entityType = entity.getEntityType();
-			if (entityType.equals(EntityIdentifier.EntityType.workspace)) {
-				url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
-			} else if (entityType.equals(EntityIdentifier.EntityType.profiles)) {
-				url.setParameter(WebKeys.URL_ACTION, "view_profile_listing");
+			if (isMobile) {
+				url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MOBILE_AJAX);
+				if (entityType.equals(EntityIdentifier.EntityType.workspace)) {
+					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_WORKSPACE);
+				} else if (entityType.equals(EntityIdentifier.EntityType.profiles)) {
+					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_WORKSPACE);
+				} else {
+					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FOLDER);				
+				}
 			} else {
-				url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");				
+				if (entityType.equals(EntityIdentifier.EntityType.workspace)) {
+					url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
+				} else if (entityType.equals(EntityIdentifier.EntityType.profiles)) {
+					url.setParameter(WebKeys.URL_ACTION, "view_profile_listing");
+				} else {
+					url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");				
+				}
 			}
 			
 		} else if (entityType.isPrincipal()) {

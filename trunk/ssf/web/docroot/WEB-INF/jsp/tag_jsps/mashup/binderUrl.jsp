@@ -55,9 +55,9 @@
   <c:if test="${!empty mashupBinder}">
     <a <c:if test="${!empty mashup_attributes['popup']}"> target="_blank" </c:if>
       href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
-		  action="view_folder_listing" 
-		  folderId="${mashupBinder.id}">
-		  <ssf:param name="newTab" value="1"/>
+		  action="view_permalink" 
+		  binderId="${mashupBinder.id}">
+		  <ssf:param name="entityType" value="${mashupBinder.entityType}"/>
 		  </ssf:url>">
 	  <c:if test="${empty mashup_attributes['title']}">
 	    <span>${mashupBinder.title}</span>

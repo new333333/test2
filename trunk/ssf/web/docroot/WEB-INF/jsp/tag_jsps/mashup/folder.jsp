@@ -72,9 +72,9 @@
 		  <span><ssf:nlt tag="mashup.type.folder"/>: </span>
 		</c:if>
 		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
-		  action="view_folder_listing" 
-		  folderId="${mashupBinder.id}">
-		  <ssf:param name="newTab" value="1"/>
+		  action="view_permalink" 
+		  binderId="${mashupBinder.id}">
+		  <ssf:param name="entityType" value="${mashupBinder.entityType}"/>
 		  </ssf:url>"><span>${mashupBinder.title}</span></a>
 		<c:if test="${ssConfigJspStyle == 'form'}">
 		  <span class="ss_italic ss_smallprint ss_normal">(${mashupBinder.parentBinder.pathName})</span>
@@ -93,10 +93,10 @@
 	    <c:if test="${empty mashup_attributes['entriesToShow'] || status.count <= mashup_attributes['entriesToShow']}">
 	      <div style="padding-left:6px;">
 	        <a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"    
-		      action="view_folder_entry" 
+		      action="view_permalink" 
 		      binderId="${entry._binderId}"
 		      entryId="${entry._docId}"
-		      ><ssf:param name="entryViewStyle" value="full"/>
+		      ><ssf:param name="entityType" value="folderEntry"/>
 		      </ssf:url>">
 	          <span>${entry.title}</span>
 	        </a>
@@ -111,11 +111,10 @@
 	      <div class="ss_mashup_folder_list_open">
 			<div class="ss_mashup_folder_list_open_title">
 			  <a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
-			      action="view_folder_entry" 
-				  folderId="${entry._binderId}"
+			      action="view_permalink" 
+				  binderId="${entry._binderId}"
 				  entryId="${entry._docId}">
-				  <ssf:param name="entryViewStyle" value="full"/>
-				  <ssf:param name="newTab" value="1"/>
+				  <ssf:param name="entityType" value="folderEntry"/>
 				  </ssf:url>">
 		  	    <span>${entry.title}</span>
 		  	  </a>
