@@ -48,11 +48,13 @@ import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletSession;
 import javax.portlet.WindowState;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.portletadapter.portlet.HttpServletResponseReachable;
 
-public class ParamsWrappedActionRequest implements ActionRequest, HttpServletResponseReachable {
+public class ParamsWrappedActionRequest implements ActionRequest, HttpServletRequestReachable {
 
 	private ActionRequest req; // the real one
 	
@@ -243,9 +245,9 @@ public class ParamsWrappedActionRequest implements ActionRequest, HttpServletRes
 		req.setCharacterEncoding(arg0);
 	}
 
-	public HttpServletResponse getHttpServletResponse() {
-		if(req instanceof HttpServletResponseReachable)
-			return ((HttpServletResponseReachable)req).getHttpServletResponse();
+	public HttpServletRequest getHttpServletRequest() {
+		if(req instanceof HttpServletRequestReachable)
+			return ((HttpServletRequestReachable)req).getHttpServletRequest();
 		else
 			throw new UnsupportedOperationException(); // This shouldn't happen...
 	}
