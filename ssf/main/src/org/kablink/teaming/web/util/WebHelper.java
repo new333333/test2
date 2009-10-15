@@ -145,6 +145,20 @@ public class WebHelper {
 		return false;
 	}
 	
+	public static HttpServletRequest getHttpServletRequest(PortletRequest request) {
+		HttpServletRequest req = null;
+		ActionRequest actionRequest;
+		
+		// The request parameter is actually a ParamsWrappedActionRequest object.  Get the real ActionRequest object.
+		if ( request instanceof ParamsWrappedActionRequest ) {
+			actionRequest = ((ParamsWrappedActionRequest)request).getActionRequest();
+			if ( actionRequest instanceof HttpServletRequestReachable ) {
+				req = ((HttpServletRequestReachable)actionRequest).getHttpServletRequest();
+			}
+		}
+		return req;
+	}
+	
 	public static String getRequiredUserName(HttpServletRequest request) 
 	throws IllegalStateException {
 		HttpSession ses = getRequiredSession(request);			
