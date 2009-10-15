@@ -306,13 +306,21 @@ span.pad-left20 {
 .entry-content {
 	font-size: 16px;
 	color: #666;
-	padding: 8px 0px 0px 2px;
+	padding-top: 8px;
 	}
 .entry-element {
 	font-size: 14px;
 	color: #666;
 	padding-top: 4px;
 	padding-left: 12px;
+	}
+.entry-docNumber {
+	padding-right: 6px;
+	}
+.entry-binder-title {
+	font-size: 9px;
+	padding-right: 6px;
+	color: #ccc;
 	}
 .entry-caption {
 	font-weight: bold;
@@ -570,6 +578,7 @@ table.ss_mobile_calendar td {
 	}
 	
 .ss_form_wrap {
+	background-color: #fff;
 	border-top-width: 14px;
 	border-right-width: thin;
 	border-bottom-width: thin;

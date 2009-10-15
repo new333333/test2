@@ -56,7 +56,7 @@
 <script type="text/javascript" src="<html:rootPath/>js/jquery/ui.core.js"></script>
 <script type="text/javascript" 
   src="<html:rootPath/>js/common/ss_mobile.js?startTime=<%= org.kablink.teaming.util.ReleaseInfo.getStartTime() %>"></script>
-
+<c:set var="ss_isMobile" value="true" scope="request" />
 <c:if test="${!empty ss_mashupCss}">
   <link href="<html:rootPath/>${ss_mashupCss}" rel="stylesheet" type="text/css" />
 </c:if>

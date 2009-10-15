@@ -41,12 +41,16 @@
 <%
 	Map entriesSeen = new HashMap();
 %>
-<div id="wrapper">
+<c:set var="ss_pageTitle" value="${ss_windowTitle}" scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
-<div id="pagebody">
 
-<div class="pagebody">
-	<h3 align="center"><ssf:nlt tag="mobile.searchResults"/></h3>
+<div class="content">
+
+<%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
+
+  <div class="folders">
+    <div class="folder-content">
+
   	<div align="right">
 	  <table>
 		<tr>
@@ -90,7 +94,6 @@
 	  </table>
 	</div>
 
-	<table cellspacing="2" cellpadding="4">
 		<c:forEach var="entry" items="${ssFolderEntries}" varStatus="status">
 			<jsp:useBean id="entry" type="java.util.HashMap" />
 			<%
@@ -107,13 +110,11 @@
 			
 				<c:choose>
 			  		<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'entry'}">
-					    <tr>
-					      <td valign="top" align="right">
+					  <div class="entry">
+						<div class="entry-title">
 						    <c:if test="${!empty entry._docNum}">
-						      <span>${entry._docNum}</span>
+						      <span class="entry-docNumber">${entry._docNum}.</span>
 						    </c:if>
-						  </td>
-						  <td style="padding-left: 4px;">
 							<a href="<ssf:url adapter="true" portletName="ss_forum" 
 							folderId="${entryBinderId}" entryId="${entry._docId}"
 							action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />">
@@ -123,21 +124,20 @@
 							<c:out value="${entry.title}" escapeXml="true"/>
 							</a>
 						    <c:if test="${!empty entry.binderTitle}">
-							  <div style="padding-left:10px;">
-							    <span style="font-size:9px; color:silver;">(${entry.binderTitle})</span>
+							  <div class="entry-binder-title">
+							    <span class="entry-binder-title">(${entry.binderTitle})</span>
 							  </div>
 						    </c:if>
-					      </td>
-					    </tr>
+						</div>
+					  </div>
 						<%
 							entriesSeen.put(entry.get("_docId"), "1");
 						%>
 				    </c:when>
 			
 			  		<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'attachment'}">
-					    <tr>
-					      <td></td>
-					      <td style="padding-left: 4px;">
+					  <div class="entry">
+						<div class="entry-title">
 							<a href="<ssf:fileUrl search="${entry}"/>">
 						    <c:if test="${empty entry.title}">
 						    	(<ssf:nlt tag="entry.noTitle"/>)
@@ -154,59 +154,57 @@
 							<c:out value="${entry.title}" escapeXml="true"/>
 							</a></span>
 							</div>
-						    <c:if test="${!empty entry.binderTitle}">
-							  <div style="padding-left:10px;">
-							    <span style="font-size:9px; color:silver;">(${entry.binderTitle})</span>
-							  </div>
-						    </c:if>
-					      </td>
-					    </tr>
-				  </c:when>
+						</div>
+						<c:if test="${!empty entry.binderTitle}">
+						  <div class="entry-binder-title">
+							<span>${entry.binderTitle}</span>
+						  </div>
+						</c:if>
+					  </div>
+				    </c:when>
 			
-				  <c:when test="${entry._docType == 'binder'}">
-					<tr>
-					  <td></td>
-					  <td style="padding-left: 4px;">
-						<c:if test="${entry._entityType == 'folder'}">
+				    <c:when test="${entry._docType == 'binder'}">
+					  <div class="entry">
+						<div class="entry-title">
+						  <c:if test="${entry._entityType == 'folder'}">
 							<a href="<ssf:url adapter="true" portletName="ss_forum" 
 							folderId="${entry._docId}" 
 							action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
 							<c:out value="${entry.title}" escapeXml="true"/>
 							</a>
-						</c:if>
-						<c:if test="${entry._entityType == 'workspace'}">
+						  </c:if>
+						  <c:if test="${entry._entityType == 'workspace'}">
 							<a href="<ssf:url adapter="true" portletName="ss_forum" 
 							folderId="${entry._docId}" 
 							action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
 							<c:out value="${entry.title}" escapeXml="true"/>
 							</a>
-						</c:if>
-					    <c:if test="${!empty entry._extendedTitle}">
-						  <div style="padding-left:10px;">
-						    <span style="font-size:9px; color:silver;">(${entry._extendedTitle})</span>
-						  </div>
-					    </c:if>
-					  </td>
-					</tr>
+						  </c:if>
+					      <c:if test="${!empty entry._extendedTitle}">
+						    <div class="entry-binder-title">
+						      <span>(${entry._extendedTitle})</span>
+						    </div>
+					      </c:if>
+						</div>
+					  </div>
 					<%
 						entriesSeen.put(entry.get("_docId"), "1");
 					%>
 			      </c:when>
 
 			  	  <c:when test="${entry._entityType == 'user'}">
-					<tr>
-					  <td></td>
-					  <td style="padding-left: 4px;">
-						<a href="<ssf:url adapter="true" portletName="ss_forum" 
-						folderId="${entry._workspaceId}"
-						action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
-						<c:out value="${entry.title}" escapeXml="true"/>
-						</a>
-					  </td>
-					</tr>
-						<%
-							entriesSeen.put(entry.get("_docId"), "1");
-						%>
+					  <div class="entry">
+						<div class="entry-title">
+						  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+						    folderId="${entry._workspaceId}"
+						    action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
+						    <c:out value="${entry.title}" escapeXml="true"/>
+						  </a>
+						</div>
+					  </div>
+					  <%
+						entriesSeen.put(entry.get("_docId"), "1");
+					  %>
 				  </c:when>
 			    <c:otherwise>
 			    </c:otherwise>
@@ -215,7 +213,6 @@
 				}
 			%>
 		</c:forEach>
-	</table>
 
   <br/>
   <table>
