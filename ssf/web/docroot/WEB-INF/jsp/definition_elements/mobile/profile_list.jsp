@@ -82,13 +82,13 @@
 		>${entry.title}</a>
 	  </div>
 	  
-	  <div>
+	  <div class="entry-signature">
 	    <span class="entry-author">${entry.owner.title}</span>
 	  </div>
 	  
 	  <c:if test="${!empty entry.owner.emailAddress}">
-	  <div>
-		<span class="entry-type"><ssf:mailto email="${entry.owner.emailAddress}"/></span>
+	  <div class="entry-type">
+		<span><ssf:mailto email="${entry.owner.emailAddress}"/></span>
 	  </div>
 	  </c:if>
 	</div>

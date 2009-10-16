@@ -37,14 +37,21 @@
 <c:set var="ss_windowTitle" value='<%= NLT.get("mobile.notEnabled") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
-<div id="wrapper">
- <div id="pagebody">
-  <div class="pagebody">
-	<div class="maincontent">
-		<ssf:nlt tag="mobile.notEnabled"/> 
-	</div>
+<c:set var="ss_pageTitle" value='<%= NLT.get("mobile.notEnabled") %>' scope="request"/>
+<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
+
+<div class="content">
+
+<%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
+
+  <div class="folders">
+    <div class="folder-content">
+      <div class="folder-head"><ssf:nlt tag="sidebar.history"/></div>
+	  <div>
+		  <ssf:nlt tag="mobile.notEnabled"/> 
+	  </div>
+    </div>
   </div>
- </div>
 </div>
 </body>
 </html>

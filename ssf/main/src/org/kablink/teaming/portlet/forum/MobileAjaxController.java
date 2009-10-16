@@ -185,6 +185,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_ENTRY)) {
 			return ajaxMobileShowEntry(this, request, response);
 			
+		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_USER)) {
+			return ajaxMobileShowUser(this, request, response);
+			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_RECENT_PLACES)) {
 			return ajaxMobileShowRecentPlaces(this, request, response);
 			
@@ -402,7 +405,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			Tabs.TabEntry tab = tabs.addTab(searchQuery, options);
 			
 			BinderHelper.prepareSearchResultPage(bs, results, model, searchQuery, options, tab);
-	    } else {
+	    } else if (!queryName.equals("")){
 			
 			// get query and options from tab		
 			Document searchQuery = BinderHelper.getSavedQuery(bs, queryName, bs.getProfileModule().getUserProperties(user.getId()));
@@ -428,6 +431,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
       	//Get the total records found by the search
       	Integer totalRecords = (Integer)model.get(WebKeys.PAGE_TOTAL_RECORDS);
+      	if (totalRecords == null) totalRecords = 0;
       	//Get the records returned (which may be more than the page size)
       	List results = (List)model.get(WebKeys.FOLDER_ENTRIES);
       	String nextPage = "";
@@ -884,6 +888,34 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	model.put("ss_actions", actions);
 	
 	return new ModelAndView("mobile/show_entry", model);
+}	
+
+	private ModelAndView ajaxMobileShowUser(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+		return ajaxMobileShowUser(bs, request, response, entryId);
+	}
+	private ModelAndView ajaxMobileShowUser(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, Long entryId) throws Exception {
+	Map model = new HashMap();
+	Binder binder = getProfileModule().getProfileBinder();
+	BinderHelper.setupStandardBeans(bs, request, response, model, binder.getId(), "ss_mobile");
+	model.put(WebKeys.BINDER, binder);
+	model.put(WebKeys.TABS, Tabs.getTabs(request));
+	User user = RequestContextHolder.getRequestContext().getUser();
+	
+	Principal entry = getProfileModule().getEntry(entryId);
+	model.put(WebKeys.ENTRY, entry);
+	
+	//Setup the actions menu list
+	List actions = new ArrayList();
+	BinderHelper.addActionsHome(request, actions);
+	BinderHelper.addActionsRecentPlaces(request, actions);
+	BinderHelper.addActionsSpacer(request, actions);
+	BinderHelper.addActionsLogout(request, actions);
+	model.put("ss_actions", actions);
+	
+	return new ModelAndView("mobile/show_user", model);
 }	
 
 	private ModelAndView ajaxMobileShowRecentPlaces(AllModulesInjected bs, RenderRequest request, 

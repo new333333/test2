@@ -79,7 +79,7 @@
   
 <div class="footerbar">
 <img id="logo" src="<html:imagesPath/>mobile/N_logo_22.png"/>
-<div class="copyright">Copyright Novell, Inc. 2000-2009. All rights reserved.</div>
+<div class="copyright"><ssf:nlt tag="mobile.copyright"/></div>
 </div>  
   
 <script type="text/javascript">

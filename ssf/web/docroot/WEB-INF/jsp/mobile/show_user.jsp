@@ -32,15 +32,24 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:if test="${!empty ssEntry.title}">
+  <c:set var="ss_windowTitle" value="${ssEntry.title}" scope="request"/>
+</c:if>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-<div class="entry-content">
 
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-	configElement="${ssConfigElement}" 
-	configJspStyle="mobile" 
-	processThisItem="true" 
-	entry="${ssEntry}"/>
+<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
 
+<div class="content">
+
+  <%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
+
+  <div class="folder-content">
+
+    <c:set var="ssProfileUser" value="${ssEntry}" scope="request"/>
+    <%@ include file="/WEB-INF/jsp/mobile/user_profile.jsp" %>
+
+  </div>
 </div>
 
 </body>

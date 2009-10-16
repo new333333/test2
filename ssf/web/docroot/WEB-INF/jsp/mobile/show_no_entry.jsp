@@ -36,29 +36,32 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("nav.noEntries") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-<div id="wrapper">
-<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
-<div class="ss_mobile_breadcrumbs">
-//<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	folderId="${ssBinder.id}" 
-	action="__ajax_mobile" operation="mobile_show_folder" 
-	actionUrl="false" />">${ssBinder.title}</a>
-</div>
-<br/>
-<div>
-  <span><ssf:nlt tag="nav.noEntries"/></span>
-</div>
 
-<c:if test="${!empty ssEntryId}">
-<div style="padding-top:20px;">
-  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
+
+<div class="content">
+
+<%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
+
+  <div class="folders">
+    <div class="folder-content">
+
+	  <div>
+  		<span><ssf:nlt tag="nav.noEntries"/></span>
+	  </div>
+
+	  <c:if test="${!empty ssEntryId}">
+		<div style="padding-top:20px;">
+		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 					folderId="${ssBinder.id}" 
 					entryId="${ssEntryId}"
 					action="__ajax_mobile" 
 					operation="mobile_show_entry" 
 					actionUrl="false" />"><ssf:nlt tag="nav.back"/></a>
-</div>
-</c:if>
+		</div>
+	  </c:if>
+	</div>
+  </div>
 
 </div>
 </body>

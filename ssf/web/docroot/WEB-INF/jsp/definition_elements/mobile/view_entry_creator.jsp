@@ -34,7 +34,7 @@
 %>
 <% //Entry creator view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<div>
+<div class="entry-signature">
 <c:if test="${!empty ssDefinitionEntry.creation.principal}">
   <span class="entry-author">
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" 

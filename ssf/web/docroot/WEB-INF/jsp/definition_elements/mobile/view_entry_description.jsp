@@ -49,6 +49,6 @@
      >${ssDefinitionEntry.description.text}</ssf:markup>
    </span>
  </c:if>
- <div style="clear: both;"></div>
+ <div class="ss_clear"></div>
 </div>
 </c:if>

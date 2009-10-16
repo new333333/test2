@@ -150,7 +150,7 @@
 			    <div class="entry-comment-label">${entryFol._totalReplyCount}</div>
 			  </c:if>
 			  
-			  <div>
+			  <div class="entry-signature">
 				<span class="entry-author"><img src="<html:rootPath/>images/pics/sym_s_gray_dude.gif" 
 			  	    width="11" height="10" hspace="2" border="0" style="vertical-align:middle" 
 			  	    <ssf:alt tag=""/> /><a href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -170,7 +170,7 @@
 			    	<ssf:textFormat 
 			      	  formatAction="limitedDescription" 
 			          textMaxWords="10"><ssf:markup search="${entryFol}">${entryFol._desc}</ssf:markup></ssf:textFormat>
-		  	    <div style="clear: both;"></div>
+		  	    <div class="ss_clear"></div>
 		  	    </div>
 			  </c:if>
 		
