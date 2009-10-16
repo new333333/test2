@@ -676,11 +676,13 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		if (binder != null && binder.getDefinitionType() != null && 
 				Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType()) {
 			Set wsUsers = new HashSet();
-			wsUsers.add(binder.getCreation().getPrincipal().getId());
+			Long userId = binder.getCreation().getPrincipal().getId();
+			if (userId != null) wsUsers.add(userId);
 			SortedSet wsUsers2 = getProfileModule().getUsers(wsUsers);
-			model.put(WebKeys.WORKSPACE_CREATOR, wsUsers2.first());
+			if (wsUsers2.size() > 0) model.put(WebKeys.WORKSPACE_CREATOR, wsUsers2.first());
 		}
 		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_MAX_HITS, SPropsUtil.getInt("mobile.max.binders", 200));
 		Map binderMap = getBinderModule().getBinders(binder, options);
 		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
 		List binderIdList = new ArrayList();
