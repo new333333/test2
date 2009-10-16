@@ -51,6 +51,18 @@
   <div class="folders">
     <div class="folder-content">
 
+	<div>
+	  <form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
+					action="__ajax_mobile" actionUrl="true" 
+					operation="mobile_show_search_results" />">
+	  <label for="searchText"><span class="ss_bold"><ssf:nlt tag="navigation.search"/></span></label>
+	  <br/>
+	  <input type="text" size="15" name="searchText" id="searchText" value="${ss_searchText}"/><input 
+	    type="submit" name="searchBtn" value="<ssf:nlt tag="button.ok"/>"/>
+	  </form>
+	</div>
+
+<c:if test="${!empty ssFolderEntries}">
   	<div align="right">
 	  <table>
 		<tr>
@@ -112,7 +124,7 @@
 			  		<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'entry'}">
 					  <div class="entry">
 						<div class="entry-title">
-						    <c:if test="${!empty entry._docNum}">
+						    <c:if test="${0 == 1 && !empty entry._docNum}">
 						      <span class="entry-docNumber">${entry._docNum}.</span>
 						    </c:if>
 							<a href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -123,12 +135,38 @@
 						    </c:if>
 							<c:out value="${entry.title}" escapeXml="true"/>
 							</a>
-						    <c:if test="${!empty entry.binderTitle}">
-							  <div class="entry-binder-title">
-							    <span class="entry-binder-title">(${entry.binderTitle})</span>
-							  </div>
-						    </c:if>
 						</div>
+						<div class="entry-signature">
+						  <span class="entry-author">
+						    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				  				binderId="${entry._principal.workspaceId}"
+				  				action="__ajax_mobile" 
+				  				operation="mobile_show_workspace" />">${entry._principal.title}</a>
+						  </span>
+						  <span class="entry-date">
+							<fmt:formatDate timeZone="${ssUser.timeZone.ID}" 
+							  value="${entry._modificationDate}" type="both" 
+							  timeStyle="short" dateStyle="medium" />
+						  </span>
+						</div>
+						<c:if test="${!empty entry.binderTitle}">
+						  <div class="entry-type">
+							  <span>
+							    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				  				  binderId="${entry._binderId}"
+				  				  action="__ajax_mobile" 
+				  				  operation="mobile_show_folder" />">${entry.binderTitle}</a>
+							  </span>
+						  </div>
+						</c:if>
+						<c:if test="${!empty entry._desc}">
+						  <div class="entry-content">
+							<ssf:textFormat formatAction="limitedDescription" textMaxWords="20">
+								<ssf:markup search="${entry}">${entry._desc}</ssf:markup>
+							</ssf:textFormat>
+							<div class="ss_clear"></div>
+						  </div>
+						</c:if>
 					  </div>
 						<%
 							entriesSeen.put(entry.get("_docId"), "1");
@@ -144,22 +182,44 @@
 						    </c:if>
 							<c:out value="${entry.title}" escapeXml="true"/>
 							</a>
-							<div style="padding-left:10px;">
-							<span style="font-size:9px; color:silver;"><a href="<ssf:url adapter="true" portletName="ss_forum" 
-							folderId="${entryBinderId}" entryId="${entry._docId}"
-							action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />">
-						    <c:if test="${empty entry.title}">
-						    	(<ssf:nlt tag="entry.noTitle"/>)
-						    </c:if>
-							<c:out value="${entry.title}" escapeXml="true"/>
-							</a></span>
-							</div>
 						</div>
-						<c:if test="${!empty entry.binderTitle}">
-						  <div class="entry-binder-title">
-							<span>${entry.binderTitle}</span>
-						  </div>
-						</c:if>
+						<div class="entry-signature">
+						  <span class="entry-author">
+						    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				  				binderId="${entry._principal.workspaceId}"
+				  				action="__ajax_mobile" 
+				  				operation="mobile_show_workspace" />">${entry._principal.title}</a>
+						  </span>
+						  <span class="entry-date">
+							<fmt:formatDate timeZone="${ssUser.timeZone.ID}" 
+							  value="${entry._modificationDate}" type="both" 
+							  timeStyle="short" dateStyle="medium" />
+						  </span>
+						</div>
+						<div class="entry-type">
+						  <div>
+							  <span>
+							    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+							      folderId="${entryBinderId}" entryId="${entry._docId}"
+							      action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />">
+						        <c:if test="${empty entry.title}">
+						    	  (<ssf:nlt tag="entry.noTitle"/>)
+						        </c:if>
+							    <c:out value="${entry.title}" escapeXml="true"/>
+							    </a>
+							  </span>
+							</div>
+						  <c:if test="${!empty entry.binderTitle}">
+						    <div>
+							  <span>
+							    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				  				  binderId="${entry._binderId}"
+				  				  action="__ajax_mobile" 
+				  				  operation="mobile_show_folder" />">${entry.binderTitle}</a>
+							  </span>
+						    </div>
+						  </c:if>
+						</div>
 					  </div>
 				    </c:when>
 			
@@ -180,9 +240,22 @@
 							<c:out value="${entry.title}" escapeXml="true"/>
 							</a>
 						  </c:if>
-					      <c:if test="${!empty entry._extendedTitle}">
-						    <div class="entry-binder-title">
-						      <span>(${entry._extendedTitle})</span>
+					      <c:if test="${!empty entry._entityPath}">
+						    <div class="entry-type">
+						     <span>
+						      <c:if test="${entry._entityType == 'folder'}">
+							    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+							      folderId="${entry._docId}" 
+							      action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />"
+							    >${entry._entityPath}</a>
+						      </c:if>
+						      <c:if test="${entry._entityType == 'workspace'}">
+							    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+							      folderId="${entry._docId}" 
+							      action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />"
+							    >${entry._entityPath}</a>
+						      </c:if>
+						     </span>
 						    </div>
 					      </c:if>
 						</div>
@@ -255,11 +328,16 @@
       </td>
 	</tr>
   </table>
-</div>
-</div>
-<br/>
+</c:if>
 
-<%@ include file="/WEB-INF/jsp/mobile/footer.jsp" %>
+<c:if test="${empty ssFolderEntries}">
+  <div class="entry-content">
+    <ssf:nlt tag="search.noneFound"/>
+  </div>
+</c:if>
+
+</div>
+</div>
 </div>
 
 </body>

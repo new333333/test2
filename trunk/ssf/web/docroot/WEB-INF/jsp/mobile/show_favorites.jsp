@@ -38,16 +38,17 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("navigation.favorites") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-<%
-	Map entriesSeen = new HashMap();
-%>
-<div id="wrapper">
+
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
 
-<div class="pagebody">
-	<h3 align="center"><ssf:nlt tag="navigation.favorites"/></h3>
-	<ul>
-		<c:forEach var="favorite" items="${ss_mobileFavoritesList}">
+<div class="content">
+
+<%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
+
+  <div class="folders">
+    <div class="folder-content">
+	  <div class="folder-head"><ssf:nlt tag="navigation.favorites"/></div>
+	  <c:forEach var="favorite" items="${ss_mobileFavoritesList}">
 		 <jsp:useBean id="favorite" type="net.sf.json.JSONObject" />
 		 <% try { %><c:set var="f_eletype" value='<%= favorite.get("eletype") %>'/><% } catch(Exception e) {} %>
 		 <% try { %><c:set var="f_type" value='<%= favorite.get("type") %>'/><% } catch(Exception e) {} %>
@@ -56,7 +57,7 @@
 		 <% try { %><c:set var="f_name" value='<%= favorite.get("name") %>'/><% } catch(Exception e) {} %>
 		 <% try { %><c:set var="f_value" value='<%= favorite.get("value") %>'/><% } catch(Exception e) {} %>
 		 <c:if test="${f_eletype == 'favorite'}">
-		  <li>
+		  <div class="folder-item">
 			<c:if test="${f_type == 'binder' && f_action == 'view_folder_listing'}">
 			  <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${f_value}" 
 							action="__ajax_mobile" actionUrl="false" 
@@ -68,14 +69,11 @@
 							action="__ajax_mobile" actionUrl="false" 
 							operation="mobile_show_workspace" />"><span>${f_name}</span></a>
 			</c:if>
-		  </li>
+		  </div>
 		 </c:if>
-		</c:forEach>
-	</ul>
-</div>
-<br/>
-
-<%@ include file="/WEB-INF/jsp/mobile/footer.jsp" %>
+	  </c:forEach>
+    </div>
+  </div>
 </div>
 
 </body>

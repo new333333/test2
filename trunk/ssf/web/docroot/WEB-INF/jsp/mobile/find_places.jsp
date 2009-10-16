@@ -36,38 +36,29 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("mobile.searchResults") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-<div id="wrapper">
-<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
-<div id="pagebody">
 
-<div class="pagebody">
-	<h3 align="center"><ssf:nlt tag="mobile.searchResultsPlaces"/></h3>
+<c:set var="ss_pageTitle" value='<%= NLT.get("mobile.searchResultsPeople") %>' scope="request"/>
+<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
+
+<div class="content">
+
+<%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
+
+  <div class="folders">
+    <div class="folder-content">
+      <div class="folder-head"><ssf:nlt tag="mobile.searchResultsPlaces"/></div>
 	
-	<table class="ss_mobile" cellspacing="0" cellpadding="2" border="0">
-		<c:forEach var="binder" items="${ssEntries}" >
-		  <tr>
-			<td>
-			  <a 
-			  <c:if test="${binder._entityType == 'folder'}">
-			    href="<ssf:url adapter="true" portletName="ss_forum" folderId="${binder._docId}" 
-							action="__ajax_mobile" actionUrl="false" 
-							operation="mobile_show_folder" />"
-			  </c:if>
-			  <c:if test="${binder._entityType == 'workspace'}">
-			    href="<ssf:url adapter="true" portletName="ss_forum" binderId="${binder._docId}" 
-							action="__ajax_mobile" actionUrl="false" 
-							operation="mobile_show_workspace" />"
-			  </c:if>
-			  >${binder.title}</a>
-		    </td>
-		  </tr>
-		</c:forEach>
-		
-	<tr>
-	<td></td>
-	</tr>
-	<tr>
-	<td>
+	<div>
+	  <form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
+					action="__ajax_mobile" actionUrl="true" 
+					operation="mobile_find_places" />">
+	  <label for="searchText"><span class="ss_bold"><ssf:nlt tag="navigation.findPlace"/></span></label>
+	  <input type="text" size="15" name="searchText" id="searchText" value="${ss_searchText}"/><input 
+	    type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
+	  </form>
+	</div>
+
+		<div align="right">
 		<table>
 		 <tr>
 		  <td>
@@ -102,25 +93,28 @@
 		  </td>
 		 </tr>
 		</table>
-	  </td>
-	 </tr>
-	</table>
-<br/>
-<div class="ss_mobile">
-<form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
-					action="__ajax_mobile" actionUrl="true" 
-					operation="mobile_find_places" />">
-<label for="searchText"><span class="ss_bold"><ssf:nlt tag="navigation.findPlace"/></span></label>
-<br/>
-<input type="text" size="15" name="searchText" id="searchText" value="${ss_searchText}"/><input 
-  type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
-</form>
-</div>
+		</div>
 
-</div>
-</div>
+		<c:forEach var="binder" items="${ssEntries}" >
+	      <div class="folder-item">
+			<a 
+			  <c:if test="${binder._entityType == 'folder'}">
+			    href="<ssf:url adapter="true" portletName="ss_forum" folderId="${binder._docId}" 
+							action="__ajax_mobile" actionUrl="false" 
+							operation="mobile_show_folder" />"
+			  </c:if>
+			  <c:if test="${binder._entityType == 'workspace'}">
+			    href="<ssf:url adapter="true" portletName="ss_forum" binderId="${binder._docId}" 
+							action="__ajax_mobile" actionUrl="false" 
+							operation="mobile_show_workspace" />"
+			  </c:if>
+			>${binder.title}</a>
+		  </div>
+		</c:forEach>
 
-<%@ include file="/WEB-INF/jsp/mobile/footer.jsp" %>
+	</div>
+  </div>
+
 </div>
 
 </body>

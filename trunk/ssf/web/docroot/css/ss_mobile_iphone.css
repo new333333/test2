@@ -316,11 +316,7 @@ span.pad-left20 {
 	}
 .entry-docNumber {
 	padding-right: 6px;
-	}
-.entry-binder-title {
-	font-size: 9px;
-	padding-right: 6px;
-	color: #ccc;
+	font-size: 16px;
 	}
 .entry-caption {
 	font-weight: bold;
@@ -328,23 +324,28 @@ span.pad-left20 {
 	color: #000;
 	padding-top: 8px;
 	}
-
-.entry-author {
-	font-size: 12px;
-	text-transform: uppercase;
+.entry-signature {
 	padding-top: 2px;
+	}
+.entry-author {
+	font-size: 14px;
 	padding-right: 10px;
+	margin: 0px;
 	}
 .entry-date {
 	font-size: 12px;
 	color: #666;
-	}
+	margin: 0px;
+}
 .entry-type {
 	font-size: 12px;
 	color: #666;
-	background-color: #fef7e4;
 	padding: 3px;
-	}
+	margin: 0px;
+}
+.entry-type span {
+	background-color: #fef7e4;
+}
 .entry-comment-label {
 	position: absolute;
 	right: 6px;
@@ -575,6 +576,10 @@ table.ss_mobile_calendar td {
 	font-size: .83em;
 	padding-right: 5px;
 	padding-bottom: 15px;
+	}
+
+.ss_clear {
+	clear: both;
 	}
 	
 .ss_form_wrap {

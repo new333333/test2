@@ -34,37 +34,31 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ss_windowTitle" value='<%= NLT.get("mobile.searchResults") %>' scope="request"/>
+<c:set var="ss_windowTitle" value='<%= NLT.get("mobile.searchResultsPeople") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-<div id="wrapper">
-<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
-<div id="pagebody">
 
-<div class="pagebody">
-	<h3 align="center"><ssf:nlt tag="mobile.searchResultsPeople"/></h3>
+<c:set var="ss_pageTitle" value='<%= NLT.get("mobile.searchResultsPeople") %>' scope="request"/>
+<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
+
+<div class="content">
+
+<%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
+
+  <div class="folders">
+    <div class="folder-content">
+      <div class="folder-head"><ssf:nlt tag="mobile.searchResultsPeople"/></div>
+
+		<div>
+		  <form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
+					action="__ajax_mobile" actionUrl="true" 
+					operation="mobile_find_people" />">
+		  <label for="searchText"><span class="ss_bold"><ssf:nlt tag="navigation.findUser"/></span></label>
+		  <input type="text" size="15" name="searchText" id="searchText" value="${ss_searchText}"/><input 
+		    type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
+		  </form>
+		</div>
 	
-	<table class="ss_mobile" cellspacing="0" cellpadding="2" border="0">
-		<c:forEach var="user" items="${ssUsers}" >
-		  <tr>
-			<td>
-			<c:if test="${!empty user['_workspaceId']}">
-			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-			    folderId="${user['_workspaceId']}"
-			    action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
-			  <c:out value="${user.title}"/>
-			  </a>
-			</c:if>
-			<c:if test="${empty user['_workspaceId']}">
-			  <c:out value="${user.title}"/>
-			</c:if>
-		  </td></tr>
-		</c:forEach>
-		
-	<tr>
-	<td></td>
-	</tr>
-	<tr>
-	<td>
+		<div align="right">
 		<table>
 		 <tr>
 		  <td>
@@ -99,25 +93,29 @@
 		  </td>
 		 </tr>
 		</table>
-	  </td>
-	 </tr>
-	</table>
-<br/>
-<div class="ss_mobile">
-<form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
-					action="__ajax_mobile" actionUrl="true" 
-					operation="mobile_find_people" />">
-<label for="searchText"><span class="ss_bold"><ssf:nlt tag="navigation.findUser"/></span></label>
-<br/>
-<input type="text" size="15" name="searchText" id="searchText" value="${ss_searchText}"/><input 
-  type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
-</form>
-</div>
+		</div>
 
-</div>
-</div>
-
-<%@ include file="/WEB-INF/jsp/mobile/footer.jsp" %>
+	  <c:forEach var="user" items="${ssUsers}" >
+	    <div class="folder-item">
+			<c:if test="${!empty user['_workspaceId']}">
+			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+			    folderId="${user['_workspaceId']}"
+			    action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
+			    <c:out value="${user.title}"/>
+			  </a>
+			</c:if>
+			<c:if test="${empty user['_workspaceId']}">
+			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+			    entryId="${user._docId}"
+			    action="__ajax_mobile" operation="mobile_show_user" actionUrl="false" />">
+			    <c:out value="${user.title}"/>
+			  </a>
+			</c:if>
+		</div>
+	  </c:forEach>
+		
+	</div>
+  </div>
 </div>
 
 </body>

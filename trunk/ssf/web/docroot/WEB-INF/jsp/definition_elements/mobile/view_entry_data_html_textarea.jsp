@@ -39,7 +39,7 @@
 </c:if>
  <div class="entry-element">
   <span><ssf:markup entity="${ssDefinitionEntry}">${ssDefinitionEntry.customAttributes[property_name].value.text}</ssf:markup></span>
-  <div style="clear: both;"></div>
+  <div class="ss_clear"></div>
  </div>
 </div>
 

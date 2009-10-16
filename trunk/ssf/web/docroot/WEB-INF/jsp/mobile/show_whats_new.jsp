@@ -125,7 +125,7 @@
 			  </a>
 			</div>
 			
-			<div>
+			<div class="entry-signature">
 				 <span class="entry-author"><a href="<ssf:url adapter="true" portletName="ss_forum" 
 				    action="__ajax_mobile"
 				    operation="mobile_show_workspace"
@@ -148,9 +148,6 @@
 				</c:if>
 				<c:set var="isDashboard" value="yes"/>
 				<c:if test="${!empty path}">
-			  	    <img src="<html:rootPath/>images/icons/folder_cyan_sm.png"
-			  	      <ssf:alt tag=""/> 
-			  	      width="11" height="10" hspace="2" border="0" style="vertical-align:middle" />
 	     			<a href="<ssf:url adapter="true" portletName="ss_forum" 
 						folderId="${entryWn._binderId}" 
 						action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />"
@@ -165,7 +162,7 @@
 			      	  formatAction="limitedDescription" 
 			          textMaxWords="20"><ssf:markup search="${entryWn}">${entryWn._desc}</ssf:markup></ssf:textFormat>
 			        </span>
-			        <div style="clear: both;"></div>
+			        <div class="ss_clear"></div>
 		  	    </div>
 			  </c:if>
 		

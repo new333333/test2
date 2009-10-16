@@ -161,7 +161,7 @@
 			    </a>
 			  </div>
 		 
-		  	  <div>
+		  	  <div class="entry-signature">
 		  	    <span class="entry-author">
 				  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				    action="__ajax_mobile"
@@ -199,6 +199,7 @@
 			    	<ssf:textFormat 
 			      	  formatAction="limitedDescription" 
 			          textMaxWords="20"><ssf:markup search="${entryWn}">${entryWn._desc}</ssf:markup></ssf:textFormat>
+		  	      <div class="ss_clear"></div>
 		  	    </div>
 			  </c:if>
 		
@@ -210,7 +211,7 @@
 	    	<div class="entry">
 	    	  <div class="entry-title">
 		    	<a href="<ssf:url adapter="true" portletName="ss_forum" 
-				  folderId="${activity.user.workspaceId}"
+				  binderId="${activity.user.workspaceId}"
 				  action="__ajax_mobile" 
 				  operation="mobile_show_workspace" />" >${activity.user.title}</a>
 		      </div>
@@ -224,7 +225,7 @@
 		  
 			  <c:if test="${!empty activity.description}">
 			    <div class="entry-content">
-			    	<span style="border:#cecece solid 1px;">${activity.description}</span>
+			    	<span>${activity.description}</span>
 		  	    </div>
 			  </c:if>
 			  </div>
