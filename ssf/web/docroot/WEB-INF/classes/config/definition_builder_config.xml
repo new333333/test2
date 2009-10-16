@@ -884,6 +884,7 @@
 	<item name="profileList" caption="__profile_listing" category="profileView"  display="view">
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_list.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/profile_list.jsp" />
 		</jsps>
 	</item>
 
