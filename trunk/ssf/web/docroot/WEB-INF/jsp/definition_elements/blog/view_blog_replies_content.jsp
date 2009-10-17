@@ -44,14 +44,14 @@
 <jsp:useBean id="reply" type="org.kablink.teaming.domain.Entry" />
  <div>
 <c:if test="${!empty reply.entryDef}">
- 	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+ 	  <ssf:displayConfiguration configDefinition='<%= (Document) reply.getEntryDef().getDefinition() %>' 
 		configElement='<%= (Element) reply.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name=\'entryBlogView\']") %>'
 		configJspStyle="view" 
 		processThisItem="false" 
 		entry="<%= reply %>" />
 </c:if>
 <c:if test="${empty reply.entryDef}">
- 	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+ 	  <ssf:displayConfiguration configDefinition='<%= (Document) reply.getEntryDef().getDefinition() %>' 
 		configElement="${ssConfigElement}" 
 		configJspStyle="view" 
 		processThisItem="false" 
