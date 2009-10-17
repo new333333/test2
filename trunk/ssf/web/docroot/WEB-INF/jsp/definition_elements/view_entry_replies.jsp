@@ -49,14 +49,14 @@
 	  <div class="ss_entryContent ss_replies">
 	
 	  <c:if test="${!empty reply.entryDef}">
-	 	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+	 	  <ssf:displayConfiguration configDefinition='<%= (Document) reply.getEntryDef().getDefinition() %>' 
 			configElement='<%= (Element) reply.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name=\'entryView\' or @name=\'profileEntryView\' or @name=\'fileEntryView\']") %>' 
 			configJspStyle="${ssConfigJspStyle}" 
 			processThisItem="false" 
 			entry="<%= reply %>" />
 	  </c:if>
 	  <c:if test="${empty reply.entryDef}">
-	 	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+	 	  <ssf:displayConfiguration configDefinition='<%= (Document) reply.getEntryDef().getDefinition() %>' 
 			configElement="${ssConfigElement}" 
 			configJspStyle="${ssConfigJspStyle}" 
 			processThisItem="false" 
