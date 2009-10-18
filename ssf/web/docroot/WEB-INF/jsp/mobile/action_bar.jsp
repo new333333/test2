@@ -86,8 +86,7 @@ function ss_logoff_from_sso(s) {
   
   <c:if test="${!empty ss_actions}">
     <a class="actions-a" href="#"><ssf:nlt tag="mobile.actions"/></a>
-  </c:if>
-  
+  </c:if>  
 </div>
 
 <%@ include file="/WEB-INF/jsp/mobile/search.jsp" %>

@@ -90,7 +90,9 @@ span.pad-left20 {
 	border: 1px solid #7abcba;
 	white-space:nowrap;
 	}
-	
+.lastupdated {
+	font-size: .6em;
+	}	
 .action-dialog { 
 	position: absolute; 
 	display: none;

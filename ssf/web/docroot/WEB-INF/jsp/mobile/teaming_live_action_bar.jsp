@@ -34,30 +34,60 @@
 %>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
 
-  <div id="micro-blog-edit" class="action-dialog" style="display: none;z-index:2;">
-    <div class="dialog-head">
-      <span><label for="miniblogText"><ssf:nlt tag="miniblog"/></label></span>
-      <span id="micro-blog-date">
-        <c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">
-          <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-		        value="${ssUser.statusDate}" type="both" 
-			    timeStyle="short" dateStyle="short" />
-        </c:if>
-      </span>
-    </div>
-	<form id="microblogForm" method="post" action="${ss_microblog_post_url}">
-			
-	  <!-- necessary "cols" attribute is set to 20 for Blackberry and is overridden by CSS -->
-			
-      <textarea id="micro-blog-text" rows="5" cols="20" name="miniblogText"
-      ><c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">${ssUser.status}</c:if></textarea>
-      <div id="micro-blog-buttons">
-        <input id="micro-blog-post" type="submit" value="<ssf:nlt tag="button.post"/>" name="miniblogBtn"/>
-        <input id="micro-blog-cancel" type="button" value="<ssf:nlt tag="button.cancel"/>" name="PostBlogCancel"/>
-        <input id="micro-blog-clear" type="reset" value="<ssf:nlt tag="button.clear"/>" name="ClearBlog"
-          onclick="ss_clearStatusMobile('micro-blog-text');return false;"/>
-      </div>
-    </form>
-  </div>
+<script type="text/javascript">
+function ss_logoff() {
+	var x = '<%= org.kablink.teaming.util.SPropsUtil.getString("sso.proxy.logoff.url","") %>';
+	if (x == null || x == "") {
+		var y = '${ss_logoutUrl}';
+		//alert(y);
+		self.location.href=y;
+	} else {
+		//alert (x);
+		var y = '${ss_logoutUrl}';
+		ss_logoff_from_teaming_then_sso(y);
+	}
+}
+function ss_logoff_from_teaming_then_sso(logoutURL) {
+	callbackRoutine = ss_logoff_from_sso
+	var x;
 
+	if (window.XMLHttpRequest) {
+	x = new XMLHttpRequest();
+	} else if (window.ActiveXObject) {
+	x = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	
+	x.open("GET", logoutURL, true);
+	
+	x.onreadystatechange = function() {
+		if (x.readyState != 4) {
+			return;
+		}
+		if (x.status == 200) {
+			callbackRoutine(x.responseText)        	
+		} else {		
+			callbackRoutine(x.statusText)
+		}
+	}
+	x.send(null);
+	delete x;
+}      
+function ss_logoff_from_sso(s) {
+	self.location.href='<%= org.kablink.teaming.util.SPropsUtil.getString("sso.proxy.logoff.url","") %>';
+}
+</script>
+
+<div id="actions">
+  
+  <a class="micro-blog-a" href="#"><ssf:nlt tag="miniblog"/></a>
+  
+  <c:if test="${!empty ss_actions}">
+    <a class="actions-a" href="#"><ssf:nlt tag="mobile.actions"/></a>
+  </c:if>
+
+</div>
+
+<%@ include file="/WEB-INF/jsp/mobile/miniblog.jsp" %>
+
+<%@ include file="/WEB-INF/jsp/mobile/actions_menu.jsp" %>
 

@@ -358,6 +358,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_BUSINESS_CARD_PREFIX="businessCardShow_";
     public static final String USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK="calendarFirstDayOfWeek";
     public static final String USER_PROPERTY_CALENDAR_WORK_DAY_START="calendarWorkDayStart";
+	public static final String USER_PROPERTY_TEAMING_LIVE_WHATS_NEW_TYPE = "teaming_live_whats_new_type";
     public static final String USER_PROPERTY_TUTORIAL_PANEL_STATE = "userTutorialPanelState";
     public static final String USER_PROPERTY_UPGRADE_ACCESS_CONTROLS = "upgradeAccessControls";
     public static final String USER_PROPERTY_UPGRADE_DEFINITIONS = "upgradeDefinitions";

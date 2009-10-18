@@ -38,7 +38,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
   <div class="folders">
-	<div class="folder-content" width="100%">
+	<div class="folder-content">
 	  <div class="entry" align="right">
 		<table cellspacing="0" cellpadding="0">
 		<tr>
@@ -82,14 +82,16 @@
 		>${entry.title}</a>
 	  </div>
 	  
-	  <div class="entry-signature">
-	    <span class="entry-author">${entry.owner.title}</span>
-	  </div>
-	  
-	  <c:if test="${!empty entry.owner.emailAddress}">
-	  <div class="entry-type">
-		<span><ssf:mailto email="${entry.owner.emailAddress}"/></span>
-	  </div>
+	  <c:if test="${!empty entry.emailAddress}">
+	    <div class="entry-type">
+		  <span><ssf:mailto email="${entry.emailAddress}"/></span>
+	    </div>
+	  </c:if>
+	
+	  <c:if test="${!empty entry.phone}">
+	    <div class="entry-type">
+		  <span>${entry.phone}</span>
+	    </div>
 	  </c:if>
 	</div>
 </c:forEach>

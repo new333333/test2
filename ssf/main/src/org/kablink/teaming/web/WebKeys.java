@@ -551,6 +551,9 @@ public class WebKeys {
 	public static final String OPERATION_GET_UPLOAD_PROGRESS_STATUS = "get_upload_progress_status";
 	public static final String OPERATION_GET_WORKFLOW_APPLET = "get_workflow_applet";
 	public static final String OPERATION_VIEW_MINIBLOG = "view_miniblog";
+	public static final String OPERATION_VIEW_TEAMING_LIVE = "view_teaming_live";
+	public static final String OPERATION_VIEW_TEAMING_LIVE_UPDATE = "view_teaming_live_update";
+	public static final String OPERATION_TEAMING_LIVE_CHECK_FOR_ACTIVITY = "teaming_live_check_for_activity";
 
 	public static final String AUTO_NOTIFY_TAIL			= "_notify";
 	public static final String AUTO_NOTIFY_GROUPS_TAIL	= "_groups";

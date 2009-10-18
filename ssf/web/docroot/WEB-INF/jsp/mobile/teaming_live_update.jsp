@@ -32,32 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<%@ page import="org.kablink.teaming.ObjectKeys" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
-  <div id="micro-blog-edit" class="action-dialog" style="display: none;z-index:2;">
-    <div class="dialog-head">
-      <span><label for="miniblogText"><ssf:nlt tag="miniblog"/></label></span>
-      <span id="micro-blog-date">
-        <c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">
-          <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-		        value="${ssUser.statusDate}" type="both" 
-			    timeStyle="short" dateStyle="short" />
-        </c:if>
-      </span>
-    </div>
-	<form id="microblogForm" method="post" action="${ss_microblog_post_url}">
-			
-	  <!-- necessary "cols" attribute is set to 20 for Blackberry and is overridden by CSS -->
-			
-      <textarea id="micro-blog-text" rows="5" cols="20" name="miniblogText"
-      ><c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">${ssUser.status}</c:if></textarea>
-      <div id="micro-blog-buttons">
-        <input id="micro-blog-post" type="submit" value="<ssf:nlt tag="button.post"/>" name="miniblogBtn"/>
-        <input id="micro-blog-cancel" type="button" value="<ssf:nlt tag="button.cancel"/>" name="PostBlogCancel"/>
-        <input id="micro-blog-clear" type="reset" value="<ssf:nlt tag="button.clear"/>" name="ClearBlog"
-          onclick="ss_clearStatusMobile('micro-blog-text');return false;"/>
-      </div>
-    </form>
-  </div>
-
-
+<%@ include file="/WEB-INF/jsp/mobile/teaming_live_update_data.jsp" %>
