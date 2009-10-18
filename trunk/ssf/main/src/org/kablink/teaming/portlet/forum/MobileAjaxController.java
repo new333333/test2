@@ -158,6 +158,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				ajaxMobileDoFrontPage(this, request, response);
 			} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_ENTRY)) {
 				ajaxMobileDoShowEntry(this, request, response);
+			} else if (op.equals(WebKeys.OPERATION_VIEW_TEAMING_LIVE)) {
+				ajaxDoTeamingLive(this, request, response);
 			}
 		}
 	}
@@ -172,7 +174,11 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 		User user = RequestContextHolder.getRequestContext().getUser();
 		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-			return ajaxMobileLogin(this, request, response);
+			if (op.equals(WebKeys.OPERATION_VIEW_TEAMING_LIVE)) {
+				return ajaxMobileLogin(this, request, response, "ss_forum", WebKeys.OPERATION_VIEW_TEAMING_LIVE);
+			} else {
+				return ajaxMobileLogin(this, request, response, "ss_mobile", WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
+			}
 		}
 		
 		//The user is logged in
@@ -210,7 +216,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			return ajaxMobileWhatsNew(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_LOGIN)) {
-			return ajaxMobileLogin(this, request, response);
+			return ajaxMobileLogin(this, request, response, "ss_mobile", WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE)) {
 			return ajaxMobileFrontPage(this, request, response);
@@ -227,9 +233,19 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_TEAMS)) {
 			return ajaxMobileShowTeams(this, request, response);
+			
+		} else if (op.equals(WebKeys.OPERATION_VIEW_TEAMING_LIVE)) {
+			return ajaxShowTeamingLive(this, request, response);
+			
+		} else if (op.equals(WebKeys.OPERATION_VIEW_TEAMING_LIVE_UPDATE)) {
+			return ajaxShowTeamingLiveUpdate(this, request, response);
+			
+		} else if (op.equals(WebKeys.OPERATION_TEAMING_LIVE_CHECK_FOR_ACTIVITY)) {
+			return ajaxTeamingLiveCheckForActivity(this, request, response);
 		}
+		
 		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-			return ajaxMobileLogin(this, request, response);
+			return ajaxMobileLogin(this, request, response, "ss_mobile", WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
 		} else {
 			return ajaxMobileFrontPage(this, request, response);
 		}
@@ -336,6 +352,32 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 	}
 
+	private void ajaxDoTeamingLive(AllModulesInjected bs, ActionRequest request, ActionResponse response) 
+			throws Exception {
+		//Do front page stuff
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Map formData = request.getParameterMap();
+		//See if the add entry form was submitted
+		if (formData.containsKey("miniblogBtn") && WebHelper.isMethodPost(request)) {
+			//The miniblog form was submitted. Go process it
+			String text = PortletRequestUtils.getStringParameter(request, "miniblogText", "");
+			BinderHelper.addMiniBlogEntry(bs, text);
+		} else if (formData.containsKey("whatsNewBtn") && WebHelper.isMethodPost(request)) {
+			//User clicked on a Whats New option
+			String type = PortletRequestUtils.getStringParameter(request, "whats_new", "");
+			UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
+			String savedType = (String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_TEAMING_LIVE_WHATS_NEW_TYPE);
+			if (savedType == null) savedType = "";
+			if (!type.equals("") && !type.equals(savedType)) {
+				//Remember the last type of results
+				bs.getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_TEAMING_LIVE_WHATS_NEW_TYPE, type);
+			}
+		} else if (formData.containsKey("acceptBtn") && WebHelper.isMethodPost(request)) {
+			//User clicked "I Accept"
+			getProfileModule().setUserProperty( null, "acceptedMobileDisclaimer", true );
+		}
+	}
+
 	private void ajaxMobileDoShowEntry(AllModulesInjected bs, ActionRequest request, ActionResponse response) 
 			throws Exception {
 		Map formData = request.getParameterMap();
@@ -357,12 +399,12 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	}
 
 	private ModelAndView ajaxMobileLogin(AllModulesInjected bs, RenderRequest request, 
-			RenderResponse response) throws Exception {
+			RenderResponse response, String portletName, String operation) throws Exception {
 		Map model = new HashMap();
-		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
-		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
+		BinderHelper.setupStandardBeans(bs, request, response, model, null, portletName);
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, portletName, true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
-		adapterUrl.setParameter(WebKeys.OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
+		adapterUrl.setParameter(WebKeys.URL_OPERATION, operation);
 		model.put(WebKeys.URL, adapterUrl);
 		return new ModelAndView("mobile/show_login_form", model);
 	}
@@ -373,6 +415,37 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		String view = BinderHelper.setupMobileFrontPageBeans(bs, request, response, model, "mobile/show_front_page");
 
+		return new ModelAndView(view, model);
+	}
+
+	private ModelAndView ajaxShowTeamingLive(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String view = BinderHelper.setupTeamingLiveBeans(bs, request, response, model, "mobile/show_teaming_live");
+
+		return new ModelAndView(view, model);
+	}
+
+	private ModelAndView ajaxShowTeamingLiveUpdate(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String view = BinderHelper.setupTeamingLiveBeans(bs, request, response, model, "mobile/teaming_live_update");
+
+		return new ModelAndView(view, model);
+	}
+
+	private ModelAndView ajaxTeamingLiveCheckForActivity(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String view = "mobile/teaming_live_check_for_activity";
+		
+		//Check if the client needs to do an update. 
+		//An empty status indicates no update needed
+		// todo For now always do an update
+		String status = "update";
+		model.put("ss_teamingLiveStatus", status);
+
+		response.setContentType("text/xml");
 		return new ModelAndView(view, model);
 	}
 
@@ -665,7 +738,15 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			return new ModelAndView("mobile/show_workspace", model);
 		}
 
-		//See if the user has selected a specific view to use
+      	Integer pageNumber = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER);
+      	if (pageNumber == null) pageNumber = 0;
+      	int pageSize = Integer.valueOf(WebKeys.MOBILE_PAGE_SIZE).intValue();
+      	int pageStart = pageNumber.intValue() * pageSize;
+      	int pageEnd = pageStart + pageSize;
+      	String nextPage = "";
+      	String prevPage = "";
+
+      	//See if the user has selected a specific view to use
 		String userDefaultDef = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
 		DefinitionHelper.getDefinitions(binder, model, userDefaultDef);
 
@@ -685,47 +766,71 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			SortedSet wsUsers2 = getProfileModule().getUsers(wsUsers);
 			if (wsUsers2.size() > 0) model.put(WebKeys.WORKSPACE_CREATOR, wsUsers2.first());
 		}
-		Map options = new HashMap();
-		options.put(ObjectKeys.SEARCH_MAX_HITS, SPropsUtil.getInt("mobile.max.binders", 200));
-		Map binderMap = getBinderModule().getBinders(binder, options);
-		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
-		List binderIdList = new ArrayList();
+		if (binder.getId().equals(getProfileModule().getProfileBinderId())) {
+			//This is the profiles binder.
+			Map users = null;
+			Map options = new HashMap();
+			
+			options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(pageSize*(pageNumber + 1) + 1));
+			options.put(ObjectKeys.SEARCH_OFFSET, new Integer(pageNumber*pageSize));
+			options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
 
-      	for (Iterator iter=binderMapList.iterator(); iter.hasNext();) {
-      		Map entryMap = (Map) iter.next();
-      		binderIdList.add(new Long((String)entryMap.get("_docId")));
-      	}
-      	SortedSet binderList = getBinderModule().getBinders(binderIdList);
-        for (Iterator iter=binderList.iterator(); iter.hasNext();) {
-     		Binder b = (Binder)iter.next();
-      		if (b.isDeleted()) continue;
-      		if (b.getEntityType().equals(EntityIdentifier.EntityType.workspace) || 
-      				b.getEntityType().equals(EntityIdentifier.EntityType.profiles)) {
-      			workspaces.add(b);
-      		} else if (b.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
-      			folders.add(b);
-      		}
+			options.put(ObjectKeys.SEARCH_SEARCH_FILTER, BinderHelper.getSearchFilter(bs, binder, userFolderProperties));
+			users = bs.getProfileModule().getUsers(options);
+			List userMapList = (List)users.get(ObjectKeys.SEARCH_ENTRIES); 
+			List userIdList = new ArrayList();
+	
+	      	for (Iterator iter=userMapList.iterator(); iter.hasNext();) {
+	      		Map entryMap = (Map) iter.next();
+	      		userIdList.add(new Long((String)entryMap.get("_docId")));
+	      	}
+	      	SortedSet userList = getProfileModule().getUsers(userIdList);
+	        for (Iterator iter=userList.iterator(); iter.hasNext();) {
+	     		User u = (User)iter.next();
+	      		workspaces.add(u);
+			}
+	        if (workspaces.size() >= pageSize) {
+	      		wsList = workspaces.subList(0, pageSize);
+	      		nextPage = String.valueOf(pageNumber.intValue() + 1);
+	        }
+      		if (pageNumber.intValue() > 0) prevPage = String.valueOf(pageNumber.intValue() - 1);
+
+		} else {
+			Map options = new HashMap();
+			options.put(ObjectKeys.SEARCH_MAX_HITS, SPropsUtil.getInt("mobile.max.binders", 200));
+			Map binderMap = getBinderModule().getBinders(binder, options);
+			List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
+			List binderIdList = new ArrayList();
+	
+	      	for (Iterator iter=binderMapList.iterator(); iter.hasNext();) {
+	      		Map entryMap = (Map) iter.next();
+	      		binderIdList.add(new Long((String)entryMap.get("_docId")));
+	      	}
+	      	SortedSet binderList = getBinderModule().getBinders(binderIdList);
+	        for (Iterator iter=binderList.iterator(); iter.hasNext();) {
+	     		Binder b = (Binder)iter.next();
+	      		if (b.isDeleted()) continue;
+	      		if (b.getEntityType().equals(EntityIdentifier.EntityType.workspace) || 
+	      				b.getEntityType().equals(EntityIdentifier.EntityType.profiles)) {
+	      			workspaces.add(b);
+	      		} else if (b.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
+	      			folders.add(b);
+	      		}
+			}
+	      	if (workspaces.size() < pageStart) {
+	      		wsList = new ArrayList();
+	      		if (pageNumber.intValue() > 0) prevPage = String.valueOf(pageNumber.intValue() - 1);
+	      	} else if (workspaces.size() >= pageEnd) {
+	      		wsList = workspaces.subList(pageStart, pageEnd);
+	      		nextPage = String.valueOf(pageNumber.intValue() + 1);
+	      		if (pageNumber.intValue() > 0) prevPage = String.valueOf(pageNumber.intValue() - 1);
+	      	} else {
+	      		wsList = workspaces.subList(pageStart, workspaces.size());
+	      		if (pageNumber.intValue() > 0) prevPage = String.valueOf(pageNumber.intValue() - 1);
+	      	}
 		}
 
-      	Integer pageNumber = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER);
-      	if (pageNumber == null) pageNumber = 0;
-      	int pageSize = Integer.valueOf(WebKeys.MOBILE_PAGE_SIZE).intValue();
-      	int pageStart = pageNumber.intValue() * pageSize;
-      	int pageEnd = pageStart + pageSize;
-      	
-      	String nextPage = "";
-      	String prevPage = "";
-      	if (workspaces.size() < pageStart) {
-      		wsList = new ArrayList();
-      		if (pageNumber.intValue() > 0) prevPage = String.valueOf(pageNumber.intValue() - 1);
-      	} else if (workspaces.size() >= pageEnd) {
-      		wsList = workspaces.subList(pageStart, pageEnd);
-      		nextPage = String.valueOf(pageNumber.intValue() + 1);
-      		if (pageNumber.intValue() > 0) prevPage = String.valueOf(pageNumber.intValue() - 1);
-      	} else {
-      		wsList = workspaces.subList(pageStart, workspaces.size());
-      		if (pageNumber.intValue() > 0) prevPage = String.valueOf(pageNumber.intValue() - 1);
-      	}
 		model.put(WebKeys.WORKSPACES, wsList);
 		model.put(WebKeys.PAGE_NUMBER, pageNumber.toString());
 		model.put(WebKeys.NEXT_PAGE, nextPage);

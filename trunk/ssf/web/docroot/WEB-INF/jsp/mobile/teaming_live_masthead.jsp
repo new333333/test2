@@ -32,32 +32,41 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<%@ page import="org.kablink.teaming.ObjectKeys" %>
 
-  <div id="micro-blog-edit" class="action-dialog" style="display: none;z-index:2;">
-    <div class="dialog-head">
-      <span><label for="miniblogText"><ssf:nlt tag="miniblog"/></label></span>
-      <span id="micro-blog-date">
-        <c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">
-          <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-		        value="${ssUser.statusDate}" type="both" 
-			    timeStyle="short" dateStyle="short" />
-        </c:if>
-      </span>
-    </div>
-	<form id="microblogForm" method="post" action="${ss_microblog_post_url}">
-			
-	  <!-- necessary "cols" attribute is set to 20 for Blackberry and is overridden by CSS -->
-			
-      <textarea id="micro-blog-text" rows="5" cols="20" name="miniblogText"
-      ><c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">${ssUser.status}</c:if></textarea>
-      <div id="micro-blog-buttons">
-        <input id="micro-blog-post" type="submit" value="<ssf:nlt tag="button.post"/>" name="miniblogBtn"/>
-        <input id="micro-blog-cancel" type="button" value="<ssf:nlt tag="button.cancel"/>" name="PostBlogCancel"/>
-        <input id="micro-blog-clear" type="reset" value="<ssf:nlt tag="button.clear"/>" name="ClearBlog"
-          onclick="ss_clearStatusMobile('micro-blog-text');return false;"/>
-      </div>
-    </form>
+<div class="header">
+<table cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td valign="top" align="left" width="1%">
+  <div class="homelink">
+	<a href="<ssf:url adapter="true" portletName="ss_forum" 
+		action="__ajax_mobile" operation="view_teaming_live" actionUrl="false" />"
+	><ssf:nlt tag="general.Refresh"/></a>
   </div>
+</td>
+<td valign="top" align="center">
+  <c:if test="${!empty ss_pageTitle}">${ss_pageTitle}</c:if>
+  <c:if test="${empty ss_pageTitle}">
+    <c:if test="${empty ssBinder && empty ssEntry}">${ssProductTitle}</c:if>
+    <c:if test="${!empty ssBinder && empty ssEntry}">${ssBinder.title}</c:if>
+    <c:if test="${!empty ssEntry}">${ssEntry.title}</c:if>
+  </c:if>
+<c:set var="now" value="<%=new java.util.Date()%>" />
+  <span class="lastupdated">(<ssf:nlt tag="teaming.live.updated">
+    <ssf:param name="value" useBody="true">
+      <span id="last_updated"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+			value="${now}" type="both" timeStyle="short" dateStyle="short" /></span>)
+	</ssf:param>
+	</ssf:nlt>
+  </span>
+</td>
+<td valign="top" align="right" width="1%">
+  <div class="search">
+	<a href="javascript: ;" 
+	   onclick="ss_logoff();return false;"><ssf:nlt tag="logout"/></a>
+  </div>
+</td>
+</tr>
+</table>
 
+</div>
 

@@ -541,7 +541,7 @@ public class BinderHelper {
 		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
-			adapterUrl.setParameter(WebKeys.OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
 			model.put(WebKeys.URL, adapterUrl);
 			if (bs.getAdminModule().isMobileAccessEnabled()) {
 				return "mobile/show_login_form";
@@ -648,6 +648,70 @@ public class BinderHelper {
 		return view;
 	}
 
+	public static String setupTeamingLiveBeans(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, Map model, String view) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_TEAMING_LIVE);
+			model.put(WebKeys.URL, adapterUrl);
+			return "mobile/show_teaming_live_login_form";
+		}
+		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
+		Long binderId = user.getWorkspaceId();
+		if (binderId == null) binderId = bs.getWorkspaceModule().getTopWorkspace().getId();
+		Binder topBinder = bs.getWorkspaceModule().getTopWorkspace();
+		Binder myWorkspaceBinder = bs.getBinderModule().getBinder(user.getWorkspaceId());
+		Binder binder = bs.getBinderModule().getBinder(binderId);
+		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_forum");
+		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.TOP_WORKSPACE, topBinder);
+
+		String type = (String)userProperties.get(ObjectKeys.USER_PROPERTY_TEAMING_LIVE_WHATS_NEW_TYPE);
+		if (type == null || type.equals("")) type = ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE;
+		model.put("ss_whatsNewType", type);
+      	Integer pageNumber = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER, 0);
+      	if (pageNumber == null || pageNumber < 0) pageNumber = 0;
+      	int pageSize = SPropsUtil.getInt("relevance.mobile.whatsNewPageSize");
+      	int pageStart = pageNumber.intValue() * pageSize;
+      	int pageEnd = pageStart + pageSize;
+      	String nextPage = "";
+      	String prevPage = "";
+		Map options = new HashMap();		
+      	options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf(pageSize));
+      	options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(pageStart));
+		model.put(WebKeys.PAGE_NUMBER, pageNumber.toString());
+		model.put(WebKeys.NEXT_PAGE, nextPage);
+		model.put(WebKeys.PREV_PAGE, prevPage);
+		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
+
+		if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED) || 
+				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS) ||
+				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE)) {
+			BinderHelper.setupWhatsNewBinderBeans(bs, topBinder, model, String.valueOf(pageNumber), type);
+		} else if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_MICROBLOG)) {
+			RelevanceDashboardHelper.setupMiniblogsBean(bs, myWorkspaceBinder, model);
+		}
+      	//Get the total records found by the search
+      	Integer totalRecords = (Integer)model.get(WebKeys.SEARCH_TOTAL_HITS);
+      	//Get the records returned (which may be more than the page size)
+      	List results = (List)model.get(WebKeys.WHATS_NEW_BINDER);
+      	if (totalRecords.intValue() < pageStart) {
+      		if (pageNumber > 0) prevPage = String.valueOf(pageNumber - 1);
+      	} else if (totalRecords.intValue() >= pageEnd) {
+      		nextPage = String.valueOf(pageNumber + 1);
+      		if (pageNumber > 0) prevPage = String.valueOf(pageNumber - 1);
+      	} else {
+      		if (pageNumber > 0) prevPage = String.valueOf(pageNumber - 1);
+      	}
+		model.put(WebKeys.PAGE_NUMBER, pageNumber);
+		model.put(WebKeys.NEXT_PAGE, nextPage);
+		model.put(WebKeys.PREV_PAGE, prevPage);
+		
+		return view;
+	}
+
 	//Routines to add mobile actions
 	public static void addActionsHome(RenderRequest request, List actions) {
 		Map action = new HashMap();
@@ -704,6 +768,14 @@ public class BinderHelper {
 	public static void addActionsSpacer(RenderRequest request, List actions) {
 		Map action = new HashMap();
 		action.put("spacer", true);
+		actions.add(action);
+	}
+
+	public static void addActionsRefresh(RenderRequest request, List actions) {
+		Map action = new HashMap();
+		action.put("title", NLT.get("general.Refresh"));
+		action.put("url", "javascript: ;");
+		action.put("onclick", "self.location.reload(true);return false;");
 		actions.add(action);
 	}
 

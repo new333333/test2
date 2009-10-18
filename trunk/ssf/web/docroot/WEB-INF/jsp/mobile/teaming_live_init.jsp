@@ -32,32 +32,27 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<%@ page import="org.kablink.teaming.ObjectKeys" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html <c:if test="${!empty ssUser && !empty ssUser.locale}"> lang="${ssUser.locale}"</c:if>>
+<c:set var="ssf_snippet" value="1" scope="request"/>
+<head>
+<meta http-equiv="Content-Script-Type" content="text/javascript"/>
+<meta http-equiv="Content-Style-Type" content="text/css"/>
 
-  <div id="micro-blog-edit" class="action-dialog" style="display: none;z-index:2;">
-    <div class="dialog-head">
-      <span><label for="miniblogText"><ssf:nlt tag="miniblog"/></label></span>
-      <span id="micro-blog-date">
-        <c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">
-          <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-		        value="${ssUser.statusDate}" type="both" 
-			    timeStyle="short" dateStyle="short" />
-        </c:if>
-      </span>
-    </div>
-	<form id="microblogForm" method="post" action="${ss_microblog_post_url}">
-			
-	  <!-- necessary "cols" attribute is set to 20 for Blackberry and is overridden by CSS -->
-			
-      <textarea id="micro-blog-text" rows="5" cols="20" name="miniblogText"
-      ><c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">${ssUser.status}</c:if></textarea>
-      <div id="micro-blog-buttons">
-        <input id="micro-blog-post" type="submit" value="<ssf:nlt tag="button.post"/>" name="miniblogBtn"/>
-        <input id="micro-blog-cancel" type="button" value="<ssf:nlt tag="button.cancel"/>" name="PostBlogCancel"/>
-        <input id="micro-blog-clear" type="reset" value="<ssf:nlt tag="button.clear"/>" name="ClearBlog"
-          onclick="ss_clearStatusMobile('micro-blog-text');return false;"/>
-      </div>
-    </form>
-  </div>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
+<c:set var="ssf_support_files_loaded" value="" scope="request"/>
+<%@ include file="/WEB-INF/jsp/common/view_css.jsp" %>
 
+<c:if test="${!empty ss_windowTitle}"><title>${ss_windowTitle}</title></c:if>
+
+<script type="text/javascript" src="<html:rootPath/>js/jquery/jquery-1.3.2.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.core.js"></script>
+<script type="text/javascript" 
+  src="<html:rootPath/>js/common/ss_mobile.js?startTime=<%= org.kablink.teaming.util.ReleaseInfo.getStartTime() %>"></script>
+<link href="<html:rootPath/>css/ss_mobile_common.css" rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>css/ss_mobile_iphone.css" rel="stylesheet" type="text/css" />
+
+</head>
+<body>
