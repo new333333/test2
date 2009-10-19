@@ -101,6 +101,7 @@
 	      <property name="statusDate"/>
 	      <property name="miniBlogId"/>
 	      <property name="diskQuota" access="field"/>
+	      <property name="maxGroupsQuota" access="field"/>
 	      <property name="diskSpaceUsed" access="field"/>
 	      <property name="password" access="field" length="64"/>
 		  <property name="timeZone" access="field" length="80"/>
