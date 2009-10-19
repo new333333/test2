@@ -38,12 +38,18 @@
 
 <%@ page contentType="text/xml; charset=UTF-8" %>
 <taconite-root xml:space="preserve">
-	<taconite-replace contextNodeID="poll_status" parseInBrowser="true">
-		<div id="poll_status" style="visibility:hidden; display:none;">${ss_teamingLiveStatus}</div>
-	</taconite-replace>
-	<taconite-replace contextNodeID="last_updated" parseInBrowser="true">
-		<span id="last_updated"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-					      value="${now}" type="both" timeStyle="short" dateStyle="short" /></span>
-	</taconite-replace>
+  <taconite-replace contextNodeID="poll_status" parseInBrowser="true">
+	<div id="poll_status" style="visibility:hidden; display:none;">${ss_teamingLiveStatus}</div>
+  </taconite-replace>
+  <taconite-replace contextNodeID="last_updated" parseInBrowser="true">
+    <span id="last_updated" class="lastupdated">
+	  <ssf:nlt tag="teaming.live.updated">
+        <ssf:param name="value" useBody="true">
+          <span ><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+			value="${now}" type="both" timeStyle="short" dateStyle="short" /></span>)
+	    </ssf:param>
+	  </ssf:nlt>
+    </span>
+  </taconite-replace>
 </taconite-root>
 
