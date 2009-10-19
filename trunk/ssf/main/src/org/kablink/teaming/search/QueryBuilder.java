@@ -119,16 +119,20 @@ public class QueryBuilder {
 	public SearchObject buildQuery(Document domQuery) {
 		return buildQuery(domQuery, false);
 	}
+	
+	public SearchObject buildQueryDeleted(Document domQuery) {
+		return buildQuery(domQuery, false, null, true);
+	}
 
 	public SearchObject buildQuery(Document domQuery, Long asUserId) {
-		return buildQuery(domQuery, false, asUserId);
+		return buildQuery(domQuery, false, asUserId, false);
 	}
 
 	public SearchObject buildQuery(Document domQuery, boolean ignoreAcls) {
-		return buildQuery(domQuery, ignoreAcls, null);
+		return buildQuery(domQuery, ignoreAcls, null, false);
 	}
 
-	public SearchObject buildQuery(Document domQuery, boolean ignoreAcls, Long asUserId) {
+	public SearchObject buildQuery(Document domQuery, boolean ignoreAcls, Long asUserId, boolean deleted) {
 		SearchObject so = new SearchObject();
 
 		Element root = domQuery.getRootElement();
@@ -157,13 +161,16 @@ public class QueryBuilder {
 			}
 		}
 
+
+		
+		String q = so.getQueryString();
 		// add acl check to every query. (If it's the superuser doing this query, then this clause
 		// will return the empty string.
 		
 		if (!ignoreAcls) { 
 			String acls = getAclClause();
 			if (acls.length() != 0) {
-				String q = so.getQueryString();
+				q = so.getQueryString();
 				if (q.equalsIgnoreCase("(  )"))
 					q = "";
 				if (q.length() > 0)
@@ -172,6 +179,15 @@ public class QueryBuilder {
 				so.setQueryString(q);
 			}
 		}
+		
+		// add deleted clause to every query.  Check to see if the deleted option was passed in
+		if (q.equalsIgnoreCase("(  )"))
+			q = " "; // if it's an empty clause - delete it
+		if (q.length() > 0)
+			q += " AND ";  // if there's a clause there, then AND this to it
+		String deletedClause = getDeletedClause(deleted);
+		q += deletedClause;
+		so.setQueryString(q);
 		
 		if(logger.isDebugEnabled())
 			logger.debug(org.kablink.teaming.util.Constants.NEWLINE + 
@@ -483,6 +499,23 @@ public class QueryBuilder {
 		}
 		return qString.toString();
 	}
+	
+	private String getDeletedClause(boolean searchDeleted)
+	{
+
+		StringBuffer qString = new StringBuffer();
+		
+		//if (searchDeleted) {
+		//	qString.append("(");
+		//} else {
+			qString.append(" NOT ");
+		//}
+		qString.append(Constants.DELETED_FIELD  + ":true "); //_deleted:true
+		//qString.append(")");
+		
+		return qString.toString();
+	}
+	
 	private String idField(Collection<Long>ids, String prefix) {
 		StringBuffer buf = new StringBuffer("");
 		if (ids != null) {

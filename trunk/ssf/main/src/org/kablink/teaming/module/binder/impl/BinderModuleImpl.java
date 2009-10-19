@@ -947,13 +947,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	public Map executeSearchQuery(Document searchQuery, Map options) {
+		SearchObject so;
+		
 		Document qTree = SearchUtils.getInitalSearchDocument(searchQuery,
 				options);
 		SearchUtils.getQueryFields(qTree, options);
 
 		// Create the Lucene query
 		QueryBuilder qb = new QueryBuilder(true);
-		SearchObject so = qb.buildQuery(qTree);
+		if (options.containsKey(ObjectKeys.SEARCH_DELETED)) {
+			so = qb.buildQueryDeleted(qTree);
+		} else {
+			so = qb.buildQuery(qTree);
+		}
 
 		// Set the sort order
 		SortField[] fields = SearchUtils.getSortFields(options);
