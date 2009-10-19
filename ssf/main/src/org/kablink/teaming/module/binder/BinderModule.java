@@ -155,35 +155,54 @@ public interface BinderModule {
 	 */
 	public void deleteTag(Long binderId, String tagId) 
 		throws AccessControlException;
-	   /**
+   /**
 	 * Execute a search query using a <code>Criteria</code>.
-     * @param query
+     * @param crit
      * @param offset
      * @param maxResults
+     * @param preDeleted
      * @return
      */
     public Map executeSearchQuery(Criteria crit, int offset, int maxResults);
+    public Map executeSearchQuery(Criteria crit, int offset, int maxResults, boolean preDeleted);
     /**
 	 * Execute a search query using a <code>Criteria</code>. Limit results to those of a different user
-     * @param query
+     * @param crit
      * @param offset
      * @param maxResults
+     * @param asUserId
+     * @param preDeleted
      * @return
      */
     public Map executeSearchQuery(Criteria crit, int offset, int maxResults, Long asUserId);
+    public Map executeSearchQuery(Criteria crit, int offset, int maxResults, Long asUserId, boolean preDeleted);
     /**
 	 * Execute a search query using a <code>QueryBuilder</code>-ready <code>Document</code>.
      * @param query
      * @param offset
      * @param maxResults
+     * @param preDeleted
      * @return
      */
     public Map executeSearchQuery(Document query, int offset, int maxResults);
+    public Map executeSearchQuery(Document query, int offset, int maxResults, boolean preDeleted);
+    /**
+	 * Execute a search query using a <code>QueryBuilder</code>-ready <code>Document</code>.
+     * @param query
+     * @param offset
+     * @param maxResults
+     * @param asUserId
+     * @param preDeleted
+     * @return
+     */
+    public Map executeSearchQuery(Document query, int offset, int maxResults, Long asUserId);
+    public Map executeSearchQuery(Document query, int offset, int maxResults, Long asUserId, boolean preDeleted);
     /**
  	 * Execute a search query using a <code>QueryBuilder</code>-ready <code>Document</code>.
-    * Optionally provide additional searchOptions.
+     * Optionally provide additional searchOptions.
      * @param searchQuery
      * @param searchOptions
+     * @param preDeleted
      * @return
      */
     public Map executeSearchQuery(Document searchQuery, Map searchOptions);

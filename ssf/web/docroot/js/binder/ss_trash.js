@@ -32,6 +32,19 @@
  */
 
 /*
+ * Returns a string contining information from an array of
+ * SSTrashEntry's for embedding in an AJAX url.  
+ */
+function ss_buildTrashEntryUrlParams(entries) {
+	var count = ((null == entries) ? 0 : entries.length);
+	var reply = new Array();
+	for (var i = 0; i < count; i += 1) {
+		reply[reply.length] = entries[i].getString();
+	}
+	return(ss_pack(reply));
+}
+
+/*
  * Called when the selects 'Purge' from the trash viewer's menu bar.
  */
 function ss_trashPurge() {
@@ -50,7 +63,8 @@ function ss_trashPurge() {
 		return;
 	}
 	
-	alert("ss_trashPurge(...this needs to be implemented...)");
+	var urlParams = ss_buildTrashEntryUrlParams(checkedEntries);
+	ajaxTrashRequest_Submit("trash_purge", urlParams);
 }
 
 /*
@@ -64,7 +78,7 @@ function ss_trashPurgeAll() {
 		return;
 	}
 	
-	alert("ss_trashPurgeAll(...this needs to be implemented...)");
+	ajaxTrashRequest_Submit("trash_purge_all", "");
 }
 
 /*
@@ -86,7 +100,8 @@ function ss_trashRestore() {
 		return;
 	}
 	
-	alert("ss_trashRestore(...this needs to be implemented...)");
+	var urlParams = ss_buildTrashEntryUrlParams(checkedEntries);
+	ajaxTrashRequest_Submit("trash_restore", urlParams);
 }
 
 /*
@@ -100,7 +115,7 @@ function ss_trashRestoreAll() {
 		return;
 	}
 	
-	alert("ss_trashRestoreAll(...this needs to be implemented...)");
+	ajaxTrashRequest_Submit("trash_restore_all", "");
 }
 
 /*
@@ -188,4 +203,31 @@ function SSTrashEntry() {
 		var eCBox = document.getElementById(this.getCheckboxId());
 		return(eCBox);
 	}
+	
+	/*
+	 * Returns the string representation of this SSTrashEntry.
+	 */
+	this.getString = function () {
+		var	reply =	(String(this.m_docId)            + ":" +
+					 String(this.m_locationBinderId) + ":" +
+					 String(this.m_docType)          + ":" +
+					 String(this.m_entityType));
+		return(reply);
+	}
+}
+
+/*
+ * Called to handle the response from an AJAX operation on the trash.
+ */
+function ajaxTrashRequest_Response(data, sOperation) {
+	setTimeout("document.location.reload();", 100);
+}
+
+/*
+ * Called to submit an AJAX request to perform an operation on the
+ * trash.
+ */
+function ajaxTrashRequest_Submit(sOperation, urlParams) {
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:sOperation, params:urlParams});
+	ss_fetch_url(url, ajaxTrashRequest_Response, sOperation);
 }

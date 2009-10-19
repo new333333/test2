@@ -921,27 +921,53 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	public Map executeSearchQuery(Criteria crit, int offset, int maxResults) {
-		return executeSearchQuery(crit.toQuery(), offset, maxResults);
+		return executeSearchQuery(crit, offset, maxResults, false);
+	}
+	public Map executeSearchQuery(Criteria crit, int offset, int maxResults, boolean preDeleted) {
+		return executeSearchQuery(crit.toQuery(), offset, maxResults, preDeleted);
 	}
 
 	public Map executeSearchQuery(Criteria crit, int offset, int maxResults,
 			Long asUserId) {
-		return executeSearchQuery(crit.toQuery(), offset, maxResults, asUserId);
+		return executeSearchQuery(crit, offset, maxResults, asUserId, false);
+	}
+	public Map executeSearchQuery(Criteria crit, int offset, int maxResults,
+			Long asUserId, boolean preDeleted) {
+		return executeSearchQuery(crit.toQuery(), offset, maxResults, asUserId, preDeleted);
 	}
 
 	public Map executeSearchQuery(Document query, int offset, int maxResults) {
+		return executeSearchQuery(query, offset, maxResults, false);
+	}
+	public Map executeSearchQuery(Document query, int offset, int maxResults, boolean preDeleted) {
 		// Create the Lucene query
 		QueryBuilder qb = new QueryBuilder(true);
-		SearchObject so = qb.buildQuery(query);
+		SearchObject so;
+		if (preDeleted) {
+			so = qb.buildQueryPreDeleted(query);
+		}
+		else {
+			so = qb.buildQuery(query);
+		}
 
 		return executeSearchQuery(so, offset, maxResults);
 	}
 
 	public Map executeSearchQuery(Document query, int offset, int maxResults,
 			Long asUserId) {
+		return executeSearchQuery(query, offset, maxResults, false);
+	}
+	public Map executeSearchQuery(Document query, int offset, int maxResults,
+			Long asUserId, boolean preDeleted) {
 		// Create the Lucene query
 		QueryBuilder qb = new QueryBuilder(true);
-		SearchObject so = qb.buildQuery(query, asUserId);
+		SearchObject so;
+		if (preDeleted) {
+			so = qb.buildQueryPreDeleted(query, asUserId);
+		}
+		else {
+			so = qb.buildQuery(query, asUserId);
+		}
 
 		return executeSearchQuery(so, offset, maxResults);
 	}
@@ -955,8 +981,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 		// Create the Lucene query
 		QueryBuilder qb = new QueryBuilder(true);
-		if (options.containsKey(ObjectKeys.SEARCH_DELETED)) {
-			so = qb.buildQueryDeleted(qTree);
+		if (options.containsKey(ObjectKeys.SEARCH_PRE_DELETED)) {
+			so = qb.buildQueryPreDeleted(qTree);
 		} else {
 			so = qb.buildQuery(qTree);
 		}

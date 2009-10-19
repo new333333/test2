@@ -120,7 +120,7 @@ public class QueryBuilder {
 		return buildQuery(domQuery, false);
 	}
 	
-	public SearchObject buildQueryDeleted(Document domQuery) {
+	public SearchObject buildQueryPreDeleted(Document domQuery) {
 		return buildQuery(domQuery, false, null, true);
 	}
 
@@ -128,11 +128,15 @@ public class QueryBuilder {
 		return buildQuery(domQuery, false, asUserId, false);
 	}
 
+	public SearchObject buildQueryPreDeleted(Document domQuery, Long asUserId) {
+		return buildQuery(domQuery, false, asUserId, true);
+	}
+
 	public SearchObject buildQuery(Document domQuery, boolean ignoreAcls) {
 		return buildQuery(domQuery, ignoreAcls, null, false);
 	}
 
-	public SearchObject buildQuery(Document domQuery, boolean ignoreAcls, Long asUserId, boolean deleted) {
+	public SearchObject buildQuery(Document domQuery, boolean ignoreAcls, Long asUserId, boolean preDeleted) {
 		SearchObject so = new SearchObject();
 
 		Element root = domQuery.getRootElement();
@@ -180,13 +184,13 @@ public class QueryBuilder {
 			}
 		}
 		
-		// add deleted clause to every query.  Check to see if the deleted option was passed in
+		// add preDeleted clause to every query.  Check to see if the preDeleted option was passed in
 		if (q.equalsIgnoreCase("(  )"))
 			q = " "; // if it's an empty clause - delete it
 		if (q.length() > 0)
 			q += " AND ";  // if there's a clause there, then AND this to it
-		String deletedClause = getDeletedClause(deleted);
-		q += deletedClause;
+		String preDeletedClause = getPreDeletedClause(preDeleted);
+		q += preDeletedClause;
 		so.setQueryString(q);
 		
 		if(logger.isDebugEnabled())
@@ -500,18 +504,15 @@ public class QueryBuilder {
 		return qString.toString();
 	}
 	
-	private String getDeletedClause(boolean searchDeleted)
+	private String getPreDeletedClause(boolean searchPreDeleted)
 	{
 
 		StringBuffer qString = new StringBuffer();
-		
-		//if (searchDeleted) {
-		//	qString.append("(");
-		//} else {
+
+		if (!searchPreDeleted) {
 			qString.append(" NOT ");
-		//}
-		qString.append(Constants.DELETED_FIELD  + ":true "); //_deleted:true
-		//qString.append(")");
+		}
+		qString.append(Constants.PRE_DELETED_FIELD  + ":true "); //_preDeleted:true
 		
 		return qString.toString();
 	}

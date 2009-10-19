@@ -1928,8 +1928,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         // Add EntityType
         EntityIndexUtils.addEntityType(indexDoc, entity, fieldsOnly);
         
-        // Add EntityType
-        EntityIndexUtils.addDeletedField(indexDoc, entity, fieldsOnly);
+        // Add PreDeletedField (i.e., entity is in the trash.)
+        EntityIndexUtils.addPreDeletedField(indexDoc, entity, fieldsOnly);
         
         // Add DefinitionType
         EntityIndexUtils.addDefinitionType(indexDoc, entity, fieldsOnly);
