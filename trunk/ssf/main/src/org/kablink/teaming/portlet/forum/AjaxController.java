@@ -145,6 +145,7 @@ import org.kablink.teaming.web.upload.ProgressListenerSessionResolver;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.FixupFolderDefsThread;
+import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.UserAppConfig;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.ListFolderHelper;
@@ -516,6 +517,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 		{
 			// Get a user access report.
 			return ajaxGetUserAccessReport( request, response );
+		}
+		else if (op.equals(WebKeys.OPERATION_TRASH_PURGE)     ||
+				   op.equals(WebKeys.OPERATION_TRASH_PURGE_ALL) ||
+				   op.equals(WebKeys.OPERATION_TRASH_RESTORE)   ||
+				   op.equals(WebKeys.OPERATION_TRASH_RESTORE_ALL)) {
+			return TrashHelper.ajaxTrashRequest(op, this, request, response);
 		}
 		return ajaxReturn(request, response);
 	} 

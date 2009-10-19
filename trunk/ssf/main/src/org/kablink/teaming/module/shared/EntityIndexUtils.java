@@ -158,12 +158,19 @@ public class EntityIndexUtils {
    	
     }
 
-    public static void addDeletedField(Document doc, DefinableEntity entry, boolean fieldsOnly) {
+    public static void addPreDeletedField(Document doc, DefinableEntity entry, boolean fieldsOnly) {
       	String deletedValue = Constants.FALSE;
-    	if (entry.isDeleted()) { 
-    		deletedValue = Constants.TRUE;
-    	}
-    	Field deletedField = new Field(Constants.DELETED_FIELD, deletedValue, Field.Store.NO, Field.Index.TOKENIZED);
+      	if (entry instanceof FolderEntry) {
+      		if (((FolderEntry) entry).isPreDeleted()) {
+      			deletedValue = Constants.TRUE;
+      		}
+      	}
+      	if (entry instanceof Folder) {
+      		if (((Folder) entry).isPreDeleted()) {
+      			deletedValue = Constants.TRUE;
+      		}
+      	}
+    	Field deletedField = new Field(Constants.PRE_DELETED_FIELD, deletedValue, Field.Store.NO, Field.Index.TOKENIZED);
     	doc.add(deletedField);  	
     }
     

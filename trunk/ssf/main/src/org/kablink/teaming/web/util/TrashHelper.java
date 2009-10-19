@@ -32,12 +32,15 @@
  */
 package org.kablink.teaming.web.util;
 
+import static org.kablink.util.search.Restrictions.in;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.portlet.RenderRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -51,11 +54,66 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.util.StringPool;
+import org.kablink.util.StringUtil;
 import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Order;
+import org.springframework.web.portlet.ModelAndView;
 
 public class TrashHelper {
-	public static final String[] trashColumns= new String[] {"title", "date", "author", "location"};
+	/*
+	 * Inner class used to track trash entries being dealt with.
+	 */
+	private static class TrashEntry {
+		public Long		m_docId;
+		public Long		m_locationBinderId;
+		public String	m_docType;
+		public String	m_entityType;
+		
+		public TrashEntry(String paramS) {
+			String[] params = paramS.split(StringPool.COLON);
+			
+			m_docId				= Long.valueOf(params[0]);
+			m_locationBinderId	= Long.valueOf(params[1]);
+			m_docType			=              params[2];
+			m_entityType		=              params[3];
+		}
+	}
 	
+	// Public data members.
+	public static final String[] trashColumns= new String[] {"title", "date", "author", "location"};
+
+	/**
+	 * Called to handle AJAX trash requests received by
+	 * AjaxController.java.
+	 * 
+	 * @param op
+	 * @param request
+	 * @param response
+	 */
+	public static ModelAndView ajaxTrashRequest(String op, AllModulesInjected bs, RenderRequest request, RenderResponse response) {
+		ModelAndView mv;
+		if (op.equals(WebKeys.OPERATION_TRASH_PURGE) || op.equals(WebKeys.OPERATION_TRASH_RESTORE)) {
+			String	paramS = PortletRequestUtils.getStringParameter(request, "params", "");
+			String[]	params = StringUtil.unpack(paramS);
+			int count = ((null == params) ? 0 : params.length);
+			TrashEntry[] trashEntries = new TrashEntry[count];
+			for (int i = 0; i < count; i += 1) {
+				trashEntries[i] = new TrashEntry(params[i]);
+			}
+			if (op.equals(WebKeys.OPERATION_TRASH_PURGE)) mv = purgeEntries(  trashEntries, bs, request, response);
+			else                                          mv = restoreEntries(trashEntries, bs, request, response);
+		}
+		else if (op.equals(WebKeys.OPERATION_TRASH_PURGE_ALL))   mv = purgeAll(  bs, request, response);
+		else if (op.equals(WebKeys.OPERATION_TRASH_RESTORE_ALL)) mv = restoreAll(bs, request, response);
+		else {
+			response.setContentType("text/xml");
+			mv = new ModelAndView("forum/ajax_return");
+		}
+		return mv;
+	}
+
 	/**
 	 * When required, builds the Trash toolbar for a binder.
 	 * 
@@ -162,6 +220,7 @@ public class TrashHelper {
 	@SuppressWarnings("unchecked")
 	public static Map getTrashEntries(AllModulesInjected bs, Map<String,Object>model, Binder binder, Map options) {
 //!		...this needs to be implemented...
+/*
 		Map trashEntries = null;
 		if (binder instanceof Folder) {
 			Folder folder = ((Folder) binder);
@@ -174,6 +233,13 @@ public class TrashHelper {
 			BinderModule bm = bs.getBinderModule();
 			trashEntries = bm.getBinders(ws, options);
 		}
+*/
+		
+		Criteria crit = new Criteria();
+		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_ENTRY, Constants.DOC_TYPE_BINDER}))
+			.add(in(Constants.ENTRY_ANCESTRY, new String[] {String.valueOf(binder.getId())}));
+//		crit.addOrder(Order.asc(Constants.BINDER_ID_FIELD));
+		Map trashEntries = bs.getBinderModule().executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS, true);
 		
 		// We need to pass information about the trash entries binder's too.
 		List<Long> binderIds = new ArrayList<Long>();
@@ -199,5 +265,41 @@ public class TrashHelper {
 		model.put(WebKeys.FOLDER_LIST, bs.getBinderModule().getBinders(binderIds));
 		
 		return trashEntries;
+	}
+	
+	/*
+	 * Called to purge the TrashEntry's in trashEntries. 
+	 */
+	private static ModelAndView purgeEntries(TrashEntry[] trashEntries, AllModulesInjected bs, RenderRequest request, RenderResponse response) {
+//!		...this needs to be implemented...
+		response.setContentType("text/xml");
+		return new ModelAndView("forum/ajax_return");
+	}
+
+	/*
+	 * Called to purge the entries in the trash. 
+	 */
+	private static ModelAndView purgeAll(AllModulesInjected bs, RenderRequest request, RenderResponse response) {
+//!		...this needs to be implemented...
+		response.setContentType("text/xml");
+		return new ModelAndView("forum/ajax_return");
+	}
+
+	/*
+	 * Called to restore the TrashEntry's in trashEntries. 
+	 */
+	private static ModelAndView restoreEntries(TrashEntry[] trashEntries, AllModulesInjected bs, RenderRequest request, RenderResponse response) {
+//!		...this needs to be implemented...
+		response.setContentType("text/xml");
+		return new ModelAndView("forum/ajax_return");
+	}
+
+	/*
+	 * Called to restore the entries in the trash. 
+	 */
+	private static ModelAndView restoreAll(AllModulesInjected bs, RenderRequest request, RenderResponse response) {
+//!		...this needs to be implemented...
+		response.setContentType("text/xml");
+		return new ModelAndView("forum/ajax_return");
 	}
 }

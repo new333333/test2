@@ -305,7 +305,7 @@ public interface ObjectKeys {
     public static final String SEARCH_COMMUNITY_TAG = "searchCommunityTag";
     public static final String SEARCH_PERSONAL_TAG = "searchPersonalTag";
     public static final String SEARCH_TITLE = "searchTitle";
-    public static final String SEARCH_DELETED = "__deleted";
+    public static final String SEARCH_PRE_DELETED = "__preDeleted";
     public static final String SEARCH_LASTACTIVITY_DATE_START = "lastActivityDateStart";
     public static final String SEARCH_LASTACTIVITY_DATE_END = "lastActivityDateEnd";
     public static final String SEARCH_CREATION_DATE_START = "creationDateStart";

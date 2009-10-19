@@ -63,7 +63,7 @@ public class Constants {
 	public static final String SORT_FIELD_PREFIX = "_sort_";
 	public static final String UID_FIELD = "_uid";
 	public static final String DOC_TYPE_FIELD = "_docType";
-	public static final String DELETED_FIELD = "_deleted";
+	public static final String PRE_DELETED_FIELD = "_preDeleted";
 	public static final String ATTACHMENT_TYPE_FIELD = "_attType";
 	public static final String THIS_CLASS_FIELD = "_class";
 	public static final String ALL_TEXT_FIELD = "_allText";

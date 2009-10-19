@@ -456,6 +456,10 @@ public class WebKeys {
 	public static final String OPERATION_SHARE_THIS_BINDER = "share_this_binder";
 	public static final String OPERATION_SHOW_BLOG_REPLIES = "show_blog_replies";
 	public static final String OPERATION_SHOW_MY_TEAMS = "show_my_teams";
+	public static final String OPERATION_TRASH_PURGE = "trash_purge";
+	public static final String OPERATION_TRASH_PURGE_ALL = "trash_purge_all";
+	public static final String OPERATION_TRASH_RESTORE = "trash_restore";
+	public static final String OPERATION_TRASH_RESTORE_ALL = "trash_restore_all";
 	public static final String OPERATION_CALENDAR_GOTO_DATE = "cal_goto_date";
 	public static final String OPERATION_UNSEEN_COUNTS = "unseen_counts";
 	public static final String OPERATION_RELOAD_LISTING = "reload_listing";

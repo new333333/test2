@@ -8250,10 +8250,73 @@ function ss_trim(str) {
     return x;
 };
 
+
+function ss_urlEncode(str) {
+	var	r;
+	if (encodeURIComponent) {
+		r = encodeURIComponent(str);
+	}
+	else {
+		r = escape(str,1);
+		r=replace(r, "+", "%2B");
+		r=replace(r, " ", "+");
+	}
+	
+	return r;
+}
+   
+function ss_urlDecode(str) {
+	str = replace(str, "+", " ");
+	if (decodeURIComponent) {
+		return decodeURIComponent(str);
+	}
+	else {
+		return unescape(str);
+	}
+}
+   
+function ss_pack(list) {
+	if(!list || !list.length || list.length<1) {
+		return "PP";
+	}
+   
+	var s = "P:" + ss_urlEncode(list[0]);
+	for(var i=1; i<list.length; i++) {
+		s += ":" + ss_urlEncode(list[i]);
+	}
+   
+	return s + "P";
+}
+   
+function ss_unpack(s) {
+	if(!s) {
+		return null;
+	}
+   
+	if(s == "PP") {
+		return new Array();
+	}
+   
+	if(s.length < 3 || s.charAt(0) != 'P' || s.charAt(1) != ':' || s.charAt(s.length - 1) != 'P') {
+		var list = new Array();
+		list[0] = s;
+		return list;
+	}
+   
+	s = s.substring(2, s.length-1);
+   
+	var tmplist = s.split(":");
+	var list = new Array();
+	for(var i=0; i<tmplist.length; i++) {
+		list[i] = ss_urlDecode(tmplist[i]);
+	}
+   
+	return list;
+}
+   
 dojo.require("dijit.dijit");
 dojo.require("dojo.fx");
 dojo.require("dojo.io.iframe");
 dojo.require("dojox.data.dom");
 dojo.require("dojox.fx");
 dojo.require("dojox.uuid.generateRandomUuid");
-

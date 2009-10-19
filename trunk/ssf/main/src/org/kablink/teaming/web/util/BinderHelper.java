@@ -3065,7 +3065,12 @@ public class BinderHelper {
 		model.put(WebKeys.FOLDER_SORT_BY, sortBy);		
 		model.put(WebKeys.FOLDER_SORT_DESCEND, sortDescend.toString());
 		
-		int totalRecordsFound = (Integer) entries.get(ObjectKeys.TOTAL_SEARCH_COUNT);
+		Integer totalSearchCount = (Integer) entries.get(ObjectKeys.TOTAL_SEARCH_COUNT);
+		if (null == totalSearchCount) {
+			totalSearchCount = (Integer) entries.get(ObjectKeys.SEARCH_COUNT_TOTAL);
+			entries.put(ObjectKeys.TOTAL_SEARCH_COUNT, totalSearchCount);
+		}
+		int totalRecordsFound = totalSearchCount;
 //		int totalRecordsReturned = (Integer) folderEntries.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED);
 		//Start Point of the Record
 		int searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
