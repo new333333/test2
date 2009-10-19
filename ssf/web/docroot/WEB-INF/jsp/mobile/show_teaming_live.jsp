@@ -44,7 +44,7 @@
 var updateTimer = null;
 var pollTimer = null;
 var newItemsCount = 0;
-var pollInterval = 3000;
+var pollInterval = 8000;
 function initiatePolling() {
 	if (pollTimer != null) clearTimeout(pollTimer);
 	pollTimer = setTimeout("pollForActivity();", pollInterval);
@@ -122,6 +122,7 @@ function postPollForUpdate(s, divId) {
 	if (targetDiv) {
 		targetDiv.innerHTML = s;
 	}
+	ss_executeJavascript(targetDiv);
 }
 
 ss_createOnLoadObj("initiatePolling", initiatePolling);
@@ -132,6 +133,12 @@ ss_createOnLoadObj("initiatePolling", initiatePolling);
 
 <div class="content">
 
+<c:set var="ss_microblog_post_url" scope="request">
+    <ssf:url adapter="true" portletName="ss_forum" 
+			action="__ajax_mobile" 
+			operation="view_teaming_live" 
+			actionUrl="true" />
+</c:set>
 <%@ include file="/WEB-INF/jsp/mobile/teaming_live_action_bar.jsp" %>
 
 <div class="folders">
