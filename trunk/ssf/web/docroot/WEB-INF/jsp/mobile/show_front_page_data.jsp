@@ -56,12 +56,14 @@
       <img src="<html:imagesPath/>mobile/iphone_teaming_favorite1.png"/>
       <a id="myfavorites-a" href="<ssf:url adapter="true" portletName="ss_forum" 
 							action="__ajax_mobile" actionUrl="false" 
+							binderId="${ssBinder.id}"
 							operation="mobile_show_favorites" />"><ssf:nlt tag="navigation.myFavorites"/></a>
     </div>
 	<div class="my-item myteams-a">
 	  <img src="<html:imagesPath/>mobile/iphone_teaming_teams1.png"/>
 	  <a id="myteams-a" href="<ssf:url adapter="true" portletName="ss_forum" 
 							action="__ajax_mobile" actionUrl="false" 
+							binderId="${ssBinder.id}"
 							operation="mobile_show_teams" />"><ssf:nlt tag="navigation.myTeams"/></a>
 	</div>    
   </div>
