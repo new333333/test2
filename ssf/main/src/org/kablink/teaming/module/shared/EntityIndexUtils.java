@@ -157,6 +157,16 @@ public class EntityIndexUtils {
         } catch (Exception ex) {};
    	
     }
+
+    public static void addDeletedField(Document doc, DefinableEntity entry, boolean fieldsOnly) {
+      	String deletedValue = Constants.FALSE;
+    	if (entry.isDeleted()) { 
+    		deletedValue = Constants.TRUE;
+    	}
+    	Field deletedField = new Field(Constants.DELETED_FIELD, deletedValue, Field.Store.NO, Field.Index.TOKENIZED);
+    	doc.add(deletedField);  	
+    }
+    
     public static void addEntityType(Document doc, DefinableEntity entry, boolean fieldsOnly) {
       	Field eField = new Field(ENTITY_FIELD, entry.getEntityType().name(), Field.Store.YES, Field.Index.TOKENIZED);
        	doc.add(eField);
