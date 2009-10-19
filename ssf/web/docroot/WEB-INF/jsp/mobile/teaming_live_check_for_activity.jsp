@@ -49,6 +49,8 @@
 			value="${now}" type="both" timeStyle="short" dateStyle="short" /></span>)
 	    </ssf:param>
 	  </ssf:nlt>
+      <br/>
+      <span class="ss_mobile_light">[<ssf:nlt tag="teaming.live.willBeUpdated"/>]</span>
     </span>
   </taconite-replace>
 </taconite-root>
