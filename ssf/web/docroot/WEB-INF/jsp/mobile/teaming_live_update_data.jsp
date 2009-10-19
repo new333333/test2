@@ -42,9 +42,9 @@
 	    	</c:if>
 	    	<div class="entry">
 	    	  <div class="entry-title">
-			    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+			    <a target="_blank" href="<ssf:url adapter="true" portletName="ss_forum" 
 				  folderId="${entryWn._binderId}"  entryId="${entryWn._docId}"
-				  action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />"
+				  action="view_folder_entry" actionUrl="false" />"
 			    >
 			  	  <span><c:if test="${empty entryWn.title}">--<ssf:nlt tag="entry.noTitle"/>--</c:if>
 			  	    <ssf:makeWrapable><c:out value="${entryWn.title}" escapeXml="true"/></ssf:makeWrapable>
@@ -54,9 +54,8 @@
 		 
 		  	  <div class="entry-signature">
 		  	    <span class="entry-author">
-				  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-				    action="__ajax_mobile"
-				    operation="mobile_show_workspace"
+				  <a target="_blank" href="<ssf:url adapter="true" portletName="ss_forum" 
+				    action="view_ws_listing"
 				    binderId="${entryWn._principal.workspaceId}" />"
 				  ><c:out value="${entryWn._principal.title}" escapeXml="true"/></a>
 				</span>
@@ -77,9 +76,9 @@
 				</c:if>
 				<c:set var="isDashboard" value="yes"/>
 				<c:if test="${!empty path}">
-	     			<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	     			<a target="_blank" href="<ssf:url adapter="true" portletName="ss_forum" 
 						folderId="${entryWn._binderId}" 
-						action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />"
+						action="view_folder_listing" actionUrl="false" />"
 					 >${title}</a>
 				</c:if>
 				</span>
@@ -104,10 +103,9 @@
 	    	  </c:if>
 	    	<div class="entry">
 	    	  <div class="entry-title">
-		    	<a href="<ssf:url adapter="true" portletName="ss_forum" 
+		    	<a target="_blank" href="<ssf:url adapter="true" portletName="ss_forum" 
 				  binderId="${activity.user.workspaceId}"
-				  action="__ajax_mobile" 
-				  operation="mobile_show_workspace" />" >${activity.user.title}</a>
+				  action="view_ws_listing" />" >${activity.user.title}</a>
 		      </div>
 		  	  <div>
 			  	<span class="entry-date">
