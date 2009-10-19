@@ -6,6 +6,7 @@ alter table SS_Forums add preDeleted (1,0);
 alter table SS_Attachments add relevanceUUID varchar2(256 char);
 alter table SS_Principals add diskSpaceUsed number(19,0);
 alter table SS_Principals add diskQuota number(19,0);
+alter table SS_Principals add maxGroupsQuota number(19,0);
 alter table SS_ZoneConfig add diskQuotasEnabled number(1,0);
 alter table SS_ZoneConfig add diskQuotaUserDefault number(19,0);
 alter table SS_ZoneConfig add diskQuotasHighwaterPercentage number(19,0);

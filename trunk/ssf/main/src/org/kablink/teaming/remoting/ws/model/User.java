@@ -50,6 +50,7 @@ public class User extends Principal implements Serializable {
 	private Long miniBlogId;
 	private Long diskQuota;
 	private Long diskSpaceUsed;
+	private Long maxGroupsQuota;
 	private Long workspaceId;
 	
 	public String getFirstName() {
@@ -125,12 +126,21 @@ public class User extends Principal implements Serializable {
 		this.miniBlogId = miniBlogId;
 	}
 	public Long getDiskQuota() {
+		if (diskQuota == null) return 0L;
 		return diskQuota;
 	}
 	public void setDiskQuota(Long diskQuota) {
 		this.diskQuota = diskQuota;
 	}
+	public Long getMaxGroupsQuota() {
+		if (maxGroupsQuota == null) return 0L;
+		return maxGroupsQuota;
+	}
+	public void setMaxGroupsQuota(Long maxGroupsQuota) {
+		this.maxGroupsQuota = maxGroupsQuota;
+	}
 	public Long getDiskSpaceUsed() {
+		if (diskSpaceUsed == null) return 0L;
 		return diskSpaceUsed;
 	}
 	public void setDiskSpaceUsed(Long diskSpaceUsed) {
