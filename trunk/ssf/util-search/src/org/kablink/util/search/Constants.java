@@ -57,10 +57,13 @@ public class Constants {
 	public static final String ASCENDING_TRUE = "TRUE";
 	public static final String INCLUSIVE_TRUE = "TRUE";
 	public static final String EXACT_PHRASE_TRUE = "TRUE";
+	public static final String TRUE = "TRUE";
+	public static final String FALSE = "FALSE";
 	public static final String TAG_ELEMENT = "TAG";
 	public static final String SORT_FIELD_PREFIX = "_sort_";
 	public static final String UID_FIELD = "_uid";
 	public static final String DOC_TYPE_FIELD = "_docType";
+	public static final String DELETED_FIELD = "_deleted";
 	public static final String ATTACHMENT_TYPE_FIELD = "_attType";
 	public static final String THIS_CLASS_FIELD = "_class";
 	public static final String ALL_TEXT_FIELD = "_allText";
