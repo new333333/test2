@@ -41,10 +41,15 @@
 <%@ include file="/WEB-INF/jsp/mobile/teaming_live_init.jsp" %>
 
 <script type="text/javascript">
+
 var updateTimer = null;
 var pollTimer = null;
 var newItemsCount = 0;
-var pollInterval = 8000;
+var newItemsCountLast = 0;
+var pollInterval = 300000;
+var titleToggleCount = 0;
+var titleToggleTimer = null;
+
 function initiatePolling() {
 	if (pollTimer != null) clearTimeout(pollTimer);
 	pollTimer = setTimeout("pollForActivity();", pollInterval);
@@ -65,33 +70,6 @@ function pollForActivity() {
 function postPollForActivity() {
 	var pollStatusObj = self.document.getElementById("poll_status");
 	
-<c:if test="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
-	var titleCount1 = newItemsCount + " <ssf:nlt tag="teaming.live.items"/>"
-	if (newItemsCount == 1) {
-		titleCount1 = "1 <ssf:nlt tag="teaming.live.item"/>"
-	}
-	var titleCount2 = "**" + newItemsCount + "** <ssf:nlt tag="teaming.live.items"/>"
-	if (newItemsCount == 1) {
-		titleCount2 = "**1** <ssf:nlt tag="teaming.live.item"/>"
-	}
-</c:if>	
-<c:if test="<%= !org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
-	var titleCount1 = newItemsCount + " <ssf:nlt tag="teaming.live.kablink.items"/>"
-	if (newItemsCount == 1) {
-		titleCount1 = "1 <ssf:nlt tag="teaming.live.kablink.item"/>"
-	}
-	var titleCount2 = "**" + newItemsCount + "** <ssf:nlt tag="teaming.live.kablink.items"/>"
-	if (newItemsCount == 1) {
-		titleCount2 = "**1** <ssf:nlt tag="teaming.live.kablink.item"/>"
-	}
-</c:if>	
-	
-	var titleObj = document.getElementsByTagName("title").item(0);
-	if (titleObj.innerHTML == titleCount1) {
-		titleObj.innerHTML = titleCount2;
-	} else {
-		titleObj.innerHTML = titleCount1;
-	}
 
 	if (pollTimer != null) clearTimeout(pollTimer);
 	pollTimer = setTimeout("pollForActivity();", pollInterval);
@@ -123,6 +101,54 @@ function postPollForUpdate(s, divId) {
 		targetDiv.innerHTML = s;
 	}
 	ss_executeJavascript(targetDiv);
+	
+	if (newItemsCountLast != newItemsCount) {
+		newItemsCountLast = newItemsCount;
+		//Flash the title for awhile to get attention
+		titleToggleCount = 15;
+		toggleTitle();
+	}
+}
+
+function toggleTitle() {
+	if (titleToggleTimer != null) clearTimeout(titleToggleTimer);
+	titleToggleTimer = null;
+	
+  <c:if test="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
+	var titleCount1 = newItemsCount + " <ssf:nlt tag="teaming.live.items"/>"
+	if (newItemsCount == 1) {
+		titleCount1 = "1 <ssf:nlt tag="teaming.live.item"/>"
+	}
+	var titleCount2 = "**" + newItemsCount + "** <ssf:nlt tag="teaming.live.items"/>"
+	if (newItemsCount == 1) {
+		titleCount2 = "**1** <ssf:nlt tag="teaming.live.item"/>"
+	}
+  </c:if>	
+  <c:if test="<%= !org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
+	var titleCount1 = newItemsCount + " <ssf:nlt tag="teaming.live.kablink.items"/>"
+	if (newItemsCount == 1) {
+		titleCount1 = "1 <ssf:nlt tag="teaming.live.kablink.item"/>"
+	}
+	var titleCount2 = "**" + newItemsCount + "** <ssf:nlt tag="teaming.live.kablink.items"/>"
+	if (newItemsCount == 1) {
+		titleCount2 = "**1** <ssf:nlt tag="teaming.live.kablink.item"/>"
+	}
+  </c:if>	
+	
+	titleToggleCount--;
+	var titleObj = document.getElementsByTagName("title").item(0);
+	if (titleToggleCount <= 0) {
+		titleObj.innerHTML = titleCount1;
+	} else {
+		if (titleObj.innerHTML == titleCount1) {
+			titleObj.innerHTML = titleCount2;
+		} else {
+			titleObj.innerHTML = titleCount1;
+		}
+	}
+	if (titleToggleCount > 0) {
+		titleToggleTimer = setTimeout("toggleTitle();", 500);
+	}
 }
 
 ss_createOnLoadObj("initiatePolling", initiatePolling);
@@ -178,7 +204,7 @@ ss_createOnLoadObj("initiatePolling", initiatePolling);
 		  <td valign="top" align="right" width="90%">
 	  		<table cellspacing="0" cellpadding="0">
 				<tr>
-		  		<td>
+		  		  <td>
 					<c:if test="${!empty ss_prevPage}">
 			  		<a href="<ssf:url adapter="true" portletName="ss_forum" 
 						folderId="${ssBinder.id}" 
@@ -195,8 +221,8 @@ ss_createOnLoadObj("initiatePolling", initiatePolling);
 					<c:if test="${empty ss_prevPage}">
 			  		  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_g.gif"/>
 					</c:if>
-		  		</td>
-		  		<td style="padding-left:20px;">
+		  		  </td>
+		  		  <td style="padding-left:20px;">
 					<c:if test="${!empty ss_nextPage}">
 			  		<a href="<ssf:url adapter="true" portletName="ss_forum" 
 						folderId="${ssBinder.id}" 
@@ -213,7 +239,16 @@ ss_createOnLoadObj("initiatePolling", initiatePolling);
 					<c:if test="${empty ss_nextPage}">
 			  		  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_g.gif"/>
 					</c:if>
-	      		</td>
+	      		  </td>
+				</tr>
+				<tr>
+				  <td colspan="2" align="center">
+				    <span class="lastupdated">
+				      <ssf:nlt tag="teaming.live.page">
+				        <ssf:param name="value" useBody="true">${ss_pageNumber+1}</ssf:param>
+				      </ssf:nlt>
+				    </span>
+				  </td>
 				</tr>
 	  		</table>
 		  </td>
@@ -232,7 +267,7 @@ ss_createOnLoadObj("initiatePolling", initiatePolling);
 	    </ssf:param>
 	  </ssf:nlt>
       <br/>
-      [<ssf:nlt tag="teaming.live.willBeUpdated"/>]
+      <span class="ss_mobile_light">[<ssf:nlt tag="teaming.live.willBeUpdated"/>]</span>
     </span>
   </div>
     
