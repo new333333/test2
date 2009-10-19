@@ -38,16 +38,21 @@
 function ss_setMobileSearchActionUrl(formObj) {
 	var type = formObj.search_type.options[formObj.search_type.selectedIndex].value;
 	formObj.action = '<ssf:url adapter="true" portletName="ss_forum" 
-		action="__ajax_mobile" actionUrl="true" operation="mobile_show_search_results" />';
+		action="__ajax_mobile" actionUrl="true" 
+		binderId="${ssBinder.id}"
+		operation="mobile_show_search_results" />';
 
 	if (type == 'all') formObj.action = '<ssf:url adapter="true" portletName="ss_forum" 
 		action="__ajax_mobile" actionUrl="true" 
+		binderId="${ssBinder.id}"
 		operation="mobile_show_search_results" />';
 	if (type == 'people') formObj.action = '<ssf:url adapter="true" portletName="ss_forum" 
 		action="__ajax_mobile" actionUrl="true" 
+		binderId="${ssBinder.id}"
 		operation="mobile_find_people" />';
 	if (type == 'places') formObj.action = '<ssf:url adapter="true" portletName="ss_forum" 
 		action="__ajax_mobile" actionUrl="true" 
+		binderId="${ssBinder.id}"
 		operation="mobile_find_places" />';
 }
 </script>
@@ -58,8 +63,9 @@ function ss_setMobileSearchActionUrl(formObj) {
 	<form id="searchForm" 
 		method="post" 
 		action="<ssf:url adapter="true" portletName="ss_forum" 
-							action="__ajax_mobile" actionUrl="true" 
-							operation="mobile_show_search_results" />"
+			action="__ajax_mobile" actionUrl="true" 
+			binderId="${ssBinder.id}"
+			operation="mobile_show_search_results" />"
 		onSubmit="ss_setMobileSearchActionUrl(this);return true;"
 	>
 	  <div class="dialog-content">

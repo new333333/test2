@@ -640,7 +640,7 @@ public class BinderHelper {
 		addActionsHome(request, actions);
 		addActionsWhatsNew(request, actions, null);
 		addActionsWhatsUnseen(request, actions, null);
-		addActionsRecentPlaces(request, actions);
+		addActionsRecentPlaces(request, actions, user.getWorkspaceId());
 		addActionsSpacer(request, actions);
 		addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
@@ -723,34 +723,55 @@ public class BinderHelper {
 		actions.add(action);
 	}
 
-	public static void addActionsRecentPlaces(RenderRequest request, List actions) {
+	public static void addActionsRecentPlaces(RenderRequest request, List actions, Long binderId) {
 		Map action = new HashMap();
 		action.put("title", NLT.get("sidebar.history"));
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+		if (binderId != null) adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_RECENT_PLACES);
 		action.put("url", adapterUrl.toString());
 		actions.add(action);
 	}
 
-	public static void addActionsWhatsNew(RenderRequest request, List actions, Long binderId) {
+	public static void addActionsWhatsNew(RenderRequest request, List actions, Binder binder) {
 		Map action = new HashMap();
-		action.put("title", NLT.get("toolbar.menu.whatsNew"));
+		if (binder == null) {
+			action.put("title", NLT.get("mobile.whatsNewSiteWide"));
+		} else if (binder.getEntityType().name().equals(EntityType.workspace.toString())) {
+			action.put("title", NLT.get("mobile.whatsNewWorkspace"));
+		} else if (binder.getEntityType().name().equals(EntityType.folder.toString())) {
+			action.put("title", NLT.get("mobile.whatsNewFolder"));
+		} else if (binder.getEntityType().name().equals(EntityType.profiles.toString())) {
+			action.put("title", NLT.get("mobile.whatsNewWorkspace"));
+		} else {
+			action.put("title", NLT.get("mobile.whatsNew"));
+		}
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
-		if (binderId != null) adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		if (binder != null) adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
 		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_WHATS_NEW);
 		adapterUrl.setParameter(WebKeys.URL_TYPE, WebKeys.URL_WHATS_NEW);
 		action.put("url", adapterUrl.toString());
 		actions.add(action);
 	}
 
-	public static void addActionsWhatsUnseen(RenderRequest request, List actions, Long binderId) {
+	public static void addActionsWhatsUnseen(RenderRequest request, List actions, Binder binder) {
 		Map action = new HashMap();
-		action.put("title", NLT.get("toolbar.menu.whatsUnseen"));
+		if (binder == null) {
+			action.put("title", NLT.get("mobile.whatsUnreadSiteWide"));
+		} else if (binder.getEntityType().name().equals(EntityType.workspace.toString())) {
+			action.put("title", NLT.get("mobile.whatsUnreadWorkspace"));
+		} else if (binder.getEntityType().name().equals(EntityType.folder.toString())) {
+			action.put("title", NLT.get("mobile.whatsUnreadFolder"));
+		} else if (binder.getEntityType().name().equals(EntityType.profiles.toString())) {
+			action.put("title", NLT.get("mobile.whatsUnreadWorkspace"));
+		} else {
+			action.put("title", NLT.get("mobile.whatsUnread"));
+		}
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
-		if (binderId != null) adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		if (binder != null) adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
 		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_WHATS_NEW);
 		adapterUrl.setParameter(WebKeys.URL_TYPE, WebKeys.URL_UNSEEN);
 		action.put("url", adapterUrl.toString());
