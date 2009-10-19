@@ -178,7 +178,7 @@ ss_createOnLoadObj("initiatePolling", initiatePolling);
         <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
           <td valign="top" width="5%" nowrap>
-          <span><ssf:nlt tag="mobile.whatsNew"/></span>
+          <span><ssf:nlt tag="teaming.live.selectFeed"/></span>
           </td>
           <td valign="top" width="5%" nowrap>
 		  <span class="pad-left20">
