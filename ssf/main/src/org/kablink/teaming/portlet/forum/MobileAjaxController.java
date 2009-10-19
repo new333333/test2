@@ -467,7 +467,18 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		Map model = new HashMap();
 		model.put("ss_queryName", queryName);
-		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		try {
+			if (binderId != null) {
+				Binder binder = getBinderModule().getBinder(binderId);
+				model.put(WebKeys.BINDER, binder);
+			} else {
+				Binder binder = getWorkspaceModule().getTopWorkspace();
+				model.put(WebKeys.BINDER, binder);
+				binderId = binder.getId();
+			}
+		} catch(Exception e) {}
+		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 
 		String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "1");
       	int pageSize = Integer.valueOf(WebKeys.MOBILE_PAGE_SIZE).intValue();
@@ -536,7 +547,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//Setup the actions menu list
 		List actions = new ArrayList();
 		BinderHelper.addActionsHome(request, actions);
-		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
@@ -668,9 +679,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//Setup the actions menu list
 		List actions = new ArrayList();
 		BinderHelper.addActionsHome(request, actions);
-		BinderHelper.addActionsWhatsNew(request, actions, binder.getId());
-		BinderHelper.addActionsWhatsUnseen(request, actions, binder.getId());
-		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsWhatsNew(request, actions, binder);
+		BinderHelper.addActionsWhatsUnseen(request, actions, binder);
+		BinderHelper.addActionsRecentPlaces(request, actions, binder.getId());
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
@@ -680,10 +691,17 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 	private ModelAndView ajaxMobileWhatsNew(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser(); 
 		Map model = new HashMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-		if (binderId == null) binderId = getWorkspaceModule().getTopWorkspace().getId();
-		Binder binder = getBinderModule().getBinder(binderId);
+		Binder binder = null;
+		if (binderId == null) {
+			binder = getWorkspaceModule().getTopWorkspace();
+			binderId = binder.getId();
+			model.put(WebKeys.MOBILE_WHATS_NEW_SITE, true);
+		} else {
+			binder = getBinderModule().getBinder(binderId);
+		}
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, WebKeys.URL_WHATS_NEW);
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 
@@ -720,7 +738,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//Setup the actions menu list
 		List actions = new ArrayList();
 		BinderHelper.addActionsHome(request, actions);
-		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
@@ -730,11 +748,37 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 	private ModelAndView ajaxMobileShowWorkspace(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser(); 
 		Map model = new HashMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		if (entryId != null && getProfileModule().getProfileBinderId().equals(binderId)) {
+			//This is a request to show a user. Check if there is a workspace for this user
+			Principal u = getProfileModule().getEntry(entryId);
+			if (u != null && u instanceof User) {
+				binderId = u.getWorkspaceId();
+				if (binderId == null) {
+					//There is no workspace for this user, show the user profile instead
+					BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
+					model.put(WebKeys.ENTRY, u);
+					model.put(WebKeys.BINDER, getProfileModule().getProfileBinder());
+					
+					//Setup the actions menu list
+					List actions = new ArrayList();
+					BinderHelper.addActionsHome(request, actions);
+					BinderHelper.addActionsRecentPlaces(request, actions, binderId);
+					BinderHelper.addActionsSpacer(request, actions);
+					BinderHelper.addActionsLogout(request, actions);
+					model.put("ss_actions", actions);
+					
+					return new ModelAndView("mobile/show_user", model);
+				}
+			}
+		}
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 		UserProperties userProperties = (UserProperties)model.get(WebKeys.USER_PROPERTIES_OBJ);
 		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
+		if (userFolderProperties == null) userFolderProperties = new UserProperties(user.getId(), binderId);
 		Workspace binder;
 		List wsList = new ArrayList();
 		List workspaces = new ArrayList();
@@ -851,9 +895,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//Setup the actions menu list
 		List actions = new ArrayList();
 		BinderHelper.addActionsHome(request, actions);
-		BinderHelper.addActionsWhatsNew(request, actions, binder.getId());
-		BinderHelper.addActionsWhatsUnseen(request, actions, binder.getId());
-		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsWhatsNew(request, actions, binder);
+		BinderHelper.addActionsWhatsUnseen(request, actions, binder);
+		BinderHelper.addActionsRecentPlaces(request, actions, binder.getId());
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
@@ -863,7 +907,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 	private ModelAndView ajaxMobileShowNextEntry(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);		
 		Binder binder = getBinderModule().getBinder(binderId);
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		Long nextEntryId = BinderHelper.getNextPrevEntry(bs, (Folder) binder, entryId, true);	
@@ -877,7 +921,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//Setup the actions menu list
 		List actions = new ArrayList();
 		BinderHelper.addActionsHome(request, actions);
-		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
@@ -886,7 +930,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	}
 	private ModelAndView ajaxMobileShowPrevEntry(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);		
 		Binder binder = getBinderModule().getBinder(binderId);
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		Long nextEntryId = BinderHelper.getNextPrevEntry(bs, (Folder) binder, entryId, false);	
@@ -900,7 +944,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//Setup the actions menu list
 		List actions = new ArrayList();
 		BinderHelper.addActionsHome(request, actions);
-		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
@@ -915,7 +959,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxMobileShowEntry(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Long entryId) throws Exception {
 	Map model = new HashMap();
-	Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+	Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);		
 	Binder binder = getBinderModule().getBinder(binderId);
 	BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 	model.put(WebKeys.BINDER, binder);
@@ -998,7 +1042,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	//Setup the actions menu list
 	List actions = new ArrayList();
 	BinderHelper.addActionsHome(request, actions);
-	BinderHelper.addActionsRecentPlaces(request, actions);
+	BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 	BinderHelper.addActionsSpacer(request, actions);
 	BinderHelper.addActionsLogout(request, actions);
 	model.put("ss_actions", actions);
@@ -1026,7 +1070,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	//Setup the actions menu list
 	List actions = new ArrayList();
 	BinderHelper.addActionsHome(request, actions);
-	BinderHelper.addActionsRecentPlaces(request, actions);
+	BinderHelper.addActionsRecentPlaces(request, actions, binder.getId());
 	BinderHelper.addActionsSpacer(request, actions);
 	BinderHelper.addActionsLogout(request, actions);
 	model.put("ss_actions", actions);
@@ -1037,14 +1081,21 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxMobileShowRecentPlaces(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);		
 		Map model = new HashMap();
+		if (binderId != null) {
+			try {
+				Binder binder = getBinderModule().getBinder(binderId);
+				model.put(WebKeys.BINDER, binder);
+			} catch(Exception e) {}
+		}
 	    Tabs tabs = Tabs.getTabs(request);
 		model.put(WebKeys.TABS, tabs);		
 
 		//Setup the actions menu list
 		List actions = new ArrayList();
 		BinderHelper.addActionsHome(request, actions);
-		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
@@ -1054,9 +1105,16 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxMobileShowFavorites(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);		
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		Map model = new HashMap();
 		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
+		if (binderId != null) {
+			try {
+				Binder binder = getBinderModule().getBinder(binderId);
+				model.put(WebKeys.BINDER, binder);
+			} catch(Exception e) {}
+		}
 
 		Object obj = userProperties.get(ObjectKeys.USER_PROPERTY_FAVORITES);
 		Favorites f;
@@ -1073,7 +1131,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//Setup the actions menu list
 		List actions = new ArrayList();
 		BinderHelper.addActionsHome(request, actions);
-		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
@@ -1084,9 +1142,16 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxMobileShowTeams(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);		
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		Map model = new HashMap();
 		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
+		if (binderId != null) {
+			try {
+				Binder binder = getBinderModule().getBinder(binderId);
+				model.put(WebKeys.BINDER, binder);
+			} catch(Exception e) {}
+		}
 
 		List<Long> teamIds = new ArrayList<Long>();
 		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId());
@@ -1095,7 +1160,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//Setup the actions menu list
 		List actions = new ArrayList();
 		BinderHelper.addActionsHome(request, actions);
-		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
@@ -1211,8 +1276,15 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 	private ModelAndView ajaxMobileFindPeople(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);		
 		Map model = new HashMap();
 		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
+		if (binderId != null) {
+			try {
+				Binder binder = getBinderModule().getBinder(binderId);
+				model.put(WebKeys.BINDER, binder);
+			} catch(Exception e) {}
+		}
 		Map formData = request.getParameterMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PEOPLE) || op.equals(WebKeys.OPERATION_MOBILE_FIND_PLACES)) {
@@ -1290,7 +1362,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//Setup the actions menu list
 		List actions = new ArrayList();
 		BinderHelper.addActionsHome(request, actions);
-		BinderHelper.addActionsRecentPlaces(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);

@@ -76,7 +76,8 @@
 	<div class="entry">
 	  <div class="entry-title">
 	    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-				  binderId="${entry.id}"  
+	    		  binderId="${ssBinder.id}"
+				  entryId="${entry.id}"  
 				  action="__ajax_mobile" 
 				  operation="mobile_show_workspace" actionUrl="false" />"
 		>${entry.title}</a>

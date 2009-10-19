@@ -36,9 +36,15 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("mobile.whatsNew") %>' scope="request"/>
 <c:set var="ss_pageTitle2" value="mobile.whatsNewIn" />
+<c:if test="${ss_whatsNewSite}">
+  <c:set var="ss_pageTitle2" value="mobile.whatsNewSiteWide" />
+</c:if>
 <c:if test="${ss_type == 'unseen'}">
   <c:set var="ss_windowTitle" value='<%= NLT.get("mobile.whatsUnread") %>' scope="request"/>
   <c:set var="ss_pageTitle2" value="mobile.whatsUnreadIn" />
+  <c:if test="${ss_whatsNewSite}">
+    <c:set var="ss_pageTitle2" value="mobile.whatsUnreadSiteWide" />
+  </c:if>
 </c:if>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 

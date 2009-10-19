@@ -54,6 +54,7 @@
 	<div>
 	  <form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
 					action="__ajax_mobile" actionUrl="true" 
+					binderId="${ssBinder.id}"
 					operation="mobile_show_search_results" />">
 	  <label for="searchText"><span class="ss_bold"><ssf:nlt tag="navigation.search"/></span></label>
 	  <br/>
@@ -268,11 +269,19 @@
 			  	  <c:when test="${entry._entityType == 'user'}">
 					  <div class="entry">
 						<div class="entry-title">
-						  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-						    folderId="${entry._workspaceId}"
-						    action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
-						    <c:out value="${entry.title}" escapeXml="true"/>
-						  </a>
+						  <a 
+						    <c:if test="${empty entry._workspaceId}">
+						      href="<ssf:url adapter="true" portletName="ss_forum" 
+						        entryId="${entry._docId}"
+						        binderId="${entry._binderId}"
+						        action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />"
+						    </c:if>
+						    <c:if test="${!empty entry._workspaceId}">
+						      href="<ssf:url adapter="true" portletName="ss_forum" 
+						        binderId="${entry._workspaceId}"
+						        action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />"
+						    </c:if>
+						  ><c:out value="${entry.title}" escapeXml="true"/></a>
 						</div>
 					  </div>
 					  <%
