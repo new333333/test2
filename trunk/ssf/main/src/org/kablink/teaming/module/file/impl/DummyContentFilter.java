@@ -54,7 +54,9 @@ public class DummyContentFilter implements ContentFilter {
 		}
 		// A more realistic filter would run a virus scanner on the data or do something useful...
 		// Instead, this dummy filter simply rejects files that are bigger than 1K in size.
-		if(baos.toByteArray().length > 1024)
+		byte[] data = baos.toByteArray();
+		System.out.println("Hey, this file " + fileName + " contains " + data.length + " bytes of data");
+		if(data.length > 1024)
 			throw new FilterException(fileName);
 	}
 
