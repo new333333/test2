@@ -44,20 +44,15 @@
   </div>
 </td>
 <td valign="top" align="center">
+  <div>
   <c:if test="${!empty ss_pageTitle}">${ss_pageTitle}</c:if>
   <c:if test="${empty ss_pageTitle}">
     <c:if test="${empty ssBinder && empty ssEntry}">${ssProductTitle}</c:if>
     <c:if test="${!empty ssBinder && empty ssEntry}">${ssBinder.title}</c:if>
     <c:if test="${!empty ssEntry}">${ssEntry.title}</c:if>
   </c:if>
-<c:set var="now" value="<%=new java.util.Date()%>" />
-  <span class="lastupdated">(<ssf:nlt tag="teaming.live.updated">
-    <ssf:param name="value" useBody="true">
-      <span id="last_updated"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-			value="${now}" type="both" timeStyle="short" dateStyle="short" /></span>)
-	</ssf:param>
-	</ssf:nlt>
-  </span>
+  </div>
+  
 </td>
 <td valign="top" align="right" width="1%">
   <div class="search">

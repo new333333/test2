@@ -221,6 +221,20 @@ ss_createOnLoadObj("initiatePolling", initiatePolling);
 		</table>
 		</form>
     </div>
+
+  <c:set var="now" value="<%=new java.util.Date()%>" />
+  <div class="folder-content" align="center">
+    <span id="last_updated" class="lastupdated">
+	  <ssf:nlt tag="teaming.live.updated">
+        <ssf:param name="value" useBody="true">
+          <span ><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+			value="${now}" type="both" timeStyle="short" dateStyle="short" /></span>)
+	    </ssf:param>
+	  </ssf:nlt>
+      <br/>
+      [<ssf:nlt tag="teaming.live.willBeUpdated"/>]
+    </span>
+  </div>
     
   <div id="teaming_live_data" class="folder-content">
     <%@ include file="/WEB-INF/jsp/mobile/teaming_live_update_data.jsp" %>
