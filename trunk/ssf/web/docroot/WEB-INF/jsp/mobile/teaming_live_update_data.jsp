@@ -33,10 +33,13 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-
+<c:set var="newTeamingEntries" value="0" />
 	    <c:if test="${ss_whatsNewType != 'microblog'}">
 	      <c:forEach var="entryWn" items="${ss_whatsNewBinder}">
 	    	<jsp:useBean id="entryWn" type="java.util.Map" />
+	    	<c:if test="${entryWn._modificationDate.time > ss_teaming_live_update_date.time}">
+	    	  <c:set var="newTeamingEntries" value="${newTeamingEntries + 1}" />
+	    	</c:if>
 	    	<div class="entry">
 	    	  <div class="entry-title">
 			    <a href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -96,6 +99,9 @@
         </c:if>
         <c:if test="${ss_whatsNewType == 'microblog'}">
 	  		<c:forEach var="activity" items="${ss_activities}">
+	    	  <c:if test="${activity.date.time > ss_teaming_live_update_date.time}">
+	    	    <c:set var="newTeamingEntries" value="${newTeamingEntries + 1}" />
+	    	  </c:if>
 	    	<div class="entry">
 	    	  <div class="entry-title">
 		    	<a href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -119,3 +125,6 @@
 			  </div>
 	  		</c:forEach>
         </c:if>
+<script type="text/javascript">
+newItemsCount = ${newTeamingEntries};
+</script>

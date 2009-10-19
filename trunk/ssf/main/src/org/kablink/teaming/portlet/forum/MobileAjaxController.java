@@ -60,6 +60,7 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
+import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONArray;
 
@@ -92,6 +93,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
+import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
@@ -423,6 +425,12 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		String view = BinderHelper.setupTeamingLiveBeans(bs, request, response, model, "mobile/show_teaming_live");
 
+		//Reset the date used to see what is new
+        HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
+        Date updateDate = new Date();
+        session.setAttribute(WebKeys.TEAMING_LIVE_UPDATE_DATE, updateDate);
+        model.put(WebKeys.TEAMING_LIVE_UPDATE_DATE, updateDate);
+        
 		return new ModelAndView(view, model);
 	}
 
@@ -430,7 +438,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		String view = BinderHelper.setupTeamingLiveBeans(bs, request, response, model, "mobile/teaming_live_update");
-
+        HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
+        Date updateDate = (Date) session.getAttribute(WebKeys.TEAMING_LIVE_UPDATE_DATE);
+        if (updateDate == null) updateDate = new Date();
+		model.put(WebKeys.TEAMING_LIVE_UPDATE_DATE, updateDate);
 		return new ModelAndView(view, model);
 	}
 

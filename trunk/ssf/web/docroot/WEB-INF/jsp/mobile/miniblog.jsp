@@ -32,6 +32,15 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<c:if test="${empty ss_microblog_post_url}">
+  <c:set var="ss_microblog_post_url" scope="request">
+    <ssf:url adapter="true" portletName="ss_forum" 
+			folderId="${ssBinder.id}"
+			action="__ajax_mobile" 
+			operation="mobile_show_front_page" 
+			actionUrl="true" />
+  </c:set>
+</c:if>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
 
   <div id="micro-blog-edit" class="action-dialog" style="display: none;z-index:2;">
