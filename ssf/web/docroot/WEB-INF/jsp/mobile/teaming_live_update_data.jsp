@@ -44,7 +44,7 @@
 	    	  <div class="entry-title">
 			    <a target="_blank" href="<ssf:url adapter="true" portletName="ss_forum" 
 				  folderId="${entryWn._binderId}"  entryId="${entryWn._docId}"
-				  action="view_folder_entry" actionUrl="false" />"
+				  action="view_folder_listing" actionUrl="false" />"
 			    >
 			  	  <span><c:if test="${empty entryWn.title}">--<ssf:nlt tag="entry.noTitle"/>--</c:if>
 			  	    <ssf:makeWrapable><c:out value="${entryWn.title}" escapeXml="true"/></ssf:makeWrapable>
