@@ -51,6 +51,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		<% // Share %>
 	  	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_share.jsp" />
 
+		<% // Teaming Feed %>
+	  	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_teaming_live.jsp" />
+
 		<%--
 		* The following line is used to call customer supplied customizations.
 		* Jsp files added to the custom_jsps directory will not be overwritten during upgrades
