@@ -52,12 +52,14 @@ public interface GwtTeamingMessages extends Messages
 	String customJspProperties();
 	
 	// Strings used with the Entry widget in the landing page editor
+	String currentEntry();
 	String entryLabel();
 	String entryProperties();
 	String findEntry();
 	String pleaseSelectAnEntry();
 	
 	// Strings used with the Folder widget in the landing page editor
+	String currentFolder();
 	String findFolderLabel();
 	String folderLabel();
 	String folderProperties();
@@ -94,6 +96,7 @@ public interface GwtTeamingMessages extends Messages
 	String openEntryInNewWnd();
 	
 	// Strings used with the "Link to folder" widget
+	String currentFolderWorkspace();
 	String folderOrWorkspaceLabel();
 	String linkToFolderLabel();
 	String linkToFolderProperties();
