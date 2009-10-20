@@ -42,13 +42,16 @@ import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.OnSelectHandler;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -66,6 +69,7 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 	private CheckBox	m_newWndCkBox = null;
 	private FindCtrl m_findCtrl = null;
 	private String m_folderId = null;
+	private InlineLabel m_currentFolderNameLabel = null;
 	
 	/**
 	 * 
@@ -93,14 +97,29 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 	{
 		LinkToFolderProperties properties;
 		Label label;
+		InlineLabel inlineLabel;
 		VerticalPanel	mainPanel;
 		FlexTable		table;
 		HTMLTable.CellFormatter cellFormatter;
+		FlowPanel flowPanel;
 		
 		properties = (LinkToFolderProperties) props;
 
 		mainPanel = new VerticalPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
+
+		// Add a label that will say Current folder: name of the currently selected folder
+		table = new FlexTable();
+		table.setCellSpacing( 8 );
+		flowPanel = new FlowPanel();
+		inlineLabel = new InlineLabel( GwtTeaming.getMessages().currentFolderWorkspace() );
+		m_currentFolderNameLabel = new InlineLabel();
+		m_currentFolderNameLabel.addStyleName( "bold" );
+		m_currentFolderNameLabel.addStyleName( "marginLeftPoint25em" );
+		flowPanel.add( inlineLabel );
+		flowPanel.add( m_currentFolderNameLabel );
+		table.setWidget( 0, 0, flowPanel );
+		mainPanel.add( table );
 
 		// Add label and find control for "Folder id"
 		table = new FlexTable();
@@ -213,11 +232,14 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 		
 		properties = (LinkToFolderProperties) props;
 
+		// Update the name of the currently selected folder.
+		m_currentFolderNameLabel.setText( properties.getFolderName() ); 
+
 		// Hide the search-results widget.
 		m_findCtrl.hideSearchResults();
 		
 		// Populate the find control's text box with the name of the selected folder.
-		m_findCtrl.setInitialSearchString( properties.getFolderName() );
+		m_findCtrl.setInitialSearchString( "" );
 		
 		// Remember the entry id that was passed to us.
 		m_folderId = properties.getFolderId();

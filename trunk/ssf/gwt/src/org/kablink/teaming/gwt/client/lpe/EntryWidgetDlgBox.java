@@ -42,13 +42,16 @@ import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.OnSelectHandler;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -64,6 +67,7 @@ public class EntryWidgetDlgBox extends DlgBox
 	private CheckBox m_showTitleCkBox = null;
 	private FindCtrl m_findCtrl = null;
 	private String m_entryId = null;
+	private InlineLabel m_currentEntryNameLabel = null;
 	
 	/**
 	 * 
@@ -91,14 +95,29 @@ public class EntryWidgetDlgBox extends DlgBox
 	{
 		EntryProperties properties;
 		Label			label;
+		InlineLabel		inlineLabel;
 		VerticalPanel	mainPanel;
 		FlexTable		table;
 		HTMLTable.CellFormatter cellFormatter;
+		FlowPanel flowPanel;
 		
 		properties = (EntryProperties) props;
 
 		mainPanel = new VerticalPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
+		
+		// Add a label that will say Current entry: name of the currently selected entry
+		table = new FlexTable();
+		table.setCellSpacing( 8 );
+		flowPanel = new FlowPanel();
+		inlineLabel = new InlineLabel( GwtTeaming.getMessages().currentEntry() );
+		m_currentEntryNameLabel = new InlineLabel();
+		m_currentEntryNameLabel.addStyleName( "bold" );
+		m_currentEntryNameLabel.addStyleName( "marginLeftPoint25em" );
+		flowPanel.add( inlineLabel );
+		flowPanel.add( m_currentEntryNameLabel );
+		table.setWidget( 0, 0, flowPanel );
+		mainPanel.add( table );
 
 		// Add label and a "find" control.
 		table = new FlexTable();
@@ -191,12 +210,15 @@ public class EntryWidgetDlgBox extends DlgBox
 		
 		properties = (EntryProperties) props;
 
+		// Update the name of the currently selected entry.
+		m_currentEntryNameLabel.setText( properties.getEntryName() ); 
+		 
 		m_showTitleCkBox.setValue( properties.getShowTitleValue() );
 		
 		// Hide the search-results widget.
 		m_findCtrl.hideSearchResults();
 		
-		m_findCtrl.setInitialSearchString( properties.getEntryName() );
+		m_findCtrl.setInitialSearchString( "" );
 		
 		// Remember the entry id that was passed to us.
 		m_entryId = properties.getEntryId();
