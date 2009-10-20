@@ -101,8 +101,10 @@
 
 	<% /* Store the localized error messages that might need to */ %>
 	<% /* display while running this page.                      */ %>
-	var g_trashErrors = new Array();
-	g_trashErrors["trash.error.NoItemsSelected"] = "<ssf:nlt tag='trash.error.NoItemsSelected'/>";
+	var g_trashStrings = new Array();
+	g_trashStrings["trash.error.NoItemsSelected"]	= "<ssf:nlt tag='trash.error.NoItemsSelected' />";
+	g_trashStrings["trash.confirm.Purge"]			= "<ssf:nlt tag='trash.confirm.Purge'         />";
+	g_trashStrings["trash.confirm.PurgeAll"]			= "<ssf:nlt tag='trash.confirm.PurgeAll'      />";
 </script>
 
 <div id="ss_trashDiv${ss_namespace}" align="center">
@@ -240,6 +242,7 @@
 
 
 						<!-- Trash Listing Header Column:  Title -->
+						<c:set var="action" value="view_folder_listing"/>
 						<c:if test="${!empty ssFolderColumns['title']}">
 						    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="27%">
 							    <a
@@ -616,5 +619,9 @@
 				</c:forEach>
 			</c:if>
 		</div>
+		<c:if test="${empty ssFolderEntries && !(ssBinder.mirrored && empty ssBinder.resourceDriverName)}">
+			<c:set var="ssEmptyTrash" value="true" scope="request" />
+			<jsp:include page="/WEB-INF/jsp/forum/view_no_entries.jsp" />
+		</c:if>
 	</div>
 </div>

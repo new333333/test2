@@ -59,12 +59,16 @@ function ss_trashPurge() {
 	var count = ((null == checkedEntries) ? 0 : checkedEntries.length);
 	if (0 == count) {
 		// No!  Tell the user about the problem and bail.
-		alert(g_trashErrors["trash.error.NoItemsSelected"]);
+		alert(g_trashStrings["trash.error.NoItemsSelected"]);
 		return;
 	}
-	
-	var urlParams = ss_buildTrashEntryUrlParams(checkedEntries);
-	ajaxTrashRequest_Submit("trash_purge", urlParams);
+
+	// If the user is sure they want to do purge...	
+	if (confirm(g_trashStrings["trash.confirm.Purge"])) {
+		// ...do it.
+		var urlParams = ss_buildTrashEntryUrlParams(checkedEntries);
+		ajaxTrashRequest_Submit("trash_purge", urlParams);
+	}
 }
 
 /*
@@ -78,7 +82,11 @@ function ss_trashPurgeAll() {
 		return;
 	}
 	
-	ajaxTrashRequest_Submit("trash_purge_all", "");
+	// If the user is sure they want to do purge...	
+	if (confirm(g_trashStrings["trash.confirm.PurgeAll"])) {
+		// ...do it.
+		ajaxTrashRequest_Submit("trash_purge_all", "");
+	}
 }
 
 /*
@@ -96,7 +104,7 @@ function ss_trashRestore() {
 	var count = ((null == checkedEntries) ? 0 : checkedEntries.length);
 	if (0 == count) {
 		// No!  Tell the user about the problem and bail.
-		alert(g_trashErrors["trash.error.NoItemsSelected"]);
+		alert(g_trashStrings["trash.error.NoItemsSelected"]);
 		return;
 	}
 	
@@ -220,6 +228,8 @@ function SSTrashEntry() {
  * Called to handle the response from an AJAX operation on the trash.
  */
 function ajaxTrashRequest_Response(data, sOperation) {
+	// Simply force the page to reload.  This will cause the trash to
+	// be re-read and re-displayed.
 	setTimeout("document.location.reload();", 100);
 }
 

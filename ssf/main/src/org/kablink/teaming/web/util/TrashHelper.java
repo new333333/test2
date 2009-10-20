@@ -41,16 +41,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.portlet.RenderRequest;
-import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.UserProperties;
-import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
@@ -219,29 +214,25 @@ public class TrashHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static Map getTrashEntries(AllModulesInjected bs, Map<String,Object>model, Binder binder, Map options) {
-//!		...this needs to be implemented...
-/*
-		Map trashEntries = null;
-		if (binder instanceof Folder) {
-			Folder folder = ((Folder) binder);
-			Long folderId = folder.getId();
-			FolderModule fm = bs.getFolderModule();
-			trashEntries = fm.getEntries(folderId, options);
-		}
-		else if (binder instanceof Workspace) {
-			Workspace ws = ((Workspace) binder);
-			BinderModule bm = bs.getBinderModule();
-			trashEntries = bm.getBinders(ws, options);
-		}
-*/
-		
+		// Construct the Criteria object...
 		Criteria crit = new Criteria();
 		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_ENTRY, Constants.DOC_TYPE_BINDER}))
-			.add(in(Constants.ENTRY_ANCESTRY, new String[] {String.valueOf(binder.getId())}));
-//		crit.addOrder(Order.asc(Constants.BINDER_ID_FIELD));
-		Map trashEntries = bs.getBinderModule().executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS, true);
+		    .add(in(Constants.ENTRY_ANCESTRY, new String[] {String.valueOf(binder.getId())}));
 		
-		// We need to pass information about the trash entries binder's too.
+		// ...add in the sort information...
+		boolean sortDescend = getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false);
+		String  sortBy      = getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
+		crit.addOrder(new Order(sortBy, sortDescend));
+		
+		// ...and issue the query.
+		Map trashEntries = bs.getBinderModule().executeSearchQuery(
+			crit,
+			getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
+			getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
+			true);	// true -> Search deleted entries.
+
+		
+		// Pass information about the trash entries binder's...
 		List<Long> binderIds = new ArrayList<Long>();
     	List items = (List) trashEntries.get(ObjectKeys.SEARCH_ENTRIES);
     	if (items != null) {
@@ -263,8 +254,39 @@ public class TrashHelper {
 	    	}
     	}
 		model.put(WebKeys.FOLDER_LIST, bs.getBinderModule().getBinders(binderIds));
-		
+
+		// ...and return the trash entries themselves.
 		return trashEntries;
+	}
+
+	/*
+	 * Returns an Integer based value from an options Map.  If a value
+	 * for key isn't found, def is returned. 
+	 */
+	@SuppressWarnings("unchecked")
+	private static int getOptionInt(Map options, String key, int def) {
+		Integer obj = ((Integer) options.get(key));
+		return ((null == obj) ? def : obj.intValue());
+	}
+	
+	/*
+	 * Returns a Boolean based value from an options Map.  If a value
+	 * for key isn't found, def is returned. 
+	 */
+	@SuppressWarnings("unchecked")
+	private static boolean getOptionBoolean(Map options, String key, boolean def) {
+		Boolean obj = ((Boolean) options.get(key));
+		return ((null == obj) ? def : obj.booleanValue());
+	}
+	
+	/*
+	 * Returns a String based value from an options Map.  If a value
+	 * for key isn't found, def is returned. 
+	 */
+	@SuppressWarnings("unchecked")
+	private static String getOptionString(Map options, String key, String def) {
+		String obj = ((String) options.get(key));
+		return (((null == obj) || (0 == obj.length())) ? def : obj);
 	}
 	
 	/*
