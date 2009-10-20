@@ -56,14 +56,14 @@ public class ManageQuotasController extends SAbstractController {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			if (formData.containsKey("enableQuotas")) {
-				//getAdminModule().setQuotasEnabled(true);
+				getAdminModule().setQuotaEnabled(true);
 			} else {
-				//getAdminModule().setQuotasEnabled(false);
+				getAdminModule().setQuotaEnabled(false);
 			}
 			Integer defaultQuota = PortletRequestUtils.getIntParameter(request, "defaultQuota");
 			Integer highWaterMark = PortletRequestUtils.getIntParameter(request, "highWaterMark");
-			//getAdminModule().setQuotasDefault(defaultQuota);
-			//getAdminModule().setQuotasHighWaterMark(highWaterMark);
+			getAdminModule().setQuotaDefault(defaultQuota);
+			getAdminModule().setQuotaHighWaterMark(highWaterMark);
 		} else {
 			response.setRenderParameters(formData);
 		}
@@ -78,9 +78,9 @@ public class ManageQuotasController extends SAbstractController {
 			return new ModelAndView("forum/close_window", model);
 		}
 
-		model.put(WebKeys.QUOTAS_DEFAULT, "100");
-		model.put(WebKeys.QUOTAS_ENABLED, true);
-		model.put(WebKeys.QUOTAS_HIGH_WATER_MARK, "85");
+		model.put(WebKeys.QUOTAS_DEFAULT, getAdminModule().getQuotaDefault());
+		model.put(WebKeys.QUOTAS_ENABLED, getAdminModule().isQuotaEnabled());
+		model.put(WebKeys.QUOTAS_HIGH_WATER_MARK, getAdminModule().getQuotaHighWaterMark());
 		
 		return new ModelAndView(WebKeys.VIEW_ADMIN_MANAGE_QUOTAS, model);
 
