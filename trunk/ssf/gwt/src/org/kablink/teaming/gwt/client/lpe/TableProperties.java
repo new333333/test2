@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.http.client.URL;
+
 
 /**
  * This class holds all of the properties needed to define a table widget in a landing page.
@@ -90,6 +92,7 @@ public class TableProperties
 	public String createConfigString()
 	{
 		String str;
+		String colWidthsStr;
 		int i;
 		
 		// The string should look like: "tableStart,showBorder=1,cols=3,colWidths=33%7C33%7C33;"
@@ -98,11 +101,11 @@ public class TableProperties
 			str += "1,";
 		else
 			str += "0,";
-		str += ",";
 		
 		str += "cols=" + getNumColumnsStr() + ",";
 		
 		str += "colWidths=";
+		colWidthsStr = "";
 		for (i = 0; i < getNumColumnsInt(); ++i)
 		{
 			String colWidth;
@@ -111,11 +114,12 @@ public class TableProperties
 			if ( colWidth != null )
 			{
 				if ( i > 0 )
-					str += "|";
+					colWidthsStr += "|";
 				
-				str += colWidth;
+				colWidthsStr += colWidth;
 			}
 		}
+		str += ConfigData.encodeConfigData( colWidthsStr );
 		str += ";";
 
 		return str;

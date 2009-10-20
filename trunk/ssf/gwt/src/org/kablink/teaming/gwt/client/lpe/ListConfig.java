@@ -69,8 +69,8 @@ public class ListConfig extends ConfigItem
 			{
 				String[] results2;
 				
-				results2 = propsStr[i].split( "=" );
-				if ( results2.length == 2 )
+				results2 = ConfigData.splitConfigItem( propsStr[i] );
+				if ( results2 != null && results2.length == 2 && results2[0] != null && results2[1] != null && results2[1].length() > 0 )
 				{
 					if ( results2[0].equalsIgnoreCase( "showBorder" ) )
 						m_properties.setShowBorder( results2[1].equalsIgnoreCase( "1" ) );

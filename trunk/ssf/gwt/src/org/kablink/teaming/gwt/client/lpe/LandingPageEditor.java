@@ -42,6 +42,9 @@ import org.kablink.teaming.gwt.client.widgets.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.widgets.EditSuccessfulHandler;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.EventTarget;
+import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.HasMouseUpHandlers;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -55,6 +58,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
@@ -81,6 +85,7 @@ public class LandingPageEditor extends Composite
 	private Stack<DropZone>		m_enteredDropZones = null;
 	private HandlerRegistration	m_previewHandlerReg = null;
 	private HandlerRegistration	m_mouseUpHandlerReg = null;
+	private Hidden m_configResultsInputCtrl = null;
 	private static TextArea m_textBox = null;//!!!
 	
 	/**
@@ -147,6 +152,11 @@ public class LandingPageEditor extends Composite
 		
 		vPanel.add( hPanel );
 		
+		// Create a hidden input control where we will put the configuration string when
+		// the user presses the ok button.
+		m_configResultsInputCtrl = new Hidden( "gwtMashupConfigResults" );
+		vPanel.add( m_configResultsInputCtrl );
+		
 		if ( false )
 		{
 			LandingPageEditor.m_textBox = new TextArea();
@@ -159,6 +169,54 @@ public class LandingPageEditor extends Composite
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( vPanel );
+		
+		Event.addNativePreviewHandler( new Event.NativePreviewHandler() {
+			/**
+			 * This handler looks for when the user clicks on the Ok button.  When we detect this
+			 * we will create a configuration string based on the widgets that have been added to
+			 * the canvas.  We will then put the configuration string in a hidden input control
+			 * and it will be sent with the other data.
+			 */
+			public void onPreviewNativeEvent( Event.NativePreviewEvent previewEvent )
+			{
+				NativeEvent nativeEvent;
+				EventTarget eventTarget;
+				InputElement inputElement;
+				Element targetElement;
+				String name;
+				int eventType;
+
+				eventType = previewEvent.getTypeInt();
+				
+				// We are only interested in mouse-up events.
+				if ( eventType != Event.ONMOUSEUP )
+					return;
+
+				// Get the target for the mouse-up event
+				nativeEvent = previewEvent.getNativeEvent();
+				eventTarget = nativeEvent.getEventTarget();
+				
+				if ( eventTarget != null && Element.is( eventTarget ) )
+				{
+					targetElement = Element.as( eventTarget );
+					if ( targetElement instanceof InputElement )
+					{
+						inputElement = (InputElement) targetElement;
+						name = inputElement.getName();
+						if ( name != null && name.equalsIgnoreCase( "okBtn" ) )
+						{
+							String configStr;
+							
+							// Get the configuration string for the mashup.
+							configStr = createConfigString();
+							
+							// Put the configuration string in a hidden input control.
+							m_configResultsInputCtrl.setValue( configStr );
+						}
+					}
+				}
+			}// end onPreviewNativeEvent()
+		});
 
 		// Adjust the height of all the tables we added.  We can't do this right now because the browser hasn't
 		// rendered anything yet.  So set a timer to do the work later.

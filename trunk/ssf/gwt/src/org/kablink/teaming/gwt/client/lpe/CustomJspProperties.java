@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.http.client.URL;
+
 
 /**
  * This class holds all of the properties needed to define a "Custom jsp" widget in a landing page.
@@ -80,7 +82,7 @@ public class CustomJspProperties
 		// The string should look like: "customJsp,customJsp=some jsp name;"
 		str = "customJsp,customJsp=";
 		if ( m_jspName != null )
-			str += m_jspName;
+			str += ConfigData.encodeConfigData( m_jspName );
 		
 		str += ";";
 		

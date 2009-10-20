@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import com.google.gwt.http.client.URL;
+
 
 /**
  * This class represents the configuration data for a Folder widget
@@ -63,7 +65,7 @@ public class FolderConfig extends ConfigItem
 				String[] results2;
 				
 				results2 = results[i].split( "=" );
-				if ( results2.length == 2 )
+				if ( results2 != null && results2.length == 2 && results2[0] != null && results2[1] != null && results2[1].length() > 0 )
 				{
 					if ( results2[0].equalsIgnoreCase( "folderId" ) )
 						m_properties.setFolderId( results2[1] );
@@ -76,8 +78,16 @@ public class FolderConfig extends ConfigItem
 					else if ( results2[0].equalsIgnoreCase( "entriesToShow" ) )
 					{
 						int numToShow;
-						
-						numToShow = Integer.parseInt( results2[1] );
+
+						numToShow = 0;
+						try
+						{
+							numToShow = Integer.parseInt( URL.decodeComponent( results2[1] ) );
+						}
+						catch (NumberFormatException nfe)
+						{
+							// Nothing to do.
+						}
 						m_properties.setNumEntriesToBeShownValue( numToShow );
 					}
 				}

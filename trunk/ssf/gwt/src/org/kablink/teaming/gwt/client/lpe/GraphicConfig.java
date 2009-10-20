@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import com.google.gwt.http.client.URL;
+
 
 /**
  * This class represents the configuration data for a Graphic widget
@@ -63,14 +65,16 @@ public class GraphicConfig extends ConfigItem
 				String[] results2;
 				
 				results2 = results[i].split( "=" );
-				if ( results2.length == 2 )
+				if ( results2 != null && results2.length == 2 && results2[0] != null && results2[1] != null && results2[1].length() > 0 )
 				{
 					if ( results2[0].equalsIgnoreCase( "showBorder" ) )
 						m_properties.setShowBorder( results2[1].equalsIgnoreCase( "1" ) );
 					else if ( results2[0].equalsIgnoreCase( "title" ) )
-						m_properties.setGraphicName( results2[1] );
+						m_properties.setGraphicName( URL.decodeComponent( results2[1] ) );
 					else if ( results2[0].equalsIgnoreCase( "graphic" ) )
-						m_properties.setGraphicId( results2[1] );
+					{
+						m_properties.setGraphicId( URL.decodeComponent( results2[1] ) );
+					}
 				}
 			}
 		}

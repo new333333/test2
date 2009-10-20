@@ -263,7 +263,10 @@ public class GraphicWidgetDlgBox extends DlgBox
 	 */
 	public FocusWidget getFocusWidget()
 	{
-		return m_graphicListBox;
+		if ( m_graphicListBox != null )
+			return m_graphicListBox;
+		
+		return m_showBorderCkBox;
 	}// end getFocusWidget()
 	
 	
@@ -289,21 +292,24 @@ public class GraphicWidgetDlgBox extends DlgBox
 		
 		properties = (GraphicProperties) props;
 
-		// Select the graphic in the ListBox.
-		for (i = 0; i < m_graphicListBox.getItemCount(); ++i)
+		if ( m_graphicListBox != null )
 		{
-			fileId = m_graphicListBox.getValue( i );
-			
-			// Is this graphic the currently selected graphic?
-			if ( fileId.equalsIgnoreCase( properties.getGraphicId() ) )
+			// Select the graphic in the ListBox.
+			for (i = 0; i < m_graphicListBox.getItemCount(); ++i)
 			{
-				selectedIndex = i;
-				break;
+				fileId = m_graphicListBox.getValue( i );
+				
+				// Is this graphic the currently selected graphic?
+				if ( fileId.equalsIgnoreCase( properties.getGraphicId() ) )
+				{
+					selectedIndex = i;
+					break;
+				}
 			}
+			
+			// Select the appropriate graphic.
+			m_graphicListBox.setSelectedIndex( selectedIndex );
 		}
-		
-		// Select the appropriate graphic.
-		m_graphicListBox.setSelectedIndex( selectedIndex );
 		
 		m_showBorderCkBox.setValue( properties.getShowBorderValue() );
 	}// end init()

@@ -63,7 +63,7 @@ public class EntryConfig extends ConfigItem
 				String[] results2;
 				
 				results2 = results[i].split( "=" );
-				if ( results2.length == 2 )
+				if ( results2 != null && results2.length == 2 && results2[0] != null && results2[1] != null && results2[1].length() > 0 )
 				{
 					if ( results2[0].equalsIgnoreCase( "showTitle" ) )
 						m_properties.setShowTitle( results2[1].equalsIgnoreCase( "1" ) );

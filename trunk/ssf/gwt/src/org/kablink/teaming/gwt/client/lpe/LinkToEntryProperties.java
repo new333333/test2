@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -130,7 +131,7 @@ public class LinkToEntryProperties
 		
 		str += "title=";
 		if ( m_title != null )
-			str += m_title;
+			str += ConfigData.encodeConfigData( m_title );
 		str += ",";
 		
 		str += "popup=";

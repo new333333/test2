@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.http.client.URL;
+
 
 /**
  * This class holds all of the properties needed to define a "Link to url" widget in a landing page.
@@ -86,12 +88,12 @@ public class LinkToUrlProperties
 		// The string should look like: "url,title=something,href=something,popup=1;"
 		str = "url,title=";
 		if ( m_title != null )
-			str += m_title;
+			str += ConfigData.encodeConfigData( m_title );
 		str += ",";
 		
 		str += "href=";
 		if ( m_url != null )
-			str += m_url;
+			str += ConfigData.encodeConfigData( m_url );
 		str += ",";
 		
 		str += "popup=";

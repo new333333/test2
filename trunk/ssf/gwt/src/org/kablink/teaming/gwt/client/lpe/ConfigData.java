@@ -34,6 +34,8 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import java.util.ArrayList;
 
+import com.google.gwt.http.client.URL;
+
 /**
  * 
  * @author jwootton
@@ -233,6 +235,37 @@ public class ConfigData
 		
 		return i;
 	}// end addConfigItems();
+	
+	
+	/**
+	 * Encode the given config data.  We will call URL.encode and then in addition to that
+	 * we will encode all ',' and ';' characters.
+	 */
+	public static String encodeConfigData( String configData )
+	{
+		String encodedStr;
+		StringBuffer finalStr;
+		int i;
+		
+		encodedStr = URL.encode( configData );
+		
+		// Replace all occurrences of ',' with "%2c" and all occurrences of ';' with "%3b". 
+		finalStr = new StringBuffer();
+		for (i = 0; i < encodedStr.length(); ++i)
+		{
+			char nextCh;
+			
+			nextCh = encodedStr.charAt( i );
+			if ( nextCh == ',' )
+				finalStr.append( "%2c" );
+			else if ( nextCh == ';' )
+				finalStr.append( "%3b" );
+			else
+				finalStr.append( nextCh );
+		}
+
+		return finalStr.toString();
+	}// end encodeConfigData()
 
 
 	/**
@@ -294,4 +327,33 @@ public class ConfigData
 	{
 		return m_topLevelConfig.numItems();
 	}// end size()
+	
+	
+	/**
+	 * Split the given config string into its 2 parts, label and data.  The string passed to this
+	 * method should be of the format "some text=some data".  Given such a string, this method will
+	 * return an array of strings where array=[0] is "some text" and array[1] is "some data"
+	 */
+	public static String[] splitConfigItem( String configStr )
+	{
+		String[] results = null;
+		int index;
+		
+		if ( configStr == null )
+			return null;
+		
+		// Find the first occurrance of '='
+		index = configStr.indexOf( '=' );
+		if ( index >= 0 )
+		{
+			results = new String[2];
+			
+			results[0] = configStr.substring( 0, index );
+			
+			if ( configStr.length() > index+1 )
+				results[1] = configStr.substring( index+1 );
+		}
+		
+		return results;
+	}// end splitConfigItem()
 }// end ConfigData
