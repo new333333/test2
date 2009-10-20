@@ -56,10 +56,23 @@
 					action="__ajax_mobile" actionUrl="true" 
 					binderId="${ssBinder.id}"
 					operation="mobile_show_search_results" />">
-	  <label for="searchText"><span class="ss_bold"><ssf:nlt tag="navigation.search"/></span></label>
-	  <br/>
-	  <input type="text" size="15" name="searchText" id="searchText" value="${ss_searchText}"/><input 
-	    type="submit" name="searchBtn" value="<ssf:nlt tag="button.ok"/>"/>
+	    <label for="searchText">
+	      <span class="ss_bold">
+	        <c:if test="${ss_searchScope != 'local'}">
+	          <ssf:nlt tag="mobile.searchTheSite"/>
+	        </c:if>
+		    <c:if test="${ss_searchScope == 'local' && ssBinder.entityType == 'folder'}">
+		      <ssf:nlt tag="mobile.searchThisFolder"/>
+		    </c:if>
+		    <c:if test="${ss_searchScope == 'local' && ssBinder.entityType != 'folder'}">
+		      <ssf:nlt tag="mobile.searchThisWorkspace"/>
+		    </c:if>
+          </span>
+        </label>
+	    <br/>
+	    <input type="text" size="15" name="searchText" id="searchText" value="${ss_searchText}"/><input 
+	      type="submit" name="searchBtn" value="<ssf:nlt tag="button.ok"/>"/>
+	    <input type="hidden" name="scope" value="${ss_searchScope}"/>
 	  </form>
 	</div>
 
@@ -76,6 +89,7 @@
 				actionUrl="false" ><ssf:param 
 				name="quickSearch" value="true"/><ssf:param 
 				name="searchText" value="${ss_searchText}"/><ssf:param 
+				name="scope" value="${ss_searchScope}"/><ssf:param 
 				name="tabId" value="${ss_tab_id}"/><ssf:param 
 				name="pageNumber" value="${ss_pageNumber-1}"/><ssf:param 
 				name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
@@ -94,6 +108,7 @@
 				actionUrl="false" ><ssf:param 
 				name="quickSearch" value="true"/><ssf:param 
 				name="searchText" value="${ss_searchText}"/><ssf:param 
+				name="scope" value="${ss_searchScope}"/><ssf:param 
 				name="tabId" value="${ss_tab_id}"/><ssf:param 
 				name="pageNumber" value="${ss_pageNumber+1}"/><ssf:param 
 				name="ss_queryName" value="${ss_queryName}" /></ssf:url>"

@@ -85,6 +85,16 @@ function ss_setMobileSearchActionUrl(formObj) {
 		      
 		    </select>
 		  </div>
+		  <div>
+		    <input type="radio" name="scope" value="site" checked="checked"/> <ssf:nlt tag="mobile.searchTheSite"/>
+		    <br/>
+		    <c:if test="${ssBinder.entityType == 'folder'}">
+		      <input type="radio" name="scope" value="local" /> <ssf:nlt tag="mobile.searchThisFolder"/>
+		    </c:if>
+		    <c:if test="${ssBinder.entityType != 'folder'}">
+		      <input type="radio" name="scope" value="local" /> <ssf:nlt tag="mobile.searchThisWorkspace"/>
+		    </c:if>
+		  </div>
 	  </div>
 	  <div>
 		<input type="text" size="35" name="searchText"/>

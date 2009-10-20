@@ -175,6 +175,7 @@ public class WebKeys {
     public static final String URL_OPERATION3="operation3";
     public static final String URL_PAGE_NUMBER="pageNumber";
     public static final String URL_SEARCH_QUERY_NAME="ss_queryName";
+    public static final String URL_SEARCH_SCOPE="scope";
     public static final String URL_PAGE="page";
     public static final String URL_PAGE_SIZE="pageSize";
     public static final String URL_PORTAL_SIGNAL="portalSignalUrl";
@@ -1161,6 +1162,7 @@ public class WebKeys {
     public static final String TYPE2="ss_type2";
     public static final String TYPE3="ss_type3";
     public static final String SEARCH_NODES="ssSearchNodes";
+	public static final Object SEARCH_SCOPE = "ss_searchScope";
     public static final String SHOW_TEAM_MEMBERS="ss_showTeamMembers";
     public static final String SIDEBAR_WORKSPACE_TREE="ssSidebarWsTree";
     public static final String SIDEBAR_CURRENT_WORKSPACE="ssSidebarCurrentWorkspace";
