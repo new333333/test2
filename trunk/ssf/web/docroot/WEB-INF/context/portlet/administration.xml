@@ -18,6 +18,7 @@
 	<bean id="adminConfigureConfigurationController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureConfigurationController" />
 	<bean id="adminImportProfilesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ImportProfilesController" />
 	<bean id="adminManageGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageGroupsController" />
+	<bean id="adminManageQuotasController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageQuotasController" />
 	<bean id="adminManageApplicationsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationsController" />
 	<bean id="adminManageApplicationGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationGroupsController" />
 	<bean id="adminViewChangeLogController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ViewChangeLogController" />
@@ -56,6 +57,7 @@
 						<entry key="get_log_files"><ref bean="adminLogFileController"/></entry>
 						<entry key="import_profiles"><ref bean="adminImportProfilesController"/></entry>
 						<entry key="manage_groups"><ref bean="adminManageGroupsController"/></entry>
+						<entry key="manage_quotas"><ref bean="adminManageQuotasController"/></entry>
 						<entry key="manage_applications"><ref bean="adminManageApplicationsController"/></entry>
 						<entry key="manage_application_groups"><ref bean="adminManageApplicationGroupsController"/></entry>
 						<entry key="view_change_log"><ref bean="adminViewChangeLogController"/></entry>

@@ -376,6 +376,22 @@ public class ViewController extends  SAbstractController {
 			}
 		} catch(AccessControlException e) {}
 	
+		//Manage quotas
+		try {
+			if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
+				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+				element.addAttribute("title", NLT.get("administration.manage.quotas"));
+				element.addAttribute("image", "bullet");
+				element.addAttribute("id", String.valueOf(nextId++));
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_QUOTAS);
+				url.setWindowState(WindowState.MAXIMIZED);
+				url.setPortletMode(PortletMode.VIEW);
+				element.addAttribute("url", url.toString());
+				elements.put(element.attributeValue("title"), element);
+			}
+		} catch(AccessControlException e) {}
+	
 		//Import profiles
 		try {
 			ProfileBinder profiles = getProfileModule().getProfileBinder();

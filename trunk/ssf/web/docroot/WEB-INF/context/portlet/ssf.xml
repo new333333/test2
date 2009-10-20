@@ -83,6 +83,7 @@
 	<bean id="adminConfigureSearchNodesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageSearchNodesController" />
 	<bean id="adminLogFileController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.LogFileController" />
 	<bean id="adminManageGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageGroupsController" />
+	<bean id="adminManageQuotasController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageQuotasController" />
 	<bean id="adminManageApplicationsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationsController" />
 	<bean id="adminManageApplicationGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationGroupsController" />
 	<bean id="adminManageZonesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageZonesController" />
@@ -178,6 +179,7 @@
 						<entry key="configure_user_access"><ref bean="adminConfigureUserAccessController"/></entry>
 						<entry key="get_log_files"><ref bean="adminLogFileController"/></entry>
 						<entry key="manage_groups"><ref bean="adminManageGroupsController"/></entry>
+						<entry key="manage_quotas"><ref bean="adminManageQuotasController"/></entry>
 						<entry key="manage_applications"><ref bean="adminManageApplicationsController"/></entry>
 						<entry key="manage_application_groups"><ref bean="adminManageApplicationGroupsController"/></entry>
 						<entry key="manage_zones"><ref bean="adminManageZonesController"/></entry>
