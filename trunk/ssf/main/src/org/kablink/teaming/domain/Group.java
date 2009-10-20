@@ -54,6 +54,7 @@ import org.kablink.util.Validator;
  */
 public class Group extends UserPrincipal implements GroupPrincipal {
     private List members;  //initialized by hibernate access=field  
+    protected Long diskQuota;
     
 	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.group;
@@ -101,5 +102,12 @@ public class Group extends UserPrincipal implements GroupPrincipal {
     	members.remove(member);
     	member.getMemberOf().remove(this);
     }
+	public Long getDiskQuota() {
+		if (diskQuota == null) return 0L;
+		return diskQuota;
+	}
+	public void setDiskQuota(Long diskQuota) {
+		this.diskQuota = diskQuota;
+	}
  
 }

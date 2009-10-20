@@ -224,5 +224,10 @@ public interface ProfileDao {
  	/**
  	 * Initialize (or reset) the disk space used by each user
  	 */
- 	public void resetDiskUsage();
+ 	public void resetDiskUsage(Long zone);
+ 	
+ 	/**
+ 	 * Get the non-default value quotas for either groups or users.
+ 	 */
+ 	public List getNonDefaultQuotas(String type, final long zoneId);
  }

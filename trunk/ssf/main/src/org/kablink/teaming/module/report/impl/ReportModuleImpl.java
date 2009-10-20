@@ -1191,6 +1191,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 							" FROM org.kablink.teaming.domain.Principal s WHERE s." + 
 							ObjectKeys.FIELD_ZONE + " = " + RequestContextHolder.getRequestContext().getZoneId() +
 							" AND s." + ObjectKeys.FIELD_USER_DISKQUOTA + " IS NOT NULL " +
+							" AND s.type='user'" +
+							" AND s." + ObjectKeys.FIELD_ID + " != 0 " +
 							" AND (s." + ObjectKeys.FIELD_USER_DISKSPACEUSED + " >= s." + ObjectKeys.FIELD_USER_DISKQUOTA + " * 1024 * 1024 )");
 					l = q.list();
 					
@@ -1229,6 +1231,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 							" FROM org.kablink.teaming.domain.Principal s WHERE s." + 
 							ObjectKeys.FIELD_ZONE + " = " + RequestContextHolder.getRequestContext().getZoneId() +
 							" AND s." + ObjectKeys.FIELD_USER_DISKQUOTA + " IS NOT NULL " +
+							" AND s.type='user'" +
+							" AND s." + ObjectKeys.FIELD_ID + " != 0 " +
 							" AND (s." + ObjectKeys.FIELD_USER_DISKSPACEUSED + " >= s." + ObjectKeys.FIELD_USER_DISKQUOTA + " * 1024 * 1024 " +
 							" * " + highWaterPercentage + " / 100 )");
 					l = q.list();

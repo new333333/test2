@@ -67,6 +67,7 @@ import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
@@ -547,7 +548,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 
    //RW transaction
    public void resetDiskUsage() {
-	   getProfileDao().resetDiskUsage();
+	   getProfileDao().resetDiskUsage(RequestContextHolder.getRequestContext().getZoneId());
    }  
    
    //RO transaction
@@ -557,30 +558,79 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    }  
    
    //RW transaction
-   public void setDiskQuotas(Collection<Long> entryIds, long megabytes) {
-		//does read check
-     	for (Long id : entryIds) {
+   public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
+		//Set each users individual quota
+     	for (Long id : userIds) {
 			User user = (User)getProfileDao().loadUser(id, RequestContextHolder.getRequestContext().getZoneId());
 			user.setDiskQuota(megabytes);
      	}
 	}
    
-   public int checkDiskQuota()  {  
+   //RW transaction
+   public void setGroupDiskQuotas(Collection<Long> groupIds, long megabytes) {
+		// iterate through the members of a group - set each members max group quota to the 
+	    // maximum value of all the groups they're a member of.
+		for (Long groupId : groupIds) {
+			Group group = (Group) getProfileDao().loadGroup(groupId,
+					RequestContextHolder.getRequestContext().getZoneId());
+			group.setDiskQuota(megabytes);
+			if (groupId != null) {
+				List memberList = ((Group) group).getMembers();
+				Iterator itUsers = memberList.iterator();
+				while (itUsers.hasNext()) {
+					Principal member = (Principal) itUsers.next();
+					if (member.getEntityType().equals(EntityIdentifier.EntityType.user)) {
+						User user = (User)getProfileDao().loadUser(member.getId(), RequestContextHolder.getRequestContext().getZoneId());
+						user.setMaxGroupsQuota(Math.max(megabytes, user.getMaxGroupsQuota()));
+					}
+				}
+			}
+		}
+	}
+   
+   // this returns non-zero quotas (any quota which has been set by the admin)
+   public List getNonDefaultQuotas(String type) {
+	   return getProfileDao().getNonDefaultQuotas(type,
+				RequestContextHolder.getRequestContext().getZoneId());
+   }
+   
+   // Walk through the user's group memberships, determine the max quota of all the groups
+   public void resetMaxGroupsDiskQuota(Long userId) {
+		User user = (User) getProfileDao().loadUser(userId,
+				RequestContextHolder.getRequestContext().getZoneId());
+		Long maxGroupsQuota = 0L;
+		List groups = user.getMemberOf();
+		for (Iterator i = groups.iterator(); i.hasNext();) {
+			Group group = (Group) i.next();
+			maxGroupsQuota = Math.max(maxGroupsQuota, group.getDiskQuota());
+		}
+		user.setMaxGroupsQuota(maxGroupsQuota);
+	}
+
+   
+   public int checkDiskQuota() {
 		// first check properties to see if quotas are enabled on this system
-   	ZoneConfig zoneConf = getCoreDao().loadZoneConfig(
-				RequestContextHolder.getRequestContext()
-				.getZoneId());
-   	if (zoneConf.isDiskQuotaEnabled()) {
-   		User user = RequestContextHolder.getRequestContext().getUser();
+		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(
+				RequestContextHolder.getRequestContext().getZoneId());
+		if (zoneConf.isDiskQuotaEnabled()) {
+			User user = RequestContextHolder.getRequestContext().getUser();
+			// always OK for the admin
+			if (user.getId() == 1)
+				return ObjectKeys.DISKQUOTA_OK;
+
 			long userQuota = zoneConf.getDiskQuotaUserDefault();
 
-			//User user = RequestContextHolder.getRequestContext().getUser();
+			// User user = RequestContextHolder.getRequestContext().getUser();
 
-			if (getDiskQuota() != 0L)
-				userQuota = getDiskQuota();
-
+			if (user.getDiskQuota() != 0L) {
+				userQuota = user.getDiskQuota();
+			} else {
+				if (user.getMaxGroupsQuota() != 0L) {
+					userQuota = user.getMaxGroupsQuota();
+				}
+			}
 			userQuota = userQuota * MEGABYTES;
-			
+
 			long highWaterMark = zoneConf.getDiskQuotasHighwaterPercentage();
 			double waterMark = (highWaterMark * userQuota) / 100.0;
 
@@ -593,7 +643,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		return ObjectKeys.DISKQUOTA_OK;
 	}
    
-   //RO transaction
+   // RO transaction
    public Group getGroup(String name) {
 	  Principal p = getProfileDao().findPrincipalByName(name, RequestContextHolder.getRequestContext().getZoneId());
 	  if (!(p instanceof Group)) throw new NoGroupByTheNameException(name);
