@@ -1509,7 +1509,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	}
 	
 	//Initialize (or reset) the disk space used by each user
-	public void resetDiskUsage() {
+	public void resetDiskUsage(Long zone) {
+		final Long zoneId = zone;
 		getHibernateTemplate().execute(
 				new HibernateCallback() {
 					public Object doInHibernate(Session session) throws HibernateException {
@@ -1517,7 +1518,10 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 									"SET diskSpaceUsed = " + 
 									"COALESCE((SELECT SUM(fileLength) FROM SS_Attachments AS b " +
 									"WHERE b.creation_principal = SS_Principals.id " + 
-									"AND b.repositoryName != \'" + ObjectKeys.FI_ADAPTER + "\'),0)";
+									" AND SS_Principals.type = 'user' " +
+									" AND SS_Principals.zoneId = " + zoneId +
+									" AND SS_Attachments.zoneId = " + zoneId +
+									" AND b.repositoryName != \'" + ObjectKeys.FI_ADAPTER + "\'),0)";
 						session.createSQLQuery(sql).executeUpdate();
 						return null;
 					}
@@ -1525,4 +1529,40 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		);    		             		 
 	}
 
+	// this returns non-zero quotas (any quota which has been set by the admin)
+	public List getNonDefaultQuotas(String type, final long zoneId) {
+		final String principalType = type;
+		List userList = new ArrayList();
+		List results = null;
+		results = (List) getHibernateTemplate().execute(
+				new HibernateCallback() {
+					public Object doInHibernate(Session session)
+							throws HibernateException {
+						List l = null;
+						try {
+							String sql = "Select id, diskQuota "
+									+ " FROM SS_Principals "
+									+ " WHERE diskQuota IS NOT NULL "
+									+ " AND diskQuota != 0 "
+									+ " AND type = '" + principalType + "' " 
+									+ " AND zoneId = " + zoneId;
+							Query q = session.createSQLQuery(sql);
+
+							l = q.list();
+
+						} catch (Exception e) {
+							System.out.println("Unable to query for quotas: "
+									+ e.getMessage());
+						}
+						return l;
+					}
+				});
+
+		for (int i = 0; i < results.size(); i++) {
+			Object[] result = (Object[]) results.get(i);
+			userList.add(result[0]);
+		}
+
+		return userList;
+	}
 }

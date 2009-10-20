@@ -483,12 +483,24 @@ public interface ProfileModule {
 	 * @param entryIds
 	 * @param megabytes
      */
-    public void setDiskQuotas(Collection<Long> entryIds, long megabytes);
+    public void setUserDiskQuotas(Collection<Long> entryIds, long megabytes);
+    /**
+     * Set the diskquota value for a set of users (in megabytes)
+	 * @param entryIds
+	 * @param megabytes
+     */
+    public void setGroupDiskQuotas(Collection<Long> groupIds, long megabytes);
     /**
      * Reset the diskspace usage value for all users
      */
     public void resetDiskUsage();
-	/**
+
+    /**
+     *this returns non-zero quotas (any quota which has been set by the admin) 
+     */
+    public List getNonDefaultQuotas(String type);
+
+    /**
 	 * Test access to a binder
 	 * @param user
 	 * @param binder

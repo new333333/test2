@@ -1570,9 +1570,16 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			long userQuota = zoneConf.getDiskQuotaUserDefault();
 
 			User user = RequestContextHolder.getRequestContext().getUser();
+			//if admin, don't bother checking quotas
+			if (user.getId() == 1) return;
 
-			if (user.getDiskQuota() != 0L)
+			if (user.getDiskQuota() != 0L) {
 				userQuota = user.getDiskQuota();
+			} else {
+				if (user.getMaxGroupsQuota() != 0L) {
+					userQuota = user.getMaxGroupsQuota();
+				}
+			}
 
 			if (userQuota == -1L) return;  // -1 = unlimited
 			
