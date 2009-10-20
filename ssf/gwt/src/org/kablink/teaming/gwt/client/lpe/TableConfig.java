@@ -70,43 +70,52 @@ public class TableConfig extends ConfigItem
 				String[] results2;
 				
 				results2 = propsStr[i].split( "=" );
-				if ( results2.length == 2 )
+				if ( results2 != null && results2.length == 2 && results2[0] != null && results2[1] != null && results2[1].length() > 0 )
 				{
 					if ( results2[0].equalsIgnoreCase( "showBorder" ) )
 						m_properties.setShowBorder( results2[1].equalsIgnoreCase( "1" ) );
 					else if ( results2[0].equalsIgnoreCase( "cols" ) )
-						m_properties.setNumColumns( Integer.valueOf( results2[1] ) );
+					{
+						int numCols;
+						
+						numCols = 0;
+						try
+						{
+							numCols = Integer.parseInt( URL.decodeComponent( results2[1] ) );
+						}
+						catch (NumberFormatException nfe)
+						{
+							// Nothing to do.
+						}
+						m_properties.setNumColumns( numCols );
+					}
 					else if ( results2[0].equalsIgnoreCase( "colWidths" ) )
 					{
 						String[] results3;
+						String tmp;
 						
 						// Get the individual column widths.
-						if ( results2[1] != null )
+						tmp = URL.decodeComponent( results2[1] );
+						results3 = tmp.split( "[|]" );
+						if ( results3 != null )
 						{
-							String tmp;
-
-							tmp = URL.decodeComponent( results2[1] );
-							results3 = tmp.split( "[|]" );
-							if ( results3 != null )
+							int j;
+							
+							for (j = 0; j < results3.length; ++j)
 							{
-								int j;
-								
-								for (j = 0; j < results3.length; ++j)
-								{
-									int width;
+								int width;
 
-									width = 0;
-									try
-									{
-										width = Integer.parseInt( results3[j] );
-									}
-									catch (NumberFormatException nfe)
-									{
-										// Nothing to do.
-									}
-									m_properties.setColWidth( j, width );
-								}// end for()
-							}
+								width = 0;
+								try
+								{
+									width = Integer.parseInt( results3[j] );
+								}
+								catch (NumberFormatException nfe)
+								{
+									// Nothing to do.
+								}
+								m_properties.setColWidth( j, width );
+							}// end for()
 						}
 					}
 				}

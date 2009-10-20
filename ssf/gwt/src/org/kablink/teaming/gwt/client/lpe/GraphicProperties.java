@@ -93,12 +93,12 @@ public class GraphicProperties
 		
 		str += "graphic=";
 		if ( m_graphicId != null )
-			str += m_graphicId;
+			str += ConfigData.encodeConfigData( m_graphicId );
 		str += ",";
 
 		str += "title=";
 		if ( m_graphicName != null )
-			str += m_graphicName;
+			str += ConfigData.encodeConfigData( m_graphicName );
 		str += ";";
 
 		return str;

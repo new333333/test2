@@ -239,6 +239,8 @@ public class TableDropWidget extends DropWidget
 		// For every cell, get the widgets that live in that cell.
 		for (i = 0; i < numColumns; ++i)
 		{
+			configStr += "tableCol,colWidth=" + m_properties.getColWidthStr( i ) + ";";
+			
 			// Get the DropZone for this cell.
 			widget = m_flexTable.getWidget( 0, i );
 			
@@ -259,8 +261,6 @@ public class TableDropWidget extends DropWidget
 					for (j = 0; j < childWidgets.size(); ++j)
 					{
 						String nextConfigStr;
-						
-						configStr += "tableCol,colWidth=" + m_properties.getColWidthStr( j ) + ";";
 						
 						// Append the configuration string for the next widget.
 						nextWidget = childWidgets.get( j );
