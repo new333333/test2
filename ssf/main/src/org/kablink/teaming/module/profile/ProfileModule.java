@@ -474,10 +474,17 @@ public interface ProfileModule {
      */
     public void setDiskQuota(long megabytes);   
     /**
-     * Get the disk quota for the current user (in megabytes)
+     * Get the user specific disk quota for the current user (in megabytes)
      * @return
      */
     public long getDiskQuota();
+
+    /**
+     * Get a user's disk quota which is either specific, or max of group membership
+     * @return
+     */
+    public long getMaxUserQuota();
+    public long getMaxUserQuota(Long userId);
     /**
      * Set the diskquota value for a set of users (in megabytes)
 	 * @param entryIds

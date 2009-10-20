@@ -555,9 +555,39 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    public long getDiskQuota() {
 	    User user = RequestContextHolder.getRequestContext().getUser();
 	    return user.getDiskQuota();
-   }  
+   } 
    
-   //RW transaction
+   public long getMaxUserQuota() {
+	   Long userId = RequestContextHolder.getRequestContext().getUserId();
+	   return getMaxUserQuota(userId);
+   }
+
+   public long getMaxUserQuota(Long userId) {
+		// first check properties to see if quotas are enabled on this system
+		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(
+				RequestContextHolder.getRequestContext().getZoneId());
+
+		User user = (User)getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());
+		// always OK for the admin
+		if (userId == 1)
+			return ObjectKeys.DISKQUOTA_OK;
+
+		long userQuota = zoneConf.getDiskQuotaUserDefault();
+
+		// User user = RequestContextHolder.getRequestContext().getUser();
+
+		if (user.getDiskQuota() != 0L) {
+			userQuota = user.getDiskQuota();
+		} else {
+			if (user.getMaxGroupsQuota() != 0L) {
+				userQuota = user.getMaxGroupsQuota();
+			}
+		}
+		userQuota = userQuota * MEGABYTES;
+		return userQuota;
+	}
+   
+   // RW transaction
    public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
 		//Set each users individual quota
      	for (Long id : userIds) {
