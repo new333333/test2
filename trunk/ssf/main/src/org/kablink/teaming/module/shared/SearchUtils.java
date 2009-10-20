@@ -294,7 +294,7 @@ public class SearchUtils {
     	}
     	if (options.containsKey(ObjectKeys.SEARCH_ANCESTRY)) {
     		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
-    		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, ObjectKeys.SEARCH_ANCESTRY);
+    		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, org.kablink.util.search.Constants.ENTRY_ANCESTRY);
     		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     		child.setText((String) options.get(ObjectKeys.SEARCH_ANCESTRY));
     	}

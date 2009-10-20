@@ -33,6 +33,7 @@
 package org.kablink.teaming.portlet.forum;
 
 import static org.kablink.util.search.Restrictions.in;
+import static org.kablink.util.search.Restrictions.eq;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -65,6 +66,7 @@ import javax.servlet.http.HttpSession;
 import net.sf.json.JSONArray;
 
 import org.apache.commons.lang.Validate;
+import org.dom4j.Branch;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
@@ -463,9 +465,11 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxMobileSearchResults(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser(); 
-		String queryName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SEARCH_QUERY_NAME, "");
-		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		Map model = new HashMap();
+		String queryName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SEARCH_QUERY_NAME, "");
+		String scope = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SEARCH_SCOPE, "site");
+		model.put(WebKeys.SEARCH_SCOPE, scope);
+		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		model.put("ss_queryName", queryName);
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		try {
@@ -490,11 +494,12 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
 		model.put(WebKeys.SEARCH_TEXT, searchText);
 	    if (formData.containsKey("searchBtn") || formData.containsKey("quickSearch")) {
-			SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, getDefinitionModule());
+	    	SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, getDefinitionModule());
 			Document searchQuery = requestParser.getSearchQuery();
 			Map options = BinderHelper.prepareSearchOptions(bs, request);
 			options.put(ObjectKeys.SEARCH_OFFSET, new Integer(pageStart));
 			options.put(ObjectKeys.SEARCH_USER_MAX_HITS, new Integer(pageSize));
+			if (scope.equals("local")) options.put(ObjectKeys.SEARCH_ANCESTRY, binderId.toString());;
 			Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, options);
 			
 			Tabs.TabEntry tab = tabs.addTab(searchQuery, options);
