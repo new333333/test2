@@ -79,7 +79,7 @@ public class XSSCheck implements StringCheck {
 	private Pattern pattern5a;
 	private Pattern pattern6;
 	private boolean enable;
-	private String mode;
+	private String defaultMode;
 	private HTMLInputFilter htmlInputFilter;
 	private ConcurrentHashMap<Long, Set<String>> trustedUsersMap;
 	private ConcurrentHashMap<Long, Set<String>> trustedGroupsMap;
@@ -94,20 +94,20 @@ public class XSSCheck implements StringCheck {
 		pattern5a = Pattern.compile(PATTERN_STR5a);
 		pattern6 = Pattern.compile(PATTERN_STR6);
 		enable = SPropsUtil.getBoolean("xss.check.enable");
-		mode = SPropsUtil.getString("xss.check.mode");
+		defaultMode = SPropsUtil.getString("xss.check.mode.default");
 		trustedUsersMap = new ConcurrentHashMap<Long, Set<String>>();
 		trustedGroupsMap = new ConcurrentHashMap<Long, Set<String>>();
 
 		// We do this not only to validate the input mode but also to enable
 		// simple reference comparison for modes. 
-		if(mode.equals(MODE_TRUSTED_DISALLOW))
-			mode = MODE_TRUSTED_DISALLOW;
-		if(mode.equals(MODE_TRUSTED_STRIP))
-			mode = MODE_TRUSTED_STRIP;
-		else if(mode.equals(MODE_STRIP))
-			mode = MODE_STRIP;
+		if(defaultMode.equals(MODE_TRUSTED_DISALLOW))
+			defaultMode = MODE_TRUSTED_DISALLOW;
+		if(defaultMode.equals(MODE_TRUSTED_STRIP))
+			defaultMode = MODE_TRUSTED_STRIP;
+		else if(defaultMode.equals(MODE_STRIP))
+			defaultMode = MODE_STRIP;
 		else
-			mode = MODE_DISALLOW; // default mode
+			defaultMode = MODE_DISALLOW; // default mode
 		
 		htmlInputFilter = new HTMLInputFilter();
 	}
@@ -122,13 +122,20 @@ public class XSSCheck implements StringCheck {
 	 */
 	public String check(String input) throws XSSCheckException {
 		if(enable)
-			return doCheck(input);
+			return doCheck(input, defaultMode);
 		else
 			return input;
 	}
 	
+	public String checkFile(String fileContentAsString) throws XSSCheckException {
+		if(enable)
+			return doCheck(fileContentAsString, MODE_TRUSTED_DISALLOW);
+		else
+			return fileContentAsString;
+	}
+	
 	// A subclass can override this method to provide custom or enhanced implementation.
-	protected String doCheck(String input) throws XSSCheckException {
+	protected String doCheck(String input, String mode) throws XSSCheckException {
 		if(input == null || input.equals(""))
 			return input;
 		

@@ -40,14 +40,11 @@ public class FilterException extends UncheckedCodedException {
 	private static final String FilterException_DefaultErrorCode = "errorcode.content.filter";
 	 
 	public FilterException(String fileName) {
-        super(FilterException_DefaultErrorCode, new Object[]{fileName});
+        this(fileName, "");
     }
 
-	public FilterException(String errorCode, String fileName) {
-		super(errorCode, new Object[]{fileName});
-	}
-	
-	public FilterException(String errorCode, Object[] errorArgs) {
-		super(errorCode, errorArgs);
-	}
+	public FilterException(String fileName, String details) {
+        super(FilterException_DefaultErrorCode, new Object[]{fileName, details});
+    }
+
 }

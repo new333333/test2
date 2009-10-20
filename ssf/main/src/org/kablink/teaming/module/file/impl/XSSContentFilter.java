@@ -38,22 +38,51 @@ import java.io.InputStream;
 
 import org.kablink.teaming.module.file.ContentFilter;
 import org.kablink.teaming.module.file.FilterException;
+import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.stringcheck.XSSCheck;
 import org.kablink.util.FileUtil;
 
-public class DummyContentFilter implements ContentFilter {
-
-	public void filter(String fileName, InputStream content) throws FilterException, IOException {
-		// Copy the file content into a byte array.
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		
-		FileUtil.copy(content, baos);
-
-		// A more realistic filter would run a virus scanner on the data or do something useful...
-		// Instead, this dummy filter simply rejects files that are bigger than 1K in size.
-		byte[] data = baos.toByteArray();
-		System.out.println("Hey, this file " + fileName + " contains " + data.length + " bytes of data");
-		if(data.length > 1024)
-			throw new FilterException(fileName);
+public class XSSContentFilter implements ContentFilter {
+	
+	private String[] fileExtensions;
+	private XSSCheck xssCheck;
+	
+	public XSSContentFilter() {
+		fileExtensions = SPropsUtil.getStringArray("xss.content.filter.file.extensions", ",");
+		for(int i = 0; i < fileExtensions.length; i++)
+			fileExtensions[i] = fileExtensions[i].toLowerCase();
+		xssCheck = new XSSCheck();
 	}
-
+	
+	public void filter(String fileName, InputStream content)
+			throws FilterException, IOException {
+		if(matchFileExtension(fileName)) {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			FileUtil.copy(content, out);
+			byte[] contentAsBytes = out.toByteArray();
+			if(contentAsBytes.length > 0) {
+				// Decode the bytes into string using ISO-8859-1 as charset.
+				// Obviously, the actual charset of the content may be very different, but for 
+				// the purpose of XSS check, we can safely read it in as a stream of 8-bit 
+				// characters, since we don't care about losing the actual data as long as
+				// we can detect the specific patterns that only involve ASCII characters.
+				String contentAsStr = new String(contentAsBytes, "ISO-8859-1");
+				try {
+					xssCheck.checkFile(contentAsStr);
+				}
+				catch(Exception e) {
+					throw new FilterException(fileName, e.getLocalizedMessage());
+				}
+			}
+		}
+	}
+	
+	private boolean matchFileExtension(String fileName) {
+		fileName = fileName.toLowerCase();
+		for(String ext:fileExtensions) {
+			if(fileName.endsWith(ext))
+				return true;
+		}
+		return false;
+	}
 }

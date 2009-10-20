@@ -32,10 +32,8 @@
  */
 package org.kablink.teaming.module.file;
 
+import java.io.IOException;
 import java.io.InputStream;
-
-import org.kablink.teaming.UncheckedIOException;
-
 
 public interface ContentFilter {
 
@@ -45,8 +43,8 @@ public interface ContentFilter {
 	 * @param fileName name of the input file
 	 * @param content content of the input file
 	 * @throws FilterException Thrown to indicate that the file failed to pass the filtering
-	 * @throws UncheckedIOException Thrown to indicate that there is an I/O exception
+	 * @throws IOException Thrown to indicate that there is an I/O exception
 	 */
-	public void filter(String fileName, InputStream content) throws FilterException, UncheckedIOException;
+	public void filter(String fileName, InputStream content) throws FilterException, IOException;
 	
 }

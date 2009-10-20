@@ -122,6 +122,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.FileCopyUtils;
 
+import com.sun.corba.se.impl.orbutil.closure.Constant;
+
 
 /**
  * This implementing class utilizes transactional demarcation strategies that 
@@ -470,7 +472,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			if(errors != null) {
     				// Since we are not throwing an exception immediately in 
     				// this case, log the error right here. 
-    				logger.error("Error filtering file " + fui.getOriginalFilename(), e);
+    				logger.error("Error filtering file " + fui.getOriginalFilename() + " for user " +  RequestContextHolder.getRequestContext().toString() + org.kablink.teaming.util.Constants.NEWLINE + e.toString());
     			}
     			// Remove the failed file from the list first. 
     			fileUploadItems.remove(i);
