@@ -37,19 +37,23 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <div class="ss_style ss_portlet">
 <span class="ss_bold">
-	<ssf:nlt tag="binder.no_entries"/>
-	<%
-		String	binderEntryDefsS = ((String) renderRequest.getAttribute("ssBinderEntryDefs"));
-		if ((null != binderEntryDefsS) && (0 < binderEntryDefsS.length())) {
-			int	binderEntryDefs = Integer.parseInt(binderEntryDefsS);
-			if (0 < binderEntryDefs) {
-				String	addEntry = ((String) renderRequest.getAttribute("ssBinderEntryAdd"));
-				if ((null != addEntry) && (0 < addEntry.length())) {
-				%>
-					&nbsp;&nbsp;<ssf:nlt tag="binder.no_entries.select"><ssf:param name="value" useBody="true"><%= addEntry %></ssf:param>></ssf:nlt>
+	<c:if test="${empty ssEmptyTrash}">
+		<ssf:nlt tag="binder.no_entries"/>
+		<%
+			String	binderEntryDefsS = ((String) renderRequest.getAttribute("ssBinderEntryDefs"));
+			if ((null != binderEntryDefsS) && (0 < binderEntryDefsS.length())) {
+				int	binderEntryDefs = Integer.parseInt(binderEntryDefsS);
+				if (0 < binderEntryDefs) {
+					String	addEntry = ((String) renderRequest.getAttribute("ssBinderEntryAdd"));
+					if ((null != addEntry) && (0 < addEntry.length())) {
+					%>
+						&nbsp;&nbsp;<ssf:nlt tag="binder.no_entries.select"><ssf:param name="value" useBody="true"><%= addEntry %></ssf:param>></ssf:nlt>
+					<% } %>
 				<% } %>
 			<% } %>
-		<% } %>
+	</c:if>
+	<c:if test="${!empty ssEmptyTrash}">
+		<ssf:nlt tag="binder.no_trash"/>
+	</c:if>
 </span>
 </div>
-
