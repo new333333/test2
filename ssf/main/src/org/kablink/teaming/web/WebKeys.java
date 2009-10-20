@@ -326,6 +326,7 @@ public class WebKeys {
 	public static final String ACTION_CONFIGURATION="configure_configuration";
 	public static final String ACTION_MANAGE_EXTENSIONS="manage_extensions";
 	public static final String ACTION_MANAGE_GROUPS="manage_groups";
+	public static final String ACTION_MANAGE_QUOTAS="manage_quotas";
 	public static final String ACTION_MANAGE_LICENSE="manage_license";
 	public static final String ACTION_MANAGE_ZONES="manage_zones";
 	public static final String ACTION_MANAGE_APPLICATIONS="manage_applications";
@@ -982,6 +983,9 @@ public class WebKeys {
     public static final String PROFILE_SHOW_BUSINESSCARD_MINE="ssProfileShowBusinessCardMine";
     public static final String PROFILE_SHOW_BUSINESSCARD_OTHER="ssProfileShowBusinessCardOther";
     public static final String PROFILES_BINDER_ID="ssProfilesBinderId";
+    public static final String QUOTAS_ENABLED="ss_quotasEnabled";
+    public static final String QUOTAS_DEFAULT="ss_quotasDefault";
+    public static final String QUOTAS_HIGH_WATER_MARK="ss_quotasHighWaterMark";
     public static final String ALL_BINDER_DEFINITIONS="ssAllBinderDefinitions";
     public static final String ALL_ENTRY_DEFINITIONS="ssAllEntryDefinitions";
     public static final String ALL_WORKFLOW_DEFINITIONS="ssAllWorkflowDefinitions";
@@ -1303,6 +1307,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_MANAGE_APPLICATION_GROUPS="administration/manage_application_groups";
     public static final String VIEW_ADMIN_MANAGE_EXTENSIONS="administration/manage_extensions";
     public static final String VIEW_ADMIN_MANAGE_GROUPS="administration/manage_groups";
+    public static final String VIEW_ADMIN_MANAGE_QUOTAS="administration/manage_quotas";
     public static final String VIEW_ADMIN_MANAGE_ZONES="administration/manage_zones";
     public static final String VIEW_ADMIN_REDIRECT="administration/view_admin_redirect";
     public static final String VIEW_ADMIN_RELOAD_OPENER="administration/reload_opener";
