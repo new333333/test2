@@ -42,16 +42,14 @@
 	<div id="poll_status" style="visibility:hidden; display:none;">${ss_teamingLiveStatus}</div>
   </taconite-replace>
   <taconite-replace contextNodeID="last_updated" parseInBrowser="true">
-    <span id="last_updated" class="lastupdated">
-	  <ssf:nlt tag="teaming.live.updated">
-        <ssf:param name="value" useBody="true">
-          <span ><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-			value="${now}" type="both" timeStyle="short" dateStyle="short" /></span>)
-	    </ssf:param>
-	  </ssf:nlt>
-      <br/>
-      <span class="ss_mobile_light">[<ssf:nlt tag="teaming.live.willBeUpdated"/>]</span>
-    </span>
+	  <div id="last_updated" class="lastupdated">
+	      <ssf:nlt tag="teaming.live.updated">
+            <ssf:param name="value" useBody="true">
+              (<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+			    value="${now}" type="both" timeStyle="short" dateStyle="short" />)
+	        </ssf:param>
+	      </ssf:nlt>
+	  </div>
   </taconite-replace>
 </taconite-root>
 

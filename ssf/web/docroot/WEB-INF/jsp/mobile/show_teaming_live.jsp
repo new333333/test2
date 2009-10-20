@@ -46,7 +46,7 @@ var updateTimer = null;
 var pollTimer = null;
 var newItemsCount = 0;
 var newItemsCountLast = 0;
-var pollInterval = 300000;
+var pollInterval = 3000;
 var titleToggleCount = 0;
 var titleToggleTimer = null;
 
@@ -137,15 +137,17 @@ function toggleTitle() {
 	
 	titleToggleCount--;
 	var titleObj = document.getElementsByTagName("title").item(0);
-	if (titleToggleCount <= 0) {
-		titleObj.innerHTML = titleCount1;
-	} else {
-		if (titleObj.innerHTML == titleCount1) {
-			titleObj.innerHTML = titleCount2;
-		} else {
+	try {
+		if (titleToggleCount <= 0) {
 			titleObj.innerHTML = titleCount1;
+		} else {
+			if (titleObj.innerHTML == titleCount1) {
+				titleObj.innerHTML = titleCount2;
+			} else {
+				titleObj.innerHTML = titleCount1;
+			}
 		}
-	}
+	} catch(e) {}
 	if (titleToggleCount > 0) {
 		titleToggleTimer = setTimeout("toggleTitle();", 500);
 	}
@@ -170,7 +172,7 @@ ss_createOnLoadObj("initiatePolling", initiatePolling);
 <div class="folders">
 
     <div class="folder-head">
-		<form id="whatsNewForm" name="whatsNewForm" 
+		<form id="whatsNewForm" name="whatsNewForm" style="display:inline;"
 		  method="post" 
 		  action="<ssf:url adapter="true" portletName="ss_forum" 
 		    action="__ajax_mobile" operation="view_teaming_live" actionUrl="true" />"
@@ -258,17 +260,18 @@ ss_createOnLoadObj("initiatePolling", initiatePolling);
     </div>
 
   <c:set var="now" value="<%=new java.util.Date()%>" />
-  <div class="folder-content" align="center">
-    <span id="last_updated" class="lastupdated">
-	  <ssf:nlt tag="teaming.live.updated">
-        <ssf:param name="value" useBody="true">
-          <span ><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-			value="${now}" type="both" timeStyle="short" dateStyle="short" /></span>)
-	    </ssf:param>
-	  </ssf:nlt>
-      <br/>
-      <span class="ss_mobile_light">[<ssf:nlt tag="teaming.live.willBeUpdated"/>]</span>
-    </span>
+  <div class="folder-content" align="center" width="100%">
+	  <div id="last_updated" class="lastupdated">
+	      <ssf:nlt tag="teaming.live.updated">
+            <ssf:param name="value" useBody="true">
+              (<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+			    value="${now}" type="both" timeStyle="short" dateStyle="short" />)
+	        </ssf:param>
+	      </ssf:nlt>
+	  </div>
+      <div class="lastupdated ss_mobile_light">
+        [<ssf:nlt tag="teaming.live.willBeUpdated"/>]
+      </div>
   </div>
     
   <div id="teaming_live_data" class="folder-content">
