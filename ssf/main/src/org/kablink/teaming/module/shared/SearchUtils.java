@@ -292,6 +292,12 @@ public class SearchUtils {
     		Element child = field.addElement(Constants.TAG_ELEMENT);
     		child.addAttribute(Constants.TAG_NAME_ATTRIBUTE, (String)options.get(ObjectKeys.SEARCH_PERSONAL_TAG));
     	}
+    	if (options.containsKey(ObjectKeys.SEARCH_ANCESTRY)) {
+    		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
+    		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, ObjectKeys.SEARCH_ANCESTRY);
+    		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
+    		child.setText((String) options.get(ObjectKeys.SEARCH_ANCESTRY));
+    	}
 
     	//See if there are event days (modification is also an event)
     	if (options.containsKey(ObjectKeys.SEARCH_EVENT_DAYS)) {

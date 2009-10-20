@@ -304,6 +304,7 @@ public interface ObjectKeys {
     public static final String SEARCH_EVENT_DAYS = "eventDays";
     public static final String SEARCH_COMMUNITY_TAG = "searchCommunityTag";
     public static final String SEARCH_PERSONAL_TAG = "searchPersonalTag";
+    public static final String SEARCH_ANCESTRY = "ancestry";
     public static final String SEARCH_TITLE = "searchTitle";
     public static final String SEARCH_PRE_DELETED = "__preDeleted";
     public static final String SEARCH_LASTACTIVITY_DATE_START = "lastActivityDateStart";
