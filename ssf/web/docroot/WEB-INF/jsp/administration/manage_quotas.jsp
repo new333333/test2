@@ -85,7 +85,11 @@
 	</td>
 	</tr>
 	</table>
+	
+	<hr width="85%" align="center" style="margin: 10px 0px;"/>
 		
+	<br/>
+	
 	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
 	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
 		  onClick="self.window.close();return false;"/>

@@ -291,6 +291,30 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    				throw new NotSupportedException(operation.toString(), "checkAccess");
 		}
    	}
+  	public boolean isQuotaEnabled() {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		return zoneConfig.isDiskQuotaEnabled(); 		
+  	}
+  	public void setQuotaEnabled(boolean quotaEnabled) {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		zoneConfig.setDiskQuotasEnabled(quotaEnabled);
+  	}
+  	public Integer getQuotaDefault() {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		return zoneConfig.getDiskQuotaUserDefault();
+  	}
+  	public Integer getQuotaHighWaterMark() {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		return zoneConfig.getDiskQuotasHighwaterPercentage();
+  	}
+  	public void setQuotaDefault(Integer quotaDefault) {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		zoneConfig.setDiskQuotaUserDefault(quotaDefault);
+  	}
+  	public void setQuotaHighWaterMark(Integer quotaHighWaterMark) {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		zoneConfig.setDiskQuotasHighwaterPercentage(quotaHighWaterMark);
+  	}
   	public boolean isMobileAccessEnabled() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.isMobileAccessEnabled(); 		

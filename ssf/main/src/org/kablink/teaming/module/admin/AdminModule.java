@@ -126,6 +126,14 @@ public interface AdminModule {
      * @return ChangeLogs ordered by entity and operationDate
      */
     public List<ChangeLog> getChanges(EntityIdentifier entityIdentifier, String operation);
+    
+    public boolean isQuotaEnabled();
+    public Integer getQuotaDefault();
+    public Integer getQuotaHighWaterMark();
+    public void setQuotaEnabled(boolean quotaEnabled);
+    public void setQuotaDefault(Integer quotaDefault);
+    public void setQuotaHighWaterMark(Integer quotaHighWaterMark);
+    
     public boolean isMobileAccessEnabled();
     public void setMobileAccessEnabled(boolean mobileAccessEnabled);
     public MailConfig getMailConfig();
