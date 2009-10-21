@@ -154,7 +154,7 @@ public class LandingPageEditor extends Composite
 		
 		// Create a hidden input control where we will put the configuration string when
 		// the user presses the ok button.
-		m_configResultsInputCtrl = new Hidden( "gwtMashupConfigResults" );
+		m_configResultsInputCtrl = new Hidden( lpeConfig.getMashupPropertyName() );
 		vPanel.add( m_configResultsInputCtrl );
 		
 		if ( false )

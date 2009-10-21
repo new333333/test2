@@ -2289,8 +2289,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			if (inputData.exists(nameValue + MASHUP_STYLE))
 				mashupStyle = inputData.getSingleValue(nameValue + MASHUP_STYLE);
 			
-			if ( inputData.exists( "gwtMashupConfigResults" ) )
-				value = inputData.getSingleValue( "gwtMashupConfigResults" );
+			// Get the landing page mashup configuration string.
+			if ( inputData.exists( nameValue ) )
+				value = inputData.getSingleValue( nameValue );
 
 			if ( !inputData.isFieldsOnly() || fieldModificationAllowed )
 			{

@@ -64,7 +64,7 @@
 // m_landingPageConfig holds the string that defines the content of this landing page and is referenced by the GWT code.
 var m_landingPageConfig = null;
 
-m_landingPageConfig = { configData : '${ssDefinitionEntry.customAttributes[property_name].value}' };
+m_landingPageConfig = { configData : '${ssDefinitionEntry.customAttributes[property_name].value}', mashupPropertyName: '${ss_mashupPropertyName}' };
 
 // Create an array of objects where each object holds the name and id of a file attachment.
 <jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Workspace" scope="request" />
