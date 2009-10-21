@@ -42,6 +42,7 @@
 <meta http-equiv="Content-Script-Type" content="text/javascript"/>
 <meta http-equiv="Content-Style-Type" content="text/css"/>
 
+<c:set var="ss_disableSessionTimer" value="true" scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <c:set var="ssf_support_files_loaded" value="" scope="request"/>

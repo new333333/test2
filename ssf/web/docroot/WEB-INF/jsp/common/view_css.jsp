@@ -191,7 +191,9 @@ function ss_defineColorValues() {
 }
 <c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
 <c:if test="${ssUser.internalId != guestInternalId}">
-ss_startSessionTimoutTimer('${ss_maxInactiveInterval}');
+  <c:if test="${!ss_disableSessionTimer}">
+    ss_startSessionTimoutTimer('${ss_maxInactiveInterval}');
+  </c:if>
 </c:if>
 </script>
 
