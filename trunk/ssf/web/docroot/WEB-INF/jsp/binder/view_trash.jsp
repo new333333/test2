@@ -65,17 +65,12 @@
 %>
 <c:set var="ssFolderColumns" value="<%= ssFolderColumns %>" scope="request"/>
 
-<nobr><center>
-	<br />
-	<c:if test="${trashMode == 'workspace'}">Workspace (ID:  ${ssBinder.id}) trash:  ...this feature is still being implemented...</c:if>
-	<c:if test="${trashMode == 'folder'}"   >Folder (ID:  ${ssBinder.id}) trash:  ...this feature is still being implemented...</c:if>
-	<br />- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-</center></nobr>
-
 <script type="text/javascript" src="<html:rootPath/>js/binder/ss_trash.js"></script>
 <script type="text/javascript">
-	<% /* Store the namespace for use in ss_trash.js. */ %> 
+	<% /* Store the namespace and binder ID for use in */ %>
+	<% /* ss_trash.js.                                 */ %> 
 	var g_namespace = "${ss_namespace}";
+	var	g_binderId  = "${ssBinder.id}";
 
 	
 	<% /* Store information about the trashed entries that we're */ %>
@@ -202,9 +197,6 @@
 			<div align="left">
 			    <div class="ss_folder_border">
 					<ssf:toolbar style="ss_actions_bar5 ss_actions_bar">			
-						<ssHelpSpot 
-							helpId="workspaces_folders/menus_toolbars/trash_view_toolbar" offsetX="0" offsetY="0" 
-							title="<ssf:nlt tag="helpSpot.trashViewMenu"/>"></ssHelpSpot>
 						<ssf:toolbar toolbar="${ssTrashViewToolbar}" style="ss_actions_bar5 ss_actions_bar" item="true" />			
 					</ssf:toolbar>
 				</div>

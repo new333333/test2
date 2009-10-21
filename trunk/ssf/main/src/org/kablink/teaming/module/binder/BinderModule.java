@@ -69,6 +69,8 @@ public interface BinderModule {
 		addFolder,
 		addWorkspace,
 		copyBinder,
+		restoreBinder,
+		preDeleteBinder,
 		deleteBinder,
 		indexBinder,
 		indexTree,
@@ -124,6 +126,57 @@ public interface BinderModule {
 	 */
 	public Binder copyBinder(Long sourceId, Long destinationId, boolean cascade, Map options)
 		throws AccessControlException;
+	
+	/**
+	 * Restores a binder including any sub-binders and entries.
+	 * Any errors deleting child-binders will be returned, but
+	 * will continue deleting as much as possible.  Mirrored source will be deleted
+	 * @param binderId
+	 * @param reindex
+	 * @throws AccessControlException
+	 */
+	public void restoreBinder(Long binderId)                  throws AccessControlException;
+	public void restoreBinder(Long binderId, boolean reindex) throws AccessControlException;
+	/**
+	 * Restores a binder including any sub-binders and entries.
+	 * Any errors deleting child-binders will be returned, but
+	 * will continue deleting as much as possible.
+	 * @param binderId
+	 * @param deleteMirroredSource indicates whether or not to delete the
+	 * corresponding source resources (directories and files) if this binder
+	 * or any of the child binders is mirrored.
+	 * @param options - processing options or null
+	 * @param reindex
+	 * @throws AccessControlException
+	 */
+	public void restoreBinder(Long binderId, boolean deleteMirroredSource, Map options)                  throws AccessControlException;
+	public void restoreBinder(Long binderId, boolean deleteMirroredSource, Map options, boolean reindex) throws AccessControlException;
+	
+	/**
+	 * Predelete a binder including any sub-binders and entries.
+	 * Any errors deleting child-binders will be returned, but
+	 * will continue deleting as much as possible.  Mirrored source will be deleted
+	 * @param binderId
+	 * @param reindex
+	 * @throws AccessControlException
+	 */
+	public void preDeleteBinder(Long binderId)                  throws AccessControlException;
+	public void preDeleteBinder(Long binderId, boolean reindex) throws AccessControlException;
+	/**
+	 * Predelete a binder including any sub-binders and entries.
+	 * Any errors deleting child-binders will be returned, but
+	 * will continue deleting as much as possible.
+	 * @param binderId
+	 * @param deleteMirroredSource indicates whether or not to delete the
+	 * corresponding source resources (directories and files) if this binder
+	 * or any of the child binders is mirrored.
+	 * @param options - processing options or null
+	 * @param reindex
+	 * @throws AccessControlException
+	 */
+	public void preDeleteBinder(Long binderId, boolean deleteMirroredSource, Map options)                  throws AccessControlException;
+	public void preDeleteBinder(Long binderId, boolean deleteMirroredSource, Map options, boolean reindex) throws AccessControlException;
+		
 	/**
 	 * Delete a binder including any sub-binders and entries.
 	 * Any errors deleting child-binders will be returned, but

@@ -63,6 +63,7 @@ import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.CloseWrapperException;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebStatusTicket;
 import org.springframework.web.portlet.ModelAndView;
@@ -150,8 +151,13 @@ public class ModifyBinderController extends AbstractBinderController {
 				Binder binder = getBinderModule().getBinder(binderId);			
 				Binder parentBinder = binder.getParentBinder();			
 				//get view data, before binder is deleted
-				setupViewBinder(response, binder);	
-				getBinderModule().deleteBinder(binderId, Boolean.parseBoolean(deleteSource), null);
+				setupViewBinder(response, binder);
+				if (binder.isMirrored()) {
+					getBinderModule().deleteBinder(binderId, Boolean.parseBoolean(deleteSource), null);
+				}
+				else {
+					TrashHelper.preDeleteBinder(this, binderId);
+				}
 				setupViewBinderInParent(response, parentBinder.getId());
 			} else {
 				setupReloadOpener(response, binderId);			

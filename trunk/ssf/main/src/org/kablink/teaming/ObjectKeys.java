@@ -293,6 +293,7 @@ public interface ObjectKeys {
     public static final String SEARCH_SEARCH_DYNAMIC_FILTER = "searchDynamicFilter";
     public static final String SEARCH_SORT_BY = "sortBy";
     public static final String SEARCH_SORT_DESCEND = "sortDescend";
+    public static final String SEARCH_SORT_NONE = "sortNone";
     public static final String SEARCH_START_DATE = "startDate";
     public static final String SEARCH_END_DATE = "endDate";
     public static final String SEARCH_FILTER_AND = "searchFilterAnd";
