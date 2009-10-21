@@ -46,7 +46,7 @@ var updateTimer = null;
 var pollTimer = null;
 var newItemsCount = 0;
 var newItemsCountLast = 0;
-var pollInterval = 3000;
+var pollInterval = 300000;
 var titleToggleCount = 0;
 var titleToggleTimer = null;
 
@@ -261,14 +261,12 @@ ss_createOnLoadObj("initiatePolling", initiatePolling);
 
   <c:set var="now" value="<%=new java.util.Date()%>" />
   <div class="folder-content" align="center" width="100%">
-	  <div id="last_updated" class="lastupdated">
-	      <ssf:nlt tag="teaming.live.updated">
-            <ssf:param name="value" useBody="true">
-              (<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-			    value="${now}" type="both" timeStyle="short" dateStyle="short" />)
-	        </ssf:param>
-	      </ssf:nlt>
-	  </div>
+	  <div id="last_updated" 
+	    class="lastupdated" ><ssf:nlt tag="teaming.live.updated"><ssf:param 
+	      name="value" useBody="true"><fmt:formatDate 
+	      timeZone="${ssUser.timeZone.ID}"
+		  value="${now}" type="both" timeStyle="short" 
+		  dateStyle="short" /></ssf:param></ssf:nlt></div>
       <div class="lastupdated ss_mobile_light">
         [<ssf:nlt tag="teaming.live.willBeUpdated"/>]
       </div>
