@@ -156,6 +156,7 @@ public class Constants {
 	public static final String FILE_EXT_FIELD = "_fileExt";
 	public static final String FILE_TYPE_FIELD = "_fileType";
 	public static final String FILE_ID_FIELD = "_fileID";
+	public static final String FILE_CREATOR_ID_FIELD = "_fileCreatorId";
 	public static final String FILE_SIZE_FIELD = "_fileSize";
 	public static final String FILE_TIME_FIELD = "_fileTime";
 	public static final String FILENAME_AND_ID_FIELD = "_fileNameId";
