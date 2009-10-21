@@ -985,6 +985,8 @@ public class WebKeys {
     public static final String PROFILES_BINDER_ID="ssProfilesBinderId";
     public static final String QUOTAS_ENABLED="ss_quotasEnabled";
     public static final String QUOTAS_DEFAULT="ss_quotasDefault";
+    public static final String QUOTAS_GROUPS="ss_quotasGroups";
+    public static final String QUOTAS_USERS="ss_quotasUsers";
     public static final String QUOTAS_HIGH_WATER_MARK="ss_quotasHighWaterMark";
     public static final String ALL_BINDER_DEFINITIONS="ssAllBinderDefinitions";
     public static final String ALL_ENTRY_DEFINITIONS="ssAllEntryDefinitions";

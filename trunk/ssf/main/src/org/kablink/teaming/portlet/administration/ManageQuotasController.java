@@ -33,13 +33,19 @@
 package org.kablink.teaming.portlet.administration;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.User;
+import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.WebHelper;
@@ -64,6 +70,18 @@ public class ManageQuotasController extends SAbstractController {
 			Integer highWaterMark = PortletRequestUtils.getIntParameter(request, "highWaterMark");
 			getAdminModule().setQuotaDefault(defaultQuota);
 			getAdminModule().setQuotaHighWaterMark(highWaterMark);
+			
+			Set groupIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addGroups"));
+			Set userIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addUsers"));
+			Long userQuota = PortletRequestUtils.getLongParameter(request, "addUserQuota");
+			Long groupQuota = PortletRequestUtils.getLongParameter(request, "addGroupQuota");
+			if (!groupIds.isEmpty() && groupQuota != null) {
+				getProfileModule().setUserDiskQuotas(groupIds, groupQuota);
+			}
+			if (!userIds.isEmpty() && userQuota != null) {
+				getProfileModule().setUserDiskQuotas(userIds, userQuota);
+			}
+
 		} else {
 			response.setRenderParameters(formData);
 		}
@@ -75,8 +93,13 @@ public class ManageQuotasController extends SAbstractController {
 		Map formData = request.getParameterMap();
 
 		if (formData.containsKey("okBtn")) {
-			return new ModelAndView("forum/close_window", model);
+			//return new ModelAndView("forum/close_window", model);
 		}
+
+		List users = getProfileModule().getNonDefaultQuotas(ObjectKeys.PRINCIPAL_TYPE_USER);
+		List groups = getProfileModule().getNonDefaultQuotas(ObjectKeys.PRINCIPAL_TYPE_GROUP);
+		model.put(WebKeys.QUOTAS_USERS, users);
+		model.put(WebKeys.QUOTAS_GROUPS, groups);
 
 		model.put(WebKeys.QUOTAS_DEFAULT, getAdminModule().getQuotaDefault());
 		model.put(WebKeys.QUOTAS_ENABLED, getAdminModule().isQuotaEnabled());
