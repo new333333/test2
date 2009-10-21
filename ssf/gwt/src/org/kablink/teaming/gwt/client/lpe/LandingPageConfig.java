@@ -58,5 +58,12 @@ public class LandingPageConfig extends JavaScriptObject
 	 * Overlay on the JavaScript object called m_landingPageConfig.
 	 */
 	public final native String getConfigStr() /*-{ return this.configData; }-*/;
+
+	
+	/**
+	 * Return the string that holds the landing page mashup property name.  This class is an
+	 * Overlay on the JavaScript object called m_landingPageConfig.
+	 */
+	public final native String getMashupPropertyName() /*-{ return this.mashupPropertyName; }-*/;
 	
 }// end LandingPageConfig
