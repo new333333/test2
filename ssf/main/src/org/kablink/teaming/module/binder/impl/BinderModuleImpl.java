@@ -121,6 +121,7 @@ import org.kablink.teaming.module.definition.export.ElementBuilderUtil;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.profile.ProfileModule;
@@ -240,6 +241,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				getAccessControlManager().checkOperation(binder,
 						WorkAreaOperation.CREATE_WORKSPACES);
 				break;
+			case restoreBinder:
+			case preDeleteBinder:
 			case deleteBinder:
 			case indexBinder:
 			case indexTree:
@@ -687,6 +690,64 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.setProperty);
 		binder.setProperty(property, value);
+	}
+
+	// inside write transaction
+	public void restoreBinder(Long binderId) {
+		restoreBinder(binderId, true);
+	}
+	public void restoreBinder(Long binderId, boolean reindex) {
+		restoreBinder(binderId, true, null, reindex);
+	}
+
+	// inside write transaction
+	public void restoreBinder(Long binderId, boolean deleteMirroredSource, Map options) {
+		restoreBinder(binderId, deleteMirroredSource, options, true);
+	}
+	public void restoreBinder(Long binderId, boolean deleteMirroredSource, Map options, boolean reindex) {
+		Binder binder = loadBinder(binderId);
+		if ((null != binder) && (!(binder.isMirrored()))) {
+			EntityType et = binder.getEntityType();
+			boolean isFolder    = (EntityType.folder    == et);
+			boolean isWorkspace = (EntityType.workspace == et);
+			if (isFolder || isWorkspace) {
+		        checkAccess(binder, BinderOperation.restoreBinder);
+		        if (isFolder) ((Folder)    binder).setPreDeleted(Boolean.FALSE);
+		        else          ((Workspace) binder).setPreDeleted(Boolean.FALSE);
+		        if (reindex) {
+		        	loadBinderProcessor(binder).indexBinder(binder, true);
+		        }
+			}
+		}
+	}
+
+	// inside write transaction
+	public void preDeleteBinder(Long binderId) {
+		preDeleteBinder(binderId, true);
+	}
+	public void preDeleteBinder(Long binderId, boolean reindex) {
+		preDeleteBinder(binderId, true, null, reindex);
+	}
+
+	// inside write transaction
+	public void preDeleteBinder(Long binderId, boolean deleteMirroredSource, Map options) {
+		preDeleteBinder(binderId, deleteMirroredSource, options, true);
+	}
+	public void preDeleteBinder(Long binderId, boolean deleteMirroredSource, Map options, boolean reindex) {
+		Binder binder = loadBinder(binderId);
+		if ((null != binder) && (!(binder.isMirrored()))) {
+			EntityType et = binder.getEntityType();
+			boolean isFolder    = (EntityType.folder    == et);
+			boolean isWorkspace = (EntityType.workspace == et);
+			if (isFolder || isWorkspace) {
+		        checkAccess(binder, BinderOperation.preDeleteBinder);
+		        if (isFolder) ((Folder)    binder).setPreDeleted(Boolean.TRUE);
+		        else          ((Workspace) binder).setPreDeleted(Boolean.TRUE);
+		        if (reindex) {
+		        	loadBinderProcessor(binder).indexBinder(binder, true);
+		        }
+			}
+		}
 	}
 
 	// no transaction

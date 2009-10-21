@@ -254,6 +254,8 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			case modifyEntryFields:
 				AccessUtils.modifyFieldCheck(entry);   
 				break;
+			case restoreEntry:
+			case preDeleteEntry:
 			case deleteEntry:
 				AccessUtils.deleteCheck(entry);   		
 				break;
@@ -656,6 +658,55 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	}
     	return sEntries;
     }
+
+    //inside write transaction    
+    public void restoreEntry(Long parentFolderId, Long entryId) {
+    	restoreEntry(parentFolderId, entryId, true);
+    }
+    public void restoreEntry(Long parentFolderId, Long entryId, boolean reindex) {
+    	restoreEntry(parentFolderId, entryId, true, null, reindex);
+    }
+    //inside write transaction    
+    public void restoreEntry(Long folderId, Long entryId, boolean deleteMirroredSource, Map options) {
+    	restoreEntry(folderId, entryId, deleteMirroredSource, options, true);
+    }
+    public void restoreEntry(Long folderId, Long entryId, boolean deleteMirroredSource, Map options, boolean reindex) {
+    	deCount.incrementAndGet();
+        FolderEntry entry = loadEntry(folderId, entryId);
+        Folder folder = loadFolder(folderId);
+        if ((null != entry) && (null != folder) && (!(folder.isMirrored()))) {
+        	checkAccess(entry, FolderOperation.restoreEntry);
+        	entry.setPreDeleted(Boolean.FALSE);
+        	if (reindex) {
+        		loadProcessor(entry.getParentFolder()).indexEntry(entry);
+        	}
+        }
+    }
+    
+    //inside write transaction    
+    public void preDeleteEntry(Long parentFolderId, Long entryId) {
+    	preDeleteEntry(parentFolderId, entryId, true);
+    }
+    public void preDeleteEntry(Long parentFolderId, Long entryId, boolean reindex) {
+    	preDeleteEntry(parentFolderId, entryId, true, null, reindex);
+    }
+    //inside write transaction    
+    public void preDeleteEntry(Long folderId, Long entryId, boolean deleteMirroredSource, Map options) {
+    	preDeleteEntry(folderId, entryId, deleteMirroredSource, options, true);
+    }
+    public void preDeleteEntry(Long folderId, Long entryId, boolean deleteMirroredSource, Map options, boolean reindex) {
+    	deCount.incrementAndGet();
+        FolderEntry entry = loadEntry(folderId, entryId);
+        Folder folder = loadFolder(folderId);
+        if ((null != entry) && (null != folder) && (!(folder.isMirrored()))) {
+        	checkAccess(entry, FolderOperation.preDeleteEntry);
+        	entry.setPreDeleted(Boolean.TRUE);
+        	if (reindex) {
+        		loadProcessor(entry.getParentFolder()).indexEntry(entry);
+        	}
+        }
+    }
+    
     //no transaction        
     public void deleteEntry(Long parentFolderId, Long entryId) {
     	deleteEntry(parentFolderId, entryId, true, null);

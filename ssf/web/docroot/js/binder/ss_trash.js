@@ -39,7 +39,7 @@ function ss_buildTrashEntryUrlParams(entries) {
 	var count = ((null == entries) ? 0 : entries.length);
 	var reply = new Array();
 	for (var i = 0; i < count; i += 1) {
-		reply[reply.length] = entries[i].getString();
+		reply[reply.length] = entries[i].serialize();
 	}
 	return(ss_pack(reply));
 }
@@ -213,9 +213,10 @@ function SSTrashEntry() {
 	}
 	
 	/*
-	 * Returns the string representation of this SSTrashEntry.
+	 * Returns a serialized (i.e., string) representation of this
+	 * SSTrashEntry.
 	 */
-	this.getString = function () {
+	this.serialize = function () {
 		var	reply =	(String(this.m_docId)            + ":" +
 					 String(this.m_locationBinderId) + ":" +
 					 String(this.m_docType)          + ":" +
@@ -238,6 +239,6 @@ function ajaxTrashRequest_Response(data, sOperation) {
  * trash.
  */
 function ajaxTrashRequest_Submit(sOperation, urlParams) {
-	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:sOperation, params:urlParams});
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:sOperation, params:urlParams, binderId:  g_binderId});
 	ss_fetch_url(url, ajaxTrashRequest_Response, sOperation);
 }

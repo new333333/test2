@@ -74,6 +74,7 @@ import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
 
@@ -89,10 +90,16 @@ public class ModifyEntryController extends SAbstractController {
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.OPERATION_DELETE) && WebHelper.isMethodPost(request)) {
+			Binder binder = getBinderModule().getBinder(folderId);
 			FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
 			if (!entry.isTop()) entry = entry.getTopEntry();
 			else entry = null;
-			getFolderModule().deleteEntry(folderId, entryId);
+			if (binder.isMirrored()) {
+				getFolderModule().deleteEntry(folderId, entryId);
+			}
+			else {
+				TrashHelper.preDeleteEntry(this, folderId, entryId);
+			}
 			setupViewFolder(response, folderId);
 			
 			//Force the user's status to be updated.

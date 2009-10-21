@@ -70,11 +70,6 @@
                 --%> title="<ssf:nlt tag="helpSpot.subscriptionsMenu"/>"></ssHelpSpot><%--
             --%></c:when><%--
 
-            --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.trashMenu'}"><%--
-                --%><ssHelpSpot helpId="/workspaces_folders/menus_toolbars/trash" offsetY="15" offsetX="0" <%--
-                --%> title="<ssf:nlt tag="helpSpot.trashMenu"/>"></ssHelpSpot><%--
-            --%></c:when><%--
-
             --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageDashboard'}"><%--
                 --%><ssHelpSpot helpId="workspaces_folders/misc_tools/manage_accessories"<%--
                 --%> offsetX="-20" <%--
