@@ -55,10 +55,18 @@
   <br/>
 </c:if>
 
-<form class="ss_style ss_form" method="post" 
+<form name="form1" class="ss_style ss_form" method="post" 
 	action="<ssf:url action="manage_quotas" actionUrl="true"><ssf:param 
 	name="binderId" value="${ssBinder.id}"/></ssf:url>">
+	
+	<div align="right">
+	  <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+	  <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
+		  onClick="self.window.close();return false;"/>
+	</div>
 		
+	<fieldset class="ss_fieldset">
+	  <legend class="ss_legend"><ssf:nlt tag="administration.quotas.enable" /></legend>
 	<div>
 	  <input type="checkbox" name="enableQuotas" 
 	  <c:if test="${ss_quotasEnabled}">checked=checked</c:if>
@@ -85,9 +93,49 @@
 	</td>
 	</tr>
 	</table>
+	</fieldset>
+			
+	<br/>
 	
-	<hr width="85%" align="center" style="margin: 10px 0px;"/>
-		
+	<fieldset class="ss_fieldset">
+	  <legend class="ss_legend"><ssf:nlt tag="administration.quotas.addUsersAndGroups" /></legend>
+  <table >
+  <tr>
+  <td valign="top" style="padding-right:50px;">
+    <div class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/></div>
+    <input type="text" name="addGroupQuota" size="6" style="width:40px;"/>
+    <ssf:nlt tag="administration.quotas.mb" />
+  </td>
+  <td valign="top">
+  <div class="ss_bold"><ssf:nlt tag="administration.quotas.addGroupQuota"/></div>
+  <ssf:find formName="form1" formElement="addGroups" 
+    type="group" />
+  </td>
+  </tr>
+  
+  <tr><td colspan="2">&nbsp;</td></tr>
+	
+  <tr>
+  <td valign="top" style="padding-right:50px;">
+    <div class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/></div>
+    <input type="text" name="addUserQuota" size="6" style="width:40px;"/>
+    <ssf:nlt tag="administration.quotas.mb" />
+  </td>
+  <td valign="top">
+  <div class="ss_bold"><ssf:nlt tag="administration.quotas.addUserQuota"/></div>
+  <ssf:find formName="form1" formElement="addUsers" 
+    type="user" />
+  </td>
+  </tr>
+  </table>
+    </fieldset>
+
+	<br/>
+	
+	<fieldset class="ss_fieldset">
+	  <legend class="ss_legend"><ssf:nlt tag="administration.quotas.currentSettings" /></legend>
+	</fieldset>
+	
 	<br/>
 	
 	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">

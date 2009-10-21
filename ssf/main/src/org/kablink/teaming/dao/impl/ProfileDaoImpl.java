@@ -1531,6 +1531,9 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 
 	// this returns non-zero quotas (any quota which has been set by the admin)
 	public List getNonDefaultQuotas(String type, final long zoneId) {
+		//Protect the SQL query by checking for legal values of "type"
+		if (!ObjectKeys.PRINCIPAL_TYPE_GROUP.equals(type) && !ObjectKeys.PRINCIPAL_TYPE_USER.equals(type)) 
+			return null;
 		final String principalType = type;
 		List userList = new ArrayList();
 		List results = null;
