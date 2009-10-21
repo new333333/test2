@@ -79,7 +79,8 @@ public class XSSCheck implements StringCheck {
 	private Pattern pattern5a;
 	private Pattern pattern6;
 	private boolean enable;
-	private String defaultMode;
+	private String modeDefault;
+	private String modeFile;
 	private HTMLInputFilter htmlInputFilter;
 	private ConcurrentHashMap<Long, Set<String>> trustedUsersMap;
 	private ConcurrentHashMap<Long, Set<String>> trustedGroupsMap;
@@ -94,20 +95,21 @@ public class XSSCheck implements StringCheck {
 		pattern5a = Pattern.compile(PATTERN_STR5a);
 		pattern6 = Pattern.compile(PATTERN_STR6);
 		enable = SPropsUtil.getBoolean("xss.check.enable");
-		defaultMode = SPropsUtil.getString("xss.check.mode.default");
+		modeDefault = SPropsUtil.getString("xss.check.mode.default");
+		modeFile = SPropsUtil.getString("xss.check.mode.file");
 		trustedUsersMap = new ConcurrentHashMap<Long, Set<String>>();
 		trustedGroupsMap = new ConcurrentHashMap<Long, Set<String>>();
 
 		// We do this not only to validate the input mode but also to enable
 		// simple reference comparison for modes. 
-		if(defaultMode.equals(MODE_TRUSTED_DISALLOW))
-			defaultMode = MODE_TRUSTED_DISALLOW;
-		if(defaultMode.equals(MODE_TRUSTED_STRIP))
-			defaultMode = MODE_TRUSTED_STRIP;
-		else if(defaultMode.equals(MODE_STRIP))
-			defaultMode = MODE_STRIP;
+		if(modeDefault.equals(MODE_TRUSTED_DISALLOW))
+			modeDefault = MODE_TRUSTED_DISALLOW;
+		if(modeDefault.equals(MODE_TRUSTED_STRIP))
+			modeDefault = MODE_TRUSTED_STRIP;
+		else if(modeDefault.equals(MODE_STRIP))
+			modeDefault = MODE_STRIP;
 		else
-			defaultMode = MODE_DISALLOW; // default mode
+			modeDefault = MODE_DISALLOW; // default mode
 		
 		htmlInputFilter = new HTMLInputFilter();
 	}
@@ -122,14 +124,14 @@ public class XSSCheck implements StringCheck {
 	 */
 	public String check(String input) throws XSSCheckException {
 		if(enable)
-			return doCheck(input, defaultMode);
+			return doCheck(input, modeDefault);
 		else
 			return input;
 	}
 	
 	public String checkFile(String fileContentAsString) throws XSSCheckException {
 		if(enable)
-			return doCheck(fileContentAsString, MODE_TRUSTED_DISALLOW);
+			return doCheck(fileContentAsString, modeFile);
 		else
 			return fileContentAsString;
 	}
