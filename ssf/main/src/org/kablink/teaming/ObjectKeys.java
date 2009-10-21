@@ -617,6 +617,8 @@ public interface ObjectKeys {
     public static final	int DISKQUOTA_OK = 1;
     public static final	int DISKQUOTA_HIGHWATERMARK_EXCEEDED = 2;
     public static final	int DISKQUOTA_EXCEEDED = 3;
+    public static final String PRINCIPAL_TYPE_GROUP = "group";
+    public static final String PRINCIPAL_TYPE_USER = "user";
     
     //Mobile related constants
 	public static final String USER_PROPERTY_MOBILE_WHATS_NEW_TYPE = "mobile_whats_new_type";
