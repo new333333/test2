@@ -5,9 +5,6 @@
 <hibernate-configuration>
 	<session-factory name="ssf">
 		
-		<!-- This property must be removed before release. See bug #533290 -->
-		<property name="hibernate.hbm2ddl.auto">update</property>
-		
 		<!-- Set the JNDI location of the SiteScape datasource. -->
 		<property name="connection.datasource">jdbc/SiteScapePool</property>
 		<!-- Use the SIteScape connection provider to lookup JNDI datasource
