@@ -1520,7 +1520,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 									"WHERE b.creation_principal = SS_Principals.id " + 
 									" AND SS_Principals.type = 'user' " +
 									" AND SS_Principals.zoneId = " + zoneId +
-									" AND SS_Attachments.zoneId = " + zoneId +
+									" AND b.zoneId = " + zoneId +
 									" AND b.repositoryName != \'" + ObjectKeys.FI_ADAPTER + "\'),0)";
 						session.createSQLQuery(sql).executeUpdate();
 						return null;
