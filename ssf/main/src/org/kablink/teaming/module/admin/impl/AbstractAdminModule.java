@@ -296,8 +296,13 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   		return zoneConfig.isDiskQuotaEnabled(); 		
   	}
   	public void setQuotaEnabled(boolean quotaEnabled) {
+  		boolean resetUsage = false;
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		// if quotas are currently turned off, and the setting is now true, then reset the usage statistics
+  		if (!isQuotaEnabled() && quotaEnabled) resetUsage = true;
   		zoneConfig.setDiskQuotasEnabled(quotaEnabled);
+  		if (resetUsage)
+  			getProfileDao().resetDiskUsage(RequestContextHolder.getRequestContext().getZoneId());
   	}
   	public Integer getQuotaDefault() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
