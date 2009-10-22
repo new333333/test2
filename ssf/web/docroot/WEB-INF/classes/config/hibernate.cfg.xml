@@ -70,6 +70,7 @@
 	    <mapping resource="org/kablink/teaming/domain/WorkflowHistory.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/ZoneConfig.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/ZoneInfo.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Extensions.hbm.xml"/>
 	    <!-- jbpms -->
 	    <mapping resource="org/jbpm/graph/action/Script.hbm.xml"/>
 	    <!-- hql queries and type defs -->
