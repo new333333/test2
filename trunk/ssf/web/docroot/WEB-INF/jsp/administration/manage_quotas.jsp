@@ -146,7 +146,7 @@
 	    <c:forEach var="group" items="${ss_quotasGroups}">
 	      <tr>
 	        <td valign="top" class="ss_table_data_TD">
-	          <input type="checkbox" name="change_${group.id}" />
+	          <input type="checkbox" name="changeGroup_${group.id}" />
 	        </td>
 	        <td valign="top" class="ss_table_data_TD">
 	          ${group.name}
@@ -183,7 +183,7 @@
 	    <c:forEach var="user" items="${ss_quotasUsers}">
 	      <tr>
 	        <td valign="top" class="ss_table_data_TD">
-	          <input type="checkbox" name="change_${user.id}" />
+	          <input type="checkbox" name="changeUser_${user.id}" />
 	        </td>
 	        <td valign="top" class="ss_table_data_TD">
 	          ${user.name}
@@ -198,7 +198,7 @@
 	          ${user.diskSpaceUsed}
 	        </td>
 	        <td valign="top" class="ss_table_data_TD" nowrap>
-	          <input type="text" name="newQuota_${user.id}" size="6" style="width:40px;" />
+	          <input type="text" name="newUserQuota_${user.id}" size="6" style="width:40px;" />
 	          <ssf:nlt tag="administration.quotas.mb" />
 	        </td>
 	      </tr>
