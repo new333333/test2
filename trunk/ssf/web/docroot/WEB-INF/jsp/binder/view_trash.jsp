@@ -99,7 +99,7 @@
 	var g_trashStrings = new Array();
 	g_trashStrings["trash.error.NoItemsSelected"]	= "<ssf:nlt tag='trash.error.NoItemsSelected' />";
 	g_trashStrings["trash.confirm.Purge"]			= "<ssf:nlt tag='trash.confirm.Purge'         />";
-	g_trashStrings["trash.confirm.PurgeAll"]			= "<ssf:nlt tag='trash.confirm.PurgeAll'      />";
+	g_trashStrings["trash.confirm.PurgeAll"]		= "<ssf:nlt tag='trash.confirm.PurgeAll'      />";
 </script>
 
 <div id="ss_trashDiv${ss_namespace}" align="center">
@@ -294,9 +294,9 @@
 										<ssf:param name="showTrash"      value="true"                  />
 										<ssf:param name="operation"      value="save_folder_sort_info" />
 										<ssf:param name="binderId"       value="${ssBinder.id}"        />
-										<ssf:param name="ssFolderSortBy" value="_lastActivity"         />
+										<ssf:param name="ssFolderSortBy" value="_preDeletedWhen"       />
 										<c:choose>
-											<c:when test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}">
+											<c:when test="${ ssFolderSortBy == '_preDeletedWhen' && ssFolderSortDescend == 'true'}">
 												<ssf:param name="ssFolderSortDescend" value="false"/>
 											</c:when>
 											<c:otherwise>
@@ -304,7 +304,7 @@
 											</c:otherwise>
 										</c:choose></ssf:url>"
 									<c:choose>
-										<c:when test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}">
+										<c:when test="${ ssFolderSortBy == '_preDeletedWhen' && ssFolderSortDescend == 'true'}">
 											<ssf:title tag="title.sort.by.column.asc">
 												<ssf:param name="value" value='<%= NLT.get("trash.column.LastActivity") %>' />
 											</ssf:title>
@@ -317,7 +317,7 @@
 									</c:choose>
 								>
 									<ssf:nlt tag="trash.column.LastActivity"/>
-									<c:if test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}">
+									<c:if test="${ ssFolderSortBy == '_preDeletedWhen' && ssFolderSortDescend == 'true'}">
 										<img
 											<ssf:alt tag="title.sorted.by.column.desc">
 												<ssf:param name="value" value='<%= NLT.get("trash.column.LastActivity") %>' />
@@ -325,7 +325,7 @@
 											border="0"
 											src="<html:imagesPath/>pics/menudown.gif"/>
 									</c:if>
-									<c:if test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'false'}">
+									<c:if test="${ ssFolderSortBy == '_preDeletedWhen' && ssFolderSortDescend == 'false'}">
 										<img
 											<ssf:alt tag="title.sorted.by.column.asc">
 												<ssf:param name="value" value='<%= NLT.get("trash.column.LastActivity") %>' />
@@ -344,9 +344,9 @@
 										<ssf:param name="showTrash"      value="true"                  />
 										<ssf:param name="operation"      value="save_folder_sort_info" />
 										<ssf:param name="binderId"       value="${ssBinder.id}"        />
-										<ssf:param name="ssFolderSortBy" value="_creatorTitle"         />
+										<ssf:param name="ssFolderSortBy" value="_preDeletedByTitle"    />
 										<c:choose>
-											<c:when test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
+											<c:when test="${ ssFolderSortBy == '_preDeletedByTitle' && ssFolderSortDescend == 'false'}">
 												<ssf:param name="ssFolderSortDescend" value="true"/>
 											</c:when>
 											<c:otherwise>
@@ -354,7 +354,7 @@
 											</c:otherwise>
 										</c:choose></ssf:url>"
 									<c:choose>
-										<c:when test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
+										<c:when test="${ ssFolderSortBy == '_preDeletedByTitle' && ssFolderSortDescend == 'false'}">
 											<ssf:title tag="title.sort.by.column.desc">
 												<ssf:param name="value" value='<%= NLT.get("trash.column.Author") %>' />
 											</ssf:title>
@@ -367,7 +367,7 @@
 									</c:choose>
 								>
 									<ssf:nlt tag="trash.column.Author"/>
-									<c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'true'}">
+									<c:if test="${ ssFolderSortBy == '_preDeletedByTitle' && ssFolderSortDescend == 'true'}">
 										<img
 											<ssf:alt tag="title.sorted.by.column.desc">
 												<ssf:param name="value" value='<%= NLT.get("trash.column.Author") %>' />
@@ -375,7 +375,7 @@
 											border="0"
 											src="<html:imagesPath/>pics/menudown.gif"/>
 									</c:if>
-									<c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
+									<c:if test="${ ssFolderSortBy == '_preDeletedByTitle' && ssFolderSortDescend == 'false'}">
 										<img
 											<ssf:alt tag="title.sorted.by.column.asc">
 												<ssf:param name="value" value='<%= NLT.get("trash.column.Author") %>' />
@@ -394,11 +394,11 @@
 								<a
 									href="<ssf:url action="${action}" actionUrl="true">
 										<ssf:param name="showTrash"      value="true"                  />
-										<ssf:param name="operation"      value="save_folder_sort_info"/>
-										<ssf:param name="binderId"       value="${ssBinder.id}"/>
-										<ssf:param name="ssFolderSortBy" value="_location"/>
+										<ssf:param name="operation"      value="save_folder_sort_info" />
+										<ssf:param name="binderId"       value="${ssBinder.id}"        />
+										<ssf:param name="ssFolderSortBy" value="_preDeletedFrom"       />
 										<c:choose>
-											<c:when test="${ ssFolderSortBy == '_location' && ssFolderSortDescend == 'false'}">
+											<c:when test="${ ssFolderSortBy == '_preDeletedFrom' && ssFolderSortDescend == 'false'}">
 												<ssf:param name="ssFolderSortDescend" value="true"/>
 											</c:when>
 											<c:otherwise>
@@ -406,7 +406,7 @@
 											</c:otherwise>
 										</c:choose></ssf:url>"
 									<c:choose>
-										<c:when test="${ ssFolderSortBy == '_location' && ssFolderSortDescend == 'false'}">
+										<c:when test="${ ssFolderSortBy == '_preDeletedFrom' && ssFolderSortDescend == 'false'}">
 											<ssf:title tag="title.sort.by.column.desc">
 												<ssf:param name="value" value='<%= NLT.get("trash.column.Location") %>' />
 											</ssf:title>
@@ -419,7 +419,7 @@
 									</c:choose>
 								>
 									<ssf:nlt tag="trash.column.Location"/>
-									<c:if test="${ ssFolderSortBy == '_location' && ssFolderSortDescend == 'true'}">
+									<c:if test="${ ssFolderSortBy == '_preDeletedFrom' && ssFolderSortDescend == 'true'}">
 										<img
 											<ssf:alt tag="title.sorted.by.column.desc">
 												<ssf:param name="value" value='<%= NLT.get("trash.column.Location") %>' />
@@ -427,7 +427,7 @@
 											border="0"
 											src="<html:imagesPath/>pics/menudown.gif"/>
 									</c:if>
-									<c:if test="${ ssFolderSortBy == '_location' && ssFolderSortDescend == 'false'}">
+									<c:if test="${ ssFolderSortBy == '_preDeletedFrom' && ssFolderSortDescend == 'false'}">
 										<img
 											<ssf:alt tag="title.sorted.by.column.asc">
 												<ssf:param name="value" value='<%= NLT.get("trash.column.Location") %>' />
@@ -443,37 +443,34 @@
 
 					<!-- Trash Listing:  Data Rows-->
 					<c:forEach var="entry1" items="${ssFolderEntries}">
-						<c:set var="folderLineId" value="folderLine_${entry1._docId}"/>
+						<!-- Setup preDeletedWhen -->
 						<jsp:useBean id="entry1" type="java.util.HashMap" />
-						<%  
-							if (!folderEntriesSeen.contains(entry1.get("_docId"))) {
-								folderEntriesSeen.add(entry1.get("_docId"));
-								String docType = entry1.get("_docType").toString();
-								String deletedById;
-								if ("entry".equalsIgnoreCase(docType)) {
-									deletedById = String.valueOf(((org.kablink.teaming.domain.User) entry1.get("_principal")).getId());
-								}
-								else {
-									deletedById = entry1.get("_modificationId").toString();
-								}
-								List deletedByUsers = org.kablink.teaming.util.ResolveIds.getPrincipals(deletedById, false);
-								org.kablink.teaming.domain.User deletedByUser = ((org.kablink.teaming.domain.User) deletedByUsers.get(0));
+						<c:set var="entry1_deletedWhen_raw" value="${entry1._preDeletedWhen}" />
+							<jsp:useBean id="utilDate" class="java.util.Date"/>
+							<c:set target="${utilDate}" property="time" value="${entry1_deletedWhen_raw}"/>
+							<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${utilDate}" type="both" timeStyle="short" dateStyle="short" var="entry1_deletedWhen" />
+
+						<!-- Setup preDeletedBy -->							
+						<%
+							String entry1_deletedById = entry1.get("_preDeletedById").toString();
+							List entry1_deletedByUsers = org.kablink.teaming.util.ResolveIds.getPrincipals(entry1_deletedById, false);
+							org.kablink.teaming.domain.User entry1_deletedByUser = ((org.kablink.teaming.domain.User) entry1_deletedByUsers.get(0));
 						%>
+
+						<!-- Setup preDeletedWhen -->
+						<c:set var="entry1_deletedFrom"     value="${entry1._preDeletedFrom}" />
+
+						<!-- Setup locationBinderId -->
 						<c:if test="${entry1._docType == 'entry'}">
 							<c:set var="entry1_locationBinderId" value="${entry1._binderId}"     />
-							<c:set var="entry1_deletedById"      value="${entry1._principal.id}" />
-							<c:set var="entry1_deletedDate_raw"  value="${entry1._lastActivity}" />
-							<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry1_deletedDate_raw}" type="both" timeStyle="short" dateStyle="short" var="entry1_deletedDate" />							
 						</c:if>
 						<c:if test="${entry1._docType != 'entry'}">
 							<c:set var="entry1_locationBinderId" value="${entry1._binderParentId}" />
-							<c:set var="entry1_deletedById"      value="${entry1._modificationId}" />
-							<fmt:parseDate                                   value="${entry1._modificationYearMonth}01" type="date" pattern="yyyyMMdd" var="entry1_deletedDate_raw" />
-							<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry1_deletedDate_raw}"          type="date" dateStyle="short"  var="entry1_deletedDate"     />							
 						</c:if>
 
 
 						<!-- Trash Listing Data:  Row -->
+						<c:set var="folderLineId" value="folderLine_${entry1._docId}"/>
 						<ssf:slidingTableRow
 								style="${slidingTableRowStyle}" 
 								oddStyle="${slidingTableRowOddStyle}"
@@ -553,7 +550,7 @@
 							<!-- Trash Listing Data Column:  Date -->
 							<c:if test="${!empty ssFolderColumns['date']}">
 								<ssf:slidingTableColumn  style="${slidingTableColStyle}">
-									<span>${entry1_deletedDate}</span>
+									<span>${entry1_deletedWhen}</span>
 								</ssf:slidingTableColumn>
 							</c:if>
 
@@ -561,7 +558,7 @@
 							<!-- Trash Listing Data Column:  Author -->
 							<c:if test="${!empty ssFolderColumns['author']}">
 								<ssf:slidingTableColumn  style="${slidingTableColStyle}">
-									<ssf:showUser user='<%= deletedByUser %>' /> 
+									<ssf:showUser user='<%= entry1_deletedByUser %>' /> 
 								</ssf:slidingTableColumn>
 							</c:if>
 
@@ -569,30 +566,20 @@
 							<!-- Trash Listing Data Column:  Location -->
 							<c:if test="${!empty ssFolderColumns['location']}">
 								<ssf:slidingTableColumn  style="${slidingTableColStyle}">
-									<c:set var="path" value=""/>
-						
-									<c:if test="${!empty ssFolderList}">
-										<c:forEach var="folder" items="${ssFolderList}">
-											<c:if test="${folder.id == entry1_locationBinderId}">
-												<c:set var="path" value="${folder}"/>
-												<c:if test="${entry1._docType == 'entry'}"><c:set var="title" value="${folder.title} (${folder.parentWorkArea.title})" /></c:if>
-												<c:if test="${entry1._docType != 'entry'}"><c:set var="title" value="${folder.title}"                                  /></c:if>
-											</c:if>
-										</c:forEach>
-									</c:if>
-						
-									<c:if test="${!empty path}">
+									<% if (false) { %>
+										<% /* I bagged making this a link to go to the location */ %>
+										<% /* folder because of the hassels of making sure that */ %>
+										<% /* it has not been predeleted.                       */ %>
 							    		<a href="javascript: ;"
 											onclick="return ss_gotoPermalink('${entry1_locationBinderId}', '${entry1_locationBinderId}', 'folder', '${ss_namespace}', 'yes');"
-											title="${path}"
-											><span>${title}</span></a>
-									</c:if>
+											title="${ssBinder}"
+											><span>${entry1_deletedFrom}</span></a>
+									<% } else { %>
+										<span>${entry1_deletedFrom}</span>
+									<% } %>
 								</ssf:slidingTableColumn>
 							</c:if>
 						</ssf:slidingTableRow>
-						<%
-							}
-						%>
 					</c:forEach>
 				</ssf:slidingTable>
 			</div>

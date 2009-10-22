@@ -64,7 +64,8 @@ public class Constants {
 	public static final String UID_FIELD = "_uid";
 	public static final String DOC_TYPE_FIELD = "_docType";
 	public static final String PRE_DELETED_FIELD = "_preDeleted";
-	public static final String PRE_DELETED_BY_FIELD = "_preDeletedBy";
+	public static final String PRE_DELETED_BY_ID_FIELD = "_preDeletedById";
+	public static final String PRE_DELETED_BY_TITLE_FIELD = "_preDeletedByTitle";
 	public static final String PRE_DELETED_WHEN_FIELD = "_preDeletedWhen";
 	public static final String PRE_DELETED_FROM_FIELD = "_preDeletedFrom";
 	public static final String ATTACHMENT_TYPE_FIELD = "_attType";

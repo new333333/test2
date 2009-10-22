@@ -197,9 +197,20 @@ public class EntityIndexUtils {
     	Field field = new Field(Constants.PRE_DELETED_FIELD, (preDeleted ? Constants.TRUE : Constants.FALSE), Field.Store.NO, Field.Index.TOKENIZED);
     	doc.add(field);
     	if (preDeleted) {
-        	if (null != preDeletedBy)   field = new Field(Constants.PRE_DELETED_BY_FIELD,                  preDeletedBy.getTitle(), Field.Store.YES, Field.Index.TOKENIZED); doc.add(field);
-        	if (null != preDeletedWhen) field = new Field(Constants.PRE_DELETED_WHEN_FIELD, String.valueOf(preDeletedWhen),         Field.Store.YES, Field.Index.TOKENIZED); doc.add(field);
-        	if (null != preDeletedFrom) field = new Field(Constants.PRE_DELETED_FROM_FIELD,                preDeletedFrom,          Field.Store.YES, Field.Index.TOKENIZED); doc.add(field);
+        	if (null != preDeletedBy) {
+        		field = new Field(Constants.PRE_DELETED_BY_ID_FIELD, String.valueOf(preDeletedBy.getId().intValue()), Field.Store.YES, Field.Index.TOKENIZED);
+        		doc.add(field);
+            	field = new Field(Constants.PRE_DELETED_BY_TITLE_FIELD, preDeletedBy.getTitle(), Field.Store.YES, Field.Index.TOKENIZED);
+            	doc.add(field);
+        	}
+        	if (null != preDeletedWhen) {
+        		field = new Field(Constants.PRE_DELETED_WHEN_FIELD, String.valueOf(preDeletedWhen), Field.Store.YES, Field.Index.TOKENIZED);
+        		doc.add(field);
+        	}
+        	if (null != preDeletedFrom) {
+        		field = new Field(Constants.PRE_DELETED_FROM_FIELD, preDeletedFrom, Field.Store.YES, Field.Index.TOKENIZED);
+        		doc.add(field);
+        	}
     	}
     }
     

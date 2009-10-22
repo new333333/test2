@@ -376,42 +376,13 @@ public class TrashHelper {
 			crit.addOrder(new Order(sortBy, sortDescend));
 		}
 		
-		// ...and issue the query.
-		Map trashEntries = bm.executeSearchQuery(
-			crit,
-			getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
-			getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
-			true);	// true -> Search deleted entries.
-
-
-		// If we have a model that we're passing date to...
-		if (null != model) {
-			// ...add information about the trash entries binder's...
-			List<Long> binderIds = new ArrayList<Long>();
-	    	List items = (List) trashEntries.get(ObjectKeys.SEARCH_ENTRIES);
-	    	if (items != null) {
-		    	Iterator it = items.iterator();
-		    	while (it.hasNext()) {
-		    		Map entry = (Map)it.next();
-		    		String docType = ((String) entry.get(Constants.DOC_TYPE_FIELD));
-		    		String binderIdAttr;
-		    		if (Constants.DOC_TYPE_ENTRY.equals(docType)) {
-		    			binderIdAttr = Constants.BINDER_ID_FIELD;
-		    		}
-		    		else {
-		    			binderIdAttr = Constants.BINDERS_PARENT_ID_FIELD;
-		    		}
-		    		String entryBinderId = ((String) entry.get(binderIdAttr));
-		    		if ((null != entryBinderId) && (0 < entryBinderId.length())) {
-		    			binderIds.add(Long.valueOf(entryBinderId));
-		    		}
-		    	}
-	    	}
-			model.put(WebKeys.FOLDER_LIST, bm.getBinders(binderIds));
-		}
-
-		// ...and return the trash entries themselves.
-		return trashEntries;
+		// ...and issue the query and return the entries.
+		return
+			bm.executeSearchQuery(
+				crit,
+				getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
+				getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
+				true);	// true -> Search deleted entries.
 	}
 
 	/*
