@@ -132,11 +132,81 @@
 
 	<br/>
 	
+	<c:if test="${!empty ss_quotasGroups}">
 	<fieldset class="ss_fieldset">
-	  <legend class="ss_legend"><ssf:nlt tag="administration.quotas.currentSettings" /></legend>
+	  <legend class="ss_legend"><ssf:nlt tag="administration.quotas.currentSettingsGroup" /></legend>
+	  <table class="ss_table_data" width="100%">
+	    <tr>
+	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.quotaChange"/></th>
+	      <th class="ss_table_data_TD"><ssf:nlt tag="profile.element.name"/></th>
+	      <th class="ss_table_data_TD"><ssf:nlt tag="profile.element.title"/></th>
+	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.quota"/></th>
+	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.newQuota"/></th>
+	    </tr>
+	    <c:forEach var="group" items="${ss_quotasGroups}">
+	      <tr>
+	        <td valign="top" class="ss_table_data_TD">
+	          <input type="checkbox" name="change_${group.id}" />
+	        </td>
+	        <td valign="top" class="ss_table_data_TD">
+	          ${group.name}
+	        </td>
+	        <td valign="top" class="ss_table_data_TD">
+	          ${group.title}
+	        </td>
+	        <td valign="top" class="ss_table_data_TD">
+	          ${group.diskQuota}
+	        </td>
+	        <td valign="top" class="ss_table_data_TD" nowrap>
+	          <input type="text" name="newGroupQuota_${group.id}" size="6" style="width:40px;" />
+	          <ssf:nlt tag="administration.quotas.mb" />
+	        </td>
+	      </tr>
+	    </c:forEach>
+	  </table>
 	</fieldset>
-	
 	<br/>
+	</c:if>
+	
+	<c:if test="${!empty ss_quotasUsers}">
+	<fieldset class="ss_fieldset">
+	  <legend class="ss_legend"><ssf:nlt tag="administration.quotas.currentSettingsUser" /></legend>
+	  <table class="ss_table_data" width="100%">
+	    <tr>
+	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.quotaChange"/></th>
+	      <th class="ss_table_data_TD"><ssf:nlt tag="profile.element.name"/></th>
+	      <th class="ss_table_data_TD"><ssf:nlt tag="profile.element.title"/></th>
+	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.quota"/></th>
+	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.diskSpaceUsed"/></th>
+	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.newQuota"/></th>
+	    </tr>
+	    <c:forEach var="user" items="${ss_quotasUsers}">
+	      <tr>
+	        <td valign="top" class="ss_table_data_TD">
+	          <input type="checkbox" name="change_${user.id}" />
+	        </td>
+	        <td valign="top" class="ss_table_data_TD">
+	          ${user.name}
+	        </td>
+	        <td valign="top" class="ss_table_data_TD">
+	          ${user.title}
+	        </td>
+	        <td valign="top" class="ss_table_data_TD">
+	          ${user.diskQuota}
+	        </td>
+	        <td valign="top" class="ss_table_data_TD">
+	          ${user.diskSpaceUsed}
+	        </td>
+	        <td valign="top" class="ss_table_data_TD" nowrap>
+	          <input type="text" name="newQuota_${user.id}" size="6" style="width:40px;" />
+	          <ssf:nlt tag="administration.quotas.mb" />
+	        </td>
+	      </tr>
+	    </c:forEach>
+	  </table>
+	</fieldset>
+	<br/>
+	</c:if>
 	
 	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
 	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
