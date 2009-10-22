@@ -40,7 +40,7 @@ import org.kablink.teaming.exception.UncheckedCodedException;
 
 public class LockedByAnotherUserException extends UncheckedCodedException {
 	
-	private static final String AlreadyLockedByAnotherUserException_ErrorCode = "errorcode.already.locked.by.another.user";
+	private static final String AlreadyLockedByAnotherUserException_ErrorCode = "file.error.locked.by.another.user";
 
 	private DefinableEntity entity;
 	private FileAttachment fa;

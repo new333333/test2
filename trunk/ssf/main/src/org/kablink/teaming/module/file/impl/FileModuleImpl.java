@@ -1336,7 +1336,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    		}
     		}
     		catch(Exception e) {
-    			logger.error("Error storing primary file " + relativeFilePath, e);
+    			logger.error("Error storing primary file " + relativeFilePath + ": " + e.toString());
     			// We failed to write the primary file. In this case, we 
     			// discard the rest of the operation (i.e., step2 thru 4).
     			errors.addProblem(new FilesErrors.Problem
