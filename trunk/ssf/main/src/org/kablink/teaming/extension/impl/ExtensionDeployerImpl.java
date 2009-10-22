@@ -56,6 +56,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
+import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.io.SAXReader;
 import org.dom4j.tree.AbstractAttribute;
@@ -66,17 +67,22 @@ import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.OrderBy;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.ExtensionInfo;
+import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.extension.ExtensionDeployer;
 import org.kablink.teaming.extension.ZoneClassManager;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.util.DirPath;
 import org.kablink.teaming.util.FileHelper;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.ZipEntryStream;
@@ -97,7 +103,8 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 	private String infPrefix = "WEB-INF";
 	private final static String TSFILE="timestamps"; 
 	private final static String LOCKFILE="lockfile";
-	private final static String PICKUP="pickup"; 
+	private final static String PICKUP="pickup";
+	private final static String REMOVAL="removal";
 
 	private TemplateModule templateModule;
 	private DefinitionModule definitionModule;
@@ -165,29 +172,37 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 			logger.info("Could not get the deploy lock");
 			return;  //try again later
 		}
-		//web-inf
+		
+		//Check for the local web-inf extensions dir
 		String localExtensionDir = DirPath.getExtensionBasePath() + File.separator + Utils.getZoneKey();
 		File localDir = new File(localExtensionDir);
 		if (!localDir.exists()) localDir.mkdirs();
 		try {
-		
+			//Get a handle to or create shared Time Stamp File.. 
 			File sharedTimeFile = new File(sharedDir, TSFILE);
 			if (!sharedTimeFile.exists()) sharedTimeFile.createNewFile();
 			Properties shared = toProperties(sharedExtensionDir + File.separator + TSFILE);
-			
+			//Get a handle to or create local time stamp file - this is under the WEB-INF extensions dir
 			File localTimeFile = new File(localDir, TSFILE);
 			Properties local = toProperties(localExtensionDir + File.separator + TSFILE);
+			//Get a list of files that are of type zip - under the shared dir
 			File[] extensions = sharedDir.listFiles(new FileOnlyFilter());
+			//If there are files to deploy
 			if (extensions != null && extensions.length > 0) {
+				//get the current date
 				String deployedDate = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.ENGLISH).format(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTime());
-
+				//try and deploy each extension
 				for (int i=0; i<extensions.length; ++i) {
+					//Get a handle or create the pickup dir exists
 					File successDir = new File(sharedDir, PICKUP);
 					if (!successDir.exists()) successDir.mkdirs();
 					File extension = extensions[i];
 					try {
-						deploy(extension, true);
+						//deploy the extension
+						deploy(extension, true, deployedDate);
+						//now move the extension to the pickup directory
 						FileHelper.move(extension, new File(successDir, extension.getName()));
+						//update the TSProperties of the shared and local properties with the deployed date
 						shared.put(extension.getName(), deployedDate);
 						local.put(extension.getName(), deployedDate);
 					} catch (IOException e) {
@@ -198,12 +213,14 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 						FileHelper.move(extension, new File(failedDir, extension.getName()));	
 					}
 				}
-				//update shared file on disk
+				//update shared TS file on disk
 				shared.store(new FileOutputStream(sharedExtensionDir + File.separator + TSFILE), null);				
-			} 
+			}
+			//This code is more for clustered servers,  an extension will already be in the pickup dir
+			//However, the localTimeFile will not exist
+			//Also, the second part of the or handles the case where there is an updated version deployed in the cluster
 			if (!localTimeFile.exists() || sharedTimeFile.lastModified() > localTimeFile.lastModified()) {
 				//now see if another node in the cluster did initial deploy -> time to do local deploy
-				//Don't know how the disks are shared
 				for (Iterator iter=shared.keySet().iterator(); iter.hasNext();) {
 					String key = (String)iter.next();
 					//check local date
@@ -211,12 +228,38 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 					if (Validator.isNull(date) || !date.equals(shared.getProperty(key))) {
 						//	deploy locally
 						try {
-							deploy(new File(sharedExtensionDir + File.separator + PICKUP + File.separator + key), false);
+							deploy(new File(sharedExtensionDir + File.separator + PICKUP + File.separator + key), false, shared.getProperty(key));
 						} catch (IOException e) {
 							logger.error("Unable to deploy extension  " + key, e);
 						}
 					}
 				}
+				
+				//check in removal dir
+				File removalDir = new File(sharedDir, REMOVAL);
+				if(removalDir.exists()) {
+					File[] removedExtensions = removalDir.listFiles(new FileOnlyFilter());
+					//If there are files to deploy
+					if (removedExtensions != null && removedExtensions.length > 0) {
+						for (int i=0; i<removedExtensions.length; ++i) {
+							
+							File extension = removedExtensions[i];
+							//Get the name and see if it is in the local TS, if it is then remove it
+							
+//							try {
+								remove(extension);
+//							} catch (IOException e) {
+//								logger.error("Unable to open extension " + extension.getPath(),
+//									e);
+//								File failedDir = new File(sharedDir, "failed");
+//								if (!failedDir.exists()) failedDir.mkdirs();
+//								FileHelper.move(extension, new File(failedDir, extension.getName()));	
+//							}
+						}
+					}
+
+				}
+
 				//the date isn't copied, but all that matters is that sharedTime is less than it.  
 				//No other updates to sharedTime can happen until after this new localTime.
 				
@@ -229,16 +272,21 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 			lock.releaseLock();
 		}		
 	}
-	public void deploy(File extension, boolean full) throws IOException {
+	public void deploy(File extension, boolean full, String deployedDate) throws IOException {
 		String zoneKey = Utils.getZoneKey();
 		logger.info("Deploying new extension from " + extension.getPath());
 		SAXReader reader = new SAXReader(false);
 		reader.setIncludeExternalDTDDeclarations(false);
+		
+		//Get the extension name
 		final String extensionPrefix = extension.getName().substring(0, extension.getName().lastIndexOf("."));
+		//Extension dir under WEB-INF
 		File extensionDir = new File(DirPath.getExtensionBasePath() + File.separator + zoneKey + File.separator + extensionPrefix);
 		extensionDir.mkdirs();
+		//Extension dir under webapp
 		File extensionWebDir = new File(DirPath.getExtensionWebPath() + File.separator + zoneKey +  File.separator + extensionPrefix);
 		extensionWebDir.mkdirs();
+		//zipFile - file under shared directory
 		ZipInputStream zipIn = new ZipInputStream(new FileInputStream(extension));
 		ZipEntry entry = null;
 		try {
@@ -267,7 +315,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 				zipIn.closeEntry();
 			}
 		} finally {
-			zipIn.close();
+			zipIn.close();List foundList = findExtensions(extension.getName(), RequestContextHolder.getRequestContext().getZoneId());
 		}
 		if (full) {
 			//load definitions
@@ -332,26 +380,25 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		getZoneClassManager().addExtensionLibs(extensionDir);
 		
 		//Add the extension info to database
-//		ExtensionInfo extInfo = new ExtensionInfo();
-//		extInfo.setName(extension.getName());
-//		extInfo.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
-//		
-//		List extList = findExtensions(RequestContextHolder.getRequestContext().getZoneId());
-//		if (extList.contains(extInfo)) {
-//			//Extension already exists, then lets update existing extension
-//			List foundList = findExtensions(extension.getName(), RequestContextHolder.getRequestContext().getZoneId());
-//			if(foundList.size() > 0)
-//			{
-//				ExtensionInfo foundExtInfo = (ExtensionInfo) foundList.get(0);
-//				//TODO update the found object
-//
-//				
-//				updateExtension(foundExtInfo);
-//
-//			}
-//		} else {
-//			addExtension(extInfo);
-//		}
+		ExtensionInfo extInfo = new ExtensionInfo();
+		extInfo.setName(extensionPrefix);
+		extInfo.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
+		
+		List extList = findExtensions(RequestContextHolder.getRequestContext().getZoneId());
+		if (extList.contains(extInfo)) {
+			//Extension already exists, then lets update existing extension
+			List foundList = findExtensions(extension.getName(), RequestContextHolder.getRequestContext().getZoneId());
+			if(foundList.size() > 0)
+			{
+				ExtensionInfo foundExtInfo = (ExtensionInfo) foundList.get(0);
+				foundExtInfo.setDateDeployed(deployedDate);
+				logger.info("Extension found: updated extension " + foundExtInfo.getName());
+				updateExtension(foundExtInfo);
+			}
+		} else {
+			extInfo.setDateDeployed(deployedDate);
+			addExtension(extInfo);
+		}
 		
 		logger.info("Extension deployed successfully from " + extension.getPath());
 	}
@@ -396,29 +443,262 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		}
 	}
 	
-
+	//1. Done - Remove Definitions, Templates, 
+	//2. Cannot Remove from ClassLoader - may require a restart
+	//3. Done - Remove Dirs
+	//3. Done - Remove keys from TS properties 
+	
 	public void remove(File extension) {
-		// TODO Auto-generated method stub
 		
+		logger.info("Begin remove extension " + extension.getPath());
+
+		String zoneKey = Utils.getZoneKey();
+		
+		//Get the extension name
+		final String extensionPrefix = extension.getName().substring(0, extension.getName().lastIndexOf("."));
+		//Extension dir under WEB-INF
+		File extensionDir = new File(DirPath.getExtensionBasePath() + File.separator + zoneKey + File.separator + extensionPrefix);
+	
+		boolean removedTemplates = removeTemplates(extensionDir);
+		boolean removedDefinitions = removeDefinitions(extensionDir);
+		if( removedDefinitions && removedTemplates && extensionDir.exists() ) {
+			extensionDir.delete();
+		}
+		
+		//Extension dir under webapp
+		File extensionWebDir = new File(DirPath.getExtensionWebPath() + File.separator + zoneKey +  File.separator + extensionPrefix);
+		if( removedDefinitions && removedTemplates && extensionWebDir.exists() ) {
+			extensionWebDir.delete();
+		}
 	}
 
+	
+	private boolean removeDefinitions(File extensionDir){
+		
+		boolean removedDefinitions = true;
+		
+		//load definitions
+		File defDir = new File(extensionDir.getAbsolutePath() + File.separator + "classes" + 
+				File.separator + "config" +  File.separator + "definitions");
+		File definitions[] = defDir.listFiles(new XMLFilter());
+		if (definitions != null) {
+			List<String> defs = new ArrayList();
+			for (int i=0; i<definitions.length; ++i) {
+				File definition = definitions[i];
+				if (logger.isDebugEnabled()) logger.debug("Registering definition from " +
+							definition.getPath());
+					
+				try {
+					SAXReader xIn = new SAXReader(false);
+					
+					final Document document = xIn.read(definition);
+					
+					// Get the extension name
+					final String extensionPrefix = extensionDir.getName();
+							
+						// record the "owning" extension
+					document.getRootElement().add(new AbstractAttribute() {
+							private static final long serialVersionUID = -7880537136055718310L;
+							public QName getQName() {
+								return new QName(ObjectKeys.XTAG_ATTRIBUTE_EXTENSION, document
+										.getRootElement().getNamespace());
+							}
+							public String getValue() {
+								return extensionPrefix;
+							}
+						});
+					
+			    	Element root = document.getRootElement();
+					String name = null;
+					String title = null;
+					
+					if (Validator.isNull(name)) name = root.attributeValue("name");
+					if (Validator.isNull(name)) name = DefinitionUtils.getPropertyValue(root, "name");
+					if (Validator.isNull(title)) title = root.attributeValue("caption");
+					if (Validator.isNull(title)) title = DefinitionUtils.getPropertyValue(root, "caption");
+					if (Validator.isNull(name)) {
+						name=title;
+					}
+
+					Definition def = getDefinitionModule().getDefinitionByName(null, true, name);
+					logger.info("Removing definition: " + def.getName());
+					getDefinitionModule().deleteDefinition(def.getId());
+					
+					// attempt to add
+					//defs.add(getDefinitionModule().addDefinition(document, null, true).getId());
+				} catch (DocumentException e) {
+					removedDefinitions = false;
+					logger.warn("Malformed definition file " 	+ extensionDir.getPath(), e);
+				} catch (Exception e) {
+					removedDefinitions = false;
+					logger.warn("Error removing definition " 	+ extensionDir.getPath(), e);
+				}
+			}
+			
+		}
+		
+		return removedDefinitions;
+	}
+	
+	private boolean removeTemplates(File extensionDir){
+		boolean removedTemplates = true;
+		
+		//Now load templates
+		File templateDir = new File(extensionDir.getAbsolutePath() + File.separator + "classes" + 
+				File.separator + "config" + File.separator + "templates");
+		File templates[] = templateDir.listFiles(new XMLFilter());
+		if (templates != null) {
+			for (int i=0; i<templates.length; ++i) {
+				File template = templates[i];
+				if (logger.isDebugEnabled()) 
+					logger.debug("Registering template from " + template.getPath());
+					
+				try {
+					SAXReader xIn = new SAXReader(false);
+					final Document document = xIn.read(template);
+					
+					 Element config = document.getRootElement();
+					 //check name
+					 String name = (String)XmlUtils.getCustomAttribute(config, ObjectKeys.XTAG_BINDER_NAME);
+					 logger.info("Removing template: " + name);
+					 if (Validator.isNull(name)) {
+						 name = (String)XmlUtils.getCustomAttribute(config, ObjectKeys.XTAG_TEMPLATE_TITLE);
+						 if (Validator.isNull(name)) {
+							 throw new IllegalArgumentException(NLT.get("general.required.name"));
+						 }
+					 }
+					 String internalId = config.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID);
+					 if (Validator.isNull(internalId)) {
+						 TemplateBinder templateBinder = getTemplateModule().getTemplateByName(name);
+						 templateBinder.setDeleted(true);
+					 } 
+				} catch (DocumentException e) {
+					removedTemplates = false;
+					logger.warn("Malformed template file " + extensionDir.getPath(), e);
+				} catch (Exception e) {
+					removedTemplates = false;
+					logger.warn("Error removing definition " 	+ extensionDir.getPath(), e);
+				}
+			}
+		}
+		
+		return removedTemplates;
+	}
+	
+	//1. Move Extension to removal dir
 	public boolean removeExtension(ExtensionInfo ext) {
 		
-		// TODO call remove
-		deleteExtension(ext);
+		logger.info("Removing Extension from the filesystem");
 		
-		return false;
+		String sharedExtensionDir = SPropsUtil.getDirPath("data.extension.root.dir") + "extensions" + File.separator + Utils.getZoneKey() ;
+		File sharedDir = new File(sharedExtensionDir);		
+		//if the shareDir does exist, we cann't remove the extension
+		if (!sharedDir.exists()) return false;
+		
+		//this file controls access to the shared extensions directory which is checked by all cluster members
+		// and the local extensions web-inf directory.  In other words, the web-inf directory is only updated when this lock is held
+		LockFile lock = new LockFile(new File(sharedDir, LOCKFILE));
+		if (!lock.getLock()) {
+			logger.info("Could not get the deploy lock");
+			return false;  //try again later
+		}
+
+		//Check for the local web-inf extensions dir
+		String localExtensionDir = DirPath.getExtensionBasePath() + File.separator + Utils.getZoneKey();
+		File localDir = new File(localExtensionDir);
+		if( !localDir.exists() ) {
+			logger.error("Could not find the local Extension dir " + localDir.getPath());
+			return false;
+		}
+		try {
+			// Get a handle to or create shared Time Stamp File..
+			File sharedTimeFile = new File(sharedDir, TSFILE);
+			if (!sharedTimeFile.exists())
+				sharedTimeFile.createNewFile();
+			Properties shared = toProperties(sharedExtensionDir
+					+ File.separator + TSFILE);
+
+			//Get a handle to or create local time stamp file - this is under the WEB-INF extensions dir
+			File localTimeFile = new File(localDir, TSFILE);
+			Properties local = toProperties(localExtensionDir + File.separator + TSFILE);
+			
+			String extensionName = ext.getName();
+
+			// Get a handle or create the pickup dir exists
+			File removalDir = new File(sharedDir, REMOVAL);
+			if (!removalDir.exists())
+				removalDir.mkdirs();
+
+			File pickUpDir = new File(sharedDir, PICKUP);
+			if (pickUpDir.exists()) {
+
+				// get the file list
+				// Get a list of files that are of type zip - under the shared
+				// dir
+				File[] extensions = pickUpDir.listFiles(new FileOnlyFilter());
+				// If there are files to deploy
+				if (extensions != null && extensions.length > 0) {
+					for (int i = 0; i < extensions.length; ++i) {
+						File extension = extensions[i];
+						// Get the extension name
+						final String extensionPrefix = extension.getName()
+								.substring(0,
+										extension.getName().lastIndexOf("."));
+						if (extensionPrefix.equals(extensionName)) {
+							// now move the extension to the pickup directory
+							FileHelper.move(extension, new File(removalDir,
+									extension.getName()));
+							
+							//remove the WEB-INF and files under webapp
+							remove(extension);
+
+							// update the TSProperties of the shared and local
+							// properties with the deployed date
+							logger.info("Remove the extension key from the shared timestamp file.");
+							shared.remove(extension.getName());
+							
+							// remove the extenison from the pickup directory
+							logger.info("Remove the extension from the pickup directory");
+							extension.delete();
+							
+							break;
+						}
+					}
+				}
+
+				//update shared TS file on disk
+				shared.store(new FileOutputStream(sharedExtensionDir + File.separator + TSFILE), null);		
+
+				//the date isn't copied, but all that matters is that sharedTime is less than it.  
+				//No other updates to sharedTime can happen until after this new localTime.
+				
+				FileCopyUtils.copy(sharedTimeFile, localTimeFile);	
+			}
+
+			deleteExtension(ext);
+
+		} catch (Exception ex) {
+			logger.error("Error in deployer", ex);
+		}
+		finally {
+			lock.releaseLock();
+		}		
+		
+		return true;
 	}
 	
 	public void addExtension(ExtensionInfo extension) {
 		getAdminModule().addExtension(extension);
 	}
 
+	/**
+	 * Remove the extensionInfo object from the database.
+	 * 
+	 */
 	public boolean deleteExtension(ExtensionInfo extension) {
 		
 		boolean retValue = true;
-		
-		//TODO remove extension
+
 		getAdminModule().deleteExtension(extension.getId());
 		return retValue;
 	}

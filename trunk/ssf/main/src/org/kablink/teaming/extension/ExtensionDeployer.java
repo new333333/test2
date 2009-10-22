@@ -55,7 +55,7 @@ public interface ExtensionDeployer {
 	 * @param extension - the extension to be deployed
 	 * @param full - deploy into database and disk or just disk
 	 */
-	public void deploy(File extension, boolean full) throws IOException;
+	public void deploy(File extension, boolean full, String deployedDate) throws IOException;
 	
 	public void remove(File extension);
 	
