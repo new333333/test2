@@ -218,13 +218,12 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	
 	public void addExtension(ExtensionInfo extension) {
 		checkAccess(AdminOperation.manageExtensions);
-		
 		coreDao.save(extension);
 	}
 	public void modifyExtension(ExtensionInfo extension) {
 		checkAccess(AdminOperation.manageExtensions);
 		
-		coreDao.save(extension);
+		coreDao.update(extension);
 	}
 	/**
    	 * Use operation so we can keep the logic out of application
