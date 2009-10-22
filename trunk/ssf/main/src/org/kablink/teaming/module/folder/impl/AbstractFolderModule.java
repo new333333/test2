@@ -676,7 +676,9 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         Folder folder = loadFolder(folderId);
         if ((null != entry) && (null != folder) && (!(folder.isMirrored()))) {
         	checkAccess(entry, FolderOperation.restoreEntry);
-        	entry.setPreDeleted(Boolean.FALSE);
+        	entry.setPreDeleted(null);
+        	entry.setPreDeletedWhen(null);
+        	entry.setPreDeletedBy(null);
         	if (reindex) {
         		loadProcessor(entry.getParentFolder()).indexEntry(entry);
         	}
@@ -684,23 +686,27 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     }
     
     //inside write transaction    
-    public void preDeleteEntry(Long parentFolderId, Long entryId) {
-    	preDeleteEntry(parentFolderId, entryId, true);
+    public void preDeleteEntry(Long parentFolderId, Long entryId, Long userId) {
+    	preDeleteEntry(parentFolderId, entryId, userId, true);
     }
-    public void preDeleteEntry(Long parentFolderId, Long entryId, boolean reindex) {
-    	preDeleteEntry(parentFolderId, entryId, true, null, reindex);
+    public void preDeleteEntry(Long parentFolderId, Long entryId, Long userId, boolean reindex) {
+    	preDeleteEntry(parentFolderId, entryId, userId, true, null, reindex);
     }
     //inside write transaction    
-    public void preDeleteEntry(Long folderId, Long entryId, boolean deleteMirroredSource, Map options) {
-    	preDeleteEntry(folderId, entryId, deleteMirroredSource, options, true);
+    public void preDeleteEntry(Long folderId, Long entryId, Long userId, boolean deleteMirroredSource, Map options) {
+    	preDeleteEntry(folderId, entryId, userId, deleteMirroredSource, options, true);
     }
-    public void preDeleteEntry(Long folderId, Long entryId, boolean deleteMirroredSource, Map options, boolean reindex) {
+    public void preDeleteEntry(Long folderId, Long entryId, Long userId, boolean deleteMirroredSource, Map options, boolean reindex) {
     	deCount.incrementAndGet();
         FolderEntry entry = loadEntry(folderId, entryId);
         Folder folder = loadFolder(folderId);
         if ((null != entry) && (null != folder) && (!(folder.isMirrored()))) {
         	checkAccess(entry, FolderOperation.preDeleteEntry);
+        	
         	entry.setPreDeleted(Boolean.TRUE);
+        	entry.setPreDeletedWhen(System.currentTimeMillis());
+        	entry.setPreDeletedBy(userId);
+        	
         	if (reindex) {
         		loadProcessor(entry.getParentFolder()).indexEntry(entry);
         	}

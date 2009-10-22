@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -55,6 +56,9 @@ import org.kablink.util.Validator;
 public class Workspace extends Binder  {
 	protected String searchTitle; //set by hibernate acccess=field
 	protected Boolean preDeleted;
+	protected Long preDeletedWhen;
+	protected Long preDeletedBy;
+	
     public Workspace() {
     }
     public Workspace(Workspace workspace) {
@@ -151,4 +155,26 @@ public class Workspace extends Binder  {
     public void setPreDeleted(Boolean preDeleted) {
     	this.preDeleted = preDeleted;
     }
+    
+	/**
+	 * @hibernate.property 
+	 * @return
+	 */
+	public Long getPreDeletedWhen() {
+		return preDeletedWhen;
+	}
+	public void setPreDeletedWhen(Long preDeletedWhen) {
+		this.preDeletedWhen = preDeletedWhen;
+	}
+	
+	/**
+     * @hibernate.property
+	 * @return
+     */
+	public Long getPreDeletedBy() {
+		return preDeletedBy;
+	}
+	public void setPreDeletedBy(Long preDeletedBy) {
+		this.preDeletedBy = preDeletedBy;
+	}
 }

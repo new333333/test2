@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,6 +48,8 @@ public class Folder extends Binder {
     protected Folder topFolder;
     protected int nextEntryNumber=1;
 	protected Boolean preDeleted;
+    protected Long preDeletedWhen;
+    protected Long preDeletedBy;
     
     //We don't maintain a list of entries because it is to big and expensive to 
     //maintain.
@@ -226,4 +229,26 @@ public class Folder extends Binder {
     public void setPreDeleted(Boolean preDeleted) {
     	this.preDeleted = preDeleted;
     }
+    
+	/**
+	 * @hibernate.property 
+	 * @return
+	 */
+	public Long getPreDeletedWhen() {
+		return preDeletedWhen;
+	}
+	public void setPreDeletedWhen(Long preDeletedWhen) {
+		this.preDeletedWhen = preDeletedWhen;
+	}
+	
+	/**
+     * @hibernate.property
+	 * @return
+     */
+	public Long getPreDeletedBy() {
+		return preDeletedBy;
+	}
+	public void setPreDeletedBy(Long preDeletedBy) {
+		this.preDeletedBy = preDeletedBy;
+	}
 }
