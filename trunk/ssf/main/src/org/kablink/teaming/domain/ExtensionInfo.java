@@ -47,6 +47,7 @@ public class ExtensionInfo extends PersistentObject  {
 	private String authorEmail;
 	private String authorSite;
 	private String dateCreated;
+	private String dateDeployed;
 
 	public ExtensionInfo() {
 		
@@ -158,5 +159,26 @@ public class ExtensionInfo extends PersistentObject  {
     public void setZoneId(Long zoneId) {
     	this.zoneId = zoneId;
     }
+    
+    public void setDateDeployed(String dateDeployed) {
+		this.dateDeployed = dateDeployed;
+	}
 
+	public String getDateDeployed() {
+		return dateDeployed;
+	}
+
+    public boolean equals(Object obj) {
+    	if (obj == null) return false;
+		if (obj == this) return true;
+    	if(obj instanceof ExtensionInfo){
+    		ExtensionInfo info = ((ExtensionInfo)obj);
+    		if(info.getName().equals(name))
+    	    	return true;
+    	}
+    	
+    	return false;
+    }
+
+	
 }
