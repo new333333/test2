@@ -33,9 +33,11 @@
 package org.kablink.teaming.portlet.administration;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -44,6 +46,7 @@ import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -81,6 +84,12 @@ public class ManageQuotasController extends SAbstractController {
 			if (!userIds.isEmpty() && userQuota != null) {
 				getProfileModule().setUserDiskQuotas(userIds, userQuota);
 			}
+			//Check for individual group and user changes
+			Iterator itFormData = formData.keySet().iterator();
+			while (itFormData.hasNext()) {
+				String key = (String)itFormData.next();
+				
+			}
 
 		} else {
 			response.setRenderParameters(formData);
@@ -89,6 +98,7 @@ public class ManageQuotasController extends SAbstractController {
 
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		Map model = new HashMap();
 		Map formData = request.getParameterMap();
 
@@ -98,7 +108,10 @@ public class ManageQuotasController extends SAbstractController {
 
 		List users = getProfileModule().getNonDefaultQuotas(ObjectKeys.PRINCIPAL_TYPE_USER);
 		List groups = getProfileModule().getNonDefaultQuotas(ObjectKeys.PRINCIPAL_TYPE_GROUP);
-		model.put(WebKeys.QUOTAS_USERS, users);
+		users.add(user.getId());
+		
+		SortedSet<Principal> principals = getProfileModule().getPrincipals(users);
+		model.put(WebKeys.QUOTAS_USERS, principals);
 		model.put(WebKeys.QUOTAS_GROUPS, groups);
 
 		model.put(WebKeys.QUOTAS_DEFAULT, getAdminModule().getQuotaDefault());
