@@ -32,7 +32,9 @@
  */
 package org.kablink.teaming.portlet.administration;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -74,21 +76,49 @@ public class ManageQuotasController extends SAbstractController {
 			getAdminModule().setQuotaDefault(defaultQuota);
 			getAdminModule().setQuotaHighWaterMark(highWaterMark);
 			
-			Set groupIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addGroups"));
-			Set userIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addUsers"));
-			Long userQuota = PortletRequestUtils.getLongParameter(request, "addUserQuota");
-			Long groupQuota = PortletRequestUtils.getLongParameter(request, "addGroupQuota");
-			if (!groupIds.isEmpty() && groupQuota != null) {
-				getProfileModule().setUserDiskQuotas(groupIds, groupQuota);
+			Set<Long> groupIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addGroups"));
+			Set<Long> userIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addUsers"));
+			String s_userQuota = PortletRequestUtils.getStringParameter(request, "addUserQuota", "");
+			if (!s_userQuota.equals("")) {
+				Long userQuota = Long.valueOf(s_userQuota);
+				if (!userIds.isEmpty() && userQuota != null) {
+					getProfileModule().setUserDiskQuotas(userIds, userQuota);
+				}
 			}
-			if (!userIds.isEmpty() && userQuota != null) {
-				getProfileModule().setUserDiskQuotas(userIds, userQuota);
+			String s_groupQuota = PortletRequestUtils.getStringParameter(request, "addGroupQuota", "");
+			if (!s_groupQuota.equals("")) {
+				Long groupQuota = Long.valueOf(s_groupQuota);
+				if (!groupIds.isEmpty() && groupQuota != null) {
+					getProfileModule().setUserDiskQuotas(groupIds, groupQuota);
+				}
 			}
 			//Check for individual group and user changes
+			userIds = new HashSet<Long>();
+			groupIds = new HashSet<Long>();
+			Map<String, Long> quotaValues = new HashMap<String, Long>();
 			Iterator itFormData = formData.keySet().iterator();
 			while (itFormData.hasNext()) {
 				String key = (String)itFormData.next();
-				
+				if (key.indexOf("changeUser_") == 0) {
+					String userId = key.substring(11, key.length());
+					userIds.add(Long.valueOf(userId));
+					quotaValues.put(userId, PortletRequestUtils.getLongParameter(request, "newUserQuota_"+userId));
+				}
+				if (key.indexOf("changeGroup_") == 0) {
+					String groupId = key.substring(12, key.length());
+					groupIds.add(Long.valueOf(groupId));
+					quotaValues.put(groupId, PortletRequestUtils.getLongParameter(request, "newGroupQuota_"+groupId));
+				}
+			}
+			for (Long id : groupIds) {
+				List ids = new ArrayList();
+				ids.add(id);
+				getProfileModule().setUserDiskQuotas(ids, quotaValues.get(id.toString()));
+			}
+			for (Long id : userIds) {
+				List ids = new ArrayList();
+				ids.add(id);
+				getProfileModule().setUserDiskQuotas(ids, quotaValues.get(id.toString()));
 			}
 
 		} else {
@@ -108,7 +138,6 @@ public class ManageQuotasController extends SAbstractController {
 
 		List users = getProfileModule().getNonDefaultQuotas(ObjectKeys.PRINCIPAL_TYPE_USER);
 		List groups = getProfileModule().getNonDefaultQuotas(ObjectKeys.PRINCIPAL_TYPE_GROUP);
-		users.add(user.getId());
 		
 		SortedSet<Principal> principals = getProfileModule().getPrincipals(users);
 		model.put(WebKeys.QUOTAS_USERS, principals);
