@@ -76,7 +76,6 @@
 				operation="mobile_add_entry" 
 				actionUrl="true" />" 
 			method="post">
-	  		<label for="url"><span style="display:none;"><ssf:nlt tag="label.selectOption"/></span></label>
 	  		<select name="url" id="url" size="1">
 	    	  <c:if test="${fn:length(ss_mobileBinderDefUrlList) == 1}">
 		  	    <c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
