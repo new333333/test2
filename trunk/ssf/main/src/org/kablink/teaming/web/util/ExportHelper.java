@@ -337,8 +337,9 @@ public class ExportHelper {
 			}
 			statusTicket.setStatus(NLT.get("administration.export_import.exporting", new String[] {binder.getPathName()}));
 			if (EntityType.workspace.equals(binder.getEntityType())) {
+				// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 				zipOut.putNextEntry(new ZipEntry(binderPrefix + "w"
-						+ nft.format(binderId) + File.separator + "."
+						+ nft.format(binderId) + "/" + "."
 						+ binderPrefix + "w" + nft.format(binderId) + ".xml"));
 				XmlFileUtil.writeFile(getWorkspaceAsDoc(null, binderId, false,
 						binderPrefix + "w" + nft.format(binderId), defList),
@@ -348,8 +349,9 @@ public class ExportHelper {
 				reportMap.put(workspaces, ++count);
 
 			} else {
+				// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 				zipOut.putNextEntry(new ZipEntry(binderPrefix + "f"
-						+ nft.format(binderId) + File.separator + "."
+						+ nft.format(binderId) + "/" + "."
 						+ binderPrefix + "f" + nft.format(binderId) + ".xml"));
 				XmlFileUtil.writeFile(getFolderAsDoc(null, binderId, false,
 						binderPrefix + "f" + nft.format(binderId), defList),
@@ -415,7 +417,8 @@ public class ExportHelper {
 		fullId = calcFullId(entry);
 
 		if (!pathName.equals("")) {
-			zipOut.putNextEntry(new ZipEntry(pathName + File.separator + "e"
+			// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
+			zipOut.putNextEntry(new ZipEntry(pathName + "/" + "e"
 					+ fullId + ".xml"));
 			XmlFileUtil.writeFile(getEntryAsDoc(null, entry.getParentBinder()
 					.getId(), entry.getId(), false, pathName + File.separator
@@ -448,7 +451,8 @@ public class ExportHelper {
 		String newFullId = fullId + "_" + nft.format(reply.getId());
 
 		if (!pathName.equals("")) {
-			zipOut.putNextEntry(new ZipEntry(pathName + File.separator + "e"
+			// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
+			zipOut.putNextEntry(new ZipEntry(pathName + "/" + "e"
 					+ newFullId + ".xml"));
 			XmlFileUtil.writeFile(getEntryAsDoc(null, reply.getParentBinder()
 					.getId(), reply.getId(), false, pathName + File.separator
@@ -508,8 +512,8 @@ public class ExportHelper {
 			fileStream = fileModule.readFile(binder, entity,
 					vAttach);
 
-			zipOut.putNextEntry(new ZipEntry(pathName + File.separator
-					+ fileName));
+			// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
+			zipOut.putNextEntry(new ZipEntry(pathName + "/" + fileName));
 			FileUtil.copy(fileStream, zipOut);
 			zipOut.closeEntry();
 
@@ -521,7 +525,8 @@ public class ExportHelper {
 			logger.error(NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
 					", entryId=" + entity.getId().toString() + ", " + fileName);
 
-			zipOut.putNextEntry(new ZipEntry(pathName + File.separator
+			// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
+			zipOut.putNextEntry(new ZipEntry(pathName + "/"
 					+ fileName + ".error_message.txt"));
 			zipOut.write(NLT.get("export.error.attachment",
 					"Error processing this attachment").getBytes());
@@ -541,7 +546,8 @@ public class ExportHelper {
 				fileStream = fileModule.readFile(binder, entity,
 						vAttach);
 
-				zipOut.putNextEntry(new ZipEntry(pathName + File.separator
+				// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
+				zipOut.putNextEntry(new ZipEntry(pathName + "/"
 						+ fileName + ".versions" + File.separator + versionNum
 						+ "." + fileExt));
 				FileUtil.copy(fileStream, zipOut);
@@ -555,8 +561,9 @@ public class ExportHelper {
 				logger.error(NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
 						", entryId=" + entity.getId().toString() + ", " + fileName);
 
-				zipOut.putNextEntry(new ZipEntry(pathName + File.separator
-						+ fileName + ".versions" + File.separator + versionNum
+				// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
+				zipOut.putNextEntry(new ZipEntry(pathName + "/"
+						+ fileName + ".versions" + "/" + versionNum
 						+ "." + fileExt + ".error_message.txt"));
 				zipOut.write(NLT.get("export.error.attachment",
 						"Error processing this attachment").getBytes());
@@ -967,7 +974,8 @@ public class ExportHelper {
 		if (Validator.isNull(name))
 			name = def.getTitle();
 
-		zipOut.putNextEntry(new ZipEntry("__definitions" + File.separator
+		// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
+		zipOut.putNextEntry(new ZipEntry("__definitions" + "/"
 				+ name + ".xml"));
 		XmlFileUtil.writeFile(def.getDefinition(), zipOut);
 		zipOut.closeEntry();
@@ -1030,7 +1038,7 @@ public class ExportHelper {
 
 				if (child.getAbsolutePath().startsWith(
 						tempDir + File.separator + "__definitions"
-								+ File.separator)) {
+								+ File.separator )) {
 
 					// adding definition to top binder locally if it does not
 					// already exist
@@ -1066,14 +1074,17 @@ public class ExportHelper {
 					}
 
 				} else if (fileExt.equals("xml")) {
-
+					String fileName;
+					
+					fileName = child.getName();
+					
 					// need to check if this xml file is for a folder,
 					// workspace,
 					// entry, or just an attachment.
 					// checking by regex-ing the filename.
 
 					// entry?
-					Matcher m = entryPattern.matcher(child.getName());
+					Matcher m = entryPattern.matcher( fileName );
 					boolean result = m.lookingAt();
 
 					if (result) {
@@ -1135,7 +1146,7 @@ public class ExportHelper {
 					}
 
 					// workspace?
-					m = workspacePattern.matcher(child.getName());
+					m = workspacePattern.matcher( fileName );
 					result = m.lookingAt();
 
 					if (result) {
@@ -1176,7 +1187,7 @@ public class ExportHelper {
 					}
 
 					// folder?
-					m = folderPattern.matcher(child.getName());
+					m = folderPattern.matcher( fileName );
 					result = m.lookingAt();
 
 					if (result) {
