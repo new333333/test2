@@ -466,9 +466,6 @@ h6 {
 
 	/*  Forms */
 
-/* Make sure inputs stay inside the content area */
-input, textarea, select {
-	}
 .ss_mobile_small, .ss_mobile_small a, .ss_mobile_small table td {
 	font-size:9px;
 }
