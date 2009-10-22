@@ -113,6 +113,7 @@
   </div>
 
 	<div>
-	  <input id="hierarchy-cancel" type="button" value="<ssf:nlt tag="button.close"/>" name="hierarchyhCancel"/>
+	  <input id="hierarchy-cancel" type="button" value="<ssf:nlt tag="button.close"/>" 
+	    name="hierarchyhCancel" onClick="ss_hideMenu('hierarchy-dialog');return false;" />
 	</div>
   </div>

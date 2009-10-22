@@ -61,8 +61,10 @@
       <textarea id="micro-blog-text" rows="5" cols="20" name="miniblogText"
       ><c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">${ssUser.status}</c:if></textarea>
       <div id="micro-blog-buttons">
-        <input id="micro-blog-post" type="submit" value="<ssf:nlt tag="button.post"/>" name="miniblogBtn"/>
-        <input id="micro-blog-cancel" type="button" value="<ssf:nlt tag="button.cancel"/>" name="PostBlogCancel"/>
+        <input id="micro-blog-post" type="submit" value="<ssf:nlt tag="button.post"/>" 
+          name="miniblogBtn" onClick="ss_hideMenu('micro-blog-edit');return true;" />
+        <input id="micro-blog-cancel" type="button" value="<ssf:nlt tag="button.cancel"/>" 
+          name="PostBlogCancel" onClick="ss_hideMenu('micro-blog-edit');return false;"/>
         <input id="micro-blog-clear" type="reset" value="<ssf:nlt tag="button.clear"/>" name="ClearBlog"
           onclick="ss_clearStatusMobile('micro-blog-text');return false;"/>
       </div>

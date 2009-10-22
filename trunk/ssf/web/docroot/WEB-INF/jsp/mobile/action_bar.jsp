@@ -78,14 +78,16 @@ function ss_logoff_from_sso(s) {
 </script>
 
 <div id="actions">
-  <a class="hierarchy-a actionimg">
+  <a class="hierarchy-a actionimg" href="javascript: ;" onClick="ss_showMenu('hierarchy-dialog');return false;">
     <img align="absmiddle" src="<html:imagesPath/>mobile/nl_browse_hierarchy_16.gif"/>
   </a>
   
-  <a class="micro-blog-a" href="#"><ssf:nlt tag="miniblog"/></a>
+  <a class="micro-blog-a" href="javascript: ;" 
+    onClick="ss_showMenu('micro-blog-edit');return false;"><ssf:nlt tag="miniblog"/></a>
   
   <c:if test="${!empty ss_actions}">
-    <a class="actions-a" href="#"><ssf:nlt tag="mobile.actions"/></a>
+    <a class="actions-a" href="javascript: ;" 
+      onClick="ss_showMenu('actions-menu');return false;"><ssf:nlt tag="mobile.actions"/></a>
   </c:if>  
 </div>
 

@@ -116,10 +116,10 @@
 						name="tabId" value="${ss_tab_id}"/><ssf:param 
 						name="pageNumber" value="${ss_pageNumber-1}"/><ssf:param 
 						name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
-			  		><img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_.gif"/></a>
+			  		><img border="0" src="<html:rootPath/>images/mobile/nl_left_16.gif"/></a>
 					</c:if>
 					<c:if test="${empty ss_prevPage}">
-			  		  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_g.gif"/>
+			  		  <img border="0" src="<html:rootPath/>images/mobile/nl_left_dis_16.gif"/>
 					</c:if>
 		  		</td>
 		  		<td style="padding-left:20px;">
@@ -134,10 +134,10 @@
 						name="tabId" value="${ss_tab_id}"/><ssf:param 
 						name="pageNumber" value="${ss_pageNumber+1}"/><ssf:param 
 						name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
-			  		><img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_.gif"/></a>
+			  		><img border="0" src="<html:rootPath/>images/mobile/nl_right_16.gif"/></a>
 					</c:if>
 					<c:if test="${empty ss_nextPage}">
-			  		  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_g.gif"/>
+			  		  <img border="0" src="<html:rootPath/>images/mobile/nl_right_dis_16.gif"/>
 					</c:if>
 	      		</td>
 				</tr>
