@@ -153,9 +153,11 @@ public class ModifyEntryController extends SAbstractController {
 						new MapInputData(formData), fileMap, deleteAtts, null, null);
 				} catch(WriteEntryDataException e) {
 		    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, e.getMessage());
+		    		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 		    		return;
 				} catch(WriteFilesException e) {
 		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
+		    		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 		    		return;
 				}
 
