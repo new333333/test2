@@ -52,8 +52,6 @@
 
 <jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_mobile_head.jsp" />
 <c:if test="${!empty ss_windowTitle}"><title>${ss_windowTitle}</title></c:if>
-<script type="text/javascript" src="<html:rootPath/>js/jquery/jquery-1.3.2.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.core.js"></script>
 <script type="text/javascript" 
   src="<html:rootPath/>js/common/ss_mobile.js?startTime=<%= org.kablink.teaming.util.ReleaseInfo.getStartTime() %>"></script>
 <c:set var="ss_isMobile" value="true" scope="request" />
@@ -61,14 +59,11 @@
   <link href="<html:rootPath/>${ss_mashupCss}" rel="stylesheet" type="text/css" />
 </c:if>
 <link href="<html:rootPath/>css/ss_mobile_common.css" rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>css/ss_mobile_iphone.css" rel="stylesheet" type="text/css" />
 <%
-	if (1 == 0 && isWap) {
+	if (isWap) {
 %>
 <link href="<html:rootPath/>css/ss_mobile_wap.css" rel="stylesheet" type="text/css" />
-<%
-	} else if (1 == 1 || isIPhone) {
-%>
-<link href="<html:rootPath/>css/ss_mobile_iphone.css" rel="stylesheet" type="text/css" />
 <%
 	} else {
 %>

@@ -100,8 +100,10 @@ function ss_setMobileSearchActionUrl(formObj) {
 		<input type="text" size="35" name="searchText"/>
 	  </div>			
       <div id="search-buttons">
-        <input id="search-ok" type="submit" value="<ssf:nlt tag="button.ok"/>" name="quickSearch"/>
-        <input id="search-cancel" type="button" value="<ssf:nlt tag="button.cancel"/>" name="cancelBtn"/>
+        <input id="search-ok" type="submit" value="<ssf:nlt tag="button.ok"/>" 
+          name="quickSearch" onClick="ss_hideMenu('search-dialog');return true;" />
+        <input id="search-cancel" type="button" value="<ssf:nlt tag="button.cancel"/>" 
+          name="cancelBtn" onClick="ss_hideMenu('search-dialog');return false;" />
       </div>
     </form>
     

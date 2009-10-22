@@ -69,10 +69,10 @@
 					actionUrl="false" ><ssf:param 
 					name="searchText" value="${ss_searchText}"/><ssf:param 
 					name="pageNumber" value="${ss_prevPage}"/></ssf:url>"
-				><img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_.gif"/></a>
+				><img border="0" src="<html:rootPath/>images/mobile/nl_left_16.gif"/></a>
 			</c:if>
 			<c:if test="${empty ss_prevPage}">
-			  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_g.gif"
+			  <img border="0" src="<html:rootPath/>images/mobile/nl_left_dis_16.gif"
 			  	<ssf:alt tag=""/> />
 			</c:if>
 		  </td>
@@ -84,10 +84,10 @@
 					actionUrl="false" ><ssf:param 
 					name="searchText" value="${ss_searchText}"/><ssf:param 
 					name="pageNumber" value="${ss_nextPage}"/></ssf:url>"
-				><img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_.gif"/></a>
+				><img border="0" src="<html:rootPath/>images/mobile/nl_right_16.gif"/></a>
 			</c:if>
 			<c:if test="${empty ss_nextPage}">
-			  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_g.gif"
+			  <img border="0" src="<html:rootPath/>images/mobile/nl_right_dis_16.gif"
 			 	<ssf:alt tag=""/> />
 			</c:if>
 		  </td>

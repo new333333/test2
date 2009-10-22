@@ -54,7 +54,8 @@
 </td>
 <td valign="top" align="right" width="1%">
   <div class="search">
-	<a href="#"><ssf:nlt tag="navigation.search"/></a>
+	<a href="javascript: ;" 
+      onClick="ss_showMenu('search-dialog');return false;"><ssf:nlt tag="navigation.search"/></a>
   </div>
 </td>
 </tr>

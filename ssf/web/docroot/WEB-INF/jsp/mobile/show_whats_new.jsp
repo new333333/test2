@@ -83,12 +83,12 @@
 			  name="type" value="${ss_type}"/><ssf:param
 			  name="pageNumber" value="${ss_pageNumber - 1}"/><ssf:param
 			  name="namespace" value="${ss_namespace}"/></ssf:url>" 
-			><img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_.gif" 
+			><img border="0" src="<html:rootPath/>images/mobile/nl_left_16.gif" 
 			    title="<ssf:nlt tag="general.previousPage"/>"
 			    <ssf:alt tag=""/> /></a>
 		</c:if>
 		<c:if test="${empty ss_pageNumber || ss_pageNumber <= '0'}">
-		  <img src="<html:rootPath/>images/pics/sym_arrow_left_g.gif"
+		  <img src="<html:rootPath/>images/mobile/nl_left_dis_16.gif"
 		  	<ssf:alt tag=""/> />
 		</c:if>
 		&nbsp;&nbsp;&nbsp;&nbsp;
@@ -100,12 +100,12 @@
 			name="type" value="${ss_type}"/><ssf:param
 			name="pageNumber" value="${ss_pageNumber + 1}"/><ssf:param
 			name="namespace" value="${ss_namespace}"/></ssf:url>" 
-		  ><img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_.gif" 
+		  ><img border="0" src="<html:rootPath/>images/mobile/nl_right_16.gif" 
 			  title="<ssf:nlt tag="general.nextPage"/>"
 			  <ssf:alt tag=""/> /></a>
 		</c:if>
 		<c:if test="${empty ss_whatsNewBinder}">
-			<img src="<html:rootPath/>images/pics/sym_arrow_right_g.gif"
+			<img src="<html:rootPath/>images/mobile/nl_right_dis_16.gif"
 			<ssf:alt tag=""/> />
 		</c:if>
 	  </div>

@@ -52,7 +52,8 @@
     </div>
 
 	<div id="actions-button">
-	  <input id="actions-menu-close" type="button" value="<ssf:nlt tag="button.close"/>" name="actionsmenuclose"/>
+	  <input id="actions-menu-close" type="button" value="<ssf:nlt tag="button.close"/>" 
+	    name="actionsmenuclose" onClick="ss_hideMenu('actions-menu');return false;" />
 	</div>
 </div>
 
