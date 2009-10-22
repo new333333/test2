@@ -16,6 +16,7 @@
     <property name="authorEmail"/>
     <property name="authorSite"/>
     <property name="dateCreated"/>
+    <property name="dateDeployed"/>
     <property name="zoneId" access="field"/>
     <properties name="nameKey" unique="true" update="false" insert="false">
 		<property name="zoneId" update="false" insert="false"/>
