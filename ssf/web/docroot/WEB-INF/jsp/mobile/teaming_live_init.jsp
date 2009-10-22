@@ -55,7 +55,7 @@
 <script type="text/javascript" 
   src="<html:rootPath/>js/common/ss_mobile.js?startTime=<%= org.kablink.teaming.util.ReleaseInfo.getStartTime() %>"></script>
 <link href="<html:rootPath/>css/ss_mobile_common.css" rel="stylesheet" type="text/css" />
-<link href="<html:rootPath/>css/ss_mobile_iphone.css" rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>css/ss_mobile_teaming_live.css" rel="stylesheet" type="text/css" />
 
 </head>
 <body>
