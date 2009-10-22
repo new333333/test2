@@ -212,22 +212,24 @@ public interface FolderModule {
      * Predeletes a <code>FolderEntry</code> and all of its replies.  Deleted mirrored resources also.
      * @param parentFolderId
      * @param entryId
+     * @param userId
      * @param reindex
      * @throws AccessControlException
      */
-    public void preDeleteEntry(Long parentFolderId, Long entryId)                  throws AccessControlException;
-    public void preDeleteEntry(Long parentFolderId, Long entryId, boolean reindex) throws AccessControlException;
+    public void preDeleteEntry(Long parentFolderId, Long entryId, Long userId)                  throws AccessControlException;
+    public void preDeleteEntry(Long parentFolderId, Long entryId, Long userId, boolean reindex) throws AccessControlException;
     /**
      * Predeletes a <code>FolderEntry</code> and all of its replies.
      * @param parentFolderId
      * @param entryId
+     * @param userId
      * @param deleteMirroredSource
      * @param options - processing options or null
      * @param reindex
      * @throws AccessControlException
      */
-    public void preDeleteEntry(Long parentFolderId, Long entryId, boolean deleteMirroredSource, Map options)                  throws AccessControlException;
-    public void preDeleteEntry(Long parentFolderId, Long entryId, boolean deleteMirroredSource, Map options, boolean reindex) throws AccessControlException;
+    public void preDeleteEntry(Long parentFolderId, Long entryId, Long userId, boolean deleteMirroredSource, Map options)                  throws AccessControlException;
+    public void preDeleteEntry(Long parentFolderId, Long entryId, Long userId, boolean deleteMirroredSource, Map options, boolean reindex) throws AccessControlException;
     /**
      * Delete a <code>FolderEntry</code> and all of its replies.  Deleted mirrored resources also.
      * @param parentFolderId

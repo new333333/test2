@@ -712,8 +712,20 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			boolean isWorkspace = (EntityType.workspace == et);
 			if (isFolder || isWorkspace) {
 		        checkAccess(binder, BinderOperation.restoreBinder);
-		        if (isFolder) ((Folder)    binder).setPreDeleted(Boolean.FALSE);
-		        else          ((Workspace) binder).setPreDeleted(Boolean.FALSE);
+		        if (isFolder) {
+		        	Folder folder = ((Folder) binder);
+		        	folder.setPreDeleted(null);
+		        	folder.setPreDeletedWhen(null);
+		        	folder.setPreDeletedBy(null);
+		        }
+		        
+		        else {
+		        	Workspace ws = ((Workspace) binder);
+		        	ws.setPreDeleted(null);
+		        	ws.setPreDeletedWhen(null);
+		        	ws.setPreDeletedBy(null);
+		        }
+		        
 		        if (reindex) {
 		        	loadBinderProcessor(binder).indexBinder(binder, true);
 		        }
@@ -722,18 +734,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// inside write transaction
-	public void preDeleteBinder(Long binderId) {
-		preDeleteBinder(binderId, true);
+	public void preDeleteBinder(Long binderId, Long userId) {
+		preDeleteBinder(binderId, userId, true);
 	}
-	public void preDeleteBinder(Long binderId, boolean reindex) {
-		preDeleteBinder(binderId, true, null, reindex);
+	public void preDeleteBinder(Long binderId, Long userId, boolean reindex) {
+		preDeleteBinder(binderId, userId, true, null, reindex);
 	}
 
 	// inside write transaction
-	public void preDeleteBinder(Long binderId, boolean deleteMirroredSource, Map options) {
-		preDeleteBinder(binderId, deleteMirroredSource, options, true);
+	public void preDeleteBinder(Long binderId, Long userId, boolean deleteMirroredSource, Map options) {
+		preDeleteBinder(binderId, userId, deleteMirroredSource, options, true);
 	}
-	public void preDeleteBinder(Long binderId, boolean deleteMirroredSource, Map options, boolean reindex) {
+	public void preDeleteBinder(Long binderId, Long userId, boolean deleteMirroredSource, Map options, boolean reindex) {
 		Binder binder = loadBinder(binderId);
 		if ((null != binder) && (!(binder.isMirrored()))) {
 			EntityType et = binder.getEntityType();
@@ -741,8 +753,20 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			boolean isWorkspace = (EntityType.workspace == et);
 			if (isFolder || isWorkspace) {
 		        checkAccess(binder, BinderOperation.preDeleteBinder);
-		        if (isFolder) ((Folder)    binder).setPreDeleted(Boolean.TRUE);
-		        else          ((Workspace) binder).setPreDeleted(Boolean.TRUE);
+		        if (isFolder) {
+		        	Folder folder = ((Folder) binder);
+		        	folder.setPreDeleted(Boolean.TRUE);
+		        	folder.setPreDeletedWhen(System.currentTimeMillis());
+		        	folder.setPreDeletedBy(userId);
+		        }
+		        
+		        else {
+		        	Workspace ws = ((Workspace) binder);
+		        	ws.setPreDeleted(Boolean.TRUE);
+		        	ws.setPreDeletedWhen(System.currentTimeMillis());
+		        	ws.setPreDeletedBy(userId);
+		        }
+		        
 		        if (reindex) {
 		        	loadBinderProcessor(binder).indexBinder(binder, true);
 		        }
@@ -2053,12 +2077,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						return null;
 					}
 				});
-				// get updates commited, this is needed if their is another
+				// get updates committed, this is needed if their is another
 				// transaction wrapping the call to delete binder
 				// This is the case with delete user workspace !!
 				getCoreDao().flush();
 
-				getCoreDao().evict(child); // update commited
+				getCoreDao().evict(child); // update committed
 
 			} catch (NoObjectByTheIdException musthavebeendeleted) {
 				continue;

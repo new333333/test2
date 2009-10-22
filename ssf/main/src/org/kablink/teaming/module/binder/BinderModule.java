@@ -157,16 +157,18 @@ public interface BinderModule {
 	 * Any errors deleting child-binders will be returned, but
 	 * will continue deleting as much as possible.  Mirrored source will be deleted
 	 * @param binderId
+	 * @param userId
 	 * @param reindex
 	 * @throws AccessControlException
 	 */
-	public void preDeleteBinder(Long binderId)                  throws AccessControlException;
-	public void preDeleteBinder(Long binderId, boolean reindex) throws AccessControlException;
+	public void preDeleteBinder(Long binderId, Long userId)                  throws AccessControlException;
+	public void preDeleteBinder(Long binderId, Long userId, boolean reindex) throws AccessControlException;
 	/**
 	 * Predelete a binder including any sub-binders and entries.
 	 * Any errors deleting child-binders will be returned, but
 	 * will continue deleting as much as possible.
 	 * @param binderId
+	 * @param userId
 	 * @param deleteMirroredSource indicates whether or not to delete the
 	 * corresponding source resources (directories and files) if this binder
 	 * or any of the child binders is mirrored.
@@ -174,8 +176,8 @@ public interface BinderModule {
 	 * @param reindex
 	 * @throws AccessControlException
 	 */
-	public void preDeleteBinder(Long binderId, boolean deleteMirroredSource, Map options)                  throws AccessControlException;
-	public void preDeleteBinder(Long binderId, boolean deleteMirroredSource, Map options, boolean reindex) throws AccessControlException;
+	public void preDeleteBinder(Long binderId, Long userId, boolean deleteMirroredSource, Map options)                  throws AccessControlException;
+	public void preDeleteBinder(Long binderId, Long userId, boolean deleteMirroredSource, Map options, boolean reindex) throws AccessControlException;
 		
 	/**
 	 * Delete a binder including any sub-binders and entries.

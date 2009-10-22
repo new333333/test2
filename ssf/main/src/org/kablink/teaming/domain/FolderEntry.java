@@ -68,6 +68,8 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     protected String postedBy;
     protected boolean subscribed=false;
 	protected Boolean preDeleted;
+	protected Long preDeletedWhen;
+	protected Long preDeletedBy;
     public FolderEntry() {
         super();
     }
@@ -311,4 +313,26 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     public void setPreDeleted(Boolean preDeleted) {
     	this.preDeleted = preDeleted;
     }
+    
+	/**
+	 * @hibernate.property 
+	 * @return
+	 */
+	public Long getPreDeletedWhen() {
+		return preDeletedWhen;
+	}
+	public void setPreDeletedWhen(Long preDeletedWhen) {
+		this.preDeletedWhen = preDeletedWhen;
+	}
+	
+	/**
+     * @hibernate.property
+	 * @return
+     */
+	public Long getPreDeletedBy() {
+		return preDeletedBy;
+	}
+	public void setPreDeletedBy(Long preDeletedBy) {
+		this.preDeletedBy = preDeletedBy;
+	}
 }

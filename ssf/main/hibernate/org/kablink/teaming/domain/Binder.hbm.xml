@@ -126,10 +126,14 @@
  		<column name="entryRootKey" sql-type="char(15)"/>
  	  </property>
  	  <property name="preDeleted"/>
+ 	  <property name="preDeletedWhen"/>
+ 	  <property name="preDeletedBy"/>
      </subclass>
     <subclass name="org.kablink.teaming.domain.Workspace" discriminator-value="workspace" dynamic-update="true">
     	<property name="searchTitle" length="255" access="field"/>
     	<property name="preDeleted"/>
+    	<property name="preDeletedWhen"/>
+    	<property name="preDeletedBy"/>
      <subclass name="org.kablink.teaming.domain.ProfileBinder" discriminator-value="profiles" dynamic-update="true"/>
     </subclass>
     <subclass name="org.kablink.teaming.domain.TemplateBinder" discriminator-value="template" dynamic-update="true">

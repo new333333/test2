@@ -52,6 +52,7 @@ import org.apache.lucene.document.Field;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.Binder;
@@ -71,11 +72,13 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WfAcl;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -159,19 +162,57 @@ public class EntityIndexUtils {
     }
 
     public static void addPreDeletedField(Document doc, DefinableEntity entry, boolean fieldsOnly) {
-      	String deletedValue = Constants.FALSE;
+    	boolean preDeleted = false;
+    	Long preDeletedWhen = null;
+    	User preDeletedBy = null;
+    	String preDeletedFrom = null;
       	if (entry instanceof FolderEntry) {
-      		if (((FolderEntry) entry).isPreDeleted()) {
-      			deletedValue = Constants.TRUE;
+      		FolderEntry fe = ((FolderEntry) entry);
+      		if (fe.isPreDeleted()) {
+      			Binder feBinder = fe.getParentBinder();
+      			preDeleted      = true;
+      			preDeletedWhen  = fe.getPreDeletedWhen();
+      			preDeletedBy    = getUserById(fe.getPreDeletedBy(), entry.getZoneId());
+      			preDeletedFrom  = feBinder.getTitle() + " (" + ((Binder) feBinder.getParentWorkArea()).getTitle() + ")";
       		}
       	}
-      	if (entry instanceof Folder) {
-      		if (((Folder) entry).isPreDeleted()) {
-      			deletedValue = Constants.TRUE;
+      	else if (entry instanceof Folder) {
+      		Folder folder = ((Folder) entry);
+      		if (folder.isPreDeleted()) {
+      			preDeleted     = true;
+      			preDeletedWhen = folder.getPreDeletedWhen();
+      			preDeletedBy   = getUserById(folder.getPreDeletedBy(), entry.getZoneId());
+      			preDeletedFrom = folder.getParentBinder().getTitle();
       		}
       	}
-    	Field deletedField = new Field(Constants.PRE_DELETED_FIELD, deletedValue, Field.Store.NO, Field.Index.TOKENIZED);
-    	doc.add(deletedField);  	
+      	else if (entry instanceof Workspace) {
+      		Workspace ws = ((Workspace) entry);
+      		if (ws.isPreDeleted()) {
+      			preDeleted     = true;
+      			preDeletedWhen = ws.getPreDeletedWhen();
+      			preDeletedBy   = getUserById(ws.getPreDeletedBy(), entry.getZoneId());
+      			preDeletedFrom = ws.getParentBinder().getTitle();
+      		}
+      	}
+    	Field field = new Field(Constants.PRE_DELETED_FIELD, (preDeleted ? Constants.TRUE : Constants.FALSE), Field.Store.NO, Field.Index.TOKENIZED);
+    	doc.add(field);
+    	if (preDeleted) {
+        	if (null != preDeletedBy)   field = new Field(Constants.PRE_DELETED_BY_FIELD,                  preDeletedBy.getTitle(), Field.Store.YES, Field.Index.TOKENIZED); doc.add(field);
+        	if (null != preDeletedWhen) field = new Field(Constants.PRE_DELETED_WHEN_FIELD, String.valueOf(preDeletedWhen),         Field.Store.YES, Field.Index.TOKENIZED); doc.add(field);
+        	if (null != preDeletedFrom) field = new Field(Constants.PRE_DELETED_FROM_FIELD,                preDeletedFrom,          Field.Store.YES, Field.Index.TOKENIZED); doc.add(field);
+    	}
+    }
+    
+    private static User getUserById(Long userId, Long zoneId) {
+    	User reply = null;
+    	try {
+    		ProfileDao pd = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
+    		reply = pd.loadUser(userId, zoneId);
+    	}
+    	catch (Exception e) {
+    		reply = null;
+    	}
+		return reply;
     }
     
     public static void addEntityType(Document doc, DefinableEntity entry, boolean fieldsOnly) {

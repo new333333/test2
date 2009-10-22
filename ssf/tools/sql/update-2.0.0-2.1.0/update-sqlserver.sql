@@ -1,8 +1,12 @@
 use sitescape;
 alter table SS_ZoneConfig add mobileAccessEnabled tinyint;
 alter table SS_AuditTrail add deletedFolderEntryFamily nvarchar(32);
-alter table SS_FolderEntries add preDeleted tinyint;
-alter table SS_Forums add preDeleted tinyint;
+alter table SS_FolderEntries add preDeleted tinyint null;
+alter table SS_FolderEntries add preDeletedWhen numeric(19,0) null;
+alter table SS_FolderEntries add preDeletedBy numeric(19,0) null;
+alter table SS_Forums add preDeleted tinyint null;
+alter table SS_Forums add preDeletedWhen numeric(19,0) null;
+alter table SS_Forums add preDeletedBy numeric(19,0) null;
 alter table SS_Attachments add relevanceUUID nvarchar(256);
 alter table SS_Principals add diskSpaceUsed numeric(19,0);
 alter table SS_Principals add diskQuota numeric(19,0);

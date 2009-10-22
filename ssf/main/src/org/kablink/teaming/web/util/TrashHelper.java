@@ -44,6 +44,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -514,7 +515,7 @@ public class TrashHelper {
 			}
 		
 			// ...and predelete the binder itself.
-			bm.preDeleteBinder(binderId, true);
+			bm.preDeleteBinder(binderId, RequestContextHolder.getRequestContext().getUser().getId(), true);
 		}
 	}
 	
@@ -537,10 +538,11 @@ public class TrashHelper {
 		}
 		
 		// Predelete the entry's replies...
-		preDeleteEntryDescendants(fm, folderId, entryId);
+		Long userId = RequestContextHolder.getRequestContext().getUser().getId();
+		preDeleteEntryDescendants(fm, folderId, entryId, userId);
 		
 		// ...and predelete the entry itself.
-		fm.preDeleteEntry(folderId, entryId);
+		fm.preDeleteEntry(folderId, entryId, userId);
 	}
 	
 	/*
@@ -550,14 +552,14 @@ public class TrashHelper {
 	 * replies, ...
 	 */
 	@SuppressWarnings("unchecked")
-	private static void preDeleteEntryDescendants(FolderModule fm, Long folderId, Long entryId) {
+	private static void preDeleteEntryDescendants(FolderModule fm, Long folderId, Long entryId, Long userId) {
 		// Scan this entry's descendants...
 		Map entryTreeMap = fm.getEntryTree(folderId, entryId);
 		List<FolderEntry> descendantsList = ((List<FolderEntry>) entryTreeMap.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
 		for (Iterator descendantsIT=descendantsList.iterator(); descendantsIT.hasNext();) {
 			// ...and predelete them.
 			FolderEntry descendantFE = ((FolderEntry) descendantsIT.next());
-			fm.preDeleteEntry(folderId, descendantFE.getId());
+			fm.preDeleteEntry(folderId, descendantFE.getId(), userId);
 		}
 	}
 	
@@ -648,7 +650,6 @@ public class TrashHelper {
 	 * Recursively restores the parentage of a binder.
 	 */
 	private static void restoreBinderParentage(BinderModule bm, Binder binder) {
-		Binder parentBinder = binder.getParentBinder();
 		boolean isFolder    = isBinderFolder(   binder);
 		boolean isWorkspace = isBinderWorkspace(binder);
 		if (isFolder || isWorkspace) {
@@ -656,8 +657,8 @@ public class TrashHelper {
 			if (isFolder) isPreDeleted = ((Folder)    binder).isPreDeleted();
 			else          isPreDeleted = ((Workspace) binder).isPreDeleted();
 			if (isPreDeleted) {
-				bm.restoreBinder(parentBinder.getId(), true);
-				restoreBinderParentage(bm, parentBinder);
+				bm.restoreBinder(binder.getId(), true);
+				restoreBinderParentage(bm, binder.getParentBinder());
 			}
 		}
 	}
