@@ -1595,7 +1595,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				}
 				for (Iterator iter = ws.iterator(); iter.hasNext();) {
 					Folder f = (Folder) iter.next();
-					if (f.isDeleted())
+					if (f.isDeleted() || f.isPreDeleted())
 						continue;
 					// Check if the user has "read" access to the folder.
 					next = current.addElement(DomTreeBuilder.NODE_CHILD);
@@ -1624,7 +1624,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 			for (Iterator iter = ws.iterator(); iter.hasNext();) {
 				Workspace w = (Workspace) iter.next();
-				if (w.isDeleted())
+				if (w.isDeleted() || w.isPreDeleted())
 					continue;
 				next = current.addElement(DomTreeBuilder.NODE_CHILD);
 				buildBinderDomTree(next, w, c, domTreeHelper, levels);
@@ -1643,7 +1643,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				}
 				for (Iterator iter = ws.iterator(); iter.hasNext();) {
 					Folder f = (Folder) iter.next();
-					if (f.isDeleted())
+					if (f.isDeleted() || f.isPreDeleted())
 						continue;
 					// Check if the user has "read" access to the folder.
 					if (!getAccessControlManager().testOperation(f,
@@ -1664,7 +1664,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				ws.addAll(((Workspace) top).getWorkspaces());
 				for (Iterator iter = ws.iterator(); iter.hasNext();) {
 					Workspace w = (Workspace) iter.next();
-					if (w.isDeleted())
+					if (w.isDeleted() || w.isPreDeleted())
 						continue;
 					// Check if the user has "read" access to the workspace.
 					if (!getAccessControlManager().testOperation(w,

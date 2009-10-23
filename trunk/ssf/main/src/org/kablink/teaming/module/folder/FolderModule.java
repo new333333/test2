@@ -314,13 +314,15 @@ public interface FolderModule {
      * 
      * @param parentFolderId
      * @param entryId
+     * @param includePreDeleted
      * @return Map containing 3 items:   
      * 			<code>ObjectKeys.FOLDER_ENTRY</code>, entry
      * 			<code>ObjectKeys.FOLDER_ENTRY_ANCESTORS</code>, List<FolderEntry> ordered by sortKey
      * 			<code>ObjectKeys.FOLDER_ENTRY_DESCENDANTS</code>, List<FolderEntry> ordered by sortKey
      * @throws AccessControlException
      */
-    public Map getEntryTree(Long parentFolderId, Long entryId) throws AccessControlException;
+    public Map getEntryTree(Long parentFolderId, Long entryId)                            throws AccessControlException;
+    public Map getEntryTree(Long parentFolderId, Long entryId, boolean includePreDeleted) throws AccessControlException;
     /**
      * Get the <code>Folder</code> with the specified id
      * @param folderId

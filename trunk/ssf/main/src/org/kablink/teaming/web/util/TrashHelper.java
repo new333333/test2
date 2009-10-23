@@ -525,7 +525,7 @@ public class TrashHelper {
 	@SuppressWarnings("unchecked")
 	private static void preDeleteEntryDescendants(FolderModule fm, Long folderId, Long entryId, Long userId) {
 		// Scan this entry's descendants...
-		Map entryTreeMap = fm.getEntryTree(folderId, entryId);
+		Map entryTreeMap = fm.getEntryTree(folderId, entryId, true);
 		List<FolderEntry> descendantsList = ((List<FolderEntry>) entryTreeMap.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
 		for (Iterator descendantsIT=descendantsList.iterator(); descendantsIT.hasNext();) {
 			// ...and predelete them.
@@ -670,7 +670,7 @@ public class TrashHelper {
 	@SuppressWarnings("unchecked")
 	private static void restoreEntryAncestors(FolderModule fm, Long folderId, Long entryId) {
 		// Scan this entry's ancestors...
-		Map entryTreeMap = fm.getEntryTree(folderId, entryId);
+		Map entryTreeMap = fm.getEntryTree(folderId, entryId, true);
 		List<FolderEntry> ancestorsList = ((List<FolderEntry>) entryTreeMap.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
 		for (Iterator ancestorsIT=ancestorsList.iterator(); ancestorsIT.hasNext();) {
 			// ...and restore them.

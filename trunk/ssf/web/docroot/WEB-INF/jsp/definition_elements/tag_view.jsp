@@ -37,6 +37,7 @@
 <c:set var="ss_tagViewNamespace" value="${renderResponse.namespace}" scope="request"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_tagViewNamespace" value="${ss_namespace}" scope="request"/></c:if>
 
+<c:if test="${empty ssFolderEntryPreDeleted || 'true' != ssFolderEntryPreDeleted}">
 <c:if test="${ssConfigJspStyle != 'template'}">
   <c:if test="${empty ss_tagDivNumber}">
   	<c:set var="ss_tagDivNumber" value="0" scope="request"/>
@@ -165,4 +166,5 @@ var ss_tagConfirmNoPunct = "<ssf:nlt tag="tags.noPunctAllowed"/>";
 
 </div>
 
+</c:if>
 </c:if>
