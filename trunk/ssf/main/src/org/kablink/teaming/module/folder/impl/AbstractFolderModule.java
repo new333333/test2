@@ -1167,6 +1167,8 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 		ObjectControls objs = new ObjectControls(Folder.class, new String[] {"id"});
 		List<Object> folders = getCoreDao().loadObjects(objs, fc, RequestContextHolder.getRequestContext().getZoneId());
 		logger.debug("checking for deleted folders");
+		int success = 0;
+		int fail = 0;
 		for (Object obj: folders) {
 			Long folderId;
 			if (obj instanceof Long) {
@@ -1180,12 +1182,14 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 				FolderCoreProcessor processor = loadProcessor(f);
 				processor.deleteBinder(f, true, null);
 				getCoreDao().evict(f);
+				success++;
 			} catch (Exception ex) {
+				fail++;
 				logger.error(ex);
 			}
 		}
 		if(folders != null && folders.size() > 0)
-			logger.info("Successfully cleaned up " + folders.size() + " folders");
+			logger.info("Folders cleaned up: success=" + success + ", fail=" + fail);
 	}
 
 
