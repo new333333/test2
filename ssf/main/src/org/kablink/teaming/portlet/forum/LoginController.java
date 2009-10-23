@@ -39,6 +39,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -53,6 +54,8 @@ import org.kablink.teaming.web.portlet.SAbstractControllerRetry;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
+import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Validator;
 import org.springframework.security.AuthenticationException;
 import org.springframework.security.ui.AbstractProcessingFilter;
@@ -125,6 +128,13 @@ public class LoginController  extends SAbstractControllerRetry {
 			refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
 		if(Validator.isNotNull(refererUrl))
 			model.put(WebKeys.URL, refererUrl);
+		
+		HttpServletRequest req = WebHelper.getHttpServletRequest(request);
+		if(BrowserSniffer.is_wap_xhtml(req) || 
+				BrowserSniffer.is_blackberry(req) || 
+				BrowserSniffer.is_iphone(req)) {
+			return new ModelAndView("mobile/show_login_form", model);
+		}
 		
 		return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
 	} 

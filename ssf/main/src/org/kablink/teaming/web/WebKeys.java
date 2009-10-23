@@ -184,6 +184,7 @@ public class WebKeys {
     public static final String URL_QUOTA_THRESHOLD="ssQuotaThreshold";
 	public static final String URL_RANDOM = "random";
 	public static final String URL_RANDOM_PLACEHOLDER = "ss_randomPlaceholder";
+	public static final String URL_REFERER_URL = "refererUrl";
 	public static final String URL_REPORT_FLAVOR = "ss_reportFlavor";
 	public static final String URL_REPORT_SORT_TYPE = "ss_reportSortType";
 	public static final String URL_REPORT_SORT_TYPE_2 = "ss_reportSortType_2";
