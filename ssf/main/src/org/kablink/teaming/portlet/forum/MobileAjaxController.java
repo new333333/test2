@@ -88,6 +88,7 @@ import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
@@ -129,6 +130,7 @@ import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebStatusTicket;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper;
+import org.kablink.util.Http;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -164,6 +166,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				ajaxMobileDoShowEntry(this, request, response);
 			} else if (op.equals(WebKeys.OPERATION_VIEW_TEAMING_LIVE)) {
 				ajaxDoTeamingLive(this, request, response);
+			} else if (op.equals(WebKeys.OPERATION_MOBILE_TRACK_THIS)) {
+				ajaxMobileDoTrackThis(this, request, response);
 			}
 		}
 	}
@@ -218,6 +222,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_WHATS_NEW)) {
 			return ajaxMobileWhatsNew(this, request, response);
+			
+		} else if (op.equals(WebKeys.OPERATION_MOBILE_TRACK_THIS)) {
+			return ajaxMobileTrackThis(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_LOGIN)) {
 			return ajaxMobileLogin(this, request, response, "ss_mobile", WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
@@ -402,18 +409,41 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 	}
 
+	private void ajaxMobileDoTrackThis(AllModulesInjected bs, ActionRequest request, ActionResponse response) 
+			throws Exception {
+		Map formData = request.getParameterMap();
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "add");		
+		BinderHelper.trackThisBinder(bs, binderId, type);
+		try {
+			if (binderId != null) {
+				Binder binder = getBinderModule().getBinder(binderId);
+				if (type.equals("delete") && 
+						binder.getEntityType().equals(EntityType.workspace) && 
+						binder.getDefinitionType().equals(Definition.USER_WORKSPACE_VIEW)) 
+					//Also stop tracking the user if this is a user workspace
+					BinderHelper.trackThisBinder(bs, binder.getOwnerId(), "deletePerson");
+			}
+		} catch(Exception e) {}
+	}
+
 	private ModelAndView ajaxMobileLogin(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, String portletName, String operation) throws Exception {
 		Map model = new HashMap();
 		String refererUrl = PortletRequestUtils.getStringParameter(request, WebKeys.URL_REFERER_URL);
-		if (!refererUrl.equals("")) {
+		if (Validator.isNotNull(refererUrl)) {
 			model.put(WebKeys.URL, refererUrl);
 		} else {
 			BinderHelper.setupStandardBeans(bs, request, response, model, null, portletName);
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, portletName, true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
-			adapterUrl.setParameter(WebKeys.URL_OPERATION, operation);
-			model.put(WebKeys.URL, adapterUrl);
+			refererUrl = Http.getCompleteURL(((HttpServletRequestReachable) request).getHttpServletRequest());
+			if (Validator.isNotNull(refererUrl) && !refererUrl.contains("operation="+WebKeys.OPERATION_MOBILE_LOGIN)) {
+				model.put(WebKeys.URL, refererUrl);
+			} else {
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, portletName, true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+				adapterUrl.setParameter(WebKeys.URL_OPERATION, operation);
+				model.put(WebKeys.URL, adapterUrl);
+			}
 		}
 		return new ModelAndView("mobile/show_login_form", model);
 	}
@@ -556,7 +586,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 		//Setup the actions menu list
 		List actions = new ArrayList();
-		BinderHelper.addActionsHome(request, actions);
+		//BinderHelper.addActionsHome(request, actions);
 		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
@@ -688,10 +718,11 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 		//Setup the actions menu list
 		List actions = new ArrayList();
-		BinderHelper.addActionsHome(request, actions);
+		//BinderHelper.addActionsHome(request, actions);
 		BinderHelper.addActionsWhatsNew(request, actions, binder);
 		BinderHelper.addActionsWhatsUnseen(request, actions, binder);
 		BinderHelper.addActionsRecentPlaces(request, actions, binder.getId());
+		BinderHelper.addActionsTrackThisBinder(bs, request, actions, binder);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
@@ -747,7 +778,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 		//Setup the actions menu list
 		List actions = new ArrayList();
-		BinderHelper.addActionsHome(request, actions);
+		//BinderHelper.addActionsHome(request, actions);
 		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
@@ -775,7 +806,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 					
 					//Setup the actions menu list
 					List actions = new ArrayList();
-					BinderHelper.addActionsHome(request, actions);
+					//BinderHelper.addActionsHome(request, actions);
 					BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 					BinderHelper.addActionsSpacer(request, actions);
 					BinderHelper.addActionsLogout(request, actions);
@@ -904,10 +935,12 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 		//Setup the actions menu list
 		List actions = new ArrayList();
-		BinderHelper.addActionsHome(request, actions);
+		//BinderHelper.addActionsHome(request, actions);
 		BinderHelper.addActionsWhatsNew(request, actions, binder);
 		BinderHelper.addActionsWhatsUnseen(request, actions, binder);
 		BinderHelper.addActionsRecentPlaces(request, actions, binder.getId());
+		if (!binder.getEntityType().equals(EntityIdentifier.EntityType.profiles))
+			BinderHelper.addActionsTrackThisBinder(bs, request, actions, binder);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
@@ -930,7 +963,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 		//Setup the actions menu list
 		List actions = new ArrayList();
-		BinderHelper.addActionsHome(request, actions);
+		//BinderHelper.addActionsHome(request, actions);
 		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
@@ -953,7 +986,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 		//Setup the actions menu list
 		List actions = new ArrayList();
-		BinderHelper.addActionsHome(request, actions);
+		//BinderHelper.addActionsHome(request, actions);
 		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
@@ -1051,7 +1084,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 	//Setup the actions menu list
 	List actions = new ArrayList();
-	BinderHelper.addActionsHome(request, actions);
+	//BinderHelper.addActionsHome(request, actions);
 	BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 	BinderHelper.addActionsSpacer(request, actions);
 	BinderHelper.addActionsLogout(request, actions);
@@ -1079,7 +1112,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	
 	//Setup the actions menu list
 	List actions = new ArrayList();
-	BinderHelper.addActionsHome(request, actions);
+	//BinderHelper.addActionsHome(request, actions);
 	BinderHelper.addActionsRecentPlaces(request, actions, binder.getId());
 	BinderHelper.addActionsSpacer(request, actions);
 	BinderHelper.addActionsLogout(request, actions);
@@ -1088,6 +1121,25 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	return new ModelAndView("mobile/show_user", model);
 }	
 
+	private ModelAndView ajaxMobileTrackThis(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);		
+		Map model = new HashMap();
+		if (binderId == null) return ajaxMobileFrontPage(bs, request, response);
+		try {
+			Binder binder = getBinderModule().getBinder(binderId);
+			model.put(WebKeys.BINDER, binder);
+			if (binder.getEntityType().equals(EntityType.folder)) {
+				return ajaxMobileShowFolder(bs, request, response);
+			} else {
+				return ajaxMobileShowWorkspace(bs, request, response);
+			}
+		} catch(Exception e) {
+			return ajaxMobileFrontPage(bs, request, response);
+		}
+	}
+	
 	private ModelAndView ajaxMobileShowRecentPlaces(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -1104,7 +1156,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 		//Setup the actions menu list
 		List actions = new ArrayList();
-		BinderHelper.addActionsHome(request, actions);
+		//BinderHelper.addActionsHome(request, actions);
 		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
@@ -1140,7 +1192,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 		//Setup the actions menu list
 		List actions = new ArrayList();
-		BinderHelper.addActionsHome(request, actions);
+		//BinderHelper.addActionsHome(request, actions);
 		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
@@ -1169,7 +1221,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		
 		//Setup the actions menu list
 		List actions = new ArrayList();
-		BinderHelper.addActionsHome(request, actions);
+		//BinderHelper.addActionsHome(request, actions);
 		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
@@ -1371,7 +1423,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 		//Setup the actions menu list
 		List actions = new ArrayList();
-		BinderHelper.addActionsHome(request, actions);
+		//BinderHelper.addActionsHome(request, actions);
 		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);

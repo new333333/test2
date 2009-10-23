@@ -54,6 +54,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
@@ -637,7 +638,7 @@ public class BinderHelper {
 		
 		//Setup the actions menu list
 		List actions = new ArrayList();
-		addActionsHome(request, actions);
+		//addActionsHome(request, actions);
 		addActionsWhatsNew(request, actions, null);
 		addActionsWhatsUnseen(request, actions, null);
 		addActionsRecentPlaces(request, actions, user.getWorkspaceId());
@@ -734,15 +735,46 @@ public class BinderHelper {
 		actions.add(action);
 	}
 
+	public static void addActionsTrackThisBinder(AllModulesInjected bs, RenderRequest request, 
+			List actions, Binder binder) {
+		if (binder == null) return;
+		boolean isTracked = isBinderTracked(bs, binder.getId());
+		Map action = new HashMap();
+		String type = "add";
+		if (isTracked) {
+			action.put("title", NLT.get("relevance.trackThisNot"));
+			type = "delete";
+		} else {
+			if (binder.getEntityType().name().equals(EntityType.workspace.name())) {
+				if (binder.getDefinitionType().equals(Definition.USER_WORKSPACE_VIEW)) {
+					action.put("title", NLT.get("relevance.trackThisPerson"));
+				} else {
+					action.put("title", NLT.get("relevance.trackThisWorkspace"));
+				}
+			} else if (binder.getEntityType().name().equals(EntityType.folder.name())) {
+				action.put("title", NLT.get("relevance.trackThisFolder"));
+			} else {
+				action.put("title", NLT.get("relevance.trackThis"));
+			}
+		}
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_TRACK_THIS);
+		adapterUrl.setParameter(WebKeys.URL_TYPE, type);
+		action.put("url", adapterUrl.toString());
+		actions.add(action);
+	}
+
 	public static void addActionsWhatsNew(RenderRequest request, List actions, Binder binder) {
 		Map action = new HashMap();
 		if (binder == null) {
 			action.put("title", NLT.get("mobile.whatsNewSiteWide"));
-		} else if (binder.getEntityType().name().equals(EntityType.workspace.toString())) {
+		} else if (binder.getEntityType().name().equals(EntityType.workspace.name())) {
 			action.put("title", NLT.get("mobile.whatsNewWorkspace"));
-		} else if (binder.getEntityType().name().equals(EntityType.folder.toString())) {
+		} else if (binder.getEntityType().name().equals(EntityType.folder.name())) {
 			action.put("title", NLT.get("mobile.whatsNewFolder"));
-		} else if (binder.getEntityType().name().equals(EntityType.profiles.toString())) {
+		} else if (binder.getEntityType().name().equals(EntityType.profiles.name())) {
 			action.put("title", NLT.get("mobile.whatsNewWorkspace"));
 		} else {
 			action.put("title", NLT.get("mobile.whatsNew"));
@@ -760,11 +792,11 @@ public class BinderHelper {
 		Map action = new HashMap();
 		if (binder == null) {
 			action.put("title", NLT.get("mobile.whatsUnreadSiteWide"));
-		} else if (binder.getEntityType().name().equals(EntityType.workspace.toString())) {
+		} else if (binder.getEntityType().name().equals(EntityType.workspace.name())) {
 			action.put("title", NLT.get("mobile.whatsUnreadWorkspace"));
-		} else if (binder.getEntityType().name().equals(EntityType.folder.toString())) {
+		} else if (binder.getEntityType().name().equals(EntityType.folder.name())) {
 			action.put("title", NLT.get("mobile.whatsUnreadFolder"));
-		} else if (binder.getEntityType().name().equals(EntityType.profiles.toString())) {
+		} else if (binder.getEntityType().name().equals(EntityType.profiles.name())) {
 			action.put("title", NLT.get("mobile.whatsUnreadWorkspace"));
 		} else {
 			action.put("title", NLT.get("mobile.whatsUnread"));
@@ -3049,6 +3081,72 @@ public class BinderHelper {
 			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
 					NLT.get("toolbar.menu.display_style_popup"), url, qualifiers);
 		}
+	}
+
+	// type = "add", "deletePerson", or "delete"
+	public static void trackThisBinder(AllModulesInjected bs, Long binderId, String type) {
+		//The list of tracked binders and shared binders are kept in the user' user workspace user folder properties
+		User user = RequestContextHolder.getRequestContext().getUser();
+		boolean deletePerson = type.equals("deletePerson");
+		Binder binder = (deletePerson ? null : bs.getBinderModule().getBinder(binderId));
+		Long userWorkspaceId = user.getWorkspaceId();
+		if ((deletePerson || (binder != null)) && userWorkspaceId != null) {
+			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(user.getId(), userWorkspaceId);
+			Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+			if (relevanceMap == null) relevanceMap = new HashMap();
+			List trackedBinders = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_BINDERS);
+			if (trackedBinders == null) {
+				trackedBinders = new ArrayList();
+				relevanceMap.put(ObjectKeys.RELEVANCE_TRACKED_BINDERS, trackedBinders);
+			}
+			List trackedPeople = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
+			if (trackedPeople == null) {
+				trackedPeople = new ArrayList();
+				relevanceMap.put(ObjectKeys.RELEVANCE_TRACKED_PEOPLE, trackedPeople);
+			}
+			List trackedCalendars = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_CALENDARS);
+			if (trackedCalendars == null) {
+				trackedCalendars = new ArrayList();
+				relevanceMap.put(ObjectKeys.RELEVANCE_TRACKED_CALENDARS, trackedCalendars);
+			}
+			if (type.equals("add")) {
+				if (!trackedBinders.contains(binderId)) trackedBinders.add(binderId);
+				if (binder.getEntityType().equals(EntityType.workspace) && 
+						binder.getDefinitionType() != null &&
+						binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
+					//This is a user workspace, so also track this user
+					if (!trackedPeople.contains(binder.getOwnerId())) trackedPeople.add(binder.getOwnerId());
+				}
+				Definition binderDef = binder.getDefaultViewDef();
+				Element familyProperty = (Element) binderDef.getDefinition().getRootElement()
+						.selectSingleNode("//properties/property[@name='family']");
+				if (familyProperty != null && familyProperty.attributeValue("value", "").equals("calendar")) {
+					if (!trackedCalendars.contains(binderId)) trackedCalendars.add(binderId);
+				}
+			} else if (type.equals("delete")) {
+				if (trackedBinders.contains(binderId)) trackedBinders.remove(binderId);
+				if (trackedCalendars.contains(binderId)) trackedCalendars.remove(binderId);
+			} else if (type.equals("deletePerson")) {
+				//This is a user workspace, so also untrack this user
+				if (trackedPeople.contains(binderId)) trackedPeople.remove(binderId);
+			}
+			//Save the updated list
+			bs.getProfileModule().setUserProperty(user.getId(), userWorkspaceId, 
+					ObjectKeys.USER_PROPERTY_RELEVANCE_MAP, relevanceMap);
+		}
+	}
+	
+	public static boolean isBinderTracked(AllModulesInjected bs, Long binderId) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Long userWorkspaceId = user.getWorkspaceId();
+		UserProperties userForumProperties = bs.getProfileModule().getUserProperties(user.getId(), userWorkspaceId);
+		Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+		if (relevanceMap == null) relevanceMap = new HashMap();
+		List trackedBinders = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_BINDERS);
+		if (trackedBinders == null) {
+			trackedBinders = new ArrayList();
+		}
+		return trackedBinders.contains(binderId);
 	}
 
 	public static Map getSearchAndPagingModels(Map entries, Map options, boolean showTrash) {
