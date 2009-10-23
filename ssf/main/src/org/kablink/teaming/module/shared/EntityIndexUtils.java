@@ -161,11 +161,25 @@ public class EntityIndexUtils {
    	
     }
 
-    public static void addPreDeletedField(Document doc, DefinableEntity entry, boolean fieldsOnly) {
+    /**
+     * If an entry is in the preDeleted state, adds appropriate fields
+     * to the index for the UI to manage them.
+     * 
+     * Note:  To sort on a field, you MUST used
+     * Field.Index.UN_TOKENIZED.
+     * 
+     * @param doc
+     * @param entry
+     * @param fieldsOnly
+     */
+    public static void addPreDeletedFields(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	boolean preDeleted = false;
     	Long preDeletedWhen = null;
     	User preDeletedBy = null;
     	String preDeletedFrom = null;
+    	
+    	// Determine the values to use for the various preDeleted
+    	// fields based on what entry is.
       	if (entry instanceof FolderEntry) {
       		FolderEntry fe = ((FolderEntry) entry);
       		if (fe.isPreDeleted()) {
@@ -194,26 +208,42 @@ public class EntityIndexUtils {
       			preDeletedFrom = ws.getParentBinder().getTitle();
       		}
       	}
+      	
+      	// Add the preDeleted flag itself.
     	Field field = new Field(Constants.PRE_DELETED_FIELD, (preDeleted ? Constants.TRUE : Constants.FALSE), Field.Store.NO, Field.Index.TOKENIZED);
     	doc.add(field);
+    	
+    	// Is entry preDeleted?
     	if (preDeleted) {
+    		// Yes!  If we know who it was deleted by by...
         	if (null != preDeletedBy) {
+        		// ...add both their ID and title to the index.
         		field = new Field(Constants.PRE_DELETED_BY_ID_FIELD, String.valueOf(preDeletedBy.getId().intValue()), Field.Store.YES, Field.Index.TOKENIZED);
         		doc.add(field);
-            	field = new Field(Constants.PRE_DELETED_BY_TITLE_FIELD, preDeletedBy.getTitle(), Field.Store.YES, Field.Index.TOKENIZED);
+        		
+            	field = new Field(Constants.PRE_DELETED_BY_TITLE_FIELD, preDeletedBy.getTitle(), Field.Store.YES, Field.Index.UN_TOKENIZED);
             	doc.add(field);
         	}
+        	
+        	// If we know when the item was deleted...
         	if (null != preDeletedWhen) {
-        		field = new Field(Constants.PRE_DELETED_WHEN_FIELD, String.valueOf(preDeletedWhen), Field.Store.YES, Field.Index.TOKENIZED);
+        		// ...add it to the index
+        		field = new Field(Constants.PRE_DELETED_WHEN_FIELD, String.valueOf(preDeletedWhen), Field.Store.YES, Field.Index.UN_TOKENIZED);
         		doc.add(field);
         	}
+        	
+        	// If we know where the item was deleted from... 
         	if (null != preDeletedFrom) {
-        		field = new Field(Constants.PRE_DELETED_FROM_FIELD, preDeletedFrom, Field.Store.YES, Field.Index.TOKENIZED);
+        		// ...add it to the index
+        		field = new Field(Constants.PRE_DELETED_FROM_FIELD, preDeletedFrom, Field.Store.YES, Field.Index.UN_TOKENIZED);
         		doc.add(field);
         	}
     	}
     }
     
+    /*
+     * Returns a User object given a user ID and a zone ID.
+     */
     private static User getUserById(Long userId, Long zoneId) {
     	User reply = null;
     	try {

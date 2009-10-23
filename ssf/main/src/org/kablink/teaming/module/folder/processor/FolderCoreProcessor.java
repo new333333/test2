@@ -53,5 +53,6 @@ public interface FolderCoreProcessor extends EntryProcessor {
 
     public FolderEntry addReply(FolderEntry parent, Definition def, InputDataAccessor inputData, Map fileItems, Map options) 
     	throws AccessControlException, WriteFilesException;
-    public Map getEntryTree(Folder parentFolderId, FolderEntry entry) throws AccessControlException;
+    public Map getEntryTree(Folder parentFolderId, FolderEntry entry)                            throws AccessControlException;
+    public Map getEntryTree(Folder parentFolderId, FolderEntry entry, boolean includePreDeleted) throws AccessControlException;
 }

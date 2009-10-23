@@ -803,6 +803,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
           
 
     public Map getEntryTree(Folder parentFolder, FolderEntry entry) {
+    	return getEntryTree(parentFolder, entry, false);
+    }
+    public Map getEntryTree(Folder parentFolder, FolderEntry entry, boolean includePreDeleted) {
     	int entryLevel;
     	List<FolderEntry> lineage;
     	Map model = new HashMap();   	
@@ -816,13 +819,30 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         model.put(ObjectKeys.FOLDER_ENTRY, entry);
         //remove self from list
         lineage.remove(entry);
-        model.put(ObjectKeys.FOLDER_ENTRY_ANCESTORS, lineage.subList(0,entryLevel-1));
-        model.put(ObjectKeys.FOLDER_ENTRY_DESCENDANTS, lineage.subList(entryLevel-1,lineage.size()));
+        List<FolderEntry> aList = lineage.subList(0,entryLevel-1);
+        List<FolderEntry> dList = lineage.subList(entryLevel-1,lineage.size());
+        if (!includePreDeleted) {
+        	aList = removePreDeletedFromList(aList);
+        	dList = removePreDeletedFromList(dList);
+        }
+        model.put(ObjectKeys.FOLDER_ENTRY_ANCESTORS, aList);
+        model.put(ObjectKeys.FOLDER_ENTRY_DESCENDANTS, dList);
         //Initialize users
         List<DefinableEntity> allE = new ArrayList(lineage);
         allE.add(entry);
     	getProfileDao().loadUserPrincipals(getPrincipalIds(allE), RequestContextHolder.getRequestContext().getZoneId(), false);
         return model;
+    }
+    private static List<FolderEntry> removePreDeletedFromList(List<FolderEntry> list) {
+    	ArrayList<FolderEntry> reply = new ArrayList<FolderEntry>();
+    	int count = ((null == list) ? 0 : list.size());
+    	for (int i = 0; i < count; i += 1) {
+    		FolderEntry fe = list.get(i);
+    		if (!fe.isPreDeleted()) {
+    			reply.add(fe);
+    		}
+    	}
+    	return reply;
     }
          
     //***********************************************************************************************************   

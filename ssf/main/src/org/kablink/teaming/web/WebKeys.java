@@ -823,6 +823,7 @@ public class WebKeys {
     public static final String FOLDER_ENTRYPERSONALTAGS="ssFolderEntryPersonalTags";
     public static final String FOLDER_ENTRY_DESCENDANTS="ssFolderEntryDescendants";
     public static final String FOLDER_ENTRY_ANCESTORS="ssFolderEntryAncestors";
+    public static final String FOLDER_ENTRY_PRE_DELETED="ssFolderEntryPreDeleted";
     public static final String FOLDER_ENTRY_TOOLBAR="ssFolderEntryToolbar";
     public static final String FOLDER_TOOLBAR="ssFolderToolbar";
     public static final String FOLDER_TYPE="ssFolderType";

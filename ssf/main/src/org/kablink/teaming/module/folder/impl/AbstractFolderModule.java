@@ -639,11 +639,14 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     }
 
     public Map getEntryTree(Long folderId, Long entryId) {
+    	return getEntryTree(folderId, entryId, false);
+    }
+    public Map getEntryTree(Long folderId, Long entryId, boolean includePreDeleted) {
     	//does read check
         FolderEntry entry = getEntry(folderId, entryId);   	
         Folder folder = entry.getParentFolder();
         FolderCoreProcessor processor=loadProcessor(folder);
-        return processor.getEntryTree(folder, entry);   	
+        return processor.getEntryTree(folder, entry, includePreDeleted);
     }
     public SortedSet<FolderEntry>getEntries(Collection<Long>ids) {
         User user = RequestContextHolder.getRequestContext().getUser();

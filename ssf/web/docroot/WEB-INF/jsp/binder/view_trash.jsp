@@ -516,7 +516,7 @@
 													crawlable="true"
 													adapter="true"
 													portletName="ss_forum"
-													binderId="${ssBinder.id}"
+													binderId="${entry1._binderId}"
 													action="view_folder_entry"
 													entryId="${entry1._docId}"
 													actionUrl="true"> 
