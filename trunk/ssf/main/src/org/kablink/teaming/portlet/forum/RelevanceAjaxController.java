@@ -86,11 +86,11 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		if (WebHelper.isUserLoggedIn(request)) {
 			String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 			if (op.equals(WebKeys.OPERATION_TRACK_THIS_BINDER)) {
-				ajaxSaveTrackThisBinder(request, response, "add");
+				ajaxSaveTrackThisBinder(this, request, response, "add");
 			} else if (op.equals(WebKeys.OPERATION_TRACK_THIS_BINDER_DELETE)) {
-				ajaxSaveTrackThisBinder(request, response, "delete");
+				ajaxSaveTrackThisBinder(this, request, response, "delete");
 			} else if (op.equals(WebKeys.OPERATION_TRACK_THIS_PERSON_DELETE)) {
-				ajaxSaveTrackThisBinder(request, response, "deletePerson");
+				ajaxSaveTrackThisBinder(this, request, response, "deletePerson");
 			} else if (op.equals(WebKeys.OPERATION_SHARE_THIS_BINDER)) {
 				ajaxSaveShareThisBinder(request, response);
 			} else if (op.equals(WebKeys.OPERATION_CLEAR_UNSEEN)) {
@@ -158,58 +158,12 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("forum/fetch_url_return");
 	} 	
 	
-	private void ajaxSaveTrackThisBinder(ActionRequest request, 
+	private void ajaxSaveTrackThisBinder(AllModulesInjected bs, ActionRequest request, 
 			ActionResponse response, String type) throws Exception {
 		//The list of tracked binders and shared binders are kept in the user' user workspace user folder properties
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-		boolean deletePerson = type.equals("deletePerson");
-		Binder binder = (deletePerson ? null : getBinderModule().getBinder(binderId));
-		Long userWorkspaceId = user.getWorkspaceId();
-		if ((deletePerson || (binder != null)) && userWorkspaceId != null) {
-			UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), userWorkspaceId);
-			Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
-			if (relevanceMap == null) relevanceMap = new HashMap();
-			List trackedBinders = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_BINDERS);
-			if (trackedBinders == null) {
-				trackedBinders = new ArrayList();
-				relevanceMap.put(ObjectKeys.RELEVANCE_TRACKED_BINDERS, trackedBinders);
-			}
-			List trackedPeople = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
-			if (trackedPeople == null) {
-				trackedPeople = new ArrayList();
-				relevanceMap.put(ObjectKeys.RELEVANCE_TRACKED_PEOPLE, trackedPeople);
-			}
-			List trackedCalendars = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_CALENDARS);
-			if (trackedCalendars == null) {
-				trackedCalendars = new ArrayList();
-				relevanceMap.put(ObjectKeys.RELEVANCE_TRACKED_CALENDARS, trackedCalendars);
-			}
-			if (type.equals("add")) {
-				if (!trackedBinders.contains(binderId)) trackedBinders.add(binderId);
-				if (binder.getEntityType().equals(EntityType.workspace) && 
-						binder.getDefinitionType() != null &&
-						binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
-					//This is a user workspace, so also track this user
-					if (!trackedPeople.contains(binder.getOwnerId())) trackedPeople.add(binder.getOwnerId());
-				}
-				Definition binderDef = binder.getDefaultViewDef();
-				Element familyProperty = (Element) binderDef.getDefinition().getRootElement()
-						.selectSingleNode("//properties/property[@name='family']");
-				if (familyProperty != null && familyProperty.attributeValue("value", "").equals("calendar")) {
-					if (!trackedCalendars.contains(binderId)) trackedCalendars.add(binderId);
-				}
-			} else if (type.equals("delete")) {
-				if (trackedBinders.contains(binderId)) trackedBinders.remove(binderId);
-				if (trackedCalendars.contains(binderId)) trackedCalendars.remove(binderId);
-			} else if (type.equals("deletePerson")) {
-				//This is a user workspace, so also track this user
-				if (trackedPeople.contains(binderId)) trackedPeople.remove(binderId);
-			}
-			//Save the updated list
-			getProfileModule().setUserProperty(user.getId(), userWorkspaceId, 
-					ObjectKeys.USER_PROPERTY_RELEVANCE_MAP, relevanceMap);
-		}
+		BinderHelper.trackThisBinder(bs, binderId, type);
 	}
 	
 	private void ajaxSaveShareThisBinder(ActionRequest request, 

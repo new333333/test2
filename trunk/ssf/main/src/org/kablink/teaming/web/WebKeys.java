@@ -423,6 +423,7 @@ public class WebKeys {
     public static final String OPERATION_MOBILE_SHOW_TEAMS="mobile_show_teams"; 
     public static final String OPERATION_MOBILE_SHOW_USER="mobile_show_user"; 
     public static final String OPERATION_MOBILE_SHOW_WORKSPACE="mobile_show_workspace"; 
+    public static final String OPERATION_MOBILE_TRACK_THIS="mobile_track_this"; 
     public static final String OPERATION_MOBILE_WHATS_NEW="mobile_whats_new"; 
 	public static final String OPERATION_OPEN_WEBDAV_FILE = "open_webdav_file";
 	public static final String OPERATION_OPEN_WEBDAV_FILE_BY_FILEID = "open_webdav_file_by_fileid";
