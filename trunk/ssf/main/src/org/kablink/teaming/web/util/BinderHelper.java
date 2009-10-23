@@ -742,7 +742,17 @@ public class BinderHelper {
 		Map action = new HashMap();
 		String type = "add";
 		if (isTracked) {
-			action.put("title", NLT.get("relevance.trackThisNot"));
+			if (binder.getEntityType().name().equals(EntityType.workspace.name())) {
+				if (binder.getDefinitionType().equals(Definition.USER_WORKSPACE_VIEW)) {
+					action.put("title", NLT.get("relevance.trackThisPersonNot"));
+				} else {
+					action.put("title", NLT.get("relevance.trackThisWorkspaceNot"));
+				}
+			} else if (binder.getEntityType().name().equals(EntityType.folder.name())) {
+				action.put("title", NLT.get("relevance.trackThisFolderNot"));
+			} else {
+				action.put("title", NLT.get("relevance.trackThisNot"));
+			}
 			type = "delete";
 		} else {
 			if (binder.getEntityType().name().equals(EntityType.workspace.name())) {
