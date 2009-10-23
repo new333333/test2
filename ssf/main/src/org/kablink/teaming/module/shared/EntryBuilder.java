@@ -235,7 +235,9 @@ public class EntryBuilder {
 					break;
 				} 
 				default: {
-					destination.addCustomAttribute(ca.getName(), ca.getValue());
+					CustomAttribute v = destination.getCustomAttribute(ca.getName());
+					if (v == null) destination.addCustomAttribute(ca.getName(), ca.getValue());
+					else v.setValue(ca.getValue());
 					break;
 				}
 			}
