@@ -485,7 +485,7 @@ public class ExportHelper {
 			String pathName, Map reportMap) throws IOException {
 
 		processAttachment(zipOut, entry.getParentBinder(), entry, attachment,
-				pathName + File.separator + "e" + fullId, reportMap);
+				pathName + "/" + "e" + fullId, reportMap);
 
 		return;
 	}
@@ -548,7 +548,7 @@ public class ExportHelper {
 
 				// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 				zipOut.putNextEntry(new ZipEntry(pathName + "/"
-						+ fileName + ".versions" + File.separator + versionNum
+						+ fileName + ".versions" + "/" + versionNum
 						+ "." + fileExt));
 				FileUtil.copy(fileStream, zipOut);
 				zipOut.closeEntry();
