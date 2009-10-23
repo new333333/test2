@@ -140,12 +140,21 @@ public class LoginFilter  implements Filter {
 				req.setAttribute(WebKeys.REFERER_URL, currentURL);
 				chain.doFilter(req, res);					
 			}
-			else if(currentURL.contains("action=__login")) {
+			else if(currentURL.contains("action=__login") || 
+					(currentURL.contains("action=__ajax_mobile") && 
+							currentURL.contains("operation=mobile_login"))) {
 				// Request for login form. Let it proceed as normal.
 				String refererURL = req.getParameter("refererUrl");
 				if(Validator.isNotNull(refererURL))
 					req.setAttribute(WebKeys.REFERER_URL, refererURL);
 				chain.doFilter(req, res);										
+			}
+			else if(1 == 0 && (BrowserSniffer.is_wap_xhtml(req) || 
+					BrowserSniffer.is_blackberry(req) || 
+					BrowserSniffer.is_iphone(req))) {
+				// Mobile interaction. 
+				// Guest access not allowed. Redirect the guest to the login page.
+				res.sendRedirect(getMobileLoginURL(req, currentURL));
 			}
 			else {
 				// The guest is requesting a non-mobile page that isn't the login form.
@@ -182,6 +191,18 @@ public class LoginFilter  implements Filter {
 		try {
 			return req.getContextPath() + 
 				SPropsUtil.getString("form.login.url", "/a/do?p_name=ss_forum&p_action=1&action=__login") +
+				"&refererUrl=" + 
+				URLEncoder.encode(currentURL, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			return null;
+		}
+	}
+	
+	protected String getMobileLoginURL(HttpServletRequest req, String currentURL) {
+		// Should we disallow this if form.login.auth.disallowed is true?
+		try {
+			return req.getContextPath() + 
+				"/a/do?p_name=ss_mobile&p_action=1&action=__ajax_mobile&operation=mobile_login" +
 				"&refererUrl=" + 
 				URLEncoder.encode(currentURL, "UTF-8");
 		} catch (UnsupportedEncodingException e) {

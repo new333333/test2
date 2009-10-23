@@ -405,11 +405,16 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxMobileLogin(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, String portletName, String operation) throws Exception {
 		Map model = new HashMap();
-		BinderHelper.setupStandardBeans(bs, request, response, model, null, portletName);
-		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, portletName, true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
-		adapterUrl.setParameter(WebKeys.URL_OPERATION, operation);
-		model.put(WebKeys.URL, adapterUrl);
+		String refererUrl = PortletRequestUtils.getStringParameter(request, WebKeys.URL_REFERER_URL);
+		if (!refererUrl.equals("")) {
+			model.put(WebKeys.URL, refererUrl);
+		} else {
+			BinderHelper.setupStandardBeans(bs, request, response, model, null, portletName);
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, portletName, true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, operation);
+			model.put(WebKeys.URL, adapterUrl);
+		}
 		return new ModelAndView("mobile/show_login_form", model);
 	}
 	
