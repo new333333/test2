@@ -2195,7 +2195,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		    	String fileName = myFile.getOriginalFilename();
 		    	if (fileName.equals("")) return;
 		    	String repositoryName = "";
-		    	if (nextItem != null) DefinitionUtils.getPropertyValue(nextItem, "storage");
+		    	if (nextItem != null) 
+		    		repositoryName = DefinitionUtils.getPropertyValue(nextItem, "storage");
 		    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
 		    	FileUploadItem fui;
 		    	if (titleGenerated && nameValue.equals(titleSource) &&
@@ -2239,7 +2240,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					    		repositoryName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(intFileCount));
 					    	if (repositoryName == null) {
 						    	repositoryName = "";
-						    	if (nextItem != null) DefinitionUtils.getPropertyValue(nextItem, "storage");
+						    	if (nextItem != null) 
+						    		repositoryName = DefinitionUtils.getPropertyValue(nextItem, "storage");
 						    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
 					    	}
 					    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
