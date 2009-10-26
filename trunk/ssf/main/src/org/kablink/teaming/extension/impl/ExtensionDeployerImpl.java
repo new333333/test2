@@ -703,6 +703,15 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		return retValue;
 	}
 
+	public List findExtensions() {
+		OrderBy order = new OrderBy();
+		order.addColumn("name");
+		FilterControls filter = new FilterControls();
+		filter.setOrderBy(order);
+		filter.setZoneCheck(false);
+		return getCoreDao().loadObjects(ExtensionInfo.class, filter, null);
+	}
+	
 	public List findExtensions(Long zoneId) {
 		OrderBy order = new OrderBy();
 		order.addColumn("name");

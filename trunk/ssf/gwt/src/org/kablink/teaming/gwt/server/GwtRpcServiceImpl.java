@@ -451,6 +451,7 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
         	client.setId(info.getId());
         	client.setName(info.getName());
         	client.setDescription("Descriptions "+info.getZoneId());
+        	client.setZoneId(info.getZoneId());
         	
         	list.add(client);
     	}

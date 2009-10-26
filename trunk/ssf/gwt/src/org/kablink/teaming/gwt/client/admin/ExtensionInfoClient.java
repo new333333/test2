@@ -7,6 +7,7 @@ public class ExtensionInfoClient implements IsSerializable {
 	private String id;
 	private String name;
 	private String description;
+	private Long zoneId;
 
 	public ExtensionInfoClient(){
 		
@@ -31,4 +32,13 @@ public class ExtensionInfoClient implements IsSerializable {
 		this.description = description;
 	}
 
+	public void setZoneId(Long zoneId) {
+		this.zoneId = zoneId;
+	}
+	
+	public Long getZoneId(){
+		return zoneId;
+	}
+	
+	
 }

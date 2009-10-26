@@ -44,12 +44,16 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.kablink.teaming.NameMissingException;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
+import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
+import org.kablink.util.Validator;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.ModelAndView;
@@ -62,11 +66,22 @@ public class ExtensionsController extends  SAbstractController {
 		if (WebHelper.isMethodPost(request)) {
 			Map fileMap=null;
 			if (request instanceof MultipartFileSupport) {
+				
+				String zoneName = PortletRequestUtils.getStringParameter(request,"zoneName");
+				if(Validator.isNull(zoneName))
+					throw new NameMissingException("errorcode.zonename.missing");
+				
+				String zoneFolderKey = "kablinlk";
+				if(!(zoneName.equals(SZoneConfig.getDefaultZoneName()))){
+					Long zoneId = getZoneModule().getZoneIdByZoneName(zoneName);
+					zoneFolderKey = zoneName + "_" + zoneId;
+				}
+				
 				fileMap = ((MultipartFileSupport) request).getFileMap();
 		    	MultipartFile myFile = (MultipartFile)fileMap.get("uploadFormElement");
 		    	InputStream fIn = myFile.getInputStream();
 		    	
-		    	String sharedExtensionDir = SPropsUtil.getDirPath("data.extension.root.dir") + "extensions" + File.separator + Utils.getZoneKey() ;
+		    	String sharedExtensionDir = SPropsUtil.getDirPath("data.extension.root.dir") + "extensions" + File.separator + zoneFolderKey;
 				File sharedDir = new File(sharedExtensionDir);		
 				if (!sharedDir.exists()) sharedDir.mkdirs();
 				
@@ -81,10 +96,10 @@ public class ExtensionsController extends  SAbstractController {
 		    	getAdminModule().getExtensionManager().deploy();
 
 				response.setRenderParameter( "extensions_updated", "success" );
-			} else {
-				response.setRenderParameters(formData);
-			}
-		
+
+			} 
+			
+			response.setRenderParameters(formData);
 		} 
 		else
 			response.setRenderParameters(formData);
@@ -103,7 +118,7 @@ public class ExtensionsController extends  SAbstractController {
 //
 //			return new ModelAndView(WebKeys.AJAX_STATUS, statusMap);	
 //		}
-			
+	    model.put( WebKeys.ZONE_INFO_LIST, getZoneModule().getZoneInfos());		
 		
 		// Pass back any error information.
 		model.put( WebKeys.EXCEPTION, request.getParameter( WebKeys.EXCEPTION ) );

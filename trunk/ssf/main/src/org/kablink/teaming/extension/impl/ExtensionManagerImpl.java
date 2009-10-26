@@ -42,7 +42,7 @@ public class ExtensionManagerImpl extends CommonDependencyInjection implements E
     }
 	public List<ExtensionInfo> getExtensions() {
 		//return new ArrayList<ExtensionInfo>();
-		return getExtDeployer().findExtensions(RequestContextHolder.getRequestContext().getZoneId());
+		return getExtDeployer().findExtensions();
     }
 	public void modifyExtension(String id, Map updates) {
 		ExtensionInfo extension = getExtDeployer().getExtension(id);
