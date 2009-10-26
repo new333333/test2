@@ -206,7 +206,9 @@
 		
 			<!-- Trash:  Navigation Bar -->
 			<c:set var="ssForumPageNav_HideGoBox" value="true" scope="request"/>
-			<jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" />
+			<c:set var="ssForumPageNav_ShowTrash" value="true" scope="request"/>
+			<jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation_init.jsp" />
+			<jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp"      />
 
 
 			<!-- Trash:  Listing Table -->

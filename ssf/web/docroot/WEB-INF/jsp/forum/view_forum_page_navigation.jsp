@@ -63,8 +63,11 @@
 				      <form name="ss_goToEntryForm_${renderResponse.namespace}" style="display:inline;"
 				        id="ss_goToEntryForm_${renderResponse.namespace}" method="post" 
 					    action="<ssf:url action="view_folder_entry" 
-					    actionUrl="true"><ssf:param 
-						name="binderId" value="${ssFolder.id}"/><ssf:param 
+					    actionUrl="true"> 
+			  			<c:if test="${!empty ssForumPageNav_ShowTrash && 'true' == ssForumPageNav_ShowTrash}">
+							<ssf:param name="showTrash" value="true"/> 
+						</c:if>
+						<ssf:param name="binderId" value="${ssFolder.id}"/><ssf:param 
 						name="entryViewStyle" value="full"/><ssf:param 
 						name="operation" value="go_to_entry"/></ssf:url>" >
 					    <c:if test="${ssBinder.entityType != 'profiles'}">
@@ -95,8 +98,11 @@
 				<tbody><tr>
 					<td bgcolor="#E9F1F1" class="ss_pagination_arrows">
 
-						<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-							name="operation" value="save_folder_page_info"/><ssf:param 
+						<a href="<ssf:url action="${action}" actionUrl="true"> 
+				  			<c:if test="${!empty ssForumPageNav_ShowTrash && 'true' == ssForumPageNav_ShowTrash}">
+								<ssf:param name="showTrash" value="true"/> 
+							</c:if>
+							<ssf:param name="operation" value="save_folder_page_info"/><ssf:param 
 							name="binderId" value="${ssFolder.id}"/><ssf:param 
 							name="ssPageStartIndex" value="0"/><c:if test="${!empty cTag}"><ssf:param 
 							name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
@@ -111,8 +117,11 @@
 						<img src="<html:rootPath/>images/pics/page/back.gif" width="15" height="10" border="0" id="back" <ssf:alt tag="title.goto.first.page"/> align="absmiddle" /></a>&nbsp;&nbsp;
 					</td>
 					<td bgcolor="#CCDFDE" class="ss_paginationFont">
-					<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-						name="operation" value="save_folder_page_info"/><ssf:param 
+					<a href="<ssf:url action="${action}" actionUrl="true"> 
+			  			<c:if test="${!empty ssForumPageNav_ShowTrash && 'true' == ssForumPageNav_ShowTrash}">
+							<ssf:param name="showTrash" value="true"/> 
+						</c:if>
+						<ssf:param name="operation" value="save_folder_page_info"/><ssf:param 
 						name="binderId" value="${ssFolder.id}"/><ssf:param 
 						name="ssPageStartIndex" value="${ssPagePrevious.ssPageInternalValue}"/><c:if test="${!empty cTag}"><ssf:param 
 						name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
@@ -146,8 +155,11 @@
 							<span class="ss_pageNext"><ssf:nlt tag="general.Next"/>&nbsp;&nbsp;</span>&nbsp;&nbsp;
 				  			</c:when>
 				  		<c:otherwise>
-						<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-							name="operation" value="save_folder_page_info"/><ssf:param 
+						<a href="<ssf:url action="${action}" actionUrl="true"> 
+				  			<c:if test="${!empty ssForumPageNav_ShowTrash && 'true' == ssForumPageNav_ShowTrash}">
+								<ssf:param name="showTrash" value="true"/> 
+							</c:if>
+							<ssf:param name="operation" value="save_folder_page_info"/><ssf:param 
 							name="binderId" value="${ssFolder.id}"/><ssf:param 
 							name="ssPageStartIndex" value="${ssPageNext.ssPageInternalValue}"/><c:if test="${!empty cTag}"><ssf:param 
 							name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
@@ -162,8 +174,11 @@
 						</c:choose>
 					</td>
 					<td bgcolor="#E9F1F1" class="ss_pagination_arrows">
-					<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-						name="operation" value="save_folder_page_info"/><ssf:param 
+					<a href="<ssf:url action="${action}" actionUrl="true"> 
+			  			<c:if test="${!empty ssForumPageNav_ShowTrash && 'true' == ssForumPageNav_ShowTrash}">
+							<ssf:param name="showTrash" value="true"/> 
+						</c:if>
+						<ssf:param name="operation" value="save_folder_page_info"/><ssf:param 
 						name="binderId" value="${ssFolder.id}"/><ssf:param 
 						name="ssPageStartIndex" value="${ssPageLastStartingIndex}"/><c:if test="${!empty cTag}"><ssf:param 
 						name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
@@ -188,8 +203,11 @@
 			    <form name="ss_goToPageForm_${renderResponse.namespace}" 
 			      style="display:inline;"
 			      id="ss_goToPageForm_${renderResponse.namespace}" method="post" 
-			      action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-					name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
+			      action="<ssf:url action="${action}" actionUrl="true"> 
+		  			<c:if test="${!empty ssForumPageNav_ShowTrash && 'true' == ssForumPageNav_ShowTrash}">
+						<ssf:param name="showTrash" value="true"/> 
+					</c:if>
+					<ssf:param name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
 					name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
 					name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
 					name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
