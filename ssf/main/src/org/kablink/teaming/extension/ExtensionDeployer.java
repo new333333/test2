@@ -69,6 +69,8 @@ public interface ExtensionDeployer {
     
     public ExtensionInfo getExtension(String id) throws NoObjectByTheIdException;
    
+    public List findExtensions();
+    
     public List findExtensions(Long zoneId);
 
 	public List findExtensions(String name, Long zoneId);

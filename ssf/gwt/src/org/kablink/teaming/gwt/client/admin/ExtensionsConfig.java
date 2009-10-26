@@ -85,32 +85,28 @@ public class ExtensionsConfig  extends Composite {
 	 */
 	public ExtensionsConfig() {
 
-		fPanel.setStyleName("ss_form_wrap");
-		
-		Label heading = new Label( "Manage Extensions");
-		heading.addStyleName("ss_form_header");
-		fPanel.add(heading);
+		fPanel.setStyleName("ss_form");
 		
 		// Create a hint
-//		Label hintLabel = new Label( GwtTeaming.getMessages().lpeHint() );
-//		hintLabel.addStyleName( "lpeHint" );
-//		fPanel.add( hintLabel );
+		//		Label hintLabel = new Label( GwtTeaming.getMessages().lpeHint() );
+		//		hintLabel.addStyleName( "lpeHint" );
+		//		fPanel.add( hintLabel );
 		
 		fPanel.add(new HTML("<br/>"));
 		
-		FlowPanel expandPanel = new FlowPanel();
-		expandPanel.setStyleName("ss_expandable_area_title");
-		
-		VerticalPanel vPanel = new VerticalPanel();
-		vPanel.setStyleName("ss_style");
-		vPanel.add(addFileUpload());
-
-		expandPanel.add(vPanel);
-		fPanel.add(expandPanel);
-		
-		fPanel.add(new HTML("<br/>"));
-		
-		fPanel.add(extensionPanelStateText);
+//		FlowPanel expandPanel = new FlowPanel();
+//		expandPanel.setStyleName("ss_expandable_area_title");
+//		
+//		VerticalPanel vPanel = new VerticalPanel();
+//		vPanel.setStyleName("ss_style");
+//		vPanel.add(addFileUpload());
+//
+//		expandPanel.add(vPanel);
+//		fPanel.add(expandPanel);
+//		
+//		fPanel.add(new HTML("<br/>"));
+//		
+//		fPanel.add(extensionPanelStateText);
 
 		extFlexTable.setCellPadding(2);
 		extFlexTable.setStyleName("lpeTableDropZone");
@@ -119,28 +115,20 @@ public class ExtensionsConfig  extends Composite {
 		extFlexTable.setText(0, 0, "ID");
 		extFlexTable.setText(0, 1, "Name");
 		extFlexTable.setText(0, 2, "Description");
-		extFlexTable.setText(0, 3, "Remove");
+		extFlexTable.setText(0, 3, "Zone");
+		extFlexTable.setText(0, 4, "Remove");
 		
 		extFlexTable.getCellFormatter().setStyleName(0, 0, "ss_bold");
 		extFlexTable.getCellFormatter().setStyleName(0, 1, "ss_bold");
 		extFlexTable.getCellFormatter().setStyleName(0, 2, "ss_bold");
+		extFlexTable.getCellFormatter().setStyleName(0, 3, "ss_bold");
 		
 		fPanel.add(extFlexTable);
 
-		//Add the close button at the bottom of the page
-		
-		//<form class="ss_portlet_style ss_form" id="${ssNamespace}_btnForm" 
-		//	  name="${ssNamespace}_btnForm" method="post" 
-		//	  action="<ssf:url action="site_administration" actionUrl="false"/>">
-		//		<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		//		  onClick="self.window.close();return false;"/>
-		//</form>
-		
-		
-		NamedFrame iframe = new NamedFrame("uploadFormTgt");
-		iframe.setVisible(false);
-		fPanel.add(iframe);
-
+//		NamedFrame iframe = new NamedFrame("uploadFormTgt");
+//		iframe.setVisible(false);
+//		fPanel.add(iframe);
+//
 		{
 			Timer timer;
 			timer = new Timer()
@@ -207,6 +195,8 @@ public class ExtensionsConfig  extends Composite {
 		          Window.alert("The text box must not be empty");
 		          event.cancel();
 		        }
+			    
+			    Window.alert("Submitted form");
 		  }
 	    });
 
@@ -276,6 +266,7 @@ public class ExtensionsConfig  extends Composite {
 		extFlexTable.setText(row, 0, info.getId());
 		extFlexTable.setText(row, 1, info.getName());
 		extFlexTable.setText(row, 2, info.getDescription());
+		extFlexTable.setText(row, 3, info.getZoneId().toString());
 		
 		Button removeButton = new Button("x");
 		removeButton.addStyleDependentName("remove");
@@ -284,7 +275,7 @@ public class ExtensionsConfig  extends Composite {
 				removeExtension(row);
 			}});
 		
-		extFlexTable.setWidget(row, 3, removeButton);
+		extFlexTable.setWidget(row, 4, removeButton);
 	}
 	
 	private void removeExtension(final int row) {
