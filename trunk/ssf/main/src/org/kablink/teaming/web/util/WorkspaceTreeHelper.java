@@ -405,8 +405,14 @@ public class WorkspaceTreeHelper {
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		model.put(WebKeys.ENTRY, binder);
 		
-		Tabs.TabEntry tab = BinderHelper.initTabs(request, binder);
-		model.put(WebKeys.TABS, tab.getTabs());		
+		Tabs.TabEntry tab;
+		if (showTrash) {
+			tab = TrashHelper.buildTrashTabs(request, binder, model);
+		}
+		else {
+			tab = BinderHelper.initTabs(request, binder);
+			model.put(WebKeys.TABS, tab.getTabs());
+		}
 
 		//Build a reload url
 		PortletURL reloadUrl = response.createRenderURL();

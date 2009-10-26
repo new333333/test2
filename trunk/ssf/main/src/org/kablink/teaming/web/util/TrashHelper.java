@@ -54,6 +54,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.TrashTraverser;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.StringPool;
@@ -364,20 +365,52 @@ public class TrashHelper {
 		// Access the binder...
 		Binder binder = bs.getBinderModule().getBinder(binderId);
 		
-		// ...store the tabs...
-		Tabs.TabEntry tab= BinderHelper.initTabs(request, binder);
-		model.put(WebKeys.TABS, tab.getTabs());
+		// ...setup the tabs...
+		Tabs.TabEntry tab = buildTrashTabs(request, binder, model, true);
 
-		
 		// Access the user properties... 
 		UserProperties userProperties       = ((UserProperties) model.get(WebKeys.USER_PROPERTIES_OBJ));
 		UserProperties userFolderProperties = ((UserProperties) model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ));
-
+		
 		// ...initialize the page counts and sort order.
 		Map options = ListFolderHelper.getSearchFilter(bs, request, binder, userFolderProperties, true);
 		ListFolderHelper.initPageCounts(bs, request, userProperties.getProperties(), tab, options);
+		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 		BinderHelper.initSortOrder(bs, userFolderProperties, options);
 		return options;
+	}
+
+	/**
+	 * Builds the tabs for displaying the trash from either a folder
+	 * or workspace binder.
+	 * 
+	 * @param request
+	 * @param binder
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public static Tabs.TabEntry buildTrashTabs(RenderRequest request, Binder binder, Map model) throws Exception {
+		return buildTrashTabs(request, binder, model, false);
+	}
+	@SuppressWarnings("unchecked")
+	public static Tabs.TabEntry buildTrashTabs(RenderRequest request, Binder binder, Map model, boolean create) throws Exception {
+		Tabs.TabEntry tab;
+		if (create) {
+			tab = BinderHelper.initTabs(request, binder);
+		}
+		else {
+			tab = Tabs.getTabs(request).getTab(binder.getId());
+		}
+		model.put(WebKeys.TABS, tab.getTabs());
+		Map tabData = tab.getData();
+		Integer recordsInPage = ((Integer) tabData.get(Tabs.RECORDS_IN_PAGE));
+		if (null == recordsInPage) {
+			recordsInPage = Integer.valueOf(SPropsUtil.getString("folder.records.listed"));
+			tabData.put(Tabs.RECORDS_IN_PAGE, recordsInPage);
+		}
+		return tab;
 	}
 
 	/*
