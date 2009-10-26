@@ -54,6 +54,7 @@ public class EntryProperties
 	private String m_entryId;
 	private String m_entryName;
 	private String m_parentBinderName;	// Name of the binder the entry is found in.
+	private String m_zoneUUID;
 	private AsyncCallback<GwtFolderEntry> m_folderEntryCallback;
 	private boolean m_rpcInProgress;
 	
@@ -66,6 +67,7 @@ public class EntryProperties
 		m_entryId = null;
 		m_entryName = null;
 		m_parentBinderName = null;
+		m_zoneUUID = null;
 		
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolderEntry object.
 		m_folderEntryCallback = new AsyncCallback<GwtFolderEntry>()
@@ -107,9 +109,19 @@ public class EntryProperties
 		if ( props instanceof EntryProperties )
 		{
 			EntryProperties entryProps;
+			String newEntryId;
 			
 			entryProps = (EntryProperties) props;
-			m_entryId = entryProps.getEntryId();
+			
+			// Did the entry id change?
+			newEntryId = entryProps.getEntryId();
+			if ( m_entryId != null && m_entryId != null && !m_entryId.equalsIgnoreCase( newEntryId ) )
+			{
+				// Yes, throw away the zone id.
+				m_zoneUUID = null;
+			}
+			
+			m_entryId = newEntryId;
 			m_entryName = entryProps.getEntryName();
 			m_parentBinderName = entryProps.getBinderName();
 			m_showTitle = entryProps.getShowTitleValue();
@@ -129,6 +141,10 @@ public class EntryProperties
 		if ( m_entryId != null )
 			str += m_entryId;
 		str += ",";
+		
+		// Add the zone uuid if we have one.
+		if ( m_zoneUUID != null && m_zoneUUID.length() > 0 )
+			str += "zoneUUID=" + m_zoneUUID + ",";
 		
 		str += "showTitle=";
 		if ( m_showTitle )
@@ -196,6 +212,15 @@ public class EntryProperties
 	
 	
 	/**
+	 * Return the zone uuid
+	 */
+	public String getZoneUUID()
+	{
+		return m_zoneUUID;
+	}// end getZoneUUID()
+	
+	
+	/**
 	 * Return whether an rpc call is in progress.
 	 */
 	public boolean isRpcInProgress()
@@ -225,8 +250,17 @@ public class EntryProperties
 	/**
 	 * 
 	 */
-	public void setShowTitle( boolean showTitle)
+	public void setShowTitle( boolean showTitle )
 	{
 		m_showTitle = showTitle;
 	}// end setShowBorder()
+
+
+	/**
+	 * 
+	 */
+	public void setZoneUUID( String zoneUUID )
+	{
+		m_zoneUUID = zoneUUID;
+	}// end setZoneUUID()
 }// end EntryProperties

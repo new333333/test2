@@ -38,7 +38,6 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
-import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -55,6 +54,7 @@ public class LinkToFolderProperties
 	private boolean	m_openInNewWindow;
 	private String m_folderId;
 	private String m_folderName;
+	private String m_zoneUUID;
 	private AsyncCallback<GwtFolder> m_folderCallback;
 	private boolean m_rpcInProgress;
 	
@@ -67,6 +67,7 @@ public class LinkToFolderProperties
 		m_openInNewWindow = false;
 		m_folderId = null;
 		m_folderName = null;
+		m_zoneUUID = null;
 		m_rpcInProgress = false;
 		
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
@@ -105,10 +106,19 @@ public class LinkToFolderProperties
 		if ( props instanceof LinkToFolderProperties )
 		{
 			LinkToFolderProperties folderProps;
+			String newFolderId;
 			
 			folderProps = (LinkToFolderProperties) props;
 			
-			setFolderId( folderProps.getFolderId() );
+			// Did the folder id change?
+			newFolderId = folderProps.getFolderId();
+			if ( m_folderId != null && newFolderId != null && !m_folderId.equalsIgnoreCase( newFolderId ) )
+			{
+				// Yes, throw away the zone id.
+				m_zoneUUID = null;
+			}
+			
+			setFolderId( newFolderId );
 			setFolderName( folderProps.getFolderName() );
 			setTitle( folderProps.getTitle() );
 			setOpenInNewWindow( folderProps.getOpenInNewWindow() );
@@ -129,6 +139,10 @@ public class LinkToFolderProperties
 			str += m_folderId;
 		str += ",";
 		
+		// Add the zone uuid if we have one.
+		if ( m_zoneUUID != null && m_zoneUUID.length() > 0 )
+			str += "zoneUUID=" + m_zoneUUID + ",";
+
 		str += "title=";
 		if ( m_title != null )
 			str += ConfigData.encodeConfigData( m_title );
@@ -200,6 +214,15 @@ public class LinkToFolderProperties
 	
 	
 	/**
+	 * Return the zone uuid
+	 */
+	public String getZoneUUID()
+	{
+		return m_zoneUUID;
+	}// end getZoneUUID()
+	
+	
+	/**
 	 * Return whether an rpc call is in progress.
 	 */
 	public boolean isRpcInProgress()
@@ -250,4 +273,13 @@ public class LinkToFolderProperties
 	{
 		m_title = title;
 	}// end setTitle()
+
+
+	/**
+	 * 
+	 */
+	public void setZoneUUID( String zoneUUID )
+	{
+		m_zoneUUID = zoneUUID;
+	}// end setZoneUUID()
 }// end LinkToFolderProperties

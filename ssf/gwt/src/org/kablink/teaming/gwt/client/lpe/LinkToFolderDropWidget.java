@@ -169,7 +169,9 @@ public class LinkToFolderDropWidget extends DropWidget
 		
 		// Create an object to hold all of the properties that define a "link to folder"widget.
 		m_properties = new LinkToFolderProperties();
-		
+		if ( properties != null )
+			m_properties.setZoneUUID( properties.getZoneUUID() );
+
 		// Update the dynamic parts of this widget
 		updateWidget( properties );
 		

@@ -69,6 +69,8 @@ public class EntryConfig extends ConfigItem
 						m_properties.setShowTitle( results2[1].equalsIgnoreCase( "1" ) );
 					else if ( results2[0].equalsIgnoreCase( "entryId" ) )
 						m_properties.setEntryId( results2[1] );
+					else if ( results2[0].equalsIgnoreCase( "zoneUUID" ) )
+						m_properties.setZoneUUID( results2[1] );
 				}
 			}
 		}

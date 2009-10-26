@@ -38,7 +38,6 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
-import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -55,6 +54,7 @@ public class LinkToEntryProperties
 	private boolean	m_openInNewWindow;
 	private String m_entryId;
 	private String m_entryName;
+	private String m_zoneUUID;
 	private AsyncCallback<GwtFolderEntry> m_folderEntryCallback;
 	private boolean m_rpcInProgress;
 	
@@ -67,6 +67,7 @@ public class LinkToEntryProperties
 		m_openInNewWindow = false;
 		m_entryId = null;
 		m_entryName = null;
+		m_zoneUUID = null;
 		m_rpcInProgress = false;
 		
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolderEntry object.
@@ -105,10 +106,19 @@ public class LinkToEntryProperties
 		if ( props instanceof LinkToEntryProperties )
 		{
 			LinkToEntryProperties entryProps;
+			String newEntryId;
 			
 			entryProps = (LinkToEntryProperties) props;
 			
-			setEntryId( entryProps.getEntryId() );
+			// Did the entry id change?
+			newEntryId = entryProps.getEntryId();
+			if ( m_entryId != null && m_entryId != null && !m_entryId.equalsIgnoreCase( newEntryId ) )
+			{
+				// Yes, throw away the zone id.
+				m_zoneUUID = null;
+			}
+			
+			setEntryId( newEntryId );
 			setEntryName( entryProps.getEntryName() );
 			setTitle( entryProps.getTitle() );
 			setOpenInNewWindow( entryProps.getOpenInNewWindow() );
@@ -129,6 +139,10 @@ public class LinkToEntryProperties
 			str += m_entryId;
 		str += ",";
 		
+		// Add the zone uuid if we have one.
+		if ( m_zoneUUID != null && m_zoneUUID.length() > 0 )
+			str += "zoneUUID=" + m_zoneUUID + ",";
+
 		str += "title=";
 		if ( m_title != null )
 			str += ConfigData.encodeConfigData( m_title );
@@ -140,7 +154,7 @@ public class LinkToEntryProperties
 		else
 			str += "0";
 		str += ";";
-		
+
 		return str;
 	}// end createConfigString()
 	
@@ -200,6 +214,15 @@ public class LinkToEntryProperties
 	
 	
 	/**
+	 * Return the zone uuid
+	 */
+	public String getZoneUUID()
+	{
+		return m_zoneUUID;
+	}// end getZoneUUID()
+	
+	
+	/**
 	 * Return whether an rpc call is in progress.
 	 */
 	public boolean isRpcInProgress()
@@ -250,4 +273,13 @@ public class LinkToEntryProperties
 	{
 		m_title = title;
 	}// end setTitle()
+
+
+	/**
+	 * 
+	 */
+	public void setZoneUUID( String zoneUUID )
+	{
+		m_zoneUUID = zoneUUID;
+	}// end setZoneUUID()
 }// end LinkToEntryProperties

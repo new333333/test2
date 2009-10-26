@@ -71,6 +71,8 @@ public class LinkToEntryConfig extends ConfigItem
 						m_properties.setTitle( URL.decodeComponent( results2[1] ) );
 					else if ( results2[0].equalsIgnoreCase( "entryId" ) )
 						m_properties.setEntryId( results2[1] );
+					else if ( results2[0].equalsIgnoreCase( "zoneUUID" ) )
+						m_properties.setZoneUUID( results2[1] );
 					else if ( results2[0].equalsIgnoreCase( "popup" ) )
 						m_properties.setOpenInNewWindow( results2[1].equalsIgnoreCase( "1" ) );
 				}

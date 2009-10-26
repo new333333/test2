@@ -69,6 +69,8 @@ public class FolderConfig extends ConfigItem
 				{
 					if ( results2[0].equalsIgnoreCase( "folderId" ) )
 						m_properties.setFolderId( results2[1] );
+					else if ( results2[0].equalsIgnoreCase( "zoneUUID" ) )
+						m_properties.setZoneUUID( results2[1] );
 					else if ( results2[0].equalsIgnoreCase( "showTitle" ) )
 						m_properties.setShowTitle( results2[1].equalsIgnoreCase( "1" ) );
 					else if ( results2[0].equalsIgnoreCase( "showFolderDescription" ) )
