@@ -37,12 +37,13 @@ import static org.kablink.util.search.Restrictions.in;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
@@ -51,10 +52,9 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.web.util.TrashTraverser;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.StringPool;
 import org.kablink.util.StringUtil;
@@ -70,10 +70,15 @@ import org.springframework.web.portlet.bind.PortletRequestBindingException;
  * @author drfoster@novell.com
  */
 public class TrashHelper {
+	// Class data members.
+	public static final String[] trashColumns= new String[] {"title", "date", "author", "location"};
+	protected static Log logger = LogFactory.getLog(TrashHelper.class);
+
 	/*
 	 * Inner class used to manipulate entries in the trash.
 	 */
 	private static class TrashEntry {
+		// Class data members.
 		public Long		m_docId;
 		public Long		m_locationBinderId;
 		public String	m_docType;
@@ -135,9 +140,9 @@ public class TrashHelper {
 		 * 
 		 * @return
 		 */
-		public boolean isFolder(BinderModule bm) {
+		public boolean isFolder(AllModulesInjected bs) {
 			if (isBinder()) {
-				isBinderFolder(bm.getBinder(m_docId));
+				isBinderFolder(bs.getBinderModule().getBinder(m_docId));
 			}
 			return false;
 		}
@@ -146,22 +151,21 @@ public class TrashHelper {
 		 * Returns true if the TrashEntry is valid and in a predeleted
 		 * state and false otherwise.
 		 * 
-		 * @param fm
-		 * @param bm
+		 * @param bs
 		 * @return
 		 */
-		public boolean isPreDeleted(FolderModule fm, BinderModule bm) {
+		public boolean isPreDeleted(AllModulesInjected bs) {
 			boolean reply = false;
 			try {
 				if (isEntry()) {
 					// Is the entry is still there and predeleted?
-					FolderEntry fe = fm.getEntry(m_locationBinderId, m_docId);
+					FolderEntry fe = bs.getFolderModule().getEntry(m_locationBinderId, m_docId);
 					reply = fe.isPreDeleted();
 				}
 				else if (isBinder()) {
 					// Is the binder is still there and is it a Folder
 					// or Workspace and predeleted? 
-					Binder binder = bm.getBinder(m_docId);
+					Binder binder = bs.getBinderModule().getBinder(m_docId);
 					if (isBinderFolder(binder)) {
 						reply = ((Folder) binder).isPreDeleted();
 					}
@@ -180,17 +184,84 @@ public class TrashHelper {
 		 * 
 		 * @return
 		 */
-		public boolean isWorkspace(BinderModule bm) {
+		public boolean isWorkspace(AllModulesInjected bs) {
 			if (isBinder()) {
-				return isBinderWorkspace(bm.getBinder(m_docId));
+				return isBinderWorkspace(bs.getBinderModule().getBinder(m_docId));
 			}
 			return false;
 		}
 	}
 	
-	// Public data members.
-	public static final String[] trashColumns= new String[] {"title", "date", "author", "location"};
-
+	/*
+	 * Inner class used to traverse trash items to predelete them.
+	 */
+	private static class TrashPreDelete implements TrashTraverser.TraverseCallback {
+		public boolean binder(AllModulesInjected bs, Long binderId, Object callbackData) {
+			boolean reply;
+			try {
+				logger.debug("TrashPreDelete.binder(" + binderId + "):  Predeleting binder.");
+				bs.getBinderModule().preDeleteBinder(binderId, RequestContextHolder.getRequestContext().getUser().getId(), true);
+				reply = true;
+			}
+			catch (Exception ex) {
+//!				...this needs to be implemented...
+				logger.debug("TrashPreDelete.binder(" + binderId + "):  ", ex);
+				reply = false;
+			}
+			return reply;
+		}
+		
+		public boolean entry(AllModulesInjected bs, Long folderId, Long entryId, Object callbackData) {
+			boolean reply;
+			try {
+				logger.debug("TrashPreDelete.entry(" + folderId + ", " + entryId + "):  Predeleting entry.");
+				bs.getFolderModule().preDeleteEntry(folderId, entryId, RequestContextHolder.getRequestContext().getUser().getId());
+				reply = true;
+			}
+			catch (Exception ex) {
+//!				...this needs to be implemented...
+				logger.debug("TrashPreDelete.entry(" + folderId + ", " + entryId + "):  ", ex);
+				reply = false;
+			}
+			return reply;
+		}
+	}
+	
+	/*
+	 * Inner class used to traverse trash items to restore them.
+	 */
+	private static class TrashRestore implements TrashTraverser.TraverseCallback {
+		public boolean binder(AllModulesInjected bs, Long binderId, Object callbackData) {
+			boolean reply;
+			try {
+				logger.debug("TrashRestore.binder(" + binderId + "):  Restoring binder.");
+				bs.getBinderModule().restoreBinder(binderId, true);
+				reply = true;
+			}
+			catch (Exception ex) {
+//!				...this needs to be implemented...
+				logger.debug("TrashRestore.binder(" + binderId + "):  ", ex);
+				reply = false;
+			}
+			return reply;
+		}
+		
+		public boolean entry(AllModulesInjected bs, Long folderId, Long entryId, Object callbackData) {
+			boolean reply;
+			try {
+				logger.debug("TrashRestore.entry(" + folderId + ", " + entryId + "):  Restoring entry.");
+				bs.getFolderModule().restoreEntry(folderId, entryId, true);
+				reply = true;
+			}
+			catch (Exception ex) {
+//!				...this needs to be implemented...
+				logger.debug("TrashRestore.entry(" + folderId + ", " + entryId + "):  ", ex);
+				reply = false;
+			}
+			return reply;
+		}
+	}
+	
 	/**
 	 * Called to handle AJAX trash requests received by
 	 * AjaxController.java.
@@ -200,9 +271,6 @@ public class TrashHelper {
 	 * @param response
 	 */
 	public static ModelAndView ajaxTrashRequest(String op, AllModulesInjected bs, RenderRequest request, RenderResponse response) {
-		return ajaxTrashRequest(bs.getFolderModule(), bs.getBinderModule(), op, request, response);
-	}
-	private static ModelAndView ajaxTrashRequest(FolderModule fm, BinderModule bm, String op, RenderRequest request, RenderResponse response) {
 		ModelAndView mv;
 		if (op.equals(WebKeys.OPERATION_TRASH_PURGE) || op.equals(WebKeys.OPERATION_TRASH_RESTORE)) {
 			String	paramS = PortletRequestUtils.getStringParameter(request, "params", "");
@@ -212,11 +280,11 @@ public class TrashHelper {
 			for (int i = 0; i < count; i += 1) {
 				trashEntries[i] = new TrashEntry(params[i]);
 			}
-			if (op.equals(WebKeys.OPERATION_TRASH_PURGE)) mv = purgeEntries(  fm, bm, trashEntries, request, response);
-			else                                          mv = restoreEntries(fm, bm, trashEntries, request, response);
+			if (op.equals(WebKeys.OPERATION_TRASH_PURGE)) mv = purgeEntries(  bs, trashEntries, request, response);
+			else                                          mv = restoreEntries(bs, trashEntries, request, response);
 		}
-		else if (op.equals(WebKeys.OPERATION_TRASH_PURGE_ALL))   mv = purgeAll(  fm, bm, request, response);
-		else if (op.equals(WebKeys.OPERATION_TRASH_RESTORE_ALL)) mv = restoreAll(fm, bm, request, response);
+		else if (op.equals(WebKeys.OPERATION_TRASH_PURGE_ALL))   mv = purgeAll(  bs, request, response);
+		else if (op.equals(WebKeys.OPERATION_TRASH_RESTORE_ALL)) mv = restoreAll(bs, request, response);
 		else {
 			response.setContentType("text/xml");
 			mv = new ModelAndView("forum/ajax_return");
@@ -317,18 +385,18 @@ public class TrashHelper {
 	 * and non-sorted.)  Used to perform purge/restore alls.
 	 */
 	@SuppressWarnings("unchecked")
-	private static TrashEntry[] getAllTrashEntries(FolderModule fm, BinderModule bm, RenderRequest request) {
+	private static TrashEntry[] getAllTrashEntries(AllModulesInjected bs, RenderRequest request) {
 		// Convert the current trash entries to an ArrayList of TrashEntry's...
 		Long binderId = null;
 		try {
 			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
 		} catch(PortletRequestBindingException ex) {}
-		Binder binder = bm.getBinder(binderId);
+		Binder binder = bs.getBinderModule().getBinder(binderId);
 		Map options = new HashMap();
 		options.put(ObjectKeys.SEARCH_OFFSET,    Integer.valueOf(0));
 		options.put(ObjectKeys.SEARCH_MAX_HITS,  Integer.MAX_VALUE);
 		options.put(ObjectKeys.SEARCH_SORT_NONE, Boolean.TRUE);
-		Map trashSearchMap = getTrashEntries(fm, bm, binder, options);
+		Map trashSearchMap = getTrashEntries(bs, binder, options);
 		ArrayList trashSearchAL = ((ArrayList) trashSearchMap.get(ObjectKeys.SEARCH_ENTRIES));
 		ArrayList<TrashEntry> trashEntriesAL = new ArrayList<TrashEntry>();
         for (Iterator trashEntriesIT=trashSearchAL.iterator(); trashEntriesIT.hasNext();) {
@@ -353,15 +421,6 @@ public class TrashHelper {
 	}
 	@SuppressWarnings("unchecked")
 	public static Map getTrashEntries(AllModulesInjected bs, Map<String,Object>model, Binder binder, Map options) {
-		return getTrashEntries(bs.getFolderModule(), bs.getBinderModule(), model, binder, options);
-	}
-	
-	@SuppressWarnings("unchecked")
-	private static Map getTrashEntries(FolderModule fm, BinderModule bm, Binder binder, Map options) {
-		return getTrashEntries(fm, bm, null, binder, options);
-	}
-	@SuppressWarnings("unchecked")
-	private static Map getTrashEntries(FolderModule fm, BinderModule bm, Map<String,Object>model, Binder binder, Map options) {
 		// Construct the search Criteria...
 		Criteria crit = new Criteria();
 		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_ENTRY, Constants.DOC_TYPE_BINDER}))
@@ -378,7 +437,7 @@ public class TrashHelper {
 		
 		// ...and issue the query and return the entries.
 		return
-			bm.executeSearchQuery(
+			bs.getBinderModule().executeSearchQuery(
 				crit,
 				getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
 				getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
@@ -418,26 +477,26 @@ public class TrashHelper {
 	/*
 	 * Returns true if binder is a Folder.
 	 */
-	private static boolean isBinderFolder(Binder binder) {
+	public static boolean isBinderFolder(Binder binder) {
 		return (EntityType.folder == binder.getEntityType());
 	}
 	
 	/*
 	 * Returns true if binder is a Workspace.
 	 */
-	private static boolean isBinderWorkspace(Binder binder) {
+	public static boolean isBinderWorkspace(Binder binder) {
 		return (EntityType.workspace == binder.getEntityType());
 	}
 	
 	/*
 	 * Called to purge all the entries in the trash. 
 	 */
-	private static ModelAndView purgeAll(FolderModule fm, BinderModule bm, RenderRequest request, RenderResponse response) {
+	private static ModelAndView purgeAll(AllModulesInjected bs, RenderRequest request, RenderResponse response) {
 		// If there are any TrashEntry's...
-		TrashEntry[] trashEntries = getAllTrashEntries(fm, bm, request);
+		TrashEntry[] trashEntries = getAllTrashEntries(bs, request);
         if (0 < trashEntries.length) {
             // ...purge them.
-        	return purgeEntries(fm, bm, trashEntries, request, response);
+        	return purgeEntries(bs, trashEntries, request, response);
         }
         
 		response.setContentType("text/xml");
@@ -452,42 +511,9 @@ public class TrashHelper {
 	 * @param entryId
 	 */
 	public static void preDeleteBinder(AllModulesInjected bs, Long binderId) {
-		preDeleteBinder(bs.getFolderModule(), bs.getBinderModule(), binderId);
-	}
-	@SuppressWarnings("unchecked")
-	private static void preDeleteBinder(FolderModule fm, BinderModule bm, Long binderId) {
-		// Can we access the Binder as other than a mirrored binder?
-		Binder binder = bm.getBinder(binderId);
-		if ((null == binder) || binder.isMirrored()) {
-			// No!  Bail.
-			return;
-		}
-		
-		// If the Binder is a Folder or Workspace... 
-		boolean isFolder    = isBinderFolder(   binder);
-		boolean isWorkspace = isBinderWorkspace(binder);
-		if (isFolder || isWorkspace) {
-			// ...predelete its child binders...
-			List<Binder>bindersList = binder.getBinders();
-			for (Iterator bindersIT=bindersList.iterator(); bindersIT.hasNext();) {
-				preDeleteBinder(fm, bm, ((Binder) bindersIT.next()).getId());
-			}
-
-			// ...if the binder is a folder...
-			if (isFolder) {
-				// ...scan its children...
-				Map folderEntriesMap = fm.getEntries(binderId, null);
-				ArrayList folderEntriesAL = ((ArrayList) folderEntriesMap.get(ObjectKeys.SEARCH_ENTRIES));
-		        for (Iterator folderEntriesIT=folderEntriesAL.iterator(); folderEntriesIT.hasNext();) {
-					// ...and predelete them...
-					Map folderEntryMap = ((Map) folderEntriesIT.next());
-					preDeleteEntry(fm, bm, binderId, Long.valueOf((String) folderEntryMap.get("_docId")));
-				}
-			}
-		
-			// ...and predelete the binder itself.
-			bm.preDeleteBinder(binderId, RequestContextHolder.getRequestContext().getUser().getId(), true);
-		}
+		TrashPreDelete trashPD = new TrashPreDelete();
+		TrashTraverser tt = new TrashTraverser(bs, logger, trashPD, null);
+		tt.doTraverse(TrashTraverser.Mode.DESCENDING, binderId);
 	}
 	
 	/**
@@ -498,64 +524,33 @@ public class TrashHelper {
 	 * @param entryId
 	 */
 	public static void preDeleteEntry(AllModulesInjected bs, Long folderId, Long entryId) {
-		preDeleteEntry(bs.getFolderModule(), bs.getBinderModule(), folderId, entryId);
-	}
-	private static void preDeleteEntry(FolderModule fm, BinderModule bm, Long folderId, Long entryId) {
-		// Can we access the Binder as other than a mirrored binder?
-		Binder binder = bm.getBinder(folderId);
-		if ((null == binder) || binder.isMirrored()) {
-			// No!  Bail.
-			return;
-		}
-		
-		// Predelete the entry's replies...
-		Long userId = RequestContextHolder.getRequestContext().getUser().getId();
-		preDeleteEntryDescendants(fm, folderId, entryId, userId);
-		
-		// ...and predelete the entry itself.
-		fm.preDeleteEntry(folderId, entryId, userId);
-	}
-	
-	/*
-	 * Called to predelete the descendants (i.e., replies) of an entry.
-	 * 
-	 * Note that the descendants will include all replies, replies to
-	 * replies, ...
-	 */
-	@SuppressWarnings("unchecked")
-	private static void preDeleteEntryDescendants(FolderModule fm, Long folderId, Long entryId, Long userId) {
-		// Scan this entry's descendants...
-		Map entryTreeMap = fm.getEntryTree(folderId, entryId, true);
-		List<FolderEntry> descendantsList = ((List<FolderEntry>) entryTreeMap.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
-		for (Iterator descendantsIT=descendantsList.iterator(); descendantsIT.hasNext();) {
-			// ...and predelete them.
-			FolderEntry descendantFE = ((FolderEntry) descendantsIT.next());
-			fm.preDeleteEntry(folderId, descendantFE.getId(), userId);
-		}
+		TrashPreDelete trashPD = new TrashPreDelete();
+		TrashTraverser tt = new TrashTraverser(bs, logger, trashPD, null);
+		tt.doTraverse(TrashTraverser.Mode.DESCENDING, folderId, entryId);
 	}
 	
 	/*
 	 * Called to purge the TrashEntry's in trashEntries. 
 	 */
-	private static ModelAndView purgeEntries(FolderModule fm, BinderModule bm, TrashEntry[] trashEntries, RenderRequest request, RenderResponse response) {
+	private static ModelAndView purgeEntries(AllModulesInjected bs, TrashEntry[] trashEntries, RenderRequest request, RenderResponse response) {
 		// Scan the TrashEntry's.
 		int count = ((null == trashEntries) ? 0 : trashEntries.length);
 		for (int i = 0; i < count; i += 1) {
 			// Is this trashEntry valid and predeleted?
 			TrashEntry trashEntry = trashEntries[i];
-			if (trashEntry.isPreDeleted(fm, bm)) {
+			if (trashEntry.isPreDeleted(bs)) {
 				// Yes!  Is it an entry?
 				if (trashEntry.isEntry()) {
 					// Yes!  Purge it.  Purging the entry should purge
 					// its replies.
-					fm.deleteEntry(trashEntry.m_locationBinderId, trashEntry.m_docId);
+					bs.getFolderModule().deleteEntry(trashEntry.m_locationBinderId, trashEntry.m_docId);
 				}
 				
 				// No, it isn't an entry!  Is it a binder?
 				else if (trashEntry.isBinder()) {
 					// Yes!  Purge it.  Purging the binder should purge
 					// its children.
-					bm.deleteBinder(trashEntry.m_docId);
+					bs.getBinderModule().deleteBinder(trashEntry.m_docId);
 				}
 			}
 		}
@@ -567,12 +562,12 @@ public class TrashHelper {
 	/*
 	 * Called to restore the entries in the trash. 
 	 */
-	private static ModelAndView restoreAll(FolderModule fm, BinderModule bm, RenderRequest request, RenderResponse response) {
+	private static ModelAndView restoreAll(AllModulesInjected bs, RenderRequest request, RenderResponse response) {
 		// If there are any TrashEntry's...
-		TrashEntry[] trashEntries = getAllTrashEntries(fm, bm, request);
+		TrashEntry[] trashEntries = getAllTrashEntries(bs, request);
         if (0 < trashEntries.length) {
             // ...restore them.
-        	return restoreEntries(fm, bm, trashEntries, request, response);
+        	return restoreEntries(bs, trashEntries, request, response);
         }
         
 		response.setContentType("text/xml");
@@ -582,123 +577,44 @@ public class TrashHelper {
 	/*
 	 * Called to restore a binder.
 	 */
-	@SuppressWarnings("unchecked")
-	private static void restoreBinder(FolderModule fm, BinderModule bm, Long binderId) {
-		// If the Binder is a Folder or Workspace... 
-		Binder binder = bm.getBinder(binderId);
-		boolean isFolder    = isBinderFolder(   binder);
-		boolean isWorkspace = isBinderWorkspace(binder);
-		if (isFolder || isWorkspace) {
-			// ...restore its child binders...
-			List<Binder>bindersList = binder.getBinders();
-			for (Iterator bindersIT=bindersList.iterator(); bindersIT.hasNext();) {
-				restoreBinder(fm, bm, ((Binder) bindersIT.next()).getId());
-			}
-			
-			// ...scan its children...
-			Map folderEntriesMap = fm.getEntries(binderId, null);
-			ArrayList folderEntriesAL = ((ArrayList) folderEntriesMap.get(ObjectKeys.SEARCH_ENTRIES));
-	        for (Iterator folderEntriesIT=folderEntriesAL.iterator(); folderEntriesIT.hasNext();) {
-				// ...and restore them...
-				Map folderEntryMap = ((Map) folderEntriesIT.next());
-				restoreEntry(
-					fm,
-					bm,
-					binderId,
-					Long.valueOf((String) folderEntryMap.get("_docId")),
-					false);	// false -> Don't restore the entry's parentage.  That will happen below.
-			}
-		}
-		
-		// ...restore the binder itself...
-		bm.restoreBinder(binderId, true);
-		
-		// ...and restore its parentage.
-		restoreBinderParentage(bm, binder);
+	private static void restoreBinder(AllModulesInjected bs, Long binderId) {
+		TrashRestore trashR = new TrashRestore();
+		TrashTraverser tt = new TrashTraverser(bs, logger, trashR, null);
+		tt.doTraverse(TrashTraverser.Mode.ASCENDING, binderId);
 	}
 
-	/*
-	 * Recursively restores the parentage of a binder.
-	 */
-	private static void restoreBinderParentage(BinderModule bm, Binder binder) {
-		boolean isFolder    = isBinderFolder(   binder);
-		boolean isWorkspace = isBinderWorkspace(binder);
-		if (isFolder || isWorkspace) {
-			boolean isPreDeleted;
-			if (isFolder) isPreDeleted = ((Folder)    binder).isPreDeleted();
-			else          isPreDeleted = ((Workspace) binder).isPreDeleted();
-			if (isPreDeleted) {
-				bm.restoreBinder(binder.getId(), true);
-				restoreBinderParentage(bm, binder.getParentBinder());
-			}
-		}
-	}
-	
 	/*
 	 * Called to restore an entry.
 	 */
-	private static void restoreEntry(FolderModule fm, BinderModule bm, Long folderId, Long entryId) {
-		restoreEntry(fm, bm, folderId, entryId, true);
+	private static void restoreEntry(AllModulesInjected bs, Long folderId, Long entryId) {
+		restoreEntry(bs, folderId, entryId, true);
 	}
-	private static void restoreEntry(FolderModule fm, BinderModule bm, Long folderId, Long entryId, boolean restoreParentage) {
-		// Can we access the Binder as other than a mirrored binder?
-		Binder binder = bm.getBinder(folderId);
-		if ((null == binder) || binder.isMirrored()) {
-			// No!  Bail.
-			return;
-		}
-		
-		// Restore the entry's ancestors (for replies to replies)...
-		restoreEntryAncestors(fm, folderId, entryId);
-		
-		// ...restore the entry itself...
-		fm.restoreEntry(folderId, entryId);
-
-		// ...and if requested to do so...
-		if (restoreParentage) {
-			// ...restore the entry's parentage.
-			restoreBinderParentage(bm, binder);
-		}
+	private static void restoreEntry(AllModulesInjected bs, Long folderId, Long entryId, boolean restoreParentage) {
+		TrashRestore trashR = new TrashRestore();
+		TrashTraverser tt = new TrashTraverser(bs, logger, trashR, null);
+		tt.doTraverse(TrashTraverser.Mode.ASCENDING, folderId, entryId);
 	}
 	
 	/*
-	 * Called to restore the ancestors of an entry (for replies to replies.)
-	 * 
-	 * Note that the ancestors will include all ancestors of a given
-	 * entry.
-	 */
-	@SuppressWarnings("unchecked")
-	private static void restoreEntryAncestors(FolderModule fm, Long folderId, Long entryId) {
-		// Scan this entry's ancestors...
-		Map entryTreeMap = fm.getEntryTree(folderId, entryId, true);
-		List<FolderEntry> ancestorsList = ((List<FolderEntry>) entryTreeMap.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
-		for (Iterator ancestorsIT=ancestorsList.iterator(); ancestorsIT.hasNext();) {
-			// ...and restore them.
-			FolderEntry ancestorFE = ((FolderEntry) ancestorsIT.next());
-			fm.restoreEntry(folderId, ancestorFE.getId());
-		}
-	}
-
-	/*
 	 * Called to restore the TrashEntry's in trashEntries. 
 	 */
-	private static ModelAndView restoreEntries(FolderModule fm, BinderModule bm, TrashEntry[] trashEntries, RenderRequest request, RenderResponse response) {
+	private static ModelAndView restoreEntries(AllModulesInjected bs, TrashEntry[] trashEntries, RenderRequest request, RenderResponse response) {
 		// Scan the TrashEntry's.
 		int count = ((null == trashEntries) ? 0 : trashEntries.length);
 		for (int i = 0; i < count; i += 1) {
 			// Is this trashEntry valid and predeleted?
 			TrashEntry trashEntry = trashEntries[i];
-			if (trashEntry.isPreDeleted(fm, bm)) {
+			if (trashEntry.isPreDeleted(bs)) {
 				// Yes!  Is it an entry?
 				if (trashEntry.isEntry()) {
 					// Yes!  Restore the entry itself...
-					restoreEntry(fm, bm, trashEntry.m_locationBinderId, trashEntry.m_docId);
+					restoreEntry(bs, trashEntry.m_locationBinderId, trashEntry.m_docId);
 				}
 				
 				// No, it isn't an entry!  Is it a binder?
 				else if (trashEntry.isBinder()) {
 					// Yes!  Restore the binder itself...
-					restoreBinder(fm, bm, trashEntry.m_docId);
+					restoreBinder(bs, trashEntry.m_docId);
 				}
 			}
 		}
