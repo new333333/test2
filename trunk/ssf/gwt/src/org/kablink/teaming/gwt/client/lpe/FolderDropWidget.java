@@ -165,7 +165,9 @@ public class FolderDropWidget extends DropWidget
 		
 		// Create an object to hold all of the properties that define a folder widget.
 		m_properties = new FolderProperties();
-		
+		if ( properties != null )
+			m_properties.setZoneUUID( properties.getZoneUUID() );
+
 		// Update the dynamic parts of this widget
 		updateWidget( properties );
 		

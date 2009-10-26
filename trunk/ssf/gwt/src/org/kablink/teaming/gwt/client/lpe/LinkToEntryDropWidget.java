@@ -169,6 +169,8 @@ public class LinkToEntryDropWidget extends DropWidget
 		
 		// Create an object to hold all of the properties that define a link to entry widget.
 		m_properties = new LinkToEntryProperties();
+		if ( properties != null )
+			m_properties.setZoneUUID( properties.getZoneUUID() );
 		
 		// Update the dynamic parts of this widget
 		updateWidget( properties );

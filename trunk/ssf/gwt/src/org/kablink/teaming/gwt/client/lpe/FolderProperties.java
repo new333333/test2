@@ -57,6 +57,7 @@ public class FolderProperties
 	private String m_folderId;
 	private String m_folderName;
 	private String m_parentBinderName;	// Name of the binder the folder is found in.
+	private String m_zoneUUID;
 	private AsyncCallback<GwtFolder> m_folderCallback;
 	private boolean m_rpcInProgress;
 	
@@ -72,6 +73,7 @@ public class FolderProperties
 		m_folderId = null;
 		m_folderName = null;
 		m_parentBinderName = null;
+		m_zoneUUID = null;
 		
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
 		m_folderCallback = new AsyncCallback<GwtFolder>()
@@ -113,9 +115,19 @@ public class FolderProperties
 		if ( props instanceof FolderProperties )
 		{
 			FolderProperties folderProps;
+			String newFolderId;
 			
 			folderProps = (FolderProperties) props;
-			m_folderId = folderProps.getFolderId();
+			
+			// Did the folder id change?
+			newFolderId = folderProps.getFolderId();
+			if ( m_folderId != null && newFolderId != null && !m_folderId.equalsIgnoreCase( newFolderId ) )
+			{
+				// Yes, throw away the zone id.
+				m_zoneUUID = null;
+			}
+			
+			m_folderId = newFolderId;
 			m_folderName = folderProps.getFolderName();
 			m_parentBinderName = folderProps.getParentBinderName();
 			m_showTitle = folderProps.getShowTitleValue();
@@ -138,6 +150,10 @@ public class FolderProperties
 		if ( m_folderId != null )
 			str += m_folderId;
 		str += ",";
+		
+		// Add the zone uuid if we have one.
+		if ( m_zoneUUID != null && m_zoneUUID.length() > 0 )
+			str += "zoneUUID=" + m_zoneUUID + ",";
 		
 		str += "showTitle=";
 		if ( m_showTitle )
@@ -248,6 +264,15 @@ public class FolderProperties
 	
 	
 	/**
+	 * Return the zone uuid
+	 */
+	public String getZoneUUID()
+	{
+		return m_zoneUUID;
+	}// end getZoneUUID()
+	
+	
+	/**
 	 * Return whether an rpc call is in progress.
 	 */
 	public boolean isRpcInProgress()
@@ -326,4 +351,13 @@ public class FolderProperties
 	{
 		m_showTitle = showTitle;
 	}// end setShowBorder()
+
+
+	/**
+	 * 
+	 */
+	public void setZoneUUID( String zoneUUID )
+	{
+		m_zoneUUID = zoneUUID;
+	}// end setZoneUUID()
 }// end FolderProperties

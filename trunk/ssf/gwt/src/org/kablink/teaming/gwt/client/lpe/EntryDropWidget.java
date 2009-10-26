@@ -165,6 +165,8 @@ public class EntryDropWidget extends DropWidget
 		
 		// Create an object to hold all of the properties that define an entry widget.
 		m_properties = new EntryProperties();
+		if ( properties != null )
+			m_properties.setZoneUUID( properties.getZoneUUID() );
 		
 		// Update the dynamic parts of this widget
 		updateWidget( properties );
