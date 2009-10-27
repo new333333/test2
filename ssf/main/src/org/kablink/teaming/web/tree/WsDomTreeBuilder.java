@@ -35,6 +35,7 @@ package org.kablink.teaming.web.tree;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -138,6 +139,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 	public boolean supportsType(int type, Object source) {
 		return helper.supportsType(type, source);
 	}
+	@SuppressWarnings("unchecked")
 	public Element setupDomElement(int type, Object source, Element element) {
 		if (!helper.supportsType(type, source)) return null;
 		if (type == DomTreeBuilder.TYPE_SKIPLIST) {
@@ -172,7 +174,8 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 				//only need this information if this is the bottom of the tree
 			if (check && (bottom == null ||  bottom.equals(binder.getParentBinder()))) {
 				if (helper.hasChildren(bs, source, type)) {
-					element.addAttribute("hasChildren", "true");
+					int binderCount = binder.getBinderCount(false);
+					element.addAttribute("hasChildren", ((0 == binderCount) ? "false" : "true"));
 				} else {	
 					element.addAttribute("hasChildren", "false");
 				}
