@@ -35,11 +35,11 @@
 
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ss_windowTitle" value='<%= NLT.get("administration.manage.zones") %>' scope="request"/>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.manage.extensions") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
-<ssf:form titleTag="administration.manage.zones">
+<ssf:form titleTag="administration.manage.extensions">
 
 <script type="text/javascript">
 
@@ -51,7 +51,7 @@ function ${renderResponse.namespace}_onsub(obj) {
 	return true;
 }
 
-var ss_confirmDeleteZoneText = "<ssf:nlt tag="zone.confirmDeleteZone"/>";
+var ss_confirmDeleteZoneText = "<ssf:nlt tag="administration.extensions.confirmDeleteExtension"/>";
 function ss_confirmDeleteZone() {
 	if (confirm(ss_confirmDeleteZoneText)) {
 		ss_startSpinner();
@@ -66,7 +66,7 @@ function ss_confirmDeleteZone() {
 <div class="ss_style ss_portlet">
 <div style="padding:10px;" id="ss_manageZones">
 <br>
-<ssf:expandableArea title='<%= NLT.get("administration.add.zone") %>'>
+<ssf:expandableArea title='<%= NLT.get("administration.extensions.add") %>'>
 
 
 <script type="text/javascript">
@@ -123,7 +123,7 @@ function ss_checkForFileSelected() {
 </table>
 <br/>
 
-<label for="profiles"><span class="ss_bold"><ssf:nlt tag="administration.profiles.file"/></span></label>
+<label for="zoneName"><span class="ss_bold"><ssf:nlt tag="administration.extensions.zones"/></span></label>
 <select name="zoneName" id="zoneName">
 <c:set var="default_zone_name" value="<%= org.kablink.teaming.util.SZoneConfig.getDefaultZoneName() %>"/>
 <c:forEach var="zoneInfo" items="${ss_zoneInfoList}">
@@ -138,21 +138,6 @@ function ss_checkForFileSelected() {
 </div>
 </div>
 </form>
-
-<!--  
-<form class="ss_style ss_form" method="post" 
-	action="<ssf:url action="manage_zones" actionUrl="true"/>" 
-	onSubmit="return(${renderResponse.namespace}_onsub(this))">
-		
-	<span class="ss_bold"><ssf:nlt tag="administration.zoneName"/></span><br/>
-	<input type="text" class="ss_text" size="50" name="zoneName"><br/><br/>
-		
-	<span class="ss_bold"><ssf:nlt tag="administration.zoneVirtualHost"/></span><br/>
-	<input type="text" class="ss_text" size="50" name="virtualHost"><br/><br/>
-		
-	<input type="submit" class="ss_submit" name="addBtn" onclick="ss_startSpinner();" value="<ssf:nlt tag="button.add" text="Add"/>">
-</form>
--->
 
 </ssf:expandableArea>
 <br/>
