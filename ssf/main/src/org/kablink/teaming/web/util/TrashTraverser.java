@@ -236,17 +236,20 @@ public class TrashTraverser {
 				}
 			}
 			
-			// ...scan its child entries...
-			Map folderEntriesMap = m_bs.getFolderModule().getEntries(binderId, null);
-			ArrayList folderEntriesAL = ((ArrayList) folderEntriesMap.get(ObjectKeys.SEARCH_ENTRIES));
-	        for (Iterator folderEntriesIT=folderEntriesAL.iterator(); folderEntriesIT.hasNext();) {
-				// ...ascending them...
-				Map folderEntryMap = ((Map) folderEntriesIT.next());
-				if (!(ascendEntry(
-					binderId,
-					Long.valueOf((String) folderEntryMap.get("_docId")),
-					false))) {	// false -> Don't ascend the entry's parentage.  That will happen below.
-					return false;
+			// ...if the binder is a Folder...
+			if (isFolder) {
+				// ...scan its child entries...
+				Map folderEntriesMap = m_bs.getFolderModule().getEntries(binderId, null);
+				ArrayList folderEntriesAL = ((ArrayList) folderEntriesMap.get(ObjectKeys.SEARCH_ENTRIES));
+		        for (Iterator folderEntriesIT=folderEntriesAL.iterator(); folderEntriesIT.hasNext();) {
+					// ...ascending them...
+					Map folderEntryMap = ((Map) folderEntriesIT.next());
+					if (!(ascendEntry(
+						binderId,
+						Long.valueOf((String) folderEntryMap.get("_docId")),
+						false))) {	// false -> Don't ascend the entry's parentage.  That will happen below.
+						return false;
+					}
 				}
 			}
 		}
