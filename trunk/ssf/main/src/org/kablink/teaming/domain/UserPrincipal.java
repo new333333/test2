@@ -33,5 +33,20 @@
 package org.kablink.teaming.domain;
 
 public abstract class UserPrincipal extends Principal {
-
+    
+	protected Long diskQuota;
+	
+	/**
+     * @hibernate.property
+     */
+	public Long getDiskQuota() {
+		if (diskQuota == null) return new Long(0);
+		return diskQuota;
+	}
+	/**
+	 * @param diskQuota to set.
+	 */
+	public void setDiskQuota(Long diskQuota) {
+		this.diskQuota = diskQuota;
+	}
 }

@@ -1185,16 +1185,20 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			public Object doInHibernate(Session session) throws HibernateException {
 				List l = null;
 				try {
-					Query q = session.createQuery("SELECT s." + ObjectKeys.FIELD_ID + ", s." + 
-							ObjectKeys.FIELD_USER_DISKSPACEUSED + ", s." + 
-							ObjectKeys.FIELD_USER_DISKQUOTA + 
-							" FROM org.kablink.teaming.domain.Principal s WHERE s." + 
-							ObjectKeys.FIELD_ZONE + " = " + RequestContextHolder.getRequestContext().getZoneId() +
-							" AND s." + ObjectKeys.FIELD_USER_DISKQUOTA + " IS NOT NULL " +
-							" AND s.type='user'" +
-							" AND s." + ObjectKeys.FIELD_ID + " != 0 " +
-							" AND (s." + ObjectKeys.FIELD_USER_DISKSPACEUSED + " >= s." + ObjectKeys.FIELD_USER_DISKQUOTA + " * 1024 * 1024 )");
-					l = q.list();
+					
+					String sql = "Select w.id, w.diskSpaceUsed, w.diskQuota, w.maxGroupsQuota "
+						+ " FROM org.kablink.teaming.domain.UserPrincipal w "
+						+ " WHERE w.zoneId = :zoneId"
+						+ " AND w.type = 'user'"
+						+ " AND w.id != 1"
+						+ " AND w.diskSpaceUsed >= CASE WHEN w.diskQuota IS NOT NULL THEN (w.diskQuota * 1024 * 1024) "
+						+ " ELSE (w.maxGroupsQuota * 1024 * 1024)"
+						+ " END ";
+					
+					Query query = session.createQuery(sql)
+                   	.setLong("zoneId", RequestContextHolder.getRequestContext().getZoneId());
+										
+					l = query.list();
 					
 				} catch(Exception e) {
 					System.out.println("Unable to query for quotas: " +  e.getMessage());
@@ -1205,9 +1209,10 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		for(int i=0; i< results.size(); i++) {
 			Object[] result = (Object[]) results.get(i);
 			HashMap<String,Object> row = new HashMap<String,Object>();
-				row.put(ReportModule.USER_ID, (Long)result[0]);
-				row.put(ReportModule.DISK_SPACE_USED, (Long)result[1]);
+				row.put(ReportModule.USER_ID, result[0]);
+				row.put(ReportModule.DISK_SPACE_USED, result[1]);
 				row.put(ReportModule.DISKQUOTA, (Long)result[2] * 1024 * 1024);
+				row.put(ReportModule.MAX_GROUPS_QUOTA, (Long)result[3] * 1024 * 1024);
 
 				report.add(row);
 			}
@@ -1225,17 +1230,19 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			public Object doInHibernate(Session session) throws HibernateException {
 				List l = null;
 				try {
-					Query q = session.createQuery("SELECT s." + ObjectKeys.FIELD_ID + ", s." + 
-							ObjectKeys.FIELD_USER_DISKSPACEUSED + ", s." + 
-							ObjectKeys.FIELD_USER_DISKQUOTA + 
-							" FROM org.kablink.teaming.domain.Principal s WHERE s." + 
-							ObjectKeys.FIELD_ZONE + " = " + RequestContextHolder.getRequestContext().getZoneId() +
-							" AND s." + ObjectKeys.FIELD_USER_DISKQUOTA + " IS NOT NULL " +
-							" AND s.type='user'" +
-							" AND s." + ObjectKeys.FIELD_ID + " != 0 " +
-							" AND (s." + ObjectKeys.FIELD_USER_DISKSPACEUSED + " >= s." + ObjectKeys.FIELD_USER_DISKQUOTA + " * 1024 * 1024 " +
-							" * " + highWaterPercentage + " / 100 )");
-					l = q.list();
+					String sql = "Select w.id, w.diskSpaceUsed, w.diskQuota, w.maxGroupsQuota "
+						+ " FROM org.kablink.teaming.domain.UserPrincipal w "
+						+ " WHERE w.zoneId = :zoneId"
+						+ " AND w.type = 'user'"
+						+ " AND w.id != 1"
+						+ " AND w.diskSpaceUsed >= ((CASE WHEN w.diskQuota IS NOT NULL THEN (w.diskQuota * 1024 * 1024) "
+						+ " ELSE (w.maxGroupsQuota * 1024 * 1024) END ) * :highWaterPercentage / 100)";
+					
+					Query query = session.createQuery(sql)
+                   	.setLong("zoneId", RequestContextHolder.getRequestContext().getZoneId())
+                   	.setLong("highWaterPercentage", highWaterPercentage);
+					
+					l = query.list();
 					
 				} catch(Exception e) {
 					System.out.println("Unable to query for quotas: " +  e.getMessage());
@@ -1248,8 +1255,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			HashMap<String,Object> row = new HashMap<String,Object>();
 				row.put(ReportModule.USER_ID, (Long)result[0]);
 				row.put(ReportModule.DISK_SPACE_USED, (Long)result[1]);
-				row.put(ReportModule.DISKQUOTA, (Long)result[2] * 1024 * 1024);
-
+				row.put(ReportModule.DISKQUOTA, (result[2] == null ? 0 : (Long)result[2] * 1024 * 1024));
+				row.put(ReportModule.MAX_GROUPS_QUOTA, (result[3] == null ? 0 : (Long)result[3] * 1024 * 1024));
 				report.add(row);
 			}
 

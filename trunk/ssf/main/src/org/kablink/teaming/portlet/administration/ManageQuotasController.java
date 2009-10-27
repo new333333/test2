@@ -89,7 +89,7 @@ public class ManageQuotasController extends SAbstractController {
 			if (!s_groupQuota.equals("")) {
 				Long groupQuota = Long.valueOf(s_groupQuota);
 				if (!groupIds.isEmpty() && groupQuota != null) {
-					getProfileModule().setUserDiskQuotas(groupIds, groupQuota);
+					getProfileModule().setGroupDiskQuotas(groupIds, groupQuota);
 				}
 			}
 			//Check for individual group and user changes
@@ -113,7 +113,7 @@ public class ManageQuotasController extends SAbstractController {
 			for (Long id : groupIds) {
 				List ids = new ArrayList();
 				ids.add(id);
-				getProfileModule().setUserDiskQuotas(ids, quotaValues.get(id.toString()));
+				getProfileModule().setGroupDiskQuotas(ids, quotaValues.get(id.toString()));
 			}
 			for (Long id : userIds) {
 				List ids = new ArrayList();
@@ -141,7 +141,8 @@ public class ManageQuotasController extends SAbstractController {
 		
 		SortedSet<Principal> principals = getProfileModule().getPrincipals(users);
 		model.put(WebKeys.QUOTAS_USERS, principals);
-		model.put(WebKeys.QUOTAS_GROUPS, groups);
+		SortedSet<Principal> group_principals = getProfileModule().getPrincipals(groups);
+		model.put(WebKeys.QUOTAS_GROUPS, group_principals);
 
 		model.put(WebKeys.QUOTAS_DEFAULT, getAdminModule().getQuotaDefault());
 		model.put(WebKeys.QUOTAS_ENABLED, getAdminModule().isQuotaEnabled());

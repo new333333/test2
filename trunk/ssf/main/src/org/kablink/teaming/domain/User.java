@@ -83,7 +83,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected String status="";
     protected Date statusDate;
     protected Long miniBlogId;
-    protected Long diskQuota;
     protected Long diskSpaceUsed;
     protected Long maxGroupsQuota;
     private SortedSet groupNames; // sorted set of group names; this field is computed
@@ -323,26 +322,12 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	public void setMiniBlogId(Long miniBlogId) {
 		this.miniBlogId = miniBlogId;
 	}
-
-	/**
-     * @hibernate.property
-     */
-	public Long getDiskQuota() {
-		if (diskQuota == null) return 0L;
-		return diskQuota;
-	}
-	/**
-	 * @param diskQuota to set.
-	 */
-	public void setDiskQuota(Long diskQuota) {
-		this.diskQuota = diskQuota;
-	}
 	
 	/**
      * @hibernate.property
      */
 	public Long getDiskSpaceUsed() {
-		if (diskSpaceUsed == null) return 0L;
+		if (diskSpaceUsed == null) return new Long(0);
 		return diskSpaceUsed;
 	}
 	/**
@@ -354,7 +339,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	}
 	
 	public Long getMaxGroupsQuota() {
-		if (maxGroupsQuota == null) return 0L;
+		if (maxGroupsQuota == null) return new Long(0);
 		return maxGroupsQuota;
 	}
 	

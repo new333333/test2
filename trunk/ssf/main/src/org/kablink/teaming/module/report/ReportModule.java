@@ -80,6 +80,7 @@ public interface ReportModule {
 	public static final String ACTIVITY_ENTRY_ID = "activity_entry_id";
 	public static final String ACTIVITY_ENTITY_TYPE = "activity_entity_type";
 	public static final String DISKQUOTA = "disk_quota";
+	public static final String MAX_GROUPS_QUOTA = "max_groups_quota";
 	public static final String DISK_SPACE_USED = "disk_space_used";
 	public static final String CREATIONDATE = "creation_date";
 	
