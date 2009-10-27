@@ -659,6 +659,7 @@ public class BinderHelper {
 			model.put(WebKeys.URL, adapterUrl);
 			return "mobile/show_teaming_live_login_form";
 		}
+        HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
 		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
 		Long binderId = user.getWorkspaceId();
 		if (binderId == null) binderId = bs.getWorkspaceModule().getTopWorkspace().getId();
@@ -670,7 +671,7 @@ public class BinderHelper {
 		model.put(WebKeys.TOP_WORKSPACE, topBinder);
 
 		String type = (String)userProperties.get(ObjectKeys.USER_PROPERTY_TEAMING_LIVE_WHATS_NEW_TYPE);
-		if (type == null || type.equals("")) type = ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE;
+		if (type == null || type.equals("")) type = ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS;
 		model.put("ss_whatsNewType", type);
       	Integer pageNumber = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER, 0);
       	if (pageNumber == null || pageNumber < 0) pageNumber = 0;
@@ -687,13 +688,48 @@ public class BinderHelper {
 		model.put(WebKeys.PREV_PAGE, prevPage);
 		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 
+		List<Long> trackedBinders = new ArrayList<Long>();
 		if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED) || 
-				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS) ||
+				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS) || 
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE)) {
-			BinderHelper.setupWhatsNewBinderBeans(bs, topBinder, model, String.valueOf(pageNumber), type);
+			List<Long> tbs = BinderHelper.setupWhatsNewBinderBeans(bs, topBinder, model, String.valueOf(pageNumber), type);
+			Criteria crit = SearchUtils.bindersForAncestryBinders(bs, tbs);
+			Map results = bs.getBinderModule().executeSearchQuery(crit, 0, 10000);
+	    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+	    	if (items != null) {
+		    	Iterator it = items.iterator();
+		    	while (it.hasNext()) {
+		    		Map entry = (Map)it.next();
+					String id = (String)entry.get(Constants.DOCID_FIELD);
+					if (id != null) {
+						Long bId = Long.valueOf(id);
+						if (!trackedBinders.contains(bId)) {
+							trackedBinders.add(bId);
+						}
+					}
+		    	}
+	    	}
 		} else if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_MICROBLOG)) {
-			RelevanceDashboardHelper.setupMiniblogsBean(bs, myWorkspaceBinder, model);
+			List<Long> trackedPeople = RelevanceDashboardHelper.setupMiniblogsBean(bs, myWorkspaceBinder, model);
+			Criteria crit = SearchUtils.bindersForTrackedMiniBlogs(trackedPeople);
+			Map results = bs.getBinderModule().executeSearchQuery(crit, 0, 10000);
+	    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+	    	if (items != null) {
+		    	Iterator it = items.iterator();
+		    	while (it.hasNext()) {
+		    		Map entry = (Map)it.next();
+					String id = (String)entry.get(Constants.DOCID_FIELD);
+					if (id != null) {
+						Long bId = Long.valueOf(id);
+						if (!trackedBinders.contains(bId)) {
+							trackedBinders.add(bId);
+						}
+					}
+		    	}
+	    	}
 		}
+		session.setAttribute(ObjectKeys.SESSION_TEAMING_LIVE_TRACKED_BINDER_IDS, trackedBinders);
+		session.setAttribute(ObjectKeys.SESSION_TEAMING_LIVE_TRACKED_TYPE, type);
       	//Get the total records found by the search
       	Integer totalRecords = (Integer)model.get(WebKeys.SEARCH_TOTAL_HITS);
       	//Get the records returned (which may be more than the page size)
@@ -709,7 +745,7 @@ public class BinderHelper {
 		model.put(WebKeys.PAGE_NUMBER, pageNumber);
 		model.put(WebKeys.NEXT_PAGE, nextPage);
 		model.put(WebKeys.PREV_PAGE, prevPage);
-		
+
 		return view;
 	}
 
@@ -1951,11 +1987,11 @@ public class BinderHelper {
 	public static void setupWhatsNewBinderBeans(AllModulesInjected bs, Binder binder, Map model, String page) {	
 		setupWhatsNewBinderBeans(bs, binder, model, page, "");
 	}
-	public static void setupWhatsNewBinderBeans(AllModulesInjected bs, Binder binder, Map model, String page,
+	public static List<Long> setupWhatsNewBinderBeans(AllModulesInjected bs, Binder binder, Map model, String page,
 			String type) {		
         User user = RequestContextHolder.getRequestContext().getUser();
         //What's new is not available to the guest user
-        if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) return;
+        if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) return new ArrayList<Long>() ;
 
         //Get the documents bean for the documents just created or modified
 		Map options = new HashMap();
@@ -2007,6 +2043,8 @@ public class BinderHelper {
 		} else {
 			trackedPlaces.add(binder.getId().toString());
 		}
+		List<Long> trackedBinderIds = new ArrayList<Long>();
+		for (String s_id : trackedPlaces) trackedBinderIds.add(Long.valueOf(s_id));
 		Criteria crit = SearchUtils.entriesForTrackedPlaces(bs, trackedPlaces);
 		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
@@ -2032,6 +2070,7 @@ public class BinderHelper {
 	    	}
     	}
     	model.put(WebKeys.WHATS_NEW_BINDER_FOLDERS, places);
+    	return trackedBinderIds;
 	}
 	
 	public static void setupUnseenBinderBeans(AllModulesInjected bs, Binder binder, Map model, String page) {		

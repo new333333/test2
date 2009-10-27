@@ -144,6 +144,8 @@ public interface ObjectKeys {
 	public static final String SESSION_TABS="userTabs";
 	public static final String SESSION_CLIPBOARD="userClipboard";
 	public static final String SESSION_SAVE_LOCATION_ID="saveLocationId";
+	public static final String SESSION_TEAMING_LIVE_TRACKED_BINDER_IDS="teamingLiveTrackedBinderIds";
+	public static final String SESSION_TEAMING_LIVE_TRACKED_TYPE="teamingLiveTrackedType";
 
     //map keys returned from modules
     public static final String BINDER="binder";

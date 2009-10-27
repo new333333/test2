@@ -128,6 +128,18 @@ public class SearchUtils {
 		return crit;
 	}
 	
+	public static Criteria bindersForTrackedMiniBlogs(List<Long> userIds)
+	{
+		List<String> s_userIds = new ArrayList<String>();
+		for (Long id : userIds) s_userIds.add(id.toString());
+		Criteria crit = new Criteria();
+		crit.add(eq(FAMILY_FIELD, FAMILY_FIELD_MINIBLOG))
+			.add(eq(DOC_TYPE_FIELD, DOC_TYPE_BINDER))
+		    .add(in(OWNERID_FIELD, s_userIds));
+		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
+		return crit;
+	}
+	
 	public static Criteria entriesForTrackedPeople(AllModulesInjected bs, Binder userWorkspace)
 	{
 		Criteria crit = new Criteria();
@@ -221,4 +233,30 @@ public class SearchUtils {
 		return crit;
 	}
 	
+	public static Criteria entriesForTeamingFeedCache(Date now, int updateInterval)
+	{
+		Date toDate = new Date();
+		toDate.setTime(now.getTime() + 60*1000); //Go a little into the future to cover anything really new
+		Date fromDate = new Date();
+		fromDate.setTime(now.getTime() - updateInterval*60*1000 - 1);
+		String s_toDate = DateTools.dateToString(toDate, DateTools.Resolution.SECOND);
+		String s_fromDate = DateTools.dateToString(fromDate, DateTools.Resolution.SECOND);
+		Criteria crit = new Criteria();
+		crit.add(eq(DOC_TYPE_FIELD, DOC_TYPE_ENTRY))
+		    .add(between(MODIFICATION_DATE_FIELD, s_fromDate, s_toDate));
+		crit.addOrder(Order.asc(MODIFICATION_DATE_FIELD));
+		return crit;
+	}
+
+	public static Criteria bindersForAncestryBinders(AllModulesInjected bs, List<Long> binderIds)
+	{
+		List<String> s_binderIds = new ArrayList<String>();
+		for (Long id : binderIds) s_binderIds.add(id.toString());
+		Criteria crit = new Criteria();
+		crit.add(in(DOC_TYPE_FIELD,new String[] {Constants.DOC_TYPE_BINDER}))
+			.add(in(ENTRY_ANCESTRY, s_binderIds));
+		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
+		return crit;
+	}
+
 }

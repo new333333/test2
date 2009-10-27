@@ -74,7 +74,9 @@ function postPollForActivity() {
 	if (pollTimer != null) clearTimeout(pollTimer);
 	pollTimer = setTimeout("pollForActivity();", pollInterval);
 	
-	if (pollStatusObj.innerHTML != '' && pollStatusObj.innerHTML != '0') {
+	if (pollStatusObj.innerHTML != '' && pollStatusObj.innerHTML == 'reload') {
+		setTimeout("self.location.reload(true);", 20);
+	} else if (pollStatusObj.innerHTML != '' && pollStatusObj.innerHTML == 'update') {
 		if (updateTimer != null) clearTimeout(updateTimer);
 		updateTimer = setTimeout("updateFeedDisplay();", 20);
 	}
