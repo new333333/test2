@@ -129,6 +129,7 @@
 			<fileset file="${cinternal.dir}/create-unconstrained-tables-core-${database.type}.sql" />
 			<fileset file="${cinternal.dir}/add-constraints-core-${database.type}.sql" />
 		</concat>
+		<echo file="${create.dir}/create-tables-core-${database.type}-temp.sql" message="${ddl.updateSchemaInfo.database}${line.separator}" append="true"/>
 		<concat destfile="${create.dir}/create-tables-jbpm-${database.type}-temp.sql">
 			<fileset file="${cinternal.dir}/create-unconstrained-tables-jbpm-${database.type}.sql" />
 			<fileset file="${cinternal.dir}/add-constraints-jbpm-${database.type}.sql" />
@@ -210,7 +211,7 @@
 		<concat destfile="${create.dir}/create-database-${database.type}.sql" append="true">
 			<fileset file="${create.dir}/create-database-${database.type}-temp.sql" />
 		</concat>
-		<delete file="${create.dir}/create-database-${database.type}-temp.sql"/>
+  		<delete file="${create.dir}/create-database-${database.type}-temp.sql"/>
     </target>
 
 	<!-- Generate SQL scripts used for creating SS tables and constraints
