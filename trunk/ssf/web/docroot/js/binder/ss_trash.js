@@ -141,17 +141,45 @@ function ss_trashSelectAll(eCBox) {
 	for (var i = 0; i < g_trashEntriesCount; i += 1) {
 		eCBox = g_trashEntries[i].getCheckbox();
 		eCBox.checked = bChecked;
+		ss_trashSelectOne(eCBox);
 	}
 }
 
 /*
- * Called when the user checks/unchecks an individual item's checkbox
- * in the trash viewer.
+ * Called when an individual item's checkbox is checked/unchecked in
+ * the trash viewer.
+ * 
+ * This may seem unnecessary, but is required to work in conjunction
+ * with ss_showMouseOverInfo()/ss_clearMouseOverInfo() in
+ * slider_table.js.
  */
-function ss_trashSelectOne(eCBox, docId, docType) {
-	var bChecked = eCBox.checked;
-	eCBox = getTrashEntryByDoc(docId, docType).getCheckbox();
-	eCBox.checked = bChecked;
+function ss_trashSelectOne(eCBox) {
+	var eCBoxDIV = document.getElementById(eCBox.id + "_DIV");
+	var sCBoxDIV = eCBoxDIV.innerHTML;
+	if (eCBox.checked) {
+		sCBoxDIV = ss_trashStrReplace(sCBoxDIV, "class=", "checked=\"checked\" class=");
+	}
+	else {
+		sCBoxDIV = ss_trashStrReplace(sCBoxDIV, "checked=\"checked\" class=", "class=");
+	}
+	eCBoxDIV.innerHTML = sCBoxDIV;
+}
+
+/*
+ * Replaces one occurence of sPattern in sIn with sReplace. 
+ */
+function ss_trashStrReplace(sIn, sPattern, sReplace) {
+	// If sIn contains an occurence of sPattern...
+	var i = sIn.indexOf( sPattern );
+	if (0 <= i) {
+		// ...replace it with sReplace.
+		sIn = (sIn.substring(0, i) + sReplace + sIn.substring(i + sPattern.length));
+	}
+
+
+	// If we get here, sIn contains the original sIn with one
+	// occurence of sPattern replaced with sReplace.  Return it.
+	return(sIn);
 }
 
 /*

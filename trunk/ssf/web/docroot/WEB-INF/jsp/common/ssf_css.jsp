@@ -1039,6 +1039,14 @@ div.ss_sliding_table_column {
     margin: 0px;
   	background-color: inherit;
 }
+input.ss_sliding_table_checkbox {
+	margin:  -1px 0px 0px 0px;
+	padding:  0px;
+}
+img.ss_sliding_table_column_image {
+	margin: 0px;
+	padding: 0px;
+}
 .ss_sliding_table_column * {
   color: ${ss_sliding_table_text_color};
   white-space:nowrap;

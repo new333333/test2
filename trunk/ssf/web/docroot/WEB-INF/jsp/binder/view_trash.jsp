@@ -232,7 +232,7 @@
 					<ssf:slidingTableRow style="${slidingTableRowStyle}" headerRow="true">
 						<!-- Trash Listing Header Column:  Select All -->
 						<ssf:slidingTableColumn  style="${slidingTableColStyle}" width="3%">
-							<div class="ss_title_menu"><input type="checkbox" id="trash_selectAllCB" style="margin: 0px; padding: 0px;" onClick="ss_trashSelectAll(this); return(true);" onMouseOver="return(true);" onMouseOut="return(true);"/></div>
+							<div class="ss_title_menu" id="trash_selectAllCB_DIV"><input type="checkbox" id="trash_selectAllCB" class="ss_sliding_table_checkbox" onClick="ss_trashSelectAll(this); return(true);" onMouseOver="return(true);" onMouseOut="return(true);"/></div>
 						</ssf:slidingTableColumn>
 
 
@@ -481,7 +481,7 @@
 								id="${folderLineId}">
 							<!-- Trash Listing Data Column:  Select Row -->
 							<ssf:slidingTableColumn  style="${slidingTableColStyle}">
-								<div class="ss_title_menu"><input type="checkbox" id="trash_selectOneCB_${entry1._docType}_${entry1._docId}" style="margin: 0px; padding: 0px;" onClick="ss_trashSelectOne(this, ${entry1._docId}, '${entry1._docType}'); return(true);" onMouseOver="return(true);" onMouseOut="return(true);" /></div>
+								<div class="ss_title_menu" id="trash_selectOneCB_${entry1._docType}_${entry1._docId}_DIV"><input type="checkbox" id="trash_selectOneCB_${entry1._docType}_${entry1._docId}" class="ss_sliding_table_checkbox" onClick="ss_trashSelectOne(this); return(true);" onMouseOver="return(true);" onMouseOut="return(true);" /></div>
 							</ssf:slidingTableColumn>
 
 
@@ -492,7 +492,10 @@
 										<img
 											alt="<ssf:nlt tag="trash.alt.entryIcon" />"
 											title="<ssf:nlt tag="trash.alt.entryIcon" />"
-											border="0" height="12" width="12" style="margin: 0px; padding: 0px;"
+											border="0"
+											height="12"
+											width="12"
+											class="ss_sliding_table_column_image"
 											src="<html:imagesPath/>pics/entry_icon.gif"/>
 									</c:if>
 									<c:if test="${entry1._docType != 'entry'}">
@@ -500,14 +503,20 @@
 											<img
 												alt="<ssf:nlt tag="trash.alt.workspaceIcon" />"
 												title="<ssf:nlt tag="trash.alt.workspaceIcon" />"
-												border="0" height="12" width="12" style="margin: 0px; padding: 0px;"
+												border="0"
+												height="12"
+												width="12"
+												class="ss_sliding_table_column_image"
 												src="<html:imagesPath/>icons/folder_workspace.gif"/>
 										</c:if>
 										<c:if test="${entry1._entityType != 'workspace'}">
 											<img
 												alt="<ssf:nlt tag="trash.alt.folderIcon" />"
 												title="<ssf:nlt tag="trash.alt.folderIcon" />"
-												border="0" height="12" width="12" style="margin: 0px; padding: 0px;"
+												border="0"
+												height="12"
+												width="12"
+												class="ss_sliding_table_column_image"
 												src="<html:imagesPath/>icons/folder_blue.gif"/>
 										</c:if>
 									</c:if>
