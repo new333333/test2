@@ -1531,9 +1531,6 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 
 	// this returns non-zero quotas (any quota which has been set by the admin)
 	public List getNonDefaultQuotas(String type, final long zoneId) {
-		//Protect the SQL query by checking for legal values of "type"
-		if (!ObjectKeys.PRINCIPAL_TYPE_GROUP.equals(type) && !ObjectKeys.PRINCIPAL_TYPE_USER.equals(type)) 
-			return null;
 		final String principalType = type;
 		List userList = new ArrayList();
 		List results = null;
@@ -1541,29 +1538,26 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 				new HibernateCallback() {
 					public Object doInHibernate(Session session)
 							throws HibernateException {
+						
+						String sql = "Select w.id "
+							+ " FROM org.kablink.teaming.domain.UserPrincipal w "
+							+ " WHERE w.diskQuota IS NOT NULL "
+							+ " AND w.diskQuota != 0 "
+							+ " AND w.type = :principalType" 
+							+ " AND w.zoneId = :zoneId";
+
+						Query query = session.createQuery(sql)
+	                   	.setString("principalType", principalType)
+	                   	.setLong("zoneId", zoneId);
+						
 						List l = null;
-						try {
-							String sql = "Select id, diskQuota "
-									+ " FROM SS_Principals "
-									+ " WHERE diskQuota IS NOT NULL "
-									+ " AND diskQuota != 0 "
-									+ " AND type = '" + principalType + "' " 
-									+ " AND zoneId = " + zoneId;
-							Query q = session.createSQLQuery(sql);
-
-							l = q.list();
-
-						} catch (Exception e) {
-							System.out.println("Unable to query for quotas: "
-									+ e.getMessage());
-						}
+						l = query.list();
 						return l;
 					}
 				});
 
 		for (int i = 0; i < results.size(); i++) {
-			Object[] result = (Object[]) results.get(i);
-			userList.add(result[0]);
+			userList.add(results.get(i));
 		}
 
 		return userList;

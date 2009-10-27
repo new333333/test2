@@ -297,6 +297,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   	public void setQuotaEnabled(boolean quotaEnabled) {
   		boolean resetUsage = false;
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		if (isQuotaEnabled() == quotaEnabled) return;  // if the setting hasn't changed, then do nothing
   		// if quotas are currently turned off, and the setting is now true, then reset the usage statistics
   		if (!isQuotaEnabled() && quotaEnabled) resetUsage = true;
   		zoneConfig.setDiskQuotasEnabled(quotaEnabled);
@@ -313,10 +314,12 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   	}
   	public void setQuotaDefault(Integer quotaDefault) {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		if (zoneConfig.getDiskQuotaUserDefault() == quotaDefault) return; // if no change, do nothing
   		zoneConfig.setDiskQuotaUserDefault(quotaDefault);
   	}
   	public void setQuotaHighWaterMark(Integer quotaHighWaterMark) {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		if (zoneConfig.getDiskQuotasHighwaterPercentage() == quotaHighWaterMark) return; // if no change, do nothing
   		zoneConfig.setDiskQuotasHighwaterPercentage(quotaHighWaterMark);
   	}
   	public boolean isMobileAccessEnabled() {

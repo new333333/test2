@@ -107,6 +107,7 @@ public class ReportDownloadController extends  SAbstractController {
 		columnNames.put(ReportModule.ACTIVITY_DATE, "report.columns.activityDate");
 		columnNames.put(ReportModule.DISK_SPACE_USED, "report.columns.diskspaceused");
 		columnNames.put(ReportModule.DISKQUOTA, "report.columns.diskquota");
+		columnNames.put(ReportModule.MAX_GROUPS_QUOTA, "report.columns.maxgroupsquota");
 		columnNames.put(ReportModule.CREATIONDATE, "report.columns.creationDate");
 	}
 
@@ -221,10 +222,10 @@ public class ReportDownloadController extends  SAbstractController {
 				columns = new String[] {ReportModule.USER_ID, ReportModule.SIZE, ReportModule.CREATIONDATE};
 			} else if ("exceededDiskQuota".equals(reportType)) {
 				report = getReportModule().generateExceededDiskQuotaReport();
-				columns = new String[] {ReportModule.USER_ID, ReportModule.DISK_SPACE_USED, ReportModule.DISKQUOTA};
+				columns = new String[] {ReportModule.USER_ID, ReportModule.DISK_SPACE_USED, ReportModule.DISKQUOTA, ReportModule.MAX_GROUPS_QUOTA};
 			} else if ("exceededHighWaterDiskQuota".equals(reportType)) {
 				report = getReportModule().generateExceededHighWaterDiskQuotaReport();
-				columns = new String[] {ReportModule.USER_ID, ReportModule.DISK_SPACE_USED, ReportModule.DISKQUOTA};
+				columns = new String[] {ReportModule.USER_ID, ReportModule.DISK_SPACE_USED, ReportModule.DISKQUOTA, ReportModule.MAX_GROUPS_QUOTA};
 			} else if ("activityByUser".equals(reportType)) {
 				hasUsers = true;
 				String type = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_FLAVOR, ReportModule.REPORT_TYPE_SUMMARY);
