@@ -52,10 +52,15 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.TrashTraverser;
+import org.kablink.teaming.web.util.TrashTraverser.TraverseCallback;
+import org.kablink.teaming.web.util.TrashTraverser.TraversalMode;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.StringPool;
 import org.kablink.util.StringUtil;
@@ -75,6 +80,88 @@ public class TrashHelper {
 	public static final String[] trashColumns= new String[] {"title", "date", "author", "location"};
 	protected static Log logger = LogFactory.getLog(TrashHelper.class);
 
+	/*
+	 * Inner class used to communicate errors encountered while
+	 * traversing binders and entries to predelete or restore them. 
+	 */
+	private static class TrashCBData {
+		// Class data members.
+		public Exception	m_exception;
+		public Long			m_binderId;
+		public Long			m_entryId;
+		public Status		m_status;
+
+		// Used for the current status of the TrashCBData object.
+		public enum Status {
+			NoError,
+			Exception,
+			ACLViolation,
+		}
+
+		/*
+		 * Class constructor.
+		 */
+		public TrashCBData() {
+			reset();
+		}
+
+		/*
+		 * Resets the object's data members to their initial state.
+		 */
+		public void reset() {
+			m_status    = Status.NoError;
+			m_exception = null;
+			m_binderId  =
+			m_entryId   = null;
+		}
+
+		/*
+		 * Returns true if the object represents an error and false
+		 * otherwise.
+		 */
+		public boolean isError() {
+			return (Status.NoError != m_status);
+		}
+
+		/*
+		 * Sets the object to contain information about an ACL
+		 * violation.
+		 */
+		public void setACLViolation(Long binderId) {
+			// Always use the final form of the method.
+			setACLViolation(binderId, null);
+		}
+		public void setACLViolation(Long binderId, Long entryId) {
+			if (null == entryId) logger.debug("TrashCBData.setACLViolation(" + binderId +                  "):  ACL violation.");
+			else                 logger.debug("TrashCBData.setACLViolation(" + binderId + ", " + entryId + "):  ACL violation.");
+			
+			reset();
+			m_status    = Status.ACLViolation;
+			m_exception = new AccessControlException();
+			m_binderId  = binderId;
+			m_entryId   = entryId;
+		}
+
+		/*
+		 * Set the object to contain information about a generic
+		 * exception.
+		 */
+		public void setException(Exception ex, Long binderId) {
+			// Always use the final form of the method.
+			setException(ex, binderId, null);
+		}
+		public void setException(Exception ex, Long binderId, Long entryId) {
+			if (null == entryId) logger.debug("TrashCBData.setException(" + binderId +                  "):  ", ex);
+			else                 logger.debug("TrashCBData.setException(" + binderId + ", " + entryId + "):  ", ex);
+			
+			reset();
+			m_status    = Status.Exception;
+			m_exception = ex;
+			m_binderId  = binderId;
+			m_entryId   = entryId;
+		}
+	}
+	
 	/*
 	 * Inner class used to manipulate entries in the trash.
 	 */
@@ -194,10 +281,54 @@ public class TrashHelper {
 	}
 	
 	/*
-	 * Inner class used to traverse trash items to predelete them.
+	 * Inner classes used to traverse trash items to predelete them.
 	 */
-	private static class TrashPreDelete implements TrashTraverser.TraverseCallback {
-		public boolean binder(AllModulesInjected bs, Long binderId, Object callbackData) {
+	private static class TrashCheckPreDeleteACLs implements TraverseCallback {
+		public boolean binder(AllModulesInjected bs, Long binderId, Object cbDataObject) {
+			boolean reply = true;
+			try {
+				logger.debug("TrashCheckPreDeleteACLs.binder(" + binderId + "):  Checking binder ACLs.");
+				Binder binder = bs.getBinderModule().getBinder(binderId);
+				boolean opAllowed = bs.getBinderModule().testAccess(binder, BinderOperation.preDeleteBinder);
+				if (!opAllowed) {
+					logger.debug("TrashCheckPreDeleteACLs.binder(" + binderId + "):  Failed!");
+					((TrashCBData) cbDataObject).setACLViolation(binderId);
+				}
+				reply = opAllowed;
+			}
+			catch (Exception ex) {
+				logger.debug("TrashCheckPreDeleteACLs.binder(" + binderId + "):  Failed!");
+				((TrashCBData) cbDataObject).setException(ex, binderId);
+				reply = false;
+			}
+			
+			return reply;
+		}
+		
+		public boolean entry(AllModulesInjected bs, Long folderId, Long entryId, Object cbDataObject) {
+			boolean reply = true;
+			try {
+				logger.debug("TrashCheckPreDeleteACLs.entry(" + folderId + ", " + entryId + "):  Checking entry ACLs.");
+				FolderEntry fe = bs.getFolderModule().getEntry(folderId, entryId);
+				boolean opAllowed = bs.getFolderModule().testAccess(fe, FolderOperation.preDeleteEntry);
+				if (!opAllowed) {
+					logger.debug("TrashCheckPreDeleteACLs.entry(" + folderId + ", " + entryId + "):  Failed!");
+					((TrashCBData) cbDataObject).setACLViolation(folderId, entryId);
+				}
+				reply = opAllowed;
+			}
+			catch (Exception ex) {
+				logger.debug("TrashCheckPreDeleteACLs.entry(" + folderId + ", " + entryId + "):  Failed!");
+				((TrashCBData) cbDataObject).setException(ex, folderId, entryId);
+				reply = false;
+			}
+			
+			return reply;
+		}
+	}
+	
+	private static class TrashPreDelete implements TraverseCallback {
+		public boolean binder(AllModulesInjected bs, Long binderId, Object cbDataObject) {
 			boolean reply;
 			try {
 				logger.debug("TrashPreDelete.binder(" + binderId + "):  Predeleting binder.");
@@ -205,14 +336,14 @@ public class TrashHelper {
 				reply = true;
 			}
 			catch (Exception ex) {
-//!				...this needs to be implemented...
-				logger.debug("TrashPreDelete.binder(" + binderId + "):  ", ex);
+				logger.debug("TrashPreDelete.binder(" + binderId + "):  Failed!");
+				((TrashCBData) cbDataObject).setException(ex, binderId);
 				reply = false;
 			}
 			return reply;
 		}
 		
-		public boolean entry(AllModulesInjected bs, Long folderId, Long entryId, Object callbackData) {
+		public boolean entry(AllModulesInjected bs, Long folderId, Long entryId, Object cbDataObject) {
 			boolean reply;
 			try {
 				logger.debug("TrashPreDelete.entry(" + folderId + ", " + entryId + "):  Predeleting entry.");
@@ -220,8 +351,8 @@ public class TrashHelper {
 				reply = true;
 			}
 			catch (Exception ex) {
-//!				...this needs to be implemented...
-				logger.debug("TrashPreDelete.entry(" + folderId + ", " + entryId + "):  ", ex);
+				logger.debug("TrashPreDelete.entry(" + folderId + ", " + entryId + "):  Failed!");
+				((TrashCBData) cbDataObject).setException(ex, folderId, entryId);
 				reply = false;
 			}
 			return reply;
@@ -229,10 +360,54 @@ public class TrashHelper {
 	}
 	
 	/*
-	 * Inner class used to traverse trash items to restore them.
+	 * Inner classes used to traverse trash items to restore them.
 	 */
-	private static class TrashRestore implements TrashTraverser.TraverseCallback {
-		public boolean binder(AllModulesInjected bs, Long binderId, Object callbackData) {
+	private static class TrashCheckRestoreACLs implements TraverseCallback {
+		public boolean binder(AllModulesInjected bs, Long binderId, Object cbDataObject) {
+			boolean reply = true;
+			try {
+				logger.debug("TrashCheckRestoreACLs.binder(" + binderId + "):  Checking binder ACLs.");
+				Binder binder = bs.getBinderModule().getBinder(binderId);
+				boolean opAllowed = bs.getBinderModule().testAccess(binder, BinderOperation.restoreBinder);
+				if (!opAllowed) {
+					logger.debug("TrashCheckRestoreACLs.binder(" + binderId + "):  Failed!");
+					((TrashCBData) cbDataObject).setACLViolation(binderId);
+				}
+				reply = opAllowed;
+			}
+			catch (Exception ex) {
+				logger.debug("TrashCheckRestoreACLs.binder(" + binderId + "):  Failed!");
+				((TrashCBData) cbDataObject).setException(ex, binderId);
+				reply = false;
+			}
+			
+			return reply;
+		}
+		
+		public boolean entry(AllModulesInjected bs, Long folderId, Long entryId, Object cbDataObject) {
+			boolean reply = true;
+			try {
+				logger.debug("TrashCheckRestoreACLs.entry(" + folderId + ", " + entryId + "):  Checking entry ACLs.");
+				FolderEntry fe = bs.getFolderModule().getEntry(folderId, entryId);
+				boolean opAllowed = bs.getFolderModule().testAccess(fe, FolderOperation.restoreEntry);
+				if (!opAllowed) {
+					logger.debug("TrashCheckRestoreACLs.entry(" + folderId + ", " + entryId + "):  Failed!");
+					((TrashCBData) cbDataObject).setACLViolation(folderId, entryId);
+				}
+				reply = opAllowed;
+			}
+			catch (Exception ex) {
+				logger.debug("TrashCheckRestoreACLs.entry(" + folderId + ", " + entryId + "):  Failed!");
+				((TrashCBData) cbDataObject).setException(ex, folderId, entryId);
+				reply = false;
+			}
+			
+			return reply;
+		}
+	}
+	
+	private static class TrashRestore implements TraverseCallback {
+		public boolean binder(AllModulesInjected bs, Long binderId, Object cbDataObject) {
 			boolean reply;
 			try {
 				logger.debug("TrashRestore.binder(" + binderId + "):  Restoring binder.");
@@ -240,14 +415,14 @@ public class TrashHelper {
 				reply = true;
 			}
 			catch (Exception ex) {
-//!				...this needs to be implemented...
-				logger.debug("TrashRestore.binder(" + binderId + "):  ", ex);
+				logger.debug("TrashRestore.binder(" + binderId + "):  Failed!");
+				((TrashCBData) cbDataObject).setException(ex, binderId);
 				reply = false;
 			}
 			return reply;
 		}
 		
-		public boolean entry(AllModulesInjected bs, Long folderId, Long entryId, Object callbackData) {
+		public boolean entry(AllModulesInjected bs, Long folderId, Long entryId, Object cbDataObject) {
 			boolean reply;
 			try {
 				logger.debug("TrashRestore.entry(" + folderId + ", " + entryId + "):  Restoring entry.");
@@ -255,8 +430,8 @@ public class TrashHelper {
 				reply = true;
 			}
 			catch (Exception ex) {
-//!				...this needs to be implemented...
-				logger.debug("TrashRestore.entry(" + folderId + ", " + entryId + "):  ", ex);
+				logger.debug("TrashRestore.entry(" + folderId + ", " + entryId + "):  Failed!");
+				((TrashCBData) cbDataObject).setException(ex, folderId, entryId);
 				reply = false;
 			}
 			return reply;
@@ -543,10 +718,23 @@ public class TrashHelper {
 	 * @param folderId
 	 * @param entryId
 	 */
-	public static void preDeleteBinder(AllModulesInjected bs, Long binderId) {
-		TrashPreDelete trashPD = new TrashPreDelete();
-		TrashTraverser tt = new TrashTraverser(bs, logger, trashPD, null);
-		tt.doTraverse(TrashTraverser.Mode.DESCENDING, binderId);
+	public static void preDeleteBinder(AllModulesInjected bs, Long binderId) throws Exception {
+		// Check the ACLs...
+		TrashCBData cbData = new TrashCBData();
+		TrashTraverser tt = new TrashTraverser(bs, logger, new TrashCheckPreDeleteACLs(), cbData);
+		tt.doTraverse(TraversalMode.DESCENDING, binderId);
+		if (!(cbData.isError())) {
+			// ...and if they pass, perform the predelete.
+			cbData.reset();
+			tt = new TrashTraverser(bs, logger, new TrashPreDelete(), cbData);
+			tt.doTraverse(TraversalMode.DESCENDING, binderId);
+		}
+		
+		// For any error...
+		if (cbData.isError()) {
+			// ...simply re-throw the exception.
+			throw cbData.m_exception;
+		}
 	}
 	
 	/**
@@ -556,10 +744,23 @@ public class TrashHelper {
 	 * @param folderId
 	 * @param entryId
 	 */
-	public static void preDeleteEntry(AllModulesInjected bs, Long folderId, Long entryId) {
-		TrashPreDelete trashPD = new TrashPreDelete();
-		TrashTraverser tt = new TrashTraverser(bs, logger, trashPD, null);
-		tt.doTraverse(TrashTraverser.Mode.DESCENDING, folderId, entryId);
+	public static void preDeleteEntry(AllModulesInjected bs, Long folderId, Long entryId) throws Exception{
+		// Check the ACLs...
+		TrashCBData cbData = new TrashCBData();
+		TrashTraverser tt = new TrashTraverser(bs, logger, new TrashCheckPreDeleteACLs(), cbData);
+		tt.doTraverse(TraversalMode.DESCENDING, folderId, entryId);
+		if (!(cbData.isError())) {
+			// ...and if they pass, perform the predelete.
+			cbData.reset();
+			tt = new TrashTraverser(bs, logger, new TrashPreDelete(), cbData);
+			tt.doTraverse(TraversalMode.DESCENDING, folderId, entryId);
+		}
+		
+		// For any error...
+		if (cbData.isError()) {
+			// ...simply re-throw the exception.
+			throw cbData.m_exception;
+		}
 	}
 	
 	/*
@@ -610,22 +811,40 @@ public class TrashHelper {
 	/*
 	 * Called to restore a binder.
 	 */
-	private static void restoreBinder(AllModulesInjected bs, Long binderId) {
-		TrashRestore trashR = new TrashRestore();
-		TrashTraverser tt = new TrashTraverser(bs, logger, trashR, null);
-		tt.doTraverse(TrashTraverser.Mode.ASCENDING, binderId);
+	private static TrashCBData restoreBinder(AllModulesInjected bs, Long binderId) {
+		// Check the ACLs...
+		TrashCBData cbData = new TrashCBData();
+		TrashTraverser tt = new TrashTraverser(bs, logger, new TrashCheckRestoreACLs(), cbData);
+		tt.doTraverse(TraversalMode.ASCENDING, binderId);
+		if (!(cbData.isError())) {
+			// ...and if they pass, perform the restore.
+			cbData.reset();
+			tt = new TrashTraverser(bs, logger, new TrashRestore(), cbData);
+			tt.doTraverse(TraversalMode.ASCENDING, binderId);
+		}
+		
+		return cbData;
 	}
 
 	/*
 	 * Called to restore an entry.
 	 */
-	private static void restoreEntry(AllModulesInjected bs, Long folderId, Long entryId) {
-		restoreEntry(bs, folderId, entryId, true);
+	private static TrashCBData restoreEntry(AllModulesInjected bs, Long folderId, Long entryId) {
+		return restoreEntry(bs, folderId, entryId, true);
 	}
-	private static void restoreEntry(AllModulesInjected bs, Long folderId, Long entryId, boolean restoreParentage) {
-		TrashRestore trashR = new TrashRestore();
-		TrashTraverser tt = new TrashTraverser(bs, logger, trashR, null);
-		tt.doTraverse(TrashTraverser.Mode.ASCENDING, folderId, entryId);
+	private static TrashCBData restoreEntry(AllModulesInjected bs, Long folderId, Long entryId, boolean restoreParentage) {
+		// Check the ACLs...
+		TrashCBData cbData = new TrashCBData();
+		TrashTraverser tt = new TrashTraverser(bs, logger, new TrashCheckRestoreACLs(), cbData);
+		tt.doTraverse(TraversalMode.ASCENDING, folderId, entryId);
+		if (!(cbData.isError())) {
+			// ...and if they pass, perform the restore.
+			cbData.reset();
+			tt = new TrashTraverser(bs, logger, new TrashRestore(), cbData);
+			tt.doTraverse(TraversalMode.ASCENDING, folderId, entryId);
+		}
+		
+		return cbData;
 	}
 	
 	/*
@@ -634,6 +853,7 @@ public class TrashHelper {
 	private static ModelAndView restoreEntries(AllModulesInjected bs, TrashEntry[] trashEntries, RenderRequest request, RenderResponse response) {
 		// Scan the TrashEntry's.
 		int count = ((null == trashEntries) ? 0 : trashEntries.length);
+		TrashCBData cbData = new TrashCBData();
 		for (int i = 0; i < count; i += 1) {
 			// Is this trashEntry valid and predeleted?
 			TrashEntry trashEntry = trashEntries[i];
@@ -641,15 +861,27 @@ public class TrashHelper {
 				// Yes!  Is it an entry?
 				if (trashEntry.isEntry()) {
 					// Yes!  Restore the entry itself...
-					restoreEntry(bs, trashEntry.m_locationBinderId, trashEntry.m_docId);
+					cbData = restoreEntry(bs, trashEntry.m_locationBinderId, trashEntry.m_docId);
+					if (cbData.isError()) {
+						break;
+					}
 				}
 				
 				// No, it isn't an entry!  Is it a binder?
 				else if (trashEntry.isBinder()) {
 					// Yes!  Restore the binder itself...
-					restoreBinder(bs, trashEntry.m_docId);
+					cbData = restoreBinder(bs, trashEntry.m_docId);
+					if (cbData.isError()) {
+						break;
+					}
 				}
 			}
+		}
+		
+		// Did we detect an error during the restore?
+		if (cbData.isError()) {
+			// Yes!  We need to tell the user about the problem.
+//!			...this needs to be handled...			
 		}
 		
 		response.setContentType("text/xml");
