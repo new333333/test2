@@ -11,7 +11,7 @@
     </id>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <property name="zoneId" access="field"/>
-	<property name="preDeleted"/>
+	<property name="preDeleted" access="field"/>
     <property name="preDeletedWhen"/>
     <property name="preDeletedBy"/>
 	<property name="deleted"/>
