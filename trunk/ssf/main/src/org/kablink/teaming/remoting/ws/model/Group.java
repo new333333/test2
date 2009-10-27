@@ -35,4 +35,14 @@ package org.kablink.teaming.remoting.ws.model;
 import java.io.Serializable;
 
 public class Group extends Principal implements Serializable {
+	
+	private Long diskQuota;
+	
+	public Long getDiskQuota() {
+		if (diskQuota == null) return new Long(0);
+		return diskQuota;
+	}
+	public void setDiskQuota(Long diskQuota) {
+		this.diskQuota = diskQuota;
+	}
 }
