@@ -48,6 +48,7 @@ public class User extends Principal implements Serializable {
 	private String skypeId;
 	private String twitterId;
 	private Long miniBlogId;
+	private Long diskQuota;
 	private Long diskSpaceUsed;
 	private Long maxGroupsQuota;
 	private Long workspaceId;
@@ -123,6 +124,13 @@ public class User extends Principal implements Serializable {
 	}
 	public void setMiniBlogId(Long miniBlogId) {
 		this.miniBlogId = miniBlogId;
+	}
+	public Long getDiskQuota() {
+		if (diskQuota == null) return new Long(0);
+		return diskQuota;
+	}
+	public void setDiskQuota(Long diskQuota) {
+		this.diskQuota = diskQuota;
 	}
 	public Long getMaxGroupsQuota() {
 		if (maxGroupsQuota == null) return 0L;
