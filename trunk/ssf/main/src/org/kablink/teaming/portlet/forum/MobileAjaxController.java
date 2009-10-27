@@ -85,6 +85,7 @@ import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
+import org.kablink.teaming.domain.TeamingFeedCache;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
@@ -184,6 +185,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			if (op.equals(WebKeys.OPERATION_VIEW_TEAMING_LIVE)) {
 				return ajaxMobileLogin(this, request, response, "ss_forum", WebKeys.OPERATION_VIEW_TEAMING_LIVE);
+			} else if (op.equals(WebKeys.OPERATION_TEAMING_LIVE_CHECK_FOR_ACTIVITY)) {
+				return ajaxMobileLoginCheckForActivity(this, request, response, "ss_forum", WebKeys.OPERATION_VIEW_TEAMING_LIVE);
 			} else {
 				return ajaxMobileLogin(this, request, response, "ss_mobile", WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
 			}
@@ -448,6 +451,18 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("mobile/show_login_form", model);
 	}
 	
+	private ModelAndView ajaxMobileLoginCheckForActivity(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, String portletName, String operation) throws Exception {
+        HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
+		Map model = new HashMap();
+		model.put("ss_teamingLiveStatus", "reload");
+        session.setAttribute(WebKeys.TEAMING_LIVE_UPDATE_DATE, new Date());
+		model.put(WebKeys.TEAMING_LIVE_UPDATE_DATE, session.getAttribute(WebKeys.TEAMING_LIVE_UPDATE_DATE));
+
+		response.setContentType("text/xml");
+		return new ModelAndView("mobile/teaming_live_check_for_activity", model);
+	}
+	
 	
 	private ModelAndView ajaxMobileFrontPage(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
@@ -460,10 +475,16 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxShowTeamingLive(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
+        HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
+		Date lastUpdate = (Date)session.getAttribute(WebKeys.TEAMING_LIVE_UPDATE_DATE);
+		if (lastUpdate == null) {
+			lastUpdate = new Date();
+			lastUpdate.setTime(lastUpdate.getTime() - TeamingFeedCache.feedClientUpdateInterval*60*1000 - 1);
+		}
+		model.put(WebKeys.TEAMING_LIVE_PREVIOUS_UPDATE_DATE, lastUpdate);
 		String view = BinderHelper.setupTeamingLiveBeans(bs, request, response, model, "mobile/show_teaming_live");
 
 		//Reset the date used to see what is new
-        HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
         Date updateDate = new Date();
         session.setAttribute(WebKeys.TEAMING_LIVE_UPDATE_DATE, updateDate);
         model.put(WebKeys.TEAMING_LIVE_UPDATE_DATE, updateDate);
@@ -473,24 +494,51 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 	private ModelAndView ajaxShowTeamingLiveUpdate(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		String view = BinderHelper.setupTeamingLiveBeans(bs, request, response, model, "mobile/teaming_live_update");
         HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
-        Date updateDate = (Date) session.getAttribute(WebKeys.TEAMING_LIVE_UPDATE_DATE);
-        if (updateDate == null) updateDate = new Date();
-		model.put(WebKeys.TEAMING_LIVE_UPDATE_DATE, updateDate);
+		Map model = new HashMap();
+		Date lastUpdate = (Date)session.getAttribute(WebKeys.TEAMING_LIVE_UPDATE_DATE);
+		if (lastUpdate == null) {
+			lastUpdate = new Date();
+			lastUpdate.setTime(lastUpdate.getTime() - TeamingFeedCache.feedClientUpdateInterval*60*1000 - 1);
+		}
+		model.put(WebKeys.TEAMING_LIVE_PREVIOUS_UPDATE_DATE, lastUpdate);
+		String view = BinderHelper.setupTeamingLiveBeans(bs, request, response, model, "mobile/teaming_live_update");
+        session.setAttribute(WebKeys.TEAMING_LIVE_UPDATE_DATE, new Date());
+		model.put(WebKeys.TEAMING_LIVE_UPDATE_DATE, session.getAttribute(WebKeys.TEAMING_LIVE_UPDATE_DATE));
 		return new ModelAndView(view, model);
 	}
 
 	private ModelAndView ajaxTeamingLiveCheckForActivity(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
+        HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
 		Map model = new HashMap();
 		String view = "mobile/teaming_live_check_for_activity";
-		
+
+        Date lastUpdateDate = (Date) session.getAttribute(WebKeys.TEAMING_LIVE_UPDATE_DATE);
+        if (lastUpdateDate == null) {
+        	lastUpdateDate = new Date();
+        	lastUpdateDate.setTime(lastUpdateDate.getTime() - TeamingFeedCache.feedClientUpdateInterval - 1);
+        }
+
 		//Check if the client needs to do an update. 
 		//An empty status indicates no update needed
-		// todo For now always do an update
-		String status = "update";
+		TeamingFeedCache.updateMap(bs);
+		String status = "";
+		String type = (String)session.getAttribute(ObjectKeys.SESSION_TEAMING_LIVE_TRACKED_TYPE);
+		if (type != null && type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE)) {
+			if (TeamingFeedCache.checkIfBinderHasNewSiteEntries(bs, lastUpdateDate)) {
+				status = "update";
+			}
+		} else {
+			List<Long> trackedBinderIds = (List<Long>)session.getAttribute(ObjectKeys.SESSION_TEAMING_LIVE_TRACKED_BINDER_IDS);
+			if (trackedBinderIds == null) trackedBinderIds = new ArrayList<Long>();
+			for (Long binderId : trackedBinderIds) {
+				if (TeamingFeedCache.checkIfBinderHasNewEntries(bs, binderId, lastUpdateDate)) {
+					status = "update";
+					break;
+				}
+			}
+		}
 		model.put("ss_teamingLiveStatus", status);
 
 		response.setContentType("text/xml");

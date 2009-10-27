@@ -642,8 +642,9 @@ public class RelevanceDashboardHelper {
 		}
 	}
 	
-	public static void setupMiniblogsBean(AllModulesInjected bs, Binder binder, Map model) {
+	public static List<Long> setupMiniblogsBean(AllModulesInjected bs, Binder binder, Map model) {
 		//What activities have been happening?
+		List<Long> trackedPeople = new ArrayList();
 		if (binder != null) {
 			String page = "0";
 			page = (String) model.get(WebKeys.PAGE_NUMBER);
@@ -653,7 +654,6 @@ public class RelevanceDashboardHelper {
 			model.put(WebKeys.ACTIVITIES_PAGE, String.valueOf(pageNumber));
 			int pageStart = pageNumber * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
 
-			List<Long> trackedPeople = new ArrayList();
 			if (!model.containsKey(WebKeys.RELEVANCE_TRACKED_PEOPLE)) {
 				UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
 				Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
@@ -687,6 +687,7 @@ public class RelevanceDashboardHelper {
 				model.put(WebKeys.ACTIVITIES, activities);
 			}
 		}
+		return trackedPeople;
 	}
 	
 	private static void setupTrackedItemsBeans(AllModulesInjected bs, Binder binder, Map model) {

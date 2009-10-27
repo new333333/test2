@@ -37,7 +37,7 @@
 	    <c:if test="${ss_whatsNewType != 'microblog'}">
 	      <c:forEach var="entryWn" items="${ss_whatsNewBinder}">
 	    	<jsp:useBean id="entryWn" type="java.util.Map" />
-	    	<c:if test="${entryWn._modificationDate.time > ss_teaming_live_update_date.time}">
+	    	<c:if test="${entryWn._modificationDate.time > ss_teaming_live_previous_update_date.time}">
 	    	  <c:set var="newTeamingEntries" value="${newTeamingEntries + 1}" />
 	    	</c:if>
 	    	<div class="entry">
@@ -98,7 +98,7 @@
         </c:if>
         <c:if test="${ss_whatsNewType == 'microblog'}">
 	  		<c:forEach var="activity" items="${ss_activities}">
-	    	  <c:if test="${activity.date.time > ss_teaming_live_update_date.time}">
+	    	  <c:if test="${activity.date.time > ss_teaming_live_previous_update_date.time}">
 	    	    <c:set var="newTeamingEntries" value="${newTeamingEntries + 1}" />
 	    	  </c:if>
 	    	<div class="entry">
