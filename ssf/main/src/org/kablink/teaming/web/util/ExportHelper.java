@@ -421,7 +421,7 @@ public class ExportHelper {
 			zipOut.putNextEntry(new ZipEntry(pathName + "/" + "e"
 					+ fullId + ".xml"));
 			XmlFileUtil.writeFile(getEntryAsDoc(null, entry.getParentBinder()
-					.getId(), entry.getId(), false, pathName + File.separator
+					.getId(), entry.getId(), false, pathName + "/"
 					+ "e" + fullId, defList), zipOut);
 		} else {
 			zipOut.putNextEntry(new ZipEntry("e" + fullId + ".xml"));
@@ -455,7 +455,7 @@ public class ExportHelper {
 			zipOut.putNextEntry(new ZipEntry(pathName + "/" + "e"
 					+ newFullId + ".xml"));
 			XmlFileUtil.writeFile(getEntryAsDoc(null, reply.getParentBinder()
-					.getId(), reply.getId(), false, pathName + File.separator
+					.getId(), reply.getId(), false, pathName + "/"
 					+ "e" + newFullId, defList), zipOut);
 		} else {
 			zipOut.putNextEntry(new ZipEntry("e" + newFullId + ".xml"));
@@ -840,7 +840,8 @@ public class ExportHelper {
 
 		for (Attribute attr : (List<Attribute>) hrefs) {
 			File tempFile = new File(attr.getValue());
-			attr.setValue(pathName + File.separator + tempFile.getName());
+			// Use '/' instead of File.separator so the correct directory structure will be created in the zip file.
+			attr.setValue(pathName + "/" + tempFile.getName());
 		}
 	}
 
