@@ -9,7 +9,7 @@
 
 	
 	<!-- Define the GWT compiler options. -->
-	<property name="gwt.debug" value="true" />
+	<property name="gwt.debug" value="false" />
 	
 	<!-- Controls style of JavaScript produced by GWT compiler. -->
 	<!-- Possible values:                                       -->
@@ -27,7 +27,7 @@
 	<!-- DEBUG:            -->
 	<!--  SPAM:            -->
 	<!--   ALL:            -->
-	<condition property="gwt.logLevel" value="INFO" else="ERROR"><istrue value="${gwt.debug}" /></condition>
+	<property name="gwt.logLevel" value="INFO" />
 
 	
 	<!-- Define the platform that we're building on. -->

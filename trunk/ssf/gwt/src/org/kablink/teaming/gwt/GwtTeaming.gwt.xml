@@ -27,26 +27,26 @@
 	<stylesheet src='GwtTeaming.css' />
 
 	<!-- Add support for other languages. -->
-	<set-property name="locale" value="default"/>				<!-- English               -->
+	<!-- <set-property name="locale" value="default"/> -->				<!-- English               -->
 	<!-- <extend-property name="locale" values="da"    /> -->	<!-- Danish                -->
-	<!-- <extend-property name="locale" values="de"    /> -->	<!-- German                -->
-	<!-- <extend-property name="locale" values="es"    /> -->	<!-- Spanish               -->
+	<extend-property name="locale" values="de"    />	<!-- German                -->
+	<extend-property name="locale" values="es"    />	<!-- Spanish               -->
 	<!-- <extend-property name="locale" values="fr"    /> -->	<!-- French                -->
-	<!-- <extend-property name="locale" values="hu_HU" /> -->	<!-- Hungarian             -->
+	<extend-property name="locale" values="hu_HU" />	<!-- Hungarian             -->
 	<!-- <extend-property name="locale" values="it"    /> -->	<!-- Italian               -->
-	<!-- <extend-property name="locale" values="ja"    /> -->	<!-- Japanese              -->
-	<!-- <extend-property name="locale" values="nl"    /> -->	<!-- Dutch                 -->
-	<!-- <extend-property name="locale" values="pl"    /> -->	<!-- Polish                -->
-	<!-- <extend-property name="locale" values="pt_BR" /> -->	<!-- Portuguese            -->
-	<!-- <extend-property name="locale" values="ru_RU" /> -->	<!-- Russian               -->
-	<!-- <extend-property name="locale" values="sv"    /> -->	<!-- Sweedish              -->
+	<extend-property name="locale" values="ja"    />	<!-- Japanese              -->
+	<extend-property name="locale" values="nl"    />	<!-- Dutch                 -->
+	<extend-property name="locale" values="pl"    />	<!-- Polish                -->
+	<extend-property name="locale" values="pt_BR" />	<!-- Portuguese            -->
+	<extend-property name="locale" values="ru_RU" />	<!-- Russian               -->
+	<extend-property name="locale" values="sv"    />	<!-- Sweedish              -->
 	<!-- <extend-property name="locale" values="uk_UA" /> -->	<!-- Ukrainian             -->
-	<!-- <extend-property name="locale" values="zh_CN" /> -->	<!-- Chinese - Simplified  -->
-	<!-- <extend-property name="locale" values="zh_TW" /> -->	<!-- Chinese - Traditional -->
+	<extend-property name="locale" values="zh_CN" />	<!-- Chinese - Simplified  -->
+	<extend-property name="locale" values="zh_TW" />	<!-- Chinese - Traditional -->
 
 	<!-- Limit support of which browsers we compile for.  Speeds up -->
 	<!-- compilation during development.                            -->
-	<set-property name="user.agent" value="gecko,gecko1_8,ie6,ie8,safari"/>
+	<set-property name="user.agent" value="gecko,gecko1_8,ie6,ie8,opera,safari"/>
 	<!-- Possible user.agent values: -->
 	<!--    gecko:     Legacy Mozilla, Firefox 1.x.              -->
 	<!--    gecko1_8:  Firefox 2.x and 3.x.                      -->
