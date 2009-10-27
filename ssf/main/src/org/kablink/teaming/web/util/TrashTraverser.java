@@ -55,13 +55,13 @@ public class TrashTraverser {
 	// Class data members.
 	private AllModulesInjected	m_bs;
 	private Log					m_logger;
-	private TraverseCallback	m_cb;
 	private Object				m_cbData;
+	private TraverseCallback	m_cb;
 
 	/**
 	 * Specifies how the traversal will be done.
 	 */
-	public enum Mode {
+	public enum TraversalMode {
 		ASCENDING,	// Typically used to restore.
 		DESCENDING,	// Typically used to preDelete.
 	}
@@ -74,8 +74,8 @@ public class TrashTraverser {
 	 * these returns false or the traversal completes.
 	 */
 	public interface TraverseCallback {
-		public boolean binder(AllModulesInjected bs, Long binderId,               Object callbackData);
-		public boolean entry( AllModulesInjected bs, Long folderId, Long entryId, Object callbackData);
+		public boolean binder(AllModulesInjected bs, Long binderId,               Object cbDataObject);
+		public boolean entry( AllModulesInjected bs, Long folderId, Long entryId, Object cbDataObject);
 	}
 	
 	/**
@@ -100,21 +100,21 @@ public class TrashTraverser {
 	 * @param binderId
 	 * @param entryId
 	 */
-	public void doTraverse(Mode mode, Long binderId) {
+	public void doTraverse(TraversalMode mode, Long binderId) {
 		// Always use the final form of the method.
 		doTraverse(mode, binderId, null);
 	}
 	
-	public void doTraverse(Mode mode, Long binderId, Long entryId) {
+	public void doTraverse(TraversalMode mode, Long binderId, Long entryId) {
 		if (null == entryId) m_logger.debug("TrashTraverser.doTraverse(" + binderId + "):  Traversing binder.");
 		else                 m_logger.debug("TrashTraverser.doTraverse(" + binderId + ", " + entryId + "):  Traversing entry.");
 		
-		if (mode == Mode.DESCENDING) {
+		if (mode == TraversalMode.DESCENDING) {
 			m_logger.debug("...descending.");
 			if (null == entryId) descendBinder(binderId         );
 			else                 descendEntry( binderId, entryId);
 		}
-		else if (mode == Mode.ASCENDING) {
+		else if (mode == TraversalMode.ASCENDING) {
 			m_logger.debug("...ascending.");
 			if (null == entryId) ascendBinder(binderId               );
 			else                 ascendEntry( binderId, entryId, true);
