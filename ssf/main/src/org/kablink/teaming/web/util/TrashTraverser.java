@@ -346,4 +346,22 @@ public class TrashTraverser {
 		// If we get here, we always continue the traversal.
 		return true;
 	}
+
+	/**
+	 * Stores a new TraverseCallback in this TrashTraverser object.
+	 * 
+	 * @param cb
+	 */
+	public void setCallback(TraverseCallback cb) {
+		m_cb = cb;
+	}
+	
+	/**
+	 * Stores a new callback data object in this TrashTraverser object.
+	 * 
+	 * @param cbData
+	 */
+	public void setCallbackData(Object cbData) {
+		m_cbData = cbData;
+	}
 }
