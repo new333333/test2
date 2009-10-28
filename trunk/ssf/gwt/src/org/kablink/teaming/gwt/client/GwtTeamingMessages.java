@@ -147,4 +147,11 @@ public interface GwtTeamingMessages extends Messages
 	
 	String testPanelState( String value );
 	String testWaiting();
+	
+	// Strings used with extensions
+	String extensionsName();
+	String extensionsDesc();
+	String extensionsZone();
+	String extensionsRemove();
+
 }// end GwtTeamingMessages
