@@ -51,6 +51,14 @@ public class QuotaReportController extends  AbstractReportController {
 	}
 
 	protected String chooseView(Map formData) {
+		String[] actions = (String[])formData.get("action");
+		if (actions[0].equals("quota_report")) {
+			 return WebKeys.VIEW_QUOTA_REPORT;
+		} else if (actions[0].equals("quota_exceeded_report")) {
+			return WebKeys.VIEW_QUOTA_EXCEEDED_REPORT;
+		} else if (actions[0].equals("quota_highwater_exceeded_report")) {
+			return WebKeys.VIEW_QUOTA_HIGHWATER_EXCEEDED_REPORT;
+		}
 		return WebKeys.VIEW_QUOTA_REPORT;
 	}
 }

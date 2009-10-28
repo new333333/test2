@@ -1429,7 +1429,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	Long fileSize = null;
     	if(versionName != null)
     		fileSize = Long.valueOf(session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName));
-    	if (fileSize != null) checkQuota(fileSize);
+    	if (fileSize != null) checkQuota(fileSize, fAtt.getName());
 		updateFileAttachment(fAtt, user, versionName, fileSize, fui.getModDate(), fui.getModifierName());
     }
 
@@ -1552,7 +1552,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 						
 		long fileSize = session.getContentLengthVersioned(binder, entry, fui.getOriginalFilename(), versionName);
 		
-		checkQuota(fileSize);
+		checkQuota(fileSize, fAtt.getName());
 		
 		fAtt.getFileItem().setLength(fileSize);
 
@@ -1561,7 +1561,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return fAtt;
 	}
 	
-	private void checkQuota(long fileSize) throws RepositoryServiceException {
+	private void checkQuota(long fileSize, String fileName) throws RepositoryServiceException {
 		// first check properties to see if quotas is enabled on this system
 		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(
 				RequestContextHolder.getRequestContext()
@@ -1590,7 +1590,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			if ((userQuota < user.getDiskSpaceUsed()))
 				// TODO ROY - put this message into the messages catalogue
 				throw new RepositoryServiceException(
-						"Cannot attach file, Disk quota exceeded");
+						"Disk quota exceeded, cannot attach file: " + fileName);
 		}
 	}
 	

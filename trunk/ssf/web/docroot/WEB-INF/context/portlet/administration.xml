@@ -69,6 +69,8 @@
 						<entry key="manage_license"><ref bean="manageLicenseController"/></entry>
 						<entry key="activity_report"><ref bean="activityReportController"/></entry>
 						<entry key="quota_report"><ref bean="quotaReportController"/></entry>
+						<entry key="quota_exceeded_report"><ref bean="quotaReportController"/></entry>
+						<entry key="quota_highwater_exceeded_report"><ref bean="quotaReportController"/></entry>												
 						<entry key="workflow_report"><ref bean="workflowReportController"/></entry>
 						<entry key="view_folder_listing"><ref bean="adminConfigureConfigurationController"/></entry>
 						<entry key="view_ws_listing"><ref bean="adminConfigureConfigurationController"/></entry>
