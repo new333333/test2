@@ -148,6 +148,7 @@ public class FindCtrl extends Composite
 		private Image m_nextDisabledImg;
 		private Image m_nextImg;
 		private InlineLabel m_nOfnLabel;
+		private FlowPanel m_searchingPanel;
 		private int m_searchCountTotal = 0;	// Total number of items found by a search.
 		private int m_displayCount = 0;		// Total number of items currently being displayed from a search.
 		
@@ -158,12 +159,24 @@ public class FindCtrl extends Composite
 		public SearchResultsWidget( OnSelectHandler onSelectHandler )
 		{
 			FlowPanel footer;
+			InlineLabel searching;
+			Image spinnerImg;
 
 			// Remember the OnSelectHandler we need to call when the user selects an item from the list of search results.
 			m_onSelectHandler = onSelectHandler;
 			
 			m_mainPanel = new FlowPanel();
 			m_mainPanel.addStyleName( "findSearchResults" );
+			
+			// Create a panel to hold "Searching..."
+			m_searchingPanel = new FlowPanel();
+			m_searchingPanel.addStyleName( "findSearchingPanel" );
+			m_mainPanel.add( m_searchingPanel );
+			searching = new InlineLabel( GwtTeaming.getMessages().searching() );
+			m_searchingPanel.add( searching );
+			spinnerImg = GwtTeaming.getImageBundle().spinner16().createImage();
+			m_searchingPanel.add( spinnerImg );
+			m_searchingPanel.setVisible( false );
 			
 			// Create the panel that will hold the content.
 			m_contentPanel = createContentPanel();
@@ -355,6 +368,15 @@ public class FindCtrl extends Composite
 		
 		
 		/**
+		 * Hide the "Searching..." text.
+		 */
+		public void hideSearchingText()
+		{
+			m_searchingPanel.setVisible( false );
+		}// end hideSearchingText()
+		
+		
+		/**
 		 * This method gets called when the user clicks on an item from the list of search results.
 		 */
 		public void onClick( ClickEvent clickEvent )
@@ -376,6 +398,25 @@ public class FindCtrl extends Composite
 				}
 			}
 		}// end onClick()
+		
+		
+		/**
+		 * Show the "Searching..." text.
+		 */
+		public void showSearchingText()
+		{
+			int width;
+			int x;
+			
+			// Center the "searching..." text
+			width = m_mainPanel.getOffsetWidth();
+			x = (width - m_searchingPanel.getOffsetWidth()) / 2;
+			x -= 40;
+			DOM.setStyleAttribute( m_searchingPanel.getElement(), "left", Integer.toString( x ) + "px" );
+			
+			// Show the "searching..." text
+			m_searchingPanel.setVisible( true );
+		}// end showSearchingText()
 	}// end SearchResultsWidget
 	
 	
@@ -386,7 +427,8 @@ public class FindCtrl extends Composite
 	private Object m_selectedObj = null;
 	private OnSelectHandler m_onSelectHandler;
 	private AsyncCallback<GwtSearchResults> m_searchResultsCallback;
-	private Timer m_timer;
+	private Timer m_timer = null;
+	private Timer m_searchTimer = null;
 	private GwtSearchCriteria m_searchCriteria;
 	private boolean m_searchInProgress = false;
 	private String m_prevSearchString = null;
@@ -434,8 +476,9 @@ public class FindCtrl extends Composite
 			public void onFailure(Throwable t)
 			{
 				//!!! Do something here.
-				Window.alert( "The request to get execute a search failed." );
+				Window.alert( "The request to execute a search failed." );
 				m_searchInProgress = false;
+				m_searchResultsWidget.hideSearchingText();
 			}// end onFailure()
 	
 			/**
@@ -444,6 +487,8 @@ public class FindCtrl extends Composite
 			 */
 			public void onSuccess( GwtSearchResults gwtSearchResults )
 			{
+				m_searchResultsWidget.hideSearchingText();
+
 				if ( gwtSearchResults != null )
 				{
 					// Add the search results to the search results widget.
@@ -475,10 +520,31 @@ public class FindCtrl extends Composite
 		// Clear any results we may be currently displaying.
 		m_searchResultsWidget.clearCurrentContent();
 
-		// Issue an ajax request do search for the specified type of object.
+		// Issue an ajax request to search for the specified type of object.
 		m_searchInProgress = true;
 		rpcService = GwtTeaming.getRpcService();
 		rpcService.executeSearch( m_searchCriteria, m_searchResultsCallback );
+
+		// We only want to show "Searching..." after the search has taken more than .5 seconds.
+		// Have we already created a timer?
+		if ( m_searchTimer == null )
+		{
+			m_searchTimer = new Timer()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void run()
+				{
+					// If the search is still in progress show "Searching..."
+					if ( m_searchInProgress )
+						m_searchResultsWidget.showSearchingText();
+				}// end run()
+			};
+		}
+		
+		m_searchTimer.schedule( 500 );
 	}// end executeSearch()
 	
 	

@@ -45,6 +45,7 @@ public interface GwtTeamingMessages extends Messages
 {
 	// Strings used in the "find" name-completion control
 	String nOfn( int value1, int value2, int value3 );
+	String searching();
 
 	// Strings used with the Custom Jsp widget in the landing page editor.
 	String customJspLabel();

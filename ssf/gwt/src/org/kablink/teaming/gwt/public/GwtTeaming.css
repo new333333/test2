@@ -52,12 +52,26 @@
 	position: relative;
 }
 
+/* Styles for the ui that displays "Searching..." */
+.findSearchingPanel
+{
+	background-color: #EBECA5;
+	border-color: #BABDB6;
+	border-style: solid solid solid;
+	border-width: 1px;
+	padding: .5em;
+	position: absolute;
+	top: 25px;
+	z-index: 100;
+}
+
 /* Styles for the "search results" in a "find" control. */
 .findSearchResults
 {
 	border-color: #BABDB6;
 	border-style: solid solid solid;
 	border-width: 1px;
+	position: relative;
 }
 
 /* Styles for the "search results" in a "find" control. */
