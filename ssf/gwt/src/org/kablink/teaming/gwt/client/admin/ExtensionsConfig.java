@@ -40,29 +40,24 @@ import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.http.client.Header;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FormHandler;
 import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.FormSubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormSubmitEvent;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.NamedFrame;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
@@ -79,6 +74,7 @@ public class ExtensionsConfig  extends Composite {
 	private FlexTable extFlexTable = new FlexTable();
 	private Label	extensionPanelStateText = new Label();
 	private ArrayList <ExtensionInfoClient> extList = new ArrayList<ExtensionInfoClient>();
+
 	
 	/*
 	 * 
@@ -91,6 +87,7 @@ public class ExtensionsConfig  extends Composite {
 		//		Label hintLabel = new Label( GwtTeaming.getMessages().lpeHint() );
 		//		hintLabel.addStyleName( "lpeHint" );
 		//		fPanel.add( hintLabel );
+
 		
 		fPanel.add(new HTML("<br/>"));
 		
@@ -112,11 +109,10 @@ public class ExtensionsConfig  extends Composite {
 		extFlexTable.setStyleName("lpeTableDropZone");
 		extFlexTable.getRowFormatter().addStyleName(0, "lpeTableDropZone-highlighted");
 		
-		extFlexTable.setText(0, 0, "ID");
-		extFlexTable.setText(0, 1, "Name");
-		extFlexTable.setText(0, 2, "Description");
-		extFlexTable.setText(0, 3, "Zone");
-		extFlexTable.setText(0, 4, "Remove");
+		extFlexTable.setText(0, 0, GwtTeaming.getMessages().extensionsName());
+		extFlexTable.setText(0, 1, GwtTeaming.getMessages().extensionsDesc());
+		extFlexTable.setText(0, 2, GwtTeaming.getMessages().extensionsZone());
+		extFlexTable.setText(0, 3, GwtTeaming.getMessages().extensionsRemove());
 		
 		extFlexTable.getCellFormatter().setStyleName(0, 0, "ss_bold");
 		extFlexTable.getCellFormatter().setStyleName(0, 1, "ss_bold");
@@ -262,11 +258,25 @@ public class ExtensionsConfig  extends Composite {
 			return;
 		
 		extList.add(info);
-
-		extFlexTable.setText(row, 0, info.getId());
-		extFlexTable.setText(row, 1, info.getName());
-		extFlexTable.setText(row, 2, info.getDescription());
-		extFlexTable.setText(row, 3, info.getZoneId().toString());
+		
+		final Label nameLabel = new Label(info.getName());
+		nameLabel.setStyleName("ss_style");
+		
+//		nameLabel.addMouseOverHandler(new MouseOverHandler() {
+//			public void onMouseOver(MouseOverEvent event) {
+//				nameLabel.setStyleName("hover");
+//			}
+//		});
+		
+		nameLabel.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event) {
+				DialogBox box = new DialogBox();
+				box.show();
+			}});
+		
+		extFlexTable.setWidget(row, 0, nameLabel );
+		extFlexTable.setText(row, 1, info.getDescription());
+		extFlexTable.setText(row, 2, info.getZoneId().toString());
 		
 		Button removeButton = new Button("x");
 		removeButton.addStyleDependentName("remove");
@@ -275,7 +285,7 @@ public class ExtensionsConfig  extends Composite {
 				removeExtension(row);
 			}});
 		
-		extFlexTable.setWidget(row, 4, removeButton);
+		extFlexTable.setWidget(row, 3, removeButton);
 	}
 	
 	private void removeExtension(final int row) {
