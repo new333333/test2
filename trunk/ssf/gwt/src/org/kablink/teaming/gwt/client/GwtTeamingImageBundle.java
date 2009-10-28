@@ -98,6 +98,9 @@ public interface GwtTeamingImageBundle extends ImageBundle
 	@Resource("org/kablink/teaming/gwt/public/images/previous_disabled_16.gif")
 	public AbstractImagePrototype previousDisabled16();
 
+	@Resource("org/kablink/teaming/gwt/public/images/spinner16x16.gif")
+	public AbstractImagePrototype spinner16();
+
 	@Resource("org/kablink/teaming/gwt/public/images/warn_icon16.gif")
 	public AbstractImagePrototype warningIcon16();
 }// end GwtTeamingImageBundle
