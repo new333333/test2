@@ -1211,9 +1211,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			HashMap<String,Object> row = new HashMap<String,Object>();
 				row.put(ReportModule.USER_ID, result[0]);
 				row.put(ReportModule.DISK_SPACE_USED, result[1]);
-				row.put(ReportModule.DISKQUOTA, (Long)result[2] * 1024 * 1024);
-				row.put(ReportModule.MAX_GROUPS_QUOTA, (Long)result[3] * 1024 * 1024);
-
+				row.put(ReportModule.DISKQUOTA, (result[2] == null ? 0 : (Long)result[2] * 1024 * 1024));
+				row.put(ReportModule.MAX_GROUPS_QUOTA, (result[3] == null ? 0 : (Long)result[3] * 1024 * 1024));
 				report.add(row);
 			}
 

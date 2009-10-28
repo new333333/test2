@@ -166,6 +166,8 @@
 						<entry key="activity_report"><ref bean="activityReportController"/></entry>
 						<entry key="activity_report_by_user"><ref bean="activityReportByUserController"/></entry>
 						<entry key="quota_report"><ref bean="quotaReportController"/></entry>
+						<entry key="quota_exceeded_report"><ref bean="quotaReportController"/></entry>
+						<entry key="quota_highwater_exceeded_report"><ref bean="quotaReportController"/></entry>
 						<entry key="user_access_report"><ref bean="userAccessReportController"/></entry>
 						<entry key="view_change_log"><ref bean="adminViewChangeLogController"/></entry>
 						<entry key="export_import"><ref bean="adminExportImportController"/></entry>

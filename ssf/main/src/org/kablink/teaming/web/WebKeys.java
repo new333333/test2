@@ -335,6 +335,8 @@ public class WebKeys {
 	public static final String ACTION_PLAY_TUTORIAL = "play_tutorial";
 	public static final String ACTION_PROFILES_IMPORT="import_profiles";
 	public static final String ACTION_QUOTA_REPORT="quota_report";
+	public static final String ACTION_QUOTA_EXCEEDED_REPORT="quota_exceeded_report";
+	public static final String ACTION_QUOTA_HIGHWATER_EXCEEDED_REPORT="quota_highwater_exceeded_report";
 	public static final String ACTION_SEND_EMAIL="send_email";
 	public static final String ACTION_SEND_ENTRY_EMAIL="send_entry_email";
 	public static final String ACTION_SCHEDULE_SYNCHRONIZATION="schedule_synchronization";
@@ -1385,6 +1387,8 @@ public class WebKeys {
     public static final String VIEW_PRESENCE_EDIT="presence/edit";
     public static final String VIEW_PROFILE="profile/view";
     public static final String VIEW_QUOTA_REPORT="administration/quota_report";
+    public static final String VIEW_QUOTA_EXCEEDED_REPORT="administration/quota_exceeded_report";
+    public static final String VIEW_QUOTA_HIGHWATER_EXCEEDED_REPORT="administration/quota_highwater_exceeded_report";
     public static final String VIEW_RELEVANCE_DASHBOARD = "relevance_dashboard/view";
     public static final String VIEW_RELEVANCE_DASHBOARD_EDIT = "relevance_dashboard/edit";
     public static final String VIEW_REPORT="administration/report";

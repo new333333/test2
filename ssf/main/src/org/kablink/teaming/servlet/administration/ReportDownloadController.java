@@ -220,10 +220,10 @@ public class ReportDownloadController extends  SAbstractController {
 				ReportModule.UserQuotaOption option = ReportModule.UserQuotaOption.valueOf(userQuotaOption);
 				report = getReportModule().generateUserDiskUsageReport(option);
 				columns = new String[] {ReportModule.USER_ID, ReportModule.SIZE, ReportModule.CREATIONDATE};
-			} else if ("exceededDiskQuota".equals(reportType)) {
+			} else if ("quota_exceeded".equals(reportType)) {
 				report = getReportModule().generateExceededDiskQuotaReport();
 				columns = new String[] {ReportModule.USER_ID, ReportModule.DISK_SPACE_USED, ReportModule.DISKQUOTA, ReportModule.MAX_GROUPS_QUOTA};
-			} else if ("exceededHighWaterDiskQuota".equals(reportType)) {
+			} else if ("quota_highwater_exceeded".equals(reportType)) {
 				report = getReportModule().generateExceededHighWaterDiskQuotaReport();
 				columns = new String[] {ReportModule.USER_ID, ReportModule.DISK_SPACE_USED, ReportModule.DISKQUOTA, ReportModule.MAX_GROUPS_QUOTA};
 			} else if ("activityByUser".equals(reportType)) {
