@@ -15,5 +15,5 @@ alter table SS_ZoneConfig add column diskQuotasEnabled bit;
 alter table SS_ZoneConfig add column diskQuotaUserDefault integer;
 alter table SS_ZoneConfig add column diskQuotasHighwaterPercentage integer;
 create table SS_Extensions (id char(32) not null, lockVersion bigint not null, name varchar(64), description varchar(256), type integer, author varchar(255), authorEmail varchar(255), authorSite varchar(255), dateCreated varchar(255), dateDeployed varchar(255), zoneId bigint, primary key (id), unique (zoneId, name)) ENGINE=InnoDB;
-create table SS_SiteInfo (schemaVersion bigint not null, primary key (schemaVersion)) ENGINE=InnoDB;
+create table SS_SchemaInfo (schemaVersion bigint not null, primary key (schemaVersion)) ENGINE=InnoDB;
 INSERT INTO SS_SchemaInfo values (3);
