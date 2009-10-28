@@ -345,6 +345,10 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   			session.createQuery("DELETE org.kablink.teaming.domain.SimpleName where binderId=:binderId")
 		   				.setLong("binderId", binder.getId())
 		   				.executeUpdate();
+		   			//delete mashup definitions on this binder
+    	   			session.createQuery("DELETE org.kablink.teaming.domain.CustomAttribute where binder=:binder")
+		   				.setLong("binder", binder.getId())
+		   				.executeUpdate();
 
 		   			if (entryClass != null) {
 		   				//finally delete the entries
