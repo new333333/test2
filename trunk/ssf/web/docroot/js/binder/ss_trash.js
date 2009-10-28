@@ -268,5 +268,5 @@ function ajaxTrashRequest_Response(data, sOperation) {
  */
 function ajaxTrashRequest_Submit(sOperation, urlParams) {
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:sOperation, params:urlParams, binderId:  g_binderId});
-	ss_fetch_url(url, ajaxTrashRequest_Response, sOperation);
+	ss_get_url(url, ajaxTrashRequest_Response, sOperation);
 }
