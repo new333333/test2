@@ -97,9 +97,10 @@
 	<% /* Store the localized error messages that might need to */ %>
 	<% /* display while running this page.                      */ %>
 	var g_trashStrings = new Array();
-	g_trashStrings["trash.error.NoItemsSelected"]	= "<ssf:nlt tag='trash.error.NoItemsSelected' />";
-	g_trashStrings["trash.confirm.Purge"]			= "<ssf:nlt tag='trash.confirm.Purge'         />";
-	g_trashStrings["trash.confirm.PurgeAll"]		= "<ssf:nlt tag='trash.confirm.PurgeAll'      />";
+	g_trashStrings["trash.error.NoItemsSelected"]							= "<ssf:nlt tag='trash.error.NoItemsSelected'                          />";
+	g_trashStrings["trash.confirm.Purge"]									= "<ssf:nlt tag='trash.confirm.Purge'                                  />";
+	g_trashStrings["trash.confirm.PurgeAll"]								= "<ssf:nlt tag='trash.confirm.PurgeAll'                               />";
+	g_trashStrings["trash.confirm.Purge.DeleteSourceOnMirroredSubFolders"]	= "<ssf:nlt tag='trash.confirm.Purge.DeleteSourceOnMirroredSubFolders' />";
 </script>
 
 <div id="ss_trashDiv${ss_namespace}" align="center">
@@ -449,19 +450,34 @@
 						<!-- Setup preDeletedWhen -->
 						<jsp:useBean id="entry1" type="java.util.HashMap" />
 						<c:set var="entry1_deletedWhen_raw" value="${entry1._preDeletedWhen}" />
+						<c:if test="${empty entry1_deletedWhen_raw}">
+							<c:set var="entry1_deletedWhen" value="" />
+						</c:if>
+						<c:if test="${!empty entry1_deletedWhen_raw}">
 							<jsp:useBean id="utilDate" class="java.util.Date"/>
 							<c:set target="${utilDate}" property="time" value="${entry1_deletedWhen_raw}"/>
 							<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${utilDate}" type="both" timeStyle="short" dateStyle="short" var="entry1_deletedWhen" />
+						</c:if>
 
 						<!-- Setup preDeletedBy -->							
 						<%
-							String entry1_deletedById = entry1.get("_preDeletedById").toString();
-							List entry1_deletedByUsers = org.kablink.teaming.util.ResolveIds.getPrincipals(entry1_deletedById, false);
-							org.kablink.teaming.domain.User entry1_deletedByUser = ((org.kablink.teaming.domain.User) entry1_deletedByUsers.get(0));
+							Object entry1_deletedById_raw = entry1.get("_preDeletedById");
+							org.kablink.teaming.domain.User entry1_deletedByUser;
+							if (null == entry1_deletedById_raw) {
+								entry1_deletedByUser = null;
+							}
+							else {
+								String entry1_deletedById = entry1_deletedById_raw.toString();
+								List entry1_deletedByUsers = org.kablink.teaming.util.ResolveIds.getPrincipals(entry1_deletedById, false);
+								entry1_deletedByUser = ((org.kablink.teaming.domain.User) entry1_deletedByUsers.get(0));
+							}
 						%>
 
 						<!-- Setup preDeletedWhen -->
-						<c:set var="entry1_deletedFrom"     value="${entry1._preDeletedFrom}" />
+						<c:set var="entry1_deletedFrom" value="${entry1._preDeletedFrom}" />
+						<c:if test="${empty entry1_deletedFrom}">
+							<c:set var="entry1_deletedFrom" value="" />
+						</c:if>
 
 						<!-- Setup locationBinderId -->
 						<c:if test="${entry1._docType == 'entry'}">
@@ -570,7 +586,9 @@
 							<!-- Trash Listing Data Column:  Author -->
 							<c:if test="${!empty ssFolderColumns['author']}">
 								<ssf:slidingTableColumn  style="${slidingTableColStyle}">
-									<ssf:showUser user='<%= entry1_deletedByUser %>' /> 
+									<% if (null != entry1_deletedByUser) { %>
+										<ssf:showUser user='<%= entry1_deletedByUser %>' />
+									<% } %> 
 								</ssf:slidingTableColumn>
 							</c:if>
 
