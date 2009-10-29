@@ -16,5 +16,6 @@ alter table SS_ZoneConfig add diskQuotaUserDefault int;
 alter table SS_ZoneConfig add diskQuotasHighwaterPercentage int;
 create table SS_Extensions (id char(32) not null, lockVersion numeric(19,0) not null, name varchar(64) null, description varchar(256) null, type int null, author varchar(255) null, authorEmail varchar(255) null, authorSite varchar(255) null, dateCreated varchar(255) null, dateDeployed varchar(255) null, zoneId numeric(19,0) null, primary key (id), unique (zoneId, name));
 create table SS_SchemaInfo (schemaVersion numeric(19,0) not null, primary key (schemaVersion));
+create index relevanceUUID_Att on SS_Attachments (relevanceUUID);
+create index diskQuota_principal on SS_Principals (diskQuota);
 INSERT INTO SS_SchemaInfo values (3);
-
