@@ -156,6 +156,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.ExportHelper;
+import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.FileUtil;
 import org.kablink.util.Validator;
@@ -693,18 +694,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// inside write transaction
-	public void restoreBinder(Long binderId) {
-		restoreBinder(binderId, true);
+	public void restoreBinder(Long binderId, Map<String,String> renameMap) {
+		restoreBinder(binderId, renameMap, true);
 	}
-	public void restoreBinder(Long binderId, boolean reindex) {
-		restoreBinder(binderId, true, null, reindex);
+	public void restoreBinder(Long binderId, Map<String,String> renameMap, boolean reindex) {
+		restoreBinder(binderId, renameMap, true, null, reindex);
 	}
 
 	// inside write transaction
-	public void restoreBinder(Long binderId, boolean deleteMirroredSource, Map options) {
-		restoreBinder(binderId, deleteMirroredSource, options, true);
+	public void restoreBinder(Long binderId, Map<String,String> renameMap, boolean deleteMirroredSource, Map options) {
+		restoreBinder(binderId, renameMap, deleteMirroredSource, options, true);
 	}
-	public void restoreBinder(Long binderId, boolean deleteMirroredSource, Map options, boolean reindex) {
+	public void restoreBinder(Long binderId, Map<String,String> renameMap, boolean deleteMirroredSource, Map options, boolean reindex) {
 		Binder binder = loadBinder(binderId);
 		if ((null != binder) && (!(binder.isMirrored()))) {
 			EntityType et = binder.getEntityType();
@@ -726,6 +727,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		        	ws.setPreDeletedBy(null);
 		        }
 		        
+		        TrashHelper.registerBinderNames(getCoreDao(), binder, renameMap);
 		        if (reindex) {
 		        	loadBinderProcessor(binder).indexBinder(binder, true);
 		        }
@@ -767,6 +769,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		        	ws.setPreDeletedBy(userId);
 		        }
 		        
+		        TrashHelper.unRegisterBinderNames(getCoreDao(), binder);
 		        if (reindex) {
 		        	loadBinderProcessor(binder).indexBinder(binder, true);
 		        }

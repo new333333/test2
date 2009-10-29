@@ -119,6 +119,7 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.TagUtil;
+import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -663,25 +664,28 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     }
 
     //inside write transaction    
-    public void restoreEntry(Long parentFolderId, Long entryId) {
-    	restoreEntry(parentFolderId, entryId, true);
+    public void restoreEntry(Long parentFolderId, Long entryId, Map<String, String> renameMap) {
+    	restoreEntry(parentFolderId, entryId, renameMap, true);
     }
-    public void restoreEntry(Long parentFolderId, Long entryId, boolean reindex) {
-    	restoreEntry(parentFolderId, entryId, true, null, reindex);
+    public void restoreEntry(Long parentFolderId, Long entryId, Map<String, String> renameMap, boolean reindex) {
+    	restoreEntry(parentFolderId, entryId, renameMap, true, null, reindex);
     }
     //inside write transaction    
-    public void restoreEntry(Long folderId, Long entryId, boolean deleteMirroredSource, Map options) {
-    	restoreEntry(folderId, entryId, deleteMirroredSource, options, true);
+    public void restoreEntry(Long folderId, Long entryId, Map<String, String> renameMap, boolean deleteMirroredSource, Map options) {
+    	restoreEntry(folderId, entryId, renameMap,deleteMirroredSource, options, true);
     }
-    public void restoreEntry(Long folderId, Long entryId, boolean deleteMirroredSource, Map options, boolean reindex) {
+    public void restoreEntry(Long folderId, Long entryId, Map<String, String> renameMap, boolean deleteMirroredSource, Map options, boolean reindex) {
     	deCount.incrementAndGet();
         FolderEntry entry = loadEntry(folderId, entryId);
         Folder folder = loadFolder(folderId);
         if ((null != entry) && (null != folder) && (!(folder.isMirrored()))) {
         	checkAccess(entry, FolderOperation.restoreEntry);
+        	
         	entry.setPreDeleted(null);
         	entry.setPreDeletedWhen(null);
         	entry.setPreDeletedBy(null);
+        	
+        	TrashHelper.registerEntryNames(getCoreDao(), folder, entry, renameMap);
         	if (reindex) {
         		loadProcessor(entry.getParentFolder()).indexEntry(entry);
         	}
@@ -710,6 +714,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         	entry.setPreDeletedWhen(System.currentTimeMillis());
         	entry.setPreDeletedBy(userId);
         	
+        	TrashHelper.unRegisterEntryNames(getCoreDao(), folder, entry);
         	if (reindex) {
         		loadProcessor(entry.getParentFolder()).indexEntry(entry);
         	}
