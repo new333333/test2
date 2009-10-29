@@ -256,10 +256,17 @@ function SSTrashEntry() {
 /*
  * Called to handle the response from an AJAX operation on the trash.
  */
-function ajaxTrashRequest_Response(data, sOperation) {
+function ajaxTrashRequest_RefreshTrash() {
 	// Simply force the page to reload.  This will cause the trash to
 	// be re-read and re-displayed.
 	setTimeout("document.location.reload();", 100);
+}
+
+/*
+ * Called to handle the response from an AJAX operation on the trash.
+ */
+function ajaxTrashRequest_Response(data, sOperation) {
+	// Nothing to do.
 }
 
 /*
@@ -268,5 +275,5 @@ function ajaxTrashRequest_Response(data, sOperation) {
  */
 function ajaxTrashRequest_Submit(sOperation, urlParams) {
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:sOperation, params:urlParams, binderId:  g_binderId});
-	ss_get_url(url, ajaxTrashRequest_Response, sOperation);
+	ss_get_url(url, ajaxTrashRequest_Response, sOperation, "ajaxTrashRequest_RefreshTrash()");
 }
