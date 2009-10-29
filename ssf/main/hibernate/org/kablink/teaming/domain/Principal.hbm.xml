@@ -75,7 +75,7 @@
       </many-to-one>
     </component>
   	<subclass dynamic-update="true" name="org.kablink.teaming.domain.UserPrincipal">
-	  	<property name="diskQuota" access="field"/>
+	  	<property name="diskQuota" access="field" index="diskQuota_principal"/>
 	    <bag inverse="true" access="field" cascade="all" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
 	      <cache usage="read-write"/>
 	      <key column="userId"/>
