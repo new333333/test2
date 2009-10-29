@@ -43,11 +43,14 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -259,22 +262,18 @@ public class ExtensionsConfig  extends Composite {
 		
 		extList.add(info);
 		
-		final Label nameLabel = new Label(info.getName());
-		nameLabel.setStyleName("ss_style");
+		final Anchor achorLabel = new Anchor(info.getName());
 		
-//		nameLabel.addMouseOverHandler(new MouseOverHandler() {
-//			public void onMouseOver(MouseOverEvent event) {
-//				nameLabel.setStyleName("hover");
-//			}
-//		});
+		//final Label nameLabel = new Label(info.getName());
+		achorLabel.setStyleName("ss_style");
 		
-		nameLabel.addClickHandler(new ClickHandler(){
+		achorLabel.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event) {
 				DialogBox box = new DialogBox();
 				box.show();
 			}});
 		
-		extFlexTable.setWidget(row, 0, nameLabel );
+		extFlexTable.setWidget(row, 0, achorLabel );
 		extFlexTable.setText(row, 1, info.getDescription());
 		extFlexTable.setText(row, 2, info.getZoneId().toString());
 		
