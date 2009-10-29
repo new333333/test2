@@ -33,7 +33,7 @@
       <property name="owningBinderId" index="owningBinder_Att"/>
     </component>
     <property name="name" length="64"/>
-    <property name="relevanceUUID" length="256" index="relevanceUUID_Att"/>
+    <property name="relevanceUUID" length="256"/>
     <component name="creation" class="org.kablink.teaming.domain.HistoryStamp">
       <property name="date" column="creation_date" type="timestamp"/>
       <many-to-one class="org.kablink.teaming.domain.UserPrincipal" name="principal">
