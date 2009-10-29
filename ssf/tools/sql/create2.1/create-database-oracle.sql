@@ -46,7 +46,6 @@ create table SS_ZoneConfig (zoneId number(19,0) not null, upgradeVersion number(
 create table SS_ZoneInfo (id char(32) not null, zoneId number(19,0) not null unique, zoneName varchar2(128 char) not null unique, virtualHost varchar2(255 char) unique, primary key (id));
 create index owningAttachment_Att on SS_Attachments (parentAttachment);
 create index entityOwner_Att on SS_Attachments (ownerType, ownerId);
-create index relevanceUUID_Att on SS_Attachments (relevanceUUID);
 create index ownerBinder_Att on SS_Attachments (binder);
 create index ownerPrincipal_Att on SS_Attachments (principal);
 create index ownerFolderEntry_Att on SS_Attachments (folderEntry);
