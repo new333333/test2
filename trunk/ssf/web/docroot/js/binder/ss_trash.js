@@ -31,6 +31,9 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
+// See ajaxTrashRequest_RefreshTrash() for how this is used.
+var	g_ajaxTrashRequest_FirstRefresh;
+
 /*
  * Returns a string contining information from an array of
  * SSTrashEntry's for embedding in an AJAX url.  
@@ -254,12 +257,26 @@ function SSTrashEntry() {
 }
 
 /*
- * Called to handle the response from an AJAX operation on the trash.
+ * Called in response to operation on the trash to refresh the trash
+ * view.
+ * 
+ * We only do this on the 2nd and later refresh calls because the call
+ * to ss_get_url(...) below causes this to be called once BEFORE the
+ * AJAX request is even submitted.  We don't want to do a screen
+ * refresh in that case.
  */
 function ajaxTrashRequest_RefreshTrash() {
-	// Simply force the page to reload.  This will cause the trash to
-	// be re-read and re-displayed.
-	setTimeout("document.location.reload();", 100);
+	// Is this the first refresh from the AJAX request? 
+	if (g_ajaxTrashRequest_FirstRefresh) {
+		// Yes!  The next one won't be.  Otherwise ignore it.
+		g_ajaxTrashRequest_FirstRefresh = false;
+		return;
+	}
+
+	// Stop the spinner and force the page to reload.  This will cause
+	// the trash to be re-read and re-displayed.
+	ss_stopSpinner();
+	window.setTimeout("document.location.reload();", 100);
 }
 
 /*
@@ -274,6 +291,17 @@ function ajaxTrashRequest_Response(data, sOperation) {
  * trash.
  */
 function ajaxTrashRequest_Submit(sOperation, urlParams) {
-	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:sOperation, params:urlParams, binderId:  g_binderId});
-	ss_get_url(url, ajaxTrashRequest_Response, sOperation, "ajaxTrashRequest_RefreshTrash()");
+	g_ajaxTrashRequest_FirstRefresh = true;
+	ss_startSpinner();
+	ss_get_url(
+		ss_buildAdapterUrl(
+			ss_AjaxBaseUrl,
+			{
+				operation:sOperation,
+				params:urlParams,
+				binderId:g_binderId
+			}),
+		ajaxTrashRequest_Response,
+		sOperation,
+		"ajaxTrashRequest_RefreshTrash()");
 }

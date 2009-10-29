@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -46,9 +47,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -81,17 +87,18 @@ public class TrashHelper {
 	protected static Log logger = LogFactory.getLog(TrashHelper.class);
 
 	/*
-	 * Inner class used to communicate errors encountered while
-	 * traversing binders and entries to predelete or restore them. 
+	 * Inner class used to communicate information while traversing
+	 * binders and entries to predelete or restore them. 
 	 */
-	private static class TrashError {
+	private static class TrashResponse {
 		// Class data members.
-		public Exception	m_exception;
-		public Long			m_binderId;
-		public Long			m_entryId;
-		public Status		m_status;
+		public Exception				m_exception;
+		public HashMap<String, String>	m_renameMap;
+		public Long						m_binderId;
+		public Long						m_entryId;
+		public Status					m_status;
 
-		// Used for the current status of the TrashError object.
+		// Used for the current status of the TrashResponse object.
 		public enum Status {
 			NoError,
 			Exception,
@@ -101,13 +108,13 @@ public class TrashHelper {
 		/*
 		 * Class constructor.
 		 */
-		public TrashError() {
+		public TrashResponse() {
 			reset();
 		}
 
 		/*
 		 * Returns the display name for the binderId in the
-		 * TrashError. 
+		 * TrashResponse. 
 		 */
 		public String getBinderDisplayName(AllModulesInjected bs) {
 			String reply = String.valueOf(m_binderId);
@@ -124,7 +131,7 @@ public class TrashHelper {
 		}
 		
 		/*
-		 * Returns the display name for the entryId in the TrashError. 
+		 * Returns the display name for the entryId in the TrashResponse. 
 		 */
 		public String getEntryDisplayName(AllModulesInjected bs) {
 			String reply = String.valueOf(m_entryId);
@@ -141,14 +148,18 @@ public class TrashHelper {
 		}
 		
 		/*
-		 * Generates an error message string based on the content of
-		 * this TrashError. 
+		 * Generates a message string based on the content of this
+		 * TrashResponse. 
 		 */
-		public String getTrashErrorMessage(AllModulesInjected bs) {
-			boolean needArgs;
-			String resourceKey;
+		public String getTrashMessage(AllModulesInjected bs) {
+			boolean needArgs = false;
+			String resourceKey = null;
 			String exString = null;
+			String reply = null;
+			
+			// Does the TrashResponse indicate an Exception?
 			if (Status.Exception == m_status) {
+				// Yes!  Setup to generate an appropriate message.
 				needArgs    = true;
 				resourceKey = "trash.error.exception.";
 				exString    = m_exception.getLocalizedMessage();
@@ -156,37 +167,69 @@ public class TrashHelper {
 					exString = m_exception.getMessage();
 				}
 			}
+			
+			// No, the TrashResponse didn't indicate an Exception!  Did
+			// it indicate an ACL violation?
 			else if (Status.ACLViolation == m_status) {
+				// Yes!  Setup to generate an appropriate message.
 				needArgs    = true;
 				resourceKey = "trash.error.ACLViolation.";
 			}
+			
+			// No, the TrashResponse didn't indicate an ACL violation
+			// either!  Are we tracking rename warnings?
+			else if (!(m_renameMap.isEmpty())) {
+				// Yes!  Generate an appropriate message.
+				reply = (NLT.get("trash.warning.RenamedOnRestore") + "\n");
+				Set<String> keySet = m_renameMap.keySet();
+				for (Iterator<String> keyIT = keySet.iterator(); keyIT.hasNext();) {
+					String key = keyIT.next();
+					String each = NLT.get("trash.warning.RenamedOnRestore.Each", new String[]{key, m_renameMap.get(key)});
+					reply += ("\n\t" + each);
+				}
+			}
+			
 			else {
+				// No, the TrashResponse didn't indicate any rename
+				// warnings!  This should never have been called.
 				needArgs    = false;
 				resourceKey = "trash.error.internalerror";
 			}
-			String[] args;
-			if (needArgs) {
-				ArrayList<String> argsAL = new ArrayList<String>();
-				argsAL.add(getBinderDisplayName(bs));
-				if (null != m_entryId) {
-					resourceKey += "entry";
-					argsAL.add(getEntryDisplayName(bs));
+
+			// Do we need to generate a messages from the resources?
+			if (null == reply) {
+				String[] args;
+				
+				// Yes!  Does the message require arguments to be
+				// patched in?
+				if (needArgs) {
+					// Yes!  Generate the arguments.
+					ArrayList<String> argsAL = new ArrayList<String>();
+					argsAL.add(getBinderDisplayName(bs));
+					if (null != m_entryId) {
+						resourceKey += "entry";
+						argsAL.add(getEntryDisplayName(bs));
+					}
+					else { 
+						resourceKey += "binder";
+					}
+					if (null != exString) {
+						argsAL.add(exString);
+					}
+					args = argsAL.toArray(new String[0]);
 				}
-				else { 
-					resourceKey += "binder";
+				else {
+					args = null;
 				}
-				if (null != exString) {
-					argsAL.add(exString);
-				}
-				args = argsAL.toArray(new String[0]);
+
+				// Setup to return the appropriate message.
+				if (null == args) reply = NLT.get(resourceKey      ); 
+				else              reply = NLT.get(resourceKey, args);
 			}
-			else {
-				args = null;
-			}
-			
-			String reply;
-			if (null == args) reply = NLT.get(resourceKey      ); 
-			else              reply = NLT.get(resourceKey, args);
+
+			// If we get here, reply refers to a String containing an
+			// appropriate message to display for this TrashEntry.
+			// Return it.
 			return reply;
 		}
 		
@@ -198,6 +241,9 @@ public class TrashHelper {
 			m_exception = null;
 			m_binderId  =
 			m_entryId   = null;
+			
+			if (null == m_renameMap) m_renameMap = new HashMap<String, String>();
+			else                     m_renameMap.clear();
 		}
 
 		/*
@@ -217,8 +263,8 @@ public class TrashHelper {
 			setACLViolation(binderId, null);
 		}
 		public void setACLViolation(Long binderId, Long entryId) {
-			if (null == entryId) logger.debug("TrashError.setACLViolation(" + binderId +                  "):  ACL violation.");
-			else                 logger.debug("TrashError.setACLViolation(" + binderId + ", " + entryId + "):  ACL violation.");
+			if (null == entryId) logger.debug("TrashResponse.setACLViolation(" + binderId +                  "):  ACL violation.");
+			else                 logger.debug("TrashResponse.setACLViolation(" + binderId + ", " + entryId + "):  ACL violation.");
 			
 			reset();
 			m_status    = Status.ACLViolation;
@@ -236,8 +282,8 @@ public class TrashHelper {
 			setException(ex, binderId, null);
 		}
 		public void setException(Exception ex, Long binderId, Long entryId) {
-			if (null == entryId) logger.debug("TrashError.setException(" + binderId +                  "):  ", ex);
-			else                 logger.debug("TrashError.setException(" + binderId + ", " + entryId + "):  ", ex);
+			if (null == entryId) logger.debug("TrashResponse.setException(" + binderId +                  "):  ", ex);
+			else                 logger.debug("TrashResponse.setException(" + binderId + ", " + entryId + "):  ", ex);
 			
 			reset();
 			m_status    = Status.Exception;
@@ -379,14 +425,14 @@ public class TrashHelper {
 					opAllowed = bs.getBinderModule().testAccess(binder, BinderOperation.preDeleteBinder);
 					if (!opAllowed) {
 						logger.debug("TrashCheckPreDeleteACLs.binder(" + binderId + "):  Failed!");
-						((TrashError) cbDataObject).setACLViolation(binderId);
+						((TrashResponse) cbDataObject).setACLViolation(binderId);
 					}
 				}
 				reply = opAllowed;
 			}
 			catch (Exception ex) {
 				logger.debug("TrashCheckPreDeleteACLs.binder(" + binderId + "):  Failed!");
-				((TrashError) cbDataObject).setException(ex, binderId);
+				((TrashResponse) cbDataObject).setException(ex, binderId);
 				reply = false;
 			}
 			
@@ -403,14 +449,14 @@ public class TrashHelper {
 					opAllowed = bs.getFolderModule().testAccess(fe, FolderOperation.preDeleteEntry);
 					if (!opAllowed) {
 						logger.debug("TrashCheckPreDeleteACLs.entry(" + folderId + ", " + entryId + "):  Failed!");
-						((TrashError) cbDataObject).setACLViolation(folderId, entryId);
+						((TrashResponse) cbDataObject).setACLViolation(folderId, entryId);
 					}
 				}
 				reply = opAllowed;
 			}
 			catch (Exception ex) {
 				logger.debug("TrashCheckPreDeleteACLs.entry(" + folderId + ", " + entryId + "):  Failed!");
-				((TrashError) cbDataObject).setException(ex, folderId, entryId);
+				((TrashResponse) cbDataObject).setException(ex, folderId, entryId);
 				reply = false;
 			}
 			
@@ -428,7 +474,7 @@ public class TrashHelper {
 			}
 			catch (Exception ex) {
 				logger.debug("TrashPreDelete.binder(" + binderId + "):  Failed!");
-				((TrashError) cbDataObject).setException(ex, binderId);
+				((TrashResponse) cbDataObject).setException(ex, binderId);
 				reply = false;
 			}
 			return reply;
@@ -443,7 +489,7 @@ public class TrashHelper {
 			}
 			catch (Exception ex) {
 				logger.debug("TrashPreDelete.entry(" + folderId + ", " + entryId + "):  Failed!");
-				((TrashError) cbDataObject).setException(ex, folderId, entryId);
+				((TrashResponse) cbDataObject).setException(ex, folderId, entryId);
 				reply = false;
 			}
 			return reply;
@@ -464,14 +510,14 @@ public class TrashHelper {
 					opAllowed = bs.getBinderModule().testAccess(binder, BinderOperation.restoreBinder);
 					if (!opAllowed) {
 						logger.debug("TrashCheckRestoreACLs.binder(" + binderId + "):  Failed!");
-						((TrashError) cbDataObject).setACLViolation(binderId);
+						((TrashResponse) cbDataObject).setACLViolation(binderId);
 					}
 				}
 				reply = opAllowed;
 			}
 			catch (Exception ex) {
 				logger.debug("TrashCheckRestoreACLs.binder(" + binderId + "):  Failed!");
-				((TrashError) cbDataObject).setException(ex, binderId);
+				((TrashResponse) cbDataObject).setException(ex, binderId);
 				reply = false;
 			}
 			
@@ -488,14 +534,14 @@ public class TrashHelper {
 					opAllowed = bs.getFolderModule().testAccess(fe, FolderOperation.restoreEntry);
 					if (!opAllowed) {
 						logger.debug("TrashCheckRestoreACLs.entry(" + folderId + ", " + entryId + "):  Failed!");
-						((TrashError) cbDataObject).setACLViolation(folderId, entryId);
+						((TrashResponse) cbDataObject).setACLViolation(folderId, entryId);
 					}
 				}
 				reply = opAllowed;
 			}
 			catch (Exception ex) {
 				logger.debug("TrashCheckRestoreACLs.entry(" + folderId + ", " + entryId + "):  Failed!");
-				((TrashError) cbDataObject).setException(ex, folderId, entryId);
+				((TrashResponse) cbDataObject).setException(ex, folderId, entryId);
 				reply = false;
 			}
 			
@@ -505,30 +551,32 @@ public class TrashHelper {
 	
 	private static class TrashRestore implements TraverseCallback {
 		public boolean binder(AllModulesInjected bs, Long binderId, Object cbDataObject) {
+			TrashResponse tr = ((TrashResponse) cbDataObject);
 			boolean reply;
 			try {
 				logger.debug("TrashRestore.binder(" + binderId + "):  Restoring binder.");
-				bs.getBinderModule().restoreBinder(binderId, true);
+				bs.getBinderModule().restoreBinder(binderId, tr.m_renameMap, true);
 				reply = true;
 			}
 			catch (Exception ex) {
 				logger.debug("TrashRestore.binder(" + binderId + "):  Failed!");
-				((TrashError) cbDataObject).setException(ex, binderId);
+				tr.setException(ex, binderId);
 				reply = false;
 			}
 			return reply;
 		}
 		
 		public boolean entry(AllModulesInjected bs, Long folderId, Long entryId, Object cbDataObject) {
+			TrashResponse tr = ((TrashResponse) cbDataObject);
 			boolean reply;
 			try {
 				logger.debug("TrashRestore.entry(" + folderId + ", " + entryId + "):  Restoring entry.");
-				bs.getFolderModule().restoreEntry(folderId, entryId, true);
+				bs.getFolderModule().restoreEntry(folderId, entryId, tr.m_renameMap, true);
 				reply = true;
 			}
 			catch (Exception ex) {
 				logger.debug("TrashRestore.entry(" + folderId + ", " + entryId + "):  Failed!");
-				((TrashError) cbDataObject).setException(ex, folderId, entryId);
+				tr.setException(ex, folderId, entryId);
 				reply = false;
 			}
 			return reply;
@@ -750,6 +798,38 @@ public class TrashHelper {
 	}
 
 	/*
+	 * Sets up the appropriate ModelAndView response based on a
+	 * TrashResponse.
+	 */
+	@SuppressWarnings("unchecked")
+	private static ModelAndView getMVBasedOnTrashResponse(RenderResponse response, AllModulesInjected bs, TrashResponse tr, String logStart) {
+		// We'll always return a JSON jsp.
+		response.setContentType("text/json");
+		
+		// Do we need to display anything to the user?
+		ModelAndView mvReply;
+		if (tr.isError() || (!(tr.m_renameMap.isEmpty()))) {
+			// Yes!  Return the message with the JSON jsp. 
+			String msg = tr.getTrashMessage(bs);
+			logger.error(logStart + msg);
+
+			Map model = new HashMap();
+			model.put(WebKeys.AJAX_ERROR_MESSAGE, msg);
+			model.put(WebKeys.AJAX_ERROR_MESSAGE_IS_TEXT, Boolean.TRUE);
+			mvReply = new ModelAndView("common/json_ajax_return", model);
+		}
+		else {
+			// No, we need to display anything to the user!  Return
+			// the JSON jsp without any parameters.
+			mvReply = new ModelAndView("common/json_ajax_return");
+		}
+
+		// If we get here, mvReply refers to the appropriate
+		// ModelAndView for the TrashResponse.  Return it.
+		return mvReply;
+	}
+	
+	/*
 	 * Returns an Integer based value from an options Map.  If a value
 	 * for key isn't found, defInt is returned. 
 	 */
@@ -832,20 +912,20 @@ public class TrashHelper {
 	 */
 	public static void preDeleteBinder(AllModulesInjected bs, Long binderId) throws Exception {
 		// Check the ACLs...
-		TrashError cbData = new TrashError();
-		TrashTraverser tt = new TrashTraverser(bs, logger, new TrashCheckPreDeleteACLs(), cbData);
+		TrashResponse tr = new TrashResponse();
+		TrashTraverser tt = new TrashTraverser(bs, logger, new TrashCheckPreDeleteACLs(), tr);
 		tt.doTraverse(TraversalMode.DESCENDING, binderId);
-		if (!(cbData.isError())) {
+		if (!(tr.isError())) {
 			// ...and if they pass, perform the predelete.
-			cbData.reset();
+			tr.reset();
 			tt.setCallback(new TrashPreDelete());
 			tt.doTraverse(TraversalMode.DESCENDING, binderId);
 		}
 		
 		// For any error...
-		if (cbData.isError()) {
+		if (tr.isError()) {
 			// ...simply re-throw the exception.
-			throw cbData.m_exception;
+			throw tr.m_exception;
 		}
 	}
 	
@@ -858,31 +938,30 @@ public class TrashHelper {
 	 */
 	public static void preDeleteEntry(AllModulesInjected bs, Long folderId, Long entryId) throws Exception{
 		// Check the ACLs...
-		TrashError cbData = new TrashError();
-		TrashTraverser tt = new TrashTraverser(bs, logger, new TrashCheckPreDeleteACLs(), cbData);
+		TrashResponse tr = new TrashResponse();
+		TrashTraverser tt = new TrashTraverser(bs, logger, new TrashCheckPreDeleteACLs(), tr);
 		tt.doTraverse(TraversalMode.DESCENDING, folderId, entryId);
-		if (!(cbData.isError())) {
+		if (!(tr.isError())) {
 			// ...and if they pass, perform the predelete.
-			cbData.reset();
+			tr.reset();
 			tt.setCallback(new TrashPreDelete());
 			tt.doTraverse(TraversalMode.DESCENDING, folderId, entryId);
 		}
 		
 		// For any error...
-		if (cbData.isError()) {
+		if (tr.isError()) {
 			// ...simply re-throw the exception.
-			throw cbData.m_exception;
+			throw tr.m_exception;
 		}
 	}
 	
 	/*
 	 * Called to purge the TrashEntry's in trashEntries. 
 	 */
-	@SuppressWarnings("unchecked")
 	private static ModelAndView purgeEntries(AllModulesInjected bs, TrashEntry[] trashEntries, RenderRequest request, RenderResponse response) {
 		// Scan the TrashEntry's.
 		int count = ((null == trashEntries) ? 0 : trashEntries.length);
-		TrashError cbData = new TrashError();
+		TrashResponse tr = new TrashResponse();
 		for (int i = 0; i < count; i += 1) {
 			// Is this trashEntry valid and predeleted?
 			TrashEntry trashEntry = trashEntries[i];
@@ -895,8 +974,8 @@ public class TrashHelper {
 						bs.getFolderModule().deleteEntry(trashEntry.m_locationBinderId, trashEntry.m_docId);
 					}
 					catch (Exception e) {
-						if (e instanceof AccessControlException) cbData.setACLViolation(trashEntry.m_locationBinderId, trashEntry.m_docId);
-						else                                     cbData.setException(e, trashEntry.m_locationBinderId, trashEntry.m_docId);
+						if (e instanceof AccessControlException) tr.setACLViolation(trashEntry.m_locationBinderId, trashEntry.m_docId);
+						else                                     tr.setException(e, trashEntry.m_locationBinderId, trashEntry.m_docId);
 					}
 				}
 				
@@ -908,38 +987,94 @@ public class TrashHelper {
 						bs.getBinderModule().deleteBinder(trashEntry.m_docId);
 					}
 					catch (Exception e) {
-						if (e instanceof AccessControlException) cbData.setACLViolation(trashEntry.m_docId);
-						else                                     cbData.setException(e, trashEntry.m_docId);
+						if (e instanceof AccessControlException) tr.setACLViolation(trashEntry.m_docId);
+						else                                     tr.setException(e, trashEntry.m_docId);
 					}
 				}
 				
 				// If we detect an error during the purge...
-				if (cbData.isError()) {
+				if (tr.isError()) {
 					// ...quit processing items.
 					break;
 				}
 			}
 		}
 		
-		// Did we detect an error during the purge?
-		response.setContentType("text/json");
-		ModelAndView mvReply;
-		if (cbData.isError()) {
-			// Yes!  We need to tell the user about the problem.
-			String errorMsg = cbData.getTrashErrorMessage(bs);
-			logger.error("Purge from trash:  " + errorMsg);
-			
-			Map model = new HashMap();
-			model.put(WebKeys.AJAX_ERROR_MESSAGE, errorMsg);
-			model.put(WebKeys.AJAX_ERROR_MESSAGE_IS_TEXT, Boolean.TRUE);
-			mvReply = new ModelAndView("common/json_ajax_return", model);
-		}
-		else {
-			mvReply = new ModelAndView("common/json_ajax_return");
-		}
-		return mvReply;
+		// Handle any based on the purge.
+		return
+			getMVBasedOnTrashResponse(
+				response,
+				bs,
+				tr,
+				"Purge from trash:  ");
 	}
 
+	/**
+     * Called to register the name of the binder and the filenames of
+     * any file attachments on the binder.
+     *  
+	 * @param cd
+	 * @param binder
+	 */
+    public static void registerBinderNames(CoreDao cd, Binder binder, Map<String, String> renameMap) {
+    	registerTitle(          cd, binder.getParentBinder(), binder,                          renameMap);
+	    registerAttachmentNames(cd, binder.getParentBinder(), binder, binder.getAttachments(), renameMap);
+    }
+    
+    /**
+     * Called to register the name of the entry and the filenames of
+     * any file attachments on the entry.
+     *  
+     * @param cd
+     * @param folder
+     * @param entry
+     */
+    public static void registerEntryNames(CoreDao cd, Folder folder, FolderEntry entry, Map<String, String> renameMap) {
+    	registerTitle(          cd, folder, entry,                         renameMap);
+	    registerAttachmentNames(cd, folder, entry, entry.getAttachments(), renameMap);
+    }
+    
+    /*
+     * Scan the Attachment's in aSet and registers the filename from
+     * any FileAttachments. 
+     */
+    private static void registerAttachmentNames(CoreDao cd, Binder binder, DefinableEntity de, Set<Attachment> aSet, Map<String, String> renameMap) {
+    	if (null != aSet) {
+		    for (Iterator<Attachment> aIT = aSet.iterator(); aIT.hasNext();) {
+		    	Attachment a = aIT.next();
+		    	if (a instanceof FileAttachment) {
+		    		FileAttachment fa = ((FileAttachment) a);
+		    		String fName = fa.getFileItem().getName();
+		    		try {
+		    			cd.registerFileName(binder, de, fName);
+		    		}
+		    		catch (Exception e) {
+		    			if (e instanceof TitleException) {
+		        			logger.debug("TrashHelper.registerAttachmentNames(" + fName + "):  Naming conflict detected.");
+//!							...this needs to be handled.    			
+		    			}
+		    		}
+		    	}
+		    }
+    	}
+    }
+    
+    /*
+     * Called to register the title of a DefinableEntity within a
+     * Binder.
+     */
+    private static void registerTitle(CoreDao cd, Binder binder, DefinableEntity de, Map<String, String> renameMap) {
+    	try {
+    		cd.registerTitle(binder, de);
+    	}
+    	catch (Exception e) {
+    		if (e instanceof TitleException) {
+    			logger.debug("TrashHelper.registerTitle(" + de.getTitle() + "):  Naming conflict detected.");
+//!				...this needs to be handled.    			
+    		}
+    	}
+    }
+    
 	/*
 	 * Called to restore the entries in the trash. 
 	 */
@@ -958,50 +1093,45 @@ public class TrashHelper {
 	/*
 	 * Called to restore a binder.
 	 */
-	private static TrashError restoreBinder(AllModulesInjected bs, Long binderId) {
+	private static void restoreBinder(AllModulesInjected bs, Long binderId, TrashResponse tr) {
 		// Check the ACLs...
-		TrashError cbData = new TrashError();
-		TrashTraverser tt = new TrashTraverser(bs, logger, new TrashCheckRestoreACLs(), cbData);
+		TrashTraverser tt = new TrashTraverser(bs, logger, new TrashCheckRestoreACLs(), tr);
 		tt.doTraverse(TraversalMode.ASCENDING, binderId);
-		if (!(cbData.isError())) {
+		if (!(tr.isError())) {
 			// ...and if they pass, perform the restore.
-			cbData.reset();
+			tr.reset();
 			tt.setCallback(new TrashRestore());
 			tt.doTraverse(TraversalMode.ASCENDING, binderId);
 		}
-		
-		return cbData;
 	}
 
 	/*
 	 * Called to restore an entry.
 	 */
-	private static TrashError restoreEntry(AllModulesInjected bs, Long folderId, Long entryId) {
-		return restoreEntry(bs, folderId, entryId, true);
+	private static void restoreEntry(AllModulesInjected bs, Long folderId, Long entryId, TrashResponse tr) {
+		restoreEntry(bs, folderId, entryId, true, tr);
 	}
-	private static TrashError restoreEntry(AllModulesInjected bs, Long folderId, Long entryId, boolean restoreParentage) {
+	private static TrashResponse restoreEntry(AllModulesInjected bs, Long folderId, Long entryId, boolean restoreParentage, TrashResponse tr) {
 		// Check the ACLs...
-		TrashError cbData = new TrashError();
-		TrashTraverser tt = new TrashTraverser(bs, logger, new TrashCheckRestoreACLs(), cbData);
+		TrashTraverser tt = new TrashTraverser(bs, logger, new TrashCheckRestoreACLs(), tr);
 		tt.doTraverse(TraversalMode.ASCENDING, folderId, entryId);
-		if (!(cbData.isError())) {
+		if (!(tr.isError())) {
 			// ...and if they pass, perform the restore.
-			cbData.reset();
+			tr.reset();
 			tt.setCallback(new TrashRestore());
 			tt.doTraverse(TraversalMode.ASCENDING, folderId, entryId);
 		}
 		
-		return cbData;
+		return tr;
 	}
 	
 	/*
 	 * Called to restore the TrashEntry's in trashEntries. 
 	 */
-	@SuppressWarnings("unchecked")
 	private static ModelAndView restoreEntries(AllModulesInjected bs, TrashEntry[] trashEntries, RenderRequest request, RenderResponse response) {
 		// Scan the TrashEntry's.
 		int count = ((null == trashEntries) ? 0 : trashEntries.length);
-		TrashError cbData = new TrashError();
+		TrashResponse tr = new TrashResponse();
 		for (int i = 0; i < count; i += 1) {
 			// Is this trashEntry valid and predeleted?
 			TrashEntry trashEntry = trashEntries[i];
@@ -1009,8 +1139,8 @@ public class TrashHelper {
 				// Yes!  Is it an entry?
 				if (trashEntry.isEntry()) {
 					// Yes!  Restore the entry itself...
-					cbData = restoreEntry(bs, trashEntry.m_locationBinderId, trashEntry.m_docId);
-					if (cbData.isError()) {
+					restoreEntry(bs, trashEntry.m_locationBinderId, trashEntry.m_docId, tr);
+					if (tr.isError()) {
 						break;
 					}
 				}
@@ -1018,30 +1148,61 @@ public class TrashHelper {
 				// No, it isn't an entry!  Is it a binder?
 				else if (trashEntry.isBinder()) {
 					// Yes!  Restore the binder itself...
-					cbData = restoreBinder(bs, trashEntry.m_docId);
-					if (cbData.isError()) {
+					restoreBinder(bs, trashEntry.m_docId, tr);
+					if (tr.isError()) {
 						break;
 					}
 				}
 			}
 		}
 		
-		// Did we detect an error during the restore?
-		response.setContentType("text/json");
-		ModelAndView mvReply;
-		if (cbData.isError()) {
-			// Yes!  We need to tell the user about the problem.
-			String errorMsg = cbData.getTrashErrorMessage(bs);
-			logger.error("Restore from trash:  " + errorMsg);
-			
-			Map model = new HashMap();
-			model.put(WebKeys.AJAX_ERROR_MESSAGE, errorMsg);
-			model.put(WebKeys.AJAX_ERROR_MESSAGE_IS_TEXT, Boolean.TRUE);
-			mvReply = new ModelAndView("common/json_ajax_return", model);
-		}
-		else {
-			mvReply = new ModelAndView("common/json_ajax_return");
-		}
-		return mvReply;
+		// Handle any messages based on the restore.
+		return
+			getMVBasedOnTrashResponse(
+				response,
+				bs,
+				tr,
+				"Restore from trash:  ");
 	}
+
+	/**
+     * Called to unregister the name of the binder and the filenames of
+     * any file attachments on the binder.
+     *  
+	 * @param cd
+	 * @param binder
+	 */
+    public static void unRegisterBinderNames(CoreDao cd, Binder binder) {
+	    cd.unRegisterTitle(binder.getParentBinder(), binder.getNormalTitle());
+	    unRegisterAttachmentNames(cd, binder.getParentBinder(), binder.getAttachments());
+    }
+    
+    /**
+     * Called to unregister the name of the entry and the filenames of
+     * any file attachments on the entry.
+     *  
+     * @param cd
+     * @param folder
+     * @param entry
+     */
+    public static void unRegisterEntryNames(CoreDao cd, Folder folder, FolderEntry entry) {
+	    cd.unRegisterTitle(folder, entry.getNormalTitle());
+	    unRegisterAttachmentNames(cd, folder, entry.getAttachments());
+    }
+    
+    /*
+     * Scan the Attachment's in aSet and unregisters the filename from
+     * any FileAttachments. 
+     */
+    private static void unRegisterAttachmentNames(CoreDao cd, Binder binder, Set<Attachment> aSet) {
+    	if (null != aSet) {
+		    for (Iterator<Attachment> aIT = aSet.iterator(); aIT.hasNext();) {
+		    	Attachment a = aIT.next();
+		    	if (a instanceof FileAttachment) {
+		    		FileAttachment fa = ((FileAttachment) a);
+		    		cd.unRegisterFileName(binder, fa.getFileItem().getName());
+		    	}
+		    }
+    	}
+    }
 }

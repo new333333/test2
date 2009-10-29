@@ -133,7 +133,7 @@ public class TrashTraverser {
 			// No!  Bail.
 			return false;
 		}
-		
+
 		// If the Binder is a Folder or Workspace...
 		boolean isFolder    = TrashHelper.isBinderFolder(   binder);
 		boolean isWorkspace = TrashHelper.isBinderWorkspace(binder);
