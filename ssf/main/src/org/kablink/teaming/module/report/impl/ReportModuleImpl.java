@@ -1267,22 +1267,28 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		List results = null;
 		results = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
-				String orderBy = "modification_date ASC";
+				String orderBy = "w.modification_date ASC";
 				if ( option != UserQuotaOption.Age) { 
-					orderBy = "fileLength DESC"; 
+					orderBy = "w.fileLength DESC"; 
 				}
 				
 				List l = null;
-				try {
-					String sql ="Select creation_principal, fileLength, modification_date " +
-					" FROM SS_Attachments " + 
-					"WHERE creation_principal = " + RequestContextHolder.getRequestContext().getUser().getId() + 
-					" AND zoneId = " + RequestContextHolder.getRequestContext().getZoneId() +
-					" AND repositoryName != \'" + ObjectKeys.FI_ADAPTER + "\'" + 
-					" ORDER BY " + orderBy;
+				try {					
 					
-					SQLQuery s = session.createSQLQuery(sql);
-					l = s.list();
+					String hsql = "Select w.creation_principal, w.fileLength, w.modification_date "
+						+ " FROM org.kablink.teaming.domain.FileAttachment w "
+						+ " WHERE w.zoneId = :zoneId"
+						+ " WHERE w.creation_principal = :userId"
+						+ " AND w.repositoryName != ':repo'"
+						+ " ORDER BY :orderBy";
+					
+					Query query = session.createQuery(hsql)
+                   	.setLong("zoneId", RequestContextHolder.getRequestContext().getZoneId())
+                   	.setLong("userId", RequestContextHolder.getRequestContext().getUser().getId())
+                   	.setString("repo", ObjectKeys.FI_ADAPTER)
+                   	.setString("orderBy", orderBy);
+					
+					l = query.list();
 					
 				} catch(Exception e) {
 					System.out.println("Unable to query for quotas: " +  e.getMessage());
@@ -1293,8 +1299,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		for(int i=0; i< results.size(); i++) {
 			Object[] result = (Object[]) results.get(i);
 			HashMap<String,Object> row = new HashMap<String,Object>();
-				row.put(ReportModule.USER_ID, ((BigDecimal)result[0]).longValue());
-				row.put(ReportModule.SIZE, ((BigDecimal)result[1]).longValue());
+				row.put(ReportModule.USER_ID, (Long)result[0]);
+				row.put(ReportModule.SIZE, (Long)result[1]);
 				row.put(ReportModule.CREATIONDATE, (Date)result[2]);
 
 				report.add(row);
