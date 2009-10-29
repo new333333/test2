@@ -107,6 +107,7 @@ import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.FilePathUtil;
 import org.kablink.teaming.util.FileStore;
 import org.kablink.teaming.util.FileUploadItem;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
@@ -1429,7 +1430,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	Long fileSize = null;
     	if(versionName != null)
     		fileSize = Long.valueOf(session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName));
-    	if (fileSize != null) checkQuota(fileSize, fAtt.getName());
+    	if (fileSize != null) checkQuota(fileSize, fAtt.getFileItem().getName());
 		updateFileAttachment(fAtt, user, versionName, fileSize, fui.getModDate(), fui.getModifierName());
     }
 
@@ -1552,7 +1553,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 						
 		long fileSize = session.getContentLengthVersioned(binder, entry, fui.getOriginalFilename(), versionName);
 		
-		checkQuota(fileSize, fAtt.getName());
+		checkQuota(fileSize, fAtt.getFileItem().getName());
 		
 		fAtt.getFileItem().setLength(fileSize);
 
@@ -1589,8 +1590,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			// exceeded when the transaction began.
 			if ((userQuota < user.getDiskSpaceUsed()))
 				// TODO ROY - put this message into the messages catalogue
-				throw new RepositoryServiceException(
-						"Disk quota exceeded, cannot attach file: " + fileName);
+				throw new RepositoryServiceException(new String (NLT.get("quota.exceeded.error.message") + fileName));
+						
 		}
 	}
 	
