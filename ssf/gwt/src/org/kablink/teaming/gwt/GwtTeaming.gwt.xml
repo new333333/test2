@@ -28,12 +28,12 @@
 
 	<!-- Add support for other languages. -->
 	<!-- <set-property name="locale" value="default"/> -->				<!-- English               -->
-	<!-- <extend-property name="locale" values="da"    /> -->	<!-- Danish                -->
+	<extend-property name="locale" values="da"    />	<!-- Danish                -->
 	<extend-property name="locale" values="de"    />	<!-- German                -->
 	<extend-property name="locale" values="es"    />	<!-- Spanish               -->
-	<!-- <extend-property name="locale" values="fr"    /> -->	<!-- French                -->
+	<extend-property name="locale" values="fr"    />	<!-- French                -->
 	<extend-property name="locale" values="hu_HU" />	<!-- Hungarian             -->
-	<!-- <extend-property name="locale" values="it"    /> -->	<!-- Italian               -->
+	<extend-property name="locale" values="it"    />	<!-- Italian               -->
 	<extend-property name="locale" values="ja"    />	<!-- Japanese              -->
 	<extend-property name="locale" values="nl"    />	<!-- Dutch                 -->
 	<extend-property name="locale" values="pl"    />	<!-- Polish                -->
