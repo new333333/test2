@@ -45,6 +45,7 @@ import javax.servlet.http.HttpSession;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.module.authentication.UserIdNotUniqueException;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
@@ -109,6 +110,14 @@ public class LoginController  extends SAbstractControllerRetry {
         HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
     	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
     	if(ex != null) {
+    		// Are we dealing with a UserIdNotUniqueException?
+    		if ( ex instanceof UserIdNotUniqueException )
+    		{
+    			// Yes
+    			// Add the flag that tells the login page to show the details of the error.
+    			model.put( "showLoginFailureDetails", "true" );
+    		}
+    		
     		model.put(WebKeys.LOGIN_ERROR, ex.getMessage());
     		session.removeAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
     	}

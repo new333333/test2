@@ -50,6 +50,20 @@
 	</script>
 </c:if>
 
+<script type="text/javascript">
+	/**
+	 * This function will display the details about a login failure.
+	 */
+	function showLoginFailureDetails()
+	{
+		var div;
+
+		div = document.getElementById( 'login-failure-details' );
+		if ( div != null )
+			div.style.display = '';
+	}// end showLoginFailureDetails()
+</script>
+
 <!-- Set some variables depending on whether we are running the Open or Enterprise version of Teaming. -->
 <c:set var="topImage" value="login_novell_top.png" scope="request" />
 <c:set var="copyrightNotice" value="login.copyright.Novell" scope="request" />
@@ -93,9 +107,24 @@
 		       		<tr>
 				 		<td>&nbsp;</td>
 		         		<td style="color: red;" colspan="2" align="right">
-		           			<span id="errorcode.login.failed"><ssf:nlt tag="errorcode.login.failed"/></span>
+		           			<div id="errorcode.login.failed"><ssf:nlt tag="errorcode.login.failed"/></div>
+	<c:if test="${!empty showLoginFailureDetails}">
+							<a href="#"
+							   onclick="showLoginFailureDetails();return false;"
+							   title="<ssf:nlt tag="login.showLoginFailureDetails" />"
+								<span><ssf:nlt tag="login.showLoginFailureDetails" /></span>
+							</a>
+	</c:if>
 		         		</td>
 		       		</tr>
+	<c:if test="${!empty showLoginFailureDetails}">
+					<!-- This row will hold the details of the login failure. -->
+					<tr>
+						<td style="color: red;" colspan="2">
+							<div id="login-failure-details" style="display: none;">${ss_loginError}</div>
+						</td>
+					</tr>
+	</c:if>
 </c:if>
 					<tr>
 						<td align="right">&nbsp;</td>

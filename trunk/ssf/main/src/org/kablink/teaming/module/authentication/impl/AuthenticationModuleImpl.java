@@ -51,13 +51,16 @@ import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.spring.security.SsfContextMapper;
 import org.kablink.teaming.spring.security.SynchNotifiableAuthentication;
 import org.kablink.teaming.spring.security.ZoneAwareLocalAuthenticationProvider;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
+import org.kablink.teaming.module.authentication.UserIdNotUniqueException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.security.Authentication;
 import org.springframework.security.AuthenticationException;
 import org.springframework.security.AuthenticationServiceException;
@@ -297,6 +300,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	    		try {
 	    			// Perform authentication
 	     			result = authenticators.get(zone).authenticate(authentication);
+	     			
 	     			// This is not used for authentication but for synchronization.
 	    			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
 	    					(String) result.getName(), (String) result.getCredentials(),
@@ -306,6 +310,17 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	    			return result;
 	    		} catch(AuthenticationException e) {
 	    			exc = e;
+	    		}
+	    		catch ( IncorrectResultSizeDataAccessException irsdaEx )
+	    		{
+	    			String errDesc;
+	    			String[] args = {authentication.getName()};
+	    			
+	    			// This exception means that there are multiple users in the ldap directory
+	    			// that have the same name as the user id supplied by the user.
+	        		errDesc = NLT.get( "errorcode.login.failed.loginNameNotUnique", args );
+	        		
+	    			exc = new UserIdNotUniqueException( errDesc );
 	    		}
         	}
         	
