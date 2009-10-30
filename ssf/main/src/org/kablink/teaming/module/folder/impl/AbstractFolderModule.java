@@ -664,17 +664,17 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     }
 
     //inside write transaction    
-    public void restoreEntry(Long parentFolderId, Long entryId, Map<String, String> renameMap) {
-    	restoreEntry(parentFolderId, entryId, renameMap, true);
+    public void restoreEntry(Long parentFolderId, Long entryId, Object renameData) {
+    	restoreEntry(parentFolderId, entryId, renameData, true);
     }
-    public void restoreEntry(Long parentFolderId, Long entryId, Map<String, String> renameMap, boolean reindex) {
-    	restoreEntry(parentFolderId, entryId, renameMap, true, null, reindex);
+    public void restoreEntry(Long parentFolderId, Long entryId, Object renameData, boolean reindex) {
+    	restoreEntry(parentFolderId, entryId, renameData, true, null, reindex);
     }
     //inside write transaction    
-    public void restoreEntry(Long folderId, Long entryId, Map<String, String> renameMap, boolean deleteMirroredSource, Map options) {
-    	restoreEntry(folderId, entryId, renameMap,deleteMirroredSource, options, true);
+    public void restoreEntry(Long folderId, Long entryId, Object renameData, boolean deleteMirroredSource, Map options) {
+    	restoreEntry(folderId, entryId, renameData,deleteMirroredSource, options, true);
     }
-    public void restoreEntry(Long folderId, Long entryId, Map<String, String> renameMap, boolean deleteMirroredSource, Map options, boolean reindex) {
+    public void restoreEntry(Long folderId, Long entryId, Object renameData, boolean deleteMirroredSource, Map options, boolean reindex) {
     	deCount.incrementAndGet();
         FolderEntry entry = loadEntry(folderId, entryId);
         Folder folder = loadFolder(folderId);
@@ -685,7 +685,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         	entry.setPreDeletedWhen(null);
         	entry.setPreDeletedBy(null);
         	
-        	TrashHelper.registerEntryNames(getCoreDao(), folder, entry, renameMap);
+        	TrashHelper.registerEntryNames(getCoreDao(), folder, entry, renameData);
         	if (reindex) {
         		loadProcessor(entry.getParentFolder()).indexEntry(entry);
         	}

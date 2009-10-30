@@ -132,18 +132,18 @@ public interface BinderModule {
 	 * Any errors deleting child-binders will be returned, but
 	 * will continue deleting as much as possible.  Mirrored source will be deleted
 	 * @param binderId
-	 * @param renameMap
+	 * @param renameData
 	 * @param reindex
 	 * @throws AccessControlException
 	 */
-	public void restoreBinder(Long binderId, Map<String,String> renameMap)                  throws AccessControlException;
-	public void restoreBinder(Long binderId, Map<String,String> renameMap, boolean reindex) throws AccessControlException;
+	public void restoreBinder(Long binderId, Object renameData)                  throws AccessControlException;
+	public void restoreBinder(Long binderId, Object renameData, boolean reindex) throws AccessControlException;
 	/**
 	 * Restores a binder including any sub-binders and entries.
 	 * Any errors deleting child-binders will be returned, but
 	 * will continue deleting as much as possible.
 	 * @param binderId
-	 * @param renameMap
+	 * @param renameData
 	 * @param deleteMirroredSource indicates whether or not to delete the
 	 * corresponding source resources (directories and files) if this binder
 	 * or any of the child binders is mirrored.
@@ -151,8 +151,8 @@ public interface BinderModule {
 	 * @param reindex
 	 * @throws AccessControlException
 	 */
-	public void restoreBinder(Long binderId, Map<String,String> renameMap, boolean deleteMirroredSource, Map options)                  throws AccessControlException;
-	public void restoreBinder(Long binderId, Map<String,String> renameMap, boolean deleteMirroredSource, Map options, boolean reindex) throws AccessControlException;
+	public void restoreBinder(Long binderId, Object renameData, boolean deleteMirroredSource, Map options)                  throws AccessControlException;
+	public void restoreBinder(Long binderId, Object renameData, boolean deleteMirroredSource, Map options, boolean reindex) throws AccessControlException;
 	
 	/**
 	 * Predelete a binder including any sub-binders and entries.
