@@ -52,6 +52,7 @@ import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.TitleException;
@@ -85,18 +86,76 @@ public class TrashHelper {
 	// Class data members.
 	public static final String[] trashColumns= new String[] {"title", "date", "author", "location"};
 	protected static Log logger = LogFactory.getLog(TrashHelper.class);
+	private final static int RENAMES_TO_DISPLAY = 5;
 
+	/*
+	 * Inner class used to assist/manage in the renaming of binders,
+	 * entries and files that have naming conflicts during a restore. 
+	 */
+	private static class TrashRenameData {
+		// Class data members.
+		public AllModulesInjected 		m_bs;
+		public HashMap<String, String>	m_renameMap;
+		
+		public enum RenameType {
+			Binder,
+			Entry,
+			File,
+		}
+
+		/*
+		 * Class constructor.
+		 */
+		public TrashRenameData(AllModulesInjected bs) {
+			m_bs        = bs;
+			m_renameMap = new HashMap<String, String>();
+		}
+
+		/*
+		 * Adds a rename item to the rename map.
+		 */
+		public void addRename(RenameType rt, String from, String to) {
+			m_renameMap.put(getKey(rt, from), to);
+		}
+
+		/*
+		 * Removes any items from the rename map.
+		 */
+		public void clearRenames() {
+			m_renameMap.clear();
+		}
+		
+		/*
+		 * Generates a key for rename entries in the rename map.
+		 */
+		private String getKey(RenameType rt, String baseKey) {
+			String key;
+			if      (RenameType.Binder == rt) key = "B:";
+			else if (RenameType.Entry  == rt) key = "E:";
+			else if (RenameType.File   == rt) key = "F:";
+			else                              key = "";
+			return (key + baseKey);
+		}
+		
+		/*
+		 * Returns true if there are items in the rename map. 
+		 */
+		public boolean hasRenames() {
+			return (!(m_renameMap.isEmpty()));
+		}
+	}
+	
 	/*
 	 * Inner class used to communicate information while traversing
 	 * binders and entries to predelete or restore them. 
 	 */
 	private static class TrashResponse {
 		// Class data members.
-		public Exception				m_exception;
-		public HashMap<String, String>	m_renameMap;
-		public Long						m_binderId;
-		public Long						m_entryId;
-		public Status					m_status;
+		public Exception		m_exception;
+		public Long				m_binderId;
+		public Long				m_entryId;
+		public Status			m_status;
+		public TrashRenameData	m_rd;
 
 		// Used for the current status of the TrashResponse object.
 		public enum Status {
@@ -108,7 +167,8 @@ public class TrashHelper {
 		/*
 		 * Class constructor.
 		 */
-		public TrashResponse() {
+		public TrashResponse(AllModulesInjected bs) {
+			m_rd = new TrashRenameData(bs);
 			reset();
 		}
 
@@ -178,13 +238,25 @@ public class TrashHelper {
 			
 			// No, the TrashResponse didn't indicate an ACL violation
 			// either!  Are we tracking rename warnings?
-			else if (!(m_renameMap.isEmpty())) {
+			else if (m_rd.hasRenames()) {
 				// Yes!  Generate an appropriate message.
 				reply = (NLT.get("trash.warning.RenamedOnRestore") + "\n");
-				Set<String> keySet = m_renameMap.keySet();
+				Set<String> keySet = m_rd.m_renameMap.keySet();
+				int rCount = 0;
 				for (Iterator<String> keyIT = keySet.iterator(); keyIT.hasNext();) {
+			    	rCount += 1;
+			    	if (rCount > RENAMES_TO_DISPLAY) {
+			    		reply += ("\n\t" + NLT.get("trash.warning.RenamedOnRestore.More"));
+			    		break;
+			    	}
 					String key = keyIT.next();
-					String each = NLT.get("trash.warning.RenamedOnRestore.Each", new String[]{key, m_renameMap.get(key)});
+					String resKey = "trash.warning.RenamedOnRestore.Each";
+					String keyPatch;
+					if      (0 == key.indexOf("B:")) {keyPatch = key.substring(2); resKey += ".Binder";}
+					else if (0 == key.indexOf("E:")) {keyPatch = key.substring(2); resKey += ".Entry"; }
+					else if (0 == key.indexOf("F:")) {keyPatch = key.substring(2); resKey += ".File";  }
+					else                             {keyPatch = key;                                  }
+					String each = NLT.get(resKey, new String[]{keyPatch, m_rd.m_renameMap.get(key)});
 					reply += ("\n\t" + each);
 				}
 			}
@@ -237,13 +309,14 @@ public class TrashHelper {
 		 * Resets the object's data members to their initial state.
 		 */
 		public void reset() {
+			// Reset the simple data members...
 			m_status    = Status.NoError;
 			m_exception = null;
 			m_binderId  =
 			m_entryId   = null;
 			
-			if (null == m_renameMap) m_renameMap = new HashMap<String, String>();
-			else                     m_renameMap.clear();
+			// ...and clear the rename data.
+			m_rd.clearRenames();
 		}
 
 		/*
@@ -303,11 +376,9 @@ public class TrashHelper {
 		public String	m_docType;
 		public String	m_entityType;
 		
-		/**
+		/*
 		 * Constructs a TrashEntry based on the packed string
 		 * representation of one.
-		 * 
-		 * @param paramS
 		 */
 		public TrashEntry(String paramS) {
 			String[] params = paramS.split(StringPool.COLON);
@@ -318,10 +389,8 @@ public class TrashHelper {
 			m_entityType		=              params[3];
 		}
 		
-		/**
+		/*
 		 * Constructs a TrashEntry based on an results of a search.
-		 * 
-		 * @param searchResultsMap
 		 */
 		@SuppressWarnings("unchecked")
 		public TrashEntry(Map searchResultsMap) {
@@ -336,28 +405,22 @@ public class TrashHelper {
 			}
 		}
 
-		/**
+		/*
 		 * Returns true if this TrashEntry is a binder.
-		 * 
-		 * @return
 		 */
 		public boolean isBinder() {
 			return "binder".equalsIgnoreCase(m_docType);
 		}
 		
-		/**
+		/*
 		 * Returns true if this TrashEntry is an entry.
-		 * 
-		 * @return
 		 */
 		public boolean isEntry() {
 			return "entry".equalsIgnoreCase(m_docType);
 		}
 		
-		/**
+		/*
 		 * Returns true if this TrashEntry is a Folder.
-		 * 
-		 * @return
 		 */
 		public boolean isFolder(AllModulesInjected bs) {
 			if (isBinder()) {
@@ -366,12 +429,9 @@ public class TrashHelper {
 			return false;
 		}
 		
-		/**
+		/*
 		 * Returns true if the TrashEntry is valid and in a predeleted
 		 * state and false otherwise.
-		 * 
-		 * @param bs
-		 * @return
 		 */
 		public boolean isPreDeleted(AllModulesInjected bs) {
 			boolean reply = false;
@@ -398,10 +458,8 @@ public class TrashHelper {
 			return reply;
 		}
 		
-		/**
+		/*
 		 * Returns true if this TrashEntry is a Workspace.
-		 * 
-		 * @return
 		 */
 		public boolean isWorkspace(AllModulesInjected bs) {
 			if (isBinder()) {
@@ -555,7 +613,7 @@ public class TrashHelper {
 			boolean reply;
 			try {
 				logger.debug("TrashRestore.binder(" + binderId + "):  Restoring binder.");
-				bs.getBinderModule().restoreBinder(binderId, tr.m_renameMap, true);
+				bs.getBinderModule().restoreBinder(binderId, tr.m_rd, true);
 				reply = true;
 			}
 			catch (Exception ex) {
@@ -571,7 +629,7 @@ public class TrashHelper {
 			boolean reply;
 			try {
 				logger.debug("TrashRestore.entry(" + folderId + ", " + entryId + "):  Restoring entry.");
-				bs.getFolderModule().restoreEntry(folderId, entryId, tr.m_renameMap, true);
+				bs.getFolderModule().restoreEntry(folderId, entryId, tr.m_rd, true);
 				reply = true;
 			}
 			catch (Exception ex) {
@@ -802,19 +860,16 @@ public class TrashHelper {
 	 * TrashResponse.
 	 */
 	@SuppressWarnings("unchecked")
-	private static ModelAndView getMVBasedOnTrashResponse(RenderResponse response, AllModulesInjected bs, TrashResponse tr, String logStart) {
+	private static ModelAndView getMVBasedOnTrashResponse(RenderResponse response, AllModulesInjected bs, TrashResponse tr) {
 		// We'll always return a JSON jsp.
 		response.setContentType("text/json");
 		
 		// Do we need to display anything to the user?
 		ModelAndView mvReply;
-		if (tr.isError() || (!(tr.m_renameMap.isEmpty()))) {
+		if (tr.isError() || tr.m_rd.hasRenames()) {
 			// Yes!  Return the message with the JSON jsp. 
-			String msg = tr.getTrashMessage(bs);
-			logger.error(logStart + msg);
-
 			Map model = new HashMap();
-			model.put(WebKeys.AJAX_ERROR_MESSAGE, msg);
+			model.put(WebKeys.AJAX_ERROR_MESSAGE, tr.getTrashMessage(bs));
 			model.put(WebKeys.AJAX_ERROR_MESSAGE_IS_TEXT, Boolean.TRUE);
 			mvReply = new ModelAndView("common/json_ajax_return", model);
 		}
@@ -912,12 +967,11 @@ public class TrashHelper {
 	 */
 	public static void preDeleteBinder(AllModulesInjected bs, Long binderId) throws Exception {
 		// Check the ACLs...
-		TrashResponse tr = new TrashResponse();
+		TrashResponse tr = new TrashResponse(bs);
 		TrashTraverser tt = new TrashTraverser(bs, logger, new TrashCheckPreDeleteACLs(), tr);
 		tt.doTraverse(TraversalMode.DESCENDING, binderId);
 		if (!(tr.isError())) {
 			// ...and if they pass, perform the predelete.
-			tr.reset();
 			tt.setCallback(new TrashPreDelete());
 			tt.doTraverse(TraversalMode.DESCENDING, binderId);
 		}
@@ -938,12 +992,11 @@ public class TrashHelper {
 	 */
 	public static void preDeleteEntry(AllModulesInjected bs, Long folderId, Long entryId) throws Exception{
 		// Check the ACLs...
-		TrashResponse tr = new TrashResponse();
+		TrashResponse tr = new TrashResponse(bs);
 		TrashTraverser tt = new TrashTraverser(bs, logger, new TrashCheckPreDeleteACLs(), tr);
 		tt.doTraverse(TraversalMode.DESCENDING, folderId, entryId);
 		if (!(tr.isError())) {
 			// ...and if they pass, perform the predelete.
-			tr.reset();
 			tt.setCallback(new TrashPreDelete());
 			tt.doTraverse(TraversalMode.DESCENDING, folderId, entryId);
 		}
@@ -961,7 +1014,7 @@ public class TrashHelper {
 	private static ModelAndView purgeEntries(AllModulesInjected bs, TrashEntry[] trashEntries, RenderRequest request, RenderResponse response) {
 		// Scan the TrashEntry's.
 		int count = ((null == trashEntries) ? 0 : trashEntries.length);
-		TrashResponse tr = new TrashResponse();
+		TrashResponse tr = new TrashResponse(bs);
 		for (int i = 0; i < count; i += 1) {
 			// Is this trashEntry valid and predeleted?
 			TrashEntry trashEntry = trashEntries[i];
@@ -1000,13 +1053,8 @@ public class TrashHelper {
 			}
 		}
 		
-		// Handle any based on the purge.
-		return
-			getMVBasedOnTrashResponse(
-				response,
-				bs,
-				tr,
-				"Purge from trash:  ");
+		// Handle any messages based on the purge.
+		return getMVBasedOnTrashResponse(response, bs, tr);
 	}
 
 	/**
@@ -1016,9 +1064,9 @@ public class TrashHelper {
 	 * @param cd
 	 * @param binder
 	 */
-    public static void registerBinderNames(CoreDao cd, Binder binder, Map<String, String> renameMap) {
-    	registerTitle(          cd, binder.getParentBinder(), binder,                          renameMap);
-	    registerAttachmentNames(cd, binder.getParentBinder(), binder, binder.getAttachments(), renameMap);
+    public static void registerBinderNames(CoreDao cd, Binder binder, Object rd) {
+    	registerTitle(          cd, binder.getParentBinder(), binder,                          ((TrashRenameData) rd));
+	    registerAttachmentNames(cd, binder.getParentBinder(), binder, binder.getAttachments(), ((TrashRenameData) rd));
     }
     
     /**
@@ -1029,41 +1077,83 @@ public class TrashHelper {
      * @param folder
      * @param entry
      */
-    public static void registerEntryNames(CoreDao cd, Folder folder, FolderEntry entry, Map<String, String> renameMap) {
-    	registerTitle(          cd, folder, entry,                         renameMap);
-	    registerAttachmentNames(cd, folder, entry, entry.getAttachments(), renameMap);
+    public static void registerEntryNames(CoreDao cd, Folder folder, FolderEntry entry, Object rd) {
+    	registerTitle(          cd, folder, entry,                         ((TrashRenameData) rd));
+	    registerAttachmentNames(cd, folder, entry, entry.getAttachments(), ((TrashRenameData) rd));
     }
     
     /*
-     * Scan the Attachment's in aSet and registers the filename from
+     * Scans the Attachment's in aSet and registers the filename from
      * any FileAttachments. 
      */
-    private static void registerAttachmentNames(CoreDao cd, Binder binder, DefinableEntity de, Set<Attachment> aSet, Map<String, String> renameMap) {
+    private static void registerAttachmentNames(CoreDao cd, Binder binder, DefinableEntity de, Set<Attachment> aSet, TrashRenameData rd) {
+    	// If we have any Attachments...
     	if (null != aSet) {
+    		// ...scan them...
 		    for (Iterator<Attachment> aIT = aSet.iterator(); aIT.hasNext();) {
+		    	// ...and for FileAttachment's...
 		    	Attachment a = aIT.next();
 		    	if (a instanceof FileAttachment) {
-		    		FileAttachment fa = ((FileAttachment) a);
-		    		String fName = fa.getFileItem().getName();
-		    		try {
-		    			cd.registerFileName(binder, de, fName);
-		    		}
-		    		catch (Exception e) {
-		    			if (e instanceof TitleException) {
-		        			logger.debug("TrashHelper.registerAttachmentNames(" + fName + "):  Naming conflict detected.");
-//!							...this needs to be handled.    			
-		    			}
-		    		}
+		    		// ...re-register their name.
+		    		registerAttachmentName(cd, ((FileAttachment) a), binder, de, rd);
 		    	}
 		    }
     	}
     }
     
     /*
+     * Registers the name for a FileAttachment taking care of any
+     * renaming that must occur to ensure uniqueness. 
+     */
+    public static void registerAttachmentName(CoreDao cd, FileAttachment fa, Binder binder, DefinableEntity de, TrashRenameData rd) {
+    	FileItem fi = fa.getFileItem();
+		String fName = fi.getName();
+		String fNameOriginal = fName;
+		int renames = 0;
+		do {
+			try {
+				// If we can register the original, unchanged
+				// filename.
+				if (0 == renames) {
+					logger.debug("TrashHelper.registerAttachmentName(\"" + fName + "\")");
+				}
+				logger.debug("...registering...");
+				cd.registerFileName(binder, de, fName);
+				logger.debug("...name is unique.");
+				if (0 == renames) {
+					// ...we're done.
+					return;
+				}
+				
+				// ...otherwise, if we registered a synthesized
+				// ...filename, we need to put it into effect.
+				break;
+			}
+			catch (TitleException te) {
+				// Ignore for now!  We'll handle renaming below.
+			}
+
+			// If we get here, fName conflicts with something in this
+			// namespace.  Synthesize a new name and try again.
+			fName = synthesizeName(fNameOriginal, ("-" + String.valueOf(++renames)), true);
+			logger.debug("...naming conflict detected, trying again using:  \"" + fName + "\"");
+		} while (true);
+		
+		// If we get here, we have to rename the FileAttachment to
+		// fName.  Since we registered the name above, we must
+		// unregister it because FileModule.renameFile(...) will
+		// re-register it.  Unfortunately, I can find now way to
+		// check if a filename is already registered.
+		cd.unRegisterFileName(binder, fName);
+		rd.m_bs.getFileModule().renameFile(binder, de, fa, fName);
+		rd.addRename(TrashRenameData.RenameType.File, fNameOriginal, fName);
+    }
+    
+    /*
      * Called to register the title of a DefinableEntity within a
      * Binder.
      */
-    private static void registerTitle(CoreDao cd, Binder binder, DefinableEntity de, Map<String, String> renameMap) {
+    private static void registerTitle(CoreDao cd, Binder binder, DefinableEntity de, TrashRenameData rd) {
     	try {
     		cd.registerTitle(binder, de);
     	}
@@ -1099,7 +1189,6 @@ public class TrashHelper {
 		tt.doTraverse(TraversalMode.ASCENDING, binderId);
 		if (!(tr.isError())) {
 			// ...and if they pass, perform the restore.
-			tr.reset();
 			tt.setCallback(new TrashRestore());
 			tt.doTraverse(TraversalMode.ASCENDING, binderId);
 		}
@@ -1117,7 +1206,6 @@ public class TrashHelper {
 		tt.doTraverse(TraversalMode.ASCENDING, folderId, entryId);
 		if (!(tr.isError())) {
 			// ...and if they pass, perform the restore.
-			tr.reset();
 			tt.setCallback(new TrashRestore());
 			tt.doTraverse(TraversalMode.ASCENDING, folderId, entryId);
 		}
@@ -1131,7 +1219,7 @@ public class TrashHelper {
 	private static ModelAndView restoreEntries(AllModulesInjected bs, TrashEntry[] trashEntries, RenderRequest request, RenderResponse response) {
 		// Scan the TrashEntry's.
 		int count = ((null == trashEntries) ? 0 : trashEntries.length);
-		TrashResponse tr = new TrashResponse();
+		TrashResponse tr = new TrashResponse(bs);
 		for (int i = 0; i < count; i += 1) {
 			// Is this trashEntry valid and predeleted?
 			TrashEntry trashEntry = trashEntries[i];
@@ -1157,14 +1245,38 @@ public class TrashHelper {
 		}
 		
 		// Handle any messages based on the restore.
-		return
-			getMVBasedOnTrashResponse(
-				response,
-				bs,
-				tr,
-				"Restore from trash:  ");
+		return getMVBasedOnTrashResponse(response, bs, tr);
 	}
 
+	/*
+	 * Synthesizes a new name for a binder, entry or file.
+	 */
+	private static String synthesizeName(String baseName, String patch, boolean fileName) {
+		// Are we synthesizing a filename?
+		String synthesizedName = baseName;
+		if (fileName) {
+			// Yes!  Does it contain a '.' separator for an extension?
+			int dotPos = baseName.indexOf(".");
+			if (0 > dotPos) {
+				// No!  Handle it the same as non-filenames.
+				fileName = false;
+			}
+			else {
+				synthesizedName = (baseName.substring(0, dotPos) + patch + baseName.substring(dotPos));
+			}
+		}
+		
+		// If we're synthesizing a non-filename...
+		if (!fileName) {
+			// ...simply append the patch string.
+			synthesizedName += patch;
+		}
+		
+		// If we get here, synthesizedName refers to the synthesized
+		// name.  Return it.
+		return synthesizedName;
+	}
+	
 	/**
      * Called to unregister the name of the binder and the filenames of
      * any file attachments on the binder.

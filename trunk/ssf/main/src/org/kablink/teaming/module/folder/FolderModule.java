@@ -192,24 +192,24 @@ public interface FolderModule {
      * Restores a <code>FolderEntry</code> and all of its replies.  Deleted mirrored resources also.
      * @param parentFolderId
      * @param entryId
-	 * @param renameMap
+	 * @param renameData
      * @param reindex
      * @throws AccessControlException
      */
-    public void restoreEntry(Long parentFolderId, Long entryId, Map<String, String> renameMap)                  throws AccessControlException;
-    public void restoreEntry(Long parentFolderId, Long entryId, Map<String, String> renameMap, boolean reindex) throws AccessControlException;
+    public void restoreEntry(Long parentFolderId, Long entryId, Object renameData)                  throws AccessControlException;
+    public void restoreEntry(Long parentFolderId, Long entryId, Object renameData, boolean reindex) throws AccessControlException;
     /**
      * Restores a <code>FolderEntry</code> and all of its replies.
      * @param parentFolderId
      * @param entryId
-	 * @param renameMap
+	 * @param renameData
      * @param deleteMirroredSource
      * @param options - processing options or null
      * @param reindex
      * @throws AccessControlException
      */
-    public void restoreEntry(Long parentFolderId, Long entryId, Map<String, String> renameMap, boolean deleteMirroredSource, Map options)                  throws AccessControlException;
-    public void restoreEntry(Long parentFolderId, Long entryId, Map<String, String> renameMap, boolean deleteMirroredSource, Map options, boolean reindex) throws AccessControlException;
+    public void restoreEntry(Long parentFolderId, Long entryId, Object renameData, boolean deleteMirroredSource, Map options)                  throws AccessControlException;
+    public void restoreEntry(Long parentFolderId, Long entryId, Object renameData, boolean deleteMirroredSource, Map options, boolean reindex) throws AccessControlException;
    /**
      * Predeletes a <code>FolderEntry</code> and all of its replies.  Deleted mirrored resources also.
      * @param parentFolderId

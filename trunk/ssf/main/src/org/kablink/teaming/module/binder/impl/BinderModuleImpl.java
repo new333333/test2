@@ -694,18 +694,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// inside write transaction
-	public void restoreBinder(Long binderId, Map<String,String> renameMap) {
-		restoreBinder(binderId, renameMap, true);
+	public void restoreBinder(Long binderId, Object renameData) {
+		restoreBinder(binderId, renameData, true);
 	}
-	public void restoreBinder(Long binderId, Map<String,String> renameMap, boolean reindex) {
-		restoreBinder(binderId, renameMap, true, null, reindex);
+	public void restoreBinder(Long binderId, Object renameData, boolean reindex) {
+		restoreBinder(binderId, renameData, true, null, reindex);
 	}
 
 	// inside write transaction
-	public void restoreBinder(Long binderId, Map<String,String> renameMap, boolean deleteMirroredSource, Map options) {
-		restoreBinder(binderId, renameMap, deleteMirroredSource, options, true);
+	public void restoreBinder(Long binderId, Object renameData, boolean deleteMirroredSource, Map options) {
+		restoreBinder(binderId, renameData, deleteMirroredSource, options, true);
 	}
-	public void restoreBinder(Long binderId, Map<String,String> renameMap, boolean deleteMirroredSource, Map options, boolean reindex) {
+	public void restoreBinder(Long binderId, Object renameData, boolean deleteMirroredSource, Map options, boolean reindex) {
 		Binder binder = loadBinder(binderId);
 		if ((null != binder) && (!(binder.isMirrored()))) {
 			EntityType et = binder.getEntityType();
@@ -727,7 +727,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		        	ws.setPreDeletedBy(null);
 		        }
 		        
-		        TrashHelper.registerBinderNames(getCoreDao(), binder, renameMap);
+		        TrashHelper.registerBinderNames(getCoreDao(), binder, renameData);
 		        if (reindex) {
 		        	loadBinderProcessor(binder).indexBinder(binder, true);
 		        }
