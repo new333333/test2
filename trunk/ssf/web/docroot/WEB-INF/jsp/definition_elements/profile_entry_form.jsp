@@ -111,7 +111,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 		value="${ssDefinitionEntry.firstName}" 
 		onchange="ss_ajaxValidate(ss_checkTitleUrl, this, 'firstName', 'ss_titleCheck');">
 </c:if>
-<c:if test="${!empty ssReadOnlyFields['firstName']}">${ssDefinitionEntry.firstName} <span class="ss_footnote">&#134;</span></c:if>
+<c:if test="${!empty ssReadOnlyFields['firstName']}">${ssDefinitionEntry.firstName}&nbsp;</c:if>
 	</div>
   </td>
   <td style="padding-right:6px;">
@@ -124,7 +124,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 		value="${ssDefinitionEntry.middleName}" 
 		onchange="ss_ajaxValidate(ss_checkTitleUrl, this, 'middleName', 'ss_titleCheck');">
 </c:if>
-<c:if test="${!empty ssReadOnlyFields['middleName']}">${ssDefinitionEntry.middleName} <span class="ss_footnote">&#134;</span></c:if>
+<c:if test="${!empty ssReadOnlyFields['middleName']}">${ssDefinitionEntry.middleName}&nbsp;</c:if>
 	</div>
   </td>
   <td>
@@ -137,7 +137,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 		value="${ssDefinitionEntry.lastName}"
 		onchange="ss_ajaxValidate(ss_checkTitleUrl, this, 'lastName', 'ss_titleCheck');">
 </c:if>
-<c:if test="${!empty ssReadOnlyFields['lastName']}">${ssDefinitionEntry.lastName} <span class="ss_footnote">&#134;</span></c:if>
+<c:if test="${!empty ssReadOnlyFields['lastName']}">${ssDefinitionEntry.lastName}&nbsp;</c:if>
 	</div>
   </td>
 </tr>
@@ -151,7 +151,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 	<input type="text" class="ss_text" name="emailAddress" id="emailAddress"
 		value="${ssDefinitionEntry.emailAddress}">
 </c:if>
-<c:if test="${!empty ssReadOnlyFields['emailAddress']}">${ssDefinitionEntry.emailAddress} <span class="ss_footnote">&#134;</span></c:if>
+<c:if test="${!empty ssReadOnlyFields['emailAddress']}">${ssDefinitionEntry.emailAddress}&nbsp;</c:if>
 	</div>
   </td>
   <td style="padding-right:6px;">
@@ -163,7 +163,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 	<input type="text" class="ss_text" name="mobileEmailAddress" id="mobileEmailAddress"
 		value="${ssDefinitionEntry.mobileEmailAddress}">
 </c:if>
-<c:if test="${!empty ssReadOnlyFields['mobileEmailAddress']}">${ssDefinitionEntry.mobileEmailAddress} <span class="ss_footnote">&#134;</span></c:if>
+<c:if test="${!empty ssReadOnlyFields['mobileEmailAddress']}">${ssDefinitionEntry.mobileEmailAddress}&nbsp;</c:if>
 	</div>
   </td>
   <td>
@@ -175,7 +175,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 	<input type="text" class="ss_text" name="txtEmailAddress" id="txtEmailAddress"
 		value="${ssDefinitionEntry.txtEmailAddress}">
 </c:if>
-<c:if test="${!empty ssReadOnlyFields['txtEmailAddress']}">${ssDefinitionEntry.txtEmailAddress} <span class="ss_footnote">&#134;</span></c:if>
+<c:if test="${!empty ssReadOnlyFields['txtEmailAddress']}">${ssDefinitionEntry.txtEmailAddress}&nbsp;</c:if>
 	</div>
   </td>
 </tr>
@@ -189,7 +189,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 	<input type="text" class="ss_text" name="zonName" id="zonName"
 		value="${ssDefinitionEntry.zonName}">
 </c:if>
-<c:if test="${!empty ssReadOnlyFields['zonName']}">${ssDefinitionEntry.zonName} <span class="ss_footnote">&#134;</span></c:if>
+<c:if test="${!empty ssReadOnlyFields['zonName']}">${ssDefinitionEntry.zonName}&nbsp;</c:if>
 	</div>
   </td>
   <td>
@@ -228,7 +228,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 <c:if test="${!empty ssReadOnlyFields && empty ss_readOnlyFieldsFootnoteOutput}">
 <br/>
 <br/>
-<span class="ss_smallprint">&#134;&nbsp;&nbsp;<ssf:nlt tag="profile.fieldsSynced"/></span>
+<span class="ss_smallprint"><ssf:nlt tag="profile.fieldsSynced"/></span>
 <c:set var="ss_readOnlyFieldsFootnoteOutput" value="1" scope="request"/>
 </c:if>
 

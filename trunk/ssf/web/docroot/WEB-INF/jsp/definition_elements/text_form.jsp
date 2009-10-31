@@ -91,6 +91,6 @@
 <c:if test="${!empty ssReadOnlyFields[property_name]}">
   <div class="ss_entryContent ${ss_fieldModifyStyle}">
   <div class="ss_labelAbove"><c:out value="${property_caption}"/><%= required %></div>
-    <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/> &#134;
+    <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/> &nbsp;
   </div>
 </c:if>

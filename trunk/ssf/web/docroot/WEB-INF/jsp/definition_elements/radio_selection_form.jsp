@@ -72,7 +72,7 @@
 </c:if>
 <c:if test="${!empty ssReadOnlyFields[radioGroupName]}">
 <c:if test="${ssDefinitionEntry.customAttributes[radioGroupName].value == radio_property_name}">
-<c:out value="${property_caption}"/> &#134;
+<c:out value="${property_caption}"/> &nbsp;
 </c:if>
  <ssf:displayConfiguration 
   configDefinition="${ssConfigDefinition}" 

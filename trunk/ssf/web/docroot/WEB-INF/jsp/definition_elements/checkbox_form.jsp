@@ -87,10 +87,10 @@
 <c:if test="${!empty ssReadOnlyFields[property_name] }">
 <div class="${ss_fieldModifyStyle}">
 	<c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
-	<input type="checkbox" checked DISABLED> &#134;
+	<input type="checkbox" checked DISABLED>&nbsp;
 	</c:if>
 	<c:if test="${!ssDefinitionEntry.customAttributes[property_name].value}" >
-	<input type="checkbox" DISABLED> &#134;
+	<input type="checkbox" DISABLED>&nbsp;
 	</c:if>
 	 <span class="ss_labelRight">${property_caption}</span>
 </div>

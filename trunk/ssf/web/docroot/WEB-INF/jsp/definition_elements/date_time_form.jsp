@@ -181,7 +181,7 @@
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
 <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				      value="${ssDefinitionEntry.customAttributes[property_name].value}" 
-				      type="both" dateStyle="medium" timeStyle="short" /> &#134;
+				      type="both" dateStyle="medium" timeStyle="short" /> &nbsp;
 </c:if>
 </div>
 
@@ -194,7 +194,7 @@
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name_per_user].value}">
 <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				      value="${ssDefinitionEntry.customAttributes[property_name_per_user].value}" 
-				      type="both" dateStyle="medium" timeStyle="short" /> &#134;
+				      type="both" dateStyle="medium" timeStyle="short" /> &nbsp;
 </c:if>
 </div>
 </c:if>

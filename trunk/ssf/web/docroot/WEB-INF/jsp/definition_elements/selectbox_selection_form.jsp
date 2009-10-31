@@ -68,7 +68,7 @@
 <c:if test="${!empty ssReadOnlyFields[selectboxName]}">
 <c:forEach var="selection" items="${ssDefinitionEntry.customAttributes[selectboxName].valueSet}" >
   <c:if test="${selection == property_name}">
- 		 <c:out value="${property_caption}"/> &#134;
+ 		 <c:out value="${property_caption}"/> &nbsp;
  </c:if>
 </c:forEach>
  <ssf:displayConfiguration 
