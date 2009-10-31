@@ -142,7 +142,7 @@ ${property_caption}<c:if test="${property_required}"><span
 <span class="ss_labelAbove">${property_caption}</span>
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
 <fmt:formatDate value="${ssDefinitionEntry.customAttributes[property_name].value}" pattern="yyyy-MM-dd" 
-			timeZone="${ssUser.timeZone.ID}"/> &#134;
+			timeZone="${ssUser.timeZone.ID}"/>&nbsp;
 </c:if>
 </div>
 
@@ -154,7 +154,7 @@ ${property_caption}<c:if test="${property_required}"><span
  	    </ssf:nlt></span>
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name_per_user].value}">
 <fmt:formatDate value="${ssDefinitionEntry.customAttributes[property_name_per_user].value}" pattern="yyyy-MM-dd" 
-			timeZone="${ssUser.timeZone.ID}"/> &#134;
+			timeZone="${ssUser.timeZone.ID}"/>&nbsp;
 </c:if>
 </div>
 </c:if>

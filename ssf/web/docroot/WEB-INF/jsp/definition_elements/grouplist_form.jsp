@@ -75,6 +75,6 @@
 <c:forEach var="groupItem" items="<%= groupListSet %>">
 	${groupItem.title}<br/>
 </c:forEach>
-<c:if test="${!empty ssReadOnlyFields[property_name]}">&#134;</c:if>
+<c:if test="${!empty ssReadOnlyFields[property_name]}">&nbsp;</c:if>
 </c:if>
 </div>

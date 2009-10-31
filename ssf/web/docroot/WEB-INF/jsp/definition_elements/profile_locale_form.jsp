@@ -80,7 +80,7 @@
 	org.kablink.teaming.domain.User currentUser = (org.kablink.teaming.domain.User)request.getAttribute("ssUser");
 	if (user != null) {	
 %>
-<%= user.getLocale().getDisplayName(currentUser.getLocale()) %> &#134;
+<%= user.getLocale().getDisplayName(currentUser.getLocale()) %>
 <%
 };
 %>

@@ -69,7 +69,7 @@
 	org.kablink.teaming.domain.User currentUser = (org.kablink.teaming.domain.User)request.getAttribute("ssUser");
 	if (user != null) {	
 %>
-<%= user.getTimeZone().getID()%> &#134;
+<%= user.getTimeZone().getID()%>
 <%
 };
 %>

@@ -112,7 +112,7 @@
 	    </c:if>
 	  </c:forEach>
 	</c:forEach>
-	&#134;
+	&nbsp;
 </c:if>
 </c:if>
 </div>
