@@ -343,7 +343,10 @@ public class WebUrlUtil {
 	public static String getFileUrl(String webPath, String action, DefinableEntity entity, String fileName) {
 		if (entity == null) return "";
 		FileAttachment fAtt = null;
-		if (!fileName.equals("")) entity.getFileAttachment(fileName);
+		if (!fileName.equals("")) 
+			try {
+				fAtt = entity.getFileAttachment(fileName);
+			} catch (Exception e) {}
 		if (fAtt != null) {
 			return WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, entity.getId().toString(), 
 				entity.getEntityType().name(), String.valueOf(fAtt.getId()), String.valueOf(fAtt.getModification().getDate().getTime()), null, fileName);

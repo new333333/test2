@@ -44,6 +44,12 @@
 	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
 %>
 <c:set var="mashupEntry" value="${ss_mashupEntries[mashup_attributes['entryId']]}"/>
+<c:if test="${!empty mashup_attributes['zoneUUID']}">
+  <c:set var="zoneEntryId" value="${mashup_attributes['zoneUUID']}.${mashup_attributes['entryId']}" />
+  <c:if test="${!empty ss_mashupEntries[zoneEntryId]}">
+    <c:set var="mashupEntry" value="${ss_mashupEntries[zoneEntryId]}"/>
+  </c:if>
+</c:if>
 <% if (ss_mashupListDepth > 0) { %>
 <c:if test="${!empty mashupEntry}">
 <li>
