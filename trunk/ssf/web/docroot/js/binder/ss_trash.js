@@ -66,14 +66,57 @@ function ss_trashPurge() {
 		return;
 	}
 
-	// If the user is sure they want to do purge...	
+	// Is the user is sure they want to purge?	
 	if (confirm(g_trashStrings["trash.confirm.Purge"])) {
-		// ...do it.
+		// Yes!  Are there any binders being purged?
+		var purgeMirroredSources = ss_trashIsPurgingBinders(checkedEntries);
+		if (purgeMirroredSources) {
+			// Yes!  How do they want to handle mirrored folders?
+			purgeMirroredSources = confirm(g_trashStrings["trash.confirm.Purge.DeleteSourceOnMirroredSubFolders"]);
+		}
+
+		// Perform the purge.
 		var urlParams = ss_buildTrashEntryUrlParams(checkedEntries);
-		ajaxTrashRequest_Submit("trash_purge", urlParams);
+		ajaxTrashRequest_Submit("trash_purge", urlParams, purgeMirroredSources);
 	}
 }
 
+/*
+ * Returns true if we are potential purging a binder and false
+ * otherwise.
+ */
+function ss_trashIsPurgingBinders(trashEntries) {
+	// Are we purging selections or all?
+	var	reply = false;
+	if (null != trashEntries) {
+		// Selections!  Scan them.
+		var count = ((null == trashEntries) ? 0 : trashEntries.length);
+		var ceScan;
+		for (var i = 0; i < count; i += 1) {
+			// Is this selection a binder?
+			ceScan = trashEntries[i];
+			if ("entry" != ceScan.m_docType) {
+				// Yes!  Then we're purging a binder.
+				reply = true;
+				break;
+			}
+		}
+	}
+	else {
+		// All!  If we've got more than 1 page of selections, we'll
+		// assume there will be a binder somewhere.  Do we have more
+		// than 1 page of selections?
+		reply = (1 < g_pageCount);
+		if (!reply) {
+			// No!  Are there any binders in the selections we've got?
+			reply = ss_trashIsPurgingBinders(g_trashEntries);
+		}
+	}
+	
+	// If we get here, reply contains true if we are potential purging
+	// a binder and false otherwise.  Return it.
+	return(reply);
+}
 /*
  * Called when the selects 'Purge All' from the trash viewer's menu
  * bar.
@@ -85,10 +128,17 @@ function ss_trashPurgeAll() {
 		return;
 	}
 	
-	// If the user is sure they want to do purge...	
+	// Is the user is sure they want to purge?	
 	if (confirm(g_trashStrings["trash.confirm.PurgeAll"])) {
+		// Yes!  Are there any binders being purged?
+		var purgeMirroredSources = ss_trashIsPurgingBinders(null);
+		if (purgeMirroredSources) {
+			// Yes!  How do they want to handle mirrored folders?
+			purgeMirroredSources = confirm(g_trashStrings["trash.confirm.Purge.DeleteSourceOnMirroredSubFolders"]);
+		}
+	
 		// ...do it.
-		ajaxTrashRequest_Submit("trash_purge_all", "");
+		ajaxTrashRequest_Submit("trash_purge_all", "", purgeMirroredSources);
 	}
 }
 
@@ -112,7 +162,7 @@ function ss_trashRestore() {
 	}
 	
 	var urlParams = ss_buildTrashEntryUrlParams(checkedEntries);
-	ajaxTrashRequest_Submit("trash_restore", urlParams);
+	ajaxTrashRequest_Submit("trash_restore", urlParams, false);
 }
 
 /*
@@ -126,7 +176,7 @@ function ss_trashRestoreAll() {
 		return;
 	}
 	
-	ajaxTrashRequest_Submit("trash_restore_all", "");
+	ajaxTrashRequest_Submit("trash_restore_all", "", false);
 }
 
 /*
@@ -290,7 +340,7 @@ function ajaxTrashRequest_Response(data, sOperation) {
  * Called to submit an AJAX request to perform an operation on the
  * trash.
  */
-function ajaxTrashRequest_Submit(sOperation, urlParams) {
+function ajaxTrashRequest_Submit(sOperation, urlParams, bPurgeMirroredSources) {
 	g_ajaxTrashRequest_FirstRefresh = true;
 	ss_startSpinner();
 	ss_get_url(
@@ -299,7 +349,8 @@ function ajaxTrashRequest_Submit(sOperation, urlParams) {
 			{
 				operation:sOperation,
 				params:urlParams,
-				binderId:g_binderId
+				binderId:g_binderId,
+				purgeMirroredSources:String(bPurgeMirroredSources),
 			}),
 		ajaxTrashRequest_Response,
 		sOperation,

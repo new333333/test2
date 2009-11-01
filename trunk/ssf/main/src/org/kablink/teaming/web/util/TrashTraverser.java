@@ -57,6 +57,8 @@ public class TrashTraverser {
 	private Log					m_logger;
 	private Object				m_cbData;
 	private TraverseCallback	m_cb;
+	
+	private final static boolean TRAVERSE_MIRRORED_BINDERS	= true;
 
 	/**
 	 * Specifies how the traversal will be done.
@@ -131,7 +133,7 @@ public class TrashTraverser {
 		Binder binder = m_bs.getBinderModule().getBinder(binderId);
 		if ((null == binder) || binder.isMirrored()) {
 			// No!  Bail.
-			return false;
+			return TRAVERSE_MIRRORED_BINDERS;
 		}
 
 		// If the Binder is a Folder or Workspace...
@@ -178,7 +180,7 @@ public class TrashTraverser {
 		Binder binder = m_bs.getBinderModule().getBinder(binderId);
 		if ((null == binder) || binder.isMirrored()) {
 			// No!  Bail.
-			return false;
+			return TRAVERSE_MIRRORED_BINDERS;
 		}
 		
 		// Descend the entry's descendants (i.e., replies)...

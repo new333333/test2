@@ -71,6 +71,7 @@
 	<% /* ss_trash.js.                                 */ %> 
 	var g_namespace = "${ss_namespace}";
 	var	g_binderId  = "${ssBinder.id}";
+	var g_pageCount	= Number(<c:out value="${ssPageCount}" />);
 
 	
 	<% /* Store information about the trashed entries that we're */ %>
