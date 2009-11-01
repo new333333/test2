@@ -51,6 +51,7 @@ import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.search.IndexErrors;
@@ -136,8 +137,8 @@ public interface BinderModule {
 	 * @param reindex
 	 * @throws AccessControlException
 	 */
-	public void restoreBinder(Long binderId, Object renameData)                  throws AccessControlException;
-	public void restoreBinder(Long binderId, Object renameData, boolean reindex) throws AccessControlException;
+	public void restoreBinder(Long binderId, Object renameData)                  throws AccessControlException, WriteEntryDataException, WriteFilesException;
+	public void restoreBinder(Long binderId, Object renameData, boolean reindex) throws AccessControlException, WriteEntryDataException, WriteFilesException;
 	/**
 	 * Restores a binder including any sub-binders and entries.
 	 * Any errors deleting child-binders will be returned, but
@@ -151,8 +152,8 @@ public interface BinderModule {
 	 * @param reindex
 	 * @throws AccessControlException
 	 */
-	public void restoreBinder(Long binderId, Object renameData, boolean deleteMirroredSource, Map options)                  throws AccessControlException;
-	public void restoreBinder(Long binderId, Object renameData, boolean deleteMirroredSource, Map options, boolean reindex) throws AccessControlException;
+	public void restoreBinder(Long binderId, Object renameData, boolean deleteMirroredSource, Map options)                  throws AccessControlException, WriteEntryDataException, WriteFilesException;
+	public void restoreBinder(Long binderId, Object renameData, boolean deleteMirroredSource, Map options, boolean reindex) throws AccessControlException, WriteEntryDataException, WriteFilesException;
 	
 	/**
 	 * Predelete a binder including any sub-binders and entries.

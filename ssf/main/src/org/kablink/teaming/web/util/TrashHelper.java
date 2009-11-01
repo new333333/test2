@@ -36,6 +36,7 @@ import static org.kablink.util.search.Restrictions.in;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -55,12 +56,14 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -86,7 +89,7 @@ public class TrashHelper {
 	// Class data members.
 	public static final String[] trashColumns= new String[] {"title", "date", "author", "location"};
 	protected static Log logger = LogFactory.getLog(TrashHelper.class);
-	private final static int RENAMES_TO_DISPLAY = 5;
+	private final static int DEFAULT_RENAME_LIST_SIZE = 5;
 
 	/*
 	 * Inner class used to assist/manage in the renaming of binders,
@@ -243,9 +246,10 @@ public class TrashHelper {
 				reply = (NLT.get("trash.warning.RenamedOnRestore") + "\n");
 				Set<String> keySet = m_rd.m_renameMap.keySet();
 				int rCount = 0;
+				int rDisplay = SPropsUtil.getInt("trash.restore.RenameListSize", DEFAULT_RENAME_LIST_SIZE);
 				for (Iterator<String> keyIT = keySet.iterator(); keyIT.hasNext();) {
 			    	rCount += 1;
-			    	if (rCount > RENAMES_TO_DISPLAY) {
+			    	if (rCount > rDisplay) {
 			    		reply += ("\n\t" + NLT.get("trash.warning.RenamedOnRestore.More"));
 			    		break;
 			    	}
@@ -962,8 +966,8 @@ public class TrashHelper {
 	 * Called to mark a binder and its contents as predeleted.
 	 * 
 	 * @param bs
-	 * @param folderId
-	 * @param entryId
+	 * @param binderId
+	 * @throws Exception
 	 */
 	public static void preDeleteBinder(AllModulesInjected bs, Long binderId) throws Exception {
 		// Check the ACLs...
@@ -989,6 +993,7 @@ public class TrashHelper {
 	 * @param bs
 	 * @param folderId
 	 * @param entryId
+	 * @throws Exception
 	 */
 	public static void preDeleteEntry(AllModulesInjected bs, Long folderId, Long entryId) throws Exception{
 		// Check the ACLs...
@@ -1064,7 +1069,7 @@ public class TrashHelper {
 	 * @param cd
 	 * @param binder
 	 */
-    public static void registerBinderNames(CoreDao cd, Binder binder, Object rd) {
+    public static void registerBinderNames(CoreDao cd, Binder binder, Object rd) throws WriteEntryDataException, WriteFilesException {
     	registerTitle(          cd, binder.getParentBinder(), binder,                          ((TrashRenameData) rd));
 	    registerAttachmentNames(cd, binder.getParentBinder(), binder, binder.getAttachments(), ((TrashRenameData) rd));
     }
@@ -1077,17 +1082,25 @@ public class TrashHelper {
      * @param folder
      * @param entry
      */
-    public static void registerEntryNames(CoreDao cd, Folder folder, FolderEntry entry, Object rd) {
+    public static void registerEntryNames(CoreDao cd, Folder folder, FolderEntry entry, Object rd) throws WriteEntryDataException, WriteFilesException {
     	registerTitle(          cd, folder, entry,                         ((TrashRenameData) rd));
 	    registerAttachmentNames(cd, folder, entry, entry.getAttachments(), ((TrashRenameData) rd));
     }
     
     /*
-     * Scans the Attachment's in aSet and registers the filename from
-     * any FileAttachments. 
+     * If necessary, scans the Attachment's in aSet and registers the
+     * filename from any FileAttachments in the Binder's namespace,
+     * taking care of rename things as necessary. 
      */
     private static void registerAttachmentNames(CoreDao cd, Binder binder, DefinableEntity de, Set<Attachment> aSet, TrashRenameData rd) {
-    	// If we have any Attachments...
+    	// If the Binder doesn't require unique filenames...
+    	if (!(requiresUniqueFilenames(binder))) {
+    		// ...we don't have to mess with any of the registration
+    		// ...stuff.
+    		return;
+    	}
+    	
+    	// If we have Attachments...
     	if (null != aSet) {
     		// ...scan them...
 		    for (Iterator<Attachment> aIT = aSet.iterator(); aIT.hasNext();) {
@@ -1111,58 +1124,144 @@ public class TrashHelper {
 		String fNameOriginal = fName;
 		int renames = 0;
 		do {
-			try {
-				// If we can register the original, unchanged
-				// filename.
+			// Is this filename registered?
+			if (0 == renames) {
+				logger.debug("TrashHelper.registerAttachmentName(\"" + fName + "\")");
+			}
+			logger.debug("...checking...");
+			boolean fNameRegistered = cd.isFileNameRegistered(binder.getId(), fName);
+			if (!fNameRegistered) {
+				// No!  Is it the original filename?
+				logger.debug("...name is unique...");
 				if (0 == renames) {
-					logger.debug("TrashHelper.registerAttachmentName(\"" + fName + "\")");
-				}
-				logger.debug("...registering...");
-				cd.registerFileName(binder, de, fName);
-				logger.debug("...name is unique.");
-				if (0 == renames) {
-					// ...we're done.
+					// Yes!  Re-register it and we're done.
+					logger.debug("...re-registering original name.");
+					cd.registerFileName(binder, de, fName);
 					return;
 				}
-				
-				// ...otherwise, if we registered a synthesized
-				// ...filename, we need to put it into effect.
+			
+				// ...otherwise, we have a synthesized name that we
+				// ...need to put into effect
 				break;
-			}
-			catch (TitleException te) {
-				// Ignore for now!  We'll handle renaming below.
 			}
 
 			// If we get here, fName conflicts with something in this
-			// namespace.  Synthesize a new name and try again.
+			// Binder's namespace.  Synthesize a new name and try
+			// again.
 			fName = synthesizeName(fNameOriginal, ("-" + String.valueOf(++renames)), true);
 			logger.debug("...naming conflict detected, trying again using:  \"" + fName + "\"");
 		} while (true);
-		
-		// If we get here, we have to rename the FileAttachment to
-		// fName.  Since we registered the name above, we must
-		// unregister it because FileModule.renameFile(...) will
-		// re-register it.  Unfortunately, I can find now way to
-		// check if a filename is already registered.
-		cd.unRegisterFileName(binder, fName);
+
+		// If we get here, we've got a synthesized name for the file.
+		// Rename it...
+		logger.debug("...putting synthesized name into effect.");
 		rd.m_bs.getFileModule().renameFile(binder, de, fa, fName);
-		rd.addRename(TrashRenameData.RenameType.File, fNameOriginal, fName);
+		
+		// ...and track what we renamed.
+		rd.addRename(
+			TrashRenameData.RenameType.File,
+			fNameOriginal,
+			fName);
     }
     
     /*
-     * Called to register the title of a DefinableEntity within a
-     * Binder.
+     * If necessary, registers the title of a DefinableEntity within a
+     * Binder taking care of any renaming necessary.
      */
-    private static void registerTitle(CoreDao cd, Binder binder, DefinableEntity de, TrashRenameData rd) {
-    	try {
-    		cd.registerTitle(binder, de);
+    @SuppressWarnings("unchecked")
+	private static void registerTitle(CoreDao cd, Binder binder, DefinableEntity de, TrashRenameData rd) throws WriteEntryDataException, WriteFilesException {
+    	// If the Binder doesn't require unique titles...
+    	if (!(requiresUniqueTitles(binder))) {
+    		// ...we don't have to mess with any of the registration
+    		// ...stuff.
+    		return;
     	}
-    	catch (Exception e) {
-    		if (e instanceof TitleException) {
-    			logger.debug("TrashHelper.registerTitle(" + de.getTitle() + "):  Naming conflict detected.");
-//!				...this needs to be handled.    			
-    		}
-    	}
+    	
+    	
+		String deTitle_Original   = de.getTitle();
+		String deTitle            = deTitle_Original;
+		String deTitle_Normalized = de.getNormalTitle();
+		int renames = 0;
+		do {
+			// Is deTitle unique to the Binder's namespace?
+			if (0 == renames) {
+				logger.debug("TrashHelper.registerTitle(\"" + deTitle + "\")");
+			}
+			logger.debug("...checking...");
+			boolean titleRegistered = cd.isTitleRegistered(binder.getId(), deTitle_Normalized);
+			if (!titleRegistered) {
+				// Yes!  Is it the entity's original name? 
+				logger.debug("...title is unique.");
+				if (0 == renames) {
+					// Yes!  Re-register it and we're done.
+					logger.debug("...re-registering original title.");
+					cd.registerTitle(binder, de);
+					return;
+				}
+				
+				// ...otherwise, we have a synthesized name that we
+				// ...need to put it into effect.
+				break;
+			}
+
+			// If we get here, deTitle conflicts with something in this
+			// Binder's namespace.  Synthesize a new name and try
+			// again.
+			deTitle = synthesizeName(deTitle_Original, ("-" + String.valueOf(++renames)), false);
+			deTitle_Normalized = WebHelper.getNormalizedTitle(deTitle);
+			logger.debug("...naming conflict detected, trying again using:  \"" + deTitle + "\"");
+		} while (true);
+
+		// If we get here, we have a new title to use for the entity.
+		// Rename it....
+		logger.debug("...putting synthesized title into effect.");
+		HashMap rdMap = new HashMap();
+		rdMap.put(ObjectKeys.FIELD_ENTITY_TITLE, deTitle);
+		MapInputData mid = new MapInputData(rdMap);
+		HashMap fiMap = new HashMap();
+		HashSet daSet = new HashSet();
+		if (de instanceof Binder) {
+			rd.m_bs.getBinderModule().modifyBinder(
+				((Binder) de).getId(),
+				mid,
+				fiMap,	// fileItems.
+				daSet,	// deleteAttachments.
+				null);	// options.
+		}
+		else {
+			rd.m_bs.getFolderModule().modifyEntry(
+				binder.getId(),
+				de.getId(),
+				mid,
+				fiMap,									// fileItems.
+				daSet,									// deleteAttachments.
+				new HashMap<FileAttachment, String>(),	// fileRenamesTo.
+				null);									// options.
+		}
+		
+		// ...and track what we renamed.
+		rd.addRename(
+			((de instanceof Binder)               ?
+				TrashRenameData.RenameType.Binder :
+				TrashRenameData.RenameType.Entry),
+			deTitle_Original,
+			deTitle);
+    }
+
+    /*
+     * Returns true if the Binder requires filenames be unique within
+     * its namespace and false otherwise. 
+     */
+    private static boolean requiresUniqueFilenames(Binder binder) {
+    	return binder.isLibrary();
+    }
+    
+    /*
+     * Returns true if the Binder requires titles be unique within its
+     * namespace and false otherwise. 
+     */
+    private static boolean requiresUniqueTitles(Binder binder) {
+    	return binder.isUniqueTitles();
     }
     
 	/*
@@ -1285,7 +1384,7 @@ public class TrashHelper {
 	 * @param binder
 	 */
     public static void unRegisterBinderNames(CoreDao cd, Binder binder) {
-	    cd.unRegisterTitle(binder.getParentBinder(), binder.getNormalTitle());
+	    unRegisterTitle(          cd, binder.getParentBinder(), binder);
 	    unRegisterAttachmentNames(cd, binder.getParentBinder(), binder.getAttachments());
     }
     
@@ -1298,23 +1397,48 @@ public class TrashHelper {
      * @param entry
      */
     public static void unRegisterEntryNames(CoreDao cd, Folder folder, FolderEntry entry) {
-	    cd.unRegisterTitle(folder, entry.getNormalTitle());
+    	unRegisterTitle(          cd, folder, entry);
 	    unRegisterAttachmentNames(cd, folder, entry.getAttachments());
     }
     
     /*
-     * Scan the Attachment's in aSet and unregisters the filename from
-     * any FileAttachments. 
+     * If necessary, scans the Attachment's in aSet and unregisters the
+     * filename from any FileAttachments from the Binder's namespace. 
      */
     private static void unRegisterAttachmentNames(CoreDao cd, Binder binder, Set<Attachment> aSet) {
+    	// If the Binder doesn't require unique filenames...
+    	if (!(requiresUniqueFilenames(binder))) {
+    		// ...we don't have to mess with any of the registration
+    		// ...stuff.
+    		return;
+    	}
+    	
+    	// If we have Attachments...
     	if (null != aSet) {
+    		// ...scan them...
 		    for (Iterator<Attachment> aIT = aSet.iterator(); aIT.hasNext();) {
+		    	// ...and for file attachments...
 		    	Attachment a = aIT.next();
 		    	if (a instanceof FileAttachment) {
-		    		FileAttachment fa = ((FileAttachment) a);
-		    		cd.unRegisterFileName(binder, fa.getFileItem().getName());
+		    		// ...unregister them.
+		    		cd.unRegisterFileName(binder, ((FileAttachment) a).getFileItem().getName());
 		    	}
 		    }
     	}
+    }
+
+    /*
+     * If necessary, unregisters the entry from a Binder's namespace.
+     */
+    private static void unRegisterTitle(CoreDao cd, Binder binder, DefinableEntity de) {
+    	// If the Binder doesn't require unique titles...
+    	if (!(requiresUniqueTitles(binder))) {
+    		// ...we don't have to mess with any of the registration
+    		// ...stuff.
+    		return;
+    	}
+
+    	// Unregister the entity's title.
+	    cd.unRegisterTitle(binder, de.getNormalTitle());
     }
 }

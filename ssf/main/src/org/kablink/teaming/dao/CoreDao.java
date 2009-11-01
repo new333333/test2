@@ -168,6 +168,8 @@ public interface CoreDao {
     public void unRegisterTitle(Binder binder, String name);
     public Long getEntityIdForMatchingTitle(Long binderId, String title); 
     public List<Long> findZoneEntityIds(Long entityId, String zoneUUID, String entityType);
+    public boolean isTitleRegistered(Long binderId, String title);
+    public boolean isFileNameRegistered(Long binderId, String fileName);
 
     public int daysSinceInstallation();
     

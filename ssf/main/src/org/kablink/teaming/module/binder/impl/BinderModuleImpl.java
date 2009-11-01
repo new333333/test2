@@ -694,18 +694,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	// inside write transaction
-	public void restoreBinder(Long binderId, Object renameData) {
+	public void restoreBinder(Long binderId, Object renameData) throws WriteEntryDataException, WriteFilesException {
 		restoreBinder(binderId, renameData, true);
 	}
-	public void restoreBinder(Long binderId, Object renameData, boolean reindex) {
+	public void restoreBinder(Long binderId, Object renameData, boolean reindex) throws WriteEntryDataException, WriteFilesException {
 		restoreBinder(binderId, renameData, true, null, reindex);
 	}
 
 	// inside write transaction
-	public void restoreBinder(Long binderId, Object renameData, boolean deleteMirroredSource, Map options) {
+	public void restoreBinder(Long binderId, Object renameData, boolean deleteMirroredSource, Map options) throws WriteEntryDataException, WriteFilesException {
 		restoreBinder(binderId, renameData, deleteMirroredSource, options, true);
 	}
-	public void restoreBinder(Long binderId, Object renameData, boolean deleteMirroredSource, Map options, boolean reindex) {
+	public void restoreBinder(Long binderId, Object renameData, boolean deleteMirroredSource, Map options, boolean reindex) throws WriteEntryDataException, WriteFilesException {
 		Binder binder = loadBinder(binderId);
 		if ((null != binder) && (!(binder.isMirrored()))) {
 			EntityType et = binder.getEntityType();
