@@ -152,7 +152,7 @@ public class Html {
 
 			x = text.indexOf(">", y) + 1;
 
-			if (x < y) {
+			if (x <= 0 || x < y) {
 
 				// <b>Hello</b
 
