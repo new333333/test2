@@ -67,19 +67,30 @@
 </c:if>
 </span><br/><br/>
 
-<c:set var="cb_checked" value=""/>
-<div style="display:block">
-<input type="checkbox" name="ss_deleteSource" id="ss_deleteSource" <c:out value="${cb_checked}"/> 
-  onClick="if (document.ss_confirm_delete_mirrored_binder.ss_deleteSource.checked) document.ss_confirm_delete_mirrored_binder.deleteSource.value='true'; else document.ss_confirm_delete_mirrored_binder.deleteSource.value='false';"/>
-&nbsp;<label for="ss_deleteSource"><span class="ss_labelRight">
-<c:if test="${ssBinder.entityType == 'folder'}">
-<ssf:nlt tag="folder.deleteMirroredFolderContents"/>
+<%
+	// Since we simply move non-mirrored binders to the trash, there's
+	// no reason to prompt if the folder being deleted is not mirrored.
+	// In the case, the user will be prompted if the item gets purged
+	// from the trash.
+	//
+	// If the binder is mirrored, it will be purged immediately so we
+	// do need to prompt the user in that case.
+%>
+<c:if test="${ssBinder.mirrored}">
+	<c:set var="cb_checked" value=""/>
+	<div style="display:block">
+	<input type="checkbox" name="ss_deleteSource" id="ss_deleteSource" <c:out value="${cb_checked}"/> 
+	  onClick="if (document.ss_confirm_delete_mirrored_binder.ss_deleteSource.checked) document.ss_confirm_delete_mirrored_binder.deleteSource.value='true'; else document.ss_confirm_delete_mirrored_binder.deleteSource.value='false';"/>
+	&nbsp;<label for="ss_deleteSource"><span class="ss_labelRight">
+	<c:if test="${ssBinder.entityType == 'folder'}">
+	<ssf:nlt tag="folder.deleteMirroredFolderContents"/>
+	</c:if>
+	<c:if test="${ssBinder.entityType != 'folder'}">
+	<ssf:nlt tag="workspace.deleteMirroredFolderContents"/>
+	</c:if>
+	</span></label>
+	</div>
 </c:if>
-<c:if test="${ssBinder.entityType != 'folder'}">
-<ssf:nlt tag="workspace.deleteMirroredFolderContents"/>
-</c:if>
-</span></label>
-</div>
 <input type="hidden" name="deleteSource" value="false"/>
 <br/>
 

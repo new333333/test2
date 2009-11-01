@@ -1020,6 +1020,8 @@ public class TrashHelper {
 		// Scan the TrashEntry's.
 		int count = ((null == trashEntries) ? 0 : trashEntries.length);
 		TrashResponse tr = new TrashResponse(bs);
+		boolean purgeMirroredSources = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_PURGE_MIRRORED_SOURCES, false);
+		logger.debug("TrashHelper.purgeEntries()");
 		for (int i = 0; i < count; i += 1) {
 			// Is this trashEntry valid and predeleted?
 			TrashEntry trashEntry = trashEntries[i];
@@ -1029,9 +1031,12 @@ public class TrashHelper {
 					// Yes!  Purge it.  Purging the entry should purge
 					// its replies.
 					try {
+						logger.debug("...purging entry:  " + String.valueOf(trashEntry.m_locationBinderId) + ", " + String.valueOf(trashEntry.m_docId));
 						bs.getFolderModule().deleteEntry(trashEntry.m_locationBinderId, trashEntry.m_docId);
+						logger.debug("...entry purged...");
 					}
 					catch (Exception e) {
+						logger.debug("...entry purge failed.", e);
 						if (e instanceof AccessControlException) tr.setACLViolation(trashEntry.m_locationBinderId, trashEntry.m_docId);
 						else                                     tr.setException(e, trashEntry.m_locationBinderId, trashEntry.m_docId);
 					}
@@ -1042,9 +1047,12 @@ public class TrashHelper {
 					// Yes!  Purge it.  Purging the binder should purge
 					// its children.
 					try {
-						bs.getBinderModule().deleteBinder(trashEntry.m_docId);
+						logger.debug("...purging binder:  " + String.valueOf(trashEntry.m_docId) + ", Mirrors too:  " + String.valueOf(purgeMirroredSources));
+						bs.getBinderModule().deleteBinder(trashEntry.m_docId, purgeMirroredSources, null);
+						logger.debug("...binder purged...");
 					}
 					catch (Exception e) {
+						logger.debug("...binder purge failed.", e);
 						if (e instanceof AccessControlException) tr.setACLViolation(trashEntry.m_docId);
 						else                                     tr.setException(e, trashEntry.m_docId);
 					}
