@@ -774,6 +774,16 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		else
 			return null;
     }
+    public boolean isTitleRegistered(Long binderId, String title) {
+    	LibraryEntry le = new LibraryEntry(binderId, LibraryEntry.TITLE, title);
+		LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
+		return(exist != null);
+    }
+    public boolean isFileNameRegistered(Long binderId, String fileName) {
+    	LibraryEntry le = new LibraryEntry(binderId, LibraryEntry.FILE, fileName);
+		LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
+		return(exist != null);
+    }
     protected void removeOldName(LibraryEntry oldLe, DefinableEntity entity) {
 		LibraryEntry le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, oldLe);
 		if (le != null) {

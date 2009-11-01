@@ -664,17 +664,17 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     }
 
     //inside write transaction    
-    public void restoreEntry(Long parentFolderId, Long entryId, Object renameData) {
+    public void restoreEntry(Long parentFolderId, Long entryId, Object renameData) throws WriteEntryDataException, WriteFilesException {
     	restoreEntry(parentFolderId, entryId, renameData, true);
     }
-    public void restoreEntry(Long parentFolderId, Long entryId, Object renameData, boolean reindex) {
+    public void restoreEntry(Long parentFolderId, Long entryId, Object renameData, boolean reindex) throws WriteEntryDataException, WriteFilesException {
     	restoreEntry(parentFolderId, entryId, renameData, true, null, reindex);
     }
     //inside write transaction    
-    public void restoreEntry(Long folderId, Long entryId, Object renameData, boolean deleteMirroredSource, Map options) {
+    public void restoreEntry(Long folderId, Long entryId, Object renameData, boolean deleteMirroredSource, Map options) throws WriteEntryDataException, WriteFilesException {
     	restoreEntry(folderId, entryId, renameData,deleteMirroredSource, options, true);
     }
-    public void restoreEntry(Long folderId, Long entryId, Object renameData, boolean deleteMirroredSource, Map options, boolean reindex) {
+    public void restoreEntry(Long folderId, Long entryId, Object renameData, boolean deleteMirroredSource, Map options, boolean reindex) throws WriteEntryDataException, WriteFilesException {
     	deCount.incrementAndGet();
         FolderEntry entry = loadEntry(folderId, entryId);
         Folder folder = loadFolder(folderId);
