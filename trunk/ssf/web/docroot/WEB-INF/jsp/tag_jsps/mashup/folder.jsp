@@ -44,6 +44,14 @@
 	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
 %>
 <c:set var="mashupBinder" value="${ss_mashupBinders[mashup_attributes['folderId']]}"/>
+<c:set var="mashupBinderIdIndex" value="${mashup_attributes['folderId']}"/>
+<c:if test="${!empty mashup_attributes['zoneUUID']}">
+  <c:set var="zoneBinderId" value="${mashup_attributes['zoneUUID']}.${mashup_attributes['folderId']}" />
+  <c:if test="${!empty ss_mashupBinders[zoneBinderId]}">
+    <c:set var="mashupBinder" value="${ss_mashupBinders[zoneBinderId]}"/>
+    <c:set var="mashupBinderIdIndex" value="${zoneBinderId}"/>
+  </c:if>
+</c:if>
 <% if (ss_mashupListDepth > 0) { %>
 <c:if test="${!empty mashupBinder}">
 <li>
@@ -89,7 +97,7 @@
 	</c:if>
 	<c:if test="${ssConfigJspStyle != 'form' && empty mashup_attributes['showEntriesOpened']}">
 	<div class="ss_mashup_folder_list_closed">
-	  <c:forEach var="entry" items="${ss_mashupBinderEntries[mashup_attributes['folderId']]}" varStatus="status">
+	  <c:forEach var="entry" items="${ss_mashupBinderEntries[mashupBinderIdIndex]}" varStatus="status">
 	    <c:if test="${empty mashup_attributes['entriesToShow'] || status.count <= mashup_attributes['entriesToShow']}">
 	      <div style="padding-left:6px;">
 	        <a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"    
@@ -106,7 +114,7 @@
 	</div>
 	</c:if>
 	<c:if test="${ssConfigJspStyle != 'form' && !empty mashup_attributes['showEntriesOpened']}">
-	  <c:forEach var="entry" items="${ss_mashupBinderEntries[mashup_attributes['folderId']]}" varStatus="status">
+	  <c:forEach var="entry" items="${ss_mashupBinderEntries[mashupBinderIdIndex]}" varStatus="status">
 	    <c:if test="${empty mashup_attributes['entriesToShow'] || status.count <= mashup_attributes['entriesToShow']}">
 	      <div class="ss_mashup_folder_list_open">
 			<div class="ss_mashup_folder_list_open_title">

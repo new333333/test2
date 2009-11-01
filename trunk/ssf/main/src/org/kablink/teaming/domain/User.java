@@ -352,6 +352,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	 */
 
 	public void incrementDiskSpaceUsed(Long diskSpace) {
+		if (diskSpaceUsed == null) this.diskSpaceUsed = Long.valueOf(0);
 		this.diskSpaceUsed += diskSpace;
 	}
 	/**
@@ -359,6 +360,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	 */
 
 	public void decrementDiskSpaceUsed(Long diskSpace) {
+		if (diskSpaceUsed == null) this.diskSpaceUsed = Long.valueOf(0);
 		this.diskSpaceUsed -= diskSpace;
 	}
 	/**

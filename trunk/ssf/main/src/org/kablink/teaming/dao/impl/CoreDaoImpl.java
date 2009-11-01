@@ -1259,7 +1259,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                 	List readObjs = new ArrayList();
                 	List objs = null;
                 	if (type.equals(EntityType.folderEntry.name())) {
-    					objs = session.createQuery("SELECT owner From org.kablink.teaming.domain.CustomAttribute WHERE name='" + key + "' AND stringValue='" + id + "' AND ownerType=folderEntry'")
+    					objs = session.createQuery("SELECT owner From org.kablink.teaming.domain.CustomAttribute WHERE name='" + key + "' AND stringValue='" + id + "' AND ownerType='folderEntry'")
 			   			.list();
                 	} else {
     					objs = session.createQuery("SELECT owner From org.kablink.teaming.domain.CustomAttribute WHERE name='" + key + "' AND stringValue='" + id + "' AND (ownerType='folder' OR ownerType='workspace')")

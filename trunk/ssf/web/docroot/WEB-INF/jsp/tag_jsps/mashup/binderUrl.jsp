@@ -44,6 +44,12 @@
 	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
 %>
 <c:set var="mashupBinder" value="${ss_mashupBinders[mashup_attributes['binderId']]}"/>
+<c:if test="${!empty mashup_attributes['zoneUUID']}">
+  <c:set var="zoneBinderId" value="${mashup_attributes['zoneUUID']}.${mashup_attributes['folderId']}" />
+  <c:if test="${!empty ss_mashupBinders[zoneBinderId]}">
+    <c:set var="mashupBinder" value="${ss_mashupBinders[zoneBinderId]}"/>
+  </c:if>
+</c:if>
 <% if (ss_mashupListDepth > 0) { %>
 <c:if test="${!empty mashupBinder}">
 <li>
