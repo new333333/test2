@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
+
 import org.kablink.teaming.exception.UncheckedCodedException;
 
 public class PasswordMismatchException extends UncheckedCodedException {
@@ -51,4 +54,18 @@ public class PasswordMismatchException extends UncheckedCodedException {
         super(errorCode, errorArgs, cause);
     	
     }
+    //overload to remove stack trace filling log files
+    //This is because springs DispatcherPortlet calls the logger.warn method with the exception
+    public void printStackTrace(PrintStream s) {
+        synchronized (s) {
+            s.println(toString());
+        }
+    }
+    //overload to remove stack trace filling log files
+    //This is because springs DispatcherPortlet calls the logger.warn method with the exception
+    public void printStackTrace(PrintWriter s) {
+        synchronized (s) {
+            s.println(toString());
+        }	
+    }    
 }
