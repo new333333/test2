@@ -104,6 +104,7 @@ import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.LibraryEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
+import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NotificationDef;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.Principal;
@@ -336,9 +337,20 @@ public class ExportHelper {
 				continue;
 			}
 			statusTicket.setStatus(NLT.get("administration.export_import.exporting", new String[] {binder.getPathName()}));
+			String pathName = "";
 			if (EntityType.workspace.equals(binder.getEntityType())) {
+				Binder parentBinder = binder;
+				while (!parentBinder.equals(start)) {
+					parentBinder = parentBinder.getParentBinder();
+					if (parentBinder == null) break;
+					if (EntityType.folder.equals(parentBinder.getEntityType())) {
+						pathName = binderPrefix + "f" + nft.format(parentBinder.getId()) + "/" + pathName;
+					} else {
+						pathName = binderPrefix + "w" + nft.format(parentBinder.getId()) + "/" + pathName;
+					}
+				}
 				// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
-				zipOut.putNextEntry(new ZipEntry(binderPrefix + "w"
+				zipOut.putNextEntry(new ZipEntry(pathName + binderPrefix + "w"
 						+ nft.format(binderId) + "/" + "."
 						+ binderPrefix + "w" + nft.format(binderId) + ".xml"));
 				XmlFileUtil.writeFile(getWorkspaceAsDoc(null, binderId, false,
@@ -349,8 +361,18 @@ public class ExportHelper {
 				reportMap.put(workspaces, ++count);
 
 			} else {
+				Binder parentBinder = binder;
+				while (!parentBinder.equals(start)) {
+					parentBinder = parentBinder.getParentBinder();
+					if (parentBinder == null) break;
+					if (EntityType.folder.equals(parentBinder.getEntityType())) {
+						pathName = binderPrefix + "f" + nft.format(parentBinder.getId()) + "/" + pathName;
+					} else {
+						pathName = binderPrefix + "w" + nft.format(parentBinder.getId()) + "/" + pathName;
+					}
+				}
 				// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
-				zipOut.putNextEntry(new ZipEntry(binderPrefix + "f"
+				zipOut.putNextEntry(new ZipEntry(pathName + binderPrefix + "f"
 						+ nft.format(binderId) + "/" + "."
 						+ binderPrefix + "f" + nft.format(binderId) + ".xml"));
 				XmlFileUtil.writeFile(getFolderAsDoc(null, binderId, false,
@@ -370,13 +392,15 @@ public class ExportHelper {
 						Map searchEntry = (Map) searchEntries.get(i);
 						Long entryId = Long.valueOf(searchEntry.get("_docId")
 								.toString());
-						FolderEntry entry = folderModule.getEntry(binderId,
-								entryId);
-						processEntry(zipOut, entry, binderPrefix + "f"
-								+ nft.format(binderId), defList, reportMap);
-
-						count = (Integer)reportMap.get(entries);
-						reportMap.put(entries, ++count);
+						try {
+							FolderEntry entry = folderModule.getEntry(binderId,
+									entryId);
+							processEntry(zipOut, entry, pathName + binderPrefix + "f"
+									+ nft.format(binderId), defList, reportMap);
+	
+							count = (Integer)reportMap.get(entries);
+							reportMap.put(entries, ++count);
+						} catch(NoFolderEntryByTheIdException e) {}
 					}
 				}
 			}
@@ -385,7 +409,7 @@ public class ExportHelper {
 			Set<FileAttachment> attachments = binder.getFileAttachments();
 	
 			for (FileAttachment attach : attachments) {
-				processBinderAttachment(zipOut, binder, attach, binderPrefix
+				processBinderAttachment(zipOut, binder, attach, pathName + binderPrefix
 						+ entityLetter + nft.format(binderId), reportMap);
 			}
       	}
