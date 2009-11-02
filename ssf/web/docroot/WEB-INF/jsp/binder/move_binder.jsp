@@ -81,19 +81,6 @@ function ss_saveDestinationBinderId(id) {
 		
 <br/>
 
-<span class="ss_bold"><ssf:nlt tag="changeLog.findFolder"/></span>
-<br/>
-<ssf:find formName="ss_move_form" 
-    formElement="binderId" 
-    type="places"
-    width="140px" 
-    singleItem="true"
-    clickRoutine="ss_saveDestinationBinderId"
-    /> 
-
-<br/>
-<br/>
-
 <span class="ss_bold"><ssf:nlt tag="move.selectDestination"/></span>
 <br/>
 <div class="ss_indent_large">
@@ -105,6 +92,18 @@ function ss_saveDestinationBinderId(id) {
 
 </div>
 
+<br/>
+<span class="ss_bold"><ssf:nlt tag="move.findDestination"/></span>
+<br/>
+<ssf:find formName="ss_move_form" 
+    formElement="binderId" 
+    type="places"
+    width="180px" 
+    singleItem="true"
+    clickRoutine="ss_saveDestinationBinderId"
+    /> 
+
+<br/>
 <br/>
 
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
