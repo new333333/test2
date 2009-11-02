@@ -43,7 +43,9 @@
 				<a href="<ssf:url adapter="true" portletName="ss_forum" 
 					action="__ajax_mobile" operation="view_teaming_live" 
 					actionUrl="false" />" 
-				  onclick="self.window.open(this.href, '_blank', 'width=500,height=700,resizable,scrollbars');return false;">${ss_feedTitle}</a>
+				  onclick="self.window.open(this.href, '_blank', 'width=500,height=700,resizable,scrollbars');return false;"
+				  title="<ssf:nlt tag="teaming.live.sidebarHint"/>"
+				  >${ss_feedTitle}</a>
 			</li>
 		  </ul>
 		</div>
