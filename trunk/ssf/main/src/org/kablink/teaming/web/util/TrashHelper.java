@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -91,6 +92,82 @@ public class TrashHelper {
 	protected static Log logger = LogFactory.getLog(TrashHelper.class);
 	private final static int DEFAULT_RENAME_LIST_SIZE = 5;
 
+	/*
+	 * Inner class used to track binders as they get purged. 
+	 */
+	private static class TrashPurgedBinderTracker {
+		// Class data members.
+		private long[] m_purgedBinderIds;
+		private int nextSlot = 0;
+		
+		// The following defines the initial size of m_purgedBinderIds
+		// as well as how it grows when as the need arises.
+		private final static int CHUNK_SIZE = 100;
+
+		/*
+		 * Class constructor.
+		 */
+		public TrashPurgedBinderTracker() {
+			// Simply allocate the initial array from tracking purged
+			// binder IDs.
+			m_purgedBinderIds = new long[CHUNK_SIZE];
+		}
+		
+		/*
+		 * Returns true if the binderId is already being tracked and
+		 * false otherwise.
+		 */
+		public boolean isBinderPurged(Long binderId) {
+			// Always use the other form of the method.
+			return isBinderPurged(binderId.longValue());
+		}
+		public boolean isBinderPurged(long binderId) {
+			// Scan the binderId's that we're already tracking.
+			for (int i = 0; i < nextSlot; i += 1) {
+				// Is this the binderId in question?
+				if (binderId == m_purgedBinderIds[i]) {
+					// Yes!  Then we're already tracking it.
+					return true;
+				}
+			}
+			
+			// If we get here, we're not tracking the binderId in
+			// question.
+			return false;
+		}
+
+		/*
+		 * Tracks binderId, if it's not already being tracked.
+		 */
+		public void track(Long binderId) {
+			// Always use the other form of the method.
+			track(binderId.longValue());
+		}
+		public void track(long binderId) {
+			// If we're not already tracking this binderId...
+			if (!(isBinderPurged(binderId))) {
+				// ...track it now.
+				validateSpace();
+				m_purgedBinderIds[nextSlot++] = binderId;
+			}
+		}
+		
+		/*
+		 * Validate there's enough space in the tracker array for
+		 * another entry. 
+		 */
+		private void validateSpace() {
+			// Do we have enough space for another binder?
+			int count = m_purgedBinderIds.length;
+			if (nextSlot >= count) {
+				// No!  Expand the array.
+				long[] biggerArray = new long[count + CHUNK_SIZE];
+				System.arraycopy(m_purgedBinderIds, 0, biggerArray, 0, count);
+				m_purgedBinderIds = biggerArray;
+			}
+		}
+	}
+	
 	/*
 	 * Inner class used to assist/manage in the renaming of binders,
 	 * entries and files that have naming conflicts during a restore. 
@@ -340,8 +417,8 @@ public class TrashHelper {
 			setACLViolation(binderId, null);
 		}
 		public void setACLViolation(Long binderId, Long entryId) {
-			if (null == entryId) logger.debug("TrashResponse.setACLViolation(" + binderId +                  "):  ACL violation.");
-			else                 logger.debug("TrashResponse.setACLViolation(" + binderId + ", " + entryId + "):  ACL violation.");
+			if (null == entryId) logger.debug("TrashResponse.setACLViolation(" + binderId +                  ")");
+			else                 logger.debug("TrashResponse.setACLViolation(" + binderId + ", " + entryId + ")");
 			
 			reset();
 			m_status    = Status.ACLViolation;
@@ -486,14 +563,14 @@ public class TrashHelper {
 				if (isBinderPredeleted(binder)) {
 					opAllowed = bs.getBinderModule().testAccess(binder, BinderOperation.preDeleteBinder);
 					if (!opAllowed) {
-						logger.debug("TrashCheckPreDeleteACLs.binder(" + binderId + "):  Failed!");
+						logger.debug("...ACL violation!");
 						((TrashResponse) cbDataObject).setACLViolation(binderId);
 					}
 				}
 				reply = opAllowed;
 			}
 			catch (Exception ex) {
-				logger.debug("TrashCheckPreDeleteACLs.binder(" + binderId + "):  Failed!");
+				logger.debug("...check failed!");
 				((TrashResponse) cbDataObject).setException(ex, binderId);
 				reply = false;
 			}
@@ -510,14 +587,14 @@ public class TrashHelper {
 				if (fe.isPreDeleted()) {
 					opAllowed = bs.getFolderModule().testAccess(fe, FolderOperation.preDeleteEntry);
 					if (!opAllowed) {
-						logger.debug("TrashCheckPreDeleteACLs.entry(" + folderId + ", " + entryId + "):  Failed!");
+						logger.debug("...ACL violation!");
 						((TrashResponse) cbDataObject).setACLViolation(folderId, entryId);
 					}
 				}
 				reply = opAllowed;
 			}
 			catch (Exception ex) {
-				logger.debug("TrashCheckPreDeleteACLs.entry(" + folderId + ", " + entryId + "):  Failed!");
+				logger.debug("...check failed!");
 				((TrashResponse) cbDataObject).setException(ex, folderId, entryId);
 				reply = false;
 			}
@@ -532,10 +609,11 @@ public class TrashHelper {
 			try {
 				logger.debug("TrashPreDelete.binder(" + binderId + "):  Predeleting binder.");
 				bs.getBinderModule().preDeleteBinder(binderId, RequestContextHolder.getRequestContext().getUser().getId(), true);
+				logger.debug("...predelete succeeded!");
 				reply = true;
 			}
 			catch (Exception ex) {
-				logger.debug("TrashPreDelete.binder(" + binderId + "):  Failed!");
+				logger.debug("...predelete failed!");
 				((TrashResponse) cbDataObject).setException(ex, binderId);
 				reply = false;
 			}
@@ -547,10 +625,11 @@ public class TrashHelper {
 			try {
 				logger.debug("TrashPreDelete.entry(" + folderId + ", " + entryId + "):  Predeleting entry.");
 				bs.getFolderModule().preDeleteEntry(folderId, entryId, RequestContextHolder.getRequestContext().getUser().getId());
+				logger.debug("...predelete succeeded!");
 				reply = true;
 			}
 			catch (Exception ex) {
-				logger.debug("TrashPreDelete.entry(" + folderId + ", " + entryId + "):  Failed!");
+				logger.debug("...predelete failed!");
 				((TrashResponse) cbDataObject).setException(ex, folderId, entryId);
 				reply = false;
 			}
@@ -571,14 +650,14 @@ public class TrashHelper {
 				if (isBinderPredeleted(binder)) {
 					opAllowed = bs.getBinderModule().testAccess(binder, BinderOperation.restoreBinder);
 					if (!opAllowed) {
-						logger.debug("TrashCheckRestoreACLs.binder(" + binderId + "):  Failed!");
+						logger.debug("...ACL violation!");
 						((TrashResponse) cbDataObject).setACLViolation(binderId);
 					}
 				}
 				reply = opAllowed;
 			}
 			catch (Exception ex) {
-				logger.debug("TrashCheckRestoreACLs.binder(" + binderId + "):  Failed!");
+				logger.debug("...check failed!");
 				((TrashResponse) cbDataObject).setException(ex, binderId);
 				reply = false;
 			}
@@ -595,14 +674,14 @@ public class TrashHelper {
 				if (fe.isPreDeleted()) {
 					opAllowed = bs.getFolderModule().testAccess(fe, FolderOperation.restoreEntry);
 					if (!opAllowed) {
-						logger.debug("TrashCheckRestoreACLs.entry(" + folderId + ", " + entryId + "):  Failed!");
+						logger.debug("...ACL violation!");
 						((TrashResponse) cbDataObject).setACLViolation(folderId, entryId);
 					}
 				}
 				reply = opAllowed;
 			}
 			catch (Exception ex) {
-				logger.debug("TrashCheckRestoreACLs.entry(" + folderId + ", " + entryId + "):  Failed!");
+				logger.debug("...check failed!");
 				((TrashResponse) cbDataObject).setException(ex, folderId, entryId);
 				reply = false;
 			}
@@ -618,10 +697,11 @@ public class TrashHelper {
 			try {
 				logger.debug("TrashRestore.binder(" + binderId + "):  Restoring binder.");
 				bs.getBinderModule().restoreBinder(binderId, tr.m_rd, true);
+				logger.debug("...restore succeeded!");
 				reply = true;
 			}
 			catch (Exception ex) {
-				logger.debug("TrashRestore.binder(" + binderId + "):  Failed!");
+				logger.debug("...restore failed!");
 				tr.setException(ex, binderId);
 				reply = false;
 			}
@@ -634,10 +714,11 @@ public class TrashHelper {
 			try {
 				logger.debug("TrashRestore.entry(" + folderId + ", " + entryId + "):  Restoring entry.");
 				bs.getFolderModule().restoreEntry(folderId, entryId, tr.m_rd, true);
+				logger.debug("...restore succeeded!");
 				reply = true;
 			}
 			catch (Exception ex) {
-				logger.debug("TrashRestore.entry(" + folderId + ", " + entryId + "):  Failed!");
+				logger.debug("...restore failed!");
 				tr.setException(ex, folderId, entryId);
 				reply = false;
 			}
@@ -1017,53 +1098,184 @@ public class TrashHelper {
 	 * Called to purge the TrashEntry's in trashEntries. 
 	 */
 	private static ModelAndView purgeEntries(AllModulesInjected bs, TrashEntry[] trashEntries, RenderRequest request, RenderResponse response) {
-		// Scan the TrashEntry's.
 		int count = ((null == trashEntries) ? 0 : trashEntries.length);
+		int purgedBinderCount = 0;
 		TrashResponse tr = new TrashResponse(bs);
 		boolean purgeMirroredSources = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_PURGE_MIRRORED_SOURCES, false);
+		TrashPurgedBinderTracker purgedBinders = new TrashPurgedBinderTracker();
+		
+		// Scan the TrashEntry's.
 		logger.debug("TrashHelper.purgeEntries()");
+		logger.debug("...checking ACLs...");
 		for (int i = 0; i < count; i += 1) {
-			// Is this trashEntry valid and predeleted?
+			// Is this trashEntry a FolderEntry?
 			TrashEntry trashEntry = trashEntries[i];
-			if (trashEntry.isPreDeleted(bs)) {
-				// Yes!  Is it an entry?
-				if (trashEntry.isEntry()) {
-					// Yes!  Purge it.  Purging the entry should purge
-					// its replies.
-					try {
-						logger.debug("...purging entry:  " + String.valueOf(trashEntry.m_locationBinderId) + ", " + String.valueOf(trashEntry.m_docId));
-						bs.getFolderModule().deleteEntry(trashEntry.m_locationBinderId, trashEntry.m_docId);
-						logger.debug("...entry purged...");
+			if (null == trashEntry) {
+				continue;
+			}
+			if (trashEntry.isEntry()) {
+				try {
+					// Yes!  Is it predeleted?
+					FolderEntry fe = bs.getFolderModule().getEntry(trashEntry.m_locationBinderId, trashEntry.m_docId);
+					if (fe.isPreDeleted()) {
+						// Yes!  Does this user have rights to purge it?
+						logger.debug("......checking entry: " + trashEntry.m_locationBinderId + ", " + trashEntry.m_docId);
+						if (!(bs.getFolderModule().testAccess(fe, FolderOperation.deleteEntry))) {
+							// No!  Track the error.
+							logger.debug(".........ACL violation!");
+							tr.setACLViolation(trashEntry.m_locationBinderId, trashEntry.m_docId);
+						}
 					}
-					catch (Exception e) {
-						logger.debug("...entry purge failed.", e);
-						if (e instanceof AccessControlException) tr.setACLViolation(trashEntry.m_locationBinderId, trashEntry.m_docId);
-						else                                     tr.setException(e, trashEntry.m_locationBinderId, trashEntry.m_docId);
+					else {
+						trashEntries[i] = null;
 					}
 				}
-				
-				// No, it isn't an entry!  Is it a binder?
-				else if (trashEntry.isBinder()) {
-					// Yes!  Purge it.  Purging the binder should purge
-					// its children.
+				catch (Exception e) {
+					// Something choked trying to do the ACL check.
+					// Track the error.
+					logger.debug(".........check failed!");
+					if (e instanceof AccessControlException) tr.setACLViolation(trashEntry.m_docId);
+					else                                     tr.setException(e, trashEntry.m_docId);
+				}
+			}
+					
+			// No, it's not a binder!  Is it an entry?
+			else if (trashEntry.isBinder()) {
+				try {
+					// Yes!  Is it predeleted?
+					Binder binder = bs.getBinderModule().getBinder(trashEntry.m_docId);
+					if (isBinderPredeleted(binder)) {
+						// Yes!  Does this user have rights to purge it?
+						logger.debug("......checking binder:  " + trashEntry.m_docId);
+						if (!(bs.getBinderModule().testAccess(binder, BinderOperation.deleteBinder))) {
+							// No!  Track the error.
+							logger.debug(".........ACL violation!");
+							tr.setACLViolation(trashEntry.m_docId);
+						}
+					}
+					else {
+						trashEntries[i] = null;
+					}
+				}
+				catch (Exception e) {
+					// Something choked trying to do the ACL check.
+					// Track the error.
+					logger.debug(".........check failed!");
+					if (e instanceof AccessControlException) tr.setACLViolation(trashEntry.m_docId);
+					else                                     tr.setException(e, trashEntry.m_docId);
+				}
+			}
+			
+			// If we detect an error during the ACL check...
+			if (tr.isError()) {
+				// ...quit processing items.
+				break;
+			}
+			logger.debug(".........entity is purgable.");
+		}
+
+		// Did we detect any ACL violations?
+		if (!(tr.isError())) {
+			// Scan the TrashEntry's again.
+			logger.debug("...purging binders...");
+			for (int i = 0; i < count; i += 1) {
+				// Is this a binder?
+				TrashEntry trashEntry = trashEntries[i];
+				if (null == trashEntry) {
+					continue;
+				}
+				if (trashEntry.isBinder()) {
+					// Yes!  Was this binder purged because it was
+					// contained in a binder that was already purged?
+					if (purgedBinders.isBinderPurged(trashEntry.m_docId)) {
+						// Yes!  Then we don't want to purge it again.
+						// Skip it.
+						logger.debug("......skipping " + trashEntry.m_docId + ", binder purged previously...");
+						continue;
+					}
+					
+					// Track this binder and it's descendants as having
+					// been purged...
+					trackPurgedBinders(bs, trashEntry.m_docId, purgedBinders);
+					
+					// ...and purge the binder.  Note that purging the
+					// ...binder will purge its descendants too.
 					try {
-						logger.debug("...purging binder:  " + String.valueOf(trashEntry.m_docId) + ", Mirrors too:  " + String.valueOf(purgeMirroredSources));
-						bs.getBinderModule().deleteBinder(trashEntry.m_docId, purgeMirroredSources, null);
-						logger.debug("...binder purged...");
+						// Note:  The true parameter in the call to
+						//    BinderModule.deleteBinder() tells that
+						//    method to only do the synchronous part of
+						//    the delete.  The final part will be
+						//    done below in the call to
+						//    BinderModule.deleteBinderFinish().
+						logger.debug("......purging binder:  " + trashEntry.m_docId + ", Mirrors too:  " + purgeMirroredSources);
+						bs.getBinderModule().deleteBinder(trashEntry.m_docId, purgeMirroredSources, null, true);
+						purgedBinderCount += 1;
+						logger.debug(".........binder purged...");
 					}
 					catch (Exception e) {
-						logger.debug("...binder purge failed.", e);
+						logger.debug(".........binder purge failed.", e);
 						if (e instanceof AccessControlException) tr.setACLViolation(trashEntry.m_docId);
 						else                                     tr.setException(e, trashEntry.m_docId);
 					}
-				}
-				
-				// If we detect an error during the purge...
-				if (tr.isError()) {
-					// ...quit processing items.
-					break;
+					
+					// If we detect an error doing a purge...
+					if (tr.isError()) {
+						// ...quit processing items.
+						break;
+					}
 				}
 			}
+		}
+
+		// Have we detected any errors yet?
+		if (!(tr.isError())) {
+			// No!  Scan the TrashEntry's one more time.
+			logger.debug("...purging entries...");
+			for (int i = 0; i < count; i += 1) {
+				// Is this an entry?
+				TrashEntry trashEntry = trashEntries[i];
+				if (null == trashEntry) {
+					continue;
+				}
+				if (trashEntry.isEntry()) {
+					// Yes!  Was this entry's binder purged above? 
+					if (purgedBinders.isBinderPurged(trashEntry.m_locationBinderId)) {
+						// Yes!  Then it will have been purged
+						// automatically.  Skip it.
+						logger.debug("......skipping " + trashEntry.m_locationBinderId + ", " + trashEntry.m_docId + ", binder purged previously...");
+						continue;
+					}
+					
+					// Purge the entry.  Note that purging an entry
+					// will purge its replies.
+					try {
+						logger.debug("......purging entry:  " + trashEntry.m_locationBinderId + ", " + trashEntry.m_docId);
+						bs.getFolderModule().deleteEntry(trashEntry.m_locationBinderId, trashEntry.m_docId);
+						logger.debug(".........entry purged...");
+					}
+					catch (Exception e) {
+						logger.debug(".........entry purge failed.", e);
+						if (e instanceof AccessControlException) tr.setACLViolation(trashEntry.m_locationBinderId, trashEntry.m_docId);
+						else                                     tr.setException(e, trashEntry.m_locationBinderId, trashEntry.m_docId);
+					}
+					
+					// If we detect an error doing a purge...
+					if (tr.isError()) {
+						// ...quit processing items.
+						break;
+					}
+				}
+			}
+		}
+		
+		// If we purged any binders...
+		if (0 < purgedBinderCount) {
+			// ...finish the Binder delete operations.  We do this dead
+			// ...last to avoid timing errors caused by this happening
+			// ...asynchronously.  We were seeing various
+			// ...LockAcquisitionException's and errors related to
+			// ...deadlocks when trying to get a lock otherwise.
+			bs.getBinderModule().deleteBinderFinish();
 		}
 		
 		// Handle any messages based on the purge.
@@ -1140,10 +1352,10 @@ public class TrashHelper {
 			boolean fNameRegistered = cd.isFileNameRegistered(binder.getId(), fName);
 			if (!fNameRegistered) {
 				// No!  Is it the original filename?
-				logger.debug("...name is unique...");
+				logger.debug("......name is unique...");
 				if (0 == renames) {
 					// Yes!  Re-register it and we're done.
-					logger.debug("...re-registering original name.");
+					logger.debug("......re-registering original name.");
 					cd.registerFileName(binder, de, fName);
 					return;
 				}
@@ -1157,7 +1369,7 @@ public class TrashHelper {
 			// Binder's namespace.  Synthesize a new name and try
 			// again.
 			fName = synthesizeName(fNameOriginal, ("-" + String.valueOf(++renames)), true);
-			logger.debug("...naming conflict detected, trying again using:  \"" + fName + "\"");
+			logger.debug("......naming conflict detected, trying again using:  \"" + fName + "\"");
 		} while (true);
 
 		// If we get here, we've got a synthesized name for the file.
@@ -1199,10 +1411,10 @@ public class TrashHelper {
 			boolean titleRegistered = cd.isTitleRegistered(binder.getId(), deTitle_Normalized);
 			if (!titleRegistered) {
 				// Yes!  Is it the entity's original name? 
-				logger.debug("...title is unique.");
+				logger.debug("......title is unique.");
 				if (0 == renames) {
 					// Yes!  Re-register it and we're done.
-					logger.debug("...re-registering original title.");
+					logger.debug("......re-registering original title.");
 					cd.registerTitle(binder, de);
 					return;
 				}
@@ -1217,7 +1429,7 @@ public class TrashHelper {
 			// again.
 			deTitle = synthesizeName(deTitle_Original, ("-" + String.valueOf(++renames)), false);
 			deTitle_Normalized = WebHelper.getNormalizedTitle(deTitle);
-			logger.debug("...naming conflict detected, trying again using:  \"" + deTitle + "\"");
+			logger.debug("......naming conflict detected, trying again using:  \"" + deTitle + "\"");
 		} while (true);
 
 		// If we get here, we have a new title to use for the entity.
@@ -1383,7 +1595,41 @@ public class TrashHelper {
 		// name.  Return it.
 		return synthesizedName;
 	}
-	
+
+	/*
+	 * Tracks a Binder and its descendant Binder's in a Map.  This map
+	 * is then used to avoid purging things that have already been
+	 * purged because of a container being purged.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void trackPurgedBinders(AllModulesInjected bs, Long binderId, TrashPurgedBinderTracker purgedBinders) {
+		// Are we already tracking this binder?
+		if (!(purgedBinders.isBinderPurged(binderId))) {
+			// No!  Track it now.
+			purgedBinders.track(binderId);
+			
+			// Can we access this Binder as other than a mirrored
+			// binder?
+			Binder binder = bs.getBinderModule().getBinder(binderId);
+			if ((null == binder) || binder.isMirrored()) {
+				// No!  Then we're done with it.  Bail.
+				return;
+			}
+
+			// Is the Binder a Folder or Workspace?
+			boolean isFolder    = TrashHelper.isBinderFolder(   binder);
+			boolean isWorkspace = TrashHelper.isBinderWorkspace(binder);
+			if (isFolder || isWorkspace) {
+				// Yes!  Descend its child binders...
+				List bindersList = binder.getBinders();
+				for (Iterator bindersIT=bindersList.iterator(); bindersIT.hasNext();) {
+					// ...and track them.
+					trackPurgedBinders(bs, ((Binder) bindersIT.next()).getId(), purgedBinders);
+				}
+			}
+		}
+	}
+
 	/**
      * Called to unregister the name of the binder and the filenames of
      * any file attachments on the binder.

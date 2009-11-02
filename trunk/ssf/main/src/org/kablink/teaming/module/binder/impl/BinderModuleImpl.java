@@ -779,16 +779,29 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	// no transaction
 	public void deleteBinder(Long binderId) {
-		deleteBinder(binderId, true, null);
+		deleteBinder(binderId, true, null, false);
 	}
 
 	// no transaction
 	public void deleteBinder(Long binderId, boolean deleteMirroredSource,
 			Map options) {
-		deleteBinderPhase1(binderId, deleteMirroredSource, options);		
-		deleteBinderPhase2();
+		deleteBinder(binderId, deleteMirroredSource, options, false);
+	}
+	
+	// no transaction
+	public void deleteBinder(Long binderId, boolean deleteMirroredSource,
+			Map options, boolean phase1Only) {
+		deleteBinderPhase1(binderId, deleteMirroredSource, options);
+		if (!phase1Only) {
+			deleteBinderPhase2();
+		}
 	}
 
+	// no transaction
+	public void deleteBinderFinish() {
+		deleteBinderPhase2();
+	}
+	
 	// inside write transaction
 	public void moveBinder(Long fromId, Long toId, Map options) {
 		Binder source = loadBinder(fromId);
