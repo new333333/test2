@@ -53,9 +53,9 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
+import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.portlet.ModelAndView;
-import org.springframework.web.portlet.bind.PortletRequestUtils;
 
 
 
@@ -102,12 +102,16 @@ public class ManageQuotasController extends SAbstractController {
 				if (key.indexOf("changeUser_") == 0) {
 					String userId = key.substring(11, key.length());
 					userIds.add(Long.valueOf(userId));
-					quotaValues.put(userId, PortletRequestUtils.getLongParameter(request, "newUserQuota_"+userId));
+					Long newQuota = PortletRequestUtils.getLongParameter(request, "newUserQuota_"+userId);
+					if (newQuota == null) newQuota = Long.valueOf(0);
+					quotaValues.put(userId, newQuota);
 				}
 				if (key.indexOf("changeGroup_") == 0) {
 					String groupId = key.substring(12, key.length());
 					groupIds.add(Long.valueOf(groupId));
-					quotaValues.put(groupId, PortletRequestUtils.getLongParameter(request, "newGroupQuota_"+groupId));
+					Long newQuota = PortletRequestUtils.getLongParameter(request, "newGroupQuota_"+groupId);
+					if (newQuota == null) newQuota = Long.valueOf(0);
+					quotaValues.put(groupId, newQuota);
 				}
 			}
 			for (Long id : groupIds) {

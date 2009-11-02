@@ -138,8 +138,8 @@
 	  <table class="ss_table_data" width="100%">
 	    <tr>
 	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.quotaChange"/></th>
-	      <th class="ss_table_data_TD"><ssf:nlt tag="profile.element.name"/></th>
-	      <th class="ss_table_data_TD"><ssf:nlt tag="profile.element.title"/></th>
+	      <th class="ss_table_data_TD"><ssf:nlt tag="userlist.groupName"/></th>
+	      <th class="ss_table_data_TD"><ssf:nlt tag="userlist.groupTitle"/></th>
 	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.quota"/></th>
 	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.newQuota"/></th>
 	    </tr>
