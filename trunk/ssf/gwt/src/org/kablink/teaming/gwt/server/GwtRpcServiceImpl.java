@@ -44,6 +44,8 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.ExtensionInfo;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.domain.ZoneInfo;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
@@ -62,6 +64,7 @@ import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.util.search.Constants;
 
 
@@ -268,7 +271,7 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 
 					// Pull information about this folder from the search results.
 					folderId = entry.get( "_docId" );
-					folder = getFolder( folderId );
+					folder = getFolder( null, folderId );
 					if ( folder != null )
 						results.add( folder );
 				}
@@ -337,24 +340,47 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 	
 	
 	/**
-	 * Return an Entry object for the given entry id
+	 * Return an Entry object for the given zone and entry id
 	 */
-	public GwtFolderEntry getEntry( String entryId )
+	public GwtFolderEntry getEntry( String zoneUUID, String entryId )
 	{
 		FolderModule folderModule;
-		FolderEntry entry;
+		FolderEntry entry = null;
 		GwtFolderEntry folderEntry = null;
 		Binder parentBinder;
 		
 		//!!! Catch exceptions and do appropriate exception handling.
 		try
 		{
+			ZoneInfo zoneInfo;
+			String zoneInfoId;
+			Long entryIdL;
+
+			// Get the id of the zone we are running in.
+			zoneInfo = ExportHelper.getZoneInfo();
+			zoneInfoId = zoneInfo.getId();
+			if ( zoneInfoId == null )
+				zoneInfoId = "";
+
 			folderModule = getFolderModule();
-			entry = folderModule.getEntry( null, new Long( entryId ) );
+
+			entryIdL = new Long( entryId );
+			
+			// Are we looking for an entry that was imported from another zone?
+			if ( zoneUUID != null && zoneUUID.length() > 0 && !zoneInfoId.equals( zoneUUID ) )
+			{
+				// Yes, get the entry id for the entry in this zone.
+				entryIdL = folderModule.getZoneEntryId( entryIdL, zoneUUID );
+			}
+
+			// Get the entry object.
+			if ( entryIdL != null )
+				entry = folderModule.getEntry( null, entryIdL );
 			
 			// Initialize the data members of the GwtFolderEntry object.
 			folderEntry = new GwtFolderEntry();
-			folderEntry.setEntryId( entryId );
+			if ( entryIdL != null )
+				folderEntry.setEntryId( entryIdL.toString() );
 			if ( entry != null )
 			{
 				folderEntry.setEntryName( entry.getTitle() );
@@ -374,22 +400,45 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 	/**
 	 * Return a Folder object for the given folder id
 	 */
-	public GwtFolder getFolder( String folderId )
+	public GwtFolder getFolder( String zoneUUID, String folderId )
 	{
 		BinderModule binderModule;
-		Binder binder;
+		Binder binder = null;
 		GwtFolder folder = null;
 		Binder parentBinder;
 		
 		//!!! Catch exceptions and do appropriate exception handling.
 		try
 		{
+			ZoneInfo zoneInfo;
+			String zoneInfoId;
+			Long folderIdL;
+
+			// Get the id of the zone we are running in.
+			zoneInfo = ExportHelper.getZoneInfo();
+			zoneInfoId = zoneInfo.getId();
+			if ( zoneInfoId == null )
+				zoneInfoId = "";
+
 			binderModule = getBinderModule();
-			binder = binderModule.getBinder( new Long( folderId ) );
+
+			folderIdL = new Long( folderId );
+			
+			// Are we looking for a folder that was imported from another zone?
+			if ( zoneUUID != null && zoneUUID.length() > 0 && !zoneInfoId.equals( zoneUUID ) )
+			{
+				// Yes, get the folder id for the folder in this zone.
+				folderIdL = binderModule.getZoneBinderId( folderIdL, zoneUUID, EntityType.folder.name() );
+			}
+
+			// Get the binder object.
+			if ( folderIdL != null )
+				binder = binderModule.getBinder( folderIdL );
 			
 			// Initialize the data members of the GwtFolder object.
 			folder = new GwtFolder();
-			folder.setFolderId( folderId );
+			if ( folderIdL != null )
+				folder.setFolderId( folderIdL.toString() );
 			if ( binder != null )
 			{
 				folder.setFolderName( binder.getTitle() );
