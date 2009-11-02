@@ -52,10 +52,10 @@ public interface GwtRpcServiceAsync
 	public void executeSearch( GwtSearchCriteria searchCriteria, AsyncCallback<GwtSearchResults> callback );
 	
 	// Return an Entry object for the given entry id.
-	public void getEntry( String entryId, AsyncCallback<GwtFolderEntry> callback );
+	public void getEntry( String zoneUUID, String entryId, AsyncCallback<GwtFolderEntry> callback );
 	
 	// Return a Folder object for the given folder id.
-	public void getFolder( String folderId, AsyncCallback<GwtFolder> callback );
+	public void getFolder( String zoneUUID, String folderId, AsyncCallback<GwtFolder> callback );
 	
     public void getTutorialPanelState( AsyncCallback<String> callback );
 	public void getExtensionInfo( AsyncCallback<ExtensionInfoClient[]> callback );

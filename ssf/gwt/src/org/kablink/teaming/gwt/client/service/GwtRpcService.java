@@ -55,10 +55,10 @@ public interface GwtRpcService extends RemoteService
 	public GwtSearchResults executeSearch( GwtSearchCriteria searchCriteria );
 	
 	// Return an Entry object for the given entry id.
-	public GwtFolderEntry getEntry( String entryId );
+	public GwtFolderEntry getEntry( String zoneUUID, String entryId );
 	
 	// Return a Folder object for the given folder id.
-	public GwtFolder getFolder( String folderId );
+	public GwtFolder getFolder( String zoneUUID, String folderId );
 	
 	public String getTutorialPanelState();
 	public ExtensionInfoClient[] getExtensionInfo();

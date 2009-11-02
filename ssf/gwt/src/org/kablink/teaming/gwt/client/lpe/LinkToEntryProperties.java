@@ -172,7 +172,7 @@ public class LinkToEntryProperties
 			// Yes, Issue an ajax request to get the GwtFolderEntry object for the given entry id.
 			m_rpcInProgress = true;
 			rpcService = GwtTeaming.getRpcService();
-			rpcService.getEntry( m_entryId, m_folderEntryCallback );
+			rpcService.getEntry( m_zoneUUID, m_entryId, m_folderEntryCallback );
 		}
 	}// end getDataFromServer()
 	
