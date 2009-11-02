@@ -336,6 +336,8 @@ public class ExportHelper {
 			} catch(Exception e) {
 				continue;
 			}
+			//Make sure the definitions used by this binder are exported
+			addDefinitions(defList, binder.getDefinitions());
 			statusTicket.setStatus(NLT.get("administration.export_import.exporting", new String[] {binder.getPathName()}));
 			String pathName = "";
 			if (EntityType.workspace.equals(binder.getEntityType())) {
