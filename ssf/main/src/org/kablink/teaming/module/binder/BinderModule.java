@@ -200,10 +200,20 @@ public interface BinderModule {
 	 * corresponding source resources (directories and files) if this binder
 	 * or any of the child binders is mirrored.
 	 * @param options - processing options or null
+	 * @param phase1Only - true -> perform only phase 1 of the delete
 	 * @throws AccessControlException
 	 */
 	public void deleteBinder(Long binderId, boolean deleteMirroredSource, Map options) 
 		throws AccessControlException;
+	public void deleteBinder(Long binderId, boolean deleteMirroredSource, Map options, boolean phase1Only) 
+		throws AccessControlException;
+	
+	/**
+	 * Performs phase2 of deleting a binder.  Must be called after calling
+	 * deleteBinder(...) one or more times and specifying to only do phase
+	 * one.
+	 */
+	public void deleteBinderFinish();
 		
 	/**
 	 * Delete a tag on a binder
