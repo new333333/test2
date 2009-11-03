@@ -76,8 +76,13 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 				<a class="ss_tinyButton ss_fineprint ss_nowrap" 
 				id="ss_dropbox_div_position${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 				href="javascript: ;" 
-				onClick="ss_showAddAttachmentDropbox('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); 
-				  return false;"
+				<c:if test="${!ss_diskQuotaExceeded}">
+				  onClick="ss_showAddAttachmentDropbox('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); 
+				    return false;"
+				</c:if>
+				<c:if test="${ss_diskQuotaExceeded}">
+				  onClick='alert("<ssf:nlt tag="quota.diskQuotaExceeded"/>");return false;'
+				</c:if>
 				title="<ssf:nlt tag="entry.AttachFilesByApplet"/>">
 				  <ssf:nlt tag="entry.AttachFilesByApplet"/>
 				</a>
@@ -94,8 +99,13 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 		<a class="ss_tinyButton ss_fineprint ss_nowrap" title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
 		  style="behavior: url(#default#AnchorClick);" 
 		  folder="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" 
-		  href="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" 
-		  target="_blank"><ssf:nlt tag="entry.AttachFilesByWebDav"/></a>
+		  <c:if test="${!ss_diskQuotaExceeded}">
+		    href="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" 
+		    target="_blank"><ssf:nlt tag="entry.AttachFilesByWebDav"/></a>
+		  </c:if>
+		  <c:if test="${ss_diskQuotaExceeded}">
+		    onClick='alert("<ssf:nlt tag="quota.diskQuotaExceeded"/>");return false;'
+		  </c:if>
 		</li>
 	</c:if>
 	<c:if test="${ss_folderViewStyle != 'blog' && !empty ssWebDavURL}">
@@ -103,8 +113,14 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 		<a class="ss_tinyButton ss_fineprint ss_nowrap"  
 		  title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
 		  style="behavior: url(#default#AnchorClick);" 
-		  folder="${ssWebDavURL}" href="${ssWebDavURL}" 
-		  target="_blank"
+		  folder="${ssWebDavURL}" 
+		  <c:if test="${!ss_diskQuotaExceeded}">
+		    href="${ssWebDavURL}" 
+		    target="_blank"
+		  </c:if>
+		  <c:if test="${ss_diskQuotaExceeded}">
+		    onClick='alert("<ssf:nlt tag="quota.diskQuotaExceeded"/>");return false;'
+		  </c:if>
 		  ><ssf:nlt tag="entry.AttachFilesByWebDav"/></a>
 		</li>	
 	</c:if>
@@ -114,7 +130,12 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	  <li style="float:left; padding:1px 10px 4px 0px;">
 		<a class="ss_tinyButton ss_fineprint ss_nowrap" 
 		  title="<ssf:nlt tag="entry.AttachFilesByWebBrowse"/>" href="javascript: ;" 
-		  onClick="ss_showAddAttachmentBrowse('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
+		  <c:if test="${!ss_diskQuotaExceeded}">
+		    onClick="ss_showAddAttachmentBrowse('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
+		  </c:if>
+		  <c:if test="${ss_diskQuotaExceeded}">
+			onClick='alert("<ssf:nlt tag="quota.diskQuotaExceeded"/>");return false;'
+		  </c:if>
 		  ><ssf:nlt tag="entry.AttachFilesByWebBrowse"/></a>
 	  </li>
 	</c:if>
@@ -125,7 +146,12 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	  <a class="ss_tinyButton ss_fineprint ss_nowrap" 
 	    title="<ssf:nlt tag="attachMeeting.attachResults"/>" 
 	    href="javascript: ;" 
-	    onClick="ss_showAttachMeetingRecords('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
+		<c:if test="${!ss_diskQuotaExceeded}">
+	      onClick="ss_showAttachMeetingRecords('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
+		</c:if>
+		<c:if test="${ss_diskQuotaExceeded}">
+		  onClick='alert("<ssf:nlt tag="quota.diskQuotaExceeded"/>");return false;'
+		</c:if>
 	    ><ssf:nlt tag="attachMeeting.attachResults"/></a>
 	<% } %>
 	

@@ -97,8 +97,10 @@
 <table>
 <tr>
 <td valign="top">
-  <c:if test="${property_showPicture}">
-    <div class="ss_replies_indent_picture">
+  <c:if test="${property_showPicture && !empty ssDefinitionEntry.top}">
+    <div 
+      <c:if test="${!ssDefinitionEntry.top}">class="ss_replies_indent_picture" </c:if>
+    >
   </c:if>
   <c:out value="${property_caption}" />
   <c:if test="${property_showPicture}">

@@ -195,7 +195,7 @@
 	          ${user.diskQuota}
 	        </td>
 	        <td valign="top" class="ss_table_data_TD">
-	          ${user.diskSpaceUsed}
+	          <fmt:formatNumber value="${user.diskSpaceUsed/1048576}" maxFractionDigits="2"/>
 	        </td>
 	        <td valign="top" class="ss_table_data_TD" nowrap>
 	          <input type="text" name="newUserQuota_${user.id}" size="6" style="width:40px;" />
