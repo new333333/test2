@@ -599,7 +599,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
  <c:if test="${!empty ssFolderColumns['size']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <c:if test="${hasFile2 && oneFile2 && !empty entry1._fileSize}">
-      <span <%= seenStyle %>><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${entry1._fileSize}" />KB</span>
+      <span <%= seenStyle %>><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${entry1._fileSize}" /> <ssf:nlt tag="file.sizeKB" text="KB"/></span>
     </c:if>
   </ssf:slidingTableColumn>
  </c:if>
