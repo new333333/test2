@@ -110,14 +110,6 @@ public class LoginController  extends SAbstractControllerRetry {
         HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
     	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
     	if(ex != null) {
-    		// Are we dealing with a UserIdNotUniqueException?
-    		if ( ex instanceof UserIdNotUniqueException )
-    		{
-    			// Yes
-    			// Add the flag that tells the login page to show the details of the error.
-    			model.put( "showLoginFailureDetails", "true" );
-    		}
-    		
     		model.put(WebKeys.LOGIN_ERROR, ex.getMessage());
     		session.removeAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
     	}
