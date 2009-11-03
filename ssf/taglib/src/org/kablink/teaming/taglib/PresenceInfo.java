@@ -60,6 +60,7 @@ import org.kablink.util.servlet.StringServletResponse;
 public class PresenceInfo extends BodyTagSupport {
     private Principal user = null;
     private Boolean showTitle = false;
+    private Boolean workspacePreDeleted = false;
 	private String titleStyle = "";
 	private String target = "";
     private String zonName=null;
@@ -97,13 +98,18 @@ public class PresenceInfo extends BodyTagSupport {
 			}
 
 			PresenceManager presenceService = (PresenceManager)SpringContextUtil.getBean("presenceService");
-			
-			if (zonName != null) {
-				userStatus = presenceService.getPresenceInfo(zonName);
-			} else if (user != null && user1 != null) {
-				userStatus = presenceService.getPresenceInfo(user1);
-			} else {
+
+			if (this.workspacePreDeleted) {
 				userStatus = -99;
+			}
+			else {
+				if (zonName != null) {
+					userStatus = presenceService.getPresenceInfo(zonName);
+				} else if (user != null && user1 != null) {
+					userStatus = presenceService.getPresenceInfo(user1);
+				} else {
+					userStatus = -99;
+				}
 			}
 			String dudeGif = "sym_s_white_dude.gif"; 
 			String altText = NLT.get("presence.none");
@@ -124,6 +130,7 @@ public class PresenceInfo extends BodyTagSupport {
 			// Pass the user status to the jsp
 			httpReq.setAttribute(WebKeys.PRESENCE_USER, user1);
 			httpReq.setAttribute(WebKeys.PRESENCE_SHOW_TITLE, this.showTitle);
+			httpReq.setAttribute(WebKeys.PRESENCE_WORKSPACE_PREDELETED, this.workspacePreDeleted);
 			httpReq.setAttribute(WebKeys.PRESENCE_TITLE_STYLE, this.titleStyle);
 			httpReq.setAttribute(WebKeys.PRESENCE_TARGET, this.target);
 			httpReq.setAttribute(WebKeys.PRESENCE_CLOSE, this.close.toString());
@@ -151,6 +158,7 @@ public class PresenceInfo extends BodyTagSupport {
 		finally {
 			userStatus = -1;
 			showTitle = false;
+			workspacePreDeleted = false;
 			titleStyle="";
 			target="";
 			componentId = "";
@@ -172,6 +180,9 @@ public class PresenceInfo extends BodyTagSupport {
 	}
 	public void setShowTitle(Boolean showTitle) {
 		this.showTitle = showTitle;
+	}
+	public void setWorkspacePreDeleted(Boolean workspacePreDeleted) {
+		this.workspacePreDeleted = workspacePreDeleted;
 	}
 	public void setTitleStyle(String titleStyle) {
 	    this.titleStyle = titleStyle;

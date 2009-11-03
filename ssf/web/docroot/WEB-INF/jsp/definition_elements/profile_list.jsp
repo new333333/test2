@@ -33,7 +33,10 @@
  */
 %>
 <% // Profile listing %>
+<%@ page import="java.util.Set" %>
 <%@ page import="org.kablink.teaming.domain.Principal" %>
+<%@ page import="org.kablink.teaming.domain.User" %>
+<%@ page import="org.kablink.teaming.domain.Workspace" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
@@ -110,18 +113,30 @@
 		docId = (String) entry.get("_docId");
 		folderLineId = "folderLine2_" + docId;
 	}
+	
+	User user = ((User) entry.get("_principal"));
+	boolean workspacePreDeleted;
+	Long showUser_workspaceId = ((null == user) ? null : user.getWorkspaceId());
+	if (null == showUser_workspaceId) {
+		workspacePreDeleted = false;
+	}
+	else {
+		Set showUser_workspaces = org.kablink.teaming.util.ResolveIds.getBinders(String.valueOf(showUser_workspaceId));
+		org.kablink.teaming.domain.Workspace showUser_workspace = ((Workspace) (showUser_workspaces.iterator().next()));
+		workspacePreDeleted = showUser_workspace.isPreDeleted();
+	}
 %>
 
 <ssf:slidingTableRow id="<%= folderLineId %>" style="${slidingTableRowStyle}" 
   oddStyle="${slidingTableRowOddStyle}" evenStyle="${slidingTableRowEvenStyle}">
 
   <ssf:slidingTableColumn style="${slidingTableColStyle}">
-  <ssf:showUser user='<%=(User)entry.get("_principal")%>' />
+  <ssf:showUser user='<%= user %>' workspacePreDeleted="<%= workspacePreDeleted %>" />
   </ssf:slidingTableColumn>
   
   <ssf:slidingTableColumn style="${slidingTableColStyle}">
     <c:if test="${!empty entry._email}">
-    	<ssf:mailto email="${entry._email}"/>
+    	<ssf:mailto email="${entry._email}" noLink="<%= workspacePreDeleted %>" />
     </c:if>
   </ssf:slidingTableColumn>
 
