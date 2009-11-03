@@ -637,8 +637,17 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		user.setMaxGroupsQuota(maxGroupsQuota);
 	}
 
+   public boolean isDiskQuotaExceeded() {
+	   if (checkDiskQuota() == ObjectKeys.DISKQUOTA_EXCEEDED) return true;
+	   else return false;
+   }
    
-   public int checkDiskQuota() {
+   public boolean isDiskQuotaHighWaterMarkExceeded() {
+	   if (checkDiskQuota() == ObjectKeys.DISKQUOTA_HIGHWATERMARK_EXCEEDED) return true;
+	   else return false;
+   }
+   
+   protected int checkDiskQuota() {
 		// first check properties to see if quotas are enabled on this system
 		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(
 				RequestContextHolder.getRequestContext().getZoneId());
@@ -666,7 +675,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 
 			if (user.getDiskSpaceUsed() > userQuota) {
 				return ObjectKeys.DISKQUOTA_EXCEEDED;
-			} else if (user.getDiskSpaceUsed() > waterMark) {
+			} else if (user.getDiskSpaceUsed()*1.0 > waterMark) {
 				return ObjectKeys.DISKQUOTA_HIGHWATERMARK_EXCEEDED;
 			}
 		}

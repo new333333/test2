@@ -473,11 +473,24 @@ public interface ProfileModule {
      * @param megabytes
      */
     public void setDiskQuota(long megabytes);   
+    
     /**
      * Get the user specific disk quota for the current user (in megabytes)
      * @return
      */
     public long getDiskQuota();
+
+    /**
+     * Check if the user's disk quota is exceeded
+     * @return
+     */
+    public boolean isDiskQuotaExceeded();
+
+    /**
+     * Check if the user's disk quota high water mark is exceeded
+     * @return
+     */
+    public boolean isDiskQuotaHighWaterMarkExceeded();
 
     /**
      * Get a user's disk quota which is either specific, or max of group membership

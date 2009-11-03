@@ -1896,7 +1896,11 @@ public class ListFolderHelper {
 				bs.getFolderModule().testAccess(folder, FolderOperation.addEntry) && 
 				!isAccessible) {
 			qualifiers = new HashMap();
-			qualifiers.put("onClick", "javascript: ss_showFolderAddAttachmentDropbox('" + response.getNamespace() + "', '" + folder.getId() + "','" + Boolean.toString(folder.isLibrary()) + "'); return false;");
+			if (bs.getProfileModule().isDiskQuotaExceeded()) {
+				qualifiers.put("onClick", "alert('" + NLT.get("quota.diskQuotaExceeded").replaceAll("'", "''") + "'); return false;");
+			} else {
+				qualifiers.put("onClick", "ss_showFolderAddAttachmentDropbox('" + response.getNamespace() + "', '" + folder.getId() + "','" + Boolean.toString(folder.isLibrary()) + "'); return false;");
+			}
 			entryToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);
 		}
 		
