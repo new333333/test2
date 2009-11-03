@@ -31,77 +31,53 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.domain;
-import static org.kablink.util.search.Constants.COMMAND_DEFINITION_FIELD;
+package org.kablink.teaming.util.feed;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
-import org.kablink.teaming.web.WebKeys;
-import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
-
 
 /**
  * Cahce of the entries added or modified in the past few minutes
  * @author Peter Hurley
  */
-public class TeamingFeedCache extends ZonedObject {
-	// This is a singleton class. 
-
-	private static TeamingFeedCache instance; // A singleton instance
+public class TeamingFeedCache {
 
 	private static final int updateInterval = 1;             //Interval in minutes between updating the cache
 	public static final int feedClientUpdateInterval = 5;    //Interval in minutes between when the feed client does its update
 	private static final int searchInterval = 11;            //Find the entries created in the last n minutes
 	private static final int maxSearchHits = 10000;          //Maximum # of search results returned
-	protected static Map<Long,Date> binderMap = null;
-	protected static Boolean hasSiteEntries = true;
-	protected static Date lastUpdate = null;
 	
+	private static ConcurrentMap<Long, FeedCache> zonedCache = new ConcurrentHashMap<Long, FeedCache>();
+
+	private static FeedCache getFeedCacheForTheZone() {
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+    	return zonedCache.get(zoneId);
+	}
+	private static void setFeedCacheForTheZone(FeedCache cache) {
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+    	zonedCache.put(zoneId, cache);
+	}
 	
-	protected TeamingFeedCache() {		
-		if(instance != null)
-			throw new SingletonViolationException(TeamingFeedCache.class);
-		
-		instance = this;
-	}
-
-	public Map<Long,Date> getBinderMap() {
-		if (binderMap == null) setBinderMap(new HashMap<Long,Date>());;
-		return binderMap;
-	}
-	protected static void setBinderMap(Map<Long,Date> seenMap) {
-		binderMap = seenMap;
-	}
-
-	protected static Date getLastUpdate() {
-		if (lastUpdate == null) {
-			lastUpdate = new Date();
-			lastUpdate.setTime(lastUpdate.getTime() - updateInterval*60*1000 - 1);
-		}
-		return lastUpdate;
-	}
-	protected static void setLastUpdate(Date newLastUpdate) {
-		lastUpdate = newLastUpdate;
-	}
-
     public static void updateMap(AllModulesInjected bs) {
+    	FeedCache cache = getFeedCacheForTheZone();
     	Date now = new Date();
-    	if (now.getTime() >= getLastUpdate().getTime() + updateInterval*60*1000) {
-    		hasSiteEntries = false;
+    	if(cache == null || (now.getTime() >= cache.getLastUpdate().getTime() + updateInterval*60*1000)) {
+    		// Time to create a fresh new cache for the current zone.
+    		cache = new FeedCache();
     		Map<Long,Date> newBinderMap = new HashMap<Long,Date>();
     		Criteria crit = SearchUtils.entriesForTeamingFeedCache(now, searchInterval);
     		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
@@ -123,20 +99,61 @@ public class TeamingFeedCache extends ZonedObject {
     							newBinderMap.put(Long.valueOf(binderId), entryModificationDate);
     						}
     					}
-    					hasSiteEntries = true;
+    					cache.setHasSiteEntries(true);
     				}
     	    	}
         	}
-        	setBinderMap(newBinderMap);
-	        setLastUpdate(new Date());
+        	cache.setBinderMap(newBinderMap);
+	        cache.setLastUpdate(new Date());
+	        setFeedCacheForTheZone(cache);
     	}
     }
+    
+    private static class FeedCache {
+    	// The following three fields need to be kept together so that they are consistent
+    	// relative to each other within a zone-specific cache.
+    	private Map<Long,Date> binderMap;
+    	private boolean hasSiteEntries;
+    	private Date lastUpdate;
+    	FeedCache() {
+    		binderMap = new HashMap<Long,Date>();
+    		hasSiteEntries = false;
+    		lastUpdate = new Date(System.currentTimeMillis() - updateInterval*60*1000 - 1);
+    	}
+		public Map<Long,Date> getBinderMap() {
+			return binderMap;
+		}
+		public void setBinderMap(Map<Long,Date> binderMap) {
+			this.binderMap = binderMap;
+		}
+		public boolean isHasSiteEntries() {
+			return hasSiteEntries;
+		}
+		public void setHasSiteEntries(boolean hasSiteEntries) {
+			this.hasSiteEntries = hasSiteEntries;
+		}
+		public Date getLastUpdate() {
+			return lastUpdate;
+		}
+		public void setLastUpdate(Date lastUpdate) {
+			this.lastUpdate = lastUpdate;
+		}
+    }
+    
     public static boolean checkIfBinderHasNewSiteEntries(AllModulesInjected bs, Date date) {
-    	return hasSiteEntries;
+    	FeedCache cache = getFeedCacheForTheZone();
+    	if(cache != null)
+    		return cache.isHasSiteEntries();
+    	else
+    		return false;
     }
     public static boolean checkIfBinderHasNewEntries(AllModulesInjected bs, Long binderId, Date date) {
-    	if (binderMap.containsKey(binderId) && 
-    			binderMap.get(binderId).after(date)) return true;
+    	FeedCache cache = getFeedCacheForTheZone();
+    	if(cache != null) {
+    		Map<Long,Date> binderMap = cache.getBinderMap();
+        	if (binderMap.containsKey(binderId) && 
+        			binderMap.get(binderId).after(date)) return true;    		
+    	}
     	return false;
     }
 }
