@@ -45,7 +45,7 @@
 %>
 <c:set var="mashupBinder" value="${ss_mashupBinders[mashup_attributes['binderId']]}"/>
 <c:if test="${!empty mashup_attributes['zoneUUID']}">
-  <c:set var="zoneBinderId" value="${mashup_attributes['zoneUUID']}.${mashup_attributes['folderId']}" />
+  <c:set var="zoneBinderId" value="${mashup_attributes['zoneUUID']}.${mashup_attributes['binderId']}" />
   <c:if test="${!empty ss_mashupBinders[zoneBinderId]}">
     <c:set var="mashupBinder" value="${ss_mashupBinders[zoneBinderId]}"/>
   </c:if>
