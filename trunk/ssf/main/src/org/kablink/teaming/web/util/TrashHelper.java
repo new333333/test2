@@ -760,23 +760,26 @@ public class TrashHelper {
 	/**
 	 * When required, builds the Trash toolbar for a binder.
 	 * 
-	 * @param binderId
+	 * @param binder
 	 * @param model
 	 * @param qualifiers
 	 * @param trashToolbar
 	 */
 	@SuppressWarnings("unchecked")
-	public static void buildTrashToolbar(String binderId, Map model, Map qualifiers, Toolbar trashToolbar) {
-		// Show the trash sidebar widget...
-		model.put(WebKeys.TOOLBAR_TRASH_SHOW, Boolean.TRUE);
-		
-		// ...and add trash to the menu bar.
-		qualifiers = new HashMap();
-		qualifiers.put("title", NLT.get("toolbar.menu.title.trash"));
-		qualifiers.put("icon", "trash.png");
-		qualifiers.put("iconFloatRight", "true");
-		qualifiers.put("onClick", "ss_treeShowId('"+binderId+"',this,'view_folder_listing','&showTrash=true');return false;");
-		trashToolbar.addToolbarMenu("1_trash", NLT.get("toolbar.menu.trash"), "javascript: //;", qualifiers);	
+	public static void buildTrashToolbar(Binder binder, Map model, Map qualifiers, Toolbar trashToolbar) {
+		// If the Binder isn't mirrored...
+		if (!(binder.isMirrored())) {
+			// ...show the trash sidebar widget...
+			model.put(WebKeys.TOOLBAR_TRASH_SHOW, Boolean.TRUE);
+			
+			// ...and add trash to the menu bar.
+			qualifiers = new HashMap();
+			qualifiers.put("title", NLT.get("toolbar.menu.title.trash"));
+			qualifiers.put("icon", "trash.png");
+			qualifiers.put("iconFloatRight", "true");
+			qualifiers.put("onClick", "ss_treeShowId('"+ binder.getId() +"',this,'view_folder_listing','&showTrash=true');return false;");
+			trashToolbar.addToolbarMenu("1_trash", NLT.get("toolbar.menu.trash"), "javascript: //;", qualifiers);
+		}
 	}
 
 	/**

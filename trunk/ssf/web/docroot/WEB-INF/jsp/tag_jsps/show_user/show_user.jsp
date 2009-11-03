@@ -50,7 +50,7 @@
 		<c:when test="${!ss_showUserIsGroup}">
 			<c:if test="${ss_showUserShowPresence}">
 				<ssf:presenceInfo user="${ss_showUserUser}" showTitle="true" 
-				  titleStyle="${ss_showUserTitleStyle}" target="${ss_showUserTarget}" /> 
+				  titleStyle="${ss_showUserTitleStyle}" target="${ss_showUserTarget}" workspacePreDeleted="${ss_showUserWorkspacePredeleted}" /> 
 			</c:if>		
 		</c:when>
 		<c:otherwise>

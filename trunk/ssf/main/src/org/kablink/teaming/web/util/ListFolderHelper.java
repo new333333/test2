@@ -2033,7 +2033,7 @@ public class ListFolderHelper {
 		}
 
 		// trash
-		TrashHelper.buildTrashToolbar(forumId, model, qualifiers, trashToolbar);
+		TrashHelper.buildTrashToolbar(folder, model, qualifiers, trashToolbar);
 
 		// start meeting
 		if (bs.getIcBrokerModule().isEnabled() && 

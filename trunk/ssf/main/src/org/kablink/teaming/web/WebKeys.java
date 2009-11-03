@@ -971,6 +971,7 @@ public class WebKeys {
     public static final String PRESENCE_STATUS="ss_presence_userStatus";
     public static final String PRESENCE_SHOW_OPTIONS_INLINE="ss_presence_show_options_inline";
     public static final String PRESENCE_SHOW_TITLE="ss_presence_show_title";
+    public static final String PRESENCE_WORKSPACE_PREDELETED="ss_presence_workspace_predeleted";
     public static final String PRESENCE_TARGET="ss_presence_target";
     public static final String PRESENCE_TITLE_STYLE="ss_presence_title_style";
     public static final String PRESENCE_SWEEP_TIME="ss_presence_sweep_time";
@@ -1144,6 +1145,7 @@ public class WebKeys {
     public static final String SHOW_GROUP_INSTANCE_COUNT="ss_showGroupInstanceCount";
     public static final String SHOW_USER_CLOSE="ss_showUserClose";
     public static final String SHOW_USER_SHOW_PRESENCE="ss_showUserShowPresence";
+    public static final String SHOW_USER_WORKSPACE_PREDELETED="ss_showUserWorkspacePredeleted";
     public static final String SHOW_USER_TARGET="ss_showUserTarget";
     public static final String SHOW_USER_TITLE_STYLE="ss_showUserTitleStyle";
     public static final String SHOW_USER_USER="ss_showUserUser";

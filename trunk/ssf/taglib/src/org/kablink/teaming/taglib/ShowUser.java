@@ -74,6 +74,7 @@ public class ShowUser extends BodyTagSupport {
 	private String titleStyle = "";
 	private String target = "";
     private Boolean showPresence = Boolean.TRUE;
+    private Boolean workspacePreDeleted = Boolean.FALSE;
     private Boolean close = Boolean.FALSE;
 
 	public int doStartTag() {
@@ -110,6 +111,7 @@ public class ShowUser extends BodyTagSupport {
 				httpReq.setAttribute(WebKeys.SHOW_USER_TARGET, target);
 				httpReq.setAttribute(WebKeys.SHOW_USER_CLOSE, close.toString());
 				httpReq.setAttribute(WebKeys.SHOW_USER_IS_GROUP, user instanceof Group);
+				httpReq.setAttribute(WebKeys.SHOW_USER_WORKSPACE_PREDELETED, workspacePreDeleted);
 				if (user != null && user.isActive())
 					httpReq.setAttribute(WebKeys.SHOW_USER_SHOW_PRESENCE, showPresence);
 				else
@@ -139,6 +141,7 @@ public class ShowUser extends BodyTagSupport {
 		} finally {
 			user = null;
 			showPresence = true;
+			workspacePreDeleted = false;
 			titleStyle = "";
 			target = "";
 			close = Boolean.FALSE;
@@ -152,6 +155,9 @@ public class ShowUser extends BodyTagSupport {
 	}
 	public void setShowPresence(Boolean showPresence) {
 		this.showPresence = showPresence;
+	}
+	public void setWorkspacePreDeleted(Boolean workspacePreDeleted) {
+		this.workspacePreDeleted = workspacePreDeleted;
 	}
 	public void setTitleStyle(String titleStyle) {
 	    this.titleStyle = titleStyle;

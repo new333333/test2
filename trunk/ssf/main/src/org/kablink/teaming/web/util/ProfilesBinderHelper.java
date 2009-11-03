@@ -66,13 +66,15 @@ import org.springframework.web.portlet.ModelAndView;
 
 public class ProfilesBinderHelper {
 	public static ModelAndView setupProfilesBinderBeans(AllModulesInjected bs, Long binderId, RenderRequest request, 
-			RenderResponse response) throws Exception {
+			RenderResponse response, boolean showTrash) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
- 		return setupProfilesBinderBeans(bs, binderId, request, response, model);
+ 		return setupProfilesBinderBeans(bs, binderId, request, response, model, showTrash);
 	}
+	@SuppressWarnings("unchecked")
 	public static ModelAndView setupProfilesBinderBeans(AllModulesInjected bs, Long binderId, RenderRequest request, 
-			RenderResponse response, Map model) throws Exception {
+			RenderResponse response, Map model, boolean showTrash) throws Exception {
 	
+		model.put(WebKeys.URL_SHOW_TRASH, new Boolean(showTrash));
 	   	User user = RequestContextHolder.getRequestContext().getUser();
 		Binder binderObj = bs.getBinderModule().getBinder(binderId);
 		
@@ -90,36 +92,51 @@ public class ProfilesBinderHelper {
 		reloadUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
 		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
 		
+		Map options;
 		Map users = null;
-		Map options = new HashMap();
-		
-		options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(ObjectKeys.LISTING_MAX_PAGE_SIZE));
-		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
-		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
+		ProfileBinder binder;
+		Tabs.TabEntry tab;
+		if (showTrash) {
+			tab = TrashHelper.buildTrashTabs(request, binderObj, model);
+			
+			TrashHelper.buildTrashViewToolbar(model);
+			options = TrashHelper.buildTrashBeans(bs, request, response, binderId, model);
+			Map trashEntries = TrashHelper.getTrashEntries(bs, model, binderObj, options);
+			model.putAll(ListFolderHelper.getSearchAndPagingModels(trashEntries, options, showTrash));
+			if (trashEntries != null) {
+				List trashEntriesList = (List) trashEntries.get(ObjectKeys.SEARCH_ENTRIES);
+				model.put(WebKeys.FOLDER_ENTRIES, trashEntriesList);
+			}
+			binder = ((ProfileBinder) binderObj);
+		}
+		else {
+			tab = BinderHelper.initTabs(request, binderObj);
+			model.put(WebKeys.TABS, tab.getTabs());
+			
+			options = new HashMap();
+			options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(ObjectKeys.LISTING_MAX_PAGE_SIZE));
+			options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
 
-		//initializing tabs
-		Tabs.TabEntry tab = BinderHelper.initTabs(request, binderObj);
-		model.put(WebKeys.TABS, tab.getTabs());
+			//determine page starts/ counts
+			initPageCounts(request, userProperties.getProperties(), tab, options);
+			options.put(ObjectKeys.SEARCH_SEARCH_FILTER, BinderHelper.getSearchFilter(bs, binderObj, userFolderProperties));
+			users = bs.getProfileModule().getUsers(options);
+			binder = (ProfileBinder)users.get(ObjectKeys.BINDER);
+			model.put(WebKeys.ENTRIES, users.get(ObjectKeys.SEARCH_ENTRIES));
+			model.putAll(getSearchAndPagingModels(users, options));		
+			model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
+			model.put(WebKeys.PAGE_MENU_CONTROL_TITLE, NLT.get("folder.Page", new Object[]{options.get(ObjectKeys.SEARCH_MAX_HITS)}));
+		}
 		
-		//determine page starts/ counts
-		initPageCounts(request, userProperties.getProperties(), tab, options);
-		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, BinderHelper.getSearchFilter(bs, binderObj, userFolderProperties));
-		users = bs.getProfileModule().getUsers(options);
-		ProfileBinder binder = (ProfileBinder)users.get(ObjectKeys.BINDER);
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.FOLDER, binder);
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
-		
-		model.put(WebKeys.ENTRIES, users.get(ObjectKeys.SEARCH_ENTRIES));
-		if (!model.containsKey(WebKeys.SEEN_MAP)) 
+		if (!model.containsKey(WebKeys.SEEN_MAP)) { 
 			model.put(WebKeys.SEEN_MAP,bs.getProfileModule().getUserSeenMap(user.getId()));
-		
-		model.putAll(getSearchAndPagingModels(users, options));		
-
+		}
 		model.put(WebKeys.URL_TAB_ID, String.valueOf(tab.getTabId()));
-		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
-		model.put(WebKeys.PAGE_MENU_CONTROL_TITLE, NLT.get("folder.Page", new Object[]{options.get(ObjectKeys.SEARCH_MAX_HITS)}));
-		
+			
 		DashboardHelper.getDashboardMap(binder, userProperties.getProperties(), model);
 		DefinitionHelper.getDefinitions(binder, model);
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
@@ -283,6 +300,7 @@ public class ProfilesBinderHelper {
 		Toolbar dashboardToolbar = new Toolbar();
 		Toolbar footerToolbar = new Toolbar();
 		Toolbar whatsNewToolbar = new Toolbar();
+		Toolbar trashToolbar = new Toolbar();
 		
 		AdaptedPortletURL adapterUrl;
 		//The "Administration" menu
@@ -370,6 +388,9 @@ public class ProfilesBinderHelper {
 		model.put(WebKeys.PERMALINK, permaLink);
 		model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
 
+		//Trash
+		TrashHelper.buildTrashToolbar(binder, model, qualifiers, trashToolbar);
+
 		//Color themes (removed for now)
 		if (0 == 1 && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			qualifiers = new HashMap();
@@ -387,6 +408,7 @@ public class ProfilesBinderHelper {
 		model.put(WebKeys.FOLDER_ACTIONS_TOOLBAR,  folderActionsToolbar.getToolbar());
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 		model.put(WebKeys.WHATS_NEW_TOOLBAR,  whatsNewToolbar.getToolbar());
+		model.put(WebKeys.TRASH_TOOLBAR,  trashToolbar.getToolbar());
 	}
 	
 	protected static Toolbar buildViewEntryToolbar (AllModulesInjected bs, RenderRequest request, RenderResponse response, ProfileBinder binder) {

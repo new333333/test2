@@ -281,7 +281,7 @@ public class ListFolderController extends  SAbstractController {
 				if (binder.getEntityType().name().equals(EntityIdentifier.EntityType.workspace.name())) {
 					return WorkspaceTreeHelper.setupWorkspaceBeans(this, binderId, request, response, showTrash);
 				} else if (binder.getEntityType().name().equals(EntityIdentifier.EntityType.profiles.name())) {
-					return ProfilesBinderHelper.setupProfilesBinderBeans(this, binderId, request, response);
+					return ProfilesBinderHelper.setupProfilesBinderBeans(this, binderId, request, response, showTrash);
 				}
 			} catch(NoBinderByTheIdException e) {
 				Map<String,Object> model = new HashMap<String,Object>();

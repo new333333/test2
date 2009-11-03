@@ -136,9 +136,7 @@ public class ListProfilesController extends   SAbstractController {
 		} else {
 			getReportModule().addAuditTrail(AuditType.view, binderObj);
 		}
-		return ProfilesBinderHelper.setupProfilesBinderBeans(this, binderId, request, response);
-
+		boolean showTrash = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_SHOW_TRASH, false);
+		return ProfilesBinderHelper.setupProfilesBinderBeans(this, binderId, request, response, showTrash);
 	}
-
-
 }
