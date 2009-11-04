@@ -69,6 +69,7 @@ import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.ExtensionInfo;
+import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
@@ -242,22 +243,11 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 					//If there are files to deploy
 					if (removedExtensions != null && removedExtensions.length > 0) {
 						for (int i=0; i<removedExtensions.length; ++i) {
-							
-							File extension = removedExtensions[i];
+							File removeExtension = removedExtensions[i];
 							//Get the name and see if it is in the local TS, if it is then remove it
-							
-//							try {
-								remove(extension);
-//							} catch (IOException e) {
-//								logger.error("Unable to open extension " + extension.getPath(),
-//									e);
-//								File failedDir = new File(sharedDir, "failed");
-//								if (!failedDir.exists()) failedDir.mkdirs();
-//								FileHelper.move(extension, new File(failedDir, extension.getName()));	
-//							}
+							remove(removeExtension);
 						}
 					}
-
 				}
 
 				//the date isn't copied, but all that matters is that sharedTime is less than it.  
@@ -446,11 +436,9 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 	//2. Cannot Remove from ClassLoader - may require a restart
 	//3. Done - Remove Dirs
 	//3. Done - Remove keys from TS properties 
-	
-	public void remove(File extension) {
-		
+	public boolean remove(File extension) {
+		boolean removeFiles = false;
 		logger.info("Begin remove extension " + extension.getPath());
-
 		String zoneKey = Utils.getZoneKey();
 		
 		//Get the extension name
@@ -460,17 +448,42 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 	
 		boolean removedTemplates = removeTemplates(extensionDir);
 		boolean removedDefinitions = removeDefinitions(extensionDir);
-		if( removedDefinitions && removedTemplates && extensionDir.exists() ) {
-			extensionDir.delete();
+		
+		//if we can remove the templates and defintions then we can go ahead and remove the files associated with the extension
+		if(removedTemplates && removedDefinitions){
+			removeFiles = true;
+		}
+		
+		if( removeFiles && extensionDir.exists() ) {
+			logger.info("Removing extension files: " + extensionDir );
+			removeFiles(extensionDir);
 		}
 		
 		//Extension dir under webapp
 		File extensionWebDir = new File(DirPath.getExtensionWebPath() + File.separator + zoneKey +  File.separator + extensionPrefix);
-		if( removedDefinitions && removedTemplates && extensionWebDir.exists() ) {
-			extensionWebDir.delete();
+		if( removeFiles && extensionWebDir.exists() ) {
+			logger.info("Removing extension files: " + extensionWebDir );
+			removeFiles(extensionWebDir);
+		}
+		
+		return removeFiles;
+	}
+	
+	private void removeFiles(File path){
+		if( path.isDirectory() ) {
+			File[] files = path.listFiles();
+			int cnt = ((files != null)? files.length : 0);
+			for(int i=0; i < cnt; i++){
+				File file = files[i];
+				removeFiles(file);
+			}
+			//remove the directory when it is empty
+			path.delete();
+		} else {
+			//remove the file
+			path.delete();
 		}
 	}
-
 	
 	private boolean removeDefinitions(File extensionDir){
 		
@@ -519,6 +532,10 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 						name=title;
 					}
 
+					if(name.startsWith("_")){
+						logger.info("Should not remove default definitions - skipping: "+name);
+						continue;
+					}
 					Definition def = getDefinitionModule().getDefinitionByName(null, true, name);
 					logger.info("Removing definition: " + def.getName());
 					getDefinitionModule().deleteDefinition(def.getId());
@@ -528,6 +545,9 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 				} catch (DocumentException e) {
 					removedDefinitions = false;
 					logger.warn("Malformed definition file " 	+ extensionDir.getPath(), e);
+				} catch (NoDefinitionByTheIdException e){
+					removedDefinitions = true;
+					logger.warn(e.getMessage());
 				} catch (Exception e) {
 					removedDefinitions = false;
 					logger.warn("Error removing definition " 	+ extensionDir.getPath(), e);
@@ -632,8 +652,8 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 			if (pickUpDir.exists()) {
 
 				// get the file list
-				// Get a list of files that are of type zip - under the shared
-				// dir
+				// Get a list of files that are of type zip - under the shared dir
+				File foundExtension = null;
 				File[] extensions = pickUpDir.listFiles(new FileOnlyFilter());
 				// If there are files to deploy
 				if (extensions != null && extensions.length > 0) {
@@ -644,38 +664,44 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 								.substring(0,
 										extension.getName().lastIndexOf("."));
 						if (extensionPrefix.equals(extensionName)) {
-							// now move the extension to the pickup directory
-							FileHelper.move(extension, new File(removalDir,
-									extension.getName()));
-							
-							//remove the WEB-INF and files under webapp
-							remove(extension);
-
-							// update the TSProperties of the shared and local
-							// properties with the deployed date
-							logger.info("Remove the extension key from the shared timestamp file.");
-							shared.remove(extension.getName());
-							
-							// remove the extenison from the pickup directory
-							logger.info("Remove the extension from the pickup directory");
-							extension.delete();
-							
+							foundExtension = extension;
 							break;
 						}
 					}
 				}
 
-				//update shared TS file on disk
-				shared.store(new FileOutputStream(sharedExtensionDir + File.separator + TSFILE), null);		
+				if(foundExtension != null){
+					//remove the WEB-INF and files under webapp
+					boolean okToRemove = remove(foundExtension);
+					if(okToRemove) {
+						// now move the extension to the removal directory
+						FileHelper.move(foundExtension, new File(removalDir,
+								foundExtension.getName()));
 
-				//the date isn't copied, but all that matters is that sharedTime is less than it.  
-				//No other updates to sharedTime can happen until after this new localTime.
-				
-				FileCopyUtils.copy(sharedTimeFile, localTimeFile);	
+						// remove the extenison from the pickup directory
+						logger.info("Removing the extension from the pickup directory");
+						foundExtension.delete();
+
+						// update the TSProperties of the shared and local
+						// properties with the deployed date
+						logger.info("Removing the extension key from the shared timestamp file.");
+						shared.remove(foundExtension.getName());
+
+						//update shared TS file on disk
+						shared.store(new FileOutputStream(sharedExtensionDir + File.separator + TSFILE), null);		
+
+						//the date isn't copied, but all that matters is that sharedTime is less than it.  
+						//No other updates to sharedTime can happen until after this new localTime.
+						FileCopyUtils.copy(sharedTimeFile, localTimeFile);	
+
+						deleteExtension(ext);
+					} else {
+						//TODO should we send error back to the client...
+					}
+				} else {
+					logger.error("No extension was found could not remove.");
+				}
 			}
-
-			deleteExtension(ext);
-
 		} catch (Exception ex) {
 			logger.error("Error in deployer", ex);
 		}
