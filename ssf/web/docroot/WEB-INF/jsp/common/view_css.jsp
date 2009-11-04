@@ -198,6 +198,11 @@ function ss_defineColorValues() {
 </script>
 
 <%--
+<link href="<html:rootPath/>css/hf_style.css" rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>css/hf_teaming.css" rel="stylesheet" type="text/css" />
+--%>
+
+<%--
 * The following line is used to call customer supplied customizations.
 * This jsp will be called at least once per page. 
 * (It can be called more than once on portlet pages, so be prepared for that.)
