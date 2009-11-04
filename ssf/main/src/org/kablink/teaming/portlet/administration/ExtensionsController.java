@@ -71,7 +71,7 @@ public class ExtensionsController extends  SAbstractController {
 				if(Validator.isNull(zoneName))
 					throw new NameMissingException("errorcode.zonename.missing");
 				
-				String zoneFolderKey = "kablinlk";
+				String zoneFolderKey = SZoneConfig.getDefaultZoneName();
 				if(!(zoneName.equals(SZoneConfig.getDefaultZoneName()))){
 					Long zoneId = getZoneModule().getZoneIdByZoneName(zoneName);
 					zoneFolderKey = zoneName + "_" + zoneId;
