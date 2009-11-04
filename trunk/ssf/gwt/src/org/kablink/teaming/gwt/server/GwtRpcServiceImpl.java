@@ -524,29 +524,25 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
     {
     	AdminModule adminModule;
     	adminModule = getAdminModule();
-    	if(adminModule == null) {
-    		//TODO handle error
-    	}
-    		
     	adminModule.getExtensionManager().removeExtensions(id);
+
     	return getExtensionInfo();
     }
 
 
 	public ExtensionFiles getExtensionFiles(String id, String zoneName) {
     	ExtensionFiles extFiles = new ExtensionFiles();
-    	
-		AdminModule adminModule;
-    	adminModule = getAdminModule();
-
-    	if(adminModule == null)
+    	try 
     	{
-    		
+    		AdminModule adminModule;
+        	adminModule = getAdminModule();
+
+        	ArrayList<String> results = adminModule.getExtensionManager().getExtensionFiles(id, zoneName);
+        	extFiles.setResults(results);
+        	extFiles.setCountTotal(results.size());
+    	} catch (Exception e)
+    	{
     	}
-    	
-    	ArrayList<String> results = adminModule.getExtensionManager().getExtensionFiles(id, zoneName);
-    	extFiles.setResults(results);
-    	extFiles.setCountTotal(results.size());
     	
     	return extFiles;
 	}
