@@ -103,8 +103,8 @@ class ExtensionViewDetailsDlg extends PopupPanel implements ClickHandler {
 		row++;
 		table.setWidget( row, 0, new Label( GwtTeaming.getMessages().extensionsDlgId() ) );
 		table.setWidget( row, 1, new Label( info.getId() ) );
-		row++;
-		table.setWidget(row, 0, new HTML("<br/>"));
+		table.getWidget(row, 0).setStyleName("marginBottomPoint25em");
+		table.getWidget(row, 1).setStyleName("marginBottomPoint25em");
 		row++;
 		table.setWidget( row, 0, new Label( GwtTeaming.getMessages().extensionsDlgAuthorName() ) );
 		table.setWidget( row, 1, new Label( info.getAuthor() ) );
@@ -128,20 +128,17 @@ class ExtensionViewDetailsDlg extends PopupPanel implements ClickHandler {
 		table.setWidget( row, 1, new Label( info.getDateCreated() ) );
 
 		mainPanel.add( table );
-		
-		mainPanel.add(new HTML("<br/>"));
 		mainPanel.add(extensionPanelStateText);
+		mainPanel.add(new HTML("<br/>"));
 		
 		fileTable = new FlexTable();
 		fileTable.setCellPadding(2);
 		fileTable.getRowFormatter().addStyleName(0, "lpeTableDropZone-highlighted");
-		
 		fileTable.setText(0, 0, GwtTeaming.getMessages().extensionsDlgFilesTitle());
-		
 		fileTable.getCellFormatter().setStyleName(0, 0, "ss_bold");
 
 		sPanel = new ScrollPanel();
-		sPanel.setSize("800px", "300px");
+		sPanel.setSize("800px", "240px");
 		sPanel.add(fileTable);
 		mainPanel.add( sPanel );
 		
