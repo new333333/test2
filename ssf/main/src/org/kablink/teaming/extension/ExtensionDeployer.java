@@ -57,7 +57,7 @@ public interface ExtensionDeployer {
 	 */
 	public void deploy(File extension, boolean full, String deployedDate) throws IOException;
 	
-	public void remove(File extension);
+	public boolean remove(File extension);
 	
 	public boolean removeExtension(ExtensionInfo ext);
 	
