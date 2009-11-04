@@ -67,6 +67,7 @@ import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.AverageRating;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -671,10 +672,12 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	restoreEntry(parentFolderId, entryId, renameData, true, null, reindex);
     }
     //inside write transaction    
-    public void restoreEntry(Long folderId, Long entryId, Object renameData, boolean deleteMirroredSource, Map options) throws WriteEntryDataException, WriteFilesException {
+    @SuppressWarnings("unchecked")
+	public void restoreEntry(Long folderId, Long entryId, Object renameData, boolean deleteMirroredSource, Map options) throws WriteEntryDataException, WriteFilesException {
     	restoreEntry(folderId, entryId, renameData,deleteMirroredSource, options, true);
     }
-    public void restoreEntry(Long folderId, Long entryId, Object renameData, boolean deleteMirroredSource, Map options, boolean reindex) throws WriteEntryDataException, WriteFilesException {
+    @SuppressWarnings("unchecked")
+	public void restoreEntry(Long folderId, Long entryId, Object renameData, boolean deleteMirroredSource, Map options, boolean reindex) throws WriteEntryDataException, WriteFilesException {
     	deCount.incrementAndGet();
         FolderEntry entry = loadEntry(folderId, entryId);
         Folder folder = loadFolder(folderId);
@@ -685,9 +688,11 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         	entry.setPreDeletedWhen(null);
         	entry.setPreDeletedBy(null);
         	
+			FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
+			TrashHelper.changeEntry_Log(processor, entry, ChangeLog.RESTOREENTRY);
         	TrashHelper.registerEntryNames(getCoreDao(), folder, entry, renameData);
         	if (reindex) {
-        		loadProcessor(entry.getParentFolder()).indexEntry(entry);
+        		processor.indexEntry(entry);
         	}
         }
     }
@@ -700,10 +705,12 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	preDeleteEntry(parentFolderId, entryId, userId, true, null, reindex);
     }
     //inside write transaction    
-    public void preDeleteEntry(Long folderId, Long entryId, Long userId, boolean deleteMirroredSource, Map options) {
+    @SuppressWarnings("unchecked")
+	public void preDeleteEntry(Long folderId, Long entryId, Long userId, boolean deleteMirroredSource, Map options) {
     	preDeleteEntry(folderId, entryId, userId, deleteMirroredSource, options, true);
     }
-    public void preDeleteEntry(Long folderId, Long entryId, Long userId, boolean deleteMirroredSource, Map options, boolean reindex) {
+    @SuppressWarnings("unchecked")
+	public void preDeleteEntry(Long folderId, Long entryId, Long userId, boolean deleteMirroredSource, Map options, boolean reindex) {
     	deCount.incrementAndGet();
         FolderEntry entry = loadEntry(folderId, entryId);
         Folder folder = loadFolder(folderId);
@@ -714,9 +721,11 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         	entry.setPreDeletedWhen(System.currentTimeMillis());
         	entry.setPreDeletedBy(userId);
         	
+			FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
+			TrashHelper.changeEntry_Log(processor, entry, ChangeLog.PREDELETEENTRY);
         	TrashHelper.unRegisterEntryNames(getCoreDao(), folder, entry);
         	if (reindex) {
-        		loadProcessor(entry.getParentFolder()).indexEntry(entry);
+        		processor.indexEntry(entry);
         	}
         }
     }

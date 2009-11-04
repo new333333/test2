@@ -51,6 +51,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Attachment;
+import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
@@ -62,8 +63,10 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
+import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -92,6 +95,231 @@ public class TrashHelper {
 	protected static Log logger = LogFactory.getLog(TrashHelper.class);
 	private final static int DEFAULT_RENAME_LIST_SIZE = 5;
 
+	/*
+	 * Inner classes used to traverse trash items to check ACLs on
+	 * them.
+	 */
+	private static class TrashCheckACLs implements TraverseCallback {
+		// Class data members.
+		private BinderOperation	m_binderOp;
+		private FolderOperation	m_entryOp;
+		
+		/*
+		 * Class construction.
+		 */
+		public TrashCheckACLs(BinderOperation binderOp, FolderOperation entryOp) {
+			m_binderOp = binderOp;
+			m_entryOp = entryOp;
+		}
+		
+		/*
+		 * Called to handle Binder's during the traversal.
+		 */
+		public boolean binder(AllModulesInjected bs, Long binderId, Object cbDataObject) {
+			boolean reply = true;
+			try {
+				logger.debug("TrashCheckACLs.binder(" + m_binderOp + ":  " + binderId + "):  Checking binder ACLs.");
+				Binder binder = bs.getBinderModule().getBinder(binderId);
+				boolean opAllowed = true;
+				if (isBinderPredeleted(binder)) {
+					opAllowed = bs.getBinderModule().testAccess(binder, m_binderOp);
+					if (!opAllowed) {
+						logger.debug("...ACL violation!");
+						((TrashResponse) cbDataObject).setACLViolation(binderId);
+					}
+				}
+				reply = opAllowed;
+			}
+			catch (Exception ex) {
+				logger.debug("...check failed!");
+				((TrashResponse) cbDataObject).setException(ex, binderId);
+				reply = false;
+			}
+			
+			return reply;
+		}
+		
+		/*
+		 * Called to handle Entry's during the traversal.
+		 */
+		public boolean entry(AllModulesInjected bs, Long folderId, Long entryId, Object cbDataObject) {
+			boolean reply = true;
+			try {
+				logger.debug("TrashCheckACLs.entry(" + m_entryOp + ":  " + folderId + ", " + entryId + "):  Checking entry ACLs.");
+				FolderEntry fe = bs.getFolderModule().getEntry(folderId, entryId);
+				boolean opAllowed = true;
+				if (fe.isPreDeleted()) {
+					opAllowed = bs.getFolderModule().testAccess(fe, m_entryOp);
+					if (!opAllowed) {
+						logger.debug("...ACL violation!");
+						((TrashResponse) cbDataObject).setACLViolation(folderId, entryId);
+					}
+				}
+				reply = opAllowed;
+			}
+			catch (Exception ex) {
+				logger.debug("...check failed!");
+				((TrashResponse) cbDataObject).setException(ex, folderId, entryId);
+				reply = false;
+			}
+			
+			return reply;
+		}
+	}
+	
+	/*
+	 * Inner class used to manipulate entries in the trash.
+	 */
+	private static class TrashEntry {
+		// Class data members.
+		public Long		m_docId;
+		public Long		m_locationBinderId;
+		public String	m_docType;
+		public String	m_entityType;
+		
+		/*
+		 * Constructs a TrashEntry based on the packed string
+		 * representation of one.
+		 */
+		public TrashEntry(String paramS) {
+			String[] params = paramS.split(StringPool.COLON);
+			
+			m_docId				= Long.valueOf(params[0]);
+			m_locationBinderId	= Long.valueOf(params[1]);
+			m_docType			=              params[2];
+			m_entityType		=              params[3];
+		}
+		
+		/*
+		 * Constructs a TrashEntry based on an results of a search.
+		 */
+		@SuppressWarnings("unchecked")
+		public TrashEntry(Map searchResultsMap) {
+			m_docId      = Long.valueOf((String) searchResultsMap.get("_docId"));
+			m_docType    =             ((String) searchResultsMap.get("_docType"));
+			m_entityType =             ((String) searchResultsMap.get("_entityType"));
+			if (isEntry()) {
+				m_locationBinderId = Long.valueOf((String) searchResultsMap.get("_binderId"));
+			}
+			else if (isBinder()) {
+				m_locationBinderId = Long.valueOf((String) searchResultsMap.get("_binderParentId"));
+			}
+		}
+
+		/*
+		 * Returns true if this TrashEntry is a binder.
+		 */
+		public boolean isBinder() {
+			return "binder".equalsIgnoreCase(m_docType);
+		}
+		
+		/*
+		 * Returns true if this TrashEntry is an entry.
+		 */
+		public boolean isEntry() {
+			return "entry".equalsIgnoreCase(m_docType);
+		}
+		
+		/*
+		 * Returns true if this TrashEntry is a Folder.
+		 */
+		public boolean isFolder(AllModulesInjected bs) {
+			if (isBinder()) {
+				isBinderFolder(bs.getBinderModule().getBinder(m_docId));
+			}
+			
+			return false;
+		}
+		
+		/*
+		 * Returns true if the TrashEntry is valid and in a predeleted
+		 * state and false otherwise.
+		 */
+		public boolean isPreDeleted(AllModulesInjected bs) {
+			boolean reply = false;
+			try {
+				if (isEntry()) {
+					// Is the entry is still there and predeleted?
+					FolderEntry fe = bs.getFolderModule().getEntry(m_locationBinderId, m_docId);
+					reply = fe.isPreDeleted();
+				}
+				else if (isBinder()) {
+					// Is the binder is still there and is it a Folder
+					// or Workspace and predeleted? 
+					Binder binder = bs.getBinderModule().getBinder(m_docId);
+					if (isBinderFolder(binder)) {
+						reply = ((Folder) binder).isPreDeleted();
+					}
+					else if (isBinderWorkspace(binder)) {
+						reply = ((Workspace) binder).isPreDeleted();
+					}
+				}
+			} catch (Exception ex) {
+				// Ignore.
+			}
+			
+			return reply;
+		}
+		
+		/*
+		 * Returns true if this TrashEntry is a Workspace.
+		 */
+		public boolean isWorkspace(AllModulesInjected bs) {
+			if (isBinder()) {
+				return isBinderWorkspace(bs.getBinderModule().getBinder(m_docId));
+			}
+			
+			return false;
+		}
+	}
+	
+	/*
+	 * Inner classes used to traverse trash items to predelete them.
+	 */
+	private static class TrashPreDelete implements TraverseCallback {
+		/*
+		 * Called to handle Binder's during the traversal.
+		 */
+		public boolean binder(AllModulesInjected bs, Long binderId, Object cbDataObject) {
+			boolean reply;
+			try {
+				logger.debug("TrashPreDelete.binder(" + binderId + "):  Predeleting binder.");
+				bs.getBinderModule().preDeleteBinder(binderId, RequestContextHolder.getRequestContext().getUser().getId(), true);
+				changeBinder_Audit(bs, binderId, AuditType.preDelete);
+				logger.debug("...predelete succeeded!");
+				reply = true;
+			}
+			catch (Exception ex) {
+				logger.debug("...predelete failed!");
+				((TrashResponse) cbDataObject).setException(ex, binderId);
+				reply = false;
+			}
+			
+			return reply;
+		}
+		
+		/*
+		 * Called to handle Entry's during the traversal.
+		 */
+		public boolean entry(AllModulesInjected bs, Long folderId, Long entryId, Object cbDataObject) {
+			boolean reply;
+			try {
+				logger.debug("TrashPreDelete.entry(" + folderId + ", " + entryId + "):  Predeleting entry.");
+				bs.getFolderModule().preDeleteEntry(folderId, entryId, RequestContextHolder.getRequestContext().getUser().getId());
+				changeEntry_Audit(bs, folderId, entryId, AuditType.preDelete);
+				logger.debug("...predelete succeeded!");
+				reply = true;
+			}
+			catch (Exception ex) {
+				logger.debug("...predelete failed!");
+				((TrashResponse) cbDataObject).setException(ex, folderId, entryId);
+				reply = false;
+			}
+			
+			return reply;
+		}
+	}
+	
 	/*
 	 * Inner class used to track binders as they get purged. 
 	 */
@@ -267,6 +495,7 @@ public class TrashHelper {
 			catch (Exception e) {
 				// Ignore.
 			}
+			
 			return reply;
 		}
 		
@@ -284,6 +513,7 @@ public class TrashHelper {
 			catch (Exception e) {
 				// Ignore.
 			}
+			
 			return reply;
 		}
 		
@@ -448,255 +678,19 @@ public class TrashHelper {
 	}
 	
 	/*
-	 * Inner class used to manipulate entries in the trash.
-	 */
-	private static class TrashEntry {
-		// Class data members.
-		public Long		m_docId;
-		public Long		m_locationBinderId;
-		public String	m_docType;
-		public String	m_entityType;
-		
-		/*
-		 * Constructs a TrashEntry based on the packed string
-		 * representation of one.
-		 */
-		public TrashEntry(String paramS) {
-			String[] params = paramS.split(StringPool.COLON);
-			
-			m_docId				= Long.valueOf(params[0]);
-			m_locationBinderId	= Long.valueOf(params[1]);
-			m_docType			=              params[2];
-			m_entityType		=              params[3];
-		}
-		
-		/*
-		 * Constructs a TrashEntry based on an results of a search.
-		 */
-		@SuppressWarnings("unchecked")
-		public TrashEntry(Map searchResultsMap) {
-			m_docId      = Long.valueOf((String) searchResultsMap.get("_docId"));
-			m_docType    =             ((String) searchResultsMap.get("_docType"));
-			m_entityType =             ((String) searchResultsMap.get("_entityType"));
-			if (isEntry()) {
-				m_locationBinderId = Long.valueOf((String) searchResultsMap.get("_binderId"));
-			}
-			else if (isBinder()) {
-				m_locationBinderId = Long.valueOf((String) searchResultsMap.get("_binderParentId"));
-			}
-		}
-
-		/*
-		 * Returns true if this TrashEntry is a binder.
-		 */
-		public boolean isBinder() {
-			return "binder".equalsIgnoreCase(m_docType);
-		}
-		
-		/*
-		 * Returns true if this TrashEntry is an entry.
-		 */
-		public boolean isEntry() {
-			return "entry".equalsIgnoreCase(m_docType);
-		}
-		
-		/*
-		 * Returns true if this TrashEntry is a Folder.
-		 */
-		public boolean isFolder(AllModulesInjected bs) {
-			if (isBinder()) {
-				isBinderFolder(bs.getBinderModule().getBinder(m_docId));
-			}
-			return false;
-		}
-		
-		/*
-		 * Returns true if the TrashEntry is valid and in a predeleted
-		 * state and false otherwise.
-		 */
-		public boolean isPreDeleted(AllModulesInjected bs) {
-			boolean reply = false;
-			try {
-				if (isEntry()) {
-					// Is the entry is still there and predeleted?
-					FolderEntry fe = bs.getFolderModule().getEntry(m_locationBinderId, m_docId);
-					reply = fe.isPreDeleted();
-				}
-				else if (isBinder()) {
-					// Is the binder is still there and is it a Folder
-					// or Workspace and predeleted? 
-					Binder binder = bs.getBinderModule().getBinder(m_docId);
-					if (isBinderFolder(binder)) {
-						reply = ((Folder) binder).isPreDeleted();
-					}
-					else if (isBinderWorkspace(binder)) {
-						reply = ((Workspace) binder).isPreDeleted();
-					}
-				}
-			} catch (Exception ex) {
-				// Ignore.
-			}
-			return reply;
-		}
-		
-		/*
-		 * Returns true if this TrashEntry is a Workspace.
-		 */
-		public boolean isWorkspace(AllModulesInjected bs) {
-			if (isBinder()) {
-				return isBinderWorkspace(bs.getBinderModule().getBinder(m_docId));
-			}
-			return false;
-		}
-	}
-	
-	/*
-	 * Inner classes used to traverse trash items to predelete them.
-	 */
-	private static class TrashCheckPreDeleteACLs implements TraverseCallback {
-		public boolean binder(AllModulesInjected bs, Long binderId, Object cbDataObject) {
-			boolean reply = true;
-			try {
-				logger.debug("TrashCheckPreDeleteACLs.binder(" + binderId + "):  Checking binder ACLs.");
-				Binder binder = bs.getBinderModule().getBinder(binderId);
-				boolean opAllowed = true;
-				if (isBinderPredeleted(binder)) {
-					opAllowed = bs.getBinderModule().testAccess(binder, BinderOperation.preDeleteBinder);
-					if (!opAllowed) {
-						logger.debug("...ACL violation!");
-						((TrashResponse) cbDataObject).setACLViolation(binderId);
-					}
-				}
-				reply = opAllowed;
-			}
-			catch (Exception ex) {
-				logger.debug("...check failed!");
-				((TrashResponse) cbDataObject).setException(ex, binderId);
-				reply = false;
-			}
-			
-			return reply;
-		}
-		
-		public boolean entry(AllModulesInjected bs, Long folderId, Long entryId, Object cbDataObject) {
-			boolean reply = true;
-			try {
-				logger.debug("TrashCheckPreDeleteACLs.entry(" + folderId + ", " + entryId + "):  Checking entry ACLs.");
-				FolderEntry fe = bs.getFolderModule().getEntry(folderId, entryId);
-				boolean opAllowed = true;
-				if (fe.isPreDeleted()) {
-					opAllowed = bs.getFolderModule().testAccess(fe, FolderOperation.preDeleteEntry);
-					if (!opAllowed) {
-						logger.debug("...ACL violation!");
-						((TrashResponse) cbDataObject).setACLViolation(folderId, entryId);
-					}
-				}
-				reply = opAllowed;
-			}
-			catch (Exception ex) {
-				logger.debug("...check failed!");
-				((TrashResponse) cbDataObject).setException(ex, folderId, entryId);
-				reply = false;
-			}
-			
-			return reply;
-		}
-	}
-	
-	private static class TrashPreDelete implements TraverseCallback {
-		public boolean binder(AllModulesInjected bs, Long binderId, Object cbDataObject) {
-			boolean reply;
-			try {
-				logger.debug("TrashPreDelete.binder(" + binderId + "):  Predeleting binder.");
-				bs.getBinderModule().preDeleteBinder(binderId, RequestContextHolder.getRequestContext().getUser().getId(), true);
-				logger.debug("...predelete succeeded!");
-				reply = true;
-			}
-			catch (Exception ex) {
-				logger.debug("...predelete failed!");
-				((TrashResponse) cbDataObject).setException(ex, binderId);
-				reply = false;
-			}
-			return reply;
-		}
-		
-		public boolean entry(AllModulesInjected bs, Long folderId, Long entryId, Object cbDataObject) {
-			boolean reply;
-			try {
-				logger.debug("TrashPreDelete.entry(" + folderId + ", " + entryId + "):  Predeleting entry.");
-				bs.getFolderModule().preDeleteEntry(folderId, entryId, RequestContextHolder.getRequestContext().getUser().getId());
-				logger.debug("...predelete succeeded!");
-				reply = true;
-			}
-			catch (Exception ex) {
-				logger.debug("...predelete failed!");
-				((TrashResponse) cbDataObject).setException(ex, folderId, entryId);
-				reply = false;
-			}
-			return reply;
-		}
-	}
-	
-	/*
 	 * Inner classes used to traverse trash items to restore them.
 	 */
-	private static class TrashCheckRestoreACLs implements TraverseCallback {
-		public boolean binder(AllModulesInjected bs, Long binderId, Object cbDataObject) {
-			boolean reply = true;
-			try {
-				logger.debug("TrashCheckRestoreACLs.binder(" + binderId + "):  Checking binder ACLs.");
-				Binder binder = bs.getBinderModule().getBinder(binderId);
-				boolean opAllowed = true;
-				if (isBinderPredeleted(binder)) {
-					opAllowed = bs.getBinderModule().testAccess(binder, BinderOperation.restoreBinder);
-					if (!opAllowed) {
-						logger.debug("...ACL violation!");
-						((TrashResponse) cbDataObject).setACLViolation(binderId);
-					}
-				}
-				reply = opAllowed;
-			}
-			catch (Exception ex) {
-				logger.debug("...check failed!");
-				((TrashResponse) cbDataObject).setException(ex, binderId);
-				reply = false;
-			}
-			
-			return reply;
-		}
-		
-		public boolean entry(AllModulesInjected bs, Long folderId, Long entryId, Object cbDataObject) {
-			boolean reply = true;
-			try {
-				logger.debug("TrashCheckRestoreACLs.entry(" + folderId + ", " + entryId + "):  Checking entry ACLs.");
-				FolderEntry fe = bs.getFolderModule().getEntry(folderId, entryId);
-				boolean opAllowed = true;
-				if (fe.isPreDeleted()) {
-					opAllowed = bs.getFolderModule().testAccess(fe, FolderOperation.restoreEntry);
-					if (!opAllowed) {
-						logger.debug("...ACL violation!");
-						((TrashResponse) cbDataObject).setACLViolation(folderId, entryId);
-					}
-				}
-				reply = opAllowed;
-			}
-			catch (Exception ex) {
-				logger.debug("...check failed!");
-				((TrashResponse) cbDataObject).setException(ex, folderId, entryId);
-				reply = false;
-			}
-			
-			return reply;
-		}
-	}
-	
 	private static class TrashRestore implements TraverseCallback {
+		/*
+		 * Called to handle Binder's during the traversal.
+		 */
 		public boolean binder(AllModulesInjected bs, Long binderId, Object cbDataObject) {
 			TrashResponse tr = ((TrashResponse) cbDataObject);
 			boolean reply;
 			try {
 				logger.debug("TrashRestore.binder(" + binderId + "):  Restoring binder.");
 				bs.getBinderModule().restoreBinder(binderId, tr.m_rd, true);
+				changeBinder_Audit(bs, binderId, AuditType.restore);
 				logger.debug("...restore succeeded!");
 				reply = true;
 			}
@@ -705,15 +699,20 @@ public class TrashHelper {
 				tr.setException(ex, binderId);
 				reply = false;
 			}
+			
 			return reply;
 		}
 		
+		/*
+		 * Called to handle Entry's during the traversal.
+		 */
 		public boolean entry(AllModulesInjected bs, Long folderId, Long entryId, Object cbDataObject) {
 			TrashResponse tr = ((TrashResponse) cbDataObject);
 			boolean reply;
 			try {
 				logger.debug("TrashRestore.entry(" + folderId + ", " + entryId + "):  Restoring entry.");
 				bs.getFolderModule().restoreEntry(folderId, entryId, tr.m_rd, true);
+				changeEntry_Audit(bs, folderId, entryId, AuditType.restore);
 				logger.debug("...restore succeeded!");
 				reply = true;
 			}
@@ -722,6 +721,7 @@ public class TrashHelper {
 				tr.setException(ex, folderId, entryId);
 				reply = false;
 			}
+			
 			return reply;
 		}
 	}
@@ -843,6 +843,7 @@ public class TrashHelper {
 		ListFolderHelper.initPageCounts(bs, request, userProperties.getProperties(), tab, options);
 		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 		BinderHelper.initSortOrder(bs, userFolderProperties, options);
+		
 		return options;
 	}
 
@@ -876,9 +877,53 @@ public class TrashHelper {
 			recordsInPage = Integer.valueOf(SPropsUtil.getString("folder.records.listed"));
 			tabData.put(Tabs.RECORDS_IN_PAGE, recordsInPage);
 		}
+		
 		return tab;
 	}
 
+	/*
+	 * Writes logging information about a binder change. 
+	 */
+	private static void changeBinder_Audit(AllModulesInjected bs, Long binderId, AuditType type) {
+		bs.getReportModule().addAuditTrail(
+			type,
+			bs.getBinderModule().getBinder(
+				binderId));
+	}
+	
+	/**
+	 * Writes logging information about a binder change. 
+	 * 
+	 * @param processor
+	 * @param binder
+	 * @param operation
+	 */
+	public static void changeBinder_Log(BinderProcessor processor, Binder binder, String operation) {
+		processor.processChangeLog(binder, operation);
+	}
+
+	/*
+	 * Writes logging information about an entry change. 
+	 */
+	private static void changeEntry_Audit(AllModulesInjected bs, Long folderId, Long entryId, AuditType type) {
+		bs.getReportModule().addAuditTrail(
+			type,
+			bs.getFolderModule().getEntry(
+				folderId,
+				entryId));
+	}
+
+	/**
+	 * Writes logging information about an entry change. 
+	 * 
+	 * @param processor
+	 * @param de
+	 * @param operation
+	 */
+	public static void changeEntry_Log(FolderCoreProcessor processor, DefinableEntity de, String operation) {
+		processor.processChangeLog(de, operation);
+	}
+	
 	/*
 	 * Returns a TrashEntry[] of all the items in the trash (non paged
 	 * and non-sorted.)  Used to perform purge/restore alls.
@@ -1021,9 +1066,10 @@ public class TrashHelper {
 		else if (isBinderWorkspace(binder)) {
 			reply = ((Workspace) binder).isPreDeleted();
 		}
+		
 		return reply;
 	}
-	
+
 	/*
 	 * Returns true if binder is a Workspace.
 	 */
@@ -1056,7 +1102,8 @@ public class TrashHelper {
 	public static void preDeleteBinder(AllModulesInjected bs, Long binderId) throws Exception {
 		// Check the ACLs...
 		TrashResponse tr = new TrashResponse(bs);
-		TrashTraverser tt = new TrashTraverser(bs, logger, new TrashCheckPreDeleteACLs(), tr);
+		TrashCheckACLs tca = new TrashCheckACLs(BinderOperation.preDeleteBinder, FolderOperation.preDeleteEntry);
+		TrashTraverser tt = new TrashTraverser(bs, logger, tca, tr);
 		tt.doTraverse(TraversalMode.DESCENDING, binderId);
 		if (!(tr.isError())) {
 			// ...and if they pass, perform the predelete.
@@ -1082,7 +1129,8 @@ public class TrashHelper {
 	public static void preDeleteEntry(AllModulesInjected bs, Long folderId, Long entryId) throws Exception{
 		// Check the ACLs...
 		TrashResponse tr = new TrashResponse(bs);
-		TrashTraverser tt = new TrashTraverser(bs, logger, new TrashCheckPreDeleteACLs(), tr);
+		TrashCheckACLs tca = new TrashCheckACLs(BinderOperation.preDeleteBinder, FolderOperation.preDeleteEntry);
+		TrashTraverser tt = new TrashTraverser(bs, logger, tca, tr);
 		tt.doTraverse(TraversalMode.DESCENDING, folderId, entryId);
 		if (!(tr.isError())) {
 			// ...and if they pass, perform the predelete.
@@ -1507,7 +1555,8 @@ public class TrashHelper {
 	 */
 	private static void restoreBinder(AllModulesInjected bs, Long binderId, TrashResponse tr) {
 		// Check the ACLs...
-		TrashTraverser tt = new TrashTraverser(bs, logger, new TrashCheckRestoreACLs(), tr);
+		TrashCheckACLs tca = new TrashCheckACLs(BinderOperation.restoreBinder, FolderOperation.restoreEntry);
+		TrashTraverser tt = new TrashTraverser(bs, logger, tca, tr);
 		tt.doTraverse(TraversalMode.ASCENDING, binderId);
 		if (!(tr.isError())) {
 			// ...and if they pass, perform the restore.
@@ -1520,11 +1569,13 @@ public class TrashHelper {
 	 * Called to restore an entry.
 	 */
 	private static void restoreEntry(AllModulesInjected bs, Long folderId, Long entryId, TrashResponse tr) {
+		// Always use the other form of the method.
 		restoreEntry(bs, folderId, entryId, true, tr);
 	}
 	private static TrashResponse restoreEntry(AllModulesInjected bs, Long folderId, Long entryId, boolean restoreParentage, TrashResponse tr) {
 		// Check the ACLs...
-		TrashTraverser tt = new TrashTraverser(bs, logger, new TrashCheckRestoreACLs(), tr);
+		TrashCheckACLs tca = new TrashCheckACLs(BinderOperation.restoreBinder, FolderOperation.restoreEntry);
+		TrashTraverser tt = new TrashTraverser(bs, logger, tca, tr);
 		tt.doTraverse(TraversalMode.ASCENDING, folderId, entryId);
 		if (!(tr.isError())) {
 			// ...and if they pass, perform the restore.

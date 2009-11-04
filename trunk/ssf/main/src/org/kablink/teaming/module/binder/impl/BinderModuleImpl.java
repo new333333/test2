@@ -726,10 +726,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		        	ws.setPreDeletedWhen(null);
 		        	ws.setPreDeletedBy(null);
 		        }
-		        
+
+				BinderProcessor processor = loadBinderProcessor(binder);
+				TrashHelper.changeBinder_Log(processor, binder, ChangeLog.RESTOREBINDER);
 		        TrashHelper.registerBinderNames(getCoreDao(), binder, renameData);
 		        if (reindex) {
-		        	loadBinderProcessor(binder).indexBinder(binder, true);
+		        	processor.indexBinder(binder, true);
 		        }
 			}
 		}
@@ -768,10 +770,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		        	ws.setPreDeletedWhen(System.currentTimeMillis());
 		        	ws.setPreDeletedBy(userId);
 		        }
-		        
+
+		        BinderProcessor processor = loadBinderProcessor(binder);
+				TrashHelper.changeBinder_Log(processor, binder, ChangeLog.PREDELETEBINDER);
 		        TrashHelper.unRegisterBinderNames(getCoreDao(), binder);
 		        if (reindex) {
-		        	loadBinderProcessor(binder).indexBinder(binder, true);
+		        	processor.indexBinder(binder, true);
 		        }
 			}
 		}
