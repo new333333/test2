@@ -54,6 +54,8 @@ public class ChangeLog extends ZonedObject {
 	public static final String ADDENTRY="addEntry";
 	public static final String MODIFYENTRY="modifyEntry";
 	public static final String DELETEENTRY="deleteEntry";
+	public static final String PREDELETEENTRY="preDeleteEntry";
+	public static final String RESTOREENTRY="restoreEntry";
 	public static final String MOVEENTRY="moveEntry";
 	public static final String STARTWORKFLOW="startWorkflow";
 	public static final String MODIFYWORKFLOWSTATE="modifyWorkflowState";
@@ -64,6 +66,8 @@ public class ChangeLog extends ZonedObject {
 	public static final String ADDBINDER="addBinder";
 	public static final String MODIFYBINDER="modifyBinder";
 	public static final String DELETEBINDER="deleteBinder";
+	public static final String PREDELETEBINDER="preDeleteBinder";
+	public static final String RESTOREBINDER="restoreBinder";
 	public static final String MOVEBINDER="moveBinder";
 	public static final String FILERENAME="renameFile";
 	public static final String FILEVERSIONDELETE="deleteVersion";

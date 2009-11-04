@@ -50,6 +50,8 @@ public class AuditTrail extends ZonedObject {
 		add, 
 		modify, 
 		delete,
+		preDelete,
+		restore,
 		workflow,
 		login,
 		download,
