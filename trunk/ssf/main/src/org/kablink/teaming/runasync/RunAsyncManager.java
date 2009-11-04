@@ -89,6 +89,8 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 							else
 								logger.debug("No request context to inherit from parent");
 						}
+						if(logger.isDebugEnabled())
+							logger.debug("Executing " + action.toString());
 						Object result = action.doAsynchronously();
 						
 						if(logger.isDebugEnabled()) {

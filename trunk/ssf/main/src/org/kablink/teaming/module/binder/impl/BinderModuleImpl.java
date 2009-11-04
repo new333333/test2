@@ -2128,6 +2128,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			    	folderModule.cleanupFolders();
 			    	return null;
 				}
+				public String toString() {
+					return "folderModule.cleanupFolders()";
+				}
 			});
 		}
 	}
