@@ -315,9 +315,13 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 				zipIn.closeEntry();
 			}
 		} finally {
-			zipIn.close();List foundList = findExtensions(extension.getName(), RequestContextHolder.getRequestContext().getZoneId());
+			zipIn.close();
+			//List foundList = findExtensions(extension.getName(), RequestContextHolder.getRequestContext().getZoneId());
 		}
 		if (full) {
+			
+			ExtensionInfo extInfo = createExtensionInfo(extension, extensionPrefix, extensionWebDir, deployedDate);
+			
 			//load definitions
 			File defDir = new File(extensionDir.getAbsolutePath() + File.separator + "classes" + 
 					File.separator + "config" +  File.separator + "definitions");
@@ -375,30 +379,25 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 					}
 				}
 			}
+
+			List extList = findExtensions(RequestContextHolder.getRequestContext().getZoneId());
+			if (extList.contains(extInfo)) {
+				//Extension already exists, then lets update existing extension
+				List foundList = findExtensions(extension.getName(), RequestContextHolder.getRequestContext().getZoneId());
+				if(foundList.size() > 0)
+				{
+					ExtensionInfo foundExtInfo = (ExtensionInfo) foundList.get(0);
+					logger.info("Extension found: updated extension " + foundExtInfo.getName());
+					foundExtInfo.setDateDeployed(deployedDate);
+					updateExtension(foundExtInfo);
+				}
+			} else {
+				extInfo.setDateDeployed(deployedDate);
+				addExtension(extInfo);
+			}
 		}
 		//Now move libraries into classpath
 		getZoneClassManager().addExtensionLibs(extensionDir);
-		
-		//Add the extension info to database
-		ExtensionInfo extInfo = new ExtensionInfo();
-		extInfo.setName(extensionPrefix);
-		extInfo.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
-		
-		List extList = findExtensions(RequestContextHolder.getRequestContext().getZoneId());
-		if (extList.contains(extInfo)) {
-			//Extension already exists, then lets update existing extension
-			List foundList = findExtensions(extension.getName(), RequestContextHolder.getRequestContext().getZoneId());
-			if(foundList.size() > 0)
-			{
-				ExtensionInfo foundExtInfo = (ExtensionInfo) foundList.get(0);
-				foundExtInfo.setDateDeployed(deployedDate);
-				logger.info("Extension found: updated extension " + foundExtInfo.getName());
-				updateExtension(foundExtInfo);
-			}
-		} else {
-			extInfo.setDateDeployed(deployedDate);
-			addExtension(extInfo);
-		}
 		
 		logger.info("Extension deployed successfully from " + extension.getPath());
 	}
@@ -737,6 +736,59 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 	}
 	public List findExtensions(String name, Long zoneId) {
 		return getCoreDao().loadObjects(new ObjectControls(ExtensionInfo.class), new FilterControls("name", name), zoneId);
+	}
+	
+	private ExtensionInfo createExtensionInfo(File extension, String extensionPrefix, File extensionWebDir, String deployedDate){
+		//Add the extension info to database
+		ExtensionInfo extInfo = new ExtensionInfo();
+		extInfo.setName(extensionPrefix);
+		extInfo.setDescription("This plugin is missing the install.xml file.");
+		extInfo.setDateDeployed(deployedDate);
+		extInfo.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
+		
+		File installFile = new File(extensionWebDir.getAbsolutePath() + File.separator + "install.xml");
+		try {
+			SAXReader xInstall = new SAXReader(false);
+			final Document installDoc = xInstall.read(installFile);
+			if( installDoc != null && installDoc.getRootElement() != null) {
+				
+				//String version = installDoc.getRootElement().attributeValue("version");
+//				if(installDoc.getRootElement().selectSingleNode("./name") != null){
+//					Element nameEle = (Element)installDoc.getRootElement().selectSingleNode("./name");
+//					String name = nameEle.getText();
+//					extInfo.setName(name);
+//				}
+				if(installDoc.getRootElement().selectSingleNode("./author") != null){
+					Element authorEle = (Element)installDoc.getRootElement().selectSingleNode("./author");
+					String author = authorEle.getText();
+					extInfo.setAuthor(author);
+				}
+				if(installDoc.getRootElement().selectSingleNode("./authorEmail") != null){
+					Element authorEmailEle = (Element)installDoc.getRootElement().selectSingleNode("./authorEmail");
+					String authorEmail = authorEmailEle.getText();
+					extInfo.setAuthorEmail(authorEmail);
+				}
+				if(installDoc.getRootElement().selectSingleNode("./authorUrl") != null){
+					Element authorSiteEle = (Element)installDoc.getRootElement().selectSingleNode("./authorUrl");
+					String authorSite = authorSiteEle.getText();
+					extInfo.setAuthorSite(authorSite);
+				}
+				if(installDoc.getRootElement().selectSingleNode("./creationDate") != null){
+					Element creationDateEle = (Element)installDoc.getRootElement().selectSingleNode("./creationDate");
+					String createDate = creationDateEle.getText();
+					extInfo.setDateCreated(createDate);
+				}
+				if(installDoc.getRootElement().selectSingleNode("./description") != null){
+					Element descrEle = (Element)installDoc.getRootElement().selectSingleNode("./description");
+					String description = descrEle.getText();
+					extInfo.setDescription(description);
+				}
+			} 
+		} catch (DocumentException e) {
+			logger.warn("Malformed template file " 	+ extension.getPath(), e);
+		}
+		
+		return extInfo;
 	}
 	
 }

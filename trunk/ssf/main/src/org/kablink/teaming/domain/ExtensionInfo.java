@@ -53,6 +53,7 @@ public class ExtensionInfo extends PersistentObject  {
 		
 	}    
 
+	
     /**
      * Unique name of definition.
      * @hibernate.property length="64"
@@ -179,6 +180,12 @@ public class ExtensionInfo extends PersistentObject  {
     	
     	return false;
     }
+
+
+	public String getFileName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	
 }
