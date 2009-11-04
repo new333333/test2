@@ -111,7 +111,7 @@ public class ExtensionsConfig  extends Composite {
 				}// end run()
 			};
 			
-			timer.schedule( 500 );
+			timer.schedule( 250 );
 		}
 		
 		// All composites must call initWidget() in their constructors.
