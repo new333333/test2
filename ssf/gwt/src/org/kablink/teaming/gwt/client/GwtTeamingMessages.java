@@ -134,6 +134,7 @@ public interface GwtTeamingMessages extends Messages
 	String showBorder();
 	String showTitle();
 	String title();
+	String close();
 	
 	// Strings used with the Utility Element widget in the landing page editor.
 	String utilityElementHint();
@@ -154,5 +155,20 @@ public interface GwtTeamingMessages extends Messages
 	String extensionsDesc();
 	String extensionsZone();
 	String extensionsRemove();
-
+	String extensionsConfirmDelete();
+	String extensionsWaiting();
+	String extensionsRPCError();
+	
+	// Strings used with extensions dlg
+	String extensionsDlgDescription();
+	String extensionsDlgDeployed();
+	String extensionsDlgZoneName();
+	String extensionsDlgId();
+	String extensionsDlgAuthorName();
+	String extensionsDlgAuthorSite();
+	String extensionsDlgAuthorEmail();
+	String extensionsDlgCreated();
+	String extensionsDlgFilesTitle();
+	String extensionsDlgFilesError();
+	
 }// end GwtTeamingMessages

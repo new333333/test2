@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.service;
 
+import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 
 import org.kablink.teaming.gwt.client.GwtFolder;
@@ -60,5 +61,6 @@ public interface GwtRpcServiceAsync
     public void getTutorialPanelState( AsyncCallback<String> callback );
 	public void getExtensionInfo( AsyncCallback<ExtensionInfoClient[]> callback );
 	public void removeExtension(String id, AsyncCallback<ExtensionInfoClient[]> callback);
+	public void getExtensionFiles(String id, String zoneName, AsyncCallback<ExtensionFiles> callback);
 
 }// end GwtRpcServiceAsync
