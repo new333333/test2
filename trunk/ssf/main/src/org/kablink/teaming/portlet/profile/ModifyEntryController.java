@@ -57,6 +57,7 @@ import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
@@ -199,6 +200,7 @@ public class ModifyEntryController extends SAbstractController {
 			model.put(WebKeys.FOLDER, entry.getParentBinder());
 			model.put(WebKeys.BINDER, entry.getParentBinder());
 			model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_FORM);
+			BinderHelper.setupStandardBeans(this, request, response, model, entry.getParentBinder().getId());
 			ProfileBinder binder = getProfileModule().getProfileBinder();
 			if (getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
 				model.put(WebKeys.IS_BINDER_ADMIN, true);

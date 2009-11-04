@@ -373,6 +373,7 @@ public class AddEntryController extends SAbstractController {
 			errorMsg += "<br/>" + errorMsg2;
 		}
 		model.put(WebKeys.FILE_PROCESSING_ERRORS, errorMsg);
+		BinderHelper.setupStandardBeans(this, request, response, model);
 		
 		if (action.equals(WebKeys.ACTION_ADD_FOLDER_ATTACHMENT)) {
 			path="forum/applet_response";
