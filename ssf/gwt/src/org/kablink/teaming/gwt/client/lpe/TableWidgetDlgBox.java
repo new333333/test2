@@ -241,7 +241,7 @@ public class TableWidgetDlgBox extends DlgBox
 			width = getColWidth( i );
 			
 			// Is the width valid?  Width must be 1-99
-			if ( width > 0 && width < 100 )
+			if ( width > 0 && width <= 100 )
 			{
 				// Yes
 				properties.setColWidth( i, width );
