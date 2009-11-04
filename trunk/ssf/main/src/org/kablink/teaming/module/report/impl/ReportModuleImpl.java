@@ -112,6 +112,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	protected FolderModule folderModule;
 	protected AdminModule adminModule;
 	protected ProfileModule profileModule;
+	private final static long MEGABYTES = 1024L * 1024L;
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
 	}
@@ -1155,7 +1156,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			}
 		}
 
-		long thresholdBytes = threshold.longValue() * 1024 * 1024;
+		long thresholdBytes = threshold.longValue() * MEGABYTES;
 		for(QKey k : distributedSizes.keySet()) {
 			Long size = distributedSizes.get(k);
 			if(size.longValue() > thresholdBytes) {
@@ -1168,7 +1169,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				if(option != QuotaOption.WorkspacesOnly) {
 					row.put(ReportModule.USER_ID, k.userId);
 				}
-				row.put(ReportModule.SIZE, size);
+				row.put(ReportModule.SIZE, (size+MEGABYTES-1) / MEGABYTES);
 				report.add(row);
 			}
 		}
@@ -1210,9 +1211,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			Object[] result = (Object[]) results.get(i);
 			HashMap<String,Object> row = new HashMap<String,Object>();
 				row.put(ReportModule.USER_ID, result[0]);
-				row.put(ReportModule.DISK_SPACE_USED, result[1]);
-				row.put(ReportModule.DISKQUOTA, (result[2] == null ? 0 : (Long)result[2] * 1024 * 1024));
-				row.put(ReportModule.MAX_GROUPS_QUOTA, (result[3] == null ? 0 : (Long)result[3] * 1024 * 1024));
+				row.put(ReportModule.DISK_SPACE_USED, ((Long)result[1]+MEGABYTES-1) / MEGABYTES);
+				row.put(ReportModule.DISKQUOTA, (result[2] == null ? 0 : (Long)result[2]));
+				row.put(ReportModule.MAX_GROUPS_QUOTA, (result[3] == null ? 0 : (Long)result[3]));
 				report.add(row);
 			}
 
@@ -1253,9 +1254,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			Object[] result = (Object[]) results.get(i);
 			HashMap<String,Object> row = new HashMap<String,Object>();
 				row.put(ReportModule.USER_ID, (Long)result[0]);
-				row.put(ReportModule.DISK_SPACE_USED, (Long)result[1]);
-				row.put(ReportModule.DISKQUOTA, (result[2] == null ? 0 : (Long)result[2] * 1024 * 1024));
-				row.put(ReportModule.MAX_GROUPS_QUOTA, (result[3] == null ? 0 : (Long)result[3] * 1024 * 1024));
+				row.put(ReportModule.DISK_SPACE_USED, ((Long)result[1] + MEGABYTES - 1) / MEGABYTES);
+				row.put(ReportModule.DISKQUOTA, (result[2] == null ? 0 : (Long)result[2]));
+				row.put(ReportModule.MAX_GROUPS_QUOTA, (result[3] == null ? 0 : (Long)result[3]));
 				report.add(row);
 			}
 
@@ -1300,7 +1301,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			Object[] result = (Object[]) results.get(i);
 			HashMap<String,Object> row = new HashMap<String,Object>();
 				row.put(ReportModule.USER_ID, (Long)result[0]);
-				row.put(ReportModule.SIZE, (Long)result[1]);
+				row.put(ReportModule.SIZE, ((Long)result[1]+MEGABYTES-1)/MEGABYTES);
 				row.put(ReportModule.CREATIONDATE, (Date)result[2]);
 
 				report.add(row);
