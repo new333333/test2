@@ -116,14 +116,24 @@ var ${eName}_ok = 1;
   <div class="needed-because-of-ie-bug"><div id="ss_duplicateFileCheck_${eName}" style="display:none; visibility:hidden;" ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
   <input type="file" class="ss_text ${ss_fieldModifyStyle}" ${ss_fieldModifyInputAttribute}
     name="${eName}" id="${eName}" ${width} 
-    onkeyup="if(window.event && window.event.keyCode!=9 && window.event.keyCode!=16)this.click();return false;"
-    onchange="ss_ajaxValidate(ss_findEntryForFileUrl, this,'${elementName}_label', 'ss_duplicateFileCheck_${eName}', '${repositoryName}');"
+	<c:if test="${ss_diskQuotaExceeded}">
+	  onClick='alert("<ssf:nlt tag="quota.diskQuotaExceeded"/>");return false;'
+	</c:if>
+	<c:if test="${!ss_diskQuotaExceeded}">
+      onkeyup="if(window.event && window.event.keyCode!=9 && window.event.keyCode!=16)this.click();return false;"
+      onchange="ss_ajaxValidate(ss_findEntryForFileUrl, this,'${elementName}_label', 'ss_duplicateFileCheck_${eName}', '${repositoryName}');"
+	</c:if>
   /><br/>
   <input type="hidden" name="ss_upload_request_uid" />
  </c:if>
  <c:if test='${empty ssFolder}'>
   <label for="${eName}">&nbsp;</label>
-  <input type="file" class="ss_text ${ss_fieldModifyStyle}" ${ss_fieldModifyInputAttribute} name="${eName}" id="${eName}" ${width}/><br/>
+  <input type="file" class="ss_text ${ss_fieldModifyStyle}" ${ss_fieldModifyInputAttribute} 
+    name="${eName}" id="${eName}" 
+	<c:if test="${ss_diskQuotaExceeded}">
+	  onClick='alert("<ssf:nlt tag="quota.diskQuotaExceeded"/>");return false;'
+	</c:if>
+    ${width}/><br/>
  </c:if>
 	<script type="text/javascript">	
 		function ${eName}_onAtatchmentFormSubmit(formObj) {
