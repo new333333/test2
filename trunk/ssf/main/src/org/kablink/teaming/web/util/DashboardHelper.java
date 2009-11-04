@@ -1002,14 +1002,20 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(this, searchQuery);
 		searchSearchFormData.putAll(searchFilterConverter.convertAndPrepareFormData());
 		Element filterTerm;
+		Element preDeletedOnlyTerm;
 		if (null == searchQuery) {
 			filterTerm = null;
+			preDeletedOnlyTerm = null;
 		}
 		else {
 			filterTerm = (Element)searchQuery.getRootElement().selectSingleNode("//filterTerms/filterTerm[@filterType='text' and @caseSensitive='true']");
+			preDeletedOnlyTerm = (Element)searchQuery.getRootElement().selectSingleNode("//filterTerms/filterTerm[@preDeletedOnly='true']");
 		}
 		if (filterTerm != null) {
 			model.put(WebKeys.SEARCH_FORM_CASE_SENSITIVE, true);
+		}
+		if (preDeletedOnlyTerm != null) {
+			model.put(WebKeys.SEARCH_FORM_PREDELETED_ONLY, true);
 		}
 
 		

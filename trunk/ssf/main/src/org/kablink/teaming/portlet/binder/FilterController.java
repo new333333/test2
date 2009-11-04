@@ -228,6 +228,10 @@ public class FilterController extends AbstractBinderController {
 				if (filterTerm != null) {
 					model.put(WebKeys.SEARCH_FORM_CASE_SENSITIVE, true);
 				}
+				Element preDeletedOnlyTerm = (Element)searchQuery.getRootElement().selectSingleNode("//filterTerms/filterTerm[@preDeletedOnly='true']");
+				if (preDeletedOnlyTerm != null) {
+					model.put(WebKeys.SEARCH_FORM_PREDELETED_ONLY, true);
+				}
 			}
 			return new ModelAndView(WebKeys.VIEW_BUILD_FILTER, model);
 		} else {

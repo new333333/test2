@@ -2539,6 +2539,10 @@ public class BinderHelper {
 		// actualize tabs info
 		Map options = prepareSearchOptions(bs, request);
 		actualizeOptions(options, request);
+		Element preDeletedOnlyTerm = (Element)searchQuery.getRootElement().selectSingleNode("//filterTerms/filterTerm[@preDeletedOnly='true']");
+		if (preDeletedOnlyTerm != null) {
+			options.put(ObjectKeys.SEARCH_PRE_DELETED, Boolean.TRUE);
+		}
 
 		options.put(Tabs.TITLE, queryName);
 		Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, options);
@@ -2550,6 +2554,9 @@ public class BinderHelper {
 		Element filterTerm = (Element)searchQuery.getRootElement().selectSingleNode("//filterTerms/filterTerm[@filterType='text' and @caseSensitive='true']");
 		if (filterTerm != null) {
 			model.put(WebKeys.SEARCH_FORM_CASE_SENSITIVE, true);
+		}
+		if (preDeletedOnlyTerm != null) {
+			model.put(WebKeys.SEARCH_FORM_PREDELETED_ONLY, true);
 		}
 		
 		return model;
@@ -2585,6 +2592,7 @@ public class BinderHelper {
 		preparePagination(model, results, options, tab);
 		
 		model.put(WebKeys.SEARCH_FORM_CASE_SENSITIVE, options.get(ObjectKeys.SEARCH_CASE_SENSITIVE));
+		model.put(WebKeys.SEARCH_FORM_PREDELETED_ONLY, options.get(ObjectKeys.SEARCH_PRE_DELETED));
 		model.put("resultsCount", options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
 		model.put("summaryWordCount", (Integer)options.get(WebKeys.SEARCH_FORM_SUMMARY_WORDS));
 
@@ -2613,13 +2621,18 @@ public class BinderHelper {
 		Map options = new HashMap();
 		
 		Boolean searchCaseSensitive = false;
+		Boolean searchPreDeletedOnly = false;
 		try {
 			searchCaseSensitive = PortletRequestUtils.getBooleanParameter(request, WebKeys.SEARCH_FORM_CASE_SENSITIVE);
+			searchPreDeletedOnly = PortletRequestUtils.getBooleanParameter(request, WebKeys.SEARCH_FORM_PREDELETED_ONLY);
 		} catch(Exception e) {
 			logger.debug("BinderHelper.prepareSearchOptions(Exception:  '" + MiscUtil.exToString(e) + "'):  Ignored");
 		}
 		if (searchCaseSensitive == null) searchCaseSensitive = false;
 		options.put(ObjectKeys.SEARCH_CASE_SENSITIVE, searchCaseSensitive);
+		if ((searchPreDeletedOnly != null) && searchPreDeletedOnly) { 
+			options.put(ObjectKeys.SEARCH_PRE_DELETED, searchPreDeletedOnly);
+		}
 		
 		//If the entries per page is not present in the user properties, then it means the
 		//number of records per page is obtained from the ssf properties file, so we do not have 
@@ -2714,6 +2727,7 @@ public class BinderHelper {
 		if (tabData.containsKey(WebKeys.SEARCH_FORM_SUMMARY_WORDS)) options.put(WebKeys.SEARCH_FORM_SUMMARY_WORDS, tabData.get(WebKeys.SEARCH_FORM_SUMMARY_WORDS));
 		if (tabData.containsKey(WebKeys.SEARCH_FORM_QUICKSEARCH)) options.put(WebKeys.SEARCH_FORM_QUICKSEARCH, tabData.get(WebKeys.SEARCH_FORM_QUICKSEARCH));
 		if (tabData.containsKey(ObjectKeys.SEARCH_CASE_SENSITIVE)) options.put(ObjectKeys.SEARCH_CASE_SENSITIVE, tabData.get(ObjectKeys.SEARCH_CASE_SENSITIVE));
+		if (tabData.containsKey(ObjectKeys.SEARCH_PRE_DELETED)) options.put(ObjectKeys.SEARCH_PRE_DELETED, tabData.get(ObjectKeys.SEARCH_PRE_DELETED));
 		if (tabData.containsKey(Tabs.PAGE)) options.put(Tabs.PAGE, tabData.get(Tabs.PAGE));
 		return options;
 	}

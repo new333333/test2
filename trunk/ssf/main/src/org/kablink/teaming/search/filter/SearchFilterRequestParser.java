@@ -73,6 +73,7 @@ public class SearchFilterRequestParser {
 		
 		parseFilterName(request, searchFilter);
 		parseFreeText(request, searchFilter);
+		parsePreDeletedOnly(request, searchFilter);
 		parsePlaces(request, searchFilter);
 		
 		parseAdvancedOptions = PortletRequestUtils.getBooleanParameter(request, SearchFilterKeys.SearchParseAdvancedForm, false);
@@ -386,6 +387,16 @@ public class SearchFilterRequestParser {
 		
 		if (!searchText.equals("")) {
 			searchFilter.addText(searchText, searchCaseSensitive);
+		}
+	}
+
+	private void parsePreDeletedOnly(PortletRequest request, SearchFilter searchFilter) {
+		Boolean searchPreDeleted = false;
+		try {
+			searchPreDeleted = PortletRequestUtils.getBooleanParameter(request, WebKeys.SEARCH_FORM_PREDELETED_ONLY);
+		} catch(Exception e) {}
+		if ((searchPreDeleted != null) && searchPreDeleted) {
+			searchFilter.addPreDeletedOnly(searchPreDeleted);
 		}
 	}
 

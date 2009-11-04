@@ -208,13 +208,21 @@
 							 		</c:if>
 							 	> <label for="ss_searchCaseSensitive"><ssf:nlt tag="searchForm.search_caseSensitive"/></label>
 							</div>
+							<div class="ss_additionals">
+							 	<input type="checkbox" name="ss_searchPreDeletedOnly" id="ss_searchPreDeletedOnly" 
+							 	  value="true" style="width: 19px; margin: 0; padding: 0; " 
+							 		<c:if test="${ss_searchPreDeletedOnly}">
+							 			checked="checked"
+							 		</c:if>
+							 	> <label for="ss_searchPreDeletedOnly"><ssf:nlt tag="searchForm.search_preDeletedOnly"/></label>
+							</div>
  						</td>
 					</tr>
 					
 					<c:if test="${!filterDefinition}">
 						<tr>
 							<td colspan="2" 
-							  style="text-align: right !important; padding-bottom: 3px;">
+							  style="text-align: right !important; padding-bottom: 3px; padding-top: 8px;">
 								<c:if test="${empty disableSearchButton || disableSearchButton == 0}">
 								<a class="ss_searchButton" href="javascript: ss_search();" ><img <ssf:alt tag="alt.search"/> 
 					  				src="<html:imagesPath/>pics/1pix.gif" /> <ssf:nlt tag="searchForm.button.label"/></a> 

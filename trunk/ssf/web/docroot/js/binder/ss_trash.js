@@ -35,6 +35,15 @@
 var	g_ajaxTrashRequest_FirstRefresh;
 
 /*
+ * Returns true if there are trash entries checked and false otherwise. 
+ */
+function areTrashEntriesChecked() {
+	var checkedEntries = getCheckedTrashEntries();
+	var count = ((null == checkedEntries) ? 0 : checkedEntries.length);
+	return(0 < count);
+}
+
+/*
  * Returns a string contining information from an array of
  * SSTrashEntry's for embedding in an AJAX url.  
  */
@@ -127,16 +136,25 @@ function ss_trashPurgeAll() {
 		// ...there's nothing to purge.  Bail!
 		return;
 	}
-	
-	// Is the user is sure they want to purge?	
-	if (confirm(g_trashStrings["trash.confirm.PurgeAll"])) {
+
+	// If the user has made selections...
+	var confirmationPrompt = g_trashStrings["trash.confirm.PurgeAll"];	
+	if (areTrashEntriesChecked()) {
+		// ...we need to ensure they meant to do a purge all and not
+		// ...simply a purge of what they've selected.
+		confirmationPrompt += "\n\n";
+		confirmationPrompt += g_trashStrings["trash.confirm.PurgeAll.WithSelections"];
+	}
+
+	// Is the user is sure they want to purge?
+	if (confirm(confirmationPrompt)) {
 		// Yes!  Are there any binders being purged?
 		var purgeMirroredSources = ss_trashIsPurgingBinders(null);
 		if (purgeMirroredSources) {
 			// Yes!  How do they want to handle mirrored folders?
 			purgeMirroredSources = confirm(g_trashStrings["trash.confirm.Purge.DeleteSourceOnMirroredSubFolders"]);
 		}
-	
+
 		// ...do it.
 		ajaxTrashRequest_Submit("trash_purge_all", "", purgeMirroredSources);
 	}
@@ -175,6 +193,15 @@ function ss_trashRestoreAll() {
 		// ...there's nothing to restore.  Bail!
 		return;
 	}
+	
+	// If the user has made selections...
+	if (areTrashEntriesChecked()) {
+		// ...make sure they know that we'll restore everthing and not
+		// ...just what they selected.
+		if (!(confirm(g_trashStrings["trash.confirm.RestoreAll.WithSelections"]))) {
+			return;
+		}
+	}		
 	
 	ajaxTrashRequest_Submit("trash_restore_all", "", false);
 }
