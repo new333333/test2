@@ -237,35 +237,6 @@ public class WorkspaceTreeHelper {
 		UserProperties userProperties = (UserProperties)model.get(WebKeys.USER_PROPERTIES_OBJ);
 		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
 
-		// Get the state of the tutorial panel (closed, expanded or collapsed)
-		{
-			String		tutorialPanelState	= null;
-			PortletURL	url;
-			
-			// If we are dealing with the Guest then don't try to get the tutorial state.
-			// Are we dealing with the Guest user?
-			if ( !(userProperties instanceof GuestProperties) )
-			{
-				// No
-				tutorialPanelState = (String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_TUTORIAL_PANEL_STATE );
-			}
-			
-			// Do we have a tutorial panel state?
-			if ( tutorialPanelState == null || tutorialPanelState.length() == 0 )
-			{
-				// No, default to expanded.
-				tutorialPanelState = "2";
-			}
-			
-			// Add the tutorial panel state to the response.
-			model.put( WebKeys.TUTORIAL_PANEL_STATE, tutorialPanelState );
-			
-			// Construct the url needed to invoke the "Play tutorial" page and add the url to the response.
-			url = response.createActionURL();
-			url.setParameter( WebKeys.ACTION, WebKeys.ACTION_PLAY_TUTORIAL );
-			model.put( WebKeys.PLAY_TUTORIAL_BASE_URL, url.toString() );
-		}
-		
  		//Remember the last binder viewed
 		String namespace = response.getNamespace();
         if (PortletAdapterUtil.isRunByAdapter(request)) {
@@ -365,6 +336,47 @@ public class WorkspaceTreeHelper {
 				BinderHelper.setupWhatsNewBinderBeans(bs, binder, model, page);
 			if (type.equals(WebKeys.URL_UNSEEN)) 
 				BinderHelper.setupUnseenBinderBeans(bs, binder, model, page);
+			
+			// Get the state of the tutorial panel (closed, expanded or collapsed)
+			{
+				String		tutorialPanelState	= null;
+				PortletURL	url;
+				
+				// If we are dealing with the Guest or we are dealing with a landing page, then don't try to get the tutorial state.
+				// Are we dealing with the Guest user?
+				if ( !(userProperties instanceof GuestProperties) )
+				{
+					String		viewType;
+
+					// No
+					configDocument = (Document)model.get( WebKeys.CONFIG_DEFINITION );
+					viewType = DefinitionUtils.getViewType( configDocument );
+					if ( viewType == null )
+						viewType = "";
+
+					// Are we dealing with a landing page?
+					if ( !viewType.equalsIgnoreCase( "landingpage" ) )
+					{
+						// No
+						tutorialPanelState = (String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_TUTORIAL_PANEL_STATE );
+					}
+				}
+				
+				// Do we have a tutorial panel state?
+				if ( tutorialPanelState == null || tutorialPanelState.length() == 0 )
+				{
+					// No, default to expanded.
+					tutorialPanelState = "2";
+				}
+				
+				// Add the tutorial panel state to the response.
+				model.put( WebKeys.TUTORIAL_PANEL_STATE, tutorialPanelState );
+				
+				// Construct the url needed to invoke the "Play tutorial" page and add the url to the response.
+				url = response.createActionURL();
+				url.setParameter( WebKeys.ACTION, WebKeys.ACTION_PLAY_TUTORIAL );
+				model.put( WebKeys.PLAY_TUTORIAL_BASE_URL, url.toString() );
+			}
 			
 		} catch(NoBinderByTheIdException e) {
 			model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {binderId.toString()}));
