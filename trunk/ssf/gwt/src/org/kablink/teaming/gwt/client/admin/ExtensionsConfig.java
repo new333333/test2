@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.admin;
 
 import java.util.ArrayList;
@@ -40,20 +39,14 @@ import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -78,36 +71,16 @@ public class ExtensionsConfig  extends Composite {
 	private Label	extensionPanelStateText = new Label();
 	private ArrayList <ExtensionInfoClient> extList = new ArrayList<ExtensionInfoClient>();
 
-	
 	/*
 	 * 
 	 */
 	public ExtensionsConfig() {
 
 		fPanel.setStyleName("ss_form");
-		
-		// Create a hint
-		//		Label hintLabel = new Label( GwtTeaming.getMessages().lpeHint() );
-		//		hintLabel.addStyleName( "lpeHint" );
-		//		fPanel.add( hintLabel );
-
-		
 		fPanel.add(new HTML("<br/>"));
 		
-//		FlowPanel expandPanel = new FlowPanel();
-//		expandPanel.setStyleName("ss_expandable_area_title");
-//		
-//		VerticalPanel vPanel = new VerticalPanel();
-//		vPanel.setStyleName("ss_style");
-//		vPanel.add(addFileUpload());
-//
-//		expandPanel.add(vPanel);
-//		fPanel.add(expandPanel);
-//		
-//		fPanel.add(new HTML("<br/>"));
-//		
-//		fPanel.add(extensionPanelStateText);
-
+		fPanel.add(extensionPanelStateText);
+		
 		extFlexTable.setCellPadding(2);
 		extFlexTable.setStyleName("lpeTableDropZone");
 		extFlexTable.getRowFormatter().addStyleName(0, "lpeTableDropZone-highlighted");
@@ -124,10 +97,6 @@ public class ExtensionsConfig  extends Composite {
 		
 		fPanel.add(extFlexTable);
 
-//		NamedFrame iframe = new NamedFrame("uploadFormTgt");
-//		iframe.setVisible(false);
-//		fPanel.add(iframe);
-//
 		{
 			Timer timer;
 			timer = new Timer()
@@ -228,7 +197,7 @@ public class ExtensionsConfig  extends Composite {
 			public void onFailure(Throwable t)
 			{
 				// display error text if we can't get the tutorial panel state:
-				extensionPanelStateText.setText( "Failed to get the AdminModule" );
+				extensionPanelStateText.setText( GwtTeaming.getMessages().extensionsRPCError() );
 			}
 	
 			public void onSuccess(ExtensionInfoClient[] info) {
@@ -238,7 +207,7 @@ public class ExtensionsConfig  extends Composite {
 			}
 		};
 	
-		extensionPanelStateText.setText( "Waiting" );
+		extensionPanelStateText.setText( GwtTeaming.getMessages().extensionsWaiting() );
 		gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
 		gwtRpcService.getExtensionInfo(callback);
 	}
@@ -255,7 +224,7 @@ public class ExtensionsConfig  extends Composite {
 		}
 	}
 	
-	private void addRow(ExtensionInfoClient info, final int row)
+	private void addRow(final ExtensionInfoClient info, final int row)
 	{
 		if(extList.contains(info))
 			return;
@@ -269,7 +238,9 @@ public class ExtensionsConfig  extends Composite {
 		
 		achorLabel.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event) {
-				DialogBox box = new DialogBox();
+				int xPos = achorLabel.getAbsoluteLeft();
+				int yPos = achorLabel.getAbsoluteTop();
+				ExtensionViewDetailsDlg box = new ExtensionViewDetailsDlg(info, false, true, xPos, yPos);
 				box.show();
 			}});
 		
@@ -281,7 +252,9 @@ public class ExtensionsConfig  extends Composite {
 		removeButton.addStyleDependentName("remove");
 		removeButton.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event) {
-				removeExtension(row);
+				if(Window.confirm(GwtTeaming.getMessages().extensionsConfirmDelete())){
+					removeExtension(row);
+				}
 			}});
 		
 		extFlexTable.setWidget(row, 3, removeButton);
@@ -290,8 +263,6 @@ public class ExtensionsConfig  extends Composite {
 	private void removeExtension(final int row) {
 			
 			ExtensionInfoClient extInfo = extList.get(row-1);
-
-		
 			GwtRpcServiceAsync	gwtRpcService;
 			
 			// create an async callback to handle the result of the request to get the state:
@@ -303,7 +274,7 @@ public class ExtensionsConfig  extends Composite {
 				public void onFailure(Throwable t)
 				{
 					// display error text if we can't get the tutorial panel state:
-					extensionPanelStateText.setText( "Failed to get the AdminModule" );
+					extensionPanelStateText.setText( GwtTeaming.getMessages().extensionsRPCError() );
 				}
 		
 				public void onSuccess(ExtensionInfoClient[] info) {
@@ -315,7 +286,7 @@ public class ExtensionsConfig  extends Composite {
 				}
 			};
 		
-			extensionPanelStateText.setText( "Waiting" );
+			extensionPanelStateText.setText( GwtTeaming.getMessages().extensionsWaiting() );
 			gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
 			gwtRpcService.removeExtension(extInfo.getId(), callback);
 		}

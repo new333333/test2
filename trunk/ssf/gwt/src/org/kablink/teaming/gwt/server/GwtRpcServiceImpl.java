@@ -51,6 +51,7 @@ import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
+import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -61,7 +62,6 @@ import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
-import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ExportHelper;
@@ -497,10 +497,18 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
     	for(ExtensionInfo info: extList){
         	ExtensionInfoClient client = new ExtensionInfoClient();
         	
+        	client.setAuthor(info.getAuthor());
+        	client.setAuthorEmail(info.getAuthorEmail());
+        	client.setAuthorSite(info.getAuthorSite());
+        	client.setDateCreated(info.getDateCreated());
+        	client.setDateDeployed(info.getDateDeployed());
+        	client.setDescription(info.getDescription());
         	client.setId(info.getId());
         	client.setName(info.getName());
-        	client.setDescription("Descriptions "+info.getZoneId());
         	client.setZoneId(info.getZoneId());
+        	
+        	ZoneInfo zoneInfo = getZoneModule().getZoneInfo(info.getZoneId());
+        	client.setZoneName(zoneInfo.getZoneName());
         	
         	list.add(client);
     	}
@@ -517,13 +525,31 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
     	AdminModule adminModule;
     	adminModule = getAdminModule();
     	if(adminModule == null) {
-    		//Throw an exception
-    		getExtensionInfo();
+    		//TODO handle error
     	}
     		
     	adminModule.getExtensionManager().removeExtensions(id);
     	return getExtensionInfo();
     }
+
+
+	public ExtensionFiles getExtensionFiles(String id, String zoneName) {
+    	ExtensionFiles extFiles = new ExtensionFiles();
+    	
+		AdminModule adminModule;
+    	adminModule = getAdminModule();
+
+    	if(adminModule == null)
+    	{
+    		
+    	}
+    	
+    	ArrayList<String> results = adminModule.getExtensionManager().getExtensionFiles(id, zoneName);
+    	extFiles.setResults(results);
+    	extFiles.setCountTotal(results.size());
+    	
+    	return extFiles;
+	}
 
     
 }// end GwtRpcServiceImpl
