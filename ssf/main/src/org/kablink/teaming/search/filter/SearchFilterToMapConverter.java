@@ -161,6 +161,11 @@ public class SearchFilterToMapConverter {
     				searchedText = searchedText.concat(" "+filterTerm.getText()); 
     			}
     			convertedQuery.put(SearchFilterKeys.SearchText, searchedText);
+    		} else if (filterType.equals(SearchFilterKeys.FilterTypePreDeletedOnly)) {
+        		String preDeleted = filterTerm.attributeValue(SearchFilterKeys.FilterTypePreDeletedOnly, "");
+        		if ((null != preDeleted) && preDeleted.equalsIgnoreCase(String.valueOf(Boolean.TRUE))) {
+        			convertedQuery.put(SearchFilterKeys.SearchPreDeletedOnly, String.valueOf(Boolean.TRUE));
+        		}
     		} else if (filterType.equals(SearchFilterKeys.FilterTypeCreatorByName)) {
     			String searchedAuthors = (String)convertedQuery.get(SearchFilterKeys.SearchAuthors);
     			if (searchedAuthors == null || searchedAuthors.equals("")) {

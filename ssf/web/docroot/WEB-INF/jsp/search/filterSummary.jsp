@@ -61,8 +61,11 @@
 	</script>
 <div id="ss_filterSummary_content">
 	<h4><ssf:nlt tag="searchForm.summary.Title"/></h4>
-   <c:if test="${! empty ss_filterMap.searchText}">
+    <c:if test="${! empty ss_filterMap.searchText}">
 	<p><ssf:nlt tag="searchForm.searchText"/>: <c:out value="${ss_filterMap.searchText}" escapeXml="true"/></p>
+	</c:if>
+    <c:if test="${! empty ss_filterMap.search_preDeletedOnly}">
+	<p><ssf:nlt tag="searchForm.searchPredeletedOnly"/></p>
 	</c:if>
 	<c:if test="${! empty ss_filterMap.additionalFilters}">
 		<c:if test="${!empty ss_filterMap.additionalFilters.workflow}">

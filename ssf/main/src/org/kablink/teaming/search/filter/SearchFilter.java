@@ -829,6 +829,15 @@ public class SearchFilter {
 		filterTerm.addText(text);
 	}
 	
+	public void addPreDeletedOnly(Boolean preDeleted) {
+		checkCurrent();
+		if (preDeleted) {
+			Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+			filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypePreDeletedOnly);
+			filterTerm.addAttribute(SearchFilterKeys.FilterTypePreDeletedOnly, "true");
+		}
+	}
+	
 	public void addTag(String tag) {
 		checkCurrent();
 		addTag(currentFilterTerms, tag);

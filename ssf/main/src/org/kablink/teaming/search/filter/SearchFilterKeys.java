@@ -54,6 +54,7 @@ public class SearchFilterKeys {
 	public final static String SearchCurrentFolder = "search_currentFolder";
 	public final static String SearchAdditionalFilters = "additionalFilters";
 	public final static String SearchCaseSensitive = "search_caseSensitive";
+	public final static String SearchPreDeletedOnly = "search_preDeletedOnly";
 	
 	public final static String SearchDaysNumber = "searchDaysNumber";
 	public final static String SearchItemType = "searchItemType";
@@ -97,6 +98,7 @@ public class SearchFilterKeys {
    	public final static String FilterEventUid = "eventUid";
    	public final static String FilterTypeSearchText = "text";
    	public final static String FilterTypeCaseSensitive = "caseSensitive";
+   	public final static String FilterTypePreDeletedOnly = "preDeletedOnly";
    	public final static String FilterTypeCreatorByName = "author";
    	public final static String FilterTypeCreatorById = "creatorById";
    	public final static String FilterTypeDate = "date";
