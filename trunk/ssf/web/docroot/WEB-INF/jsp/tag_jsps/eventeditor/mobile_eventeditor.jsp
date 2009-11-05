@@ -200,7 +200,7 @@
 			</td>
 		</tr>
 	</c:if>	
-	<c:if test="${!attMap.isTimeZoneSensitiveActive}">
+	<c:if test="${'1' == '1' || !attMap.isTimeZoneSensitiveActive}">
 		<input type="hidden" name="timeZoneSensitive_${evid}" id="timeZoneSensitive_${evid}" checked="checked" value="true" />
 	</c:if>	
 	<c:if test="${attMap.isFreeBusyActive}">
