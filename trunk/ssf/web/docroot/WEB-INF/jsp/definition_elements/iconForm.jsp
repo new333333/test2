@@ -73,10 +73,15 @@
 		}
 
 %>
-<li><label for="<%= iconListValue %>"><span style="display:none;"><ssf:nlt tag="label.iconListValue"/></span></label>
-  <input type="radio" class="ss_text" name="${property_name}" ${ss_fieldModifyInputAttribute}
-  value="<%= iconListValue %>" id="<%= iconListValue %>" <%= checked %>
-/><img <ssf:alt text="<%= iconListValue %>"/> border="0" src="<html:imagesPath/>/<%= iconListValue %>" /></li>
+<li>
+	<label for="<%= iconListValue %>">
+		<span style="display:none;"><ssf:nlt tag="label.iconListValue"/></span>
+	</label>
+  	<input type="radio" class="ss_text" name="${property_name}" ${ss_fieldModifyInputAttribute}
+  			value="<%= iconListValue %>" id="<%= iconListValue %>" <%= checked %> />
+	<img <ssf:alt text="<%= iconListValue %>"/> border="0" src="<html:brandedImagesPath/><%= iconListValue %>" />
+</li>
+
 <%
 	}
 %>
