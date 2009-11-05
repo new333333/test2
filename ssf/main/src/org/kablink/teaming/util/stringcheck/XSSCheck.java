@@ -54,12 +54,15 @@ import org.kablink.util.StringPool;
 
 public class XSSCheck implements StringCheck {
 
+	private static final String TYPE_CHECK_STRING = "check_string"; // Checking a string
+	private static final String TYPE_CHECK_FILE = "check_file"; // Checking a file
 	private static final String MODE_DISALLOW = "disallow"; // default mode
 	private static final String MODE_STRIP = "strip";
 	private static final String MODE_TRUSTED_DISALLOW = "trusted.disallow";
 	private static final String MODE_TRUSTED_STRIP = "trusted.strip";
 	
 	private static final String PATTERN_STR1 = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|style|html|head|body|meta|xml|blink|link|iframe|frame|frameset|ilayer|layer|bgsound|base)(?:[\\s]+[^>]*>|>))";
+	private static final String PATTERN_STR1_FILE = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|xml|blink|link|iframe|frame|frameset|ilayer|layer|bgsound|base)(?:[\\s]+[^>]*>|>))";
 
 	private static final String PATTERN_STR2 = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|meta|blockquote|del|ins|q)[\\s]*[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^>\\s]*script[\\s]*:[^>\\s]*))([^>]*>)";
 	private static final String PATTERN_STR2a = "(?i)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^>\\s]*script[\\s]*:[^>\\s]*))";
@@ -71,6 +74,7 @@ public class XSSCheck implements StringCheck {
 	private static final String PATTERN_STR6 = "(?i)(<[\\s]*[^>]*[\\s]+)(on[^>\\s]*[\\s]*=[\\s]*(?:\"[^\">]*\"|'[^'>]*'|[^>\\s]*))([^>]*>)";
 	
 	private Pattern pattern1;
+	private Pattern pattern1file;
 	private Pattern pattern2;
 	private Pattern pattern2a;
 	private Pattern pattern3;
@@ -87,6 +91,7 @@ public class XSSCheck implements StringCheck {
 	
 	public XSSCheck() {
 		pattern1 = Pattern.compile(PATTERN_STR1);
+		pattern1file = Pattern.compile(PATTERN_STR1_FILE);
 		pattern2 = Pattern.compile(PATTERN_STR2);
 		pattern2a = Pattern.compile(PATTERN_STR2a);
 		pattern3 = Pattern.compile(PATTERN_STR3);
@@ -124,20 +129,20 @@ public class XSSCheck implements StringCheck {
 	 */
 	public String check(String input) throws XSSCheckException {
 		if(enable)
-			return doCheck(input, modeDefault);
+			return doCheck(input, TYPE_CHECK_STRING, modeDefault);
 		else
 			return input;
 	}
 	
 	public String checkFile(String fileContentAsString) throws XSSCheckException {
 		if(enable)
-			return doCheck(fileContentAsString, modeFile);
+			return doCheck(fileContentAsString, TYPE_CHECK_FILE, modeFile);
 		else
 			return fileContentAsString;
 	}
 	
 	// A subclass can override this method to provide custom or enhanced implementation.
-	protected String doCheck(String input, String mode) throws XSSCheckException {
+	protected String doCheck(String input, String type, String mode) throws XSSCheckException {
 		if(input == null || input.equals(""))
 			return input;
 		
@@ -157,9 +162,10 @@ public class XSSCheck implements StringCheck {
 		String sequence = new String(input);
 		Map data = new HashMap();
 
-		if (mode == MODE_DISALLOW || mode == MODE_TRUSTED_DISALLOW) {
+		//We do not support "strip" mode for files
+		if (type.equals(TYPE_CHECK_FILE) || mode == MODE_DISALLOW || mode == MODE_TRUSTED_DISALLOW) {
 			data.put("sequence", sequence);
-			if (!checkIfStringValid(data)) {
+			if (!checkIfStringValid(type, data)) {
 				throw new XSSCheckException();
 			}
 			return input;
@@ -170,18 +176,19 @@ public class XSSCheck implements StringCheck {
 				decodedString = URLDecoder.decode(cleanString, "UTF-8");
 		    } catch(Exception e) {}
 			data.put("sequence", decodedString);
-			if (!checkIfStringValid(data)) {
+			if (!checkIfStringValid(type, data)) {
 				cleanString = (String)data.get("sequence");
 			}
 			return cleanString;			
 		}
 	}
 	
-	protected boolean checkIfStringValid(Map data) {
+	protected boolean checkIfStringValid(String type, Map data) {
 		boolean result = true;
 		String sequence = (String)data.get("sequence");
 		//Check for scrip, embed, iframe, ...
 		Matcher matcher1 = pattern1.matcher(sequence);
+		if (type.equals(TYPE_CHECK_FILE)) matcher1 = pattern1file.matcher(sequence);
 		if (matcher1.find()) {
 			sequence = matcher1.replaceAll(StringPool.BLANK);
 			result = false;
