@@ -841,6 +841,19 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		return WorkflowProcessUtils.processConditions(entry, false, true);	
 	}	
 
+	//see if anything to do after a deleted entry gets restored
+    public void  modifyWorkflowStateOnRestore(WorkflowSupport wfEntry) {
+		boolean changed = WorkflowProcessUtils.processConditions(wfEntry, false, false);
+		if (changed) {
+			Entry entry = (Entry)wfEntry;
+			EntryProcessor processor = loadEntryProcessor(entry.getParentBinder());
+			entry.incrLogVersion();
+			processor.processChangeLog(entry, ChangeLog.RESTOREENTRY);
+			processor.indexEntry(entry);
+		}
+	
+    }
+	
 	//see if anything to do after some external event
     public void  modifyWorkflowStateOnChange(WorkflowSupport wfEntry) {
 		boolean changed = WorkflowProcessUtils.processConditions(wfEntry, false, false);
