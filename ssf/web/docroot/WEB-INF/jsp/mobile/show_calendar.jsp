@@ -44,7 +44,7 @@
 Calendar calendarPrevDate = (java.util.Calendar) request.getAttribute("ssPrevDate");
 Calendar calendarNextDate = (java.util.Calendar) request.getAttribute("ssNextDate");
 Calendar calendarCurrDate = (java.util.Calendar) request.getAttribute("ssCurrDate");
-Calendar calendarRangeEndDate = (java.util.Calendar) request.getAttribute("ssRangeEndDate");
+
 User user = (User) request.getAttribute("ssUser");
 TimeZone timeZone = user.getTimeZone();
 Calendar calendarTodayDate = new GregorianCalendar(timeZone);
@@ -56,12 +56,12 @@ if (gridSize != null) {
 }
 
 String strPrevDay = "" + calendarPrevDate.get(Calendar.DAY_OF_MONTH);
-int intPrevMonth = calendarPrevDate.get(Calendar.MONTH) + 1;
+int intPrevMonth = calendarCurrDate.get(Calendar.MONTH) ;
 String strPrevMonth = "" + intPrevMonth;
 String strPrevYear = "" + calendarPrevDate.get(Calendar.YEAR);
 
 String strNextDay = "" + calendarNextDate.get(Calendar.DAY_OF_MONTH);
-int intNextMonth = calendarNextDate.get(Calendar.MONTH) + 1;
+int intNextMonth = calendarCurrDate.get(Calendar.MONTH) + 2;
 String strNextMonth = "" + intNextMonth;
 String strNextYear = "" + calendarNextDate.get(Calendar.YEAR);
 
@@ -83,13 +83,9 @@ String strTodayYear = "" + calendarTodayDate.get(Calendar.YEAR);
 Date currDate = calendarCurrDate.getTime();
 Date todayDate = calendarTodayDate.getTime();
 Date nextDate = calendarNextDate.getTime();
-Date rangeEndDate = calendarRangeEndDate.getTime();
 %>
 
-<c:set var="ssGridSize" value="<%= strGridSize %>" />
 <c:set var="ssCurrDateFormat" value="<%= currDate %>" />
-<c:set var="ssNextDateFormat" value="<%= nextDate %>" />
-<c:set var="ssRangeEndDateFormat" value="<%= rangeEndDate %>" />
 <c:set var="currMonthDate"><fmt:formatDate value="<%= currDate %>" pattern="MMM" /></c:set>
 <c:set var="todayMonthDate"><fmt:formatDate value="<%= todayDate %>" pattern="MMM" /></c:set>
 
@@ -108,10 +104,12 @@ Date rangeEndDate = calendarRangeEndDate.getTime();
 	  href="<ssf:url adapter="true" portletName="ss_forum" 
           folderId="${ssBinder.id}" action="__ajax_mobile" 
           operation="mobile_show_folder" actionUrl="false">
-			<ssf:param name="day" value="<%= strPrevDay %>" />
-			<ssf:param name="dayOfMonth" value="<%= strPrevDay %>" />
+			<ssf:param name="day" value="1" />
+			<ssf:param name="dayOfMonth" value="1" />
 			<ssf:param name="month" value="<%= strPrevMonth %>" />
-			<ssf:param name="year" value="<%= strPrevYear %>" />
+			<ssf:param name="year" value="<%= strCurrYear %>" />
+			<ssf:param name="ssGridType" value="month" />
+			<ssf:param name="ssGridSize" value="1" />
 		  </ssf:url>" >
 		<img <ssf:alt tag="alt.viewCalPrev"/> title="<ssf:nlt tag="alt.viewCalPrev"/>"
 		border="0" src="<html:imagesPath/>pics/sym_s_arrow_left.gif" />
@@ -129,10 +127,12 @@ Date rangeEndDate = calendarRangeEndDate.getTime();
 	  href="<ssf:url adapter="true" portletName="ss_forum" 
           folderId="${ssBinder.id}" action="__ajax_mobile" 
           operation="mobile_show_folder" actionUrl="false">
-			<ssf:param name="day" value="<%= strNextDay %>" />
-			<ssf:param name="dayOfMonth" value="<%= strNextDay %>" />
+			<ssf:param name="day" value="1" />
+			<ssf:param name="dayOfMonth" value="1" />
 			<ssf:param name="month" value="<%= strNextMonth %>" />
-			<ssf:param name="year" value="<%= strNextYear %>" />
+			<ssf:param name="year" value="<%= strCurrYear %>" />
+			<ssf:param name="ssGridType" value="month" />
+			<ssf:param name="ssGridSize" value="1" />
 		  </ssf:url>">
 		<img <ssf:alt tag="alt.viewCalNext"/> title="<ssf:nlt tag="alt.viewCalNext"/>"
 		border="0" src="<html:imagesPath/>pics/sym_s_arrow_right.gif" />
@@ -177,7 +177,17 @@ Date rangeEndDate = calendarRangeEndDate.getTime();
                   <% if (intTodayDay == cnt - weekStartDay + 1) { %> class="ss_mobile_calendar_today" <% } %>
                   </c:if>
                 >
-                  <span><%= (cnt - weekStartDay + 1) %></span>
+                  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+          			folderId="${ssBinder.id}" action="__ajax_mobile" 
+          			operation="mobile_show_folder" actionUrl="false">
+						<ssf:param name="day" value="<%= strCurrDay %>" />
+						<ssf:param name="dayOfMonth" value="<%= String.valueOf((cnt - weekStartDay + 1)) %>" />
+						<ssf:param name="month" value="<%= strCurrMonth %>" />
+						<ssf:param name="year" value="<%= strCurrYear %>" />
+						<ssf:param name="ssGridType" value="day" />
+						<ssf:param name="ssGridSize" value="1" />
+		  			</ssf:url>"
+                  ><span style="padding: 2px 4px;"><%= (cnt - weekStartDay + 1) %></span></a>
                 </td>
                <% 
 		        }
@@ -269,8 +279,20 @@ Date rangeEndDate = calendarRangeEndDate.getTime();
 	 	}
 	 %>
 	</c:forEach>
+	</table>
 
 	<c:if test="${entriesSeen == 0}">
-	  <tr><td><ssf:nlt tag="folder.NoResults"/></td></tr>
+      <hr class="ss_mobile_calendar_no_entries">
+      <div class="ss_mobile_calendar_no_entries_header">
+        <c:if test="${ssGridType != 'month'}">
+          <span><fmt:formatDate value="<%= currDate %>" pattern="EEE" /></span>
+          <span><fmt:formatDate value="<%= currDate %>" pattern="d MMM" /></span>
+        </c:if>
+        <c:if test="${ssGridType == 'month'}">
+          <span><%= strMonthName %>, <fmt:formatDate value="${ssCurrDateFormat}" pattern="yyyy" /></span>
+        </c:if>
+      </div>
+	  <div class="ss_mobile_calendar_no_entries_content">
+	    <span><ssf:nlt tag="folder.NoResults"/></span>
+	  </div>
 	</c:if>
-	</table>

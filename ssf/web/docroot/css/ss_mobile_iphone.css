@@ -566,6 +566,30 @@ td.ss_mobile_calendar_today span {
 	font-weight: bold;
 	color: #1C5894;
 }
+hr.ss_mobile_calendar_no_entries {
+	border-top: 1px solid #1C5894;
+	border-bottom: 0px solid #fff;
+	height: 1px;
+	width:100%;
+	margin-top: 0px;
+	margin-bottom: 10px;
+}
+div.ss_mobile_calendar_no_entries_header {
+	background-color: #e5e5e5;
+	width:100%;
+	padding: 6px 10px 6px 20px;
+}
+div.ss_mobile_calendar_no_entries_header span {
+	font-size: 1.0em;
+	font-weight: bold;
+	padding-right: 50px;
+}
+div.ss_mobile_calendar_no_entries_content {
+	padding: 6px 20px;
+}
+div.ss_mobile_calendar_no_entries_content span {
+	font-size: .9em;
+}
 
  /*  Helpers */
 	
