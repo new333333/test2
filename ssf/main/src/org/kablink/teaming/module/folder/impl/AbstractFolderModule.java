@@ -87,6 +87,7 @@ import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Visits;
+import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -104,11 +105,13 @@ import org.kablink.teaming.module.folder.FilesLockedByOtherUsersException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.SearchUtils;
+import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.LuceneReadSession;
@@ -119,6 +122,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleMultipartFile;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.Validator;
@@ -691,6 +695,11 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
 			TrashHelper.changeEntry_Log(processor, entry, ChangeLog.RESTOREENTRY);
         	TrashHelper.registerEntryNames(getCoreDao(), folder, entry, renameData);
+        	
+    		WorkflowModule workflowModule = (WorkflowModule)SpringContextUtil.getBean("workflowModule");
+        	if (entry instanceof WorkflowControlledEntry) {
+        		workflowModule.modifyWorkflowStateOnRestore(entry);
+        	}
         	if (reindex) {
         		processor.indexEntry(entry);
         	}

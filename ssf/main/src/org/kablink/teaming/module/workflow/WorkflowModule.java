@@ -112,6 +112,13 @@ public interface WorkflowModule {
 	 */
 	public boolean modifyWorkflowStateOnResponse(WorkflowSupport entry);
 	/**
+	 * A deleted entry was restored.
+	 * Restart the workflow
+	 * @param entry
+	 * @return
+	 */
+	public void  modifyWorkflowStateOnRestore(WorkflowSupport wfEntry);
+	/**
 	 * An update has occured on the entry.
 	 * See if that triggers a transition and process
 	 * @param entry

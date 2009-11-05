@@ -63,9 +63,11 @@ import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Event;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WfAcl;
+import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowHistory;
 import org.kablink.teaming.domain.WorkflowResponse;
 import org.kablink.teaming.domain.WorkflowState;
@@ -463,6 +465,9 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	 */
 	private static String processConditions(final ExecutionContext executionContext, final WorkflowSupport entry, final WorkflowState state, 
 			boolean isModify, boolean isReply) {
+		//First, make sure this entry is not pre-deleted. If so, don't do anything.
+		if (entry instanceof FolderEntry && ((FolderEntry)entry).isPreDeleted()) return null;
+		
 		List conditions = getConditionElements(state.getDefinition(), state.getState());
 //		Date currentDate = new Date();
 		Date minDate = new Date(0);
