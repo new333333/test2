@@ -1,0 +1,6 @@
+Version 3:
+Cortez Schema changes
+
+Version 4:
+Additional Cortez Schema changes
+Made changes to the Extensions table: Added columns: Title, Version
