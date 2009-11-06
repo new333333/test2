@@ -1313,6 +1313,7 @@ text/calendar											  ics
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
 		<property name="zoneClassManager"><ref bean="zoneClassManager"/></property>
 		<property name="adminModule"><ref bean="adminModule"/></property>
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
 	</bean>
 	<bean id="zoneClassManager" class="org.kablink.teaming.extension.impl.ZoneClassManagerImpl" depends-on="zoneConfig"/>
 	
