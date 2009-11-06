@@ -84,3 +84,6 @@ ss_focusOnTitle();
 </c:choose>
 
 </c:if>
+<c:if test="${property_generated}">
+  <c:set var="ss_titleGenerated" value="${propertyValues_itemSource[0]}" scope="request"/>
+</c:if>

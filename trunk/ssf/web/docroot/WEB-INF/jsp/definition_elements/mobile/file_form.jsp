@@ -51,5 +51,9 @@ ${selection.fileItem.name}
 <span class="ss_small">(<ssf:nlt tag="form.file.selectForDelete"/>)</span>
 <br/>
 </c:if>
-
+<c:if test="${empty ssDefinitionEntry.customAttributes[property_name]}">
+  <c:if test="${property_name == ss_titleGenerated}">
+    <span class="font-red"><ssf:nlt tag="mobile.error.fileUploadsNotSupported"/></span>
+  </c:if>
+</c:if>
 </div>
