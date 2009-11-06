@@ -337,28 +337,33 @@ public class WorkspaceTreeHelper {
 			if (type.equals(WebKeys.URL_UNSEEN)) 
 				BinderHelper.setupUnseenBinderBeans(bs, binder, model, page);
 			
-			// Get the state of the tutorial panel (closed, expanded or collapsed)
+			// If the user is not the Guest user and the user is looking at their own workspace,
+			// then get the user's tutorial panel state (closed, expanded or collapsed).
 			{
 				String		tutorialPanelState	= null;
 				PortletURL	url;
 				
-				// If we are dealing with the Guest or we are dealing with a landing page, then don't try to get the tutorial state.
 				// Are we dealing with the Guest user?
 				if ( !(userProperties instanceof GuestProperties) )
 				{
 					String		viewType;
+					Integer binderDefType;
 
 					// No
-					configDocument = (Document)model.get( WebKeys.CONFIG_DEFINITION );
-					viewType = DefinitionUtils.getViewType( configDocument );
-					if ( viewType == null )
-						viewType = "";
-
-					// Are we dealing with a landing page?
-					if ( !viewType.equalsIgnoreCase( "landingpage" ) )
+					// Are we dealing with a user workspace?
+					binderDefType = binder.getDefinitionType();
+					if ( binderDefType != null && binderDefType.intValue() == Definition.USER_WORKSPACE_VIEW )
 					{
-						// No
-						tutorialPanelState = (String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_TUTORIAL_PANEL_STATE );
+						Long workspaceId;
+						
+						// Yes
+						// Is the user looking at their own workspace?
+						workspaceId = user.getWorkspaceId();
+						if ( workspaceId != null && binderId.intValue() == workspaceId.intValue() )
+						{
+							// Yes, get the user's tutorial panel state.
+							tutorialPanelState = (String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_TUTORIAL_PANEL_STATE );
+						}
 					}
 				}
 				
