@@ -922,8 +922,14 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		extInfo.setDescription("This plugin is missing the install.xml file.");
 		extInfo.setDateDeployed(deployedDate);
 		extInfo.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
-		
+				
 		File installFile = new File(extensionWebDir.getAbsolutePath() + File.separator + "install.xml");
+		if(!installFile.exists()){
+			//missing the install.xml file
+			logger.info("Missing the install.xml file from: "+extensionPrefix);
+			return extInfo;
+		}
+		
 		try {
 			SAXReader xInstall = new SAXReader(false);
 			final Document installDoc = xInstall.read(installFile);
