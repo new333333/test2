@@ -36,6 +36,7 @@ import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
+import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 
@@ -63,7 +64,7 @@ public interface GwtRpcService extends RemoteService
 	
 	public String getTutorialPanelState();
 	public ExtensionInfoClient[] getExtensionInfo();
-	public ExtensionInfoClient[] removeExtension(String id);
+	public ExtensionInfoClient[] removeExtension(String id) throws ExtensionDefinitionInUseException;
 	public ExtensionFiles getExtensionFiles(String id, String zoneName);
 
 }// end GwtRpcService
