@@ -35,5 +35,28 @@ package org.kablink.teaming.remoting.ws.model;
 import java.io.Serializable;
 
 public class Binder extends DefinableEntity implements Serializable {
+	protected Boolean preDeleted;
+    protected Long preDeletedWhen;
+    protected Long preDeletedBy;
 
+    public Boolean isPreDeleted() {
+    	return ((null != preDeleted) && preDeleted);
+    }
+    public void setPreDeleted(Boolean preDeleted) {
+    	this.preDeleted = preDeleted;
+    }
+    
+	public Long getPreDeletedWhen() {
+		return preDeletedWhen;
+	}
+	public void setPreDeletedWhen(Long preDeletedWhen) {
+		this.preDeletedWhen = preDeletedWhen;
+	}
+	
+	public Long getPreDeletedBy() {
+		return preDeletedBy;
+	}
+	public void setPreDeletedBy(Long preDeletedBy) {
+		this.preDeletedBy = preDeletedBy;
+	}
 }
