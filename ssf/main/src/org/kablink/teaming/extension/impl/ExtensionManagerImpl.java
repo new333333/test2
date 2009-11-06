@@ -35,13 +35,11 @@ package org.kablink.teaming.extension.impl;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.kablink.teaming.domain.ExtensionInfo;
 import org.kablink.teaming.extension.ExtensionDeployer;
 import org.kablink.teaming.extension.ExtensionManager;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
-import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.util.DirPath;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -65,14 +63,14 @@ public class ExtensionManagerImpl extends CommonDependencyInjection implements E
 		return getExtDeployer().findExtensions();
     }
 
-	public void modifyExtension(String id, Map updates) {
-		ExtensionInfo extension = getExtDeployer().getExtension(id);
-
-		if(updates != null){
-			ObjectBuilder.updateObject(extension, updates);
-			getExtDeployer().updateExtension(extension);
-		}
-	}
+//	public void modifyExtension(String id, Map updates) {
+//		ExtensionInfo extension = getExtDeployer().getExtension(id);
+//
+//		if(updates != null){
+//			ObjectBuilder.updateObject(extension, updates);
+//			getExtDeployer().updateExtension(extension);
+//		}
+//	}
 	
 	public void removeExtensions(String id) {
 		ExtensionInfo ext = getExtDeployer().getExtension(id);
