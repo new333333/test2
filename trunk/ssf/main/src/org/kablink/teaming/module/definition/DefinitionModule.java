@@ -154,4 +154,10 @@ public interface DefinitionModule {
   		abstract public void visit(Element entryElement, Element flagElement, Map args);
   		abstract public String getFlagElementName();
   	}
+  	/**
+  	 * Check to see if a definition is in use or being referenced.
+  	 * @param id - the Definition id
+  	 * @return true if the definition is being referenced.
+  	 */
+  	public boolean checkDefInUse(String id);
 }

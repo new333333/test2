@@ -15,6 +15,7 @@ public interface ExtensionManager {
 	public ExtensionInfo getExtension(String id);
 	public ArrayList<String> getExtensionFiles(String id, String zoneName);
 	public void deploy();
+	public boolean checkDefinitionsInUse(String id);
 	
 //	public ExtensionDeployer getExtDeployer();
 //	public void setExtDeployer(ExtensionDeployer extDeployer);

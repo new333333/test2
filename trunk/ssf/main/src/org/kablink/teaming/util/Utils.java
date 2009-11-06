@@ -41,6 +41,7 @@ import org.kablink.teaming.InternalException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.util.Validator;
 
 
@@ -76,6 +77,17 @@ public class Utils {
 		}
 		else {
 			zoneKey = zone.getName();
+		}
+		return zoneKey;
+	}
+	//handle cases where request context not set
+	public static String getZoneKey(ZoneInfo zone) {
+		String zoneKey;
+		if(!zone.getZoneName().equals(SZoneConfig.getDefaultZoneName())) {
+			zoneKey = zone.getZoneName() + "_" + zone.getId();
+		}
+		else {
+			zoneKey = zone.getZoneName();
 		}
 		return zoneKey;
 	}

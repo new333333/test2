@@ -208,4 +208,12 @@ public interface CoreDao {
      * @param indexName
      */
     public void purgeIndexNodeByIndexName(String indexName);
+	/**
+	 * Check to see if the definition is in use.
+	 * Used to verify if a definition can be deleted.
+	 * 
+	 * @param def
+	 * @return
+	 */
+    public boolean checkInUse(Definition def);
 }

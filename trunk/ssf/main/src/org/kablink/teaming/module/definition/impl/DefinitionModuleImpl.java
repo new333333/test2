@@ -736,6 +736,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			getWorkflowModule().deleteProcessDefinition(def.getId());
 		}
 	}
+	
+	public boolean checkDefInUse(String id) {
+		Definition def = getDefinition(id);
+	   	checkAccess(def, DefinitionOperation.manageDefinition);
+	   	
+	   	return getCoreDao().checkInUse(def);
+	}
+	
 	/**
 	 * Load the default definition for a definition type.  If it doesn't exist, create it
 	 * @param type

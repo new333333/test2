@@ -74,5 +74,7 @@ public interface ExtensionDeployer {
     public List findExtensions(Long zoneId);
 
 	public List findExtensions(String name, Long zoneId);
+	
+	public boolean checkDefinitionsInUse(ExtensionInfo ext);
 
 }
