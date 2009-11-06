@@ -913,12 +913,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 				wEntry.addWorkflowResponse(wr);
 			}
 		}
-		if (changes) {
-			getWorkflowModule().modifyWorkflowStateOnResponse(wEntry);
-			processChangeLog(entry, ChangeLog.ADDWORKFLOWRESPONSE);
-	    	getReportModule().addAuditTrail(AuditType.modify, entry);
-			indexEntry(entry);
-		}
+		getWorkflowModule().modifyWorkflowStateOnResponse(wEntry);
+		processChangeLog(entry, ChangeLog.ADDWORKFLOWRESPONSE);
+    	getReportModule().addAuditTrail(AuditType.modify, entry);
+		indexEntry(entry);
     	
     }
 
