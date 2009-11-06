@@ -11,6 +11,8 @@
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <property name="name" length="64"/>
     <property name="description" length="256"/>
+    <property name="title"/>
+    <property name="version"/>
     <property name="type"/>
     <property name="author"/>
     <property name="authorEmail"/>

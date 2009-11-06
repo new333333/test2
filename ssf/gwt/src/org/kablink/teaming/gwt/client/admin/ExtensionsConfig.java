@@ -231,7 +231,12 @@ public class ExtensionsConfig  extends Composite {
 		
 		extList.add(info);
 		
-		final Anchor achorLabel = new Anchor(info.getName());
+		String name = info.getTitle();
+		if(name == null)
+		{
+			name = info.getName();
+		}
+		final Anchor achorLabel = new Anchor(name);
 		
 		//final Label nameLabel = new Label(info.getName());
 		achorLabel.setStyleName("ss_style");

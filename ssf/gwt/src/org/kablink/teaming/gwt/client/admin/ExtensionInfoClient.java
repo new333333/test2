@@ -49,6 +49,8 @@ public class ExtensionInfoClient implements IsSerializable {
 	private String description;
 	private String id;
 	private String name;
+	private String version;
+	private String title;
 	private Long zoneId;
 	private String zoneName;
 	
@@ -130,5 +132,20 @@ public class ExtensionInfoClient implements IsSerializable {
 		return zoneName;
 	}
 
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
 }

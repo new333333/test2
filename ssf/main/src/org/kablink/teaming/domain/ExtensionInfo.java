@@ -30,19 +30,24 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.domain;
 
-
+/**
+ * 
+ * @author Nathan Jensen
+ *
+ */
 public class ExtensionInfo extends PersistentObject  {
 
     public static String STATE_INSTALLED = "installed";
     public static String STATE_DELETED = "deleted";
 	
 	private String name="";
-    private String description="";
-	
-    private int type;
+    private String title="";
+	private String description="";
+	private String version;
+    
+	private int type;
 	private String author;
 	private String authorEmail;
 	private String authorSite;
@@ -52,7 +57,6 @@ public class ExtensionInfo extends PersistentObject  {
 	public ExtensionInfo() {
 		
 	}    
-
 	
     /**
      * Unique name of definition.
@@ -132,17 +136,6 @@ public class ExtensionInfo extends PersistentObject  {
 		this.dateCreated = createDate;
 	}
 	
-	/**
-	 * Return the Map of servers
-	 * @return
-	 */
-//	public Map getServerProperties() {
-//		return serverProperties;
-//	}
-//	public void setServerProperties(Map serverProperties) {
-//		this.serverProperties = serverProperties;
-//	}
-    
     /**
      * Return the extension name.
      */
@@ -169,6 +162,25 @@ public class ExtensionInfo extends PersistentObject  {
 		return dateDeployed;
 	}
 
+	public String getTitle() {
+		return title;
+	}
+
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+
+	public String getVersion() {
+		return version;
+	}
+
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+	
     public boolean equals(Object obj) {
     	if (obj == null) return false;
 		if (obj == this) return true;
@@ -180,12 +192,5 @@ public class ExtensionInfo extends PersistentObject  {
     	
     	return false;
     }
-
-
-	public String getFileName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	
 }

@@ -79,7 +79,7 @@ class ExtensionViewDetailsDlg extends PopupPanel implements ClickHandler {
 		setPopupPosition( xPos, yPos );
 		
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( info.getName(), info ); 
+		createAllDlgContent( info.getTitle(), info ); 
     }
 
 	public Panel createContent(ExtensionInfoClient info) {
