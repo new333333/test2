@@ -86,9 +86,10 @@ public class FolderConfig extends ConfigItem
 						{
 							numToShow = Integer.parseInt( URL.decodeComponent( results2[1] ) );
 						}
-						catch (NumberFormatException nfe)
+						catch (Exception ex)
 						{
-							// Nothing to do.
+							// Nothing to do.  This is here to handle the case when the data is
+							// not properly url encoded or an invalid number string was entered.
 						}
 						m_properties.setNumEntriesToBeShownValue( numToShow );
 					}

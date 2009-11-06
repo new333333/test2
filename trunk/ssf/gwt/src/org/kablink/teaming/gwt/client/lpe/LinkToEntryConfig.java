@@ -67,14 +67,22 @@ public class LinkToEntryConfig extends ConfigItem
 				results2 = ConfigData.splitConfigItem( results[i] );
 				if ( results2 != null && results2.length == 2 && results2[0] != null && results2[1] != null && results2[1].length() > 0 )
 				{
-					if ( results2[0].equalsIgnoreCase( "title" ) )
-						m_properties.setTitle( URL.decodeComponent( results2[1] ) );
-					else if ( results2[0].equalsIgnoreCase( "entryId" ) )
-						m_properties.setEntryId( results2[1] );
-					else if ( results2[0].equalsIgnoreCase( "zoneUUID" ) )
-						m_properties.setZoneUUID( results2[1] );
-					else if ( results2[0].equalsIgnoreCase( "popup" ) )
-						m_properties.setOpenInNewWindow( results2[1].equalsIgnoreCase( "1" ) );
+					try
+					{
+						if ( results2[0].equalsIgnoreCase( "title" ) )
+							m_properties.setTitle( URL.decodeComponent( results2[1] ) );
+						else if ( results2[0].equalsIgnoreCase( "entryId" ) )
+							m_properties.setEntryId( results2[1] );
+						else if ( results2[0].equalsIgnoreCase( "zoneUUID" ) )
+							m_properties.setZoneUUID( results2[1] );
+						else if ( results2[0].equalsIgnoreCase( "popup" ) )
+							m_properties.setOpenInNewWindow( results2[1].equalsIgnoreCase( "1" ) );
+					}
+					catch (Exception ex)
+					{
+						// Nothing to do.  This is here to handle the case when the data is
+						// not properly url encoded.
+					}
 				}
 			}
 		}

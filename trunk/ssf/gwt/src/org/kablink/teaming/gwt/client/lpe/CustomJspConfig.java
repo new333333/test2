@@ -66,8 +66,16 @@ public class CustomJspConfig extends ConfigItem
 				results2 = ConfigData.splitConfigItem( results[i] );
 				if ( results2 != null && results2.length == 2 && results2[0] != null && results2[1] != null && results2[1].length() > 0 )
 				{
-					if ( results2[0].equalsIgnoreCase( "customJsp" ) )
-						m_properties.setJspName( URL.decodeComponent( results2[1] ) );
+					try
+					{
+						if ( results2[0].equalsIgnoreCase( "customJsp" ) )
+							m_properties.setJspName( URL.decodeComponent( results2[1] ) );
+					}
+					catch (Exception ex)
+					{
+						// Nothing to do.  This is here to handle the case when the data is
+						// not properly url encoded.
+					}
 				}
 			}
 		}
