@@ -47,3 +47,7 @@ each user to delete,insert,select,update each table and sequence.
 The liferay one is checked in with the liferay create sql scripts.
 
 
+
+SchemaInfo
+
+Added the SchemaInfo table to track changes we make in the Teaming schema.
