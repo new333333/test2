@@ -393,7 +393,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 			//child is active, end it
 			Token childToken = executionContext.getJbpmContext().loadToken(thread.getTokenId().longValue());
 			if (childToken != null)	{
-				childToken.end();
+				childToken.end(false);
 			}
 			//leaving a state - logit
 			WorkflowHistory history = new WorkflowHistory(thread, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()), true);
