@@ -42,6 +42,9 @@ public class FolderEntry extends Entry implements Serializable {
 	private int docLevel;
 	private String href;
 	private List<Workflow> workflows = new ArrayList();
+	protected Boolean preDeleted;
+	protected Long preDeletedWhen;
+	protected Long preDeletedBy;
 	public int getDocLevel() {
 		return docLevel;
 	}
@@ -76,4 +79,24 @@ public class FolderEntry extends Entry implements Serializable {
 			this.workflows = new ArrayList<Workflow>();
 	}
 
+    public Boolean isPreDeleted() {
+    	return ((null != preDeleted) && preDeleted);
+    }
+    public void setPreDeleted(Boolean preDeleted) {
+    	this.preDeleted = preDeleted;
+    }
+    
+	public Long getPreDeletedWhen() {
+		return preDeletedWhen;
+	}
+	public void setPreDeletedWhen(Long preDeletedWhen) {
+		this.preDeletedWhen = preDeletedWhen;
+	}
+	
+	public Long getPreDeletedBy() {
+		return preDeletedBy;
+	}
+	public void setPreDeletedBy(Long preDeletedBy) {
+		this.preDeletedBy = preDeletedBy;
+	}
 }
