@@ -399,13 +399,13 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 			List extList = findExtensions(RequestContextHolder.getRequestContext().getZoneId());
 			if (extList.contains(extInfo)) {
 				//Extension already exists, then lets update existing extension
-				List foundList = findExtensions(extension.getName(), RequestContextHolder.getRequestContext().getZoneId());
+				List foundList = findExtensions(extensionPrefix, RequestContextHolder.getRequestContext().getZoneId());
 				if(foundList.size() > 0)
 				{
 					ExtensionInfo foundExtInfo = (ExtensionInfo) foundList.get(0);
 					logger.info("Extension found: updated extension " + foundExtInfo.getName());
 					foundExtInfo.setDateDeployed(deployedDate);
-					updateExtension(foundExtInfo);
+					updateExtension(extInfo, foundExtInfo);
 				}
 			} else {
 				extInfo.setDateDeployed(deployedDate);
@@ -907,8 +907,18 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		return extension;
 	}
 
-	public void updateExtension(ExtensionInfo extension) {
-		getAdminModule().modifyExtension(extension);
+	public void updateExtension(ExtensionInfo newInfo, ExtensionInfo existingInfo) {
+		
+		existingInfo.setAuthor(newInfo.getAuthor());
+		existingInfo.setAuthorEmail(newInfo.getAuthorEmail());
+		existingInfo.setAuthorSite(newInfo.getAuthorSite());
+		existingInfo.setDateCreated(newInfo.getDateCreated());
+		existingInfo.setDescription(newInfo.getDescription());
+		existingInfo.setTitle(newInfo.getTitle());
+		existingInfo.setType(newInfo.getType());
+		existingInfo.setVersion(newInfo.getVersion());
+		
+		getAdminModule().modifyExtension(existingInfo);
 	}
 	public List findExtensions(String name, Long zoneId) {
 		return getCoreDao().loadObjects(new ObjectControls(ExtensionInfo.class), new FilterControls("name", name), zoneId);

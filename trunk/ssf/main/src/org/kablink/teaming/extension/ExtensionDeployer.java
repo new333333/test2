@@ -65,7 +65,7 @@ public interface ExtensionDeployer {
     
     public boolean deleteExtension(ExtensionInfo extension);
     
-    public void updateExtension(ExtensionInfo extension);
+    public void updateExtension(ExtensionInfo newInfo, ExtensionInfo existingInfo);
     
     public ExtensionInfo getExtension(String id) throws NoObjectByTheIdException;
    

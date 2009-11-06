@@ -45,7 +45,7 @@ import org.kablink.teaming.domain.ExtensionInfo;
 public interface ExtensionManager {
 	
 	public List<ExtensionInfo> getExtensions();
-	public void modifyExtension(String id, Map updates);
+//	public void modifyExtension(String id, Map updates);
 	public void removeExtensions(String id);
 	public ExtensionInfo getExtension(String id);
 	public ArrayList<String> getExtensionFiles(String id, String zoneName);
