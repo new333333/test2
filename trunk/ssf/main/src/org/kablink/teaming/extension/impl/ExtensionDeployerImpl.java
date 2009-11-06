@@ -30,9 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-/**
- * 
- */
 package org.kablink.teaming.extension.impl;
 
 import java.io.File;
@@ -96,6 +93,7 @@ import org.springframework.util.FileCopyUtils;
 
 
 /**
+ * @author Nathan Jensen
  * 
  * Listens for and deploys extensions.
  * 
@@ -920,6 +918,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		//Add the extension info to database
 		ExtensionInfo extInfo = new ExtensionInfo();
 		extInfo.setName(extensionPrefix);
+		extInfo.setTitle(extensionPrefix);
 		extInfo.setDescription("This plugin is missing the install.xml file.");
 		extInfo.setDateDeployed(deployedDate);
 		extInfo.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
@@ -930,12 +929,15 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 			final Document installDoc = xInstall.read(installFile);
 			if( installDoc != null && installDoc.getRootElement() != null) {
 				
-				//String version = installDoc.getRootElement().attributeValue("version");
-//				if(installDoc.getRootElement().selectSingleNode("./name") != null){
-//					Element nameEle = (Element)installDoc.getRootElement().selectSingleNode("./name");
-//					String name = nameEle.getText();
-//					extInfo.setName(name);
-//				}
+				if(installDoc.getRootElement().attributeValue("version") != null ){
+					String version = installDoc.getRootElement().attributeValue("version");
+					extInfo.setVersion(version);
+				}
+				if(installDoc.getRootElement().selectSingleNode("./title") != null){
+					Element titleEle = (Element)installDoc.getRootElement().selectSingleNode("./title");
+					String title = titleEle.getText();
+					extInfo.setTitle(title);
+				}
 				if(installDoc.getRootElement().selectSingleNode("./author") != null){
 					Element authorEle = (Element)installDoc.getRootElement().selectSingleNode("./author");
 					String author = authorEle.getText();
