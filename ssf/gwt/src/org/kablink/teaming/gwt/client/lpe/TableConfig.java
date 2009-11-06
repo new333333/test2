@@ -83,9 +83,10 @@ public class TableConfig extends ConfigItem
 						{
 							numCols = Integer.parseInt( URL.decodeComponent( results2[1] ) );
 						}
-						catch (NumberFormatException nfe)
+						catch (Exception ex)
 						{
-							// Nothing to do.
+							// Nothing to do.  This is here to handle the case when the data is
+							// not properly url encoded.
 						}
 						m_properties.setNumColumns( numCols );
 					}
@@ -93,29 +94,37 @@ public class TableConfig extends ConfigItem
 					{
 						String[] results3;
 						String tmp;
-						
-						// Get the individual column widths.
-						tmp = URL.decodeComponent( results2[1] );
-						results3 = tmp.split( "[|]" );
-						if ( results3 != null )
+					
+						try
 						{
-							int j;
-							
-							for (j = 0; j < results3.length; ++j)
+							// Get the individual column widths.
+							tmp = URL.decodeComponent( results2[1] );
+							results3 = tmp.split( "[|]" );
+							if ( results3 != null )
 							{
-								int width;
-
-								width = 0;
-								try
+								int j;
+								
+								for (j = 0; j < results3.length; ++j)
 								{
-									width = Integer.parseInt( results3[j] );
-								}
-								catch (NumberFormatException nfe)
-								{
-									// Nothing to do.
-								}
-								m_properties.setColWidth( j, width );
-							}// end for()
+									int width;
+	
+									width = 0;
+									try
+									{
+										width = Integer.parseInt( results3[j] );
+									}
+									catch (NumberFormatException nfe)
+									{
+										// Nothing to do.
+									}
+									m_properties.setColWidth( j, width );
+								}// end for()
+							}
+						}
+						catch (Exception ex)
+						{
+							// Nothing to do.  This is here to handle the case when the data is
+							// not properly url encoded.
 						}
 					}
 				}

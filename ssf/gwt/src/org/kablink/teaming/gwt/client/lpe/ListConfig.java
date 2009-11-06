@@ -72,10 +72,18 @@ public class ListConfig extends ConfigItem
 				results2 = ConfigData.splitConfigItem( propsStr[i] );
 				if ( results2 != null && results2.length == 2 && results2[0] != null && results2[1] != null && results2[1].length() > 0 )
 				{
-					if ( results2[0].equalsIgnoreCase( "showBorder" ) )
-						m_properties.setShowBorder( results2[1].equalsIgnoreCase( "1" ) );
-					else if ( results2[0].equalsIgnoreCase( "title" ) )
-						m_properties.setTitle( URL.decodeComponent( results2[1] ) );
+					try
+					{
+						if ( results2[0].equalsIgnoreCase( "showBorder" ) )
+							m_properties.setShowBorder( results2[1].equalsIgnoreCase( "1" ) );
+						else if ( results2[0].equalsIgnoreCase( "title" ) )
+							m_properties.setTitle( URL.decodeComponent( results2[1] ) );
+					}
+					catch (Exception ex)
+					{
+						// Nothing to do.  This is here to handle the case when the data is
+						// not properly url encoded.
+					}
 				}
 			}// end for()
 		}
