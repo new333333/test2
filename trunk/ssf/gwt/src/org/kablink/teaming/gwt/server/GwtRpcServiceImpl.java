@@ -51,6 +51,7 @@ import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
+import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
@@ -62,6 +63,7 @@ import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ExportHelper;
@@ -520,10 +522,15 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
     	
     }
 
-    public ExtensionInfoClient[] removeExtension(String id)
+    public ExtensionInfoClient[] removeExtension(String id) throws ExtensionDefinitionInUseException
     {
     	AdminModule adminModule;
     	adminModule = getAdminModule();
+    	
+    	if( adminModule.getExtensionManager().checkDefinitionsInUse(id) )
+    	{
+    		throw new ExtensionDefinitionInUseException(NLT.get("definition.errror.inUse"));
+    	}
     	adminModule.getExtensionManager().removeExtensions(id);
 
     	return getExtensionInfo();
