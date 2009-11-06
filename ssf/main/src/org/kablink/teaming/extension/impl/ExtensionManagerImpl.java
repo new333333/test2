@@ -100,6 +100,11 @@ public class ExtensionManagerImpl extends CommonDependencyInjection implements E
 		getExtDeployer().check();
 	}
 
+	public boolean checkDefinitionsInUse(String id){
+		ExtensionInfo ext = getExtDeployer().getExtension(id);
+		return getExtDeployer().checkDefinitionsInUse(ext);
+	}
+	
 	private void walkTheTree(ArrayList<String> list, File path){
 		if(path.isDirectory()){
 			File[] files = path.listFiles();

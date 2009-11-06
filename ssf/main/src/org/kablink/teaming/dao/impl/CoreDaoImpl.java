@@ -1089,6 +1089,29 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	    );		
 	}
 	
+	public boolean checkInUse(final Definition def){
+		Boolean inUse = (Boolean) getHibernateTemplate().execute(
+		        new HibernateCallback() {
+		            public Object doInHibernate(Session session) throws HibernateException {
+		            	//see if in use
+		               	if (def.getType() != Definition.WORKFLOW) {
+		               		long count = countObjects(org.kablink.teaming.domain.FolderEntry.class, new FilterControls("entryDef", def), def.getZoneId());
+		               		if (count > 0) return new Boolean(true);
+		               		count = countObjects(org.kablink.teaming.domain.Principal.class, new FilterControls("entryDef", def), def.getZoneId());
+		               		if (count > 0) return new Boolean(true);;
+		               		count = countObjects(org.kablink.teaming.domain.Binder.class, new FilterControls("entryDef", def), def.getZoneId());
+		               		if (count > 0) return new Boolean(true);;
+		               	} else {
+		               		long count = countObjects(org.kablink.teaming.domain.WorkflowState.class, new FilterControls("definition", def), def.getZoneId());
+		               		if (count > 0) return new Boolean(true);
+		               	}
+		               	return new Boolean(false);
+		            }
+		        }
+		    );
+		return inUse.booleanValue();
+	}
+	
 	/**
 	 * Perform a write of a new object now using a new Session so we can commit it fast
 	 * @param obj

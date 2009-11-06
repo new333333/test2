@@ -68,11 +68,13 @@ import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.DefinitionInvalidOperation;
 import org.kablink.teaming.domain.ExtensionInfo;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.extension.ExtensionDeployer;
 import org.kablink.teaming.extension.ZoneClassManager;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -81,6 +83,7 @@ import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.module.template.TemplateModule;
+import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.util.DirPath;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.NLT;
@@ -111,6 +114,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 	private DefinitionModule definitionModule;
 	private ZoneClassManager zoneClassManager;
 	private AdminModule adminModule;
+	private ZoneModule zoneModule;
 	
 	public void setTemplateModule(TemplateModule templateModule) {
 		this.templateModule = templateModule;
@@ -141,6 +145,14 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 
 	public AdminModule getAdminModule() {
 		return adminModule;
+	}
+
+	public ZoneModule getZoneModule() {
+		return zoneModule;
+	}
+
+	public void setZoneModule(ZoneModule zoneModule) {
+		this.zoneModule = zoneModule;
 	}
 
 	/**
@@ -203,6 +215,8 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 						deploy(extension, true, deployedDate);
 						//now move the extension to the pickup directory
 						FileHelper.move(extension, new File(successDir, extension.getName()));
+						//check and remove the extension from the removal dir
+						removeExtensionFromRemovalDir(sharedDir, extension.getName());
 						//update the TSProperties of the shared and local properties with the deployed date
 						shared.put(extension.getName(), deployedDate);
 						local.put(extension.getName(), deployedDate);
@@ -262,6 +276,17 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 			lock.releaseLock();
 		}		
 	}
+	
+	private void removeExtensionFromRemovalDir(File sharedDir, String extensionName){
+		File removalDir = new File(sharedDir, REMOVAL);
+		if(removalDir.exists()) {
+			File extFile = new File(removalDir, extensionName);
+			if(extFile.delete()) {
+				logger.info("Deleted extension from the removal dir: "+extFile.getPath());
+			}
+		}
+	}
+	
 	public void deploy(File extension, boolean full, String deployedDate) throws IOException {
 		String zoneKey = Utils.getZoneKey();
 		logger.info("Deploying new extension from " + extension.getPath());
@@ -270,12 +295,15 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		
 		//Get the extension name
 		final String extensionPrefix = extension.getName().substring(0, extension.getName().lastIndexOf("."));
+		
 		//Extension dir under WEB-INF
 		File extensionDir = new File(DirPath.getExtensionBasePath() + File.separator + zoneKey + File.separator + extensionPrefix);
 		extensionDir.mkdirs();
+		
 		//Extension dir under webapp
 		File extensionWebDir = new File(DirPath.getExtensionWebPath() + File.separator + zoneKey +  File.separator + extensionPrefix);
 		extensionWebDir.mkdirs();
+		
 		//zipFile - file under shared directory
 		ZipInputStream zipIn = new ZipInputStream(new FileInputStream(extension));
 		ZipEntry entry = null;
@@ -445,7 +473,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		final String extensionPrefix = extension.getName().substring(0, extension.getName().lastIndexOf("."));
 		//Extension dir under WEB-INF
 		File extensionDir = new File(DirPath.getExtensionBasePath() + File.separator + zoneKey + File.separator + extensionPrefix);
-	
+		
 		boolean removedTemplates = removeTemplates(extensionDir);
 		boolean removedDefinitions = removeDefinitions(extensionDir);
 		
@@ -609,7 +637,10 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		
 		logger.info("Removing Extension from the filesystem");
 		
-		String sharedExtensionDir = SPropsUtil.getDirPath("data.extension.root.dir") + "extensions" + File.separator + Utils.getZoneKey() ;
+		ZoneInfo zone = getZoneModule().getZoneInfo(ext.getZoneId());
+		String zoneKey = Utils.getZoneKey(zone);
+		
+		String sharedExtensionDir = SPropsUtil.getDirPath("data.extension.root.dir") + "extensions" + File.separator + zoneKey ;
 		File sharedDir = new File(sharedExtensionDir);		
 		//if the shareDir does exist, we cann't remove the extension
 		if (!sharedDir.exists()) return false;
@@ -623,7 +654,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		}
 
 		//Check for the local web-inf extensions dir
-		String localExtensionDir = DirPath.getExtensionBasePath() + File.separator + Utils.getZoneKey();
+		String localExtensionDir = DirPath.getExtensionBasePath() + File.separator + zoneKey;
 		File localDir = new File(localExtensionDir);
 		if( !localDir.exists() ) {
 			logger.error("Could not find the local Extension dir " + localDir.getPath());
@@ -671,6 +702,10 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 				}
 
 				if(foundExtension != null){
+					
+					if( checkDefinitionsInUse(foundExtension, zoneKey) )
+						throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
+					
 					//remove the WEB-INF and files under webapp
 					boolean okToRemove = remove(foundExtension);
 					if(okToRemove) {
@@ -702,7 +737,13 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 					logger.error("No extension was found could not remove.");
 				}
 			}
-		} catch (Exception ex) {
+		} 
+		catch (Exception ex) {
+
+			if(ex instanceof DefinitionInvalidOperation){
+				throw new DefinitionInvalidOperation(ex.getMessage());
+			}
+			
 			logger.error("Error in deployer", ex);
 		}
 		finally {
@@ -711,6 +752,117 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		
 		return true;
 	}
+	
+	public boolean checkDefinitionsInUse(ExtensionInfo ext){
+
+		ZoneInfo zone = getZoneModule().getZoneInfo(ext.getZoneId());
+		String zoneKey = Utils.getZoneKey(zone);
+		
+		String sharedExtensionDir = SPropsUtil.getDirPath("data.extension.root.dir") + "extensions" + File.separator + zoneKey ;
+		File sharedDir = new File(sharedExtensionDir);		
+		//if the shareDir does exist, we cann't remove the extension
+		if (!sharedDir.exists()) return false;
+		
+		String extensionName = ext.getName();
+		File pickUpDir = new File(sharedDir, PICKUP);
+		if (pickUpDir.exists()) {
+
+			// get the file list
+			// Get a list of files that are of type zip - under the shared dir
+			File foundExtension = null;
+			File[] extensions = pickUpDir.listFiles(new FileOnlyFilter());
+			// If there are files to deploy
+			if (extensions != null && extensions.length > 0) {
+				for (int i = 0; i < extensions.length; ++i) {
+					File extension = extensions[i];
+					// Get the extension name
+					final String extensionPrefix = extension.getName().substring(0, extension.getName().lastIndexOf("."));
+					if (extensionPrefix.equals(extensionName)) {
+						foundExtension = extension;
+						break;
+					}
+				}
+			}
+
+			if(foundExtension != null){
+				if( checkDefinitionsInUse(foundExtension, zoneKey) )
+					return true; //throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
+			}
+		}
+			
+		return false;
+	}
+	
+	private boolean checkDefinitionsInUse(File extension, String zoneKey) {
+		boolean inUse = false;
+		
+		logger.info("Begin remove extension " + extension.getPath());
+		
+		//Get the extension name
+		final String extensionPrefix = extension.getName().substring(0, extension.getName().lastIndexOf("."));
+		//Extension dir under WEB-INF
+		File extensionDir = new File(DirPath.getExtensionBasePath() + File.separator + zoneKey + File.separator + extensionPrefix);
+		
+		//load definitions
+		File defDir = new File(extensionDir.getAbsolutePath() + File.separator + "classes" + 
+				File.separator + "config" +  File.separator + "definitions");
+		File definitions[] = defDir.listFiles(new XMLFilter());
+		if (definitions != null) {
+			List<String> defs = new ArrayList();
+			for (int i=0; i<definitions.length; ++i) {
+				File definition = definitions[i];
+				if (logger.isDebugEnabled()) logger.debug("Registering definition from " +
+							definition.getPath());
+					
+				try {
+					SAXReader xIn = new SAXReader(false);
+					
+					final Document document = xIn.read(definition);
+					// record the "owning" extension
+					document.getRootElement().add(new AbstractAttribute() {
+							private static final long serialVersionUID = -7880537136055718310L;
+							public QName getQName() {
+								return new QName(ObjectKeys.XTAG_ATTRIBUTE_EXTENSION, document
+										.getRootElement().getNamespace());
+							}
+							public String getValue() {
+								return extensionPrefix;
+							}
+						});
+					
+			    	Element root = document.getRootElement();
+					String name = null;
+					String title = null;
+					
+					if (Validator.isNull(name)) name = root.attributeValue("name");
+					if (Validator.isNull(name)) name = DefinitionUtils.getPropertyValue(root, "name");
+					if (Validator.isNull(title)) title = root.attributeValue("caption");
+					if (Validator.isNull(title)) title = DefinitionUtils.getPropertyValue(root, "caption");
+					if (Validator.isNull(name)) {
+						name=title;
+					}
+
+					Definition def = getDefinitionModule().getDefinitionByName(null, true, name);
+					inUse = getDefinitionModule().checkDefInUse(def.getId());
+					
+					if(inUse){
+						logger.info("Found definition in use: "+def.getName());
+						break;
+					}
+					
+				} catch (DocumentException e) {
+					logger.warn("Malformed definition file " 	+ extensionDir.getPath(), e);
+				} catch (NoDefinitionByTheIdException e){
+					logger.warn(e.getMessage());
+				} catch (Exception e) {
+					logger.warn("Error checking definition is in use " 	+ extensionDir.getPath(), e);
+				}
+			}
+		}
+		
+		return inUse;
+	}
+	
 	
 	public void addExtension(ExtensionInfo extension) {
 		getAdminModule().addExtension(extension);
