@@ -83,9 +83,9 @@ public class MarkupUtil {
 	protected final static Pattern v1AttachmentUrlPattern = Pattern.compile("(<img [^>]*src=\"[^>]*viewType=ss_viewAttachmentFile[^>]*>)");
 	protected final static Pattern readFileImagePattern = Pattern.compile("(<img [^>]*src=\"[^>]*/readFile/[^>]*>)");
 	protected final static Pattern readFilePathPattern = Pattern.compile("/readFile/[^\"]*");
-	protected final static Pattern attachedImagePattern = Pattern.compile("(<img [^>]*class=\"ss_addimage_att\"[^>]*>)");
+	protected final static Pattern attachedImagePattern = Pattern.compile("(<img [^>]*class=\"\\s*ss_addimage_att\\s*\"[^>]*>)");
 	
-	protected final static Pattern iceCoreLinkPattern = Pattern.compile("(<a [^>]*class=\"ss_icecore_link\"[^>]*>)([^<]*)</a>");
+	protected final static Pattern iceCoreLinkPattern = Pattern.compile("(<a [^>]*class=\"\\s*ss_icecore_link\\s*\"[^>]*>)([^<]*)</a>");
 	protected final static Pattern iceCoreLinkRelPattern = Pattern.compile("rel=\"([^\"]*)");
 	
 	protected final static Pattern attachmentUrlPattern = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})");
