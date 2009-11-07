@@ -352,6 +352,15 @@ public class LandingPageEditor extends Composite
 	
 
 	/**
+	 * Return the height of the canvas.
+	 */
+	public int getCanvasHeight()
+	{
+		return m_canvas.getOffsetHeight();
+	}
+	
+	
+	/**
 	 * Return the absolute X position of the canvas.
 	 */
 	public int getCanvasLeft()
@@ -367,6 +376,15 @@ public class LandingPageEditor extends Composite
 	{
 		return m_canvas.getAbsoluteTop();
 	}// end getCanvasTop()
+	
+	
+	/**
+	 * Return the width of the canvas.
+	 */
+	public int getCanvasWidth()
+	{
+		return m_canvas.getOffsetWidth();
+	}// end getCanvasWidth()
 	
 	
 	/**
@@ -529,8 +547,8 @@ public class LandingPageEditor extends Composite
 				// our editSuccessful() will be called and we will add the DropWidget to the
 				// selected DropZone.  If the user pressed cancel, our editCanceled() method
 				// will be called.
-				x = getCanvasLeft() + 5;
-				y = getCanvasTop() + 5;
+				x = event.getClientX();
+				y = event.getClientY();
 				dropWidget.editProperties( this, this, x, y );
 			}
 		}
