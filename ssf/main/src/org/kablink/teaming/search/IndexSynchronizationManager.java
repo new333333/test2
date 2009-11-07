@@ -88,8 +88,11 @@ public class IndexSynchronizationManager {
      * @throws LuceneException
      */
     public static void addDocument(Document doc) throws LuceneException {
+    	if(logger.isTraceEnabled())
+    		logger.trace("addDocument(" + doc.toString() + ")");
+    	
         BasicIndexUtils.validateDocument(doc);
-        getRequests().getList().add(doc);
+        getRequests().addAddRequest(doc);
     }
     
     /**
@@ -98,6 +101,9 @@ public class IndexSynchronizationManager {
      * @param uid
      */
     public static void deleteDocument(String uid) {
+    	if(logger.isTraceEnabled())
+    		logger.trace("deleteDocument(" + uid + ")");
+    	
     	deleteDocuments(new Term(Constants.UID_FIELD, uid));
     }
     
@@ -107,7 +113,10 @@ public class IndexSynchronizationManager {
      * @param term
      */
     public static void deleteDocuments(Term term) {
-        getRequests().getList().add(term);
+    	if(logger.isTraceEnabled())
+    		logger.trace("deleteDocuments(" + term.toString() + ")");
+    		
+    	getRequests().addDeleteRequest(term);
     }
     
     /**
@@ -129,30 +138,51 @@ public class IndexSynchronizationManager {
      * @param autoFlush
      */
     public static void setAutoFlush(boolean autoFlush) {
+    	if(logger.isTraceEnabled())
+    		logger.trace("setAutoFlush(" + autoFlush + ")");
+    	
         autoFlushTL.set(Boolean.valueOf(autoFlush));
     }
     
     public static void setNodeNames(String[] nodeNames) {
+    	if(logger.isTraceEnabled())
+    		logger.trace("setNodeNames(" + nodeNames[0] + "...)");
+    	
     	nodeNamesTL.set(nodeNames);
     }
     
     public static void clearNodeNames() {
+    	if(logger.isTraceEnabled())
+    		logger.trace("clearNodeNames()");
+    	
     	nodeNamesTL.set(null);
     }
     
     public static void setForceSequential() {
+    	if(logger.isTraceEnabled())
+    		logger.trace("setForceSequential()");
+    	
     	forceSequentialTL.set(Boolean.TRUE);
     }
     
     public static boolean isForceSequential() {
+    	if(logger.isTraceEnabled())
+    		logger.trace("isForceSequential()");
+    	
     	return Boolean.TRUE.equals(forceSequentialTL.get());
     }
     
     public static void clearForceSequential() {
+    	if(logger.isTraceEnabled())
+    		logger.trace("clearForceSequential()");
+    	
     	forceSequentialTL.set(null);
     }
     
     public static void begin() {
+    	if(logger.isTraceEnabled())
+    		logger.trace("begin()");
+    	
         // If same thread was never re-used for another request or transaction
         // in the system, this initialization wouldn't be necessary, since 
         // we would be working with fresh new thread local object. 
@@ -163,11 +193,16 @@ public class IndexSynchronizationManager {
     }
     
     public static void applyChanges(int threshold) {
-    	ArrayList req = getRequests().getList();
-    	if (req.size() >= threshold) applyChanges();
+    	if(logger.isTraceEnabled())
+    		logger.trace("applyChanges(" + threshold + ")");
+    	
+    	if (getRequests().size() >= threshold) applyChanges();
     }
 
     public static void applyChanges() {
+    	if(logger.isTraceEnabled())
+    		logger.trace("applyChanges()");
+    	
         try {
             if(hasWorkToDo()) {                
 		        LuceneWriteSession luceneSession = getInstance().getLuceneSessionFactory().openWriteSession((String[]) nodeNamesTL.get());
@@ -186,6 +221,9 @@ public class IndexSynchronizationManager {
     }
     
     public static void discardChanges() {
+    	if(logger.isTraceEnabled())
+    		logger.trace("discardChanges()");
+    	
     	// Discard all requests. 
     	clear(); 
     }
@@ -202,7 +240,7 @@ public class IndexSynchronizationManager {
     private static boolean hasWorkToDo() {
     	Requests req = (Requests) requests.get();
     	if(req != null) {
-    		if(req.getList().size() > 0)
+    		if(req.size() > 0)
     			return true;
     		else
     			return false;
@@ -253,6 +291,20 @@ public class IndexSynchronizationManager {
     	
     	int getDeletesCount() {
     		return deletesCount;
+    	}
+    	
+    	void addAddRequest(Object req) {
+    		getList().add(req);
+    		incrAddsCount();
+    	}
+    	
+    	void addDeleteRequest(Object req) {
+    		getList().add(req);
+    		incrDeletesCount();
+    	}
+    	
+    	int size() {
+    		return getList().size();
     	}
     	
     	void clear() {
