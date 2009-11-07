@@ -36,6 +36,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
@@ -129,8 +130,13 @@ public class EditDeleteControl extends Composite
 			// Do we have a handler we need to call?
 			if ( m_editHandler != null )
 			{
+				int x;
+				int y;
+				
 				// Yes
-				m_editHandler.onEdit();
+				x = event.getNativeEvent().getClientX();
+				y = event.getNativeEvent().getClientY();
+				m_editHandler.onEdit( x, y );
 			}
 			
 			return;

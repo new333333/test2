@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 
 /**
@@ -55,6 +56,9 @@ public abstract class DropWidget extends Composite
 	private DlgBox					m_dlgBox = null;
 	private EditSuccessfulHandler	m_editSuccessfulHandler = null;
 	private EditCanceledHandler	m_editCanceledHandler = null;
+	private PopupPanel.PositionCallback m_popupCallback = null;
+	private int m_dlgX;
+	private int m_dlgY;
 	protected LandingPageEditor	m_lpe = null;
 
 
@@ -142,7 +146,59 @@ public abstract class DropWidget extends Composite
 		
 		// Get the dialog box that is used to edit properties for this widget.
 		m_dlgBox = getPropertiesDlgBox( xPos, yPos );
-		m_dlgBox.show();
+		
+		// Remember the position where the dialog should be shown.
+		m_dlgX = xPos + Window.getScrollLeft();
+		m_dlgY = yPos + Window.getScrollTop();
+		
+		// Create a popup callback if we haven't created one yet.
+		if ( m_popupCallback == null )
+		{
+			m_popupCallback = new PopupPanel.PositionCallback()
+			{
+				/**
+				 * 
+				 */
+				public void setPosition( int offsetWidth, int offsetHeight )
+				{
+					int canvasRightEdge;
+					int canvasBottomEdge;
+					int dlgRightEdge;
+					int dlgBottomEdge;
+					int overlap;
+					
+					canvasRightEdge = m_lpe.getCanvasLeft() + m_lpe.getCanvasWidth();
+					dlgRightEdge = m_dlgX + offsetWidth;
+					
+					// If we position the dialog where the mouse is will the right side of the dialog
+					// extend past the right side of the canvas?
+					overlap = dlgRightEdge - canvasRightEdge;
+					if ( overlap > 0 )
+					{
+						// Adjust the x position so the right edge of the dialog does not extend past the right edge of the canvas.
+						m_dlgX -= overlap;
+					}
+					
+					canvasBottomEdge = m_lpe.getCanvasTop() + m_lpe.getCanvasHeight();
+					dlgBottomEdge = m_dlgY + offsetHeight;
+					
+					// If we position the dialog where the mouse is will the bottom of the dialog
+					// extend past the bottom of the canvas?
+					overlap = dlgBottomEdge - canvasBottomEdge;
+					if ( overlap > 0 )
+					{
+						// Adjust the y position so the bottom of the dialog does not extend pas the bottom of the canvas.
+						m_dlgY -= overlap;
+					}
+					
+					m_dlgBox.setPopupPosition( m_dlgX, m_dlgY );
+				}// end setPosition()
+			};
+		}
+
+		// We call setPopupPositionAndShow() instead of show() so we can position the
+		// dialog based on the dialog width which is not available until the popup is visible.
+		m_dlgBox.setPopupPositionAndShow( m_popupCallback );
 	}// end editProperties()
 	
 	
@@ -244,13 +300,8 @@ public abstract class DropWidget extends Composite
 	/**
 	 * This method gets called when the user clicks on the "edit" link.
 	 */
-	public void onEdit()
+	public void onEdit( int x, int y )
 	{
-		int x;
-		int y;
-		
-		x = m_lpe.getCanvasLeft() + 5;
-		y = m_lpe.getCanvasTop() + 5;
 		editProperties( null, null, x, y );
 	}// end onEdit()
 	

@@ -41,5 +41,5 @@ package org.kablink.teaming.gwt.client.widgets;
 public interface EditHandler
 {
 	// This method gets called when the user has requested to edit a particular object.
-	public void onEdit();
+	public void onEdit( int x, int y );
 }// end EditHandler
