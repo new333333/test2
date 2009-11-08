@@ -88,8 +88,8 @@ public class IndexSynchronizationManager {
      * @throws LuceneException
      */
     public static void addDocument(Document doc) throws LuceneException {
-    	if(logger.isTraceEnabled())
-    		logger.trace("addDocument(" + doc.toString() + ")");
+    	if(logger.isDebugEnabled())
+    		logger.debug("addDocument(" + doc.toString() + ")");
     	
         BasicIndexUtils.validateDocument(doc);
         getRequests().addAddRequest(doc);
@@ -113,8 +113,8 @@ public class IndexSynchronizationManager {
      * @param term
      */
     public static void deleteDocuments(Term term) {
-    	if(logger.isTraceEnabled())
-    		logger.trace("deleteDocuments(" + term.toString() + ")");
+    	if(logger.isDebugEnabled())
+    		logger.debug("deleteDocuments(" + term.toString() + ")");
     		
     	getRequests().addDeleteRequest(term);
     }
@@ -138,29 +138,29 @@ public class IndexSynchronizationManager {
      * @param autoFlush
      */
     public static void setAutoFlush(boolean autoFlush) {
-    	if(logger.isTraceEnabled())
-    		logger.trace("setAutoFlush(" + autoFlush + ")");
+    	if(logger.isDebugEnabled())
+    		logger.debug("setAutoFlush(" + autoFlush + ")");
     	
         autoFlushTL.set(Boolean.valueOf(autoFlush));
     }
     
     public static void setNodeNames(String[] nodeNames) {
-    	if(logger.isTraceEnabled())
-    		logger.trace("setNodeNames(" + nodeNames[0] + "...)");
+    	if(logger.isDebugEnabled())
+    		logger.debug("setNodeNames(" + nodeNames[0] + "...)");
     	
     	nodeNamesTL.set(nodeNames);
     }
     
     public static void clearNodeNames() {
-    	if(logger.isTraceEnabled())
-    		logger.trace("clearNodeNames()");
+    	if(logger.isDebugEnabled())
+    		logger.debug("clearNodeNames()");
     	
     	nodeNamesTL.set(null);
     }
     
     public static void setForceSequential() {
-    	if(logger.isTraceEnabled())
-    		logger.trace("setForceSequential()");
+    	if(logger.isDebugEnabled())
+    		logger.debug("setForceSequential()");
     	
     	forceSequentialTL.set(Boolean.TRUE);
     }
@@ -173,8 +173,8 @@ public class IndexSynchronizationManager {
     }
     
     public static void clearForceSequential() {
-    	if(logger.isTraceEnabled())
-    		logger.trace("clearForceSequential()");
+    	if(logger.isDebugEnabled())
+    		logger.debug("clearForceSequential()");
     	
     	forceSequentialTL.set(null);
     }
@@ -221,8 +221,8 @@ public class IndexSynchronizationManager {
     }
     
     public static void discardChanges() {
-    	if(logger.isTraceEnabled())
-    		logger.trace("discardChanges()");
+    	if(logger.isDebugEnabled())
+    		logger.debug("discardChanges()");
     	
     	// Discard all requests. 
     	clear(); 
