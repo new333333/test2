@@ -30,61 +30,15 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming;
+package org.kablink.teaming.web.util;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
+import org.kablink.teaming.exception.NoStackTraceWrapperRuntimeException;
 
-public class NoStackTraceWrapperException extends Exception {
+public class ExportException extends NoStackTraceWrapperRuntimeException {
 
-	private Exception wrappedException;
-	
-	public NoStackTraceWrapperException(Exception wrappedException) {
-		this.wrappedException = wrappedException;
+	public ExportException(
+			Exception wrappedException) {
+		super(wrappedException);
 	}
-
-    public String getMessage() {
-        return wrappedException.getMessage();
-    }
-
-    public String getLocalizedMessage() {
-        return wrappedException.getLocalizedMessage();
-    }
-
-    public Throwable getCause() {
-        return wrappedException.getCause();
-    }
-
-    public Throwable initCause(Throwable cause) {
-    	return wrappedException.initCause(cause);
-    }
-
-    public String toString() {
-    	return wrappedException.toString();
-    }
-
-    public void printStackTrace() { 
-    	wrappedException.printStackTrace();
-    }
-
-    public void printStackTrace(PrintStream s) {
-    	// This is noop!
-    }
-
-    public void printStackTrace(PrintWriter s) { 
-    	// This is noop!
-    }
-
-    public Throwable fillInStackTrace() {
-    	return wrappedException.fillInStackTrace();
-    }
-
-    public StackTraceElement[] getStackTrace() {
-    	return wrappedException.getStackTrace();
-    }
-
-    public void setStackTrace(StackTraceElement[] stackTrace) {
-    	wrappedException.setStackTrace(stackTrace);
-    }
 
 }
