@@ -73,7 +73,7 @@ public class Utils {
 		//		zoneKey = zoneName + "_" + zoneId
 		String zoneKey;
 		if(!zone.getName().equals(SZoneConfig.getDefaultZoneName())) {
-			zoneKey = zone.getName() + "_" + zone.getId();
+			zoneKey = zone.getName() + "_" + zone.getZoneId();
 		}
 		else {
 			zoneKey = zone.getName();
@@ -84,7 +84,7 @@ public class Utils {
 	public static String getZoneKey(ZoneInfo zone) {
 		String zoneKey;
 		if(!zone.getZoneName().equals(SZoneConfig.getDefaultZoneName())) {
-			zoneKey = zone.getZoneName() + "_" + zone.getId();
+			zoneKey = zone.getZoneName() + "_" + zone.getZoneId();
 		}
 		else {
 			zoneKey = zone.getZoneName();

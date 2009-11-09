@@ -67,6 +67,7 @@ import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.DefinitionInvalidOperation;
 import org.kablink.teaming.domain.ExtensionInfo;
+import org.kablink.teaming.domain.NoBinderByTheNameException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
@@ -75,6 +76,7 @@ import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.extension.ExtensionDeployer;
 import org.kablink.teaming.extension.ZoneClassManager;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
@@ -113,7 +115,16 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 	private ZoneClassManager zoneClassManager;
 	private AdminModule adminModule;
 	private ZoneModule zoneModule;
+	private BinderModule binderModule;
 	
+	public BinderModule getBinderModule() {
+		return binderModule;
+	}
+
+	public void setBinderModule(BinderModule binderModule) {
+		this.binderModule = binderModule;
+	}
+
 	public void setTemplateModule(TemplateModule templateModule) {
 		this.templateModule = templateModule;
 	}
@@ -614,8 +625,22 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 					 }
 					 String internalId = config.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID);
 					 if (Validator.isNull(internalId)) {
-						 TemplateBinder templateBinder = getTemplateModule().getTemplateByName(name);
-						 templateBinder.setDeleted(true);
+						 
+						 TemplateBinder templateBinder = null;
+						 try
+						 {
+							 templateBinder = getTemplateModule().getTemplateByName(name);
+							 
+						 } catch (NoBinderByTheNameException nameEx) {
+							 //must already be removed....
+							 return true;
+						 }
+						 	
+						 if(templateBinder != null){
+							 Long configId = templateBinder.getId();
+							 getBinderModule().deleteBinder(configId);
+						 }
+
 					 } 
 				} catch (DocumentException e) {
 					removedTemplates = false;
