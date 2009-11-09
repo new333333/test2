@@ -338,7 +338,7 @@ public class ListFolderHelper {
 			}
 			else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
 				Workspace binderWs = BinderHelper.getBinderWorkspace(binder);
-				boolean showModeSelect = (BinderHelper.isBinderUserWorkspace(binderWs) || BinderHelper.isBinderTeamWorkspace(binderWs));
+				boolean showModeSelect = (BinderHelper.isBinderUserWorkspace(binderWs));
 				model.put(WebKeys.FOLDER_SHOW_MODE_SELECT, new Boolean(showModeSelect));
 			}
 	
@@ -2261,7 +2261,7 @@ public class ListFolderHelper {
 		ModeType modeType;
 		Boolean showModeSelect;
 		Workspace binderWs = BinderHelper.getBinderWorkspace(binder);
-		if (BinderHelper.isBinderUserWorkspace(binderWs) || BinderHelper.isBinderTeamWorkspace(binderWs)) {
+		if (BinderHelper.isBinderUserWorkspace(binderWs)) {
 			String modeTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.FOLDER_MODE_TYPE, null);
 			modeType = setFolderModeType(bs, userId, binderId, ((modeTypeParam != null) ? ModeType.valueOf(modeTypeParam) : null));
 			showModeSelect = Boolean.TRUE;
