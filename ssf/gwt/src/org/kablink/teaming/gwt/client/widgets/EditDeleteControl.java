@@ -78,7 +78,6 @@ public class EditDeleteControl extends Composite
 		// Create an "edit" anchor.
 		{
 			m_editAnchor = new Anchor();
-			m_editAnchor.setHref( "#" );
 			m_editAnchor.addClickHandler( this );
 			m_editAnchor.addStyleName( "editDeleteControlAnchor" );
 			
@@ -95,7 +94,6 @@ public class EditDeleteControl extends Composite
 		// Create a "delete" anchor.
 		{
 			m_deleteAnchor = new Anchor();
-			m_deleteAnchor.setHref( "#" );
 			m_deleteAnchor.addClickHandler( this );
 			m_deleteAnchor.addStyleName( "editDeleteControlAnchor" );
 			
@@ -119,7 +117,7 @@ public class EditDeleteControl extends Composite
 	public void onClick( ClickEvent event )
 	{
 		Object	source;
-		
+
 		// Get the object that was clicked on.
 		source = event.getSource();
 		
