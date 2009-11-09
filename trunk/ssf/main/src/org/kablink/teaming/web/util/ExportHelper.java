@@ -43,11 +43,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,7 +55,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -66,9 +62,6 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.SortField;
 import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipOutputStream;
 import org.dom4j.Attribute;
@@ -77,22 +70,10 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.hibernate.NonUniqueObjectException;
-import org.kablink.teaming.ConfigurationException;
-import org.kablink.teaming.InternalException;
-import org.kablink.teaming.NoObjectByTheIdException;
-import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.comparator.BinderComparator;
-import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
-import org.kablink.teaming.dao.util.FilterControls;
-import org.kablink.teaming.dao.util.ObjectControls;
-import org.kablink.teaming.dao.util.SFQuery;
-import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
@@ -101,17 +82,9 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
-import org.kablink.teaming.domain.LibraryEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
-import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
-import org.kablink.teaming.domain.NotificationDef;
-import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.SimpleName;
-import org.kablink.teaming.domain.Subscription;
-import org.kablink.teaming.domain.Tag;
-import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.VersionAttachment;
@@ -119,12 +92,8 @@ import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.lucene.Hits;
-import org.kablink.teaming.lucene.TagObject;
 import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
-import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.definition.export.ElementBuilder;
@@ -133,53 +102,33 @@ import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ical.IcalModule;
-import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
-import org.kablink.teaming.module.shared.InputDataAccessor;
-import org.kablink.teaming.module.shared.ObjectBuilder;
-import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.util.DomInputData;
-import org.kablink.teaming.search.IndexErrors;
-import org.kablink.teaming.search.IndexSynchronizationManager;
-import org.kablink.teaming.search.LuceneReadSession;
-import org.kablink.teaming.search.LuceneWriteSession;
-import org.kablink.teaming.search.QueryBuilder;
 import org.kablink.teaming.search.SearchFieldResult;
-import org.kablink.teaming.search.SearchObject;
-import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
-import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.util.ZipEntryStream;
-import org.kablink.teaming.web.WebKeys;
-import org.kablink.teaming.web.tree.DomTreeBuilder;
-import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.FileUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
-import org.springframework.orm.hibernate3.HibernateSystemException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.FileCopyUtils;
 
-import static org.kablink.util.search.Restrictions.between;
-import static org.kablink.util.search.Restrictions.eq;
 import static org.kablink.util.search.Restrictions.in;
 
 /**
@@ -232,43 +181,51 @@ public class ExportHelper {
 			Map options, Collection<Long> binderIds, Boolean noSubBinders, 
 			StatusTicket statusTicket, Map reportMap) throws Exception {
 
-		getNumberFormat();
-
-		ZipOutputStream zipOut = new ZipOutputStream(out);
-
-		// Standard zip encoding is cp437. (needed when chars are outside the
-		// ASCII range)
-		zipOut.setEncoding("cp437");
-
-		// Binder and entry definitions that we will later export
-		Set defList = new HashSet();
-
-		if (entityId != null) {
-			processEntry(zipOut, folderModule.getEntry(binderId, entityId), "",
-					defList, reportMap);
-		} else {
-
-			EntityType entType = binderModule.getBinder(binderId)
-					.getEntityType();
-
-			// see if folder
-			if (entType == EntityType.folder) {
-				process(zipOut, folderModule.getFolder(binderId), false,
-						options, binderIds, noSubBinders, defList, statusTicket, reportMap);
-				// see if ws or profiles ws
-			} else if ((entType == EntityType.workspace)
-					|| (entType == EntityType.profiles)) {
-				process(zipOut, workspaceModule.getWorkspace(binderId), true,
-						options, binderIds, noSubBinders, defList, statusTicket, reportMap);
+		try {
+			getNumberFormat();
+	
+			ZipOutputStream zipOut = new ZipOutputStream(out);
+	
+			// Standard zip encoding is cp437. (needed when chars are outside the
+			// ASCII range)
+			zipOut.setEncoding("cp437");
+	
+			// Binder and entry definitions that we will later export
+			Set defList = new HashSet();
+	
+			if (entityId != null) {
+				processEntry(zipOut, folderModule.getEntry(binderId, entityId), "",
+						defList, reportMap);
 			} else {
-				// something's wrong
+	
+				EntityType entType = binderModule.getBinder(binderId)
+						.getEntityType();
+	
+				// see if folder
+				if (entType == EntityType.folder) {
+					process(zipOut, folderModule.getFolder(binderId), false,
+							options, binderIds, noSubBinders, defList, statusTicket, reportMap);
+					// see if ws or profiles ws
+				} else if ((entType == EntityType.workspace)
+						|| (entType == EntityType.profiles)) {
+					process(zipOut, workspaceModule.getWorkspace(binderId), true,
+							options, binderIds, noSubBinders, defList, statusTicket, reportMap);
+				} else {
+					// something's wrong
+				}
 			}
+	
+			// Export the binder and entry definitions
+			exportDefinitionList(zipOut, defList);
+	
+			zipOut.finish();
 		}
-
-		// Export the binder and entry definitions
-		exportDefinitionList(zipOut, defList);
-
-		zipOut.finish();
+		catch(Exception e) {
+			if(e instanceof ExportException)
+				throw e;
+			else
+				throw new ExportException(e);
+		}
 	}
 
 	private static void process(ZipOutputStream zipOut, Binder start,
@@ -550,6 +507,7 @@ public class ExportHelper {
 			logger.error(e);
 			logger.error(NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
 					", entryId=" + entity.getId().toString() + ", " + fileName);
+			if (fileStream != null) fileStream.close();
 
 			// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 			zipOut.putNextEntry(new ZipEntry(pathName + "/"
@@ -557,7 +515,6 @@ public class ExportHelper {
 			zipOut.write(NLT.get("export.error.attachment",
 					"Error processing this attachment").getBytes());
 			zipOut.closeEntry();
-			if (fileStream != null) fileStream.close();
 		}
 
 		// older versions, from highest to lowest
@@ -586,6 +543,7 @@ public class ExportHelper {
 				logger.error(e);
 				logger.error(NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
 						", entryId=" + entity.getId().toString() + ", " + fileName);
+				if (fileStream != null) fileStream.close();
 
 				// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 				zipOut.putNextEntry(new ZipEntry(pathName + "/"
@@ -594,7 +552,6 @@ public class ExportHelper {
 				zipOut.write(NLT.get("export.error.attachment",
 						"Error processing this attachment").getBytes());
 				zipOut.closeEntry();
-				if (fileStream != null) fileStream.close();
 			}
 		}
 
