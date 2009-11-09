@@ -783,6 +783,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		RequestContextHolder.getRequestContext().setZoneId(top.getId());   		
 	
     		ProfileBinder profiles = addPersonalRoot(top);
+    		profiles.setFunctionMembershipInherited(false);
 
     		//build user
     		User user = new User();
@@ -827,8 +828,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		Function participantsRole = addParticipantsRole(top);
     		Function guestParticipantRole = addGuestParticipantRole(top);
     		Function teamMemberRole = addTeamMemberRole(top);
-    		Function binderRole = 	addBinderRole(top);
+    		Function binderRole = addBinderRole(top);
     		Function teamWsRole = addTeamWorkspaceRole(top);
+    		Function canModifyOwnProfileRole = addModifyOwnProfileRole(top);
+    		
     		//make sure allusers group and roles are defined, may be referenced by templates
     		getAdminModule().updateDefaultDefinitions(top.getId(), false);
     		getTemplateModule().updateDefaultTemplates(top.getId(), true);
@@ -881,6 +884,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		// all users participants at top
     		members.remove(applicationGroup.getId());
     		addMembership(top, participantsRole, top, members);
+    		// all users visitors at profiles
+    		addMembership(top, visitorsRole, profiles, members);
+    		// all users can modify their own profile
+    		addMembership(top, canModifyOwnProfileRole, profiles, members);
     		// all users participants at teamroot
     		addMembership(top, participantsRole, teamRoot, members);
     		// all users createWs  at teamroot
@@ -896,6 +903,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		members.clear();
     		members.add(ObjectKeys.OWNER_USER_ID);
     		addMembership(top, binderRole, top, members);
+    		addMembership(top, binderRole, profiles, members);
     		addMembership(top, binderRole, teamRoot, members);
 	
     		members.clear();
@@ -1212,6 +1220,19 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getFunctionManager().addFunction(function);
 		return function;
 	}
+	private Function addModifyOwnProfileRole(Workspace top) {
+		Function function = new Function();
+		function.setZoneId(top.getId());
+		function.setName(ObjectKeys.ROLE_CAN_MODIFY_OWN_PROFILE);
+
+		function.addOperation(WorkAreaOperation.CREATOR_READ);
+		function.addOperation(WorkAreaOperation.CREATOR_MODIFY);
+		
+		//generate functionId
+		getFunctionManager().addFunction(function);
+		return function;
+	}
+
 	private void addMembership(Workspace top, Function function, WorkArea workArea, List ids) {
 		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
 		ms.setWorkAreaId(workArea.getWorkAreaId());

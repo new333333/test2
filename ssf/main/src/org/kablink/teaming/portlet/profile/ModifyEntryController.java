@@ -53,6 +53,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
@@ -123,8 +124,12 @@ public class ModifyEntryController extends SAbstractController {
 
 		        	// Note: The following code needs to be kept in synch with the similar check in 
 		        	//       ProfileModuleImpl.changePassword() method.
-		        	ProfileBinder binder = getProfileModule().getProfileBinder();
-		            if (!getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
+		        	ProfileBinder binder = null;
+		        	try {
+		        		binder = getProfileModule().getProfileBinder();
+		        	} catch(AccessControlException ex) {}
+		        	
+		            if (binder == null || !getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
 		            	String passwordOriginal = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD_ORIGINAL);
 
 		            	//Check that the user knows the current password
@@ -201,10 +206,12 @@ public class ModifyEntryController extends SAbstractController {
 			model.put(WebKeys.BINDER, entry.getParentBinder());
 			model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_FORM);
 			BinderHelper.setupStandardBeans(this, request, response, model, entry.getParentBinder().getId());
-			ProfileBinder binder = getProfileModule().getProfileBinder();
-			if (getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
-				model.put(WebKeys.IS_BINDER_ADMIN, true);
-			}
+			try {
+				ProfileBinder binder = getProfileModule().getProfileBinder();
+				if (getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
+					model.put(WebKeys.IS_BINDER_ADMIN, true);
+				}
+			} catch(AccessControlException ex) {}
 			Definition entryDef = entry.getEntryDef();
 			if (entryDef == null) {
 				DefinitionHelper.getDefaultEntryView(entry, model, "//item[@name='entryForm' or @name='profileEntryForm']");
