@@ -571,10 +571,38 @@ public class LandingPageEditor extends Composite
 		if ( isPaletteItemDragInProgress() )
 		{
 			NativeEvent nativeEvent;
+			int x;
+			int y;
+			int scrollTop;
+			int scrollLeft;
+			int windowHeight;
 
 			nativeEvent = previewEvent.getNativeEvent();
+			x = nativeEvent.getClientX();
+			y = nativeEvent.getClientY();
 			
-			handleMouseMove( nativeEvent.getClientX(), nativeEvent.getClientY() );
+			handleMouseMove( x, y );
+			
+			scrollTop = Window.getScrollTop();
+			scrollLeft = Window.getScrollLeft();
+			
+			// Is the mouse within 10 pixels of the bottom of the page?
+			windowHeight = Window.getClientHeight();
+			if ( (windowHeight - y) <= 10 )
+			{
+				// Yes, scroll the window down.
+				Window.scrollTo( scrollLeft, scrollTop + 30 );
+			}
+			// Is the mouse within 10 pixels of the top of the page?
+			else if ( y <= 10 )
+			{
+				// Yes, scroll the window up.
+				if ( scrollTop > 30 )
+					scrollTop -= 30;
+				else
+					scrollTop = 0;
+				Window.scrollTo( scrollLeft, scrollTop );
+			}
 			
 			// Kill this mouse-move event so text on the page does not get highlighted when the user moves the mouse.
 			previewEvent.cancel();
