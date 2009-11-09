@@ -40,6 +40,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Workspace;
@@ -53,10 +54,11 @@ import org.kablink.teaming.util.AllModulesInjected;
  */
 public class TrashTraverser {
 	// Class data members.
-	private AllModulesInjected	m_bs;
-	private Log					m_logger;
-	private Object				m_cbData;
-	private TraverseCallback	m_cb;
+	private AllModulesInjected			m_bs;
+	private ArrayList<DefinableEntity>	m_additionalTraversalsAL;
+	private Log							m_logger;
+	private Object						m_cbData;
+	private TraverseCallback			m_cb;
 	
 	private final static boolean TRAVERSE_MIRRORED_BINDERS	= true;
 
@@ -93,6 +95,9 @@ public class TrashTraverser {
 		m_logger = logger;
 		m_cb     = cb;
 		m_cbData = cbData;
+		
+		// ...and initialize everything else.
+		resetAdditionalTraversalsAL();
 	}
 
 	/**
@@ -118,7 +123,7 @@ public class TrashTraverser {
 		}
 		else if (mode == TraversalMode.ASCENDING) {
 			m_logger.debug("...ascending.");
-			if (null == entryId) ascendBinder(binderId               );
+			if (null == entryId) ascendBinder(binderId, true         );
 			else                 ascendEntry( binderId, entryId, true);
 		}
 	}
@@ -219,12 +224,22 @@ public class TrashTraverser {
 		// If we get here, we always continue the traversal.
 		return true;
 	}
+
+	/*
+	 * Adds a DefinableEntity to the additional traversals ArrayList if
+	 * it is not already there.
+	 */
+	private void addAdditionalTraversals(DefinableEntity de) {
+		if (!(m_additionalTraversalsAL.contains(de))) {
+			m_additionalTraversalsAL.add(de);
+		}
+	}
 	
 	/*
 	 * Called to recursively ascend a binder.
 	 */
 	@SuppressWarnings("unchecked")
-	private boolean ascendBinder(Long binderId) {
+	private boolean ascendBinder(Long binderId, boolean topLevelBinder) {
 		// If the Binder is a Folder or Workspace... 
 		Binder binder = m_bs.getBinderModule().getBinder(binderId);
 		boolean isFolder    = TrashHelper.isBinderFolder(   binder);
@@ -233,7 +248,7 @@ public class TrashTraverser {
 			// ...ascend its child binders...
 			List<Binder>bindersList = binder.getBinders();
 			for (Iterator bindersIT=bindersList.iterator(); bindersIT.hasNext();) {
-				if (!(ascendBinder(((Binder) bindersIT.next()).getId()))) {
+				if (!(ascendBinder(((Binder) bindersIT.next()).getId(), false))) {
 					return false;
 				}
 			}
@@ -249,7 +264,7 @@ public class TrashTraverser {
 					if (!(ascendEntry(
 						binderId,
 						Long.valueOf((String) folderEntryMap.get("_docId")),
-						false))) {	// false -> Don't ascend the entry's parentage.  That will happen below.
+						false))) {	// false -> We're ascending a binder.
 						return false;
 					}
 				}
@@ -260,10 +275,13 @@ public class TrashTraverser {
 		if (!(m_cb.binder(m_bs, binderId, m_cbData))) {
 			return false;
 		}
-		
-		// ...and ascend its predeleted parentage.
-		if (!(ascendBindersPreDeletedParentage(binder))) {
-			return false;
+
+		// ...and for the top level binder being deleted...
+		if (topLevelBinder) {
+			// ...ascend its predeleted parentage.
+			if (!(ascendBindersPreDeletedParentage(binder.getParentBinder()))) {
+				return false;
+			}
 		}
 		
 		// If we get here, we always continue the traversal.
@@ -284,6 +302,7 @@ public class TrashTraverser {
 			else          isPreDeleted = ((Workspace) binder).isPreDeleted();
 			if (isPreDeleted) {
 				// Yes!  Handle it...
+				addAdditionalTraversals(binder);
 				if (!(m_cb.binder(m_bs, binder.getId(), m_cbData))) {
 					return false;
 				}
@@ -302,10 +321,10 @@ public class TrashTraverser {
 	/*
 	 * Called to ascend an entry (ancestors, parentage, ...)
 	 */
-	private boolean ascendEntry(Long folderId, Long entryId, boolean ascendParentage) {
+	private boolean ascendEntry(Long folderId, Long entryId, boolean traversingEntry) {
 		// Ascend the entry's ancestors (for replies to replies)...
 		Binder binder = m_bs.getBinderModule().getBinder(folderId);
-		if (!(ascendEntryAncestors(folderId, entryId))) {
+		if (!(ascendEntryAncestors(folderId, entryId, traversingEntry))) {
 			return false;
 		}
 		
@@ -314,9 +333,9 @@ public class TrashTraverser {
 			return false;
 		}
 
-		// ...and if requested to do so...
-		if (ascendParentage) {
-			// ...ascend the entry's parentage.
+		// ...and if we're traversing an entry...
+		if (traversingEntry) {
+			// ...ascend it's parentage.
 			if (!(ascendBindersPreDeletedParentage(binder))) {
 				return false;
 			}
@@ -333,13 +352,14 @@ public class TrashTraverser {
 	 * entry.
 	 */
 	@SuppressWarnings("unchecked")
-	private boolean ascendEntryAncestors(Long folderId, Long entryId) {
+	private boolean ascendEntryAncestors(Long folderId, Long entryId, boolean traversingEntry) {
 		// Scan this entry's ancestors...
 		Map entryTreeMap = m_bs.getFolderModule().getEntryTree(folderId, entryId, true);
 		List<FolderEntry> ancestorsList = ((List<FolderEntry>) entryTreeMap.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
 		for (Iterator ancestorsIT=ancestorsList.iterator(); ancestorsIT.hasNext();) {
 			// ...and ascend them.
 			FolderEntry ancestorFE = ((FolderEntry) ancestorsIT.next());
+			addAdditionalTraversals(ancestorFE);
 			if (!(m_cb.entry(m_bs, folderId, ancestorFE.getId(), m_cbData))) {
 				return false;
 			}
@@ -349,6 +369,25 @@ public class TrashTraverser {
 		return true;
 	}
 
+	/**
+	 * When performing an ascending traversal, we traverse a
+	 * Binder/Entry's hierarchy/ancestry.  This returns an ArrayList
+	 * of the additional DefinableEntity's that were traversed.
+	 * 
+	 * @return
+	 */
+	public ArrayList<DefinableEntity> getAdditionalTraversalsAL() {
+		return m_additionalTraversalsAL;
+	}
+
+	/**
+	 * Resets the addition indexing ArrayList.
+	 */
+	public void resetAdditionalTraversalsAL() {
+		if (null == m_additionalTraversalsAL) m_additionalTraversalsAL = new ArrayList<DefinableEntity>();
+		else                                  m_additionalTraversalsAL.clear();
+	}
+	
 	/**
 	 * Stores a new TraverseCallback in this TrashTraverser object.
 	 * 

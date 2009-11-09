@@ -284,7 +284,7 @@ public class TrashHelper {
 			boolean reply;
 			try {
 				logger.debug("TrashPreDelete.binder(" + binderId + "):  Predeleting binder.");
-				bs.getBinderModule().preDeleteBinder(binderId, RequestContextHolder.getRequestContext().getUser().getId(), true);
+				bs.getBinderModule().preDeleteBinder(binderId, RequestContextHolder.getRequestContext().getUser().getId(), false);
 				changeBinder_Audit(bs, binderId, AuditType.preDelete);
 				logger.debug("...predelete succeeded!");
 				reply = true;
@@ -305,7 +305,7 @@ public class TrashHelper {
 			boolean reply;
 			try {
 				logger.debug("TrashPreDelete.entry(" + folderId + ", " + entryId + "):  Predeleting entry.");
-				bs.getFolderModule().preDeleteEntry(folderId, entryId, RequestContextHolder.getRequestContext().getUser().getId());
+				bs.getFolderModule().preDeleteEntry(folderId, entryId, RequestContextHolder.getRequestContext().getUser().getId(), false);
 				changeEntry_Audit(bs, folderId, entryId, AuditType.preDelete);
 				logger.debug("...predelete succeeded!");
 				reply = true;
@@ -689,7 +689,7 @@ public class TrashHelper {
 			boolean reply;
 			try {
 				logger.debug("TrashRestore.binder(" + binderId + "):  Restoring binder.");
-				bs.getBinderModule().restoreBinder(binderId, tr.m_rd, true);
+				bs.getBinderModule().restoreBinder(binderId, tr.m_rd, false);
 				changeBinder_Audit(bs, binderId, AuditType.restore);
 				logger.debug("...restore succeeded!");
 				reply = true;
@@ -711,7 +711,7 @@ public class TrashHelper {
 			boolean reply;
 			try {
 				logger.debug("TrashRestore.entry(" + folderId + ", " + entryId + "):  Restoring entry.");
-				bs.getFolderModule().restoreEntry(folderId, entryId, tr.m_rd, true);
+				bs.getFolderModule().restoreEntry(folderId, entryId, tr.m_rd, false);
 				changeEntry_Audit(bs, folderId, entryId, AuditType.restore);
 				logger.debug("...restore succeeded!");
 				reply = true;
@@ -925,6 +925,42 @@ public class TrashHelper {
 	}
 	
 	/*
+	 * Scans the Binder's and FolderEntry's in an ArrayList of
+	 * DefinableEntity's and re-indexes them.
+	 */
+	private static void doAdditionalIndexing(AllModulesInjected bs, TrashResponse tr, ArrayList<DefinableEntity> indexAL) {
+		// Scan the DefinableEntity's in the ArrayList...
+		int count = ((null == indexAL) ? 0 : indexAL.size());
+		for (int i = 0; i < count; i += 1) {
+			DefinableEntity de = indexAL.get(i);
+			Long deId = de.getId();
+			try {
+				// ...re-indexing each.
+				if (de instanceof Binder) {
+					// Note that we only re-index the Binder and not
+					// its tree since this case is used to restore
+					// the parentage of something.
+					logger.debug("TrashHelper.doAdditionalIndexing(" + deId + "):  Re-indexing binder (binder only)");
+					bs.getBinderModule().indexBinder(deId);
+				}
+				else {
+					logger.debug("TrashHelper.doAdditionalIndexing(" + de.getParentBinder().getId() + ", " + deId + "):  Re-indexing entry");
+					bs.getFolderModule().indexEntry(((FolderEntry) de), true);
+				}
+			}
+			catch (AccessControlException e) {
+				// If we're not already tracking an error for this
+				// operation...
+				if (!(tr.isError())) {
+					// ...track this one.
+					if (de instanceof Binder) tr.setACLViolation(((FolderEntry) de).getParentBinder().getId(), deId);
+					else                      tr.setACLViolation(deId);
+				}
+			}
+		}
+	}
+	
+	/*
 	 * Returns a TrashEntry[] of all the items in the trash (non paged
 	 * and non-sorted.)  Used to perform purge/restore alls.
 	 */
@@ -1076,7 +1112,7 @@ public class TrashHelper {
 	public static boolean isBinderWorkspace(Binder binder) {
 		return (EntityType.workspace == binder.getEntityType());
 	}
-	
+
 	/*
 	 * Called to purge all the entries in the trash. 
 	 */
@@ -1109,7 +1145,20 @@ public class TrashHelper {
 			// ...and if they pass, perform the predelete.
 			tt.setCallback(new TrashPreDelete());
 			tt.doTraverse(TraversalMode.DESCENDING, binderId);
+
+			// After predeleting a binder hierarchy, we need to
+			// re-index the binder and everything below.
+			try {
+				logger.debug("TrashHelper.preDeleteBinder(" + binderId + "):  Re-indexing binder (binder tree)");
+				bs.getBinderModule().indexTree(binderId);
+			}
+			catch (AccessControlException e) {
+				if (!(tr.isError())) {
+					tr.setACLViolation(binderId);
+				}
+			}
 		}
+
 		
 		// For any error...
 		if (tr.isError()) {
@@ -1136,6 +1185,18 @@ public class TrashHelper {
 			// ...and if they pass, perform the predelete.
 			tt.setCallback(new TrashPreDelete());
 			tt.doTraverse(TraversalMode.DESCENDING, folderId, entryId);
+			
+			// After predeleting an entry, we need to re-index it.
+			try {
+				logger.debug("TrashHelper.preDeleteEntry(" + folderId + "," + entryId + "):  Re-indexing entry");
+				FolderEntry fe = bs.getFolderModule().getEntry(folderId, entryId);
+				bs.getFolderModule().indexEntry(fe, true);
+			}
+			catch (AccessControlException e) {
+				if (!(tr.isError())) {
+					tr.setACLViolation(folderId, entryId);
+				}
+			}
 		}
 		
 		// For any error...
@@ -1560,27 +1621,58 @@ public class TrashHelper {
 		tt.doTraverse(TraversalMode.ASCENDING, binderId);
 		if (!(tr.isError())) {
 			// ...and if they pass, perform the restore.
+			tt.resetAdditionalTraversalsAL();
 			tt.setCallback(new TrashRestore());
 			tt.doTraverse(TraversalMode.ASCENDING, binderId);
+			
+			// After restoring a binder hierarchy, we need to re-index
+			// the binder and its children...
+			try {
+				logger.debug("TrashHelper.restoreBinder(" + binderId + "):  Re-indexing binder (binder tree)");
+				bs.getBinderModule().indexTree(binderId);
+			}
+			catch (AccessControlException e) {
+				if (!(tr.isError())) {
+					tr.setACLViolation(binderId);
+				}
+			}
+			
+			// ...and any parent binders that had to get restored to
+			// ...restore the binder.
+			doAdditionalIndexing(bs, tr, tt.getAdditionalTraversalsAL());
 		}
 	}
 
 	/*
 	 * Called to restore an entry.
 	 */
-	private static void restoreEntry(AllModulesInjected bs, Long folderId, Long entryId, TrashResponse tr) {
-		// Always use the other form of the method.
-		restoreEntry(bs, folderId, entryId, true, tr);
-	}
-	private static TrashResponse restoreEntry(AllModulesInjected bs, Long folderId, Long entryId, boolean restoreParentage, TrashResponse tr) {
+	private static TrashResponse restoreEntry(AllModulesInjected bs, Long folderId, Long entryId, TrashResponse tr) {
 		// Check the ACLs...
 		TrashCheckACLs tca = new TrashCheckACLs(BinderOperation.restoreBinder, FolderOperation.restoreEntry);
 		TrashTraverser tt = new TrashTraverser(bs, logger, tca, tr);
 		tt.doTraverse(TraversalMode.ASCENDING, folderId, entryId);
 		if (!(tr.isError())) {
 			// ...and if they pass, perform the restore.
+			tt.resetAdditionalTraversalsAL();
 			tt.setCallback(new TrashRestore());
 			tt.doTraverse(TraversalMode.ASCENDING, folderId, entryId);
+			
+			// After restoring an entry, we need to re-index the
+			// entry...
+			try {
+				logger.debug("TrashHelper.restoreEntry(" + folderId + ", " + entryId + "):  Re-indexing entry");
+				FolderEntry fe = bs.getFolderModule().getEntry(folderId, entryId);
+				bs.getFolderModule().indexEntry(fe, true);
+			}
+			catch (AccessControlException e) {
+				if (!(tr.isError())) {
+					tr.setACLViolation(folderId, entryId);
+				}
+			}
+			
+			// ...and any parent binders that had to get restored to
+			// ...restore the entry.
+			doAdditionalIndexing(bs, tr, tt.getAdditionalTraversalsAL());
 		}
 		
 		return tr;
