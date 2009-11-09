@@ -69,4 +69,7 @@ public class WriteFilesException extends Exception {
     public Long getEntityId() {
     	return entityId;
     }
+    public void setEntityId(Long entityId) {
+    	this.entityId = entityId;
+    }
 }

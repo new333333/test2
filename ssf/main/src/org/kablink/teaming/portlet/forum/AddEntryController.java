@@ -380,6 +380,7 @@ public class AddEntryController extends SAbstractController {
 		} else {
 			if (!errorMsg.equals("")) {
 				model.put(WebKeys.ERROR_MESSAGE, errorMsg);
+				model.put(WebKeys.ERROR_MESSAGE_FORMAT, WebKeys.ERROR_MESSAGE_FORMAT_NORMAL);
 				path = "forum/reload_opener";
 				return new ModelAndView(path, model);
 			}

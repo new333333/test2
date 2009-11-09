@@ -66,7 +66,7 @@ public class MakeWrapableTag extends BodyTagSupport {
 	private String _bodyContent;
 	private static final String specChar = "^&[^&;]+;.*$";
 	private Pattern pattern_specChar = Pattern.compile( specChar, Pattern.DOTALL + Pattern.MULTILINE );
-	private static final String nonAlphaChar = "[!\"#$%&'()*+,-./:;<=>?@\\[\\]^_`{|}~]+";
+	private static final String nonAlphaChar = "[!\"#$%&'()*+,-./:;<=>\\s?@\\[\\]^_`{|}~]+";
 	private Pattern pattern_nonAlphaChar = Pattern.compile( nonAlphaChar );
 
 	public int doStartTag() {

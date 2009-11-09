@@ -125,7 +125,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
-        
+        Entry newEntry = null;
         try {
         	
         	SimpleProfiler.startProfiler("addEntry_create");
@@ -158,6 +158,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		}
         	});
         	SimpleProfiler.stopProfiler("addEntry_transactionExecute");
+        	newEntry = entry;
         	
            	// We must save the entry before processing files because it makes use
         	// of the persistent id of the entry. 
@@ -191,6 +192,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		return entry;
         	}
         } catch(WriteFilesException ex) {
+        	//See if there was an entry created. If so, delete it.
+        	if (ex.getEntityId() != null && newEntry != null && ex.getEntityId().equals(newEntry.getId())) {
+        		deleteEntry(binder, newEntry, false, new HashMap());
+        		ex.setEntityId(null);
+        	}
         	throw ex;
         } catch(Exception ex) {
         	entryDataErrors.addProblem(new Problem(Problem.GENERAL_PROBLEM, ex));
