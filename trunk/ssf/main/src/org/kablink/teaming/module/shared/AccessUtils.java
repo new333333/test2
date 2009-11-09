@@ -236,7 +236,13 @@ public class AccessUtils  {
     		
 	}
 	private static void readCheck(User user, Binder binder, Entry entry) {
-		getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
+		try {
+			getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
+		} catch(AccessControlException ex) {
+			if (user != null && user.equals(entry.getCreation().getPrincipal())) {
+				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_READ);
+			}
+		}
     }
     private static void readCheck(User user, Binder binder, WorkflowSupport entry) throws AccessControlException {
 		if (!entry.hasAclSet()) {

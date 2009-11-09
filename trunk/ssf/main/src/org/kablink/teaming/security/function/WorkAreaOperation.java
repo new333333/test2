@@ -68,6 +68,7 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation CREATE_FOLDERS = new WorkAreaOperation("createFolders");
     public final static WorkAreaOperation MANAGE_ENTRY_DEFINITIONS = new WorkAreaOperation("manageEntryDefinitions");
     public final static WorkAreaOperation MANAGE_WORKFLOW_DEFINITIONS = new WorkAreaOperation("manageWorkflowDefinitions");
+    public final static WorkAreaOperation CREATOR_READ = new WorkAreaOperation("creatorReadEntries");
     public final static WorkAreaOperation CREATOR_MODIFY = new WorkAreaOperation("creatorModifyEntries");
     public final static WorkAreaOperation CREATOR_DELETE = new WorkAreaOperation("creatorDeleteEntries");
 //    public final static WorkAreaOperation USER_SEE_COMMUNITY = new WorkAreaOperation("userSeeCommunity");
