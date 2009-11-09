@@ -779,6 +779,9 @@ public class WebKeys {
     public static final String EMAIL_SUBSCRIPTION_TOOLBAR = "ssEmailSubscriptionToolbar";
     public static final String ENTRY_ATTACHMENT_FILE_RECEIVER_URL = "ssAttachmentFileReceiverURL";
     public static final String ERROR_MESSAGE = "ss_errorMessage";
+    public static final String ERROR_MESSAGE_FORMAT = "ss_errorMessageFormat";
+    public static final String ERROR_MESSAGE_FORMAT_PRE = "pre";
+    public static final String ERROR_MESSAGE_FORMAT_NORMAL = "normal";
     public static final String FOLDER_ATTACHMENT_FILE_RECEIVER_URL = "ssFolderAttachmentFileReceiverURL";
     public static final String FOLDER_ATTACHMENT_APPLET_REFRESH_URL = "ssFolderAttachmentAppletRefereshURL";
 	public static final String FOLDER_CONFIGS="ssFolderConfigs";
