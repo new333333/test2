@@ -95,6 +95,9 @@ class ExtensionViewDetailsDlg extends PopupPanel implements ClickHandler {
 		table.setWidget( row, 0, new Label( GwtTeaming.getMessages().extensionsDlgDescription() ) );
 		table.setWidget( row, 1, new Label( info.getDescription() ) );
 		row++;
+		table.setWidget( row, 0, new Label( GwtTeaming.getMessages().extensionsDlgVersion() ) );
+		table.setWidget( row, 1, new Label( info.getVersion() ) );
+		row++;
 		table.setWidget( row, 0, new Label( GwtTeaming.getMessages().extensionsDlgDeployed() ) );
 		table.setWidget( row, 1, new Label( info.getDateDeployed() ) );
 		row++;
