@@ -63,15 +63,6 @@ public class ExtensionManagerImpl extends CommonDependencyInjection implements E
 		return getExtDeployer().findExtensions();
     }
 
-//	public void modifyExtension(String id, Map updates) {
-//		ExtensionInfo extension = getExtDeployer().getExtension(id);
-//
-//		if(updates != null){
-//			ObjectBuilder.updateObject(extension, updates);
-//			getExtDeployer().updateExtension(extension);
-//		}
-//	}
-	
 	public void removeExtensions(String id) {
 		ExtensionInfo ext = getExtDeployer().getExtension(id);
 
