@@ -34,22 +34,14 @@
 %>
 <% //YouTube view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:set var="ss_youTubeUrl" value="${ssDefinitionEntry.customAttributes[property_name].value}" scope="request"/>
-<c:if test="${empty ss_element_display_style}">
-<div class="ss_entryContent" style="padding-top:10px;">
-<div><span class="ss_labelLeft"><c:out value="${property_caption}" /></span><div>
-<%@ include file="/WEB-INF/jsp/definition_elements/you_tube_view.jsp" %>
+<c:if test="${!empty ss_youTubeUrl}">
+<div style="padding:4px 10px 20px 10px;">
+  <object width="425" height="344"><param name="movie"
+    value="${ss_youTubeUrl}"></param><param
+    name="allowFullScreen" value="true"></param><param name="allowscriptaccess"
+    value="always"></param><embed
+    src="${ss_youTubeUrl}"
+    type="application/x-shockwave-flash" allowscriptaccess="always"
+    allowfullscreen="true" width="425" height="344"></embed></object>
 </div>
-</c:if>
-
-<c:if test="${!empty ss_element_display_style && 
-    ss_element_display_style == 'tableAlignLeft'}">
-<tr>
-  <td class="ss_table_spacer_right" valign="top" align="right">
-    <span class="${ss_element_display_style_caption}"><c:out value="${property_caption}" /></span>
-  </td>
-  <td valign="top" align="left">
-<%@ include file="/WEB-INF/jsp/definition_elements/you_tube_view.jsp" %>
-  </td>
-</tr>
 </c:if>

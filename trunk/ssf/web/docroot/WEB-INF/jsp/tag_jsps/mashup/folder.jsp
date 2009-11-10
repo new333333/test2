@@ -93,6 +93,10 @@
 	  <div class="ss_mashup_folder_description">
 		<ssf:markup entity="${mashupEntry}">${mashupBinder.description.text}</ssf:markup>
 		<div class="ss_clear"></div>
+	    <c:if test="${!empty mashupBinder.customAttributes['youTubeUrl'].value}">
+          <c:set var="ss_youTubeUrl" value="${mashupBinder.customAttributes['youTubeUrl'].value}" scope="request"/>
+          <%@ include file="/WEB-INF/jsp/definition_elements/you_tube_view.jsp" %>
+	    </c:if>
 	  </div>
 	</c:if>
 	<c:if test="${ssConfigJspStyle != 'form' && empty mashup_attributes['showEntriesOpened']}">
@@ -131,6 +135,10 @@
 			  <div class="ss_mashup_folder_list_open_entry">
 			    <ssf:markup search="${entry}">${entry._desc}</ssf:markup>
 			    <div class="ss_clear"></div>
+	            <c:if test="${!empty entry.youTubeUrl}">
+                  <c:set var="ss_youTubeUrl" value="${entry.youTubeUrl}" scope="request"/>
+                  <%@ include file="/WEB-INF/jsp/definition_elements/you_tube_view.jsp" %>
+	            </c:if>
 			  </div>
 			</c:if>
 		  </div>

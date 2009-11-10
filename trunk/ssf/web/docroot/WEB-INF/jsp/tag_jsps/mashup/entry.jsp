@@ -92,6 +92,10 @@
 	  <div class="ss_mashup_entry_content">
 	    <ssf:markup entity="${mashupEntry}">${mashupEntry.description.text}</ssf:markup>
 	    <div class="ss_clear"></div>
+	    <c:if test="${!empty mashupEntry.customAttributes['youTubeUrl'].value}">
+          <c:set var="ss_youTubeUrl" value="${mashupEntry.customAttributes['youTubeUrl'].value}" scope="request"/>
+          <%@ include file="/WEB-INF/jsp/definition_elements/you_tube_view.jsp" %>
+	    </c:if>
 	  </div>
 	</c:if>
   <div class="ss_mashup_round_bottom"><div></div></div>

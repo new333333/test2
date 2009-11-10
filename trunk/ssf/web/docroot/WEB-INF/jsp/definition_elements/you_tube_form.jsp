@@ -34,7 +34,6 @@
 %>
 <% //YouTube form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="ss_fieldModifyDisabled" value=""/>
 <c:set var="ss_fieldModifyStyle" value=""/>
 <c:if test="${ss_accessControlMap['ss_modifyEntryRightsSet']}">
