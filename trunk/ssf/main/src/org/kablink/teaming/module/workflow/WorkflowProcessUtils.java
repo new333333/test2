@@ -839,7 +839,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 							CustomAttribute attr = entity.getCustomAttribute(userListName); 
 							if (attr != null) {
 								//comma separated value
-								if (listType.equals("user_list") || listType.equals("group_list")) {
+								if (listType.equals("user_list") || listType.equals("group_list") || listType.equals("userListSelectbox")) {
 									result.addPrincipalIds(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
 								} else if(listType.equals("team_list")) {
 									//The team list is a list of binder ids. We have to get the teams from each binder
