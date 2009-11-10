@@ -67,6 +67,7 @@
 	for (int i = 0; i < iconList.length; i++) {
 		String iconListValue = iconList[i].trim();
 		if (iconListValue.equals("")) continue;
+		if (iconListValue.startsWith("/")) iconListValue = iconListValue.substring(1, iconListValue.length());
 		String checked = "";
 		if (iconValue.equals(iconListValue)) {
 			checked = " checked=\"checked\"";
