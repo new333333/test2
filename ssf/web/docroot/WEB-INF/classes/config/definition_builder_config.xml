@@ -361,6 +361,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/you_tube_form.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/you_tube_form.jsp" />
 		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderText" />
 	    <webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderText" />
 	    <export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderText" />
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderText"/>
