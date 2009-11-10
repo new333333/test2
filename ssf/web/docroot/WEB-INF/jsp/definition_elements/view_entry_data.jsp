@@ -103,12 +103,12 @@
 	} else if (itemType.equals("entryAttributes")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/entry_attributes_view.jsp" %><%
 
-	} else if (itemType.equals("entryIcon")) {
-        %>
-        <c:if test="${!empty ssDefinitionEntry.iconName}">
-        <img border="0" src="<html:imagesPath/>${ssDefinitionEntry.iconName}" <ssf:alt/> />
-        </c:if>
-        <%
+	} else if (itemType.equals("entryAttributes")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/entry_attributes_view.jsp" %><%
+
+	} else if (itemType.equals("youtube")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_you_tube.jsp" %><%
+
 	} else {
         %>
         Unknown definition element: <%= itemType %>
