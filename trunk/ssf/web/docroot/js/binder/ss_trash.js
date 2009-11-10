@@ -377,7 +377,7 @@ function ajaxTrashRequest_Submit(sOperation, urlParams, bPurgeMirroredSources) {
 				operation:sOperation,
 				params:urlParams,
 				binderId:g_binderId,
-				purgeMirroredSources:String(bPurgeMirroredSources),
+				purgeMirroredSources:String(bPurgeMirroredSources)
 			}),
 		ajaxTrashRequest_Response,
 		sOperation,
