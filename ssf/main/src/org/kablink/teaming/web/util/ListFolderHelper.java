@@ -881,7 +881,14 @@ public class ListFolderHelper {
 		BinderHelper.buildWorkspaceTreeBean(bs, workspaceBinder, model, null);
 		
 		buildFolderToolbars(bs, req, response, folder, folderId.toString(), model, viewType);
-		return BinderHelper.getViewListingJsp(bs, viewType);
+		String targetJSP;
+		if (showTrash) {
+			targetJSP = WebKeys.VIEW_LISTING_IFRAME;
+		}
+		else {
+			targetJSP = BinderHelper.getViewListingJsp(bs, viewType);
+		}
+		return targetJSP;
 	}
 	
 	protected static Map getSearchAndPagingModels(Map folderEntries, Map options, boolean showTrash) {

@@ -450,6 +450,14 @@
 
 					<!-- Trash Listing:  Data Rows-->
 					<c:forEach var="entry1" items="${ssFolderEntries}">
+						<!-- Setup Title -->
+						<c:if test="${empty entry1.title}"> 
+							<c:set var="entry1_title">--<ssf:nlt tag="entry.noTitle" />--</c:set>
+						</c:if>
+						<c:if test="${!empty entry1.title}">
+							<c:set var="entry1_title" value="${entry1.title}"/>
+						</c:if>
+
 						<!-- Setup preDeletedWhen -->
 						<jsp:useBean id="entry1" type="java.util.HashMap" />
 						<c:set var="entry1_deletedWhen_raw" value="${entry1._preDeletedWhen}" />
@@ -476,7 +484,7 @@
 							}
 						%>
 
-						<!-- Setup preDeletedWhen -->
+						<!-- Setup preDeletedFrom -->
 						<c:set var="entry1_deletedFrom" value="${entry1._preDeletedFrom}" />
 						<c:if test="${empty entry1_deletedFrom}">
 							<c:set var="entry1_deletedFrom" value="" />
@@ -559,21 +567,12 @@
 												onClick="ss_loadEntry(this,'${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 											</c:if>
 										>
+											<span><c:out value="${entry1_title}"/></span>
+										</a>
 									</c:if>
 									<c:if test="${entry1._docType != 'entry'}">
-							    		<a href="javascript: ;"
-											onclick="return ss_gotoPermalink('${entry1._docId}', '${entry1._docId}', 'folder', '${ss_namespace}', 'yes');"
-											title="${entry1.title}"
-										>
+										<span><c:out value="${entry1_title}"/></span>
 									</c:if>
-
-										<span>
-											<c:if test="${empty entry1.title}"> 
-												--<ssf:nlt tag="entry.noTitle" />--
-											</c:if>
-											<c:out value="${entry1.title}"/>
-										</span>
-									</a>
 								</ssf:slidingTableColumn>
  							</c:if>
 
