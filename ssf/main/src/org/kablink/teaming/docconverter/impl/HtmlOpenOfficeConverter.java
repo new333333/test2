@@ -229,7 +229,7 @@ public class HtmlOpenOfficeConverter
 			else
 			if (ifp.toLowerCase().endsWith(".ods")
 			|| ifp.toLowerCase().endsWith(".xls"))
-				convertType = "scalc: HTML (StarCalc)";
+				convertType = "HTML (StarCalc)";
 			else
 				convertType = "HTML (StarWriter)";
 			
