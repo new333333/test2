@@ -2031,13 +2031,13 @@ public class BinderHelper {
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
 		List<String> trackedPlaces = new ArrayList<String>();
-		if (type.equals(WebKeys.URL_WHATS_NEW_TRACKED)) {
+		if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED)) {
 			Long userWsId = user.getWorkspaceId();
 			if (userWsId != null) {
 				Binder userWs = bs.getBinderModule().getBinder(userWsId);
 				trackedPlaces = SearchUtils.getTrackedPlacesIds(bs, userWs);
 			}
-		} else if (type.equals(WebKeys.URL_WHATS_NEW_TEAMS)) {
+		} else if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS)) {
 			Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId());
 			Iterator itTeams = myTeams.iterator();
 			while (itTeams.hasNext()) {
