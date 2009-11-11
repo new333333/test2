@@ -3432,7 +3432,7 @@ public class BinderHelper {
 				//store the UI caption for each state
 				captionMap.put(ws.getTokenId(), WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState()));
 				//See if user can transition out of this state
-				if (bs.getFolderModule().testTransitionOutStateAllowed(entry, ws.getTokenId())) {
+				if (!entry.isPreDeleted() && bs.getFolderModule().testTransitionOutStateAllowed(entry, ws.getTokenId())) {
 					//get all manual transitions
 					Map trans = bs.getFolderModule().getManualTransitions(entry, ws.getTokenId());
 					transitionMap.put(ws.getTokenId(), trans);
@@ -3443,8 +3443,10 @@ public class BinderHelper {
 					threadMap.put(ws.getTokenId(), threadCaption);
 				}
 					
-				Map qMap = bs.getFolderModule().getWorkflowQuestions(entry, ws.getTokenId());
-				questionsMap.put(ws.getTokenId(), qMap);
+				if (!entry.isPreDeleted()) {
+					Map qMap = bs.getFolderModule().getWorkflowQuestions(entry, ws.getTokenId());
+					questionsMap.put(ws.getTokenId(), qMap);
+				}
 			}
 		}
 		model.put(WebKeys.WORKFLOW_CAPTIONS, captionMap);
