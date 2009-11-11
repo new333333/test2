@@ -90,6 +90,8 @@ public class WebUrlUtil {
 	private static final String SSFS_IGNORE_PASSWORD_ENABLED = "ssfs.ignore.password.enabled";
 	private static final String FILE_URL_ENCODE_FILENAME = "file.url.encode.filename";
 	
+	private static String multiHomingSubPath = null;
+	
 	enum WebApp {
 		SSF,
 		SSFS,
@@ -702,6 +704,9 @@ public class WebUrlUtil {
 			}			
 		}
 		
+		if(!getMultiHomingSubPath().equals(""))
+			sb.append(Constants.SLASH).append(getMultiHomingSubPath());
+		
 		return sb;
 	}
 	
@@ -838,4 +843,14 @@ public class WebUrlUtil {
 		return adapterUrl.toString();
 	}
 
+	private static String getMultiHomingSubPath() {
+		if(multiHomingSubPath == null) {
+			multiHomingSubPath = SPropsUtil.getString("sso.proxy.multihoming.subpath", "");
+			if(multiHomingSubPath.startsWith("/"))
+				multiHomingSubPath = multiHomingSubPath.substring(1);
+			if(multiHomingSubPath.endsWith("/"))
+				multiHomingSubPath = multiHomingSubPath.substring(0, multiHomingSubPath.length()-1);
+		}
+		return multiHomingSubPath;
+	}
 }
