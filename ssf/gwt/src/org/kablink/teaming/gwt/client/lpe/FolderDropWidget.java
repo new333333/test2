@@ -37,7 +37,14 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditDeleteControl;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 
@@ -47,11 +54,13 @@ import com.google.gwt.user.client.ui.InlineLabel;
  *
  */
 public class FolderDropWidget extends DropWidget
+	implements ClickHandler, MouseOverHandler, MouseOutHandler
 {
 	private static FolderWidgetDlgBox m_folderDlgBox = null;	// For efficiency sake, we only create one dialog box.
 	private FolderProperties	m_properties = null;
 	private InlineLabel		m_folderName = null;
 	private InlineLabel		m_binderName = null;
+	private String				m_viewFolderUrl = null;
 	private Timer				m_timer = null;
 	
 	/**
@@ -152,8 +161,13 @@ public class FolderDropWidget extends DropWidget
 			label.addStyleName( "lpeWidgetIdentifier" );
 			mainPanel.add( label );
 			
+			// m_folderName will be updated with the entry's name in updateWidget().
 			m_folderName = new InlineLabel();
-			m_folderName.addStyleName( "lpeFolderName" );
+			m_folderName.setStylePrimaryName( "lpeFolderName" );
+			m_folderName.addStyleDependentName( "mouseOut" );
+			m_folderName.addClickHandler( this );
+			m_folderName.addMouseOverHandler( this );
+			m_folderName.addMouseOutHandler( this );
 			mainPanel.add( m_folderName );
 			
 			m_binderName = new InlineLabel();
@@ -174,6 +188,47 @@ public class FolderDropWidget extends DropWidget
 		// All composites must call initWidget() in their constructors.
 		initWidget( wrapperPanel );
 	}// end init()
+
+	
+	/*
+	 * This method gets called when the user clicks on the folder's name.
+	 */
+	public void onClick( ClickEvent event )
+	{
+		Object	source;
+
+		// Get the object that was clicked on.
+		source = event.getSource();
+		
+		// Did the user click on the folder name?
+		if ( source == m_folderName )
+		{
+			// Yes
+			// Open a window where we will view this folder.
+			if ( m_viewFolderUrl != null )
+				Window.open( m_viewFolderUrl, "ViewFolderWnd", "height=750,resizeable,scrollbars,width=750" );
+		}
+	}// end onClick()
+	
+	
+	/**
+	 * This method gets called when the mouse was over the folder's name and has now left.
+	 */
+	public void onMouseOut( MouseOutEvent event )
+	{
+		m_folderName.removeStyleDependentName( "mouseOver" );
+		m_folderName.addStyleDependentName( "mouseOut" );
+	}// end onMouseOut()
+
+	
+	/**
+	 * This method gets called when the mouse is over the folder's name.
+	 */
+	public void onMouseOver( MouseOverEvent event )
+	{
+		m_folderName.removeStyleDependentName( "mouseOut" );
+		m_folderName.addStyleDependentName( "mouseOver" );
+	}// end onMouseOver()
 
 	
 	/**
@@ -239,5 +294,8 @@ public class FolderDropWidget extends DropWidget
 		if ( binderName == null || binderName.length() == 0 )
 			binderName = "";
 		m_binderName.setText( " (" + binderName + ")" );
+
+		// Update the url that is used to view the folder.
+		m_viewFolderUrl =  m_properties.getViewFolderUrl();
 	}// end updateWidget()
 }// end FolderDropWidget

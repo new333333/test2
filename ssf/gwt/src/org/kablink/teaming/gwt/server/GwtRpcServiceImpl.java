@@ -38,6 +38,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -59,6 +61,7 @@ import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
@@ -67,6 +70,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ExportHelper;
+import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.search.Constants;
 
 
@@ -385,10 +389,19 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 				folderEntry.setEntryId( entryIdL.toString() );
 			if ( entry != null )
 			{
+				Long parentBinderId;
+				String url;
+				
 				folderEntry.setEntryName( entry.getTitle() );
 			
 				parentBinder = entry.getParentBinder();
+				parentBinderId = parentBinder.getId();
 				folderEntry.setParentBinderName( parentBinder.getPathName() );
+				folderEntry.setParentBinderId( parentBinderId );
+				
+				// Create a url that can be used to view this entry.
+				url = PermaLinkUtil.getPermalink( entry );
+				folderEntry.setViewEntryUrl( url );
 			}
 		}
 		catch (Exception ex)
@@ -443,10 +456,16 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 				folder.setFolderId( folderIdL.toString() );
 			if ( binder != null )
 			{
+				String url;
+
 				folder.setFolderName( binder.getTitle() );
 			
 				parentBinder = binder.getParentBinder();
 				folder.setParentBinderName( parentBinder.getPathName() );
+
+				// Create a url that can be used to view this folder.
+				url = PermaLinkUtil.getPermalink( binder );
+				folder.setViewFolderUrl( url );
 			}
 		}
 		catch (Exception ex)

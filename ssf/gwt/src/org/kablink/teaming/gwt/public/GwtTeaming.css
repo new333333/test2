@@ -215,11 +215,23 @@
 /* Styles used for the entry name in the "entry" widget */
 .lpeEntryName
 {
-	cursor: default;
-	color: #333333;
 	font-family: Arial,sans-serif;
 	font-size: 11px;
 	font-style: italic;
+}
+
+/* Styles used for the entry name in the "entry" widget when the mouse is not over the name*/
+.lpeEntryName-mouseOut
+{
+	cursor: default;
+	color: #333333;
+}
+
+/* Styles used for the entry name in the "entry" widget when the mouse is over the name*/
+.lpeEntryName-mouseOver
+{
+	cursor: pointer;
+	color: blue;
 }
 
 /* Styles for the "Entry" widget. */
@@ -242,11 +254,23 @@
 /* Styles used for the folder  name in the "folder" widget */
 .lpeFolderName
 {
-	cursor: default;
-	color: #333333;
 	font-family: Arial,sans-serif;
 	font-size: 11px;
 	font-style: italic;
+}
+
+/* Styles used for the folder  name in the "folder" widget when the mouse is not over the name. */
+.lpeFolderName-mouseOut
+{
+	cursor: default;
+	color: #333333;
+}
+
+/* Styles used for the folder name in the "folder" widget when the mouse is over the name */
+.lpeFolderName-mouseOver
+{
+	cursor: pointer;
+	color: blue;
 }
 
 /* Styles for the "Folder" widget. */
