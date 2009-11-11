@@ -269,7 +269,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				break;
 			case export:
 				getAccessControlManager().checkOperation(binder,
-						WorkAreaOperation.READ_ENTRIES);
+						WorkAreaOperation.BINDER_ADMINISTRATION);
 				break;
 			default:
 				throw new NotSupportedException(operation.toString(),
@@ -2003,7 +2003,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			StatusTicket statusTicket, Map reportMap) throws Exception {
 
 		Binder binder = loadBinder(binderId);
-		checkAccess(binder, BinderOperation.modifyBinder);
+		checkAccess(binder, BinderOperation.export);
 		
 		ExportHelper.export(binderId, entityId, out, options, binderIds, noSubBinders, 
 				statusTicket, reportMap);
@@ -2012,6 +2012,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	public void importZip(Long binderId, InputStream fIn, StatusTicket statusTicket, 
 			Map reportMap) throws IOException {
+		Binder binder = loadBinder(binderId);
+		checkAccess(binder, BinderOperation.export);
+		
 		ExportHelper.importZip(binderId, fIn, statusTicket, reportMap);
 	}
 
