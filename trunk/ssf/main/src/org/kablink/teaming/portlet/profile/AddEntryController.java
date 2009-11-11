@@ -42,28 +42,24 @@ import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.kablink.teaming.IllegalCharacterInNameException;
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.NameMissingException;
+import org.kablink.teaming.ObjectExistsException;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.PasswordMismatchException;
 import org.kablink.teaming.TextVerificationException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.ProfileBinder;
+import org.kablink.teaming.domain.NoPrincipalByTheNameException;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.UserProperties;
-import org.kablink.teaming.module.profile.impl.GuestProperties;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
-import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.ParamsWrappedActionRequest;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
-import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.portlet.ModelAndView;
@@ -93,6 +89,16 @@ public class AddEntryController extends SAbstractController {
         	String name = inputData.getSingleValue(WebKeys.USER_PROFILE_NAME);
         	if (name == null || name.equals("")) throw new NameMissingException("errorcode.name.missing");
         	if (!BinderHelper.isBinderNameLegal(name)) throw new IllegalCharacterInNameException("errorcode.illegalCharacterInName");
+        
+        	//check if the user already exists, if found throw ObjectExistsException,
+        	//if not found catch exception, and go ahead and add the new user
+        	try
+        	{
+        		User user = getProfileModule().getUser(name);
+        		throw new ObjectExistsException("errorcode.user.exists", (Object[])null);
+        	} catch (NoPrincipalByTheNameException nue){
+        	}
+        	
         	String password = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD);
         	String password2 = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD2);
         	if (password == null || password.equals("")) 
@@ -134,8 +140,8 @@ public class AddEntryController extends SAbstractController {
 	    				}
     				}
     			}
-    			
-				getProfileModule().addUser(entryType, inputData, fileMap, null);
+
+    			getProfileModule().addUser(entryType, inputData, fileMap, null);
 				setupReloadOpener(response, binderId);
 				//flag reload of folder listing
 				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
