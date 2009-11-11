@@ -222,16 +222,14 @@ public class HtmlOpenOfficeConverter
 			// Getting an object that will offer a simple way to store a document to a URL.
 			xstorable = (XStorable) UnoRuntime.queryInterface(XStorable.class, objectDocumentToStore);
 	      
-			// Determine convert type based on input file name extension
-			if (ifp.toLowerCase().endsWith(".odp")
-			|| ifp.toLowerCase().endsWith(".ppt"))
-				convertType = "impress_html_Export";
-			else
-			if (ifp.toLowerCase().endsWith(".ods")
-			|| ifp.toLowerCase().endsWith(".xls"))
-				convertType = "HTML (StarCalc)";
-			else
-				convertType = "HTML (StarWriter)";
+			// Determine convert type based on input file name extension.
+			// Note the convertType's used are based on OpenOffice 3.0.
+			// See http://wiki.services.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0
+			String ifpLC = ifp.toLowerCase();
+			if      (ifpLC.endsWith(".odp") || ifpLC.endsWith(".ppt")) convertType = "impress_html_Export";
+			else if (ifpLC.endsWith(".ods") || ifpLC.endsWith(".xls")) convertType = "HTML (StarCalc)";
+			else if (ifpLC.endsWith(".odg"))                           convertType = "draw_html_Export";
+			else                                                       convertType = "HTML (StarWriter)";
 			
 			// Preparing properties for converting the document
 			propertyValues = new PropertyValue[2];
