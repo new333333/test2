@@ -879,7 +879,7 @@ public class ViewEntryController extends  SAbstractController {
 			
 			//Export / Import
 			if (entry.isTop() && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-				if (bs.getBinderModule().testAccess(folder, BinderOperation.export)) {
+				if (bs.getBinderModule().testAccess(entry.getParentBinder(), BinderOperation.export)) {
 					qualifiers = new HashMap();
 					url = response.createActionURL();
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_EXPORT_IMPORT);
