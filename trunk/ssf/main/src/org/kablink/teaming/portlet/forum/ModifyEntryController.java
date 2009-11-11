@@ -94,7 +94,8 @@ public class ModifyEntryController extends SAbstractController {
 			FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
 			if (!entry.isTop()) entry = entry.getTopEntry();
 			else entry = null;
-			if (binder.isMirrored()) {
+			String purgeImmediately = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PURGE_IMMEDIATELY, "false");
+			if (binder.isMirrored() || Boolean.parseBoolean(purgeImmediately)) {
 				getFolderModule().deleteEntry(folderId, entryId);
 			}
 			else {

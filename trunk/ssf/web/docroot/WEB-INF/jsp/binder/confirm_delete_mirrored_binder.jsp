@@ -91,7 +91,23 @@
 	</span></label>
 	</div>
 </c:if>
-<input type="hidden" name="deleteSource" value="false"/>
+<c:if test="${!ssBinder.mirrored}">
+	<c:set var="cb_checked" value=""/>
+	<div style="display:block">
+	<input type="checkbox" name="ss_purgeImmediately" id="ss_purgeImmediately" <c:out value="${cb_checked}"/> 
+	  onClick="if (document.ss_confirm_delete_mirrored_binder.ss_purgeImmediately.checked) document.ss_confirm_delete_mirrored_binder.purgeImmediately.value='true'; else document.ss_confirm_delete_mirrored_binder.purgeImmediately.value='false';"/>
+	&nbsp;<label for="ss_purgeImmediately"><span class="ss_labelRight">
+	<c:if test="${ssBinder.entityType == 'folder'}">
+	<ssf:nlt tag="trash.confirm.Purge.immediately.folder"/>
+	</c:if>
+	<c:if test="${ssBinder.entityType != 'folder'}">
+	<ssf:nlt tag="trash.confirm.Purge.immediately.workspace"/>
+	</c:if>
+	</span></label>
+	</div>
+</c:if>
+<input type="hidden" name="purgeImmediately" value="false"/>
+<input type="hidden" name="deleteSource"     value="false"/>
 <br/>
 
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" 

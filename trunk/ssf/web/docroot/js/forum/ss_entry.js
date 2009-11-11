@@ -99,14 +99,123 @@ function ss_clearRating(rating, id, namespace) {
     ss_currentRatingInfoId = "";
 }
 
-function ss_confirmDeleteEntry(obj) {
-	if (confirm(ss_confirmDeleteEntryText)) {
-		var url = obj.href;
-		ss_postToThisUrl(url);
-		return false
-	} else {
-		return false
+/*
+ * Runs the delete entry confirmation dialog.
+ */
+function ss_confirmDeleteEntry(eA) {
+	if (ss_binderMirrored && ("true" == ss_binderMirrored)) {
+		if (confirm(ss_confirmDeleteEntryText)) {
+			var url = eA.href;
+			ss_postToThisUrl(url);
+		}
 	}
+	else {
+	   	ss_confirmDeleteEntry_Create(eA);
+		ss_confirmDeleteEntry_Show('ss_confirm_entry_delete_div');
+	}
+ 	return false;
+}
+
+/*
+ * Creates the delete entry confirmation dialog if it doesn't
+ * already exist.
+ */
+function ss_confirmDeleteEntry_Create(eA)
+{
+	// If we haven't create the <DIV> for the dialog yet...
+	var eDIV = document.getElementById('ss_confirm_entry_delete_div');
+	if (!eDIV) {
+		// ...create it now...
+		eDIV = document.createElement("div");
+		eDIV.setAttribute("class", "ss_confirmationDlg");
+        eDIV.setAttribute("id", "ss_confirm_entry_delete_div");
+        eDIV.style.position = "absolute";
+        eDIV.style.visibility = "hidden";
+        eDIV.style.display = "none";
+		
+		// ...store the URL from and patch the <A>'s href...
+		eDIV.n_href = eA.href;
+		eA.href = "javascript://";
+
+		// ...add the banner text...		
+		var ePBanner = document.createElement("p");
+        eDIV.appendChild(ePBanner);
+    	ePBanner.innerHTML = ss_confirmDeleteEntryText;
+
+		// ...add the purge immediately checkbox...		
+		var ePCBox = document.createElement("p");
+        eDIV.appendChild(ePCBox);
+		var eNOBR = document.createElement("nobr");
+		ePCBox.appendChild(eNOBR);
+		var eCB = document.createElement("input");
+		eNOBR.appendChild(eCB);
+		eCB.setAttribute("type", "checkbox");
+		eCB.setAttribute("id", "ss_purgeImmediately");
+		var eCBSpan = document.createElement("span");
+		eNOBR.appendChild(eCBSpan);
+		eCBSpan.innerHTML = ss_purgeEntryImmediately
+
+		// ...add a container for the push buttons...
+		var eBR = document.createElement("br");
+		eDIV.appendChild(eBR);		
+		eNOBR = document.createElement("nobr");
+		eDIV.appendChild(eNOBR);
+		
+		// ...add the OK push button...
+		var eOK = document.createElement("input");
+        eNOBR.appendChild(eOK);
+		eOK.setAttribute("type", "button");
+		dojo.connect(eOK, "onclick", function(evt) {
+			ss_cancelPopupDiv('ss_confirm_entry_delete_div');
+			var url = this.n_div.n_href;
+			if (document.getElementById("ss_purgeImmediately").checked) {
+				url += "&purgeImmediately=true";
+			}
+			ss_postToThisUrl(url);
+			return false;
+	    });
+		eOK.setAttribute("name", ss_buttonOK);
+		eOK.setAttribute("value", ss_buttonOK);
+		eOK.setAttribute("id", "ss_confirmEntryDeleteOK");
+        eOK.n_div = eDIV;
+
+		// ...add a spacer between the ok and cancel push buttons.
+		var eSpace = document.createTextNode(" ");
+		eNOBR.appendChild(eSpace);
+				
+		// ...add the cancel push button...
+		var eCancel = document.createElement("input");
+        eNOBR.appendChild(eCancel);
+		eCancel.setAttribute("type", "button");
+		dojo.connect(eCancel, "onclick", function(evt) {
+			ss_cancelPopupDiv('ss_confirm_entry_delete_div');
+			return false;
+	    });
+		eCancel.setAttribute("name", ss_buttonCancel);
+		eCancel.setAttribute("value", ss_buttonCancel);
+		eCancel.setAttribute("id", "ss_confirmEntryDeleteCancel");
+
+		// ...and finally, add the <DIV> to the page's <BODY>.		
+    	document.getElementsByTagName("body").item(0).appendChild(eDIV);
+	}
+}
+
+/*
+ * Shows the delete entry confirmation dialog.
+ */
+function ss_confirmDeleteEntry_Show(divId, focusId) {
+	// Write the <DIV> in a lightbox...
+	var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
+	lightBox.onclick = function(e) {ss_cancelPopupDiv(divId);};
+	var divObj = document.getElementById(divId);
+	divObj.style.zIndex = parseInt(ssLightboxZ + 1);
+	
+	// ...show it...
+    ss_moveObjectToBody(divObj); 
+	ss_setupPopupDiv(divObj);
+	
+	// ...and put the focus in its cancel push button.
+	try {document.getElementById("ss_confirmEntryDeleteCancel").focus();} catch(e){}
 }
 
 function ss_confirmUnlockEntry(obj) {
