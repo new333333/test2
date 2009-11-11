@@ -143,7 +143,9 @@ var ss_selectAllBtnText = "<ssf:nlt tag="button.selectAll"/>";
 var ss_clearAllBtnText = "<ssf:nlt tag="button.clearAll"/>";
 var ss_sessionTimeoutText = "<ssf:nlt tag="session.timeoutWarning"/>";
 var ss_entryFrameTitle = "<ssf:nlt tag="iframe.entry"/>";
-									
+
+var ss_buttonCancel = "<ssf:nlt tag="button.cancel"/>";
+var ss_buttonOK = "<ssf:nlt tag="button.ok"/>";
 var ss_findButtonClose = "<ssf:nlt tag="button.close"/>";
 var ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
 

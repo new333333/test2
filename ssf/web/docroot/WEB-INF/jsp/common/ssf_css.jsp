@@ -4428,6 +4428,17 @@ span.ss_infoDivName {
 span.ss_infoDivValue {
 	font-weight:normal;
 	}
+	
+.ss_confirmationDlg {
+	background-color: ${ss_style_background_color_opaque};
+	border:1px solid black; 
+	padding: 8px;
+	width:  400px;
+	font-size: ${ss_style_font_normalprint};
+	font-weight: bold;
+	font-family: ${ss_style_font_family};
+	color: ${ss_form_element_text_color};
+}
 
 
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_dashboard.jsp" />

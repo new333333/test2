@@ -132,6 +132,7 @@ public class WebKeys {
 	public static final String URL_DATE_END="endDate";
 	public static final String URL_DEBUG="enableDebug";
 	public static final String URL_DELETE_SOURCE="deleteSource";
+	public static final String URL_PURGE_IMMEDIATELY="purgeImmediately";
 	public static final String URL_DIRECTION="direction";
 	public static final String URL_DISPLAY_TYPE="displayType";
     public static final String URL_DIV_ID="divId";

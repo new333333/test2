@@ -82,6 +82,7 @@ public class ModifyBinderController extends AbstractBinderController {
 		String binderType = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_BINDER_TYPE);	
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String deleteSource = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DELETE_SOURCE, null);
+		String purgeImmediately = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PURGE_IMMEDIATELY, null);
 		if (op.equals(WebKeys.OPERATION_SYNCHRONIZE_MIRRORED_FOLDER)) {
 			// This trick is here to handle the situation where the synchronization
 			// causes the binder to be deleted.
@@ -152,7 +153,7 @@ public class ModifyBinderController extends AbstractBinderController {
 				Binder parentBinder = binder.getParentBinder();			
 				//get view data, before binder is deleted
 				setupViewBinder(response, binder);
-				if (binder.isMirrored()) {
+				if (binder.isMirrored() || Boolean.parseBoolean(purgeImmediately)) {
 					getBinderModule().deleteBinder(binderId, Boolean.parseBoolean(deleteSource), null);
 				}
 				else {
