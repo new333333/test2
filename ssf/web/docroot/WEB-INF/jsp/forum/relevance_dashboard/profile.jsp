@@ -48,7 +48,8 @@
   <c:if test="${ssUser == ssDefinitionEntry}">
 	<c:if test="${ss_quotasEnabled}">
 	  <div>
-	    <span><ssf:nlt tag="quota.diskQuota"><ssf:param name="value" value="${ssUser.diskQuota}"/></ssf:nlt></span>
+	    <span><ssf:nlt tag="quota.diskQuota"><ssf:param name="value" useBody="true"
+	    ><fmt:formatNumber value="${ss_diskQuotaUserMaximum/1048576}" maxFractionDigits="0"/></ssf:param></ssf:nlt></span>
 	  </div>
 	  <div>
 	    <span><ssf:nlt tag="quota.diskSpaceUsed"><ssf:param name="value" useBody="true"
