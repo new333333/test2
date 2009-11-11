@@ -223,29 +223,15 @@ public class TextOpenOfficeConverter
 			// Getting an object that will offer a simple way to store a document to a URL.
 			xstorable = (XStorable) UnoRuntime.queryInterface(XStorable.class, objectDocumentToStore);
 	      
-			// Determine convert type based on input file name extension
-			if (ifp.toLowerCase().endsWith(".odp")
-			|| ifp.toLowerCase().endsWith(".ppt"))
-				convertType = "XHTML Draw File";
-			else
-			if (ifp.toLowerCase().endsWith(".ods")
-			|| ifp.toLowerCase().endsWith(".xls"))
-				convertType = "XHTML Calc File";
-			else
-				convertType = "XHTML Writer File";
+			// Determine convert type based on input file name extension.
+			// Note the convertType's used are based on OpenOffice 3.0.
+			// See http://wiki.services.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0
+			String ifpLC = ifp.toLowerCase();
+			if      (ifpLC.endsWith(".odp") || ifpLC.endsWith(".ppt")) convertType = "XHTML Impress File";
+			else if (ifpLC.endsWith(".ods") || ifpLC.endsWith(".xls")) convertType = "XHTML Calc File";
+			else if (ifpLC.endsWith(".odg"))                           convertType = "XHTML Draw File";
+			else                                                       convertType = "XHTML Writer File";
 
-/*
-  				convertType = "XHTML Impress File";
-				convertType = "XHTML Writer File";				
-				convertType = "XHTML Draw File";
-				convertType = "writer_pdf_Export";
-				convertType = "Text";
-				convertType = "XHTML 1.0 strict (.html)";
-				convertType = "XHTML (StarWriter)";
-				convertType = "HTML (StarWriter)";
-				convertType = "XHTML 1.0 Strict";
-*/
-			
 			// Preparing properties for converting the document
 			propertyValues = new PropertyValue[2];
 			// Setting the flag for overwriting
