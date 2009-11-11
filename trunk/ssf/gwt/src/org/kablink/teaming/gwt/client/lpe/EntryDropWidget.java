@@ -37,7 +37,15 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditDeleteControl;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 
@@ -47,11 +55,13 @@ import com.google.gwt.user.client.ui.InlineLabel;
  *
  */
 public class EntryDropWidget extends DropWidget
+	implements ClickHandler, MouseOverHandler, MouseOutHandler
 {
 	private static EntryWidgetDlgBox m_entryDlgBox = null;	// For efficiency sake, we only create one dialog box.
 	private EntryProperties	m_properties = null;
 	private InlineLabel		m_entryName = null;
 	private InlineLabel		m_binderName = null;
+	private String				m_viewEntryUrl = null;
 	private Timer				m_timer = null;
 	
 	/**
@@ -152,8 +162,13 @@ public class EntryDropWidget extends DropWidget
 			label.addStyleName( "lpeWidgetIdentifier" );
 			mainPanel.add( label );
 			
+			// m_entryName will be updated with the entry's name in updateWidget().
 			m_entryName = new InlineLabel();
-			m_entryName.addStyleName( "lpeEntryName" );
+			m_entryName.setStylePrimaryName( "lpeEntryName" );
+			m_entryName.addStyleDependentName( "mouseOut" );
+			m_entryName.addClickHandler( this );
+			m_entryName.addMouseOverHandler( this );
+			m_entryName.addMouseOutHandler( this );
 			mainPanel.add( m_entryName );
 			
 			m_binderName = new InlineLabel();
@@ -174,6 +189,47 @@ public class EntryDropWidget extends DropWidget
 		// All composites must call initWidget() in their constructors.
 		initWidget( wrapperPanel );
 	}// end init()
+
+	
+	/*
+	 * This method gets called when the user clicks on the entry's name.
+	 */
+	public void onClick( ClickEvent event )
+	{
+		Object	source;
+
+		// Get the object that was clicked on.
+		source = event.getSource();
+		
+		// Did the user click on the entry name?
+		if ( source == m_entryName )
+		{
+			// Yes
+			// Open a window where we will view this entry.
+			if ( m_viewEntryUrl != null )
+				Window.open( m_viewEntryUrl, "ViewEntryWnd", "height=750,resizeable,scrollbars,width=750" );
+		}
+	}// end onClick()
+	
+	
+	/**
+	 * This method gets called when the mouse was over the entry's name and has now left.
+	 */
+	public void onMouseOut( MouseOutEvent event )
+	{
+		m_entryName.removeStyleDependentName( "mouseOver" );
+		m_entryName.addStyleDependentName( "mouseOut" );
+	}// end onMouseOut()
+
+	
+	/**
+	 * This method gets called when the mouse is over the entry's name.
+	 */
+	public void onMouseOver( MouseOverEvent event )
+	{
+		m_entryName.removeStyleDependentName( "mouseOut" );
+		m_entryName.addStyleDependentName( "mouseOver" );
+	}// end onMouseOver()
 
 	
 	/**
@@ -239,5 +295,8 @@ public class EntryDropWidget extends DropWidget
 		if ( binderName == null || binderName.length() == 0 )
 			binderName = "";
 		m_binderName.setText( " (" + binderName + ")" );
+		
+		// Update the url that is used to view the entry.
+		m_viewEntryUrl =  m_properties.getViewEntryUrl();
 	}// end updateWidget()
 }// end EntryDropWidget

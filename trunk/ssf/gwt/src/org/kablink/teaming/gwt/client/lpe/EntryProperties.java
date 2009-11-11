@@ -55,6 +55,7 @@ public class EntryProperties
 	private String m_entryName;
 	private String m_parentBinderName;	// Name of the binder the entry is found in.
 	private String m_zoneUUID;
+	private String m_viewEntryUrl;
 	private AsyncCallback<GwtFolderEntry> m_folderEntryCallback;
 	private boolean m_rpcInProgress;
 	
@@ -68,6 +69,7 @@ public class EntryProperties
 		m_entryName = null;
 		m_parentBinderName = null;
 		m_zoneUUID = null;
+		m_viewEntryUrl = null;
 		
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolderEntry object.
 		m_folderEntryCallback = new AsyncCallback<GwtFolderEntry>()
@@ -92,6 +94,7 @@ public class EntryProperties
 				{
 					m_entryName = gwtFolderEntry.getEntryName();
 					m_parentBinderName = gwtFolderEntry.getParentBinderName();
+					m_viewEntryUrl = gwtFolderEntry.getViewEntryUrl();
 				}
 				
 				m_rpcInProgress = false;
@@ -125,6 +128,7 @@ public class EntryProperties
 			m_entryName = entryProps.getEntryName();
 			m_parentBinderName = entryProps.getBinderName();
 			m_showTitle = entryProps.getShowTitleValue();
+			m_viewEntryUrl = entryProps.getViewEntryUrl();
 		}
 	}// end copy()
 	
@@ -209,6 +213,15 @@ public class EntryProperties
 	{
 		return m_showTitle;
 	}// end getShowTitleValue()
+	
+	
+	/**
+	 * Return the url that can be used to view this entry.
+	 */
+	public String getViewEntryUrl()
+	{
+		return m_viewEntryUrl;
+	}// end getViewEntryUrl()
 	
 	
 	/**

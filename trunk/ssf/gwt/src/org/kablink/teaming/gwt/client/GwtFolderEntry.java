@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client;
 
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -45,7 +46,10 @@ public class GwtFolderEntry extends GwtTeamingItem
 {
 	private String m_entryId;
 	private String m_entryName;
+	
+	private Long m_parentBinderId;
 	private String m_parentBinderName;
+	private String m_viewUrl;
 	
 	/**
 	 * 
@@ -54,7 +58,9 @@ public class GwtFolderEntry extends GwtTeamingItem
 	{
 		m_entryId = null;
 		m_entryName = null;
+		m_parentBinderId = null;
 		m_parentBinderName = null;
+		m_viewUrl = null;
 	}// end GwtFolderEntry()
 	
 	
@@ -74,6 +80,14 @@ public class GwtFolderEntry extends GwtTeamingItem
 		return m_entryName;
 	}// end getEntryName()
 	
+	/**
+	 * 
+	 */
+	public Long getParentBinderId()
+	{
+		return m_parentBinderId;
+	}// end getParentBinderId()
+
 	/**
 	 * 
 	 */
@@ -109,6 +123,15 @@ public class GwtFolderEntry extends GwtTeamingItem
 	
 	
 	/**
+	 * Return the url that can be used to view this entry.
+	 */
+	public String getViewEntryUrl()
+	{
+		return m_viewUrl;
+	}// end getViewEntryUrl()
+	
+	
+	/**
 	 * 
 	 */
 	public void setEntryId( String entryId )
@@ -127,8 +150,27 @@ public class GwtFolderEntry extends GwtTeamingItem
 	/**
 	 * 
 	 */
+	public void setParentBinderId( Long id )
+	{
+		m_parentBinderId = id;
+	}// end setParentBinderId()
+	
+	
+	/**
+	 * 
+	 */
 	public void setParentBinderName( String parentBinderName )
 	{
 		m_parentBinderName = parentBinderName;
 	}// end setParentBinderName()
+
+
+	/**
+	 * Set the url that can be used to view this entry.
+	 */
+	public void setViewEntryUrl( String url)
+	{
+		m_viewUrl = url;
+	}// end createViewEntryUrl()
+	
 }// end GwtFolderEntry

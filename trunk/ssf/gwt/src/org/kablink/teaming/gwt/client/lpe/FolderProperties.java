@@ -58,6 +58,7 @@ public class FolderProperties
 	private String m_folderName;
 	private String m_parentBinderName;	// Name of the binder the folder is found in.
 	private String m_zoneUUID;
+	private String m_viewFolderUrl;
 	private AsyncCallback<GwtFolder> m_folderCallback;
 	private boolean m_rpcInProgress;
 	
@@ -74,6 +75,7 @@ public class FolderProperties
 		m_folderName = null;
 		m_parentBinderName = null;
 		m_zoneUUID = null;
+		m_viewFolderUrl = null;
 		
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
 		m_folderCallback = new AsyncCallback<GwtFolder>()
@@ -98,6 +100,7 @@ public class FolderProperties
 				{
 					setFolderName( gwtFolder.getFolderName() );
 					setParentBinderName( gwtFolder.getParentBinderName() );
+					setViewFolderUrl( gwtFolder.getViewFolderUrl() );
 				}
 				
 				m_rpcInProgress = false;
@@ -134,6 +137,7 @@ public class FolderProperties
 			m_showDesc = folderProps.getShowDescValue();
 			m_showEntriesOpened = folderProps.getShowEntriesOpenedValue();
 			m_numEntriesToBeShown = folderProps.getNumEntriesToBeShownValue();
+			m_viewFolderUrl = folderProps.getViewFolderUrl();
 		}
 	}// end copy()
 	
@@ -264,6 +268,15 @@ public class FolderProperties
 	
 	
 	/**
+	 * Return the url that can be used to view this folder.
+	 */
+	public String getViewFolderUrl()
+	{
+		return m_viewFolderUrl;
+	}// end getViewFolderUrl()
+	
+	
+	/**
 	 * Return the zone uuid
 	 */
 	public String getZoneUUID()
@@ -353,6 +366,15 @@ public class FolderProperties
 	}// end setShowBorder()
 
 
+	/**
+	 * Set the url that can be used to view this folder.
+	 */
+	public void setViewFolderUrl( String url )
+	{
+		m_viewFolderUrl = url;
+	}// end setViewFolderUrl()
+	
+	
 	/**
 	 * 
 	 */

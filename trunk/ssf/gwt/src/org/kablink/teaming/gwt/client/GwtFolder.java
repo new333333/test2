@@ -46,6 +46,7 @@ public class GwtFolder extends GwtTeamingItem
 	private String m_folderId;
 	private String m_folderName;
 	private String m_parentBinderName;
+	private String m_viewUrl;
 	
 	/**
 	 * 
@@ -55,6 +56,7 @@ public class GwtFolder extends GwtTeamingItem
 		m_folderId = null;
 		m_folderName = null;
 		m_parentBinderName = null;
+		m_viewUrl = null;
 	}// end GwtFolder()
 	
 	
@@ -110,6 +112,15 @@ public class GwtFolder extends GwtTeamingItem
 	
 	
 	/**
+	 * Return the url that can be used to view this folder.
+	 */
+	public String getViewFolderUrl()
+	{
+		return m_viewUrl;
+	}// end getViewFolderUrl()
+	
+	
+	/**
 	 * 
 	 */
 	public void setFolderId( String folderId )
@@ -132,4 +143,14 @@ public class GwtFolder extends GwtTeamingItem
 	{
 		m_parentBinderName = parentBinderName;
 	}// end setParentBinderName()
+
+
+	/**
+	 * Set the url that can be used to view this folder.
+	 */
+	public void setViewFolderUrl( String url )
+	{
+		m_viewUrl = url;
+	}// end createViewFolderUrl()
+	
 }// end GwtFolder
