@@ -85,6 +85,7 @@ import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
+import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.TagUtil;
@@ -418,7 +419,7 @@ public class ViewEntryController extends  SAbstractController {
 
 			String viewType = BinderHelper.getViewType(this, fe.getParentBinder());			
 			viewPath = BinderHelper.getViewListingJsp(this, viewType);
-			buildEntryToolbar(request, response, model, fe, viewType, userProperties);
+			buildEntryToolbar(this, request, response, model, fe, viewType, userProperties);
 			setRepliesAccessControl(model, fe);
 
 			//Build the mashup beans
@@ -523,7 +524,7 @@ public class ViewEntryController extends  SAbstractController {
 		
 	}
 	
-	protected Toolbar buildEntryToolbar(RenderRequest request, RenderResponse response, 
+	protected Toolbar buildEntryToolbar(AllModulesInjected bs, RenderRequest request, RenderResponse response, 
 			Map model, FolderEntry entry, String viewType, Map userProperties) {
 
 		PortletURL url;
@@ -878,14 +879,16 @@ public class ViewEntryController extends  SAbstractController {
 			
 			//Export / Import
 			if (entry.isTop() && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-				qualifiers = new HashMap();
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_EXPORT_IMPORT);
-				url.setParameter(WebKeys.OPERATION, WebKeys.OPERATION_EXPORT);
-				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-				url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-				url.setParameter(WebKeys.URL_SHOW_MENU, "false");
-				footerToolbar.addToolbarMenu("5_export", NLT.get("toolbar.menu.exportEntry"), url, qualifiers);
+				if (bs.getBinderModule().testAccess(folder, BinderOperation.export)) {
+					qualifiers = new HashMap();
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_EXPORT_IMPORT);
+					url.setParameter(WebKeys.OPERATION, WebKeys.OPERATION_EXPORT);
+					url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+					url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+					url.setParameter(WebKeys.URL_SHOW_MENU, "false");
+					footerToolbar.addToolbarMenu("5_export", NLT.get("toolbar.menu.exportEntry"), url, qualifiers);
+				}
 			}
 		}
 
