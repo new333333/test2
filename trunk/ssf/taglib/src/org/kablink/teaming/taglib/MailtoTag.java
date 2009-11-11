@@ -73,6 +73,8 @@ public class MailtoTag extends BodyTagSupport {
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 			httpReq.setAttribute("noLink", this.noLink);
 			httpReq.setAttribute("email", email);
+			httpReq.setAttribute("emailName", "");
+			httpReq.setAttribute("emailHost", "");
 			if (email.indexOf("@") > 0) {
 				httpReq.setAttribute("emailName", email.substring(0, email.indexOf("@")));
 				httpReq.setAttribute("emailHost", email.substring(email.indexOf("@")+1));
