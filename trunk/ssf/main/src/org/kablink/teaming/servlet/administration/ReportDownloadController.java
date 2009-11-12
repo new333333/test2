@@ -239,6 +239,7 @@ public class ReportDownloadController extends  SAbstractController {
 				} else {
 					columns = new String[] {ReportModule.USER_ID, 
 							ReportModule.ACTIVITY_TYPE, 
+							ReportModule.COUNT,
 							ReportModule.ACTIVITY_DATE, 
 							ReportModule.FOLDER, 
 							ReportModule.ENTRY_TITLE,
