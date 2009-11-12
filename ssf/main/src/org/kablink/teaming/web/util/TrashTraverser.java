@@ -245,14 +245,6 @@ public class TrashTraverser {
 		boolean isFolder    = TrashHelper.isBinderFolder(   binder);
 		boolean isWorkspace = TrashHelper.isBinderWorkspace(binder);
 		if (isFolder || isWorkspace) {
-			// ...ascend its child binders...
-			List<Binder>bindersList = binder.getBinders();
-			for (Iterator bindersIT=bindersList.iterator(); bindersIT.hasNext();) {
-				if (!(ascendBinder(((Binder) bindersIT.next()).getId(), false))) {
-					return false;
-				}
-			}
-			
 			// ...if the binder is a Folder...
 			if (isFolder) {
 				// ...scan its child entries...
