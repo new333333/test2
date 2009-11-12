@@ -86,6 +86,7 @@ import org.kablink.teaming.domain.DashboardPortlet;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -647,6 +648,7 @@ public class BinderHelper {
 		addActionsWhatsNew(request, actions, null);
 		addActionsWhatsUnseen(request, actions, null);
 		addActionsRecentPlaces(request, actions, user.getWorkspaceId());
+		addActionsFullView(bs, request, actions, user.getWorkspaceId(), null);
 		addActionsSpacer(request, actions);
 		addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
@@ -784,7 +786,7 @@ public class BinderHelper {
 		String type = "add";
 		if (isTracked) {
 			if (binder.getEntityType().name().equals(EntityType.workspace.name())) {
-				if (binder.getDefinitionType().equals(Definition.USER_WORKSPACE_VIEW)) {
+				if (Integer.valueOf(Definition.USER_WORKSPACE_VIEW).equals(binder.getDefinitionType())) {
 					action.put("title", NLT.get("relevance.trackThisPersonNot"));
 				} else {
 					action.put("title", NLT.get("relevance.trackThisWorkspaceNot"));
@@ -797,7 +799,7 @@ public class BinderHelper {
 			type = "delete";
 		} else {
 			if (binder.getEntityType().name().equals(EntityType.workspace.name())) {
-				if (binder.getDefinitionType().equals(Definition.USER_WORKSPACE_VIEW)) {
+				if (Integer.valueOf(Definition.USER_WORKSPACE_VIEW).equals(binder.getDefinitionType())) {
 					action.put("title", NLT.get("relevance.trackThisPerson"));
 				} else {
 					action.put("title", NLT.get("relevance.trackThisWorkspace"));
@@ -867,6 +869,32 @@ public class BinderHelper {
 		action.put("url", "javascript: ;");
 		action.put("onclick", "ss_logoff();return false;");
 		actions.add(action);
+	}
+
+	public static void addActionsFullView(AllModulesInjected bs, RenderRequest request, List actions, 
+			Long binderId, Long entryId) {
+		Binder binder = bs.getBinderModule().getBinder(binderId);
+		if (binder != null) {
+			Map action = new HashMap();
+			action.put("title", NLT.get("mobile.teamingUI"));
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			if (EntityType.folder.equals(binder.getEntityType())) {
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+			} else if (EntityType.workspace.equals(binder.getEntityType())) {
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+			} else if (EntityType.profiles.equals(binder.getEntityType())) {
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+			}
+			if (entryId != null) {
+				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+			}
+			//adapterUrl.setParameter(WebKeys.URL_CAPTIVE, "true");
+			action.put("url", adapterUrl.toString());
+			actions.add(action);
+		}
 	}
 
 	public static void addActionsSpacer(RenderRequest request, List actions) {
