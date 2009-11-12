@@ -94,6 +94,8 @@ public class ReportDownloadController extends  SAbstractController {
 		columnNames.put(AuditTrail.AuditType.view.name(), "report.columns.view");
 		columnNames.put(AuditTrail.AuditType.modify.name(), "report.columns.modify");
 		columnNames.put(AuditTrail.AuditType.delete.name(), "report.columns.delete");
+		columnNames.put(AuditTrail.AuditType.preDelete.name(), "report.columns.preDelete");
+		columnNames.put(AuditTrail.AuditType.restore.name(), "report.columns.restore");
 		columnNames.put(ReportModule.LOGIN_COUNT, "report.columns.login_count");
 		columnNames.put(ReportModule.LAST_LOGIN, "report.columns.last_login");
 		columnNames.put(ReportModule.LOGIN_DATE, "report.columns.login_date");
@@ -235,7 +237,9 @@ public class ReportDownloadController extends  SAbstractController {
 							AuditTrail.AuditType.view.name(), 
 							AuditTrail.AuditType.add.name(),
 							AuditTrail.AuditType.modify.name(), 
-							AuditTrail.AuditType.delete.name()};
+							AuditTrail.AuditType.delete.name(),
+							AuditTrail.AuditType.preDelete.name(),
+							AuditTrail.AuditType.restore.name()};
 				} else {
 					columns = new String[] {ReportModule.USER_ID, 
 							ReportModule.ACTIVITY_TYPE, 
@@ -319,10 +323,26 @@ public class ReportDownloadController extends  SAbstractController {
 		for(int i = 0; i < columns.length; i++) {
 			String name = columns[i];
 			if(!isUserColumn(name) || hasUsers) {
+				String nltKey;
+				String columnName;
+				
 				if(i > 0) {
 					out.write(",".getBytes());
 				}
-				out.write(NLT.get(columnNames.get(name)).getBytes("UTF-8"));
+				
+				// Get the key used to read the column name from the properties file.
+				nltKey = columnNames.get( name );
+				
+				// Do we have a key?
+				if ( nltKey == null )
+				{
+					// No, this should never happen.
+					columnName = "???";
+				}
+				else
+					columnName = NLT.get( nltKey );
+				
+				out.write( columnName.getBytes("UTF-8"));
 			}
 		}
 		out.write("\n".getBytes());
