@@ -196,7 +196,8 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		String title = entity.getTitle();
 		if (entity.getParentBinder() != null) title = entity.getParentBinder().getPathName() + "/" + title;
 		String addedComments = PortletRequestUtils.getStringParameter(request, "mailBody", "");
-		Description body = new Description("<a href=\"" + PermaLinkUtil.getPermalink(request, entity) +
+		// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
+		Description body = new Description("<a href=\"" + PermaLinkUtil.getPermalink((ActionRequest) null, entity) +
 				"\">" + title + "</a><br/><br/>" + addedComments);
 		try {
 			Map status = getAdminModule().sendMail(ids, teams, null, null, null, NLT.get("relevance.mailShared", new Object[]{RequestContextHolder.getRequestContext().getUser().getTitle()}), body);
