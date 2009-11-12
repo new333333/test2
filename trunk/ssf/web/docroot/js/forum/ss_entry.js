@@ -127,8 +127,8 @@ function ss_confirmDeleteEntry_Create(eA)
 	if (!eDIV) {
 		// ...create it now...
 		eDIV = document.createElement("div");
-		eDIV.setAttribute("class", "ss_confirmationDlg");
-        eDIV.setAttribute("id", "ss_confirm_entry_delete_div");
+		eDIV.className = "ss_confirmationDlg";
+        eDIV.id = "ss_confirm_entry_delete_div";
         eDIV.style.position = "absolute";
         eDIV.style.visibility = "hidden";
         eDIV.style.display = "none";
@@ -139,8 +139,8 @@ function ss_confirmDeleteEntry_Create(eA)
 
 		// ...add the banner text...		
 		var ePBanner = document.createElement("p");
-        eDIV.appendChild(ePBanner);
     	ePBanner.innerHTML = ss_confirmDeleteEntryText;
+        eDIV.appendChild(ePBanner);
 
 		// ...add the purge immediately checkbox...		
 		var ePCBox = document.createElement("p");
@@ -148,12 +148,12 @@ function ss_confirmDeleteEntry_Create(eA)
 		var eNOBR = document.createElement("nobr");
 		ePCBox.appendChild(eNOBR);
 		var eCB = document.createElement("input");
+		eCB.type = "checkbox";
+		eCB.id = "ss_purgeImmediately";
 		eNOBR.appendChild(eCB);
-		eCB.setAttribute("type", "checkbox");
-		eCB.setAttribute("id", "ss_purgeImmediately");
 		var eCBSpan = document.createElement("span");
-		eNOBR.appendChild(eCBSpan);
 		eCBSpan.innerHTML = ss_purgeEntryImmediately
+		eNOBR.appendChild(eCBSpan);
 
 		// ...add a container for the push buttons...
 		var eBR = document.createElement("br");
@@ -163,8 +163,7 @@ function ss_confirmDeleteEntry_Create(eA)
 		
 		// ...add the OK push button...
 		var eOK = document.createElement("input");
-        eNOBR.appendChild(eOK);
-		eOK.setAttribute("type", "button");
+		eOK.type = "button";
 		dojo.connect(eOK, "onclick", function(evt) {
 			ss_cancelPopupDiv('ss_confirm_entry_delete_div');
 			var url = this.n_div.n_href;
@@ -176,8 +175,9 @@ function ss_confirmDeleteEntry_Create(eA)
 	    });
 		eOK.setAttribute("name", ss_buttonOK);
 		eOK.setAttribute("value", ss_buttonOK);
-		eOK.setAttribute("id", "ss_confirmEntryDeleteOK");
+		eOK.id = "ss_confirmEntryDeleteOK";
         eOK.n_div = eDIV;
+        eNOBR.appendChild(eOK);
 
 		// ...add a spacer between the ok and cancel push buttons.
 		var eSpace = document.createTextNode(" ");
@@ -185,15 +185,15 @@ function ss_confirmDeleteEntry_Create(eA)
 				
 		// ...add the cancel push button...
 		var eCancel = document.createElement("input");
-        eNOBR.appendChild(eCancel);
-		eCancel.setAttribute("type", "button");
+		eCancel.type = "button";
 		dojo.connect(eCancel, "onclick", function(evt) {
 			ss_cancelPopupDiv('ss_confirm_entry_delete_div');
 			return false;
 	    });
 		eCancel.setAttribute("name", ss_buttonCancel);
 		eCancel.setAttribute("value", ss_buttonCancel);
-		eCancel.setAttribute("id", "ss_confirmEntryDeleteCancel");
+		eCancel.id = "ss_confirmEntryDeleteCancel";
+        eNOBR.appendChild(eCancel);
 
 		// ...and finally, add the <DIV> to the page's <BODY>.		
     	document.getElementsByTagName("body").item(0).appendChild(eDIV);
