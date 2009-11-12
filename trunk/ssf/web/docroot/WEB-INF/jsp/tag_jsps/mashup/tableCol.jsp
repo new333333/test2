@@ -34,8 +34,14 @@
 %>
 <% //table2_col1 top %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="colWidth" value="${mashup_attributes['colWidth']}"/>
+<jsp:useBean id="colWidth" type="java.lang.String"/>
+<%
+	if (colWidth.indexOf("%") < 0 && !colWidth.trim().equals("")) colWidth = colWidth.trim() + "%";
+%>
+
 <c:if test="${ss_mashupColStarted == 'true'}">
 </td>
 </c:if>
-<td valign="top" <c:if test="${!empty mashup_attributes['colWidth']}">width="${mashup_attributes['colWidth']}"</c:if> >
+<td valign="top" <c:if test="${!empty mashup_attributes['colWidth']}">width="<%= colWidth %>"</c:if> >
 <c:set var="ss_mashupColStarted" value="true" scope="request"/>
