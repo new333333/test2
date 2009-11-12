@@ -269,7 +269,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				break;
 			case export:
 				getAccessControlManager().checkOperation(binder,
-						WorkAreaOperation.BINDER_ADMINISTRATION);
+						WorkAreaOperation.ZONE_ADMINISTRATION);
 				break;
 			default:
 				throw new NotSupportedException(operation.toString(),
