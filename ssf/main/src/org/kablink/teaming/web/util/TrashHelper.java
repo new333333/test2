@@ -1502,8 +1502,10 @@ public class TrashHelper {
      */
     @SuppressWarnings("unchecked")
 	private static void registerTitle(CoreDao cd, Binder binder, DefinableEntity de, TrashRenameData rd) throws WriteEntryDataException, WriteFilesException {
-    	// If the Binder doesn't require unique titles...
-    	if (!(requiresUniqueTitles(binder))) {
+    	// If the Binder doesn't require unique names...
+    	boolean uniqueTitles =                            requiresUniqueTitles(   binder);
+    	boolean uniqueFNames = ((de instanceof Binder) && requiresUniqueFilenames(binder));
+    	if ((!uniqueTitles) && (!uniqueFNames)) {
     		// ...we don't have to mess with any of the registration
     		// ...stuff.
     		return;
@@ -1520,14 +1522,16 @@ public class TrashHelper {
 				logger.debug("TrashHelper.registerTitle(\"" + deTitle + "\")");
 			}
 			logger.debug("...checking...");
-			boolean titleRegistered = cd.isTitleRegistered(binder.getId(), deTitle_Normalized);
-			if (!titleRegistered) {
+			boolean titleRegistered = (uniqueTitles && cd.isTitleRegistered(   binder.getId(), deTitle_Normalized));
+			boolean fNameRegistered = (uniqueFNames && cd.isFileNameRegistered(binder.getId(), deTitle           ));
+			if ((!titleRegistered) && (!fNameRegistered)) {
 				// Yes!  Is it the entity's original name? 
 				logger.debug("......title is unique.");
 				if (0 == renames) {
 					// Yes!  Re-register it and we're done.
 					logger.debug("......re-registering original title.");
-					cd.registerTitle(binder, de);
+					if (uniqueTitles) cd.registerTitle(   binder, de         );
+					if (uniqueFNames) cd.registerFileName(binder, de, deTitle);
 					return;
 				}
 				
@@ -1831,14 +1835,17 @@ public class TrashHelper {
      * If necessary, unregisters the entry from a Binder's namespace.
      */
     private static void unRegisterTitle(CoreDao cd, Binder binder, DefinableEntity de) {
-    	// If the Binder doesn't require unique titles...
-    	if (!(requiresUniqueTitles(binder))) {
-    		// ...we don't have to mess with any of the registration
-    		// ...stuff.
-    		return;
+    	// If the Binder requires unique titles...
+    	if (requiresUniqueTitles(binder)) {
+        	// ...unregister the entity's title.
+    	    cd.unRegisterTitle(binder, de.getNormalTitle());
     	}
 
-    	// Unregister the entity's title.
-	    cd.unRegisterTitle(binder, de.getNormalTitle());
+	    // If the entity is a Binder and the Binder requires unique
+    	// filenames...
+	    if ((de instanceof Binder) && requiresUniqueFilenames(binder)) {
+    		// ...unregister the title as a filename too.
+    		cd.unRegisterFileName(binder, de.getTitle());
+	    }
     }
 }
