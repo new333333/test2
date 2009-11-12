@@ -53,7 +53,7 @@
 	if (width == null || width.equals("")) {
 		width = "";
 	} else {
-		width = "size=\""+width+"\" maxlength=\""+width+"\"";
+		width = "size=\""+width+"\"";
 	}
 	if (caption == null || caption.equals("")) {
 		caption = "";

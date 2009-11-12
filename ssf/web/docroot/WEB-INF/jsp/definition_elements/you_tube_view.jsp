@@ -33,7 +33,6 @@
  */
 %>
 <% //YouTube view %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${!empty ss_youTubeUrl}">
 <div style="padding:4px 10px 20px 10px;">
   <object width="425" height="344"><param name="movie"
