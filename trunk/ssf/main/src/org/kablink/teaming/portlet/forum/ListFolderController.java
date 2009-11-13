@@ -174,7 +174,7 @@ public class ListFolderController extends  SAbstractController {
 			getProfileModule().setUserProperties(user.getId(), binderId, values);
 			response.setRenderParameter(WebKeys.URL_NEW_TAB, "1");
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_PAGE_INFO)) {
-			//Saves the folder page informaton when the user clicks on the page link			
+			//Saves the folder page information when the user clicks on the page link			
 			String pageStartIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_START_INDEX, "0");
 			if (pageStartIndex.equals("")) pageStartIndex = "0";
 			Tabs.TabEntry tab = Tabs.getTabs(request).getTab(binderId);
@@ -183,9 +183,12 @@ public class ListFolderController extends  SAbstractController {
 				tabData.put(Tabs.PAGE, new Integer(pageStartIndex));			
 				tab.setData(tabData);
 				response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
+				if (showTrash) {
+					response.setRenderParameter(WebKeys.URL_SHOW_TRASH, "true");
+				}
 			}
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_GOTOPAGE_INFO)) {
-			//Saves the folder page informaton when the user enters the page number in the go to page field
+			//Saves the folder page information when the user enters the page number in the go to page field
 			String pageGoToIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_GOTOPAGE_INDEX, "");
 			
 			Tabs.TabEntry tab = Tabs.getTabs(request).getTab(binderId);
@@ -199,6 +202,9 @@ public class ListFolderController extends  SAbstractController {
 				tabData.put(Tabs.PAGE, new Integer(intPageStartIndex));			
 				tab.setData(tabData);
 				response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
+				if (showTrash) {
+					response.setRenderParameter(WebKeys.URL_SHOW_TRASH, "true");
+				}
 			}
 		} else if (op.equals(WebKeys.OPERATION_CHANGE_ENTRIES_ON_PAGE)) {
 			//Changes the number or records to be displayed in a page

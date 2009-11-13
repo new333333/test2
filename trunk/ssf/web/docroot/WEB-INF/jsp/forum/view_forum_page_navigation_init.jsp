@@ -53,8 +53,11 @@ var ss_baseBinderPageUrl${renderResponse.namespace} = '<ssf:url><ssf:param
 	name="newTab" value="ssNewTabPlaceHolder"/></ssf:url>';
 
 var ss_pageNavigationSliderUrl${renderResponse.namespace} = '<ssf:url action="${action}" actionUrl="true"><ssf:param 
-	name="operation" value="save_folder_page_info"/><ssf:param 
-	name="binderId" value="${ssFolder.id}"/><ssf:param 
+	name="operation" value="save_folder_page_info"/> 
+	<c:if test="${!empty ssForumPageNav_ShowTrash && 'true' == ssForumPageNav_ShowTrash}">
+		<ssf:param name="showTrash" value="true"/> 
+	</c:if>
+	<ssf:param name="binderId" value="${ssFolder.id}"/><ssf:param 
 	name="ssPageStartIndex" value="ss_pageIndexPlaceHolder"/><c:if test="${!empty cTag}"><ssf:param 
 	name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
 	name="pTag" value="${pTag}"/></c:if><c:if test="${!empty ss_yearMonth}"><ssf:param 
