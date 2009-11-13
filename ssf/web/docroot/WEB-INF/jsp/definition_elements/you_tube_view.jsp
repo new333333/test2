@@ -34,6 +34,14 @@
 %>
 <% //YouTube view %>
 <c:if test="${!empty ss_youTubeUrl}">
+<%
+	//Adding the object can only be done to a real www.youtube.com URL
+	String str_youTubeUrl = (String) request.getAttribute("ss_youTubeUrl");
+	Boolean is_youTubeUrl = str_youTubeUrl.toLowerCase().startsWith("http://www.youtube.com/");
+%>
+<%
+	if (is_youTubeUrl) {
+%>
 <div style="padding:4px 10px 20px 10px;">
   <object width="425" height="344"><param name="movie"
     value="${ss_youTubeUrl}"></param><param
@@ -43,4 +51,13 @@
     type="application/x-shockwave-flash" allowscriptaccess="always"
     allowfullscreen="true" width="425" height="344"></embed></object>
 </div>
+<%
+	} else {
+%>
+<div style="padding:4px 10px 20px 10px;">
+  <a target="_blank" href="${ss_youTubeUrl}"><ssf:nlt tag="__youTubeWatch"/></a>
+</div>
+<%
+	}
+%>
 </c:if>
