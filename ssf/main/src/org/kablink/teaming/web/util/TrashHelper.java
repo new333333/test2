@@ -1502,9 +1502,9 @@ public class TrashHelper {
      */
     @SuppressWarnings("unchecked")
 	private static void registerTitle(CoreDao cd, Binder binder, DefinableEntity de, TrashRenameData rd) throws WriteEntryDataException, WriteFilesException {
-    	// If the Binder doesn't require unique names...
-    	boolean uniqueTitles =                            requiresUniqueTitles(   binder);
-    	boolean uniqueFNames = ((de instanceof Binder) && requiresUniqueFilenames(binder));
+    	// If don't require any type of unique name...
+    	boolean uniqueTitles = requiresUniqueTitles(binder);
+    	boolean uniqueFNames = (de instanceof Binder);
     	if ((!uniqueTitles) && (!uniqueFNames)) {
     		// ...we don't have to mess with any of the registration
     		// ...stuff.
@@ -1825,7 +1825,9 @@ public class TrashHelper {
 		    	Attachment a = aIT.next();
 		    	if (a instanceof FileAttachment) {
 		    		// ...unregister them.
-		    		cd.unRegisterFileName(binder, ((FileAttachment) a).getFileItem().getName());
+		    		String fName = ((FileAttachment) a).getFileItem().getName();
+		    		logger.debug("TrashHelper.unRegisterAttachmentNames(Unregistering filename:  \"" + fName + "\" from binder:  \"" + binder.getTitle() + "\")");
+		    		cd.unRegisterFileName(binder, fName);
 		    	}
 		    }
     	}
@@ -1838,14 +1840,17 @@ public class TrashHelper {
     	// If the Binder requires unique titles...
     	if (requiresUniqueTitles(binder)) {
         	// ...unregister the entity's title.
-    	    cd.unRegisterTitle(binder, de.getNormalTitle());
+    		String normalizedTitle = de.getNormalTitle();
+    		logger.debug("TrashHelper.unRegisterTitle(Unregistering title:  \"" + normalizedTitle + "\" from binder:  \"" + binder.getTitle() + "\")");
+    	    cd.unRegisterTitle(binder, normalizedTitle);
     	}
 
-	    // If the entity is a Binder and the Binder requires unique
-    	// filenames...
-	    if ((de instanceof Binder) && requiresUniqueFilenames(binder)) {
+	    // If the entity is a Binder...
+	    if (de instanceof Binder) {
     		// ...unregister the title as a filename too.
-    		cd.unRegisterFileName(binder, de.getTitle());
+	    	String title = de.getTitle();
+    		logger.debug("TrashHelper.unRegisterTitle(Unregistering filename:  \"" + title + "\" from binder:  \"" + binder.getTitle() + "\")");
+    		cd.unRegisterFileName(binder, title);
 	    }
     }
 }
