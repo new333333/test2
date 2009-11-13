@@ -235,14 +235,36 @@ function ss_trashSelectAll(eCBox) {
  */
 function ss_trashSelectOne(eCBox) {
 	var eCBoxDIV = document.getElementById(eCBox.id + "_DIV");
-	var sCBoxDIV = eCBoxDIV.innerHTML;
+	var sCBoxHTML = eCBoxDIV.innerHTML;
 	if (eCBox.checked) {
-		sCBoxDIV = ss_trashStrReplace(sCBoxDIV, "class=", "checked=\"checked\" class=");
+		sCBoxHTML = ss_trashStrReplace(sCBoxHTML, g_uncheckedPattern, g_checkedPatterns[0]);
 	}
 	else {
-		sCBoxDIV = ss_trashStrReplace(sCBoxDIV, "checked=\"checked\" class=", "class=");
+		var sPattern = ss_trashFindCheckedPattern(sCBoxHTML);
+		if (null != sPattern) {
+			sCBoxHTML = ss_trashStrReplace(sCBoxHTML, sPattern, g_uncheckedPattern);
+		}
 	}
-	eCBoxDIV.innerHTML = sCBoxDIV;
+	eCBoxDIV.innerHTML = sCBoxHTML;
+}
+
+/*
+ * Scans the HTML for a checkbox searching for the pattern used by the
+ * browser for checked items.
+ */
+var	g_uncheckedPattern = "type=";
+var	g_checkedPatterns = new Array();
+g_checkedPatterns[g_checkedPatterns.length] = ("checked=\"checked\" " + g_uncheckedPattern);	// All non-IE.
+g_checkedPatterns[g_checkedPatterns.length] = ("checked "             + g_uncheckedPattern);	// IE.
+function ss_trashFindCheckedPattern(sCBoxHTML) {
+	var	sCBoxHTML_LC = sCBoxHTML.toLowerCase();
+	for (var i = 0; i < g_checkedPatterns.length; i += 1) {
+		var	sPattern = g_checkedPatterns[i];
+		if (0 <= sCBoxHTML_LC.indexOf(sPattern)) {
+			return(sPattern);
+		}
+	}
+	return(null);
 }
 
 /*
@@ -250,7 +272,7 @@ function ss_trashSelectOne(eCBox) {
  */
 function ss_trashStrReplace(sIn, sPattern, sReplace) {
 	// If sIn contains an occurence of sPattern...
-	var i = sIn.indexOf( sPattern );
+	var i = sIn.toLowerCase().indexOf(sPattern);
 	if (0 <= i) {
 		// ...replace it with sReplace.
 		sIn = (sIn.substring(0, i) + sReplace + sIn.substring(i + sPattern.length));
