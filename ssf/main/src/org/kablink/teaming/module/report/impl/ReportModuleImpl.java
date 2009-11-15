@@ -1162,19 +1162,23 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 
 		long thresholdBytes = threshold.longValue() * MEGABYTES;
 		for(QKey k : distributedSizes.keySet()) {
-			Long size = distributedSizes.get(k);
-			if(size.longValue() > thresholdBytes) {
-				HashMap<String,Object> row = new HashMap<String,Object>();
-				if(option != QuotaOption.UsersOnly) {
-					Binder b = binderMap.get(k.binderKey);
-					row.put(ReportModule.BINDER_ID, b.getId());
-					row.put(ReportModule.BINDER_TITLE, b.getPathName());
+			try {
+				Long size = distributedSizes.get(k);
+				if(size.longValue() > thresholdBytes) {
+					HashMap<String,Object> row = new HashMap<String,Object>();
+					if(option != QuotaOption.UsersOnly) {
+						Binder b = binderMap.get(k.binderKey);
+						row.put(ReportModule.BINDER_ID, b.getId());
+						row.put(ReportModule.BINDER_TITLE, b.getPathName());
+					}
+					if(option != QuotaOption.WorkspacesOnly) {
+						row.put(ReportModule.USER_ID, k.userId);
+					}
+					row.put(ReportModule.SIZE, (size+MEGABYTES-1) / MEGABYTES);
+					report.add(row);
 				}
-				if(option != QuotaOption.WorkspacesOnly) {
-					row.put(ReportModule.USER_ID, k.userId);
-				}
-				row.put(ReportModule.SIZE, (size+MEGABYTES-1) / MEGABYTES);
-				report.add(row);
+			} catch(Exception e) {
+				System.out.println("Bad row in Quota Report, skipped: " +  e.getMessage());
 			}
 		}
 
