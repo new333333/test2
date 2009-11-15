@@ -1164,7 +1164,8 @@ public class ExportHelper {
 						// check actual entity type of the data in the xml file
 						if (entType.equals("workspace")) {
 							binder_addBinderWithXML(null, newParentId, defId,
-									xmlStr, binderId, binderIdMap, statusTicket, nameCache);
+									xmlStr, binderId, binderIdMap, tempDir, reportMap,
+									statusTicket, nameCache);
 							Integer count = (Integer)reportMap.get(workspaces);
 							reportMap.put(workspaces, ++count);
 						}
@@ -1211,7 +1212,8 @@ public class ExportHelper {
 						// check actual entity type of the data in the xml file
 						if (entType.equals("folder")) {
 							binder_addBinderWithXML(null, newParentId, defId,
-									xmlStr, binderId, binderIdMap, statusTicket, nameCache);
+									xmlStr, binderId, binderIdMap, tempDir, reportMap, 
+									statusTicket, nameCache);
 							Integer count = (Integer)reportMap.get(folders);
 							reportMap.put(folders, ++count);
 
@@ -1252,7 +1254,8 @@ public class ExportHelper {
 
 	private static long binder_addBinderWithXML(String accessToken, long parentId,
 			String definitionId, String inputDataAsXML, long binderId,
-			Map binderIdMap, StatusTicket statusTicket, Map<String, Principal> nameCache) {
+			Map binderIdMap, String tempDir, Map reportMap, 
+			StatusTicket statusTicket, Map<String, Principal> nameCache) {
 
 		final Document doc = getDocument(inputDataAsXML, nameCache);
 
@@ -1261,6 +1264,9 @@ public class ExportHelper {
 					definitionId, new DomInputData(doc, iCalModule),
 					new HashMap(), null).getId().longValue();
 			binderIdMap.put(binderId, newBinderId);
+
+			// add file attachments
+			addBinderFileAttachments(newBinderId, doc, tempDir, reportMap);
 
 			// team members
 			addTeamMembers(newBinderId, doc, nameCache);
@@ -1499,6 +1505,123 @@ public class ExportHelper {
 		try {
 			iStream = new FileInputStream(new File(href));
 			folderModule.modifyEntry(binderId, entryId, fileDataItemName,
+					filename, iStream);
+			iStream.close();
+			Integer count = (Integer)reportMap.get(files);
+			reportMap.put(files, ++count);
+		} catch (Exception e) {
+			logger.error(e);
+			return;
+		}
+	}
+
+	private static void addBinderFileAttachments(Long binderId,
+			Document entityDoc, String tempDir, Map reportMap) {
+
+		String xPath = "//attribute[@type='attachFiles']//file";
+		List attachFiles = entityDoc.selectNodes(xPath);
+
+		for (Element fileEle : (List<Element>) attachFiles) {
+			boolean handled = false;
+
+			String href = tempDir + File.separator
+					+ fileEle.attributeValue("href", "");
+			
+			String filename = fileEle.getText();
+			
+			int numVersions = Integer.valueOf(fileEle
+					.attributeValue("numVersions", "0"));
+			
+			String versionsDir = null;
+
+			if (numVersions > 1) {
+				versionsDir = tempDir + File.separator
+						+ fileEle.attributeValue("href", "") + ".versions";
+			}
+
+			// see if there's a matching attachment of type 'file'
+			String fileXPath = "//attribute[@type='file']//value";
+			List fileList = entityDoc.selectNodes(fileXPath);
+
+			for (Element fileListEle : (List<Element>) fileList) {
+				if (fileListEle.getText().equals(filename)) {
+					String name = fileListEle.getParent()
+							.attributeValue("name", "");
+					addBinderFileVersions(binderId, name, filename, href,
+							numVersions, versionsDir, reportMap);
+					handled = true;
+					break;
+				}
+			}
+
+			// if not yet found, see if there's a matching attachment of type
+			// 'graphic'
+
+			if (!handled) {
+				String graphicXPath = "//attribute[@type='graphic']//value";
+				List graphicList = entityDoc.selectNodes(graphicXPath);
+
+				for (Element graphicListEle : (List<Element>) graphicList) {
+					if (graphicListEle.getText().equals(filename)) {
+						String name = graphicListEle.getParent()
+								.attributeValue("name", "");
+						addBinderFileVersions(binderId, name, filename,
+								href, numVersions, versionsDir, reportMap);
+						handled = true;
+						break;
+					}
+				}
+			}
+
+			// if not yet found, see if there's a match in the rest of the
+			// attachments
+
+			if (!handled) {
+				String attachsXPath = "//attribute[@type='attachFiles']//file";
+				List attachsList = entityDoc.selectNodes(attachsXPath);
+
+				for (Element attachsListEle : (List<Element>) attachsList) {
+					if (attachsListEle.getText().equals(filename)) {
+						String name = attachsListEle.getParent()
+								.attributeValue("name", "")
+								+ "1";
+						addBinderFileVersions(binderId, name, filename,
+								href, numVersions, versionsDir, reportMap);
+						handled = true;
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	private static void addBinderFileVersions(Long binderId,
+			String fileDataItemName, String filename, String href,
+			int numVersions, String versionsDir, Map reportMap) {
+
+		String fileExt = EntityIndexUtils.getFileExtension(filename);
+		InputStream iStream = null;
+
+		if (numVersions > 1) {
+			for (int i = 1; i < numVersions; i++) {
+				try {
+					iStream = new FileInputStream(new File(versionsDir
+							+ File.separator + i + "." + fileExt));
+					binderModule.modifyBinder(binderId,
+							fileDataItemName, filename, iStream);
+					iStream.close();
+					Integer count = (Integer)reportMap.get(files);
+					reportMap.put(files, ++count);
+				} catch (Exception e) {
+					logger.error(e);
+					return;
+				}
+			}
+		}
+
+		try {
+			iStream = new FileInputStream(new File(href));
+			binderModule.modifyBinder(binderId, fileDataItemName,
 					filename, iStream);
 			iStream.close();
 			Integer count = (Integer)reportMap.get(files);

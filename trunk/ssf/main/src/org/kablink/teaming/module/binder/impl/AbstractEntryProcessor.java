@@ -326,6 +326,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 				MarkupUtil.scanDescriptionForUploadFiles(description, ObjectKeys.FIELD_ENTITY_DESCRIPTION, fileData);
 				MarkupUtil.scanDescriptionForAttachmentFileUrls(description);
 				MarkupUtil.scanDescriptionForICLinks(description);
+				MarkupUtil.scanDescriptionForYouTubeLinks(description);
 				if (!inputData.exists(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT)) {
 					description.setFormat(Description.FORMAT_HTML);
 				} else {

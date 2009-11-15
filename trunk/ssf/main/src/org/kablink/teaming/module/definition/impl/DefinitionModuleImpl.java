@@ -1900,6 +1900,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
 				MarkupUtil.scanDescriptionForAttachmentFileUrls(description);
 				MarkupUtil.scanDescriptionForICLinks(description);
+				MarkupUtil.scanDescriptionForYouTubeLinks(description);
 				MarkupUtil.scanDescriptionForExportTitleUrls(description);
 				if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, description);
 			}
@@ -2265,55 +2266,57 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		    	}
 		    }
 		} else if (itemName.equals("mashupCanvas")) {
-			Boolean showBranding = false;
-			Boolean showFavoritesAndTeams = false;
-			Boolean showNavigation = false;
-			Boolean hideMasthead = false;
-			Boolean hideSidebar = false;
-			Boolean hideToolbar = false;
-			Boolean hideFooter = false;
-			String mashupStyle = "";
-			String value = "";
-			
-			if (inputData.exists(nameValue + MASHUP_SHOW_BRANDING))
-				showBranding = true;
-			
-			if (inputData.exists(nameValue + MASHUP_SHOW_FAVORITES_AND_TEAMS))
-				showFavoritesAndTeams = true;
-			
-			if (inputData.exists(nameValue + MASHUP_SHOW_NAVIGATION))
-				showNavigation = true;
-			
-			if (inputData.exists(nameValue + MASHUP_HIDE_MASTHEAD))
-				hideMasthead = true;
-			
-			if (inputData.exists(nameValue + MASHUP_HIDE_SIDEBAR))
-				hideSidebar = true;
-			
-			if (inputData.exists(nameValue + MASHUP_HIDE_TOOLBAR))
-				hideToolbar = true;
-			
-			if (inputData.exists(nameValue + MASHUP_HIDE_FOOTER))
-				hideFooter = true;
-			
-			if (inputData.exists(nameValue + MASHUP_STYLE))
-				mashupStyle = inputData.getSingleValue(nameValue + MASHUP_STYLE);
-			
-			// Get the landing page mashup configuration string.
-			if ( inputData.exists( nameValue ) )
-				value = inputData.getSingleValue( nameValue );
-
-			if ( !inputData.isFieldsOnly() || fieldModificationAllowed )
-			{
-				entryData.put( nameValue, value );
-				entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_BRANDING, showBranding);
-				entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_FAVORITES_AND_TEAMS, showFavoritesAndTeams);
-				entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_NAVIGATION, showNavigation);
-				entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_MASTHEAD, hideMasthead);
-				entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_SIDEBAR, hideSidebar);
-				entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_TOOLBAR, hideToolbar);
-				entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_FOOTER, hideFooter);
-				entryData.put(nameValue + DefinitionModule.MASHUP_STYLE, mashupStyle);
+			if (inputData.exists(nameValue)) {
+				Boolean showBranding = false;
+				Boolean showFavoritesAndTeams = false;
+				Boolean showNavigation = false;
+				Boolean hideMasthead = false;
+				Boolean hideSidebar = false;
+				Boolean hideToolbar = false;
+				Boolean hideFooter = false;
+				String mashupStyle = "";
+				String value = "";
+				
+				if (inputData.exists(nameValue + MASHUP_SHOW_BRANDING))
+					showBranding = true;
+				
+				if (inputData.exists(nameValue + MASHUP_SHOW_FAVORITES_AND_TEAMS))
+					showFavoritesAndTeams = true;
+				
+				if (inputData.exists(nameValue + MASHUP_SHOW_NAVIGATION))
+					showNavigation = true;
+				
+				if (inputData.exists(nameValue + MASHUP_HIDE_MASTHEAD))
+					hideMasthead = true;
+				
+				if (inputData.exists(nameValue + MASHUP_HIDE_SIDEBAR))
+					hideSidebar = true;
+				
+				if (inputData.exists(nameValue + MASHUP_HIDE_TOOLBAR))
+					hideToolbar = true;
+				
+				if (inputData.exists(nameValue + MASHUP_HIDE_FOOTER))
+					hideFooter = true;
+				
+				if (inputData.exists(nameValue + MASHUP_STYLE))
+					mashupStyle = inputData.getSingleValue(nameValue + MASHUP_STYLE);
+				
+				// Get the landing page mashup configuration string.
+				if ( inputData.exists( nameValue ) )
+					value = inputData.getSingleValue( nameValue );
+	
+				if ( !inputData.isFieldsOnly() || fieldModificationAllowed )
+				{
+					entryData.put( nameValue, value );
+					entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_BRANDING, showBranding);
+					entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_FAVORITES_AND_TEAMS, showFavoritesAndTeams);
+					entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_NAVIGATION, showNavigation);
+					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_MASTHEAD, hideMasthead);
+					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_SIDEBAR, hideSidebar);
+					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_TOOLBAR, hideToolbar);
+					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_FOOTER, hideFooter);
+					entryData.put(nameValue + DefinitionModule.MASHUP_STYLE, mashupStyle);
+				}
 			}
 		} else {
 			if (inputData.exists(nameValue)) {

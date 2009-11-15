@@ -101,6 +101,7 @@ import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NotificationDef;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
@@ -125,6 +126,7 @@ import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.ObjectBuilder;
@@ -146,6 +148,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TagUtil;
@@ -168,6 +171,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import static org.kablink.util.search.Restrictions.between;
 import static org.kablink.util.search.Restrictions.eq;
@@ -534,7 +538,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				includeEntries);
 	}
 
-	// no transaction
+    //no transaction
+    public void modifyBinder(Long binderId, String fileDataItemName, String fileName, InputStream content)
+			throws AccessControlException, WriteFilesException {
+    	MultipartFile mf = new SimpleMultipartFile(fileName, content);
+    	Map<String, MultipartFile> fileItems = new HashMap<String, MultipartFile>();
+    	if(fileDataItemName == null)
+    		fileDataItemName = ObjectKeys.FILES_FROM_APPLET_FOR_BINDER + "1";
+    	fileItems.put(fileDataItemName, mf);
+    	modifyBinder(binderId, new EmptyInputData(), fileItems, null, null);
+    }
+
+    // no transaction
 	public void modifyBinder(Long binderId, InputDataAccessor inputData,
 			Map fileItems, Collection<String> deleteAttachments, Map options)
 			throws AccessControlException, WriteFilesException {

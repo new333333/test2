@@ -11,7 +11,7 @@ function ss_youtube_init() {
 	var html = "";
 
 	// Check action
-	if (elm != null && elm.nodeName == "A")
+	if (elm != null && elm.nodeName.toUpperCase() == "A")
 		action = "update";
 
 	formObj.insert.value = tinyMCE.getLang('lang_' + action, 'Insert', true); 
@@ -45,21 +45,21 @@ function ss_insertYouTube() {
     var width = document.getElementById('width').value;
     var height = document.getElementById('height').value;
     if (!url.indexOf("http://www.youtube.com/") == 0) {
-    	alert(replaceSubStrAll(ss_invalidYouTubeUrl, "\"", "&quot;"))
+    	alert(self.opener.ss_invalidYouTubeUrl)
     	return false;
     }
 
-	elm = tinyMCE.getParentElement(elm, "a");
-
 	tinyMCEPopup.execCommand("mceBeginUndoLevel");
 
-	// Create new anchor elements
-	if (elm == null || elm == '') {
-		link = '<a class="ss_youtube_link" rel="url=' + url + ' width=' + width + ' height=' + height + '">' + url + '</a>';
-		tinyMCE.execCommand('mceInsertContent', false, link);
-	} else {
+	if (elm != null && elm.nodeName.toUpperCase() == "A") {
 		setAttrib(elm, "rel", 'url=' + url + ' width=' + width + ' height=' + height);
-		setAttrib(elm, "class", "ss_youtube_link");
+		
+	} else {
+		var rootPath = self.opener.ss_rootPath;
+		var html = '<a class="ss_youtube_link" rel="url=' + url;
+		html += ' width=' + width + ' height=' + height + '"';
+		html += ' style="padding:12px 24px; background:url('+rootPath+'images/pics/youtube.gif) no-repeat center;">&nbsp;</a>';
+		tinyMCE.execCommand("mceInsertContent", false, html);
 	}
 
 	tinyMCE._setEventsEnabled(inst.getBody(), false);

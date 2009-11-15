@@ -513,6 +513,11 @@ public class WebUrlUtil {
 		return sb;
 	}
 	
+	public static String getRelativeSSFContextRootURL() {
+		String ctx = SPropsUtil.getString(SPropsUtil.SSF_CTX, "/ssf");
+		return ctx + "/";
+	}
+	
 	public static String getSSFContextRootURL(HttpServletRequest req) {
 		boolean secure = ((req != null)? req.isSecure() : false);
 		return getSSFContextRootURL(req, secure,
