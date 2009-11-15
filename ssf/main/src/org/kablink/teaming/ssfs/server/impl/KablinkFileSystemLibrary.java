@@ -941,29 +941,15 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 		FileAttachment fa = getFileAttachment(objMap);
 
 		try {
-			if(parentBinder.isMirrored() && fa.getRepositoryName().equals(ObjectKeys.FI_ADAPTER)) {
-				// The file being deleted is a mirrored file.
-				// In this case, we delete the entire entry. 
-				FolderUtils.deleteMirroredEntry((Folder)parentBinder, entry, true);
-			}
-			else {
-				List faId = new ArrayList();
-				faId.add(fa.getId());
-				
-				bs.getFolderModule().modifyEntry(getParentBinder(objMap).getId(), getFolderEntry(objMap).getId(), new EmptyInputData(), null, faId, null, null);
-			}
+			// Bug #554284 - Whether the parent binder is a mirrored folder or not, delete the entire enclosing 
+			// entry when deleting its associated file through WebDAV interface.
+			bs.getFolderModule().deleteEntry(parentBinder.getId(), entry.getId(), true, null);
 		}
 		catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} 
 		catch (ReservedByAnotherUserException e) {
 			throw new NoAccessException(e.getLocalizedMessage());
-		} 
-		catch (WriteFilesException e) {
-			throw new KablinkFileSystemException(e.getLocalizedMessage());
-		} 
-		catch (WriteEntryDataException e) {
-			throw new KablinkFileSystemException(e.getLocalizedMessage());
 		} 
 	}
 	
