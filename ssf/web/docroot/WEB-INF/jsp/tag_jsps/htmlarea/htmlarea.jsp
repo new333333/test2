@@ -35,6 +35,7 @@
 <% // htmlarea editor %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="java.lang.String" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <c:if test="${empty ss_tinyMCE_hasBeenLoaded}">
 <c:set var="wikiLinkBinderId" value="" scope="request"/><%--
 --%><c:if test="${!empty ssDefinitionEntry}"><%--
@@ -93,7 +94,7 @@ tinyMCE.init(
   gecko_spellcheck : true,
   plugins: "compat2x,table,<%--
   --%><c:if test="${empty ssInlineNoImage && !ssBinder.mirrored}">ss_addimage,</c:if><%--
-  --%>preview,paste,ss_wikilink",
+  --%>preview,paste,ss_wikilink,ss_youtube",
   theme_advanced_buttons3_add : "pastetext,pasteword,selectall",
   theme_advanced_toolbar_location: "top", theme_advanced_toolbar_align: "top", 
   theme_advanced_toolbar_align: "left", theme_advanced_statusbar_location: "bottom", 
@@ -103,7 +104,7 @@ tinyMCE.init(
   theme_advanced_buttons1_add: "forecolor,backcolor",
   theme_advanced_buttons2_add: "pastetext,pasteword<%--
   --%><c:if test="${empty ssInlineNoImage}">,ss_addimage</c:if><%--
-  --%><c:if test="${!empty wikiLinkBinderId}">,ss_wikilink</c:if>",
+  --%><c:if test="${!empty wikiLinkBinderId}">,ss_wikilink</c:if>,ss_youtube",
   theme_advanced_path: false,
   theme_advanced_buttons3_add: "tablecontrols", 
   theme_advanced_disable : "image,advimage",
@@ -120,6 +121,11 @@ missing_img : "<ssf:nlt tag="editor.addimage.noImage"/>"
 
 tinyMCE.addI18n('${ssUser.locale.language}.ss_wikilink',{
 desc : "<ssf:nlt tag="editor.wikilink.title"/>"
+});
+tinyMCE.addI18n('${ssUser.locale.language}.ss_youtube',{
+desc : "<ssf:nlt tag="editor.youtube.title"/>",
+youTubeUrl : "<ssf:nlt tag="__youTubeUrl"/>",
+dimensions : "<ssf:nlt tag="__youTubeDimensions"/>"
 });
 
 var ss_imageUploadError1 = "<ssf:nlt tag="imageUpload.badFile"/>"
@@ -138,6 +144,14 @@ var ss_wikiLinkUrl = "<ssf:url
 	  <ssf:param name="operation" value="wikilink_form" />
 	  <ssf:param name="binderId" value="${wikiLinkBinderId}" />
     </ssf:url>";
+var ss_youTubeUrl = "<ssf:url 
+    adapter="true" 
+    actionUrl="true"
+    portletName="ss_forum" 
+    action="__ajax_request">
+	  <ssf:param name="operation" value="youtube_form" />
+    </ssf:url>";
+var ss_invalidYouTubeUrl = "<%= NLT.get("__youTubeInvalidUrl").replaceAll("\"", "\\\\\"") %>";
 </script>
 </c:if>
 <c:set var="ss_tinyMCE_hasBeenLoaded" value="1" scope="request"/>

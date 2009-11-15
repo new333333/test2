@@ -414,8 +414,21 @@ public interface BinderModule {
       * @param binderId
       * @return Set of binderIds indexed
       */
-      public Set<Long> indexTree(Collection<Long> binderId, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors) throws AccessControlException;
+	public Set<Long> indexTree(Collection<Long> binderId, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors) throws AccessControlException;
    
+	/**
+     * Attach a single file to a binder.  
+     * @param binderId
+     * @param fileDataItemName name of the data item defined in the definition 
+     *   object of the binder. Pass <code>null</code> to store the file through
+     *   the default attachment element.
+     * @param fileName Name of the file
+     * @param content content of the file as an input stream
+     * @throws AccessControlException
+     * @throws WriteFilesException
+     */
+	public void modifyBinder(Long binderId, String fileDataItemName, String fileName, InputStream content)
+		throws AccessControlException, WriteFilesException;
     /**
      * Modify a binder.  Optionally include files to add and attachments to delete 
      * @param binderId

@@ -345,6 +345,9 @@
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderEvent"/>
 	</item>
 
+<!--
+  Note: The "youtube" item was removed. While this does work, it was decided to do this as a TinyMCE widget
+  
 	<item name="youtube" caption="__youTube" type="data" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
@@ -359,13 +362,13 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/you_tube_form.jsp" />
-			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/you_tube_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderText" />
 	    <webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderText" />
 	    <export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderText" />
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderText"/>
 	</item>
+-->
 
 	<item name="guestName" caption="__guestName" type="data" multipleAllowed="false" 
 		category="entryData" display="form">

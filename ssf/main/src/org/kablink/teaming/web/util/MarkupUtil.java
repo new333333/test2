@@ -88,6 +88,9 @@ public class MarkupUtil {
 	protected final static Pattern iceCoreLinkPattern = Pattern.compile("(<a [^>]*class=\"\\s*ss_icecore_link\\s*\"[^>]*>)([^<]*)</a>");
 	protected final static Pattern iceCoreLinkRelPattern = Pattern.compile("rel=\"([^\"]*)");
 	
+	protected final static Pattern youtubeLinkPattern = Pattern.compile("(<a [^>]*class=\"\\s*ss_youtube_link\\s*\"[^>]*>)([^<]*)</a>");
+	protected final static Pattern youtubeLinkRelPattern = Pattern.compile("rel=\"([^\"]*)");
+	
 	protected final static Pattern attachmentUrlPattern = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})");
 	protected final static Pattern v1AttachmentFileIdPattern = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})");
 	protected final static Pattern titleUrlPattern = Pattern.compile("(\\{\\{titleUrl: ([^\\}]*)\\}\\})");
@@ -95,10 +98,15 @@ public class MarkupUtil {
 	protected final static Pattern titleUrlZoneUUIDPattern = Pattern.compile("zoneUUID=([^ ]*)");
 	protected final static Pattern titleUrlTitlePattern = Pattern.compile("title=([^ ]*)");
 	protected final static Pattern titleUrlTextPattern = Pattern.compile("text=(.*)$");
+	protected final static Pattern youtubeUrlPattern = Pattern.compile("(\\{\\{youtubeUrl: ([^\\}]*)\\}\\})");
+	protected final static Pattern youtubeUrlUrlPattern = Pattern.compile("url=([^ ]*)");
+	protected final static Pattern youtubeUrlWidthPattern = Pattern.compile("width=([^ ]*)");
+	protected final static Pattern youtubeUrlHeightPattern = Pattern.compile("height=([^ ]*)");
 	protected final static Pattern hrefPattern = Pattern.compile("((<a[\\s]href[=\\s]\")([^\":]*)\")");
 	protected final static Pattern pageTitleUrlTextPattern = Pattern.compile("(\\[\\[([^\\]]*)\\]\\])");
 	protected final static Pattern sectionPattern =Pattern.compile("(==[=]*)([^=]*)(==[=]*)");
 	protected final static Pattern httpPattern =Pattern.compile("^https*://[^/]*(/[^/]*)/s/readFile/(.*)$");
+	protected static Integer youtubeDivId = 0;
 	/**
 	 * Parse a description looking for uploaded file references
 	 * 
@@ -274,6 +282,30 @@ public class MarkupUtil {
     	}
 	}
 
+	public static void scanDescriptionForYouTubeLinks(Description description) {
+		if (Validator.isNull(description.getText())) return;
+    	Matcher m = youtubeLinkPattern.matcher(description.getText());
+    	int loopDetector = 0;
+    	while (m.find()) {
+    		if (loopDetector++ > 2000) {
+	        	logger.error("Error processing markup [2a]: " + description.getText());
+    			break;
+    		}
+    		String linkArgs = "";
+    		String link = m.group();
+        	Matcher m2 = youtubeLinkRelPattern.matcher(link);
+        	if (m2.find() && m2.groupCount() >= 1) linkArgs = m2.group(1).trim().replace("$", "\\$");
+    		
+        	String linkText = "" ;
+        	if (m.groupCount() >= 2) { linkText = m.group(2).trim().replace("$", "\\$"); }
+
+        	if (Validator.isNotNull(linkArgs)) {
+        		description.setText(m.replaceFirst("{{youtubeUrl: " + linkArgs.replaceAll("%2B", "+") + "}}"));
+        		m = youtubeLinkPattern.matcher(description.getText());
+	    	}
+    	}
+	}
+
 	public static void scanDescriptionForExportTitleUrls(Description description) {
 		if (Validator.isNull(description.getText())) return;
     	//Scan the text for {{titleUrl: binderId=xxx zoneUUID=xxx title=xxx}}
@@ -313,6 +345,7 @@ public class MarkupUtil {
 		public String getRelativeTitleUrl(String normalizedTitle, String title);
 		public String getTitleUrl(String binderId, String zoneUUID, String normalizedTitle, String title);
 		public String getRootUrl();
+		public String getImagesRootUrl();
 		public String getRootServletUrl();
 	}
 	public static String markupStringReplacement(final RenderRequest req, final RenderResponse res, 
@@ -323,6 +356,9 @@ public class MarkupUtil {
 				if (httpReq != null) return WebUrlUtil.getAdapterRootURL(httpReq, httpReq.isSecure());
 				if (req != null) return WebUrlUtil.getAdapterRootURL(req, req.isSecure());
 				return WebUrlUtil.getAdapterRootUrl();
+			}
+			public String getImagesRootUrl() {
+				return WebUrlUtil.getRelativeSSFContextRootURL() + "images/";
 			}
 			public String getRootServletUrl() {
 				if (httpReq != null) return WebUrlUtil.getServletRootURL(httpReq, httpReq.isSecure());
@@ -374,6 +410,9 @@ public class MarkupUtil {
 				if (httpReq != null) return WebUrlUtil.getAdapterRootURL(httpReq, httpReq.isSecure());
 				if (req != null) return WebUrlUtil.getAdapterRootURL(req, req.isSecure());
 				return WebUrlUtil.getAdapterRootUrl();
+			}
+			public String getImagesRootUrl() {
+				return WebUrlUtil.getRelativeSSFContextRootURL() + "images/";
 			}
 			public String getRootServletUrl() {
 				if (httpReq != null) return WebUrlUtil.getServletRootURL(httpReq, httpReq.isSecure());
@@ -578,6 +617,77 @@ public class MarkupUtil {
 			    				WebHelper.getNormalizedTitle(normalizedTitle), title);
 			    		titleLink.append("<a href=\"").append(webUrl).append("\">").append(title).append("</a>");
 			    		
+			    	}
+	    			matcher.appendReplacement(outputBuf, titleLink.toString().replace("$", "\\$"));
+		    	} while (matcher.find());
+				matcher.appendTail(outputBuf);
+			}
+		    	
+	    	//Replace the markup {{youTubeUrl}} with real urls {{youTubeUrl: url=xxx width=www height=hhh}}
+			matcher = youtubeUrlPattern.matcher(outputBuf.toString());
+			if (matcher.find()) {
+				loopDetector = 0;
+				outputBuf = new StringBuffer();
+				do {
+					if (loopDetector++ > 2000) {
+						logger.error("Error processing markup [5]: " + inputString);
+						return outputBuf.toString();
+					}
+					if (matcher.groupCount() < 2) continue;
+					String urlParts = matcher.group(2).trim();
+					String s_url = "";
+					Matcher fieldMatcher = youtubeUrlUrlPattern.matcher(urlParts);
+					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_url = fieldMatcher.group(1).trim();
+			    		
+					String s_width = "";
+					fieldMatcher = youtubeUrlWidthPattern.matcher(urlParts);
+					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_width = fieldMatcher.group(1).trim();
+			    		
+					String s_height = "";
+					fieldMatcher = youtubeUrlHeightPattern.matcher(urlParts);
+					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_height = fieldMatcher.group(1).trim();
+			    		
+					//build the link
+		    		StringBuffer titleLink = new StringBuffer();
+			    	if (type.equals(WebKeys.MARKUP_FORM)) {
+			        	titleLink.append("<a class=\"ss_youtube_link\" rel=\"url=");
+			        	titleLink.append(s_url);
+			        	if (!s_width.equals("")) titleLink.append(" width=" + s_width);
+			        	if (!s_height.equals("")) titleLink.append(" height=" + s_height);
+			        	titleLink.append("\" style=\"padding:12px 24px; background:url(");
+			        	titleLink.append(builder.getImagesRootUrl()).append("pics/youtube.gif) no-repeat center;\">");
+			        	titleLink.append("&nbsp;</a>");
+			        	titleLink.append("</a>");
+			    	} else if (s_url.startsWith("http://www.youtube.com/")) {
+			    		/*
+							<div id="ytapiplayer">
+    							You need Flash player 8+ and JavaScript enabled to view this video.
+  							</div>
+                            <script type="text/javascript">
+							    var params = { allowScriptAccess: "always" };
+							    var atts = { id: "myytplayer" };
+							    swfobject.embedSWF("http://www.youtube.com/v/VIDEO_ID?enablejsapi=1&playerapiid=ytplayer", 
+							                       "ytapiplayer", "425", "356", "8", null, null, params, atts);
+							</script>
+			    		 */
+			    		Integer id = ++youtubeDivId;
+			    		if (youtubeDivId > 1000000) youtubeDivId = 0;
+			    		titleLink.append("<div id=\"ytapiplayer"+id.toString()+"\">\n");
+			    		titleLink.append("");
+			    		titleLink.append("</div>\n");
+			    		titleLink.append("<script type=\"text/javascript\">\n");
+			    		titleLink.append("var params = { allowScriptAccess: \"always\" };\n");
+			    		titleLink.append("var atts = { id: \"myytplayer\" };\n");
+			    		titleLink.append("swfobject.embedSWF(\"").append(s_url.replace("?v=", "/v/"));
+			    		titleLink.append("?enablejsapi=1&playerapiid=ytplayer\",");
+			    		titleLink.append(" \"ytapiplayer"+id.toString()+"\", \"").append(s_width).append("\", ");
+			    		titleLink.append("\"").append(s_height).append("\", \"8\", null, null, params, atts);\n");
+			    		titleLink.append("</script>\n");
+			    	} else {
+			        	titleLink.append("<a target=\"_blank\" src=\"");
+			        	titleLink.append(s_url);
+			        	titleLink.append("\">");
+			        	titleLink.append(s_url).append("</a>");
 			    	}
 	    			matcher.appendReplacement(outputBuf, titleLink.toString().replace("$", "\\$"));
 		    	} while (matcher.find());
