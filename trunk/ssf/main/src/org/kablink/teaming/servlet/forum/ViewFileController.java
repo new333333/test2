@@ -64,6 +64,7 @@ import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.FileUtil;
+import org.kablink.util.Http;
 import org.kablink.util.Validator;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -89,6 +90,7 @@ public class ViewFileController extends SAbstractController {
 		String viewType = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_VIEW_TYPE, ""); 
 		String fileId = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, ""); 
 		String fileTitle = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_TITLE, ""); 
+		if (!fileTitle.equals("")) fileTitle = Http.decodeURL(fileTitle);
 		String fileTime = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_TIME, ""); 
 		if (viewType.equals(WebKeys.FILE_VIEW_TYPE_ZIPPED)) {
 			streamZipFile(request, response, fileId, fileTitle);
@@ -174,6 +176,16 @@ public class ViewFileController extends SAbstractController {
 				}
 			}
 			if (!fileId.equals("")) topAtt = (FileAttachment)entity.getAttachment(fileId);
+			if (topAtt == null) {
+				//See if there is a title included
+				if (!fileTitle.equals("")) {
+					fa = entity.getFileAttachment(fileTitle);
+					if (fa != null) {
+						fileId = fa.getId();
+						topAtt = (FileAttachment)entity.getAttachment(fileId);
+					}
+				}
+			}
 			if (topAtt != null) {
 				//see if we want a version
 				String versionId = RequestUtils.getStringParameter(request, WebKeys.URL_VERSION_ID, ""); 
