@@ -52,11 +52,17 @@
  <div class="ss_mashup_round_top"><div></div></div>
  <div class="ss_mashup_graphic_content">
   <c:if test="${!empty mashup_attributes['graphic']}">
+    <c:set var="graphicFileTitle" value="${mashup_attributes['title']}"/>
+    <jsp:useBean id="graphicFileTitle" type="java.lang.String" />
+    <%
+    	graphicFileTitle = org.kablink.util.Http.encodeURL(graphicFileTitle);
+    %>
     <img src="<ssf:url 
 		    webPath="viewFile"
 		    folderId="${ssBinder.id}"
 		    entityType="${ssBinder.entityType}" >
 	    	<ssf:param name="fileId" value="${mashup_attributes['graphic']}"/>
+	    	<ssf:param name="fileTitle" value="<%= graphicFileTitle %>"/>
 	    	</ssf:url>" alt="${mashup_attributes['title']}">
   </c:if>
  </div>
