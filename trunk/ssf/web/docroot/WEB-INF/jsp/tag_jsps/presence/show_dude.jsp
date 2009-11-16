@@ -42,7 +42,7 @@
 
 <c:if test="${empty ss_presence_user}">
 <a href="javascript: ;"
- onClick="ss_popupPresenceMenu(this, '', '', '-1', '', '', '', '', '', '', '${ss_presence_component_id}', '${ss_presence_zonBridge}', '');return false;"
+ onClick="ss_popupPresenceMenu(this, '', '', '-1', '', '', '', '', '', '', '${ss_presence_component_id}', '${ss_presence_zonBridge}', '', '');return false;"
 ><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
  alt="<c:out value="${ss_presence_text}"/>"/></a>
 </c:if>
@@ -105,7 +105,7 @@
     '<%= presenceUserEmailAddressHost %>', 
     '${ss_presence_vcard}', 
     '${current}', '${ss_presence_component_id}', '${ss_presence_zonBridge}',
-    '<%= presenceUserSkypeId %>');return false;"
+    '<%= presenceUserSkypeId %>', '${ss_presence_user.workspaceId}');return false;"
 ><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
  alt="<c:out value="${ss_presence_text}"/>"/></a>
   <c:if test="${ss_presence_show_title}">
@@ -124,6 +124,7 @@
 		    class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle user="${ss_presence_user}"/></span></a>
 		  </c:if>
 		  <c:if test="${empty ss_presence_user.workspaceId}">
+		    <c:if test="${!empty ss_presence_user.parentBinder.id}">
 	  	      <a 
 	  	        <c:if test="${!empty ss_presence_target}">target="${ss_presence_target}"</c:if>
 	  	        href="<ssf:url     
@@ -135,6 +136,11 @@
 			    <span id="${ss_presence_user.id}" 
 			      class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle user="${ss_presence_user}"/></span>
 			  </a>
+			</c:if>
+		    <c:if test="${empty ss_presence_user.parentBinder.id}">
+			    <span id="${ss_presence_user.id}" 
+			      class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle user="${ss_presence_user}"/></span>
+			</c:if>			
 		  </c:if>
 	  </c:if>
 	</ssf:ifadapter>

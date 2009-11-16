@@ -77,7 +77,8 @@ public class ViewEntryController extends SAbstractController {
 		String displayStyle = user.getDisplayStyle();
 		Map model = new HashMap();	
 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
+		if (binderId == null) binderId = getProfileModule().getProfileBinderId();
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		String entryViewType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_TYPE, "entryView");
 		String entryViewStyle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_STYLE, "");

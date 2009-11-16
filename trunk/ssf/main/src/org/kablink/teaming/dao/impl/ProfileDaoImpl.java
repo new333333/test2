@@ -98,6 +98,7 @@ import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.Constants;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -553,8 +554,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                 }
         );
        
-        if (filterInaccessiblePrincipal(principal) == null) 
-        	throw new NoPrincipalByTheIdException(prinId); 
+        principal = (User)filterInaccessiblePrincipal(principal);
+        if (principal == null) throw new NoPrincipalByTheIdException(prinId); 
         return principal;
               
     }
@@ -1490,22 +1491,41 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		for (int i = 0; i < principals.size(); i++) {
 			Principal principal = (Principal)principals.get(i);
 			if (principal instanceof User) {
-				List memberOf = principal.getMemberOf();
-				if (memberOf != null) {
-					for (int k = 0; k < memberOf.size(); k++) {
-						if (groupIds.contains(((Group)memberOf.get(k)).getId())) {
-							result.add(principals.get(i));
-							break;
+				if (user.getId() == principal.getId()) {
+					//Always allow a user to see his/her own profile
+					if (!result.contains(principal)) result.add(principal);
+				} else {
+					List memberOf = principal.getMemberOf();
+					if (memberOf != null) {
+						for (int k = 0; k < memberOf.size(); k++) {
+							if (groupIds.contains(((Group)memberOf.get(k)).getId())) {
+								result.add(principal);
+								break;
+							}
 						}
+						if (!result.contains(principal)) {
+							//The current user cannot see this principal, so add a dummy principal object
+							result.add(makeItFake(principal));
+						}
+					} else {
+						//The current user cannot see this principal, so add a dummy principal object
+						result.add(makeItFake(principal));
 					}
 				}
-				if (user.getId() == principal.getId() && !result.contains(user.getId())) 
-					result.add(principals.get(i));
 			} else {
-				result.add(principals.get(i));
+				result.add(principal);
 			}
 		}
 		return result;
+	}
+	
+	private Principal makeItFake(Principal p) {
+		User u = new User();
+		u.setId(p.getId());
+		u.setName("__unavailable_" + p.getId().toString());
+		String title = NLT.get("user.redacted.title");
+		u.setLastName(title);
+		return u;
 	}
 	
 	//Initialize (or reset) the disk space used by each user

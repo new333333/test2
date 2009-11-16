@@ -146,15 +146,22 @@ public class User extends UserPrincipal implements IndividualPrincipal {
  
 	}
     private String setupTitle() {
-    	String val;
-    	StringBuffer tBuf = new StringBuffer();
-    	val = getFirstName();
-    	if (Validator.isNotNull(val)) tBuf.append(val + " ");
-    	val = getMiddleName();
-    	if (Validator.isNotNull(val)) tBuf.append(val + " ");
-    	val = getLastName();
-    	if (Validator.isNotNull(val)) tBuf.append(val + " ");
-    	return tBuf.toString().trim();   	
+    	String firstName = getFirstName();
+    	if (Validator.isNull(firstName)) firstName = "";
+    	String middleName = getMiddleName();
+    	if (Validator.isNull(middleName)) middleName = "";
+    	String lastName = getLastName();
+    	if (Validator.isNull(lastName)) lastName = "";
+    	String title = firstName;
+    	if (title.equals("")) title = middleName;
+    	if (!lastName.equals("")) title = lastName;
+    	if (Validator.isNull(firstName + middleName) || Validator.isNull(firstName + lastName) || Validator.isNull(middleName + lastName)) {
+    		//There is only one name field set, so use it as the title
+    		return title;
+    	} else {
+	    	String[] names = new String[] {firstName, middleName, lastName};
+	    	return NLT.get("user.title", names);   
+    	}
     }
     public String getSearchTitle() {
     	//return lastname first

@@ -90,11 +90,15 @@ public class PresenceInfo extends BodyTagSupport {
 			//Get a user object from the principal
 			User user1 = null;
 			if (user != null) {
-				ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
-				try {
-					user1 = profileDao.loadUser(user.getId(), user.getZoneId());
+				if (user instanceof User) {
+					user1 = (User) user;
+				} else {
+					ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
+					try {
+						user1 = profileDao.loadUser(user.getId(), user.getZoneId());
+					}
+					catch(Exception e) {}
 				}
-				catch(Exception e) {}
 			}
 
 			PresenceManager presenceService = (PresenceManager)SpringContextUtil.getBean("presenceService");

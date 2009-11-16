@@ -34,8 +34,10 @@
 %>
 <% // htmlarea editor %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ page import="org.kablink.teaming.util.SPropsUtil" %>
 <%@ page import="java.lang.String" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<c:set var="isShowYouTube" value='<%= SPropsUtil.getBoolean("youTube.showInEditor") %>'/>
 <c:if test="${empty ss_tinyMCE_hasBeenLoaded}">
 <c:set var="wikiLinkBinderId" value="" scope="request"/><%--
 --%><c:if test="${!empty ssDefinitionEntry}"><%--
@@ -94,7 +96,7 @@ tinyMCE.init(
   gecko_spellcheck : true,
   plugins: "compat2x,table,<%--
   --%><c:if test="${empty ssInlineNoImage && !ssBinder.mirrored}">ss_addimage,</c:if><%--
-  --%>preview,paste,ss_wikilink,ss_youtube",
+  --%>preview,paste,ss_wikilink<c:if test="${isShowYouTube}">,ss_youtube</c:if>",
   theme_advanced_buttons3_add : "pastetext,pasteword,selectall",
   theme_advanced_toolbar_location: "top", theme_advanced_toolbar_align: "top", 
   theme_advanced_toolbar_align: "left", theme_advanced_statusbar_location: "bottom", 
@@ -104,7 +106,7 @@ tinyMCE.init(
   theme_advanced_buttons1_add: "forecolor,backcolor",
   theme_advanced_buttons2_add: "pastetext,pasteword<%--
   --%><c:if test="${empty ssInlineNoImage}">,ss_addimage</c:if><%--
-  --%><c:if test="${!empty wikiLinkBinderId}">,ss_wikilink</c:if>,ss_youtube",
+  --%><c:if test="${!empty wikiLinkBinderId}">,ss_wikilink</c:if><c:if test="${isShowYouTube}">,ss_youtube</c:if>",
   theme_advanced_path: false,
   theme_advanced_buttons3_add: "tablecontrols", 
   theme_advanced_disable : "image,advimage",
