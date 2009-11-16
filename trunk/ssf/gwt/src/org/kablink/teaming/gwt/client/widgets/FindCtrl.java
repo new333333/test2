@@ -185,7 +185,7 @@ public class FindCtrl extends Composite
 			// Create the footer
 			footer = createFooter();
 			m_mainPanel.add( footer );
-			
+
 			// All composites must call initWidget() in their constructors.
 			initWidget( m_mainPanel );
 		}// end SearchResultsWidget()
@@ -398,6 +398,15 @@ public class FindCtrl extends Composite
 				}
 			}
 		}// end onClick()
+		
+		/**
+		 * Set the width of this widget.
+		 */
+		public void setWidthInt( int width )
+		{
+			m_mainPanel.setWidth( width + "px" );
+			m_contentPanel.setWidth( width + "px" );
+		}// end setWidthInt()
 		
 		
 		/**
@@ -776,7 +785,7 @@ public class FindCtrl extends Composite
 	public void showSearchResults()
 	{
 		// Make the search results widget as wide as the text box.  We subtract 4 because of the border around the search results widget.
-		m_searchResultsWidget.setWidth( m_txtBox.getOffsetWidth()-4 + "px" );
+		m_searchResultsWidget.setWidthInt( m_txtBox.getOffsetWidth() - 4 );
 		m_searchResultsWidget.setVisible( true );
 	}// end showSearchResults()		
 }// end FindCtrl
