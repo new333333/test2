@@ -80,6 +80,7 @@
 	background-color: white;
 	height: 245px;
 	overflow: auto;
+	width: 200px;	/* Even though this isn't the real width, we need to specify it or IE won't honor the overflow: auto. */
 }
 
 /* Styles for the footer of the "search results" in a "find" control. */
