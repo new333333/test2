@@ -79,7 +79,9 @@ public class ListProfilesController extends   SAbstractController {
 			if (pageStartIndex.equals("")) pageStartIndex = "0";
 			Tabs.TabEntry tab = Tabs.getTabs(request).getTab(binderId);
 			Map tabData = tab.getData();
-			tabData.put(Tabs.PAGE, new Integer(pageStartIndex));			
+			Integer pageSI = Integer.valueOf(pageStartIndex);
+			if (pageSI < 0) pageSI = 0;
+			tabData.put(Tabs.PAGE, pageSI);			
 			tab.setData(tabData);
 			response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_GOTOPAGE_INFO)) {
