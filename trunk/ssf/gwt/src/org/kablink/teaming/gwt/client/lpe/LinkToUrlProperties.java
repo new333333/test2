@@ -94,13 +94,9 @@ public class LinkToUrlProperties
 		str += "href=";
 		if ( m_url != null )
 			str += ConfigData.encodeConfigData( m_url );
-		str += ",";
 		
-		str += "popup=";
 		if ( m_openInNewWindow )
-			str += "1";
-		else
-			str += "0";
+			str += ",popup=1";
 		str += ";";
 
 		return str;

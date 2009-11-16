@@ -146,13 +146,9 @@ public class LinkToEntryProperties
 		str += "title=";
 		if ( m_title != null )
 			str += ConfigData.encodeConfigData( m_title );
-		str += ",";
 		
-		str += "popup=";
 		if ( m_openInNewWindow )
-			str += "1";
-		else
-			str += "0";
+			str += ",popup=1;";
 		str += ";";
 
 		return str;
