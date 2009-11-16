@@ -1767,6 +1767,8 @@ public class ExportHelper {
 				}
 				zipIn.closeEntry();
 			}
+		} catch(Exception e) {
+			logger.error(e);
 		} finally {
 			zipIn.close();
 		}
