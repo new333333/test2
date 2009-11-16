@@ -57,7 +57,7 @@
 <li>
 <% } %>
 
-  <div class="ss_mashup_element">
+  <div class="ss_mashup_element" <c:if test="${!empty mashup_attributes['showBorder']}"> style="border: 1px solid;"</c:if>>
     <div class="ss_mashup_round_top"><div></div></div>
 	<c:if test="${ssConfigJspStyle == 'form' || !empty mashup_attributes['title']}">
 	  <c:set var="divClass" value="ss_mashup_list_header_form" />

@@ -96,11 +96,9 @@ public class TableProperties
 		int i;
 		
 		// The string should look like: "tableStart,showBorder=1,cols=3,colWidths=33%7C33%7C33;"
-		str = "tableStart,showBorder=";
+		str = "tableStart,";
 		if ( m_showBorder )
-			str += "1,";
-		else
-			str += "0,";
+			str += "showBorder=1,";
 		
 		str += "cols=" + getNumColumnsStr() + ",";
 		
