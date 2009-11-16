@@ -37,7 +37,7 @@
 <c:set var="ss_windowTitle" value='<%= NLT.get("mobile.searchResults") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
-<c:set var="ss_pageTitle" value='<%= NLT.get("mobile.searchResultsPeople") %>' scope="request"/>
+<c:set var="ss_pageTitle" value='<%= NLT.get("mobile.searchResultsPlaces") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
 
 <div class="content">
@@ -109,6 +109,24 @@
 							operation="mobile_show_workspace" />"
 			  </c:if>
 			>${binder.title}</a>
+			<c:if test="${!empty binder._entityPath}">
+			  <div class="entry-type">
+				<span>
+				<c:if test="${binder._entityType == 'folder'}">
+					<a href="<ssf:url adapter="true" portletName="ss_forum" 
+						folderId="${binder._docId}" 
+						action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />"
+					>${binder._entityPath}</a>
+				</c:if>
+				<c:if test="${binder._entityType == 'workspace'}">
+					<a href="<ssf:url adapter="true" portletName="ss_forum" 
+						folderId="${binder._docId}" 
+						action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />"
+					>${binder._entityPath}</a>
+				</c:if>
+				</span>
+			  </div>
+			 </c:if>
 		  </div>
 		</c:forEach>
 
