@@ -1484,8 +1484,11 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
-		
-		return new ModelAndView("mobile/find_people", model);
+
+		String view = "mobile/find_people";
+		if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PLACES)) view = "mobile/find_places";
+
+		return new ModelAndView(view, model);
 	}
 	
 }
