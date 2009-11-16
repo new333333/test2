@@ -4865,7 +4865,7 @@ function ss_savePenletLayout() {
 
 
 //Presence support
-function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, emailName, emailHost, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId) {
+function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, emailName, emailHost, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId, workspaceId) {
     obj = self.document.getElementById('ss_presencePopUp'+ssNamespace)
     if (obj == null) {
 		obj = document.createElement("div");
@@ -4876,10 +4876,10 @@ function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTim
     	document.getElementsByTagName("body").item(0).appendChild(obj);
     }
     ss_moveObjectToBody(obj)
-	ss_presenceMenu('', x, userId, userTitle, status, screenName, sweepTime, emailName, emailHost, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId);
+	ss_presenceMenu('', x, userId, userTitle, status, screenName, sweepTime, emailName, emailHost, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId, workspaceId);
 }
 
-function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepTime, emailName, emailHost, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId) {
+function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepTime, emailName, emailHost, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId, workspaceId) {
     var obj;
     var objId = divId;
     if (objId == '') objId = 'ss_presencePopUp'+ssNamespace;
@@ -4973,10 +4973,12 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
     }
 
     //View MiniBlog
-    m += '<tr>';
-    m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgminiblog' +ssNamespace+'"></td>';
-    m += '<td id="miniblog' + userId + '"><a class="ss_graymenu" href="javascript: ;" ';
-    m += 'onClick="ss_viewMiniBlog(\'' + userId + '\', \'0\', true);return false;">' +ss_ostatus_miniblog+'</a></td></tr>';
+    if (workspaceId != "") {
+    	m += '<tr>';
+    	m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgminiblog' +ssNamespace+'"></td>';
+    	m += '<td id="miniblog' + userId + '"><a class="ss_graymenu" href="javascript: ;" ';
+    	m += 'onClick="ss_viewMiniBlog(\'' + userId + '\', \'0\', true);return false;">' +ss_ostatus_miniblog+'</a></td></tr>';
+    }
 
     m += '</table>'
 
