@@ -1821,6 +1821,7 @@ public class ExportHelper {
 	private static void importWorkflows(Document entityDoc, DefinableEntity entity) {
 
 		if (entity instanceof FolderEntry) {
+			boolean needsToBeIndexed = false;
 
 			// end all workflows that started upon entry creation
 
@@ -1830,6 +1831,7 @@ public class ExportHelper {
 			while (iter.hasNext()) {
 				((FolderEntry) entity).removeWorkflowState((WorkflowState) iter
 						.next());
+				needsToBeIndexed = true;
 			}
 
 			// start up the imported workflows
@@ -1850,9 +1852,18 @@ public class ExportHelper {
 						.put(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE,
 								state);
 
-				workflowModule.addEntryWorkflow((FolderEntry) entity,
+				try {
+					workflowModule.addEntryWorkflow((FolderEntry) entity,
 						entityIdentifier, def, options);
+				} catch(Exception e) {
+					logger.error(e);
+				}
+				needsToBeIndexed = true;
 
+			}
+			if (needsToBeIndexed) {
+				//Re-index this entry
+				folderModule.indexEntry((FolderEntry)entity, false);
 			}
 		} else if (entity instanceof Binder) {
 
