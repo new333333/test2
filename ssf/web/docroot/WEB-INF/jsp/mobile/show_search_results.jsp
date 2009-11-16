@@ -176,12 +176,16 @@
 						  </div>
 						</c:if>
 						<c:if test="${!empty entry._desc}">
-						  <div class="entry-content">
-							<ssf:textFormat formatAction="limitedDescription" textMaxWords="20">
-								<ssf:markup search="${entry}">${entry._desc}</ssf:markup>
-							</ssf:textFormat>
-							<div class="ss_clear"></div>
-						  </div>
+			    		  <c:set var="truncatedDescription" ><ssf:textFormat 
+			      	  		formatAction="limitedDescription" 
+			          		textMaxWords="20"><ssf:markup 
+			          		search="${entry}">${entry._desc}</ssf:markup></ssf:textFormat></c:set>
+			          	  <c:if test="${!empty truncatedDescription}">
+						    <div class="entry-content">
+							  ${truncatedDescription}
+							  <div class="ss_clear"></div>
+						    </div>
+						  </c:if>
 						</c:if>
 					  </div>
 						<%

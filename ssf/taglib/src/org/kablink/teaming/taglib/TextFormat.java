@@ -107,8 +107,9 @@ public class TextFormat extends BodyTagSupport {
 				//We are excepting the tags and HTML code if any to be well formed.
 				for (int i = 0; i < words.length; i++) {
 					String strWord = words[i];
-					summary = summary + " " + strWord;
+					if (strWord.equals("")) continue;
 					
+					summary = summary + " " + strWord;
 					String strLCWord = strWord.toLowerCase();
 	
 					//Hemanth:
@@ -157,7 +158,7 @@ public class TextFormat extends BodyTagSupport {
 				}
 				
 				JspWriter jspOut = pageContext.getOut();
-				jspOut.print(summary);
+				jspOut.print(summary.trim());
 					
 			} else if (formatAction.equals("simpleLimitedDescription")) {
 				int intMaxAllowedWords = 0;
@@ -186,7 +187,7 @@ public class TextFormat extends BodyTagSupport {
 				}
 				
 				JspWriter jspOut = pageContext.getOut();
-				jspOut.print(summary);
+				jspOut.print(summary.trim());
 				
 			} else {
 				JspWriter jspOut = pageContext.getOut();

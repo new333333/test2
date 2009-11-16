@@ -163,13 +163,17 @@
 			</div>
 			
 			  <c:if test="${!empty entryWn._desc}">
-			    <div class="entry-content">
-			    	<span style="border:#cecece solid 1px;"><ssf:textFormat 
+			    <c:set var="truncatedDescription" ><ssf:textFormat 
 			      	  formatAction="limitedDescription" 
-			          textMaxWords="20"><ssf:markup search="${entryWn}">${entryWn._desc}</ssf:markup></ssf:textFormat>
+			          textMaxWords="20"><ssf:markup 
+			          search="${entryWn}">${entryWn._desc}</ssf:markup></ssf:textFormat></c:set>
+			    <c:if test="${!empty truncatedDescription}">
+			      <div class="entry-content">
+			    	<span style="border:#cecece solid 1px;">
 			        </span>
 			        <div class="ss_clear"></div>
-		  	    </div>
+		  	      </div>
+		  	    </c:if>
 			  </c:if>
 		
 	      </div>

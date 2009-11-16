@@ -22,6 +22,10 @@
 
 package org.kablink.util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+
 /**
  * <a href="Html.java.html"><b><i>View Source</i></b></a>
  *
@@ -31,6 +35,11 @@ package org.kablink.util;
  *
  */
 public class Html {
+
+	private final static String scriptObjs = "script|embed|object|applet|html|head|body|meta|xml|blink|link|iframe|frame|frameset|ilayer|layer|base";
+	private final static Pattern scriptsPattern1 = Pattern.compile("(<[\\s]*(" + scriptObjs + ")(?:[\\s]+[^>]*/>|[\\s]*/>))", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private final static Pattern scriptsPattern2 = 
+		Pattern.compile("(<[\\s]*(" + scriptObjs + ")(?:[\\s]+[^>]*>|[\\s]+[^>]*>).*<[\\s]*/[\\s]*\\2[\\s]*[^>]*>)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
 	public static String formatFrom(String text) {
 		if (text == null) {
@@ -136,12 +145,26 @@ public class Html {
 		//return text;
 	}
 
+	public static String stripScripts(String text) {
+		//Check for <script/>, <embed/>, <iframe/>, ...
+		Matcher matcher1 = scriptsPattern1.matcher(text);
+		if (matcher1.find()) {
+			text = matcher1.replaceAll("");
+		}
+		//Check for <script ...>...</script>, <embed ...>...</embed>, <iframe ...>...</iframe>, ...
+		Matcher matcher2 = scriptsPattern2.matcher(text);
+		if (matcher2.find()) {
+			text = matcher2.replaceAll("");
+		}
+		return text.trim();
+	}
+
 	public static String stripHtml(String text) {
 		if (text == null) {
 			return null;
 		}
 
-		text = stripComments(text);
+		text = stripComments(text).trim();
 
 		StringBuffer sb = new StringBuffer();
 		int x = 0;
@@ -178,6 +201,7 @@ public class Html {
 			return null;
 		}
 
+		text = stripScripts(text);
 		text = stripComments(text);
 		
 		int intTextLength = text.length();
@@ -233,7 +257,7 @@ public class Html {
 		String reply = sb.toString();
 		reply = reply.replaceAll("&nbsp;", " ");
 		reply = reply.replaceAll("&#39;",  "'");
-		return reply;
+		return reply.trim();
 	}	
 	
 	/**
