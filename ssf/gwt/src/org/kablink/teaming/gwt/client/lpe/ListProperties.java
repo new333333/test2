@@ -83,12 +83,9 @@ public class ListProperties
 		String str;
 		
 		// The string should look like: "listStart,showBorder=1,title=something;"
-		str = "listStart,showBorder=";
+		str = "listStart,";
 		if ( m_showBorder )
-			str += "1";
-		else
-			str += "0";
-		str += ",";
+			str += "showBorder=1,";
 		
 		str += "title=";
 		if ( m_title != null )
