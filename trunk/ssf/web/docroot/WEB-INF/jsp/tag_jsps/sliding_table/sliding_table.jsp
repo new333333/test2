@@ -102,6 +102,17 @@ ss_colWidthsUser[<%= String.valueOf(i) %>] = '<%= columnPositions[i] %>';
 		
 		//Output the main div that holds them all
 %>
+
+<%
+	String browserType = request.getHeader("User-Agent");
+	String sizingTableCellPadding;
+	if ((null != browserType) && ((-1) != browserType.toLowerCase().indexOf("safari"))) {
+		sizingTableCellPadding = "3";
+	}
+	else {
+		sizingTableCellPadding = "2";
+	}
+%>
 <script type="text/javascript">
 var ss_columnCount = <%= String.valueOf(colSize) %>;
 </script>
@@ -113,12 +124,12 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
  onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 
 <div id="col0" class="ss_style ss_sliding_table_column0" width="100%">
-<table cellspacing="0" cellpadding="2" width="100%">
+<table cellspacing="0" cellpadding="<%= sizingTableCellPadding %>" width="100%">
  <tr class="ss_sliding">
   <td class="ss_sliding_table_row0" width="100%">&nbsp; </td>
  </tr>
 </table>
-<table cellspacing="0" cellpadding="2" width="100%" style="padding-bottom:2px;">
+<table cellspacing="0" cellpadding="<%= sizingTableCellPadding %>" width="100%" style="padding-bottom:2px;">
 <%		
 		int rowCount = 1;
 		String rowStyle = "ss_sliding_table_row0";
