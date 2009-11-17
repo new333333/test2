@@ -193,6 +193,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 					icon = "/icons/workspace.gif";
 					imageClass = "ss_twImg";
 				}
+				if (!icon.startsWith("/")) icon = "/" + icon;
 				element.addAttribute("type", DomTreeBuilder.NODE_TYPE_WORKSPACE);
 				element.addAttribute("image", "/" + imageBrand + icon);
 				element.addAttribute("imageClass", imageClass);
@@ -205,6 +206,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 				String icon = f.getIconName();
 				String imageBrand = SPropsUtil.getString("branding.prefix");
 				if (icon == null || icon.equals("")) icon = "/icons/folder.png";
+				if (!icon.startsWith("/")) icon = "/" + icon;
 				element.addAttribute("type", DomTreeBuilder.NODE_TYPE_FOLDER);
 				element.addAttribute("image", "/" + imageBrand + icon);
 				element.addAttribute("imageClass", "ss_twIcon");
