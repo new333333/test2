@@ -95,7 +95,7 @@ public class AddEntryController extends SAbstractController {
         	try
         	{
         		User user = getProfileModule().getUser(name);
-        		throw new ObjectExistsException("errorcode.user.exists", (Object[])null);
+        		throw new ObjectExistsException("errorcode.user.alreadyExists", (Object[])null);
         	} catch (NoPrincipalByTheNameException nue){
         	}
         	
