@@ -237,12 +237,13 @@ function ss_trashSelectOne(eCBox) {
 	var eCBoxDIV = document.getElementById(eCBox.id + "_DIV");
 	var sCBoxHTML = eCBoxDIV.innerHTML;
 	if (eCBox.checked) {
-		sCBoxHTML = ss_trashStrReplace(sCBoxHTML, g_uncheckedPattern, g_checkedPatterns[0]);
+		var oPattern  = g_checkedPatterns[0];
+		sCBoxHTML = ss_trashStrReplace(sCBoxHTML, oPattern.replacement, oPattern.pattern);
 	}
 	else {
-		var sPattern = ss_trashFindCheckedPattern(sCBoxHTML);
-		if (null != sPattern) {
-			sCBoxHTML = ss_trashStrReplace(sCBoxHTML, sPattern, g_uncheckedPattern);
+		var oPattern = ss_trashFindCheckedPattern(sCBoxHTML);
+		if (null != oPattern) {
+			sCBoxHTML = ss_trashStrReplace(sCBoxHTML, oPattern.pattern, oPattern.replacement);
 		}
 	}
 	eCBoxDIV.innerHTML = sCBoxHTML;
@@ -252,19 +253,27 @@ function ss_trashSelectOne(eCBox) {
  * Scans the HTML for a checkbox searching for the pattern used by the
  * browser for checked items.
  */
-var	g_uncheckedPattern = "type=";
 var	g_checkedPatterns = new Array();
-g_checkedPatterns[g_checkedPatterns.length] = ("checked=\"checked\" " + g_uncheckedPattern);	// All non-IE.
-g_checkedPatterns[g_checkedPatterns.length] = ("checked "             + g_uncheckedPattern);	// IE.
+g_checkedPatterns[g_checkedPatterns.length] = new SSCheckPattern("checked=\"checked\" type=", "type=");			// All non-IE.
+g_checkedPatterns[g_checkedPatterns.length] = new SSCheckPattern("checked type=",             "type=");			// IE8.
+g_checkedPatterns[g_checkedPatterns.length] = new SSCheckPattern("type=checkbox checked",     "type=checkbox");	// IE6/7.
 function ss_trashFindCheckedPattern(sCBoxHTML) {
 	var	sCBoxHTML_LC = sCBoxHTML.toLowerCase();
 	for (var i = 0; i < g_checkedPatterns.length; i += 1) {
-		var	sPattern = g_checkedPatterns[i];
-		if (0 <= sCBoxHTML_LC.indexOf(sPattern)) {
-			return(sPattern);
+		var	oPattern = g_checkedPatterns[i];
+		if (0 <= sCBoxHTML_LC.indexOf(oPattern.pattern)) {
+			return(oPattern);
 		}
 	}
 	return(null);
+}
+
+/*
+ * Object used to manage the checkbox munging patters above.
+ */
+function SSCheckPattern(sPattern, sReplacement) {
+	this.pattern     = sPattern;
+	this.replacement = sReplacement;
 }
 
 /*
