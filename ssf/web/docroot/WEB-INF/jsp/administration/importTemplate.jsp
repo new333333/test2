@@ -34,12 +34,22 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_cfg.import") %>' scope="request"/>
+
+<c:choose>
+	<c:when test="${ssOperation == 'import'}">
+		<c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_cfg.import") %>' scope="request"/>
+	</c:when>
+	<c:otherwise>
+		<c:set var="ss_windowTitle" value='<%= NLT.get("administration.reload.templates") %>' scope="request"/>
+	</c:otherwise>
+</c:choose>
+
+
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
-<ssf:form titleTag="administration.configure_cfg.import">
+<ssf:form titleTag="${ss_windowTitle}">
 
 <c:if test="${!empty ssErrorList}">
 <span class="ss_bold"><ssf:nlt tag="administration.errors"/></span>
@@ -51,12 +61,11 @@
 </c:forEach>
 </ul>
 </c:if>
+
 <c:if test="${ssOperation == 'import'}">
 <form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
 		  action="<ssf:url adapter="true" action="configure_configuration" 
 			actionUrl="true" ><ssf:param name="operation" value="import"/></ssf:url>">
-<span class="ss_titlebold"><ssf:nlt tag="administration.configure_cfg.import" /></span>
-<br>
 <div class="ss_divider"></div>
 <br>
 
@@ -89,9 +98,9 @@
 </div>
 </form>
 </c:if>
+
 <c:if test="${ssOperation == 'reset'}">
-<span class="ss_titlebold"><ssf:nlt tag="administration.reload.templates" /></span>
-<br>
+<div class="ss_divider"></div>
 <br>
 
 <form class="ss_style ss_form" method="post" 
