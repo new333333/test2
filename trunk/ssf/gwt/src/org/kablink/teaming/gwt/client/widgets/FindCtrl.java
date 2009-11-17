@@ -484,8 +484,14 @@ public class FindCtrl extends Composite
 			 */
 			public void onFailure(Throwable t)
 			{
-				//!!! Do something here.
-				Window.alert( "The request to execute a search failed." );
+				String errMsg;
+				String cause;
+				
+				cause = t.getLocalizedMessage();
+				if ( cause == null )
+					cause = t.toString();
+				errMsg = GwtTeaming.getMessages().searchRPCFailed( cause );
+				Window.alert( errMsg );
 				m_searchInProgress = false;
 				m_searchResultsWidget.hideSearchingText();
 			}// end onFailure()

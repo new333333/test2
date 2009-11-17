@@ -46,6 +46,7 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the "find" name-completion control
 	String nOfn( int value1, int value2, int value3 );
 	String searching();
+	String searchRPCFailed( String cause );
 
 	// Strings used with the Custom Jsp widget in the landing page editor.
 	String customJspLabel();
@@ -57,6 +58,7 @@ public interface GwtTeamingMessages extends Messages
 	String entryLabel();
 	String entryProperties();
 	String findEntry();
+	String getFolderEntryRPCFailed( String cause );
 	String pleaseSelectAnEntry();
 	
 	// Strings used with the Folder widget in the landing page editor
@@ -64,6 +66,7 @@ public interface GwtTeamingMessages extends Messages
 	String findFolderLabel();
 	String folderLabel();
 	String folderProperties();
+	String getFolderRPCFailed( String cause );
 	String numEntriesToShow();
 	String pleaseSelectAFolder();
 	String showEntriesOpened();

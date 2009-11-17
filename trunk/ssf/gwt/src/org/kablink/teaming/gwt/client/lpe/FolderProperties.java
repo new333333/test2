@@ -83,10 +83,15 @@ public class FolderProperties
 			/**
 			 * 
 			 */
-			public void onFailure(Throwable t)
+			public void onFailure( Throwable t )
 			{
-				//!!! Do something here.
-				Window.alert( "The request to get the GwtFolder object failed." );
+				String errMsg;
+				String cause;
+				
+				cause = t.getLocalizedMessage();
+				if ( cause == null )
+					cause = t.toString();
+				errMsg = GwtTeaming.getMessages().getFolderRPCFailed( cause );
 				m_rpcInProgress = false;
 			}// end onFailure()
 	

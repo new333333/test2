@@ -54,13 +54,13 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface GwtRpcService extends RemoteService
 {
 	// Do a search given the criteria found in the GwtSearchCriteria object.
-	public GwtSearchResults executeSearch( GwtSearchCriteria searchCriteria );
+	public GwtSearchResults executeSearch( GwtSearchCriteria searchCriteria ) throws Exception;
 	
 	// Return an Entry object for the given entry id.
-	public GwtFolderEntry getEntry( String zoneUUID, String entryId );
+	public GwtFolderEntry getEntry( String zoneUUID, String entryId ) throws Exception;
 	
 	// Return a Folder object for the given folder id.
-	public GwtFolder getFolder( String zoneUUID, String folderId );
+	public GwtFolder getFolder( String zoneUUID, String folderId ) throws Exception;
 	
 	public String getTutorialPanelState();
 	public ExtensionInfoClient[] getExtensionInfo();
