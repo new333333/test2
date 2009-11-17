@@ -77,10 +77,16 @@ public class EntryProperties
 			/**
 			 * 
 			 */
-			public void onFailure(Throwable t)
+			public void onFailure( Throwable t )
 			{
-				//!!! Do something here.
-				Window.alert( "The request to get the GwtFolderEntry object failed." );
+				String errMsg;
+				String cause;
+				
+				cause = t.getLocalizedMessage();
+				if ( cause == null )
+					cause = t.toString();
+				errMsg = GwtTeaming.getMessages().getFolderEntryRPCFailed( cause );
+				Window.alert( errMsg );
 				m_rpcInProgress = false;
 			}// end onFailure()
 	

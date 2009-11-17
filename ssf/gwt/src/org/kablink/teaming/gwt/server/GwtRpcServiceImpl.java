@@ -89,7 +89,7 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 	 * This method is meant to search for applications or entries or groups or places or tags or teams or users.
 	 */
 	@SuppressWarnings("unchecked")
-	private GwtSearchResults doSearch( GwtSearchCriteria searchCriteria )
+	private GwtSearchResults doSearch( GwtSearchCriteria searchCriteria ) throws Exception
 	{
 		Map options;
 		List searchTerms;
@@ -316,7 +316,7 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 	/**
 	 * Execute a search based on the given search criteria.
 	 */
-	public GwtSearchResults executeSearch( GwtSearchCriteria searchCriteria )
+	public GwtSearchResults executeSearch( GwtSearchCriteria searchCriteria ) throws Exception
 	{
 		GwtSearchResults searchResults;
 		
@@ -348,7 +348,7 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 	/**
 	 * Return an Entry object for the given zone and entry id
 	 */
-	public GwtFolderEntry getEntry( String zoneUUID, String entryId )
+	public GwtFolderEntry getEntry( String zoneUUID, String entryId ) throws Exception
 	{
 		FolderModule folderModule;
 		FolderEntry entry = null;
@@ -406,6 +406,7 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 		}
 		catch (Exception ex)
 		{
+			throw ex;
 		}
 		
 		return folderEntry;
@@ -415,7 +416,7 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 	/**
 	 * Return a Folder object for the given folder id
 	 */
-	public GwtFolder getFolder( String zoneUUID, String folderId )
+	public GwtFolder getFolder( String zoneUUID, String folderId ) throws Exception
 	{
 		BinderModule binderModule;
 		Binder binder = null;
@@ -470,6 +471,7 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 		}
 		catch (Exception ex)
 		{
+			throw ex;
 		}
 		
 		return folder;
