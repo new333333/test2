@@ -830,7 +830,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		Function teamMemberRole = addTeamMemberRole(top);
     		Function binderRole = addBinderRole(top);
     		Function teamWsRole = addTeamWorkspaceRole(top);
-    		Function canModifyOwnProfileRole = addModifyOwnProfileRole(top);
     		
     		//make sure allusers group and roles are defined, may be referenced by templates
     		getAdminModule().updateDefaultDefinitions(top.getId(), false);
@@ -886,8 +885,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		addMembership(top, participantsRole, top, members);
     		// all users visitors at profiles
     		addMembership(top, visitorsRole, profiles, members);
-    		// all users can modify their own profile
-    		addMembership(top, canModifyOwnProfileRole, profiles, members);
     		// all users participants at teamroot
     		addMembership(top, participantsRole, teamRoot, members);
     		// all users createWs  at teamroot
@@ -1216,18 +1213,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.setZoneId(top.getId());
 		function.setName(ObjectKeys.ROLE_TITLE_WORKSPACE_CREATOR);
 		function.addOperation(WorkAreaOperation.CREATE_WORKSPACES);
-		//generate functionId
-		getFunctionManager().addFunction(function);
-		return function;
-	}
-	private Function addModifyOwnProfileRole(Workspace top) {
-		Function function = new Function();
-		function.setZoneId(top.getId());
-		function.setName(ObjectKeys.ROLE_CAN_MODIFY_OWN_PROFILE);
-
-		function.addOperation(WorkAreaOperation.CREATOR_READ);
-		function.addOperation(WorkAreaOperation.CREATOR_MODIFY);
-		
 		//generate functionId
 		getFunctionManager().addFunction(function);
 		return function;

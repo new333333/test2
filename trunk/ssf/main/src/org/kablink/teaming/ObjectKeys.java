@@ -186,7 +186,6 @@ public interface ObjectKeys {
     public static final String ROLE_ZONE_ADMINISTRATION="__role.zoneAdministration";
     public static final String ROLE_ADD_GUEST_ACCESS="__role.addGuestAccess";
     public static final String ROLE_TOKEN_REQUESTER="__role.tokenRequester";
-    public static final String ROLE_CAN_MODIFY_OWN_PROFILE="__role.canModifyOwnProfile";
     public static final String ROLE_ONLY_SEE_GROUP_MEMBERS="__role.onlySeeGroupMembers";
     public static final String ROLE_OVERRIDE_ONLY_SEE_GROUP_MEMBERS="__role.overrideOnlySeeGroupMembers";
     //map keys from admin/sendMail
@@ -624,7 +623,6 @@ public interface ObjectKeys {
     public static final	int DISKQUOTA_EXCEEDED = 3;
     public static final String PRINCIPAL_TYPE_GROUP = "group";
     public static final String PRINCIPAL_TYPE_USER = "user";
-    public static final	int DISKQUOTA_MAX = 1000000;
     
     //Mobile related constants
 	public static final String USER_PROPERTY_MOBILE_WHATS_NEW_TYPE = "mobile_whats_new_type";

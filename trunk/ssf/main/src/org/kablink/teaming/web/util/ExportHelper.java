@@ -83,6 +83,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
@@ -191,11 +192,11 @@ public class ExportHelper {
 			zipOut.setEncoding("cp437");
 	
 			// Binder and entry definitions that we will later export
-			Set defList = new HashSet();
+			Set defListAlreadyAdded = new HashSet();
 	
 			if (entityId != null) {
 				processEntry(zipOut, folderModule.getEntry(binderId, entityId), "",
-						defList, reportMap);
+						defListAlreadyAdded, reportMap);
 			} else {
 	
 				EntityType entType = binderModule.getBinder(binderId)
@@ -204,19 +205,16 @@ public class ExportHelper {
 				// see if folder
 				if (entType == EntityType.folder) {
 					process(zipOut, folderModule.getFolder(binderId), false,
-							options, binderIds, noSubBinders, defList, statusTicket, reportMap);
+							options, binderIds, noSubBinders, defListAlreadyAdded, statusTicket, reportMap);
 					// see if ws or profiles ws
 				} else if ((entType == EntityType.workspace)
 						|| (entType == EntityType.profiles)) {
 					process(zipOut, workspaceModule.getWorkspace(binderId), true,
-							options, binderIds, noSubBinders, defList, statusTicket, reportMap);
+							options, binderIds, noSubBinders, defListAlreadyAdded, statusTicket, reportMap);
 				} else {
 					// something's wrong
 				}
 			}
-	
-			// Export the binder and entry definitions
-			exportDefinitionList(zipOut, defList);
 	
 			zipOut.finish();
 		}
@@ -230,7 +228,7 @@ public class ExportHelper {
 
 	private static void process(ZipOutputStream zipOut, Binder start,
 			boolean isWorkspace, Map options, Collection<Long> binderIds, 
-			Boolean noSubBinders, Set defList, StatusTicket statusTicket, Map reportMap) throws Exception {
+			Boolean noSubBinders, Set defListAlreadyAdded, StatusTicket statusTicket, Map reportMap) throws Exception {
 		Map<Long,Boolean> binderIdsToExport = new HashMap<Long,Boolean>();
 		binderIdsToExport.put(start.getId(), false);
 		SortedSet<Binder> binders = binderModule.getBinders(binderIds);
@@ -250,7 +248,9 @@ public class ExportHelper {
 		//Nothing selected means do everything
 		if (binders.isEmpty()) binderIdsToExport.put(start.getId(), true);
 		
-		addDefinitions(defList, start.getDefinitions());
+		// Export the definitions
+		exportDefinitionList(zipOut, start.getDefinitions(), defListAlreadyAdded);
+
 		
 		//Get a complete list of all sub-binders
 		List folderIds = new ArrayList();
@@ -294,7 +294,7 @@ public class ExportHelper {
 				continue;
 			}
 			//Make sure the definitions used by this binder are exported
-			addDefinitions(defList, binder.getDefinitions());
+			exportDefinitionList(zipOut, binder.getDefinitions(), defListAlreadyAdded);
 			statusTicket.setStatus(NLT.get("administration.export_import.exporting", new String[] {binder.getPathName()}));
 			String pathName = "";
 			if (EntityType.workspace.equals(binder.getEntityType())) {
@@ -309,11 +309,16 @@ public class ExportHelper {
 					}
 				}
 				// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
+				// Retrieve the raw workspace.
+				Workspace workspace = workspaceModule.getWorkspace(binderId);
+				addBinderDefinitions(zipOut, workspace, defListAlreadyAdded);
+
 				zipOut.putNextEntry(new ZipEntry(pathName + binderPrefix + "w"
 						+ nft.format(binderId) + "/" + "."
 						+ binderPrefix + "w" + nft.format(binderId) + ".xml"));
+			
 				XmlFileUtil.writeFile(getWorkspaceAsDoc(null, binderId, false,
-						binderPrefix + "w" + nft.format(binderId), defList),
+						binderPrefix + "w" + nft.format(binderId)),
 						zipOut);
 				zipOut.closeEntry();
 				Integer count = (Integer)reportMap.get(workspaces);
@@ -330,12 +335,15 @@ public class ExportHelper {
 						pathName = binderPrefix + "w" + nft.format(parentBinder.getId()) + "/" + pathName;
 					}
 				}
+				//Add any definitions used by this folder
+				addBinderDefinitions(zipOut, binder, defListAlreadyAdded);
+				
 				// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 				zipOut.putNextEntry(new ZipEntry(pathName + binderPrefix + "f"
 						+ nft.format(binderId) + "/" + "."
 						+ binderPrefix + "f" + nft.format(binderId) + ".xml"));
 				XmlFileUtil.writeFile(getFolderAsDoc(null, binderId, false,
-						binderPrefix + "f" + nft.format(binderId), defList),
+						binderPrefix + "f" + nft.format(binderId)),
 						zipOut);
 				zipOut.closeEntry();
 				Integer count = (Integer)reportMap.get(folders);
@@ -355,7 +363,7 @@ public class ExportHelper {
 							FolderEntry entry = folderModule.getEntry(binderId,
 									entryId);
 							processEntry(zipOut, entry, pathName + binderPrefix + "f"
-									+ nft.format(binderId), defList, reportMap);
+									+ nft.format(binderId), defListAlreadyAdded, reportMap);
 	
 							count = (Integer)reportMap.get(entries);
 							reportMap.put(entries, ++count);
@@ -394,27 +402,28 @@ public class ExportHelper {
 	}
 
 	private static void processEntry(ZipOutputStream zipOut, FolderEntry entry,
-			String pathName, Set defList, Map reportMap) throws Exception {
+			String pathName, Set defListAlreadyAdded, Map reportMap) throws Exception {
 		String fullId = null;
 
 		fullId = calcFullId(entry);
+
+		//Add any definitions used by this folder
+		addEntryDefinitions(zipOut, entry, defListAlreadyAdded);
 
 		if (!pathName.equals("")) {
 			// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 			zipOut.putNextEntry(new ZipEntry(pathName + "/" + "e"
 					+ fullId + ".xml"));
-			XmlFileUtil.writeFile(getEntryAsDoc(null, entry.getParentBinder()
+			XmlFileUtil.writeFile(getEntryAsDoc(zipOut, null, entry.getParentBinder()
 					.getId(), entry.getId(), false, pathName + "/"
-					+ "e" + fullId, defList), zipOut);
+					+ "e" + fullId, defListAlreadyAdded), zipOut);
 		} else {
 			zipOut.putNextEntry(new ZipEntry("e" + fullId + ".xml"));
-			XmlFileUtil.writeFile(getEntryAsDoc(null, entry.getParentBinder()
-					.getId(), entry.getId(), false, "e" + fullId, defList),
+			XmlFileUtil.writeFile(getEntryAsDoc(zipOut, null, entry.getParentBinder()
+					.getId(), entry.getId(), false, "e" + fullId, defListAlreadyAdded),
 					zipOut);
 		}
 		zipOut.closeEntry();
-
-		defList.add(entry.getEntryDef());
 
 		Set<FileAttachment> attachments = entry.getFileAttachments();
 		for (FileAttachment attach : attachments) {
@@ -423,32 +432,33 @@ public class ExportHelper {
 
 		List<FolderEntry> replies = entry.getReplies();
 		for (FolderEntry reply : replies) {
-			processEntryReply(zipOut, reply, fullId, pathName, defList, reportMap);
+			processEntryReply(zipOut, reply, fullId, pathName, defListAlreadyAdded, reportMap);
 		}
 
 		return;
 	}
 
 	private static void processEntryReply(ZipOutputStream zipOut, FolderEntry reply,
-			String fullId, String pathName, Set defList, Map reportMap) throws Exception {
+			String fullId, String pathName, Set defListAlreadyAdded, Map reportMap) throws Exception {
 		String newFullId = fullId + "_" + nft.format(reply.getId());
+
+		//Add any definitions used by this folder
+		addEntryDefinitions(zipOut, reply, defListAlreadyAdded);
 
 		if (!pathName.equals("")) {
 			// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 			zipOut.putNextEntry(new ZipEntry(pathName + "/" + "e"
 					+ newFullId + ".xml"));
-			XmlFileUtil.writeFile(getEntryAsDoc(null, reply.getParentBinder()
+			XmlFileUtil.writeFile(getEntryAsDoc(zipOut, null, reply.getParentBinder()
 					.getId(), reply.getId(), false, pathName + "/"
-					+ "e" + newFullId, defList), zipOut);
+					+ "e" + newFullId, defListAlreadyAdded), zipOut);
 		} else {
 			zipOut.putNextEntry(new ZipEntry("e" + newFullId + ".xml"));
-			XmlFileUtil.writeFile(getEntryAsDoc(null, reply.getParentBinder()
-					.getId(), reply.getId(), false, "e" + newFullId, defList),
+			XmlFileUtil.writeFile(getEntryAsDoc(zipOut, null, reply.getParentBinder()
+					.getId(), reply.getId(), false, "e" + newFullId, defListAlreadyAdded),
 					zipOut);
 		}
 		zipOut.closeEntry();
-
-		defList.add(reply.getEntryDef());
 
 		Set<FileAttachment> attachments = reply.getFileAttachments();
 		for (FileAttachment attach : attachments) {
@@ -457,7 +467,7 @@ public class ExportHelper {
 
 		List<FolderEntry> reps = reply.getReplies();
 		for (FolderEntry rep : reps) {
-			processEntryReply(zipOut, rep, newFullId, pathName, defList, reportMap);
+			processEntryReply(zipOut, rep, newFullId, pathName, defListAlreadyAdded, reportMap);
 		}
 
 		return;
@@ -557,9 +567,9 @@ public class ExportHelper {
 
 	}
 
-	private static Document getEntryAsDoc(String accessToken, long binderId,
+	private static Document getEntryAsDoc(ZipOutputStream zipOut, String accessToken, long binderId,
 			long entryId, boolean includeAttachments, String pathName,
-			Set defList) {
+			Set defListAlreadyAdded) {
 		Long bId = new Long(binderId);
 		Long eId = new Long(entryId);
 
@@ -578,13 +588,13 @@ public class ExportHelper {
 		adjustAttachmentUrls(doc, pathName);
 
 		// workflows
-		addWorkflows(doc.getRootElement(), entry, defList);
+		addWorkflows(doc.getRootElement(), entry);
 
 		return doc;
 	}
 
 	private static Document getFolderAsDoc(String accessToken, long folderId,
-			boolean includeAttachments, String pathName, Set defList) {
+			boolean includeAttachments, String pathName) {
 		Long fId = new Long(folderId);
 
 		// Retrieve the raw folder.
@@ -608,20 +618,19 @@ public class ExportHelper {
 		adjustAttachmentUrls(doc, pathName);
 
 		// binder settings
-		addSettingsList(doc.getRootElement(), folder, defList);
+		addSettingsList(doc.getRootElement(), folder);
 
 		// workflows
-		addWorkflows(doc.getRootElement(), folder, defList);
+		addWorkflows(doc.getRootElement(), folder);
 
 		return doc;
 	}
 
-	private static Document getWorkspaceAsDoc(String accessToken, long workspaceId,
-			boolean includeAttachments, String pathName, Set defList) {
-		Long wId = new Long(workspaceId);
-
+	private static Document getWorkspaceAsDoc(String accessToken, Long binderId,
+			boolean includeAttachments, String pathName) {
+		
 		// Retrieve the raw workspace.
-		Workspace workspace = workspaceModule.getWorkspace(wId);
+		Workspace workspace = workspaceModule.getWorkspace(binderId);
 
 		Element team = binder_getTeamMembersAsElement(null, workspace.getId());
 
@@ -641,11 +650,11 @@ public class ExportHelper {
 		adjustAttachmentUrls(doc, pathName);
 
 		// binder settings
-		addSettingsList(doc.getRootElement(), workspace, defList);
+		addSettingsList(doc.getRootElement(), workspace);
 
 		// workflows
-		addWorkflows(doc.getRootElement(), workspace, defList);
-
+		addWorkflows(doc.getRootElement(), workspace);
+		
 		return doc;
 	}
 
@@ -655,8 +664,8 @@ public class ExportHelper {
 		if (binder != null) entityElem.addAttribute("binderId", binder.getId().toString());
 
 		if (entity.getEntryDef() != null) {
-			entityElem.addAttribute("definitionId", entity.getEntryDef()
-					.getId());
+			entityElem.addAttribute("definitionId", entity.getEntryDef().getId());
+			entityElem.addAttribute("definitionName", entity.getEntryDef().getName());
 		}
 
 		entityElem.addAttribute("title", entity.getTitle());
@@ -828,8 +837,7 @@ public class ExportHelper {
 		}
 	}
 
-	private static void addWorkflows(Element element, DefinableEntity entity,
-			Set defList) {
+	private static void addWorkflows(Element element, DefinableEntity entity) {
 
 		Element workflowsEle = element.addElement("workflows");
 
@@ -838,13 +846,9 @@ public class ExportHelper {
 					.getWorkflowStates()) {
 				if (workflow != null) {
 					if (workflowsEle != null) {
-						defList.add(workflow.getDefinition());
-
 						Element value = workflowsEle.addElement("process");
-						value.addAttribute("definitionId", workflow
-								.getDefinition().getId());
-						value.addAttribute("name", workflow.getDefinition()
-								.getName());
+						value.addAttribute("definitionId", workflow.getDefinition().getId());
+						value.addAttribute("definitionName", workflow.getDefinition().getName());
 						value.addAttribute("state", workflow.getState());
 					}
 				}
@@ -861,18 +865,13 @@ public class ExportHelper {
 					Element value = allowed.addElement("process");
 					value.addAttribute("definitionId",
 							((Definition) workflowDefinitions.get(i)).getId());
-					value
-							.addAttribute("name",
-									((Definition) workflowDefinitions.get(i))
-											.getName());
+					value.addAttribute("definitionName", 
+							((Definition) workflowDefinitions.get(i)).getName());
 				}
 			}
 
 			Map workflowAssociations = ((Binder) entity)
 					.getWorkflowAssociations();
-
-			addDefinitions(defList,
-					new ArrayList(workflowAssociations.values()));
 
 			Element associated = workflowsEle.addElement("associated");
 
@@ -903,7 +902,7 @@ public class ExportHelper {
 		}
 	}
 
-	private static void addSettingsList(Element element, Binder binder, Set defList) {
+	private static void addSettingsList(Element element, Binder binder) {
 
 		Element settingsEle = element.addElement("settings");
 
@@ -918,7 +917,7 @@ public class ExportHelper {
 				Element value = views.addElement("view");
 				value.addAttribute("definitionId", viewDefinitions.get(i)
 						.getId());
-				value.addAttribute("name", viewDefinitions.get(i).getName());
+				value.addAttribute("definitionName", viewDefinitions.get(i).getName());
 			}
 		}
 
@@ -933,21 +932,60 @@ public class ExportHelper {
 				Element value = entries.addElement("entry");
 				value.addAttribute("definitionId", entryDefinitions.get(i)
 						.getId());
-				value.addAttribute("name", entryDefinitions.get(i).getName());
+				value.addAttribute("definitionName", entryDefinitions.get(i).getName());
 			}
 		}
 	}
 
-	private static void addDefinitions(Set defList, List defListToAdd) {
-		for (Definition def : (List<Definition>) defListToAdd) {
-			defList.add(def);
+	private static void addBinderDefinitions(ZipOutputStream zipOut, Binder binder, Set defListAlreadyAdded) {
+		List<Definition> defListToAdd = new ArrayList<Definition>();
+		defListToAdd.add(binder.getEntryDef());
+
+		//Get a list of all of the definitions in use by this binder
+		defListToAdd.addAll(binder.getViewDefinitions());
+		defListToAdd.addAll(binder.getEntryDefinitions());
+		defListToAdd.addAll(binder.getWorkflowDefinitions());
+
+		Map workflowAssociations = binder.getWorkflowAssociations();
+		Iterator keyIter = workflowAssociations.keySet().iterator();
+		while (keyIter.hasNext()) {
+			String key = (String) keyIter.next();
+			Definition entryDef = definitionModule.getDefinition(key);
+			if (entryDef != null) defListToAdd.add(entryDef);
+			Definition workflowDef = (Definition) workflowAssociations.get(key);
+			if (workflowDef != null) defListToAdd.add(workflowDef);
+		}
+
+		try {
+			exportDefinitionList(zipOut, defListToAdd, defListAlreadyAdded);
+		} catch(Exception e) {
+			logger.error(e);
 		}
 	}
+	
+	private static void addEntryDefinitions(ZipOutputStream zipOut, FolderEntry entry, Set defListAlreadyAdded) {
+		List<Definition> defListToAdd = new ArrayList<Definition>();
+		defListToAdd.add(entry.getEntryDef());
 
-	private static void exportDefinitionList(ZipOutputStream zipOut, Set defList)
+		for (WorkflowState workflow : entry.getWorkflowStates()) {
+			if (workflow != null) {
+				defListToAdd.add(workflow.getDefinition());
+			}
+		}
+		try {
+			exportDefinitionList(zipOut, defListToAdd, defListAlreadyAdded);
+		} catch(Exception e) {
+			logger.error(e);
+		}
+	}
+	
+	private static void exportDefinitionList(ZipOutputStream zipOut, List<Definition> defListToAdd, Set defListAlreadyAdded)
 			throws Exception {
-		for (Definition def : (Set<Definition>) defList) {
-			exportDefinition(zipOut, def);
+		for (Definition def : defListToAdd) {
+			if (def != null && !defListAlreadyAdded.contains(def)) {
+				exportDefinition(zipOut, def);
+				defListAlreadyAdded.add(def);
+			}
 		}
 	}
 
@@ -987,18 +1025,23 @@ public class ExportHelper {
 		// during import
 		HashMap binderIdMap = new HashMap();
 
+		// key-value pairs: old exported definition id - new definition id assigned
+		// during import
+		HashMap<String, Definition> definitionIdMap = new HashMap<String, Definition>();
+
 		String tempDir = deploy(zIn);
 
 		try {
 			File tempDirFile = new File(tempDir);
-			importDir(tempDirFile, tempDir, binderId, entryIdMap, binderIdMap, statusTicket, reportMap, nameCache);
+			importDir(tempDirFile, tempDir, binderId, entryIdMap, binderIdMap, definitionIdMap, 
+					statusTicket, reportMap, nameCache);
 		} finally {
 			FileUtil.deltree(tempDir);
 		}
 	}
 
 	private static void importDir(File currentDir, String tempDir, Long topBinderId,
-			Map entryIdMap, Map binderIdMap, StatusTicket statusTicket,
+			Map entryIdMap, Map binderIdMap, Map<String, Definition> definitionIdMap, StatusTicket statusTicket,
 			Map reportMap, Map<String, Principal> nameCache) throws IOException {
 
 		SortedMap sortMap = new TreeMap(String.CASE_INSENSITIVE_ORDER);
@@ -1015,7 +1058,8 @@ public class ExportHelper {
 			File child = (File) sortMap.get(keyIter.next());
 
 			if (child.isDirectory())
-				importDir(child, tempDir, topBinderId, entryIdMap, binderIdMap, statusTicket, reportMap, nameCache);
+				importDir(child, tempDir, topBinderId, entryIdMap, binderIdMap, definitionIdMap, 
+						statusTicket, reportMap, nameCache);
 			else {
 				String fileExt = EntityIndexUtils.getFileExtension(child
 						.getName().toLowerCase());
@@ -1046,15 +1090,39 @@ public class ExportHelper {
 
 					Document tempDoc = getDocument(xmlStr, nameCache);
 
-					String defId = getDatabaseId(tempDoc);
+					String defId = getDefinitionDatabaseId(tempDoc);
+					String internalId = getDefinitionInternalId(tempDoc);
+					String defName = getDefinitionName(tempDoc);
+					//See if this definition already exists
+					Definition def = null;
+					if (!definitionIdMap.containsKey(defId)) {
+						if (!internalId.equals("")) {
+							//This is a default definition, get its id
+							def = definitionModule.getDefinitionByReservedId(internalId);
+							if (def != null) {
+								definitionIdMap.put(defId, def);
+							} else {
+								try {
+									def = definitionModule.getDefinitionByName(null, false, defName);
+								} catch(NoDefinitionByTheIdException e) {}
+								if (def != null) definitionIdMap.put(defId, def);
+							}
+						} else {
+							try {
+								def = definitionModule.getDefinitionByName(null, false, defName);
+							} catch(NoDefinitionByTheIdException e) {}
+							if (def != null) definitionIdMap.put(defId, def);
+						}
+					}
 
-					if (defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)
-							|| defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)) {
+					if (ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF.equals(internalId)
+							|| ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF.equals(internalId)) {
 						// don't add definitions if they are for mirrored file
 						// entries
 						// or mirrored file folders
 					} else {
-						definitionModule.addDefinition(tempDoc, topBinder, false);
+						if (def == null) def = definitionModule.addDefinition(tempDoc, topBinder, false);
+						if (def != null) definitionIdMap.put(defId, def);
 					}
 
 				} else if (fileExt.equals("xml")) {
@@ -1087,12 +1155,16 @@ public class ExportHelper {
 						input.close();
 
 						Document tempDoc = getDocument(xmlStr, nameCache);
-						String defId = getDefinitionId(tempDoc);
+						String defId = getEntityDefinitionId(tempDoc);
+						String defName = getEntityDefinitionName(tempDoc);
+						Definition def = getTargetDefinition(defId, defName, definitionIdMap);
 
-						if (defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)) {
-							setDefinitionId(tempDoc,
-									ObjectKeys.DEFAULT_LIBRARY_ENTRY_DEF);
-							defId = getDefinitionId(tempDoc);
+						if (def != null && ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF.equals(def.getId())) {
+							Definition newDef = definitionModule.getDefinitionByReservedId(ObjectKeys.DEFAULT_LIBRARY_ENTRY_DEF);
+							if (newDef != null) {
+								setEntityDefinitionId(tempDoc, newDef.getId());
+								defId = newDef.getId();
+							}
 						}
 
 						String entType = getEntityType(tempDoc);
@@ -1115,16 +1187,16 @@ public class ExportHelper {
 						if (entType.equals("entry")) {
 							if (parentId == null) {
 								folder_addEntryWithXML(null, newBinderId,
-										defId, xmlStr, tempDir, entryIdMap,
-										binderIdMap, entryId, statusTicket, reportMap, nameCache);
+										def, xmlStr, tempDir, entryIdMap, binderIdMap, 
+										definitionIdMap, entryId, statusTicket, reportMap, nameCache);
 							
 								Integer count = (Integer)reportMap.get(entries);
 								reportMap.put(entries, ++count);
 							} else {
 								Long newParentId = (Long) entryIdMap.get(parentId);
 								folder_addReplyWithXML(null, newBinderId,
-										newParentId, defId, xmlStr, tempDir,
-										entryIdMap, binderIdMap, entryId, reportMap, nameCache);
+										newParentId, def, xmlStr, tempDir, entryIdMap, binderIdMap, 
+										definitionIdMap, entryId, reportMap, nameCache);
 							}
 						}
 					}
@@ -1148,7 +1220,11 @@ public class ExportHelper {
 						input.close();
 
 						Document tempDoc = getDocument(xmlStr, nameCache);
-						String defId = getDefinitionId(tempDoc);
+						String defId = getEntityDefinitionId(tempDoc);
+						String defName = getEntityDefinitionName(tempDoc);
+						Definition def = null;
+						if (definitionIdMap.containsKey(defId)) def = definitionIdMap.get(defId);
+
 						String entType = getEntityType(tempDoc);
 						Long parentId = null;
 						Long newParentId = null;
@@ -1163,8 +1239,8 @@ public class ExportHelper {
 
 						// check actual entity type of the data in the xml file
 						if (entType.equals("workspace")) {
-							binder_addBinderWithXML(null, newParentId, defId,
-									xmlStr, binderId, binderIdMap, tempDir, reportMap,
+							binder_addBinderWithXML(null, newParentId, def,
+									xmlStr, binderId, binderIdMap, definitionIdMap, tempDir, reportMap,
 									statusTicket, nameCache);
 							Integer count = (Integer)reportMap.get(workspaces);
 							reportMap.put(workspaces, ++count);
@@ -1190,13 +1266,17 @@ public class ExportHelper {
 						input.close();
 
 						Document tempDoc = getDocument(xmlStr, nameCache);
-						String defId = getDefinitionId(tempDoc);
+						String defId = getEntityDefinitionId(tempDoc);
+						String defName = getEntityDefinitionName(tempDoc);
+						Definition def = null;
+						if (definitionIdMap.containsKey(defId)) def = definitionIdMap.get(defId);
 
-						if (defId
-								.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)) {
-							setDefinitionId(tempDoc,
-									ObjectKeys.DEFAULT_LIBRARY_FOLDER_DEF);
-							defId = getDefinitionId(tempDoc);
+						if (ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF.equals(def.getId())) {
+							def = definitionModule.getDefinitionByReservedId(ObjectKeys.DEFAULT_LIBRARY_ENTRY_DEF);
+							if (def != null) {
+								setEntityDefinitionId(tempDoc, def.getId());
+								defId = def.getId();
+							}
 						}
 
 						String entType = getEntityType(tempDoc);
@@ -1211,8 +1291,8 @@ public class ExportHelper {
 
 						// check actual entity type of the data in the xml file
 						if (entType.equals("folder")) {
-							binder_addBinderWithXML(null, newParentId, defId,
-									xmlStr, binderId, binderIdMap, tempDir, reportMap, 
+							binder_addBinderWithXML(null, newParentId, def,
+									xmlStr, binderId, binderIdMap, definitionIdMap, tempDir, reportMap, 
 									statusTicket, nameCache);
 							Integer count = (Integer)reportMap.get(folders);
 							reportMap.put(folders, ++count);
@@ -1228,16 +1308,28 @@ public class ExportHelper {
 		return entity.getRootElement().getName();
 	}
 
-	private static String getDefinitionId(Document entity) {
+	private static String getEntityDefinitionId(Document entity) {
 		return entity.getRootElement().attributeValue("definitionId", "");
 	}
 
-	private static void setDefinitionId(Document entity, String defId) {
+	private static String getEntityDefinitionName(Document entity) {
+		return entity.getRootElement().attributeValue("definitionName", "");
+	}
+
+	private static void setEntityDefinitionId(Document entity, String defId) {
 		entity.getRootElement().attribute("definitionId").setValue(defId);
 	}
 
-	private static String getDatabaseId(Document entity) {
+	private static String getDefinitionDatabaseId(Document entity) {
 		return entity.getRootElement().attributeValue("databaseId", "");
+	}
+
+	private static String getDefinitionInternalId(Document entity) {
+		return entity.getRootElement().attributeValue("internalId", "");
+	}
+
+	private static String getDefinitionName(Document entity) {
+		return entity.getRootElement().attributeValue("name", "");
 	}
 
 	private static String getId(Document entity) {
@@ -1251,17 +1343,32 @@ public class ExportHelper {
 	private static String getParentId(Document entity) {
 		return entity.getRootElement().attributeValue("parentId", "");
 	}
+	
+	private static Definition getTargetDefinition(String defId, String defName, 
+			Map<String, Definition> definitionIdMap) {
+		Definition def = null;
+		if (definitionIdMap.containsKey(defId)) {
+			def = definitionIdMap.get(defId);
+		} else if (!defId.equals("") && !defName.equals("")) {
+			try {
+				def = definitionModule.getDefinitionByName(null, false, defName);
+				if (def != null) definitionIdMap.put(defId, def);
+			} catch(Exception e) {}
+		}
+		return def;
+	}
 
 	private static long binder_addBinderWithXML(String accessToken, long parentId,
-			String definitionId, String inputDataAsXML, long binderId,
-			Map binderIdMap, String tempDir, Map reportMap, 
+			Definition def, String inputDataAsXML, long binderId, Map binderIdMap, 
+			Map<String, Definition> definitionIdMap, String tempDir, Map reportMap, 
 			StatusTicket statusTicket, Map<String, Principal> nameCache) {
 
 		final Document doc = getDocument(inputDataAsXML, nameCache);
+		final Map<String, Definition> fDefIdMap = new HashMap<String, Definition>(definitionIdMap);
 
 		try {
 			Long newBinderId = binderModule.addBinder(new Long(parentId),
-					definitionId, new DomInputData(doc, iCalModule),
+					def.getId(), new DomInputData(doc, iCalModule),
 					new HashMap(), null).getId().longValue();
 			binderIdMap.put(binderId, newBinderId);
 
@@ -1279,10 +1386,10 @@ public class ExportHelper {
 				public Object doInTransaction(TransactionStatus status) {
 
 					// binder settings
-					importSettingsList(doc, binder);
+					importSettingsList(doc, binder, fDefIdMap);
 
 					// workflows
-					importWorkflows(doc, binder);
+					importWorkflows(doc, binder, fDefIdMap);
 					return null;
 				}
 			});
@@ -1294,17 +1401,19 @@ public class ExportHelper {
 	}
 
 	private static long folder_addEntryWithXML(String accessToken, long binderId,
-			String definitionId, String inputDataAsXML, String tempDir,
-			Map entryIdMap, Map binderIdMap, Long entryId, StatusTicket statusTicket,
+			Definition def, String inputDataAsXML, String tempDir,
+			Map entryIdMap, Map binderIdMap, Map<String, Definition> definitionIdMap, 
+			Long entryId, StatusTicket statusTicket,
 			Map reportMap, Map<String, Principal> nameCache) {
-		return addFolderEntry(accessToken, binderId, definitionId,
-				inputDataAsXML, tempDir, entryIdMap, binderIdMap, entryId, statusTicket, 
+		return addFolderEntry(accessToken, binderId, def,
+				inputDataAsXML, tempDir, entryIdMap, binderIdMap, definitionIdMap, entryId, statusTicket, 
 				reportMap, nameCache);
 	}
 
 	private static long addFolderEntry(String accessToken, long binderId,
-			String definitionId, String inputDataAsXML, String tempDir, Map entryIdMap, 
-			Map binderIdMap, Long entryId, StatusTicket statusTicket, Map reportMap,
+			Definition def, String inputDataAsXML, String tempDir, Map entryIdMap, 
+			Map binderIdMap, Map<String, Definition> definitionIdMap, 
+			Long entryId, StatusTicket statusTicket, Map reportMap,
 			Map<String, Principal> nameCache) {
 
 		final Document doc = getDocument(inputDataAsXML, nameCache);
@@ -1316,7 +1425,7 @@ public class ExportHelper {
 		try {
 			// create new entry
 			long newEntryId = folderModule.addEntry(new Long(binderId),
-					definitionId, new DomInputData(doc, iCalModule), null,
+					def.getId(), new DomInputData(doc, iCalModule), null,
 					options).getId().longValue();
 
 			// add file attachments
@@ -1329,7 +1438,7 @@ public class ExportHelper {
 			try {
 				final FolderEntry entry = folderModule.getEntry(null, newEntryId);
 				statusTicket.setStatus(NLT.get("administration.export_import.importingEntry", new String[] {entry.getTitle()}));
-				importWorkflows(doc, entry);
+				importWorkflows(doc, entry, definitionIdMap);
 			} catch(Exception e) {}
 
 			return newEntryId;
@@ -1341,17 +1450,17 @@ public class ExportHelper {
 	}
 
 	private static long folder_addReplyWithXML(String accessToken, long binderId,
-			long parentId, String definitionId, String inputDataAsXML,
-			String tempDir, Map entryIdMap, Map binderIdMap, Long entryId, Map reportMap, 
-			Map<String, Principal> nameCache) {
-		return addReply(accessToken, binderId, parentId, definitionId,
-				inputDataAsXML, tempDir, entryIdMap, binderIdMap, entryId, reportMap, nameCache);
+			long parentId, Definition def, String inputDataAsXML,
+			String tempDir, Map entryIdMap, Map binderIdMap, Map<String, Definition> definitionIdMap, 
+			Long entryId, Map reportMap, Map<String, Principal> nameCache) {
+		return addReply(accessToken, binderId, parentId, def, inputDataAsXML, 
+				tempDir, entryIdMap, binderIdMap, definitionIdMap, entryId, reportMap, nameCache);
 	}
 
 	private static long addReply(String accessToken, long binderId, long parentId,
-			String definitionId, String inputDataAsXML, String tempDir,
-			Map entryIdMap, Map binderIdMap, Long entryId, Map reportMap, 
-			Map<String, Principal> nameCache) {
+			Definition def, String inputDataAsXML, String tempDir,
+			Map entryIdMap, Map binderIdMap, Map<String, Definition> definitionIdMap, 
+			Long entryId, Map reportMap, Map<String, Principal> nameCache) {
 
 		Document doc = getDocument(inputDataAsXML, nameCache);
 
@@ -1362,7 +1471,7 @@ public class ExportHelper {
 		try {
 			// add new reply
 			long newEntryId = folderModule.addReply(new Long(binderId),
-					new Long(parentId), definitionId,
+					new Long(parentId), def.getId(),
 					new DomInputData(doc, iCalModule), null, options).getId()
 					.longValue();
 
@@ -1375,7 +1484,7 @@ public class ExportHelper {
 			// workflows
 			try {
 				final FolderEntry entry = folderModule.getEntry(null, newEntryId);
-				importWorkflows(doc, entry);
+				importWorkflows(doc, entry, definitionIdMap);
 			} catch(Exception e) {}
 
 			return newEntryId;
@@ -1818,7 +1927,8 @@ public class ExportHelper {
 		return entryElem;
 	}
 
-	private static void importWorkflows(Document entityDoc, DefinableEntity entity) {
+	private static void importWorkflows(Document entityDoc, DefinableEntity entity, 
+			Map<String, Definition> definitionIdMap) {
 
 		if (entity instanceof FolderEntry) {
 			boolean needsToBeIndexed = false;
@@ -1841,16 +1951,15 @@ public class ExportHelper {
 
 			for (Element process : workflows) {
 				String defId = process.attributeValue("definitionId", "");
+				String defName = process.attributeValue("definitionName", "");
 				String state = process.attributeValue("state", "");
-				Definition def = definitionModule.getDefinition(defId);
+				Definition def = getTargetDefinition(defId, defName, definitionIdMap);
 
 				EntityIdentifier entityIdentifier = new EntityIdentifier(entity
 						.getId(), EntityIdentifier.EntityType.folderEntry);
 
 				Map options = new HashMap();
-				options
-						.put(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE,
-								state);
+				options.put(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE, state);
 
 				try {
 					workflowModule.addEntryWorkflow((FolderEntry) entity,
@@ -1884,7 +1993,11 @@ public class ExportHelper {
 
 			for (Element process : workflows) {
 				String defId = process.attributeValue("definitionId", "");
-				if (!defId.equals("")) newDefinitionList.add(defId);
+				String defName = process.attributeValue("definitionName", "");
+				if (!defId.equals("")) {
+					Definition def = getTargetDefinition(defId, defName, definitionIdMap);
+					if (def != null) newDefinitionList.add(def.getId());
+				}
 			}
 
 			// associated workflows
@@ -1896,8 +2009,15 @@ public class ExportHelper {
 
 			for (Element process : workflows) {
 				String entryDefId = process.attributeValue("entryDefinitionId", "");
+				String entryDefName = process.attributeValue("entryDefinitionName", "");
 				String workflowDefId = process.attributeValue("workflowDefinitionId", "");
-				if (!entryDefId.equals("")) workflowAssociations.put(entryDefId, workflowDefId);
+				String workflowDefName = process.attributeValue("workflowDefinitionName", "");
+				if (!entryDefId.equals("")) {
+					Definition entryDef = getTargetDefinition(entryDefId, entryDefName, definitionIdMap);
+					Definition workflowDef = getTargetDefinition(workflowDefId, workflowDefName, definitionIdMap);
+					if (entryDef != null && workflowDef != null) 
+						workflowAssociations.put(entryDef.getId(), workflowDef.getId());
+				}
 			}
 
 			binderModule.setDefinitions(entity.getId(), newDefinitionList,
@@ -1905,7 +2025,7 @@ public class ExportHelper {
 		}
 	}
 
-	private static void importSettingsList(Document entityDoc, Binder binder) {
+	private static void importSettingsList(Document entityDoc, Binder binder, Map<String, Definition>definitionIdMap) {
 
 		// current binder definitions
 
@@ -1918,12 +2038,13 @@ public class ExportHelper {
 
 		for (Element view : views) {
 			String defId = view.attributeValue("definitionId", "");
-
-			// don't want to include mirrored file folder as an imported view
-			// setting
-
-			if (!defId.equals("") && !defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)) {
-				newDefinitionList.add(definitionModule.getDefinition(defId));
+			String defName = view.attributeValue("definitionName", "");
+			Definition def = getTargetDefinition(defId, defName, definitionIdMap);
+			if (def != null) {
+				// don't want to include mirrored file folder as an imported view setting
+				if (!def.getId().equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)) {
+					newDefinitionList.add(def);
+				}
 			}
 		}
 
@@ -1934,12 +2055,13 @@ public class ExportHelper {
 
 		for (Element entry : entries) {
 			String defId = entry.attributeValue("definitionId", "");
-
-			// don't want to include mirrored file entry as an imported allowed
-			// entry setting
-
-			if (!defId.equals("") && !defId.equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)) {
-				newDefinitionList.add(definitionModule.getDefinition(defId));
+			String defName = entry.attributeValue("definitionName", "");
+			Definition def = getTargetDefinition(defId, defName, definitionIdMap);
+			if (def != null) {
+				// don't want to include mirrored file entry as an imported allowed entry setting
+				if (!def.getId().equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)) {
+					newDefinitionList.add(def);
+				}
 			}
 		}
 

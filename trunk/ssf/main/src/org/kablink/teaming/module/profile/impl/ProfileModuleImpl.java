@@ -568,9 +568,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 				RequestContextHolder.getRequestContext().getZoneId());
 
 		User user = (User)getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());
-		// always OK for the admin
-		if (userId == 1)
-			return ObjectKeys.DISKQUOTA_MAX * MEGABYTES;
 
 		long userQuota = zoneConf.getDiskQuotaUserDefault();
 
@@ -653,9 +650,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 				RequestContextHolder.getRequestContext().getZoneId());
 		if (zoneConf.isDiskQuotaEnabled()) {
 			User user = RequestContextHolder.getRequestContext().getUser();
-			// always OK for the admin
-			if (user.getId() == 1)
-				return ObjectKeys.DISKQUOTA_OK;
 
 			long userQuota = zoneConf.getDiskQuotaUserDefault();
 
