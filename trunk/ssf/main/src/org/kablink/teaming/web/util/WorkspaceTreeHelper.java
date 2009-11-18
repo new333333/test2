@@ -312,7 +312,10 @@ public class WorkspaceTreeHelper {
 			} else {
 				Document searchFilter = BinderHelper.getSearchFilter(bs, binder, userFolderProperties);
 				Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
-				String viewType = DefinitionUtils.getViewType(configDocument);
+				String viewType = null;
+				if (!showTrash) {
+					viewType = DefinitionUtils.getViewType(configDocument);
+				}
 				if (viewType == null) viewType = "";
 				if (viewType.equals(Definition.VIEW_STYLE_DISCUSSION_WORKSPACE)) {
 					getShowDiscussionWorkspace(bs, formData, request, response, (Workspace)binder, searchFilter, model);					
