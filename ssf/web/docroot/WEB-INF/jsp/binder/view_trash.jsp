@@ -83,7 +83,7 @@
 		trashEntry.m_docId = Number(${entry3._docId});
 		trashEntry.m_docType = "${entry3._docType}";
 		trashEntry.m_entityType = "${entry3._entityType}";
-		trashEntry.m_title = "${entry3.title}";
+		trashEntry.m_title = "<ssf:escapeJavaScript>${entry3.title}</ssf:escapeJavaScript>";
 		<c:if test="${entry3._docType == 'entry'}">
 			trashEntry.m_locationBinderId = Number(${entry3._binderId});
 		</c:if>
