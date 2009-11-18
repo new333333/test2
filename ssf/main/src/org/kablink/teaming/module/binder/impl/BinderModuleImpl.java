@@ -721,31 +721,54 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		restoreBinder(binderId, renameData, deleteMirroredSource, options, true);
 	}
 	public void restoreBinder(Long binderId, Object renameData, boolean deleteMirroredSource, Map options, boolean reindex) throws WriteEntryDataException, WriteFilesException {
+		// Can we access the Binder as a non-mirrored binder?
 		Binder binder = loadBinder(binderId);
 		if ((null != binder) && (!(binder.isMirrored()))) {
+			// Yes!  Is it preDeleted?
 			EntityType et = binder.getEntityType();
-			boolean isFolder    = (EntityType.folder    == et);
-			boolean isWorkspace = (EntityType.workspace == et);
-			if (isFolder || isWorkspace) {
+			boolean isPreDeleted = false;
+			boolean isFolder = (EntityType.folder == et);
+			Folder folder = null;
+			Workspace ws = null;
+			if (isFolder) {
+	        	folder = ((Folder) binder);
+				isPreDeleted = folder.isPreDeleted();
+			}
+			else {
+				boolean isWorkspace = (EntityType.workspace == et);
+				if (isWorkspace) {
+		        	ws = ((Workspace) binder);
+					isPreDeleted = ws.isPreDeleted();
+				}
+			}
+			if (isPreDeleted) {
+				// Yes!  Validate we can restore it...
 		        checkAccess(binder, BinderOperation.restoreBinder);
+		        
+		        // ...restore it...
 		        if (isFolder) {
-		        	Folder folder = ((Folder) binder);
 		        	folder.setPreDeleted(null);
 		        	folder.setPreDeletedWhen(null);
 		        	folder.setPreDeletedBy(null);
 		        }
 		        
 		        else {
-		        	Workspace ws = ((Workspace) binder);
 		        	ws.setPreDeleted(null);
 		        	ws.setPreDeletedWhen(null);
 		        	ws.setPreDeletedBy(null);
 		        }
 
+		        // ...log the restoration...
 				BinderProcessor processor = loadBinderProcessor(binder);
 				TrashHelper.changeBinder_Log(processor, binder, ChangeLog.RESTOREBINDER);
+				
+				// ...register the names so any naming conflicts get
+				// ...handled...
 		        TrashHelper.registerBinderNames(getCoreDao(), binder, renameData);
+		        
+		        // ...and finally, if requested to do so...
 		        if (reindex) {
+			        // ...re-index the Binder.
 		        	processor.indexBinder(binder, true);
 		        }
 			}

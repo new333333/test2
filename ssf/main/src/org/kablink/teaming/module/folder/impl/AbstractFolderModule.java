@@ -683,24 +683,38 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     @SuppressWarnings("unchecked")
 	public void restoreEntry(Long folderId, Long entryId, Object renameData, boolean deleteMirroredSource, Map options, boolean reindex) throws WriteEntryDataException, WriteFilesException {
     	deCount.incrementAndGet();
+    	
+    	// Is the entry preDeleted and located in a non-mirrored
+    	// Folder?
         FolderEntry entry = loadEntry(folderId, entryId);
         Folder folder = loadFolder(folderId);
-        if ((null != entry) && (null != folder) && (!(folder.isMirrored()))) {
+        if ((null != entry)  &&    entry.isPreDeleted() &&
+        	(null != folder) && (!(folder.isMirrored()))) {
+			// Yes!  Validate we can restore it...
         	checkAccess(entry, FolderOperation.restoreEntry);
         	
+	        // ...restore it...
         	entry.setPreDeleted(null);
         	entry.setPreDeletedWhen(null);
         	entry.setPreDeletedBy(null);
         	
+	        // ...log the restoration...
 			FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
 			TrashHelper.changeEntry_Log(processor, entry, ChangeLog.RESTOREENTRY);
+			
+			// ...register the names so any naming conflicts get
+			// ...handled...
         	TrashHelper.registerEntryNames(getCoreDao(), folder, entry, renameData);
-        	
+
+        	// ...restart any workflows...
     		WorkflowModule workflowModule = (WorkflowModule)SpringContextUtil.getBean("workflowModule");
         	if (entry instanceof WorkflowControlledEntry) {
         		workflowModule.modifyWorkflowStateOnRestore(entry);
         	}
+        	
+	        // ...and finally, if requested to do so...
         	if (reindex) {
+		        // ...re-index the entry.
         		processor.indexEntry(entry);
         	}
         }
