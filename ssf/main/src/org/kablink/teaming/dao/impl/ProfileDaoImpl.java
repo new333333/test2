@@ -1536,12 +1536,12 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 					public Object doInHibernate(Session session) throws HibernateException {
 						String sql ="Update SS_Principals " +
 									"SET diskSpaceUsed = " + 
-									"COALESCE((SELECT SUM(fileLength) FROM SS_Attachments AS b " +
+									"COALESCE( (SELECT SUM(fileLength) FROM SS_Attachments b " +
 									"WHERE b.creation_principal = SS_Principals.id " + 
 									" AND SS_Principals.type = 'user' " +
 									" AND SS_Principals.zoneId = " + zoneId +
 									" AND b.zoneId = " + zoneId +
-									" AND b.repositoryName != \'" + ObjectKeys.FI_ADAPTER + "\'),0)";
+									" AND b.repositoryName != \'" + ObjectKeys.FI_ADAPTER + "\'), 0)";
 						session.createSQLQuery(sql).executeUpdate();
 						return null;
 					}
