@@ -77,7 +77,7 @@
 		>
         <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
-          <td valign="top" width="5%" nowrap>
+          <td width="5%" nowrap>
           <span><ssf:nlt tag="mobile.whatsNew"/></span>
           </td>
           <td valign="top" width="5%" nowrap>
@@ -101,7 +101,7 @@
 		    <input type="hidden" name="whatsNewBtn" value="whats_new"/>
 		  </span>
 		  </td>
-		  <td valign="top" align="right" width="90%">
+		  <td align="right" width="90%">
 	  		<table cellspacing="0" cellpadding="0">
 				<tr>
 		  		<td>
