@@ -1912,6 +1912,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
 				MarkupUtil.scanDescriptionForAttachmentFileUrls(description);
 				MarkupUtil.scanDescriptionForICLinks(description);
+				MarkupUtil.scanDescriptionForYouTubeLinks(description);
+				MarkupUtil.scanDescriptionForExportTitleUrls(description);
 				if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, description.getText());
 			}
 		} else if (itemName.equals("folderAttributeList")) {
