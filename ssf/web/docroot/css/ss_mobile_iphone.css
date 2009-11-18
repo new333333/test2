@@ -573,7 +573,14 @@ table.ss_mobile_calendar th {
 	}
 table.ss_mobile_calendar td {
 	padding: 6px;
-	background-color: red;
+
+/*
+		font-size: .8em;
+		background:url(../../../1Web/testing/common/images/bg/putty_blend4.png) repeat-x bottom;
+		border-bottom: 1px solid #e2e5e1;
+		white-space: normal;
+*/
+
 	}
 .ss_mobile_calendar_time {
 	text-align: right;
