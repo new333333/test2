@@ -79,7 +79,7 @@ function ss_logoff_from_sso(s) {
 
 <div id="actions">
   <a class="hierarchy-a actionimg" href="javascript: ;" onClick="ss_showMenu('hierarchy-dialog');return false;">
-    <img align="absmiddle" src="<html:imagesPath/>mobile/nl_browse_hierarchy_16.gif"/>
+    <img src="<html:imagesPath/>mobile/nl_browse_hierarchy_20.png" border="0" align="absmiddle"/>
   </a>
   
   <a class="micro-blog-a" href="javascript: ;" 

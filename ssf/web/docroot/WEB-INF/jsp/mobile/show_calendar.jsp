@@ -99,7 +99,7 @@ Date nextDate = calendarNextDate.getTime();
  int iTotalweeks=cal.get(Calendar.WEEK_OF_MONTH);
 %>
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
-  <tr>
+  <tr class="ss_mobile_calendar_monthyear">
   <td align="center" valign="middle" width="10%">
 	<a class="ss_calDateDownButton" 
 	  href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -113,7 +113,7 @@ Date nextDate = calendarNextDate.getTime();
 			<ssf:param name="ssGridSize" value="1" />
 		  </ssf:url>" >
 		<img <ssf:alt tag="alt.viewCalPrev"/> title="<ssf:nlt tag="alt.viewCalPrev"/>"
-		border="0" src="<html:imagesPath/>pics/sym_s_arrow_left.gif" />
+		border="0" src="<html:imagesPath/>pics/nl_left_noborder_20.png" />
 	</a>
   </td>
   
@@ -147,19 +147,16 @@ Date nextDate = calendarNextDate.getTime();
 			<ssf:param name="ssGridSize" value="1" />
 		  </ssf:url>">
 		<img <ssf:alt tag="alt.viewCalNext"/> title="<ssf:nlt tag="alt.viewCalNext"/>"
-		border="0" src="<html:imagesPath/>pics/sym_s_arrow_right.gif" />
+		border="0" src="<html:imagesPath/>pics/nl_right_noborder_20.png" />
 	</a>
   </td>
   </tr>
 
 </table>
 
-<table width="100%" >
-  <tr>
-    <td>
-     <table class="ss_mobile_calendar_month" border="1" cellspacing="0" cellpadding="0">
+<table class="ss_mobile_calendar_month" border="0" cellspacing="0" cellpadding="0" width="100%">
       <tbody>
-        <tr>
+        <tr class="ss_mobile_calendar_weekdayLabel">
           <th><ssf:nlt tag="calendar.day.abbrevs.su"/></th>
           <th><ssf:nlt tag="calendar.day.abbrevs.mo"/></th>
           <th><ssf:nlt tag="calendar.day.abbrevs.tu"/></th>
@@ -178,13 +175,13 @@ Date nextDate = calendarNextDate.getTime();
 	        {
 		        if (cnt < weekStartDay || (cnt - weekStartDay + 1) > days) {
 		         %>
-                <td align="center" height="35">&nbsp;</td>
+                <td align="center">&nbsp;</td>
                <% 
 		        }
 		        else
 		        {
 		         %>
-                <td align="center" height="35" id="day_<%= (cnt - weekStartDay + 1) %>"
+                <td align="center" id="day_<%= (cnt - weekStartDay + 1) %>"
                   class="
                     <c:if test="${ssGridType == 'day'}">
                       <% if (intCurrDay == (cnt - weekStartDay + 1)) { %> ss_mobile_calendar_current_day <% } %>
@@ -217,13 +214,8 @@ Date nextDate = calendarNextDate.getTime();
 	    %>
       </tbody>
      </table>
-    </td>
-  </tr>
-</table>
 
 <table align="center">
-  
-  
   <tr>
   <td colspan="3" align="center">
 	<a 
