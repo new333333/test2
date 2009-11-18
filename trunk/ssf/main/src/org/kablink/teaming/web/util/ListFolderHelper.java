@@ -826,10 +826,12 @@ public class ListFolderHelper {
 							SortedSet<FolderEntry> pinnedFolderEntriesSet = bs.getFolderModule().getEntries(peSet);
 							List pinnedFolderEntriesList = new ArrayList();
 							for (FolderEntry entry : pinnedFolderEntriesSet) {
-								org.apache.lucene.document.Document indexDoc = 
-									bs.getFolderModule().buildIndexDocumentFromEntry(entry.getParentBinder(), entry, null);
-								pinnedFolderEntriesList.add(indexDoc);
-								pinnedEntriesMap.put(entry.getId().toString(), entry);
+								if (!(entry.isPreDeleted())) {
+									org.apache.lucene.document.Document indexDoc = 
+										bs.getFolderModule().buildIndexDocumentFromEntry(entry.getParentBinder(), entry, null);
+									pinnedFolderEntriesList.add(indexDoc);
+									pinnedEntriesMap.put(entry.getId().toString(), entry);
+								}
 							}
 							pinnedFolderEntries = SearchUtils.getSearchEntries(pinnedFolderEntriesList);
 							bs.getFolderModule().getEntryPrincipals(pinnedFolderEntries);
