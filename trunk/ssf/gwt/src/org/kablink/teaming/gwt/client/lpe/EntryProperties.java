@@ -156,11 +156,9 @@ public class EntryProperties
 		if ( m_zoneUUID != null && m_zoneUUID.length() > 0 )
 			str += "zoneUUID=" + m_zoneUUID + ",";
 		
-		str += "showTitle=";
 		if ( m_showTitle )
-			str += "1";
-		else
-			str += "0";
+			str += "showTitle=1";
+
 		str += ";";
 		
 		return str;
