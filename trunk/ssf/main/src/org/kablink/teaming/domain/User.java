@@ -125,9 +125,9 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	public String getTitle() {
 		// title is set by hibernate access=field
 		//title is only kept in the db for sql queries
-		String val = super.getTitle();
+    	String val = setupTitle();
     	if (Validator.isNotNull(val)) return val;
-    	val = setupTitle();
+		val = super.getTitle();
     	if (Validator.isNotNull(val)) return val;
     	return getName();		
 	}
