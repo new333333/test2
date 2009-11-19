@@ -101,33 +101,33 @@ function handleRepeatEveryOnFocus()
    <br/>
    <table class="ss_style" border="0" cellpadding="0" style="border-spacing: 2px;">
 	  <tr><td >&nbsp;&nbsp;&nbsp;&nbsp;</td>
-	<td ><label>
-	<input type="checkbox"  name="${schedPrefix}onday_sun" id="${schedPrefix}onday_sun"  <c:if test="${schedule.onSunday}">checked</c:if>/><br/>
-	<ssf:nlt tag="calendar.day.abbrevs.su"/>
+	<td align="center"><label>
+	<input type="checkbox"  name="${schedPrefix}onday_sun" id="${schedPrefix}onday_sun"  <c:if test="${schedule.onSunday}">checked</c:if>/>
+	<div><ssf:nlt tag="calendar.day.abbrevs.su"/></div>
 	</label></td>
-	<td ><label>
-	<input type="checkbox"  name="${schedPrefix}onday_mon" id="${schedPrefix}onday_mon" <c:if test="${schedule.onMonday}">checked</c:if>/><br/>
-	<ssf:nlt tag="calendar.day.abbrevs.mo"/>
+	<td align="center"><label>
+	<input type="checkbox"  name="${schedPrefix}onday_mon" id="${schedPrefix}onday_mon" <c:if test="${schedule.onMonday}">checked</c:if>/>
+	<div><ssf:nlt tag="calendar.day.abbrevs.mo"/></div>
 	</label></td>
-	<td ><label>
-	<input type="checkbox"  name="${schedPrefix}onday_tue" id="${schedPrefix}onday_tue" <c:if test="${schedule.onTuesday}">checked</c:if>/><br/>
-	<ssf:nlt tag="calendar.day.abbrevs.tu"/>
+	<td align="center"><label>
+	<input type="checkbox"  name="${schedPrefix}onday_tue" id="${schedPrefix}onday_tue" <c:if test="${schedule.onTuesday}">checked</c:if>/>
+	<div><ssf:nlt tag="calendar.day.abbrevs.tu"/></div>
 	</label></td>
-	<td ><label>
-	<input type="checkbox"  name="${schedPrefix}onday_wed" id="${schedPrefix}onday_wed" <c:if test="${schedule.onWednesday}">checked</c:if>/><br/>
-	<ssf:nlt tag="calendar.day.abbrevs.we"/>
+	<td align="center"><label>
+	<input type="checkbox"  name="${schedPrefix}onday_wed" id="${schedPrefix}onday_wed" <c:if test="${schedule.onWednesday}">checked</c:if>/>
+	<div><ssf:nlt tag="calendar.day.abbrevs.we"/></div>
 	</label></td>
-	<td ><label>
-	<input type="checkbox"  name="${schedPrefix}onday_thu" id="${schedPrefix}onday_thu" <c:if test="${schedule.onThursday}">checked</c:if>/><br/>
-	<ssf:nlt tag="calendar.day.abbrevs.th"/>
+	<td align="center"><label>
+	<input type="checkbox"  name="${schedPrefix}onday_thu" id="${schedPrefix}onday_thu" <c:if test="${schedule.onThursday}">checked</c:if>/>
+	<div><ssf:nlt tag="calendar.day.abbrevs.th"/></div>
 	</label></td>
-	<td ><label>
-	<input type="checkbox"  name="${schedPrefix}onday_fri" id="${schedPrefix}onday_fri" <c:if test="${schedule.onFriday}">checked</c:if>/><br/>
-	<ssf:nlt tag="calendar.day.abbrevs.fr"/>
+	<td align="center"><label>
+	<input type="checkbox"  name="${schedPrefix}onday_fri" id="${schedPrefix}onday_fri" <c:if test="${schedule.onFriday}">checked</c:if>/>
+	<div><ssf:nlt tag="calendar.day.abbrevs.fr"/></div>
 	</label></td>
-	<td ><label>
-	<input type="checkbox"  name="${schedPrefix}onday_sat" id="${schedPrefix}onday_sat" <c:if test="${schedule.onSaturday}">checked</c:if>/><br/>
-	<ssf:nlt tag="calendar.day.abbrevs.sa"/>
+	<td align="center"><label>
+	<input type="checkbox"  name="${schedPrefix}onday_sat" id="${schedPrefix}onday_sat" <c:if test="${schedule.onSaturday}">checked</c:if>/>
+	<div><ssf:nlt tag="calendar.day.abbrevs.sa"/></div>
 	</label></td>
 	</tr>
 	</table>
