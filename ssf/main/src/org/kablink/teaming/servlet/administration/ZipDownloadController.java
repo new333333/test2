@@ -69,8 +69,10 @@ public abstract class ZipDownloadController extends  SAbstractController {
 					"Content-Disposition",
 					"attachment; filename=\"" + filename + "\"");
 		ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream());
-		//Standard zip encoding is cp437. (needed when chars are outside the ASCII range)
-		zipOut.setEncoding("cp437");
+		
+		// As the fix for bug 505921, changed the parameter passed to setEncoding() from "cp437" to "UTF-8"
+		String encoding = "UTF-8";
+		zipOut.setEncoding( encoding );
 		Map formData = request.getParameterMap();
 		Iterator itFormData = formData.entrySet().iterator();
 		while (itFormData.hasNext()) {
