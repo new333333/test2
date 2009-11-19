@@ -98,6 +98,22 @@ Date nextDate = calendarNextDate.getTime();
  cal = new GregorianCalendar (intCurrYear, calendarCurrDate.get(Calendar.MONTH), days); 
  int iTotalweeks=cal.get(Calendar.WEEK_OF_MONTH);
 %>
+
+<div style="text-align: center; padding: 5px;">
+	<a href="<ssf:url adapter="true" portletName="ss_forum" 
+          folderId="${ssBinder.id}" action="__ajax_mobile" 
+          operation="mobile_show_folder" actionUrl="false">
+			<ssf:param name="day" value="<%= strTodayDay %>" />
+			<ssf:param name="dayOfMonth" value="<%= strTodayDay %>" />
+			<ssf:param name="month" value="<%= strTodayMonth %>" />
+			<ssf:param name="year" value="<%= strTodayYear %>" />
+			<ssf:param name="ssGridType" value="day" />
+			<ssf:param name="ssGridSize" value="1" />
+		  </ssf:url>">
+		<span class="ss_mobile_small"><ssf:nlt tag="mobile.calendar.showToday"/></span>
+	</a>
+</div>
+
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr class="ss_mobile_calendar_monthyear">
   <td align="center" valign="middle" width="10%">
@@ -129,7 +145,7 @@ Date nextDate = calendarNextDate.getTime();
 			<ssf:param name="ssGridSize" value="1" />
 		  </ssf:url>" >
       <span class="ss_mobile_calendar_header">
-		<%= strMonthName %>, <fmt:formatDate value="${ssCurrDateFormat}" pattern="yyyy" />
+		<%= strMonthName %>&nbsp;<fmt:formatDate value="${ssCurrDateFormat}" pattern="yyyy" />
 	  </span>
 	</a>
   </td>
@@ -173,40 +189,82 @@ Date nextDate = calendarNextDate.getTime();
           <% 
 	        for(int j=1; j <= 7; j++)
 	        {
-		        if (cnt < weekStartDay || (cnt - weekStartDay + 1) > days) {
-		         %>
-                <td align="center">&nbsp;</td>
-               <% 
-		        }
-		        else
-		        {
-		         %>
-                <td align="center" id="day_<%= (cnt - weekStartDay + 1) %>"
-                  class="
-                    <c:if test="${ssGridType == 'day'}">
-                      <% if (intCurrDay == (cnt - weekStartDay + 1)) { %> ss_mobile_calendar_current_day <% } %>
-                    </c:if>
-                    <c:if test="${currMonthDate == todayMonthDate}">
-                      <% if (intTodayDay == cnt - weekStartDay + 1) { %> ss_mobile_calendar_today <% } %>
-                    </c:if>
-                  "
-                >
-                  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-          			folderId="${ssBinder.id}" action="__ajax_mobile" 
-          			operation="mobile_show_folder" actionUrl="false">
-						<ssf:param name="day" value="<%= strCurrDay %>" />
-						<ssf:param name="dayOfMonth" value="<%= String.valueOf((cnt - weekStartDay + 1)) %>" />
-						<ssf:param name="month" value="<%= strCurrMonth %>" />
-						<ssf:param name="year" value="<%= strCurrYear %>" />
-						<ssf:param name="ssGridType" value="day" />
-						<ssf:param name="ssGridSize" value="1" />
-		  			</ssf:url>"
-                  ><span><%= (cnt - weekStartDay + 1) %></span></a>
-                </td>
-               <% 
-		        }
-		        cnt++;
-		      }
+
+				if (j==1 || j==7)
+				{
+					if (cnt < weekStartDay || (cnt - weekStartDay + 1) > days)
+					{
+						%>
+						<td align="center" class="ss_mobile_calendar_weekend">&nbsp;</td>
+						<% 
+					}
+					else
+					{
+						%>
+						<td align="center" id="day_<%= (cnt - weekStartDay + 1) %>"
+							class="ss_mobile_calendar_weekend 
+								<c:if test="${ssGridType == 'day'}">
+									<% if (intCurrDay == (cnt - weekStartDay + 1)) { %> ss_mobile_calendar_current_day <% } %>
+								</c:if>
+								<c:if test="${currMonthDate == todayMonthDate}">
+									<% if (intTodayDay == cnt - weekStartDay + 1) { %> ss_mobile_calendar_today <% } %>
+								</c:if>
+							"
+						>
+						  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+							folderId="${ssBinder.id}" action="__ajax_mobile" 
+							operation="mobile_show_folder" actionUrl="false">
+								<ssf:param name="day" value="<%= strCurrDay %>" />
+								<ssf:param name="dayOfMonth" value="<%= String.valueOf((cnt - weekStartDay + 1)) %>" />
+								<ssf:param name="month" value="<%= strCurrMonth %>" />
+								<ssf:param name="year" value="<%= strCurrYear %>" />
+								<ssf:param name="ssGridType" value="day" />
+								<ssf:param name="ssGridSize" value="1" />
+							</ssf:url>"
+						  ><span><%= (cnt - weekStartDay + 1) %></span></a>
+						</td>
+						<% 
+					}
+				}
+				else
+				{
+					if (cnt < weekStartDay || (cnt - weekStartDay + 1) > days)
+					{
+						%>
+						<td align="center" class="ss_mobile_calendar_day">&nbsp;</td>
+						<% 
+					}
+					else
+					{
+						%>
+						<td align="center" id="day_<%= (cnt - weekStartDay + 1) %>"
+							class="ss_mobile_calendar_day 
+								<c:if test="${ssGridType == 'day'}">
+									<% if (intCurrDay == (cnt - weekStartDay + 1)) { %> ss_mobile_calendar_current_day <% } %>
+								</c:if>
+								<c:if test="${currMonthDate == todayMonthDate}">
+									<% if (intTodayDay == cnt - weekStartDay + 1) { %> ss_mobile_calendar_today <% } %>
+								</c:if>
+							"
+						>
+						  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+							folderId="${ssBinder.id}" action="__ajax_mobile" 
+							operation="mobile_show_folder" actionUrl="false">
+								<ssf:param name="day" value="<%= strCurrDay %>" />
+								<ssf:param name="dayOfMonth" value="<%= String.valueOf((cnt - weekStartDay + 1)) %>" />
+								<ssf:param name="month" value="<%= strCurrMonth %>" />
+								<ssf:param name="year" value="<%= strCurrYear %>" />
+								<ssf:param name="ssGridType" value="day" />
+								<ssf:param name="ssGridSize" value="1" />
+							</ssf:url>"
+						  ><span><%= (cnt - weekStartDay + 1) %></span></a>
+						</td>
+						<% 
+					}
+				}
+
+			cnt++;
+			}
 	        %>
         </tr>
         <% 
@@ -214,26 +272,6 @@ Date nextDate = calendarNextDate.getTime();
 	    %>
       </tbody>
      </table>
-
-<table align="center">
-  <tr>
-  <td colspan="3" align="center">
-	<a 
-	  href="<ssf:url adapter="true" portletName="ss_forum" 
-          folderId="${ssBinder.id}" action="__ajax_mobile" 
-          operation="mobile_show_folder" actionUrl="false">
-			<ssf:param name="day" value="<%= strTodayDay %>" />
-			<ssf:param name="dayOfMonth" value="<%= strTodayDay %>" />
-			<ssf:param name="month" value="<%= strTodayMonth %>" />
-			<ssf:param name="year" value="<%= strTodayYear %>" />
-			<ssf:param name="ssGridType" value="day" />
-			<ssf:param name="ssGridSize" value="1" />
-		  </ssf:url>">
-		<span class="ss_mobile_small"><ssf:nlt tag="mobile.calendar.showToday"/></span>
-	</a>
-  </td>
-  </tr>
-</table>
 
 	<c:set var="lastCalDayDate" value=""/>
 	<table class="ss_mobile_calendar" cellspacing="0" cellpadding="0">
@@ -258,15 +296,20 @@ Date nextDate = calendarNextDate.getTime();
     <c:set var="entriesSeen" value="${entriesSeen + 1}"/>
 	<c:set var="calDayDate"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
       		value="<%= startDate %>" type="date" dateStyle="short" /></c:set>
+
     <c:if test="${calDayDate != lastCalDayDate}">
-    <tr><td colspan="2" style="padding:5px 0px;"><img src="<html:imagesPath/>pics/1pix.gif"</td></tr>
     <tr>
-      <th><fmt:formatDate value="<%= startDate %>" pattern="EEE" /></th>
-      <th><fmt:formatDate value="<%= startDate %>" pattern="d MMM" /></th>
+		<td colspan="2">
+		<div class="ss_mobile_calendar_entries_header">
+			<span><fmt:formatDate value="<%= startDate %>" pattern="EEE" /></span>
+			<span><fmt:formatDate value="<%= startDate %>" pattern="d MMM" /></span>
+		</div>
+		</td>
     </tr>
-    </c:if>
+	</c:if>
+	
     <c:set var="lastCalDayDate" value="${calDayDate}"/>
-	 <tr>
+	 <tr class="ss_mobile_calendar_entry_row">
 	   <td class="ss_mobile_calendar_time">
 		  <fmt:formatDate 
 		    timeZone="${ssUser.timeZone.ID}"
@@ -293,14 +336,13 @@ Date nextDate = calendarNextDate.getTime();
 	</table>
 
 	<c:if test="${entriesSeen == 0}">
-      <hr class="ss_mobile_calendar_no_entries">
       <div class="ss_mobile_calendar_no_entries_header">
         <c:if test="${ssGridType != 'month'}">
           <span><fmt:formatDate value="<%= currDate %>" pattern="EEE" /></span>
           <span><fmt:formatDate value="<%= currDate %>" pattern="d MMM" /></span>
         </c:if>
         <c:if test="${ssGridType == 'month'}">
-          <span><%= strMonthName %>, <fmt:formatDate value="${ssCurrDateFormat}" pattern="yyyy" /></span>
+          <span><%= strMonthName %>&nbsp;<fmt:formatDate value="${ssCurrDateFormat}" pattern="yyyy" /></span>
         </c:if>
       </div>
 	  <div class="ss_mobile_calendar_no_entries_content">

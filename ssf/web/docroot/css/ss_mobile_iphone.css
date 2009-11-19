@@ -201,7 +201,7 @@ span.pad-left20 {
 	}
 
 .userid {
-	background-color: #fef7e4; 
+	background-color: #fef7c7; 
 	border-bottom: 1px solid #e2e5e1;
 	}
 .username {
@@ -532,7 +532,6 @@ h6 {
 	}
 	
 	
-	
 /* Calendar */
 
 .ss_mobile_calendar_weekdayLabel th {
@@ -544,8 +543,7 @@ h6 {
 	text-transform: uppercase;
 	padding: 3px;
 	border-bottom: 1px solid #bdbdb6;
-}
-	
+	}
 .ss_mobile_calendar_header {
 	font-size: 1.3em;
 	font-weight: bold;
@@ -562,25 +560,16 @@ table.ss_mobile_calendar {
 	width:100%;
 	border-collapse: collapse;
 	empty-cells: show;
-/*	border-top: 1px solid #afc8e3;
-	border-left: 1px solid #afc8e3;
-	border-right: 1px solid #afc8e3; */
 	}
-table.ss_mobile_calendar th {
-	background-color: #58a6e3;
-	padding: 6px;
-	text-align: left;
+tr.ss_mobile_calendar_entry_row td {
+	font-size: .85em;
+	padding: 8px;
+	background:url(images/mobile/putty_blend4.png) repeat-x center;
+	border-bottom: 1px solid #eceeec;
 	}
-table.ss_mobile_calendar td {
-	padding: 6px;
-
-/*
-		font-size: .8em;
-		background:url(../../../1Web/testing/common/images/bg/putty_blend4.png) repeat-x bottom;
-		border-bottom: 1px solid #e2e5e1;
-		white-space: normal;
-*/
-
+td.ss_mobile_calendar_weekend {
+	background-color: #efeeec;
+	border-bottom: 1px solid #e0e2e0;
 	}
 .ss_mobile_calendar_time {
 	text-align: right;
@@ -590,15 +579,22 @@ table.ss_mobile_calendar td {
 table.ss_mobile_calendar_month {
 	width:100%;
 	text-align: center;
+	border-bottom: 1px solid #1C5894;
 	}
-table.ss_mobile_calendar_month td {
-	font-size: 1em;
-	padding: 5px;
+td.ss_mobile_calendar_day,
+tr.ss_mobile_calendar_entry_row td {
 	border-bottom: 1px solid #eceeec;
 	}
 td.ss_mobile_calendar_today {
 	border: 1px solid #1C5894;
+	border-bottom: 1px solid #1C5894;
+	}
+table.ss_mobile_calendar_month td {
+	font-size: 1.1em;
 	padding: 5px;
+	}
+table.ss_mobile_calendar_month td a {
+	padding: 4px 10px;
 	}
 td.ss_mobile_calendar_today span {
 	color: #1C5894;
@@ -606,25 +602,23 @@ td.ss_mobile_calendar_today span {
 td.ss_mobile_calendar_current_day {
 	font-weight: bold;
 	text-transform: uppercase;
-	background-color: #fef7c7;
+	background-color: #feed7b; /* #fef7c7; */
 	}
-hr.ss_mobile_calendar_no_entries {
-	border-top: 1px solid #1C5894;
-	border-bottom: 0px solid #fff;
-	height: 1px;
-	width:100%;
-	margin-top: 0px;
-	margin-bottom: 10px;
-}
+
+div.ss_mobile_calendar_entries_header,
 div.ss_mobile_calendar_no_entries_header {
-	background-color: #e5e5e5;
-	width:100%;
-	padding: 6px 10px 6px 20px;
+	background-color: #fef7c7;
+	padding: 3px 0;
+	text-align: center;
 }
+div.ss_mobile_calendar_entries_header span,
 div.ss_mobile_calendar_no_entries_header span {
-	font-size: 1.0em;
+	font-size: .9em;
 	font-weight: bold;
-	padding-right: 50px;
+	padding-right: 10px;
+}
+td div.ss_mobile_calendar_entries_header span {
+	font-size: 1.02em;
 }
 div.ss_mobile_calendar_no_entries_content {
 	padding: 6px 20px;
@@ -711,3 +705,7 @@ ul.ss_nobullet li {
 ul.ss_square li {
   list-style-type: square;
 } 
+
+.my-item a {
+	padding: 5px 100px 5px 0px;
+	}
