@@ -297,7 +297,7 @@ public class ExportHelper {
 			exportDefinitionList(zipOut, binder.getDefinitions(), defListAlreadyAdded);
 			statusTicket.setStatus(NLT.get("administration.export_import.exporting", new String[] {binder.getPathName()}));
 			String pathName = "";
-			if (EntityType.workspace.equals(binder.getEntityType())) {
+			if (EntityType.workspace.equals(binder.getEntityType()) || EntityType.profiles.equals(binder.getEntityType())) {
 				Binder parentBinder = binder;
 				while (!parentBinder.equals(start)) {
 					parentBinder = parentBinder.getParentBinder();
