@@ -164,6 +164,7 @@
 	      </tr>
 	    </c:forEach>
 	  </table>
+	  <div><span class="ss_fineprint"><ssf:nlt tag="quota.select.itemToBeModified"/></span></div>
 	</fieldset>
 	<br/>
 	</c:if>
@@ -204,6 +205,7 @@
 	      </tr>
 	    </c:forEach>
 	  </table>
+	  <div><span class="ss_fineprint"><ssf:nlt tag="quota.select.itemToBeModified"/></span></div>
 	</fieldset>
 	<br/>
 	</c:if>
