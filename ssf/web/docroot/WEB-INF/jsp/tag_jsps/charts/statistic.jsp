@@ -69,7 +69,14 @@
 	<div class="${barStyle}">
 		<ul class="ss_statisticLegend">
 		<c:forEach var="singleValue" items="${percentStatistic}" varStatus="status">
-			<li><div class="statistic${status.index mod 8} ss_statisticLegend">&nbsp;</div><ssf:nlt tag="${singleValue.value.label}" />: ${singleValue.value.percent}% (${singleValue.value.value} <c:choose><c:when test="${singleValue.value.value == 1}"><ssf:nlt tag="statistic.unity" /></c:when><c:otherwise><ssf:nlt tag="statistic.unity.plural" /></c:otherwise></c:choose>)<div class="ss_clear_float"></div></li>
+			<li><div class="statistic${status.index mod 8} ss_statisticLegend">&nbsp;</div>
+			  <ssf:nlt tag="general.a.colon.b"><ssf:param name="value" 
+			    useBody="true"><ssf:nlt tag="${singleValue.value.label}" /></ssf:param><ssf:param
+			    name="value" useBody="true">${singleValue.value.percent}% (${singleValue.value.value} 
+			    <c:choose><c:when test="${singleValue.value.value == 1}"><ssf:nlt tag="statistic.unity" /></c:when>
+			    <c:otherwise><ssf:nlt tag="statistic.unity.plural" /></c:otherwise>
+			    </c:choose>)</ssf:param></ssf:nlt>
+			  <div class="ss_clear_float"></div></li>
 		</c:forEach>
 		</ul>
 	</div>
