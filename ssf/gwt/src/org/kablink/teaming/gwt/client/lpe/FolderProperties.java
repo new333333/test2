@@ -38,7 +38,6 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -164,26 +163,14 @@ public class FolderProperties
 		if ( m_zoneUUID != null && m_zoneUUID.length() > 0 )
 			str += "zoneUUID=" + m_zoneUUID + ",";
 		
-		str += "showTitle=";
 		if ( m_showTitle )
-			str += "1";
-		else
-			str += "0";
-		str += ",";
+			str += "showTitle=1,";
 		
-		str += "showFolderDescription=";
 		if ( m_showDesc )
-			str += "1";
-		else
-			str += "0";
-		str += ",";
+			str += "showFolderDescription=1,";
 
-		str += "showEntriesOpened=";
 		if ( m_showEntriesOpened )
-			str += "1";
-		else
-			str += "0";
-		str += ",";
+			str += "showEntriesOpened=1,";
 
 		str += "entriesToShow=" + String.valueOf( m_numEntriesToBeShown ) + ";";
 
