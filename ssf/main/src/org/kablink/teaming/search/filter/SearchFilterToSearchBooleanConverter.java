@@ -808,6 +808,8 @@ public class SearchFilterToSearchBooleanConverter {
 	    				   
     				if ("date".equals(valueType) || "date_time".equals(valueType)) {
     					value = formatDateTime(value);
+    					//If there is no date, search for everything in this centry (i.e., the year starts with 2)
+    					if (value.trim().equals("")) value = "2*";
     				}
     				
 	    			if (value.contains("*")) {
