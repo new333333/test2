@@ -70,6 +70,30 @@ public class CustomJspConfig extends ConfigItem
 					{
 						if ( results2[0].equalsIgnoreCase( "customJsp" ) )
 							m_properties.setJspName( URL.decodeComponent( results2[1] ) );
+						else if ( results2[0].equalsIgnoreCase( "folderId" ) )
+							m_properties.setFolderId( results2[1] );
+						else if ( results2[0].equalsIgnoreCase( "entryId" ) )
+							m_properties.setEntryId( results2[1] );
+						else if ( results2[0].equalsIgnoreCase( "showTitle" ) )
+							m_properties.setShowTitle( results2[1].equalsIgnoreCase( "1" ) );
+						else if ( results2[0].equalsIgnoreCase( "zoneUUID" ) )
+							m_properties.setZoneUUID( results2[1] );
+						else if ( results2[0].equalsIgnoreCase( "entriesToShow" ) )
+						{
+							int numToShow;
+
+							numToShow = 0;
+							try
+							{
+								numToShow = Integer.parseInt( URL.decodeComponent( results2[1] ) );
+							}
+							catch (Exception ex)
+							{
+								// Nothing to do.  This is here to handle the case when the data is
+								// not properly url encoded or an invalid number string was entered.
+							}
+							m_properties.setNumEntriesToBeShownValue( numToShow );
+						}
 					}
 					catch (Exception ex)
 					{

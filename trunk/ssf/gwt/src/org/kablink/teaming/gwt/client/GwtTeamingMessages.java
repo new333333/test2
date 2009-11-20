@@ -49,6 +49,8 @@ public interface GwtTeamingMessages extends Messages
 	String searchRPCFailed( String cause );
 
 	// Strings used with the Custom Jsp widget in the landing page editor.
+	String customJspAssocEntry();
+	String customJspAssocFolder();
 	String customJspLabel();
 	String customJspName();
 	String customJspProperties();
