@@ -2279,29 +2279,44 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				String mashupStyle = "";
 				String value = "";
 				
-				if (inputData.exists(nameValue + MASHUP_SHOW_BRANDING))
-					showBranding = true;
+				if (inputData.exists(nameValue + MASHUP_SHOW_BRANDING)) {
+					String val = inputData.getSingleValue( nameValue + MASHUP_SHOW_BRANDING );
+					if (!val.toLowerCase().equals("false")) showBranding = true;
+				}
 				
-				if (inputData.exists(nameValue + MASHUP_SHOW_FAVORITES_AND_TEAMS))
-					showFavoritesAndTeams = true;
+				if (inputData.exists(nameValue + MASHUP_SHOW_FAVORITES_AND_TEAMS)) {
+					String val = inputData.getSingleValue( nameValue + MASHUP_SHOW_FAVORITES_AND_TEAMS );
+					if (!val.toLowerCase().equals("false")) showFavoritesAndTeams = true;
+				}
 				
-				if (inputData.exists(nameValue + MASHUP_SHOW_NAVIGATION))
-					showNavigation = true;
+				if (inputData.exists(nameValue + MASHUP_SHOW_NAVIGATION)) {
+					String val = inputData.getSingleValue( nameValue + MASHUP_SHOW_NAVIGATION );
+					if (!val.toLowerCase().equals("false")) showNavigation = true;
+				}
 				
-				if (inputData.exists(nameValue + MASHUP_HIDE_MASTHEAD))
-					hideMasthead = true;
+				if (inputData.exists(nameValue + MASHUP_HIDE_MASTHEAD)) {
+					String val = inputData.getSingleValue( nameValue + MASHUP_HIDE_MASTHEAD );
+					if (!val.toLowerCase().equals("false")) hideMasthead = true;
+				}
 				
-				if (inputData.exists(nameValue + MASHUP_HIDE_SIDEBAR))
-					hideSidebar = true;
+				if (inputData.exists(nameValue + MASHUP_HIDE_SIDEBAR)) {
+					String val = inputData.getSingleValue( nameValue + MASHUP_HIDE_SIDEBAR );
+					if (!val.toLowerCase().equals("false")) hideSidebar = true;
+				}
 				
-				if (inputData.exists(nameValue + MASHUP_HIDE_TOOLBAR))
-					hideToolbar = true;
+				if (inputData.exists(nameValue + MASHUP_HIDE_TOOLBAR)) {
+					String val = inputData.getSingleValue( nameValue + MASHUP_HIDE_TOOLBAR );
+					if (!val.toLowerCase().equals("false")) hideToolbar = true;
+				}
 				
-				if (inputData.exists(nameValue + MASHUP_HIDE_FOOTER))
-					hideFooter = true;
+				if (inputData.exists(nameValue + MASHUP_HIDE_FOOTER)) {
+					String val = inputData.getSingleValue( nameValue + MASHUP_HIDE_FOOTER );
+					if (!val.toLowerCase().equals("false")) hideFooter = true;
+				}
 				
-				if (inputData.exists(nameValue + MASHUP_STYLE))
+				if (inputData.exists(nameValue + MASHUP_STYLE)) {
 					mashupStyle = inputData.getSingleValue(nameValue + MASHUP_STYLE);
+				}
 				
 				// Get the landing page mashup configuration string.
 				if ( inputData.exists( nameValue ) )

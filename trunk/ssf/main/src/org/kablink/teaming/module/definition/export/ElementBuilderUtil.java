@@ -48,9 +48,9 @@ public class ElementBuilderUtil {
     			String fieldBuilderClassName, ElementBuilder.BuilderContext context) {
     	ElementBuilder fieldBuilder = (ElementBuilder)ReflectHelper.getInstance(fieldBuilderClassName);
     	Element element = (parent != null)? DocumentHelper.createElement("attribute") : null;
-    	if (fieldBuilder.buildElement(element, entity, dataElemType, dataElemName, context)) {
-    		if(parent != null)
-    			parent.add(element);
+    	if (parent != null) parent.add(element);
+    	if (!fieldBuilder.buildElement(element, entity, dataElemType, dataElemName, context)) {
+    		if (parent != null) parent.remove(element);
     	}
     }
     

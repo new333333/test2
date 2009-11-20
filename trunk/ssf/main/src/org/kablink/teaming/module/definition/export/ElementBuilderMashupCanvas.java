@@ -32,8 +32,14 @@
  */
 package org.kablink.teaming.module.definition.export;
 
+import java.util.Iterator;
+import java.util.Map;
+
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.CustomAttribute;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
@@ -55,4 +61,24 @@ public class ElementBuilderMashupCanvas extends AbstractElementBuilder {
 		return true;
 	}
 
+    protected boolean build(Element element, Object obj, DefinableEntity entity, String dataElemType, String dataElemName) {
+		//First, save all of the mashup flags (dataElemName.*)
+    	Element parent = element.getParent();
+		if (parent != null) {
+			Map attrs = entity.getCustomAttributes();
+			Iterator itAttrs = attrs.keySet().iterator();
+			while (itAttrs.hasNext()) {
+				String key = (String) itAttrs.next();
+				if (key.startsWith(dataElemName + "__")) {
+					CustomAttribute attr = (CustomAttribute) attrs.get(key);
+					Element newEle = DocumentHelper.createElement("attribute");
+					newEle.addAttribute("name", key);
+					newEle.addAttribute("type", "text");
+					newEle.setText(attr.getValue().toString());
+					parent.add(newEle);
+				}
+			}
+		}
+    	return build(element, obj, dataElemType, dataElemName);
+    }
 }
