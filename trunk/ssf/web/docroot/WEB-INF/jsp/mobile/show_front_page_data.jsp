@@ -46,21 +46,21 @@
 <div class="folders">
   <div class="folder-content">
     <div class="my-item myws-a">
-	  <img src="<html:imagesPath/>mobile/iphone_teaming_workspace1.png"/>
+	  <img src="<html:rootPath/>images/mobile/iphone_teaming_workspace1.png"/>
       <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				    action="__ajax_mobile"
 				    operation="mobile_show_workspace"
 				    binderId="${ssUser.workspaceId}" />"><ssf:nlt tag="navigation.myWorkspace"/></a>
     </div>
     <div class="my-item myfavorites-a">
-      <img src="<html:imagesPath/>mobile/iphone_teaming_favorite1.png"/>
+      <img src="<html:rootPath/>images/mobile/iphone_teaming_favorite1.png"/>
       <a id="myfavorites-a" href="<ssf:url adapter="true" portletName="ss_forum" 
 							action="__ajax_mobile" actionUrl="false" 
 							binderId="${ssBinder.id}"
 							operation="mobile_show_favorites" />"><ssf:nlt tag="navigation.myFavorites"/></a>
     </div>
 	<div class="my-item myteams-a">
-	  <img src="<html:imagesPath/>mobile/iphone_teaming_teams1.png"/>
+	  <img src="<html:rootPath/>images/mobile/iphone_teaming_teams1.png"/>
 	  <a id="myteams-a" href="<ssf:url adapter="true" portletName="ss_forum" 
 							action="__ajax_mobile" actionUrl="false" 
 							binderId="${ssBinder.id}"
