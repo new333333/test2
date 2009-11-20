@@ -40,7 +40,7 @@
   <c:if test="${!empty ssFolderEntryDescendants}">
 
 <div class="folder-head">
-  <img class="margin5r" align="absmiddle" src="<html:imagesPath/>mobile/comments_16.png"/>
+  <img class="margin5r" align="absmiddle" src="<html:rootPath/>images/mobile/comments_16.png"/>
   <c:if test="${!empty property_caption}">
     <span class="entry-caption">${property_caption}</span>
   </c:if>
@@ -62,7 +62,7 @@
     <c:set var="commentImg" value="comments_16.png"/>
   </c:if>
   <div class="${commentClass}">
-    <img class="comment-img" src="<html:imagesPath/>mobile/${commentImg}"/>
+    <img class="comment-img" src="<html:rootPath/>images/mobile/${commentImg}"/>
 
 	<c:set var="ss_showSignatureAfterTitle" value="false" scope="request"/>
 	<c:set var="ss_signatureShown" value="false" scope="request"/>

@@ -38,7 +38,7 @@
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
 <div>
-  <img height="225" width="320" src="<html:imagesPath/>mobile/login_MobileTeaming.png"/>
+  <img height="225" width="320" src="<html:rootPath/>images/mobile/login_MobileTeaming.png"/>
 </div>
 
 <div>
@@ -78,7 +78,7 @@
 </div>
   
 <div class="footerbar">
-<img id="logo" src="<html:imagesPath/>mobile/N_logo_22.png"/>
+<img id="logo" src="<html:rootPath/>images/mobile/N_logo_22.png"/>
 <div class="copyright"><ssf:nlt tag="mobile.copyright"/></div>
 </div>  
   
