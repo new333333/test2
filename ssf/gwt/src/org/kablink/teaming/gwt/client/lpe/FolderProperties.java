@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -91,6 +92,7 @@ public class FolderProperties
 				if ( cause == null )
 					cause = t.toString();
 				errMsg = GwtTeaming.getMessages().getFolderRPCFailed( cause );
+				Window.alert( errMsg );
 				m_rpcInProgress = false;
 			}// end onFailure()
 	
