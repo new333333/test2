@@ -1753,26 +1753,24 @@ public class ExportHelper {
 				if (!sDate.equals("") && value != null) {
 					String name = value.attributeValue("name", "");
 					String emailAdr = value.attributeValue("emailAddress", "");
-					if (!emailAdr.equals("")) {
-						List names = new ArrayList();
-						names.add(emailAdr);
-						Principal p = matchPrincipal(name, emailAdr, zoneUUID, nameCache);
-				    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-				    	Calendar date = Calendar.getInstance();
-				    	try {
-							if (p != null && p instanceof UserPrincipal) {
-								date.setTime(sdf.parse(sDate));
-								//Set the creator of this entity to the original author and
-								// make the current user be the modifier of the entity
-								options.put(ObjectKeys.INPUT_OPTION_CREATION_NAME, p.getName());
-								options.put(ObjectKeys.INPUT_OPTION_CREATION_DATE, date);
-						    	Calendar now = Calendar.getInstance();
-						    	now.setTime(new Date());
-								options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, user.getName());
-								options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, now);
-							}
-						} catch(java.text.ParseException e) {}
-					}
+					List names = new ArrayList();
+					names.add(emailAdr);
+					Principal p = matchPrincipal(name, emailAdr, zoneUUID, nameCache);
+			    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+			    	Calendar date = Calendar.getInstance();
+			    	try {
+						if (p != null && p instanceof UserPrincipal) {
+							date.setTime(sdf.parse(sDate));
+							//Set the creator of this entity to the original author and
+							// make the current user be the modifier of the entity
+							options.put(ObjectKeys.INPUT_OPTION_CREATION_NAME, p.getName());
+							options.put(ObjectKeys.INPUT_OPTION_CREATION_DATE, date);
+					    	Calendar now = Calendar.getInstance();
+					    	now.setTime(new Date());
+							options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, user.getName());
+							options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, now);
+						}
+					} catch(java.text.ParseException e) {}
 				}
 			}
 		}
