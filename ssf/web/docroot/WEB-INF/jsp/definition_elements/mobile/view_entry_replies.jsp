@@ -42,23 +42,23 @@
 <div class="folder-head">
   <img class="margin5r" align="absmiddle" src="<html:rootPath/>images/mobile/comments_16.png"/>
   <c:if test="${!empty property_caption}">
-    <span class="entry-caption">${property_caption}</span>
+    <span>${property_caption}</span>
   </c:if>
   <c:if test="${empty property_caption}">
     <ssf:nlt tag="mobile.comments"/>
   </c:if>
-  (<span class="font-red">${ssDefinitionEntry.totalReplyCount}</span>)
+  (<span>${ssDefinitionEntry.totalReplyCount}</span>)
 </div>
 
 
 <c:forEach var="reply" items="${ssFolderEntryDescendants}">
   <jsp:useBean id="reply" type="org.kablink.teaming.domain.Entry" />
   <c:if test="${ssEntry == reply.parentEntry}">
-    <c:set var="commentClass" value="comment"/>
+    <c:set var="commentClass" value="comment entry"/>
     <c:set var="commentImg" value="comments_22.png"/>
   </c:if>
   <c:if test="${ssEntry != reply.parentEntry}">
-    <c:set var="commentClass" value="comment2"/>
+    <c:set var="commentClass" value="comment2 entry"/>
     <c:set var="commentImg" value="comments_16.png"/>
   </c:if>
   <div class="${commentClass}">
