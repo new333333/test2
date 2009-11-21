@@ -53,8 +53,8 @@
 				FolderEntry nextEntry = (FolderEntry) parentEntryTree.pop();
 				%>
 				<c:set var="nextEntry" value="<%= nextEntry %>"/>
-				<div style="padding-bottom:6px;">
-				  <span style="ss_mobile_small ss_mobile_light">
+				<div style="padding-left: 15px">
+				  <span class="ss_mobile_small ss_mobile_light">
 					<a
 			  			href="<ssf:url adapter="true" portletName="ss_forum" 
 								folderId="${ssDefinitionEntry.parentBinder.id}" 
@@ -88,7 +88,7 @@
 	  }
   %>
   <c:if test="${!empty ssDefinitionEntry.docNumber}">
-	<span class="ss_bold">${ssDefinitionEntry.docNumber}.</span>
+	<span class="doc-number">${ssDefinitionEntry.docNumber}.</span>
   </c:if>
   <a href="<ssf:url adapter="true" portletName="ss_forum" 
 					folderId="${ssBinder.id}" 
@@ -96,10 +96,9 @@
 					action="__ajax_mobile" 
 					operation="mobile_show_entry" 
 					actionUrl="false" />"
-  ><span class="ss_bold"><c:if test="${empty ssDefinitionEntry.title}" >
+  ><span><c:if test="${empty ssDefinitionEntry.title}" >
   (<ssf:nlt tag="entry.noTitle" />)</c:if>
   <c:out value="${ssDefinitionEntry.title}" escapeXml="true" /></span></a>
-  <br/>
 
 </div>
 <c:if test="${ss_showSignatureAfterTitle && !ss_signatureShown}">

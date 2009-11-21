@@ -44,28 +44,29 @@
 
 <%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
 
-  <div class="folders">
-    <div class="folder-content">
+	<div class="folders">
+		<div class="folder-content">
 
-	  <div class="folder-head" align="right" style="padding-right:8px;">
-	    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-						folderId="${ssBinder.id}" 
-						entryId="${ssEntry.id}"
-						action="__ajax_mobile" 
-						operation="mobile_show_prev_entry" 
-						actionUrl="false" />">
-	      <span class="ss_mobile_small"><ssf:nlt tag="nav.prevEntry"/></span>
-	    </a>&nbsp;&nbsp;&nbsp;<a href="<ssf:url adapter="true" portletName="ss_forum" 
-						folderId="${ssBinder.id}" 
-						entryId="${ssEntry.id}"
-						action="__ajax_mobile" 
-						operation="mobile_show_next_entry" 
-						actionUrl="false" />">
-	      <span class="ss_mobile_small"><ssf:nlt tag="nav.nextEntry"/></span>
-	    </a>
-	  </div>
-	
-	<c:if test="${!empty ssEntry}">
+			<div class="entry-actions">
+				<a href="<ssf:url adapter="true" portletName="ss_forum" 
+								folderId="${ssBinder.id}" 
+								entryId="${ssEntry.id}"
+								action="__ajax_mobile" 
+								operation="mobile_show_prev_entry" 
+								actionUrl="false" />">
+					<img <ssf:alt tag="nav.prevEntry"/> title="<ssf:nlt tag="nav.prevEntry"/>" border="0" src="<html:imagesPath/>mobile/nl_left_20.png" />
+				</a>
+				<a href="<ssf:url adapter="true" portletName="ss_forum" 
+								folderId="${ssBinder.id}" 
+								entryId="${ssEntry.id}"
+								action="__ajax_mobile" 
+								operation="mobile_show_next_entry" 
+								actionUrl="false" />">
+					<img <ssf:alt tag="nav.nextEntry"/> title="<ssf:nlt tag="nav.nextEntry"/>" border="0" src="<html:imagesPath/>mobile/nl_right_20.png" />
+				</a>
+			</div>
+
+		<c:if test="${!empty ssEntry}">
 			<div align="center">
 			  <table>
 			  <tr>
@@ -119,14 +120,15 @@
 			</div>
 			
 		<div class="entry">
-		  <div class="entry-comment-label">${ssEntry.totalReplyCount}</div>
+			<div class="entry-comment-label">${ssEntry.totalReplyCount}</div>
 
-	  		<div style="padding: 4px 6px;">
-			  <c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
-			  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-				configElement="${ssConfigElement}" 
-				configJspStyle="mobile" 
-				entry="${ssEntry}" />
+			<div>
+				<c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
+			  	<ssf:displayConfiguration
+					configDefinition="${ssConfigDefinition}" 
+					configElement="${ssConfigElement}" 
+					configJspStyle="mobile" 
+					entry="${ssEntry}" />
 			</div>
 		</div>
 	</c:if> 

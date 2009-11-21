@@ -74,7 +74,7 @@
 	  </div>
 
 
-	  <div style="padding:10px 20px 14px 0px;" align="right">
+	  <div class="entry-actions">
 		<c:if test="${ss_pageNumber > '0'}">
 			<a href="<ssf:url 
 			  action="__ajax_mobile" 
@@ -83,15 +83,14 @@
 			  name="type" value="${ss_type}"/><ssf:param
 			  name="pageNumber" value="${ss_pageNumber - 1}"/><ssf:param
 			  name="namespace" value="${ss_namespace}"/></ssf:url>" 
-			><img border="0" src="<html:rootPath/>images/mobile/nl_left_16.gif" 
+			><img border="0" src="<html:rootPath/>images/mobile/nl_left_20.png" 
 			    title="<ssf:nlt tag="general.previousPage"/>"
 			    <ssf:alt tag=""/> /></a>
 		</c:if>
 		<c:if test="${empty ss_pageNumber || ss_pageNumber <= '0'}">
-		  <img src="<html:rootPath/>images/mobile/nl_left_dis_16.gif"
+		  <img src="<html:rootPath/>images/mobile/nl_left_dis_20.png"
 		  	<ssf:alt tag=""/> />
 		</c:if>
-		&nbsp;&nbsp;&nbsp;&nbsp;
 		<c:if test="${!empty ss_whatsNewBinder}">
 		  <a href="<ssf:url 
 			action="__ajax_mobile" 
@@ -100,12 +99,12 @@
 			name="type" value="${ss_type}"/><ssf:param
 			name="pageNumber" value="${ss_pageNumber + 1}"/><ssf:param
 			name="namespace" value="${ss_namespace}"/></ssf:url>" 
-		  ><img border="0" src="<html:rootPath/>images/mobile/nl_right_16.gif" 
+		  ><img border="0" src="<html:rootPath/>images/mobile/nl_right_20.png" 
 			  title="<ssf:nlt tag="general.nextPage"/>"
 			  <ssf:alt tag=""/> /></a>
 		</c:if>
 		<c:if test="${empty ss_whatsNewBinder}">
-			<img src="<html:rootPath/>images/mobile/nl_right_dis_16.gif"
+			<img src="<html:rootPath/>images/mobile/nl_right_dis_20.png"
 			<ssf:alt tag=""/> />
 		</c:if>
 	  </div>
@@ -179,7 +178,7 @@
 	      </div>
         </c:forEach>
   
-	  <div style="padding:14px 0px 10px 20px;">
+	  <div class="entry-actions">
 		<c:if test="${ss_pageNumber > '0'}">
 			<a href="<ssf:url 
 			  action="__ajax_mobile" 
@@ -188,15 +187,14 @@
 			  name="type" value="${ss_type}"/><ssf:param
 			  name="pageNumber" value="${ss_pageNumber - 1}"/><ssf:param
 			  name="namespace" value="${ss_namespace}"/></ssf:url>" 
-			><img border="0" src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
+			><img border="0" src="<html:rootPath/>images/mobile/nl_left_20.png" 
 			    title="<ssf:nlt tag="general.previousPage"/>"
 			    <ssf:alt tag=""/> /></a>
 		</c:if>
 		<c:if test="${empty ss_pageNumber || ss_pageNumber <= '0'}">
-		  <img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"
+		  <img src="<html:rootPath/>images/mobile/nl_left_dis_20.png"
 		  	<ssf:alt tag=""/> />
 		</c:if>
-		&nbsp;&nbsp;&nbsp;&nbsp;
 		<c:if test="${!empty ss_whatsNewBinder}">
 		  <a href="<ssf:url 
 			action="__ajax_mobile" 
@@ -205,13 +203,13 @@
 			name="type" value="${ss_type}"/><ssf:param
 			name="pageNumber" value="${ss_pageNumber + 1}"/><ssf:param
 			name="namespace" value="${ss_namespace}"/></ssf:url>" 
-		  ><img border="0" src="<html:imagesPath/>pics/sym_arrow_right_.gif" 
+		  ><img border="0" src="<html:rootPath/>images/mobile/nl_right_20.png" 
 			  title="<ssf:nlt tag="general.nextPage"/>"
 			  <ssf:alt tag=""/> /></a>
 		</c:if>
 		<c:if test="${empty ss_whatsNewBinder}">
-			<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"
-				<ssf:alt tag=""/> />
+			<img src="<html:rootPath/>images/mobile/nl_right_dis_20.png"
+			<ssf:alt tag=""/> />
 		</c:if>
 	  </div>
     </div>

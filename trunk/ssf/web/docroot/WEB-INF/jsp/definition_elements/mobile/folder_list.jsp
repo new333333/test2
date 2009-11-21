@@ -150,9 +150,7 @@
 			  </c:if>
 			  
 			  <div class="entry-signature">
-				<span class="entry-author"><img src="<html:rootPath/>images/pics/sym_s_gray_dude.gif" 
-			  	    width="11" height="10" hspace="2" border="0" style="vertical-align:middle" 
-			  	    <ssf:alt tag=""/> /><a href="<ssf:url adapter="true" portletName="ss_forum" 
+				<span class="entry-author"><a href="<ssf:url adapter="true" portletName="ss_forum" 
 				    action="__ajax_mobile"
 				    operation="mobile_show_workspace"
 				    binderId="${entryFol._principal.workspaceId}" />"
