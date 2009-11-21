@@ -40,17 +40,17 @@
     <div class="dialog-content">
       <c:forEach var="action" items="${ss_actions}">
         <c:if test="${empty action.spacer}">
-		  <div class="menu-item homelink-menu">
+		  <div class="menu-item">
 		    <a href="${action.url}" <c:if test="${!empty action.onclick}">onClick="${action.onclick}" </c:if>
 		    >${action.title}</a>
 		  </div>
 		</c:if>
 		<c:if test="${!empty action.spacer}">
-		  <div class="menu-spacer"> </div>
+		  <div class="menu-spacer">&nbsp;</div>
 		</c:if>
       </c:forEach>
     </div>
-
+	<div class="menu-spacer">&nbsp;</div>
 	<div id="actions-button">
 	  <input id="actions-menu-close" type="button" value="<ssf:nlt tag="button.close"/>" 
 	    name="actionsmenuclose" onClick="ss_hideMenu('actions-menu');return false;" />

@@ -97,17 +97,19 @@ span.pad-left20 {
 	position: absolute; 
 	display: none;
 	top: 38px; 
-	left: 0px;
+	left: 5px;
+	right: 5px;
 	padding: 10px;
-	width: 100%;
-	border-top: 4px solid #1C5894;
+	border-left: 1px solid #1C5894;
+	border-right: 1px solid #1C5894;
+	border-top: 2px solid #1C5894;
 	border-bottom: 4px solid #1C5894;
 	background: #e8e9e6 url(images/mobile/putty_blend3.png) repeat-x;
 	background-position: bottom;
 	}
 
 .search	a, .homelink a { 
-	color: #e1eaea;
+	color: #fff;
 	}
 
 #actions { 
@@ -141,31 +143,39 @@ span.pad-left20 {
 	}
 
 .menu-spacer { 
-	border-top: 1px solid #d2d5d1;
+	border-top: 2px solid #d2d5d1;
 	margin-top: 5px;
 	height: 5px;
 	line-height:.5em;
 	}
 .menu-item {padding-left: .5em;}
-.menu-item a { font-size: 1em; line-height: 2em;}
+.menu-item a { font-size: .95em; line-height: 1.8em;}
 .menu-curlevel {font-weight: bold;}	
 
 #micro-blog	a { 
 	color: black;
-	} 
-		
+	} 	
 #micro-blog-date {
 	padding-left: 20px;
 	color: #949691;	
 	}
-	
 #micro-blog-clear {
 	margin-left: 2em; 
 	}
-	
 #micro-blog-buttons {
 	margin-top: .3em; 
 	}
+	
+.entry-actions {
+	text-align: right; 
+	padding-top: 5px;
+	background-color: #eceeec;
+	}
+.entry-actions img {
+	padding-right: 15px;
+	}
+
+
 
 #categoryTable {
 	table-layout:fixed;
@@ -201,7 +211,7 @@ span.pad-left20 {
 	}
 
 .userid {
-	background-color: #fef7c7; 
+	background-color: #f8f9cd; /* #fef7c7; */
 	border-bottom: 1px solid #e2e5e1;
 	}
 .username {
@@ -266,8 +276,8 @@ span.pad-left20 {
 .folder-head {
 	clear: both; 
 	color: #fff;
+	font-size: .95em;
 	font-weight: bold;
-	font-size: 1em;
 	vertical-align: middle;
 	padding: 5px 5px 5px 10px;
 	letter-spacing: 1px;
@@ -298,28 +308,36 @@ span.pad-left20 {
 .entry {
 	position: relative;
 	border-bottom: 1px solid #e2e5e1; /* #d2d5d1; */
-	padding: 10px 10px 10px 25px;
 	background:url(images/mobile/putty_blend4.png) repeat-x bottom;
 	}
 .entry-title {
 	font-size: 20px;
-	padding-top: 5px;
-	padding-right: 20px;
+	line-height: 19px;
+	font-weight: bold;
+	padding-top: 8px;
+	padding-right: 30px;
+	padding-left: 15px;
+	}
+
+.entry-title span.doc-number {
+	color: #666;
+	padding-right: 5px;
+	font-size: 14px;
+	font-weight: normal;
 	}
 .entry-content {
 	font-size: 16px;
-	color: #666;
-	padding-top: 8px;
+	color: #333;
+	padding-top: 5px;
+	padding-right: 15px;
+	padding-bottom: 10px;
+	padding-left: 15px;
 	}
 .entry-element {
 	font-size: 14px;
 	color: #666;
 	padding-top: 4px;
 	padding-left: 12px;
-	}
-.entry-docNumber {
-	padding-right: 6px;
-	font-size: 16px;
 	}
 .entry-caption {
 	font-weight: bold;
@@ -328,26 +346,26 @@ span.pad-left20 {
 	padding-top: 8px;
 	}
 .entry-signature {
-	padding-top: 2px;
+	padding-top: 5px;
 	}
 .entry-author {
 	font-size: 14px;
-	padding-right: 10px;
-	margin: 0px;
+	padding-left: 15px;
 	}
 .entry-date {
 	font-size: 12px;
 	color: #666;
-	margin: 0px;
-}
+	padding-left: 15px;
+	}
 .entry-type {
 	font-size: 12px;
 	color: #666;
 	padding: 3px;
 	margin: 0px;
-}
+	padding-left: 15px;
+	}
 .entry-type span {
-	background-color: #fef7e4;
+	background-color: #f8f9cd;
 }
 .entry-comment-label {
 	position: absolute;
@@ -381,14 +399,16 @@ span.pad-left20 {
 	color: #666;
 	padding-top: 5px;
 	white-space: nowrap;
-	width: 95%;
 	overflow: hidden;
 	}
-.comment .entry-title span, .comment2 .entry-title span {
-	font-size: 16px;
-	font-weight: bold;
-	color: #000;
+.comment .entry-title span.doc-number, .comment2 .entry-title span.doc-number {
+	color: #666;
+	font-size: 14px;
+	font-weight: normal;
 	padding-right: 5px;
+	}
+.comment .entry-title span.number, .comment2 .entry-title span.number {
+	font-weight: normal;
 	}
 .comment-bg {
 	font-size: 16px;
@@ -511,7 +531,7 @@ h6 {
 	background-color: #cecece;
 	}
 .ss_entryContent {
-	margin-bottom:10px;
+	margin-bottom: 5px;
 	}
 .ss_labelAbove {
   padding-top: 2px;
@@ -591,7 +611,8 @@ td.ss_mobile_calendar_today {
 	}
 table.ss_mobile_calendar_month td {
 	font-size: 1.1em;
-	padding: 5px;
+	padding-top: 6px;
+	padding-bottom: 6px;
 	}
 table.ss_mobile_calendar_month td a {
 	padding: 4px 10px;
@@ -602,12 +623,12 @@ td.ss_mobile_calendar_today span {
 td.ss_mobile_calendar_current_day {
 	font-weight: bold;
 	text-transform: uppercase;
-	background-color: #feed7b; /* #fef7c7; */
+	background-color: #f8f975 /* #feed7b; #fef7c7; */
 	}
 
 div.ss_mobile_calendar_entries_header,
 div.ss_mobile_calendar_no_entries_header {
-	background-color: #fef7c7;
+	background-color: #f8f9cd;
 	padding: 3px 0;
 	text-align: center;
 }

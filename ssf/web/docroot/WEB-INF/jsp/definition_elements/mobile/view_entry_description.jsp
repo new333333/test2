@@ -41,7 +41,8 @@
 </c:if>
 <div class="entry-content">
  <c:if test="${textFormat == '2'}">
-   <pre>${ssDefinitionEntry.description.text}</pre>
+	<img " border="0" src="<html:imagesPath/>mobile/comments_16.png" />
+	${ssDefinitionEntry.description.text}
  </c:if>
  <c:if test="${textFormat != '2'}">
    <span>
