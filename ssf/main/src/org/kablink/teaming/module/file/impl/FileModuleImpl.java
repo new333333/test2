@@ -1430,7 +1430,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	Long fileSize = null;
     	if(versionName != null)
     		fileSize = Long.valueOf(session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName));
-    	if (fileSize != null) checkQuota(fileSize, fAtt.getFileItem().getName());
+    	if (!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fAtt.getRepositoryName()) && fileSize != null) 
+    		checkQuota(fileSize, fAtt.getFileItem().getName());
 		updateFileAttachment(fAtt, user, versionName, fileSize, fui.getModDate(), fui.getModifierName());
     }
 
@@ -1553,7 +1554,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 						
 		long fileSize = session.getContentLengthVersioned(binder, entry, fui.getOriginalFilename(), versionName);
 		
-		checkQuota(fileSize, fAtt.getFileItem().getName());
+		if (!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fAtt.getRepositoryName())) 
+			checkQuota(fileSize, fAtt.getFileItem().getName());
 		
 		fAtt.getFileItem().setLength(fileSize);
 
@@ -1571,8 +1573,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			long userQuota = zoneConf.getDiskQuotaUserDefault();
 
 			User user = RequestContextHolder.getRequestContext().getUser();
-			//if admin, don't bother checking quotas
-			if (user.getId() == 1) return;
 
 			if (user.getDiskQuota() != 0L) {
 				userQuota = user.getDiskQuota();

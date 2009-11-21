@@ -105,6 +105,7 @@ import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
+import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.AccessControlException;
@@ -653,8 +654,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 
 			long userQuota = zoneConf.getDiskQuotaUserDefault();
 
-			// User user = RequestContextHolder.getRequestContext().getUser();
-
 			if (user.getDiskQuota() != 0L) {
 				userQuota = user.getDiskQuota();
 			} else {
@@ -662,6 +661,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 					userQuota = user.getMaxGroupsQuota();
 				}
 			}
+			if (userQuota == -1L) return ObjectKeys.DISKQUOTA_OK;  // -1 = unlimited
+			
 			userQuota = userQuota * MEGABYTES;
 
 			long highWaterMark = zoneConf.getDiskQuotasHighwaterPercentage();
@@ -674,7 +675,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			}
 		}
 		return ObjectKeys.DISKQUOTA_OK;
-	}
+   }
    
    // RO transaction
    public Group getGroup(String name) {
