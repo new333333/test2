@@ -213,6 +213,9 @@ public abstract class Principal extends Entry implements IPrincipal {
     public String getName() {
         return this.name;
     }
+    public String getUrlSafeName() {
+    	return (name != null)? name.replace('@', '_') : null;
+    }
     /**
      * @param loginName The loginName to set.
      */

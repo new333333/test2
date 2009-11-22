@@ -133,9 +133,9 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
         <c:if test="${ss_isSiteAdmin}">
           <option value="" selected>--<ssf:nlt tag="simpleUrl.leaveBlank"/>--</option>
         </c:if>
-        <option value="${ssUser.name}" selected>${ssUser.name}</option>
+        <option value="${ssUser.urlSafeName}" selected>${ssUser.urlSafeName}</option>
         <c:if test="${ssBinder.owner.name != ssUser.name}">
-          <option value="${ssBinder.owner.name}">${ssBinder.owner.name}</option>
+          <option value="${ssBinder.owner.urlSafeName}">${ssBinder.owner.urlSafeName}</option>
         </c:if>
         <c:forEach var="item" items="${ssSimpleUrlGlobalKeywords}">
           <option value="${item}">${item}</option>
