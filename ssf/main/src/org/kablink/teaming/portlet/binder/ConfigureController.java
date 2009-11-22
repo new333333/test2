@@ -118,7 +118,7 @@ public class ConfigureController extends AbstractBinderController {
 				}
 			}
 			if (!prefix.equals("") && !prefixIsGlobalKeyword && 
-					!prefix.toLowerCase().equals(user.getName().toLowerCase())) {
+					!prefix.toLowerCase().equals(user.getUrlSafeName().toLowerCase())) {
 				response.setRenderParameter(WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, "true");
 				return;
 			}
@@ -165,7 +165,7 @@ public class ConfigureController extends AbstractBinderController {
 				}
 			} else {
 				//name is null, see if prefix is user's name
-				if (prefix.toLowerCase().equals(user.getName().toLowerCase())) {
+				if (prefix.toLowerCase().equals(user.getUrlSafeName().toLowerCase())) {
 					SimpleName simpleUrl = getBinderModule().getSimpleName(prefix);
 					if (simpleUrl == null) {
 						getBinderModule().addSimpleName(prefix, binderId, binder.getEntityType().name());
