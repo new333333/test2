@@ -33,6 +33,7 @@
 package org.kablink.teaming.portlet.administration;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -102,12 +103,15 @@ public class ExportImportController  extends  SAbstractController {
 					reportMap.put(ExportHelper.folders, new Integer(0));
 					reportMap.put(ExportHelper.entries, new Integer(0));
 					reportMap.put(ExportHelper.files, new Integer(0));
+					reportMap.put(ExportHelper.errors, new Integer(0));
+					reportMap.put(ExportHelper.errorList, new ArrayList());
 			    	getBinderModule().importZip(binderId, fIn, statusTicket, reportMap);	
 					String[] reportData = new String[] {
 							((Integer)reportMap.get(ExportHelper.workspaces)).toString(),
 							((Integer)reportMap.get(ExportHelper.folders)).toString(),
 							((Integer)reportMap.get(ExportHelper.entries)).toString(),
-							((Integer)reportMap.get(ExportHelper.files)).toString()
+							((Integer)reportMap.get(ExportHelper.files)).toString(),
+							((Integer)reportMap.get(ExportHelper.errors)).toString()
 						};
 					statusTicket.setStatus(NLT.get("administration.export_import.importReport", reportData));
 			    	statusTicket.done();
@@ -218,13 +222,16 @@ public class ExportImportController  extends  SAbstractController {
 			reportMap.put(ExportHelper.folders, new Integer(0));
 			reportMap.put(ExportHelper.entries, new Integer(0));
 			reportMap.put(ExportHelper.files, new Integer(0));
+			reportMap.put(ExportHelper.errors, new Integer(0));
+			reportMap.put(ExportHelper.errorList, new ArrayList());
 			getBinderModule().export(binderId, entryId, res.getOutputStream(), options, binderIds, 
 					noSubBinders, statusTicket, reportMap);
 			String[] reportData = new String[] {
 					((Integer)reportMap.get(ExportHelper.workspaces)).toString(),
 					((Integer)reportMap.get(ExportHelper.folders)).toString(),
 					((Integer)reportMap.get(ExportHelper.entries)).toString(),
-					((Integer)reportMap.get(ExportHelper.files)).toString()
+					((Integer)reportMap.get(ExportHelper.files)).toString(),
+					((Integer)reportMap.get(ExportHelper.errors)).toString()
 				};
 			statusTicket.setStatus(NLT.get("administration.export_import.exportReport", reportData));
 			statusTicket.done();
