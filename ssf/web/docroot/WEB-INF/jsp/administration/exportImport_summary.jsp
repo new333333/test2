@@ -58,9 +58,17 @@
 <ssf:param name="value" value="${ss_reportData.folders}"/>
 <ssf:param name="value" value="${ss_reportData.entries}"/>
 <ssf:param name="value" value="${ss_reportData.files}"/>
+<ssf:param name="value" value="${ss_reportData.errors}"/>
 </ssf:nlt>
 <br/>
 <br/>
+<c:if test="${!empty ss_reportData.errors}">
+<div style="padding-left:20px;">
+<c:forEach var="e" items="${ss_reportData.errorList}">
+  ${e}<br/><br/>
+</c:forEach>
+</div>
+</c:if>
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"/>
 
 </form>
