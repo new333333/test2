@@ -155,6 +155,8 @@ public class ExportHelper {
 	public static final String folders = "folders";
 	public static final String entries = "entries";
 	public static final String files = "files";
+	public static final String errors = "errors";
+	public static final String errorList = "errorList";
 	
 	//Export version number. Used to distinguish between export file formats 
 	public static final String exportVersion = "1";
@@ -291,6 +293,9 @@ public class ExportHelper {
       		try {
 				binder = binderModule.getBinder(binderId);
 			} catch(Exception e) {
+				Integer count = (Integer)reportMap.get(errors);
+				reportMap.put(errors, ++count);
+				((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
 				continue;
 			}
 			//Make sure the definitions used by this binder are exported
@@ -311,7 +316,7 @@ public class ExportHelper {
 				// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 				// Retrieve the raw workspace.
 				Workspace workspace = workspaceModule.getWorkspace(binderId);
-				addBinderDefinitions(zipOut, workspace, defListAlreadyAdded);
+				addBinderDefinitions(zipOut, workspace, defListAlreadyAdded, reportMap);
 
 				zipOut.putNextEntry(new ZipEntry(pathName + binderPrefix + "w"
 						+ nft.format(binderId) + "/" + "."
@@ -336,7 +341,7 @@ public class ExportHelper {
 					}
 				}
 				//Add any definitions used by this folder
-				addBinderDefinitions(zipOut, binder, defListAlreadyAdded);
+				addBinderDefinitions(zipOut, binder, defListAlreadyAdded, reportMap);
 				
 				// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 				zipOut.putNextEntry(new ZipEntry(pathName + binderPrefix + "f"
@@ -367,7 +372,11 @@ public class ExportHelper {
 	
 							count = (Integer)reportMap.get(entries);
 							reportMap.put(entries, ++count);
-						} catch(NoFolderEntryByTheIdException e) {}
+						} catch(NoFolderEntryByTheIdException e) {
+							Integer c = (Integer)reportMap.get(errors);
+							reportMap.put(errors, ++c);
+							((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
+						}
 					}
 				}
 			}
@@ -408,7 +417,7 @@ public class ExportHelper {
 		fullId = calcFullId(entry);
 
 		//Add any definitions used by this folder
-		addEntryDefinitions(zipOut, entry, defListAlreadyAdded);
+		addEntryDefinitions(zipOut, entry, defListAlreadyAdded, reportMap);
 
 		if (!pathName.equals("")) {
 			// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
@@ -443,7 +452,7 @@ public class ExportHelper {
 		String newFullId = fullId + "_" + nft.format(reply.getId());
 
 		//Add any definitions used by this folder
-		addEntryDefinitions(zipOut, reply, defListAlreadyAdded);
+		addEntryDefinitions(zipOut, reply, defListAlreadyAdded, reportMap);
 
 		if (!pathName.equals("")) {
 			// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
@@ -515,9 +524,13 @@ public class ExportHelper {
 			reportMap.put(files, ++count);
 		} catch (Exception e) {
 			logger.error(e);
-			logger.error(NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
-					", entryId=" + entity.getId().toString() + ", " + fileName);
+			String eMsg = NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
+					", entryId=" + entity.getId().toString() + ", " + fileName;
+			logger.error(eMsg);
 			if (fileStream != null) fileStream.close();
+			Integer c = (Integer)reportMap.get(errors);
+			reportMap.put(errors, ++c);
+			((List)reportMap.get(errorList)).add(eMsg);
 
 			// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 			zipOut.putNextEntry(new ZipEntry(pathName + "/"
@@ -551,9 +564,13 @@ public class ExportHelper {
 				reportMap.put(files, ++count);
 			} catch (Exception e) {
 				logger.error(e);
-				logger.error(NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
-						", entryId=" + entity.getId().toString() + ", " + fileName);
+				String eMsg = NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
+						", entryId=" + entity.getId().toString() + ", " + fileName;
+				logger.error(eMsg);
 				if (fileStream != null) fileStream.close();
+				Integer c = (Integer)reportMap.get(errors);
+				reportMap.put(errors, ++c);
+				((List)reportMap.get(errorList)).add(eMsg);
 
 				// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 				zipOut.putNextEntry(new ZipEntry(pathName + "/"
@@ -937,7 +954,8 @@ public class ExportHelper {
 		}
 	}
 
-	private static void addBinderDefinitions(ZipOutputStream zipOut, Binder binder, Set defListAlreadyAdded) {
+	private static void addBinderDefinitions(ZipOutputStream zipOut, Binder binder, 
+			Set defListAlreadyAdded, Map reportMap) {
 		List<Definition> defListToAdd = new ArrayList<Definition>();
 		defListToAdd.add(binder.getEntryDef());
 
@@ -960,10 +978,14 @@ public class ExportHelper {
 			exportDefinitionList(zipOut, defListToAdd, defListAlreadyAdded);
 		} catch(Exception e) {
 			logger.error(e);
+			Integer c = (Integer)reportMap.get(errors);
+			reportMap.put(errors, ++c);
+			((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
 		}
 	}
 	
-	private static void addEntryDefinitions(ZipOutputStream zipOut, FolderEntry entry, Set defListAlreadyAdded) {
+	private static void addEntryDefinitions(ZipOutputStream zipOut, FolderEntry entry, 
+			Set defListAlreadyAdded, Map reportMap) {
 		List<Definition> defListToAdd = new ArrayList<Definition>();
 		defListToAdd.add(entry.getEntryDef());
 
@@ -976,6 +998,9 @@ public class ExportHelper {
 			exportDefinitionList(zipOut, defListToAdd, defListAlreadyAdded);
 		} catch(Exception e) {
 			logger.error(e);
+			Integer c = (Integer)reportMap.get(errors);
+			reportMap.put(errors, ++c);
+			((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
 		}
 	}
 	
@@ -1157,7 +1182,7 @@ public class ExportHelper {
 						Document tempDoc = getDocument(xmlStr, nameCache);
 						String defId = getEntityDefinitionId(tempDoc);
 						String defName = getEntityDefinitionName(tempDoc);
-						Definition def = getTargetDefinition(defId, defName, definitionIdMap);
+						Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap);
 
 						if (def != null && ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF.equals(def.getId())) {
 							Definition newDef = definitionModule.getDefinitionByReservedId(ObjectKeys.DEFAULT_LIBRARY_ENTRY_DEF);
@@ -1345,7 +1370,7 @@ public class ExportHelper {
 	}
 	
 	private static Definition getTargetDefinition(String defId, String defName, 
-			Map<String, Definition> definitionIdMap) {
+			Map<String, Definition> definitionIdMap, Map reportMap) {
 		Definition def = null;
 		if (definitionIdMap.containsKey(defId)) {
 			def = definitionIdMap.get(defId);
@@ -1353,7 +1378,11 @@ public class ExportHelper {
 			try {
 				def = definitionModule.getDefinitionByName(null, false, defName);
 				if (def != null) definitionIdMap.put(defId, def);
-			} catch(Exception e) {}
+			} catch(Exception e) {
+				Integer c = (Integer)reportMap.get(errors);
+				reportMap.put(errors, ++c);
+				((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
+			}
 		}
 		return def;
 	}
@@ -1380,22 +1409,26 @@ public class ExportHelper {
 
 			// workflows
 			final Binder binder = loadBinder(newBinderId);
+			final Map rMap = reportMap;
 			statusTicket.setStatus(NLT.get("administration.export_import.importing", new String[] {binder.getPathName()}));
 
 			transactionTemplate.execute(new TransactionCallback() {
 				public Object doInTransaction(TransactionStatus status) {
 
 					// binder settings
-					importSettingsList(doc, binder, fDefIdMap);
+					importSettingsList(doc, binder, fDefIdMap, rMap);
 
 					// workflows
-					importWorkflows(doc, binder, fDefIdMap);
+					importWorkflows(doc, binder, fDefIdMap, rMap);
 					return null;
 				}
 			});
 
 			return newBinderId;
 		} catch (WriteFilesException e) {
+			Integer c = (Integer)reportMap.get(errors);
+			reportMap.put(errors, ++c);
+			((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
 			throw new RemotingException(e);
 		}
 	}
@@ -1438,13 +1471,19 @@ public class ExportHelper {
 			try {
 				final FolderEntry entry = folderModule.getEntry(null, newEntryId);
 				statusTicket.setStatus(NLT.get("administration.export_import.importingEntry", new String[] {entry.getTitle()}));
-				importWorkflows(doc, entry, definitionIdMap);
+				importWorkflows(doc, entry, definitionIdMap, reportMap);
 			} catch(Exception e) {}
 
 			return newEntryId;
 		} catch (WriteFilesException e) {
+			Integer c = (Integer)reportMap.get(errors);
+			reportMap.put(errors, ++c);
+			((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
 			throw new RemotingException(e);
 		} catch (WriteEntryDataException e) {
+			Integer c = (Integer)reportMap.get(errors);
+			reportMap.put(errors, ++c);
+			((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
 			throw new RemotingException(e);
 		}
 	}
@@ -1484,13 +1523,19 @@ public class ExportHelper {
 			// workflows
 			try {
 				final FolderEntry entry = folderModule.getEntry(null, newEntryId);
-				importWorkflows(doc, entry, definitionIdMap);
+				importWorkflows(doc, entry, definitionIdMap, reportMap);
 			} catch(Exception e) {}
 
 			return newEntryId;
 		} catch (WriteFilesException e) {
+			Integer c = (Integer)reportMap.get(errors);
+			reportMap.put(errors, ++c);
+			((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
 			throw new RemotingException(e);
 		} catch (WriteEntryDataException e) {
+			Integer c = (Integer)reportMap.get(errors);
+			reportMap.put(errors, ++c);
+			((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
 			throw new RemotingException(e);
 		}
 	}
@@ -1606,6 +1651,9 @@ public class ExportHelper {
 					reportMap.put(files, ++count);
 				} catch (Exception e) {
 					logger.error(e);
+					Integer c = (Integer)reportMap.get(errors);
+					reportMap.put(errors, ++c);
+					((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
 					return;
 				}
 			}
@@ -1620,6 +1668,9 @@ public class ExportHelper {
 			reportMap.put(files, ++count);
 		} catch (Exception e) {
 			logger.error(e);
+			Integer c = (Integer)reportMap.get(errors);
+			reportMap.put(errors, ++c);
+			((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
 			return;
 		}
 	}
@@ -1723,6 +1774,9 @@ public class ExportHelper {
 					reportMap.put(files, ++count);
 				} catch (Exception e) {
 					logger.error(e);
+					Integer c = (Integer)reportMap.get(errors);
+					reportMap.put(errors, ++c);
+					((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
 					return;
 				}
 			}
@@ -1737,6 +1791,9 @@ public class ExportHelper {
 			reportMap.put(files, ++count);
 		} catch (Exception e) {
 			logger.error(e);
+			Integer c = (Integer)reportMap.get(errors);
+			reportMap.put(errors, ++c);
+			((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
 			return;
 		}
 	}
@@ -1926,7 +1983,7 @@ public class ExportHelper {
 	}
 
 	private static void importWorkflows(Document entityDoc, DefinableEntity entity, 
-			Map<String, Definition> definitionIdMap) {
+			Map<String, Definition> definitionIdMap, Map reportMap) {
 
 		if (entity instanceof FolderEntry) {
 			boolean needsToBeIndexed = false;
@@ -1951,7 +2008,7 @@ public class ExportHelper {
 				String defId = process.attributeValue("definitionId", "");
 				String defName = process.attributeValue("definitionName", "");
 				String state = process.attributeValue("state", "");
-				Definition def = getTargetDefinition(defId, defName, definitionIdMap);
+				Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap);
 
 				EntityIdentifier entityIdentifier = new EntityIdentifier(entity
 						.getId(), EntityIdentifier.EntityType.folderEntry);
@@ -1993,7 +2050,7 @@ public class ExportHelper {
 				String defId = process.attributeValue("definitionId", "");
 				String defName = process.attributeValue("definitionName", "");
 				if (!defId.equals("")) {
-					Definition def = getTargetDefinition(defId, defName, definitionIdMap);
+					Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap);
 					if (def != null) newDefinitionList.add(def.getId());
 				}
 			}
@@ -2011,8 +2068,8 @@ public class ExportHelper {
 				String workflowDefId = process.attributeValue("workflowDefinitionId", "");
 				String workflowDefName = process.attributeValue("workflowDefinitionName", "");
 				if (!entryDefId.equals("")) {
-					Definition entryDef = getTargetDefinition(entryDefId, entryDefName, definitionIdMap);
-					Definition workflowDef = getTargetDefinition(workflowDefId, workflowDefName, definitionIdMap);
+					Definition entryDef = getTargetDefinition(entryDefId, entryDefName, definitionIdMap, reportMap);
+					Definition workflowDef = getTargetDefinition(workflowDefId, workflowDefName, definitionIdMap, reportMap);
 					if (entryDef != null && workflowDef != null) 
 						workflowAssociations.put(entryDef.getId(), workflowDef.getId());
 				}
@@ -2023,7 +2080,8 @@ public class ExportHelper {
 		}
 	}
 
-	private static void importSettingsList(Document entityDoc, Binder binder, Map<String, Definition>definitionIdMap) {
+	private static void importSettingsList(Document entityDoc, Binder binder, 
+			Map<String, Definition>definitionIdMap, Map reportMap) {
 
 		// current binder definitions
 
@@ -2037,7 +2095,7 @@ public class ExportHelper {
 		for (Element view : views) {
 			String defId = view.attributeValue("definitionId", "");
 			String defName = view.attributeValue("definitionName", "");
-			Definition def = getTargetDefinition(defId, defName, definitionIdMap);
+			Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap);
 			if (def != null) {
 				// don't want to include mirrored file folder as an imported view setting
 				if (!def.getId().equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)) {
@@ -2054,7 +2112,7 @@ public class ExportHelper {
 		for (Element entry : entries) {
 			String defId = entry.attributeValue("definitionId", "");
 			String defName = entry.attributeValue("definitionName", "");
-			Definition def = getTargetDefinition(defId, defName, definitionIdMap);
+			Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap);
 			if (def != null) {
 				// don't want to include mirrored file entry as an imported allowed entry setting
 				if (!def.getId().equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)) {
