@@ -37,6 +37,6 @@
   <div class="entry-caption"><c:out value="${property_caption}" /></div>
   <div class="entry-element">
     <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}" escapeXml="false"/>
-    <div style="clear:both;"></div>
+    <div class="ss_clear"></div>
   </div>
 </div>

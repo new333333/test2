@@ -56,7 +56,7 @@
 
 	<table cellpadding="0" border="0">
 		<tr>
-			<td>
+			<td>s
 				<input type="text" size="12"
 					id="date_${property_name}_${prefix}" 
 					name="${property_name}_fullDate" 

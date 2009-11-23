@@ -328,7 +328,6 @@ span.pad-left20 {
 .entry-content {
 	font-size: 16px;
 	color: #333;
-	padding-top: 5px;
 	padding-right: 15px;
 	padding-bottom: 10px;
 	padding-left: 15px;
@@ -343,7 +342,7 @@ span.pad-left20 {
 	font-weight: bold;
 	font-size: 14px;
 	color: #000;
-	padding-top: 8px;
+	padding-top: 4px;
 	}
 .entry-signature {
 	padding-top: 5px;
@@ -360,8 +359,9 @@ span.pad-left20 {
 .entry-type {
 	font-size: 12px;
 	color: #666;
-	padding: 3px;
 	margin: 0px;
+	padding-top: 3px;
+	padding-bottom: 10px;
 	padding-left: 15px;
 	}
 .entry-type span {
@@ -681,25 +681,20 @@ div.ss_mobile_calendar_no_entries_content span {
 	}
 	
 .ss_form_wrap {
-	background-color: #fff;
-	border-top-width: 14px;
-	border-right-width: thin;
-	border-bottom-width: thin;
-	border-left-width: thin;
-	border-style: solid;
-	border-top-color: #5A9A98;
-	border-right-color: #CCCCCC;
-	border-bottom-color: #CCCCCC;
-	border-left-color: #CCCCCC;
+	background-color: #eceeec;
 	padding: 0 10px 10px 10px!important;
-	margin: 4px;
 	}
 .ss_form_header {
-	font-size:16px !important;
-	letter-spacing:-1px;
-	font-family:Georgia, "Times New Roman", Times, serif !important;
-	font-weight:normal !important;
-	color:#5A9A98;
+	clear: both; 
+	color: #000;
+	font-size: .9em;
+	font-weight: bold;
+	vertical-align: middle;
+	padding: 5px 5px 5px 10px;
+	letter-spacing: 1px;
+	background-color: #71bfde;
+	background: url(images/mobile/blue_slice40.png) repeat-x;
+	background-position: center;
 	}
 .ss_form_subhead {
 	 font-weight: bold;

@@ -33,7 +33,7 @@
  */
 %>
 <% //Textarea view %>
-<div class="entry-content">
+<div>
 <c:if test="${!empty property_caption}">
  <div class="entry-caption"><c:out value="${property_caption}"/></div>
 </c:if>
