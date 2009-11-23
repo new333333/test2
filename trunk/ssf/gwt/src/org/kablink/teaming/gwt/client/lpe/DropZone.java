@@ -155,6 +155,14 @@ public class DropZone extends Composite
 				tableWidget = (TableDropWidget) nextWidget;
 				tableWidget.adjustTableHeight();
 			}
+			else if ( nextWidget instanceof ListDropWidget )
+			{
+				ListDropWidget listWidget;
+				
+				// Adjust the height of all table widgets contained in this list widget.
+				listWidget = (ListDropWidget) nextWidget;
+				listWidget.adjustHeightOfAllTableWidgets();
+			}
 		}// end for()
 		
 		// Get the adjusted height of this drop zone.

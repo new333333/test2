@@ -113,6 +113,15 @@ public class ListDropWidget extends DropWidget
 	
 	
 	/**
+	 * Adjust the height of all the table widgets so all the DropZones in a table are the same height.
+	 */
+	public int adjustHeightOfAllTableWidgets()
+	{
+		return m_dropZone.adjustHeightOfAllTableWidgets();
+	}// end adjustHeightOfAllTableWidgets()
+	
+	
+	/**
 	 * Create a configuration string that represents this widget and that can be stored in the db.
 	 */
 	public String createConfigString()
