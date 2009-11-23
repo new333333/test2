@@ -15,22 +15,43 @@
 		init : function(ed, url) {
 			// Register commands
 			ed.addCommand('mce_ssAddImage', function() {
-				ed.windowManager.open({
-					file : url + '/image.htm',
-					width : 550 + parseInt(ed.getLang('advimage.delta_width', 0)),
-					height : 460 + parseInt(ed.getLang('advimage.delta_height', 0)),
-					inline : 1
-				}, {
-					plugin_url : url
-				});
+				if (!ss_diskQuotaExceeded) {
+					ed.windowManager.open({
+						file : url + '/image_.htm',
+						width : 550 + parseInt(ed.getLang('advimage.delta_width', 0)),
+						height : 460 + parseInt(ed.getLang('advimage.delta_height', 0)),
+						inline : 1
+					}, {
+						plugin_url : url
+					});
+				}
+				if (ss_diskQuotaExceeded) {
+					ed.windowManager.open({
+						file : url + '/image_no.htm',
+						width : 550 + parseInt(ed.getLang('advimage.delta_width', 0)),
+						height : 460 + parseInt(ed.getLang('advimage.delta_height', 0)),
+						inline : 1
+					}, {
+						plugin_url : url
+					});
+				}
 			});
 
 			// Register buttons
-			ed.addButton('ss_addimage', {
-				title : 'advimage.image_desc',
-				cmd : 'mce_ssAddImage',
-				image : url + '/images/ss_image.gif'
-			});
+			if (!ss_diskQuotaExceeded) {
+			    ed.addButton('ss_addimage', {
+				    title : 'advimage.image_desc',
+				    cmd : 'mce_ssAddImage',
+				    image : url + '/images/ss_image.gif'
+			    });
+			}
+			if (ss_diskQuotaExceeded) {
+			    ed.addButton('ss_addimage', {
+				    title : 'ss_addimage.desc_no',
+				    cmd : 'mce_ssAddImage',
+				    image : url + '/images/ss_image_no.gif'
+			    });
+			}
 
 			// Add a node change handler, selects the button in the UI when a image is selected
 			ed.onNodeChange.add(function(ed, cm, n) {

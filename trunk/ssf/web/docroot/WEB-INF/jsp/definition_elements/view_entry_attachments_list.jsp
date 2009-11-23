@@ -257,22 +257,36 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					
 						<ssf:isFileEditorConfiguredForOS relativeFilePath="${selection.fileItem.name}" operatingSystem="<%= operatingSystem %>">
 					
-							<a href="javascript: ;" 
+							<c:if test="${!ss_diskQuotaExceeded}">
+							  <a href="javascript: ;" 
 								onClick="javascript:ss_openWebDAVFile('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}', '<%= operatingSystem %>', 
 									'${selection.id}');
 									return false;">
 								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
+							</c:if>
+							<c:if test="${ss_diskQuotaExceeded}">
+							  <a href="javascript: ;" 
+								onClick='alert("<ssf:nlt tag="quota.diskQuotaExceeded"/>");return false;'>
+								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
+							</c:if>
 
 						</ssf:isFileEditorConfiguredForOS>
 							
 					</ssf:editorTypeToUseForEditInPlace>
 					
 					<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="webdav">
-						<a href="<ssf:ssfsInternalAttachmentUrl 
+						  <c:if test="${!ss_diskQuotaExceeded}">
+						    <a href="<ssf:ssfsInternalAttachmentUrl 
 								binder="${ssDefinitionEntry.parentBinder}"
 								entity="${ssDefinitionEntry}"
 								fileAttachment="${selection}"/>">
 								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
+						  </c:if>
+						  <c:if test="${ss_diskQuotaExceeded}">
+							  <a href="javascript: ;" 
+								onClick='alert("<ssf:nlt tag="quota.diskQuotaExceeded"/>");return false;'>
+								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
+						  </c:if>
 					</ssf:editorTypeToUseForEditInPlace>
 				
 				</ssf:ifSupportsEditInPlace>
