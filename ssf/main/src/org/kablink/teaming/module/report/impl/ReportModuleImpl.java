@@ -1188,7 +1188,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	public List<Map<String,Object>> generateExceededDiskQuotaReport() {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		
-		
+		Integer defaultQuota = getAdminModule().getQuotaDefault();
 		List results = null;
 		results = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
@@ -1222,6 +1222,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				row.put(ReportModule.DISK_SPACE_USED, ((Long)result[1]+MEGABYTES-1) / MEGABYTES);
 				row.put(ReportModule.DISKQUOTA, (result[2] == null ? 0 : (Long)result[2]));
 				row.put(ReportModule.MAX_GROUPS_QUOTA, (result[3] == null ? 0 : (Long)result[3]));
+				row.put(ReportModule.DEFAULT_QUOTA, defaultQuota.toString());
 				report.add(row);
 			}
 
@@ -1231,6 +1232,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	public List<Map<String,Object>> generateExceededHighWaterDiskQuotaReport() {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		
+		Integer defaultQuota = getAdminModule().getQuotaDefault();
 		final int highWaterPercentage = Integer.valueOf(SPropsUtil.getInt("disk.quotas.highwater.percentage", 90));
 		
 		List results = null;
@@ -1265,6 +1267,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				row.put(ReportModule.DISK_SPACE_USED, ((Long)result[1] + MEGABYTES - 1) / MEGABYTES);
 				row.put(ReportModule.DISKQUOTA, (result[2] == null ? 0 : (Long)result[2]));
 				row.put(ReportModule.MAX_GROUPS_QUOTA, (result[3] == null ? 0 : (Long)result[3]));
+				row.put(ReportModule.DEFAULT_QUOTA, defaultQuota.toString());
 				report.add(row);
 			}
 
