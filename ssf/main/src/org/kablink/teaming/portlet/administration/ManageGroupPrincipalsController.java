@@ -58,6 +58,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -107,33 +108,44 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 			Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
 			Principal group = getProfileModule().getEntry(groupId);
 			if (group!= null && group instanceof Group) {
+				//Capture the current membership of the group before it gets modified
+				Map<Long,Principal> changes = new HashMap<Long,Principal>();
+				List<Principal> currentMembers = new ArrayList(((Group)group).getMembers());
+				
 				String title = PortletRequestUtils.getStringParameter(request, "title", "");
 				String description = PortletRequestUtils.getStringParameter(request, "description", "");
 				Set ids = LongIdUtil.getIdsAsLongSet(request.getParameterValues("users"));
-				ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
 				Set groupIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups"));
-				Set gIds = profileDao.explodeGroups(groupIds, RequestContextHolder.getRequestContext().getZoneId());
-				ids.addAll(gIds);
+				ids.addAll(groupIds);
 				SortedSet<Principal> principals = getProfileModule().getPrincipals(ids);
-				Map<Long,Principal> changes = new HashMap<Long,Principal>();
-				//Get the list of additions and deletions so we re re-index them later
-				List<Principal> currentMembers = ((Group)group).getMembers();
-				for (Principal p : currentMembers) {
-					if (!principals.contains(p)) changes.put(p.getId(), p);
-				}
-				for (Principal p : principals) {
-					if (!currentMembers.contains(p)) changes.put(p.getId(), p);
-				}
 				Map updates = new HashMap();
 				updates.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 				updates.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
 				updates.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals);
 				getProfileModule().modifyEntry( groupId, new MapInputData(updates));
 				
+	       		List<Long> gIdList = new ArrayList();
+	       		gIdList.add(groupId);
+	       		getProfileModule().setGroupDiskQuotas(gIdList, new Long(0L));
+				
+				//Now deal with everyone who was affected
+				ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
+				for (Principal p : currentMembers) {
+					if (!principals.contains(p)) changes.put(p.getId(), p);
+				}
+				for (Principal p : principals) {
+					if (!currentMembers.contains(p)) changes.put(p.getId(), p);
+				}
 				//After changing the group membership, re-index any user that was added or deleted
 				List<Principal> users = new ArrayList<Principal>();
+				List<Principal> groups = new ArrayList<Principal>();
+				List<Long> gIds = new ArrayList<Long>();
 				for (Map.Entry<Long,Principal> me : changes.entrySet()) {
 					if (me.getValue() instanceof User) users.add(me.getValue());
+					if (me.getValue() instanceof Group) {
+						groups.add(me.getValue());
+						gIds.add(((Group)me.getValue()).getId());
+					}
 				}
 				// Re-index the list of users and all binders "owned" by them
 				// reindex the profile entry for each user
@@ -141,13 +153,29 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 					getProfileModule().indexEntry(user);
 				}
 				// set up a background job that will reindex all of the binders owned by all of these users.
-				getProfileModule().reindexUserOwnedBinders(users);
+				Set<Principal> groupUsers = new HashSet<Principal>();
+				Set<Long> groupUserIds = new HashSet<Long>();
+				groupUsers.addAll(users);
+				groupUserIds.addAll(profileDao.explodeGroups(gIds, RequestContextHolder.getRequestContext().getZoneId()));
+				groupUsers.addAll(getProfileModule().getPrincipals(ids));
+				//This is not implemented for Cortez
+				//  The following routine must be changed to only index the binders that are under the Personal Workspaces branch
+				//getProfileModule().reindexUserOwnedBinders(groupUsers);
+				
+				
 			}
 			response.setRenderParameter(WebKeys.URL_ENTRY_ID, groupId.toString());
 
 		} else if (formData.containsKey("deleteBtn") && WebHelper.isMethodPost(request)) {
 			Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
-			getProfileModule().deleteEntry(groupId, null);
+       		//Remove the group's quota (by setting it to 0) before deleting it
+			//  This will fix up all of the user quotas that may have been influenced by this group
+       		List gIds = new ArrayList();
+       		gIds.add(groupId);
+       		getProfileModule().setGroupDiskQuotas(gIds, new Long(0L));
+	       		
+			//Now, delete the group
+       		getProfileModule().deleteEntry(groupId, null);
 			
 		} else {
 			response.setRenderParameters(formData);

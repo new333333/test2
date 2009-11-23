@@ -252,7 +252,7 @@ public interface ProfileModule {
 	 * @param ids
 	 * @return
 	 */
-	public List reindexUserOwnedBinders(List<Principal> userIds);
+	public List reindexUserOwnedBinders(Set<Principal> userIds);
 	
 	/**
 	 * Return set of principals, sorted by title

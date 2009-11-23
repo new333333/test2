@@ -91,6 +91,7 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.UserPropertiesPK;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.jobs.BinderReindex;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -417,7 +418,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         return  p.getWorkspaceId();
     }
     
-    public List reindexUserOwnedBinders(List<Principal> userIds) {
+    public List reindexUserOwnedBinders(Set<Principal> userIds) {
     	List<Long> binderIds = new ArrayList<Long>();
     	if (userIds == null) return binderIds;
     	binderIds = getProfileDao().getOwnedBinders(userIds);
