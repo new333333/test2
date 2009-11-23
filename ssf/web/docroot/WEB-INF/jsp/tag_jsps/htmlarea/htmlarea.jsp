@@ -60,6 +60,9 @@
 --%></c:if><%--
 --%><script type="text/javascript" src="<html:rootPath/>js/tiny_mce/tiny_mce.js"></script>
 <script type="text/javascript">
+<c:if test="${!empty ss_diskQuotaExceeded}">
+var ss_diskQuotaExceeded = ${ss_diskQuotaExceeded};
+</c:if>
 var ss_imageSelections${element_id} = "<select name='srcUrl' id='srcUrl'><%--
 --%><c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" ><%--
 --%><option value='<ssf:escapeJavaScript value="${selection.fileItem.name}"/>'>${selection.fileItem.name}</option><%--
@@ -113,6 +116,7 @@ tinyMCE.init(
   theme_advanced_resizing_use_cookie : false});
 
 tinyMCE.addI18n('${ssUser.locale.language}.ss_addimage_dlg',{
+overQuota : "<ssf:nlt tag="quota.diskQuotaExceeded"/>",
 srcFile : "<ssf:nlt tag="editor.addimage.srcFile"/>",
 addFile : "<ssf:nlt tag="editor.addimage.addFile"/>",
 addUrl : "<ssf:nlt tag="editor.addimage.addUrl"/>",
@@ -121,6 +125,9 @@ imageSelectBox : ss_imageSelections${element_id},
 missing_img : "<ssf:nlt tag="editor.addimage.noImage"/>"
 });
 
+tinyMCE.addI18n('${ssUser.locale.language}.ss_addimage',{
+desc_no : "<ssf:nlt tag="editor.addimage.overQuota"/>"
+});
 tinyMCE.addI18n('${ssUser.locale.language}.ss_wikilink',{
 desc : "<ssf:nlt tag="editor.wikilink.title"/>"
 });
