@@ -120,7 +120,7 @@ public class AddAttachmentController extends SAbstractController {
 			try {
 				getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap, deleteAtts, null, null);
 			} catch (WriteFilesException wf) {
-				strFilesErrors = wf.toString();
+				strFilesErrors = wf.getLocalizedMessage();
 			}
 			
 			if (op.equals(WebKeys.OPERATION_ADD_FILES_FROM_APPLET)) {
