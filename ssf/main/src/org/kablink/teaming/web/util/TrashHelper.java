@@ -207,6 +207,20 @@ public class TrashHelper {
 		}
 
 		/*
+		 * Returns true if the FolderEntry for this TrashEntry can
+		 * still be accessed and false otherwise.
+		 */
+		public boolean exists(AllModulesInjected bs) {
+			FolderEntry fe;
+			try {
+				fe = bs.getFolderModule().getEntry(m_locationBinderId, m_docId);
+			}
+			catch (Exception e) {
+				fe = null;
+			}
+			return (null != fe);
+		}
+		/*
 		 * Returns true if this TrashEntry is a binder.
 		 */
 		public boolean isBinder() {
@@ -1362,8 +1376,13 @@ public class TrashHelper {
 					// will purge its replies.
 					try {
 						logger.debug("......purging entry:  " + trashEntry.m_locationBinderId + ", " + trashEntry.m_docId);
-						bs.getFolderModule().deleteEntry(trashEntry.m_locationBinderId, trashEntry.m_docId);
-						logger.debug(".........entry purged...");
+						if (trashEntry.exists(bs)) {
+							bs.getFolderModule().deleteEntry(trashEntry.m_locationBinderId, trashEntry.m_docId);
+							logger.debug(".........entry purged...");
+						}
+						else {
+							logger.debug(".........entry no longer exists, purging skipped...");
+						}
 					}
 					catch (Exception e) {
 						logger.debug(".........entry purge failed.", e);
