@@ -765,7 +765,7 @@ public class DefinitionHelper {
 					}
 
 					String type = mashupItemValues[0];
-	        		if (ObjectKeys.MASHUP_TYPE_ENTRY.equals(type) && 
+	        		if ((ObjectKeys.MASHUP_TYPE_ENTRY.equals(type) || ObjectKeys.MASHUP_TYPE_CUSTOM_JSP.equals(type)) && 
 	        				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ENTRY_ID) &&
 	        				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID).equals("")) {
 	        			try {
@@ -787,7 +787,7 @@ public class DefinitionHelper {
 	        			} catch(Exception e) {
 	        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + MiscUtil.exToString(e) + "'):  1:  Ignored");
 	        			}
-	        		} else if (ObjectKeys.MASHUP_TYPE_FOLDER.equals(type) && 
+	        		} else if ((ObjectKeys.MASHUP_TYPE_FOLDER.equals(type) || ObjectKeys.MASHUP_TYPE_CUSTOM_JSP.equals(type)) && 
 	        				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_FOLDER_ID) && 
 	        				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_FOLDER_ID).equals("")) {
 	        			try {
@@ -873,8 +873,7 @@ public class DefinitionHelper {
 	        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + MiscUtil.exToString(e) + "'):  5:  Ignored");
 	        			}
 	        		}
-	        		else if ( type != null && type.equals( "utility" ) )
-	        		{
+	        		else if ( type != null && type.equals( "utility" ) ) {
 	        			// We are working with a utility element in the mashup.
 	        			// Are we dealing with a "sign in" widget?
 	        			if ( attrValue != null && attrValue.equals( "signInForm" ) )
