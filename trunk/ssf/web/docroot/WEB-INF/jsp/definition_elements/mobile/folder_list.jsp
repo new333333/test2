@@ -146,6 +146,9 @@
 		
 	    	</div>
 		</c:forEach>
+		<c:if test="${empty ssFolderEntries}">
+		  <div style="padding:20px;"><ssf:nlt tag="folder.NoResults"/></div>
+		</c:if>
 	</c:if>
 	<c:if test="${ssDefinitionFamily == 'calendar'}">
 		<%@ include file="/WEB-INF/jsp/mobile/show_calendar.jsp" %>
