@@ -43,10 +43,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NameMissingException;
-import org.kablink.teaming.ObjectExistsException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.PasswordMismatchException;
 import org.kablink.teaming.TextVerificationException;
+import org.kablink.teaming.UserExistsException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
@@ -95,8 +95,9 @@ public class AddEntryController extends SAbstractController {
         	try
         	{
         		User user = getProfileModule().getUser(name);
-        		throw new ObjectExistsException("errorcode.user.alreadyExists", (Object[])null);
+        		throw new UserExistsException("errorcode.user.alreadyExists", (Object[])null);
         	} catch (NoPrincipalByTheNameException nue){
+        		//if user not found continue, this is what we want
         	}
         	
         	String password = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD);
