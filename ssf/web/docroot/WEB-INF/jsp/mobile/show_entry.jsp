@@ -38,10 +38,12 @@
 </c:if>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
+<c:set var="ss_pageTitle" value="${ssBinder.title}" scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
 
 <div class="content">
 
+<c:set var="ss_hideMiniBlog" value="true" scope="request" />
 <%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
 
 	<div class="folders">
@@ -67,58 +69,6 @@
 			</div>
 
 		<c:if test="${!empty ssEntry}">
-			<div align="center">
-			  <table>
-			  <tr>
-			  <c:if test="${!empty ss_mobileBinderDefUrlList && fn:length(ss_mobileBinderDefUrlList) > 1}">
-				<td valign="top">
-				  <form name="addEntryForm" 
-				  		action="<ssf:url adapter="true" portletName="ss_forum" 
-							binderId="${ssBinder.id}" 
-							entryId="${ssEntry.id}" 
-							action="__ajax_mobile" 
-							operation="mobile_add_reply" 
-							actionUrl="true" />" 
-				  		method="post">
-				  <table>
-				  <tr>
-				  <td valign="top">
-				  <select name="url" size="1">
-			      <option value="">--<ssf:nlt tag="mobile.addReply"/>--</option>
-				  <c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
-				    <option value="${def.url}">${def.title}</option>
-				  </c:forEach>
-				  </select>
-				  </td>
-				  <td valign="top">
-				  <input type="submit" name="goBtn" value="<ssf:nlt tag="button.ok"/>">
-				  </td>
-				  </tr>
-				  </table>  
-				  </form>
-				</td>
-			  </c:if>
-			  <c:if test="${!empty ss_mobileBinderDefUrlList && fn:length(ss_mobileBinderDefUrlList) == 1}">
-			    <td valign="top">
-				  <c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
-				    <a href="${def.url}"><ssf:nlt tag="button.add"/>: ${def.title}</a>
-				  </c:forEach>
-				</td>
-			  </c:if>
-			  
-			  <c:if test="${!empty ss_mobileEntryModifyUrl}">
-			    <td 
-			      <c:if test="${!empty ss_mobileBinderDefUrlList}">
-			        style="padding-left:10px;"
-			      </c:if>
-			      valign="top">
-			  	  <a href="${ss_mobileEntryModifyUrl}"><ssf:nlt tag="mobile.modifyEntry"/></a>
-			  	</td>
-			  </c:if>
-			</tr>
-			</table>
-			</div>
-			
 		<div class="entry">
 			<div class="entry-comment-label">${ssEntry.totalReplyCount}</div>
 

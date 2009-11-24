@@ -37,7 +37,7 @@
 			ed.addButton('ss_youtube', {
 				title : 'ss_youtube.desc',
 				cmd : 'mce_ssYouTube',
-				image : url + '/images/youtube.gif'
+				image : url + '/images/media.gif'
 			});
 
 			// Add a node change handler, selects the button in the UI when a image is selected

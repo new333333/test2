@@ -654,8 +654,8 @@ public class MarkupUtil {
 			        	titleLink.append(s_url);
 			        	if (!s_width.equals("")) titleLink.append(" width=" + s_width);
 			        	if (!s_height.equals("")) titleLink.append(" height=" + s_height);
-			        	titleLink.append("\" style=\"padding:12px 24px; background:url(");
-			        	titleLink.append(builder.getImagesRootUrl()).append("pics/youtube.gif) no-repeat center;\">");
+			        	titleLink.append("\" style=\"padding:12px 12px; background:url(");
+			        	titleLink.append(builder.getImagesRootUrl()).append("pics/media.gif) no-repeat center;\">");
 			        	titleLink.append("&nbsp;</a>");
 			        	titleLink.append("</a>");
 			    	} else if (s_url.startsWith("http://www.youtube.com/")) {

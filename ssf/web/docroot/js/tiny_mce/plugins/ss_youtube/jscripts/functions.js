@@ -58,7 +58,7 @@ function ss_insertYouTube() {
 		var rootPath = self.opener.ss_rootPath;
 		var html = '<a class="ss_youtube_link" rel="url=' + url;
 		html += ' width=' + width + ' height=' + height + '"';
-		html += ' style="padding:12px 24px; background:url('+rootPath+'images/pics/youtube.gif) no-repeat center;">&nbsp;</a>';
+		html += ' style="padding:12px 12px; background:url('+rootPath+'images/pics/media.gif) no-repeat center;">&nbsp;</a>';
 		tinyMCE.execCommand("mceInsertContent", false, html);
 	}
 

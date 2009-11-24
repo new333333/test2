@@ -82,8 +82,10 @@ function ss_logoff_from_sso(s) {
     <img src="<html:rootPath/>images/mobile/nl_browse_hierarchy_20.png" border="0" align="absmiddle"/>
   </a>
   
+<c:if test="${!ss_hideMiniBlog}">
   <a class="micro-blog-a" href="javascript: ;" 
     onClick="ss_showMenu('micro-blog-edit');return false;"><ssf:nlt tag="miniblog"/></a>
+</c:if>
   
   <c:if test="${!empty ss_actions}">
     <a class="actions-a" href="javascript: ;" 
@@ -95,6 +97,8 @@ function ss_logoff_from_sso(s) {
 
 <%@ include file="/WEB-INF/jsp/mobile/navigation.jsp" %>
 
+<c:if test="${!ss_hideMiniBlog}">
 <%@ include file="/WEB-INF/jsp/mobile/miniblog.jsp" %>
+</c:if>
 
 <%@ include file="/WEB-INF/jsp/mobile/actions_menu.jsp" %>

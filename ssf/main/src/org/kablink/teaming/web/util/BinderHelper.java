@@ -911,6 +911,15 @@ public class BinderHelper {
 		actions.add(action);
 	}
 
+	public static void addActionsGeneral(RenderRequest request, List actions, 
+			String title, String url, String onClick) {
+		Map action = new HashMap();
+		action.put("title", title);
+		action.put("url", url);
+		if (!onClick.equals("")) action.put("onclick", onClick);
+		actions.add(action);
+	}
+
 	protected static ModelAndView setupWorkareaPortlet(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, PortletPreferences prefs, Map model, String view) throws Exception {
 		Boolean showTrash = ((Boolean) model.get(WebKeys.URL_SHOW_TRASH));

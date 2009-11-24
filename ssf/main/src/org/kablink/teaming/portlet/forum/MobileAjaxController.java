@@ -654,6 +654,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map options = new HashMap();		
 		Map folderEntries = null;
 		
+		//Setup the actions menu list
+		List actions = new ArrayList();
+		
 		if (binder== null) {
 			return ajaxMobileFrontPage(this, request, response);
 		} 
@@ -726,6 +729,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				defTitle.put("def", def);
 				defTitle.put("url", adapterUrl.toString());
 				defTitleUrlList.add(defTitle);
+				String[] ta = new String[1];
+				ta[0] = title;
+				title = NLT.get("mobile.addSomething", ta);
+				BinderHelper.addActionsGeneral(request, actions, title, adapterUrl.toString(), "");
 			}
 			model.put(WebKeys.MOBILE_BINDER_DEF_URL_LIST, defTitleUrlList);
 		}
@@ -764,8 +771,6 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.FOLDERS, folders);
 		}
 
-		//Setup the actions menu list
-		List actions = new ArrayList();
 		//BinderHelper.addActionsHome(request, actions);
 		BinderHelper.addActionsWhatsNew(request, actions, binder);
 		BinderHelper.addActionsWhatsUnseen(request, actions, binder);
@@ -1053,98 +1058,105 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	}
 	private ModelAndView ajaxMobileShowEntry(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Long entryId) throws Exception {
-	Map model = new HashMap();
-	Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);		
-	Binder binder = getBinderModule().getBinder(binderId);
-	BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
-	model.put(WebKeys.BINDER, binder);
-	model.put(WebKeys.TABS, Tabs.getTabs(request));
-	User user = RequestContextHolder.getRequestContext().getUser();
+		Map model = new HashMap();
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);		
+		Binder binder = getBinderModule().getBinder(binderId);
+		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
+		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.TABS, Tabs.getTabs(request));
+		User user = RequestContextHolder.getRequestContext().getUser();
+		//Setup the actions menu list
+		List actions = new ArrayList();
 	
-	FolderEntry entry = null;
-	Map folderEntries = null;
-	folderEntries  = getFolderModule().getEntryTree(binderId, entryId);
-	if (folderEntries != null) {
-		entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
-		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MOBILE);
-		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
-			DefinitionHelper.getDefaultEntryView(entry, model);
-		}
-		BinderHelper.setAccessControlForAttachmentList(this, model, entry, user);
-		Map accessControlMap = (Map) model.get(WebKeys.ACCESS_CONTROL_MAP);
-		HashMap entryAccessMap = BinderHelper.getEntryAccessMap(this, model, entry);
-		model.put(WebKeys.ENTRY, entry);
-		model.put(WebKeys.DEFINITION_ENTRY, entry);
-		model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
-		model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
-		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
-			DefinitionHelper.getDefaultEntryView(entry, model);
-		}
-		SeenMap seen = getProfileModule().getUserSeenMap(null);
-		model.put(WebKeys.SEEN_MAP, seen);
-		List replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));
-		if (replies != null)  {
-			accessControlMap.put(entry.getId(), entryAccessMap);
-			for (int i=0; i<replies.size(); i++) {
-				FolderEntry reply = (FolderEntry)replies.get(i);
-				accessControlMap.put(reply.getId(), entryAccessMap);
-			}
-		}
-		if (!seen.checkIfSeen(entry)) { 
-			//only mark top entries as seen
-			getProfileModule().setSeen(null, entry);
-		}
 		
-		if (getFolderModule().testAccess(entry, FolderOperation.modifyEntry)) {
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
-			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
-			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_MODIFY_ENTRY);
-			model.put(WebKeys.MOBILE_ENTRY_MODIFY_URL, adapterUrl);
-		}
-
-		if (getFolderModule().testAccess(entry, FolderOperation.addReply)) {
-			Definition def = entry.getEntryDef(); //cannot be null here
-			List replyStyles = DefinitionUtils.getPropertyValueList(def.getDefinition().getRootElement(), "replyStyle");
-			model.put(WebKeys.ENTRY_REPLY_STYLES, replyStyles);
-			List<Map> defTitleUrlList = new ArrayList();
-			model.put(WebKeys.MOBILE_BINDER_DEF_URL_LIST, defTitleUrlList);
-			if (!replyStyles.isEmpty()) {
-				for (int i = 0; i < replyStyles.size(); i++) {
-					String replyStyleId = (String)replyStyles.get(i);
-					Definition replyDef = getDefinitionModule().getDefinition(replyStyleId);
-					String title = NLT.getDef(replyDef.getTitle());
-					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
-					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
-					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
-					adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
-					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, replyDef.getId());
-					adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_ADD_REPLY);
-					Map defTitle = new HashMap();
-					defTitle.put("title", title);
-					defTitle.put("def", replyDef);
-					defTitle.put("url", adapterUrl.toString());
-					defTitleUrlList.add(defTitle);
+		FolderEntry entry = null;
+		Map folderEntries = null;
+		folderEntries  = getFolderModule().getEntryTree(binderId, entryId);
+		if (folderEntries != null) {
+			entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
+			model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MOBILE);
+			if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
+				DefinitionHelper.getDefaultEntryView(entry, model);
+			}
+			BinderHelper.setAccessControlForAttachmentList(this, model, entry, user);
+			Map accessControlMap = (Map) model.get(WebKeys.ACCESS_CONTROL_MAP);
+			HashMap entryAccessMap = BinderHelper.getEntryAccessMap(this, model, entry);
+			model.put(WebKeys.ENTRY, entry);
+			model.put(WebKeys.DEFINITION_ENTRY, entry);
+			model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
+			model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
+			if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
+				DefinitionHelper.getDefaultEntryView(entry, model);
+			}
+			SeenMap seen = getProfileModule().getUserSeenMap(null);
+			model.put(WebKeys.SEEN_MAP, seen);
+			List replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));
+			if (replies != null)  {
+				accessControlMap.put(entry.getId(), entryAccessMap);
+				for (int i=0; i<replies.size(); i++) {
+					FolderEntry reply = (FolderEntry)replies.get(i);
+					accessControlMap.put(reply.getId(), entryAccessMap);
 				}
 			}
-		}
-		List entries = new ArrayList();
-		entries.add(entry);
-		BinderHelper.buildWorkflowSupportBeans(this, entries, model);
-	}
-
-	//Setup the actions menu list
-	List actions = new ArrayList();
-	//BinderHelper.addActionsHome(request, actions);
-	BinderHelper.addActionsRecentPlaces(request, actions, binderId);
-	BinderHelper.addActionsFullView(bs, request, actions, binderId, entryId);
-	BinderHelper.addActionsSpacer(request, actions);
-	BinderHelper.addActionsLogout(request, actions);
-	model.put("ss_actions", actions);
+			if (!seen.checkIfSeen(entry)) { 
+				//only mark top entries as seen
+				getProfileModule().setSeen(null, entry);
+			}
+			
+			if (getFolderModule().testAccess(entry, FolderOperation.addReply)) {
+				Definition def = entry.getEntryDef(); //cannot be null here
+				List replyStyles = DefinitionUtils.getPropertyValueList(def.getDefinition().getRootElement(), "replyStyle");
+				model.put(WebKeys.ENTRY_REPLY_STYLES, replyStyles);
+				List<Map> defTitleUrlList = new ArrayList();
+				model.put(WebKeys.MOBILE_BINDER_DEF_URL_LIST, defTitleUrlList);
+				if (!replyStyles.isEmpty()) {
+					for (int i = 0; i < replyStyles.size(); i++) {
+						String replyStyleId = (String)replyStyles.get(i);
+						Definition replyDef = getDefinitionModule().getDefinition(replyStyleId);
+						String title = NLT.getDef(replyDef.getTitle());
+						AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
+						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+						adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+						adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
+						adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, replyDef.getId());
+						adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_ADD_REPLY);
+						Map defTitle = new HashMap();
+						defTitle.put("title", title);
+						defTitle.put("def", replyDef);
+						defTitle.put("url", adapterUrl.toString());
+						defTitleUrlList.add(defTitle);
+						String[] ta = new String[1];
+						ta[0] = title;
+						title = NLT.get("mobile.addSomething", ta);
+						BinderHelper.addActionsGeneral(request, actions, title, adapterUrl.toString(), "");
+					}
+				}
+			}
+			
+			if (getFolderModule().testAccess(entry, FolderOperation.modifyEntry)) {
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
+				adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_MODIFY_ENTRY);
+				model.put(WebKeys.MOBILE_ENTRY_MODIFY_URL, adapterUrl);
+				BinderHelper.addActionsGeneral(request, actions, NLT.get("mobile.modifyEntry"), adapterUrl.toString(), "");
+			}
 	
-	return new ModelAndView("mobile/show_entry", model);
-}	
+			List entries = new ArrayList();
+			entries.add(entry);
+			BinderHelper.buildWorkflowSupportBeans(this, entries, model);
+		}
+	
+		//BinderHelper.addActionsHome(request, actions);
+		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
+		BinderHelper.addActionsFullView(bs, request, actions, binderId, entryId);
+		BinderHelper.addActionsSpacer(request, actions);
+		BinderHelper.addActionsLogout(request, actions);
+		model.put("ss_actions", actions);
+		
+		return new ModelAndView("mobile/show_entry", model);
+	}	
 
 	private ModelAndView ajaxMobileShowUser(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
