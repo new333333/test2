@@ -66,34 +66,7 @@
 		<table cellspacing="0" cellpadding="0" width="95%">
 		<tr>
 		<td valign="middle" width="10%"> </td>
-		<td valign="middle" width="80%" align="center" nowrap>
-	 	<c:if test="${!empty ss_mobileBinderDefUrlList}">
-	  	<div align="center">
-	  	  <form name="addEntryForm" 
-	  		action="<ssf:url adapter="true" portletName="ss_forum" 
-				binderId="${ssBinder.id}" 
-				action="__ajax_mobile" 
-				operation="mobile_add_entry" 
-				actionUrl="true" />" 
-			method="post">
-	  		<select name="url" id="url" size="1">
-	    	  <c:if test="${fn:length(ss_mobileBinderDefUrlList) == 1}">
-		  	    <c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
-		    	  <option value="${def.url}"><ssf:nlt tag="button.add"/>: ${def.title}</option>
-		  	    </c:forEach>
-	    	  </c:if>
-	    	  <c:if test="${fn:length(ss_mobileBinderDefUrlList) > 1}">
-	      		<option value="">--<ssf:nlt tag="mobile.add"/>--</option>
-		  		<c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
-		    	  <option value="${def.url}">${def.title}</option>
-		  		</c:forEach>
-			  </c:if>
-	  		</select>
-	  		<input type="submit" name="goBtn" value="<ssf:nlt tag="button.ok"/>"/>
-	  	  </form>
-	  	</div>
-	 	</c:if>
-		</td>
+		<td valign="middle" width="80%" align="center" nowrap>&nbsp;</td>
 		
 		<td valign="middle" width="10%" nowrap>
 	<c:if test="${ssDefinitionFamily != 'calendar'}">
