@@ -38,6 +38,17 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
+<script type="text/javascript">
+function ss_checkIfNumber(obj) {
+	if (!ss_isInteger(obj.value)) {
+		var msg = "<ssf:nlt tag="definition.error.invalidCharacter"><ssf:param name="value" value="xxxxxx"/></ssf:nlt>";
+		msg = ss_replaceSubStr(msg, "xxxxxx", obj.value);
+		alert(msg);
+		obj.value="";
+	}
+}
+</script>
+
 <div class="ss_pseudoPortal">
 
 <div class="ss_style ss_portlet">
@@ -80,7 +91,9 @@
 	  <ssf:nlt tag="administration.quotas.default"/>
 	</td>
 	<td style="padding-left:4px;" valign="top">
-	  <input type="text" size="6" name="defaultQuota" value="${ss_quotasDefault}"/>
+	  <input type="text" size="6" name="defaultQuota" value="${ss_quotasDefault}"
+	    onblur="ss_checkIfNumber(this);"
+	  />
 	  <ssf:nlt tag="administration.quotas.mb"/>
 	</td>
 	</tr>
@@ -89,7 +102,9 @@
 	  <ssf:nlt tag="administration.quotas.highWaterMark"/>
 	</td>
 	<td style="padding-left:4px;" valign="top">
-	  <input type="text" size="6" name="highWaterMark" value="${ss_quotasHighWaterMark}"/>%
+	  <input type="text" size="6" name="highWaterMark" value="${ss_quotasHighWaterMark}"
+	  	onblur="ss_checkIfNumber(this);"
+	  />%
 	</td>
 	</tr>
 	</table>
@@ -103,7 +118,9 @@
   <tr>
   <td valign="top" style="padding-right:50px;">
     <div class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/></div>
-    <input type="text" name="addGroupQuota" size="6" style="width:40px;"/>
+    <input type="text" name="addGroupQuota" size="6" style="width:40px;"
+	  onblur="ss_checkIfNumber(this);"
+    />
     <ssf:nlt tag="administration.quotas.mb" />
   </td>
   <td valign="top">
@@ -118,7 +135,9 @@
   <tr>
   <td valign="top" style="padding-right:50px;">
     <div class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/></div>
-    <input type="text" name="addUserQuota" size="6" style="width:40px;"/>
+    <input type="text" name="addUserQuota" size="6" style="width:40px;"
+	  onblur="ss_checkIfNumber(this);"
+    />
     <ssf:nlt tag="administration.quotas.mb" />
   </td>
   <td valign="top">
@@ -158,7 +177,9 @@
 	          ${group.diskQuota}
 	        </td>
 	        <td valign="top" class="ss_table_data_TD" nowrap>
-	          <input type="text" name="newGroupQuota_${group.id}" size="6" style="width:40px;" />
+	          <input type="text" name="newGroupQuota_${group.id}" size="6" style="width:40px;" 
+	            onblur="ss_checkIfNumber(this);"
+	          />
 	          <ssf:nlt tag="administration.quotas.mb" />
 	        </td>
 	      </tr>
@@ -199,7 +220,9 @@
 	          <fmt:formatNumber value="${user.diskSpaceUsed/1048576}" maxFractionDigits="2"/>
 	        </td>
 	        <td valign="top" class="ss_table_data_TD" nowrap>
-	          <input type="text" name="newUserQuota_${user.id}" size="6" style="width:40px;" />
+	          <input type="text" name="newUserQuota_${user.id}" size="6" style="width:40px;" 
+	            onblur="ss_checkIfNumber(this);"
+	          />
 	          <ssf:nlt tag="administration.quotas.mb" />
 	        </td>
 	      </tr>
