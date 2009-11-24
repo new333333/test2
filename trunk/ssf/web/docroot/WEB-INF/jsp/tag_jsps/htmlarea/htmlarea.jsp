@@ -63,6 +63,9 @@
 <c:if test="${!empty ss_diskQuotaExceeded}">
 var ss_diskQuotaExceeded = ${ss_diskQuotaExceeded};
 </c:if>
+<c:if test="${empty ss_diskQuotaExceeded}">
+var ss_diskQuotaExceeded = false;
+</c:if>
 var ss_imageSelections${element_id} = "<select name='srcUrl' id='srcUrl'><%--
 --%><c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" ><%--
 --%><option value='<ssf:escapeJavaScript value="${selection.fileItem.name}"/>'>${selection.fileItem.name}</option><%--

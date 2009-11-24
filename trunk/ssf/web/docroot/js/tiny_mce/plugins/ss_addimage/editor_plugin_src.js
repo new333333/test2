@@ -15,7 +15,7 @@
 		init : function(ed, url) {
 			// Register commands
 			ed.addCommand('mce_ssAddImage', function() {
-				if (!ss_diskQuotaExceeded) {
+				if (typeof ss_diskQuotaExceeded == "undefined" || !ss_diskQuotaExceeded) {
 					ed.windowManager.open({
 						file : url + '/image_.htm',
 						width : 550 + parseInt(ed.getLang('advimage.delta_width', 0)),
@@ -25,7 +25,7 @@
 						plugin_url : url
 					});
 				}
-				if (ss_diskQuotaExceeded) {
+				if (typeof ss_diskQuotaExceeded != "undefined" && ss_diskQuotaExceeded) {
 					ed.windowManager.open({
 						file : url + '/image_no.htm',
 						width : 550 + parseInt(ed.getLang('advimage.delta_width', 0)),
@@ -38,14 +38,14 @@
 			});
 
 			// Register buttons
-			if (!ss_diskQuotaExceeded) {
+			if (typeof ss_diskQuotaExceeded == "undefined" || !ss_diskQuotaExceeded) {
 			    ed.addButton('ss_addimage', {
 				    title : 'advimage.image_desc',
 				    cmd : 'mce_ssAddImage',
 				    image : url + '/images/ss_image.gif'
 			    });
 			}
-			if (ss_diskQuotaExceeded) {
+			if (typeof ss_diskQuotaExceeded != "undefined" && ss_diskQuotaExceeded) {
 			    ed.addButton('ss_addimage', {
 				    title : 'ss_addimage.desc_no',
 				    cmd : 'mce_ssAddImage',
