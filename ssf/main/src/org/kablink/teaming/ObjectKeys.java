@@ -239,6 +239,7 @@ public interface ObjectKeys {
     public static final String MASHUP_ATTR_FOLDER_ID = "folderId";
     public static final String MASHUP_ATTR_BINDER_ID = "binderId";
     public static final String MASHUP_ATTR_ZONE_UUID = "zoneUUID";
+    public static final String MASHUP_TYPE_CUSTOM_JSP = "customJsp";
     public static final String MASHUP_TYPE_ENTRY = "entry";
     public static final String MASHUP_TYPE_FOLDER = "folder";
     public static final String MASHUP_TYPE_BINDER_URL = "binderUrl";
