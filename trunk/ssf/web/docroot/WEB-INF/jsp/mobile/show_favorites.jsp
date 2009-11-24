@@ -72,6 +72,9 @@
 		  </div>
 		 </c:if>
 	  </c:forEach>
+	  <c:if test="${empty ss_mobileFavoritesList}">
+	    <span><ssf:nlt tag="mobile.noFavorites"/></span>
+	  </c:if>
     </div>
   </div>
 </div>
