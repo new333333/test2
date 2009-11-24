@@ -35,6 +35,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.web.util.WebHelper" %>
 
 <c:if test="${empty ss_namespace}">
 	<c:set var="ss_namespace" value="${renderResponse.namespace}" />
@@ -47,6 +48,11 @@
 
 		<ul class="ss_searchResult ss_nobullet">
 		<c:forEach var="entry" items="${ssFolderEntries}" varStatus="status">
+			<c:set var="parentBinderId" value="${entry._binderId}"/>
+			<jsp:useBean id="parentBinderId" type="java.lang.String" />
+			<%
+				boolean parentBinderPreDeleted = WebHelper.isBinderPreDeleted(Long.valueOf(parentBinderId));
+			%>
 		    <c:set var="entryBinderTitle" value="${entry.binderTitle}"/>
 		    <c:if test="${!empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[entry._binderId].title}">
 		    	<c:set var="entryBinderTitle" value="${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[entry._binderId].title}"/>
@@ -166,21 +172,27 @@
 									</p>
 								</c:if>
 								<c:if test="${!empty entryBinderTitle}">
-									<p><ssf:nlt tag="searchResult.label.binder" />: <a 
-									<c:if test="${isDashboard == 'yes'}">
-										href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" >
-											<ssf:param name="entityType" value="folder"/><ssf:param name="newTab" value="1"/></ssf:url>"
-										onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
-									</c:if>
-									<c:if test="${empty isDashboard || isDashboard == 'no'}">
-								     href="<ssf:url adapter="false" portletName="ss_forum" binderId="${entry._binderId}" action="view_folder_listing" actionUrl="false" >
-						  					<ssf:param name="newTab" value="1"/>
-	    	  							</ssf:url>" 
-	    	  						  onClick="ss_openUrlInWorkarea(this.href, '${entry._binderId}', 'view_folder_listing');return false;"
-	    	  						</c:if>
-									class="ss_parentPointer" title="${entryBinderPathName}">
-									${entryBinderTitle}
-									</a></p>
+									<p><ssf:nlt tag="searchResult.label.binder" />:
+									<%if (!parentBinderPreDeleted) { %>
+										<a 
+											<c:if test="${isDashboard == 'yes'}">
+												href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" >
+													<ssf:param name="entityType" value="folder"/><ssf:param name="newTab" value="1"/></ssf:url>"
+												onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
+											</c:if>
+											<c:if test="${empty isDashboard || isDashboard == 'no'}">
+										     href="<ssf:url adapter="false" portletName="ss_forum" binderId="${entry._binderId}" action="view_folder_listing" actionUrl="false" >
+								  					<ssf:param name="newTab" value="1"/>
+			    	  							</ssf:url>" 
+			    	  						  onClick="ss_openUrlInWorkarea(this.href, '${entry._binderId}', 'view_folder_listing');return false;"
+			    	  						</c:if>
+											class="ss_parentPointer" title="${entryBinderPathName}">
+											${entryBinderTitle}
+										</a>
+									<% } else { %>
+										${entryBinderTitle}
+									<% } %>
+									</p>
 								</c:if>
 							</div>
 				</c:when>
@@ -235,24 +247,30 @@
 										</ssf:titleLink>
 								</p>
 								<c:if test="${!empty entryBinderTitle}">
-									<p><ssf:nlt tag="searchResult.label.binder" />: <a 
-									<c:if test="${isDashboard == 'yes'}">
-										href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" >
-											<ssf:param name="entityType" value="folder"/><ssf:param name="newTab" value="1"/></ssf:url>"
-										onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
-									</c:if>
-									<c:if test="${empty isDashboard || isDashboard == 'no'}">
-								     href="<ssf:url adapter="false" 
-								       portletName="ss_forum" 
-								       binderId="${entry._binderId}" 
-								       action="view_folder_listing" actionUrl="false" >
-	    	  							<ssf:param name="newTab" value="1"/>
-	    	  							</ssf:url>" 
-	    	  						  onClick="ss_openUrlInWorkarea(this.href, '${entry._binderId}', 'view_folder_listing');return false;"
-	    	  						</c:if>
-									class="ss_parentPointer" title="${entryBinderPathName}">
-									${entryBinderTitle}
-									</a></p>
+									<p><ssf:nlt tag="searchResult.label.binder" />:
+									<% if (!parentBinderPreDeleted) { %>
+										<a 
+											<c:if test="${isDashboard == 'yes'}">
+												href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" >
+													<ssf:param name="entityType" value="folder"/><ssf:param name="newTab" value="1"/></ssf:url>"
+												onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
+											</c:if>
+											<c:if test="${empty isDashboard || isDashboard == 'no'}">
+										     href="<ssf:url adapter="false" 
+										       portletName="ss_forum" 
+										       binderId="${entry._binderId}" 
+										       action="view_folder_listing" actionUrl="false" >
+			    	  							<ssf:param name="newTab" value="1"/>
+			    	  							</ssf:url>" 
+			    	  						  onClick="ss_openUrlInWorkarea(this.href, '${entry._binderId}', 'view_folder_listing');return false;"
+			    	  						</c:if>
+											class="ss_parentPointer" title="${entryBinderPathName}">
+											${entryBinderTitle}
+										</a>
+									<% } else { %>
+										${entryBinderTitle}
+									<% } %>
+									</p>
 								</c:if>
 								
 							</div>
