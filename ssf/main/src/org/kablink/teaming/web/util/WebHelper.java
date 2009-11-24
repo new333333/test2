@@ -58,7 +58,12 @@ import org.kablink.teaming.TextVerificationException;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
@@ -143,6 +148,19 @@ public class WebHelper {
 		}
 		if (req != null) return "post".equals(req.getMethod().toLowerCase());
 		return false;
+	}
+	
+	public static boolean isBinderPreDeleted(Long binderId) {
+    	BinderModule bm = ((BinderModule) SpringContextUtil.getBean("binderModule"));
+    	Binder binder = bm.getBinder(binderId);
+    	boolean reply = false;
+    	if (binder instanceof Workspace) {
+    		reply = ((Workspace) binder).isPreDeleted();
+    	}
+    	else if (binder instanceof Folder) {
+    		reply = ((Folder) binder).isPreDeleted();
+    	}
+		return reply;
 	}
 	
 	public static HttpServletRequest getHttpServletRequest(PortletRequest request) {
