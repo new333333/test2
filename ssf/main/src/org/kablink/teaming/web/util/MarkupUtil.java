@@ -676,8 +676,9 @@ public class MarkupUtil {
 			    		titleLink.append("");
 			    		titleLink.append("</div>\n");
 			    		titleLink.append("<div>\n");
-			    		titleLink.append("<img width=\"60\" height=\"38\" src=\"").append(builder.getImagesRootUrl());
-			    		titleLink.append("pics/yt_powered_by_black.png").append("\"/>\n");
+			    		titleLink.append("<a href=\"http://www.youtube.com\"><img width=\"60\" height=\"38\" src=\"");
+			    		titleLink.append(builder.getImagesRootUrl());
+			    		titleLink.append("pics/yt_powered_by_black.png").append("\"/></a>\n");
 			    		titleLink.append("</div>\n");
 			    		titleLink.append("<script type=\"text/javascript\">\n");
 			    		titleLink.append("var params = { allowScriptAccess: \"always\" };\n");
