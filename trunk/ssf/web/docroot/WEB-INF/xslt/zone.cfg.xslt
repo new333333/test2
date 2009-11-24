@@ -30,15 +30,31 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <xsl:template match="zoneConfiguration">
 	<xsl:copy-of select="$doc2/zoneConfiguration/property | ./property[not(@name=$doc2/zoneConfiguration/property/@name)]"/>
-		<xsl:choose>
-			<xsl:when test="$doc2/zoneConfiguration/defaultZone">
-				<xsl:copy-of select="$doc2/zoneConfiguration/defaultZone"/>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:copy-of select="./defaultZone" />
-			</xsl:otherwise>
-		</xsl:choose>
-
+	<xsl:choose>
+		<xsl:when test="$doc2/zoneConfiguration/defaultZone">
+			<xsl:copy-of select="$doc2/zoneConfiguration/defaultZone"/>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:copy-of select="./defaultZone" />
+		</xsl:otherwise>
+	</xsl:choose>
+	<xsl:copy-of select="$doc2/zoneConfiguration/zone | ./property[not(@name=$doc2/zoneConfiguration/zone/@name)]"/>
+	<xsl:choose>
+		<xsl:when test="$doc2/zoneConfiguration/defaultGroupsOnAcctCreation">
+			<xsl:copy-of select="$doc2/zoneConfiguration/defaultGroupsOnAcctCreation"/>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:copy-of select="./defaultGroupsOnAcctCreation" />
+		</xsl:otherwise>
+	</xsl:choose>
+	<xsl:choose>
+		<xsl:when test="$doc2/zoneConfiguration/xssConfiguration">
+			<xsl:copy-of select="$doc2/zoneConfiguration/xssConfiguration"/>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:copy-of select="./xssConfiguration" />
+		</xsl:otherwise>
+	</xsl:choose>
 </xsl:template>
 <xsl:template match="folderConfiguration">
 	<xsl:copy-of select="$doc2/zoneConfiguration/folderConfiguration/property | ./property[not(@name=$doc2/zoneConfiguration/folderConfiguration/property/@name)]"/>

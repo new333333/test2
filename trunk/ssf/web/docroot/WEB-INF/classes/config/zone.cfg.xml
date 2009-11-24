@@ -1,28 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- MAKE SURE NEW ADDITIONS ARE HANDLED IN THE XSLT MERGE zone.cfg.xslt -->
+<!-- DEVELOPERS: MAKE SURE NEW ADDITIONS ARE HANDLED IN THE XSLT MERGE zone.cfg.xslt. --> 
+<!-- USERS: THIS FILE IS READ-ONLY. IF YOU NEED TO MAKE CUSTOM CHANGES TO ANY OF      -->
+<!-- THE SETTINGS, YOU MUST SPECIFY IT IN zone-ext.cfg.xml FILE.                      -->
 <zoneConfiguration>
 	<!-- Unlike all other elements in the file, the following element is
 	     meaningful only at the top-level. In other words, it does not
 	     apply to individual zone instances. This element is required. -->
 	<defaultZone name="kablink"/>
-	<!-- Zone specific settings for default zone of liferay.com. -->
-	<zone name="kablink">
-		<!-- all new users in this zone will be assigned group membership in these groups -->
-		<defaultGroupsOnAcctCreation>
-			<!-- Example format -->
-			<!--<group name="registered_user" />-->
-		</defaultGroupsOnAcctCreation>
-		<xssConfiguration>
-			<trustedUsers>
-				<!-- Example format -->
-				<!--<user name="special_user"/>-->
-			</trustedUsers>
-			<trustedGroups>
-				<!-- Example format -->
-				<!--<group name="special_group"/>-->
-			</trustedGroups>
-		</xssConfiguration>
-	</zone>
 	<property name="adminUser">admin</property>
 	<property name="guestUser">guest</property>
 	<property name="startupConfig">config/startup.xml</property>
@@ -65,5 +49,27 @@
 		<property name="deploy.seconds">300</property>
 	</extensionConfiguration>
 	<licenseConfiguration/>
+	<!-- You can specify zone-specific settings by creating a separate nested element 
+	     with the name "zone" as shown here. This example illustrates a set of configuration 
+	     settings that are applicable only to the zone named "kablink" which happens to
+	     be the name of the default zone in Teaming.
+	<zone name="kablink">
+		All new users in this zone will be assigned group membership in these groups.
+		<defaultGroupsOnAcctCreation>
+			Example format.
+			<group name="registered_user" />
+		</defaultGroupsOnAcctCreation>
+		<xssConfiguration>
+			<trustedUsers>
+				Example format.
+				<user name="special_user"/>
+			</trustedUsers>
+			<trustedGroups>
+				Example format.
+				<group name="special_group"/>
+			</trustedGroups>
+		</xssConfiguration>
+	</zone>
+	-->
 </zoneConfiguration>
 
