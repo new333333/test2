@@ -165,9 +165,18 @@ public class ReportDownloadController extends  SAbstractController {
 				Collection<Long> ids = TreeHelper.getSelectedIds(formData);
 
 				report = getReportModule().generateReport(ids, hasUsers, startDate, endDate);
-				columns = new String[] {ReportModule.BINDER_ID, ReportModule.BINDER_PARENT, ReportModule.BINDER_TITLE,
-						ReportModule.USER_ID, AuditTrail.AuditType.view.name(), AuditTrail.AuditType.add.name(),
-						AuditTrail.AuditType.modify.name(), AuditTrail.AuditType.delete.name()};
+				columns = new String[]
+				                     {
+										ReportModule.BINDER_ID,
+										ReportModule.BINDER_PARENT,
+										ReportModule.BINDER_TITLE,
+										ReportModule.USER_ID,
+										AuditTrail.AuditType.view.name(),
+										AuditTrail.AuditType.add.name(),
+										AuditTrail.AuditType.modify.name(),
+										AuditTrail.AuditType.delete.name(),
+										AuditTrail.AuditType.preDelete.name(),
+										AuditTrail.AuditType.restore.name()};
 			} else if ("login".equals(reportType)) {
 				report = getReportModule().generateLoginReport(startDate, endDate, optionType, 
 						sortType, sortType2, memberIds);
