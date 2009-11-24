@@ -32,9 +32,10 @@
  */
 package org.kablink.teaming.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.io.File;
+
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -47,6 +48,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.DocumentSource;
+import org.dom4j.io.OutputFormat;
 import org.kablink.teaming.ConfigurationException;
 import org.springframework.core.io.Resource;
 
@@ -73,14 +75,42 @@ public class DefaultMergeableXmlClassPathConfigFiles extends MergeableXmlClassPa
     			StreamResult result = new StreamResult(new StringWriter());
     			trans.transform(new DocumentSource(getAsDom4jDocument(0)), result);
     			Document document = null;
-//    			String it = result.getWriter().toString();
-   		    	document = DocumentHelper.parseText(result.getWriter().toString());
+   		    	document = DocumentHelper.parseText(result.getWriter().toString());	   		    	
+   		    	if(logger.isDebugEnabled()) {
+   		    		logger.debug("Merging " + size() + " files into a single document. The combined document is shown below.");
+   		    		logger.debug(toPrettyString(document));
+   		    	}
    		    	return document;
-    		} else return getAsDom4jDocument();
+    		} 
+    		else {
+    			if(logger.isDebugEnabled()) {
+    				if(size() == 1)
+    					logger.debug("No merging of XML files since there is only one file");
+    				else if(size() == 0)
+    					logger.debug("No merging of XML files since there is none");
+    				else
+    					logger.debug("No merging of XML files since there is no style sheet");
+    			}
+    			return getAsDom4jDocument();
+    		}
     	} catch (TransformerConfigurationException te) {
     		throw new ConfigurationException(te.getLocalizedMessage(), te);
        	} catch (TransformerException te) {
     		throw new ConfigurationException(te.getLocalizedMessage(), te);
+    	}
+    }
+    
+    private String toPrettyString(Document doc) {
+    	try {
+	    	ByteArrayOutputStream out = new ByteArrayOutputStream();
+		    OutputFormat format = OutputFormat.createPrettyPrint();
+			org.dom4j.io.XMLWriter w = new org.dom4j.io.XMLWriter(System.out, format);
+			w.write(doc);
+			w.close();
+			return new String(out.toByteArray(), "UTF-8");
+    	}
+    	catch(IOException e) {
+    		return "Cannot print a document due to an unexpected problem.";
     	}
     }
 }

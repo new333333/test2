@@ -38,6 +38,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -47,6 +49,7 @@ import org.springframework.core.io.Resource;
  */
 public class ClassPathConfigFiles {
     
+	protected Log logger = LogFactory.getLog(getClass());
     protected List<String> configFiles;
     protected List<Resource> resources;
     
@@ -61,12 +64,20 @@ public class ClassPathConfigFiles {
     			cFile = cFile.substring(9);
     			resource = toResource(cFile);
     			if(!resource.exists()) {
+    				if(logger.isDebugEnabled())
+    					logger.debug("The optional file " + cFile + " does not exist");
     				// The optional resource does not exist. Proceed.
     				continue;
+    			}
+    			else {
+    				if(logger.isDebugEnabled())
+    					logger.debug("The optional file " + cFile + " exists");  				
     			}
     		}
     		else {
     			resource = toResource(cFile);
+				if(logger.isDebugEnabled())
+					logger.debug("The file " + cFile + " is required");	
     		}
 			configFiles.add(cFile);
 			resources.add(resource);    			
