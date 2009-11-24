@@ -186,6 +186,10 @@ function ss_exportingDone() {
 	ss_hideSpinnerImg();
 }
 
+function ss_folderTree_showId(id, obj, action) {
+	return ss_checkTree(obj, "ss_tree_checkboxss_folderTreeid" + id);
+}
+
 </script>
 
 <c:if test="${ss_statusWindow}">
