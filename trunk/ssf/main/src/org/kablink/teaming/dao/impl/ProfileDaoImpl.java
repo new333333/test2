@@ -798,16 +798,17 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
       		    		ids.add(p.getId());
        		    	}
       		    	List<EmailAddress> objs = session.createCriteria(EmailAddress.class)
-      		    		.add(Expression.in("principal", entries))
-      		    		.addOrder(Order.asc("principal"))
+      		    		.add(Expression.in("id.principal", ids))
+      		    		.addOrder(Order.asc("id.principal"))
       		    		.list();
       		    	//now build EMAIL collection
  		    		HashSet tSet = new HashSet();
  		    		for (Principal p:sorted) {
       		    		HashMap tMap = new HashMap();
       		    		for (EmailAddress email:objs) {
-      		    			if (p.equals(email.getPrincipal())) {
-      		    				tMap.put(email.getType(), email);
+      		    			EmailAddress.ID emailAddressId = email.getId();
+      		    			if(p.getId().equals(emailAddressId.getPrincipal())) {
+      		    				tMap.put(emailAddressId.getType(), email);
       		    				tSet.add(email);    
       		    			} else break;
       		    		}

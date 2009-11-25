@@ -38,41 +38,25 @@ import java.io.Serializable;
  *
  */
 //This could be a composite element, but then the primary key contains all fields, and don't want that.
-public class EmailAddress extends ZonedObject implements Serializable {
+public class EmailAddress extends ZonedObject {
 
 	private static final long serialVersionUID = 1L;
-	protected String type;
 	protected String address;
 	protected Long zoneId; //hibernate field access
-	protected transient Principal principal;	
+	protected ID id;
 
 	protected EmailAddress() {
 	}
 	public EmailAddress(Principal principal, String type, String address) {
-		this.type = type;
+		this.id = new ID(principal.getId(), type);
 		this.address = address;
-		this.principal = principal;
 	}
-	/**
-	 * Return the owning principal
-	 * @hibernate.key-many-to-one
-	 */
-	public Principal getPrincipal() {
-		return principal;
+
+	public ID getId() {
+		return id;
 	}
-	public void setPrincipal(Principal principal) {
-		this.principal = principal;
-	}
-	/**
-	 * Return the type of address. 
-	 * @hibernate.key-property length="64"
-	 * @return
-	 */
-	public String getType()  {
-		return type;
-	}
-	protected void setType(String type) {
-		this.type = type;
+	public void setId(ID id) {
+		this.id = id;
 	}
 	/**
 	 * Return email address.
@@ -85,17 +69,51 @@ public class EmailAddress extends ZonedObject implements Serializable {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	public boolean equals(Object obj) {
-		if (obj == null) return false;
-		if (obj == this) return true;
-		if (obj instanceof EmailAddress) {
-			EmailAddress pk = (EmailAddress) obj;
-			if (pk.getPrincipal().equals(principal) && 
-					pk.getType().equals(type)) return true;
+	
+	public static class ID implements Serializable {
+		private Long principal;
+		private String type;
+		protected ID() {
 		}
-		return false;
-	}
-	public int hashCode() {
-		return 31*principal.hashCode() + type.hashCode();
+		public ID(Long principal, String type) {
+			this.principal = principal;
+			this.type = type;
+		}
+		public Long getPrincipal() {
+			return principal;
+		}
+		public void setPrincipal(Long principal) {
+			this.principal = principal;
+		}
+		public String getType() {
+			return type;
+		}
+		public void setType(String type) {
+			this.type = type;
+		}
+		public boolean equals(Object obj) {
+			if(obj == null) 
+				return false;
+			if(obj == this) 
+				return true;
+			if(principal == null || type == null)
+				return false;
+			if(obj instanceof ID) {
+				ID id = (ID) obj;
+				if(id.principal == null || id.type == null)
+					return false;
+				if(id.principal.equals(principal) && id.type.equals(type))
+					return true;
+			}
+			return false;
+		}
+		public int hashCode() {
+			int result = 0;
+			if(principal != null)
+				result = 31*principal.hashCode();
+			if(type != null)
+				result += type.hashCode();
+			return result;
+		}
 	}
 }
