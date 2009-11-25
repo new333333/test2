@@ -25,10 +25,11 @@ default definition of the bean with the same name in applicationContext.xml.
 4. Restart Kablink server.
 
 5. To test the newly added WS operation, go to samples/wsclient, execute
-"ant", and run "wsclient.bat getFolderTitle 1" (on Windows). 
+"ant", and run "teamingservice-client-with-call.bat getFolderTitle 1" 
+(on Windows). 
 It runs the sample client program that invokes the folder_getFolderTitle 
 WS operation that was built and deployed in the step 1 above.
 
-You can also point your browser to http://<kablink host>:<port>/ssf/ws/TeamingService?wsdl
-or http://<kablink host>:<port>/ssr/ws/TeamingService?wsdl to make sure that 
-the newly added WS operation is properly exported through the WSDL.
+You can also point your browser to http://<kablink host>:<port>/ssf/ws/TeamingServiceV1?wsdl
+or http://<kablink host>:<port>/ssr/ws/TeamingServiceV1?wsdl to verify that 
+the newly added WS operation is properly exported through the Teaming WSDL.
