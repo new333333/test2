@@ -137,11 +137,11 @@
 				    binderId="${entryWn._principal.workspaceId}" />"
 				 ><c:out value="${entryWn._principal.title}" escapeXml="true"/></a></span>
 	
-			  	 <span class="entry-date">
+			  	 <div class="entry-date">
 			    	<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 		          	value="${entryWn._modificationDate}" type="both" 
 			      	timeStyle="short" dateStyle="medium" />
-			  	 </span>
+			  	 </div>
 		   
 		  	</div>
 		  
@@ -159,6 +159,7 @@
 					 >
 			  		 <span>${title}</span></a>
 				</c:if>
+				  <span class="font-red">Lynn</span>
 			</div>
 			
 			  <c:if test="${!empty entryWn._desc}">

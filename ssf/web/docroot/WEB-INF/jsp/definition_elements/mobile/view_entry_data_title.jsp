@@ -88,7 +88,7 @@
 	  }
   %>
   <c:if test="${!empty ssDefinitionEntry.docNumber}">
-	<span class="doc-number">${ssDefinitionEntry.docNumber}.</span>
+	<div class="doc-number">${ssDefinitionEntry.docNumber}.</div>
   </c:if>
   <a href="<ssf:url adapter="true" portletName="ss_forum" 
 					folderId="${ssBinder.id}" 
