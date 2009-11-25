@@ -81,7 +81,7 @@
 	    ><img border="0" src="<html:rootPath/>images/mobile/nl_left_16.gif"/></a>
 		</c:if>
 		<c:if test="${empty ss_prevPage}">
-	  	<img border="0" src="<html:rootPath/>images/mobile/nl_left_dis_16.gif"
+	  	<img border="0" src="<html:rootPath/>images/mobile/nl_left_dis_20.png"
 	  		<ssf:alt tag=""/> />
 		</c:if>
 		</td><td style="padding-left:20px;">
@@ -94,7 +94,7 @@
 	  	><img border="0" src="<html:rootPath/>images/mobile/nl_right_16.gif"/></a>
 		</c:if>
 		<c:if test="${empty ss_nextPage}">
-	  		<img border="0" src="<html:rootPath/>images/mobile/nl_right_dis_16.gif"
+	  		<img border="0" src="<html:rootPath/>images/mobile/nl_right_dis_20.png"
 	  		<ssf:alt tag=""/> />
 		</c:if>
 		</tr></table>
@@ -128,10 +128,10 @@
 				    operation="mobile_show_workspace"
 				    binderId="${entryFol._principal.workspaceId}" />"
 				  ><c:out value="${entryFol._principal.title}" escapeXml="true"/></a></span>
-				<span class="entry-date"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+				<div class="entry-date"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 		          	value="${entryFol._modificationDate}" type="both" 
 			      	timeStyle="short" dateStyle="medium" />
-			    </span>
+			    </div>
 			  </div>
 		 
 		  	  
