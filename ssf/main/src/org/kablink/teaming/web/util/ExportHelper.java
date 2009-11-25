@@ -2015,7 +2015,17 @@ public class ExportHelper {
 
 				Map options = new HashMap();
 				options.put(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE, state);
-
+				
+				//Workflow State needs a modification timestamp
+				User user = RequestContextHolder.getRequestContext().getUser();
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		    	Calendar current = Calendar.getInstance();
+		    	current.setTime(new Date());
+				
+				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, user.getName());
+				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, current);
+				
+				
 				try {
 					workflowModule.addEntryWorkflow((FolderEntry) entity,
 						entityIdentifier, def, options);
