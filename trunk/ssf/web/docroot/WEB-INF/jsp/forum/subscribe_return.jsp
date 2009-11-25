@@ -34,7 +34,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<div class="ss_style ss_popup" align="left">
+<div class="ss_style ss_popup" style="width: 350px" align="left">
 <form method="post" id="${ss_namespace}subscription_form${ssBinder.id}">
 <div align="center" class="ss_popup_topLg ss_bold"><ssf:nlt tag="subscribe.select.type"/><ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_notifications_explained"/></div>
 
