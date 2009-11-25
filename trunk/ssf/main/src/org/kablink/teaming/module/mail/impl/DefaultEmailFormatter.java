@@ -393,13 +393,21 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 
 	public String getSubject(Binder binder, Entry entry, Notify notify) {
 		if (entry == null) {
+			StringBuffer buf = new StringBuffer();
+			buf.append("[");
+			buf.append(NLT.get("notify.subject.entry", notify.getLocale()));
+			buf.append(":");
+			buf.append(NLT.get("notify.digest", notify.getLocale()));
+			buf.append("] ");
 			String subject = binder.getNotificationDef().getSubject();
-			if (Validator.isNull(subject))
+			if (Validator.isNull(subject)) {
 				subject = mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.NOTIFY_SUBJECT);
-			//	if not specified, use a localized default
-			if (Validator.isNull(subject))
-				return NLT.get("notify.subject", notify.getLocale()) + " " + binder.toString();
-			return subject;
+			}
+			if (Validator.isNull(subject)) {
+				subject = binder.getTitle();
+			}
+			buf.append(subject);
+			return buf.toString();
 		} else {
 			String family = DefinitionUtils.getFamily(entry.getEntryDef().getDefinition());
 			if (ObjectKeys.FAMILY_CALENDAR.equals(family) || ObjectKeys.FAMILY_TASK.equals(family)) {
