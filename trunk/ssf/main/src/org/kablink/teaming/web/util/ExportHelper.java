@@ -1123,7 +1123,9 @@ public class ExportHelper {
 					if (!definitionIdMap.containsKey(defId)) {
 						if (!internalId.equals("")) {
 							//This is a default definition, get its id
-							def = definitionModule.getDefinitionByReservedId(internalId);
+							try {
+								def = definitionModule.getDefinitionByReservedId(internalId);
+							} catch(NoDefinitionByTheIdException e) {}
 							if (def != null) {
 								definitionIdMap.put(defId, def);
 							} else {
@@ -1296,7 +1298,7 @@ public class ExportHelper {
 						Definition def = null;
 						if (definitionIdMap.containsKey(defId)) def = definitionIdMap.get(defId);
 
-						if (ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF.equals(def.getId())) {
+						if (def != null && ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF.equals(def.getId())) {
 							def = definitionModule.getDefinitionByReservedId(ObjectKeys.DEFAULT_LIBRARY_ENTRY_DEF);
 							if (def != null) {
 								setEntityDefinitionId(tempDoc, def.getId());
