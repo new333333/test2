@@ -4,8 +4,8 @@
 <hibernate-mapping auto-import="false">
   <class dynamic-update="true" table="SS_EmailAddresses" lazy="false" name="org.kablink.teaming.domain.EmailAddress">
     <cache usage="read-write"/>
-    <composite-id name="id">
-     <key-property name="principal"/>
+    <composite-id >
+     <key-many-to-one name="principal"/>
      <key-property name="type" length="64"/>
     </composite-id>
     <property name="zoneId" access="field" not-null="true"/>
