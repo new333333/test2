@@ -1878,12 +1878,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
         User user = RequestContextHolder.getRequestContext().getUser();
 		String nameValuePerUser = nameValue + "." + user.getName();
 		String s_userVersionAllowed = "false";
-		if (nextItem != null) DefinitionUtils.getPropertyValue(nextItem, "userVersionAllowed");
+		if (nextItem != null) s_userVersionAllowed = DefinitionUtils.getPropertyValue(nextItem, "userVersionAllowed");
 		boolean userVersionAllowed = false;
 		if (s_userVersionAllowed != null && "true".equals(s_userVersionAllowed)) 
 			userVersionAllowed = true;
 		String s_fieldModificationAllowed = "false";
-		if (nextItem != null) DefinitionUtils.getPropertyValue(nextItem, "fieldModificationAllowed");
+		if (nextItem != null) s_fieldModificationAllowed = DefinitionUtils.getPropertyValue(nextItem, "fieldModificationAllowed");
 		boolean fieldModificationAllowed = false;
 		if (s_fieldModificationAllowed != null && "true".equals(s_fieldModificationAllowed)) 
 			fieldModificationAllowed = true;
@@ -2337,8 +2337,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 		} else {
 			if (inputData.exists(nameValue)) {
-				if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-					entryData.put(nameValue, inputData.getSingleValue(nameValue));
+				if (!inputData.isFieldsOnly() || fieldModificationAllowed) {
+					if (inputData.getValues(nameValue).length > 1) {
+						entryData.put(nameValue, inputData.getValues(nameValue));
+					} else {
+						entryData.put(nameValue, inputData.getSingleValue(nameValue));
+					}
+				}
 			}
 			if (userVersionAllowed && inputData.exists(nameValuePerUser)) 
 				entryData.put(nameValuePerUser, inputData.getSingleValue(nameValuePerUser));

@@ -113,8 +113,7 @@
       <td valign="top" style="padding-left:10px;">
 		<div class="ss_entryContent"><ssf:showUser user="${perUserUser}"/></div>
 	  </td>
-	  <td valign="top" style="padding-left:10px;">
-		<ul class="ss_nobullet">
+	  <td valign="top" style="padding:4px 0px 0px 10px;">
 			<c:forEach var="selection" items="${ssDefinitionEntry.customAttributes[perUserPropertyName].valueSet}" >
 				<%
 				String caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
@@ -122,9 +121,10 @@
 				caption = NLT.getDef(caption);
 				%>
 				<c:set var="caption" value="<%= caption %>"/>
-				<li><span class="${ss_element_display_style_item}"><c:out value="${caption}" escapeXml="false"/></span></li>
+				<div>
+				  <span class="${ss_element_display_style_item}"><c:out value="${caption}" escapeXml="false"/></span>
+				</div>
 			</c:forEach>
-		</ul>
 	  </td>
       </tr>
     </c:forEach>

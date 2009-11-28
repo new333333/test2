@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import javax.activation.FileTypeMap;
@@ -62,6 +63,7 @@ import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.ExportException;
 import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -105,7 +107,13 @@ public class ExportImportController  extends  SAbstractController {
 					reportMap.put(ExportHelper.files, new Integer(0));
 					reportMap.put(ExportHelper.errors, new Integer(0));
 					reportMap.put(ExportHelper.errorList, new ArrayList());
-			    	getBinderModule().importZip(binderId, fIn, statusTicket, reportMap);	
+			    	try {
+			    		getBinderModule().importZip(binderId, fIn, statusTicket, reportMap);	
+			    	} catch(ExportException e) {
+			    		reportMap.put("errors", (Integer)reportMap.get("errors") + 1);
+			    		List eList = (List)reportMap.get("errorList");
+			    		eList.add(e.getMessage());
+			    	}
 					String[] reportData = new String[] {
 							((Integer)reportMap.get(ExportHelper.workspaces)).toString(),
 							((Integer)reportMap.get(ExportHelper.folders)).toString(),
@@ -224,8 +232,14 @@ public class ExportImportController  extends  SAbstractController {
 			reportMap.put(ExportHelper.files, new Integer(0));
 			reportMap.put(ExportHelper.errors, new Integer(0));
 			reportMap.put(ExportHelper.errorList, new ArrayList());
-			getBinderModule().export(binderId, entryId, res.getOutputStream(), options, binderIds, 
-					noSubBinders, statusTicket, reportMap);
+			try {
+				getBinderModule().export(binderId, entryId, res.getOutputStream(), options, binderIds, 
+						noSubBinders, statusTicket, reportMap);
+	    	} catch(ExportException e) {
+	    		reportMap.put("errors", (Integer)reportMap.get("errors") + 1);
+	    		List eList = (List)reportMap.get("errorList");
+	    		eList.add(e.getMessage());
+	    	}
 			String[] reportData = new String[] {
 					((Integer)reportMap.get(ExportHelper.workspaces)).toString(),
 					((Integer)reportMap.get(ExportHelper.folders)).toString(),

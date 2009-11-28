@@ -158,6 +158,7 @@ import org.kablink.teaming.util.ZipEntryStream;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.ExportException;
 import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
@@ -2049,7 +2050,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	public void importZip(Long binderId, InputStream fIn, StatusTicket statusTicket, 
-			Map reportMap) throws IOException {
+			Map reportMap) throws IOException, ExportException {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.export);
 		
