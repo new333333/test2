@@ -32,21 +32,31 @@
  */
 package org.kablink.teaming.fi;
 
-public class FIException extends RuntimeException {
+import org.kablink.teaming.exception.UncheckedCodedException;
+
+public class FIException extends UncheckedCodedException {
 
 	private static final long serialVersionUID = 1L;
 	
-	public FIException() {
-        super();
+	public static final String CANNOT_FIND_RESOURCE_DRIVER = "fi.error.cannot.find.resource.driver";
+	public static final String FAILED_TO_DELETE = "fi.error.failed.to.delete";
+	public static final String FAILED_TO_MOVE = "fi.error.failed.to.move";
+	public static final String FAILED_TO_WRITE = "fi.error.failed.to.write";
+	public static final String PARENT_BINDER_DOES_NOT_EXIST = "fi.error.parent.binder.doesnot.exist";
+	public static final String PARENT_BINDER_IS_NOT_BINDER="fi.error.parent.binder.isnot.binder";
+	public static final String PARENT_BINDER_IS_NOT_MIRRORED_FOLDER="fi.error.parent.binder.isnot.mirrored.folder";
+	public static final String FILE_DOES_NOT_EXIST="fi.error.file.doesnot.exist";
+	public static final String BINDER_TO_DELETE_DOES_NOT_EXIST="fi.error.binder.to.delete.doesnot.exist";
+	public static final String BINDER_TO_DELETE_IS_NOT_MIRRORED_FOLDER="fi.error.binder.to.delete.isnot.mirrored.folder";
+	public static final String FAILED_TO_SYNCHRONIZE_NOT_DIRECTORY="fi.error.failed.to.synchronize.not.directory";
+	public static final String CANNOT_ADD_FOLDER_ANCESTER="fi.error.cannot.add.folder.ancester";
+	
+    public FIException(String errorCode, Object arg) {
+    	super(errorCode, new Object[]{arg});
     }
-    public FIException(String message) {
-        super(message);
-    }
-    public FIException(String message, Throwable cause) {
-        super(message, cause);
-    }
-    public FIException(Throwable cause) {
-        super(cause);
+
+    public FIException(String errorCode, Object arg1, Object arg2) {
+    	super(errorCode, new Object[]{arg1,arg2});
     }
 
 }
