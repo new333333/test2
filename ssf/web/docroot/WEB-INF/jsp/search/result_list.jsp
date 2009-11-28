@@ -51,7 +51,10 @@
 			<c:set var="parentBinderId" value="${entry._binderId}"/>
 			<jsp:useBean id="parentBinderId" type="java.lang.String" />
 			<%
-				boolean parentBinderPreDeleted = WebHelper.isBinderPreDeleted(Long.valueOf(parentBinderId));
+				boolean parentBinderPreDeleted = true;
+				try {
+					parentBinderPreDeleted = WebHelper.isBinderPreDeleted(Long.valueOf(parentBinderId));
+				} catch(Exception e) {}
 			%>
 		    <c:set var="entryBinderTitle" value="${entry.binderTitle}"/>
 		    <c:if test="${!empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[entry._binderId].title}">

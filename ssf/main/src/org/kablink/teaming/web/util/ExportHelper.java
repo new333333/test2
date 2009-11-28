@@ -159,7 +159,8 @@ public class ExportHelper {
 	public static final String errorList = "errorList";
 	
 	//Export version number. Used to distinguish between export file formats 
-	public static final String exportVersion = "1";
+	public static final String exportVersion = "3";
+	public static final String exportVersionV1 = "3";
 
 	// used during export so that all id's are at least 8 digits long,
 	// with leading zeroes
@@ -304,7 +305,7 @@ public class ExportHelper {
 			String pathName = "";
 			if (EntityType.workspace.equals(binder.getEntityType()) || EntityType.profiles.equals(binder.getEntityType())) {
 				Binder parentBinder = binder;
-				while (!parentBinder.equals(start)) {
+				while (parentBinder != null && !parentBinder.equals(start)) {
 					parentBinder = parentBinder.getParentBinder();
 					if (parentBinder == null) break;
 					if (EntityType.folder.equals(parentBinder.getEntityType())) {
@@ -348,7 +349,7 @@ public class ExportHelper {
 						+ nft.format(binderId) + "/" + "."
 						+ binderPrefix + "f" + nft.format(binderId) + ".xml"));
 				XmlFileUtil.writeFile(getFolderAsDoc(null, binderId, false,
-						binderPrefix + "f" + nft.format(binderId)),
+						pathName + binderPrefix + "f" + nft.format(binderId)),
 						zipOut);
 				zipOut.closeEntry();
 				Integer count = (Integer)reportMap.get(folders);
@@ -602,7 +603,7 @@ public class ExportHelper {
 		addCustomElements(entryElem, entry);
 
 		// attachments
-		adjustAttachmentUrls(doc, pathName);
+		addAttachmentFiles(doc, entry);
 
 		// workflows
 		addWorkflows(doc.getRootElement(), entry);
@@ -632,7 +633,7 @@ public class ExportHelper {
 		folderElem.add(team);
 
 		// attachments
-		adjustAttachmentUrls(doc, pathName);
+		addAttachmentFiles(doc, folder);
 
 		// binder settings
 		addSettingsList(doc.getRootElement(), folder);
@@ -664,7 +665,7 @@ public class ExportHelper {
 		workspaceElem.add(team);
 
 		// attachments
-		adjustAttachmentUrls(doc, pathName);
+		addAttachmentFiles(doc, workspace);
 
 		// binder settings
 		addSettingsList(doc.getRootElement(), workspace);
@@ -842,15 +843,28 @@ public class ExportHelper {
 		return team;
 	}
 
-	private static void adjustAttachmentUrls(Document entityDoc, String pathName) {
-		String xPath = "//attribute[@type='attachFiles']//file//@href";
+	private static void addAttachmentFiles(Document entityDoc, DefinableEntity entity) {
+		String xPath = "//attribute[@name='ss_attachFile']";
 
-		List hrefs = entityDoc.selectNodes(xPath);
-
-		for (Attribute attr : (List<Attribute>) hrefs) {
-			File tempFile = new File(attr.getValue());
-			// Use '/' instead of File.separator so the correct directory structure will be created in the zip file.
-			attr.setValue(pathName + "/" + tempFile.getName());
+		List attachFiles = entityDoc.selectNodes(xPath);
+		if (!entity.getFileAttachments().isEmpty() && (attachFiles == null || attachFiles.isEmpty())) {
+			Element element = entityDoc.getRootElement().addElement("attribute");
+			element.addAttribute("name", "ss_attachFile");
+			element.addAttribute("type", "attachFiles");
+			
+			//The attached files are already loaded, so do it now
+			for (FileAttachment att:entity.getFileAttachments()) {
+				if (att != null && att.getFileItem() != null) { 
+					Element value = element.addElement("file");
+					value.setText(att.getFileItem().getName());
+					
+					String fileName = binderModule.filename8BitSingleByteOnly(att, 
+							SPropsUtil.getBoolean("export.filename.8bitsinglebyte.only", true));
+					value.addAttribute("href", fileName);
+					
+					value.addAttribute("numVersions", String.valueOf(att.getFileVersions().size()));
+				}
+			}
 		}
 	}
 
@@ -1037,7 +1051,9 @@ public class ExportHelper {
 			+ "f[0-9]{8}");
 
 	public static void importZip(Long binderId, InputStream fIn, StatusTicket statusTicket,
-			Map reportMap) throws IOException {
+			Map reportMap) throws IOException, ExportException {
+		getNumberFormat();
+		
 		Map<String, Principal> nameCache = new HashMap();
 		Binder binder = binderModule.getBinder(binderId);
 		ZipInputStream zIn = new ZipInputStream(fIn);
@@ -1060,6 +1076,11 @@ public class ExportHelper {
 			File tempDirFile = new File(tempDir);
 			importDir(tempDirFile, tempDir, binderId, entryIdMap, binderIdMap, definitionIdMap, 
 					statusTicket, reportMap, nameCache);
+		} catch(Exception e) {
+				if (e instanceof ExportException)
+					throw (ExportException) e;
+				else
+					throw new ExportException(e);
 		} finally {
 			FileUtil.deltree(tempDir);
 		}
@@ -1213,7 +1234,7 @@ public class ExportHelper {
 						// check actual entity type of the data in the xml file
 						if (entType.equals("entry")) {
 							if (parentId == null) {
-								folder_addEntryWithXML(null, newBinderId,
+								folder_addEntryWithXML(null, newBinderId, topBinderId,
 										def, xmlStr, tempDir, entryIdMap, binderIdMap, 
 										definitionIdMap, entryId, statusTicket, reportMap, nameCache);
 							
@@ -1221,7 +1242,7 @@ public class ExportHelper {
 								reportMap.put(entries, ++count);
 							} else {
 								Long newParentId = (Long) entryIdMap.get(parentId);
-								folder_addReplyWithXML(null, newBinderId,
+								folder_addReplyWithXML(null, newBinderId, topBinderId,
 										newParentId, def, xmlStr, tempDir, entryIdMap, binderIdMap, 
 										definitionIdMap, entryId, reportMap, nameCache);
 							}
@@ -1267,7 +1288,7 @@ public class ExportHelper {
 						// check actual entity type of the data in the xml file
 						if (entType.equals("workspace")) {
 							binder_addBinderWithXML(null, newParentId, def,
-									xmlStr, binderId, binderIdMap, definitionIdMap, tempDir, reportMap,
+									xmlStr, binderId, topBinderId, binderIdMap, definitionIdMap, tempDir, reportMap,
 									statusTicket, nameCache);
 							Integer count = (Integer)reportMap.get(workspaces);
 							reportMap.put(workspaces, ++count);
@@ -1319,7 +1340,7 @@ public class ExportHelper {
 						// check actual entity type of the data in the xml file
 						if (entType.equals("folder")) {
 							binder_addBinderWithXML(null, newParentId, def,
-									xmlStr, binderId, binderIdMap, definitionIdMap, tempDir, reportMap, 
+									xmlStr, binderId, topBinderId, binderIdMap, definitionIdMap, tempDir, reportMap, 
 									statusTicket, nameCache);
 							Integer count = (Integer)reportMap.get(folders);
 							reportMap.put(folders, ++count);
@@ -1389,8 +1410,8 @@ public class ExportHelper {
 		return def;
 	}
 
-	private static long binder_addBinderWithXML(String accessToken, long parentId,
-			Definition def, String inputDataAsXML, long binderId, Map binderIdMap, 
+	private static long binder_addBinderWithXML(String accessToken, long parentId, Definition def,
+			String inputDataAsXML, long binderId, Long topBinderId, Map binderIdMap, 
 			Map<String, Definition> definitionIdMap, String tempDir, Map reportMap, 
 			StatusTicket statusTicket, Map<String, Principal> nameCache) {
 
@@ -1404,7 +1425,7 @@ public class ExportHelper {
 			binderIdMap.put(binderId, newBinderId);
 
 			// add file attachments
-			addBinderFileAttachments(newBinderId, doc, tempDir, reportMap);
+			addBinderFileAttachments(newBinderId, topBinderId, binderIdMap, doc, tempDir, reportMap);
 
 			// team members
 			addTeamMembers(newBinderId, doc, nameCache);
@@ -1435,17 +1456,17 @@ public class ExportHelper {
 		}
 	}
 
-	private static long folder_addEntryWithXML(String accessToken, long binderId,
+	private static long folder_addEntryWithXML(String accessToken, long binderId, Long topBinderId,
 			Definition def, String inputDataAsXML, String tempDir,
 			Map entryIdMap, Map binderIdMap, Map<String, Definition> definitionIdMap, 
 			Long entryId, StatusTicket statusTicket,
 			Map reportMap, Map<String, Principal> nameCache) {
-		return addFolderEntry(accessToken, binderId, def,
+		return addFolderEntry(accessToken, binderId, topBinderId, def,
 				inputDataAsXML, tempDir, entryIdMap, binderIdMap, definitionIdMap, entryId, statusTicket, 
 				reportMap, nameCache);
 	}
 
-	private static long addFolderEntry(String accessToken, long binderId,
+	private static long addFolderEntry(String accessToken, long binderId, Long topBinderId,
 			Definition def, String inputDataAsXML, String tempDir, Map entryIdMap, 
 			Map binderIdMap, Map<String, Definition> definitionIdMap, 
 			Long entryId, StatusTicket statusTicket, Map reportMap,
@@ -1463,12 +1484,12 @@ public class ExportHelper {
 					def.getId(), new DomInputData(doc, iCalModule), null,
 					options).getId().longValue();
 
-			// add file attachments
-			addFileAttachments(binderId, newEntryId, doc, tempDir, reportMap);
-			
 			// add entry id to entry id map
 			entryIdMap.put(entryId, newEntryId);
-
+			
+			// add file attachments
+			addFileAttachments(binderId, newEntryId, topBinderId, doc, tempDir, reportMap, binderIdMap, entryIdMap);
+			
 			// workflows
 			try {
 				final FolderEntry entry = folderModule.getEntry(null, newEntryId);
@@ -1490,15 +1511,15 @@ public class ExportHelper {
 		}
 	}
 
-	private static long folder_addReplyWithXML(String accessToken, long binderId,
+	private static long folder_addReplyWithXML(String accessToken, long binderId, Long topBinderId,
 			long parentId, Definition def, String inputDataAsXML,
 			String tempDir, Map entryIdMap, Map binderIdMap, Map<String, Definition> definitionIdMap, 
 			Long entryId, Map reportMap, Map<String, Principal> nameCache) {
-		return addReply(accessToken, binderId, parentId, def, inputDataAsXML, 
+		return addReply(accessToken, binderId, topBinderId, parentId, def, inputDataAsXML, 
 				tempDir, entryIdMap, binderIdMap, definitionIdMap, entryId, reportMap, nameCache);
 	}
 
-	private static long addReply(String accessToken, long binderId, long parentId,
+	private static long addReply(String accessToken, long binderId, Long topBinderId, long parentId,
 			Definition def, String inputDataAsXML, String tempDir,
 			Map entryIdMap, Map binderIdMap, Map<String, Definition> definitionIdMap, 
 			Long entryId, Map reportMap, Map<String, Principal> nameCache) {
@@ -1517,7 +1538,7 @@ public class ExportHelper {
 					.longValue();
 
 			// add file attachments
-			addFileAttachments(binderId, newEntryId, doc, tempDir, reportMap);
+			addFileAttachments(binderId, newEntryId, topBinderId, doc, tempDir, reportMap, binderIdMap, entryIdMap);
 
 			// add entry reply id to entry id map
 			entryIdMap.put(entryId, newEntryId);
@@ -1547,6 +1568,12 @@ public class ExportHelper {
 		try {
 			Document doc = DocumentHelper.parseText(xml);
 			buildNameCache(doc, nameCache);
+			//Check to see if this file format is legal
+			Element rootEle = doc.getRootElement();
+			String version = rootEle.attributeValue("exportVersion", exportVersion);
+			if (Integer.valueOf(version) < Integer.valueOf(exportVersionV1))
+				throw new ExportException(
+						new Exception("Export file format is out of date; please re-create this export file."));
 			return doc;
 		} catch (DocumentException e) {
 			logger.error(e);
@@ -1554,16 +1581,17 @@ public class ExportHelper {
 		}
 	}
 
-	private static void addFileAttachments(Long binderId, Long entryId,
-			Document entityDoc, String tempDir, Map reportMap) {
+	private static void addFileAttachments(Long binderId, Long entryId, Long topBinderId, 
+			Document entityDoc, String tempDir, Map reportMap, Map binderIdMap, Map entryIdMap) {
 
+		String hrefPath = getHrefPath(binderId, entryId, topBinderId, binderIdMap, entryIdMap);
 		String xPath = "//attribute[@type='attachFiles']//file";
 		List attachFiles = entityDoc.selectNodes(xPath);
 
 		for (Element fileEle : (List<Element>) attachFiles) {
 			boolean handled = false;
 
-			String href = tempDir + File.separator
+			String href = tempDir + File.separator + hrefPath
 					+ fileEle.attributeValue("href", "");
 			
 			String filename = fileEle.getText();
@@ -1574,7 +1602,7 @@ public class ExportHelper {
 			String versionsDir = null;
 
 			if (numVersions > 1) {
-				versionsDir = tempDir + File.separator
+				versionsDir = tempDir + File.separator + hrefPath
 						+ fileEle.attributeValue("href", "") + ".versions";
 			}
 
@@ -1677,16 +1705,17 @@ public class ExportHelper {
 		}
 	}
 
-	private static void addBinderFileAttachments(Long binderId,
-			Document entityDoc, String tempDir, Map reportMap) {
+	private static void addBinderFileAttachments(Long binderId, Long topBinderId,
+			Map binderIdMap, Document entityDoc, String tempDir, Map reportMap) {
 
+		String hrefPath = getHrefPath(binderId, topBinderId, binderIdMap);
 		String xPath = "//attribute[@type='attachFiles']//file";
 		List attachFiles = entityDoc.selectNodes(xPath);
 
 		for (Element fileEle : (List<Element>) attachFiles) {
 			boolean handled = false;
 
-			String href = tempDir + File.separator
+			String href = tempDir + File.separator + hrefPath
 					+ fileEle.attributeValue("href", "");
 			
 			String filename = fileEle.getText();
@@ -1697,7 +1726,7 @@ public class ExportHelper {
 			String versionsDir = null;
 
 			if (numVersions > 1) {
-				versionsDir = tempDir + File.separator
+				versionsDir = tempDir + File.separator + hrefPath
 						+ fileEle.attributeValue("href", "") + ".versions";
 			}
 
@@ -1800,6 +1829,39 @@ public class ExportHelper {
 		}
 	}
 
+	private static String getHrefPath(Long binderId, Long topBinderId, Map binderIdMap) {
+		return getHrefPath(binderId, null, topBinderId, binderIdMap, null);
+	}
+	private static String getHrefPath(Long binderId, Long entryId, Long topBinderId, Map binderIdMap, Map entryIdMap) {
+		Map reverseBinderIdMap = new HashMap();
+		for (Object id : binderIdMap.keySet()) reverseBinderIdMap.put(binderIdMap.get(id), id);
+		Binder topBinder = loadBinder(topBinderId);
+		Binder binder = loadBinder(binderId);
+		String pathName = "";
+		while (binder != null) {
+			if (reverseBinderIdMap.containsKey(binder.getId())) {
+				Long originalBinderId = (Long)reverseBinderIdMap.get(binder.getId());
+				if (EntityType.folder.equals(binder.getEntityType())) {
+					pathName = binderPrefix + "f" + nft.format(originalBinderId) + "/" + pathName;
+				} else {
+					pathName = binderPrefix + "w" + nft.format(originalBinderId) + "/" + pathName;
+				}
+			}
+			binder = binder.getParentBinder();
+			if (binder == null || binder.equals(topBinder)) break;
+		}
+		if (entryId != null) {
+			Long originalEntryId = null;
+			for (Object id : entryIdMap.keySet()) {
+				if (entryIdMap.get(id).equals(entryId)) {
+					originalEntryId = (Long) id;
+					break;
+				}
+			}
+			if (originalEntryId != null) pathName = pathName + "e" + nft.format(originalEntryId) + "/";
+		}
+		return pathName;
+	}
 	private static void setSignature(Map options, Document entityDoc, Map<String, Principal> nameCache) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String zoneUUID = entityDoc.getRootElement().attributeValue("zoneUUID", "");
