@@ -35,8 +35,9 @@ package org.kablink.teaming.fi;
 public class ReadOnlyException extends FIException {
 
 	private static final long serialVersionUID = 1L;
+	private static final String ERROR_CODE = "fi.error.read.only";
 
 	public ReadOnlyException(String driverTitle, String operationName) {
-		super("Cannot execute " + operationName + ": Driver " + driverTitle + " is read-only");
+		super(ERROR_CODE, operationName, driverTitle);
 	}
 }
