@@ -1189,6 +1189,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		
 		Integer defaultQuota = getAdminModule().getQuotaDefault();
+		final int i_defaultQuota = defaultQuota;
 		List results = null;
 		results = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
@@ -1199,8 +1200,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						+ " FROM org.kablink.teaming.domain.UserPrincipal w "
 						+ " WHERE w.zoneId = :zoneId"
 						+ " AND w.type = 'user'"
-						+ " AND w.id != 1"
-						+ " AND w.diskSpaceUsed >= CASE WHEN w.diskQuota IS NOT NULL THEN (w.diskQuota * 1024 * 1024) "
+						+ " AND ((w.diskQuota IS NOT NULL AND w.diskQuota > 0) OR (w.maxGroupsQuota IS NOT NULL AND w.maxGroupsQuota > 0)) "
+						+ " AND w.diskSpaceUsed > CASE WHEN w.diskQuota IS NOT NULL AND w.diskQuota > 0 THEN (w.diskQuota * 1024 * 1024) "
 						+ " ELSE (w.maxGroupsQuota * 1024 * 1024)"
 						+ " END ";
 					
@@ -1208,7 +1209,21 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
                    	.setLong("zoneId", RequestContextHolder.getRequestContext().getZoneId());
 										
 					l = query.list();
+
+					String sql2 = "Select w.id, w.diskSpaceUsed, w.diskQuota, w.maxGroupsQuota "
+						+ " FROM org.kablink.teaming.domain.UserPrincipal w "
+						+ " WHERE w.zoneId = :zoneId"
+						+ " AND w.type = 'user'"
+						+ " AND (w.diskQuota IS NULL OR w.diskQuota = '0') "
+						+ " AND (w.maxGroupsQuota IS NULL OR w.maxGroupsQuota = '0') "
+						+ " AND w.diskSpaceUsed > (:defaultQuota * 1024 * 1024) ";
 					
+					Query query2 = session.createQuery(sql2)
+                   	.setLong("defaultQuota", i_defaultQuota)
+                   	.setLong("zoneId", RequestContextHolder.getRequestContext().getZoneId());
+										
+					l.addAll(query2.list());
+
 				} catch(Exception e) {
 					System.out.println("Unable to query for quotas: " +  e.getMessage());
 				}
@@ -1233,6 +1248,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		
 		Integer defaultQuota = getAdminModule().getQuotaDefault();
+		final int i_defaultQuota = defaultQuota;
 		final int highWaterPercentage = Integer.valueOf(SPropsUtil.getInt("disk.quotas.highwater.percentage", 90));
 		
 		List results = null;
@@ -1244,15 +1260,30 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						+ " FROM org.kablink.teaming.domain.UserPrincipal w "
 						+ " WHERE w.zoneId = :zoneId"
 						+ " AND w.type = 'user'"
-						+ " AND w.id != 1"
-						+ " AND w.diskSpaceUsed >= ((CASE WHEN w.diskQuota IS NOT NULL THEN (w.diskQuota * 1024 * 1024) "
+						+ " AND ((w.diskQuota IS NOT NULL AND w.diskQuota > 0) OR (w.maxGroupsQuota IS NOT NULL AND w.maxGroupsQuota > 0)) "
+						+ " AND w.diskSpaceUsed > ((CASE WHEN w.diskQuota IS NOT NULL AND w.diskQuota > 0 THEN (w.diskQuota * 1024 * 1024) "
 						+ " ELSE (w.maxGroupsQuota * 1024 * 1024) END ) * :highWaterPercentage / 100)";
-					
+
 					Query query = session.createQuery(sql)
                    	.setLong("zoneId", RequestContextHolder.getRequestContext().getZoneId())
                    	.setLong("highWaterPercentage", highWaterPercentage);
 					
 					l = query.list();
+					
+					String sql2 = "Select w.id, w.diskSpaceUsed, w.diskQuota, w.maxGroupsQuota "
+						+ " FROM org.kablink.teaming.domain.UserPrincipal w "
+						+ " WHERE w.zoneId = :zoneId"
+						+ " AND w.type = 'user'"
+						+ " AND (w.diskQuota IS NULL OR w.diskQuota = '0') "
+						+ " AND (w.maxGroupsQuota IS NULL OR w.maxGroupsQuota = '0') "
+						+ " AND w.diskSpaceUsed > (:defaultQuota * 1024 * 1024 * :highWaterPercentage / 100)";
+					
+					Query query2 = session.createQuery(sql2)
+                   	.setLong("zoneId", RequestContextHolder.getRequestContext().getZoneId())
+                   	.setLong("defaultQuota", i_defaultQuota)
+                   	.setLong("highWaterPercentage", highWaterPercentage);
+										
+					l.addAll(query2.list());
 					
 				} catch(Exception e) {
 					System.out.println("Unable to query for quotas: " +  e.getMessage());
