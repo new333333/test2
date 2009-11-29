@@ -71,7 +71,6 @@ function ss_checkIfNumber(obj) {
 	name="binderId" value="${ssBinder.id}"/></ssf:url>">
 	
 	<div align="right">
-	  <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
 	  <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
 		  onClick="self.window.close();return false;"/>
 	</div>
@@ -233,7 +232,7 @@ function ss_checkIfNumber(obj) {
 	<br/>
 	</c:if>
 	
-	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
 	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
 		  onClick="self.window.close();return false;"/>
 </form>
