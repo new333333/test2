@@ -125,9 +125,9 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	public String getTitle() {
 		// title is set by hibernate access=field
 		//title is only kept in the db for sql queries
-    	String val = setupTitle();
+		String val = super.getTitle();
     	if (Validator.isNotNull(val)) return val;
-		val = super.getTitle();
+    	val = setupTitle();
     	if (Validator.isNotNull(val)) return val;
     	return getName();		
 	}
@@ -146,22 +146,15 @@ public class User extends UserPrincipal implements IndividualPrincipal {
  
 	}
     private String setupTitle() {
-    	String firstName = getFirstName();
-    	if (Validator.isNull(firstName)) firstName = "";
-    	String middleName = getMiddleName();
-    	if (Validator.isNull(middleName)) middleName = "";
-    	String lastName = getLastName();
-    	if (Validator.isNull(lastName)) lastName = "";
-    	String title = firstName;
-    	if (title.equals("")) title = middleName;
-    	if (!lastName.equals("")) title = lastName;
-    	if (Validator.isNull(firstName + middleName) || Validator.isNull(firstName + lastName) || Validator.isNull(middleName + lastName)) {
-    		//There is only one name field set, so use it as the title
-    		return title;
-    	} else {
-	    	String[] names = new String[] {firstName, middleName, lastName};
-	    	return NLT.get("user.title", names);   
-    	}
+    	String val;
+    	StringBuffer tBuf = new StringBuffer();
+    	val = getFirstName();
+    	if (Validator.isNotNull(val)) tBuf.append(val + " ");
+    	val = getMiddleName();
+    	if (Validator.isNotNull(val)) tBuf.append(val + " ");
+    	val = getLastName();
+    	if (Validator.isNotNull(val)) tBuf.append(val + " ");
+    	return tBuf.toString().trim();   	
     }
     public String getSearchTitle() {
     	//return lastname first
