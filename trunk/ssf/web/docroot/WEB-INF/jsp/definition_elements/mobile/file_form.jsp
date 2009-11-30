@@ -54,6 +54,7 @@ ${selection.fileItem.name}
 <c:if test="${empty ssDefinitionEntry.customAttributes[property_name]}">
   <c:if test="${property_name == ss_titleGenerated}">
     <span class="font-red"><ssf:nlt tag="mobile.error.fileUploadsNotSupported"/></span>
+    <c:set var="ss_hideFormOKButton" value="true" scope="request"/>
   </c:if>
 </c:if>
 </div>
