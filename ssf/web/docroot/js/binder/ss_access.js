@@ -113,7 +113,7 @@ function ssAccessControl(namespace, workAreaId, workAreaType) {
 		
 		var divObj = document.getElementById('ss_changeOwnerMenuOk' + namespace);
 		ss_showDiv('ss_changeOwnerMenuOk' + namespace)
-		setTimeout("ss_hideDivNone('ss_changeOwnerMenuOk" + namespace + "');", 1500);
+		setTimeout("ss_hideDivNone('ss_changeOwnerMenuOk" + namespace + "');", 2500);
 	}
 	
 	this.selectRole = function () {

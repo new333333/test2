@@ -46,9 +46,12 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.util.servlet.StringServletResponse;
 
@@ -81,6 +84,18 @@ public class UserTitleTag extends BodyTagSupport {
 				String result = user.getTitle();
 				if (user instanceof User) {
 					result = Utils.getUserTitle((User) user);
+				} else {
+					ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
+					// Get a user object from the principal
+					if (!(user instanceof Group)) {
+						try {
+							//this will remove the proxy and return a real user or group
+							//currently looks like this code is expecting a User
+							//get user even if deleted.
+							user = profileDao.loadUserPrincipal(user.getId(), user.getZoneId(), false);
+							result = Utils.getUserTitle((User) user);
+						} catch(Exception e) {}
+					}
 				}
 				jspOut.print(result);
 			}

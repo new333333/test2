@@ -34,4 +34,33 @@
 %>
 <% //Title view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ include file="/WEB-INF/jsp/definition_elements/view_binder_title.jsp" %>
+
+  <div id="ss_topic_box">
+	<div id="ss_topic_box_h1">
+	
+	  <ul class="ss_horizontal ss_nobullet">
+	  <li>
+	  <div class="ss_treeWidget">
+	  <a href="<ssf:url crawlable="true"
+           adapter="true" portletName="ss_forum"
+           folderId="${ssDefinitionEntry.id}" 
+           action="view_ws_listing"/>">
+	    <c:if test="${empty ssDefinitionEntry.title}">
+          <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
+        </c:if>
+        <span><ssf:userTitle user="${ssDefinitionEntry}" /></span>
+      </a>
+      </div>
+      </li>
+      </ul>
+    
+	  <div class="ss_clear"></div>
+    </div>
+    
+	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+	  configElement="${item}" 
+	  configJspStyle="${ssConfigJspStyle}"
+	  entry="${ssDefinitionEntry}" />
+    
+  </div><!-- end of box -->
+
