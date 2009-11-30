@@ -412,7 +412,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  					binder.setResourceDriverName(parent.getResourceDriverName());
  				}
  				else {
- 					throw new ConfigurationException("Mirrored folder requires a resource driver to be specified");
+ 					throw new ConfigurationException("errorcode.mirrored.folder.requires.resource.driver", new Object[]{});
  				}
  			}
  			else {
