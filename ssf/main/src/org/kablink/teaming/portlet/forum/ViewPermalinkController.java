@@ -43,11 +43,16 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
@@ -128,6 +133,7 @@ public class ViewPermalinkController  extends SAbstractController {
  		if (Validator.isNotNull(fileId)) return getFileUrlById(request, entityType, binderId, entryId, fileId);
  		if (Validator.isNotNull(fileName)) return getFileUrlByName(request, entityType, binderId, entryId, fileName);
 
+		boolean binderPreDeleted;
 		if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) { //folderEntry
 			if (isMobile && Validator.isNotNull(entryId)) {
 				entity = getFolderModule().getEntry(null, Long.valueOf(entryId));
@@ -142,10 +148,11 @@ public class ViewPermalinkController  extends SAbstractController {
 					url.setParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());
 					url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 				} else {
-					entity = getBinderModule().getBinder(Long.valueOf(binderId));				
+					entity = getBinderModule().getBinder(Long.valueOf(binderId));
 					url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
 					url.setParameter(WebKeys.URL_ENTRY_TITLE, entryTitle);
 				}
+				
 				boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
 				User user = RequestContextHolder.getRequestContext().getUser();
 				String displayStyle = user.getDisplayStyle();
@@ -157,8 +164,32 @@ public class ViewPermalinkController  extends SAbstractController {
 				}
 				url.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, WebKeys.URL_ENTRY_VIEW_STYLE_FULL);
 			}
+			
+			if (null != entity) {
+				if (entity instanceof FolderEntry) {
+					if (((FolderEntry) entity).isPreDeleted()) {
+						throw new NoFolderEntryByTheIdException(entity.getId());
+					}
+				}
+				else {
+					if      (entity instanceof Workspace) binderPreDeleted = ((Workspace) entity).isPreDeleted();
+					else if (entity instanceof Folder)    binderPreDeleted = ((Folder)    entity).isPreDeleted();
+					else                                  binderPreDeleted = false;
+					if (binderPreDeleted) {
+						throw new NoBinderByTheIdException(entity.getId());
+					}
+				}
+			}
 		} else	if (entityType.isBinder() || entityType.equals(EntityIdentifier.EntityType.none)) {
 			entity = getBinderModule().getBinder(Long.valueOf(binderId));
+			if (null != entity) {
+				if      (entity instanceof Workspace) binderPreDeleted = ((Workspace) entity).isPreDeleted();
+				else if (entity instanceof Folder)    binderPreDeleted = ((Folder)    entity).isPreDeleted();
+				else binderPreDeleted = false;
+				if (binderPreDeleted) {
+					throw new NoBinderByTheIdException(Long.valueOf(binderId));
+				}
+			}
 			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 			entityType = entity.getEntityType();
 			if (isMobile) {
