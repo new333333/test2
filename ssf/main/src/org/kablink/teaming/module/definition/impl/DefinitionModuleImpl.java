@@ -1999,7 +1999,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			if (inputData.exists(nameValue)) {
 				//Use the helper routine to parse the date into a date object
 				Date date = inputData.getDateValue(nameValue);
-				if (date != null) {
+				if (date != null || inputData.exists(nameValue + "_dateExistedBefore")) {
 					if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, date);
 				}
 			}

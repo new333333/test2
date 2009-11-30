@@ -89,6 +89,9 @@ ${property_caption}<c:if test="${property_required}"><span
 		<input type="hidden" name="${property_name}_timezoneid" value="${ssUser.timeZone.ID}" />
 		<input type="hidden" name="${property_name}_skipTime" value="false" />
 		<input type="hidden" name="${property_name}" value="" />
+		<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
+		  <input type="hidden" name="${property_name}_dateExistedBefore" value="true" />
+		</c:if>
 		
 	<script type="text/javascript">
 		dojo.addOnLoad(function() {
@@ -132,6 +135,9 @@ ${property_caption}<c:if test="${property_required}"><span
 		<input type="hidden" name="${property_name_per_user}_timezoneid" value="${ssUser.timeZone.ID}" />
 		<input type="hidden" name="${property_name_per_user}_skipTime" value="false" />
 		<input type="hidden" name="${property_name_per_user}" value="" />
+		<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name_per_user].value}">
+		  <input type="hidden" name="${property_name_per_user}_dateExistedBefore" value="true" />
+		</c:if>
 		
 </div>
   </c:if>
