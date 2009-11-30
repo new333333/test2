@@ -89,7 +89,7 @@
      exporting Novell software. Novell assumes no responsibility for your failure
      to obtain any necessary export approvals.
 
-     Copyright © 2008-2009 Novell, Inc. All rights reserved. No part of this
+     Copyright © 2008-2010 Novell, Inc. All rights reserved. No part of this
      publication may be reproduced, photocopied, stored on a retrieval system, or
      transmitted without the express written consent of the publisher.
 
