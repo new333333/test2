@@ -166,8 +166,25 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 			if (config.getUserSearches().size() > 0) {
 				DefaultSpringSecurityContextSource contextSource = null;
 				try {
-					contextSource = new DefaultSpringSecurityContextSource(
-						config.getUrl());
+					String url;
+					
+					// The call to new DefaultSpringSecurityContextSource() will fail if
+					// the word "ldap" is not all lower case.
+					url = config.getUrl();
+					if ( url != null )
+					{
+						String protocol;
+						
+						// ldap authentication fails if the word "ldap" in the url is not all lower case.  Bug 553190
+						// See if the url starts with "ldap:"
+						protocol = url.substring( 0, 5 );
+						if ( protocol.equalsIgnoreCase( "ldap:" ) )
+						{
+							url = "ldap:" + url.substring( 5 );
+						}
+					}
+					
+					contextSource = new DefaultSpringSecurityContextSource( url );
 				} catch(Exception e) {
 					if(logger.isDebugEnabled())
 						logger.debug("Unable to create LDAP context for url " + config.getUrl() + ": " + e.toString());
