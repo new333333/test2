@@ -65,6 +65,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 public class MimeNotifyPreparator extends AbstractMailPreparator {
 	EmailFormatter processor;
 	Binder binder;
+	Collection<String> ccAddrs;
+	Collection<String> bccAddrs;
 	Collection<String> toAddrs;
 	Collection entries;
 	Entry entry;
@@ -83,6 +85,12 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		this.startDate = startDate;	
 		this.sendVTODO = sendVTODO;
 		icalModule = (IcalModule)SpringContextUtil.getBean("icalModule");
+	}
+	public void setCcAddrs(Collection<String> ccAddrs) {
+		this.ccAddrs = ccAddrs;			
+	}
+	public void setBccAddrs(Collection<String> bccAddrs) {
+		this.bccAddrs = bccAddrs;			
 	}
 	public void setToAddrs(Collection<String> toAddrs) {
 		this.toAddrs = toAddrs;			
@@ -118,9 +126,23 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		}
 		helper.setFrom(from);
 	}
+	protected void setCcAddrs(MimeMessageHelper helper) throws MessagingException {
+		if (null != ccAddrs) {
+			//Using 1 set results in 1 TO: line in mime-header - GW like this better
+			helper.setCc(ccAddrs.toArray(new String[ccAddrs.size()]));
+		}
+	}
+	protected void setBccAddrs(MimeMessageHelper helper) throws MessagingException {
+		if (null != bccAddrs) {
+			//Using 1 set results in 1 TO: line in mime-header - GW like this better
+			helper.setBcc(bccAddrs.toArray(new String[bccAddrs.size()]));
+		}
+	}
 	protected void setToAddrs(MimeMessageHelper helper) throws MessagingException {
-		//Using 1 set results in 1 TO: line in mime-header - GW like this better
-		helper.setTo(toAddrs.toArray(new String[toAddrs.size()]));					
+		if (null != toAddrs) {
+			//Using 1 set results in 1 TO: line in mime-header - GW like this better
+			helper.setTo(toAddrs.toArray(new String[toAddrs.size()]));
+		}
 	}
 	public void prepare(MimeMessage mimeMessage) throws MessagingException {
 		//make sure nothing saved yet
@@ -148,6 +170,8 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, multipartMode);
 		mimeMessage.addHeader(MailModule.HEADER_CONTENT_TRANSFER_ENCODING, MailModule.HEADER_CONTENT_TRANSFER_ENCODING_8BIT);
 		setSubject(helper);
+		setCcAddrs(helper);
+		setBccAddrs(helper);
 		setToAddrs(helper);
 		setFrom(helper);
 		

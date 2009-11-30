@@ -600,7 +600,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			for (int i=0; i<rcpts.size(); i+=rcptToLimit) {
 				try {
 					List subList = rcpts.subList(i, Math.min(rcpts.size(), i+rcptToLimit));
-					mHelper.setToAddrs(subList);
+					if (SPropsUtil.getBoolean("mail.notifyAsBCC", true)) mHelper.setBccAddrs(subList);
+					else                                                 mHelper.setToAddrs( subList);
 					mailSender.send(transport, mHelper);
 				} catch (MailSendException sx) {
 		    		logger.error("Error sending mail:" + getMessage(sx));
