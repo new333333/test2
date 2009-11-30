@@ -165,7 +165,7 @@
 		  <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.name}" escapeXml="true"/></span>
 		</c:if>
 		<c:if test="${!empty ssDefinitionEntry.title}">
-		  <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.title}" escapeXml="true"/></span> 
+		  <span style="font-size: 18px;"><ssf:userTitle user="${ssDefinitionEntry}" /></span> 
 		  <span class="ss_normalprint ss_light">(<c:out value="${ssDefinitionEntry.name}" escapeXml="true"/>)</span>
 		</c:if>
 	  </div>
@@ -268,7 +268,7 @@
  <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.name}" escapeXml="true"/></span>
  </c:if>
  <c:if test="${!empty ssDefinitionEntry.title}">
- <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.title}" escapeXml="true"/></span> 
+ <span style="font-size: 18px;"><ssf:userTitle user="${ssDefinitionEntry}" /></span> 
  <span class="ss_normalprint ss_light">(<c:out value="${ssDefinitionEntry.name}" escapeXml="true"/>)</span>
  </c:if>
 <br/>

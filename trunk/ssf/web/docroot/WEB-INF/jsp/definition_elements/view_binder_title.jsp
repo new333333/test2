@@ -69,7 +69,12 @@
 	    <c:if test="${empty ssDefinitionEntry.title}">
           <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
         </c:if>
-        <span><c:out value="${ssDefinitionEntry.title}" escapeXml="true"/></span>
+        <c:if test="${ssDefinitionEntry.definitionType != '12' || ssDefinitionEntry.parentBinder.entityType != 'profiles'}">
+          <span><c:out value="${ssDefinitionEntry.title}" escapeXml="true"/></span>
+        </c:if>
+        <c:if test="${ssDefinitionEntry.definitionType == '12' && ssDefinitionEntry.parentBinder.entityType == 'profiles'}">
+          <span><ssf:userTitle user="${ssDefinitionEntry.owner}" /></span>
+        </c:if>
       </a>
       </div>
       </li>
@@ -139,7 +144,12 @@
 		    <c:if test="${empty nextBinder.title}">
 	          <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
 	        </c:if>
-	        <span>${nextBinder.title}</span>
+        	<c:if test="${nextBinder.definitionType != '12' || nextBinder.parentBinder.entityType != 'profiles'}">
+          	  <span>${nextBinder.title}</span>
+        	</c:if>
+        	<c:if test="${nextBinder.definitionType == '12' && nextBinder.parentBinder.entityType == 'profiles'}">
+          	  <span><ssf:userTitle user="${nextBinder.owner}" /></span>
+        	</c:if>
 	      </a><%  if (!parentTree2.empty()) {  %>&nbsp;&gt;&gt;&nbsp;&nbsp;<%  }  %>
 	      </div>
 	  </c:if>
