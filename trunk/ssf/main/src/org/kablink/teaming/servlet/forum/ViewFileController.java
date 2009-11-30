@@ -215,6 +215,7 @@ public class ViewFileController extends SAbstractController {
 					eMsg = eMsg.replaceAll("\"", "'");
 					String output = "<html><head><script language='javascript'>function submitForm(){ document.errorform.submit(); }</script></head><body onload='javascript:submitForm()'><form name='errorform' action='" + url + "'><input type='hidden' name='ssf-error' value=\"" + eMsg + "\"></input></form></body></html>";
 					
+					response.setContentType("text/html; charset=UTF-8");
 					response.getOutputStream().print(output);
 					response.getOutputStream().flush();
 				}
