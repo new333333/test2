@@ -22,9 +22,6 @@
         <properties> 
           <property name="name" value="table1"/>  
           <property name="caption" value=""/>  
-          <property name="required" caption="__required" type="boolean" default="false" value="false"> 
-            <help>ihelp.designers.required</help> 
-          </property> 
         </properties>  
         <item name="profileFirstName" caption="__firstName" type="data" id="5" category="profileEntryData"> 
           <properties> 
@@ -151,9 +148,6 @@
       <properties> 
         <property name="name" value=""/>  
         <property name="caption" value=""/>  
-        <property name="required" caption="__required" type="boolean" default="false" value="false"> 
-          <help>ihelp.designers.required</help> 
-        </property> 
       </properties>  
       <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" id="27" formItem="profileEmailAddress"> 
         <properties> 
