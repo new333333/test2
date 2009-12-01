@@ -33,12 +33,10 @@
 package org.kablink.teaming.remoting.ws.service.binder;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,12 +50,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.comparator.BinderComparator;
-import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
-import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NoBinderByTheNameException;
@@ -65,7 +59,6 @@ import org.kablink.teaming.domain.NoFileByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
-import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.rss.util.UrlUtil;
@@ -86,6 +79,7 @@ import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
@@ -99,6 +93,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		this.coreDao = coreDao;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public long binder_addBinderWithXML(String accessToken, long parentId, String definitionId, String inputDataAsXML)
 	{
 		
@@ -117,6 +112,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		return toSubscriptionModel(sub);
 		
 	}
+	@SuppressWarnings("unchecked")
 	public void binder_setSubscription(String accessToken, long binderId, org.kablink.teaming.remoting.ws.model.Subscription subscription) {
 		if (subscription == null || subscription.getStyles().length == 0) {
 			getBinderModule().setSubscription(binderId, null);
@@ -130,6 +126,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		getBinderModule().setSubscription(binderId, subMap);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void binder_setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations) {
 		HashMap wfs = new HashMap();
 		for (int i=0; i<workflowAssociations.length; i++) {
@@ -151,6 +148,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		
 		return doc.getRootElement().asXML();
 	}
+	@SuppressWarnings("unchecked")
 	public void binder_setTeamMembers(String accessToken, long binderId, String []memberNames) {
 		Collection<Principal> principals = getProfileModule().getPrincipalsByName(Arrays.asList(memberNames));
 		Set<Long>ids = new HashSet();
@@ -160,6 +158,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		
 		getBinderModule().setTeamMembers(binderId, ids);
 	}
+	@SuppressWarnings("unchecked")
 	public void binder_setFunctionMembershipWithXML(String accessToken, long binderId, String inputDataAsXml) {
 		Binder binder = getBinderModule().getBinder(binderId);
 		List<Function> functions = getAdminModule().getFunctions();
@@ -213,6 +212,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		Long[] array = new Long[binderIds.size()];
 		return binderIds.toArray(array);
 	}
+	@SuppressWarnings("unchecked")
 	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId, boolean explodeGroups, int firstRecord, int maxRecords) {
 		Binder binder = getBinderModule().getBinder(new Long(binderId));
 		SortedSet<Principal> principals = getBinderModule().getTeamMembers(binder, explodeGroups);
@@ -238,6 +238,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 				principalList.toArray(array));
 	}
 	
+	@SuppressWarnings("unchecked")
 	public long binder_addBinder(String accessToken, org.kablink.teaming.remoting.ws.model.Binder binder) {
 		try {
 			Map options = new HashMap();
@@ -254,6 +255,26 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 	}
 	public void binder_deleteBinder(String accessToken, long binderId, boolean deleteMirroredSource) {
 		getBinderModule().deleteBinder(binderId, deleteMirroredSource, null);
+	}
+	public void binder_preDeleteBinder(String accessToken, long binderId) {
+		try {
+			TrashHelper.preDeleteBinder(this, binderId);
+		}
+		catch (Exception e) {
+			throw new RemotingException(e);
+		}
+	}
+	@SuppressWarnings("unchecked")
+	public void binder_restoreBinder(String accessToken, long binderId) {
+		Binder binder = getBinderModule().getBinder(binderId);
+		Long binderParentId = binder.getParentBinder().getId();
+		HashMap	hm = new HashMap();
+		hm.put("_docId", binderId);
+		hm.put("_docType", "binder");
+		hm.put("_binderParentId", String.valueOf(binderParentId));
+		TrashHelper.restoreEntries(
+			this,
+			new TrashHelper.TrashEntry(hm));
 	}
 	public void binder_moveBinder(String accessToken, long binderId, long destinationId) {
 		getBinderModule().moveBinder(binderId, destinationId, null);
@@ -292,6 +313,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 	public void binder_uploadFile(String accessToken, long binderId, String fileUploadDataItemName, String fileName) {
 		throw new UnsupportedOperationException();
 	}
+	@SuppressWarnings("unchecked")
 	public void binder_removeFile(String accessToken, long binderId, String fileName) {
 		try {
 			Binder binder = getBinderModule().getBinder(binderId);
@@ -307,6 +329,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships) {
 		if(functionMemberships == null) return;
 		Binder binder = getBinderModule().getBinder(binderId);
@@ -342,11 +365,10 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		getAdminModule().setWorkAreaFunctionMemberships(binder, wfms);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public FolderCollection binder_getFolders(String accessToken, long binderId, int firstRecord, int maxRecords) {
-        User user = RequestContextHolder.getRequestContext().getUser();
         // Probably sorting by title isn't as important in web services as in browser UI, 
         // but it wouldn't hurt either.
-        Comparator c = new BinderComparator(user.getLocale(),BinderComparator.SortByField.title);
 		Binder binder = getBinderModule().getBinder(binderId);		
     	Map options = new HashMap();
     	options.put(ObjectKeys.SEARCH_OFFSET, new Integer(firstRecord));
@@ -460,6 +482,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		return getFileAttachmentAsByteArray(binder, binder, attachmentId);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void binder_uploadFileAsByteArray(String accessToken, long binderId,
 			String fileUploadDataItemName, String fileName, byte[] fileContent) {
 		if (Validator.isNull(fileUploadDataItemName)) fileUploadDataItemName="ss_attachFile1";

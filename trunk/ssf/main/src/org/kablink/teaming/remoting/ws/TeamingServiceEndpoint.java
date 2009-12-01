@@ -149,6 +149,12 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void binder_deleteBinder(String accessToken, long binderId, boolean deleteMirroredSource) {
 		getBinderService().binder_deleteBinder(accessToken, binderId, deleteMirroredSource);
 	}
+	public void binder_preDeleteBinder(String accessToken, long binderId) {
+		getBinderService().binder_preDeleteBinder(accessToken, binderId);
+	}
+	public void binder_restoreBinder(String accessToken, long binderId) {
+		getBinderService().binder_restoreBinder(accessToken, binderId);
+	}
 	public Binder binder_getBinder(String accessToken, long binderId, boolean includeAttachments) {
 		return getBinderService().binder_getBinder(accessToken, binderId, includeAttachments);
 	}
@@ -299,6 +305,12 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	}
 	public void folder_deleteEntry(String accessToken, long entryId) {
 		getFolderService().folder_deleteEntry(accessToken, entryId);
+	}
+	public void folder_preDeleteEntry(String accessToken, long entryId) {
+		getFolderService().folder_preDeleteEntry(accessToken, entryId);
+	}
+	public void folder_restoreEntry(String accessToken, long entryId) {
+		getFolderService().folder_restoreEntry(accessToken, entryId);
 	}
     public long folder_copyEntry(String accessToken, long entryId, long destinationId) {
     	return getFolderService().folder_copyEntry(accessToken, entryId, destinationId);
