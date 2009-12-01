@@ -61,6 +61,7 @@ import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Html;
 import org.kablink.util.Http;
 import org.kablink.util.Validator;
@@ -659,35 +660,46 @@ public class MarkupUtil {
 			        	titleLink.append("&nbsp;</a>");
 			        	titleLink.append("</a>");
 			    	} else if (s_url.startsWith("http://www.youtube.com/")) {
-			    		/*
-							<div id="ytapiplayer">
-    							You need Flash player 8+ and JavaScript enabled to view this video.
-  							</div>
-                            <script type="text/javascript">
-							    var params = { allowScriptAccess: "always" };
-							    var atts = { id: "myytplayer" };
-							    swfobject.embedSWF("http://www.youtube.com/v/VIDEO_ID?enablejsapi=1&playerapiid=ytplayer", 
-							                       "ytapiplayer", "425", "356", "8", null, null, params, atts);
-							</script>
-			    		 */
-			    		Integer id = ++youtubeDivId;
-			    		if (youtubeDivId > 1000000) youtubeDivId = 0;
-			    		titleLink.append("<div id=\"ytapiplayer"+id.toString()+"\">\n");
-			    		titleLink.append("");
-			    		titleLink.append("</div>\n");
-			    		titleLink.append("<div>\n");
-			    		titleLink.append("<a href=\"http://www.youtube.com\"><img width=\"60\" height=\"38\" src=\"");
-			    		titleLink.append(builder.getImagesRootUrl());
-			    		titleLink.append("pics/yt_powered_by_black.png").append("\"/></a>\n");
-			    		titleLink.append("</div>\n");
-			    		titleLink.append("<script type=\"text/javascript\">\n");
-			    		titleLink.append("var params = { allowScriptAccess: \"always\" };\n");
-			    		titleLink.append("var atts = { id: \"myytplayer\" };\n");
-			    		titleLink.append("swfobject.embedSWF(\"").append(s_url.replace("?v=", "/v/"));
-			    		titleLink.append("?enablejsapi=1&playerapiid=ytplayer\",");
-			    		titleLink.append(" \"ytapiplayer"+id.toString()+"\", \"").append(s_width).append("\", ");
-			    		titleLink.append("\"").append(s_height).append("\", \"8\", null, null, params, atts);\n");
-			    		titleLink.append("</script>\n");
+			    		if (checkIfMobile(req, httpReq)) {
+				    		titleLink.append("<div>\n");
+				    		titleLink.append("<a href=\"");
+				    		titleLink.append(s_url.replaceFirst("www.youtube.com", "m.youtube.com"));
+				    		titleLink.append("\"><img width=\"60\" height=\"38\" src=\"");
+				    		titleLink.append(builder.getImagesRootUrl());
+				    		titleLink.append("pics/yt_powered_by_black.png").append("\"/></a>\n");
+				    		titleLink.append("</div>\n");
+			    			
+			    		} else {
+				    		/*
+								<div id="ytapiplayer">
+	    							You need Flash player 8+ and JavaScript enabled to view this video.
+	  							</div>
+	                            <script type="text/javascript">
+								    var params = { allowScriptAccess: "always" };
+								    var atts = { id: "myytplayer" };
+								    swfobject.embedSWF("http://www.youtube.com/v/VIDEO_ID?enablejsapi=1&playerapiid=ytplayer", 
+								                       "ytapiplayer", "425", "356", "8", null, null, params, atts);
+								</script>
+				    		 */
+				    		Integer id = ++youtubeDivId;
+				    		if (youtubeDivId > 1000000) youtubeDivId = 0;
+				    		titleLink.append("<div id=\"ytapiplayer"+id.toString()+"\">\n");
+				    		titleLink.append("");
+				    		titleLink.append("</div>\n");
+				    		titleLink.append("<div>\n");
+				    		titleLink.append("<a href=\"" + s_url + "\"><img width=\"60\" height=\"38\" src=\"");
+				    		titleLink.append(builder.getImagesRootUrl());
+				    		titleLink.append("pics/yt_powered_by_black.png").append("\"/></a>\n");
+				    		titleLink.append("</div>\n");
+				    		titleLink.append("<script type=\"text/javascript\">\n");
+				    		titleLink.append("var params = { allowScriptAccess: \"always\" };\n");
+				    		titleLink.append("var atts = { id: \"myytplayer\" };\n");
+				    		titleLink.append("swfobject.embedSWF(\"").append(s_url.replace("?v=", "/v/"));
+				    		titleLink.append("?enablejsapi=1&playerapiid=ytplayer\",");
+				    		titleLink.append(" \"ytapiplayer"+id.toString()+"\", \"").append(s_width).append("\", ");
+				    		titleLink.append("\"").append(s_height).append("\", \"8\", null, null, params, atts);\n");
+				    		titleLink.append("</script>\n");
+			    		}
 			    	} else {
 			        	titleLink.append("<a target=\"_blank\" src=\"");
 			        	titleLink.append(s_url);
@@ -907,4 +919,20 @@ public class MarkupUtil {
 		return result;
 	}
 	
+	public static boolean checkIfMobile(final RenderRequest req, final HttpServletRequest httpReq) {
+		if (req != null) {
+			HttpServletRequest hr = WebHelper.getHttpServletRequest(req);
+			if (BrowserSniffer.is_iphone(hr) || 
+					BrowserSniffer.is_blackberry(hr) || 
+					BrowserSniffer.is_wml(hr)) return true;
+			else return false;
+		} else if (httpReq != null) {
+			if (BrowserSniffer.is_iphone(httpReq) || 
+					BrowserSniffer.is_blackberry(httpReq) || 
+					BrowserSniffer.is_wml(httpReq)) return true;
+			else return false;
+		} else {
+			return false;
+		}
+	}
 }
