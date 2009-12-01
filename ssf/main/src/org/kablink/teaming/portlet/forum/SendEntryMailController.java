@@ -53,12 +53,10 @@ import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.mail.MailSentStatus;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.LongIdUtil;
-import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -71,6 +69,7 @@ import org.springframework.web.portlet.ModelAndView;
  *
  */
 public class SendEntryMailController extends SAbstractController {
+	@SuppressWarnings("unchecked")
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
@@ -142,6 +141,7 @@ public class SendEntryMailController extends SAbstractController {
 		for (Address email: addrs) addresses[i++] = email.toString();
 		return addresses;
 	}
+	@SuppressWarnings("unchecked")
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();

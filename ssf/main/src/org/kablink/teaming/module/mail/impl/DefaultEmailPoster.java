@@ -32,13 +32,10 @@
  */
 package org.kablink.teaming.module.mail.impl;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectOutputStream;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -55,7 +52,6 @@ import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMultipart;
 
-import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -64,7 +60,6 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -96,6 +91,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 	public void setIcalModule(IcalModule icalModule) {
 		this.icalModule = icalModule;
 	}	
+	@SuppressWarnings("unchecked")
 	public List postMessages(Folder folder, String recipient, Message[] msgs, Session session) {
 		//initialize collections
 		Map fileItems = new HashMap();
@@ -142,6 +138,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		return errors;
 	}
 	//override to provide alternate processing 
+	@SuppressWarnings("unchecked")
 	protected void processReply(Folder folder, InternetAddress from, Message msg, Map inputData, Map fileItems, List iCalendars ) throws Exception {
 		inputData = StringCheckUtil.check(inputData);
 		String title = (String)inputData.get(ObjectKeys.FIELD_ENTITY_TITLE);
@@ -161,6 +158,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		msg.setFlag(Flags.Flag.DELETED, true);
 	}
 	//override to provide alternate processing 
+	@SuppressWarnings("unchecked")
 	protected void processEntry(Folder folder, InternetAddress from, Message msg, Map inputData, Map fileItems, List iCalendars ) throws Exception {
 		inputData = StringCheckUtil.check(inputData);
 		User fromUser = setUser(folder, from);
@@ -260,6 +258,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		return user;
 	}
 	//override to provide alternate processing 
+	@SuppressWarnings("unchecked")
 	protected void processPart(Folder folder, Part part, Map inputData, Map fileItems, List iCalendars) throws MessagingException, IOException {
 		if (part.isMimeType(MailModule.CONTENT_TYPE_CALENDAR)) {
 			processICalendar(folder, part.getContent(), iCalendars);
@@ -289,6 +288,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		}
 	}	
 	//override to provide alternate processing 
+	@SuppressWarnings("unchecked")
 	protected void processMultiPart(Folder folder, MimeMultipart content, Map inputData, Map fileItems, List iCalendars) throws MessagingException, IOException {
 		int count = content.getCount();
 		for (int i=0; i<count; ++i ) {
@@ -304,6 +304,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 
 	
 	//override to provide alternate processing 
+	@SuppressWarnings("unchecked")
 	protected void processText(Folder folder, Object content, Map inputData) {
 		if (inputData.containsKey(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) return;
 		String[] val = new String[1];
@@ -312,6 +313,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_NONE));			
 	}
 	//override to provide alternate processing 
+	@SuppressWarnings("unchecked")
 	protected void processHTML(Folder folder, Object content, Map inputData) {
 		String[] val = new String[1];
 		val[0] = (String)content;
@@ -319,6 +321,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_HTML));			
 	}	
 	//override to provide alternate processing 
+	@SuppressWarnings("unchecked")
 	protected void processICalendar(Folder folder, Object content, List iCalendars) throws IOException {
 		try {
 			iCalendars.add((InputStream)content);
@@ -327,6 +330,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		}
 	}
 	//override to provide alternate processing 
+	@SuppressWarnings("unchecked")
 	protected AttendedEntries processICalAttachments(Folder folder, Definition def, Map inputData, Map fileItems, List iCalendars) {
 		AttendedEntries entryIdsFromICalendars = new AttendedEntries();
 		Iterator fileItemsIt = fileItems.entrySet().iterator();
@@ -353,6 +357,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		return entryIdsFromICalendars;
 	}
 	//override to provide alternate processing 
+	@SuppressWarnings("unchecked")
 	protected AttendedEntries processICalInline(Folder folder,  Definition def, Map inputData, Map fileItems, List iCalendars) {
 		// process inline iCalendars
 		AttendedEntries entryIdsFromICalendars = new AttendedEntries();
