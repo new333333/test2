@@ -1960,13 +1960,16 @@ function ss_calendarEngine(
 	    var currEventData = gridControl.currEventData;
 	    
 	    var url = addEntryURL;
-	    url += "&year=" + currEventData.startDate.getFullYear();
-	    url += "&month=" + currEventData.startDate.getMonth();
-	    url += "&dayOfMonth=" + currEventData.startDate.getDate();
-	    url += "&time=" + currEventData.start.toString().replace(".5", ":30");
-	    url += "&duration=" + currEventData.dur;
+	    var haveAddEntryURL = ((null != url) && (0 < url.length));
+	    if (haveAddEntryURL) {
+	    	url += "&year=" + currEventData.startDate.getFullYear();
+	    	url += "&month=" + currEventData.startDate.getMonth();
+	    	url += "&dayOfMonth=" + currEventData.startDate.getDate();
+	    	url += "&time=" + currEventData.start.toString().replace(".5", ":30");
+	    	url += "&duration=" + currEventData.dur;
 	        
-	    ss_openUrlInPortlet(url, true);
+	    	ss_openUrlInPortlet(url, true);
+	    }
 	    
 	    gridControl.deleteCurrentEvent();
 	}
