@@ -35,7 +35,7 @@
 <% //Group_list view %>
 <c:set var="grouplist_entry" value="${ssDefinitionEntry}"/>
 <jsp:useBean id="grouplist_entry" type="org.kablink.teaming.domain.Entry" />
-
+<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].valueSet}">
 <div class="entry-content">
 <div class="entry-caption"><c:out value="${property_caption}" /></div>
 <c:forEach var="selection" 
@@ -45,11 +45,4 @@
   </div>
 </c:forEach>
 </div>
-
-
-
-
-
-
-
-
+</c:if>
