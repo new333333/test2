@@ -87,6 +87,28 @@ function ss_logoff_from_sso(s) {
     onClick="ss_showMenu('micro-blog-edit');return false;"><ssf:nlt tag="miniblog"/></a>
 </c:if>
   
+  <c:if test="${!empty ss_new_actions}">
+    <c:if test="${fn:length(ss_new_actions) == 1}">
+      <c:forEach var="action" items="${ss_new_actions}">
+        <a class="actions-a" href="${action.url}" 
+          title="${action.title}"><ssf:nlt tag="mobile.newEntry"/></a>
+      </c:forEach>
+    </c:if>
+    <c:if test="${fn:length(ss_new_actions) > 1}">
+      <a class="actions-a" href="javascript: ;" 
+        onClick="ss_showMenu('new-actions-menu');return false;"><ssf:nlt tag="mobile.newEntry"/></a>
+    </c:if>
+  </c:if>  
+
+  <c:if test="${!empty ss_modify_actions}">
+     <c:if test="${fn:length(ss_modify_actions) == 1}">
+      <c:forEach var="action" items="${ss_modify_actions}">
+        <a class="actions-a" href="${action.url}" 
+          title="${action.title}"><ssf:nlt tag="Edit"/></a>
+      </c:forEach>
+    </c:if>
+  </c:if>  
+
   <c:if test="${!empty ss_actions}">
     <a class="actions-a" href="javascript: ;" 
       onClick="ss_showMenu('actions-menu');return false;"><ssf:nlt tag="mobile.actions"/></a>
@@ -101,4 +123,5 @@ function ss_logoff_from_sso(s) {
 <%@ include file="/WEB-INF/jsp/mobile/miniblog.jsp" %>
 </c:if>
 
+<%@ include file="/WEB-INF/jsp/mobile/new_menu.jsp" %>
 <%@ include file="/WEB-INF/jsp/mobile/actions_menu.jsp" %>

@@ -656,6 +656,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		
 		//Setup the actions menu list
 		List actions = new ArrayList();
+		List new_actions = new ArrayList();
 		
 		if (binder== null) {
 			return ajaxMobileFrontPage(this, request, response);
@@ -732,7 +733,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				String[] ta = new String[1];
 				ta[0] = title;
 				title = NLT.get("mobile.addSomething", ta);
-				BinderHelper.addActionsGeneral(request, actions, title, adapterUrl.toString(), "");
+				BinderHelper.addActionsGeneral(request, new_actions, title, adapterUrl.toString(), "");
 			}
 			model.put(WebKeys.MOBILE_BINDER_DEF_URL_LIST, defTitleUrlList);
 		}
@@ -780,6 +781,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
+		model.put("ss_new_actions", new_actions);
 		
 		return new ModelAndView("mobile/show_folder", model);
 	}
@@ -1067,7 +1069,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		//Setup the actions menu list
 		List actions = new ArrayList();
-	
+		List new_actions = new ArrayList();	
+		List modify_actions = new ArrayList();	
 		
 		FolderEntry entry = null;
 		Map folderEntries = null;
@@ -1128,7 +1131,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 						String[] ta = new String[1];
 						ta[0] = title;
 						title = NLT.get("mobile.addSomething", ta);
-						BinderHelper.addActionsGeneral(request, actions, title, adapterUrl.toString(), "");
+						BinderHelper.addActionsGeneral(request, new_actions, title, adapterUrl.toString(), "");
 					}
 				}
 			}
@@ -1140,7 +1143,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
 				adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_MODIFY_ENTRY);
 				model.put(WebKeys.MOBILE_ENTRY_MODIFY_URL, adapterUrl);
-				BinderHelper.addActionsGeneral(request, actions, NLT.get("mobile.modifyEntry"), adapterUrl.toString(), "");
+				BinderHelper.addActionsGeneral(request, modify_actions, NLT.get("mobile.modifyEntry"), adapterUrl.toString(), "");
 			}
 	
 			List entries = new ArrayList();
@@ -1154,6 +1157,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
+		model.put("ss_new_actions", new_actions);
+		model.put("ss_modify_actions", modify_actions);
 		
 		return new ModelAndView("mobile/show_entry", model);
 	}	
