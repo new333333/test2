@@ -332,6 +332,9 @@ public class ReportDownloadController extends  SAbstractController {
 		}
 
 	try{
+		byte[] doubleQuote = "\"".getBytes();
+		int indexOfComma = -1;
+
 		for(int i = 0; i < columns.length; i++) {
 			String name = columns[i];
 			if(!isUserColumn(name) || hasUsers) {
@@ -393,10 +396,33 @@ public class ReportDownloadController extends  SAbstractController {
 				}
 				if (! isUserColumn(name)) {
 					if(row.containsKey(name)) {
-						if(row.get(name) instanceof Date) {
-							out.write(("\"" + Validator.replaceDelimiter(dateFormat.format((Date) row.get(name))) +"\"").getBytes());
-						} else {
-							out.write(row.get(name).toString().getBytes());
+						String colValue;
+						
+						// Get the value for this column.
+						if( row.get(name) instanceof Date )
+						{
+							colValue = dateFormat.format( (Date) row.get(name) );
+						}
+						else
+						{
+							colValue = row.get(name).toString();
+						}
+
+						// Does the value for this column have a ',' in it?
+						indexOfComma = colValue.indexOf( ',' ); 
+						if ( indexOfComma >= 0 )
+						{
+							// Yes, enclose the value in quotes.
+							out.write( doubleQuote );
+						}
+						
+						out.write( colValue.getBytes() );
+
+						// Does the value for this column have a ',' in it?
+						if ( indexOfComma >= 0 )
+						{
+							// Yes, enclose the user's name in quotes.
+							out.write( doubleQuote );
 						}
 					}
 				} else if (hasUsers && row.containsKey(name)) {
@@ -404,8 +430,25 @@ public class ReportDownloadController extends  SAbstractController {
 					Principal user = null;
 					if (userId != null) user = userMap.get(userId);
 					if(user != null) {
-						out.write((Validator.replaceDelimiter(user.getTitle()) + " (" 
-								+ Validator.replaceDelimiter(user.getName()) + ")").getBytes());
+						String userName;
+						
+						// Does the user's name have a ',' in it?
+						userName = user.getTitle() + " (" + user.getName() + ")";
+						indexOfComma = userName.indexOf( ',' ); 
+						if ( indexOfComma >= 0 )
+						{
+							// Yes, enclose the user's name in quotes.
+							out.write( doubleQuote );
+						}
+
+						out.write( userName.getBytes() );
+
+						// Does the user's name have a ',' in it?
+						if ( indexOfComma >= 0 )
+						{
+							// Yes, enclose the user's name in quotes.
+							out.write( doubleQuote );
+						}
 					}
 				}
 			}
