@@ -78,6 +78,8 @@ public interface FolderService {
 	public long folder_addReply(String accessToken, long parentEntryId, FolderEntry reply, String attachedFileName);
 	
 	public void folder_deleteEntry(String accessToken, long entryId);
+	public void folder_preDeleteEntry(String accessToken, long entryId);
+	public void folder_restoreEntry(String accessToken, long entryId);
     public long folder_copyEntry(String accessToken, long entryId, long destinationId);
     public void folder_moveEntry(String accessToken, long entryId, long destinationId); 
     public void folder_reserveEntry(String accessToken, long entryId);

@@ -170,12 +170,11 @@ public class TrashHelper {
 	/*
 	 * Inner class used to manipulate entries in the trash.
 	 */
-	private static class TrashEntry {
+	public static class TrashEntry {
 		// Class data members.
 		public Long		m_docId;
 		public Long		m_locationBinderId;
 		public String	m_docType;
-		public String	m_entityType;
 		
 		/*
 		 * Constructs a TrashEntry based on the packed string
@@ -187,7 +186,6 @@ public class TrashHelper {
 			m_docId				= Long.valueOf(params[0]);
 			m_locationBinderId	= Long.valueOf(params[1]);
 			m_docType			=              params[2];
-			m_entityType		=              params[3];
 		}
 		
 		/*
@@ -195,15 +193,15 @@ public class TrashHelper {
 		 */
 		@SuppressWarnings("unchecked")
 		public TrashEntry(Map searchResultsMap) {
-			m_docId      = Long.valueOf((String) searchResultsMap.get("_docId"));
-			m_docType    =             ((String) searchResultsMap.get("_docType"));
-			m_entityType =             ((String) searchResultsMap.get("_entityType"));
-			if (isEntry()) {
-				m_locationBinderId = Long.valueOf((String) searchResultsMap.get("_binderId"));
-			}
-			else if (isBinder()) {
-				m_locationBinderId = Long.valueOf((String) searchResultsMap.get("_binderParentId"));
-			}
+			m_docId   = Long.valueOf((String) searchResultsMap.get("_docId"));
+			m_docType =             ((String) searchResultsMap.get("_docType"));
+			
+			String binderId;
+			if      (isEntry())  binderId = ((String) searchResultsMap.get("_binderId"));
+			else if (isBinder()) binderId = ((String) searchResultsMap.get("_binderParentId"));
+			else                 binderId = null;
+			if (null != binderId) m_locationBinderId = Long.valueOf(binderId);
+			else                  m_locationBinderId = null;
 		}
 
 		/*
@@ -414,7 +412,7 @@ public class TrashHelper {
 	 * Inner class used to assist/manage in the renaming of binders,
 	 * entries and files that have naming conflicts during a restore. 
 	 */
-	private static class TrashRenameData {
+	public static class TrashRenameData {
 		// Class data members.
 		public AllModulesInjected 		m_bs;
 		public HashMap<String, String>	m_renameMap;
@@ -978,13 +976,25 @@ public class TrashHelper {
 	 * Returns a TrashEntry[] of all the items in the trash (non paged
 	 * and non-sorted.)  Used to perform purge/restore alls.
 	 */
-	@SuppressWarnings("unchecked")
 	private static TrashEntry[] getAllTrashEntries(AllModulesInjected bs, RenderRequest request) {
 		// Convert the current trash entries to an ArrayList of TrashEntry's...
 		Long binderId = null;
 		try {
 			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
 		} catch(PortletRequestBindingException ex) {}
+		return getAllTrashEntries(bs, binderId);
+	}
+
+	/**
+	 * Returns a TrashEntry[] of all the items in the trash (non paged
+	 * and non-sorted.)  Used to perform purge/restore alls.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static TrashEntry[] getAllTrashEntries(AllModulesInjected bs, Long binderId) {
 		Binder binder = bs.getBinderModule().getBinder(binderId);
 		Map options = new HashMap();
 		options.put(ObjectKeys.SEARCH_OFFSET,    Integer.valueOf(0));
@@ -1044,8 +1054,11 @@ public class TrashHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static ModelAndView getMVBasedOnTrashResponse(RenderResponse response, AllModulesInjected bs, TrashResponse tr) {
-		// We'll always return a JSON jsp.
-		response.setContentType("text/json");
+		// For the UI...
+		if (null != response) {
+			// ...we'll always return a JSON jsp.
+			response.setContentType("text/json");
+		}
 		
 		// Do we need to display anything to the user?
 		ModelAndView mvReply;
@@ -1097,16 +1110,22 @@ public class TrashHelper {
 		return (((null == obj) || (0 == obj.length())) ? defStr : obj);
 	}
 
-	/*
+	/**
 	 * Returns true if binder is a Folder.
+	 * 
+	 * @param binder
+	 * @return
 	 */
 	public static boolean isBinderFolder(Binder binder) {
 		return (EntityType.folder == binder.getEntityType());
 	}
 
-	/*
+	/**
 	 * Returns true if binder is a predeleted folder or workspace and
 	 * false otherwise. 
+	 * 
+	 * @param binder
+	 * @return
 	 */
 	public static boolean isBinderPredeleted(Binder binder) {
 		boolean reply = false;
@@ -1120,8 +1139,11 @@ public class TrashHelper {
 		return reply;
 	}
 
-	/*
+	/**
 	 * Returns true if binder is a Workspace.
+	 * 
+	 * @param binder
+	 * @return
 	 */
 	public static boolean isBinderWorkspace(Binder binder) {
 		return (EntityType.workspace == binder.getEntityType());
@@ -1464,10 +1486,16 @@ public class TrashHelper {
 		    }
     	}
     }
-    
-    /*
+
+    /**
      * Registers the name for a FileAttachment taking care of any
      * renaming that must occur to ensure uniqueness. 
+     * 
+     * @param cd
+     * @param fa
+     * @param binder
+     * @param de
+     * @param rd
      */
     public static void registerAttachmentName(CoreDao cd, FileAttachment fa, Binder binder, DefinableEntity de, TrashRenameData rd) {
     	FileItem fi = fa.getFileItem();
@@ -1700,11 +1728,44 @@ public class TrashHelper {
 		
 		return tr;
 	}
-	
-	/*
+
+	/**
 	 * Called to restore the TrashEntry's in trashEntries. 
+	 * 
+	 * @param bs
+	 * @param trashEntries
+	 * @param request
+	 * @param response
+	 * @return
 	 */
-	private static ModelAndView restoreEntries(AllModulesInjected bs, TrashEntry[] trashEntries, RenderRequest request, RenderResponse response) {
+	public static ModelAndView restoreEntries(AllModulesInjected bs, TrashEntry trashEntry) {
+		// Always use the final form of the method.
+		return
+			restoreEntries(
+				bs,
+				new TrashEntry[]{trashEntry},
+				null,	// null -> No RenderRequest.   Used from web services.
+				null);	// null -> No RenderResponse.  Used from web services.
+	}
+	public static ModelAndView restoreEntries(AllModulesInjected bs, TrashEntry[] trashEntries) {
+		// Always use the final form of the method.
+		return
+			restoreEntries(
+				bs,
+				trashEntries,
+				null,	// null -> No RenderRequest.   Used from web services.
+				null);	// null -> No RenderResponse.  Used from web services.
+	}
+	public static ModelAndView restoreEntries(AllModulesInjected bs, TrashEntry trashEntry, RenderRequest request, RenderResponse response) {
+		// Always use the final form of the method.
+		return
+			restoreEntries(
+				bs,
+				new TrashEntry[]{trashEntry},
+				request,
+				response);
+	}
+	public static ModelAndView restoreEntries(AllModulesInjected bs, TrashEntry[] trashEntries, RenderRequest request, RenderResponse response) {
 		// Scan the TrashEntry's.
 		int count = ((null == trashEntries) ? 0 : trashEntries.length);
 		TrashResponse tr = new TrashResponse(bs);

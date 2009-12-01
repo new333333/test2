@@ -73,6 +73,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -85,6 +86,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	public void folder_uploadFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName) {
 		throw new UnsupportedOperationException();
 	}
+	@SuppressWarnings("unchecked")
 	public void folder_removeFile(String accessToken, long entryId, String fileName) {
 		try {
 			FolderEntry entry = getFolderModule().getEntry(null, entryId);
@@ -101,6 +103,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		}			
 
 	}
+	@SuppressWarnings("unchecked")
 	public String folder_getEntriesAsXML(String accessToken, long binderId) {
 		org.kablink.teaming.domain.Binder binder = getBinderModule().getBinder(new Long(binderId));
 
@@ -157,6 +160,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	static int count = 0;
 	static SimpleProfiler profiler = null;
 	
+	@SuppressWarnings("unchecked")
 	protected Map getFileAttachments(String fileUploadDataItemName, String[] fileNames)
 	{
 		return new HashMap();
@@ -165,6 +169,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	public long folder_addEntryWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
 		return addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, attachedFileName, null);
 	}
+	@SuppressWarnings("unchecked")
 	protected long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName, Map options) {
 
 		Document doc = getDocument(inputDataAsXML);
@@ -210,6 +215,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		return addReply(accessToken, binderId, parentId, definitionId, inputDataAsXML, attachedFileName, null);
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName, Map options) {
 		Document doc = getDocument(inputDataAsXML);
 		
@@ -234,6 +240,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	public void folder_modifyWorkflowState(String accessToken, long entryId, long stateId, String toState) {
 		getFolderModule().modifyWorkflowState(null, entryId, stateId, toState);
 	}
+	@SuppressWarnings("unchecked")
 	public void folder_setWorkflowResponse(String accessToken, long entryId, long stateId, String question, String response) {
 		Map params = new HashMap();
 		response = StringCheckUtil.check(response);
@@ -249,6 +256,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		uploadFolderFileStaged(accessToken, null, entryId, fileUploadDataItemName, fileName, 
 				stagedFileRelativePath, null, null, null);
 	}
+	@SuppressWarnings("unchecked")
 	protected void uploadFolderFileStaged(String accessToken, Long binderId, Long entryId, String fileUploadDataItemName, String fileName, 
 			String stagedFileRelativePath, String modifier, Calendar modificationDate, Map options) {
 		boolean enable = SPropsUtil.getBoolean("staging.upload.files.enable", false);
@@ -325,6 +333,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		return entryModel;
 	}
 
+	@SuppressWarnings("unchecked")
 	public FolderEntryCollection folder_getEntries(String accessToken, long binderId, int firstRecord, int maxRecords) {
 		org.kablink.teaming.domain.Binder binder = getBinderModule().getBinder(new Long(binderId));
 
@@ -348,11 +357,13 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		return new FolderEntryCollection(firstRecord, total, entries.toArray(array));
 	}
 
+	@SuppressWarnings("unchecked")
 	public long folder_addEntry(String accessToken, org.kablink.teaming.remoting.ws.model.FolderEntry entry, String attachedFileName) {
 		HashMap options = new HashMap();
  		getTimestamps(options, entry);
 		return addFolderEntry(accessToken, entry, attachedFileName, options);	
 	}
+	@SuppressWarnings("unchecked")
 	protected long addFolderEntry(String accessToken, org.kablink.teaming.remoting.ws.model.FolderEntry entry, String attachedFileName, Map options) {
 		if(profiler == null) {
 			profiler = new SimpleProfiler("webServices");
@@ -377,11 +388,13 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public long folder_addReply(String accessToken, long parentEntryId, org.kablink.teaming.remoting.ws.model.FolderEntry reply, String attachedFileName) {
 		Map options = new HashMap();
 		getTimestamps(options, reply);
 		return addReply(accessToken, parentEntryId, reply, attachedFileName, options);
 	}
+	@SuppressWarnings("unchecked")
 	protected long addReply(String accessToken, long parentEntryId, org.kablink.teaming.remoting.ws.model.FolderEntry reply, String attachedFileName, Map options) {
 		try {
 			return getFolderModule().addReply(reply.getParentBinderId(), new Long(parentEntryId), 
@@ -395,6 +408,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void folder_modifyEntry(String accessToken, org.kablink.teaming.remoting.ws.model.FolderEntry entry) {
 		try {
 			HashMap options = new HashMap();
@@ -412,6 +426,30 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 
 	public void folder_deleteEntry(String accessToken, long entryId) {
 		getFolderModule().deleteEntry(null, entryId);
+	}
+	public void folder_preDeleteEntry(String accessToken, long entryId) {
+		try {
+			FolderEntry fe = getFolderModule().getEntry(null, entryId);
+			TrashHelper.preDeleteEntry(
+				this,
+				fe.getParentBinder().getId(),
+				entryId);
+		}
+		catch (Exception e) {
+			throw new RemotingException(e);
+		}
+	}
+	@SuppressWarnings("unchecked")
+	public void folder_restoreEntry(String accessToken, long entryId) {
+		FolderEntry fe = getFolderModule().getEntry(null, entryId);
+		Long binderId = fe.getParentBinder().getId();
+		HashMap	hm = new HashMap();
+		hm.put("_docId", entryId);
+		hm.put("_docType", "entry");
+		hm.put("_binderId", String.valueOf(binderId));
+		TrashHelper.restoreEntries(
+			this,
+			new TrashHelper.TrashEntry(hm));
 	}
     public long folder_copyEntry(String accessToken, long entryId, long destinationId) {
     	return getFolderModule().copyEntry(null, entryId, destinationId, null).getId().longValue();
@@ -432,6 +470,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		return toSubscriptionModel(sub);
 		
 	}
+	@SuppressWarnings("unchecked")
 	public void folder_setSubscription(String accessToken, long entryId, org.kablink.teaming.remoting.ws.model.Subscription subscription) {
 		if (subscription == null || subscription.getStyles().length == 0) {
 			getFolderModule().setSubscription(null, entryId, null);
@@ -500,6 +539,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public long[] folder_getCreatedOrUpdatedEntries(String accessToken,
 			String family, Calendar startTime, Calendar endTime) {
 		Date startDate = (startTime != null) ? startTime.getTime() : new Date(0);
