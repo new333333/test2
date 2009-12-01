@@ -52,7 +52,7 @@
 				      <img style="padding:4px 0px 0px 2px;" align="texttop"
 			            src="<html:rootPath/>images/pics/delete.gif"
 			            onclick="ss_trackedItemsDelete(this, '${binder.id}');"
-			            <ssf:alt text="alt.delete"/>/>
+			            <ssf:alt tag="alt.delete"/>/>
 			        </c:if>
 				    </td></tr></tbody></table>
 			</c:forEach>

@@ -46,7 +46,7 @@
 			    <img style="padding:4px 0px 0px 2px;" align="texttop"
 			      src="<html:rootPath/>images/pics/delete.gif"
 			      onclick="ss_trackedPeopleDelete(this, '${user.id}');"
-			      <ssf:alt text="alt.delete"/>/>
+			      <ssf:alt tag="alt.delete"/>/>
 			    </c:if>
 			    <c:if test="${!empty user.status}">
 				    <div>
