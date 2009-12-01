@@ -36,9 +36,11 @@
 <c:set var="teamlist_entry" value="${ssDefinitionEntry}"/>
 <jsp:useBean id="teamlist_entry" type="org.kablink.teaming.domain.Entry" />
 
+<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].valueSet}">
 <div class="entry-content">
 <div class="entry-caption"><c:out value="${property_caption}" /></div>
   <c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getBinders(teamlist_entry.getCustomAttribute(property_name)) %>" >
     <div class="entry-element"><ssf:showTeam team="${selection}" /></div>
   </c:forEach>
 </div>
+</c:if>
