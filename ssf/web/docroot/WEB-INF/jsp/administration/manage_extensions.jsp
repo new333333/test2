@@ -35,6 +35,8 @@
 
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp"     %>
+
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.manage.extensions") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
