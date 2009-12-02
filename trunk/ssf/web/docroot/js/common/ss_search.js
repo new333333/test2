@@ -1034,7 +1034,7 @@ function ss_saveSearchQuery(inputId, errMsgBoxId) {
 		return;
 	}
 	var queryName = inputObj.value;
-	if (typeof queryName != "undefined" || !queryName || ss_trim(queryName) == "" || 
+	if (typeof queryName == "undefined" || !queryName || ss_trim(queryName) == "" || 
 			queryName == window.ss_searchResultSavedSearchInputLegend) {
 		var errMsgBoxObj = document.getElementById(errMsgBoxId);		
 		errMsgBoxObj.innerHTML = ss_noNameMsg;

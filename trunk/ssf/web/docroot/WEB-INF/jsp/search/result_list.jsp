@@ -48,12 +48,17 @@
 
 		<ul class="ss_searchResult ss_nobullet">
 		<c:forEach var="entry" items="${ssFolderEntries}" varStatus="status">
-			<c:set var="parentBinderId" value="${entry._binderId}"/>
-			<jsp:useBean id="parentBinderId" type="java.lang.String" />
+			<jsp:useBean id="entry" type="java.util.HashMap" />
 			<%
+				String parentBinderId = "";
+				if (entry.containsKey("_binderId")) parentBinderId = (String)entry.get("_binderId");
 				boolean parentBinderPreDeleted = true;
 				try {
-					parentBinderPreDeleted = WebHelper.isBinderPreDeleted(Long.valueOf(parentBinderId));
+					if (!parentBinderId.equals("")) {
+						parentBinderPreDeleted = WebHelper.isBinderPreDeleted(Long.valueOf(parentBinderId));
+					} else {
+						parentBinderPreDeleted = false;
+					}
 				} catch(Exception e) {}
 			%>
 		    <c:set var="entryBinderTitle" value="${entry.binderTitle}"/>
@@ -65,7 +70,6 @@
 		    	<c:set var="entryBinderPathName" value="${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[entry._binderId].pathName}"/>
 		    </c:if>
 		
-			<jsp:useBean id="entry" type="java.util.HashMap" />
 			
 			<jsp:useBean id="isDashboard" type="java.lang.String" />
 			
