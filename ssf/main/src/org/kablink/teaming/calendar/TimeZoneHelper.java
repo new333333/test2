@@ -32,12 +32,17 @@
  */
 package org.kablink.teaming.calendar;
 
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Map;
 import java.util.TimeZone;
 
 import org.joda.time.DateTimeZone;
+import org.kablink.teaming.comparator.StringComparator;
+import org.kablink.teaming.domain.User;
+import org.kablink.teaming.util.NLT;
+
 
 /**
  * Fixes wrong time zone definitions: converts all deprecated 3-characters time
@@ -202,6 +207,27 @@ public class TimeZoneHelper {
 			results.add(id);
 		}
 		return results;
-
+	}
+	public static TreeMap<String, String> getTimeZoneIdDisplayStrings(User user) {
+		String[] ids = java.util.TimeZone.getAvailableIDs();
+		//prune the list
+		String offset = "";
+		TreeMap<String, String> results = new TreeMap<String, String>(); //sorted list
+		for (int i=0; i<ids.length; ++i) {
+			String id = fixTimeZoneId(ids[i]);
+			if (id == null) continue;
+			if (id.startsWith("Etc/") || id.startsWith("SystemV")) continue;
+			if (id.length() == 3 && !id.equals("GMT")) continue; //UTC is only one left
+			String tzString = TimeZone.getTimeZone(id).getDisplayName(false, TimeZone.LONG, user.getLocale());
+			Integer o = TimeZone.getTimeZone(id).getRawOffset() / (1000*60*60);
+			offset = "(" + NLT.get("GMT") + " " + o.toString() + ":00) ";
+			String city = id;
+			if (id.indexOf("/") >= 0) city = id.substring(id.indexOf("/")+1);
+			if (!tzString.contains("(")) tzString += " (" + city + ")";
+			results.put(offset + tzString, id);
+		}
+		if (!results.containsValue(fixTimeZoneId(user.getTimeZone().getID()))) 
+				results.put(user.getTimeZone().getDisplayName(), fixTimeZoneId(user.getTimeZone().getID()));
+		return results;
 	}
 }
