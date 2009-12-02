@@ -52,6 +52,7 @@ import org.kablink.teaming.remoting.ws.model.Tag;
 import org.kablink.teaming.remoting.ws.model.TeamCollection;
 import org.kablink.teaming.remoting.ws.model.TeamMemberCollection;
 import org.kablink.teaming.remoting.ws.model.TemplateCollection;
+import org.kablink.teaming.remoting.ws.model.TrashCollection;
 import org.kablink.teaming.remoting.ws.model.User;
 import org.kablink.teaming.remoting.ws.model.UserCollection;
 import org.kablink.teaming.remoting.ws.service.admin.AdminService;
@@ -227,6 +228,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 
 	public FolderCollection binder_getFolders(String accessToken, long binderId, int firstRecord, int maxRecords) {
 		return getBinderService().binder_getFolders(accessToken, binderId, firstRecord, maxRecords);
+	}
+	public TrashCollection binder_getTrashEntries(String accessToken, long binderId, int firstRecord, int maxRecords) {
+		return getBinderService().binder_getTrashEntries(accessToken, binderId, firstRecord, maxRecords);
 	}
 	public void binder_deleteTag(String accessToken, long binderId, String tagId) {
 		getBinderService().binder_deleteTag(accessToken, binderId, tagId);

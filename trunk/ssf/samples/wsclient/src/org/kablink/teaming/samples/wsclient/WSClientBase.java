@@ -73,6 +73,8 @@ public abstract class WSClientBase {
 			org.kablink.teaming.client.ws.model.Entry.class,
 			org.kablink.teaming.client.ws.model.Event.class,
 			org.kablink.teaming.client.ws.model.Field.class,
+			org.kablink.teaming.client.ws.model.TrashBrief.class,
+			org.kablink.teaming.client.ws.model.TrashCollection.class,
 			org.kablink.teaming.client.ws.model.FolderBrief.class,
 			org.kablink.teaming.client.ws.model.FolderCollection.class,
 			org.kablink.teaming.client.ws.model.FolderEntry.class,
