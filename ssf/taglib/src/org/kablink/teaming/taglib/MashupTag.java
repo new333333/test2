@@ -60,6 +60,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
@@ -133,7 +134,12 @@ public class MashupTag extends BodyTagSupport {
 							rd.include(req, res);
 							pageContext.getOut().print(res.getString().trim());
 						} catch (Exception e) {
-							pageContext.getOut().print(e.getLocalizedMessage());
+							String errorTag = "errorcode.unexpectedError";
+							if (type.equals("customJsp")) {
+								errorTag = "mashup.customJspError";
+							}
+							String[] errorArgs = new String[] {e.getLocalizedMessage()};
+							pageContext.getOut().print(NLT.get(errorTag, errorArgs));
 						}
 					}
 				}
