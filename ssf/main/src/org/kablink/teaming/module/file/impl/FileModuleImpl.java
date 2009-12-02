@@ -57,6 +57,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.search.Query;
 import org.dom4j.Element;
+import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
@@ -1590,8 +1591,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			// exceeded when the transaction began.
 			if ((userQuota < user.getDiskSpaceUsed()))
 				// TODO ROY - put this message into the messages catalogue
-				throw new RepositoryServiceException(new String (NLT.get("quota.exceeded.error.message") + fileName));
-						
+				throw new DataQuotaException("quota.exceeded.error.message", new Object[]{fileName});
 		}
 	}
 	
