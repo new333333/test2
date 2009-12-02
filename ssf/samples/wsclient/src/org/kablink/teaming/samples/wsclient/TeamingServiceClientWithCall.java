@@ -206,6 +206,8 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "migration_uploadFolderFileStaged", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], args[6], c1}, null);
 			} else if(args[0].equals("getFolders")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getFolders", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])});
+			} else if(args[0].equals("getTrashEntries")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getTrashEntries", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])});
 			} else if(args[0].equals("preDeleteBinder")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_preDeleteBinder", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("restoreBinder")) {

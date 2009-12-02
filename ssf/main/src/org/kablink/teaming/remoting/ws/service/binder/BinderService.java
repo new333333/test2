@@ -39,6 +39,7 @@ import org.kablink.teaming.remoting.ws.model.FunctionMembership;
 import org.kablink.teaming.remoting.ws.model.Subscription;
 import org.kablink.teaming.remoting.ws.model.Tag;
 import org.kablink.teaming.remoting.ws.model.TeamMemberCollection;
+import org.kablink.teaming.remoting.ws.model.TrashCollection;
 
 public interface BinderService {
 	/**
@@ -97,6 +98,7 @@ public interface BinderService {
 	public Subscription binder_getSubscription(String accessToken, long binderId); 
 	public void binder_setSubscription(String accessToken, long binderId, Subscription subscription); 
 	public FolderCollection binder_getFolders(String accessToken, long binderId, int firstRecord, int maxRecords);
+	public TrashCollection binder_getTrashEntries(String accessToken, long binderId, int firstRecord, int maxRecords);
 	public byte[] binder_getAttachmentAsByteArray(String accessToken, long binderId, String attachmentId);
    
 }

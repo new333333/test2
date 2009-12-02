@@ -73,6 +73,8 @@ import org.kablink.teaming.remoting.ws.model.FunctionMembership;
 import org.kablink.teaming.remoting.ws.model.PrincipalBrief;
 import org.kablink.teaming.remoting.ws.model.TeamMemberCollection;
 import org.kablink.teaming.remoting.ws.model.Timestamp;
+import org.kablink.teaming.remoting.ws.model.TrashBrief;
+import org.kablink.teaming.remoting.ws.model.TrashCollection;
 import org.kablink.teaming.remoting.ws.util.DomInputData;
 import org.kablink.teaming.remoting.ws.util.ModelInputData;
 import org.kablink.teaming.security.function.Function;
@@ -80,6 +82,7 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
+import org.kablink.teaming.web.util.TrashHelper.TrashEntry;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
@@ -452,6 +455,33 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 				((Integer)searchResults.get(ObjectKeys.TOTAL_SEARCH_COUNT)).intValue(),
 				folderList.toArray(array));
 	}
+	@SuppressWarnings("unchecked")
+	public TrashCollection binder_getTrashEntries(String accessToken, long binderId, int firstRecord, int maxRecords) {
+		// Read the requested trash entries...
+		Binder binder = getBinderModule().getBinder(binderId);
+		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_OFFSET,    Integer.valueOf(firstRecord));
+		options.put(ObjectKeys.SEARCH_MAX_HITS,  Integer.valueOf(maxRecords));
+		options.put(ObjectKeys.SEARCH_SORT_NONE, Boolean.TRUE);
+		Map trashSearchMap = TrashHelper.getTrashEntries(this, binder, options);
+		ArrayList trashSearchAL = ((ArrayList) trashSearchMap.get(ObjectKeys.SEARCH_ENTRIES));
+		ArrayList<TrashEntry> trashEntriesAL = new ArrayList<TrashEntry>();
+        for (Iterator trashEntriesIT=trashSearchAL.iterator(); trashEntriesIT.hasNext();) {
+			trashEntriesAL.add(new TrashEntry((Map) trashEntriesIT.next()));
+		}
+
+        // ...convert them to TrashBrief's...
+        int count = trashEntriesAL.size();
+        TrashBrief[] trashBriefs = new TrashBrief[count];
+        for (int i = 0; i < count; i += 1) {
+        	TrashEntry te = ((TrashEntry) trashEntriesAL.get(i));
+        	trashBriefs[i] = new TrashBrief(this, getCoreDao(), te);
+        }
+        
+        // ...and return them as a TrashCollection.
+        return new TrashCollection(firstRecord, count, trashBriefs);
+	}
+
 	public void binder_deleteTag(String accessToken, long binderId, String tagId) {
 		getBinderModule().deleteTag(binderId, tagId);
 	}
