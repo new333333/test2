@@ -47,6 +47,7 @@ import javax.activation.FileTypeMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Binder;
@@ -57,6 +58,7 @@ import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.LockIdMismatchException;
 import org.kablink.teaming.module.file.LockedByAnotherUserException;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -751,7 +753,7 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} 
 		catch (WriteFilesException e) {
-			throw new KablinkFileSystemException(e.getLocalizedMessage());
+			throw toKablinkFileSystemException(e);
 		}
 		catch (WriteEntryDataException e) {
 			throw new KablinkFileSystemException(e.getLocalizedMessage());
@@ -771,7 +773,7 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} 
 		catch (WriteFilesException e) {
-			throw new KablinkFileSystemException(e.getLocalizedMessage());
+			throw toKablinkFileSystemException(e);
 		}
 		catch (WriteEntryDataException e) {
 			throw new KablinkFileSystemException(e.getLocalizedMessage());
@@ -871,7 +873,7 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} 
 		catch (WriteFilesException e) {
-			throw new KablinkFileSystemException(e.getLocalizedMessage());
+			throw toKablinkFileSystemException(e);
 		}
 		catch (WriteEntryDataException e) {
 			throw new KablinkFileSystemException(e.getLocalizedMessage());
@@ -975,7 +977,7 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 			throw new NoAccessException(e.getLocalizedMessage());
 		} 
 		catch (WriteFilesException e) {
-			throw new KablinkFileSystemException(e.getLocalizedMessage());
+			throw toKablinkFileSystemException(e);
 		}
 	}
 	
@@ -994,7 +996,7 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 			throw new NoAccessException(e.getLocalizedMessage());
 		} 
 		catch (WriteFilesException e) {
-			throw new KablinkFileSystemException(e.getLocalizedMessage());
+			throw toKablinkFileSystemException(e);
 		}
 		catch (WriteEntryDataException e) {
 			throw new KablinkFileSystemException(e.getLocalizedMessage());
@@ -1003,5 +1005,20 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 	
 	private InputStream getHelpFile() {
 		return new ByteArrayInputStream(helpFileContentInUTF8);
+	}
+	
+	private KablinkFileSystemException toKablinkFileSystemException(WriteFilesException e) {
+		boolean warning = false;
+		FilesErrors errors = e.getErrors();
+		if(errors != null) {
+			List<FilesErrors.Problem> problems = errors.getProblems();
+			if(problems != null && problems.size() == 1) {
+				Exception cause = problems.get(0).getException();
+				if(cause instanceof DataQuotaException) {
+					warning = true;
+				}
+			}
+		}
+		return new KablinkFileSystemException(e.getLocalizedMessage(), warning);
 	}
 }
