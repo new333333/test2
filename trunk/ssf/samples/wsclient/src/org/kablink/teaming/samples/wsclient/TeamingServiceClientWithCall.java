@@ -206,6 +206,14 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "migration_uploadFolderFileStaged", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], args[6], c1}, null);
 			} else if(args[0].equals("getFolders")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getFolders", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])});
+			} else if(args[0].equals("preDeleteBinder")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_preDeleteBinder", new Object[] {null, Long.parseLong(args[1])});
+			} else if(args[0].equals("restoreBinder")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_restoreBinder", new Object[] {null, Long.parseLong(args[1])});
+			} else if(args[0].equals("preDeleteEntry")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_preDeleteEntry", new Object[] {null, Long.parseLong(args[1])});
+			} else if(args[0].equals("restoreEntry")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_restoreEntry", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("getCreatedOrUpdatedEntries")) {
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
 				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "folder_getCreatedOrUpdatedEntries", 
@@ -277,6 +285,10 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("migrateFileStaged <folder id> <entry id> <fileDataFieldName> <fileName> <stagedFileRelativePath> <modifier> <modDate>");
 		System.out.println("synchronize <mirrored folder id>");
 		System.out.println("getFolders <binder id> <first> <max>");
+		System.out.println("preDeleteBinder <binder id>");
+		System.out.println("restoreBinder <binder id>");
+		System.out.println("preDeleteEntry <entry id>");
+		System.out.println("restoreEntry <entry id>");
 		
 		// an example of addZoneUnderPortal invocation - 
 		// addZoneUnderPortal fake-bestbuy www.fake-bestbuy.com mail.fake-bestbuy.com
