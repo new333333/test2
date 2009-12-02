@@ -43,21 +43,20 @@
 <c:if test="${empty ssReadOnlyFields[property_name]}">
 <select name="${property_name}" id="${property_name}">
 <%
-	java.util.Set<String> tzones = org.kablink.teaming.calendar.TimeZoneHelper.getTimeZoneIds();
-	org.kablink.teaming.domain.User user = (org.kablink.teaming.domain.User)request.getAttribute("ssDefinitionEntry");
-	org.kablink.teaming.domain.User currentUser = (org.kablink.teaming.domain.User)request.getAttribute("ssUser");
-	java.util.Set<String> map = new java.util.TreeSet(new org.kablink.teaming.comparator.StringComparator(currentUser.getLocale())); //sort
-	map.addAll(tzones);
+	User user = (User)request.getAttribute("ssDefinitionEntry");
+	User currentUser = (User)request.getAttribute("ssUser");
+	TreeMap<String, String> tzones = org.kablink.teaming.calendar.TimeZoneHelper.getTimeZoneIdDisplayStrings(currentUser);
 	String tzId;
 	if (user != null) tzId = user.getTimeZone().getID();
 	else tzId = org.kablink.teaming.calendar.TimeZoneHelper.getDefault().getID();
-	map.add(tzId);
-	for (String tz:map) {
+
+	for (Map.Entry me : tzones.entrySet()) {
+		String tz = (String) me.getValue();
 		String checked = "";
 		if (tz.equals(tzId))
 			checked="selected=\"selected\"";
 %>
-<option value="<%= tz %>" <%= checked %>><%= tz %></option>
+<option value="<%= tz %>" <%= checked %>><%= (String)me.getKey() %></option>
 <%
 };
 %>

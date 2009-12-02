@@ -34,11 +34,13 @@ package org.kablink.teaming.util;
 import java.util.Locale;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.SingletonViolationException;
+import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
@@ -211,5 +213,16 @@ public class NLT implements ApplicationContextAware {
 		}
 		return results;
 
+	}
+	public static TreeMap<String,Locale> getSortedLocaleList(User user) {
+		Set<Locale> ids = getLocales();
+		TreeMap<String,Locale> map = new TreeMap(new StringComparator(user.getLocale())); //sort
+		for (Locale lc : ids) {
+			map.put(lc.getDisplayName(lc), lc);
+		}
+		//make sure current users locale appears
+		map.put(user.getLocale().getDisplayName(user.getLocale()), user.getLocale());
+		
+		return map;
 	}
 }
