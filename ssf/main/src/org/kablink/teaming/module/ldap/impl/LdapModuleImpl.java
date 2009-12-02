@@ -1397,6 +1397,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, Boolean.valueOf(deleteWS));
 
+		int count = 0;
 		for (Iterator iter=ids.iterator(); iter.hasNext();) {
     		Long id = (Long)iter.next();
     		try {
@@ -1415,7 +1416,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     				}
     			}
 
-    			getProfileModule().deleteEntry(id, options);
+    			getProfileModule().deleteEntry(id, options, true);
+    			count++;
     			
     			if(syncResults != null && name != null)
     				syncResults.addResult(name);
@@ -1423,6 +1425,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     			logError(NLT.get("errorcode.ldap.delete", new Object[]{id.toString()}), ex);
     		}
     	}
+		if(count > 0) {
+			getProfileModule().deleteEntryFinish();
+		}
 		IndexSynchronizationManager.applyChanges();
     }
     //have not implement re-enable so only support delete

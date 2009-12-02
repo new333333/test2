@@ -177,7 +177,25 @@ public interface ProfileModule {
 	 * @throws WriteFilesException
 	 */
 	public void deleteEntry( Long entryId, Map options)
-		throws AccessControlException, WriteFilesException, WriteEntryDataException;
+	throws AccessControlException, WriteFilesException, WriteEntryDataException;
+	/**
+	 * Execute only the phase1 (synchronous part) of the {@link #deleteEntry(Long, Map)}
+	 * method. 
+	 * @param entryId
+	 * @param options
+	 * @param phase1Only
+	 * @throws AccessControlException
+	 * @throws WriteFilesException
+	 * @throws WriteEntryDataException
+	 */
+	public void deleteEntry( Long entryId, Map options, boolean phase1Only)
+	throws AccessControlException, WriteFilesException, WriteEntryDataException;	
+	/**
+	 * Performs phase2 (asynchronous part) of deleting an entry. Must be called after
+	 * calling {@link #deleteEntry(Long, Map, boolean)} one or more times and specifying
+	 * to only do phase1.
+	 */
+	public void deleteEntryFinish();
 	/**
 	 * Delete a user.
 	 * @param userName
