@@ -68,6 +68,7 @@ import org.kablink.teaming.web.servlet.SAbstractController;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.util.Validator;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -210,7 +211,18 @@ public class ReportDownloadController extends  SAbstractController {
 						AuditTrail.AuditType.modify.name(), AuditTrail.AuditType.delete.name()};
 			} else if ("quota".equals(reportType)) {
 				String quotaOption = ServletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_QUOTA_OPTION);
-				Long threshold = ServletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_QUOTA_THRESHOLD);
+				Long threshold = null;
+				try
+				{
+					threshold = ServletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_QUOTA_THRESHOLD);
+				}
+				catch (ServletRequestBindingException srbEx)
+				{
+					// Nothing to do.
+				}
+				if ( threshold == null )
+					threshold = new Long( 0 );
+				
 				ReportModule.QuotaOption option = ReportModule.QuotaOption.valueOf(quotaOption);
 				report = getReportModule().generateQuotaReport(option, threshold);
 				switch(option) {
