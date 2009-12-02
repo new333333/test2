@@ -148,7 +148,7 @@ public class SendMailController extends SAbstractController {
 		Map model = new HashMap();
 		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			//Sending mail as guest is not allowed
-			model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.access.denied"));
+			model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.operation.denied.sessionTimeout"));
 			return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
 		}
 		if (errors != null) {
