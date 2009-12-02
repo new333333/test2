@@ -269,7 +269,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		Binder binder = getBinderModule().getBinder(binderId);
 		Long binderParentId = binder.getParentBinder().getId();
 		HashMap	hm = new HashMap();
-		hm.put("_docId", binderId);
+		hm.put("_docId", String.valueOf(binderId));
 		hm.put("_docType", "binder");
 		hm.put("_binderParentId", String.valueOf(binderParentId));
 		TrashHelper.restoreEntries(

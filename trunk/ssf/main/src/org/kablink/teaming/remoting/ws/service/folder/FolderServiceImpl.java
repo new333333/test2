@@ -444,7 +444,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		FolderEntry fe = getFolderModule().getEntry(null, entryId);
 		Long binderId = fe.getParentBinder().getId();
 		HashMap	hm = new HashMap();
-		hm.put("_docId", entryId);
+		hm.put("_docId", String.valueOf(entryId));
 		hm.put("_docType", "entry");
 		hm.put("_binderId", String.valueOf(binderId));
 		TrashHelper.restoreEntries(
