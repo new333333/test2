@@ -1248,8 +1248,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		
 		Integer defaultQuota = getAdminModule().getQuotaDefault();
+		Integer highWaterPercentage = getAdminModule().getQuotaHighWaterMark();
 		final int i_defaultQuota = defaultQuota;
-		final int highWaterPercentage = Integer.valueOf(SPropsUtil.getInt("disk.quotas.highwater.percentage", 90));
+		final int i_highWaterPercentage = highWaterPercentage.intValue();
 		
 		List results = null;
 		results = (List)getHibernateTemplate().execute(new HibernateCallback() {
@@ -1266,7 +1267,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 
 					Query query = session.createQuery(sql)
                    	.setLong("zoneId", RequestContextHolder.getRequestContext().getZoneId())
-                   	.setLong("highWaterPercentage", highWaterPercentage);
+                   	.setLong("highWaterPercentage", i_highWaterPercentage);
 					
 					l = query.list();
 					
@@ -1281,7 +1282,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					Query query2 = session.createQuery(sql2)
                    	.setLong("zoneId", RequestContextHolder.getRequestContext().getZoneId())
                    	.setLong("defaultQuota", i_defaultQuota)
-                   	.setLong("highWaterPercentage", highWaterPercentage);
+                   	.setLong("highWaterPercentage", i_highWaterPercentage);
 										
 					l.addAll(query2.list());
 					
