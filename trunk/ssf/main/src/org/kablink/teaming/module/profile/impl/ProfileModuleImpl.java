@@ -1129,8 +1129,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		return miniBlog;
    }
 
-    //RW transaction
-    public void deleteEntry(Long principalId, Map options) {
+   //RW transaction
+   public void deleteEntry(Long principalId, Map options) {
+	   deleteEntry(principalId, options, false);
+   }
+   //RW transaction
+   public void deleteEntry(Long principalId, Map options, boolean phase1Only) {
         Principal entry = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), true);
         checkAccess(entry, ProfileOperation.deleteEntry);
        	if (entry.isReserved()) 
@@ -1146,13 +1150,16 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         	Long wsId = u.getWorkspaceId();
         	if (wsId != null) {
         		try {
-        			getBinderModule().deleteBinder(wsId, true, options);
+        			getBinderModule().deleteBinder(wsId, true, options, phase1Only);
         			u.setWorkspaceId(null);       		
         		} catch (Exception ue) {}    
         	}
         }
      }
-    
+   // no transaction
+	public void deleteEntryFinish() {
+		getBinderModule().deleteBinderFinish();
+	}
     //RO transaction
     public User getUser(String name) {
  	  Principal p = getProfileDao().findPrincipalByName(name, RequestContextHolder.getRequestContext().getZoneId());
