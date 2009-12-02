@@ -159,7 +159,6 @@
 					 >
 			  		 <span>${title}</span></a>
 				</c:if>
-				  <span class="font-red">Lynn</span>
 			</div>
 			
 			  <c:if test="${!empty entryWn._desc}">

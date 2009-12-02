@@ -51,7 +51,7 @@
   <div class="folders">
     <div class="folder-content">
 
-	<div>
+	<div class="entry-actions" style="text-align: left;">
 	  <form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
 					action="__ajax_mobile" actionUrl="true" 
 					binderId="${ssBinder.id}"
@@ -70,7 +70,7 @@
           </span>
         </label>
 	    <br/>
-	    <input type="text" size="15" name="searchText" id="searchText" value="${ss_searchText}"/><input 
+	    <input type="text" size="20" name="searchText" id="searchText" value="${ss_searchText}"/><input 
 	      type="submit" name="searchBtn" value="<ssf:nlt tag="button.ok"/>"/>
 	    <input type="hidden" name="scope" value="${ss_searchScope}"/>
 	  </form>
@@ -78,9 +78,7 @@
 
 <c:if test="${!empty ssFolderEntries}">
   	<div align="right">
-	  <table>
-		<tr>
-		  <td>
+	  <div class="entry-actions">
 			<c:if test="${!empty ss_prevPage}">
 			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				folderId="${ssBinder.id}" 
@@ -93,13 +91,12 @@
 				name="tabId" value="${ss_tab_id}"/><ssf:param 
 				name="pageNumber" value="${ss_pageNumber-1}"/><ssf:param 
 				name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
-			  ><img border="0" src="<html:rootPath/>images/mobile/nl_left_16.gif"/></a>
+			  ><img border="0" src="<html:rootPath/>images/mobile/nl_left_20.png"/></a>
 			</c:if>
 			<c:if test="${empty ss_prevPage}">
-			  <img border="0" src="<html:rootPath/>images/mobile/nl_left_dis_16.gif"/>
+			  <img border="0" src="<html:rootPath/>images/mobile/nl_left_dis_20.png"/>
 			</c:if>
-		  </td>
-		  <td style="padding-left:20px;">
+
 			<c:if test="${!empty ss_nextPage}">
 			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				folderId="${ssBinder.id}" 
@@ -112,14 +109,12 @@
 				name="tabId" value="${ss_tab_id}"/><ssf:param 
 				name="pageNumber" value="${ss_pageNumber+1}"/><ssf:param 
 				name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
-			  ><img border="0" src="<html:rootPath/>images/mobile/nl_right_16.gif"/></a>
+			  ><img border="0" src="<html:rootPath/>images/mobile/nl_right_20.png"/></a>
 			</c:if>
 			<c:if test="${empty ss_nextPage}">
-			  <img border="0" src="<html:rootPath/>images/mobile/nl_right_dis_16.gif"/>
+			  <img border="0" src="<html:rootPath/>images/mobile/nl_right_dis_20.png"/>
 			</c:if>
-	      </td>
-		</tr>
-	  </table>
+	  </div>
 	</div>
 
 		<c:forEach var="entry" items="${ssFolderEntries}" varStatus="status">
@@ -315,10 +310,7 @@
 			%>
 		</c:forEach>
 
-  <br/>
-  <table>
-	<tr>
-	  <td>
+  <div class="entry-actions">
 		<c:if test="${!empty ss_prevPage}">
 		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 			folderId="${ssBinder.id}" 
@@ -330,13 +322,12 @@
 			name="tabId" value="${ss_tab_id}"/><ssf:param 
 			name="pageNumber" value="${ss_pageNumber-1}"/><ssf:param 
 			name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
-		  ><img border="0" src="<html:rootPath/>images/mobile/nl_left_16.gif"/></a>
+		  ><img border="0" src="<html:rootPath/>images/mobile/nl_left_20.png"/></a>
 		</c:if>
 		<c:if test="${empty ss_prevPage}">
-		  <img border="0" src="<html:rootPath/>images/mobile/nl_left_dis_16.gif"/>
+		  <img border="0" src="<html:rootPath/>images/mobile/nl_left_dis_20.png"/>
 		</c:if>
-	  </td>
-	  <td style="padding-left:20px;">
+
 		<c:if test="${!empty ss_nextPage}">
 		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 			folderId="${ssBinder.id}" 
@@ -348,14 +339,12 @@
 			name="tabId" value="${ss_tab_id}"/><ssf:param 
 			name="pageNumber" value="${ss_pageNumber+1}"/><ssf:param 
 			name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
-		  ><img border="0" src="<html:rootPath/>images/mobile/nl_right_16.gif"/></a>
+		  ><img border="0" src="<html:rootPath/>images/mobile/nl_right_20.png"/></a>
 		</c:if>
 		<c:if test="${empty ss_nextPage}">
-		  <img border="0" src="<html:rootPath/>images/mobile/nl_right_dis_16.gif"/>
+		  <img border="0" src="<html:rootPath/>images/mobile/nl_right_dis_20.png"/>
 		</c:if>
-      </td>
-	</tr>
-  </table>
+  </div>
 </c:if>
 
 <c:if test="${empty ssFolderEntries}">

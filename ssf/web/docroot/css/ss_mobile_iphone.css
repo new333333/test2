@@ -26,6 +26,10 @@ input[type=button], input[type=submit], input[type=reset] {
 span.pad-left20 {
 	padding-left: 10px;
 	}	
+	
+span.pad-left20 select {
+	color: #1C5894;
+	}	
 
 .font-red {
 	color: red;
@@ -169,6 +173,7 @@ span.pad-left20 {
 .entry-actions {
 	text-align: right; 
 	padding-top: 5px;
+	padding-left: 10px;
 	background-color: #eceeec;
 	}
 .entry-actions img {
@@ -211,7 +216,7 @@ span.pad-left20 {
 	}
 
 .userid {
-	background-color: #fef7c7; /* #f8f9cd;*/
+	background-color: #efeeec; /* #fef7c7; #f8f9cd;*/
 	border-bottom: 1px solid #e2e5e1;
 	}
 .username {
@@ -224,7 +229,7 @@ span.pad-left20 {
 	color: #666;
 	padding-top: 2px;
 	padding-bottom: 2px;
-	margin-left: 28%;
+	margin-left: 23%;
 	}
 .userid-clear {
 	clear: both;
@@ -234,7 +239,7 @@ span.pad-left20 {
 	position: relative;
 	top: 0px;
 	left: 0px;
-	width: 25%;
+	width: 20%;
 	float: left;
 	margin-right: 6px;
 	}	
@@ -314,7 +319,7 @@ span.pad-left20 {
 	font-size: 18px;
 	line-height: 19px;
 	font-weight: bold;
-	padding-top: 5px;
+	padding-top: 8px;
 	padding-right: 34px;
 	padding-left: 15px;
 	}
@@ -341,7 +346,7 @@ span.pad-left20 {
 	}
 .entry-caption {
 	font-weight: bold;
-	font-size: 14px;
+	font-size: 12px;
 	color: #000;
 	padding-top: 4px;
 	}
@@ -361,15 +366,17 @@ span.pad-left20 {
 	font-size: 12px;
 	color: #666;
 	margin: 0px;
-	padding-top: 3px;
+	padding-top: 8px;
 	padding-bottom: 10px;
-	padding-left: 15px;
+	padding-left: 10px;
 	}
 .entry-type span {
-	padding: 2px;
-	border: 1px solid #eceeec;
-	background-color: #fef7c7;
-}
+	padding: 2px 5px;
+	border: 1px solid #e0e2e0;
+	background-color: #eceeec;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px
+	}
 .entry-comment-label {
 	position: absolute;
 	right: 6px;
