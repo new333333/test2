@@ -196,7 +196,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 				reject.setText(errorMsg);
 				reject.setFrom(new InternetAddress(recipient));
 				reject.setContent(msg.getContent(), msg.getContentType());
-				reject.setSubject(reject.getSubject() + " " + errorMsg); 
+				reject.setSubject(errorMsg + " (" + reject.getSubject() + ")"); 
 				return reject;
 			} 
 		} catch (Exception ex2) {}
