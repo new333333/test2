@@ -71,8 +71,31 @@ public class ManageQuotasController extends SAbstractController {
 			} else {
 				getAdminModule().setQuotaEnabled(false);
 			}
-			Integer defaultQuota = PortletRequestUtils.getIntParameter(request, "defaultQuota");
-			Integer highWaterMark = PortletRequestUtils.getIntParameter(request, "highWaterMark");
+			Integer defaultQuota;
+			Integer highWaterMark;
+			
+			// Get the default data quota size entered by the user.
+			try
+			{
+				defaultQuota = PortletRequestUtils.getIntParameter(request, "defaultQuota");
+			}
+			catch (Exception ex)
+			{
+				// The value entered by the user is not valid.  Use default value.
+				defaultQuota = getAdminModule().getQuotaDefault();
+			}
+			
+			// Get the highwater mark entered by the user.
+			try
+			{
+				highWaterMark = PortletRequestUtils.getIntParameter(request, "highWaterMark");
+			}
+			catch (Exception ex)
+			{
+				// The value entered by the user is not valid.  Use default value.
+				highWaterMark = getAdminModule().getQuotaHighWaterMark();
+			}
+			
 			getAdminModule().setQuotaDefault(defaultQuota);
 			getAdminModule().setQuotaHighWaterMark(highWaterMark);
 			
