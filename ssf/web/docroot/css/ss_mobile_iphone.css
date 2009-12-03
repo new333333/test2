@@ -169,6 +169,9 @@ span.pad-left20 select {
 #micro-blog-buttons {
 	margin-top: .3em; 
 	}
+#micro-blog-text {
+	width: 250px;h
+	}
 	
 .entry-actions {
 	text-align: right; 
@@ -179,8 +182,6 @@ span.pad-left20 select {
 .entry-actions img {
 	padding-right: 15px;
 	}
-
-
 
 #categoryTable {
 	table-layout:fixed;
@@ -545,10 +546,10 @@ h6 {
 	margin-bottom: 5px;
 	}
 .ss_labelAbove {
-  padding-top: 2px;
-  padding-bottom: 2px;
-  display: block;
-  font-weight: bold;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	display: block;
+	font-weight: bold;
 	}
 .ss_labelLeft {
   font-weight: bold;
@@ -562,6 +563,17 @@ h6 {
 	padding-bottom:6px;
 	}
 	
+.ss_entryContent input.ss_text {
+	font-size: 13px;
+	width: 250px;
+	}	
+.ss_entryContent textarea#description {
+	width: 250px;
+	height: 70px;
+	}	
+.ss_mobile_form_element input[type="text"] {
+	width: 80px;
+	}
 	
 /* Calendar */
 
@@ -693,7 +705,7 @@ div.ss_mobile_calendar_no_entries_content span {
 	
 .ss_form_wrap {
 	background-color: #eceeec;
-	padding: 0 10px 10px 10px!important;
+/*	padding: 0 10px 10px 10px!important; */
 	}
 .ss_form_header {
 	clear: both; 

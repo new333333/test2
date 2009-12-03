@@ -33,7 +33,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-<div class="entry-content">
+<div>
 
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 	configElement="${ssConfigElement}" 

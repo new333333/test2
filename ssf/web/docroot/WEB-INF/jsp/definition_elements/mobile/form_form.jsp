@@ -76,7 +76,7 @@
   </c:when>
 
   <c:otherwise>
-	<form style="background: transparent;" 
+	<form style="background: transparent; padding: 10px" 
 	  method="<%= methodName %>" 
 	  enctype="<%= enctype %>" 
 	  name="<%= formName %>" 
