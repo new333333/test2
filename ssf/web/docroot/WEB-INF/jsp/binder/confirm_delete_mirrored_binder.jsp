@@ -77,35 +77,44 @@
 	// do need to prompt the user in that case.
 %>
 <c:if test="${ssBinder.mirrored}">
-	<c:set var="cb_checked" value=""/>
-	<div style="display:block">
-	<input type="checkbox" name="ss_deleteSource" id="ss_deleteSource" <c:out value="${cb_checked}"/> 
-	  onClick="if (document.ss_confirm_delete_mirrored_binder.ss_deleteSource.checked) document.ss_confirm_delete_mirrored_binder.deleteSource.value='true'; else document.ss_confirm_delete_mirrored_binder.deleteSource.value='false';"/>
-	&nbsp;<label for="ss_deleteSource"><span class="ss_labelRight">
-	<c:if test="${ssBinder.entityType == 'folder'}">
-	<ssf:nlt tag="folder.deleteMirroredFolderContents"/>
-	</c:if>
-	<c:if test="${ssBinder.entityType != 'folder'}">
-	<ssf:nlt tag="workspace.deleteMirroredFolderContents"/>
-	</c:if>
-	</span></label>
-	</div>
 </c:if>
 <c:if test="${!ssBinder.mirrored}">
 	<c:set var="cb_checked" value=""/>
 	<div style="display:block">
-	<input type="checkbox" name="ss_purgeImmediately" id="ss_purgeImmediately" <c:out value="${cb_checked}"/> 
-	  onClick="if (document.ss_confirm_delete_mirrored_binder.ss_purgeImmediately.checked) document.ss_confirm_delete_mirrored_binder.purgeImmediately.value='true'; else document.ss_confirm_delete_mirrored_binder.purgeImmediately.value='false';"/>
-	&nbsp;<label for="ss_purgeImmediately"><span class="ss_labelRight">
-	<c:if test="${ssBinder.entityType == 'folder'}">
-	<ssf:nlt tag="trash.confirm.Purge.immediately.folder"/>
-	</c:if>
-	<c:if test="${ssBinder.entityType != 'folder'}">
-	<ssf:nlt tag="trash.confirm.Purge.immediately.workspace"/>
-	</c:if>
-	</span></label>
+		<input type="checkbox" name="ss_purgeImmediately" id="ss_purgeImmediately" <c:out value="${cb_checked}"/> 
+		  onClick="if (document.ss_confirm_delete_mirrored_binder.ss_purgeImmediately.checked) {document.ss_confirm_delete_mirrored_binder.purgeImmediately.value='true'; document.getElementById('ss_deleteSourceDIV').style.visibility='';} else {document.ss_confirm_delete_mirrored_binder.purgeImmediately.value='false'; document.getElementById('ss_deleteSourceDIV').style.visibility='hidden';}"/>
+		  &nbsp;<label for="ss_purgeImmediately"><span class="ss_labelRight">
+		<c:if test="${ssBinder.entityType == 'folder'}">
+			<ssf:nlt tag="trash.confirm.Purge.immediately.folder"/>
+		</c:if>
+		<c:if test="${ssBinder.entityType != 'folder'}">
+			<ssf:nlt tag="trash.confirm.Purge.immediately.workspace"/>
+		</c:if>
+		</span></label>
 	</div>
 </c:if>
+
+
+<c:if test="${!ssBinder.mirrored}">
+	<div id="ss_deleteSourceDIV" style="visibility:hidden">
+</c:if>
+		<c:set var="cb_checked" value=""/>
+		<div style="display:block">
+			<input type="checkbox" name="ss_deleteSource" id="ss_deleteSource" <c:out value="${cb_checked}"/> 
+			  onClick="if (document.ss_confirm_delete_mirrored_binder.ss_deleteSource.checked) document.ss_confirm_delete_mirrored_binder.deleteSource.value='true'; else document.ss_confirm_delete_mirrored_binder.deleteSource.value='false';"/>
+			  &nbsp;<label for="ss_deleteSource"><span class="ss_labelRight">
+			<c:if test="${ssBinder.entityType == 'folder'}">
+				<ssf:nlt tag="folder.deleteMirroredFolderContents"/>
+			</c:if>
+			<c:if test="${ssBinder.entityType != 'folder'}">
+				<ssf:nlt tag="workspace.deleteMirroredFolderContents"/>
+			</c:if>
+			</span></label>
+		</div>
+<c:if test="${!ssBinder.mirrored}">
+	</div>
+</c:if>
+
 <input type="hidden" name="purgeImmediately" value="false"/>
 <input type="hidden" name="deleteSource"     value="false"/>
 <br/>
