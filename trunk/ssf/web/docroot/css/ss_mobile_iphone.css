@@ -376,7 +376,6 @@ span.pad-left20 select {
 	border: 1px solid #e0e2e0;
 	background-color: #eceeec;
 	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px
 	}
 .entry-comment-label {
 	position: absolute;
@@ -443,11 +442,9 @@ span.pad-left20 select {
 
 .roundcorner {
 	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px
 	}
 .roundcornerLG {
 	-webkit-border-radius: 40px;
-	-moz-border-radius: 40px
 	}
 	
 

@@ -45,10 +45,7 @@
 <head>
 <meta http-equiv="Content-Script-Type" content="text/javascript"/>
 <meta http-equiv="Content-Style-Type" content="text/css"/>
-<meta content="yes" name="apple-mobile-web-app-capable"/>
-<meta content="user-scalable=no; width=device-width; initial-scale=1.0; 
-	maximum-scale=1.0; minimum-scale=1.0; " name="viewport"/>
-<meta content="black" name="apple-mobile-web-app-status-bar-style"/>
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
 
 <jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_mobile_head.jsp" />
 <c:if test="${!empty ss_windowTitle}"><title>${ss_windowTitle}</title></c:if>
