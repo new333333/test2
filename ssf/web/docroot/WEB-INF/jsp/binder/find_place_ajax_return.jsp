@@ -74,7 +74,7 @@ function ss_saveFolderId(id, type, clickObj) {
     foldersOnly="true"
     singleItem="true"
     clickRoutine="ss_saveFolderId"
-    accessibilityText="iclink.folder"
+    accessibilityText="entry.Folder"
     /> 
 <input type="hidden" name="searchTitle"/>
 </form>
