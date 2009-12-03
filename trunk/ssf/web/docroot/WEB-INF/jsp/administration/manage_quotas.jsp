@@ -47,6 +47,43 @@ function ss_checkIfNumber(obj) {
 		obj.value="";
 	}
 }
+function showAddUsersDiv() {
+	hideAllDivs();
+	var userDivObj = self.document.getElementById("addUserDiv");
+	userDivObj.style.display = "block";
+}
+
+function showAddGroupsDiv() {
+	hideAllDivs();
+	var groupDivObj = self.document.getElementById("addGroupDiv");
+	groupDivObj.style.display = "block";
+}
+
+function hideAllDivs() {
+	var userDivObj = self.document.getElementById("addUserDiv");
+	var groupDivObj = self.document.getElementById("addGroupDiv");
+	groupDivObj.style.display = "none";
+	userDivObj.style.display = "none";
+	if (ss_quotaModifyDivBeingShown != null) {
+		var divObj = self.document.getElementById("ss_modifyQuotaDiv" + ss_quotaModifyDivBeingShown);
+		divObj.style.display = "none";
+		ss_quotaModifyDivBeingShown = null;
+	}
+	var modifyIdObj = self.document.getElementById("modifyId");
+	alert(modifyIdObj)
+	alert(modifyIdObj.value)
+	modifyIdObj.value = "";
+}
+var ss_quotaModifyDivBeingShown = null;
+function ss_showModifyDiv(id) {
+	hideAllDivs();
+	var modifyIdObj = self.document.getElementById("modifyId");
+	modifyIdObj.value = id;
+	var divObj = self.document.getElementById("ss_modifyQuotaDiv" + id);
+	divObj.style.display = "block";
+	ss_quotaModifyDivBeingShown = id;
+}
+
 </script>
 
 <div class="ss_pseudoPortal">
@@ -55,8 +92,6 @@ function ss_checkIfNumber(obj) {
 <ssf:form titleTag="administration.manage.quotas">
 
 <div style="padding:10px;" id="ss_manageQuotas">
-<span class="ss_titlebold"><ssf:nlt tag="administration.manage.quotas" /></span>
-<br>
 <br>
 
 <c:if test="${!empty ssException}">
@@ -76,12 +111,12 @@ function ss_checkIfNumber(obj) {
 	</div>
 		
 	<fieldset class="ss_fieldset">
-	  <legend class="ss_legend"><ssf:nlt tag="administration.quotas.enable" /></legend>
-	<div>
-	  <input type="checkbox" name="enableQuotas" 
+	  <legend class="ss_legend"><input type="checkbox" name="enableQuotas" 
 	  <c:if test="${ss_quotasEnabled}">checked=checked</c:if>
 	  />
-	  <ssf:nlt tag="administration.quotas.enable"/>
+	  <ssf:nlt tag="administration.quotas.enable" /></legend>
+	<div>
+	  
 	</div>
 		
 	<table>
@@ -91,7 +126,7 @@ function ss_checkIfNumber(obj) {
 	</td>
 	<td style="padding-left:4px;" valign="top">
 	  <input type="text" size="6" name="defaultQuota" value="${ss_quotasDefault}"
-	    onblur="ss_checkIfNumber(this);"
+	    onblur="ss_checkIfNumber(this);" style="text-align:right;"
 	  />
 	  <ssf:nlt tag="administration.quotas.mb"/>
 	</td>
@@ -102,7 +137,7 @@ function ss_checkIfNumber(obj) {
 	</td>
 	<td style="padding-left:4px;" valign="top">
 	  <input type="text" size="6" name="highWaterMark" value="${ss_quotasHighWaterMark}"
-	  	onblur="ss_checkIfNumber(this);"
+	  	onblur="ss_checkIfNumber(this);" style="text-align:right;"
 	  />%
 	</td>
 	</tr>
@@ -111,42 +146,76 @@ function ss_checkIfNumber(obj) {
 			
 	<br/>
 	
-	<fieldset class="ss_fieldset">
-	  <legend class="ss_legend"><ssf:nlt tag="administration.quotas.addUsersAndGroups" /></legend>
   <table >
   <tr>
   <td valign="top" style="padding-right:50px;">
-    <div class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/></div>
-    <input type="text" name="addGroupQuota" size="6" style="width:40px;"
-	  onblur="ss_checkIfNumber(this);"
-    />
-    <ssf:nlt tag="administration.quotas.mb" />
+    <input type="button" class="ss_submit" name="addUserBtn" value="<ssf:nlt tag="administration.quotas.addUserQuota"/>"
+		  onClick="showAddUsersDiv();return false;"/>
+    <input type="button" class="ss_submit" name="addGroupBtn" value="<ssf:nlt tag="administration.quotas.addGroupQuota"/>"
+		  onClick="showAddGroupsDiv();return false;"/>
   </td>
   <td valign="top">
-  <div class="ss_bold"><ssf:nlt tag="administration.quotas.addGroupQuota"/></div>
-  <ssf:find formName="form1" formElement="addGroups" 
-    type="group" />
+    <div class="ss_form_wrap" id="addUserDiv" style="display:none; width:100%;">
+      <div style="padding:4px 0px 10px 0px;">
+        <span class="ss_bold ss_largerprint"><ssf:nlt tag="administration.quotas.addUserQuota"/></span>
+      </div>
+  		<table>
+  		<tr>
+          <td valign="top"><span class="ss_bold"><ssf:nlt tag="__definition_default_user"/></span></td>
+  		  <td valign="top">
+  		    <ssf:find formName="form1" formElement="addUsers" 
+    		  type="user" />
+    	  </td>
+    	</tr>
+
+  		<tr>
+          <td valign="top"><span class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/></span></td>
+  		  <td valign="top">
+            <input type="text" name="addUserQuota" size="6" style="width:40px;"
+	          onblur="ss_checkIfNumber(this);" style="text-align:right;"
+            /><ssf:nlt tag="administration.quotas.mb" />
+          </td>
+        </tr>
+        </table>
+        <br/>
+        <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+		<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
+		  onClick="hideAllDivs();return false;"/>
+        
+    </div>
+    <div class="ss_form_wrap" id="addGroupDiv" style="display:none; width:100%;">
+      <div style="padding:4px 0px 10px 0px;">
+        <span class="ss_bold ss_largerprint"><ssf:nlt tag="administration.quotas.addGroupQuota"/>
+        </span>
+      </div>
+
+  		<table>
+  		<tr>
+          <td valign="top"><span class="ss_bold"><ssf:nlt tag="__definition_default_group"/></span></td>
+  		  <td valign="top">
+  		    <ssf:find formName="form1" formElement="addGroups" 
+    		  type="group" />
+    	  </td>
+    	</tr>
+
+  		<tr>
+          <td valign="top"><span class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/></span></td>
+  		  <td valign="top">
+            <input type="text" name="addGroupQuota" size="6" style="width:40px;"
+	          onblur="ss_checkIfNumber(this);" style="text-align:right;"
+            /><ssf:nlt tag="administration.quotas.mb" />
+          </td>
+        </tr>
+        </table>
+  		<br/>
+        <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+		<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
+		  onClick="hideAllDivs();return false;"/>
+    </div>
   </td>
   </tr>
   
-  <tr><td colspan="2">&nbsp;</td></tr>
-	
-  <tr>
-  <td valign="top" style="padding-right:50px;">
-    <div class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/></div>
-    <input type="text" name="addUserQuota" size="6" style="width:40px;"
-	  onblur="ss_checkIfNumber(this);"
-    />
-    <ssf:nlt tag="administration.quotas.mb" />
-  </td>
-  <td valign="top">
-  <div class="ss_bold"><ssf:nlt tag="administration.quotas.addUserQuota"/></div>
-  <ssf:find formName="form1" formElement="addUsers" 
-    type="user" />
-  </td>
-  </tr>
   </table>
-    </fieldset>
 
 	<br/>
 	
@@ -155,19 +224,19 @@ function ss_checkIfNumber(obj) {
 	  <legend class="ss_legend"><ssf:nlt tag="administration.quotas.currentSettingsGroup" /></legend>
 	  <table class="ss_table_data" width="100%">
 	    <tr>
-	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.quotaChange"/></th>
+	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.quotaDelete"/></th>
 	      <th class="ss_table_data_TD"><ssf:nlt tag="userlist.groupName"/></th>
 	      <th class="ss_table_data_TD"><ssf:nlt tag="userlist.groupTitle"/></th>
 	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.quota"/></th>
-	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.newQuota"/></th>
+	      <th></th>
 	    </tr>
 	    <c:forEach var="group" items="${ss_quotasGroups}">
 	      <tr>
 	        <td valign="top" class="ss_table_data_TD">
-	          <input type="checkbox" name="changeGroup_${group.id}" />
+	          <input type="checkbox" name="deleteGroup_${group.id}" />
 	        </td>
 	        <td valign="top" class="ss_table_data_TD">
-	          ${group.name}
+	          <a href="javascript: ;" onClick="ss_showModifyDiv('${group.id}');return false;">${group.name}</a>
 	        </td>
 	        <td valign="top" class="ss_table_data_TD">
 	          ${group.title}
@@ -175,16 +244,38 @@ function ss_checkIfNumber(obj) {
 	        <td valign="top" class="ss_table_data_TD">
 	          ${group.diskQuota}
 	        </td>
-	        <td valign="top" class="ss_table_data_TD" nowrap>
-	          <input type="text" name="newGroupQuota_${group.id}" size="6" style="width:40px;" 
-	            onblur="ss_checkIfNumber(this);"
-	          />
-	          <ssf:nlt tag="administration.quotas.mb" />
+	        <td valign="top" class="ss_table_data_TD">
+  				<div class="ss_form_wrap" id="ss_modifyQuotaDiv${group.id}" style="display:none;">
+      				<div style="padding:4px 0px 10px 0px;">
+        				<span class="ss_bold ss_largerprint"><ssf:nlt tag="administration.quotas.quotaModify"/></span>
+      				</div>
+  				<table>
+  				  <tr>
+          			<td valign="top" nowrap>
+          			  <span class="ss_bold">${group.title} (${group.name})</span>
+          			</td>
+          		  </tr>
+          		  <tr>
+  		  			<td valign="top" nowrap>
+	          			<ssf:nlt tag="administration.quotas.quota"/>
+	          			<input type="text" name="newGroupQuota_${group.id}" size="6" style="width:40px;" 
+	            			onblur="ss_checkIfNumber(this);" style="text-align:right;" value="${group.diskQuota}"
+	          			/>
+	          			<ssf:nlt tag="administration.quotas.mb" />
+     	  			</td>
+    			  </tr>
+        		</table>
+        		<br/>
+        		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+				<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
+		  			onClick="hideAllDivs();return false;"/>
+  				</div>
 	        </td>
 	      </tr>
 	    </c:forEach>
 	  </table>
-	  <div><span class="ss_fineprint"><ssf:nlt tag="quota.select.itemToBeModified"/></span></div>
+    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.delete"/>"
+		  title="<ssf:nlt tag="quota.select.itemToBeDeleteChecked"/>"/>
 	</fieldset>
 	<br/>
 	</c:if>
@@ -194,20 +285,20 @@ function ss_checkIfNumber(obj) {
 	  <legend class="ss_legend"><ssf:nlt tag="administration.quotas.currentSettingsUser" /></legend>
 	  <table class="ss_table_data" width="100%">
 	    <tr>
-	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.quotaChange"/></th>
+	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.quotaDelete"/></th>
 	      <th class="ss_table_data_TD"><ssf:nlt tag="profile.element.name"/></th>
 	      <th class="ss_table_data_TD"><ssf:nlt tag="profile.element.title"/></th>
 	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.quota"/></th>
 	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.diskSpaceUsed"/></th>
-	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.newQuota"/></th>
+	      <th></th>
 	    </tr>
 	    <c:forEach var="user" items="${ss_quotasUsers}">
 	      <tr>
 	        <td valign="top" class="ss_table_data_TD">
-	          <input type="checkbox" name="changeUser_${user.id}" />
+	          <input type="checkbox" name="deleteUser_${user.id}" />
 	        </td>
 	        <td valign="top" class="ss_table_data_TD">
-	          ${user.name}
+	          <a href="javascript: ;" onClick="ss_showModifyDiv('${user.id}');return false;">${user.name}</a>
 	        </td>
 	        <td valign="top" class="ss_table_data_TD">
 	          ${user.title}
@@ -218,16 +309,38 @@ function ss_checkIfNumber(obj) {
 	        <td valign="top" class="ss_table_data_TD">
 	          <fmt:formatNumber value="${user.diskSpaceUsed/1048576}" maxFractionDigits="2"/>
 	        </td>
-	        <td valign="top" class="ss_table_data_TD" nowrap>
-	          <input type="text" name="newUserQuota_${user.id}" size="6" style="width:40px;" 
-	            onblur="ss_checkIfNumber(this);"
-	          />
-	          <ssf:nlt tag="administration.quotas.mb" />
-	        </td>
+	        <td valign="top" class="ss_table_data_TD">
+  				<div class="ss_form_wrap" id="ss_modifyQuotaDiv${user.id}" style="display:none;">
+      				<div style="padding:4px 0px 10px 0px;">
+        				<span class="ss_bold ss_largerprint"><ssf:nlt tag="administration.quotas.quotaModify"/></span>
+      				</div>
+  				<table>
+  				  <tr>
+          			<td valign="top" nowrap>
+          			  <span class="ss_bold">${user.title} (${user.name})</span>
+          			</td>
+          		  </tr>
+          		  <tr>
+  		  			<td valign="top" nowrap>
+	          			<ssf:nlt tag="administration.quotas.quota"/>
+	          			<input type="text" name="newUserQuota_${user.id}" size="6" style="width:40px;" 
+	            			onblur="ss_checkIfNumber(this);" style="text-align:right;" value="${user.diskQuota}"
+	          			/>
+	          			<ssf:nlt tag="administration.quotas.mb" />
+     	  			</td>
+    			  </tr>
+        		</table>
+        		<br/>
+        		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+				<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
+		  			onClick="hideAllDivs();return false;"/>
+  				</div>
 	      </tr>
 	    </c:forEach>
 	  </table>
-	  <div><span class="ss_fineprint"><ssf:nlt tag="quota.select.itemToBeModified"/></span></div>
+	<input type="hidden" name="modifyId" id="modifyId" value="" />
+    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.delete"/>"
+		  title="<ssf:nlt tag="quota.select.itemToBeDeleteChecked"/>"/>
 	</fieldset>
 	<br/>
 	</c:if>
