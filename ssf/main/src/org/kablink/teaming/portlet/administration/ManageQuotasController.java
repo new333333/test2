@@ -122,19 +122,28 @@ public class ManageQuotasController extends SAbstractController {
 			Iterator itFormData = formData.keySet().iterator();
 			while (itFormData.hasNext()) {
 				String key = (String)itFormData.next();
-				if (key.indexOf("changeUser_") == 0) {
+				if (key.indexOf("deleteUser_") == 0) {
 					String userId = key.substring(11, key.length());
 					userIds.add(Long.valueOf(userId));
-					Long newQuota = PortletRequestUtils.getLongParameter(request, "newUserQuota_"+userId);
-					if (newQuota == null) newQuota = Long.valueOf(0);
-					quotaValues.put(userId, newQuota);
+					quotaValues.put(userId, Long.valueOf(0));
 				}
-				if (key.indexOf("changeGroup_") == 0) {
+				if (key.indexOf("deleteGroup_") == 0) {
 					String groupId = key.substring(12, key.length());
 					groupIds.add(Long.valueOf(groupId));
-					Long newQuota = PortletRequestUtils.getLongParameter(request, "newGroupQuota_"+groupId);
-					if (newQuota == null) newQuota = Long.valueOf(0);
-					quotaValues.put(groupId, newQuota);
+					quotaValues.put(groupId, Long.valueOf(0));
+				}
+				if (key.indexOf("modifyId") == 0) {
+					String id = PortletRequestUtils.getStringParameter(request, "modifyId", "");
+					String newGroupQuota = PortletRequestUtils.getStringParameter(request, "newGroupQuota_"+id, "");
+					if (!newGroupQuota.equals("")) {
+						groupIds.add(Long.valueOf(id));
+						quotaValues.put(id, Long.valueOf(newGroupQuota));
+					}
+					String newUserQuota = PortletRequestUtils.getStringParameter(request, "newUserQuota_"+id, "");
+					if (!newUserQuota.equals("")) {
+						userIds.add(Long.valueOf(id));
+						quotaValues.put(id, Long.valueOf(newUserQuota));
+					}
 				}
 			}
 			for (Long id : groupIds) {
