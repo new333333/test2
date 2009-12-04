@@ -58,6 +58,7 @@ var ssReportURL="<ssf:url action="quota_report" actionUrl="true"><ssf:param
 	name="binderType" value="${ssBinder.entityType}"/></ssf:url>";
 </script>
 
+<c:if test="${ss_quotasEnabled}">
 <ssf:form titleTag="administration.report.title.disk_quota_exceeded">
 <table class="ss_style" width="100%"><tr><td>
 <form class="ss_style ss_form" 
@@ -86,6 +87,16 @@ var ssReportURL="<ssf:url action="quota_report" actionUrl="true"><ssf:param
 <br>
 </td></tr></table>
 </ssf:form>
+</c:if>
+
+<c:if test="${!ss_quotasEnabled}">
+  <ssf:form titleTag="administration.quotas.notEnabled">
+    <br/>
+    <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+		  onClick="self.window.close();return false;"/>
+  </ssf:form>
+</c:if>
+
 </div>
 </div>
 </body>

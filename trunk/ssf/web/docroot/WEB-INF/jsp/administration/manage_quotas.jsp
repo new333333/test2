@@ -216,7 +216,7 @@ function ss_showModifyDiv(id) {
   </table>
 
 	<br/>
-	
+
 	<c:if test="${!empty ss_quotasGroups}">
 	<fieldset class="ss_fieldset">
 	  <legend class="ss_legend"><ssf:nlt tag="administration.quotas.currentSettingsGroup" /></legend>
@@ -342,7 +342,13 @@ function ss_showModifyDiv(id) {
 	</fieldset>
 	<br/>
 	</c:if>
-	
+
+<c:if test="${!ss_quotasEnabled}">
+  <span class="ss_bold ss_errorLabel"><ssf:nlt tag="administration.quotas.notEnabled"/></span>
+    <br/>
+    <br/>
+</c:if>
+
 	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
 	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
 		  onClick="self.window.close();return false;"/>

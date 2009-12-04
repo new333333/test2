@@ -45,6 +45,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portlet.binder.AbstractBinderController;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -67,6 +68,7 @@ public abstract class AbstractReportController extends  AbstractBinderController
 		Map formData = request.getParameterMap();
 		
 		Map model = new HashMap();
+		BinderHelper.setupStandardBeans(this, request, response, model);
 		populateModel(request, model);
 		return new ModelAndView(chooseView(formData), model);
 	}
