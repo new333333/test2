@@ -70,8 +70,6 @@ function hideAllDivs() {
 		ss_quotaModifyDivBeingShown = null;
 	}
 	var modifyIdObj = self.document.getElementById("modifyId");
-	alert(modifyIdObj)
-	alert(modifyIdObj.value)
 	modifyIdObj.value = "";
 }
 var ss_quotaModifyDivBeingShown = null;
