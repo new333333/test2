@@ -936,6 +936,44 @@ public class TrashHelper {
 		processor.processChangeLog(de, operation);
 	}
 	
+    /**
+     * Returns true if binder contains any sub Binder's that are not
+     * preDeleted and false otherwise.
+     *
+     * @param bs
+     * @param binder
+     * @return
+     */
+	@SuppressWarnings("unchecked")
+	public static boolean containsVisibleBinders(AllModulesInjected bs, Binder binder) {
+		// Does the Binder contain any sub binders?
+		boolean reply = false;
+    	if (0 < binder.getBinderCount()) {   	
+			// Yes!  Search for the visible Binder's with this Binder
+	    	// in their hierarchy (note that we search for 2 hits, one
+    		// for this binder itself and one for any children)...
+			Criteria crit = new Criteria();
+			crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
+			    .add(in(Constants.ENTRY_ANCESTRY, new String[] {String.valueOf(binder.getId())}));
+
+			Map visibleBindersMap = bs.getBinderModule().executeSearchQuery(
+				crit,
+				0,		// Start at index 0...
+				2,		// ...requesting a maximum of 2 hits.
+				false);	// false -> Ignore preDeleted entries.
+
+			if (null != visibleBindersMap) {
+				// ...and return true if we find any besides this binder.
+				List visibleBindersList = ((List) visibleBindersMap.get(ObjectKeys.SEARCH_ENTRIES));
+				reply = ((null != visibleBindersList) && (1 < visibleBindersList.size()));
+			}
+    	}
+    	
+    	// If we get here, reply is true if there are any visible
+    	// Binders in binder and false otherwise.  Return it.
+    	return reply;
+	}
+	
 	/*
 	 * Scans the Binder's and FolderEntry's in an ArrayList of
 	 * DefinableEntity's and re-indexes them.
