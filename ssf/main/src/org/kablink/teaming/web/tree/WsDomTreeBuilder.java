@@ -49,6 +49,7 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.Validator;
 
 
@@ -173,12 +174,8 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 			}
 				//only need this information if this is the bottom of the tree
 			if (check && (bottom == null ||  bottom.equals(binder.getParentBinder()))) {
-				if (helper.hasChildren(bs, source, type)) {
-					int binderCount = binder.getBinderCount(false);
-					element.addAttribute("hasChildren", ((0 == binderCount) ? "false" : "true"));
-				} else {	
-					element.addAttribute("hasChildren", "false");
-				}
+				boolean hasVisibleBinders = (helper.hasChildren(bs, source, type) && TrashHelper.containsVisibleBinders(bs, binder));
+				element.addAttribute("hasChildren", String.valueOf(hasVisibleBinders));
 			}
 			if (element.isRootElement()) {
 				//save identifier of tree helper to use on ajax callbacks

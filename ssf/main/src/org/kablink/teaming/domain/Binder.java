@@ -258,38 +258,12 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
      * @hibernate.property
      */
     public int getBinderCount() {
-    	return getBinderCount(true);
-    }
-    @SuppressWarnings("unchecked")
-	public int getBinderCount(boolean countPreDeleted) {
-    	if (countPreDeleted) {
-    		return binderCount;
-    	}
-    	
-		List subBinders = getBinders();
-		int subBinderCount = 0;
-		for (Iterator subBindersIT=subBinders.iterator(); subBindersIT.hasNext();) {
-			Binder subBinder = ((Binder) subBindersIT.next());
-			if (subBinder instanceof Folder) {
-				if (!((((Folder) subBinder).isPreDeleted()))) {
-					subBinderCount += 1;
-				}
-			}
-			else if (subBinder instanceof Workspace) {
-				if (!((((Workspace) subBinder).isPreDeleted()))) {
-					subBinderCount += 1;
-				}
-			}
-			else {
-				subBinderCount += 1;
-			}
-		}
-		return subBinderCount;
+    	return binderCount;
     }
     protected void setBinderCount(int binderCount) {
     	this.binderCount = binderCount;
     }
- 
+    
     /**
      * @hibernate.property insert="false" update="false"
      *
