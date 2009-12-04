@@ -51,8 +51,10 @@
 	<div>
 	  <form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
 					action="__ajax_mobile" actionUrl="true" 
+					binderId="${ssBinder.id}"
 					operation="mobile_find_places" />">
 	  <label for="searchText"><span class="ss_bold"><ssf:nlt tag="navigation.findPlace"/></span></label>
+	  <input type="hidden" name="scope" value="${ss_searchScope}" />
 	  <input type="text" size="15" name="searchText" id="searchText" value="${ss_searchText}"/><input 
 	    type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
 	  </form>
