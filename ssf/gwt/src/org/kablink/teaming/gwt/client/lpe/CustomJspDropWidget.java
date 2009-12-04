@@ -233,5 +233,8 @@ public class CustomJspDropWidget extends DropWidget
 			m_timer.schedule( 250 );
 			return;
 		}
+
+		// Notify the landing page editor that this widget has been updated.
+		m_lpe.notifyWidgetUpdated( this );
 	}// end updateWidget()
 }// end CustomJspDropWidget

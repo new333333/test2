@@ -298,5 +298,8 @@ public class EntryDropWidget extends DropWidget
 		
 		// Update the url that is used to view the entry.
 		m_viewEntryUrl =  m_properties.getViewEntryUrl();
+		
+		// Notify the landing page editor that this widget has been updated.
+		m_lpe.notifyWidgetUpdated( this );
 	}// end updateWidget()
 }// end EntryDropWidget

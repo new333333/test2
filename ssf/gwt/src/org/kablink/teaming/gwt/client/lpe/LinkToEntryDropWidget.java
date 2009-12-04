@@ -244,5 +244,7 @@ public class LinkToEntryDropWidget extends DropWidget
 		else
 			m_entryName.setText( entryName );
 		
+		// Notify the landing page editor that this widget has been updated.
+		m_lpe.notifyWidgetUpdated( this );
 	}// end updateWidget()
 }// end LinkToEntryDropWidget

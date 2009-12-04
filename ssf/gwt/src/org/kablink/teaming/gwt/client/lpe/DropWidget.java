@@ -223,8 +223,8 @@ public abstract class DropWidget extends Composite
 		if ( retVal )
 			m_dlgBox.hide();
 		
-		// Tell the landing page editor to adjust the height of all the table widgets.
-		m_lpe.adjustHeightOfAllTableWidgets();
+		// Notify the landing page editor that this widget has been updated.
+		m_lpe.notifyWidgetUpdated( this );
 		
 		return retVal;
 	}// end editSuccessful()
