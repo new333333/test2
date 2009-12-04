@@ -1413,6 +1413,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			RenderResponse response) throws Exception {
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);		
 		Map model = new HashMap();
+		String scope = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SEARCH_SCOPE, "site");
+		model.put(WebKeys.SEARCH_SCOPE, scope);
 		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
 		if (binderId != null) {
 			try {
@@ -1437,6 +1439,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				options.put(ObjectKeys.SEARCH_OFFSET, startingCount);
 				options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
 				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
+				if (scope.equals("local")) options.put(ObjectKeys.SEARCH_ANCESTRY, binderId.toString());;
 				
 				//Build the search query
 				SearchFilter searchTermFilter = new SearchFilter();
