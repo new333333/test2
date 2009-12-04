@@ -256,6 +256,14 @@ span.pad-left20 select {
 	white-space:nowrap;
 	}
 
+.masthead-title {
+	position:relative;
+	top:-6px;
+	font-size: 1.0em;
+	}
+.masthead-title2 {
+	font-size: .6em;
+	}
 
 /*  my links styles */
 .my-item {

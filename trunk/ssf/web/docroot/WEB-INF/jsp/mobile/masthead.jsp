@@ -45,12 +45,17 @@
   </div>
 </td>
 <td valign="top" align="center">
+  <div class="masthead-title">
+  <c:if test="${empty ss_pageTitle && !empty ssBinder.parentBinder}">
+    <div class="masthead-title2">${ssBinder.parentBinder.title}</div>
+  </c:if>
   <c:if test="${!empty ss_pageTitle}">${ss_pageTitle}</c:if>
   <c:if test="${empty ss_pageTitle}">
     <c:if test="${empty ssBinder && empty ssEntry}">${ssProductTitle}</c:if>
     <c:if test="${!empty ssBinder && empty ssEntry}">${ssBinder.title}</c:if>
     <c:if test="${!empty ssEntry}">${ssEntry.title}</c:if>
   </c:if>
+  </div>
 </td>
 <td valign="top" align="right" width="1%">
   <div class="search">
