@@ -109,7 +109,9 @@
 
 <%
 	String backOCHandler = "self.window.history.back()";
-	if (org.kablink.util.BrowserSniffer.is_ie(request)) {
+	if (org.kablink.util.BrowserSniffer.is_mozilla(request)) {
+	}
+	else {
 		backOCHandler = "self.window.location.reload(" + backOCHandler + ")";
 	}
 %>
