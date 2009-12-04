@@ -169,7 +169,7 @@ public class LandingPageEditor extends Composite
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( vPanel );
-		
+
 		Event.addNativePreviewHandler( new Event.NativePreviewHandler() {
 			/**
 			 * This handler looks for when the user clicks on the Ok button.  When we detect this
@@ -217,6 +217,26 @@ public class LandingPageEditor extends Composite
 				}
 			}// end onPreviewNativeEvent()
 		});
+		
+		// Adjust the height of all the tables we added.  We can't do this right now because the browser hasn't
+		// rendered anything yet.  So set a timer to do the work later.
+		{
+			Timer timer;
+			
+			timer = new Timer()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void run()
+				{
+					adjustHeightOfAllTableWidgets();
+				}// end run()
+			};
+			
+			timer.schedule( 250 );
+		}
 	}// end LandingPageEditor()
 	
 	
