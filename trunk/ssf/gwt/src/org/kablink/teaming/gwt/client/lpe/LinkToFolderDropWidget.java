@@ -244,5 +244,7 @@ public class LinkToFolderDropWidget extends DropWidget
 		else
 			m_folderName.setText( folderName );
 		
+		// Notify the landing page editor that this widget has been updated.
+		m_lpe.notifyWidgetUpdated( this );
 	}// end updateWidget()
 }// end LinkToFolderDropWidget

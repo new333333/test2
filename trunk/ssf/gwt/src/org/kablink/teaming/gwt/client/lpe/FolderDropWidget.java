@@ -297,5 +297,8 @@ public class FolderDropWidget extends DropWidget
 
 		// Update the url that is used to view the folder.
 		m_viewFolderUrl =  m_properties.getViewFolderUrl();
+
+		// Notify the landing page editor that this widget has been updated.
+		m_lpe.notifyWidgetUpdated( this );
 	}// end updateWidget()
 }// end FolderDropWidget

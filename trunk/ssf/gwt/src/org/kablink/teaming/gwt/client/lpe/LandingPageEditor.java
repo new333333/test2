@@ -217,26 +217,6 @@ public class LandingPageEditor extends Composite
 				}
 			}// end onPreviewNativeEvent()
 		});
-
-		// Adjust the height of all the tables we added.  We can't do this right now because the browser hasn't
-		// rendered anything yet.  So set a timer to do the work later.
-		{
-			Timer timer;
-			
-			timer = new Timer()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void run()
-				{
-					adjustHeightOfAllTableWidgets();
-				}// end run()
-			};
-			
-			timer.schedule( 250 );
-		}
 	}// end LandingPageEditor()
 	
 	
@@ -473,6 +453,17 @@ public class LandingPageEditor extends Composite
 	}// end leavingDropZone()
 	
 
+	/**
+	 * This method should be called whenever an item in the canvas has been updated.
+	 */
+	public void notifyWidgetUpdated( DropWidget dropWidget )
+	{
+		// Because the given widget has been updated we may need to adjust the height of
+		// the tables in the canvas.
+		adjustHeightOfAllTableWidgets();
+	}// end notifyWidgetUpdated()
+	
+	
 	/**
 	 * Handles the MouseDownEvent.  This will initiate the dragging of an item from the palette.
 	 */
