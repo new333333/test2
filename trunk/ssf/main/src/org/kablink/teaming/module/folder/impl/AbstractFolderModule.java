@@ -1083,7 +1083,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
    		
     	for(Object o : folder.getFolders()) {
     		Folder f = (Folder) o;
-    		if (f.isDeleted()) continue;
+    		if (f.isDeleted() || f.isPreDeleted()) continue;
     		if(getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
     			titles.add(f.getTitle());
     	}
@@ -1099,7 +1099,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
    		
     	for(Object o : folder.getFolders()) {
     		Folder f = (Folder) o;
-    		if (f.isDeleted()) continue;
+    		if (f.isDeleted() || f.isPreDeleted()) continue;
     		if(getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
     			subFolders.add(f);
     	}

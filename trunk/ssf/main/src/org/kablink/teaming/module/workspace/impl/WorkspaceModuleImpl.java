@@ -127,7 +127,13 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     		// (ie, getDomBinderTree), the following additional check is necessary 
     		// before testing its access control.
        		if ((b instanceof Folder) || (b instanceof Workspace)) {
-       		     	// Check if the user has "read" access to the binder.
+       			if(b instanceof Folder) {
+       				if(((Folder) b).isPreDeleted()) continue;
+       			}
+       			if(b instanceof Workspace) {
+       				if(((Workspace) b).isPreDeleted()) continue;
+       			}
+       		    // Check if the user has "read" access to the binder.
        			if(getAccessControlManager().testOperation(b, WorkAreaOperation.READ_ENTRIES))
        				titles.add(b.getTitle());
        		}
