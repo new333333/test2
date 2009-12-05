@@ -77,7 +77,7 @@ public class ManageQuotasController extends SAbstractController {
 			// Get the default data quota size entered by the user.
 			try
 			{
-				defaultQuota = PortletRequestUtils.getIntParameter(request, "defaultQuota");
+				defaultQuota = PortletRequestUtils.getIntParameter(request, "defaultQuota", getAdminModule().getQuotaDefault());
 			}
 			catch (Exception ex)
 			{
@@ -88,7 +88,7 @@ public class ManageQuotasController extends SAbstractController {
 			// Get the highwater mark entered by the user.
 			try
 			{
-				highWaterMark = PortletRequestUtils.getIntParameter(request, "highWaterMark");
+				highWaterMark = PortletRequestUtils.getIntParameter(request, "highWaterMark", getAdminModule().getQuotaHighWaterMark());
 			}
 			catch (Exception ex)
 			{
@@ -103,17 +103,21 @@ public class ManageQuotasController extends SAbstractController {
 			Set<Long> userIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addUsers"));
 			String s_userQuota = PortletRequestUtils.getStringParameter(request, "addUserQuota", "");
 			if (!s_userQuota.equals("")) {
-				Long userQuota = Long.valueOf(s_userQuota);
-				if (!userIds.isEmpty() && userQuota != null) {
-					getProfileModule().setUserDiskQuotas(userIds, userQuota);
-				}
+				try {
+					Long userQuota = Long.valueOf(s_userQuota);
+					if (!userIds.isEmpty() && userQuota != null) {
+						getProfileModule().setUserDiskQuotas(userIds, userQuota);
+					}
+				} catch(Exception e) {}
 			}
 			String s_groupQuota = PortletRequestUtils.getStringParameter(request, "addGroupQuota", "");
 			if (!s_groupQuota.equals("")) {
-				Long groupQuota = Long.valueOf(s_groupQuota);
-				if (!groupIds.isEmpty() && groupQuota != null) {
-					getProfileModule().setGroupDiskQuotas(groupIds, groupQuota);
-				}
+				try {
+					Long groupQuota = Long.valueOf(s_groupQuota);
+					if (!groupIds.isEmpty() && groupQuota != null) {
+						getProfileModule().setGroupDiskQuotas(groupIds, groupQuota);
+					}
+				} catch(Exception e) {}
 			}
 			//Check for individual group and user changes
 			userIds = new HashSet<Long>();
@@ -136,13 +140,17 @@ public class ManageQuotasController extends SAbstractController {
 					String id = PortletRequestUtils.getStringParameter(request, "modifyId", "");
 					String newGroupQuota = PortletRequestUtils.getStringParameter(request, "newGroupQuota_"+id, "");
 					if (!newGroupQuota.equals("")) {
-						groupIds.add(Long.valueOf(id));
-						quotaValues.put(id, Long.valueOf(newGroupQuota));
+						try {
+							groupIds.add(Long.valueOf(id));
+							quotaValues.put(id, Long.valueOf(newGroupQuota));
+						} catch(Exception e) {}
 					}
 					String newUserQuota = PortletRequestUtils.getStringParameter(request, "newUserQuota_"+id, "");
 					if (!newUserQuota.equals("")) {
-						userIds.add(Long.valueOf(id));
-						quotaValues.put(id, Long.valueOf(newUserQuota));
+						try {
+							userIds.add(Long.valueOf(id));
+							quotaValues.put(id, Long.valueOf(newUserQuota));
+						} catch(Exception e) {}
 					}
 				}
 			}
@@ -164,7 +172,6 @@ public class ManageQuotasController extends SAbstractController {
 
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		User user = RequestContextHolder.getRequestContext().getUser();
 		Map model = new HashMap();
 		Map formData = request.getParameterMap();
 
