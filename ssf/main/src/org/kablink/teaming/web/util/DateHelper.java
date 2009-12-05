@@ -91,8 +91,30 @@ public class DateHelper {
     }
     
     private static Date getDateFromDojoWidgetInput(InputDataAccessor inputData, String datePrefix, String timePrefix) {
-    	
-    	if (!inputData.exists(datePrefix + "fullDate") || 
+    	DateTimeZone dateTimeZone = null;
+        if (inputData.exists(datePrefix + "timezoneid") ||
+        		inputData.exists(datePrefix + "timeZoneSensitive")) {
+            String timeZoneString = inputData.getSingleValue(datePrefix + "timezoneid");
+            String timeZoneSensitiveString = inputData.getSingleValue(datePrefix + "timeZoneSensitive");
+            if ("".equals(timeZoneString) || 
+            		"false".equals(timeZoneSensitiveString)) {
+            	timeZoneString = DateTimeZone.UTC.getID();
+            }
+            dateTimeZone = DateTimeZone.forTimeZone(TimeZoneHelper.getTimeZone(timeZoneString));
+        }
+        
+		DateTime dateTime = null;
+		String skipTime = null;
+		if (inputData.exists(datePrefix + "skipTime")) {
+			skipTime = inputData.getSingleValue(datePrefix + "skipTime");
+		}
+        
+        DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd");
+        if (!"true".equals(skipTime) && dateTimeZone != null) {
+        	dateFormatter = dateFormatter.withZone(dateTimeZone);
+        }
+
+        if (!inputData.exists(datePrefix + "fullDate") || 
     			"".equals(inputData.getSingleValue(datePrefix+"fullDate"))) {
             
             //We must be using the old style of date picker
@@ -150,7 +172,42 @@ public class DateHelper {
                 if (mm != 99) {
                     cal.set(Calendar.MINUTE, mm);
                 }
-            }
+            } else if (inputData.exists(timePrefix + "fullTime")) {
+    			DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("HH:mm:00");
+    			if (dateTimeZone != null) {
+    				timeFormatter = timeFormatter.withZone(dateTimeZone);
+    			}
+    			
+    			// Remove time zone information from time string. Time zone is set by dojo TimePicker widget,
+    			// but this is user client time zone what is NOT the same like user profile time zone.
+    			String timeString = inputData.getSingleValue(timePrefix + "fullTime");
+    			//Allow hh:mm format, too
+    			Pattern timeP = Pattern.compile("^[0-9]?[0-9]:[0-9]?[0-9]$");
+    			Matcher m = timeP.matcher(timeString);
+    			if (m.find()) timeString += ":00";
+    			if (!"".equals(timeString)) {
+    				timeString = timeString.replaceFirst("T", "");
+    				if (timeString.indexOf("-") > -1) {
+    					timeString = timeString.substring(0, timeString.indexOf("-"));
+    				}
+    				if (timeString.indexOf("+") > -1) {
+    					timeString = timeString.substring(0, timeString.indexOf("+"));
+    				}			
+    				try {
+    					DateTime time = timeFormatter.parseDateTime(timeString);
+	                    int hh = time.getHourOfDay();
+	                    // note that since 0 is a valid hour, we use 99 to indicate no selection 
+	                    if (hh != 99) {
+	                        cal.set(Calendar.HOUR_OF_DAY, hh);
+	                    }
+	                    int mm = time.getMinuteOfHour();
+	                    if (mm != 99) {
+	                        cal.set(Calendar.MINUTE, mm);
+	                    }
+    				} catch(Exception e) {}
+     			}
+    		}
+
             
             if (inputData.exists(datePrefix + "timezoneid")) {
                 String tzs = inputData.getSingleValue(datePrefix + "timezoneid");
@@ -162,28 +219,6 @@ public class DateHelper {
     	}
     	
         //This is the dojo date picker
-    	DateTimeZone dateTimeZone = null;
-        if (inputData.exists(datePrefix + "timezoneid") ||
-        		inputData.exists(datePrefix + "timeZoneSensitive")) {
-            String timeZoneString = inputData.getSingleValue(datePrefix + "timezoneid");
-            String timeZoneSensitiveString = inputData.getSingleValue(datePrefix + "timeZoneSensitive");
-            if ("".equals(timeZoneString) || 
-            		"false".equals(timeZoneSensitiveString)) {
-            	timeZoneString = DateTimeZone.UTC.getID();
-            }
-            dateTimeZone = DateTimeZone.forTimeZone(TimeZoneHelper.getTimeZone(timeZoneString));
-        }
-        
-		String skipTime = null;
-		if (inputData.exists(datePrefix + "skipTime")) {
-			skipTime = inputData.getSingleValue(datePrefix + "skipTime");
-		}
-        
-        DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd");
-        if (!"true".equals(skipTime) && dateTimeZone != null) {
-        	dateFormatter = dateFormatter.withZone(dateTimeZone);
-        }
-		DateTime dateTime = null;
 		if (inputData.exists(datePrefix + "fullDate")) {
 			dateTime = dateFormatter.parseDateTime(inputData.getSingleValue(datePrefix+"fullDate"));
 		}

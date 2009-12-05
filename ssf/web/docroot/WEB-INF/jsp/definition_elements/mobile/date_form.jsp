@@ -54,20 +54,12 @@ ${property_caption}<c:if test="${property_required}"><span
 		<c:set var="initDate" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
 		<c:set var="property_initialSetting" value="entry"/>
 	</c:if>
-
-	<br/>
-	<input type="text" 
-		id="date_${property_name}_${prefix}" 
-		name="${property_name}_fullDate" 
-		<c:if test="${property_initialSetting != 'none'}">
-		  value="<fmt:formatDate value="${initDate}" pattern="yyyy-MM-dd" 
-			timeZone="${ssUser.timeZone.ID}"/>"
-		</c:if>
-		<c:if test="${property_initialSetting == 'none'}">
-		  value=""
-		</c:if>
-	/>
-	<div><span class="ss_mobile_small"><ssf:nlt tag="mobile.dateFormat"/></span></div>
+    <c:set var="ss_dateWidgetId" value="${property_name}" scope="request"/>
+	<c:set var="ss_dateWidgetDate" value="" scope="request"/>
+	<c:if test="${property_initialSetting != 'none'}">
+      <c:set var="ss_dateWidgetDate" value="${initDate}" scope="request"/>
+    </c:if>
+    <%@ include file="/WEB-INF/jsp/mobile/date_widget.jsp" %>
 
 		<input type="hidden" name="${property_name}_timezoneid" value="${ssUser.timeZone.ID}" />
 		<input type="hidden" name="${property_name}_skipTime" value="false" />
