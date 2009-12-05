@@ -32,8 +32,14 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% //mailto link %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<% //mailto link %><%--
+--%><%@ page import="org.kablink.util.BrowserSniffer" %><%--
+--%><%
+	boolean isMobile = BrowserSniffer.is_mobile(request);
+%><%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %><%--
+--%><c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/><%--
+--%><c:set var="isMobileDevice" value="<%= isMobile %>"/>
+<c:if test="${ssUser.internalId == guestInternalId || !isMobileDevice }">
 <c:if test="${!empty emailName && !empty emailHost}">
   <c:if test="${!noLink}">
 	<a href=""><ssmailto 
@@ -52,4 +58,8 @@ ss_createOnLoadObj("ss_showEmailLinks", ss_showEmailLinks);
 </c:if>
 <c:if test="${empty emailName || empty emailHost}">
 	<a href="mailto:${email}"><span><c:out value="${email}" escapeXml="true"/></span></a>
+</c:if>
+</c:if>
+<c:if test="${ssUser.internalId != guestInternalId && isMobileDevice }">
+    <a href="mailto:${email}"><span><c:out value="${email}" escapeXml="true"/></span></a>
 </c:if>
