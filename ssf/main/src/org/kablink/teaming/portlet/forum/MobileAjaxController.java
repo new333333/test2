@@ -1184,7 +1184,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	List actions = new ArrayList();
 	//BinderHelper.addActionsHome(request, actions);
 	BinderHelper.addActionsRecentPlaces(request, actions, binder.getId());
-	if (entry instanceof User) {
+	if (entry instanceof User && ((User)entry).getWorkspaceId() != null) {
 		BinderHelper.addActionsFullView(bs, request, actions, ((User)entry).getWorkspaceId(), null);
 	}
 	BinderHelper.addActionsSpacer(request, actions);
