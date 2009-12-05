@@ -62,23 +62,13 @@
 <div class="ss_mobile_form_element">
 	<table>
 		<tr>
-			<td><ssf:nlt tag="event.start" />:</td>
-			<td>
-                
-				<input type="text"
-					name="${dateId}_fullDate" 
-					id="event_start_${prefix}"
-					<c:if test="${!empty startDate}">
-						value="<fmt:formatDate value="${startDate}" 
-							pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
-					</c:if>
-					startDateWidgetId="event_start_${prefix}"
-					startTimeWidgetId="event_start_time_${prefix}"
-					endDateWidgetId="event_end_${prefix}"
-					endTimeWidgetId="event_end_time_${prefix}" />
-				<div><span class="ss_mobile_small"><ssf:nlt tag="mobile.dateFormat"/></span></div>
+			<td valign="top"><ssf:nlt tag="event.start" />:</td>
+			<td valign="top">
+                <c:set var="ss_dateWidgetId" value="${dateId}" scope="request"/>
+                <c:set var="ss_dateWidgetDate" value="${startDate}" scope="request"/>
+                <%@ include file="/WEB-INF/jsp/mobile/date_widget.jsp" %>
 			</td>
-			<td>
+			<td valign="top">
 				<span id="${prefix}eventStartTime"
 					<c:if test="${initEvent.allDayEvent}">
 						style="display: none; "
@@ -89,12 +79,12 @@
 						name="${dateId}_0_fullTime" 
 						<c:choose>
 							<c:when test="${initEvent.allDayEvent}">
-								value="08:00:00"
+								value="08:00"
 							</c:when>
 							<c:otherwise>
 								<c:if test="${!empty startDate}">
 									value="<fmt:formatDate value="${startDate}" 
-										pattern="HH:mm:ss" timeZone="${timeZoneID}"/>"
+										pattern="HH:mm" timeZone="${timeZoneID}"/>"
 								</c:if>
 							</c:otherwise>
 						</c:choose>
@@ -120,7 +110,7 @@
 				</span>	
 			</td>
 			<c:if test="${attMap.hasDur}">
-				<td>
+				<td valign="top">
 					<input type="checkbox" 
 					    name="${allDayEventId}"
 					    <c:if test="${initEvent.allDayEvent}"> checked="checked" </c:if> 
@@ -132,22 +122,13 @@
 	
 	<c:if test="${attMap.hasDur}">
 			<tr>
-				<td><ssf:nlt tag="event.end" />:</td>
-				<td>
-					<input type="text" 
-						id="event_end_${prefix}" 
-						name="${dateId2}_fullDate" 
-						<c:if test="${!empty endDate}">			
-							value="<fmt:formatDate value="${endDate}" 
-								pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
-						</c:if>
-						startDateWidgetId="event_start_${prefix}"
-						startTimeWidgetId="event_start_time_${prefix}"
-						endDateWidgetId="event_end_${prefix}"
-						endTimeWidgetId="event_end_time_${prefix}" />
-					<div><span class="ss_mobile_small"><ssf:nlt tag="mobile.dateFormat"/></span></div>
+				<td valign="top"><ssf:nlt tag="event.end" />:</td>
+				<td valign="top">
+                  <c:set var="ss_dateWidgetId" value="${dateId2}" scope="request"/>
+                  <c:set var="ss_dateWidgetDate" value="${endDate}" scope="request"/>
+                  <%@ include file="/WEB-INF/jsp/mobile/date_widget.jsp" %>
 				</td>
-				<td>
+				<td valign="top">
 					<span id="${prefix}eventEndTime"
 						<c:if test="${initEvent.allDayEvent}">
 							style="display: none; "
@@ -158,12 +139,12 @@
 							name="${dateId2}_0_fullTime" 
 							<c:choose>
 								<c:when test="${initEvent.allDayEvent}">
-									value="08:30:00"
+									value="08:30"
 								</c:when>
 								<c:otherwise>
 									<c:if test="${!empty endDate}">	
 										value="<fmt:formatDate value="${endDate}" 
-											pattern="HH:mm:ss" timeZone="${timeZoneID}"/>"
+											pattern="HH:mm" timeZone="${timeZoneID}"/>"
 									</c:if>
 								</c:otherwise>
 							</c:choose>						

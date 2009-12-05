@@ -56,27 +56,21 @@
 
 	<table cellpadding="0" border="0">
 		<tr>
-			<td>s
-				<input type="text" size="12"
-					id="date_${property_name}_${prefix}" 
-					name="${property_name}_fullDate" 
-					<c:if test="${property_initialSetting != 'none'}">
-					  value="<fmt:formatDate value="${initDate}" 
-					    pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/>"
-					</c:if>
-					<c:if test="${property_initialSetting == 'none'}">
-					  value=""
-					</c:if>
-				/>
-				<div><span class="ss_mobile_small"><ssf:nlt tag="mobile.dateFormat"/></span></div>
+			<td valign="top">
+    			<c:set var="ss_dateWidgetId" value="${property_name}" scope="request"/>
+				<c:set var="ss_dateWidgetDate" value="" scope="request"/>
+				<c:if test="${property_initialSetting != 'none'}">
+      			  <c:set var="ss_dateWidgetDate" value="${initDate}" scope="request"/>
+    			</c:if>
+    			<%@ include file="/WEB-INF/jsp/mobile/date_widget.jsp" %>
 			</td>
-			<td>
+			<td valign="top">
 				<input type="text" size="7"
 					id="date_time_${property_name}_${prefix}" 
 					name="${property_name}_0_fullTime" 
 					<c:if test="${property_initialSetting != 'none'}">
 					  value="<fmt:formatDate value="${initDate}" 
-					    pattern="HH:mm:ss" timeZone="${ssUser.timeZone.ID}"/>"
+					    pattern="HH:mm" timeZone="${ssUser.timeZone.ID}"/>"
 					</c:if>
 					<c:if test="${property_initialSetting == 'none'}">
 					  value=""

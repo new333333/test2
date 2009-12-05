@@ -32,6 +32,10 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("window.title.addEntry") %>' scope="request"/>
+<c:set var="ss_pageTitle" value='<%= NLT.get("window.title.addEntry") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <div>
 

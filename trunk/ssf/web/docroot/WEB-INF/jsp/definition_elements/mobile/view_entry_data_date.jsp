@@ -37,9 +37,6 @@
   <div class="entry-caption"><c:out value="${property_caption}" /></div>
   <div class="entry-element">
   
-  				<span class="font-red">Lynn</span>
-
-  
    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				      value="${ssDefinitionEntry.customAttributes[property_name].value}" type="date" 
 					  dateStyle="medium" />
