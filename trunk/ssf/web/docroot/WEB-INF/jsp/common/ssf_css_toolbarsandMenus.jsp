@@ -86,7 +86,7 @@ ul.ss_actions_bar li {
 	display: inline;
 	margin: 0px;
 	white-space: nowrap;
-	padding-top: 1px;
+	padding: 2px 0px 4px 0px;
 	}
 .ss_actions_bar li.ss_toolBarItem {
 	border: 0px;
