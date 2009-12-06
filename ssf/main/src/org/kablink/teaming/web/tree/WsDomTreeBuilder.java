@@ -172,10 +172,15 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 			} else {
 				element.addAttribute("id", binder.getId().toString() + "." + getPage());
 			}
-				//only need this information if this is the bottom of the tree
+			//only need this information if this is the bottom of the tree
 			if (check && (bottom == null ||  bottom.equals(binder.getParentBinder()))) {
-				boolean hasVisibleBinders = (helper.hasChildren(bs, source, type) && TrashHelper.containsVisibleBinders(bs, binder));
-				element.addAttribute("hasChildren", String.valueOf(hasVisibleBinders));
+				boolean hasChildBinders = helper.hasChildren(bs, source, type);
+				if (hasChildBinders) {
+					if (SPropsUtil.getBoolean("ui.hideEmptyExpanders", true)) {
+						hasChildBinders = TrashHelper.containsVisibleBinders(bs, binder);
+					}
+				}
+				element.addAttribute("hasChildren", String.valueOf(hasChildBinders));
 			}
 			if (element.isRootElement()) {
 				//save identifier of tree helper to use on ajax callbacks
