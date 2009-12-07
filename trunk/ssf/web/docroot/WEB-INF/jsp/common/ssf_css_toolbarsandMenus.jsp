@@ -70,6 +70,39 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 /* CSS Document - container for toolbars and menu styles */
 
+/* General CSS */
+
+.ss_relDiv {
+	position: relative;
+	} 
+	
+/* positioned inside of a relative DIV (can use .ss_relDiv) to keep with content */	
+.ss_diagSmallDiv { 
+	position: absolute;
+	background-color: #f6f6f6;
+	border: 1px solid #babdb6;
+	min-width: 300px;
+	}
+.ss_diagDivTitle {
+	color: #fff;
+	font-size: 13px;
+	font-weight: bold;
+	letter-spacing: .1em;
+	background: #5A9A98 url(<html:imagesPath/>pics/H_bg_blend_teal.png) repeat-x;
+	padding: 4px;
+	}
+.ss_diagDivContent {
+	padding: 10px;
+	}		
+.ss_diagDivFooter {
+	position: relative;
+	background-color: #efeeec;
+	text-align: right;
+	margin-top: 1em;
+	padding: 0.5em;
+	border-top: 1px solid #babdb6;
+	}	
+
 /* ACTIONS */
 
 .ss_actions_bar {
@@ -86,7 +119,7 @@ ul.ss_actions_bar li {
 	display: inline;
 	margin: 0px;
 	white-space: nowrap;
-	padding: 2px 0px 4px 0px;
+	padding-top: 1px;
 	}
 .ss_actions_bar li.ss_toolBarItem {
 	border: 0px;

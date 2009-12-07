@@ -169,7 +169,7 @@ function ss_showModifyDiv(id) {
 					<tr>
 						<td><span class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/>:&nbsp;</span></td>
 						<td valign="top">
-							<input type="text" name="addUserQuota" size="6" style="width:50px;" 
+							<input class="ss_bold" type="text" name="addUserQuota" size="6" style="width:50px; text-align: right;" 
 							  onblur="ss_checkIfNumber(this);" style="text-align:right;"/>&nbsp;<ssf:nlt tag="administration.quotas.mb" />
 						</td>
 					</tr>
@@ -198,7 +198,7 @@ function ss_showModifyDiv(id) {
 					<tr>
 						<td><span class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/>:&nbsp;</span></td>
 						<td valign="top">
-							<input type="text" name="addGroupQuota" size="6" style="width:50px;" 
+							<input class="ss_bold" type="text" name="addGroupQuota" size="6" style="width:50px; text-align: right;" 
 							  onblur="ss_checkIfNumber(this);" style="text-align:right;"/>&nbsp;<ssf:nlt tag="administration.quotas.mb" />
 						</td>
 					</tr>
@@ -255,7 +255,7 @@ function ss_showModifyDiv(id) {
 								<tr class="no-regrow">
 									<td><span class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/>:&nbsp;</span></td>
 									<td valign="top">
-										<input type="text" name="newGroupQuota_${group.id}" size="6" style="width:50px;" 
+										<input class="ss_bold" type="text" name="newGroupQuota_${group.id}" size="6" style="width:50px; text-align: right;" 
 										  onblur="ss_checkIfNumber(this);" style="text-align:right;" value="${group.diskQuota}"/>&nbsp;<ssf:nlt tag="administration.quotas.mb" />
 									</td>
 								</tr>
@@ -326,7 +326,7 @@ function ss_showModifyDiv(id) {
 								<tr class="no-regrow">
 									<td><span class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/>:&nbsp;</span></td>
 									<td valign="top">
-										<input type="text" name="newUserQuota_${user.id}" size="6" style="width:50px;" 
+										<input class="ss_bold" type="text" name="newUserQuota_${user.id}" size="6" style="width:50px; text-align: right;" 
 										  onblur="ss_checkIfNumber(this);" style="text-align:right;" value="${user.diskQuota}"/>&nbsp;<ssf:nlt tag="administration.quotas.mb" />
 									</td>
 								</tr>
@@ -348,7 +348,7 @@ function ss_showModifyDiv(id) {
 	        <td align="center">
 	          ${user.diskQuota}
 	        </td>
-	        <td valign="top" class="ss_table_data_TD" align="center">
+	        <td align="center">
 	          <fmt:formatNumber value="${user.diskSpaceUsed/1048576}" maxFractionDigits="2"/>
 	        </td>
 	        <td class="rightend">&nbsp;</td>
