@@ -38,7 +38,6 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditDeleteControl;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -89,7 +88,7 @@ public class TableDropWidget extends DropWidget
 	 * Create a widget for every child defined in TableColConfig and add the children to
 	 * the given col in the table.
 	 */
-	public void addChildWidgetsFromConfigToCell( TableColConfig configData, int col )
+	private void addChildWidgetsFromConfigToCell( ConfigItem configData, int col )
 	{
 		// Is the given col valid?
 		if ( col < m_flexTable.getCellCount( 0 ) )
@@ -103,16 +102,31 @@ public class TableDropWidget extends DropWidget
 
 			if ( dropZone != null )
 			{
-				for (i = 0; i < configData.numItems(); ++i)
+				DropWidget dropWidget;
+
+				if ( configData instanceof TableColConfig )
 				{
-					DropWidget dropWidget;
-					ConfigItem configItem;
+					TableColConfig tableColConfig;
 					
-					// Get the next piece of configuration information.
-					configItem = configData.get( i );
-					
+					tableColConfig = (TableColConfig) configData;
+					for (i = 0; i < tableColConfig.numItems(); ++i)
+					{
+						ConfigItem configItem;
+						
+						// Get the next piece of configuration information.
+						configItem = tableColConfig.get( i );
+						
+						// Create the appropriate DropWidget based on the configuration data.
+						dropWidget = DropWidget.createDropWidget( m_lpe, configItem );
+						
+						// Add the widget to the col's drop zone.
+						dropZone.addWidgetToDropZone( dropWidget );
+					}
+				}
+				else
+				{
 					// Create the appropriate DropWidget based on the configuration data.
-					dropWidget = DropWidget.createDropWidget( m_lpe, configItem );
+					dropWidget = DropWidget.createDropWidget( m_lpe, configData );
 					
 					// Add the widget to the col's drop zone.
 					dropZone.addWidgetToDropZone( dropWidget );
@@ -128,7 +142,9 @@ public class TableDropWidget extends DropWidget
 	public void addChildWidgetsFromConfigToTable( TableConfig configData )
 	{
 		int i;
+		int col;
 		
+		col = 0;
 		for (i = 0; i < configData.numItems(); ++i)
 		{
 			ConfigItem configItem;
@@ -139,7 +155,15 @@ public class TableDropWidget extends DropWidget
 			// A TableConfig can only hold TableColConfig items.
 			if ( configItem instanceof TableColConfig )
 			{
-				addChildWidgetsFromConfigToCell( (TableColConfig)configItem, i );
+				addChildWidgetsFromConfigToCell( configItem, col );
+				++col;
+			}
+			else
+			{
+				// In theory a TableColConfig should be the only item contained by a TableConfig object.
+				// However, the old landing page editor created invalid configuration data
+				// where a tableStart did not contain a tableCol element.
+				addChildWidgetsFromConfigToCell( configItem, col );
 			}
 		}
 	}// end addChildWidgetsFromConfigToTable()

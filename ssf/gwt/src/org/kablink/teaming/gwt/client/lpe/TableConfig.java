@@ -54,7 +54,10 @@ public class TableConfig extends ConfigItem
 	public TableConfig( String configStr )
 	{
 		int i;
+		int numCols;
+		int width;
 		String[] propsStr;
+		boolean valid;
 		
 		m_properties = new TableProperties();
 		m_configItems = new ArrayList<ConfigItem>();
@@ -76,8 +79,6 @@ public class TableConfig extends ConfigItem
 						m_properties.setShowBorder( results2[1].equalsIgnoreCase( "1" ) );
 					else if ( results2[0].equalsIgnoreCase( "cols" ) )
 					{
-						int numCols;
-						
 						numCols = 0;
 						try
 						{
@@ -106,9 +107,8 @@ public class TableConfig extends ConfigItem
 								
 								for (j = 0; j < results3.length; ++j)
 								{
-									int width;
-	
 									width = 0;
+
 									try
 									{
 										width = Integer.parseInt( results3[j] );
@@ -129,6 +129,27 @@ public class TableConfig extends ConfigItem
 					}
 				}
 			}// end for()
+		}
+		
+		// Make sure the columns have a width.
+		valid = true;
+		numCols = m_properties.getNumColumnsInt();
+		for (i = 0; i < numCols && valid == true; ++i)
+		{
+			if ( m_properties.getColWidthInt( i ) == 0 )
+				valid = false;
+		}
+		
+		// Are the columns valid?
+		if ( !valid && numCols > 0 )
+		{
+			// No, make all the column widths equal.
+			width = 100 / numCols;
+			
+			for (i = 0; i < numCols; ++i)
+			{
+				m_properties.setColWidth( i, width );
+			}
 		}
 	}// end TableConfig()
 	
