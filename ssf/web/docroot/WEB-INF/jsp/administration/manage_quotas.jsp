@@ -112,235 +112,255 @@ function ss_showModifyDiv(id) {
 	  <legend class="ss_legend"><input type="checkbox" name="enableQuotas" 
 	  <c:if test="${ss_quotasEnabled}">checked=checked</c:if>
 	  />
-	  <ssf:nlt tag="administration.quotas.enable" /></legend>
-	<div>
-	  
-	</div>
+	  <b><ssf:nlt tag="administration.quotas.enable" /></b></legend>
 		
-	<table>
+	<table style="margin: 10px">
 	<tr>
-	<td style="padding-left:20px;" valign="top">
-	  <ssf:nlt tag="administration.quotas.default"/>
+	<td>
+	  <ssf:nlt tag="administration.quotas.default"/>:
 	</td>
-	<td style="padding-left:4px;" valign="top">
+	<td style="padding-left:4px;">
 	  <input type="text" size="6" name="defaultQuota" value="${ss_quotasDefault}"
-	    onblur="ss_checkIfNumber(this);" style="text-align:right;"
+	    onblur="ss_checkIfNumber(this);" style="text-align: right; font-weight: bold;"
 	  />
 	  <ssf:nlt tag="administration.quotas.mb"/>
 	</td>
 	</tr>
 	<tr>
-	<td style="padding-left:20px;" valign="top">
-	  <ssf:nlt tag="administration.quotas.highWaterMark"/>
+	<td>
+	  <ssf:nlt tag="administration.quotas.highWaterMark"/>:
 	</td>
-	<td style="padding-left:4px;" valign="top">
+	<td style="padding-left:4px;">
 	  <input type="text" size="6" name="highWaterMark" value="${ss_quotasHighWaterMark}"
-	  	onblur="ss_checkIfNumber(this);" style="text-align:right;"
-	  />%
+	  	onblur="ss_checkIfNumber(this);" style="text-align: right; font-weight: bold;"
+	  />&nbsp;%
 	</td>
 	</tr>
 	</table>
 	</fieldset>
 			
-	<br/>
 	
-  <table >
+  <table style="margin: 20px 0 20px 0">
   <tr>
   <td valign="top" style="padding-right:50px;">
     <input type="button" class="ss_submit" name="addUserBtn" value="<ssf:nlt tag="administration.quotas.addUserQuota"/>"
-		  onClick="showAddUsersDiv();return false;"/>
+	  onClick="showAddUsersDiv();return false;"/>
     <input type="button" class="ss_submit" name="addGroupBtn" value="<ssf:nlt tag="administration.quotas.addGroupQuota"/>"
-		  onClick="showAddGroupsDiv();return false;"/>
+	  onClick="showAddGroupsDiv();return false;"/>
   </td>
   <td valign="top">
-    <div class="ss_form_wrap" id="addUserDiv" style="display:none; width:100%;">
-      <div style="padding:4px 0px 10px 0px;">
-        <span class="ss_bold ss_largerprint"><ssf:nlt tag="administration.quotas.addUserQuota"/></span>
-      </div>
-  		<table>
-  		<tr>
-          <td valign="top"><span class="ss_bold"><ssf:nlt tag="__definition_default_user"/></span></td>
-  		  <td valign="top">
-  		    <ssf:find formName="form1" formElement="addUsers" 
-    		  type="user" />
-    	  </td>
-    	</tr>
+  
+	<div class="ss_relDiv">
+		<!--Add User DIV dialog-->
+ 	  	<div class="ss_diagSmallDiv" id="addUserDiv" style="display: none;">
+			<div class="ss_diagDivTitle">
+		  		<ssf:nlt tag="administration.quotas.addUserQuota"/>
+			</div>
+			<div class="ss_diagDivContent">
+				<table>
+  					<tr>
+						<td class="ss_cellvalign"><span class="ss_bold"><ssf:nlt tag="__definition_default_user"/>:&nbsp;</span></td>
+						<td valign="top">
+							<ssf:find formName="form1" formElement="addUsers" type="user" />
+						</td>
+					</tr>
+					<tr>
+						<td><span class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/>:&nbsp;</span></td>
+						<td valign="top">
+							<input type="text" name="addUserQuota" size="6" style="width:50px;" 
+							  onblur="ss_checkIfNumber(this);" style="text-align:right;"/>&nbsp;<ssf:nlt tag="administration.quotas.mb" />
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="ss_diagDivFooter">
+				<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+				<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>"
+				  onClick="hideAllDivs();return false;"/>
+			</div>
+	    </div>
+		<!--END-->
+		<!--Add Group DIV dialog-->
+ 	  	<div class="ss_diagSmallDiv" id="addGroupDiv" style="display: none;">
+			<div class="ss_diagDivTitle">
+		  		<ssf:nlt tag="administration.quotas.addGroupQuota"/>
+			</div>
+			<div class="ss_diagDivContent">
+				<table>
+  					<tr>
+						<td class="ss_cellvalign"><span class="ss_bold"><ssf:nlt tag="__definition_default_group"/>:&nbsp;</span></td>
+						<td valign="top">
+							<ssf:find formName="form1" formElement="addGroups" type="group" />
+						</td>
+					</tr>
+					<tr>
+						<td><span class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/>:&nbsp;</span></td>
+						<td valign="top">
+							<input type="text" name="addGroupQuota" size="6" style="width:50px;" 
+							  onblur="ss_checkIfNumber(this);" style="text-align:right;"/>&nbsp;<ssf:nlt tag="administration.quotas.mb" />
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="ss_diagDivFooter">
+				<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+				<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>"
+				  onClick="hideAllDivs();return false;"/>
+			</div>
+	    </div>
+		<!--END-->
+	</div>	
 
-  		<tr>
-          <td valign="top"><span class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/></span></td>
-  		  <td valign="top">
-            <input type="text" name="addUserQuota" size="6" style="width:40px;"
-	          onblur="ss_checkIfNumber(this);" style="text-align:right;"
-            /><ssf:nlt tag="administration.quotas.mb" />
-          </td>
-        </tr>
-        </table>
-        <br/>
-        <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
-		<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
-		  onClick="hideAllDivs();return false;"/>
-        
-    </div>
-    <div class="ss_form_wrap" id="addGroupDiv" style="display:none; width:100%;">
-      <div style="padding:4px 0px 10px 0px;">
-        <span class="ss_bold ss_largerprint"><ssf:nlt tag="administration.quotas.addGroupQuota"/>
-        </span>
-      </div>
-
-  		<table>
-  		<tr>
-          <td valign="top"><span class="ss_bold"><ssf:nlt tag="__definition_default_group"/></span></td>
-  		  <td valign="top">
-  		    <ssf:find formName="form1" formElement="addGroups" 
-    		  type="group" />
-    	  </td>
-    	</tr>
-
-  		<tr>
-          <td valign="top"><span class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/></span></td>
-  		  <td valign="top">
-            <input type="text" name="addGroupQuota" size="6" style="width:40px;"
-	          onblur="ss_checkIfNumber(this);" style="text-align:right;"
-            /><ssf:nlt tag="administration.quotas.mb" />
-          </td>
-        </tr>
-        </table>
-  		<br/>
-        <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
-		<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
-		  onClick="hideAllDivs();return false;"/>
-    </div>
   </td>
   </tr>
   
   </table>
 
-	<br/>
 
 	<c:if test="${!empty ss_quotasGroups}">
-	<fieldset class="ss_fieldset">
-	  <legend class="ss_legend"><ssf:nlt tag="administration.quotas.currentSettingsGroup" /></legend>
-	  <table class="ss_table_data" width="100%">
-	    <tr>
-	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.quotaDelete"/></th>
-	      <th class="ss_table_data_TD"><ssf:nlt tag="userlist.groupName"/></th>
-	      <th class="ss_table_data_TD"><ssf:nlt tag="userlist.groupTitle"/></th>
-	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.quota"/></th>
-	      <th></th>
+	  <table class="objlist" width="100%">
+		<tr class="title ends">
+		  <td colspan="5"><ssf:nlt tag="administration.quotas.currentSettingsGroup" /></td>
+		</tr>  
+	    <tr class="columnhead">
+	      <td class="leftend"><ssf:nlt tag="button.delete"/></td>
+	      <td><ssf:nlt tag="userlist.groupName"/></td>
+	      <td><ssf:nlt tag="userlist.groupTitle"/></td>
+	      <td align="center"><ssf:nlt tag="administration.quotas.quota"/></td>
+	      <td class="rightend" width="100%">&nbsp;</td>
 	    </tr>
 	    <c:forEach var="group" items="${ss_quotasGroups}">
-	      <tr>
-	        <td valign="top" class="ss_table_data_TD">
+	      <tr class="regrow">
+	        <td class="leftend">
 	          <input type="checkbox" name="deleteGroup_${group.id}" />
 	        </td>
-	        <td valign="top" class="ss_table_data_TD">
+	        <td>
 	          <a href="javascript: ;" onClick="ss_showModifyDiv('${group.id}');return false;">${group.name}</a>
+			  	<!--Edit Group DIV dialog-->
+				<div class="ss_relDiv">
+					<div class="ss_diagSmallDiv" id="ss_modifyQuotaDiv${group.id}" style="display: none;">
+						<div class="ss_diagDivTitle">
+							<ssf:nlt tag="administration.quotas.quotaModify"/>
+						</div>
+						<div class="ss_diagDivContent">
+							<table>
+								<tr class="no-regrow">
+									<td class="ss_cellvalign"><span class="ss_bold"><ssf:nlt tag="__definition_default_group"/>:&nbsp;</span></td>
+									<td style="white-space: nowrap">
+										${group.name}&nbsp;(${group.title})
+									</td>
+								</tr>
+								<tr class="no-regrow">
+									<td><span class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/>:&nbsp;</span></td>
+									<td valign="top">
+										<input type="text" name="newGroupQuota_${group.id}" size="6" style="width:50px;" 
+										  onblur="ss_checkIfNumber(this);" style="text-align:right;" value="${group.diskQuota}"/>&nbsp;<ssf:nlt tag="administration.quotas.mb" />
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div class="ss_diagDivFooter">
+							<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+							<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>"
+							  onClick="hideAllDivs();return false;"/>
+						</div>
+					</div>
+				</div>	
+				<!--END-->
 	        </td>
-	        <td valign="top" class="ss_table_data_TD">
+	        <td>
 	          ${group.title}
 	        </td>
-	        <td valign="top" class="ss_table_data_TD">
+	        <td align="center">
 	          ${group.diskQuota}
 	        </td>
-	        <td valign="top" class="ss_table_data_TD">
-  				<div class="ss_form_wrap" id="ss_modifyQuotaDiv${group.id}" style="display:none;">
-      				<div style="padding:4px 0px 10px 0px;">
-        				<span class="ss_bold ss_largerprint"><ssf:nlt tag="administration.quotas.quotaModify"/></span>
-      				</div>
-  				<table>
-  				  <tr>
-          			<td valign="top" nowrap>
-          			  <span class="ss_bold">${group.title} (${group.name})</span>
-          			</td>
-          		  </tr>
-          		  <tr>
-  		  			<td valign="top" nowrap>
-	          			<ssf:nlt tag="administration.quotas.quota"/>
-	          			<input type="text" name="newGroupQuota_${group.id}" size="6" style="width:40px;" 
-	            			onblur="ss_checkIfNumber(this);" style="text-align:right;" value="${group.diskQuota}"
-	          			/>
-	          			<ssf:nlt tag="administration.quotas.mb" />
-     	  			</td>
-    			  </tr>
-        		</table>
-        		<br/>
-        		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
-				<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
-		  			onClick="hideAllDivs();return false;"/>
-  				</div>
+	        <td class="rightend">&nbsp;
 	        </td>
 	      </tr>
 	    </c:forEach>
-	  </table>
+		  <tr class="ends footrow">
+		    <td colspan="5">
     <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.delete"/>"
 		  title="<ssf:nlt tag="quota.select.itemToBeDeleteChecked"/>"/>
-	</fieldset>
-	<br/>
+			  </td>
+			</tr>
+		  </table>
 	</c:if>
 	
 	<c:if test="${!empty ss_quotasUsers}">
-	<fieldset class="ss_fieldset">
-	  <legend class="ss_legend"><ssf:nlt tag="administration.quotas.currentSettingsUser" /></legend>
-	  <table class="ss_table_data" width="100%">
-	    <tr>
-	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.quotaDelete"/></th>
-	      <th class="ss_table_data_TD"><ssf:nlt tag="profile.element.name"/></th>
-	      <th class="ss_table_data_TD"><ssf:nlt tag="profile.element.title"/></th>
-	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.quota"/></th>
-	      <th class="ss_table_data_TD"><ssf:nlt tag="administration.quotas.diskSpaceUsed"/></th>
-	      <th></th>
+	  <table class="objlist" width="100%" style="margin-top: 20px">
+	  	<tr class="title ends">
+		  <td colspan="6"><ssf:nlt tag="administration.quotas.currentSettingsUser" /></td>
+	    <tr class="columnhead">
+	      <td class="leftend"><ssf:nlt tag="button.delete"/></td>
+	      <td><ssf:nlt tag="profile.element.title"/></td>
+	      <td><ssf:nlt tag="profile.element.name"/></td>
+	      <td align="center"><ssf:nlt tag="administration.quotas.quota"/></td>
+	      <td align="center"><ssf:nlt tag="administration.quotas.diskSpaceUsed"/></td>
+	      <td class="rightend" width="100%">&nbsp;</td>
 	    </tr>
 	    <c:forEach var="user" items="${ss_quotasUsers}">
-	      <tr>
-	        <td valign="top" class="ss_table_data_TD">
+	      <tr class="regrow">
+	        <td class="leftend">
 	          <input type="checkbox" name="deleteUser_${user.id}" />
 	        </td>
-	        <td valign="top" class="ss_table_data_TD">
-	          <a href="javascript: ;" onClick="ss_showModifyDiv('${user.id}');return false;">${user.name}</a>
+	        <td>
+	          <a href="javascript: ;" onClick="ss_showModifyDiv('${user.id}');return false;">${user.title}</a>
+
+			  	<!--Edit User DIV dialog-->
+				<div class="ss_relDiv">
+					<div class="ss_diagSmallDiv" id="ss_modifyQuotaDiv${user.id}" style="display: none;">
+						<div class="ss_diagDivTitle">
+							<ssf:nlt tag="administration.quotas.quotaModify"/>
+						</div>
+						<div class="ss_diagDivContent">
+							<table>
+								<tr class="no-regrow">
+									<td class="ss_cellvalign"><span class="ss_bold"><ssf:nlt tag="__definition_default_user"/>:&nbsp;</span></td>
+									<td style="white-space: nowrap">
+										${user.title}&nbsp;(${user.name})
+									</td>
+								</tr>
+								<tr class="no-regrow">
+									<td><span class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/>:&nbsp;</span></td>
+									<td valign="top">
+										<input type="text" name="newUserQuota_${user.id}" size="6" style="width:50px;" 
+										  onblur="ss_checkIfNumber(this);" style="text-align:right;" value="${user.diskQuota}"/>&nbsp;<ssf:nlt tag="administration.quotas.mb" />
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div class="ss_diagDivFooter">
+							<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+							<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>"
+							  onClick="hideAllDivs();return false;"/>
+						</div>
+					</div>
+				</div>	
+				<!--END-->
+
 	        </td>
-	        <td valign="top" class="ss_table_data_TD">
-	          ${user.title}
+	        <td>
+	          ${user.name}
 	        </td>
-	        <td valign="top" class="ss_table_data_TD">
+	        <td align="center">
 	          ${user.diskQuota}
 	        </td>
-	        <td valign="top" class="ss_table_data_TD">
+	        <td valign="top" class="ss_table_data_TD" align="center">
 	          <fmt:formatNumber value="${user.diskSpaceUsed/1048576}" maxFractionDigits="2"/>
 	        </td>
-	        <td valign="top" class="ss_table_data_TD">
-  				<div class="ss_form_wrap" id="ss_modifyQuotaDiv${user.id}" style="display:none;">
-      				<div style="padding:4px 0px 10px 0px;">
-        				<span class="ss_bold ss_largerprint"><ssf:nlt tag="administration.quotas.quotaModify"/></span>
-      				</div>
-  				<table>
-  				  <tr>
-          			<td valign="top" nowrap>
-          			  <span class="ss_bold">${user.title} (${user.name})</span>
-          			</td>
-          		  </tr>
-          		  <tr>
-  		  			<td valign="top" nowrap>
-	          			<ssf:nlt tag="administration.quotas.quota"/>
-	          			<input type="text" name="newUserQuota_${user.id}" size="6" style="width:40px;" 
-	            			onblur="ss_checkIfNumber(this);" style="text-align:right;" value="${user.diskQuota}"
-	          			/>
-	          			<ssf:nlt tag="administration.quotas.mb" />
-     	  			</td>
-    			  </tr>
-        		</table>
-        		<br/>
-        		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
-				<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
-		  			onClick="hideAllDivs();return false;"/>
-  				</div>
+	        <td class="rightend">&nbsp;</td>
 	      </tr>
 	    </c:forEach>
-	  </table>
+		  <tr class="footrow ends">
+		    <td colspan="6">
 	<input type="hidden" name="modifyId" id="modifyId" value="" />
     <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.delete"/>"
 		  title="<ssf:nlt tag="quota.select.itemToBeDeleteChecked"/>"/>
-	</fieldset>
-	<br/>
+
+			</td>
+		  </tr>
+	  </table>
 	</c:if>
 
 <c:if test="${!ss_quotasEnabled}">
@@ -348,10 +368,11 @@ function ss_showModifyDiv(id) {
     <br/>
     <br/>
 </c:if>
-
+  <div style="margin-top: 20px">
 	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
 	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
 		  onClick="self.window.close();return false;"/>
+  </div>		  
 </form>
 </div>
 </ssf:form>

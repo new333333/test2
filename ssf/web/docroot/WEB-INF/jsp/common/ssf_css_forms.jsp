@@ -69,6 +69,101 @@ boolean isIE = BrowserSniffer.is_ie(request);
 %>
 
 
+/* General CSS */
+
+input[type="submit"] {
+	min-width: 50px;
+	}
+td.ss_cellvalign {
+	vertical-align: top;
+	padding-top: 3px;
+	}
+
+/* Object List Table styles */
+
+.objlist  /*   apply to the object list table tag  */ { margin-bottom: 1em; }
+.objlist td  /* applies a "nowrap" style to all TD cells in a object list table */ {
+	white-space: nowrap;
+	}
+.objlist td.wrapOK  /* Apply this class to a TD to let the TD wrap normally. */ {
+	white-space: normal;
+	}
+.objlist tr.title td  	 /* apply to the first row in table */
+	 { color: #5A9A98; 
+	 font-size: 1.1em;
+	 font-weight: bold;
+	 background-color: #e9f1f1;
+	 text-align: left; 
+	 text-indent: 0.15em;
+	 letter-spacing: 1px; 
+	 padding: 3px; 
+	 border-top: 1px solid #5A9A98;
+	}
+	 
+.objlist tr.menu td	/* apply to the row after the title */ 
+	{ background-color: #efeeec; padding-top: 3px;  padding-left: 3px; padding-bottom: 5px; font-size: 1em;}
+	
+.objlist tr.menu a	/* menu style will automaticallly apply to all links within the table row*/ 
+	{ text-decoration: none; padding: 2px 5px; padding-bottom: 1px !important; }
+
+.objlist div.actions a:hover { color: white; background-color: #5e919e;}
+
+.objlist tr.columnhead td	/* Apply to the column headings row following the menu */ {
+	color: #666;
+	font-weight: bold;
+	font-size: .85em;
+	background-color: #e9f1f1;
+	padding: 5px;
+	padding-right: 10px;
+	border-bottom: 1px solid #dbdbd3;
+	}
+
+.objlist tr.columnhead a { text-decoration: none; }
+.objlist tr.columnhead a.nv-sortedcol { font-weight: bold; }
+.objlist tr.columnhead a.nv-sortcol { font-weight: normal; }
+.objlist tr.columnhead td.nv-nonsortcol { color: #666666; font-weight: normal; }
+
+
+.objlist tr.regrow	/*Apply to all the content rows.  Style will automatically flow to each cell td. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
+	{ background-color: white; } /* #babdb6 */
+
+.objlist tr.regrow td	/*Apply to all the content rows.  Style will automatically flow to each cell td. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
+	{ font-size: 1em; padding: 3px 5px; border-bottom: 1px solid #dbdbd3; } /* #babdb6 */
+
+.objlist tr.no-regrow td	/* use to override regrow border */ 
+	{ font-size: 1em; padding: 3px 5px; border-bottom: 0px; } 
+		
+.objlist tr.regrow a {	color: ${ss_style_link_hover_color}; }
+
+.objlist tr.overrow 	/*roll over a row to change the background color*/ 
+	{ background-color: #F6F6F6; }
+
+.objlist tr.selectrow 	/*select a row to change the background color*/ 
+	{ background-color: #CCDAE8; }
+
+.objlist tr.footrow td	/*Apply to all the content rows.  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
+	{ background-color: #f6f6f6; color: #666666; letter-spacing: .1em; font-size:0.7em; padding: 3px 5px; border-bottom: 1px solid #bbbbb9; } /* #babdb6 */
+
+tr.ends td   
+	{ border-right: 1px solid #bbbbb9; 
+	border-left: 1px solid #bbbbb9}	
+			
+tr.titleends td   
+	{ border-right: 1px solid #173751; 
+	border-left: 1px solid #173751}		
+		
+td.leftend    
+	{ border-left: 1px solid #bbbbb9; }
+				
+td.rightend   
+	{ border-right: 1px solid #bbbbb9; }
+.objlist tr.regrow td.righton { color: black; font-weight: 700; text-transform: uppercase; cursor: help; }
+.objlist tr.regrow td.rightoff { color: #bbbbb9; font-weight: normal; text-transform: uppercase; cursor: help; }
+.objlist tr.regrow td span.instructions { font-size: 0.95em; }
+
+
+
+
 .ss_form_header {
 	font-size:28px !important;
 	letter-spacing:-1px;
@@ -99,8 +194,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border-right-color: #CCCCCC;
 	border-bottom-color: #CCCCCC;
 	border-left-color: #CCCCCC;
-	padding: 0 25px 25px 25px!important;
-	margin: 25px 25px 25px 25px;
+	padding: 0 15px 15px 15px!important;
 	}
 .ss_form_wrap_compact {
 	border-top-width: 24px;

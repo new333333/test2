@@ -188,7 +188,7 @@
   --
 --%><c:set var="ss_style_link_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_style_link_visited_color" value="#333333" scope="request"/><%--	
---%><c:set var="ss_style_link_hover_color" value="#0000FC" scope="request"/><%-- 	
+--%><c:set var="ss_style_link_hover_color" value="#4b7bb1" scope="request"/><%-- 	
 --%><%--
   --
   -- LOGO ICECORE COLORS
