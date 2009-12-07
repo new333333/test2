@@ -70,16 +70,18 @@ function hideAllDivs() {
 		ss_quotaModifyDivBeingShown = null;
 	}
 	var modifyIdObj = self.document.getElementById("modifyId");
-	modifyIdObj.value = "";
+	if (modifyIdObj != null) modifyIdObj.value = "";
 }
 var ss_quotaModifyDivBeingShown = null;
 function ss_showModifyDiv(id) {
 	hideAllDivs();
 	var modifyIdObj = self.document.getElementById("modifyId");
-	modifyIdObj.value = id;
-	var divObj = self.document.getElementById("ss_modifyQuotaDiv" + id);
-	divObj.style.display = "block";
-	ss_quotaModifyDivBeingShown = id;
+	if (modifyIdObj != null) {
+		modifyIdObj.value = id;
+		var divObj = self.document.getElementById("ss_modifyQuotaDiv" + id);
+		divObj.style.display = "block";
+		ss_quotaModifyDivBeingShown = id;
+	}
 }
 
 </script>
