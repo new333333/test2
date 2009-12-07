@@ -2071,7 +2071,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			for (int i = 0; i < fileName.length(); i++) {
 				int c = (int) fileName.charAt(i);
 
-				if (c >= 0 && c < 256) {
+				if (c >= 0x20 && c < 0x7F) {
 					// it's ok
 				} else
 					return attachment.getId() + "." + fileExt;
