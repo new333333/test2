@@ -444,7 +444,7 @@ public class BinderHelper {
 					brandingAccess = bs.getBinderModule().checkAccess(binder.getBrandingSource().getId(), user);
 				} catch(AccessControlException e) {
 					brandingAccess = false;
-				}
+				} catch(Exception e) {}
 				model.put(WebKeys.ACCESS_BRANDING, brandingAccess);
 			}
 		}
