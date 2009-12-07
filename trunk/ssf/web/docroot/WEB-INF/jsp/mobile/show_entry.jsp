@@ -70,8 +70,6 @@
 
 		<c:if test="${!empty ssEntry}">
 		<div class="entry">
-			<div class="entry-comment-label">${ssEntry.totalReplyCount}</div>
-
 			<div>
 				<c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
 			  	<ssf:displayConfiguration

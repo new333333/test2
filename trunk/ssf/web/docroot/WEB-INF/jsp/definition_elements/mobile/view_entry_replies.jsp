@@ -58,7 +58,7 @@
     <c:set var="commentImg" value="comments_22.png"/>
   </c:if>
   <c:if test="${ssEntry != reply.parentEntry}">
-    <c:set var="commentClass" value="comment2 entry"/>
+    <c:set var="commentClass" value="comment2 entry "/>
     <c:set var="commentImg" value="comments_16.png"/>
   </c:if>
   <div class="${commentClass}">

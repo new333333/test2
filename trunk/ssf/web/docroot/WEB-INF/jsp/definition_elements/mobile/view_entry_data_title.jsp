@@ -40,7 +40,7 @@
   <c:if test="${empty ss_title_breadcrumbs_seen && 
                     ssDefinitionEntry.entityType == 'folderEntry' && 
                     !empty ssDefinitionEntry.parentEntry}">
-    <div style="padding-bottom:10px;">
+    <div style="padding-bottom:2px;">
 	    <c:set var="parentEntry" value="${ssDefinitionEntry.parentEntry}"/>
 	    <jsp:useBean id="parentEntry" type="java.lang.Object" />
 	    <%
@@ -81,6 +81,9 @@
   </c:if>
   <c:set var="ss_title_breadcrumbs_seen" value="1" scope="request"/>
 
+<table cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td valign="top">
 <div class="entry-title">
   <%
 	  if (!ssSeenMap.checkIfSeen(title_entry)) {
@@ -101,6 +104,12 @@
   <c:out value="${ssDefinitionEntry.title}" escapeXml="true" /></span></a>
 
 </div>
+</td>
+<td valign="bottom" align="right" width="30">
+			<div class="entry-comment-label">${ssEntry.totalReplyCount}</div>
+</td>
+</tr>
+</table>
 <c:if test="${ss_showSignatureAfterTitle && !ss_signatureShown}">
   <%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_signature2.jsp" %>
   <c:set var="ss_signatureShown" value="true" scope="request"/>
