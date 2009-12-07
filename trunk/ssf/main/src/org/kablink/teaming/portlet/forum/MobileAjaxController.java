@@ -995,7 +995,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		BinderHelper.addActionsWhatsNew(request, actions, binder);
 		BinderHelper.addActionsWhatsUnseen(request, actions, binder);
 		BinderHelper.addActionsRecentPlaces(request, actions, binder.getId());
-		if (!binder.getEntityType().equals(EntityIdentifier.EntityType.profiles))
+		if (binder != null && !binder.getEntityType().equals(EntityIdentifier.EntityType.profiles))
 			BinderHelper.addActionsTrackThisBinder(bs, request, actions, binder);
 		BinderHelper.addActionsFullView(bs, request, actions, binder.getId(), entryId);
 		BinderHelper.addActionsSpacer(request, actions);
