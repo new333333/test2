@@ -2198,6 +2198,7 @@ public class ExportHelper {
 		binder.setDefinitions(newDefinitionList);
 	}
 
+	//Keep this in sync with the same routine in BinderModuleImpl
 	public static String filename8BitSingleByteOnly(FileAttachment attachment,
 			boolean _8BitSingleByteOnly) {
 		String fileName = attachment.getFileItem().getName();
@@ -2211,7 +2212,8 @@ public class ExportHelper {
 			for (int i = 0; i < fileName.length(); i++) {
 				int c = (int) fileName.charAt(i);
 
-				if (c >= 0 && c < 256) {
+				//Allow only Basic Latin characters
+				if (c >= 0x20 && c < 0x7F) {
 					// it's ok
 				} else
 					return attachment.getId() + "." + fileExt;
