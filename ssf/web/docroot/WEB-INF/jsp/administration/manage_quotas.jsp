@@ -141,48 +141,12 @@ function ss_showModifyDiv(id) {
 	</table>
 	</fieldset>
 			
-	
-  <table style="margin: 20px 0 20px 0">
-  <tr>
-  <td valign="top" style="padding-right:50px;">
-    <input type="button" class="ss_submit" name="addUserBtn" value="<ssf:nlt tag="administration.quotas.addUserQuota"/>"
-	  onClick="showAddUsersDiv();return false;"/>
-    <input type="button" class="ss_submit" name="addGroupBtn" value="<ssf:nlt tag="administration.quotas.addGroupQuota"/>"
-	  onClick="showAddGroupsDiv();return false;"/>
-  </td>
-  <td valign="top">
-  
+	<div style="margin: 20px 0 10px 0; padding-right: 50px;">
+		<input style="min-width: 95px;" type="button" class="ss_submit" name="addGroupBtn" value="<ssf:nlt tag="administration.quotas.addGroupQuota"/>"
+		  onClick="showAddGroupsDiv();return false;"/>
+	</div>  
+	<!--Add Group DIV dialog-->
 	<div class="ss_relDiv">
-		<!--Add User DIV dialog-->
- 	  	<div class="ss_diagSmallDiv" id="addUserDiv" style="display: none;">
-			<div class="ss_diagDivTitle">
-		  		<ssf:nlt tag="administration.quotas.addUserQuota"/>
-			</div>
-			<div class="ss_diagDivContent">
-				<table>
-  					<tr>
-						<td class="ss_cellvalign"><span class="ss_bold"><ssf:nlt tag="__definition_default_user"/>:&nbsp;</span></td>
-						<td valign="top">
-							<ssf:find formName="form1" formElement="addUsers" type="user" />
-						</td>
-					</tr>
-					<tr>
-						<td><span class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/>:&nbsp;</span></td>
-						<td valign="top">
-							<input class="ss_bold" type="text" name="addUserQuota" size="6" style="width:50px; text-align: right;" 
-							  onblur="ss_checkIfNumber(this);" style="text-align:right;"/>&nbsp;<ssf:nlt tag="administration.quotas.mb" />
-						</td>
-					</tr>
-				</table>
-			</div>
-			<div class="ss_diagDivFooter">
-				<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
-				<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>"
-				  onClick="hideAllDivs();return false;"/>
-			</div>
-	    </div>
-		<!--END-->
-		<!--Add Group DIV dialog-->
  	  	<div class="ss_diagSmallDiv" id="addGroupDiv" style="display: none;">
 			<div class="ss_diagDivTitle">
 		  		<ssf:nlt tag="administration.quotas.addGroupQuota"/>
@@ -210,14 +174,8 @@ function ss_showModifyDiv(id) {
 				  onClick="hideAllDivs();return false;"/>
 			</div>
 	    </div>
-		<!--END-->
 	</div>	
-
-  </td>
-  </tr>
-  
-  </table>
-
+	<!--END-->
 
 	<c:if test="${!empty ss_quotasGroups}">
 	  <table class="objlist" width="100%">
@@ -289,8 +247,43 @@ function ss_showModifyDiv(id) {
 		  </table>
 	</c:if>
 	
+	<div style="margin: 20px 0 10px 0; padding-right: 50px;">
+		<input style="min-width: 95px" type="button" class="ss_submit" name="addUserBtn" value="<ssf:nlt tag="administration.quotas.addUserQuota"/>"
+	  onClick="showAddUsersDiv();return false;"/>
+	</div>  
+	<!--Add User DIV dialog-->
+	<div class="ss_relDiv">
+	  	<div class="ss_diagSmallDiv" id="addUserDiv" style="display: none;">
+			<div class="ss_diagDivTitle">
+		  		<ssf:nlt tag="administration.quotas.addUserQuota"/>
+			</div>
+			<div class="ss_diagDivContent">
+				<table>
+  					<tr>
+						<td class="ss_cellvalign"><span class="ss_bold"><ssf:nlt tag="__definition_default_user"/>:&nbsp;</span></td>
+						<td valign="top">
+							<ssf:find formName="form1" formElement="addUsers" type="user" />
+						</td>
+					</tr>
+					<tr>
+						<td><span class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/>:&nbsp;</span></td>
+						<td valign="top">
+							<input class="ss_bold" type="text" name="addUserQuota" size="6" style="width:50px; text-align: right;" 
+							  onblur="ss_checkIfNumber(this);" style="text-align:right;"/>&nbsp;<ssf:nlt tag="administration.quotas.mb" />
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="ss_diagDivFooter">
+				<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+				<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>"
+				  onClick="hideAllDivs();return false;"/>
+			</div>
+	    </div>
+	</div>	
+	<!--END-->
 	<c:if test="${!empty ss_quotasUsers}">
-	  <table class="objlist" width="100%" style="margin-top: 20px">
+	  <table class="objlist" width="100%">
 	  	<tr class="title ends">
 		  <td colspan="6"><ssf:nlt tag="administration.quotas.currentSettingsUser" /></td>
 	    <tr class="columnhead">
@@ -370,7 +363,7 @@ function ss_showModifyDiv(id) {
     <br/>
     <br/>
 </c:if>
-  <div style="margin-top: 20px">
+  <div style="margin-top: 50px;">
 	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
 	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
 		  onClick="self.window.close();return false;"/>
