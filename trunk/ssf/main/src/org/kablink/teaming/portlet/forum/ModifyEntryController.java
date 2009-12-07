@@ -303,6 +303,7 @@ public class ModifyEntryController extends SAbstractController {
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 
 		Map model = new HashMap();	
+		BinderHelper.setupStandardBeans(this, request, response, model, folderId);
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		model.put(WebKeys.OPERATION, action);
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
