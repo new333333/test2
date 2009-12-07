@@ -176,7 +176,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 			if (check && (bottom == null ||  bottom.equals(binder.getParentBinder()))) {
 				boolean hasChildBinders = helper.hasChildren(bs, source, type);
 				if (hasChildBinders) {
-					if (SPropsUtil.getBoolean("ui.hideEmptyExpanders", true)) {
+					if (SPropsUtil.getBoolean("ui.hideEmptyExpanders", false)) {
 						hasChildBinders = TrashHelper.containsVisibleBinders(bs, binder);
 					}
 				}
