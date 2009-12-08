@@ -32,37 +32,33 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<% //Folder list.  %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:if test="${!empty ssBinder.title}">
-  <c:set var="ss_windowTitle" value="${ssBinder.title}" scope="request"/>
-</c:if>
-<%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
-<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
+  <c:if test="${!empty ss_prevPage}">
+    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+	  folderId="${ssBinder.id}" 
+	  action="__ajax_mobile" 
+	  operation="mobile_show_folder" 
+	  actionUrl="false" ><ssf:param name="pageNumber" value="${ss_prevPage}"/></ssf:url>"
+    ><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_left_16.gif"/></a>
+  </c:if>
+  <c:if test="${empty ss_prevPage}">
+  	<a href="javascript: ;" onClick="return false;" 
+	  ><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_left_dis_20.png"
+  		<ssf:alt tag=""/> /></a>
+  </c:if>
 
-<div class="content">
-
-<c:set var="ss_hideMiniBlog" value="true" scope="request" />
-<c:if test="${ssDefinitionFamily != 'calendar'}">
-  <c:set var="ss_showFolderNextPrev" value="true" scope="request" />
-</c:if>
-<%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
-
-<c:set var="ssDefinitionEntry" value="${ssBinder}" scope="request" />
-
-<div class="folder-content">
-<ssf:displayConfiguration 
-	configDefinition="${ssConfigDefinition}" 
-	configElement="${ssConfigElement}" 
-	configJspStyle="mobile" 
-	entry="${ssDefinitionEntry}" />
-</div>
-
-<c:if test="${empty ss_mobileBinderListShown}">
-  <%@ include file="/WEB-INF/jsp/definition_elements/mobile/folder_list.jsp" %>
-</c:if>
-
-</div>
-
-</body>
-</html>
+  <c:if test="${!empty ss_nextPage}">
+  	<a href="<ssf:url adapter="true" portletName="ss_forum" 
+		folderId="${ssBinder.id}" 
+		action="__ajax_mobile" 
+		operation="mobile_show_folder" 
+		actionUrl="false" ><ssf:param name="pageNumber" value="${ss_nextPage}"/></ssf:url>"
+  	><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_right_16.gif"/></a>
+  </c:if>
+  <c:if test="${empty ss_nextPage}">
+  	  <a href="javascript: ;" onClick="return false;" 
+	  ><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_right_dis_20.png"
+  		<ssf:alt tag=""/> /></a>
+  </c:if>

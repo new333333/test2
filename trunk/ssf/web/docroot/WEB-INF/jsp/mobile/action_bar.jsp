@@ -112,12 +112,19 @@ function ss_logoff_from_sso(s) {
     </c:if>
   </c:if>  
 
+  <c:if test="${ssDefinitionFamily == 'calendar'}">
+    <%@ include file="/WEB-INF/jsp/mobile/calendar_today_button.jsp" %>
+  </c:if>  
+
   <c:if test="${!empty ss_actions}">
     <a class="actions-a" href="javascript: ;" 
       onClick="ss_showMenu('actions-menu');return false;"><ssf:nlt tag="mobile.actions"/></a>
   </c:if>  
  </td>
  <td valign="top" align="right">
+   <c:if test="${ss_showFolderNextPrev}">
+     <%@ include file="/WEB-INF/jsp/mobile/folder_next_prev.jsp" %>
+   </c:if>
    <c:if test="${ss_showEntryNextPrev}">
      <%@ include file="/WEB-INF/jsp/mobile/entry_next_prev.jsp" %>
    </c:if>
