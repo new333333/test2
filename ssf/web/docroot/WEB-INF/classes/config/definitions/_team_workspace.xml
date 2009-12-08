@@ -38,16 +38,16 @@
         <property name="caption" value="__icon"/> 
       </properties> 
     </item>  
-    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="14">
+    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="14"> 
       <properties>
         <property name="caption" value="__attach_files"/>
         <property name="name" value="ss_attachFile"/>
         <property name="width" value="60"/>
         <property name="number" value=""/>
         <property name="storage" value="simpleFileRepository"/>
-        <property name="hide" value="true"/>
+        <property name="hide" value="false"/>
       </properties>
-    </item>
+    </item> 
   </item>  
   <item name="workspaceView" caption="__workspace_view" id="5" display="view"> 
     <item name="workspaceTitleView" caption="__title" category="workspaceViewData" display="view" id="11"> 
