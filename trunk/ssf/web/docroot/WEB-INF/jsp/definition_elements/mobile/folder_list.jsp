@@ -63,11 +63,8 @@
     
 	  <c:if test="${!empty ssFolderEntries}">
 	    <c:forEach var="entryFol" items="${ssFolderEntries}">
-	      <jsp:useBean id="entryFol" type="java.util.Map" />
+	    	<jsp:useBean id="entryFol" type="java.util.Map" />
 			<div class="entry">
-		      <table cellspacing="0" cellpadding="0" width="100%">
-		      <tr>
-		      <td valign="top">
 			  <div class="entry-title">
 			    <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				  folderId="${entryFol._binderId}"  entryId="${entryFol._docId}"
@@ -78,14 +75,9 @@
 			  	  </span>
 			    </a>
 			  </div>
-		      </td>
-              <td valign="top" align="right" width="30">
 			  <c:if test="${!empty entryFol._totalReplyCount}">
 			    <div class="entry-comment-label">${entryFol._totalReplyCount}</div>
 			  </c:if>
-		      </td>
-		      </tr>
-		      </table>
 			  
 			  <div class="entry-signature">
 				<span class="entry-author"><a href="<ssf:url adapter="true" portletName="ss_forum" 
