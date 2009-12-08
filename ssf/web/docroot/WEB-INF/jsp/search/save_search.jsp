@@ -48,8 +48,8 @@
 	
 	   <input class="ss_saveQueryNameUnactive" type="text" name="searchQueryName" id="${ss_namespace}searchQueryName" 
 			  value="<ssf:nlt tag="searchResult.savedSearch.input.legend"/>" 
-		      onfocus="this.className='ss_saveQueryName'; if (this.value == '<ssf:nlt tag="searchResult.savedSearch.input.legend"/>') this.value = ''; " 
-		      onblur="if (this.value == '') this.value='<ssf:nlt tag="searchResult.savedSearch.input.legend"/>'"/>
+		      onfocus="this.className='ss_saveQueryName'; if (this.value == '<ssf:escapeJavaScript><ssf:nlt tag="searchResult.savedSearch.input.legend"/></ssf:escapeJavaScript>') this.value = ''; " 
+		      onblur="if (this.value == '') this.value='<ssf:escapeJavaScript><ssf:nlt tag="searchResult.savedSearch.input.legend"/></ssf:escapeJavaScript>'"/>
 		<a href="javascript: //;" onclick="ss_saveSearchQuery('${ss_namespace}searchQueryName', 'ss_saveQueryErrMsg');"><ssf:nlt tag="searchResult.savedSearch.save"/></a>
 		<div id="ss_saveQueryErrMsg" style="visibility: hidden;"></div>
 	</c:if>
