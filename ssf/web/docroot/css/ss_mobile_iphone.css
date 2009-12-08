@@ -386,6 +386,9 @@ span.pad-left20 select {
 	-webkit-border-radius: 10px;
 	}
 .entry-comment-label {
+	position: absolute;
+	right: 6px;
+	top: 10px;
 	color: #000;
 	font-size: 12px;
 	font-weight: bold;
