@@ -54,12 +54,12 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.mail.MailSentStatus;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
@@ -71,6 +71,7 @@ import javax.mail.Address;
  *
  */
 public class SendMailController extends SAbstractController {
+	@SuppressWarnings("unchecked")
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
@@ -128,6 +129,8 @@ public class SendMailController extends SAbstractController {
 			response.setRenderParameter(WebKeys.EMAIL_FAILED_ACCESS, noAccessPrincipals.toArray(new String[noAccessPrincipals.size()]));
 			List errors = (List)status.get(ObjectKeys.SENDMAIL_ERRORS);
 			response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
+			if (formData.containsKey(WebKeys.URL_SEND_MAIL_LOCATION)) response.setRenderParameter(WebKeys.URL_SEND_MAIL_LOCATION, request.getParameter(WebKeys.URL_SEND_MAIL_LOCATION));
+			if (formData.containsKey(WebKeys.USER_IDS_TO_ADD))        response.setRenderParameter(WebKeys.USER_IDS_TO_ADD,        request.getParameter(WebKeys.USER_IDS_TO_ADD));
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CLOSE_WINDOW);			
 		} else {
@@ -141,6 +144,7 @@ public class SendMailController extends SAbstractController {
 		for (Address email: addrs) addresses[i++] = email.toString();
 		return addresses;
 	}
+	@SuppressWarnings("unchecked")
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -151,12 +155,15 @@ public class SendMailController extends SAbstractController {
 			model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.operation.denied.sessionTimeout"));
 			return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
 		}
+		
+		List userIds = MiscUtil.splitUserIds(request, WebKeys.USER_IDS_TO_ADD, model);
 		if (errors != null) {
 			model.put(WebKeys.ERROR_LIST, errors);
 			model.put(WebKeys.EMAIL_SENT_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_SENT_ADDRESSES));
 			model.put(WebKeys.EMAIL_QUEUED_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_QUEUED_ADDRESSES));
 			model.put(WebKeys.EMAIL_FAILED_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_FAILED_ADDRESSES));
 			model.put(WebKeys.EMAIL_FAILED_ACCESS, request.getParameterValues(WebKeys.EMAIL_FAILED_ACCESS));
+			model.put(WebKeys.URL_SEND_MAIL_LOCATION, request.getParameter(WebKeys.URL_SEND_MAIL_LOCATION));
 			return new ModelAndView(WebKeys.VIEW_SENDMAIL_RESULT, model);
 		}
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
@@ -170,8 +177,6 @@ public class SendMailController extends SAbstractController {
 						+ "\">" + binder.getTitle() + "</a>");
 		}
 		
-		List userIds = PortletRequestUtils.getLongListParameters(request, WebKeys.USER_IDS_TO_ADD);
-
 		Set users = new HashSet();
 		users.addAll(getProfileModule().getUsers(new HashSet(userIds)));
 

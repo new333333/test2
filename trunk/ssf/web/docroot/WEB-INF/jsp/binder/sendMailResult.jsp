@@ -37,6 +37,27 @@
 <ssf:ifadapter>
 <body class="tundra">
 </ssf:ifadapter>
+<script type="text/javascript">
+	function handleReturnToPrevious() {
+		<c:if test="${empty sendMailLocation}">
+			 <% if (org.kablink.util.BrowserSniffer.is_mozilla(request)) { %>
+			 	self.window.history.back();
+			 <% } else { %>
+			 	self.window.location.reload(self.window.history.back());
+			 <% } %>
+		</c:if>
+		
+		<c:if test="${!empty sendMailLocation}">
+			var previousLocation = "${sendMailLocation}";
+			<c:if test="${!empty ssUsersIdsToAdd}">
+				if (0 > previousLocation.indexOf("ssUsersIdsToAdd")) {
+					previousLocation += ("&ssUsersIdsToAdd=" + "<ssf:escapeJavaScript>${ssUsersIdsToAdd}</ssf:escapeJavaScript>");
+				}
+			</c:if>
+			self.window.location = previousLocation;
+		</c:if>
+	}
+</script>
 
 <div class="ss_style ss_portlet" style="padding:10px;">
 
@@ -107,20 +128,11 @@
 <br/>
 </c:if>
 
-<%
-	String backOCHandler = "self.window.history.back()";
-	if (org.kablink.util.BrowserSniffer.is_mozilla(request)) {
-	}
-	else {
-		backOCHandler = "self.window.location.reload(" + backOCHandler + ")";
-	}
-%>
-
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" 
   onClick="self.window.close();return false;">
 <input type="submit" class="ss_submit" name="backBtn" value="<ssf:nlt tag="button.goBack"/>" 
-  onClick="<%= backOCHandler %>;return false;"
+  onClick="handleReturnToPrevious();return false;"
   style="padding-left:20px;">
 </div>
 </form>

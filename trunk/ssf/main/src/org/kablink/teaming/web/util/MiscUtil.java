@@ -33,6 +33,7 @@
 package org.kablink.teaming.web.util;
 
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -40,16 +41,9 @@ import java.util.Map;
 
 import javax.portlet.RenderRequest;
 
-import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.ProfileBinder;
-import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.profile.ProfileModule;
-import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
-import org.kablink.teaming.module.profile.impl.ProfileModuleImpl;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.ReleaseInfo;
@@ -76,6 +70,7 @@ public final class MiscUtil
 	/**
 	 * Add all of the information needed to support the "Create new account" ui to the response.
 	 */
+	@SuppressWarnings("unchecked")
 	public static void addCreateNewAccountDataToResponse(
 		AllModulesInjected	bs,
 		RenderRequest		request,
@@ -212,5 +207,58 @@ public final class MiscUtil
 		// If we get here the name is not a system user account.
 		return false;
 	}// end isSystemUserAccount()
-	
+
+	/**
+	 * Splits the String(s) in a RenderRequest property into their
+	 * constituent Long values.
+	 * 
+	 * @param request
+	 * @param requestKey
+	 * @param model
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static List splitUserIds(RenderRequest request, String requestKey) {
+		return splitUserIds(request, requestKey, null);
+	}
+	@SuppressWarnings("unchecked")
+	public static List splitUserIds(RenderRequest request, String requestKey, Map model) {
+		// Are there any values in the request parameter?
+		ArrayList userIds = new ArrayList();
+		String[] uids = PortletRequestUtils.getStringParameters(request, requestKey);
+		int uidsCount = ((null == uids) ? 0 : uids.length);
+		if (0 < uidsCount) {
+			// Yes!  Is there only one that contains a ','?
+			if ((1 == uidsCount) && (0 < uids[0].indexOf(','))) {
+				// Yes!  Then it's a comma separated list of values.
+				// Split them up.
+				uids = uids[0].split(",");
+				uidsCount = ((null == uids) ? 0 : uids.length);
+			}
+			
+			// Scan the values...
+			StringBuffer uidsBuf = new StringBuffer();
+			for (int i = 0; i < uidsCount; i += 1) {
+				// ...adding each to the StringBuffer...
+				if (0 < i) {
+					uidsBuf.append(",");
+				}
+				uidsBuf.append(uids[i]);
+				
+				// ...and to the ArrayList.
+				userIds.add(Long.valueOf(uids[i]));
+			}
+			
+			// If we were requested to put the string values into a
+			// model...
+			if (null != model) {
+				// ...put them there.
+				model.put(requestKey, uidsBuf.toString());
+			}
+		}
+		
+		// If we get here, userIds refers to an ArrayList of the Long
+		// values from the request property.  Return it.
+		return userIds;
+	}//end splitUserIds
 }// end MiscUtil
