@@ -103,6 +103,7 @@ function ss_clearRating(rating, id, namespace) {
  * Runs the delete entry confirmation dialog.
  */
 function ss_confirmDeleteEntry(eA) {
+	ss_hideSpannedAreas();
 	if (ss_binderMirrored && ("true" == ss_binderMirrored)) {
 		if (confirm(ss_confirmDeleteEntryText)) {
 			var url = eA.href;
@@ -166,6 +167,7 @@ function ss_confirmDeleteEntry_Create(eA)
 		eOK.type = "button";
 		dojo.connect(eOK, "onclick", function(evt) {
 			ss_cancelPopupDiv('ss_confirm_entry_delete_div');
+			ss_showSpannedAreas();
 			var url = this.n_div.n_href;
 			if (document.getElementById("ss_purgeImmediately").checked) {
 				url += "&purgeImmediately=true";
@@ -188,6 +190,7 @@ function ss_confirmDeleteEntry_Create(eA)
 		eCancel.type = "button";
 		dojo.connect(eCancel, "onclick", function(evt) {
 			ss_cancelPopupDiv('ss_confirm_entry_delete_div');
+			ss_showSpannedAreas();
 			return false;
 	    });
 		eCancel.setAttribute("name", ss_buttonCancel);
@@ -206,7 +209,10 @@ function ss_confirmDeleteEntry_Create(eA)
 function ss_confirmDeleteEntry_Show(divId, focusId) {
 	// Write the <DIV> in a lightbox...
 	var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
-	lightBox.onclick = function(e) {ss_cancelPopupDiv(divId);};
+	lightBox.onclick = function(e) {
+		ss_showSpannedAreas();
+		ss_cancelPopupDiv(divId);
+	};
 	var divObj = document.getElementById(divId);
 	divObj.style.zIndex = parseInt(ssLightboxZ + 1);
 	
