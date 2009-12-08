@@ -175,12 +175,12 @@ span.pad-left20 select {
 	
 .entry-actions {
 	text-align: right; 
+	background-color: #eceeec;
+	padding-right: 15px;
+    }
+.entry-action-buttons {
 	padding-top: 5px;
 	padding-left: 10px;
-	background-color: #eceeec;
-	}
-.entry-actions img {
-	padding-right: 15px;
 	}
 
 #categoryTable {

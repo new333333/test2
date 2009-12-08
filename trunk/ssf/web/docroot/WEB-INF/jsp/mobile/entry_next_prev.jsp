@@ -33,37 +33,23 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:if test="${!empty ssEntry.title}">
-  <c:set var="ss_windowTitle" value="${ssEntry.title}" scope="request"/>
-</c:if>
-<%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
-<c:set var="ss_pageTitle" value="${ssBinder.title}" scope="request"/>
-<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
+	<a href="<ssf:url adapter="true" portletName="ss_forum" 
+					folderId="${ssBinder.id}" 
+					entryId="${ssEntry.id}"
+					action="__ajax_mobile" 
+					operation="mobile_show_prev_entry" 
+					actionUrl="false" />">
+		<img <ssf:alt tag="nav.prevEntry"/> title="<ssf:nlt tag="nav.prevEntry"/>" 
+		  border="0" src="<html:imagesPath/>mobile/nl_left_20.png" />
+	</a>
+	<a href="<ssf:url adapter="true" portletName="ss_forum" 
+					folderId="${ssBinder.id}" 
+					entryId="${ssEntry.id}"
+					action="__ajax_mobile" 
+					operation="mobile_show_next_entry" 
+					actionUrl="false" />">
+		<img <ssf:alt tag="nav.nextEntry"/> title="<ssf:nlt tag="nav.nextEntry"/>" 
+		  border="0" src="<html:imagesPath/>mobile/nl_right_20.png" />
+	</a>
 
-<div class="content">
-
-<c:set var="ss_hideMiniBlog" value="true" scope="request" />
-<c:set var="ss_showEntryNextPrev" value="true" scope="request" />
-<%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
-
-	<div class="folders">
-		<div class="folder-content">
-
-		<c:if test="${!empty ssEntry}">
-		<div class="entry">
-			<div>
-				<c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
-			  	<ssf:displayConfiguration
-					configDefinition="${ssConfigDefinition}" 
-					configElement="${ssConfigElement}" 
-					configJspStyle="mobile" 
-					entry="${ssEntry}" />
-			</div>
-		</div>
-	</c:if> 
-  </div>	
-</div>
-
-</body>
-</html>
