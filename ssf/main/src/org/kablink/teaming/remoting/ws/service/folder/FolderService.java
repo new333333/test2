@@ -71,6 +71,8 @@ public interface FolderService {
 	
 	public long folder_addEntry(String accessToken, FolderEntry entry, String attachedFileName);
 	
+	public void folder_addEntryAsMime(String accessToken, long binderId, byte[] mimeData);
+	
 	public Long folder_addMicroBlog(String accessToken, String text);
 	
 	public void folder_modifyEntry(String accessToken, FolderEntry entry);
