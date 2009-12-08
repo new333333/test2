@@ -2113,13 +2113,17 @@ function ss_ShowHideDivXY(divName, x, y) {
         ss_lastDivBeingShown = divName;
         if (x != null && y != null && x != '' && y != '') ss_positionDiv(ss_divBeingShown, x, y);
         ss_showDiv(ss_divBeingShown)
+        ss_hideSpannedAreas();
     }
 }
 
 function ss_hideDivToBeHidden(i) {
 	if (ss_divToBeHidden[i] != '') {
-		if (ss_divToBeHidden[i] != ss_divBeingShown) ss_hideDiv(ss_divToBeHidden[i]);
+		if (ss_divToBeHidden[i] != ss_divBeingShown) {
+			ss_hideDiv(ss_divToBeHidden[i]);
+		}
 	    ss_divToBeHidden[i] = '';
+	    ss_showSpannedAreas();
 	}
 }
 
@@ -2472,12 +2476,12 @@ function spannedAreaObj(name) {
     this.name = name;
     this.showArgumentString = '';
     this.hideArgumentString = '';
+    this.setHideRoutine = m_setHideRoutine;
     this.showRoutine = null;
-    this.show = m_showSpannedArea;
+    this.show = function() {ss_showDiv(this.name);}
     this.setShowRoutine = m_setShowRoutine;
     this.hideRoutine = null;
-    this.hide = m_hideSpannedArea;
-    this.setHideRoutine = m_setHideRoutine;
+    this.hide = function() {ss_hideDiv(this.name);}
 }
 function m_setShowRoutine(showRoutine) {
     this.showRoutine = showRoutine;
@@ -2515,14 +2519,23 @@ function ss_toggleSpannedAreas(spanName,newValue) {
 function ss_hideSpannedAreas() {
     //Hide any form elements that may be visible
     for (var i = 0; i < ss_spannedAreasList.length; i++) {
-        ss_spannedAreasList[i].hide()
+        var divObj = self.document.getElementById(ss_spannedAreasList[i].name);
+        if (divObj != null) {
+        	divObj.style.visibility = "hidden";
+        	divObj.style.display = "none";
+        }
     }
 }
 
 function ss_showSpannedAreas() {
     //Show any form elements that should be returned to the visible state
+    if (typeof ss_spannedAreasList == 'undefined' || ss_spannedAreasList == null) return;
     for (var i = 0; i < ss_spannedAreasList.length; i++) {
-        ss_spannedAreasList[i].show()
+        var divObj = self.document.getElementById(ss_spannedAreasList[i].name);
+        if (divObj != null) {
+        	divObj.style.display = "block";
+        	divObj.style.visibility = "visible";
+        }
     }
 }
 

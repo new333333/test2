@@ -683,6 +683,7 @@ public class MarkupUtil {
 				    		 */
 				    		Integer id = ++youtubeDivId;
 				    		if (youtubeDivId > 1000000) youtubeDivId = 0;
+				    		titleLink.append("<div id=\"ss_videoDiv"+id.toString()+"\">\n");
 				    		titleLink.append("<div id=\"ytapiplayer"+id.toString()+"\">\n");
 				    		titleLink.append("");
 				    		titleLink.append("</div>\n");
@@ -691,6 +692,7 @@ public class MarkupUtil {
 				    		titleLink.append(builder.getImagesRootUrl());
 				    		titleLink.append("pics/yt_powered_by_black.png").append("\"/></a>\n");
 				    		titleLink.append("</div>\n");
+				    		titleLink.append("</div>\n");
 				    		titleLink.append("<script type=\"text/javascript\">\n");
 				    		titleLink.append("var params = { allowScriptAccess: \"always\" };\n");
 				    		titleLink.append("var atts = { id: \"myytplayer\" };\n");
@@ -698,6 +700,7 @@ public class MarkupUtil {
 				    		titleLink.append("?enablejsapi=1&playerapiid=ytplayer\",");
 				    		titleLink.append(" \"ytapiplayer"+id.toString()+"\", \"").append(s_width).append("\", ");
 				    		titleLink.append("\"").append(s_height).append("\", \"8\", null, null, params, atts);\n");
+				    		titleLink.append("ss_createSpannedAreaObj(\"ss_videoDiv"+id.toString()+"\");\n");
 				    		titleLink.append("</script>\n");
 			    		}
 			    	} else {

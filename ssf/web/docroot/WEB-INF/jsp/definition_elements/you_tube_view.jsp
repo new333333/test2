@@ -42,7 +42,14 @@
 <%
 	if (is_youTubeUrl) {
 %>
-<div style="padding:4px 10px 20px 10px;">
+<c:if test="${empty ss_youTubeDivNum}">
+<c:set var="ss_youTubeDivNum" value="0" scope="request"/>
+</c:if>
+<c:set var="ss_youTubeDivNum" value="${ss_youTubeDivNum + 1}" scope="request"/>
+<script type="text/javascript">
+ss_createSpannedAreaObj("ss_youTubeDiv${ss_youTubeDivNum}");
+</script>"
+<div id="ss_youTubeDiv${ss_youTubeDivNum}" style="padding:4px 10px 20px 10px;">
   <object width="425" height="344"><param name="movie"
     value="${ss_youTubeUrl}"></param><param
     name="allowFullScreen" value="true"></param><param name="allowscriptaccess"
