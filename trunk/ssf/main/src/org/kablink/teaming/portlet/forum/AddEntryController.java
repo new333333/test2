@@ -86,6 +86,7 @@ import org.kablink.teaming.web.tree.FolderConfigHelper;
 import org.kablink.teaming.web.tree.WorkspaceConfigHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
@@ -96,6 +97,7 @@ import org.kablink.util.cal.Duration;
  *
  */
 public class AddEntryController extends SAbstractController {
+	@SuppressWarnings("unchecked")
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
@@ -112,6 +114,7 @@ public class AddEntryController extends SAbstractController {
 			Map fileMap=null;
 			if (request instanceof MultipartFileSupport) {
 				fileMap = ((MultipartFileSupport) request).getFileMap();
+				formData = MiscUtil.defaultTitleToFilename(fileMap, formData);
 			} else {
 				fileMap = new HashMap();
 			}

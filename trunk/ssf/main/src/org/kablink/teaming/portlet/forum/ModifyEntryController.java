@@ -73,6 +73,7 @@ import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebHelper;
@@ -83,6 +84,7 @@ import org.kablink.util.Validator;
  *
  */
 public class ModifyEntryController extends SAbstractController {
+	@SuppressWarnings("unchecked")
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
@@ -137,6 +139,7 @@ public class ModifyEntryController extends SAbstractController {
 				Map fileMap=null;
 				if (request instanceof MultipartFileSupport) {
 					fileMap = ((MultipartFileSupport) request).getFileMap();
+					formData = MiscUtil.defaultTitleToFilename(fileMap, formData);
 				} else {
 					fileMap = new HashMap();
 				}

@@ -149,6 +149,7 @@ public class WebKeys {
     public static final String URL_ENTRY_PAGE_TITLE="page_title";
     public static final String URL_ENTRY_TITLE="title";
     public static final String URL_ENTRY_TYPE="entryType";
+    public static final String URL_ENTRY_UPLOAD="upload";
     public static final String URL_ENTRY_VIEW_STYLE="entryViewStyle";
     public static final String URL_ENTRY_VIEW_STYLE2="entryViewStyle2";
     public static final String URL_ENTRY_VIEW_STYLE_FULL="full";

@@ -35,6 +35,7 @@ package org.kablink.teaming.web.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.web.WebKeys;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -261,4 +263,41 @@ public final class MiscUtil
 		// values from the request property.  Return it.
 		return userIds;
 	}//end splitUserIds
+
+	/**
+	 * Looks in formData for a title.  If one is found that's empty AND
+	 * fileMap contains an uploaded file specification, the filename is
+	 * used as the title.
+	 * 
+	 * @param fileMap
+	 * @param formData
+	 */
+	@SuppressWarnings("unchecked")
+	public static Map defaultTitleToFilename(Map fileMap, Map formData) {
+		// Did we get the maps we need to work with?
+		if ((null != fileMap) && (null != formData)) {
+			// Yes!  Did we find an empty title in the form data?
+			Object titleO = formData.get(WebKeys.URL_ENTRY_TITLE);
+			String title = null;
+			if ((null != titleO) && (titleO instanceof String[])) {
+				String[] titleA = ((String[]) titleO);
+				if (0 < titleA.length) {
+					title = titleA[0];
+				}
+			}
+			if ((null != title) && (0 == title.length())) {
+				// Yes!  Do we have an uploaded file?
+		    	MultipartFile myFile = ((MultipartFile) fileMap.get(WebKeys.URL_ENTRY_UPLOAD));
+		    	String fileName = ((null == myFile) ? null : myFile.getOriginalFilename());
+		    	if ((null != fileName) && (0 < fileName.length())) {
+		    		// Yes!  Use the upload file's name as the title.
+		    		HashMap formDataCopy = new HashMap();
+		    		formDataCopy.putAll(formData);
+		    		formData = formDataCopy;
+					formData.put(WebKeys.URL_ENTRY_TITLE, new String[]{fileName});
+		    	}
+			}
+		}
+		return formData;
+	}// end defaultTitleToFilename()
 }// end MiscUtil
