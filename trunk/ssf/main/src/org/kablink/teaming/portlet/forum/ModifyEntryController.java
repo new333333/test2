@@ -86,16 +86,15 @@ public class ModifyEntryController extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
-		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.OPERATION_DELETE) && WebHelper.isMethodPost(request)) {
-			Binder binder = getBinderModule().getBinder(folderId);
 			FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
 			if (!entry.isTop()) entry = entry.getTopEntry();
 			else entry = null;
 			String purgeImmediately = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PURGE_IMMEDIATELY, "false");
-			if (binder.isMirrored() || Boolean.parseBoolean(purgeImmediately)) {
+			if (entry.getParentFolder().isMirrored() || Boolean.parseBoolean(purgeImmediately)) {
 				getFolderModule().deleteEntry(folderId, entryId);
 			}
 			else {
@@ -300,7 +299,7 @@ public class ModifyEntryController extends SAbstractController {
 	
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 		RenderResponse response) throws Exception {
-		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
 
 		Map model = new HashMap();	
 		BinderHelper.setupStandardBeans(this, request, response, model, folderId);
