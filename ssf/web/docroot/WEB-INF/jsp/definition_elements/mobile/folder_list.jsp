@@ -55,56 +55,13 @@
   </div>
   </c:if>
 
+<c:if test="${ssDefinitionFamily != 'calendar'}">
   <div class="folders">
     <div class="folder-head">
        <ssf:nlt tag="mobile.entries"/>
     </div>
     
-
-	<div class="folder-content" width="100%">
-	  <div class="entry">
-		<table cellspacing="0" cellpadding="0" width="95%">
-		<tr>
-		<td valign="middle" width="10%"> </td>
-		<td valign="middle" width="80%" align="center" nowrap>&nbsp;</td>
-		
-		<td valign="middle" width="10%" nowrap>
-	<c:if test="${ssDefinitionFamily != 'calendar'}">
-		<table cellspacing="0" cellpadding="0"><tr>
-		<td>
-		<c:if test="${!empty ss_prevPage}">
-	    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-		  folderId="${ssBinder.id}" 
-		  action="__ajax_mobile" 
-		  operation="mobile_show_folder" 
-		  actionUrl="false" ><ssf:param name="pageNumber" value="${ss_prevPage}"/></ssf:url>"
-	    ><img border="0" src="<html:rootPath/>images/mobile/nl_left_16.gif"/></a>
-		</c:if>
-		<c:if test="${empty ss_prevPage}">
-	  	<img border="0" src="<html:rootPath/>images/mobile/nl_left_dis_20.png"
-	  		<ssf:alt tag=""/> />
-		</c:if>
-		</td><td style="padding-left:20px;">
-		<c:if test="${!empty ss_nextPage}">
-	  	<a href="<ssf:url adapter="true" portletName="ss_forum" 
-			folderId="${ssBinder.id}" 
-			action="__ajax_mobile" 
-			operation="mobile_show_folder" 
-			actionUrl="false" ><ssf:param name="pageNumber" value="${ss_nextPage}"/></ssf:url>"
-	  	><img border="0" src="<html:rootPath/>images/mobile/nl_right_16.gif"/></a>
-		</c:if>
-		<c:if test="${empty ss_nextPage}">
-	  		<img border="0" src="<html:rootPath/>images/mobile/nl_right_dis_20.png"
-	  		<ssf:alt tag=""/> />
-		</c:if>
-		</tr></table>
-	</c:if>
-
-		</td></tr>
-		</table>
-	  </div>
-
-	<c:if test="${ssDefinitionFamily != 'calendar'}">
+	  <c:if test="${!empty ssFolderEntries}">
 	    <c:forEach var="entryFol" items="${ssFolderEntries}">
 	      <jsp:useBean id="entryFol" type="java.util.Map" />
 			<div class="entry">
@@ -154,13 +111,19 @@
 		
 	    	</div>
 		</c:forEach>
-		<c:if test="${empty ssFolderEntries}">
-		  <div style="padding:20px;"><ssf:nlt tag="folder.NoResults"/></div>
-		</c:if>
-	</c:if>
-	<c:if test="${ssDefinitionFamily == 'calendar'}">
-		<%@ include file="/WEB-INF/jsp/mobile/show_calendar.jsp" %>
-	</c:if>
-		
+	    <div class="entry-actions">
+	      <%@ include file="/WEB-INF/jsp/mobile/search_results_next_prev.jsp" %>
+	    </div>
+	  </c:if>
+	  <c:if test="${empty ssFolderEntries}">
+		<div style="padding:20px;"><ssf:nlt tag="folder.NoResults"/></div>
+	  </c:if>
+
 	</div>
+  </div>
+</c:if>
+<c:if test="${ssDefinitionFamily == 'calendar'}">
+	<%@ include file="/WEB-INF/jsp/mobile/show_calendar.jsp" %>
+</c:if>
+		
 <c:set var="ss_mobileBinderListShown" value="true" scope="request"/>

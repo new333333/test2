@@ -99,20 +99,7 @@ Date nextDate = calendarNextDate.getTime();
  int iTotalweeks=cal.get(Calendar.WEEK_OF_MONTH);
 %>
 
-<div style="text-align: center; padding: 5px;">
-	<a href="<ssf:url adapter="true" portletName="ss_forum" 
-          folderId="${ssBinder.id}" action="__ajax_mobile" 
-          operation="mobile_show_folder" actionUrl="false">
-			<ssf:param name="day" value="<%= strTodayDay %>" />
-			<ssf:param name="dayOfMonth" value="<%= strTodayDay %>" />
-			<ssf:param name="month" value="<%= strTodayMonth %>" />
-			<ssf:param name="year" value="<%= strTodayYear %>" />
-			<ssf:param name="ssGridType" value="day" />
-			<ssf:param name="ssGridSize" value="1" />
-		  </ssf:url>">
-		<span class="ss_mobile_small"><ssf:nlt tag="mobile.calendar.showToday"/></span>
-	</a>
-</div>
+<div class="folders">
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr class="ss_mobile_calendar_monthyear">
@@ -349,3 +336,4 @@ Date nextDate = calendarNextDate.getTime();
 	    <span><ssf:nlt tag="folder.NoResults"/></span>
 	  </div>
 	</c:if>
+</div>
