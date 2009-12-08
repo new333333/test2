@@ -196,6 +196,7 @@ public class WebKeys {
 	public static final String URL_SEARCH_NODE_NAME = "searchNodeName";
 	public static final String URL_SECTION_PLACEHOLDER = "ss_sectionPlaceholder";
 	public static final String URL_SECTION_TO_EDIT = "_section";
+	public static final String URL_SEND_MAIL_LOCATION = "sendMailLocation";
     public static final String URL_SHOW_TRASH="showTrash";
 	public static final String URL_START_DATE = "ss_startDate";
 	public static final String URL_STATUS_TICKET_ID = "ss_statusId";

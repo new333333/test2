@@ -35,7 +35,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <ssf:ifadapter>
-<body class="tundra">
+<body class="tundra" onload="javascript:saveLocation();">
 </ssf:ifadapter>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
@@ -43,7 +43,11 @@
 	if (width < 700) width=700;
 	var height = ss_getWindowHeight();
 	if (height < 600) height=600;
-self.window.resizeTo(width, height);
+	self.window.resizeTo(width, height);
+
+	function saveLocation() {
+		document.getElementById("sendMailLocation").value = self.window.location;
+	}
 </script>
 <div class="ss_style ss_portlet" style="padding:10px;">
   
@@ -51,6 +55,9 @@ self.window.resizeTo(width, height);
 
 <form class="ss_style ss_form" method="post" 
   onSubmit="return ss_onSubmit(this);" name="${renderResponse.namespace}fm">
+
+<input type="hidden" id="sendMailLocation" name="sendMailLocation" value=""                   />
+<input type="hidden" id="ssUsersIdsToAdd"  name="ssUsersIdsToAdd"  value="${ssUsersIdsToAdd}" />
 
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="sendMail.recipients" /></legend>
