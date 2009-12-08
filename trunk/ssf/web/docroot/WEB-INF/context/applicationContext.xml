@@ -1140,6 +1140,7 @@ text/calendar											  ics
 	<bean id="folderService" parent="wsProxyTemplate">
 		<property name="target">
 			<bean class="org.kablink.teaming.remoting.ws.service.folder.attachments.FolderServiceImpl" parent="dependOnAllModulesTemplate">
+				<property name="processorManager"><ref local="modelProcessorManager"/></property>
 			</bean>
 		</property>
 		<property name="proxyInterfaces">

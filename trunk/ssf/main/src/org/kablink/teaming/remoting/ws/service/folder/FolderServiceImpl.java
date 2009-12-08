@@ -37,6 +37,7 @@ import static org.kablink.util.search.Restrictions.eq;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -45,6 +46,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
 
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
@@ -57,8 +64,10 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoFileByTheNameException;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
+import org.kablink.teaming.modelprocessor.ProcessorManager;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.mail.EmailPoster;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.remoting.RemotingException;
@@ -79,10 +88,16 @@ import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
 
+import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
+
 
 public class FolderServiceImpl extends BaseService implements FolderService, FolderServiceInternal {
 
-	
+	protected ProcessorManager processorManager;
+	public void setProcessorManager(ProcessorManager processorManager) {
+		this.processorManager = processorManager;
+	}
+
 	public void folder_uploadFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName) {
 		throw new UnsupportedOperationException();
 	}
@@ -362,6 +377,25 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		HashMap options = new HashMap();
  		getTimestamps(options, entry);
 		return addFolderEntry(accessToken, entry, attachedFileName, options);	
+	}
+	@SuppressWarnings("unchecked")
+	public void folder_addEntryAsMime(String accessToken, long binderId, byte[] mimeData) {
+		try {
+			Session session = Session.getDefaultInstance(new Properties());
+			org.kablink.teaming.domain.Binder binder = getBinderModule().getBinder(new Long(binderId));
+			InputStream data = new ByteArrayInputStream(mimeData);
+			MimeMessage msgs[] = new MimeMessage[1];
+			msgs[0] = new MimeMessage(session, data);
+			EmailPoster processor = (EmailPoster)processorManager.getProcessor(binder,EmailPoster.PROCESSOR_KEY);
+			List errors = processor.postMessages((Folder)binder, "", msgs, session);
+			if(errors.size() > 0) {
+				Message m = (Message) errors.get(0);
+				throw new RemotingException(m.getSubject());
+			}
+		}
+		catch(MessagingException e) {
+			throw new RemotingException(e);
+		}			
 	}
 	@SuppressWarnings("unchecked")
 	protected long addFolderEntry(String accessToken, org.kablink.teaming.remoting.ws.model.FolderEntry entry, String attachedFileName, Map options) {

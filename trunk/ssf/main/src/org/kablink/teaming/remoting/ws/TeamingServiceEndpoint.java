@@ -350,6 +350,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getFolderService().folder_addEntry(accessToken, entry, attachedFileName);
 	}
 	
+	public void folder_addEntryAsMime(String accessToken, long binderId, byte[] mimeData) {
+		getFolderService().folder_addEntryAsMime(accessToken, binderId, mimeData);
+	}
+	
 	public Long folder_addMicroBlog(String accessToken, String text) {
 		return getFolderService().folder_addMicroBlog(accessToken, text);
 	}
