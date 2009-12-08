@@ -78,6 +78,9 @@ function ss_logoff_from_sso(s) {
 </script>
 
 <div id="actions">
+ <table cellspacing="0" cellpadding="0" width="100%">
+ <tr>
+ <td valign="top">
   <a class="hierarchy-a actionimg" href="javascript: ;" onClick="ss_showMenu('hierarchy-dialog');return false;">
     <img src="<html:rootPath/>images/mobile/nl_browse_hierarchy_20.png" border="0" align="absmiddle"/>
   </a>
@@ -113,6 +116,20 @@ function ss_logoff_from_sso(s) {
     <a class="actions-a" href="javascript: ;" 
       onClick="ss_showMenu('actions-menu');return false;"><ssf:nlt tag="mobile.actions"/></a>
   </c:if>  
+ </td>
+ <td valign="top" align="right">
+   <c:if test="${ss_showEntryNextPrev}">
+     <%@ include file="/WEB-INF/jsp/mobile/entry_next_prev.jsp" %>
+   </c:if>
+   <c:if test="${ss_showSearchResultsNextPrev}">
+     <%@ include file="/WEB-INF/jsp/mobile/search_results_next_prev.jsp" %>
+   </c:if>
+   <c:if test="${ss_showWhatsNewNextPrev}">
+     <%@ include file="/WEB-INF/jsp/mobile/whats_new_next_prev.jsp" %>
+   </c:if>
+ </td>
+ </tr>
+ </table>
 </div>
 
 <%@ include file="/WEB-INF/jsp/mobile/search.jsp" %>

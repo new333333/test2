@@ -53,6 +53,7 @@
 
 <div class="content">
 
+<c:set var="ss_showWhatsNewNextPrev" value="true" scope="request" />
 <%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
 
   <div class="folders">
@@ -71,42 +72,6 @@
 	      </ssf:param>
 	    </ssf:nlt>
 	   </span>      
-	  </div>
-
-
-	  <div class="entry-actions">
-		<c:if test="${ss_pageNumber > '0'}">
-			<a href="<ssf:url 
-			  action="__ajax_mobile" 
-			  binderId="${ssBinder.id}"
-			  operation="mobile_whats_new"><ssf:param
-			  name="type" value="${ss_type}"/><ssf:param
-			  name="pageNumber" value="${ss_pageNumber - 1}"/><ssf:param
-			  name="namespace" value="${ss_namespace}"/></ssf:url>" 
-			><img border="0" src="<html:rootPath/>images/mobile/nl_left_20.png" 
-			    title="<ssf:nlt tag="general.previousPage"/>"
-			    <ssf:alt tag=""/> /></a>
-		</c:if>
-		<c:if test="${empty ss_pageNumber || ss_pageNumber <= '0'}">
-		  <img src="<html:rootPath/>images/mobile/nl_left_dis_20.png"
-		  	<ssf:alt tag=""/> />
-		</c:if>
-		<c:if test="${!empty ss_whatsNewBinder}">
-		  <a href="<ssf:url 
-			action="__ajax_mobile" 
-			binderId="${ssBinder.id}"
-			operation="mobile_whats_new"><ssf:param
-			name="type" value="${ss_type}"/><ssf:param
-			name="pageNumber" value="${ss_pageNumber + 1}"/><ssf:param
-			name="namespace" value="${ss_namespace}"/></ssf:url>" 
-		  ><img border="0" src="<html:rootPath/>images/mobile/nl_right_20.png" 
-			  title="<ssf:nlt tag="general.nextPage"/>"
-			  <ssf:alt tag=""/> /></a>
-		</c:if>
-		<c:if test="${empty ss_whatsNewBinder}">
-			<img src="<html:rootPath/>images/mobile/nl_right_dis_20.png"
-			<ssf:alt tag=""/> />
-		</c:if>
 	  </div>
   
 		<c:if test="${empty ss_whatsNewBinder && ss_pageNumber > '0'}">
@@ -179,38 +144,7 @@
         </c:forEach>
   
 	  <div class="entry-actions">
-		<c:if test="${ss_pageNumber > '0'}">
-			<a href="<ssf:url 
-			  action="__ajax_mobile" 
-			  binderId="${ssBinder.id}"
-			  operation="mobile_whats_new"><ssf:param
-			  name="type" value="${ss_type}"/><ssf:param
-			  name="pageNumber" value="${ss_pageNumber - 1}"/><ssf:param
-			  name="namespace" value="${ss_namespace}"/></ssf:url>" 
-			><img border="0" src="<html:rootPath/>images/mobile/nl_left_20.png" 
-			    title="<ssf:nlt tag="general.previousPage"/>"
-			    <ssf:alt tag=""/> /></a>
-		</c:if>
-		<c:if test="${empty ss_pageNumber || ss_pageNumber <= '0'}">
-		  <img src="<html:rootPath/>images/mobile/nl_left_dis_20.png"
-		  	<ssf:alt tag=""/> />
-		</c:if>
-		<c:if test="${!empty ss_whatsNewBinder}">
-		  <a href="<ssf:url 
-			action="__ajax_mobile" 
-			binderId="${ssBinder.id}"
-			operation="mobile_whats_new"><ssf:param
-			name="type" value="${ss_type}"/><ssf:param
-			name="pageNumber" value="${ss_pageNumber + 1}"/><ssf:param
-			name="namespace" value="${ss_namespace}"/></ssf:url>" 
-		  ><img border="0" src="<html:rootPath/>images/mobile/nl_right_20.png" 
-			  title="<ssf:nlt tag="general.nextPage"/>"
-			  <ssf:alt tag=""/> /></a>
-		</c:if>
-		<c:if test="${empty ss_whatsNewBinder}">
-			<img src="<html:rootPath/>images/mobile/nl_right_dis_20.png"
-			<ssf:alt tag=""/> />
-		</c:if>
+	    <%@ include file="/WEB-INF/jsp/mobile/whats_new_next_prev.jsp" %>
 	  </div>
     </div>
   </div>  

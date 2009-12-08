@@ -32,38 +32,40 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:if test="${!empty ssEntry.title}">
-  <c:set var="ss_windowTitle" value="${ssEntry.title}" scope="request"/>
-</c:if>
-<%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-
-<c:set var="ss_pageTitle" value="${ssBinder.title}" scope="request"/>
-<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
-
-<div class="content">
-
-<c:set var="ss_hideMiniBlog" value="true" scope="request" />
-<c:set var="ss_showEntryNextPrev" value="true" scope="request" />
-<%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
-
-	<div class="folders">
-		<div class="folder-content">
-
-		<c:if test="${!empty ssEntry}">
-		<div class="entry">
-			<div>
-				<c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
-			  	<ssf:displayConfiguration
-					configDefinition="${ssConfigDefinition}" 
-					configElement="${ssConfigElement}" 
-					configJspStyle="mobile" 
-					entry="${ssEntry}" />
-			</div>
-		</div>
-	</c:if> 
-  </div>	
-</div>
-
-</body>
-</html>
+	<c:if test="${ss_pageNumber > '0'}">
+		<a href="<ssf:url 
+		  action="__ajax_mobile" 
+		  binderId="${ssBinder.id}"
+		  operation="mobile_whats_new"><ssf:param
+		  name="type" value="${ss_type}"/><ssf:param
+		  name="pageNumber" value="${ss_pageNumber - 1}"/><ssf:param
+		  name="namespace" value="${ss_namespace}"/></ssf:url>" 
+		><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_left_20.png" 
+		    title="<ssf:nlt tag="general.previousPage"/>"
+		    <ssf:alt tag=""/> /></a>
+	</c:if>
+	<c:if test="${empty ss_pageNumber || ss_pageNumber <= '0'}">
+	  <a href="javascript: ;" onClick="return false;" 
+	  ><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_left_dis_20.png"
+	  	<ssf:alt tag=""/> /></a>
+	</c:if>
+	<c:if test="${!empty ss_whatsNewBinder}">
+	  <a href="<ssf:url 
+		action="__ajax_mobile" 
+		binderId="${ssBinder.id}"
+		operation="mobile_whats_new"><ssf:param
+		name="type" value="${ss_type}"/><ssf:param
+		name="pageNumber" value="${ss_pageNumber + 1}"/><ssf:param
+		name="namespace" value="${ss_namespace}"/></ssf:url>" 
+	  ><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_right_20.png" 
+		  title="<ssf:nlt tag="general.nextPage"/>"
+		  <ssf:alt tag=""/> /></a>
+	</c:if>
+	<c:if test="${empty ss_whatsNewBinder}">
+		<a href="javascript: ;" onClick="return false;" 
+	    ><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_right_dis_20.png"
+		<ssf:alt tag=""/> /></a>
+	</c:if>
+  

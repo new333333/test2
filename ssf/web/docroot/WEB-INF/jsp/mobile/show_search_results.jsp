@@ -46,6 +46,7 @@
 
 <div class="content">
 
+<c:set var="ss_showSearchResultsNextPrev" value="true" scope="request" />
 <%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
 
   <div class="folders">
@@ -77,46 +78,6 @@
 	</div>
 
 <c:if test="${!empty ssFolderEntries}">
-  	<div align="right">
-	  <div class="entry-actions">
-			<c:if test="${!empty ss_prevPage}">
-			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-				folderId="${ssBinder.id}" 
-				action="__ajax_mobile" 
-				operation="mobile_show_search_results" 
-				actionUrl="false" ><ssf:param 
-				name="quickSearch" value="true"/><ssf:param 
-				name="searchText" value="${ss_searchText}"/><ssf:param 
-				name="scope" value="${ss_searchScope}"/><ssf:param 
-				name="tabId" value="${ss_tab_id}"/><ssf:param 
-				name="pageNumber" value="${ss_pageNumber-1}"/><ssf:param 
-				name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
-			  ><img border="0" src="<html:rootPath/>images/mobile/nl_left_20.png"/></a>
-			</c:if>
-			<c:if test="${empty ss_prevPage}">
-			  <img border="0" src="<html:rootPath/>images/mobile/nl_left_dis_20.png"/>
-			</c:if>
-
-			<c:if test="${!empty ss_nextPage}">
-			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-				folderId="${ssBinder.id}" 
-				action="__ajax_mobile" 
-				operation="mobile_show_search_results" 
-				actionUrl="false" ><ssf:param 
-				name="quickSearch" value="true"/><ssf:param 
-				name="searchText" value="${ss_searchText}"/><ssf:param 
-				name="scope" value="${ss_searchScope}"/><ssf:param 
-				name="tabId" value="${ss_tab_id}"/><ssf:param 
-				name="pageNumber" value="${ss_pageNumber+1}"/><ssf:param 
-				name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
-			  ><img border="0" src="<html:rootPath/>images/mobile/nl_right_20.png"/></a>
-			</c:if>
-			<c:if test="${empty ss_nextPage}">
-			  <img border="0" src="<html:rootPath/>images/mobile/nl_right_dis_20.png"/>
-			</c:if>
-	  </div>
-	</div>
-
 		<c:forEach var="entry" items="${ssFolderEntries}" varStatus="status">
 			<jsp:useBean id="entry" type="java.util.HashMap" />
 			<%
@@ -311,39 +272,7 @@
 		</c:forEach>
 
   <div class="entry-actions">
-		<c:if test="${!empty ss_prevPage}">
-		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-			folderId="${ssBinder.id}" 
-			action="__ajax_mobile" 
-			operation="mobile_show_search_results" 
-			actionUrl="false" ><ssf:param 
-			name="quickSearch" value="true"/><ssf:param 
-			name="searchText" value="${ss_searchText}"/><ssf:param 
-			name="tabId" value="${ss_tab_id}"/><ssf:param 
-			name="pageNumber" value="${ss_pageNumber-1}"/><ssf:param 
-			name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
-		  ><img border="0" src="<html:rootPath/>images/mobile/nl_left_20.png"/></a>
-		</c:if>
-		<c:if test="${empty ss_prevPage}">
-		  <img border="0" src="<html:rootPath/>images/mobile/nl_left_dis_20.png"/>
-		</c:if>
-
-		<c:if test="${!empty ss_nextPage}">
-		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-			folderId="${ssBinder.id}" 
-			action="__ajax_mobile" 
-			operation="mobile_show_search_results" 
-			actionUrl="false" ><ssf:param 
-			name="quickSearch" value="true"/><ssf:param 
-			name="searchText" value="${ss_searchText}"/><ssf:param 
-			name="tabId" value="${ss_tab_id}"/><ssf:param 
-			name="pageNumber" value="${ss_pageNumber+1}"/><ssf:param 
-			name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
-		  ><img border="0" src="<html:rootPath/>images/mobile/nl_right_20.png"/></a>
-		</c:if>
-		<c:if test="${empty ss_nextPage}">
-		  <img border="0" src="<html:rootPath/>images/mobile/nl_right_dis_20.png"/>
-		</c:if>
+    <%@ include file="/WEB-INF/jsp/mobile/search_results_next_prev.jsp" %>
   </div>
 </c:if>
 
