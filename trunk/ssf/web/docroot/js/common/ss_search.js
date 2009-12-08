@@ -1035,7 +1035,7 @@ function ss_saveSearchQuery(inputId, errMsgBoxId) {
 	}
 	var queryName = inputObj.value;
 	if (typeof queryName == "undefined" || !queryName || ss_trim(queryName) == "" || 
-			queryName == window.ss_searchResultSavedSearchInputLegend) {
+			queryName == ss_searchResultSavedSearchInputLegend) {
 		var errMsgBoxObj = document.getElementById(errMsgBoxId);		
 		errMsgBoxObj.innerHTML = ss_noNameMsg;
 		ss_showDiv(errMsgBoxId);
