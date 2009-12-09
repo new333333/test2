@@ -679,6 +679,15 @@ div.ss_mobile_calendar_no_entries_content span {
 	font-size: .9em;
 }
 
+.ss_eventdateinput td {
+	padding: 2px 0 5px;
+	border-top: 1px solid #bbbbb6;
+	}
+.ss_eventdateinput2 td {
+	padding: 2px 0 5px;
+	border-bottom: 1px solid #bbbbb6;
+	}
+
  /*  Helpers */
 	
 .background_light {
