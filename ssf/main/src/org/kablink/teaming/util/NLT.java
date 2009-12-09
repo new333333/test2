@@ -219,10 +219,10 @@ public class NLT implements ApplicationContextAware {
 		Set<Locale> ids = getLocales();
 		TreeMap<String,Locale> map = new TreeMap(new StringComparator(user.getLocale())); //sort
 		for (Locale lc : ids) {
-			map.put(lc.getDisplayName(lc) + " / " + lc.getDisplayName(currentUser.getLocale()), lc);
+			map.put(lc.getDisplayName(lc) + "   [" + lc.getDisplayName(currentUser.getLocale()) + "]", lc);
 		}
 		//make sure current users Locale appears
-		map.put(user.getLocale().getDisplayName(user.getLocale()) + " / " + user.getLocale().getDisplayName(currentUser.getLocale()), user.getLocale());
+		map.put(user.getLocale().getDisplayName(user.getLocale()) + "   [" + user.getLocale().getDisplayName(currentUser.getLocale()) + "]", user.getLocale());
 		
 		return map;
 	}
