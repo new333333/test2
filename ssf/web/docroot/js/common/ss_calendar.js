@@ -555,6 +555,8 @@ function ss_calendarEngine(
 	
 	var ss_cal_Grid = {
 
+	    onClickSetForToday : false,	// This variable tells us whether we have set the onclick event handler on today.
+	    
 	    // Some defaults
 	    gridSize: 7,
 	    gridIncr: 7,
@@ -927,12 +929,33 @@ function ss_calendarEngine(
 		    url += "&month=" + date.getMonth();
 		    url += "&dayOfMonth=" + date.getDate();
             (function() {
-				dojo.connect(allDayBadge, "onclick", function(evt) {
-					if (haveAddEntryURL) {		
-				    	ss_openUrlInPortlet(url, true);
-					}
-					return false;
-       			});
+            	var setOnclickHandler;
+            	
+            	setOnclickHandler = true;
+        		// Have we already set the onclick handler for the "today" object?
+            	if ( isToday && ss_cal_Grid.onClickSetForToday )
+            	{
+           			// Yes, we don't need to set the onclick handler again.
+           			setOnclickHandler = false;
+            	}
+            	
+            	// Do we need to set the onclick handler?
+            	if ( setOnclickHandler )
+            	{
+            		// Yes
+            		if ( isToday )
+            		{
+            			// Remember that we have set the onclick handler for the "today" object so we don't do it again.
+            			ss_cal_Grid.onClickSetForToday = true;
+            		}
+            		
+            		dojo.connect(allDayBadge, "onclick", function(evt) {
+            			if (haveAddEntryURL) {		
+            				ss_openUrlInPortlet(url, true);
+            			}
+            			return false;
+            		});
+            	}
             })();							
 
 
