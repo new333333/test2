@@ -58,6 +58,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -384,7 +385,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 			MimeMessage msgs[] = new MimeMessage[1];
 			msgs[0] = new MimeMessage(session, data);
 			EmailPoster processor = (EmailPoster)processorManager.getProcessor(binder,EmailPoster.PROCESSOR_KEY);
-			List errors = processor.postMessages((Folder)binder, "", msgs, session);
+			List errors = processor.postMessages((Folder)binder, "", msgs, session, RequestContextHolder.getRequestContext().getUser());
 			if(errors.size() > 0) {
 				Message m = (Message) errors.get(0);
 				throw new RemotingException(m.getSubject());
