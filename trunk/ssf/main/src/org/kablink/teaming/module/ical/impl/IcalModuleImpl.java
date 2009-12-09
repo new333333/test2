@@ -49,7 +49,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.data.UnfoldingReader;
 import net.fortuna.ical4j.model.Calendar;
@@ -90,6 +89,7 @@ import net.fortuna.ical4j.model.property.Transp;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Version;
 import net.fortuna.ical4j.model.property.XProperty;
+import net.fortuna.ical4j.util.CompatibilityHints;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -110,6 +110,7 @@ import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.ical.util.ICalUtils;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionUtils;
@@ -1520,7 +1521,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		Event event = null;
 		Map<String, TimeZone> timeZones = new HashMap();
 		try {
-			Calendar cal = (new CalendarBuilder()).build(new UnfoldingReader(icalData));
+			Calendar cal = ICalUtils.getCalendarBuilder().build(new UnfoldingReader(icalData));
 			for(Object comp : cal.getComponents("VTIMEZONE")) {
 				VTimeZone timeZoneComponent = (VTimeZone) comp;
 				timeZones.put(timeZoneComponent.getTimeZoneId().getValue(), new TimeZone(timeZoneComponent));
