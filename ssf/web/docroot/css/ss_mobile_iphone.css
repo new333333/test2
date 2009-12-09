@@ -172,13 +172,16 @@ span.pad-left20 select {
 #micro-blog-text {
 	width: 250px;h
 	}
-	
 .entry-actions {
 	text-align: right; 
 	background-color: #eceeec;
+	padding: 5px;
+	padding-left: 10px;
+    }
+.entry-actions img{
 	padding-right: 15px;
     }
-.entry-action-buttons {
+.entry-action-buttons2 {
 	padding-top: 5px;
 	padding-left: 10px;
 	}
@@ -258,7 +261,7 @@ span.pad-left20 select {
 
 .masthead-title {
 	position:relative;
-	top:-6px;
+	top:-3px;
 	font-size: 1.0em;
 	}
 .masthead-title2 {
@@ -328,7 +331,7 @@ span.pad-left20 select {
 	font-size: 18px;
 	line-height: 19px;
 	font-weight: bold;
-	padding-top: 8px;
+	padding-top: 6px;
 	padding-right: 34px;
 	padding-left: 15px;
 	}
