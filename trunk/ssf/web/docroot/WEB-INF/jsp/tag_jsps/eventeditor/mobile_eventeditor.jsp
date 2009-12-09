@@ -60,15 +60,18 @@
 </c:choose>
 
 <div class="ss_mobile_form_element">
-	<table>
-		<tr>
-			<td valign="top"><ssf:nlt tag="event.start" />:</td>
-			<td valign="top">
+	<table cellpadding="0" cellspacing="0">
+		<tr class="ss_eventdateinput">
+			<td><ssf:nlt tag="event.start" />:</td>
+			<td colspan="2">
                 <c:set var="ss_dateWidgetId" value="${dateId}" scope="request"/>
                 <c:set var="ss_dateWidgetDate" value="${startDate}" scope="request"/>
                 <%@ include file="/WEB-INF/jsp/mobile/date_widget.jsp" %>
 			</td>
-			<td valign="top">
+		</tr>
+		<tr>	
+			<td>&nbsp;</td>
+			<td style="padding-bottom: 5px;">
 				<span id="${prefix}eventStartTime"
 					<c:if test="${initEvent.allDayEvent}">
 						style="display: none; "
@@ -121,14 +124,17 @@
 		</tr>
 	
 	<c:if test="${attMap.hasDur}">
-			<tr>
-				<td valign="top"><ssf:nlt tag="event.end" />:</td>
-				<td valign="top">
+			<tr class="ss_eventdateinput">
+				<td><ssf:nlt tag="event.end" />:</td>
+				<td colspan="2">
                   <c:set var="ss_dateWidgetId" value="${dateId2}" scope="request"/>
                   <c:set var="ss_dateWidgetDate" value="${endDate}" scope="request"/>
                   <%@ include file="/WEB-INF/jsp/mobile/date_widget.jsp" %>
 				</td>
-				<td valign="top">
+			</tr>
+			<tr class="ss_eventdateinput2">
+				<td>&nbsp;</td>	
+				<td colspan="2">
 					<span id="${prefix}eventEndTime"
 						<c:if test="${initEvent.allDayEvent}">
 							style="display: none; "
@@ -171,7 +177,7 @@
 			</tr>
 	</c:if>
 	<c:if test="${'1' == '0' && attMap.isTimeZoneSensitiveActive}">
-		<tr>
+		<tr class="ss_eventdateinput">
 			<td colspan="4">
 				<input type="checkbox" name="timeZoneSensitive_${evid}"
 					<c:if test="${initEvent.timeZoneSensitive}">
