@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -92,7 +93,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		this.icalModule = icalModule;
 	}	
 	@SuppressWarnings("unchecked")
-	public List postMessages(Folder folder, String recipient, Message[] msgs, Session session) {
+	public List postMessages(Folder folder, String recipient, Message[] msgs, Session session, User postAsUser) {
 		//initialize collections
 		Map fileItems = new HashMap();
 		List iCalendars = new ArrayList();
@@ -100,15 +101,26 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		List errors = new ArrayList();
 		InternetAddress from=null;
 		
-		//save job processing user context
+		// save job processing user context
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
+		
+		// If no recipient specified then user the current context user
+		if(postAsUser != null) {
+			try {
+				from = new InternetAddress(postAsUser.getEmailAddress(), postAsUser.getTitle());
+			} catch (UnsupportedEncodingException ex) {
+				logger.error("Error building internet address for: " + postAsUser.getEmailAddress() + " Error: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
+			}
+		}
 		
 		for (int i=0; i<msgs.length; ++i) {
 			try {
 				if (msgs[i].isSet(Flags.Flag.DELETED)) continue;  //groupwise doesn't purge rightaway
 				String title = msgs[i].getSubject();
 				if (title == null) title = "";
-				from = (InternetAddress)msgs[i].getFrom()[0];
+				if(postAsUser == null || from == null) {
+					from = (InternetAddress)msgs[i].getFrom()[0];
+				}
 				try {
 					//save original from
 					inputData.put(ObjectKeys.INPUT_FIELD_POSTING_FROM, from.toString()); 

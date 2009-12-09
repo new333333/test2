@@ -39,10 +39,11 @@ import javax.mail.Session;
 
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.PostingDef;
+import org.kablink.teaming.domain.User;
 
 
 public interface EmailPoster {
     public static final String PROCESSOR_KEY = "processorKey_emailPoster";
-	public List postMessages(Folder folder, String recipient, Message[] msgs, Session session);
+	public List postMessages(Folder folder, String recipient, Message[] msgs, Session session, User postAsUser);
 
 }

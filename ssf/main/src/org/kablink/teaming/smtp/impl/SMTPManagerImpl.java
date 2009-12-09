@@ -305,7 +305,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 					
 					Binder binder = getCoreDao().loadBinder(recipient.simpleName.getBinderId(),recipient.simpleName.getZoneId());
 					EmailPoster processor = (EmailPoster)processorManager.getProcessor(binder,EmailPoster.PROCESSOR_KEY);
-					errors.addAll(processor.postMessages((Folder)binder, recipient.email, msgs, session));
+					errors.addAll(processor.postMessages((Folder)binder, recipient.email, msgs, session, null));
 			   		RequestContextHolder.clear();
 			   		getCoreDao().clear(); // Clear session in case next from different zone.
 				}
