@@ -40,6 +40,8 @@
 <c:set var="isDashboard" value="true" />
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_content.jsp" %>
 <script type="text/javascript">
-	ss_callDashboardEvent("${ssComponentId}", "onAfterShow");
+	ss_createOnLoadObj("showCalendarAccessory", onLoadEventHandler);
+	function onLoadEventHandler() {
+		ss_callDashboardEvent("${ssComponentId}", "onAfterShow");
+	}
 </script>
-
