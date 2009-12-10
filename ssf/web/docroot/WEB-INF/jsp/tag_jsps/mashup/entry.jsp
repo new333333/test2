@@ -75,7 +75,7 @@
 		</c:if>
 		<c:set var="spanClass" value="" />
 		<c:if test="${ssConfigJspStyle != 'form'}">
-		  <c:set var="spanClass" value="ss_largeprint ss_bold" />
+		  <c:set var="spanClass" value="ss_size_20px ss_bold" />
 		</c:if>
 		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
 		  action="view_permalink" 
