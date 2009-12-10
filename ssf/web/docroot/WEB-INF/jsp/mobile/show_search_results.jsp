@@ -115,11 +115,11 @@
 				  				action="__ajax_mobile" 
 				  				operation="mobile_show_workspace" />">${entry._principal.title}</a>
 						  </span>
-						  <span class="entry-date">
+						  <div class="entry-date">
 							<fmt:formatDate timeZone="${ssUser.timeZone.ID}" 
 							  value="${entry._modificationDate}" type="both" 
 							  timeStyle="short" dateStyle="medium" />
-						  </span>
+						  </div>
 						</div>
 						<c:if test="${!empty entry.binderTitle}">
 						  <div class="entry-type">
