@@ -350,9 +350,13 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			//The miniblog form was submitted. Go process it
 			String text = PortletRequestUtils.getStringParameter(request, "miniblogText", "");
 			BinderHelper.addMiniBlogEntry(bs, text);
-		} else if (formData.containsKey("whatsNewBtn") && WebHelper.isMethodPost(request)) {
-			//User clicked on a Whats New option
-			String type = PortletRequestUtils.getStringParameter(request, "whats_new", "");
+		} else if (formData.containsKey("acceptBtn") && WebHelper.isMethodPost(request)) {
+			//User clicked "I Accept"
+			getProfileModule().setUserProperty( null, "acceptedMobileDisclaimer", true );
+		}
+		//See if the user clicked on a What's New option
+		String type = PortletRequestUtils.getStringParameter(request, "whats_new", "");
+		if (!type.equals("")) {
 			UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
 			String savedType = (String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_MOBILE_WHATS_NEW_TYPE);
 			if (savedType == null) savedType = "";
@@ -360,10 +364,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				//Remember the last type of results
 				bs.getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_MOBILE_WHATS_NEW_TYPE, type);
 			}
-		} else if (formData.containsKey("acceptBtn") && WebHelper.isMethodPost(request)) {
-			//User clicked "I Accept"
-			getProfileModule().setUserProperty( null, "acceptedMobileDisclaimer", true );
 		}
+
 	}
 
 	private void ajaxDoTeamingLive(AllModulesInjected bs, ActionRequest request, ActionResponse response) 

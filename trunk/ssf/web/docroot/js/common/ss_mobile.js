@@ -155,8 +155,18 @@ function ss_hideMenu(divId) {
 		ss_activeMenu = null;
 	}
 	var divObj = self.document.getElementById(divId);
-	if (divObj.style.visibility != "hiidden") divObj.style.visibility = "hidden";
+	if (divObj.style.visibility != "hidden") divObj.style.visibility = "hidden";
 	if (divObj.style.display != "none") divObj.style.display = "none";
 	ss_activeMenu = null;
 }
 
+function ss_toggleDivVisibility(id) {
+	var divObj = self.document.getElementById(id);
+	if (divObj.style.display != "none") {
+		divObj.style.display = "none";
+		divObj.style.visibility = "hidden";
+	} else {
+		divObj.style.display = "block";
+		divObj.style.visibility = "visible";
+	}
+}
