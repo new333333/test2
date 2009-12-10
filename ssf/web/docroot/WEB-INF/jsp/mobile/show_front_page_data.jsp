@@ -77,31 +77,53 @@
 		>
         <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
-          <td width="5%" nowrap>
+          <td valign="top" width="40%" nowrap>
           <span><ssf:nlt tag="mobile.whatsNew"/></span>
           </td>
-          <td valign="top" width="5%" nowrap>
-		  <span class="pad-left20">
-		    <select size="1" name="whats_new" 
-		      onChange="self.document.getElementById('whatsNewForm').submit();">
-		    
-		      <option value="teams" <c:if test="${ss_whatsNewType == 'teams'}">selected</c:if>
-		      ><ssf:nlt tag="navigation.myTeams"/></option>
-		      
-		      <option value="tracked" <c:if test="${ss_whatsNewType == 'tracked'}">selected</c:if>
-		      ><ssf:nlt tag="mobile.whatsNewTracked"/></option>
-		      
-		      <option value="site" <c:if test="${ss_whatsNewType == 'site'}">selected</c:if>
-		      ><ssf:nlt tag="mobile.whatsNewSite"/></option>
-		      
-		      <option value="microblog" <c:if test="${ss_whatsNewType == 'microblog'}">selected</c:if>
-		      ><ssf:nlt tag="mobile.whatsNewMicroBlogs"/></option>
-		      
-		    </select>
-		    <input type="hidden" name="whatsNewBtn" value="whats_new"/>
-		  </span>
+          <td valign="top" align="center" width="20%" nowrap>
+		  <div align="center">
+          <a href="javascript: ;" 
+      		  onClick="ss_toggleDivVisibility('whats-new-menu');return false;">
+      	    <span>
+              <c:if test="${ss_whatsNewType == 'teams'}"><ssf:nlt tag="navigation.myTeams"/></c:if>
+              <c:if test="${ss_whatsNewType == 'tracked'}"><ssf:nlt tag="mobile.whatsNewTracked"/></c:if>
+              <c:if test="${ss_whatsNewType == 'site'}"><ssf:nlt tag="mobile.whatsNewSite"/></c:if>
+              <c:if test="${ss_whatsNewType == 'microblog'}"><ssf:nlt tag="mobile.whatsNewMicroBlogs"/></c:if>
+            </span><img border="0" 
+      		  src="<html:rootPath/>images/pics/menudown.gif"/>
+      	  </a>
+          
+			<div id="whats-new-menu" class="whats-new-dialog" style="display:none; z-index:2;">
+			    <div class="dialog-content">
+		      		<div class="menu-item">
+				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				        action="__ajax_mobile" operation="mobile_show_front_page" 
+				        actionUrl="true" ><ssf:param name="whats_new" value="teams"/></ssf:url>"
+				      ><ssf:nlt tag="navigation.myTeams"/></a>
+				    </div>
+				    <div class="menu-item">		      
+				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				        action="__ajax_mobile" operation="mobile_show_front_page" 
+				        actionUrl="true" ><ssf:param name="whats_new" value="tracked"/></ssf:url>"
+				      ><ssf:nlt tag="mobile.whatsNewTracked"/></a>
+				    </div>
+				    <div class="menu-item">		      
+				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				        action="__ajax_mobile" operation="mobile_show_front_page" 
+				        actionUrl="true" ><ssf:param name="whats_new" value="site"/></ssf:url>"
+				      ><ssf:nlt tag="mobile.whatsNewSite"/></a>
+				    </div>
+				    <div class="menu-item">		      
+				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				        action="__ajax_mobile" operation="mobile_show_front_page" 
+				        actionUrl="true" ><ssf:param name="whats_new" value="microblog"/></ssf:url>"
+				      ><ssf:nlt tag="mobile.whatsNewMicroBlogs"/></a>
+				    </div>
+				</div>
+			</div>
+			</div>
 		  </td>
-		  <td align="right" width="90%">
+		  <td valign="top" align="right" width="40%">
 	  		<table cellspacing="0" cellpadding="0">
 				<tr>
 		  		<td>

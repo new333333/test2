@@ -87,8 +87,8 @@ Date nextDate = calendarNextDate.getTime();
 %>
 
 <c:set var="ssCurrDateFormat" value="<%= currDate %>" />
-<c:set var="currMonthDate"><fmt:formatDate value="<%= currDate %>" pattern="MMM" /></c:set>
-<c:set var="todayMonthDate"><fmt:formatDate value="<%= todayDate %>" pattern="MMM" /></c:set>
+<c:set var="currMonthDate"><fmt:formatDate value="<%= currDate %>" pattern="MMM" timeZone="${ssUser.timeZone.ID}" /></c:set>
+<c:set var="todayMonthDate"><fmt:formatDate value="<%= todayDate %>" pattern="MMM" timeZone="${ssUser.timeZone.ID}" /></c:set>
 
 <%
  GregorianCalendar cal = new GregorianCalendar (intCurrYear, calendarCurrDate.get(Calendar.MONTH), 1); 
@@ -132,7 +132,7 @@ Date nextDate = calendarNextDate.getTime();
 			<ssf:param name="ssGridSize" value="1" />
 		  </ssf:url>" >
       <span class="ss_mobile_calendar_header">
-		<%= strMonthName %>&nbsp;<fmt:formatDate value="${ssCurrDateFormat}" pattern="yyyy" />
+		<%= strMonthName %>&nbsp;<fmt:formatDate value="${ssCurrDateFormat}" pattern="yyyy" timeZone="${ssUser.timeZone.ID}" />
 	  </span>
 	</a>
   </td>
@@ -288,8 +288,8 @@ Date nextDate = calendarNextDate.getTime();
     <tr>
 		<td colspan="2">
 		<div class="ss_mobile_calendar_entries_header">
-			<span><fmt:formatDate value="<%= startDate %>" pattern="EEE" /></span>
-			<span><fmt:formatDate value="<%= startDate %>" pattern="d MMM" /></span>
+			<span><fmt:formatDate value="<%= startDate %>" pattern="EEE" timeZone="${ssUser.timeZone.ID}" /></span>
+			<span><fmt:formatDate value="<%= startDate %>" pattern="d MMM" timeZone="${ssUser.timeZone.ID}" /></span>
 		</div>
 		</td>
     </tr>
@@ -325,11 +325,11 @@ Date nextDate = calendarNextDate.getTime();
 	<c:if test="${entriesSeen == 0}">
       <div class="ss_mobile_calendar_no_entries_header">
         <c:if test="${ssGridType != 'month'}">
-          <span><fmt:formatDate value="<%= currDate %>" pattern="EEE" /></span>
-          <span><fmt:formatDate value="<%= currDate %>" pattern="d MMM" /></span>
+          <span><fmt:formatDate value="<%= currDate %>" pattern="EEE" timeZone="${ssUser.timeZone.ID}" /></span>
+          <span><fmt:formatDate value="<%= currDate %>" pattern="d MMM" timeZone="${ssUser.timeZone.ID}" /></span>
         </c:if>
         <c:if test="${ssGridType == 'month'}">
-          <span><%= strMonthName %>&nbsp;<fmt:formatDate value="${ssCurrDateFormat}" pattern="yyyy" /></span>
+          <span><%= strMonthName %>&nbsp;<fmt:formatDate value="${ssCurrDateFormat}" pattern="yyyy" timeZone="${ssUser.timeZone.ID}" /></span>
         </c:if>
       </div>
 	  <div class="ss_mobile_calendar_no_entries_content">
