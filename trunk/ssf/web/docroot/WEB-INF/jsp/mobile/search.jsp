@@ -69,7 +69,7 @@ function ss_setMobileSearchActionUrl(formObj) {
 		onSubmit="ss_setMobileSearchActionUrl(this);return true;"
 	>
 	  <div class="dialog-content">
-		  <div class="pad-left20">
+		  <div class="pad-left20 marginbottom2">
 		    <select size="1" name="search_type" >
 		    
 		      <option value="all" <c:if test="${ss_searchType == 'all'}">selected</c:if>
@@ -99,7 +99,7 @@ function ss_setMobileSearchActionUrl(formObj) {
 	  <div>
 		<input type="text" size="35" name="searchText"/>
 	  </div>			
-      <div id="search-buttons">
+      <div id="search-buttons" class="margintop2">
         <input id="search-ok" type="submit" value="<ssf:nlt tag="button.ok"/>" 
           name="quickSearch" onClick="ss_hideMenu('search-dialog');return true;" />
         <input id="search-cancel" type="button" value="<ssf:nlt tag="button.cancel"/>" 
