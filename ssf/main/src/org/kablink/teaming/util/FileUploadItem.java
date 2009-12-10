@@ -227,7 +227,7 @@ public class FileUploadItem {
 			((SimpleMultipartFile) mf).close();
 	}
 	
-	public void makeReentrant() throws IOException {
+	public long makeReentrant() throws IOException {
 		if(mf instanceof SimpleMultipartFile) {
 			SimpleMultipartFile smp = (SimpleMultipartFile) mf;
 			if(smp.getFile() == null) {
@@ -238,6 +238,11 @@ public class FileUploadItem {
 				}
 			}
 		}
+		// Returns the length of the file
+		if(file != null)
+			return file.length();
+		else
+			return mf.getSize();
 	}
 	
 	/**
@@ -265,5 +270,5 @@ public class FileUploadItem {
 	public void setSynchToRepository(boolean synchToRepository) {
 		this.synchToRepository = synchToRepository;
 	}
-	
+
 }

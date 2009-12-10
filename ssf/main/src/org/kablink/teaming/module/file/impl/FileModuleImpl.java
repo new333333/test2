@@ -1128,7 +1128,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	private void writeFileMetadataTransactional(final Binder binder, final DefinableEntity entry, 
-    		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew) {	
+    		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew, final boolean versionCreated) {	
     	
 		getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
@@ -1198,13 +1198,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
             	else
             		changes = new ChangeLog(entry, ChangeLog.FILEMODIFY);
             	
-            	// add the size of the file to the users disk usage
-            	ZoneConfig zoneConf = getCoreDao().loadZoneConfig(
-        				RequestContextHolder.getRequestContext()
-        				.getZoneId());
-            	if (zoneConf.isDiskQuotaEnabled() && !fAtt.getRepositoryName().equalsIgnoreCase(ObjectKeys.FI_ADAPTER)) {
-            		User user = RequestContextHolder.getRequestContext().getUser();
-            		user.incrementDiskSpaceUsed(fAtt.getFileItem().getLength());
+            	if(versionCreated) {
+            		// The content was committed creating a new version. Increment disk usage for the user.
+            		incrementDiskSpaceUsed(fAtt);
             	}
             	
             	ChangeLogUtils.buildLog(changes, fAtt);
@@ -1306,6 +1302,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
     	try {
+    		boolean versionCreated = false;
     		try {
 	    		// Store primary file first, since we do not want to generate secondary
 	    		// files unless we could successfully store the primary file first. 
@@ -1314,11 +1311,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    			sp.start("createFile");
 	    			isNew = true;
 	    			fAtt = createFile(session, binder, entry, fui);
+	    			versionCreated = true;
 	    			sp.stop("createFile");
 	    		}
 	    		else { // Existing file for the entry
 	    			sp.start("writeExistingFile");
-	    			writeExistingFile(session, binder, entry, fui);
+	    			if(writeExistingFile(session, binder, entry, fui) != null)
+	    				versionCreated = true;
 	    			sp.stop("writeExistingFile");
 	    		}
     		}
@@ -1345,10 +1344,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    	// using JTA. But that's not always available, and this version of
 	    	// the system does not try to address that. 
     		sp.start("writeFileMetadataTransactional");
-	    	writeFileMetadataTransactional(binder, entry, fui, fAtt, isNew);
+	    	writeFileMetadataTransactional(binder, entry, fui, fAtt, isNew, versionCreated);
     		sp.stop("writeFileMetadataTransactional");
 	    	
-     	
         	sp.print();
 
 	    	return true;
@@ -1358,9 +1356,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	}
     }
     
-    private void writeExistingFile(RepositorySession session,
+    private String writeExistingFile(RepositorySession session,
     		Binder binder, DefinableEntity entry, FileUploadItem fui)
-		throws LockedByAnotherUserException, RepositoryServiceException, IOException {
+		throws LockedByAnotherUserException, RepositoryServiceException, IOException, DataQuotaException {
     	User user = RequestContextHolder.getRequestContext().getUser();
     	String relativeFilePath = fui.getOriginalFilename();
 		// flatten repository namespace to reduce confusion
@@ -1369,10 +1367,24 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
     	// Before checking the lock, we must make sure that the lock state is
     	// up-to-date.
-    	closeExpiredLock(session, binder, entry, fAtt, true);
+    	if(closeExpiredLock(session, binder, entry, fAtt, true)) {
+    		// Handling of expired lock resulted in some changes to the metadata. 
+    		// We want to commit this changes separately from the main work that this
+    		// method is being invoked to perform, since they are two completely separate
+    		// works and we do not want the outcome of the main work to affect 
+    		// the durability of the changes incurred inside closeExpiredLock().
+    		triggerUpdateTransaction();
+    	}
     	
     	// Now that lock state is current, we can test it for the user.
     	checkLock(entry, fAtt);
+    	
+    	// Check data quota
+		if (!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName())) { 
+			checkQuota(RequestContextHolder.getRequestContext().getUser(),
+					fui.makeReentrant(),
+					fui.getOriginalFilename());
+		}
     	
     	FileAttachment.FileLock lock = fAtt.getFileLock();
     	
@@ -1416,9 +1428,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	Long fileSize = null;
     	if(versionName != null)
     		fileSize = Long.valueOf(session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName));
-    	if (!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fAtt.getRepositoryName()) && fileSize != null) 
-    		checkQuota(fileSize, fAtt.getFileItem().getName());
 		updateFileAttachment(fAtt, user, versionName, fileSize, fui.getModDate(), fui.getModifierName());
+		
+		return versionName;
     }
 
     private void updateFileAttachment(FileAttachment fAtt, 
@@ -1531,34 +1543,35 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	 */
 	private FileAttachment createFile(RepositorySession session, 
 			Binder binder, DefinableEntity entry, FileUploadItem fui) 
-		throws RepositoryServiceException, IOException {	
+		throws RepositoryServiceException, IOException, DataQuotaException {	
 		// Since we are creating a new file, file locking doesn't concern us.
 		
+		if (!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName())) { 
+			checkQuota(RequestContextHolder.getRequestContext().getUser(),
+					fui.makeReentrant(),
+					fui.getOriginalFilename());
+		}
+				
 		FileAttachment fAtt = createFileAttachment(entry, fui);
 		
 		String versionName = createVersionedFile(session, binder, entry, fui);
 						
 		long fileSize = session.getContentLengthVersioned(binder, entry, fui.getOriginalFilename(), versionName);
-		
-		if (!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fAtt.getRepositoryName())) 
-			checkQuota(fileSize, fAtt.getFileItem().getName());
-		
+				
 		fAtt.getFileItem().setLength(fileSize);
 
-		createVersionAttachment(fAtt, versionName);
+		createVersionAttachment(fAtt, versionName);			
 
 		return fAtt;
 	}
 	
-	private void checkQuota(long fileSize, String fileName) throws RepositoryServiceException {
+	private void checkQuota(User user, long fileSize, String fileName) throws DataQuotaException {
 		// first check properties to see if quotas is enabled on this system
 		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(
 				RequestContextHolder.getRequestContext()
 				.getZoneId());
 		if (zoneConf.isDiskQuotaEnabled()) {
 			long userQuota = zoneConf.getDiskQuotaUserDefault();
-
-			User user = RequestContextHolder.getRequestContext().getUser();
 
 			if (user.getDiskQuota() != 0L) {
 				userQuota = user.getDiskQuota();
@@ -1572,11 +1585,18 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			
 			userQuota = userQuota * MEGABYTES;
 
-			// The spec says to allow a transaction if the user quota wasn't
-			// exceeded when the transaction began.
-			if ((userQuota < user.getDiskSpaceUsed()))
-				// TODO ROY - put this message into the messages catalogue
-				throw new DataQuotaException("quota.exceeded.error.message", new Object[]{fileName});
+			if(SPropsUtil.getBoolean("data.quota.strict.conformance", false)) {
+				// strict conformance - allow a transaction only if the user quota
+				// will not be exceeded after the transaction commits.
+				if(userQuota < user.getDiskSpaceUsed() + fileSize)
+					throw new DataQuotaException("quota.exceeded.error.message", new Object[]{fileName});					
+			}
+			else {
+				// soft conformance - allow a transaction if the user quota wasn't
+				// exceeded when the transaction began.
+				if ((userQuota < user.getDiskSpaceUsed()))
+					throw new DataQuotaException("quota.exceeded.error.message", new Object[]{fileName});
+			}
 		}
 	}
 	
@@ -1858,6 +1878,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 							relativeFilePath, versionName));
 					updateFileAttachment(fa, lock.getOwner(), versionName, contentLength, null, null);
 					metadataDirty = true;
+	            	// add the size of the file to the users disk usage
+	            	incrementDiskSpaceUsed(fa);				
 				}  
 			}
 		}
@@ -1965,4 +1987,17 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		if(ca != null) ca.setValue(fAtts);
 		else           entry.addCustomAttribute(fuiName, fAtts);
    }
+    
+    private void incrementDiskSpaceUsed(FileAttachment fAtt) {
+    	ZoneConfig zoneConf = getCoreDao().loadZoneConfig(
+				RequestContextHolder.getRequestContext()
+				.getZoneId());
+    	if (zoneConf.isDiskQuotaEnabled() && !fAtt.getRepositoryName().equalsIgnoreCase(ObjectKeys.FI_ADAPTER)) {
+    		UserPrincipal up = fAtt.getModification().getPrincipal();
+    		if(up instanceof User) {        		
+        		User user = (User) up;
+        		user.incrementDiskSpaceUsed(fAtt.getFileItem().getLength());
+    		}
+    	} 	
+    }
 }

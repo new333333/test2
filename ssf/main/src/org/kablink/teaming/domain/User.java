@@ -352,16 +352,22 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	 */
 
 	public void incrementDiskSpaceUsed(Long diskSpace) {
-		if (diskSpaceUsed == null) this.diskSpaceUsed = Long.valueOf(0);
-		this.diskSpaceUsed += diskSpace;
+		if(diskSpace == null || diskSpace.longValue() == 0L)
+			return;
+		setDiskSpaceUsed(getDiskSpaceUsed().longValue() + diskSpace.longValue());
 	}
 	/**
 	 * @param diskSpace to decrement.
 	 */
 
 	public void decrementDiskSpaceUsed(Long diskSpace) {
-		if (diskSpaceUsed == null) this.diskSpaceUsed = Long.valueOf(0);
-		this.diskSpaceUsed -= diskSpace;
+		if(diskSpace == null || diskSpace.longValue() == 0L)
+			return;
+		long newValue = getDiskSpaceUsed().longValue() - diskSpace.longValue();
+		// I don't know if this can ever happen, but we'd better be safe and ensure that the usage can't never go below zero.
+		if(newValue < 0L) 
+			newValue = 0L; 
+		setDiskSpaceUsed(newValue);
 	}
 	/**
 	 * Returns encrypted password.
