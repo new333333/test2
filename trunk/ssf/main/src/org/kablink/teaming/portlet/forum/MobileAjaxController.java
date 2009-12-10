@@ -594,6 +594,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			
 			// get query and options from tab		
 			Document searchQuery = BinderHelper.getSavedQuery(bs, queryName, bs.getProfileModule().getUserProperties(user.getId()));
+			if (searchQuery == null) {
+				return ajaxMobileFrontPage(bs, request, response);
+			}
 			
 			// get page no and actualize options
 			// execute query
