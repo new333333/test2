@@ -67,6 +67,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.FolderEntry;
@@ -1142,26 +1143,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
             		getCoreDao().save(fAtt);    		
         		}
             	if (fui.getType() == FileUploadItem.TYPE_FILE) {
-        			// Find custom attribute by the attribute name. 
-        			Set fAtts = null;
-        			CustomAttribute ca = entry.getCustomAttribute(fui.getName());
-        			if(ca != null)
-        				fAtts = (Set) ca.getValueSet();
-        			else
-        				fAtts = new HashSet();
-
-        			// Simply because the file already exists for the entry does not 
-        			// mean that it is known through this particular data element
-        			// (i.e., custom attribute). So we need to make sure that it is
-        			// made visible through this element.
-        			fAtts.add(fAtt); // If it is already in the set, it will have no effect
-        			
-        			if(ca != null)
-        				ca.setValue(fAtts);
-        			else
-        				entry.addCustomAttribute(fui.getName(), fAtts);
+            		setCustomAttribute(entry, fui, fAtt);
         		} else if (fui.getType() == FileUploadItem.TYPE_ATTACHMENT) {
         			// Add the file attachment to the entry only if new file. 
+            		setCustomAttribute(entry, fui, fAtt);
         			if(isNew) {
         				entry.addAttachment(fAtt);
         			}
@@ -1946,4 +1931,38 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	}
     	return fa;
     }
+    
+    @SuppressWarnings("unchecked")
+	private static void setCustomAttribute(DefinableEntity entry, FileUploadItem fui, FileAttachment fAtt) {
+    	// Is the FileUploadItem named?
+		Set fAtts = null;
+		String fuiName = fui.getName();
+		if ((null == fuiName) || (0 == fuiName.length())) {
+			// No!  Is the entry it's being uploaded to a file entry?
+			Definition def = entry.getEntryDef();
+			String defId = ((null == def) ? null : def.getInternalId());
+			if ((null == defId) || (!(defId.equalsIgnoreCase(ObjectKeys.DEFAULT_LIBRARY_ENTRY_DEF)))) {
+				// No!  Then we don't store a custom attribute for it.
+				return;
+			}
+			
+			// Yes, it's a file entry!  Use upload for the
+			// FileUploadItem's name.  This will cause it to play
+			// nicely with the other uploaded items in the entry.
+			fuiName = "upload";
+		}
+		
+		// Find custom attribute by the attribute name. 
+		CustomAttribute ca = entry.getCustomAttribute(fuiName);
+		if(ca != null) fAtts = ((Set) ca.getValueSet());
+		else           fAtts = new HashSet();
+
+		// Simply because the file already exists for the entry does
+		// not mean that it is known through this particular data
+		// element (i.e., custom attribute). So we need to make
+		// sure that it is made visible through this element.
+		fAtts.add(fAtt); // If it is already in the set, this will have no effect.
+		if(ca != null) ca.setValue(fAtts);
+		else           entry.addCustomAttribute(fuiName, fAtts);
+   }
 }
