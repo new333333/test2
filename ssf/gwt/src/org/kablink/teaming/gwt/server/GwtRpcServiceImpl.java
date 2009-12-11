@@ -533,7 +533,9 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
         	client.setVersion(info.getVersion());
         	
         	ZoneInfo zoneInfo = getZoneModule().getZoneInfo(info.getZoneId());
-        	client.setZoneName(zoneInfo.getZoneName());
+        	if(zoneInfo != null){
+            	client.setZoneName(zoneInfo.getZoneName());
+        	} 
         	
         	list.add(client);
     	}

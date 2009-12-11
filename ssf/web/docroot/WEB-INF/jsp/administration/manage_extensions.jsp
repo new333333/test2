@@ -125,6 +125,7 @@ function ss_checkForFileSelected() {
 </table>
 <br/>
 
+<!-- 
 <label for="zoneName"><span class="ss_bold"><ssf:nlt tag="administration.extensions.zones"/></span></label>
 <select name="zoneName" id="zoneName">
 <c:set var="default_zone_name" value="<%= org.kablink.teaming.util.SZoneConfig.getDefaultZoneName() %>"/>
@@ -134,6 +135,8 @@ function ss_checkForFileSelected() {
 </select>
 <br/>
 <br/>
+ -->
+
 <div class="ss_formBreak"/>
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="addBtn" onclick="return ss_checkForFileSelected();" value="<ssf:nlt tag="button.add" text="Add"/>">

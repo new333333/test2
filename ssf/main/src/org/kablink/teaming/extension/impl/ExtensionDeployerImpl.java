@@ -904,12 +904,14 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 	}
 
 	public List findExtensions() {
-		OrderBy order = new OrderBy();
-		order.addColumn("name");
-		FilterControls filter = new FilterControls();
-		filter.setOrderBy(order);
-		filter.setZoneCheck(false);
-		return getCoreDao().loadObjects(ExtensionInfo.class, filter, null);
+//		OrderBy order = new OrderBy();
+//		order.addColumn("name");
+//		FilterControls filter = new FilterControls();
+//		filter.setOrderBy(order);
+//		filter.setZoneCheck(false);
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+//		return getCoreDao().loadObjects(ExtensionInfo.class, filter, zoneId);
+		return findExtensions(zoneId);
 	}
 	
 	public List findExtensions(Long zoneId) {
