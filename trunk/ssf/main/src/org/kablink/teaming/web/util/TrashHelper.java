@@ -58,6 +58,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.LibraryEntry;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -1049,6 +1050,18 @@ public class TrashHelper {
        	return ((TrashEntry[]) trashEntriesAL.toArray(new TrashEntry[0]));
 	}
 	
+	/*
+	 * Returns the DefinableEntity corresponding to a LibraryEntry.
+	 */
+	private static DefinableEntity getEntityFromLE(LibraryEntry le, AllModulesInjected bs) {
+		Long binderId = le.getBinderId();
+		Long entityId = le.getEntityId();
+		DefinableEntity reply;
+		if (null == entityId) reply = bs.getBinderModule().getBinder(binderId);
+		else                  reply = bs.getFolderModule().getEntry(null, entityId);
+		return reply;
+	}
+	
 	/**
 	 * Returns the trash entries for the given binder.
 	 * 
@@ -1596,10 +1609,13 @@ public class TrashHelper {
     		return;
     	}
     	
-    	
-		String deTitle_Original   = de.getTitle();
-		String deTitle            = deTitle_Original;
+    	// Keep track of any uses of the initial name(s).
+		String deTitle = de.getTitle();
 		String deTitle_Normalized = de.getNormalTitle();
+		LibraryEntry registeredTitle = (uniqueTitles ? cd.getRegisteredTitle(   binder.getId(), deTitle_Normalized) : null);
+		LibraryEntry registeredFName = (uniqueFNames ? cd.getRegisteredFileName(binder.getId(), deTitle           ) : null);
+
+		String deTitle_Original = deTitle;
 		int renames = 0;
 		do {
 			// Is deTitle unique to the Binder's namespace?
@@ -1659,6 +1675,12 @@ public class TrashHelper {
 				new HashMap<FileAttachment, String>(),	// fileRenamesTo.
 				null);									// options.
 		}
+
+		// If we had anything using the original names, we need to put
+		// them back into effect as the modifies above will have
+		// unregistered them.
+		if (null != registeredTitle) cd.addExistingName(registeredTitle, getEntityFromLE(registeredTitle, rd.m_bs));
+		if (null != registeredFName) cd.addExistingName(registeredFName, getEntityFromLE(registeredFName, rd.m_bs));
 		
 		// ...and track what we renamed.
 		rd.addRename(
