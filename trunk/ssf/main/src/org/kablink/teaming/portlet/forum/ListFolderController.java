@@ -44,6 +44,7 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
+import javax.servlet.http.HttpServletResponse;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -53,6 +54,7 @@ import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.portletadapter.portlet.PortletResponseImpl;
 import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.LongIdUtil;
@@ -235,6 +237,18 @@ public class ListFolderController extends  SAbstractController {
 		boolean showTrash = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_SHOW_TRASH, false);
         User user = RequestContextHolder.getRequestContext().getUser();
 		String displayType = BinderHelper.getDisplayType(request);
+
+		if ( response instanceof PortletResponseImpl )
+		{
+			HttpServletResponse httpServletResponse;
+			
+			// Set the http response header to no-cache so this page won't get cached.
+			httpServletResponse = ((PortletResponseImpl)response).getHttpServletResponse();
+			httpServletResponse.setHeader( "Pragma", "no-cache" );
+			httpServletResponse.setHeader( "Cache-Control", "no-cache" );
+			httpServletResponse.setDateHeader( "Expires", 0 );
+		}
+
 		if (request.getWindowState().equals(WindowState.NORMAL) &&
 				!BinderHelper.WORKAREA_PORTLET.equals(displayType)) 
 			return BinderHelper.CommonPortletDispatch(this, request, response);
