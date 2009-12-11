@@ -377,8 +377,9 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		return addFolderEntry(accessToken, entry, attachedFileName, options);	
 	}
 	@SuppressWarnings("unchecked")
-	public void folder_addEntryAsMime(String accessToken, long binderId, byte[] mimeData) {
+	public long folder_addEntryAsMime(String accessToken, long binderId, byte[] mimeData) {
 		try {
+			long entryId = 0;
 			Session session = Session.getDefaultInstance(new Properties());
 			org.kablink.teaming.domain.Binder binder = getBinderModule().getBinder(new Long(binderId));
 			InputStream data = new ByteArrayInputStream(mimeData);
@@ -390,6 +391,10 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 				Message m = (Message) errors.get(0);
 				throw new RemotingException(m.getSubject());
 			}
+			String[] hdrs = msgs[0].getHeader(EmailPoster.X_TEAMING_ENTRYID);
+			if(hdrs != null && hdrs.length > 0)
+				entryId = Long.valueOf(hdrs[0]);
+			return entryId;
 		}
 		catch(MessagingException e) {
 			throw new RemotingException(e);

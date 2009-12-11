@@ -166,7 +166,13 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		}
 		Definition def = getReplyDefinition(folder, parentDocId);
 		processPart(folder, msg, inputData, fileItems, iCalendars);
-		getFolderModule().addReply(folder.getId(), parentDocId, def == null? null:def.getId(), new MapInputData(inputData), fileItems, null);
+		FolderEntry reply = getFolderModule().addReply(folder.getId(), parentDocId, def == null? null:def.getId(), new MapInputData(inputData), fileItems, null);
+		if(reply != null) {
+			try {
+				msg.addHeader(EmailPoster.X_TEAMING_ENTRYID, reply.getId().toString());
+			}
+			catch(MessagingException ex){}
+		}
 		msg.setFlag(Flags.Flag.DELETED, true);
 	}
 	//override to provide alternate processing 
@@ -195,7 +201,13 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 //		inputData.put("description", buf.toString());
 		//IF attachments left or message didn't contain ICALs; add as an entry
 		if (!fileItems.isEmpty() || entryIdsFromICalendars.isEmpty()) {
-			folderModule.addEntry(folder.getId(), def == null? null:def.getId(), new MapInputData(inputData), fileItems, null);
+			FolderEntry entry = folderModule.addEntry(folder.getId(), def == null? null:def.getId(), new MapInputData(inputData), fileItems, null);
+			if(entry != null) {
+				try {
+					msg.addHeader(EmailPoster.X_TEAMING_ENTRYID, entry.getId().toString());
+				}
+				catch(MessagingException ex){}
+			}
 		}
 		msg.setFlag(Flags.Flag.DELETED, true);
 	}
@@ -223,7 +235,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 	//override to provide alternate processing 
 	protected Long getParentDocId(Folder folder, String title, Message msg) {
 		String flag = MailModule.REPLY_SUBJECT+folder.getId().toString()+":";
-		//docId encoded in sublect line
+		//docId encoded in subject line
 		String docId = title.substring(flag.length());
 		int index = docId.indexOf(" ");
 		if (index == -1) return Long.valueOf(docId);
