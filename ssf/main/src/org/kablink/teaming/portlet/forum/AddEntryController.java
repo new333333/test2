@@ -500,7 +500,7 @@ public class AddEntryController extends SAbstractController {
 						}
 						if (timeS.length > 1) {
 							int minute = Integer.parseInt(timeS[1]);
-							startDate = startDate.withMinuteOfHour(minute > 30 ? 60 - minute : 30 - minute);
+							startDate = startDate.withMinuteOfHour(minute);
 						}
 					} catch (NumberFormatException e) {
 						// do nothing, no hour, no minute
