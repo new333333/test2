@@ -196,6 +196,8 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 					if (w != null) {
 						WorkflowHistory history = new WorkflowHistory(w, endit, true);
 						getInstance().getCoreDao().save(history);
+						
+						removeWorkflowResponses(wEntry, w);
 						wEntry.removeWorkflowState(w);
 					}
 				}
@@ -205,10 +207,12 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 			getInstance().getCoreDao().save(history);
 			wEntry.setWorkflowChange(endit);
 			if (!current.isRoot()) {
+				removeWorkflowResponses(wEntry, state);
 				wEntry.removeWorkflowState(state);
 				//check all other threads
 				WorkflowProcessUtils.processConditions(wEntry, current);
 			} else if (deleteIt) {
+				removeWorkflowResponses(wEntry, state);
 				wEntry.removeWorkflowState(state);
 				context.getGraphSession().deleteProcessInstance(current.getProcessInstance());
 			}
@@ -218,6 +222,21 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	    }		
 	
 	}
+ 	public static void removeWorkflowResponses(WorkflowSupport wEntry, WorkflowState state) {
+		//remove old responses associated with this state
+		Set names = WorkflowProcessUtils.getQuestionNames(state.getDefinition(), state.getState());
+		if (!names.isEmpty()) {
+			//now see if response to this question from this user exists
+			Set<WorkflowResponse> responses = new HashSet<WorkflowResponse>(wEntry.getWorkflowResponses());
+			for (WorkflowResponse wr:responses) {
+				if (state.getDefinition().getId().equals(wr.getDefinitionId())) {
+					String name = wr.getName();
+					//if question is defined here, clear any old answers
+					if (names.contains(name)) wEntry.removeWorkflowResponse(wr);
+				}			
+			}
+		}
+ 	}
     public static List getOnEntry(Definition wfDef, String stateName) {
     	Document wfDoc = wfDef.getDefinition();
 		//Find the current state in the definition
