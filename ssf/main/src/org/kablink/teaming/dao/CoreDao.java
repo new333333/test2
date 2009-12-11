@@ -49,6 +49,7 @@ import org.kablink.teaming.domain.EntityDashboard;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.LdapConnectionConfig;
+import org.kablink.teaming.domain.LibraryEntry;
 import org.kablink.teaming.domain.NotifyStatus;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.SimpleName;
@@ -168,8 +169,11 @@ public interface CoreDao {
     public void unRegisterTitle(Binder binder, String name);
     public Long getEntityIdForMatchingTitle(Long binderId, String title); 
     public List<Long> findZoneEntityIds(Long entityId, String zoneUUID, String entityType);
+    public LibraryEntry getRegisteredTitle(Long binderId, String title);
+    public LibraryEntry getRegisteredFileName(Long binderId, String fileName);
     public boolean isTitleRegistered(Long binderId, String title);
     public boolean isFileNameRegistered(Long binderId, String fileName);
+    public void addExistingName(LibraryEntry le, DefinableEntity entity);
 
     public int daysSinceInstallation();
     

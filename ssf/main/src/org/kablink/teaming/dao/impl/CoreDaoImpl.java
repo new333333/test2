@@ -774,15 +774,21 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		else
 			return null;
     }
-    public boolean isTitleRegistered(Long binderId, String title) {
+    public LibraryEntry getRegisteredTitle(Long binderId, String title) {
     	LibraryEntry le = new LibraryEntry(binderId, LibraryEntry.TITLE, title);
 		LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
-		return(exist != null);
+		return exist;
     }
-    public boolean isFileNameRegistered(Long binderId, String fileName) {
+    public LibraryEntry getRegisteredFileName(Long binderId, String fileName) {
     	LibraryEntry le = new LibraryEntry(binderId, LibraryEntry.FILE, fileName);
 		LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
-		return(exist != null);
+		return exist;
+    }
+    public boolean isTitleRegistered(Long binderId, String title) {
+		return(null != getRegisteredTitle(binderId, title));
+    }
+    public boolean isFileNameRegistered(Long binderId, String fileName) {
+		return(null != getRegisteredFileName(binderId, fileName));
     }
     protected void removeOldName(LibraryEntry oldLe, DefinableEntity entity) {
 		LibraryEntry le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, oldLe);
@@ -817,6 +823,14 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 				throw new TitleException(newLe.getName(),ex);
 		}  	
     	
+    }
+    public void addExistingName(LibraryEntry le, DefinableEntity entity) {
+		LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
+		if (exist != null) {
+			delete(exist);
+			flush();
+		}
+    	addNewName(le, entity);
     }
     public  Long findFileNameEntryId(Binder binder, String name) {
     	LibraryEntry le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, new LibraryEntry(binder.getId(),LibraryEntry.FILE, name));
