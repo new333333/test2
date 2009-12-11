@@ -45,6 +45,8 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.NameMissingException;
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
@@ -67,16 +69,21 @@ public class ExtensionsController extends  SAbstractController {
 			Map fileMap=null;
 			if (request instanceof MultipartFileSupport) {
 				
-				String zoneName = PortletRequestUtils.getStringParameter(request,"zoneName");
-				if(Validator.isNull(zoneName))
-					throw new NameMissingException("errorcode.zonename.missing");
+				//ZoneConfig zoneConfig = getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+				//String zoneName = zoneConfig.;
 				
-				String zoneFolderKey = SZoneConfig.getDefaultZoneName();
-				if(!(zoneName.equals(SZoneConfig.getDefaultZoneName()))){
-					Long zoneId = getZoneModule().getZoneIdByZoneName(zoneName);
-					zoneFolderKey = zoneName + "_" + zoneId;
-				}
+				//String zoneName = PortletRequestUtils.getStringParameter(request,"zoneName");
+				//if(Validator.isNull(zoneName))
+				//	throw new NameMissingException("errorcode.zonename.missing");
 				
+				//SZoneConfig.getDefaultZoneName();
+				//if(!(zoneName.equals(SZoneConfig.getDefaultZoneName()))){
+				//Long zoneId = getZoneModule().getZoneIdByZoneName(zoneName);
+				//zoneFolderKey = zoneName + "_" + zoneId;
+				//}
+
+				String zoneFolderKey = Utils.getZoneKey(); 
+
 				fileMap = ((MultipartFileSupport) request).getFileMap();
 		    	MultipartFile myFile = (MultipartFile)fileMap.get("uploadFormElement");
 		    	InputStream fIn = myFile.getInputStream();

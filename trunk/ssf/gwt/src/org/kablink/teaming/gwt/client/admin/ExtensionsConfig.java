@@ -87,13 +87,11 @@ public class ExtensionsConfig  extends Composite {
 		
 		extFlexTable.setText(0, 0, GwtTeaming.getMessages().extensionsName());
 		extFlexTable.setText(0, 1, GwtTeaming.getMessages().extensionsDesc());
-		extFlexTable.setText(0, 2, GwtTeaming.getMessages().extensionsZone());
-		extFlexTable.setText(0, 3, GwtTeaming.getMessages().extensionsRemove());
+		extFlexTable.setText(0, 2, GwtTeaming.getMessages().extensionsRemove());
 		
 		extFlexTable.getCellFormatter().setStyleName(0, 0, "ss_bold");
 		extFlexTable.getCellFormatter().setStyleName(0, 1, "ss_bold");
 		extFlexTable.getCellFormatter().setStyleName(0, 2, "ss_bold");
-		extFlexTable.getCellFormatter().setStyleName(0, 3, "ss_bold");
 		
 		fPanel.add(extFlexTable);
 
@@ -251,7 +249,6 @@ public class ExtensionsConfig  extends Composite {
 		
 		extFlexTable.setWidget(row, 0, achorLabel );
 		extFlexTable.setText(row, 1, info.getDescription());
-		extFlexTable.setText(row, 2, info.getZoneId().toString());
 		
 		Button removeButton = new Button("x");
 		removeButton.addStyleDependentName("remove");
@@ -262,7 +259,7 @@ public class ExtensionsConfig  extends Composite {
 				}
 			}});
 		
-		extFlexTable.setWidget(row, 3, removeButton);
+		extFlexTable.setWidget(row, 2, removeButton);
 	}
 	
 	private void removeExtension(final int row) {

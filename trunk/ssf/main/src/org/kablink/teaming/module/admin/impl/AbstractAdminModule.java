@@ -285,7 +285,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
  				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    				break;
 			case manageExtensions:
-				break;
+  				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
+   				break;
 			default:
    				throw new NotSupportedException(operation.toString(), "checkAccess");
 		}
