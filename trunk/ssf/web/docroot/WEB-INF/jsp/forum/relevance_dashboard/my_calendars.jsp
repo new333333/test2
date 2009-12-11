@@ -43,57 +43,60 @@
 	<div id="ss_today">
 		<div id="ss_cal_para" > 
 			<script type="text/javascript">
-				ss_calendar_${ss_namespace} = ss_calendar.createCalendar({
-					containerId: "ss_cal_para", 
-					calendarDataProvider: new function() {
-							this.loadEventsByDate = function(reqParams, date, calendarObj) {
-								calendarObj.addEvents(<jsp:include page="/WEB-INF/jsp/forum/json/events_uncommented.jsp" />, date);
-							}
-							this.stickyCalendarDisplaySettings = function(){}
-							this.loadEntryEvents = function(options) {}
-					}, 
-					readOnly: true,
-				    defaultCalendarId: "${ssBinder.id}",
-				    weekFirstDayDefault:  "${ssUser.weekFirstDayDefault}",
-				    <c:if test="${empty ssUserProperties.calendarFirstDayOfWeek}">
-			    		weekFirstDay: "${ssUser.weekFirstDayDefault}",
-				    </c:if>
-				    <c:if test="${!empty ssUserProperties.calendarFirstDayOfWeek}">
-				    	weekFirstDay: "${ssUserProperties.calendarFirstDayOfWeek}",
-				    </c:if>
-				    workDayStartDefault:  ${ssUser.workDayStartDefault},
-				    <c:if test="${empty ssUserProperties.calendarWorkDayStart}">
-				    	workDayStart: ${ssUser.workDayStartDefault},
-				    </c:if>
-				    <c:if test="${!empty ssUserProperties.calendarWorkDayStart}">
-				    	workDayStart: ${ssUserProperties.calendarWorkDayStart},
-				    </c:if>
-				    viewDatesDescriptionsFieldId : "ss_calViewDatesDescriptions${ss_namespace}",
-				    viewSelectorHrefIds: {
-						days1: "ss_calDaySelectButton${ss_namespace}", 
-						days3: "ss_cal3DaysSelectButton${ss_namespace}", 
-						days5: "ss_cal5DaysSelectButton${ss_namespace}", 
-				    	days7: "ss_cal7DaysSelectButton${ss_namespace}", 
-						days14: "ss_cal14DaysSelectButton${ss_namespace}", 
-						month: "ss_calMonthSelectButton${ss_namespace}"
-					},
-					calendarHoursSelectorId: "ss_selectCalendarHours${ss_namespace}",
-					eventsTypeChooseId: "ss_calendarEventsTypeChoose${ss_namespace}",
-					eventsTypeSelectId: "ss_calendarEventsTypeSelect${ss_namespace}",
-					addEntryURL: "${addDefaultEntryURL}".replace("addEntryFromIFrame=1&", ""),
-					stickyId: "${ssBinder.id}"
-				});
-		
-				ss_calendar_${ss_namespace}.locale.workDayGridTitle = "<ssf:nlt tag="calendar.hours.workday"/>";
-				ss_calendar_${ss_namespace}.locale.fullDayGridTitle = "<ssf:nlt tag="calendar.hours.fullday"/>";
-				ss_calendar_${ss_namespace}.locale.entriesLabel = "<ssf:nlt tag="statistic.unity.plural"/>";
-				ss_calendar_${ss_namespace}.locale.minutesShortLabel = "<ssf:nlt tag="calendar.minutes.shortLabel"/>";
-				ss_calendar_${ss_namespace}.locale.dayNamesShort = ["<ssf:nlt tag="calendar.day.abbrevs.su"/>", "<ssf:nlt tag="calendar.day.abbrevs.mo"/>", "<ssf:nlt tag="calendar.day.abbrevs.tu"/>", "<ssf:nlt tag="calendar.day.abbrevs.we"/>", "<ssf:nlt tag="calendar.day.abbrevs.th"/>", "<ssf:nlt tag="calendar.day.abbrevs.fr"/>", "<ssf:nlt tag="calendar.day.abbrevs.sa"/>"];
-				ss_calendar_${ss_namespace}.locale.monthNamesShort = ["<ssf:nlt tag="calendar.abbreviation.january"/>", "<ssf:nlt tag="calendar.abbreviation.february"/>", "<ssf:nlt tag="calendar.abbreviation.march"/>", "<ssf:nlt tag="calendar.abbreviation.april"/>", "<ssf:nlt tag="calendar.abbreviation.may"/>", "<ssf:nlt tag="calendar.abbreviation.june"/>", "<ssf:nlt tag="calendar.abbreviation.july"/>", "<ssf:nlt tag="calendar.abbreviation.august"/>", "<ssf:nlt tag="calendar.abbreviation.september"/>", "<ssf:nlt tag="calendar.abbreviation.october"/>", "<ssf:nlt tag="calendar.abbreviation.november"/>", "<ssf:nlt tag="calendar.abbreviation.december"/>"];
-				ss_calendar_${ss_namespace}.locale.monthNames = ["<ssf:nlt tag="calendar.january"/>", "<ssf:nlt tag="calendar.february"/>", "<ssf:nlt tag="calendar.march"/>", "<ssf:nlt tag="calendar.april"/>", "<ssf:nlt tag="calendar.may"/>", "<ssf:nlt tag="calendar.june"/>", "<ssf:nlt tag="calendar.july"/>", "<ssf:nlt tag="calendar.august"/>", "<ssf:nlt tag="calendar.september"/>", "<ssf:nlt tag="calendar.october"/>", "<ssf:nlt tag="calendar.november"/>", "<ssf:nlt tag="calendar.december"/>"];
-				ss_calendar_${ss_namespace}.locale.allDay = "<ssf:nlt tag="calendar.allDay"/>";
-				ss_calendar_${ss_namespace}.locale.noTitle = "--<ssf:nlt tag="entry.noTitle"/>--";
-				ss_calendar_${ss_namespace}.ss_initializeCalendar();
+				ss_createOnLoadObj("my_calendars", onLoadHandler_my_calendars);
+				function onLoadHandler_my_calendars() {
+					ss_calendar_${ss_namespace} = ss_calendar.createCalendar({
+						containerId: "ss_cal_para", 
+						calendarDataProvider: new function() {
+								this.loadEventsByDate = function(reqParams, date, calendarObj) {
+									calendarObj.addEvents(<jsp:include page="/WEB-INF/jsp/forum/json/events_uncommented.jsp" />, date);
+								}
+								this.stickyCalendarDisplaySettings = function(){}
+								this.loadEntryEvents = function(options) {}
+						}, 
+						readOnly: true,
+					    defaultCalendarId: "${ssBinder.id}",
+					    weekFirstDayDefault:  "${ssUser.weekFirstDayDefault}",
+					    <c:if test="${empty ssUserProperties.calendarFirstDayOfWeek}">
+				    		weekFirstDay: "${ssUser.weekFirstDayDefault}",
+					    </c:if>
+					    <c:if test="${!empty ssUserProperties.calendarFirstDayOfWeek}">
+					    	weekFirstDay: "${ssUserProperties.calendarFirstDayOfWeek}",
+					    </c:if>
+					    workDayStartDefault:  ${ssUser.workDayStartDefault},
+					    <c:if test="${empty ssUserProperties.calendarWorkDayStart}">
+					    	workDayStart: ${ssUser.workDayStartDefault},
+					    </c:if>
+					    <c:if test="${!empty ssUserProperties.calendarWorkDayStart}">
+					    	workDayStart: ${ssUserProperties.calendarWorkDayStart},
+					    </c:if>
+					    viewDatesDescriptionsFieldId : "ss_calViewDatesDescriptions${ss_namespace}",
+					    viewSelectorHrefIds: {
+							days1: "ss_calDaySelectButton${ss_namespace}", 
+							days3: "ss_cal3DaysSelectButton${ss_namespace}", 
+							days5: "ss_cal5DaysSelectButton${ss_namespace}", 
+					    	days7: "ss_cal7DaysSelectButton${ss_namespace}", 
+							days14: "ss_cal14DaysSelectButton${ss_namespace}", 
+							month: "ss_calMonthSelectButton${ss_namespace}"
+						},
+						calendarHoursSelectorId: "ss_selectCalendarHours${ss_namespace}",
+						eventsTypeChooseId: "ss_calendarEventsTypeChoose${ss_namespace}",
+						eventsTypeSelectId: "ss_calendarEventsTypeSelect${ss_namespace}",
+						addEntryURL: "${addDefaultEntryURL}".replace("addEntryFromIFrame=1&", ""),
+						stickyId: "${ssBinder.id}"
+					});
+			
+					ss_calendar_${ss_namespace}.locale.workDayGridTitle = "<ssf:nlt tag="calendar.hours.workday"/>";
+					ss_calendar_${ss_namespace}.locale.fullDayGridTitle = "<ssf:nlt tag="calendar.hours.fullday"/>";
+					ss_calendar_${ss_namespace}.locale.entriesLabel = "<ssf:nlt tag="statistic.unity.plural"/>";
+					ss_calendar_${ss_namespace}.locale.minutesShortLabel = "<ssf:nlt tag="calendar.minutes.shortLabel"/>";
+					ss_calendar_${ss_namespace}.locale.dayNamesShort = ["<ssf:nlt tag="calendar.day.abbrevs.su"/>", "<ssf:nlt tag="calendar.day.abbrevs.mo"/>", "<ssf:nlt tag="calendar.day.abbrevs.tu"/>", "<ssf:nlt tag="calendar.day.abbrevs.we"/>", "<ssf:nlt tag="calendar.day.abbrevs.th"/>", "<ssf:nlt tag="calendar.day.abbrevs.fr"/>", "<ssf:nlt tag="calendar.day.abbrevs.sa"/>"];
+					ss_calendar_${ss_namespace}.locale.monthNamesShort = ["<ssf:nlt tag="calendar.abbreviation.january"/>", "<ssf:nlt tag="calendar.abbreviation.february"/>", "<ssf:nlt tag="calendar.abbreviation.march"/>", "<ssf:nlt tag="calendar.abbreviation.april"/>", "<ssf:nlt tag="calendar.abbreviation.may"/>", "<ssf:nlt tag="calendar.abbreviation.june"/>", "<ssf:nlt tag="calendar.abbreviation.july"/>", "<ssf:nlt tag="calendar.abbreviation.august"/>", "<ssf:nlt tag="calendar.abbreviation.september"/>", "<ssf:nlt tag="calendar.abbreviation.october"/>", "<ssf:nlt tag="calendar.abbreviation.november"/>", "<ssf:nlt tag="calendar.abbreviation.december"/>"];
+					ss_calendar_${ss_namespace}.locale.monthNames = ["<ssf:nlt tag="calendar.january"/>", "<ssf:nlt tag="calendar.february"/>", "<ssf:nlt tag="calendar.march"/>", "<ssf:nlt tag="calendar.april"/>", "<ssf:nlt tag="calendar.may"/>", "<ssf:nlt tag="calendar.june"/>", "<ssf:nlt tag="calendar.july"/>", "<ssf:nlt tag="calendar.august"/>", "<ssf:nlt tag="calendar.september"/>", "<ssf:nlt tag="calendar.october"/>", "<ssf:nlt tag="calendar.november"/>", "<ssf:nlt tag="calendar.december"/>"];
+					ss_calendar_${ss_namespace}.locale.allDay = "<ssf:nlt tag="calendar.allDay"/>";
+					ss_calendar_${ss_namespace}.locale.noTitle = "--<ssf:nlt tag="entry.noTitle"/>--";
+					ss_calendar_${ss_namespace}.ss_initializeCalendar();
+				}
 			</script>
 		</div><!-- end of para -->
 	</div><!-- end of today -->
