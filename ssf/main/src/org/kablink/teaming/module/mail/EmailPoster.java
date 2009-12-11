@@ -44,6 +44,7 @@ import org.kablink.teaming.domain.User;
 
 public interface EmailPoster {
     public static final String PROCESSOR_KEY = "processorKey_emailPoster";
+    public static final String X_TEAMING_ENTRYID = "x-teaming-entryid";
 	public List postMessages(Folder folder, String recipient, Message[] msgs, Session session, User postAsUser);
 
 }
