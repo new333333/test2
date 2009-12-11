@@ -79,9 +79,9 @@
 		   border="0"
 		   cellpadding="3"
 		   cellspacing="0"
-		   style="margin-top: 5em; margin-bottom: 5em; width:27.5em; border: 1px solid black; background: white url(<html:imagesPath/>/pics/Login/login_bk.png) no-repeat bottom right;">
+		   style="margin-top: 5em; margin-bottom: 5em; width:27.5em; border: 1px solid black; background: #eceeec url(<html:imagesPath/>/pics/Login/login_bk.png) no-repeat bottom right;">
 		<!-- Add a row for the Novell/Kablink Teaming 2.0 image to live in. -->
-		<tr style="background: white url(<html:imagesPath/>/pics/Login/${topImage}) no-repeat top left;">
+		<tr style="background: #eceeec url(<html:imagesPath/>/pics/Login/${topImage}) no-repeat top left;">
 			<td align="right" style="color: #404040;">
 				<img src="<html:imagesPath/>/pics/Login/login_dotzero.gif" width="1" height="75">
 				<table border="0" cellpadding="2" width="90%" style="margin: 0px 10px;">
@@ -128,7 +128,7 @@
 </c:if>
 					<tr>
 						<td align="right">&nbsp;</td>
-						<td align="right" nowrap >
+						<td align="right" style="white-space: nowrap" >
 							<div style="margin-top: 1.5em; margin-bottom: .25em;">
 			    		  		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
 			    		  		<input type="reset" style="margin-left: 10px;" class="ss_submit" value="<ssf:nlt tag="button.reset"/>"/>

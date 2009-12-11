@@ -47,7 +47,7 @@
       <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}" autocomplete="off">
         <table border="0" cellspacing="5">
           <tr>
-            <td valign="top">
+            <td>
               <label for="j_username"><span><ssf:nlt tag="login.name"/></span></label>
             </td>
             <td valign="top">
@@ -55,7 +55,7 @@
             </td>
           </tr>
           <tr>
-            <td valign="top">
+            <td>
               <label for="j_password"><span><ssf:nlt tag="login.password"/></span></label>
             </td>
             <td valign="top">
@@ -63,9 +63,9 @@
             </td>
           </tr>
           <tr>
-            <td valign="top">
+            <td>
             </td>
-            <td valign="top">
+            <td>
               <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="login"/>"/>
             </td>
           </tr>
