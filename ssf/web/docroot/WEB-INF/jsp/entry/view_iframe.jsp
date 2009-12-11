@@ -179,7 +179,14 @@ ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initSho
 				folderId="${ssBinder.id}" 
 				action="view_folder_entry" 
 				entryId="${ssEntryIdToBeShown}" 
-				actionUrl="true" />" 
+				actionUrl="true" />"
+
+			var date;
+
+			// To avoid caching problems, add a parameter to the url that will be unique every time.
+			date = new Date();
+			url += '&ms=' + date.getTime();
+
 			ss_showForumEntryInIframe(url);
 		}
 		ss_createOnLoadObj('ss_showEntryToBeShown${renderResponse.namespace}', ss_showEntryToBeShown${renderResponse.namespace});

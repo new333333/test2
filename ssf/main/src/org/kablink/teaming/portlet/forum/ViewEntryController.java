@@ -49,6 +49,7 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
+import javax.servlet.http.HttpServletResponse;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -81,6 +82,7 @@ import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.portletadapter.portlet.PortletResponseImpl;
 import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
@@ -904,6 +906,17 @@ public class ViewEntryController extends  SAbstractController {
 			RenderResponse response, Folder folder, String entryTitle, Map model) {
 		//Initialize the acl bean
 		Map accessControlFolderMap = BinderHelper.getAccessControlEntityMapBean(model, folder);
+
+		if ( response instanceof PortletResponseImpl )
+		{
+			HttpServletResponse httpServletResponse;
+			
+			// Set the http response header to no-cache so this page won't get cached.
+			httpServletResponse = ((PortletResponseImpl)response).getHttpServletResponse();
+			httpServletResponse.setHeader( "Pragma", "no-cache" );
+			httpServletResponse.setHeader( "Cache-Control", "no-cache" );
+			httpServletResponse.setDateHeader( "Expires", 0 );
+		}
 
 		//Build the "add entry" beans
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
