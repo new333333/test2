@@ -45,12 +45,16 @@
 <head>
 <meta http-equiv="Content-Script-Type" content="text/javascript"/>
 <meta http-equiv="Content-Style-Type" content="text/css"/>
-<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-
+<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0"/>
 <jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_mobile_head.jsp" />
 <c:if test="${!empty ss_windowTitle}"><title>${ss_windowTitle}</title></c:if>
 <script type="text/javascript" 
   src="<html:rootPath/>js/common/ss_mobile.js?startTime=<%= org.kablink.teaming.util.ReleaseInfo.getStartTime() %>"></script>
+<script type="text/javascript">	
+	window.onload = function() {
+  		setTimeout(function(){window.scrollTo(0, 1);}, 100);
+	}
+</script>  
 <c:set var="ss_isMobile" value="true" scope="request" />
 <c:if test="${!empty ss_mashupCss}">
   <link href="<html:rootPath/>${ss_mashupCss}" rel="stylesheet" type="text/css" />
@@ -69,4 +73,4 @@
 	}
 %>
 </head>
-<body>
+<body style="margin: 0;">
