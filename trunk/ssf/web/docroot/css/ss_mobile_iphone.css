@@ -68,8 +68,8 @@ span.pad-left20 select {
 	font-weight: bold; 
 	padding: 6px;
 	background-color: #54919a;
-	border: 1px solid #7abcba;
 	white-space:nowrap;
+	-webkit-border-radius: 7px;
 	}
 
 .homelink { 
@@ -80,8 +80,8 @@ span.pad-left20 select {
 	font-weight: bold; 
 	padding: 6px;
 	background-color: #54919a;
-	border: 1px solid #7abcba;
 	white-space:nowrap;
+	-webkit-border-radius: 7px;
 	}
 
 .backlink { 
