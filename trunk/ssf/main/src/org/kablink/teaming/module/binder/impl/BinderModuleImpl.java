@@ -273,7 +273,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						WorkAreaOperation.GENERATE_REPORTS);
 				break;
 			case export:
-				getAccessControlManager().checkOperation(binder,
+				getAccessControlManager().checkOperation(
+						getCoreDao().loadZoneConfig(
+								RequestContextHolder.getRequestContext()
+										.getZoneId()),
 						WorkAreaOperation.ZONE_ADMINISTRATION);
 				break;
 			default:
