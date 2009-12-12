@@ -977,17 +977,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	      			folders.add(b);
 	      		}
 			}
-	      	if (workspaces.size() < pageStart) {
-	      		wsList = new ArrayList();
-	      		if (pageNumber.intValue() > 0) prevPage = String.valueOf(pageNumber.intValue() - 1);
-	      	} else if (workspaces.size() >= pageEnd) {
-	      		wsList = workspaces.subList(pageStart, pageEnd);
-	      		nextPage = String.valueOf(pageNumber.intValue() + 1);
-	      		if (pageNumber.intValue() > 0) prevPage = String.valueOf(pageNumber.intValue() - 1);
-	      	} else {
-	      		wsList = workspaces.subList(pageStart, workspaces.size());
-	      		if (pageNumber.intValue() > 0) prevPage = String.valueOf(pageNumber.intValue() - 1);
-	      	}
+	      	wsList =workspaces;
 		}
 
 		model.put(WebKeys.WORKSPACES, wsList);
