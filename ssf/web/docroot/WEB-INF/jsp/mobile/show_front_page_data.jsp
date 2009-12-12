@@ -69,7 +69,7 @@
   </div>
 
   <div class="folder-content">
-    <div class="folder-head">
+    <div class="folder-head" style="letter-spacing: 0">
 		<form id="whatsNewForm" name="whatsNewForm" 
 		  method="post" 
 		  action="<ssf:url adapter="true" portletName="ss_forum" 
@@ -78,10 +78,7 @@
         <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
           <td valign="top" width="40%" nowrap>
-          <span><ssf:nlt tag="mobile.whatsNew"/></span>
-          </td>
-          <td valign="top" align="center" width="20%" nowrap>
-		  <div align="center">
+          <span>&nbsp;<ssf:nlt tag="mobile.whatsNew"/></span>
           <a href="javascript: ;" 
       		  onClick="ss_toggleDivVisibility('whats-new-menu');return false;">
       	    <span>
@@ -93,7 +90,7 @@
       		  src="<html:rootPath/>images/pics/menudown.gif"/>
       	  </a>
           
-			<div id="whats-new-menu" class="whats-new-dialog" style="display:none; z-index:2;">
+			<div id="whats-new-menu" class="action-dialog" style="display:none; z-index:2;">
 			    <div class="dialog-content">
 		      		<div class="menu-item">
 				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -120,7 +117,6 @@
 				      ><ssf:nlt tag="mobile.whatsNewMicroBlogs"/></a>
 				    </div>
 				</div>
-			</div>
 			</div>
 		  </td>
 		  <td valign="top" align="right" width="40%">
