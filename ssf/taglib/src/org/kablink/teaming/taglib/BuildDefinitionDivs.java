@@ -1260,7 +1260,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					    User user = RequestContextHolder.getRequestContext().getUser();
 
 						Set userListSet = new HashSet();
-						List userList = profileDao.loadUserPrincipals(ids, user.getZoneId(), true);
+						List userList = profileDao.loadUserPrincipals(ids, user.getZoneId(), false);
 						for (int i = 0; i < userList.size(); i++) {
 							if (((Principal)userList.get(i)).getEntityType().equals(EntityType.user)) userListSet.add(userList.get(i));
 						}
