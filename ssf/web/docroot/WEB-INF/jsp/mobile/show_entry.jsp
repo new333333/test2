@@ -47,10 +47,10 @@
 <c:set var="ss_showEntryNextPrev" value="true" scope="request" />
 <%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
 
-	<div class="folders">
-		<div class="folder-content">
+<div class="folders">
+  <div class="folder-content">
 
-		<c:if test="${!empty ssEntry}">
+	<c:if test="${!empty ssEntry}">
 		<div class="entry">
 			<div class="entry-comment-label">${ssEntry.totalReplyCount}</div>
 			<div>
