@@ -39,6 +39,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -73,7 +74,9 @@ import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
@@ -89,12 +92,15 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.domain.WorkflowResponse;
 import org.kablink.teaming.domain.WorkflowState;
+import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.binder.processor.EntryProcessor;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.definition.export.ElementBuilder;
@@ -111,6 +117,7 @@ import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.util.DomInputData;
 import org.kablink.teaming.search.SearchFieldResult;
+import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
@@ -150,6 +157,7 @@ public class ExportHelper {
 	private static IcalModule iCalModule = (IcalModule) SpringContextUtil.getBean("icalModule");
 	private static ProfileModule profileModule = (ProfileModule) SpringContextUtil.getBean("profileModule");
 	private static ZoneModule zoneModule = (ZoneModule) SpringContextUtil.getBean("zoneModule");
+	private static ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
 	
 	public static final String workspaces = "workspaces";
 	public static final String folders = "folders";
@@ -873,6 +881,27 @@ public class ExportHelper {
 		Element workflowsEle = element.addElement("workflows");
 
 		if (entity instanceof FolderEntry) {
+			for (WorkflowResponse response : ((FolderEntry) entity)
+					.getWorkflowResponses()) {
+				if (response != null) {
+					if (workflowsEle != null) {
+						Element value = workflowsEle.addElement("response");
+						String defId = response.getDefinitionId();
+						Definition def = definitionModule.getDefinition(defId);
+						value.addAttribute("definitionId", defId);
+						value.addAttribute("definitionName", def.getName());
+						value.addAttribute("responseName", response.getName());
+						Date date = response.getResponseDate();
+						SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+						value.addAttribute("responseDate", formatter.format(date.getTime()));
+						value.addAttribute("responderId", response.getResponderId().toString());
+						value.addAttribute("responseValue", response.getResponse());
+						User responder = profileDao.loadUser(response.getResponderId(), 
+								RequestContextHolder.getRequestContext().getZoneId());
+						addPrincipalToDocument(value, responder);
+					}
+				}
+			}
 			for (WorkflowState workflow : ((FolderEntry) entity)
 					.getWorkflowStates()) {
 				if (workflow != null) {
@@ -1433,6 +1462,7 @@ public class ExportHelper {
 			// workflows
 			final Binder binder = loadBinder(newBinderId);
 			final Map rMap = reportMap;
+			final Map fNameCache = nameCache;
 			statusTicket.setStatus(NLT.get("administration.export_import.importing", new String[] {binder.getPathName()}));
 
 			transactionTemplate.execute(new TransactionCallback() {
@@ -1442,7 +1472,7 @@ public class ExportHelper {
 					importSettingsList(doc, binder, fDefIdMap, rMap);
 
 					// workflows
-					importWorkflows(doc, binder, fDefIdMap, rMap);
+					importWorkflows(doc, binder, fDefIdMap, rMap, fNameCache);
 					return null;
 				}
 			});
@@ -1493,8 +1523,16 @@ public class ExportHelper {
 			// workflows
 			try {
 				final FolderEntry entry = folderModule.getEntry(null, newEntryId);
+				final Map fDefinitionIdMap = definitionIdMap;
+				final Map rMap = reportMap;
+				final Map fNameCache = nameCache;
 				statusTicket.setStatus(NLT.get("administration.export_import.importingEntry", new String[] {entry.getTitle()}));
-				importWorkflows(doc, entry, definitionIdMap, reportMap);
+				transactionTemplate.execute(new TransactionCallback() {
+					public Object doInTransaction(TransactionStatus status) {
+						importWorkflows(doc, entry, fDefinitionIdMap, rMap, fNameCache);
+						return null;
+					}
+				});
 			} catch(Exception e) {}
 
 			return newEntryId;
@@ -1524,7 +1562,7 @@ public class ExportHelper {
 			Map entryIdMap, Map binderIdMap, Map<String, Definition> definitionIdMap, 
 			Long entryId, Map reportMap, Map<String, Principal> nameCache) {
 
-		Document doc = getDocument(inputDataAsXML, nameCache);
+		final Document doc = getDocument(inputDataAsXML, nameCache);
 
 		Map options = new HashMap();
 		//Set the entry creator and modifier fields
@@ -1546,7 +1584,15 @@ public class ExportHelper {
 			// workflows
 			try {
 				final FolderEntry entry = folderModule.getEntry(null, newEntryId);
-				importWorkflows(doc, entry, definitionIdMap, reportMap);
+				final Map fDefinitionIdMap = definitionIdMap;
+				final Map rMap = reportMap;
+				final Map fNameCache = nameCache;
+				transactionTemplate.execute(new TransactionCallback() {
+					public Object doInTransaction(TransactionStatus status) {
+						importWorkflows(doc, entry, fDefinitionIdMap, rMap, fNameCache);
+						return null;
+					}
+				});
 			} catch(Exception e) {}
 
 			return newEntryId;
@@ -2047,8 +2093,10 @@ public class ExportHelper {
 	}
 
 	private static void importWorkflows(Document entityDoc, DefinableEntity entity, 
-			Map<String, Definition> definitionIdMap, Map reportMap) {
-
+			Map<String, Definition> definitionIdMap, Map reportMap, Map<String, Principal> nameCache) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String zoneUUID = entityDoc.getRootElement().attributeValue("zoneUUID", "");
+		
 		if (entity instanceof FolderEntry) {
 			boolean needsToBeIndexed = false;
 
@@ -2063,10 +2111,50 @@ public class ExportHelper {
 				needsToBeIndexed = true;
 			}
 
-			// start up the imported workflows
+			// add workflow responses
+			List<Element> repsonses = entityDoc.selectNodes("//workflows//response");
 
-			String xPath = "//workflows//process";
-			List<Element> workflows = entityDoc.selectNodes(xPath);
+			for (Element response : repsonses) {
+				String defId = response.attributeValue("definitionId", "");
+				String defName = response.attributeValue("definitionName", "");
+				Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap);
+				String question = response.attributeValue("responseName", "");
+				String responseValue = response.attributeValue("responseValue", "");
+				String responseDate = response.attributeValue("responseDate", "");
+				String responderId = response.attributeValue("responderId", "");
+
+				Element responderEle = (Element)response.selectSingleNode("./principal");
+				String responderName = responderEle.attributeValue("name", "");
+				String responderEmailAdr = responderEle.attributeValue("emailAddress", "");
+				Principal responder = matchPrincipal(responderName, responderEmailAdr, zoneUUID, nameCache);
+				if (responder == null) responder = user;
+
+		    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		    	Date date = new Date();
+		    	try {
+					date.setTime(sdf.parse(responseDate).getTime());
+		    	} catch(Exception e) {}
+
+				try {
+					WorkflowResponse wr = new WorkflowResponse();
+					wr.setResponderId(responder.getId());
+					wr.setResponseDate(date);
+					wr.setDefinitionId(def.getId());
+					wr.setName(question);
+					wr.setResponse(responseValue);
+					wr.setOwner(entity);
+					coreDao.save(wr);
+					((WorkflowSupport)entity).addWorkflowResponse(wr);
+
+					//processor.processChangeLog(entity, ChangeLog.ADDWORKFLOWRESPONSE);
+				
+				} catch(Exception e) {
+					logger.error(e);
+				}
+			}
+
+			// start up the imported workflows
+			List<Element> workflows = entityDoc.selectNodes("//workflows//process");
 
 			for (Element process : workflows) {
 				String defId = process.attributeValue("definitionId", "");
@@ -2081,7 +2169,6 @@ public class ExportHelper {
 				options.put(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE, state);
 				
 				//Workflow State needs a modification timestamp
-				User user = RequestContextHolder.getRequestContext().getUser();
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		    	Calendar current = Calendar.getInstance();
 		    	current.setTime(new Date());
@@ -2090,9 +2177,11 @@ public class ExportHelper {
 				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, current);
 				
 				
+				
 				try {
 					workflowModule.addEntryWorkflow((FolderEntry) entity,
 						entityIdentifier, def, options);
+					
 				} catch(Exception e) {
 					logger.error(e);
 				}
@@ -2238,5 +2327,4 @@ public class ExportHelper {
 	public static ZoneInfo getZoneInfo() {
 		return zoneModule.getZoneInfo(RequestContextHolder.getRequestContext().getZoneId());
 	}
-
 }
