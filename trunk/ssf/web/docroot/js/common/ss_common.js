@@ -405,7 +405,7 @@ function ss_openUrlInParentWorkarea(url, id, action, target, close) {
 		} else {
 			if (typeof target != 'undefined' && target != "") {
 				var win = window.open(url, target);
-				win.focus();
+				if (win != null && win.focus) win.focus();
 				if (typeof close != 'undefined' && close == 'true') setTimeout("self.window.close()", 100);
 			} else {
 				self.parent.location.href = url;
@@ -414,7 +414,7 @@ function ss_openUrlInParentWorkarea(url, id, action, target, close) {
 	} catch(e) {
 		if (typeof target != 'undefined' && target != "") {
 			var win = window.open(url, target);
-			win.focus();
+			if (win != null && win.focus) win.focus();
 			if (typeof close != 'undefined' && close == 'true') setTimeout("self.window.close()", 100);
 		} else {
 			self.parent.location.href = url;
@@ -525,7 +525,7 @@ function ss_openUrlInWindow(obj, windowName, width, height) {
 	} else {
 		var url = obj.href
 		var win = self.window.open(url, windowName, 'directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no,width='+width+',height='+height)
-		if (win.focus) win.focus();
+		if (win != null && win.focus) win.focus();
 	}
 	return false;
 }
