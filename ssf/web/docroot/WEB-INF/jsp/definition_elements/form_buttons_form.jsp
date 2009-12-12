@@ -39,7 +39,7 @@
 		//Get the form item being displayed
 		Element item = (Element) request.getAttribute("item");
 		String alignment = (String) request.getAttribute("property_alignment");
-		String divClass = "ss_buttonBarRight";
+		String divClass = "ss_buttonBarLeft";
 		if (alignment.equals("right")) {
 			divClass = "ss_buttonBarRight";
 		}
