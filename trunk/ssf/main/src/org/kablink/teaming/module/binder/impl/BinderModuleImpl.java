@@ -1275,6 +1275,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		for (Binder binder : binders) {
 			if (binder.isDeleted())
 				continue;
+			else if(binder instanceof Folder) {
+				if(((Folder) binder).isPreDeleted())
+					continue;
+			}
+			else if(binder instanceof Workspace) {
+				if(((Workspace) binder).isPreDeleted())
+					continue;						
+			}
 			getAccessControlManager().checkOperation(binder,
 					WorkAreaOperation.READ_ENTRIES);
 			return binder;
