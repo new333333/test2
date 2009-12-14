@@ -147,10 +147,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
                 	SimpleProfiler.startProfiler("addEntry_save");
         			addEntry_save(binder, entry, inputData, entryData,ctx);
         			SimpleProfiler.stopProfiler("addEntry_save");
-                   	//After the entry is successfully added, start up any associated workflows
-        			SimpleProfiler.startProfiler("addEntry_startWorkflow");
-                	addEntry_startWorkflow(entry, ctx);
-                	SimpleProfiler.stopProfiler("addEntry_startWorkflow");
                 	SimpleProfiler.startProfiler("addEntry_postSave");
          			addEntry_postSave(binder, entry, inputData, entryData, ctx);
                 	SimpleProfiler.stopProfiler("addEntry_postSave");
@@ -172,6 +168,18 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	filesErrors = addEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx);
         	SimpleProfiler.stopProfiler("addEntry_processFiles");
         
+        	SimpleProfiler.startProfiler("addEntry_startWorkflows");
+        	// 	The following part requires update database transaction.
+        	getTransactionTemplate().execute(new TransactionCallback() {
+        		public Object doInTransaction(TransactionStatus status) {
+                    	//After the entry is successfully added, start up any associated workflows
+        			SimpleProfiler.startProfiler("addEntry_startWorkflow");
+                	addEntry_startWorkflow(entry, ctx);
+                	SimpleProfiler.stopProfiler("addEntry_startWorkflow");
+       			return null;
+        		}
+        	});
+        	SimpleProfiler.stopProfiler("addEntry_startWorkflows");
  
         	SimpleProfiler.startProfiler("addEntry_indexAdd");
         	// This must be done in a separate step after persisting the entry,
