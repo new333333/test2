@@ -1507,7 +1507,8 @@ public class ExportHelper {
 		Map options = new HashMap();
 		//Set the entry creator and modifier fields
 		setSignature(options, doc, nameCache);
-
+		//Don't start any workflows; they will be added later
+		options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);
 		try {
 			// create new entry
 			long newEntryId = folderModule.addEntry(new Long(binderId),
@@ -1567,7 +1568,8 @@ public class ExportHelper {
 		Map options = new HashMap();
 		//Set the entry creator and modifier fields
 		setSignature(options, doc, nameCache);
-		
+		//Don't start the workflows; they get started later
+		options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);		
 		try {
 			// add new reply
 			long newEntryId = folderModule.addReply(new Long(binderId),
@@ -2100,8 +2102,7 @@ public class ExportHelper {
 		if (entity instanceof FolderEntry) {
 			boolean needsToBeIndexed = false;
 
-			// end all workflows that started upon entry creation
-
+			// end all workflows that started upon entry creation (none should have been started)
 			Set defaultWorkflows = ((FolderEntry) entity).getWorkflowStates();
 			Iterator iter = defaultWorkflows.iterator();
 
@@ -2175,7 +2176,8 @@ public class ExportHelper {
 				
 				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, user.getName());
 				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, current);
-				
+				//Don't process any conditions after starting the workflow
+				options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);				
 				
 				
 				try {
