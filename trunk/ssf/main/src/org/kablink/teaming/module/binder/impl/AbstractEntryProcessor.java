@@ -168,7 +168,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	filesErrors = addEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx);
         	SimpleProfiler.stopProfiler("addEntry_processFiles");
         
-        	SimpleProfiler.startProfiler("addEntry_startWorkflows");
         	// 	The following part requires update database transaction.
         	getTransactionTemplate().execute(new TransactionCallback() {
         		public Object doInTransaction(TransactionStatus status) {
@@ -179,7 +178,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        			return null;
         		}
         	});
-        	SimpleProfiler.stopProfiler("addEntry_startWorkflows");
  
         	SimpleProfiler.startProfiler("addEntry_indexAdd");
         	// This must be done in a separate step after persisting the entry,
