@@ -630,13 +630,14 @@ public class BinderHelper {
 		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
 		Long binderId = user.getWorkspaceId();
 		if (binderId == null) binderId = bs.getWorkspaceModule().getTopWorkspace().getId();
-		Binder binder = bs.getBinderModule().getBinder(binderId);
-
-		Tabs.TabEntry tab;
 		try {
-			tab = BinderHelper.initTabs(request, binder);
-			model.put(WebKeys.TABS, tab.getTabs());		
-		} catch (Exception e1) {}
+			Binder binder = bs.getBinderModule().getBinder(binderId);
+			Tabs.TabEntry tab;
+			try {
+				tab = BinderHelper.initTabs(request, binder);
+				model.put(WebKeys.TABS, tab.getTabs());		
+			} catch (Exception e1) {}
+		} catch(Exception e) {}
 
 		Map userQueries = new HashMap();
 		if (userProperties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
@@ -652,7 +653,6 @@ public class BinderHelper {
 		if (profileBinder != null) {
 			accessControlMap.put(WebKeys.CAN_VIEW_USER_PROFILES, true);
 		}
-
 
 		Object obj = userProperties.get(ObjectKeys.USER_PROPERTY_FAVORITES);
 		Favorites f;
