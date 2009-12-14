@@ -386,7 +386,8 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 			MimeMessage msgs[] = new MimeMessage[1];
 			msgs[0] = new MimeMessage(session, data);
 			EmailPoster processor = (EmailPoster)processorManager.getProcessor(binder,EmailPoster.PROCESSOR_KEY);
-			List errors = processor.postMessages((Folder)binder, "", msgs, session, RequestContextHolder.getRequestContext().getUser());
+			org.kablink.teaming.domain.User user = RequestContextHolder.getRequestContext().getUser();
+			List errors = processor.postMessages((Folder)binder, user.getEmailAddress(), msgs, session, user);
 			if(errors.size() > 0) {
 				Message m = (Message) errors.get(0);
 				throw new RemotingException(m.getSubject());

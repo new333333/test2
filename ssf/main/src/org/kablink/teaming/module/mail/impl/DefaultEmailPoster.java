@@ -50,6 +50,7 @@ import javax.mail.Message;
 import javax.mail.MessageRemovedException;
 import javax.mail.MessagingException;
 import javax.mail.Session;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMultipart;
 
@@ -142,7 +143,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 			} catch (Exception ex) {
 				logger.error("Error posting the message from: " + from.toString() + " Error: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
 				//if fails and from self, don't reply or we will get it back
-				errors.add(postError(recipient, msgs[i], from, ex));
+				errors.add(postError(recipient, msgs[i], from, postAsUser, ex));
 			} finally {
 				RequestContextHolder.setRequestContext(oldCtx);				
 			}
@@ -211,10 +212,10 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		}
 		msg.setFlag(Flags.Flag.DELETED, true);
 	}
-	private Message postError(String recipient, Message msg, InternetAddress from, Exception error) {
+	private Message postError(String recipient, Message msg, InternetAddress from, User postAsUser, Exception error) {
 		try {
 			msg.setFlag(Flags.Flag.DELETED, true);
-			if (!recipient.equals(from.getAddress())) {
+			if (!recipient.equals(from.getAddress()) || postAsUser != null) {
 				String errorMsg = NLT.get("errorcode.postMessage.failed", new Object[]{Html.stripHtml((error.getLocalizedMessage()==null? error.getMessage():error.getLocalizedMessage()))});
 				Message reject = msg.reply(false);
 				reject.setText(errorMsg);
@@ -412,10 +413,13 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		
 		public FileHandler(Part part) throws MessagingException {
 			this.part = part;
-			try {
-				fileName = javax.mail.internet.MimeUtility.decodeText(part.getFileName());
-			} catch (java.io.UnsupportedEncodingException  nc) {
-				throw new MessagingException(nc.getMessage());	
+			fileName = part.getFileName();
+			if(fileName != null) {
+				try {
+					fileName = javax.mail.internet.MimeUtility.decodeText(fileName);
+				} catch (java.io.UnsupportedEncodingException  nc) {
+					throw new MessagingException(nc.getMessage());	
+				}
 			}
 			type = part.getContentType();
 			size = part.getSize();
