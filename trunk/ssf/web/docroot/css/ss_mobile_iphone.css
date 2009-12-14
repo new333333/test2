@@ -165,8 +165,8 @@ span.pad-left20 select {
 	height: 5px;
 	line-height:.5em;
 	}
-.menu-item {padding-left: .5em;}
-.menu-item a { font-size: .95em; line-height: 1.8em;}
+.menu-item {padding-left: .5em; margin-bottom: 10px}
+.menu-item a { font-size: 1em;}
 .menu-curlevel {font-weight: bold;}	
 
 #micro-blog	a { 
@@ -247,6 +247,12 @@ span.pad-left20 select {
 	padding-top: 2px;
 	padding-bottom: 2px;
 	margin-left: 23%;
+	}
+.phone-2, .email-2 {
+	font-size: 15px;
+	color: #666;
+	padding: 3px;
+	margin-left: 30px;
 	}
 .userid-clear {
 	clear: both;
@@ -339,6 +345,7 @@ span.pad-left20 select {
 	position: relative;
 	border-bottom: 1px solid #e2e5e1; /* #d2d5d1; */
 	background:url(images/mobile/putty_blend4.png) repeat-x bottom;
+	min-height: 30px;
 	}
 .entry-title {
 	font-size: 18px;
