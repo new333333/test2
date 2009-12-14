@@ -440,6 +440,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.URL, refererUrl);
 		} else {
 			BinderHelper.setupStandardBeans(bs, request, response, model, null, portletName);
+			BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 			refererUrl = Http.getCompleteURL(((HttpServletRequestReachable) request).getHttpServletRequest());
 			if (Validator.isNotNull(refererUrl) && !refererUrl.contains("operation="+WebKeys.OPERATION_MOBILE_LOGIN)) {
 				model.put(WebKeys.URL, refererUrl);
@@ -552,6 +553,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		User user = RequestContextHolder.getRequestContext().getUser(); 
 		Map model = new HashMap();
 		String queryName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SEARCH_QUERY_NAME, "");
+		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID, -1);
 		String scope = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SEARCH_SCOPE, "site");
 		model.put(WebKeys.SEARCH_SCOPE, scope);
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
@@ -568,6 +570,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			}
 		} catch(Exception e) {}
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
+		BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 
 		String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "1");
       	int pageSize = Integer.valueOf(WebKeys.MOBILE_PAGE_SIZE).intValue();
@@ -611,6 +614,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			Tabs.TabEntry tab = tabs.addTab(searchQuery, options);
 			
 			BinderHelper.prepareSearchResultPage(bs, results, model, searchQuery, options, tab);
+	    } else if (tabId != -1) {
+	    	model.putAll(BinderHelper.prepareSearchResultPage(this, request, tabs));
 	    }
 		Map userQueries = new HashMap();
 		if (userProperties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
@@ -654,6 +659,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Binder binder = getBinderModule().getBinder(binderId);
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
+		BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 		UserProperties userProperties = (UserProperties)model.get(WebKeys.USER_PROPERTIES_OBJ);
 		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
 		Map options = new HashMap();		
@@ -806,6 +812,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, WebKeys.URL_WHATS_NEW);
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
+		BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 
 		Map options = new HashMap();		
 		if (binder== null) {
@@ -864,6 +871,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 					BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
 					model.put(WebKeys.ENTRY, u);
 					model.put(WebKeys.BINDER, getProfileModule().getProfileBinder());
+					BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 					
 					//Setup the actions menu list
 					List actions = new ArrayList();
@@ -878,7 +886,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			}
 		}
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
-		UserProperties userProperties = (UserProperties)model.get(WebKeys.USER_PROPERTIES_OBJ);
+		BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
 		if (userFolderProperties == null) userFolderProperties = new UserProperties(user.getId(), binderId);
 		Workspace binder;
@@ -1014,6 +1022,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.ENTRY_ID, entryId);
+		BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 
 		//Setup the actions menu list
 		List actions = new ArrayList();
@@ -1038,6 +1047,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.ENTRY_ID, entryId);
+		BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 
 		//Setup the actions menu list
 		List actions = new ArrayList();
@@ -1063,6 +1073,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.TABS, Tabs.getTabs(request));
+		BinderHelper.setupMobileSearchBeans(bs, request, response, model);
+
 		User user = RequestContextHolder.getRequestContext().getUser();
 		//Setup the actions menu list
 		List actions = new ArrayList();
@@ -1172,6 +1184,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	BinderHelper.setupStandardBeans(bs, request, response, model, binder.getId(), "ss_mobile");
 	model.put(WebKeys.BINDER, binder);
 	model.put(WebKeys.TABS, Tabs.getTabs(request));
+	BinderHelper.setupMobileSearchBeans(bs, request, response, model);
+
 	User user = RequestContextHolder.getRequestContext().getUser();
 	
 	Principal entry = getProfileModule().getEntry(entryId);
@@ -1215,12 +1229,15 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);		
 		Map model = new HashMap();
+		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
 		if (binderId != null) {
 			try {
 				Binder binder = getBinderModule().getBinder(binderId);
 				model.put(WebKeys.BINDER, binder);
 			} catch(Exception e) {}
 		}
+		BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 	    Tabs tabs = Tabs.getTabs(request);
 		model.put(WebKeys.TABS, tabs);		
 
@@ -1247,6 +1264,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				model.put(WebKeys.BINDER, binder);
 			} catch(Exception e) {}
 		}
+		BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 
 		Object obj = userProperties.get(ObjectKeys.USER_PROPERTY_FAVORITES);
 		Favorites f;
@@ -1284,6 +1302,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				model.put(WebKeys.BINDER, binder);
 			} catch(Exception e) {}
 		}
+		BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 
 		List<Long> teamIds = new ArrayList<Long>();
 		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId());
@@ -1419,6 +1438,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				model.put(WebKeys.BINDER, binder);
 			} catch(Exception e) {}
 		}
+		BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 		Map formData = request.getParameterMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PEOPLE) || op.equals(WebKeys.OPERATION_MOBILE_FIND_PLACES)) {

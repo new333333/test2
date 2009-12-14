@@ -74,10 +74,10 @@
 					  </c:if>
 					  <c:if test="${tab.type == 'search'}">
 					    href="<ssf:url 
-			  				action="advanced_search"
-			  				windowState="${ss_urlWindowState}">
+			  				action="__ajax_mobile" >
 			  				<ssf:param name="tabId" value="${tab.tabId}"/>
-			  				<ssf:param name="operation" value="viewPage"/>
+			  				<ssf:param name="operation" value="mobile_show_search_results"/>
+			  				<ssf:param name="operation" value="mobile_show_search_results"/>
 			  				</ssf:url>" 
 					  </c:if>
 					title="${tab.data.path}" >

@@ -75,7 +75,7 @@
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_user_list.jsp" %><%
 
 	} else if (itemType.equals("mashupCanvas")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/mashup_canvas_form.jsp" %><%
+		%><%@ include file="/WEB-INF/jsp/definition_elements/mashup_canvas_view.jsp" %><%
 
 	} else if (itemType.equals("workspaceRemoteApp")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/remote_application_view.jsp" %><%

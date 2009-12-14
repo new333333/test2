@@ -565,41 +565,9 @@ public class BinderHelper {
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.TOP_WORKSPACE, topBinder);
-
-		Tabs.TabEntry tab;
-		try {
-			tab = BinderHelper.initTabs(request, binder);
-			model.put(WebKeys.TABS, tab.getTabs());		
-		} catch (Exception e1) {}
-
-		Map userQueries = new HashMap();
-		if (userProperties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
-			userQueries = (Map)userProperties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
-		}
-		model.put("ss_UserQueries", userQueries);
 		
-		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
-		ProfileBinder profileBinder = null;
-		try {
-			profileBinder = bs.getProfileModule().getProfileBinder();
-		} catch(Exception e) {}
-		if (profileBinder != null) {
-			accessControlMap.put(WebKeys.CAN_VIEW_USER_PROFILES, true);
-		}
+		setupMobileSearchBeans(bs, request, response, model);
 
-
-		Object obj = userProperties.get(ObjectKeys.USER_PROPERTY_FAVORITES);
-		Favorites f;
-		if (obj != null && obj instanceof Document) {
-			f = new Favorites((Document)obj);
-			//fixup - have to store as string cause hibernate equals fails
-			bs.getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
-		} else {		
-			f = new Favorites((String)obj);
-		}
-		List<Map> favList = f.getFavoritesList();
-		model.put(WebKeys.MOBILE_FAVORITES_LIST, favList);
-		
 		String type = (String)userProperties.get(ObjectKeys.USER_PROPERTY_MOBILE_WHATS_NEW_TYPE);
 		if (type == null || type.equals("")) type = ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE;
 		model.put("ss_whatsNewType", type);
@@ -654,6 +622,49 @@ public class BinderHelper {
 		model.put("ss_actions", actions);
 		
 		return view;
+	}
+	
+	public static void setupMobileSearchBeans(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, Map model) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
+		Long binderId = user.getWorkspaceId();
+		if (binderId == null) binderId = bs.getWorkspaceModule().getTopWorkspace().getId();
+		Binder binder = bs.getBinderModule().getBinder(binderId);
+
+		Tabs.TabEntry tab;
+		try {
+			tab = BinderHelper.initTabs(request, binder);
+			model.put(WebKeys.TABS, tab.getTabs());		
+		} catch (Exception e1) {}
+
+		Map userQueries = new HashMap();
+		if (userProperties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
+			userQueries = (Map)userProperties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
+		}
+		model.put("ss_UserQueries", userQueries);
+
+		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
+		ProfileBinder profileBinder = null;
+		try {
+			profileBinder = bs.getProfileModule().getProfileBinder();
+		} catch(Exception e) {}
+		if (profileBinder != null) {
+			accessControlMap.put(WebKeys.CAN_VIEW_USER_PROFILES, true);
+		}
+
+
+		Object obj = userProperties.get(ObjectKeys.USER_PROPERTY_FAVORITES);
+		Favorites f;
+		if (obj != null && obj instanceof Document) {
+			f = new Favorites((Document)obj);
+			//fixup - have to store as string cause hibernate equals fails
+			bs.getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
+		} else {		
+			f = new Favorites((String)obj);
+		}
+		List<Map> favList = f.getFavoritesList();
+		model.put(WebKeys.MOBILE_FAVORITES_LIST, favList);
 	}
 
 	public static String setupTeamingLiveBeans(AllModulesInjected bs, RenderRequest request, 
