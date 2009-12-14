@@ -1393,9 +1393,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	// if exists, is effective and owned by the calling user.
     	
     	String versionName = null;
+    	Long fileSize = null;
     	int fileInfo = session.fileInfo(binder, entry, relativeFilePath);
     	if(fileInfo == RepositorySession.VERSIONED_FILE) { // Normal condition
-    		versionName = updateVersionedFile(session, binder, entry, fui, lock);
+    		UpdateInfo updateInfo = updateVersionedFile(session, binder, entry, fui, lock);
+    		versionName = updateInfo.versionName;
+    		fileSize = updateInfo.fileLength;
     	}
     	else if(fileInfo == RepositorySession.NON_EXISTING_FILE) {
 			// For some reason the file doesn't exist in the repository.
@@ -1409,6 +1412,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			// this kind of situation appears to be the one that is more
 			// forgiving or self-curing. This part of code implements that.
     		versionName = createVersionedFile(session, binder, entry, fui);
+    		fileSize = Long.valueOf(session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName));
     	}
     	else {
     		throw new InternalException();
@@ -1425,9 +1429,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		//if we are adding a new version of an existing attachment to 
 		//a uniqueName item, set flag - (will already be set if originally added
 		//through a unique element.  In other works, once unique always unique
-    	Long fileSize = null;
-    	if(versionName != null)
-    		fileSize = Long.valueOf(session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName));
 		updateFileAttachment(fAtt, user, versionName, fileSize, fui.getModDate(), fui.getModifierName());
 		
 		return versionName;
@@ -1472,11 +1473,16 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
     
-    private String updateVersionedFile(RepositorySession session, Binder binder, 
+    private class UpdateInfo {
+    	private String versionName = null;
+    	private Long fileLength = null;
+    }
+    
+    private UpdateInfo updateVersionedFile(RepositorySession session, Binder binder, 
     		DefinableEntity entity, FileUploadItem fui, FileAttachment.FileLock lock) 
     throws IOException {
     	String relativeFilePath = fui.getOriginalFilename();
-    	String versionName = null;
+    	UpdateInfo updateInfo = new UpdateInfo();
 		if(fui.isSynchToRepository()) {
     		// Attempt to check out the file. If the file was already checked out
     		// this is noop. So no harm. 
@@ -1496,14 +1502,20 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			// This update request is being made without the user's prior 
     			// obtaining lock. Since there's no lock to associate the 
     			// checkout with, we must checkin the file here. 
-    			versionName = session.checkin(binder, entity, relativeFilePath);
+    			// sort of like auto-commit = true
+    			updateInfo.versionName = session.checkin(binder, entity, relativeFilePath);
+    			updateInfo.fileLength = Long.valueOf(session.getContentLengthVersioned(binder, entity, relativeFilePath, updateInfo.versionName));
+    		}
+    		else {
+    			// auto-commit = false
+    			updateInfo.fileLength = Long.valueOf(fui.makeReentrant());
     		}
 		}
 		else {
-			versionName = RepositoryUtil.generateRandomVersionName();
+			updateInfo.versionName = RepositoryUtil.generateRandomVersionName();
 		}
 
-		return versionName;
+		return updateInfo;
     }
     
     private String createVersionedFile(RepositorySession session, Binder binder, 
