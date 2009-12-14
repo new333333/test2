@@ -54,7 +54,7 @@
 			Binder nextBinder = (Binder) parentTree.pop();
 	  %>
 	 <c:set var="nextBinder" value="<%= nextBinder %>"/>
-	   <div style="padding-left: ${navPadding}px;">
+	   <div class="menu-item" style="padding-left: ${navPadding}px;">
 	  	<a 
 		  <c:if test="${nextBinder.entityType == 'folder'}">
   			href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -85,7 +85,7 @@
 	</c:if>
 
 	<c:if test="${!empty ssBinder}">
-	   <div class="menu-curlevel" style="padding-left: ${navPadding}px;">
+	   <div class="menu-item menu-curlevel" style="padding-left: ${navPadding}px;">
 	  	<a 
 		  <c:if test="${ssBinder.entityType == 'folder'}">
   			href="<ssf:url adapter="true" portletName="ss_forum" 

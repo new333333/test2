@@ -84,13 +84,13 @@
 	  </div>
 	  
 	  <c:if test="${!empty entry.emailAddress}">
-	    <div class="entry-type">
+	    <div class="email-2">
 		  <span><ssf:mailto email="${entry.emailAddress}"/></span>
 	    </div>
 	  </c:if>
 	
 	  <c:if test="${!empty entry.phone}">
-	    <div class="entry-type">
+	    <div class="phone-2">
 		  <span>${entry.phone}</span>
 	    </div>
 	  </c:if>
