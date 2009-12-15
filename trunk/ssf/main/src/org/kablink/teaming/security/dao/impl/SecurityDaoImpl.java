@@ -46,6 +46,7 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.teaming.dao.KablinkDao;
 import org.kablink.teaming.domain.ZoneMismatchException;
 import org.kablink.teaming.security.accesstoken.impl.TokenInfoApplication;
 import org.kablink.teaming.security.accesstoken.impl.TokenInfoRequest;
@@ -60,7 +61,7 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
  *
  * @author Jong Kim
  */
-public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao {
+public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 
     private static final String ZONE_ID = "zoneId"; 
     private static final String WORK_AREA_ID = "workAreaId";
@@ -81,76 +82,101 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
         getHibernateTemplate().delete(obj);
     }
     public Function loadFunction(Long zoneId, Long id)  throws NoObjectByTheIdException {
-        Function f = (Function)getHibernateTemplate().get(Function.class, id);
-        if (zoneId.equals(f.getZoneId())) return f;
-        throw new NoObjectByTheIdException("errorcode.no.role.by.the.id", id);
+		long begin = System.currentTimeMillis();
+		try {
+	        Function f = (Function)getHibernateTemplate().get(Function.class, id);
+	        if (zoneId.equals(f.getZoneId())) return f;
+	        throw new NoObjectByTheIdException("errorcode.no.role.by.the.id", id);
+    	}
+    	finally {
+    		end(begin, "loadFunction(Long,Long)");
+    	}	        
     }
 
     public List findFunctions(final Long zoneId) {
-        return (List)getHibernateTemplate().execute(
-                new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                        List<Function> results = session.createCriteria(Function.class)
-                        	.add(Expression.eq(ZONE_ID, zoneId))
-                        	.setFetchMode("operationNames", FetchMode.JOIN)
-                        	.setCacheable(true)
-                        	.addOrder(Order.asc("name"))
-                        	.list();
-                    	//since we eagerly fetch, results are not unique
-                    	List sorted = new ArrayList();
-                    	for (Function f:results) {
-                    		//keep orderd
-                    		if (!sorted.contains(f)) sorted.add(f);                    		
-                    	}
-                    	return sorted;
-                    }
-                }
-            );
+		long begin = System.currentTimeMillis();
+		try {
+	        return (List)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    public Object doInHibernate(Session session) throws HibernateException {
+	                        List<Function> results = session.createCriteria(Function.class)
+	                        	.add(Expression.eq(ZONE_ID, zoneId))
+	                        	.setFetchMode("operationNames", FetchMode.JOIN)
+	                        	.setCacheable(true)
+	                        	.addOrder(Order.asc("name"))
+	                        	.list();
+	                    	//since we eagerly fetch, results are not unique
+	                    	List sorted = new ArrayList();
+	                    	for (Function f:results) {
+	                    		//keep orderd
+	                    		if (!sorted.contains(f)) sorted.add(f);                    		
+	                    	}
+	                    	return sorted;
+	                    }
+	                }
+	            );
+    	}
+    	finally {
+    		end(begin, "findFunctions(Long)");
+    	}
     }
 
 
 	public WorkAreaFunctionMembership getWorkAreaFunctionMembership(final Long zoneId, 
 			final Long workAreaId, final String workAreaType, final Long functionId) {
-        return (WorkAreaFunctionMembership) getHibernateTemplate().execute(
-                new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                    	List results = session.createCriteria(WorkAreaFunctionMembership.class)
-                                .add(Expression.conjunction() 
-                               			.add(Expression.eq(ZONE_ID, zoneId))
-                               			.add(Expression.eq(WORK_AREA_ID, workAreaId))
-                               			.add(Expression.eq(WORK_AREA_TYPE, workAreaType))
-                               			.add(Expression.eq(FUNCTION_ID, functionId))
-                               		)
-                               	.setFetchMode("memberIds", FetchMode.JOIN)
-                               	.list();
-                    	//since we eagerly fetch, results are not unique
-                    	if(results == null || results.size() == 0)
-                    		return null;
-                    	else
-                    		return (WorkAreaFunctionMembership) results.get(0);
-                   	}
-                }
-            );	
+		long begin = System.currentTimeMillis();
+		try {
+	        return (WorkAreaFunctionMembership) getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    public Object doInHibernate(Session session) throws HibernateException {
+	                    	List results = session.createCriteria(WorkAreaFunctionMembership.class)
+	                                .add(Expression.conjunction() 
+	                               			.add(Expression.eq(ZONE_ID, zoneId))
+	                               			.add(Expression.eq(WORK_AREA_ID, workAreaId))
+	                               			.add(Expression.eq(WORK_AREA_TYPE, workAreaType))
+	                               			.add(Expression.eq(FUNCTION_ID, functionId))
+	                               		)
+	                               	.setFetchMode("memberIds", FetchMode.JOIN)
+	                               	.list();
+	                    	//since we eagerly fetch, results are not unique
+	                    	if(results == null || results.size() == 0)
+	                    		return null;
+	                    	else
+	                    		return (WorkAreaFunctionMembership) results.get(0);
+	                   	}
+	                }
+	            );	    	}
+    	finally {
+    		end(begin, "getWorkAreaFunctionMembership(Long,Long,String,Long)");
+    	}
+
 	}
 
 	public List findWorkAreaFunctionMemberships(final Long zoneId, final Long functionId) {
-        return (List) getHibernateTemplate().execute(
-                new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                    	return session.createCriteria(WorkAreaFunctionMembership.class)
-                                .add(Expression.conjunction() 
-                               			.add(Expression.eq(ZONE_ID, zoneId))
-                               			.add(Expression.eq(FUNCTION_ID, functionId))
-                               		)
-                               	.list();
-                    }
-                }
-                	
-            );		
+		long begin = System.currentTimeMillis();
+		try {
+	        return (List) getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    public Object doInHibernate(Session session) throws HibernateException {
+	                    	return session.createCriteria(WorkAreaFunctionMembership.class)
+	                                .add(Expression.conjunction() 
+	                               			.add(Expression.eq(ZONE_ID, zoneId))
+	                               			.add(Expression.eq(FUNCTION_ID, functionId))
+	                               		)
+	                               	.list();
+	                    }
+	                }
+	                	
+	            );		
+    	}
+    	finally {
+    		end(begin, "findWorkAreaFunctionMemberships(Long,Long)");
+    	}
 	}
 	public List findWorkAreaFunctionMemberships(final Long zoneId,
             final Long workAreaId, final String workAreaType) {
-		
+		long begin = System.currentTimeMillis();
+		try {
 	       return (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
@@ -168,13 +194,24 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
 	                    	}
 	                	}
 	            );
-	 	}
+    	}
+    	finally {
+    		end(begin, "findWorkAreaFunctionMemberships(Long,Long,String)");
+    	}
+	 }
+	
     public void deleteWorkAreaFunctionMemberships(final Long zoneId, final Long workAreaId, final String workAreaType) {
-    	List members = findWorkAreaFunctionMemberships(zoneId, workAreaId, workAreaType);
-    	for (int i=0; i<members.size(); ++i) {
-    		WorkAreaFunctionMembership m = (WorkAreaFunctionMembership)members.get(i);
-    		//hibernate will delete memberids
-    		delete(m);
+		long begin = System.currentTimeMillis();
+		try {
+	    	List members = findWorkAreaFunctionMemberships(zoneId, workAreaId, workAreaType);
+	    	for (int i=0; i<members.size(); ++i) {
+	    		WorkAreaFunctionMembership m = (WorkAreaFunctionMembership)members.get(i);
+	    		//hibernate will delete memberids
+	    		delete(m);
+	    	}
+    	}
+    	finally {
+    		end(begin, "deleteWorkAreaFunctionMemberships(Long,Long,String)");
     	}
      	
     }
@@ -191,133 +228,181 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
     public boolean checkWorkAreaFunctionMembership(final Long zoneId,
             final Long workAreaId, final String workAreaType, 
             final String workAreaOperationName, final Set membersToLookup) {
-    	List matches = (List) getHibernateTemplate().execute(
-                new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                        // The following query performs 4 table joins in a single SQL query.
-                        // To increase performance, it only asks for the first matching 
-                        // record. In addition, it actually fetches only the ID (ie, primary
-                        // key) field of the record, which eliminates the need for another 
-                        // SELECT statement that would have been normally required otherwise. 
-                        // So, in summary, this query is as efficient as it can get. 
-                        return session.getNamedQuery("check-WorkAreaFunctionMembership")
-                       		.setLong(ZONE_ID, zoneId)
-                            .setLong(WORK_AREA_ID, workAreaId.longValue())
-                        	.setString(WORK_AREA_TYPE, workAreaType)
-                        	.setString(WORK_AREA_OPERATION_NAME, workAreaOperationName)
-                        	.setParameterList(PRINCIPAL_IDS, membersToLookup)
-                        	.setMaxResults(1) // Fetching the first matching row is enough for us
-                         	.setCacheable(true)
-                         	.list();
-                    }
-                }
-            );
-        
-        if(matches.size() > 0)
-            return true;
-        else
-            return false;
+		long begin = System.currentTimeMillis();
+		try {
+	    	List matches = (List) getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    public Object doInHibernate(Session session) throws HibernateException {
+	                        // The following query performs 4 table joins in a single SQL query.
+	                        // To increase performance, it only asks for the first matching 
+	                        // record. In addition, it actually fetches only the ID (ie, primary
+	                        // key) field of the record, which eliminates the need for another 
+	                        // SELECT statement that would have been normally required otherwise. 
+	                        // So, in summary, this query is as efficient as it can get. 
+	                        return session.getNamedQuery("check-WorkAreaFunctionMembership")
+	                       		.setLong(ZONE_ID, zoneId)
+	                            .setLong(WORK_AREA_ID, workAreaId.longValue())
+	                        	.setString(WORK_AREA_TYPE, workAreaType)
+	                        	.setString(WORK_AREA_OPERATION_NAME, workAreaOperationName)
+	                        	.setParameterList(PRINCIPAL_IDS, membersToLookup)
+	                        	.setMaxResults(1) // Fetching the first matching row is enough for us
+	                         	.setCacheable(true)
+	                         	.list();
+	                    }
+	                }
+	            );
+	        
+	        if(matches.size() > 0)
+	            return true;
+	        else
+	            return false;
+    	}
+    	finally {
+    		end(begin, "checkWorkAreaFunctionMembership(Long,Long,String,String,Set)");
+    	}
     }
     public List findWorkAreaFunctionMembershipsByOperation(final Long zoneId,
             final Long workAreaId, final String workAreaType, 
             final String workAreaOperationName) {
-    	List matches = (List) getHibernateTemplate().execute(
-                new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                        // The following query performs 4 table joins in a single SQL query.
-                        return session.getNamedQuery("get-WorkAreaFunctionMembershipByOperation")
-                       		.setLong(ZONE_ID, zoneId)
-                            .setLong(WORK_AREA_ID, workAreaId.longValue())
-                        	.setString(WORK_AREA_TYPE, workAreaType)
-                        	.setString(WORK_AREA_OPERATION_NAME, workAreaOperationName)
-                         	.setCacheable(true)
-                         	.list();
-                    }
-                }
-            );
-    	return matches;
+		long begin = System.currentTimeMillis();
+		try {
+	    	List matches = (List) getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    public Object doInHibernate(Session session) throws HibernateException {
+	                        // The following query performs 4 table joins in a single SQL query.
+	                        return session.getNamedQuery("get-WorkAreaFunctionMembershipByOperation")
+	                       		.setLong(ZONE_ID, zoneId)
+	                            .setLong(WORK_AREA_ID, workAreaId.longValue())
+	                        	.setString(WORK_AREA_TYPE, workAreaType)
+	                        	.setString(WORK_AREA_OPERATION_NAME, workAreaOperationName)
+	                         	.setCacheable(true)
+	                         	.list();
+	                    }
+	                }
+	            );
+	    	return matches;
+    	}
+    	finally {
+    		end(begin, "findWorkAreaFunctionMembershipsByOperation(Long,Long,String,String)");
+    	}
     }
     
     public List findWorkAreaByOperation(final Long zoneId,
                       final String workAreaOperationName, final Set membersToLookup) {
-    	List matches = (List) getHibernateTemplate().execute(
-                new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                        // The following query performs 4 table joins in a single SQL query.
-                        // To increase performance, it only asks for the first matching 
-                        // record. In addition, it actually fetches only the ID (ie, primary
-                        // key) field of the record, which eliminates the need for another 
-                        // SELECT statement that would have been normally required otherwise. 
-                        // So, in summary, this query is as efficient as it can get. 
-                        return session.getNamedQuery("get-FunctionMembershipByOperation")
-                       		.setLong(ZONE_ID, zoneId)
-                         	.setString(WORK_AREA_OPERATION_NAME, workAreaOperationName)
-                         	.setParameterList(PRINCIPAL_IDS, membersToLookup)
-                        	.list();
-                    }
-                }
-            );
-    	return matches;
+		long begin = System.currentTimeMillis();
+		try {
+	    	List matches = (List) getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    public Object doInHibernate(Session session) throws HibernateException {
+	                        // The following query performs 4 table joins in a single SQL query.
+	                        // To increase performance, it only asks for the first matching 
+	                        // record. In addition, it actually fetches only the ID (ie, primary
+	                        // key) field of the record, which eliminates the need for another 
+	                        // SELECT statement that would have been normally required otherwise. 
+	                        // So, in summary, this query is as efficient as it can get. 
+	                        return session.getNamedQuery("get-FunctionMembershipByOperation")
+	                       		.setLong(ZONE_ID, zoneId)
+	                         	.setString(WORK_AREA_OPERATION_NAME, workAreaOperationName)
+	                         	.setParameterList(PRINCIPAL_IDS, membersToLookup)
+	                        	.list();
+	                    }
+	                }
+	            );
+	    	return matches;
+    	}
+    	finally {
+    		end(begin, "findWorkAreaByOperation(Long,String,Set)");
+    	}
     }
 
 	public void deleteAll(final Class clazz) {
-		getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session)
-					throws HibernateException {
-				session.createQuery("DELETE " + clazz.getName())
-						.executeUpdate();
-				return null;
-			}
-		});
+		long begin = System.currentTimeMillis();
+		try {
+			getHibernateTemplate().execute(new HibernateCallback() {
+				public Object doInHibernate(Session session)
+						throws HibernateException {
+					session.createQuery("DELETE " + clazz.getName())
+							.executeUpdate();
+					return null;
+				}
+			});
+    	}
+    	finally {
+    		end(begin, "deleteAll(Class)");
+    	}
 	}
 
 	public TokenInfoRequest loadTokenInfoRequest(Long zoneId, String infoId) {
-		TokenInfoRequest info = (TokenInfoRequest) getHibernateTemplate().get
-		(TokenInfoRequest.class, infoId);
-		
-		if(info != null) {
-			if(!zoneId.equals(info.getZoneId()))
-				throw new ZoneMismatchException(info.getZoneId(), zoneId);
-		}
-
-		return info;
+		long begin = System.currentTimeMillis();
+		try {
+			TokenInfoRequest info = (TokenInfoRequest) getHibernateTemplate().get
+			(TokenInfoRequest.class, infoId);
+			
+			if(info != null) {
+				if(!zoneId.equals(info.getZoneId()))
+					throw new ZoneMismatchException(info.getZoneId(), zoneId);
+			}
+	
+			return info;
+    	}
+    	finally {
+    		end(begin, "loadTokenInfoRequest(Long,String)");
+    	}
 	}
 
 	public TokenInfoApplication loadTokenInfoApplication(Long zoneId, String infoId) {
-		TokenInfoApplication info = (TokenInfoApplication) getHibernateTemplate().get
-		(TokenInfoApplication.class, infoId);
-		
-		if(info != null) {
-			if(!zoneId.equals(info.getZoneId()))
-				throw new ZoneMismatchException(info.getZoneId(), zoneId);
-		}
-
-		return info;
+		long begin = System.currentTimeMillis();
+		try {
+			TokenInfoApplication info = (TokenInfoApplication) getHibernateTemplate().get
+			(TokenInfoApplication.class, infoId);
+			
+			if(info != null) {
+				if(!zoneId.equals(info.getZoneId()))
+					throw new ZoneMismatchException(info.getZoneId(), zoneId);
+			}
+	
+			return info;
+    	}
+    	finally {
+    		end(begin, "loadTokenInfoApplication(Long,String)");
+    	}
 	}
 
 	public TokenInfoSession loadTokenInfoSession(Long zoneId, String infoId) {
-		TokenInfoSession info = (TokenInfoSession) getHibernateTemplate().get
-		(TokenInfoSession.class, infoId);
-		
-		if(info != null) {
-			if(!zoneId.equals(info.getZoneId()))
-				throw new ZoneMismatchException(info.getZoneId(), zoneId);
-		}
-
-		return info;
+		long begin = System.currentTimeMillis();
+		try {
+			TokenInfoSession info = (TokenInfoSession) getHibernateTemplate().get
+			(TokenInfoSession.class, infoId);
+			
+			if(info != null) {
+				if(!zoneId.equals(info.getZoneId()))
+					throw new ZoneMismatchException(info.getZoneId(), zoneId);
+			}
+	
+			return info;
+    	}
+    	finally {
+    		end(begin, "loadTokenInfoSession(Long,String)");
+    	}
 	}
 
 	public void deleteUserTokenInfoSession(final Long userId) {
-	   	getHibernateTemplate().execute(
-	    	   	new HibernateCallback() {
-	    	   		public Object doInHibernate(Session session) throws HibernateException {
-		     	   		session.createQuery("Delete org.kablink.teaming.security.accesstoken.impl.TokenInfoSession where userId=:userId")
-		   				.setLong("userId", userId)
-	     	   			.executeUpdate();
-	       	   		return null;
-	       	   		}
-	       	   	}
-	    	 );    	
+		long begin = System.currentTimeMillis();
+		try {
+		   	getHibernateTemplate().execute(
+		    	   	new HibernateCallback() {
+		    	   		public Object doInHibernate(Session session) throws HibernateException {
+			     	   		session.createQuery("Delete org.kablink.teaming.security.accesstoken.impl.TokenInfoSession where userId=:userId")
+			   				.setLong("userId", userId)
+		     	   			.executeUpdate();
+		       	   		return null;
+		       	   		}
+		       	   	}
+		    	 );    	
+    	}
+    	finally {
+    		end(begin, "deleteUserTokenInfoSession(Long)");
+    	}
 	}
 
  }
