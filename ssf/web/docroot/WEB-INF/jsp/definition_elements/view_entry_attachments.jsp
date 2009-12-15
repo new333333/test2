@@ -39,6 +39,15 @@
 	boolean presence_service_enabled = org.kablink.teaming.util.SPropsUtil.getBoolean("presence.service.enable", false);
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="ss_quotaMessage" value="" />
+<c:if test="${ss_diskQuotaHighWaterMarkExceeded && !ss_diskQuotaExceeded}">
+<c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.nearLimit"><ssf:param name="value" useBody="true"
+	    ><fmt:formatNumber value="${(ssUser.diskQuota*1048576 - ssUser.diskSpaceUsed)/1048576}" 
+	    maxFractionDigits="2"/></ssf:param></ssf:nlt></c:set>
+</c:if>
+<c:if test="${ss_diskQuotaExceeded}">
+<c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.diskQuotaExceeded"/></c:set>
+</c:if>
 
 <c:set var="ss_attachments_namespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_attachments_namespace" value="${ss_namespace}"/></c:if>
@@ -77,11 +86,11 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 				id="ss_dropbox_div_position${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 				href="javascript: ;" 
 				<c:if test="${!ss_diskQuotaExceeded}">
-				  onClick="ss_showAddAttachmentDropbox('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); 
-				    return false;"
+				  onClick='ss_showAddAttachmentDropbox("${ssDefinitionEntry.parentBinder.id}", "${ssDefinitionEntry.id}", "${ss_attachments_namespace}"); 
+				    <c:if test="${!empty ss_quotaMessage}">alert("${ss_quotaMessage}");</c:if>return false;'
 				</c:if>
 				<c:if test="${ss_diskQuotaExceeded}">
-				  onClick='alert("<ssf:nlt tag="quota.diskQuotaExceeded"/>");return false;'
+				  onClick='alert("${ss_quotaMessage}");return false;'
 				</c:if>
 				title="<ssf:nlt tag="entry.AttachFilesByApplet"/>">
 				  <ssf:nlt tag="entry.AttachFilesByApplet"/>
@@ -101,11 +110,15 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 		  folder="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" 
 		  <c:if test="${!ss_diskQuotaExceeded}">
 		    href="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" 
-		    target="_blank"><ssf:nlt tag="entry.AttachFilesByWebDav"/></a>
+		    target="_blank"
+		    <c:if test="${!empty ss_quotaMessage}">
+		      onClick='alert("${ss_quotaMessage}");'
+		    </c:if>
 		  </c:if>
 		  <c:if test="${ss_diskQuotaExceeded}">
-		    onClick='alert("<ssf:nlt tag="quota.diskQuotaExceeded"/>");return false;'
+		    onClick='alert("${ss_quotaMessage}");'
 		  </c:if>
+		><ssf:nlt tag="entry.AttachFilesByWebDav"/></a>
 		</li>
 	</c:if>
 	<c:if test="${ss_folderViewStyle != 'blog' && !empty ssWebDavURL}">
@@ -117,9 +130,12 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 		  <c:if test="${!ss_diskQuotaExceeded}">
 		    href="${ssWebDavURL}" 
 		    target="_blank"
+		    <c:if test="${!empty ss_quotaMessage}">
+		      onClick='alert("${ss_quotaMessage}");'
+		    </c:if>
 		  </c:if>
 		  <c:if test="${ss_diskQuotaExceeded}">
-		    onClick='alert("<ssf:nlt tag="quota.diskQuotaExceeded"/>");return false;'
+		    onClick='alert("${ss_quotaMessage}");return false;'
 		  </c:if>
 		  ><ssf:nlt tag="entry.AttachFilesByWebDav"/></a>
 		</li>	
@@ -131,10 +147,11 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 		<a class="ss_tinyButton ss_fineprint ss_nowrap" 
 		  title="<ssf:nlt tag="entry.AttachFilesByWebBrowse"/>" href="javascript: ;" 
 		  <c:if test="${!ss_diskQuotaExceeded}">
-		    onClick="ss_showAddAttachmentBrowse('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
+		    onClick='ss_showAddAttachmentBrowse("${ssDefinitionEntry.parentBinder.id}", "${ssDefinitionEntry.id}", "${ss_attachments_namespace}"); 
+		      <c:if test="${!empty ss_quotaMessage}">alert("${ss_quotaMessage}");</c:if>return false;'
 		  </c:if>
 		  <c:if test="${ss_diskQuotaExceeded}">
-			onClick='alert("<ssf:nlt tag="quota.diskQuotaExceeded"/>");return false;'
+			onClick='alert("${ss_quotaMessage}");return false;'
 		  </c:if>
 		  ><ssf:nlt tag="entry.AttachFilesByWebBrowse"/></a>
 	  </li>
@@ -147,10 +164,11 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	    title="<ssf:nlt tag="attachMeeting.attachResults"/>" 
 	    href="javascript: ;" 
 		<c:if test="${!ss_diskQuotaExceeded}">
-	      onClick="ss_showAttachMeetingRecords('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
+	      onClick='ss_showAttachMeetingRecords("${ssDefinitionEntry.parentBinder.id}", "${ssDefinitionEntry.id}", "${ss_attachments_namespace}"); 
+	        <c:if test="${!empty ss_quotaMessage}">alert("${ss_quotaMessage}");</c:if>return false;'
 		</c:if>
 		<c:if test="${ss_diskQuotaExceeded}">
-		  onClick='alert("<ssf:nlt tag="quota.diskQuotaExceeded"/>");return false;'
+		  onClick='alert("${ss_quotaMessage}");return false;'
 		</c:if>
 	    ><ssf:nlt tag="attachMeeting.attachResults"/></a>
 	<% } %>

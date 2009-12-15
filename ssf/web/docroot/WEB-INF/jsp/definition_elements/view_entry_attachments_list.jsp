@@ -35,6 +35,15 @@
 <%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<c:set var="ss_quotaMessage" value="" />
+<c:if test="${ss_diskQuotaHighWaterMarkExceeded && !ss_diskQuotaExceeded}">
+<c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.nearLimit"><ssf:param name="value" useBody="true"
+	    ><fmt:formatNumber value="${(ssUser.diskQuota*1048576 - ssUser.diskSpaceUsed)/1048576}" 
+	    maxFractionDigits="2"/></ssf:param></ssf:nlt></c:set>
+</c:if>
+<c:if test="${ss_diskQuotaExceeded}">
+<c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.diskQuotaExceeded"/></c:set>
+</c:if>
 <c:set var="owningBinder" value="${ssBinder}"/>
 <jsp:useBean id="owningBinder" type="org.kablink.teaming.domain.Binder" />
 
@@ -259,14 +268,15 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					
 							<c:if test="${!ss_diskQuotaExceeded}">
 							  <a href="javascript: ;" 
-								onClick="javascript:ss_openWebDAVFile('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}', '<%= operatingSystem %>', 
-									'${selection.id}');
-									return false;">
+								onClick='javascript:<c:if test="${!empty ss_quotaMessage}">alert("${ss_quotaMessage}");</c:if>
+								    ss_openWebDAVFile("${ssDefinitionEntry.parentBinder.id}", "${ssDefinitionEntry.id}", "${ss_attachments_namespace}", "<%= operatingSystem %>", 
+									"${selection.id}");
+									return false;'>
 								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
 							</c:if>
 							<c:if test="${ss_diskQuotaExceeded}">
 							  <a href="javascript: ;" 
-								onClick='alert("<ssf:nlt tag="quota.diskQuotaExceeded"/>");return false;'>
+								onClick='alert("${ss_quotaMessage}");return false;'>
 								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
 							</c:if>
 
@@ -279,12 +289,14 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						    <a href="<ssf:ssfsInternalAttachmentUrl 
 								binder="${ssDefinitionEntry.parentBinder}"
 								entity="${ssDefinitionEntry}"
-								fileAttachment="${selection}"/>">
+								fileAttachment="${selection}"/>"
+							<c:if test="${!empty ss_quotaMessage}">onClick='alert("${ss_quotaMessage}");'</c:if>
+							>
 								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
 						  </c:if>
 						  <c:if test="${ss_diskQuotaExceeded}">
 							  <a href="javascript: ;" 
-								onClick='alert("<ssf:nlt tag="quota.diskQuotaExceeded"/>");return false;'>
+								onClick='alert("${ss_quotaMessage}");return false;'>
 								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
 						  </c:if>
 					</ssf:editorTypeToUseForEditInPlace>

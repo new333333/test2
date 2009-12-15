@@ -42,6 +42,15 @@
     <c:set var="ss_fieldModifyDisabled" value="true"/>
   </c:if>
 </c:if>
+<c:set var="ss_quotaMessage" value="" />
+<c:if test="${ss_diskQuotaHighWaterMarkExceeded && !ss_diskQuotaExceeded}">
+<c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.nearLimit"><ssf:param name="value" useBody="true"
+	    ><fmt:formatNumber value="${(ssUser.diskQuota*1048576 - ssUser.diskSpaceUsed)/1048576}" 
+	    maxFractionDigits="2"/></ssf:param></ssf:nlt></c:set>
+</c:if>
+<c:if test="${ss_diskQuotaExceeded}">
+<c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.diskQuotaExceeded"/></c:set>
+</c:if>
 <script type="text/javascript">
 function ss_showMoreFiles${property_name}() {
 	document.getElementById('ss_extraFiles_${property_name}').style.display='block';
@@ -116,14 +125,16 @@ var ${eName}_ok = 1;
   <div class="needed-because-of-ie-bug"><div id="ss_duplicateFileCheck_${eName}" style="display:none; visibility:hidden;" ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
   <input type="file" class="ss_text ${ss_fieldModifyStyle}" ${ss_fieldModifyInputAttribute}
     name="${eName}" id="${eName}" ${width} 
-	<c:if test="${ss_diskQuotaExceeded}">
-	  onClick='alert("<ssf:nlt tag="quota.diskQuotaExceeded"/>");return false;'
-	</c:if>
 	<c:if test="${!ss_diskQuotaExceeded}">
       onkeyup="if(window.event && window.event.keyCode!=9 && window.event.keyCode!=16)this.click();return false;"
       onchange="ss_ajaxValidate(ss_findEntryForFileUrl, this,'${elementName}_label', 'ss_duplicateFileCheck_${eName}', '${repositoryName}');"
 	</c:if>
-  /><br/>
+	<c:if test="${ss_diskQuotaExceeded}">
+	  onClick='alert("${ss_quotaMessage}");return false;'
+	</c:if>
+  />
+  <div align="left"><span class="ss_smallprint" style="color:red;">${ss_quotaMessage}</span></div>
+  <br/>
   <input type="hidden" name="ss_upload_request_uid" />
  </c:if>
  <c:if test='${empty ssFolder}'>
@@ -131,9 +142,11 @@ var ${eName}_ok = 1;
   <input type="file" class="ss_text ${ss_fieldModifyStyle}" ${ss_fieldModifyInputAttribute} 
     name="${eName}" id="${eName}" 
 	<c:if test="${ss_diskQuotaExceeded}">
-	  onClick='alert("<ssf:nlt tag="quota.diskQuotaExceeded"/>");return false;'
+	  onClick='alert("${ss_quotaMessage}");return false;'
 	</c:if>
-    ${width}/><br/>
+    ${width}/>
+  <div align="left"><span class="ss_smallprint" style="color:red;">${ss_quotaMessage}</span></div>
+  <br/>
  </c:if>
 	<script type="text/javascript">	
 		function ${eName}_onAtatchmentFormSubmit(formObj) {
