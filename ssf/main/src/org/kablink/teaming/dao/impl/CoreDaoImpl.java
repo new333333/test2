@@ -345,17 +345,44 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   			session.createQuery("DELETE org.kablink.teaming.domain.SimpleName where binderId=:binderId")
 		   				.setLong("binderId", binder.getId())
 		   				.executeUpdate();
-		   			//delete mashup definitions on this binder
-    	   			session.createQuery("DELETE org.kablink.teaming.domain.CustomAttribute where binder=:binder")
-		   				.setLong("binder", binder.getId())
-		   				.executeUpdate();
 
 		   			if (entryClass != null) {
+		   				
+			   			//delete customAttributeListElement definitions on this binder
+	    	   			session.createQuery("DELETE org.kablink.teaming.domain.CustomAttributeListElement where owningBinderId=:ownerBinderId and ownerType=:entityType")
+			   				.setLong("ownerBinderId", binder.getId())
+			   				.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.name())
+			   				.executeUpdate();
+		   				
+	    	   		    //delete customAttributeListElement definitions on this binder
+	    	   			session.createQuery("DELETE org.kablink.teaming.domain.CustomAttribute where owningBinderId=:ownerBinderId and ownerType=:entityType")
+			   				.setLong("ownerBinderId", binder.getId())
+			   				.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.name())
+			   				.executeUpdate();
+		   				
 		   				//finally delete the entries
 		   				session.createQuery("Delete " + entryClass.getName() + " where parentBinder=:parent")
 		       	   				.setEntity("parent", binder)
 		       	   				.executeUpdate();		 		   				
 		   			}
+
+		   			//delete customAttributeListElement definitions on this binder
+    	   			session.createQuery("DELETE org.kablink.teaming.domain.CustomAttributeListElement where ownerId=:ownerId and ownerType=:entityType")
+		   				.setLong("ownerId", binder.getId())
+		   				.setParameter("entityType", EntityIdentifier.EntityType.folder.name())
+		   				.executeUpdate();
+	   				
+    	   		    //delete customAttributeListElement definitions on this binder
+    	   			session.createQuery("DELETE org.kablink.teaming.domain.CustomAttribute where ownerId=:ownerId and ownerType=:entityType")
+		   				.setLong("ownerId", binder.getId())
+		   				.setParameter("entityType", EntityIdentifier.EntityType.folder.name())
+		   				.executeUpdate();
+
+		   			//delete mashup definitions on this binder
+    	   			session.createQuery("DELETE org.kablink.teaming.domain.CustomAttribute where binder=:binder")
+		   				.setLong("binder", binder.getId())
+		   				.executeUpdate();
+		   			
 		   			//do ourselves or hibernate will flsuh
 		   			session.createQuery("Delete  org.kablink.teaming.domain.Binder where id=:id")
 		   		    	.setLong("id", binder.getId().longValue())
