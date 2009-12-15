@@ -392,8 +392,8 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		SimpleProfiler.stopProfiler("RssModule.updateRssFeed");
 	}
 
-	private String getRssDisabledString() {
-		String rss = addRssHeader("RSS has been disabled for this feed");
+	private String getRssDisabledString(HttpServletRequest request) {
+		String rss = addRssHeader(request, null, "RSS has been disabled for this feed");
 		rss += addRssFooter();
 		return rss;
 	}
@@ -411,7 +411,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 
 		boolean rssEnabled = SPropsUtil.getBoolean("rss.enable", true);
 		if (!rssEnabled) {
-			return this.getRssDisabledString();
+			return this.getRssDisabledString(request);
 		}
 		
 		File indexPath = getRssIndexPath(binder);
@@ -438,7 +438,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			Hits hits = indexSearcher.search(so.getQuery(),so.getSortBy());
 
 			// create the return string, add the channel info
-			String rss = addRssHeader(binder.getTitle());
+			String rss = addRssHeader(request, binder, binder.getTitle());
 			
 			String adapterRoot = WebUrlUtil.getAdapterRootURL(request, null);
 			
@@ -479,7 +479,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 
 		boolean rssEnabled = SPropsUtil.getBoolean("rss.enable", true);
 		if (!rssEnabled) {
-			return this.getRssDisabledString();
+			return this.getRssDisabledString(request);
 		}
 		
 		File indexPath = getRssIndexPath(binder);
@@ -639,13 +639,22 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		return ret;
 	}
 
-	private String addRssHeader(String title) {
+	private String addRssHeader(HttpServletRequest request, Binder binder, String title) {
 		String ret = "";
 		ret += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 		ret += "<rss version=\"2.0\">\n";
 		ret += "<channel>\n";
 		ret += "<title><![CDATA[ " +  title + "]]></title>\n";
-		ret += "<link/>";
+		if (binder == null) {
+			ret += "<link/>";
+		} else {
+			ret += "<link>"
+				+ PermaLinkUtil.getPermalink(binder).replaceAll(
+						"&", "&amp;") + "</link>\n";
+			ret += "<guid>"
+				+ PermaLinkUtil.getPermalink(binder).replaceAll(
+						"&", "&amp;") + "</guid>\n";
+		}
 		ret += "<description><![CDATA[ " + title + "]]></description>\n";
 		ret += "<pubDate>" + rssFmt.format(new Date()) + "</pubDate>\n";
 		ret += "<ttl>60</ttl>\n";
