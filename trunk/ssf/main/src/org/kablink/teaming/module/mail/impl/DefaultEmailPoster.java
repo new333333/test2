@@ -291,7 +291,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 			//old mailers may not use disposition, and instead put the name in the content-type
 			//java mail handles this.
 			String fileName = part.getFileName();
-			if (Validator.isNotNull(fileName)) {
+			if (Validator.isNotNull(fileName) && !(part.isMimeType("text/html") && part instanceof Message)) {
 				fileItems.put(ObjectKeys.INPUT_FIELD_ENTITY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
 			} else if (part.isMimeType("text/html")) {
 				processHTML(folder, part.getContent(), inputData);
