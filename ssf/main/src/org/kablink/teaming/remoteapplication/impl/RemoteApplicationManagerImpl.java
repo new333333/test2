@@ -64,6 +64,7 @@ import org.kablink.teaming.security.accesstoken.AccessToken;
 import org.kablink.teaming.security.accesstoken.AccessTokenManager;
 import org.kablink.teaming.security.accesstoken.AccessToken.BinderAccessConstraints;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
 
@@ -72,7 +73,8 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 
 	protected static Protocol protocol;
 	static {
-		protocol = new Protocol("https", new EasySSLProtocolSocketFactory(), 443); 
+		if(Utils.isSunVM())
+			protocol = new Protocol("https", new EasySSLProtocolSocketFactory(), 443); 
 	}
 
 	protected Log logger = LogFactory.getLog(getClass());
@@ -170,7 +172,7 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 		HttpURL hrl = getHttpUrl(application.getPostUrl());
 		HttpClient client = new HttpClient();
 		HostConfiguration hc = client.getHostConfiguration();
-		if(hrl instanceof HttpsURL && 
+		if((protocol != null) && (hrl instanceof HttpsURL) && 
 				SPropsUtil.getBoolean("remoteapp.allow.self.signed.certificate", true))
 			hc.setHost(hrl.getHost(), hrl.getPort(), protocol);
 		else
