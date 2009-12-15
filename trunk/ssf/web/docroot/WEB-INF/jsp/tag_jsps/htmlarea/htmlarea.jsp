@@ -37,6 +37,15 @@
 <%@ page import="org.kablink.teaming.util.SPropsUtil" %>
 <%@ page import="java.lang.String" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<c:set var="ss_quotaMessage" value="" />
+<c:if test="${ss_diskQuotaHighWaterMarkExceeded && !ss_diskQuotaExceeded}">
+<c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.nearLimit"><ssf:param name="value" useBody="true"
+	    ><fmt:formatNumber value="${(ssUser.diskQuota*1048576 - ssUser.diskSpaceUsed)/1048576}" 
+	    maxFractionDigits="2"/></ssf:param></ssf:nlt></c:set>
+</c:if>
+<c:if test="${ss_diskQuotaExceeded}">
+<c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.diskQuotaExceeded"/></c:set>
+</c:if>
 <c:set var="isShowYouTube" value='<%= SPropsUtil.getBoolean("youTube.showInEditor") %>'/>
 <c:if test="${empty ss_tinyMCE_hasBeenLoaded}">
 <c:set var="wikiLinkBinderId" value="" scope="request"/><%--
@@ -119,7 +128,7 @@ tinyMCE.init(
   theme_advanced_resizing_use_cookie : false});
 
 tinyMCE.addI18n('${ssUser.locale.language}.ss_addimage_dlg',{
-overQuota : "<ssf:nlt tag="quota.diskQuotaExceeded"/>",
+overQuota : "${ss_quotaMessage} ",
 srcFile : "<ssf:nlt tag="editor.addimage.srcFile"/>",
 addFile : "<ssf:nlt tag="editor.addimage.addFile"/>",
 addUrl : "<ssf:nlt tag="editor.addimage.addUrl"/>",

@@ -133,6 +133,13 @@ public class FilesErrors implements Serializable {
 			this.exception = exception;
 		}
 		
+		public Problem(Exception exception) {
+			this.repositoryName = null;
+			this.fileName = null;
+			this.type = -1;
+			this.exception = exception;
+		}
+		
 		public Exception getException() {
 			return exception; // may be null
 		}
@@ -155,21 +162,25 @@ public class FilesErrors implements Serializable {
 		
 		public String toString() {
 			StringBuffer sb = new StringBuffer();
-			String typeCodeError = NLT.get(getTypeCode()).trim();
-			sb.append(typeCodeError);
-			if (typeCodeError.lastIndexOf(":") == -1 || 
-					typeCodeError.lastIndexOf(":") < typeCodeError.length() - 1) sb.append(":");
-			sb.append(" ");
-			sb.append(getFileName());
-			sb.append(" ");
-			if (getRepositoryName() != null && !getRepositoryName().equals("")) {
-				sb.append("(")
-				.append(getRepositoryName())
-				.append(")");
-			}
-			if(getException() != null) {
-				sb.append(" - ");
+			if (this.fileName == null && this.repositoryName == null && this.type == -1 && this.exception != null) {
 				sb.append(getException().getLocalizedMessage());
+			} else {
+				String typeCodeError = NLT.get(getTypeCode()).trim();
+				sb.append(typeCodeError);
+				if (typeCodeError.lastIndexOf(":") == -1 || 
+						typeCodeError.lastIndexOf(":") < typeCodeError.length() - 1) sb.append(":");
+				sb.append(" ");
+				sb.append(getFileName());
+				sb.append(" ");
+				if (getRepositoryName() != null && !getRepositoryName().equals("")) {
+					sb.append("(")
+					.append(getRepositoryName())
+					.append(")");
+				}
+				if(getException() != null) {
+					sb.append(" - ");
+					sb.append(getException().getLocalizedMessage());
+				}
 			}
 			return sb.toString();
 		}

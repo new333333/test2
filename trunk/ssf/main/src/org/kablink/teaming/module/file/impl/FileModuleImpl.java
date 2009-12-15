@@ -1321,6 +1321,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    			sp.stop("writeExistingFile");
 	    		}
     		}
+    		catch(DataQuotaException e) {
+    			errors.addProblem(new FilesErrors.Problem(null, null, -1, e));
+    			return false;
+    		}
     		catch(Exception e) {
     			logger.error("Error storing primary file " + relativeFilePath + ": " + e.toString());
     			// We failed to write the primary file. In this case, we 

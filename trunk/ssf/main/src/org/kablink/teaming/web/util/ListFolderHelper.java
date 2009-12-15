@@ -34,6 +34,8 @@ package org.kablink.teaming.web.util;
 
 import static org.kablink.util.search.Restrictions.in;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -46,6 +48,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -1911,7 +1914,17 @@ public class ListFolderHelper {
 			if (bs.getProfileModule().isDiskQuotaExceeded()) {
 				qualifiers.put("onClick", "alert('" + NLT.get("quota.diskQuotaExceeded").replaceAll("'", "''") + "'); return false;");
 			} else {
-				qualifiers.put("onClick", "ss_showFolderAddAttachmentDropbox('" + response.getNamespace() + "', '" + folder.getId() + "','" + Boolean.toString(folder.isLibrary()) + "'); return false;");
+				String msg = "ss_showFolderAddAttachmentDropbox('" + response.getNamespace() + "', '" + folder.getId() + "','" + Boolean.toString(folder.isLibrary()) + "');";
+				if (bs.getProfileModule().isDiskQuotaHighWaterMarkExceeded()) {
+					Double quotaLeft = (Double.valueOf(user.getDiskQuota().toString())*1048576 - 
+							Double.valueOf(user.getDiskSpaceUsed().toString()))/1048576;
+					Locale.setDefault(user.getLocale());
+					DecimalFormat form = new DecimalFormat("0.00");
+					String[] args = new String[] {form.format(quotaLeft)};
+					msg += "alert('" + NLT.get("quota.nearLimit", args).replaceAll("'", "''") + "');";
+				}
+				msg += "return false;";
+				qualifiers.put("onClick", msg);
 			}
 			entryToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);
 		}
