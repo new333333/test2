@@ -391,7 +391,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 			if (lastHrefId != '') {
 				var aObj = self.document.getElementById(lastHrefId);
 				if (aObj != null) {
-					aObj.focus();
+					try {aObj.focus();} catch(e){}
 				} else {
 					lastHrefId = "";
 					pageRequested = 0;
@@ -483,7 +483,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 					if (lastHrefId != '') {
 						var aObj = self.document.getElementById(lastHrefId);
 						if (aObj != null) {
-							aObj.focus();
+							try {aObj.focus();} catch(e) {}
 						} else {
 							lastHrefId = "";
 							pageRequested = 0;
@@ -493,7 +493,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 				if (lastHrefId != '' && pageRequested) {
 					var aObj = self.document.getElementById(lastHrefId);
 					if (aObj != null) {
-						aObj.focus();
+						try {aObj.focus();} catch(e) {}
 					} else {
 						lastHrefId = "";
 						pageRequested = 0;
