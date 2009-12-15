@@ -616,7 +616,7 @@ public class BinderHelper {
 		addActionsWhatsNew(request, actions, null);
 		addActionsWhatsUnseen(request, actions, null);
 		addActionsRecentPlaces(request, actions, user.getWorkspaceId());
-		addActionsFullView(bs, request, actions, user.getWorkspaceId(), null);
+		//addActionsFullView(bs, request, actions, user.getWorkspaceId(), null);
 		addActionsSpacer(request, actions);
 		addActionsLogout(request, actions);
 		model.put("ss_actions", actions);

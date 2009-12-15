@@ -788,7 +788,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		BinderHelper.addActionsWhatsUnseen(request, actions, binder);
 		BinderHelper.addActionsRecentPlaces(request, actions, binder.getId());
 		BinderHelper.addActionsTrackThisBinder(bs, request, actions, binder);
-		BinderHelper.addActionsFullView(bs, request, actions, binder.getId(), null);
+		//BinderHelper.addActionsFullView(bs, request, actions, binder.getId(), null);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
@@ -1002,7 +1002,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		BinderHelper.addActionsRecentPlaces(request, actions, binder.getId());
 		if (binder != null && !binder.getEntityType().equals(EntityIdentifier.EntityType.profiles))
 			BinderHelper.addActionsTrackThisBinder(bs, request, actions, binder);
-		BinderHelper.addActionsFullView(bs, request, actions, binder.getId(), entryId);
+		//BinderHelper.addActionsFullView(bs, request, actions, binder.getId(), entryId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
@@ -1028,7 +1028,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		List actions = new ArrayList();
 		//BinderHelper.addActionsHome(request, actions);
 		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
-		BinderHelper.addActionsFullView(bs, request, actions, binderId, entryId);
+		//BinderHelper.addActionsFullView(bs, request, actions, binderId, entryId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
@@ -1053,7 +1053,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		List actions = new ArrayList();
 		//BinderHelper.addActionsHome(request, actions);
 		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
-		BinderHelper.addActionsFullView(bs, request, actions, binderId, entryId);
+		//BinderHelper.addActionsFullView(bs, request, actions, binderId, entryId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
@@ -1162,7 +1162,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	
 		//BinderHelper.addActionsHome(request, actions);
 		BinderHelper.addActionsRecentPlaces(request, actions, binderId);
-		BinderHelper.addActionsFullView(bs, request, actions, binderId, entryId);
+		//BinderHelper.addActionsFullView(bs, request, actions, binderId, entryId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
 		model.put("ss_actions", actions);
@@ -1196,7 +1196,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	//BinderHelper.addActionsHome(request, actions);
 	BinderHelper.addActionsRecentPlaces(request, actions, binder.getId());
 	if (entry instanceof User && ((User)entry).getWorkspaceId() != null) {
-		BinderHelper.addActionsFullView(bs, request, actions, ((User)entry).getWorkspaceId(), null);
+		//BinderHelper.addActionsFullView(bs, request, actions, ((User)entry).getWorkspaceId(), null);
 	}
 	BinderHelper.addActionsSpacer(request, actions);
 	BinderHelper.addActionsLogout(request, actions);
