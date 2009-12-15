@@ -1601,7 +1601,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			
 			userQuota = userQuota * MEGABYTES;
 
-			if(SPropsUtil.getBoolean("data.quota.strict.conformance", false)) {
+			if(SPropsUtil.getBoolean("data.quota.strict.conformance", true)) {
 				// strict conformance - allow a transaction only if the user quota
 				// will not be exceeded after the transaction commits.
 				if(userQuota < user.getDiskSpaceUsed() + fileSize)
