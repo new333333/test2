@@ -135,4 +135,13 @@ public class Utils {
 		
 		return result;
 	}
+	
+	public static boolean isSunVM() {
+		String vmVendor = System.getProperty("java.vm.vendor");
+		if(vmVendor != null && vmVendor.toLowerCase().contains("sun"))
+			return true;
+		else
+			return false;
+	}
+
 }
