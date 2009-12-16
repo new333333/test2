@@ -730,21 +730,23 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			List<Map> defTitleUrlList = new ArrayList();
 			for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
 				Definition def = (Definition) defaultEntryDefinitions.get(i);
-				String title = NLT.getDef(def.getTitle());
-				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
-				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
-				adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-				adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_ADD_ENTRY);
-				Map defTitle = new HashMap();
-				defTitle.put("title", title);
-				defTitle.put("def", def);
-				defTitle.put("url", adapterUrl.toString());
-				defTitleUrlList.add(defTitle);
-				String[] ta = new String[1];
-				ta[0] = title;
-				title = NLT.get("mobile.addSomething", ta);
-				BinderHelper.addActionsGeneral(request, new_actions, title, adapterUrl.toString(), "");
+				if (validateMobileDef(def)) {
+					String title = NLT.getDef(def.getTitle());
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+					adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_ADD_ENTRY);
+					Map defTitle = new HashMap();
+					defTitle.put("title", title);
+					defTitle.put("def", def);
+					defTitle.put("url", adapterUrl.toString());
+					defTitleUrlList.add(defTitle);
+					String[] ta = new String[1];
+					ta[0] = title;
+					title = NLT.get("mobile.addSomething", ta);
+					BinderHelper.addActionsGeneral(request, new_actions, title, adapterUrl.toString(), "");
+				}
 			}
 			model.put(WebKeys.MOBILE_BINDER_DEF_URL_LIST, defTitleUrlList);
 		}
@@ -795,6 +797,30 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		model.put("ss_new_actions", new_actions);
 		
 		return new ModelAndView("mobile/show_folder", model);
+	}
+	
+	private boolean validateMobileDef(Definition def) {
+		Document doc = def.getDefinition();
+		Element root = doc.getRootElement();
+		//Look to see if the title field is coming from a file upload
+		Element formEle = (Element) root.selectSingleNode("//item[@type='form']");
+		Element titleItem = (Element) formEle.selectSingleNode(".//item[@name='title']");
+		if (titleItem != null) {
+			Element itemSourceEle = (Element) titleItem.selectSingleNode("./properties/property[@name='itemSource']");
+			if (itemSourceEle != null) {
+				String itemSource = itemSourceEle.attributeValue("value", "");
+				Element titleSourceProperty = (Element) formEle.selectSingleNode(".//item/properties/property[@name='name' and @value='"+itemSource+"']");
+				if (titleSourceProperty != null) {
+					Element titleSourceItem = (Element) titleSourceProperty.getParent().getParent();
+					String titleSourceItemName = titleSourceItem.attributeValue("name", "");
+					if (titleSourceItemName.equals("file") || titleSourceItemName.equals("graphic")) {
+						//This is a file or photo entry. Skip it in the mobile UI
+						return false;
+					}
+				}
+			}
+		}
+		return true;
 	}
 
 	private ModelAndView ajaxMobileWhatsNew(AllModulesInjected bs, RenderRequest request, 
