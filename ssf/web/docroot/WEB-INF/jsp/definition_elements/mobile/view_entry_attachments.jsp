@@ -41,7 +41,6 @@ String strBrowserType = "nonie";
 if (isIECheck) strBrowserType = "ie";
 %>
 <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
-  <br/>
   <div class="entry-content">
 	<c:if test="${!empty property_caption}">
 	  <div class="entry-caption">${property_caption}</div>
@@ -68,7 +67,8 @@ if (isIECheck) strBrowserType = "ie";
 					</c:if>
 				  <ssf:ifSupportsViewAsHtml relativeFilePath="${selection.fileItem.name}" 
 				    browserType="<%=strBrowserType%>">
-						&nbsp;&nbsp;&nbsp;<a style="text-decoration: none;" href="<ssf:url 
+						<div style="display: inline" class="entry-type">
+						   <a style="text-decoration: none;" href="<ssf:url 
 						    webPath="viewFile"
 						    folderId="${ssDefinitionEntry.parentBinder.id}"
 					   	 	entryId="${ssDefinitionEntry.id}"
@@ -76,7 +76,8 @@ if (isIECheck) strBrowserType = "ie";
 					    	<ssf:param name="fileId" value="${selection.id}"/>
 					    	<ssf:param name="fileTime" value="${selection.modification.date.time}"/>
 					    	<ssf:param name="viewType" value="html"/>
-					    	</ssf:url>"><span class="ss_mobile_small">[<ssf:nlt tag="entry.HTML" />]</span></a>
+					    	</ssf:url>"><span style="padding: 2px 10px"><ssf:nlt tag="entry.HTML" /></span></a>
+						</div>	
 				  </ssf:ifSupportsViewAsHtml>
 				</td>
 			</tr>
