@@ -117,13 +117,13 @@
 			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
 			    	name="binderId" value="${ssFolder.id}"/><ssf:param 
-			    	name="ssFolderSortBy" value="start_end#EndDate"/><c:choose><c:when 
-			    	test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}"><ssf:param 
+			    	name="ssFolderSortBy" value="due_date"/><c:choose><c:when 
+			    	test="${ ssFolderSortBy == 'due_date' && ssFolderSortDescend == 'false'}"><ssf:param 
 			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
 			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></ssf:url>"
 				
 				<c:choose>
-				  <c:when test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}">
+				  <c:when test="${ ssFolderSortBy == 'due_date' && ssFolderSortDescend == 'false'}">
 				  	<ssf:title tag="title.sort.by.column.desc">
 				  		<ssf:param name="value" value='<%= NLT.get("survey.dueDate") %>' />
 				  	</ssf:title>
@@ -137,11 +137,11 @@
 				 >
 </c:if>
 			      <div class="ss_title_menu"><ssf:nlt tag="survey.dueDate"/> </div>
-			    	<c:if test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'true'}">
+			    	<c:if test="${ ssFolderSortBy == 'due_date' && ssFolderSortDescend == 'true'}">
 						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 					</c:if>
-					<c:if test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}">
+					<c:if test="${ ssFolderSortBy == 'due_date' && ssFolderSortDescend == 'false'}">
 						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
