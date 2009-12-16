@@ -814,7 +814,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 					Element titleSourceItem = (Element) titleSourceProperty.getParent().getParent();
 					String titleSourceItemName = titleSourceItem.attributeValue("name", "");
 					if (titleSourceItemName.equals("file") || titleSourceItemName.equals("graphic")) {
-						//This is a file or photo entry. Skip it in the mobile UI
+						//This is a file or graphic entry. Skip it in the mobile UI
 						return false;
 					}
 				}
