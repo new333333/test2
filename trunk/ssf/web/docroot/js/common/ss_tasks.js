@@ -474,14 +474,14 @@
 		}		
 		
 		// completed 0% => status needs action
-		if (changed == "s3") {
+		if (changed == "completed") {
 			if (completedObj.options[completedObj.selectedIndex].value == "c000") {
 				statusObj.selectedIndex = 0;
 			}
 		}		
 		
 		// completed 10% - 90% => status in process
-		if (changed == "s3") {
+		if (changed == "completed") {
 			var completedValue = completedObj.options[completedObj.selectedIndex].value;
 			if (completedValue == "c010" || completedValue == "c020" || completedValue == "c030" || 
 					completedValue == "c040" || completedValue == "c050" || completedValue == "c060" || 
@@ -491,7 +491,7 @@
 		}
 		
 		// completed 100% => status completed
-		if (changed == "s3") {
+		if (changed == "completed") {
 			var completedValue = completedObj.options[completedObj.selectedIndex].value;
 			if (completedValue == "c100") {
 				statusObj.selectedIndex = 2;
