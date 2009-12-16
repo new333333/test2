@@ -4563,12 +4563,103 @@ function ssFavorites(namespace) {
 
 function ss_moveThisTableRow(objToMove, namespace, upDown) {
     var toMove = ss_findOwningElement(objToMove, "tr");
-    if (upDown == 'up') {
-	    ss_moveElementUp(toMove, false);
-	} else {
-	    ss_moveElementDown(toMove, false);
-	}
+    
+    if ( toMove instanceof HTMLTableRowElement )
+    {
+    	if (upDown == 'up')
+    	{
+    		var prevRow;
+    		
+    		// Do we have a previous row?
+    		prevRow = ss_getPrevRow( toMove );
+    		if ( prevRow != null )
+    		{
+    			// Yes, move the given row above the previous row.
+				toMove.parentNode.insertBefore( toMove, prevRow );
+    		}
+		}
+		else
+		{
+			var nextRow;
+			
+			// Do we have a next row?
+			nextRow = ss_getNextRow( toMove );
+			if ( nextRow != null )
+			{
+				// Yes, is the next row the last row?
+				nextRow = ss_getNextRow( nextRow );
+				if ( nextRow != null )
+				{
+					// No
+					toMove.parentNode.insertBefore( toMove, nextRow );
+				}
+				else
+				{
+					// Yes, move the given row after the last row.
+					toMove.parentNode.appendChild( toMove );
+				}
+			}
+		}
+    }
 }
+
+/**
+ * Return the <tr> that is before the given <tr>
+ */
+function ss_getPrevRow( tr )
+{
+	var prevRow = null;
+	
+	// Are we dealing with an HTMLTableRowElement?
+	if ( tr instanceof HTMLTableRowElement )
+	{
+		var prevSibling;
+		
+		// Yes
+		prevSibling = tr.previousSibling;
+		while ( prevSibling != null && prevRow == null )
+		{
+			if ( prevSibling instanceof HTMLTableRowElement )
+			{
+				prevRow = prevSibling;
+			}
+			else
+				prevSibling = prevSibling.previousSibling;
+		}
+	}
+	
+	return prevRow;
+}// end ss_getPrevRow()
+
+
+/**
+ * Return the <tr> that is after the given <tr>
+ */
+function ss_getNextRow( tr )
+{
+	var nextRow = null;
+	
+	// Are we dealing with an HTMLTableRowElement?
+	if ( tr instanceof HTMLTableRowElement )
+	{
+		var nextSibling;
+		
+		// Yes
+		nextSibling = tr.nextSibling;
+		while ( nextSibling != null && nextRow == null )
+		{
+			if ( nextSibling instanceof HTMLTableRowElement )
+			{
+				nextRow = nextSibling;
+			}
+			else
+				nextSibling = nextSibling.nextSibling;
+		}
+	}
+	
+	return nextRow;
+}// end ss_getNextRow()
+
 
 function ss_findOwningElement(obj, eleName) {
 	var node = obj;
