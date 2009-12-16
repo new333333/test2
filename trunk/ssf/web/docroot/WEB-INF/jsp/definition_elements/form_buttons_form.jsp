@@ -38,14 +38,10 @@
 <%
 		//Get the form item being displayed
 		Element item = (Element) request.getAttribute("item");
-		String alignment = (String) request.getAttribute("property_alignment");
-		String divClass = "ss_buttonBarLeft";
-		if (alignment.equals("right")) {
-			divClass = "ss_buttonBarRight";
-		}
-		
 %>
-<div class="<%= divClass %>">
+<c:set var="divClass" value="ss_buttonBarLeft"/>
+<c:if test="${propertyValues_alignment[0] == 'right'}"><c:set var="divClass" value="ss_buttonBarRight"/></c:if>
+<div class="${divClass}" width="100%">
 <%
 		//Iterate through the child button items, putting them into a set of divs
 		Iterator itItems = item.elementIterator("item");
