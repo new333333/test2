@@ -594,12 +594,9 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 					//need to save explicitly - actions called by the node.enter may look it up 
 					getCoreDao().save(ws);
 					entry.addWorkflowState(ws);
-					if (options == null || !options.containsKey(ObjectKeys.INPUT_OPTION_NO_WORKFLOW) || 
-							!(Boolean)options.get(ObjectKeys.INPUT_OPTION_NO_WORKFLOW)) {
-						//Start the workflow process at the initial state
-					    ExecutionContext executionContext = new ExecutionContext(token);
-			            node.enter(executionContext);
-					}
+					//Start the workflow process at the initial state
+				    ExecutionContext executionContext = new ExecutionContext(token);
+		            node.enter(executionContext);
 		            context.save(pI);
 			    }
 		    } catch (Exception ex) {

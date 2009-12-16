@@ -1507,8 +1507,6 @@ public class ExportHelper {
 		Map options = new HashMap();
 		//Set the entry creator and modifier fields
 		setSignature(options, doc, nameCache);
-		//Don't start any workflows; they will be added later
-		options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);
 		try {
 			// create new entry
 			long newEntryId = folderModule.addEntry(new Long(binderId),
@@ -1568,8 +1566,6 @@ public class ExportHelper {
 		Map options = new HashMap();
 		//Set the entry creator and modifier fields
 		setSignature(options, doc, nameCache);
-		//Don't start the workflows; they get started later
-		options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);		
 		try {
 			// add new reply
 			long newEntryId = folderModule.addReply(new Long(binderId),
@@ -2175,10 +2171,7 @@ public class ExportHelper {
 		    	current.setTime(new Date());
 				
 				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, user.getName());
-				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, current);
-				//Don't process any conditions after starting the workflow
-				options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);				
-				
+				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, current);				
 				
 				try {
 					workflowModule.addEntryWorkflow((FolderEntry) entity,
