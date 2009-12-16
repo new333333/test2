@@ -1186,8 +1186,8 @@ function ss_toggleShowDiv(divName, namespace) {
 		//Signal that the layout changed
 		if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
 		try {
-			if (parent.ss_positionEntryDiv) setTimeout("parent.ss_positionEntryDiv();", 100);
-			if (parent.ss_setWikiIframeSize) setTimeout("parent.ss_setWikiIframeSize('"+namespace+"');", 100);
+			if (self != self.parent && parent.ss_positionEntryDiv) setTimeout("parent.ss_positionEntryDiv();", 100);
+			if (self != self.parent && parent.ss_setWikiIframeSize) setTimeout("parent.ss_setWikiIframeSize('"+namespace+"');", 100);
 		} catch(e) {}
 	} else {
 		//ss_debug('Div "'+objName+'" does not exist. (ss_showHideObj)')
