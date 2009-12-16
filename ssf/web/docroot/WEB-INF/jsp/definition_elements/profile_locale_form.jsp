@@ -36,6 +36,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="java.util.Locale" %>
 <%@ page import="org.kablink.teaming.domain.User" %>
+<%@ page import="org.kablink.teaming.util.SPropsUtil" %>
 <div class="ss_entryContent">
 <c:if test="${!empty property_caption}">
 <label for="${property_name}">
@@ -55,8 +56,16 @@
 		userLocale = user.getLocale();
 	}
 	if (userLocale == null) {
-		userLocale = Locale.getDefault();
-		if (s_locale != null && !s_locale.equals("")) userLocale = new Locale(s_locale);
+		String language = SPropsUtil.getString("i18n.default.locale.language", "");
+		String country = SPropsUtil.getString("i18n.default.locale.country", "");
+		if (!language.equals("")) {
+			if (!country.equals("")) userLocale = new Locale(language, country);
+			else userLocale = new Locale(language);
+		}
+		if (userLocale == null) {
+			userLocale =  Locale.getDefault();
+			if (s_locale != null && !s_locale.equals("")) userLocale = new Locale(s_locale);
+		}
 	}
 
 	for (Map.Entry<String, Locale> me: map.entrySet()) {
