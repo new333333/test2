@@ -815,7 +815,15 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private boolean validateMobileDef(Definition def) {
 		Document doc = def.getDefinition();
 		Element root = doc.getRootElement();
-		//Look to see if the title field is coming from a file upload
+		
+		//See if this is a file or photo entry
+		Element familyEle = (Element) root.selectSingleNode("./properties/property[@name='family']");
+		if (familyEle != null) {
+			String family = familyEle.attributeValue("value", "");
+			if (family.equals("file") || family.equals("photo")) return false;
+		}
+		
+		//See if the title field is coming from a file upload
 		Element formEle = (Element) root.selectSingleNode("//item[@type='form']");
 		Element titleItem = (Element) formEle.selectSingleNode(".//item[@name='title']");
 		if (titleItem != null) {
@@ -833,6 +841,12 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				}
 			}
 		}
+		
+		//See if there is a survey element on the form
+		formEle = (Element) root.selectSingleNode("//item[@type='form']");
+		Element surveyItem = (Element) formEle.selectSingleNode(".//item[@name='survey']");
+		if (surveyItem != null) return false;
+		
 		return true;
 	}
 
