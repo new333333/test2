@@ -126,7 +126,8 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 				
 	       		List<Long> gIdList = new ArrayList();
 	       		gIdList.add(groupId);
-	       		getProfileModule().setGroupDiskQuotas(gIdList, new Long(0L));
+	       		Principal g = getProfileModule().getEntry(groupId);
+	       		getProfileModule().setGroupDiskQuotas(gIdList, ((Group)g).getDiskQuota());
 				
 				//Now deal with everyone who was affected
 				ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
