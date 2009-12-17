@@ -136,6 +136,8 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
+import org.springframework.security.AuthenticationException;
+import org.springframework.security.ui.AbstractProcessingFilter;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
@@ -435,6 +437,12 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxMobileLogin(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, String portletName, String operation) throws Exception {
 		Map model = new HashMap();
+        HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
+    	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+    	if(ex != null) {
+    		model.put(WebKeys.LOGIN_ERROR, ex.getMessage());
+    		session.removeAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+    	}
 		String refererUrl = PortletRequestUtils.getStringParameter(request, WebKeys.URL_REFERER_URL);
 		if (Validator.isNotNull(refererUrl)) {
 			model.put(WebKeys.URL, refererUrl);
@@ -458,6 +466,11 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			RenderResponse response, String portletName, String operation) throws Exception {
         HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
 		Map model = new HashMap();
+    	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+    	if(ex != null) {
+    		model.put(WebKeys.LOGIN_ERROR, ex.getMessage());
+    		session.removeAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+    	}
 		model.put("ss_teamingLiveStatus", "reload");
         session.setAttribute(WebKeys.TEAMING_LIVE_UPDATE_DATE, new Date());
 		model.put(WebKeys.TEAMING_LIVE_UPDATE_DATE, session.getAttribute(WebKeys.TEAMING_LIVE_UPDATE_DATE));
