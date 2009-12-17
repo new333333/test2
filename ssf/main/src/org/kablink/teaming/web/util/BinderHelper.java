@@ -73,6 +73,8 @@ import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.security.AuthenticationException;
+import org.springframework.security.ui.AbstractProcessingFilter;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -546,6 +548,12 @@ public class BinderHelper {
 			RenderResponse response, Map model, String view) {
         User user = RequestContextHolder.getRequestContext().getUser();
 		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+	        HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
+	    	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+	    	if(ex != null) {
+	    		model.put(WebKeys.LOGIN_ERROR, ex.getMessage());
+	    		session.removeAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+	    	}
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
 			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);

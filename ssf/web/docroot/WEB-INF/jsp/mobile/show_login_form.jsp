@@ -62,6 +62,32 @@
               <input type="password" style="width:160px;" name="j_password" id="j_password"/>
             </td>
           </tr>
+
+<!-- If there was an error logging in, show the error. -->
+<c:if test="${!empty ss_loginError}">
+		       		<tr>
+				 		<td>&nbsp;</td>
+		         		<td style="color: red;" colspan="2" align="right">
+		           			<div id="errorcode.login.failed"><ssf:nlt tag="errorcode.login.failed"/></div>
+	<c:if test="${!empty showLoginFailureDetails}">
+							<a href="#"
+							   onclick="showLoginFailureDetails();return false;"
+							   title="<ssf:nlt tag="login.showLoginFailureDetails" />"
+								<span><ssf:nlt tag="login.showLoginFailureDetails" /></span>
+							</a>
+	</c:if>
+		         		</td>
+		       		</tr>
+	<c:if test="${!empty showLoginFailureDetails}">
+					<!-- This row will hold the details of the login failure. -->
+					<tr>
+						<td style="color: red;" colspan="2">
+							<div id="login-failure-details" style="display: none;">${ss_loginError}</div>
+						</td>
+					</tr>
+	</c:if>
+</c:if>
+
           <tr>
             <td>
             </td>
