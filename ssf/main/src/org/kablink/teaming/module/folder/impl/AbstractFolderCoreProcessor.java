@@ -448,7 +448,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		    List<Tag> entryTags = tags.get(child.getEntityIdentifier());
 			doCopy(child, entry, entryTags);
 	   }
+	   
 	   FolderEntry top = sourceMap.get(source);
+	   //the top folder was already index but prior to adding its children, so by adding this index on the top folder entry
+	   //the additional information such as # of comments on a blog entry will show correctly
+	   indexEntry(top.getParentBinder(), top, null, top.getFileAttachments(), true, tags.get(top.getEntityIdentifier()));
 	   return top; 
    }
  
