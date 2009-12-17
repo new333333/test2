@@ -2212,6 +2212,11 @@ function ss_calendarEngine(
 	};
 	
 	function drawMonthEventBlock(containerId, date, eventList) {
+		// Bugzilla:  557401
+		//   Removed the vertical fudge used to display day entries in
+		//   a month view where the month displays 6 weeks.
+		var hFudge6Weeks = "0";	// ...was "-3px"
+
 		var monthViewInfo = ss_cal_CalData.getMonthViewInfo(ss_cal_Grid.currentDate);
 		
 		var dayPositions = [];
@@ -2372,7 +2377,7 @@ function ss_calendarEngine(
 			if ((continues == ss_cal_Events.CONTINUES_LEFT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)) {
 				boxHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_prev.gif'+'" style="float: left; border: 0;" />';			
 			}
-			boxHtml += '<a href="'+viewHref+'" onClick="try{' + e.viewOnClick + '; ss_currentEntryId = ' + e.entryId + ';} catch(e) {return true;} return false;" ' + (ss_cal_Grid.monthGridWeeks > 5? 'style="position: relative; top: -3px; margin-left: 4px; float: left;"':'style="margin-left: 4px; float: left;"') + '>'+(e.title?e.title:that.locale.noTitle)+'</a>';			
+			boxHtml += '<a href="'+viewHref+'" onClick="try{' + e.viewOnClick + '; ss_currentEntryId = ' + e.entryId + ';} catch(e) {return true;} return false;" ' + (ss_cal_Grid.monthGridWeeks > 5? 'style="position: relative; top: ' + hFudge6Weeks + '; margin-left: 4px; float: left;"':'style="margin-left: 4px; float: left;"') + '>'+(e.title?e.title:that.locale.noTitle)+'</a>';			
 			if (takesDaysToTheEndOfEvent > eventDaysLength && (continues == ss_cal_Events.CONTINUES_RIGHT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)) {
 				boxHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_next.gif'+'" style="float: right; border: 0;" />';			
 			}
@@ -2474,7 +2479,7 @@ function ss_calendarEngine(
 						if ((continues == ss_cal_Events.CONTINUES_LEFT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)) {
 							boxHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_prev.gif'+'" style="float: left; border: 0;" />';			
 						}
-						boxHtml += '<a href="'+viewHref+'" onClick="try{' + e.viewOnClick + '; ss_currentEntryId = ' + e.entryId + ';} catch(e) {return true;} return false;" ' + (ss_cal_Grid.monthGridWeeks > 5? 'style="position: relative; top: -3px; margin-left: 4px; float: left;"':'style="margin-left: 4px; float: left;"') + '>'+(e.title?e.title:that.locale.noTitle)+'</a>';			
+						boxHtml += '<a href="'+viewHref+'" onClick="try{' + e.viewOnClick + '; ss_currentEntryId = ' + e.entryId + ';} catch(e) {return true;} return false;" ' + (ss_cal_Grid.monthGridWeeks > 5? 'style="position: relative; top: ' + hFudge6Weeks + '; margin-left: 4px; float: left;"':'style="margin-left: 4px; float: left;"') + '>'+(e.title?e.title:that.locale.noTitle)+'</a>';			
 						if (takesDaysToTheEndOfEvent > eventDaysLength && (continues == ss_cal_Events.CONTINUES_RIGHT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)) {
 							boxHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_next.gif'+'" style="float: right; border: 0;" />';			
 						}
