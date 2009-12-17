@@ -2130,6 +2130,21 @@ public class AjaxController  extends SAbstractControllerRetry {
 					String eventsType = EventsViewHelper.getCalendarDisplayEventType(this, user.getId(), binderId);
 					ModeType modeType;
 					virtual = ((null != eventsType) && "virtual".equals(eventsType));
+					if (!virtual) {
+						int binderCount = ((null == binderIds) ? 0 : binderIds.size());
+						switch (binderCount) {
+						case 0:
+							virtual = true;
+							break;
+							
+						case 1:
+							Object binderO = binderIds.get(0);
+							if ((null != binderO) && (binderO instanceof String)) {
+								virtual = ("none".equalsIgnoreCase((String)binderO));
+							}
+							break;
+						}
+					}
 					if (virtual) {
 						modeType = ModeType.VIRTUAL;
 					}
