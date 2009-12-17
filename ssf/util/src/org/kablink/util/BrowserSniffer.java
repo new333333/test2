@@ -182,6 +182,27 @@ public class BrowserSniffer {
 		}
 	}
 
+	public static boolean is_ie_8(HttpServletRequest req) {
+		if (req == null) {
+			return false;
+		}
+
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
+
+		if (agent == null) {
+			return false;
+		}
+
+		agent = agent.toLowerCase();
+
+		if (is_ie(req) && (agent.indexOf("msie 8.0") != -1)) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	public static boolean is_linux(HttpServletRequest req) {
 		String agent = req.getHeader(HttpHeaders.USER_AGENT);
 
