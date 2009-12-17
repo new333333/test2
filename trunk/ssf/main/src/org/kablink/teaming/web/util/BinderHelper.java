@@ -1961,6 +1961,9 @@ public class BinderHelper {
 	}
 
 	public static boolean isWebdavSupported(HttpServletRequest req) {
+		//Is this ie8
+		if (BrowserSniffer.is_ie_8(req)) return SPropsUtil.getBoolean("webdav.ie.8", false);
+		
 		//Is this ie7
 		if (BrowserSniffer.is_ie_7(req)) return SPropsUtil.getBoolean("webdav.ie.7", false);
 		
