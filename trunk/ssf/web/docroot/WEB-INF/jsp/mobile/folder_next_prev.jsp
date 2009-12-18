@@ -41,7 +41,7 @@
 	  action="__ajax_mobile" 
 	  operation="mobile_show_folder" 
 	  actionUrl="false" ><ssf:param name="pageNumber" value="${ss_prevPage}"/></ssf:url>"
-    ><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_left_16.gif"/></a>
+    ><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_left_20.png"/></a>
   </c:if>
   <c:if test="${empty ss_prevPage}">
   	<a href="javascript: ;" onClick="return false;" 
@@ -55,7 +55,7 @@
 		action="__ajax_mobile" 
 		operation="mobile_show_folder" 
 		actionUrl="false" ><ssf:param name="pageNumber" value="${ss_nextPage}"/></ssf:url>"
-  	><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_right_16.gif"/></a>
+  	><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_right_20.png"/></a>
   </c:if>
   <c:if test="${empty ss_nextPage}">
   	  <a href="javascript: ;" onClick="return false;" 

@@ -104,7 +104,7 @@
 	    	</div>
 		</c:forEach>
 	    <div class="entry-actions">
-	      <%@ include file="/WEB-INF/jsp/mobile/search_results_next_prev.jsp" %>
+	      <%@ include file="/WEB-INF/jsp/mobile/folder_next_prev.jsp" %>
 	    </div>
 	  </c:if>
 	  <c:if test="${empty ssFolderEntries}">
