@@ -62,9 +62,10 @@ public class XSSCheck implements StringCheck {
 	private static final String MODE_TRUSTED_STRIP = "trusted.strip";
 	
 	private static final String PATTERN_STR1 = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|style|html|head|body|meta|xml|blink|link|iframe|frame|frameset|ilayer|layer|bgsound|base)(?:[\\s]+[^>]*>|>))";
-	private static final String PATTERN_STR1_FILE = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|xml|blink|link|iframe|frame|frameset|ilayer|layer|bgsound|base)(?:[\\s]+[^>]*>|>))";
+	private static final String PATTERN_STR1_FILE = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|blink|iframe|frame|frameset|ilayer|layer|bgsound|base)(?:[\\s]+[^>]*>|>))";
 
-	private static final String PATTERN_STR2 = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|meta|blockquote|del|ins|q)[\\s]*[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^>\\s]*script[\\s]*:[^>\\s]*))([^>]*>)";
+	private static final String PATTERN_STR2 = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|xml|meta|blockquote|del|ins|q)[\\s]*[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^>\\s]*script[\\s]*:[^>\\s]*))([^>]*>)";
+	private static final String PATTERN_STR2_FILE = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|xml|meta|blockquote|del|ins|q)[\\s]*[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*https?[\\s]*:[^>]*\\2|[^>\\s]*https?[\\s]*:[^>\\s]*))([^>]*>)";
 	private static final String PATTERN_STR2a = "(?i)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^>\\s]*script[\\s]*:[^>\\s]*))";
 
 	private static final String PATTERN_STR3 = "(?i)<[\\s]*[^>]+[\\s]*([^>\\s]*style[\\s]*=[\\s]*([\"'])[^>]*\\2|[^>\\s]*style[\\s]*=[^>\\s\"']*)[^>]*>";
@@ -76,6 +77,7 @@ public class XSSCheck implements StringCheck {
 	private Pattern pattern1;
 	private Pattern pattern1file;
 	private Pattern pattern2;
+	private Pattern pattern2file;
 	private Pattern pattern2a;
 	private Pattern pattern3;
 	private Pattern pattern4;
@@ -93,6 +95,7 @@ public class XSSCheck implements StringCheck {
 		pattern1 = Pattern.compile(PATTERN_STR1);
 		pattern1file = Pattern.compile(PATTERN_STR1_FILE);
 		pattern2 = Pattern.compile(PATTERN_STR2);
+		pattern2file = Pattern.compile(PATTERN_STR2_FILE);
 		pattern2a = Pattern.compile(PATTERN_STR2a);
 		pattern3 = Pattern.compile(PATTERN_STR3);
 		pattern4 = Pattern.compile(PATTERN_STR4);
@@ -192,6 +195,11 @@ public class XSSCheck implements StringCheck {
 		if (matcher1.find()) {
 			sequence = matcher1.replaceAll(StringPool.BLANK);
 			result = false;
+		}
+		//Check files for href="http:..." 
+		if (type.equals(TYPE_CHECK_FILE)) {
+			Matcher matcher2file = pattern2file.matcher(sequence);
+			if (matcher2file.find()) result = false;
 		}
 		//Check for href="javascript:..." or any *script as src or href, etc
 		Matcher matcher2 = pattern2.matcher(sequence);
