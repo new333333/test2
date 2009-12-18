@@ -35,6 +35,7 @@ package org.kablink.teaming.module.report.impl;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -954,6 +955,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 
 	protected void generateWorkflowStateRow(List<Map<String, Object>> report, final Binder binder, final Date startDate, final Date endDate) {
+		SimpleDateFormat	dateFormat;
+
 		if (!getBinderModule().testAccess(binder, BinderOperation.report)) return;
 		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
@@ -978,14 +981,55 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				return auditTrail;
 			}});
 
+		// Create a SimpleDateFormat that will be used to parse the average start date and average end date.
+		dateFormat = new SimpleDateFormat( "yyyyMMddHHmmssZ" );
+
 		for(Object o : result) {
+			Date date;
+			Double tmp;
+			String dateStr;
+			long start;
+			long end;
+			long seconds;
+			
 			Object[] col = (Object []) o;
 			Map<String,Object> row = addBlankRow(report, binder);
 			row.put(ReportModule.DEFINITION_ID, col[0]);
 			row.put(ReportModule.STATE, col[1]);
-			double seconds = ((Double)col[3]).doubleValue() - ((Double)col[2]).doubleValue();
+			
+			// Get the average start date.  This value is stored as a double.  The following
+			// is an example of how it is stored: 2.0091217174537E13 which represents
+			// Dec 17, 2009 17:45:37
+			tmp = (Double)col[2];
+			dateStr = Long.toString( tmp.longValue() ) + "-0000";
+			start = 0;
+			try
+			{
+				date = dateFormat.parse( dateStr );
+				start = date.getTime() / 1000;
+			}
+			catch (Exception ex)
+			{
+			}
+			
+			// Get the average end date.  This value is stored as a double.  The following
+			// is an example of how it is stored: 2.0091217174537E13 which represents
+			// Dec 17, 2009 17:45:37
+			tmp = (Double)col[3];
+			dateStr = Long.toString( tmp.longValue() ) + "-0000";
+			end = 0;
+			try
+			{
+				date = dateFormat.parse( dateStr );
+				end = date.getTime() / 1000;
+			}
+			catch (Exception ex)
+			{
+			}
+			
+			seconds = end - start;
 			row.put(ReportModule.AVERAGE, seconds);
-			row.put(ReportModule.AVERAGE_TI, new TimeInterval(seconds));
+			row.put(ReportModule.AVERAGE_TI, new TimeInterval((double)seconds));
 		}
 	}
 
