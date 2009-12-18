@@ -67,6 +67,8 @@ import org.kablink.teaming.web.tree.WebSvcTreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criterion;
+import org.kablink.util.search.Restrictions;
 
 
 public class SearchServiceImpl extends BaseService implements SearchService, SearchServiceInternal {
@@ -264,6 +266,27 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 		query = StringCheckUtil.check(query);
 		
 		Document queryDoc = getDocument(query);
+		Element queryRoot = queryDoc.getRootElement();
+		
+		// Find the root junction element
+		Iterator it = queryRoot.selectNodes("AND|OR|NOT").iterator();
+		
+		// Build an implicit query to filter out everything except for folder entries
+		Criterion crit = Restrictions.conjunction()
+			.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
+			.add(Restrictions.in(Constants.ENTRY_TYPE_FIELD, new String[]{Constants.ENTRY_TYPE_ENTRY, Constants.ENTRY_TYPE_REPLY}));
+		Element implicit = crit.toQuery(queryRoot);
+		
+		// Add the user supplied query criteria into our implicit AND 
+		while(it.hasNext()) {
+			implicit.add(((Element)it.next()).detach());
+		}
+		
+		// Add the SORTBY back to the end of the document
+		it = queryRoot.selectNodes("SORTBY").iterator();
+		while(it.hasNext()) {
+			queryRoot.add(((Element)it.next()).detach());
+		}
 		
 		Document doc = DocumentHelper.createDocument();
 		Element folderElement = doc.addElement("searchResults");
@@ -272,17 +295,7 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 		List entrylist = (List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 		Iterator entryIterator = entrylist.listIterator();
 		while (entryIterator.hasNext()) {
-			Map result = (Map) entryIterator.next();
-			String docType = (String) result.get(Constants.DOC_TYPE_FIELD);
-			Element resultElem = null;
-			if(Constants.DOC_TYPE_ENTRY.equals(docType)) {
-				String entryType = (String) result.get(Constants.ENTRY_TYPE_FIELD);
-				String elementName = null;
-				boolean isPrincipal = true;
-				if(Constants.ENTRY_TYPE_ENTRY.equalsIgnoreCase(entryType) || Constants.ENTRY_TYPE_REPLY.equalsIgnoreCase(entryType)) {
-					entries.add(toFolderEntryBrief(result));
-				}
-			}
+			entries.add(toFolderEntryBrief((Map) entryIterator.next()));
 		}
 		
 		FolderEntryBrief[] array = new FolderEntryBrief[entries.size()];
