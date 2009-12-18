@@ -55,10 +55,12 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.DocumentException;
 import org.dom4j.io.DocumentSource;
 import org.dom4j.io.SAXReader;
+import org.kablink.teaming.docconverter.impl.TextOpenOfficeConverter;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.FileCopyUtils;
@@ -74,6 +76,8 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 	protected String excludedExtensions = "";
 	private static final String TEXT_SUBDIR = "text",
 		   TEXT_FILE_SUFFIX = ".txt";
+
+	private String[] m_additionalExclusions = null;
 	
 	public String convert(Binder binder, DefinableEntity entry, FileAttachment fa)
 		throws IOException
@@ -168,8 +172,25 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 	}
 	public void setExcludedExtensions(String excludedExtensions)
 	{
+		// Are there any additional exclusions specified in the
+		// ssf*.properties files?
+		String[] additionalExclusions = getAdditionalExclusions();
+		int c = ((null == additionalExclusions) ? 0 : additionalExclusions.length);
+		if (0 < c) {
+			// Yes!  Scan them...
+			StringBuffer eeBuf = new StringBuffer((null == excludedExtensions) ? "" : excludedExtensions);
+			for (int i = 0; i < c; i +=1) {
+				// ...appending each to the excluded extensions.
+				if ((0 < i) || (0 < eeBuf.length())) {
+					eeBuf.append(",");
+				}
+				eeBuf.append(additionalExclusions[i]);
+			}
+			excludedExtensions = eeBuf.toString();
+		}
 		this.excludedExtensions = excludedExtensions;
 	}
+	
 	/**
 	 * @return Returns the nullTransform.
 	 */
@@ -204,4 +225,64 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 		convertedFile.createNewFile();
 	}
 
+	/**
+	 * By default, there are no additional exclusions.  Each class that
+	 * extends this class this may define one, however.
+	 * 
+	 * @return
+	 */
+	public String getAdditionalExclusionsKey() {
+		return null;
+	}
+	
+	// Returns a String[] of any additional file extensions that are to
+	// be excluded from OpenOffice text conversions specified in the
+	// ssf*.properties files.
+	private String[] getAdditionalExclusions() {
+		initAdditionalExclusions();
+		return m_additionalExclusions;
+	}
+
+	/*
+	 * Initializes the static array of extensions that are to be
+	 * excluded by the OpenOffice text converter.
+	 */
+	private void initAdditionalExclusions() {
+		// If we've already initialized the excluded extensions...
+		if (null != m_additionalExclusions) {
+			// ...bail.
+			return;
+		}
+		
+
+		// If there is no key defined to access any additional
+		// extensions in the ssf*.properties files...
+		String key = getAdditionalExclusionsKey();
+		if ((null == key) || (0 == key.length())) {
+			// ...define an empty array of them.
+			m_additionalExclusions = new String[0];
+			return;
+		}
+
+		// Are there any excluded extensions specified in the
+		// ssf*.properties files?
+		String excludeThese = SPropsUtil.getString(key, "");
+		if ((null != excludeThese) && (0 < excludeThese.length())) {
+			// Yes!  Extract and count them...
+			m_additionalExclusions = excludeThese.toLowerCase().split(",");
+			int count = ((null == m_additionalExclusions) ? 0 : m_additionalExclusions.length);
+			
+			// ...and ensure none of them start with a period.
+			for (int i = 0; i < count; i += 1) {
+				String excludeThis = m_additionalExclusions[i];
+				if (excludeThis.startsWith(".")) {
+					m_additionalExclusions[i] = excludeThis.substring(1);
+				}
+			}
+		}
+		else {
+			// No, there aren't any excluded extensions specified!
+			m_additionalExclusions = new String[0];
+		}
+	}
 }

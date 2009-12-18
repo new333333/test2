@@ -30,17 +30,14 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 /*
  * Created on Jun 24, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 package org.kablink.teaming.docconverter.impl;
 
 import java.io.File;
 
-//UNO API
 import com.sun.star.comp.helper.Bootstrap;
 import com.sun.star.bridge.XUnoUrlResolver;
 import com.sun.star.uno.XComponentContext;
@@ -55,6 +52,8 @@ import com.sun.star.uri.ExternalUriReferenceTranslator;
 import com.sun.star.connection.NoConnectException;
 
 import org.kablink.teaming.docconverter.TextConverter;
+import org.kablink.teaming.util.SPropsUtil;
+
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -78,6 +77,8 @@ public class TextOpenOfficeConverter
 	private int _port = 0;
 	private String _host = null,
 				   _configFileName = null;
+	
+	private String[] m_excludedExtensions = null;
 	
 	public TextOpenOfficeConverter()
 	{
@@ -133,7 +134,6 @@ public class TextOpenOfficeConverter
 	public void convert(String origFileName, String ifp, String ofp, long timeout, String parameters)
 		throws Exception
 	{
-		org.dom4j.Document doc = null;
 		XStorable xstorable = null;
 		XComponent xcomponent = null;
 		XUnoUrlResolver xurlresolver = null;
@@ -150,21 +150,13 @@ public class TextOpenOfficeConverter
 		String url = "",
 			   convertType = "";
 	    
-		/**
-		 * If the output file exist an has a modified date equal or greating than incoming file
-		 * do not perform any conversion. 
-		 */
+		// If the output file exists and has a modified date equal or
+		// greater than the incoming file do not perform any conversion. 
 		ifile = new File(ifp);
 		ofile = new File(ofp);
 
 		try
 		{
-			// OpenOffice can not conver these types of files. Will cause OpenOffice crash in some cases
-			if (ifp.toLowerCase().endsWith(".jpg")
-			|| ifp.toLowerCase().endsWith(".jpeg")
-			|| ifp.toLowerCase().endsWith(".gif"))
-				return;
-			
 			/* Bootstraps a component context with the jurt base components
 			 * registered. Component context to be granted to a component for running.
 			 * Arbitrary values can be retrieved from the context.
@@ -284,5 +276,13 @@ public class TextOpenOfficeConverter
 	 */
 	public void setConfigFileName(String configFileName) {
 		_configFileName = configFileName;
+	}
+
+	/**
+	 * Return the ssf*properties key used to look for additional
+	 * extensions to be excluded from text conversions.
+	 */
+	public String getAdditionalExclusionsKey() {
+		return "exclude.from.openoffice.indexing.extensions";
 	}
 }
