@@ -1916,8 +1916,8 @@ public class ListFolderHelper {
 			} else {
 				String msg = "ss_showFolderAddAttachmentDropbox('" + response.getNamespace() + "', '" + folder.getId() + "','" + Boolean.toString(folder.isLibrary()) + "');";
 				if (bs.getProfileModule().isDiskQuotaHighWaterMarkExceeded()) {
-					Double quotaLeft = (Double.valueOf(user.getDiskQuota().toString())*1048576 - 
-							Double.valueOf(user.getDiskSpaceUsed().toString()))/1048576;
+					Double quotaLeft = (Double.valueOf(bs.getProfileModule().getMaxUserQuota()) - 
+							Double.valueOf(user.getDiskSpaceUsed()))/1048576;
 					Locale.setDefault(user.getLocale());
 					DecimalFormat form = new DecimalFormat("0.00");
 					String[] args = new String[] {form.format(quotaLeft)};
