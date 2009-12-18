@@ -814,7 +814,12 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		}
     	Map message = new HashMap();
        	try {
-    		message.put(MailModule.FROM, new InternetAddress(user.getEmailAddress()));
+       		InternetAddress ia = new InternetAddress(user.getEmailAddress());
+       		String userName = user.getTitle();
+       		if ((null != userName) && (0 < userName.length())) {
+       			ia.setPersonal(userName);
+       		}
+    		message.put(MailModule.FROM, ia);
     	} catch (Exception ex) {
 			String errorMsg = ex.getLocalizedMessage();
 			String emailAddr = user.getEmailAddress();
