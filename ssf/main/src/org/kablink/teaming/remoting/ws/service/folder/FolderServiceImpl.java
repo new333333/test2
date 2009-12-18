@@ -36,6 +36,7 @@ import static org.kablink.util.search.Restrictions.between;
 import static org.kablink.util.search.Restrictions.eq;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.lucene.document.DateTools;
@@ -65,10 +67,16 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoFileByTheNameException;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
+import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.modelprocessor.ProcessorManager;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.definition.notify.Notify;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.mail.EmailFormatter;
 import org.kablink.teaming.module.mail.EmailPoster;
+import org.kablink.teaming.module.mail.MailModule;
+import org.kablink.teaming.module.mail.MimeEntryPreparator;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.remoting.RemotingException;
@@ -344,6 +352,48 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		fillFolderEntryModel(entryModel, entry);
 		
 		return entryModel;
+	}
+	
+	public byte[] folder_getEntryAsMime(String accessToken, long entryId, boolean includeAttachments) {
+		byte[] mimeData = null;
+		FolderEntry entry = getFolderModule().getEntry(null, entryId);
+		EmailFormatter processor = (EmailFormatter)processorManager.getProcessor(entry.getParentBinder(), EmailFormatter.PROCESSOR_KEY);
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		Map props = new HashMap();
+		List recipients = new ArrayList();
+		try {
+			recipients.add(new InternetAddress(user.getEmailAddress(), user.getTitle()));
+		} catch(Exception ex){}
+		props.put(MailModule.TO, recipients);
+		props.put(MailModule.SUBJECT, entry.getTitle());
+		MimeEntryPreparator helper = new MimeEntryPreparator(processor, entry, props, logger, true);
+ 		UserPrincipal creator = entry.getCreation().getPrincipal();
+ 		String from = null;
+ 		try {
+ 			InternetAddress addr = new InternetAddress(creator.getEmailAddress(), creator.getTitle());
+ 			from = addr.toString();
+ 		} catch(Exception ex) {
+ 			from = entry.getPostedBy();
+ 		}
+		helper.setDefaultFrom(from);		
+ 		helper.setTimeZone(user.getTimeZone().getID());
+ 		helper.setLocale(user.getLocale());
+		helper.setType(Notify.NotifyType.interactive);
+ 		helper.setSendAttachments(includeAttachments);
+ 		
+ 		Session session = Session.getDefaultInstance(new Properties());
+ 		MimeMessage msg = new MimeMessage(session);
+ 		ByteArrayOutputStream strm = new ByteArrayOutputStream();
+ 		try {
+ 	 		helper.prepare(msg);
+ 	 		msg.writeTo(strm);
+ 	 		mimeData = strm.toByteArray();
+ 		} catch(Exception e) {
+			throw new RemotingException(e);
+ 		}
+		
+		return mimeData;
 	}
 
 	@SuppressWarnings("unchecked")
