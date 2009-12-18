@@ -38,6 +38,7 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 
 import org.kablink.teaming.remoting.ws.model.Binder;
+import org.kablink.teaming.remoting.ws.model.BinderBrief;
 import org.kablink.teaming.remoting.ws.model.DefinitionBrief;
 import org.kablink.teaming.remoting.ws.model.DefinitionCollection;
 import org.kablink.teaming.remoting.ws.model.FileVersions;
@@ -253,6 +254,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getFolderService().folder_getEntry(accessToken, entryId, includeAttachments, eventAsIcalString);
 	}
 
+	public byte[] folder_getEntryAsMime(String accessToken, long entryId, boolean includeAttachments) {
+		return getFolderService().folder_getEntryAsMime(accessToken, entryId, includeAttachments);
+	}
+	
 	public FolderEntryCollection folder_getEntries(String accessToken, long binderId, int firstRecord, int maxRecords) {
 		return getFolderService().folder_getEntries(accessToken, binderId, firstRecord, maxRecords);
 	}
@@ -520,6 +525,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 
 	public byte[] profile_getAttachmentAsByteArray(String accessToken, long userId, String attachmentId) {
 		return getProfileService().profile_getAttachmentAsByteArray(accessToken, userId, attachmentId);
+	}
+	
+	public BinderBrief[] profile_getFavorites(String accessToken) {
+		return getProfileService().profile_getFavorites(accessToken);
 	}
 
 	// Search Service

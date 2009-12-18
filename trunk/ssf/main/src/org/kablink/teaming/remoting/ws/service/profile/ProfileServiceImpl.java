@@ -41,16 +41,20 @@ import java.util.Map;
 import java.util.SortedSet;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NoFileByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
+import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.ChainedInputData;
@@ -58,9 +62,12 @@ import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.BaseService;
+import org.kablink.teaming.remoting.ws.model.Binder;
+import org.kablink.teaming.remoting.ws.model.BinderBrief;
 import org.kablink.teaming.remoting.ws.model.FileVersions;
 import org.kablink.teaming.remoting.ws.model.PrincipalBrief;
 import org.kablink.teaming.remoting.ws.model.PrincipalCollection;
+import org.kablink.teaming.remoting.ws.model.Timestamp;
 import org.kablink.teaming.remoting.ws.model.UserBrief;
 import org.kablink.teaming.remoting.ws.model.UserCollection;
 import org.kablink.teaming.remoting.ws.util.ModelInputData;
@@ -408,6 +415,52 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		catch(WriteEntryDataException e) {
 			throw new RemotingException(e);
 		}
+	}
+
+	public BinderBrief[] profile_getFavorites(String accessToken) {
+		List<BinderBrief> binders = new ArrayList<BinderBrief>();
+		Document favorites = null;
+		UserProperties userProperties = getProfileModule().getUserProperties(null);
+		Object obj = userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
+		
+		if(obj != null) {
+			if(obj instanceof Document) {
+				favorites = (Document)obj;
+			} else {
+				try {
+					favorites = DocumentHelper.parseText((String)obj);
+				} catch (DocumentException e) {}
+			}
+		}
+		
+		if(favorites != null) {
+			java.util.Iterator it = favorites.getRootElement().selectNodes("favorite[@type=\"binder\"]").iterator();
+			while(it.hasNext()) {
+				Element e = (Element)it.next();
+				BinderBrief brief = new BinderBrief();
+				brief.setId(Long.valueOf(e.attributeValue("value")));
+				brief.setTitle(e.attributeValue("name"));
+				org.kablink.teaming.domain.Binder binder = getBinderModule().getBinder(brief.getId());
+				if(binder != null){
+					HistoryStamp hs = null;
+					hs = binder.getCreation();
+					brief.setCreation(new Timestamp(hs.getPrincipal().getName(), hs.getDate()));
+					hs = binder.getModification();
+					brief.setModification(new Timestamp(hs.getPrincipal().getName(), hs.getDate()));
+					brief.setPermaLink(PermaLinkUtil.getPermalink(binder));
+					brief.setEntityType(binder.getEntityType().toString());
+					brief.setDefinitionType(binder.getDefinitionType());
+				}
+				binders.add(brief);
+			}
+		}
+		
+		BinderBrief[] ret = null;
+		if(binders.size() > 0) {
+			ret = new BinderBrief[binders.size()];
+			binders.toArray(ret);
+		}
+		return ret;
 	}
 	
 }

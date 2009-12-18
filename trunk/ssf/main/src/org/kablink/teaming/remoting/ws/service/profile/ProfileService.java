@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.remoting.ws.service.profile;
 
+import org.kablink.teaming.remoting.ws.model.BinderBrief;
 import org.kablink.teaming.remoting.ws.model.FileVersions;
 import org.kablink.teaming.remoting.ws.model.Group;
 import org.kablink.teaming.remoting.ws.model.PrincipalCollection;
@@ -95,5 +96,7 @@ public interface ProfileService {
 	public void profile_changePassword(String accessToken, Long userId, String oldPassword, String newPassword);
 	
 	public byte[] profile_getAttachmentAsByteArray(String accessToken, long userId, String attachmentId);
+
+	public BinderBrief[] profile_getFavorites(String accessToken);
 
 }
