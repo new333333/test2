@@ -82,17 +82,20 @@
 	  <span>	  
 		<ssf:showUser user='<%=(org.kablink.teaming.domain.User)entry.get("_principal")%>' titleStyle="ss_link_1" />  
 	  </span>  
+
+	<c:set var="path" value=""/>	
+	<c:if test="${!empty ss_whatsNewFolders[entry._binderId]}">
+		<c:set var="path" value="${ss_whatsNewFolders[entry._binderId]}"/>
+		<c:set var="title" value="${ss_whatsNewFolders[entry._binderId].title} (${ss_whatsNewFolders[entry._binderId].parentBinder.title})"/>
+	</c:if>
+	<c:if test="${!empty path}">
+	  <div>
 	  <span class="ss_link_4">
 	    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
       value="${entry._modificationDate}" type="both" 
 	  timeStyle="short" dateStyle="medium" />
 	  </span>  
 	  <span class="ss_link_2">  
-		<c:set var="path" value=""/>
-		<c:if test="${!empty ss_whatsNewFolders[entry._binderId]}">
-			<c:set var="path" value="${ss_whatsNewFolders[entry._binderId]}"/>
-			<c:set var="title" value="${ss_whatsNewFolders[entry._binderId].title} (${ss_whatsNewFolders[entry._binderId].parentBinder.title})"/>
-		</c:if>
 		<c:set var="isDashboard" value="yes"/>
 		<c:if test="${!empty path}">
     		<br/><a href="javascript: ;"
@@ -102,6 +105,8 @@
 		</c:if>
 	  
 	  </span>&nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" <ssf:alt tag="entry.Folder"/> width="11" height="10" hspace="2" border="0" align="absmiddle" />
+	  </div>
+	</c:if>
 	  <c:if test="${!empty entry._desc}">
 	    <br/>
 	    <span class="ss_summary"><ssf:textFormat 
