@@ -140,14 +140,14 @@
 			</c:choose>				  
 		</div>
 		
+		<c:set var="path" value=""/>
+		<c:if test="${!empty ss_myTasksFolders[entry._binderId]}">
+			<c:set var="path" value="${ss_myTasksFolders[entry._binderId]}"/>
+			<c:set var="title" value="${ss_myTasksFolders[entry._binderId].title} (${ss_myTasksFolders[entry._binderId].parentBinder.title})"/>
+		</c:if>
+		<c:if test="${!empty path}">
 		<div>
 		<span class="ss_link_2">
-			<c:set var="path" value=""/>
-
-			<c:if test="${!empty ss_myTasksFolders[entry._binderId]}">
-				<c:set var="path" value="${ss_myTasksFolders[entry._binderId]}"/>
-				<c:set var="title" value="${ss_myTasksFolders[entry._binderId].title} (${ss_myTasksFolders[entry._binderId].parentBinder.title})"/>
-			</c:if>
 			<c:set var="isDashboard" value="yes"/>
 
 			<c:if test="${!empty path}">
@@ -158,6 +158,7 @@
 			</c:if>
 		</span>&nbsp;<img src="<html:rootPath/>images/icons/folder_green_sm.png" <ssf:alt tag="entry.Folder"/> width="11" height="10" hspace="2" border="0" align="absmiddle" />
 		</div>
+		</c:if>
 	</li>
 							
   </c:forEach>

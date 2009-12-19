@@ -89,12 +89,14 @@
 	  timeStyle="short" dateStyle="medium" />
 	  </span>
 	  
+	<c:set var="path" value=""/>
+	<c:if test="${!empty ss_whatsNewTeamPlacesFolders[entry._binderId]}">
+		<c:set var="path" value="${ss_whatsNewTeamPlacesFolders[entry._binderId]}"/>
+		<c:set var="title" value="${ss_whatsNewTeamPlacesFolders[entry._binderId].title} (${ss_whatsNewTeamPlacesFolders[entry._binderId].parentBinder.title})"/>
+	</c:if>
+	<c:if test="${!empty path}">
+	<div>
 	  <span class="ss_link_2">
-		<c:set var="path" value=""/>
-		<c:if test="${!empty ss_whatsNewTeamPlacesFolders[entry._binderId]}">
-			<c:set var="path" value="${ss_whatsNewTeamPlacesFolders[entry._binderId]}"/>
-			<c:set var="title" value="${ss_whatsNewTeamPlacesFolders[entry._binderId].title} (${ss_whatsNewTeamPlacesFolders[entry._binderId].parentBinder.title})"/>
-		</c:if>
 		<c:set var="isDashboard" value="yes"/>
 		<c:if test="${!empty path}">
     		<br/><a href="javascript: ;"
@@ -105,12 +107,15 @@
 	  </span>&nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" 
 	    title="<ssf:nlt tag="general.type.folder"/>" width="11" height="10" 
 	    hspace="2" border="0" align="absmiddle" <ssf:alt/>/>
+	</div>
+	</c:if>
 	  <c:if test="${!empty entry._desc}">
-	    <br/>
+	    <div>
 	    <span class="ss_summary"><ssf:textFormat 
 	      formatAction="limitedDescription" 
 	      textMaxWords="10"><ssf:markup search="${entry}">${entry._desc}</ssf:markup></ssf:textFormat></span>
 	    <div class="ss_clear"></div>
+	    </div>
 	  </c:if>
 	
     </li>
