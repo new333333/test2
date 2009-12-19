@@ -95,6 +95,9 @@ public class ManageQuotasController extends SAbstractController {
 				// The value entered by the user is not valid.  Use default value.
 				highWaterMark = getAdminModule().getQuotaHighWaterMark();
 			}
+			if (defaultQuota < 0) defaultQuota = 0;
+			if (highWaterMark > 100) highWaterMark = 100;
+			if (highWaterMark < 0) highWaterMark = 0;
 			
 			getAdminModule().setQuotaDefault(defaultQuota);
 			getAdminModule().setQuotaHighWaterMark(highWaterMark);
