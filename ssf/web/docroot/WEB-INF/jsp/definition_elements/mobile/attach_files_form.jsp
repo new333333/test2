@@ -33,19 +33,3 @@
  */
 %>
 <% //File form for attaching files %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${empty property_hide || !property_hide || !empty ssDefinitionEntry}">
-<div class="ss_entryContent">
-<c:if test="${!empty ssDefinitionEntry.fileAttachments}">
-<span class="ss_bold"><ssf:nlt tag="form.attachments.currentFiles" /></span>
-<br/>
-<c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}">
-&nbsp;&nbsp;&nbsp;<input type="checkbox" name="_delete_${selection.id}"
->&nbsp;${selection.fileItem.name}<br>
-</c:forEach>
-<span class="ss_small">(<ssf:nlt tag="form.atachments.selectForDelete" />)</span>
-<br/>
-</c:if>
-<br/>
-</div>
-</c:if>

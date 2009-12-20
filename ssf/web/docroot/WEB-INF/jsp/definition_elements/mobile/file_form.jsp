@@ -34,27 +34,9 @@
 %>
 <% //File form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<div class="ss_entryContent">
-<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
-<c:set var="selections" value="${ssDefinitionEntry.customAttributes[property_name].value}" />
-<span class="ss_bold"><ssf:nlt tag="form.file.currentFiles"><ssf:param name="value" value="${property_caption}"/></ssf:nlt></span>
-<br/>
-<table cellspacing="0" cellpadding="0" border="0"><tbody>
-<c:forEach var="selection" items="${selections}">
-<tr id="${selection.id}">
-<td><input type="checkbox" name="_delete_${selection.id}">&nbsp;
-${selection.fileItem.name}
-</td>
-</tr>
-</c:forEach>
-</tbody></table>	
-<span class="ss_small">(<ssf:nlt tag="form.file.selectForDelete"/>)</span>
-<br/>
-</c:if>
-<c:if test="${empty ssDefinitionEntry.customAttributes[property_name]}">
-  <c:if test="${property_name == ss_titleGenerated}">
+<c:if test="${property_name == ss_titleGenerated}">
+  <div class="ss_entryContent">
     <span class="font-red"><ssf:nlt tag="mobile.error.fileUploadsNotSupported"/></span>
     <c:set var="ss_hideFormOKButton" value="true" scope="request"/>
-  </c:if>
+  </div>
 </c:if>
-</div>
