@@ -46,7 +46,10 @@
 </td>
 <td valign="top" align="center">
   <div class="masthead-title">
-  <c:if test="${empty ss_pageTitle && !empty ssBinder.parentBinder}">
+  <c:if test="${!empty ssEntry}">
+    <div class="masthead-title2">${ssEntry.parentFolder.parentBinder.title}</div>
+  </c:if>
+  <c:if test="${empty ssEntry && empty ss_pageTitle && !empty ssBinder.parentBinder}">
     <div class="masthead-title2">${ssBinder.parentBinder.title}</div>
   </c:if>
   <c:if test="${!empty ss_pageTitle}">${ss_pageTitle}</c:if>
