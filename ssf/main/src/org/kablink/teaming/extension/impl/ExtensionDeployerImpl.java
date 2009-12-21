@@ -956,7 +956,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		ExtensionInfo extInfo = new ExtensionInfo();
 		extInfo.setName(extensionPrefix);
 		extInfo.setTitle(extensionPrefix);
-		extInfo.setDescription("This plugin is missing the install.xml file.");
+		extInfo.setDescription(NLT.get("administration.extensions.pluginMissing"));
 		extInfo.setDateDeployed(deployedDate);
 		extInfo.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
 				
