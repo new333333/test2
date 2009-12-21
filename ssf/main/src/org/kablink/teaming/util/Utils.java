@@ -133,7 +133,7 @@ public class Utils {
 			result = result.trim().replaceAll("  ", " ");
 		}
 		
-		return result;
+		return result.trim();
 	}
 	
 	public static boolean isSunVM() {
