@@ -218,13 +218,12 @@ public class RelevanceDashboardHelper {
 		} else if (type3.equals(ObjectKeys.RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_TRACKED)) {
 			setupTrackedPlacesBeans(bs, binder, model);
 			setupTrackedItemsBeans(bs, binder, model);
-			setupTrackedPeopleBeans(bs, binder, model);
 		} else if (type3.equals(ObjectKeys.RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_SITE)) {
 			setupWhatsHotBean(bs, model);
 			setupWhatsNewSite(bs, binder, model);
 		}
 	}
-
+	
 	protected static boolean setupProfileBeans(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Binder binder, Map model) {
 		if (model.containsKey(WebKeys.CONFIG_ELEMENT_RELEVANCE_DASHBOARD)) {
@@ -326,8 +325,10 @@ public class RelevanceDashboardHelper {
 				String id = (String)entry.get(Constants.BINDER_ID_FIELD);
 				if (id != null) {
 					Long bId = new Long(id);
-					Binder place = bs.getBinderModule().getBinder(bId);
-					places.put(id, place);
+					try {
+						Binder place = bs.getBinderModule().getBinder(bId);
+						places.put(id, place);
+					} catch(Exception e) {}
 				}
 	    	}
     	}
@@ -367,8 +368,10 @@ public class RelevanceDashboardHelper {
 				String id = (String)entry.get(Constants.BINDER_ID_FIELD);
 				if (id != null) {
 					Long bId = new Long(id);
-					Binder place = bs.getBinderModule().getBinder(bId);
-					places.put(id, place);
+					try {
+						Binder place = bs.getBinderModule().getBinder(bId);
+						places.put(id, place);
+					} catch(Exception e) {}
 				}
 	    	}
     	}
@@ -394,8 +397,9 @@ public class RelevanceDashboardHelper {
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
 		List trackedPlaces = SearchUtils.getTrackedPlacesIds(bs, binder);
+		List<String> trackedPeopleIds = SearchUtils.getTrackedPeopleIds(bs, binder);
 		if (trackedPlaces.size() > 0) {
-			Criteria crit = SearchUtils.entriesForTrackedPlaces(bs, trackedPlaces);
+			Criteria crit = SearchUtils.entriesForTrackedPlacesAndPeople(bs, trackedPlaces, trackedPeopleIds);
 			Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
 			model.put(WebKeys.WHATS_NEW_TRACKED_PLACES, results.get(ObjectKeys.SEARCH_ENTRIES));
@@ -464,8 +468,10 @@ public class RelevanceDashboardHelper {
 					if (id != null) {
 						Long bId = new Long(id);
 						if (!places.containsKey(id)) {
-							Binder place = bs.getBinderModule().getBinder(bId);
-							places.put(id, place);
+							try {
+								Binder place = bs.getBinderModule().getBinder(bId);
+								places.put(id, place);
+							} catch(Exception e) {}
 						}
 					}
 		    	}
@@ -511,50 +517,16 @@ public class RelevanceDashboardHelper {
 					if (id != null) {
 						Long bId = new Long(id);
 						if (!places.containsKey(id)) {
-							Binder place = bs.getBinderModule().getBinder(bId);
-							places.put(id, place);
+							try {
+								Binder place = bs.getBinderModule().getBinder(bId);
+								places.put(id, place);
+							} catch(Exception e) {}
 						}
 					}
 		    	}
 	    	}
 	    	model.put(WebKeys.WHATS_NEW_TRACKED_CALENDAR_FOLDERS, places);
 		}
-	}
-	
-	private static void setupTrackedPeopleBeans(AllModulesInjected bs, Binder binder, Map model) {
-		//Get the documents bean for the documents th the user just authored or modified
-		Map options = new HashMap();
-		
-		//Prepare for a standard dashboard search operation
-		setupInitialSearchOptions(options);
-		
-		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
-		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
-		
-		Criteria crit = SearchUtils.entriesForTrackedPeople(bs, binder);
-	
-		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
-		model.put(WebKeys.WHATS_NEW_TRACKED_PEOPLE, results.get(ObjectKeys.SEARCH_ENTRIES));
-
-		Map places = new HashMap();
-    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
-    	if (items != null) {
-	    	Iterator it = items.iterator();
-	    	while (it.hasNext()) {
-	    		Map entry = (Map)it.next();
-				String id = (String)entry.get(Constants.BINDER_ID_FIELD);
-				if (id != null) {
-					Long bId = new Long(id);
-					if (!places.containsKey(id)) {
-						try {
-							Binder place = bs.getBinderModule().getBinder(bId);
-							places.put(id, place);
-						} catch(Exception e) {}
-					}
-				}
-	    	}
-    	}
-    	model.put(WebKeys.WHATS_NEW_TRACKED_PEOPLE_FOLDERS, places);
 	}
 	
 	protected static void setupWhatsNewSite(AllModulesInjected bs, Binder binder, Map model) {		
@@ -590,8 +562,10 @@ public class RelevanceDashboardHelper {
 				String id = (String)entry.get(Constants.BINDER_ID_FIELD);
 				if (id != null) {
 					Long bId = new Long(id);
-					Binder place = bs.getBinderModule().getBinder(bId);
-					places.put(id, place);
+					try {
+						Binder place = bs.getBinderModule().getBinder(bId);
+						places.put(id, place);
+					} catch(Exception e) {}
 				}
 	    	}
     	}

@@ -102,6 +102,24 @@ public class SearchUtils {
 		return crit;
 	}
 	
+	public static Criteria entriesForTrackedPlacesAndPeople(AllModulesInjected bs, List userWorkspaces, 
+			List<String> trackedPeopleIds)
+	{
+		Criteria crit = new Criteria();
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {Constants.ENTRY_TYPE_ENTRY, 
+				Constants.ENTRY_TYPE_REPLY}))
+			.add(in(DOC_TYPE_FIELD,new String[] {Constants.DOC_TYPE_ENTRY}));
+		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
+		
+		Disjunction disjunction = disjunction();
+		disjunction.add(in(ENTRY_ANCESTRY, userWorkspaces));
+		
+		disjunction.add(in(CREATORID_FIELD, trackedPeopleIds));
+		crit.add(disjunction);
+
+		return crit;
+	}
+	
 	public static Criteria entriesForTrackedCalendars(AllModulesInjected bs, List userWorkspaces, String start, String end)
 	{
 		Criteria crit = new Criteria();
@@ -186,13 +204,10 @@ public class SearchUtils {
 		UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
 		Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
 		if (relevanceMap != null) {
-			List trackedPeople = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
+			List<Long> trackedPeople = (List<Long>) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
 			if (trackedPeople != null) {
-				List<Long> idList = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_BINDERS);
-				if (idList != null) {
-					for (Long id: idList) {
-						sIdList.add(String.valueOf(id));
-					}
+				for (Long id: trackedPeople) {
+					sIdList.add(String.valueOf(id));
 				}
 			}
 		}
