@@ -40,12 +40,12 @@
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="ss_quotaMessage" value="" />
-<c:if test="${ss_diskQuotaHighWaterMarkExceeded && !ss_diskQuotaExceeded}">
+<c:if test="${ss_diskQuotaHighWaterMarkExceeded && !ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 <c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.nearLimit"><ssf:param name="value" useBody="true"
 	    ><fmt:formatNumber value="${(ss_diskQuotaUserMaximum - ssUser.diskSpaceUsed)/1048576}" 
 	    maxFractionDigits="2"/></ssf:param></ssf:nlt></c:set>
 </c:if>
-<c:if test="${ss_diskQuotaExceeded}">
+<c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 <c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.diskQuotaExceeded"/></c:set>
 </c:if>
 
@@ -85,11 +85,11 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 				<a class="ss_tinyButton ss_fineprint ss_nowrap" 
 				id="ss_dropbox_div_position${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 				href="javascript: ;" 
-				<c:if test="${!ss_diskQuotaExceeded}">
+				<c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
 				  onClick='ss_showAddAttachmentDropbox("${ssDefinitionEntry.parentBinder.id}", "${ssDefinitionEntry.id}", "${ss_attachments_namespace}"); 
 				    <c:if test="${!empty ss_quotaMessage}">alert("${ss_quotaMessage}");</c:if>return false;'
 				</c:if>
-				<c:if test="${ss_diskQuotaExceeded}">
+				<c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 				  onClick='alert("${ss_quotaMessage}");return false;'
 				</c:if>
 				title="<ssf:nlt tag="entry.AttachFilesByApplet"/>">
@@ -108,14 +108,14 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 		<a class="ss_tinyButton ss_fineprint ss_nowrap" title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
 		  style="behavior: url(#default#AnchorClick);" 
 		  folder="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" 
-		  <c:if test="${!ss_diskQuotaExceeded}">
+		  <c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
 		    href="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" 
 		    target="_blank"
 		    <c:if test="${!empty ss_quotaMessage}">
 		      onClick='alert("${ss_quotaMessage}");'
 		    </c:if>
 		  </c:if>
-		  <c:if test="${ss_diskQuotaExceeded}">
+		  <c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 		    onClick='alert("${ss_quotaMessage}");'
 		  </c:if>
 		><ssf:nlt tag="entry.AttachFilesByWebDav"/></a>
@@ -127,14 +127,14 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 		  title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
 		  style="behavior: url(#default#AnchorClick);" 
 		  folder="${ssWebDavURL}" 
-		  <c:if test="${!ss_diskQuotaExceeded}">
+		  <c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
 		    href="${ssWebDavURL}" 
 		    target="_blank"
 		    <c:if test="${!empty ss_quotaMessage}">
 		      onClick='alert("${ss_quotaMessage}");'
 		    </c:if>
 		  </c:if>
-		  <c:if test="${ss_diskQuotaExceeded}">
+		  <c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 		    onClick='alert("${ss_quotaMessage}");return false;'
 		  </c:if>
 		  ><ssf:nlt tag="entry.AttachFilesByWebDav"/></a>
@@ -146,11 +146,11 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	  <li style="float:left; padding:1px 10px 4px 0px;">
 		<a class="ss_tinyButton ss_fineprint ss_nowrap" 
 		  title="<ssf:nlt tag="entry.AttachFilesByWebBrowse"/>" href="javascript: ;" 
-		  <c:if test="${!ss_diskQuotaExceeded}">
+		  <c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
 		    onClick='ss_showAddAttachmentBrowse("${ssDefinitionEntry.parentBinder.id}", "${ssDefinitionEntry.id}", "${ss_attachments_namespace}"); 
 		      <c:if test="${!empty ss_quotaMessage}">alert("${ss_quotaMessage}");</c:if>return false;'
 		  </c:if>
-		  <c:if test="${ss_diskQuotaExceeded}">
+		  <c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 			onClick='alert("${ss_quotaMessage}");return false;'
 		  </c:if>
 		  ><ssf:nlt tag="entry.AttachFilesByWebBrowse"/></a>
@@ -163,11 +163,11 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	  <a class="ss_tinyButton ss_fineprint ss_nowrap" 
 	    title="<ssf:nlt tag="attachMeeting.attachResults"/>" 
 	    href="javascript: ;" 
-		<c:if test="${!ss_diskQuotaExceeded}">
+		<c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
 	      onClick='ss_showAttachMeetingRecords("${ssDefinitionEntry.parentBinder.id}", "${ssDefinitionEntry.id}", "${ss_attachments_namespace}"); 
 	        <c:if test="${!empty ss_quotaMessage}">alert("${ss_quotaMessage}");</c:if>return false;'
 		</c:if>
-		<c:if test="${ss_diskQuotaExceeded}">
+		<c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 		  onClick='alert("${ss_quotaMessage}");return false;'
 		</c:if>
 	    ><ssf:nlt tag="attachMeeting.attachResults"/></a>

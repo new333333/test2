@@ -1911,11 +1911,11 @@ public class ListFolderHelper {
 				bs.getFolderModule().testAccess(folder, FolderOperation.addEntry) && 
 				!isAccessible) {
 			qualifiers = new HashMap();
-			if (bs.getProfileModule().isDiskQuotaExceeded()) {
+			if (bs.getProfileModule().isDiskQuotaExceeded() && !folder.isMirrored()) {
 				qualifiers.put("onClick", "alert('" + NLT.get("quota.diskQuotaExceeded").replaceAll("'", "''") + "'); return false;");
 			} else {
 				String msg = "ss_showFolderAddAttachmentDropbox('" + response.getNamespace() + "', '" + folder.getId() + "','" + Boolean.toString(folder.isLibrary()) + "');";
-				if (bs.getProfileModule().isDiskQuotaHighWaterMarkExceeded()) {
+				if (bs.getProfileModule().isDiskQuotaHighWaterMarkExceeded() && !folder.isMirrored()) {
 					Double quotaLeft = (Double.valueOf(bs.getProfileModule().getMaxUserQuota()) - 
 							Double.valueOf(user.getDiskSpaceUsed()))/1048576;
 					Locale.setDefault(user.getLocale());
