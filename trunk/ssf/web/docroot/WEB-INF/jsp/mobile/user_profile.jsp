@@ -35,11 +35,12 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <c:if test="${!empty ssProfileUser}">
+<c:set var="userTitle"><ssf:userTitle user="${ssProfileUser}"/></c:set>
  <div class="userid">
    <div>
      <c:if test="${empty ssProfileUser.customAttributes['picture']}">
 		<img src="<html:imagesPath/>pics/UserPhoto.png" 
-		     alt="${ssProfileUser.title}" />
+		     alt="${userTitle}" />
      </c:if>
      <c:if test="${!empty ssProfileUser.customAttributes['picture']}">
 	   <c:set var="selections" value="${ssProfileUser.customAttributes['picture'].value}" />
@@ -47,14 +48,14 @@
 	   <c:forEach var="selection" items="${selections}">
 	     <c:if test="${pictureCount == 0}">
 		   <img src="<ssf:fileUrl webPath="readScaledFile" file="${selection}"/>"
-		     alt="${ssProfileUser.title}" />
+		     alt="${userTitle}" />
 	     </c:if>
 	     <c:set var="pictureCount" value="${pictureCount + 1}"/>
 	   </c:forEach>
      </c:if>
    </div>
    
-   <div class="username">${ssProfileUser.title}</div>
+   <div class="username">${userTitle}</div>
    
    <c:if test="${!empty ssProfileUser.emailAddress}">
      <div class="email">

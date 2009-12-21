@@ -44,7 +44,7 @@
 	<li>
 	  <span>
 	    <ssf:nlt tag="mobile.welcome">
-	      <ssf:param name="value" value="${ssUser.title}"/>
+	      <ssf:param name="value" useBody="true"><ssf:userTitle user="${ssUser}"/></ssf:param>
 	    </ssf:nlt>
 	  </span>
 	</li>

@@ -275,7 +275,7 @@
 <input type="hidden" name="principalIds" value="${user.id}"/>
 <TR class="${rowClass}">
   <TD class="ss_table_paragraph"></TD>
-  <TD class="ss_table_paragraph">${user.title}</TD>
+  <TD class="ss_table_paragraph"><ssf:userTitle user="${user}"/></TD>
   <TD class="ss_table_paragraph">${user.name}</TD>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <TD class="ss_table_paragraph" align="center" noWrap="noWrap">

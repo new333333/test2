@@ -101,14 +101,14 @@
 			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 			    folderId="${user['_workspaceId']}"
 			    action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
-			    <c:out value="${user.title}"/>
+			    <ssf:userTitle user="${user._principal}"/>
 			  </a>
 			</c:if>
 			<c:if test="${empty user['_workspaceId']}">
 			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 			    entryId="${user._docId}"
 			    action="__ajax_mobile" operation="mobile_show_user" actionUrl="false" />">
-			    <c:out value="${user.title}"/>
+			    <ssf:userTitle user="${user._principal}"/>
 			  </a>
 			</c:if>
 		</div>

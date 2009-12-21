@@ -37,6 +37,7 @@
 <% // This is JSON type AJAX response  %>
 [
 <c:forEach var="user" items="${ssClipboardPrincipals}" varStatus="status">
-	[<c:out value="${user.id}"/>, "<ssf:escapeJavaScript value="${user.title}"/>"]<c:if test="${!status.last}">,</c:if>
+	<c:set var="userTitle"><ssf:userTitle user="${user}"/></c:set>
+	[<c:out value="${user.id}"/>, "<ssf:escapeJavaScript value="${userTitle}"/>"]<c:if test="${!status.last}">,</c:if>
 </c:forEach>
 ]

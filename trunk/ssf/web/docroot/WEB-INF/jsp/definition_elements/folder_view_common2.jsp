@@ -762,7 +762,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 %>
           	<c:forEach var="user" 
           	  items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(ids, false) %>"
-          	>${separator}${user.title}<c:set var="separator" value=", "/>
+          	>${separator}<ssf:userTitle user="${user}"/><c:set var="separator" value=", "/>
           	</c:forEach>
 <%
 	} catch(Exception e) {}
