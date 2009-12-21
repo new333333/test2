@@ -955,7 +955,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 
 	protected void generateWorkflowStateRow(List<Map<String, Object>> report, final Binder binder, final Date startDate, final Date endDate) {
-		SimpleDateFormat	dateFormat;
+		SimpleDateFormat dateFormat;
+		int i;
 
 		if (!getBinderModule().testAccess(binder, BinderOperation.report)) return;
 		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
@@ -963,10 +964,10 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				List auditTrail = null;
 				try {
 					ProjectionList proj = Projections.projectionList()
-									.add(Projections.groupProperty("definitionId"))
-									.add(Projections.groupProperty("state"))
-									.add(Projections.avg("startDate"))
-									.add(Projections.avg("endDate"));
+									.add(Projections.property("definitionId"))
+									.add(Projections.property("state"))
+									.add(Projections.property("startDate"))
+									.add(Projections.property("endDate"));
 					Criteria crit = session.createCriteria(WorkflowHistory.class)
 						.setProjection(proj)
 						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, binder.getZoneId()))
@@ -984,54 +985,84 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		// Create a SimpleDateFormat that will be used to parse the average start date and average end date.
 		dateFormat = new SimpleDateFormat( "yyyyMMddHHmmssZ" );
 
-		for(Object o : result) {
-			Date date;
-			Double tmp;
-			String dateStr;
-			long start;
-			long end;
-			long seconds;
+		i = 0;
+		while ( i < result.size() )
+		{
+			Object o;
 			
+			o = result.get( i );
 			Object[] col = (Object []) o;
 			Map<String,Object> row = addBlankRow(report, binder);
 			row.put(ReportModule.DEFINITION_ID, col[0]);
 			row.put(ReportModule.STATE, col[1]);
 			
-			// Get the average start date.  This value is stored as a double.  The following
-			// is an example of how it is stored: 2.0091217174537E13 which represents
-			// Dec 17, 2009 17:45:37
-			tmp = (Double)col[2];
-			dateStr = Long.toString( tmp.longValue() ) + "-0000";
-			start = 0;
-			try
-			{
-				date = dateFormat.parse( dateStr );
-				start = date.getTime() / 1000;
-			}
-			catch (Exception ex)
-			{
-			}
-			
-			// Get the average end date.  This value is stored as a double.  The following
-			// is an example of how it is stored: 2.0091217174537E13 which represents
-			// Dec 17, 2009 17:45:37
-			tmp = (Double)col[3];
-			dateStr = Long.toString( tmp.longValue() ) + "-0000";
-			end = 0;
-			try
-			{
-				date = dateFormat.parse( dateStr );
-				end = date.getTime() / 1000;
-			}
-			catch (Exception ex)
-			{
-			}
-			
-			seconds = end - start;
-			row.put(ReportModule.AVERAGE, seconds);
-			row.put(ReportModule.AVERAGE_TI, new TimeInterval((double)seconds));
+			i = getAverageTimeInWorkflowState( result, i, row );
 		}
 	}
+	
+	/**
+	 * Get the average time spent in the given workflow state.
+	 */
+	private int getAverageTimeInWorkflowState(
+		List results,			// Results of a db query
+		int startIndex,			// Start looking at this index.
+		Map<String,Object> row )// Put the average time in this row.
+	{
+		long avg = 0;
+		long total = 0;
+		int count = 0;
+		boolean done;
+		String definitionId;
+		String stateName;
+		Object obj;
+		Object[] nextResults;
+		
+		// Get the definition id of the workflow and the name of the state.
+		obj = results.get( startIndex );
+		nextResults = (Object []) obj;
+		definitionId = (String)nextResults[0];
+		stateName = (String)nextResults[1];
+		
+		done = false;
+		while ( done == false && startIndex < results.size() )
+		{
+			// Get the next result from the list of db query results.
+			obj = results.get( startIndex );
+			nextResults = (Object []) obj;
+
+			// Is this result dealing with the workflow and state we are looking for? 
+			if ( definitionId.equalsIgnoreCase( (String)nextResults[0] ) && stateName.equalsIgnoreCase( (String)nextResults[1] ) )
+			{
+				Timestamp timestamp;
+				long start;
+				long end;
+				
+				timestamp =(Timestamp)nextResults[2]; 
+				start = timestamp.getTime();
+				timestamp = (Timestamp)nextResults[3];
+				end = timestamp.getTime();
+				
+				// Add the time spent in this workflow state.
+				total += (end - start) / 1000;
+				
+				++count;
+				++startIndex;
+			}
+			else
+				done = true;
+		}
+		
+		if ( count > 0 )
+		{
+			avg = total / count;
+		}
+		
+		row.put( ReportModule.AVERAGE, avg );
+		row.put( ReportModule.AVERAGE_TI, new TimeInterval((double)avg) );
+
+		return startIndex;
+	}// end getAverageTimeInWorkflowState()
+
 
 	public List<Map<String,Object>> generateWorkflowStateCountReport(Collection binderIds) {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
