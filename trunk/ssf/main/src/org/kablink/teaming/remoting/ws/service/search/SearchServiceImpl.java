@@ -94,6 +94,12 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 			if(Constants.DOC_TYPE_ATTACHMENT.equals(docType)) {
 				String attachmentType = "file";
 				resultElem = folderElement.addElement(attachmentType);
+				resultElem.addAttribute("id", (String) result.get(Constants.DOCID_FIELD));
+				resultElem.addAttribute("binderId", (String) result.get(Constants.BINDER_ID_FIELD));
+				resultElem.addAttribute("fileId", (String)result.get(Constants.FILE_ID_FIELD));
+				resultElem.addAttribute("fileName", (String)result.get(Constants.FILENAME_FIELD));
+				resultElem.addAttribute("title", (String) result.get(Constants.TITLE_FIELD));
+				resultElem.addAttribute("definitionId", (String) result.get(Constants.COMMAND_DEFINITION_FIELD));
 			} else if(Constants.DOC_TYPE_BINDER.equals(docType)) {
 				String binderType = (String) result.get(Constants.ENTITY_FIELD);
 				resultElem = folderElement.addElement(docType);
@@ -119,6 +125,10 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 				addEntryAttributes(resultElem, result, isPrincipal);
 			}
 		}
+		
+		folderElement.addAttribute("first", Integer.toString(offset));
+		folderElement.addAttribute("count", Integer.toString(entrylist.size()));
+		folderElement.addAttribute("total", ((Integer)folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL)).toString());
 		
 		return doc.getRootElement().asXML();
 	}
