@@ -40,7 +40,7 @@
 <form class="ss_style ss_form" 
   method="post">
 <span class="ss_bold">
-<ssf:nlt tag="profile.confirmDeleteUser"><ssf:param name="value" value="${ssEntry.title}"/></ssf:nlt>
+<ssf:nlt tag="profile.confirmDeleteUser"><ssf:param name="value" useBody="true"><ssf:userTitle user="${ssEntry}"/></ssf:param></ssf:nlt>
 </span><br/><br/>
 
 <div style="display:block">
