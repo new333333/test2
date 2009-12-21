@@ -49,6 +49,7 @@ import org.kablink.teaming.util.NLT;
 
 import java.util.Date;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.GregorianCalendar;
 import java.util.regex.*;
@@ -63,7 +64,7 @@ public class Datepicker extends TagSupport {
     private String formName;
     private String altText = "";
     private Date initDate = null;
-    private String componentOrder = "dmy";
+    private String componentOrder = null;
     private String callbackRoutine = "";
     private Boolean showSelectors = new Boolean(true);
     private Boolean immediateMode = new Boolean(false);
@@ -80,6 +81,7 @@ public class Datepicker extends TagSupport {
 	    if (id == null) {
 	        throw new JspException("ssf:datepicker calls must include a unique id"); 
 	    }
+	    if (componentOrder == null) componentOrder = getLocaleComponentOrder();
 	    String prefix = id;
 	    Pattern pat;
 	    Matcher mat;
@@ -478,7 +480,7 @@ public class Datepicker extends TagSupport {
         	popupDivId = "";
         	calendarDivId = "";
         	initDate = null;
-            componentOrder = "dmy";
+            componentOrder = null;
             callbackRoutine = "";
             showSelectors = new Boolean(true);
             immediateMode = new Boolean(false);
@@ -511,6 +513,18 @@ public class Datepicker extends TagSupport {
 
 	public void setInitDate(Date initDate) {
 	    this.initDate = initDate;
+	}
+	
+	//Routine to determine the proper component order depending on locale
+	private String getLocaleComponentOrder() {
+		String order = "dmy";
+		User user = RequestContextHolder.getRequestContext().getUser();
+		if (user.getLocale().equals(Locale.US)) order = "mdy";
+		if (user.getLocale().getLanguage().equals(Locale.CHINESE.getLanguage())) order = "ymd";
+		if (user.getLocale().getLanguage().equals(Locale.JAPANESE.getLanguage())) order = "ymd";
+		if (user.getLocale().getLanguage().equals(Locale.KOREAN.getLanguage())) order = "ymd";
+		
+		return order;
 	}
 
 	// component order is the order of the three form elements, month, day, and year
