@@ -1243,8 +1243,6 @@ public class WebKeys {
     public static final String WHATS_NEW_BINDER_FOLDERS="ss_whatsNewBinderFolders";
     public static final String WHATS_NEW_TEAM_PLACES="ss_whatsNewTeamPlaces";
     public static final String WHATS_NEW_TEAM_PLACES_FOLDERS="ss_whatsNewTeamPlacesFolders";
-    public static final String WHATS_NEW_TRACKED_PEOPLE="ss_whatsNewTrackedPeople";
-    public static final String WHATS_NEW_TRACKED_PEOPLE_FOLDERS="ss_whatsNewTrackedPeopleFolders";
     public static final String WHATS_NEW_TRACKED_PLACES="ss_whatsNewTrackedPlaces";
     public static final String WHATS_NEW_TRACKED_PLACES_FOLDERS="ss_whatsNewTrackedPlacesFolders";
     public static final String WHATS_NEW_TRACKED_CALENDARS="ss_whatsNewTrackedCalendars";
