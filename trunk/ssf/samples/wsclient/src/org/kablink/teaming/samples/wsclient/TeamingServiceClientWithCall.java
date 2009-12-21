@@ -220,6 +220,12 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
 				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "folder_getCreatedOrUpdatedEntries", 
 						new Object[] {null, args[1], sdf.parse(args[2]), sdf.parse(args[3])});
+			} else if(args[0].equals("testAccess")) {
+				String[] sIds = args[2].split(",");
+				long[] ids = new long[sIds.length];
+				for(int i = 0; i < sIds.length; i++)
+					ids[i] = Long.parseLong(sIds[i]);
+				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "binder_testAccess", new Object[] {null, args[1], ids});
 			} else if(args[0].equals("getDeletedEntries")) {
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
 				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "folder_getDeletedEntries", 
@@ -291,6 +297,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("restoreBinder <binder id>");
 		System.out.println("preDeleteEntry <entry id>");
 		System.out.println("restoreEntry <entry id>");
+		System.out.println("testAccess <work area operation name> <binder id1, binder id2,....>");
 		
 		// an example of addZoneUnderPortal invocation - 
 		// addZoneUnderPortal fake-bestbuy www.fake-bestbuy.com mail.fake-bestbuy.com
