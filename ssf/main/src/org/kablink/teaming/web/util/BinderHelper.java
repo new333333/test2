@@ -405,12 +405,16 @@ public class BinderHelper {
 			model.put(WebKeys.MOBILE_ACCESS_ENABLED, bs.getAdminModule().isMobileAccessEnabled());
 			model.put(WebKeys.LOGOUT_URL, logoutUrl);
 			model.put(WebKeys.LOGIN_POST_URL, loginPostUrl);
+			model.put(WebKeys.IS_BINDER_MIRRORED_FOLDER, false);
 			if (binderId == null) {
 				BinderHelper.getBinderAccessibleUrl(bs, null, null, request, response, model);
 			} else {
 				try {
 					Binder binder = bs.getBinderModule().getBinder(binderId);
 					BinderHelper.getBinderAccessibleUrl(bs, binder, null, request, response, model);
+					if (binder instanceof Folder) {
+						model.put(WebKeys.IS_BINDER_MIRRORED_FOLDER, ((Folder)binder).isMirrored());
+					}
 				} catch(Exception e) {
 					logger.debug("BinderHelper.setupStandardBeans(Exception:  '" + MiscUtil.exToString(e) + "')");
 					BinderHelper.getBinderAccessibleUrl(bs, null, null, request, response, model);

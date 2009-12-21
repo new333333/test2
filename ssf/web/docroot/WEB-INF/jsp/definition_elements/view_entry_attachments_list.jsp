@@ -36,12 +36,12 @@
 <%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <c:set var="ss_quotaMessage" value="" />
-<c:if test="${ss_diskQuotaHighWaterMarkExceeded && !ss_diskQuotaExceeded}">
+<c:if test="${ss_diskQuotaHighWaterMarkExceeded && !ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 <c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.nearLimit"><ssf:param name="value" useBody="true"
 	    ><fmt:formatNumber value="${(ss_diskQuotaUserMaximum - ssUser.diskSpaceUsed)/1048576}" 
 	    maxFractionDigits="2"/></ssf:param></ssf:nlt></c:set>
 </c:if>
-<c:if test="${ss_diskQuotaExceeded}">
+<c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 <c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.diskQuotaExceeded"/></c:set>
 </c:if>
 <c:set var="owningBinder" value="${ssBinder}"/>
@@ -266,7 +266,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					
 						<ssf:isFileEditorConfiguredForOS relativeFilePath="${selection.fileItem.name}" operatingSystem="<%= operatingSystem %>">
 					
-							<c:if test="${!ss_diskQuotaExceeded}">
+							<c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
 							  <a href="javascript: ;" 
 								onClick='javascript:<c:if test="${!empty ss_quotaMessage}">alert("${ss_quotaMessage}");</c:if>
 								    ss_openWebDAVFile("${ssDefinitionEntry.parentBinder.id}", "${ssDefinitionEntry.id}", "${ss_attachments_namespace}", "<%= operatingSystem %>", 
@@ -274,7 +274,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 									return false;'>
 								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
 							</c:if>
-							<c:if test="${ss_diskQuotaExceeded}">
+							<c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 							  <a href="javascript: ;" 
 								onClick='alert("${ss_quotaMessage}");return false;'>
 								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
@@ -285,7 +285,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					</ssf:editorTypeToUseForEditInPlace>
 					
 					<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="webdav">
-						  <c:if test="${!ss_diskQuotaExceeded}">
+						  <c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
 						    <a href="<ssf:ssfsInternalAttachmentUrl 
 								binder="${ssDefinitionEntry.parentBinder}"
 								entity="${ssDefinitionEntry}"
@@ -294,7 +294,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 							>
 								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
 						  </c:if>
-						  <c:if test="${ss_diskQuotaExceeded}">
+						  <c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 							  <a href="javascript: ;" 
 								onClick='alert("${ss_quotaMessage}");return false;'>
 								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>

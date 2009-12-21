@@ -38,12 +38,12 @@
 <%@ page import="java.lang.String" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <c:set var="ss_quotaMessage" value="" />
-<c:if test="${ss_diskQuotaHighWaterMarkExceeded && !ss_diskQuotaExceeded}">
+<c:if test="${ss_diskQuotaHighWaterMarkExceeded && !ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 <c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.nearLimit"><ssf:param name="value" useBody="true"
 	    ><fmt:formatNumber value="${(ss_diskQuotaUserMaximum - ssUser.diskSpaceUsed)/1048576}" 
 	    maxFractionDigits="2"/></ssf:param></ssf:nlt></c:set>
 </c:if>
-<c:if test="${ss_diskQuotaExceeded}">
+<c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 <c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.diskQuotaExceeded"/></c:set>
 </c:if>
 <c:set var="isShowYouTube" value='<%= SPropsUtil.getBoolean("youTube.showInEditor") %>'/>
@@ -69,10 +69,10 @@
 --%></c:if><%--
 --%><script type="text/javascript" src="<html:rootPath/>js/tiny_mce/tiny_mce.js"></script>
 <script type="text/javascript">
-<c:if test="${!empty ss_diskQuotaExceeded}">
+<c:if test="${!empty ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 var ss_diskQuotaExceeded = ${ss_diskQuotaExceeded};
 </c:if>
-<c:if test="${empty ss_diskQuotaExceeded}">
+<c:if test="${empty ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
 var ss_diskQuotaExceeded = false;
 </c:if>
 var ss_imageSelections${element_id} = "<select name='srcUrl' id='srcUrl'><%--
