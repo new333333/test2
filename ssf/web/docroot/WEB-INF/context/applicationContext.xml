@@ -1166,6 +1166,7 @@ text/calendar											  ics
 		<property name="target">
 			<bean class="org.kablink.teaming.remoting.ws.service.binder.attachments.BinderServiceImpl" parent="dependOnAllModulesTemplate">
 				<property name="coreDao"><ref bean="coreDao"/></property>
+				<property name="accessControlManager"><ref bean="accessControlManager"/></property>
 			</bean>
 		</property>
 		<property name="proxyInterfaces">

@@ -100,5 +100,7 @@ public interface BinderService {
 	public FolderCollection binder_getFolders(String accessToken, long binderId, int firstRecord, int maxRecords);
 	public TrashCollection binder_getTrashEntries(String accessToken, long binderId, int firstRecord, int maxRecords);
 	public byte[] binder_getAttachmentAsByteArray(String accessToken, long binderId, String attachmentId);
-   
+
+	public boolean[] binder_testAccess(String accessToken, String workAreaOperationName, long[] binderIds);
+
 }

@@ -248,8 +248,25 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getBinderService().binder_getAttachmentAsByteArray(accessToken, binderId, attachmentId);
 	}
 
+	/**
+	 * Test if the calling user has the specified access right on each of the binders specified.
+	 * 
+	 * <p>If a binder does not exist, the result will be set to <code>false</code> for that specific binder.
+	 * If the access right is an unknown value in Teaming, the result will be set to <code>false</code>
+	 * for all binders.
+	 * 
+	 * @param accessToken Either the security token passed to your application by Teaming as part of
+	 * implementing a remote application, or the null value.
+	 * @param workAreaOperationName The string name of a {@link org.kablink.teaming.security.function.WorkAreaOperation WorkAreaOperation}
+	 * instance. See the Java source file for the names.
+	 * @param binderIds The ID of the binders against which to test the access.
+	 */
+	public boolean[] binder_testAccess(String accessToken, String workAreaOperationName, long[] binderIds) {
+		return getBinderService().binder_testAccess(accessToken, workAreaOperationName, binderIds);
+	}
+
 	/// Folder Service
-	
+
 	public FolderEntry folder_getEntry(String accessToken, long entryId, boolean includeAttachments, boolean eventAsIcalString) {
 		return getFolderService().folder_getEntry(accessToken, entryId, includeAttachments, eventAsIcalString);
 	}

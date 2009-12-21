@@ -54,6 +54,7 @@ import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoBinderByTheNameException;
 import org.kablink.teaming.domain.NoFileByTheNameException;
 import org.kablink.teaming.domain.Principal;
@@ -77,7 +78,9 @@ import org.kablink.teaming.remoting.ws.model.TrashBrief;
 import org.kablink.teaming.remoting.ws.model.TrashCollection;
 import org.kablink.teaming.remoting.ws.util.DomInputData;
 import org.kablink.teaming.remoting.ws.util.ModelInputData;
+import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.Function;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -88,12 +91,20 @@ import org.kablink.util.search.Constants;
 
 public class BinderServiceImpl extends BaseService implements BinderService, BinderServiceInternal {
 	private CoreDao coreDao;
+	private AccessControlManager accessControlManager;
 	
 	protected CoreDao getCoreDao() {
 		return coreDao;
 	}
 	public void setCoreDao(CoreDao coreDao) {
 		this.coreDao = coreDao;
+	}
+	
+	protected AccessControlManager getAccessControlManager() {
+		return accessControlManager;
+	}
+	public void setAccessControlManager(AccessControlManager accessControlManager) {
+		this.accessControlManager = accessControlManager;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -532,4 +543,22 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		}
 	}
 
+	public boolean[] binder_testAccess(String accessToken, String workAreaOperationName, long[] binderIds) {
+		WorkAreaOperation workAreaOperation = WorkAreaOperation.getInstance(workAreaOperationName);
+		boolean[] result = new boolean[binderIds.length];
+		for(int i = 0; i < binderIds.length; i++) {
+			try {
+				Binder binder = getBinderModule().getBinder(binderIds[i]);
+				result[i] = getAccessControlManager().testOperation(binder, workAreaOperation);
+			}
+			catch(NoBinderByTheIdException e) {
+				// The specified binder does not exist. Instead of throwing an exception (and
+				// aborting this operation all together), simply set the result to false for
+				// this binder, and move on to the next binder.
+				result[i] = false;
+				continue;
+			}
+		}
+		return result;
+	}
 }
