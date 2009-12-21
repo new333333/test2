@@ -54,7 +54,7 @@
     <c:forEach var="user" items="${ss_accessSortedUsersAll}">
       <c:if test="${!empty ssOperationMap['readEntries'].ssUsers[user.id]}">
         <li style="list-style: square outside none;">
-          <span>${user.title}</span> <span class="ss_smallprint ss_italic">(${user.name})</span>
+          <span><ssf:userTitle user="${user}"/></span> <span class="ss_smallprint ss_italic">(${user.name})</span>
         </li>
       </c:if>
     </c:forEach>
@@ -93,7 +93,7 @@
     <ul style="margin:0px 0px 0px 12px; padding:0px;">
     <c:forEach var="user" items="${ss_accessSortedUsersAll}">
       <c:if test="${!empty ssOperationMap['createEntries'].ssUsers[user.id]}">
-        <li style="list-style: square outside none;"><span>${user.title}</span> <span class="ss_smallprint ss_italic">(${user.name})</span></li>
+        <li style="list-style: square outside none;"><span><ssf:userTitle user="${user}"/></span> <span class="ss_smallprint ss_italic">(${user.name})</span></li>
       </c:if>
     </c:forEach>
     </ul>
@@ -133,7 +133,7 @@
     <ul style="margin:0px 0px 0px 12px; padding:0px;">
     <c:forEach var="user" items="${ss_accessSortedUsersAll}">
       <c:if test="${!empty ssOperationMap['binderAdministration'].ssUsers[user.id]}">
-        <li style="list-style: square outside none;"><span>${user.title}</span> <span class="ss_smallprint ss_italic">(${user.name})</span></li>
+        <li style="list-style: square outside none;"><span><ssf:userTitle user="${user}"/></span> <span class="ss_smallprint ss_italic">(${user.name})</span></li>
       </c:if>
     </c:forEach>
     </ul>

@@ -233,7 +233,7 @@
 		    	<a href="<ssf:url adapter="true" portletName="ss_forum" 
 				  binderId="${activity.user.workspaceId}"
 				  action="__ajax_mobile" 
-				  operation="mobile_show_workspace" />" >${activity.user.title}</a>
+				  operation="mobile_show_workspace" />" ><ssf:userTitle user="${activity.user}"/></a>
 		      </div>
 		  	  <div>
 			  	<span class="entry-date">

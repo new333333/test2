@@ -99,10 +99,10 @@
 						<td>
 						  <a href="<ssf:permalink entity="${member}"/>"
 							onClick="return ss_gotoPermalink('${member.parentBinder.id}','${member.id}', 'user', '${ss_namespace}', 'yes');"
-							>${member.title}</a>
+							><ssf:userTitle user="${member}"/></a>
 						</td>
 						<td><c:if test="${!empty member.organization}"><c:out value="${member.organization}" /></c:if></td>
-						<td>
+						<td width="20">
 							<div id="ss_presenceOptions_${member.id}_${ss_namespace}_${componentId}"></div>
 							<ssf:presenceInfo user="${member}" 
 							    optionsDivId="ss_presenceOptions_${member.id}_${ss_namespace}_${componentId}"/>

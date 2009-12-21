@@ -109,7 +109,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   <span><ssf:nlt tag="access.workspaceOwner"/></span>
 </c:if>
 <span id="ss_accessControlOwner${renderResponse.namespace}"
-  class="ss_bold">${ssWorkArea.owner.title} 
+  class="ss_bold"><ssf:userTitle user="${ssWorkArea.owner}"/> 
   <span class="ss_normal ss_smallprint ss_italic">(${ssWorkArea.owner.name})</span></span>&nbsp;&nbsp;
 <span class="ss_fineprint"><a href="javascript: ;" 
   onClick="${renderResponse.namespace}accessObj.showChangeOwnerMenu(this, 'ss_changeOwnerMenu${renderResponse.namespace}');return false;"
@@ -381,7 +381,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 </c:if>
 
 <span class="ss_italic ss_small">[<ssf:nlt tag="access.superUser">
-  <ssf:param name="value" value="${ss_superUser.title}"/>
+  <ssf:param name="value" useBody="true"><ssf:userTitle user="${ss_superUser}"/></ssf:param>
   <ssf:param name="value" value="${ss_superUser.name}"/>
   </ssf:nlt>]</span><br/>
 </div>

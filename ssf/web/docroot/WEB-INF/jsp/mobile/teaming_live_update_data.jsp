@@ -57,7 +57,7 @@
 				  <a target="_blank" href="<ssf:url adapter="true" portletName="ss_forum" 
 				    action="view_ws_listing"
 				    binderId="${entryWn._principal.workspaceId}" />"
-				  ><c:out value="${entryWn._principal.title}" escapeXml="true"/></a>
+				  ><ssf:userTitle user="${entryWn._principal}"/></a>
 				</span>
 	
 			  	<span class="entry-date">
@@ -105,7 +105,7 @@
 	    	  <div class="entry-title">
 		    	<a target="_blank" href="<ssf:url adapter="true" portletName="ss_forum" 
 				  binderId="${activity.user.workspaceId}"
-				  action="view_ws_listing" />" >${activity.user.title}</a>
+				  action="view_ws_listing" />" ><ssf:userTitle user="${activity.user}"/></a>
 		      </div>
 		  	  <div>
 			  	<span class="entry-date">

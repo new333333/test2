@@ -39,6 +39,7 @@
 <c:forEach var="user" items="${ssTeamMembers}" varStatus="status"><%--
 --%><c:set var="userType" value=""/><c:if test="${user.entityType == 'group'}"><%--
 --%><c:set var="userType"> (<ssf:nlt tag="__definition_default_group"/>)</c:set></c:if>
-	[<c:out value="${user.id}"/>, "<ssf:escapeJavaScript value="${user.title}"/> ${userType}"]<c:if test="${!status.last}">,</c:if>
+	<c:set var="userTitle"><ssf:userTitle user="${user}"/></c:set>
+	[<c:out value="${user.id}"/>, "<ssf:escapeJavaScript value="${userTitle}"/> ${userType}"]<c:if test="${!status.last}">,</c:if>
 </c:forEach>
 ]
