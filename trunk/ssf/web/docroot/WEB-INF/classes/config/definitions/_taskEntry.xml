@@ -86,7 +86,7 @@
           <property name="size" value="1"/>
           <property name="required" value="false"/>
           <property name="fieldModificationAllowed" value="false"/>
-          <property name="userVersionAllowed" value="true"/>
+          <property name="userVersionAllowed" value="false"/>
         </properties>
       </item>  
       <item name="user_list" caption="__user_list" type="data" category="commonEntryData" id="28"> 
@@ -160,7 +160,7 @@
           <property name="size" value="1"/>
           <property name="required" value="false"/>
           <property name="fieldModificationAllowed" value="false"/>
-          <property name="userVersionAllowed" value="true"/>
+          <property name="userVersionAllowed" value="false"/>
         </properties>
       </item>  
       <item name="selectbox" caption="__selectbox" type="data" category="commonEntryData" id="36" display="form"> 
@@ -248,7 +248,7 @@
           <property name="size" value="1"/>
           <property name="required" value="false"/>
           <property name="fieldModificationAllowed" value="false"/>
-          <property name="userVersionAllowed" value="true"/>
+          <property name="userVersionAllowed" value="false"/>
         </properties>
       </item>  
       <item name="attachFiles" caption="__attach_files" type="data" id="5"> 
