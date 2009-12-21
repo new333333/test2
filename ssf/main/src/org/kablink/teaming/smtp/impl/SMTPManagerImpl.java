@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
@@ -296,6 +297,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 			try {
 				MimeMessage msgs[] = new MimeMessage[1];
 				msgs[0] = new MimeMessage(session, data);
+				boolean msgInitiallyDeleted = msgs[0].isSet(Flags.Flag.DELETED);
 				List errors = new ArrayList();
 				for(Recipient recipient : recipients) {
 					logger.debug("Delivering new message to " + recipient.email);			
@@ -306,9 +308,11 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 					Binder binder = getCoreDao().loadBinder(recipient.simpleName.getBinderId(),recipient.simpleName.getZoneId());
 					EmailPoster processor = (EmailPoster)processorManager.getProcessor(binder,EmailPoster.PROCESSOR_KEY);
 					errors.addAll(processor.postMessages((Folder)binder, recipient.email, msgs, session, null));
+					msgs[0].setFlag(Flags.Flag.DELETED, msgInitiallyDeleted);
 			   		RequestContextHolder.clear();
 			   		getCoreDao().clear(); // Clear session in case next from different zone.
 				}
+				msgs[0].setFlag(Flags.Flag.DELETED, true);
 				if(errors.size() > 0) {
 					Message m = (Message) errors.get(0);
 					throw new RejectException(554, m.getSubject());
