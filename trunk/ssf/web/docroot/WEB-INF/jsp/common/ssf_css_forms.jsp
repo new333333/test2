@@ -72,8 +72,16 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /* General CSS */
 
 input[type="submit"] {
-	min-width: 50px;
-	}
+	<c:choose>
+		<c:when test="<%= isIE %>">
+			/* IE does not support the min-width attribute. */
+		</c:when>
+		<c:otherwise>
+			min-width: 50px;
+		</c:otherwise>
+	</c:choose>
+}
+
 td.ss_cellvalign {
 	vertical-align: top;
 	padding-top: 3px;
