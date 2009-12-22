@@ -340,6 +340,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 	//override to provide alternate processing 
 	@SuppressWarnings("unchecked")
 	protected void processHTML(Folder folder, Object content, Map inputData) {
+		if (inputData.containsKey(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) return;
 		String[] val = new String[1];
 		val[0] = (String)content;
 		inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, val);			
