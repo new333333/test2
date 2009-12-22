@@ -167,7 +167,7 @@ public class ProfilesBinderHelper {
 		//Getting the entries per page from the user properties
 		//String entriesPerPage = (String) userFolderProperties.getProperty(ObjectKeys.PAGE_ENTRIES_PER_PAGE);
 		//Moving the entries per information from the user/folder level to the user level.
-		String entriesPerPage = (String) userProperties.get(ObjectKeys.PAGE_ENTRIES_PER_PAGE);
+		String entriesPerPage = MiscUtil.entriesPerPage(userProperties);
 		//Getting the number of records per page entry in the tab
 		Integer recordsInPage = (Integer) tabOptions.get(Tabs.RECORDS_IN_PAGE);
 		Integer pageRecordIndex = (Integer) tabOptions.get(Tabs.PAGE);
@@ -389,7 +389,7 @@ public class ProfilesBinderHelper {
 		model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
 
 		//Trash
-		TrashHelper.buildTrashToolbar(binder, model, qualifiers, trashToolbar);
+		TrashHelper.buildTrashToolbar(user, binder, model, qualifiers, trashToolbar);
 
 		//Color themes (removed for now)
 		if (0 == 1 && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {

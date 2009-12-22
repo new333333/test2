@@ -417,7 +417,7 @@ public class ListFolderHelper {
 		//Getting the entries per page from the user properties
 		//String entriesPerPage = (String) userFolderProperties.getProperty(ObjectKeys.PAGE_ENTRIES_PER_PAGE);
 		//Moving the entries per information from the user/folder level to the user level.
-		String entriesPerPage = (String) userProperties.get(ObjectKeys.PAGE_ENTRIES_PER_PAGE);
+		String entriesPerPage = MiscUtil.entriesPerPage(userProperties);
 		//Getting the number of records per page entry in the tab
 		Integer recordsInPage = (Integer) tabOptions.get(Tabs.RECORDS_IN_PAGE);
 		Integer pageRecordIndex = (Integer) tabOptions.get(Tabs.PAGE);
@@ -812,7 +812,7 @@ public class ListFolderHelper {
 						Map pinnedEntriesMap = new HashMap();
 						model.put(WebKeys.PINNED_ENTRIES, pinnedEntriesMap);
 						String pinnedEntries = "";
-						if (properties.containsKey(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES)) {
+						if ((null != properties) && properties.containsKey(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES)) {
 							pinnedEntries = (String)properties.get(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES);
 						}
 						if (!pinnedEntries.equals("")) {
@@ -2062,7 +2062,7 @@ public class ListFolderHelper {
 		}
 
 		// trash
-		TrashHelper.buildTrashToolbar(folder, model, qualifiers, trashToolbar);
+		TrashHelper.buildTrashToolbar(user, folder, model, qualifiers, trashToolbar);
 
 		// start meeting
 		if (bs.getIcBrokerModule().isEnabled() && 

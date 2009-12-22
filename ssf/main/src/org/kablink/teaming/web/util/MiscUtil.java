@@ -42,12 +42,15 @@ import java.util.Map;
 
 import javax.portlet.RenderRequest;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -300,4 +303,45 @@ public final class MiscUtil
 		}
 		return formData;
 	}// end defaultTitleToFilename()
+
+	/**
+	 * Returns the entriesPerPage to use based on the settings in the
+	 * userProperites.  We're abstracting this here because there are no
+	 * saved userProperties for the guest user.
+	 * 
+	 * @param userProperties
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static String entriesPerPage(UserProperties userProperties) {
+		return
+			entriesPerPage(
+				(null == userProperties) ?
+					null                 :
+					userProperties.getProperties());
+	}
+	@SuppressWarnings("unchecked")
+	public static String entriesPerPage(Map propMap) {
+		return
+			getPropertyFromMap(
+				propMap,
+				ObjectKeys.PAGE_ENTRIES_PER_PAGE,
+				SPropsUtil.getString(
+					"folder.records.listed",
+					"10"));
+	}
+	@SuppressWarnings("unchecked")
+	public static String getUserProperty(UserProperties userProperties, String property, String defValue) {
+		Map	propMap;
+		if (null == userProperties) propMap = null;
+		else                        propMap = userProperties.getProperties();
+		return getPropertyFromMap(propMap, property, defValue);
+	}
+	@SuppressWarnings("unchecked")
+	private static String getPropertyFromMap(Map propMap, String property, String defValue) {
+		String reply;
+		if (null == propMap) reply = defValue;
+		else                 reply = ((String) propMap.get(property));
+		return reply;
+	}
 }// end MiscUtil
