@@ -678,6 +678,8 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/binder_branding_form.jsp" />
 		</jsps>
 		<help>ihelp.designers.branding</help>
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderDescription" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderDescription" />
 	</item>
 	
 <!--
@@ -1616,6 +1618,8 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/binder_branding_form.jsp" />
 		</jsps>
 		<help>ihelp.designers.branding</help>
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderDescription" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderDescription" />
 	</item>
 	
 	<item name="workspaceView" caption="__workspace_view" canBeDeleted="false" 
