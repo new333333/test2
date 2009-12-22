@@ -163,7 +163,7 @@
 			<c:set var="path" value=""/>
 			<c:if test="${!empty ss_whatsNewBinderFolders[entryWn._binderId]}">
 			  <c:set var="path" value="${ss_whatsNewBinderFolders[entryWn._binderId]}"/>
-			  <c:set var="title" value="${ss_whatsNewBinderFolders[entryWn._binderId].title} (${ss_whatsNewBinderFolders[entryWn._binderId].parentBinder.title})"/>
+			  <c:set var="title" value="${ss_whatsNewBinderFolders[entryWn._binderId].parentBinder.title} // ${ss_whatsNewBinderFolders[entryWn._binderId].title}"/>
 			</c:if>
 			<c:set var="isDashboard" value="yes"/>
 			<c:if test="${!empty path}">

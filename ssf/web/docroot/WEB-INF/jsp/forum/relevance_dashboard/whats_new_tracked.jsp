@@ -91,7 +91,7 @@
 	  <c:set var="path" value=""/>
 	  <c:if test="${!empty ss_whatsNewTrackedPlacesFolders[entry._binderId]}">
 		<c:set var="path" value="${ss_whatsNewTrackedPlacesFolders[entry._binderId]}"/>
-		<c:set var="title" value="${ss_whatsNewTrackedPlacesFolders[entry._binderId].title} (${ss_whatsNewTrackedPlacesFolders[entry._binderId].parentBinder.title})"/>
+		<c:set var="title" value="${ss_whatsNewTrackedPlacesFolders[entry._binderId].parentBinder.title} // ${ss_whatsNewTrackedPlacesFolders[entry._binderId].title}"/>
 	  </c:if>
 	  <c:if test="${!empty path}">
 	  <div>
