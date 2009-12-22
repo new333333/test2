@@ -1851,7 +1851,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 										" AND SS_Principals.zoneId = " + zoneId +
 										" AND b.versionNumber > 0" +
 										" AND b.zoneId = " + zoneId +
-										" AND b.repositoryName != \'" + ObjectKeys.FI_ADAPTER + "\'), 0)";
+										" AND b.repositoryName != \'" + ObjectKeys.FI_ADAPTER + "\'), 0)" +
+										" WHERE zoneId = " + zoneId;
 							session.createSQLQuery(sql).executeUpdate();
 							return null;
 						}
