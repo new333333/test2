@@ -101,7 +101,7 @@
 
 		<c:if test="${!empty ss_myDocsFolders[entry._binderId]}">
 			<c:set var="path" value="${ss_myDocsFolders[entry._binderId]}"/>
-			<c:set var="title" value="${ss_myDocsFolders[entry._binderId].title} (${ss_myDocsFolders[entry._binderId].parentBinder.title})"/>
+			<c:set var="title" value="${ss_myDocsFolders[entry._binderId].parentBinder.title} // ${ss_myDocsFolders[entry._binderId].title}"/>
 		</c:if>
 		<c:set var="isDashboard" value="yes"/>
 		<c:if test="${!empty path}">

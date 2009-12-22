@@ -95,7 +95,7 @@
 	  <span class="ss_link_2">
     	<a href="javascript: ;"
 			onclick="return ss_gotoPermalink('${entry.parentBinder.id}', '${entry.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
-			><span>${entry.parentBinder.title} (${entry.parentBinder.parentBinder.title})</span></a>
+			><span>${entry.parentBinder.parentBinder.title} // ${entry.parentBinder.title}</span></a>
 	  </span>&nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" <ssf:alt tag="entry.Folder"/> width="11" height="10" hspace="2" border="0" align="absmiddle" /> 
 	  <c:if test="${!empty entry.description}">
 	    <br/>
@@ -152,7 +152,7 @@
 	  <span class="ss_link_2">
     	<a href="javascript: ;"
 			onclick="return ss_gotoPermalink('${entry2.parentBinder.id}', '${entry2.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
-			><span>${entry2.parentBinder.title} (${entry2.parentBinder.parentBinder.title})</span></a>
+			><span>${entry2.parentBinder.parentBinder.title} // ${entry2.parentBinder.title}</span></a>
 	  </span>&nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" <ssf:alt tag="entry.Folder"/> width="11" height="10" hspace="2" border="0" align="absmiddle" /> 
 	  <c:if test="${!empty entry2.description}">
 	    <br/>
