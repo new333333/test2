@@ -59,6 +59,7 @@ import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.LibraryEntry;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -779,22 +780,50 @@ public class TrashHelper {
 	 * @param trashToolbar
 	 */
 	@SuppressWarnings("unchecked")
-	public static void buildTrashToolbar(Binder binder, Map model, Map qualifiers, Toolbar trashToolbar) {
-		// If the Binder isn't mirrored...
-		if (!(binder.isMirrored())) {
-			// ...show the trash sidebar widget...
-			model.put(WebKeys.TOOLBAR_TRASH_SHOW, Boolean.TRUE);
-			
-			// ...and add trash to the menu bar.
-			qualifiers = new HashMap();
-			qualifiers.put("title", NLT.get("toolbar.menu.title.trash"));
-			qualifiers.put("icon", "trash.png");
-			qualifiers.put("iconFloatRight", "true");
-			qualifiers.put("onClick", "ss_treeShowId('"+ binder.getId() +"',this,'view_folder_listing','&showTrash=true');return false;");
-			trashToolbar.addToolbarMenu("1_trash", NLT.get("toolbar.menu.trash"), "javascript: //;", qualifiers);
+	public static void buildTrashToolbar(User user, Binder binder, Map model, Map qualifiers, Toolbar trashToolbar) {
+		// If the user is allowed to access the trash...
+		if (allowUserTrashAccess(user)) {
+			// ...and if the Binder isn't mirrored...
+			if (!(binder.isMirrored())) {
+				// ...show the trash sidebar widget...
+				model.put(WebKeys.TOOLBAR_TRASH_SHOW, Boolean.TRUE);
+				
+				// ...and add trash to the menu bar.
+				qualifiers = new HashMap();
+				qualifiers.put("title", NLT.get("toolbar.menu.title.trash"));
+				qualifiers.put("icon", "trash.png");
+				qualifiers.put("iconFloatRight", "true");
+				qualifiers.put("onClick", "ss_treeShowId('"+ binder.getId() +"',this,'view_folder_listing','&showTrash=true');return false;");
+				trashToolbar.addToolbarMenu("1_trash", NLT.get("toolbar.menu.trash"), "javascript: //;", qualifiers);
+			}
 		}
 	}
 
+	/**
+	 * Returns true if the guest user is allowed trash access and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean allowGuestTrashAccess() {
+		return SPropsUtil.getBoolean("trash.allowGuestAccess", false);
+	}
+	
+	/**
+	 * Returns true if user should have access to the trash and false
+	 * otherwise.
+	 * 
+	 * @param user
+	 * @return
+	 */
+	public static boolean allowUserTrashAccess(User user) {
+		boolean reply;
+		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()))
+			 reply = allowGuestTrashAccess();
+		else reply = true;
+		return reply;
+	}
+	
 	/**
 	 * Build the menu bar within the trash viewer.
 	 * 

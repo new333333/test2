@@ -1005,7 +1005,7 @@ public class WorkspaceTreeHelper {
 		}
 
 		// trash
-		TrashHelper.buildTrashToolbar(workspace, model, qualifiers, trashToolbar);
+		TrashHelper.buildTrashToolbar(user, workspace, model, qualifiers, trashToolbar);
 
 		// start meeting
 		if (bs.getIcBrokerModule().isEnabled() && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
