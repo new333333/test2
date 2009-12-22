@@ -989,7 +989,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			Map users = null;
 			Map options = new HashMap();
 			
-			options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(pageSize*(pageNumber + 1) + 1));
+			options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(pageSize*(pageNumber + 1) + 3));
 			options.put(ObjectKeys.SEARCH_OFFSET, new Integer(pageNumber*pageSize));
 			options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
 			options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
@@ -1006,8 +1006,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	      	SortedSet userList = getProfileModule().getUsers(userIdList);
 	        for (Iterator iter=userList.iterator(); iter.hasNext();) {
 	     		User u = (User)iter.next();
-	      		if (!ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(u.getInternalId()) && 
-	      				!ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(u.getInternalId())) workspaces.add(u);
+	      		workspaces.add(u);
 			}
 	        wsList = workspaces;
 	        if (workspaces.size() >= pageSize) {

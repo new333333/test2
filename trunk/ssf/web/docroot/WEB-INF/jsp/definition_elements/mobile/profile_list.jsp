@@ -35,44 +35,14 @@
 <% // Profile listing %>
 <%@ page import="org.kablink.teaming.domain.Principal" %>
 <%@ page import="org.kablink.teaming.domain.User" %>
+<%@ page import="org.kablink.teaming.ObjectKeys" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-
+<c:set var="postingAgentInternalId" value="<%= ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID %>"/>
+<c:set var="syncAgentInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
   <div class="folders">
 	<div class="folder-content">
-	  <div class="entry" align="right">
-		<table cellspacing="0" cellpadding="0">
-		<tr>
-		<td>
-		<c:if test="${!empty ss_prevPage}">
-	    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-		  folderId="${ssBinder.id}" 
-		  action="__ajax_mobile" 
-		  operation="mobile_show_folder" 
-		  actionUrl="false" ><ssf:param name="pageNumber" value="${ss_prevPage}"/></ssf:url>"
-	    ><img border="0" src="<html:rootPath/>images/mobile/nl_left_16.gif"/></a>
-		</c:if>
-		<c:if test="${empty ss_prevPage}">
-	  	<img border="0" src="<html:rootPath/>images/mobile/nl_left_dis_16.gif"
-	  		<ssf:alt tag=""/> />
-		</c:if>
-		</td><td style="padding-left:20px;">
-		<c:if test="${!empty ss_nextPage}">
-	  	<a href="<ssf:url adapter="true" portletName="ss_forum" 
-			folderId="${ssBinder.id}" 
-			action="__ajax_mobile" 
-			operation="mobile_show_folder" 
-			actionUrl="false" ><ssf:param name="pageNumber" value="${ss_nextPage}"/></ssf:url>"
-	  	><img border="0" src="<html:rootPath/>images/mobile/nl_right_16.gif"/></a>
-		</c:if>
-		<c:if test="${empty ss_nextPage}">
-	  		<img border="0" src="<html:rootPath/>images/mobile/nl_right_dis_16.gif"
-	  		<ssf:alt tag=""/> />
-		</c:if>
-		</tr>
-		</table>
-	  </div>
-
 <c:forEach var="entry" items="${ssWorkspaces}" >
+  <c:if test="${entry.internalId != postingAgentInternalId && entry.internalId != syncAgentInternalId}">
 	<div class="entry">
 	  <div class="entry-title">
 	    <a href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -95,7 +65,11 @@
 	    </div>
 	  </c:if>
 	</div>
+  </c:if>
 </c:forEach>
+	<div class="entry-actions">
+	      <%@ include file="/WEB-INF/jsp/mobile/folder_next_prev.jsp" %>
+	</div>
 </div>
 </div>
 <c:set var="ss_mobileBinderListShown" value="true" scope="request"/>
