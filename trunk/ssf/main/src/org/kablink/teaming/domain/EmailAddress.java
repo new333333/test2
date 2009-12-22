@@ -88,14 +88,19 @@ public class EmailAddress extends ZonedObject implements Serializable {
 	public boolean equals(Object obj) {
 		if (obj == null) return false;
 		if (obj == this) return true;
+		if(principal == null) return false;
 		if (obj instanceof EmailAddress) {
 			EmailAddress pk = (EmailAddress) obj;
+			if(pk.getPrincipal() == null) return false;
 			if (pk.getPrincipal().equals(principal) && 
 					pk.getType().equals(type)) return true;
 		}
 		return false;
 	}
 	public int hashCode() {
-		return 31*principal.hashCode() + type.hashCode();
+		if(principal != null)
+			return 31*principal.hashCode() + type.hashCode();
+		else
+			return type.hashCode();
 	}
 }
