@@ -133,12 +133,24 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		addRating(entryElem, entry);
 	}
 	
-	protected void addEntryAttributes(Element entryElem, Map entry, boolean isPrincipal)
+	protected void addCommonAttributes(Element entryElem, Map entry)
 	{
 		entryElem.addAttribute("id", (String) entry.get(Constants.DOCID_FIELD));
 		entryElem.addAttribute("binderId", (String) entry.get(Constants.BINDER_ID_FIELD));
 		entryElem.addAttribute("definitionId", (String) entry.get(Constants.COMMAND_DEFINITION_FIELD));
 		entryElem.addAttribute("title", (String) entry.get(Constants.TITLE_FIELD));
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss aa");
+		entryElem.addAttribute("creationDate", sdFormat.format((Date)entry.get(Constants.CREATION_DATE_FIELD)));
+		entryElem.addAttribute("creatorName", (String)entry.get(Constants.CREATOR_NAME_FIELD));
+		entryElem.addAttribute("creatorTitle", (String)entry.get(Constants.CREATOR_TITLE_FIELD));
+		entryElem.addAttribute("modificationDate", sdFormat.format((Date)entry.get(Constants.MODIFICATION_DATE_FIELD)));
+		entryElem.addAttribute("modificationName", (String)entry.get(Constants.MODIFICATION_NAME_FIELD));
+		entryElem.addAttribute("modificationTitle", (String)entry.get(Constants.MODIFICATION_TITLE_FIELD));
+	}
+	
+	protected void addEntryAttributes(Element entryElem, Map entry, boolean isPrincipal)
+	{
+		addCommonAttributes(entryElem, entry);
 		if(isPrincipal) {
 			entryElem.addAttribute("type", (String) entry.get(Constants.ENTRY_TYPE_FIELD));
 			entryElem.addAttribute("reserved", Boolean.toString(entry.get(Constants.RESERVEDID_FIELD)!=null));
