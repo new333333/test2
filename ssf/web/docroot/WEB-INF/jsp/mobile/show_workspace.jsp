@@ -42,6 +42,9 @@
 
 <div class="content">
 
+  <c:if test="${ssBinder.entityType == 'profiles'}">
+    <c:set var="ss_showFolderNextPrev" value="true" scope="request" />
+  </c:if>
   <c:set var="ss_hideMiniBlog" value="true" scope="request" />
   <%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
 
