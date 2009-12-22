@@ -1022,10 +1022,12 @@ public class TrashHelper {
 					// the parentage of something.
 					logger.debug("TrashHelper.doAdditionalIndexing(" + deId + "):  Re-indexing binder (binder only)");
 					bs.getBinderModule().indexBinder(deId);
+					refreshRssFeed(bs, ((Binder) de));
 				}
 				else {
 					logger.debug("TrashHelper.doAdditionalIndexing(" + de.getParentBinder().getId() + ", " + deId + "):  Re-indexing entry");
 					bs.getFolderModule().indexEntry(((FolderEntry) de), true);
+					refreshRssFeed(bs, ((FolderEntry) de));
 				}
 			}
 			catch (AccessControlException e) {
@@ -1267,6 +1269,7 @@ public class TrashHelper {
 			try {
 				logger.debug("TrashHelper.preDeleteBinder(" + binderId + "):  Re-indexing binder (binder tree)");
 				bs.getBinderModule().indexTree(binderId);
+				refreshRssFeed(bs, binderId);
 			}
 			catch (AccessControlException e) {
 				if (!(tr.isError())) {
@@ -1307,6 +1310,7 @@ public class TrashHelper {
 				logger.debug("TrashHelper.preDeleteEntry(" + folderId + "," + entryId + "):  Re-indexing entry");
 				FolderEntry fe = bs.getFolderModule().getEntry(folderId, entryId);
 				bs.getFolderModule().indexEntry(fe, true);
+				refreshRssFeed(bs, fe);
 			}
 			catch (AccessControlException e) {
 				if (!(tr.isError())) {
@@ -1515,6 +1519,23 @@ public class TrashHelper {
 		return getMVBasedOnTrashResponse(response, bs, tr);
 	}
 
+	/*
+	 * Updates the RSS feeds for a binder and/or entry.
+	 */
+	@SuppressWarnings("unused")
+	private static void refreshRssFeed(AllModulesInjected bs, Long binderId, Long entryId) {
+		refreshRssFeed(bs, binderId);
+	}
+	private static void refreshRssFeed(AllModulesInjected bs, Long binderId) {
+		refreshRssFeed(bs, bs.getBinderModule().getBinder(binderId));
+	}
+	private static void refreshRssFeed(AllModulesInjected bs, FolderEntry fe) {
+		refreshRssFeed(bs, fe.getParentBinder());
+	}
+	private static void refreshRssFeed(AllModulesInjected bs, Binder binder) {
+		bs.getRssModule().deleteRssFeed(binder);
+	}
+	
 	/**
      * Called to register the name of the binder and the filenames of
      * any file attachments on the binder.
@@ -1770,6 +1791,7 @@ public class TrashHelper {
 			try {
 				logger.debug("TrashHelper.restoreBinder(" + binderId + "):  Re-indexing binder (binder tree)");
 				bs.getBinderModule().indexTree(binderId);
+				refreshRssFeed(bs, binderId);
 			}
 			catch (AccessControlException e) {
 				if (!(tr.isError())) {
@@ -1803,6 +1825,7 @@ public class TrashHelper {
 				logger.debug("TrashHelper.restoreEntry(" + folderId + ", " + entryId + "):  Re-indexing entry");
 				FolderEntry fe = bs.getFolderModule().getEntry(folderId, entryId);
 				bs.getFolderModule().indexEntry(fe, true);
+				refreshRssFeed(bs, fe);
 			}
 			catch (AccessControlException e) {
 				if (!(tr.isError())) {

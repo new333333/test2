@@ -247,9 +247,11 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 					(Folder) binder, start, new Date(),
 					new OrderBy("HKey.sortKey"), 100);
 			for (int i = 0; i < entries.size(); i++) {
-				Entry entry = entries.get(i);
-				org.apache.lucene.document.Document doc = createDocumentFromEntry(entry);
-				indexWriter.addDocument(doc);
+				FolderEntry entry = entries.get(i);
+				if (!(entry.isPreDeleted())) {
+					org.apache.lucene.document.Document doc = createDocumentFromEntry(entry);
+					indexWriter.addDocument(doc);
+				}
 			}
 			indexWriter.close();
 		} catch (Exception e) {
