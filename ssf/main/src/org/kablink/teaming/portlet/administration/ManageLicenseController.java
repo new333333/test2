@@ -33,7 +33,10 @@
 package org.kablink.teaming.portlet.administration;
 
 import java.io.StringWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +58,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.DocumentSource;
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.license.LicenseException;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
@@ -79,6 +84,14 @@ public class ManageLicenseController extends SAbstractController {
 
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		User user;
+		DateFormat localeDateFormat; 
+		
+        user = RequestContextHolder.getRequestContext().getUser();
+		
+		// Get a DateFormat object based on the locale this user is running in.
+		localeDateFormat = DateFormat.getDateInstance( DateFormat.MEDIUM, user.getLocale() );
+		
 		Map model = new HashMap();
 		try {
 			getLicenseModule().validateLicense();
@@ -89,7 +102,13 @@ public class ManageLicenseController extends SAbstractController {
 		Collection<Document> docs = getLicenseModule().getLicenses();
 		StringBuffer visibleDoc = new StringBuffer();
 		StringBuffer uids = new StringBuffer();
-		for(Document doc : docs) {
+		for(Document doc : docs)
+		{
+			String issuedDate;
+			String effectiveDate;
+			String expireDate;
+			String expireDateOrig;
+			
 			try {
 				TransformerFactory transFactory = TransformerFactory.newInstance();
 				Source xsltSource = new StreamSource(request.getPortletSession().getPortletContext().getResourceAsStream(LICENSE_XSL_FILE));
@@ -106,16 +125,83 @@ public class ManageLicenseController extends SAbstractController {
 				logger.warn("Unable to process license with XSL", e);
 			}
 			uids.append(getValue(doc, "//KeyInfo/@uid") + " ");
+
+			// Format the "issued" date according to the locale the user is running in.
+			issuedDate = getValue(doc, "//KeyInfo/@issued");
+			if ( issuedDate != null && issuedDate.length() > 0 )
+			{
+				SimpleDateFormat dateFormat;
+				Date date;
+				
+				// Parse the "issued" date.
+				dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
+				
+				try
+				{
+					date = dateFormat.parse( issuedDate );
+				
+					// Format the "issued" date using the locale the user is running in.
+					issuedDate = localeDateFormat.format( date );
+				}
+				catch (Exception ex)
+				{
+					// Nothing we can do.
+				}
+			}
+			model.put( WebKeys.LICENSE_ISSUED, issuedDate );
+
+			// Format the "effective" date according to the locale the user is running in.
+			effectiveDate = getValue( doc, "//Dates/@effective" );
+			if ( effectiveDate != null && effectiveDate.length() > 0 )
+			{
+				SimpleDateFormat dateFormat;
+				Date date;
+				
+				// Parse the "effective" date.
+				dateFormat = new SimpleDateFormat( "MM/dd/yyyy" );
+				
+				try
+				{
+					date = dateFormat.parse( effectiveDate );
+				
+					// Format the "effective" date using the locale the user is running in.
+					effectiveDate = localeDateFormat.format( date );
+				}
+				catch (Exception ex)
+				{
+					// Nothing we can do.
+				}
+			}
 			
-			model.put(WebKeys.LICENSE_ISSUED, getValue(doc, "//KeyInfo/@issued"));
+			// Format the "expiration" date according to the locale the user is running in.
+			expireDate = getValue(doc, "//Dates/@expiration");
+			expireDateOrig = expireDate;
+			if ( expireDate != null && expireDate.length() > 0 )
+			{
+				SimpleDateFormat dateFormat;
+				Date date;
+				
+				// Parse the "expiration" date.
+				dateFormat = new SimpleDateFormat( "MM/dd/yyyy" );
+				
+				try
+				{
+					date = dateFormat.parse( expireDate );
+				
+					// Format the "expiration" date using the locale the user is running in.
+					expireDate = localeDateFormat.format( date );
+				}
+				catch (Exception ex)
+				{
+					// Nothing we can do.
+				}
+			}
 
-			String expireDate = getValue(doc, "//Dates/@expiration");
-
-			if(expireDate.equals("1/1/2500"))
-				model.put(WebKeys.LICENSE_EFFECTIVE, getValue(doc, "//Dates/@effective") 
-						+ " - " + NLT.get("license.expire.never"));
+			if ( expireDateOrig.equals("1/1/2500") )
+				model.put(WebKeys.LICENSE_EFFECTIVE, effectiveDate + " - " + NLT.get("license.expire.never"));
 			else
-				model.put(WebKeys.LICENSE_EFFECTIVE, getValue(doc, "//Dates/@effective") + " - " + expireDate);
+				model.put(WebKeys.LICENSE_EFFECTIVE, effectiveDate + " - " + expireDate);
+
 			model.put(WebKeys.LICENSE_CONTACT, getValue(doc, "//AuditPolicy/ReportContact"));
 
 			model.put(WebKeys.LICENSE_ISSUER, getValue(doc, "//KeyInfo/@by"));
