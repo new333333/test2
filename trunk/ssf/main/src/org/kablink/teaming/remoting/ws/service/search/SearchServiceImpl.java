@@ -94,18 +94,14 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 			if(Constants.DOC_TYPE_ATTACHMENT.equals(docType)) {
 				String attachmentType = "file";
 				resultElem = folderElement.addElement(attachmentType);
-				resultElem.addAttribute("id", (String) result.get(Constants.DOCID_FIELD));
-				resultElem.addAttribute("binderId", (String) result.get(Constants.BINDER_ID_FIELD));
-				resultElem.addAttribute("fileId", (String)result.get(Constants.FILE_ID_FIELD));
+				addCommonAttributes(resultElem, result);
+				resultElem.addAttribute("fileID", (String)result.get(Constants.FILE_ID_FIELD));
 				resultElem.addAttribute("fileName", (String)result.get(Constants.FILENAME_FIELD));
-				resultElem.addAttribute("title", (String) result.get(Constants.TITLE_FIELD));
-				resultElem.addAttribute("definitionId", (String) result.get(Constants.COMMAND_DEFINITION_FIELD));
 			} else if(Constants.DOC_TYPE_BINDER.equals(docType)) {
 				String binderType = (String) result.get(Constants.ENTITY_FIELD);
 				resultElem = folderElement.addElement(docType);
+				addCommonAttributes(resultElem, result);
 				resultElem.addAttribute("type", binderType);
-				resultElem.addAttribute("id", (String) result.get(Constants.DOCID_FIELD));
-				resultElem.addAttribute("title", (String) result.get(Constants.TITLE_FIELD));
 			} else if(Constants.DOC_TYPE_ENTRY.equals(docType)) {
 				String entryType = (String) result.get(Constants.ENTRY_TYPE_FIELD);
 				String elementName = null;
@@ -298,9 +294,6 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 			queryRoot.add(((Element)it.next()).detach());
 		}
 		
-		Document doc = DocumentHelper.createDocument();
-		Element folderElement = doc.addElement("searchResults");
-
 		Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, offset, maxResults);
 		List entrylist = (List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 		Iterator entryIterator = entrylist.listIterator();
