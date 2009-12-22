@@ -36,7 +36,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.util.XmlFileUtil;
@@ -68,6 +70,19 @@ public class ListController extends SAbstractController {
 		if(!WebHelper.isUnauthenticatedRequest(request)) {
 			try {
 				binder = getBinderModule().getBinder(binderId);
+				boolean skipBinder = (null == binder);
+				if (!skipBinder) {
+					if (binder instanceof Folder) {
+						skipBinder = ((Folder) binder).isPreDeleted();
+					}
+					else if (binder instanceof Workspace) {
+						skipBinder = ((Workspace) binder).isPreDeleted();
+					}
+				}
+				if (skipBinder) {
+					binder = null;
+					binderExists = false;
+				}
 			} catch (NoBinderByTheIdException nbe) {
 				binderExists = false;
 			} catch (OperationAccessControlExceptionNoName oace) {
