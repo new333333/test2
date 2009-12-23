@@ -94,7 +94,7 @@ function ss_logoff_from_sso(s) {
     <c:if test="${fn:length(ss_new_actions) == 1}">
       <c:forEach var="action" items="${ss_new_actions}">
         <a class="actions-a" href="${action.url}" 
-          title="${action.title}"><ssf:nlt tag="mobile.newEntry"/></a>
+          title="${action.title}"><ssf:nlt tag="toolbar.comment"/></a>
       </c:forEach>
     </c:if>
     <c:if test="${fn:length(ss_new_actions) > 1}">
