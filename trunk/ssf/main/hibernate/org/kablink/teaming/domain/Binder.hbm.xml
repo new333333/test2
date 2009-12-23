@@ -96,12 +96,12 @@
     <property name="title" length="255" access="field"/>
     <property name="normalTitle" length="255"/>
     <property name="iconName" length="64"/>    
-    <property name="internalId" length="32"/>
-      <property name="nextBinderNumber" />
-      <component name="binderKey" class="org.kablink.teaming.domain.HKey">
-        <property name="level" column="binder_level"/>
-        <property name="sortKey" length="255" column="binder_sortKey" unique="true"/>
-      </component>
+    <property name="internalId" length="32" index="internalId_Binder"/>
+    <property name="nextBinderNumber" />
+    <component name="binderKey" class="org.kablink.teaming.domain.HKey">
+      <property name="level" column="binder_level"/>
+      <property name="sortKey" length="255" column="binder_sortKey" unique="true"/>
+    </component>
     
     <many-to-one access="field" class="org.kablink.teaming.domain.Definition" name="entryDef">
       <column name="entryDef" sql-type="char(32)"/>
