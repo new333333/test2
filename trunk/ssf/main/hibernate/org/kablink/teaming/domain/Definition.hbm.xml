@@ -13,7 +13,7 @@
     <property name="name" length="64"/>
     <property name="title" length="128"/>
     <property name="type"/>
-    <property name="internalId" length="32"/>
+    <property name="internalId" length="32" index="internalId_Definition"/>
     <property name="visibility"/>
 <!-- use length to force long blog in mysql -->
     <property name="encoding"  length="20000000" type="org.springframework.orm.hibernate3.support.BlobByteArrayType"/>

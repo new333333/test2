@@ -20,4 +20,5 @@ alter table SS_Extensions add column version varchar(255);
 create table SS_SchemaInfo (schemaVersion bigint not null, primary key (schemaVersion)) ENGINE=InnoDB;
 create index diskQuota_principal on SS_Principals (diskQuota);
 create index internalId_Binder on SS_Forums (internalId);
+create index internalId_Definition on SS_Definitions (internalId);
 INSERT INTO SS_SchemaInfo values (4);

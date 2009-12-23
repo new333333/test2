@@ -20,4 +20,5 @@ alter table SS_Extensions add version varchar(255);
 create table SS_SchemaInfo (schemaVersion numeric(19,0) not null, primary key (schemaVersion));
 create index diskQuota_principal on SS_Principals (diskQuota);
 create index internalId_Binder on SS_Forums (internalId);
+create index internalId_Definition on SS_Definitions (internalId);
 INSERT INTO SS_SchemaInfo values (4);
