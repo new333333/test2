@@ -1089,11 +1089,11 @@ public class ExportHelper {
 
 		// key-value pairs: old exported entry id - new entry id assigned during
 		// import
-		HashMap entryIdMap = new HashMap();
+		HashMap<Long, Long> entryIdMap = new HashMap<Long, Long>();
 
 		// key-value pairs: old exported binder id - new binder id assigned
 		// during import
-		HashMap binderIdMap = new HashMap();
+		HashMap<Long, Long> binderIdMap = new HashMap<Long, Long>();
 
 		// key-value pairs: old exported definition id - new definition id assigned
 		// during import
@@ -1113,6 +1113,9 @@ public class ExportHelper {
 		} finally {
 			FileUtil.deltree(tempDir);
 		}
+		
+		//After importing binders and entries, perform a final fix-up of mappings (landing pages and markup)
+		fixUpLinks(binderIdMap, entryIdMap);
 	}
 
 	private static void importDir(File currentDir, String tempDir, Long topBinderId,
@@ -1378,6 +1381,12 @@ public class ExportHelper {
 					}
 				}
 			}
+		}
+	}
+	
+	private static void fixUpLinks(Map<Long, Long> binderIdMap, Map<Long, Long> entryIdMap) {
+		if (getZoneInfo().getId().equals("")) {
+			
 		}
 	}
 

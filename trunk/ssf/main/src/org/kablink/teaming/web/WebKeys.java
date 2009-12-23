@@ -608,6 +608,7 @@ public class WebKeys {
 	public static final String ADD_ENTRY_TITLE="ssAddEntryTitle";
 	public static final String ADD_ENTRY_TITLES="ssAddEntryTitles";
 	public static final String ADD_ENTRY_URLS="ssAddEntryUrls";
+	public static final String ADD_REPLY_TITLE="ssAddReplyTitle";
 	public static final String ADD_TEAM_WORKSPACE_URL="ssAddTeamWorkspaceUrl";
 	public static final String ADD_USER_ALLOWED = "ssAddUserAllowed";
 	public static final String ADD_USER_URL = "ssAddUserUrl";

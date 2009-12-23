@@ -91,15 +91,20 @@ function ss_logoff_from_sso(s) {
 </c:if>
   
   <c:if test="${!empty ss_new_actions}">
+    <c:set var="actionTitle"><ssf:nlt tag="mobile.newEntry"/></c:set>
+    <c:if test="${!empty ssAddReplyTitle}">
+      <c:set var="actionTitle" value="${ssAddReplyTitle}"/>
+    </c:if>
+    
     <c:if test="${fn:length(ss_new_actions) == 1}">
       <c:forEach var="action" items="${ss_new_actions}">
         <a class="actions-a" href="${action.url}" 
-          title="${action.title}"><ssf:nlt tag="toolbar.comment"/></a>
+          title="${action.title}">${actionTitle}</a>
       </c:forEach>
     </c:if>
     <c:if test="${fn:length(ss_new_actions) > 1}">
       <a class="actions-a" href="javascript: ;" 
-        onClick="ss_showMenu('new-actions-menu');return false;"><ssf:nlt tag="mobile.newEntry"/></a>
+        onClick="ss_showMenu('new-actions-menu');return false;">${actionTitle}</a>
     </c:if>
   </c:if>  
 
