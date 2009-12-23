@@ -1143,6 +1143,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 			        public Object doInHibernate(Session session) throws HibernateException {
 	                 	return session.createCriteria(Workspace.class)
 	             				.add(Expression.eq("internalId", ObjectKeys.TOP_WORKSPACE_INTERNALID))
+	             				.setCacheable(true)
 	             				.list();
 	               }
 	            }
