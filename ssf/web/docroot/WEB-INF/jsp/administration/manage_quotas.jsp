@@ -349,7 +349,6 @@ function ss_showModifyDiv(id) {
 	    </c:forEach>
 		  <tr class="footrow ends">
 		    <td colspan="6">
-	<input type="hidden" name="modifyId" id="modifyId" value="" />
     <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.delete"/>"
 		  title="<ssf:nlt tag="quota.select.itemToBeDeleteChecked"/>"/>
 
@@ -368,6 +367,7 @@ function ss_showModifyDiv(id) {
 	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
 		  onClick="self.window.close();return false;"/>
   </div>		  
+  <input type="hidden" name="modifyId" id="modifyId" value="" />
 </form>
 </div>
 </ssf:form>
