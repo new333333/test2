@@ -37,6 +37,5 @@
 <c:if test="${property_name == ss_titleGenerated}">
   <div class="ss_entryContent">
     <span class="font-red"><ssf:nlt tag="mobile.error.fileUploadsNotSupported"/></span>
-    <c:set var="ss_hideFormOKButton" value="true" scope="request"/>
   </div>
 </c:if>
