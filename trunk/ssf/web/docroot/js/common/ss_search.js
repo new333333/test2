@@ -134,7 +134,7 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	stepsContainer.className = "ss_nobullet";
 	div.appendChild(stepsContainer);
 
-    if (typeof stepsValue != "undefined") {
+    if (typeof stepsValue != "undefined" && ("" + stepsValue) != "") {
 		var steps = "" + stepsValue;
 		for (var i in steps.split(",")) {
 			var step = steps.split(",")[i];
@@ -313,7 +313,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType) 
 	} else {
 		valueOptionValue = value;
 	}
-	if (typeof fieldName != "undefined") {
+	if (typeof fieldName != "undefined" && fieldName != "") {
 		var selectObj = document.createElement("select");
 		selectObj.name = "elementName" + orderNo + "_selected";
 		selectObj.id = "elementName" + orderNo + "_selected";
@@ -324,7 +324,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType) 
 		selectObj.appendChild(optionObj);
 		fieldValue2Div.appendChild(selectObj);
 		
-		if (typeof value != "undefined") {
+		if (typeof value != "undefined" && valueOptionValue != "") {
 			var selectObj = document.createElement("select");
 			selectObj.name = "elementValue" + orderNo + "_selected";
 			selectObj.id = "elementValue" + orderNo + "_selected";
