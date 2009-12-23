@@ -44,10 +44,12 @@
 		  <ul style="margin: 0px;">
 		    <c:forEach var="query" items="${ss_UserQueries}" varStatus="status">
 		      <li>
-		        <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${binder.id}" 
-					action="__ajax_mobile" actionUrl="false" 
-					operation="mobile_show_search_results"><ssf:param 
-					name="ss_queryName" value="${query.key}" /></ssf:url>">${query.key}</a>
+			  	<div class="menu-item" style="font-size: 17px;">
+					<a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${binder.id}" 
+						action="__ajax_mobile" actionUrl="false" 
+						operation="mobile_show_search_results"><ssf:param 
+						name="ss_queryName" value="${query.key}" /></ssf:url>">${query.key}</a>
+				</div>
 			  </li>
 		    </c:forEach>
 		  </ul>

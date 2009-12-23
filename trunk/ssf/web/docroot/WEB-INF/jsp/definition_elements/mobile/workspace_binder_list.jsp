@@ -41,16 +41,16 @@
     </div>
     
 	<c:forEach var="workspace" items="${ssWorkspaces}" >
-      <div class="folder-item">
 		<a href="<ssf:url adapter="true" portletName="ss_forum" 
 				folderId="${workspace.id}" 
 				action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
+	      <div class="folder-item">
 		  <c:if test="${empty workspace.title}">
 		    (<ssf:nlt tag="workspace.noTitle"/>)
 		  </c:if>
 		  <c:out value="${workspace.title}" escapeXml="true"/>
+		  </div>
 		</a>
-	  </div>
 	</c:forEach>
   </div>
 </c:if>
@@ -62,16 +62,16 @@
       <ssf:nlt tag="mobile.folders"/>
     </div>
 	<c:forEach var="folder" items="${ssFolders}" >
-      <div class="folder-item">
 		<a href="<ssf:url adapter="true" portletName="ss_forum" 
 				folderId="${folder.id}" 
 				action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
+	      <div class="folder-item">
 		  <c:if test="${empty folder.title}">
 		    (<ssf:nlt tag="folder.noTitle"/>)
 		  </c:if>
 		  <c:out value="${folder.title}" escapeXml="true"/>
+		  </div>
 		</a>
-	  </div>
 	</c:forEach>
 	
   </div>

@@ -50,7 +50,6 @@
 	  <div class="folder-head"><ssf:nlt tag="navigation.myTeams"/></div>
 	  <c:forEach var="binder" items="${ss_mobileTeamsList}">
 			<jsp:useBean id="binder" type="java.util.Map" />
-			<div class="folder-item">
 			  <a 
 			  <c:if test="${binder._entityType == 'folder'}">
 			    href="<ssf:url adapter="true" portletName="ss_forum" folderId="${binder._docId}" 
@@ -62,8 +61,11 @@
 							action="__ajax_mobile" actionUrl="false" 
 							operation="mobile_show_workspace" />"
 			  </c:if>
-			  >${binder.title}</a>
+			  >
+  			<div class="folder-item">
+			  ${binder.title}
 			</div>
+			</a>
 	  </c:forEach>
 	</div>
   </div>

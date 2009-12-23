@@ -58,7 +58,7 @@ function ss_setMobileSearchActionUrl(formObj) {
 </script>
 <div id="search-dialog" class="action-dialog" style="display: none;z-index:2">
     <div class="dialog-head">
-      <span><ssf:nlt tag="navigation.find" /></span>
+      <span><ssf:nlt tag="navigation.search" /></span>
     </div>
 	<form id="searchForm" 
 		method="post" 
@@ -97,7 +97,7 @@ function ss_setMobileSearchActionUrl(formObj) {
 		  </div>
 	  </div>
 	  <div>
-		<input type="text" size="35" name="searchText"/>
+		<input class="mediumtext" type="text" size="33" name="searchText"/>
 	  </div>			
       <div id="search-buttons" class="margintop2">
         <input id="search-ok" type="submit" value="<ssf:nlt tag="button.ok"/>" 

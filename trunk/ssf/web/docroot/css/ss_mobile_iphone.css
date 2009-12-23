@@ -694,6 +694,7 @@ td div.ss_mobile_calendar_entries_header span {
 }
 div.ss_mobile_calendar_no_entries_content {
 	padding: 6px 20px;
+	padding-bottom: 100px;
 }
 div.ss_mobile_calendar_no_entries_content span {
 	font-size: .9em;
