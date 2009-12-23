@@ -45,27 +45,33 @@
 
 <div class="folders">
   <div class="folder-content">
-    <div class="my-item myws-a">
-	  <img src="<html:rootPath/>images/mobile/iphone_teaming_workspace1.png"/>
-      <a href="<ssf:url adapter="true" portletName="ss_forum" 
+    <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				    action="__ajax_mobile"
 				    operation="mobile_show_workspace"
-				    binderId="${ssUser.workspaceId}" />"><ssf:nlt tag="navigation.myWorkspace"/></a>
-    </div>
-    <div class="my-item myfavorites-a">
-      <img src="<html:rootPath/>images/mobile/iphone_teaming_favorite1.png"/>
-      <a id="myfavorites-a" href="<ssf:url adapter="true" portletName="ss_forum" 
+				    binderId="${ssUser.workspaceId}" />">
+		<div class="my-item myws-a">
+		  <img src="<html:rootPath/>images/mobile/iphone_teaming_workspace1.png"/>
+		  <ssf:nlt tag="navigation.myWorkspace"/>
+		</div>
+	</a>
+    <a id="myfavorites-a" href="<ssf:url adapter="true" portletName="ss_forum" 
 							action="__ajax_mobile" actionUrl="false" 
 							binderId="${ssBinder.id}"
-							operation="mobile_show_favorites" />"><ssf:nlt tag="navigation.myFavorites"/></a>
-    </div>
-	<div class="my-item myteams-a">
-	  <img src="<html:rootPath/>images/mobile/iphone_teaming_teams1.png"/>
-	  <a id="myteams-a" href="<ssf:url adapter="true" portletName="ss_forum" 
+							operation="mobile_show_favorites" />">
+		<div class="my-item myfavorites-a">
+		  <img src="<html:rootPath/>images/mobile/iphone_teaming_favorite1.png"/>
+		  <ssf:nlt tag="navigation.myFavorites"/>
+		</div>
+	</a>
+    <a id="myteams-a" href="<ssf:url adapter="true" portletName="ss_forum" 
 							action="__ajax_mobile" actionUrl="false" 
 							binderId="${ssBinder.id}"
-							operation="mobile_show_teams" />"><ssf:nlt tag="navigation.myTeams"/></a>
-	</div>    
+							operation="mobile_show_teams" />">
+		<div class="my-item myteams-a">
+		  <img src="<html:rootPath/>images/mobile/iphone_teaming_teams1.png"/>
+		  <ssf:nlt tag="navigation.myTeams"/>
+		</div>    
+    </a>
   </div>
 
   <div class="folder-content">

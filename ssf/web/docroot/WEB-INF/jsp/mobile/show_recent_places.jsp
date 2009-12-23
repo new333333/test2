@@ -55,7 +55,6 @@
 			<jsp:useBean id="tab" type="org.kablink.teaming.web.util.Tabs.TabEntry" />
 			  <c:set var="numTabs" value="${numTabs + 1}"/>
 			  <c:if test="${numTabs < 6}">
-			    <div class="folder-item">
 					<a id="ss_tabbar_td${tab.tabId}" 
 					  <c:if test="${tab.type == 'binder'}">
 					    href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -95,8 +94,10 @@
 							tabTitle = tabTitle.substring(0, maxTitle) + "...";
 						}
 					%>	
-					<span class="ss_tabs_title"><%= tabTitle %></span></a>
-			     </div>
+				    <div class="folder-item">
+						<%= tabTitle %>
+					</div>
+				 </a>
 			   </c:if>
 	  </c:forEach>
 	</div>
