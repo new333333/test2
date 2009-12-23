@@ -1166,9 +1166,17 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				//only mark top entries as seen
 				getProfileModule().setSeen(null, entry);
 			}
+			Definition def = entry.getEntryDef(); //cannot be null here
+			Document defDoc = def.getDefinition();
+			Element familyEle = (Element) defDoc.getRootElement().selectSingleNode("./properties/property[@name='family']");
+			String replyText = NLT.get("toolbar.comment");
+			if (familyEle != null && familyEle.attributeValue("value", "").equals("discussion")) {
+				replyText = NLT.get("toolbar.reply");
+				model.put(WebKeys.DEFINITION_FAMILY, familyEle.attributeValue("value", ""));
+			}
+			model.put(WebKeys.ADD_REPLY_TITLE, replyText);
 			
 			if (getFolderModule().testAccess(entry, FolderOperation.addReply)) {
-				Definition def = entry.getEntryDef(); //cannot be null here
 				List replyStyles = DefinitionUtils.getPropertyValueList(def.getDefinition().getRootElement(), "replyStyle");
 				model.put(WebKeys.ENTRY_REPLY_STYLES, replyStyles);
 				List<Map> defTitleUrlList = new ArrayList();
