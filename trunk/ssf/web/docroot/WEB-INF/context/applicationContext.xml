@@ -1252,8 +1252,8 @@ text/calendar											  ics
 	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
 	    <property name="beans">
 	      <map>
-	        <entry key="SiteScape:type=Indexing,name=localLuceneSessionFactory">
-	          <ref local="luceneSessionFactory"/>
+	        <entry key="SiteScape:type=Indexing,name=luceneSessionFactory">
+	          <ref bean="luceneSessionFactory"/>
 	        </entry>
 	        <entry key="SiteScape:type=Converter,name=htmlOpenOfficeConverter">
 	          <ref local="htmlOpenOfficeConverter"/>
