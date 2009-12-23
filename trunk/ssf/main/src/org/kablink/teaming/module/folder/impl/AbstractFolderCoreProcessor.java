@@ -741,6 +741,10 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		      		    	List<Tag> entryTags = tags.get(sEntry.getEntityIdentifier());
 		       				doCopy(sEntry, dEntry, entryTags);
 		       			}
+		       			
+		       			//index the folder to fix issues with this binder not knowing about its children
+		       			indexEntries(folder, false, false);
+		       			
 		       			getCoreDao().flush();
 		       			//get rid of entries no longer needed
 		       			getCoreDao().evict(CollectionUtil.differences(batch, sourceMap.values()));
