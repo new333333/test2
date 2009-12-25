@@ -940,9 +940,6 @@ public class DefinitionHelper {
 		ZoneInfo zoneInfo = ExportHelper.getZoneInfo();
 		String zoneInfoId = zoneInfo.getId();
 		if (zoneInfoId == null) zoneInfoId = "";
-		Map mashupEntries = new HashMap();
-		Map mashupBinders = new HashMap();
-		Map mashupBinderEntries = new HashMap();
     	String[] mashupValues = mashupValue.split(";");
     	for (int i = 0; i < mashupValues.length; i++) {
     		String[] mashupItemValues = mashupValues[i].split(",");
@@ -960,7 +957,6 @@ public class DefinitionHelper {
 			}
 
 			String type = mashupItemValues[0];
-			boolean changed = false;
     		if (ObjectKeys.MASHUP_TYPE_ENTRY.equals(type) && 
     				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ENTRY_ID) &&
     				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID).equals("") &&
@@ -981,6 +977,71 @@ public class DefinitionHelper {
     				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID).equals("") &&
     				!mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ZONE_UUID)) {
     			mashupValues[i] = mashupValues[i].replaceFirst(",", ",zoneUUID="+zoneInfoId+",");
+    		}
+    	}
+    	String result = "";
+    	for (int i = 0; i < mashupValues.length; i++) {
+    		if (!result.equals("")) result += ";";
+    		result += mashupValues[i];
+    	}
+    	return result;
+	}
+
+	public static String fixupMashupCanvasForImport(String mashupValue, 
+			Map<Long, Long> binderIdMap, Map<Long, Long> entryIdMap) {
+    	String[] mashupValues = mashupValue.split(";");
+    	for (int i = 0; i < mashupValues.length; i++) {
+    		String[] mashupItemValues = mashupValues[i].split(",");
+			Map mashupItemAttributes = new HashMap();
+			if (mashupItemValues.length > 0) {
+				//Build a map of attributes
+				for (int j = 0; j < mashupItemValues.length; j++) {
+					int k = mashupItemValues[j].indexOf("=");
+					if (k > 0) {
+						String a = mashupItemValues[j].substring(0, k);
+						String v = mashupItemValues[j].substring(k+1, mashupItemValues[j].length());
+						mashupItemAttributes.put(a, v);
+					}
+				}
+			}
+
+			String type = mashupItemValues[0];
+    		if (ObjectKeys.MASHUP_TYPE_ENTRY.equals(type) && 
+    				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ENTRY_ID) &&
+    				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID).equals("")) {
+    			String entryId = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID);
+    			if (entryIdMap.containsKey(Long.valueOf(entryId))) {
+    				String newEntryId = entryIdMap.get(Long.valueOf(entryId)).toString();
+    				mashupValues[i] = mashupValues[i].replaceFirst(",entryId="+entryId+",", ",entryId="+newEntryId+",");
+    				mashupValues[i] = mashupValues[i].replaceFirst(",zoneUUID=[^,;$]*", "");
+    			}
+    		} else if (ObjectKeys.MASHUP_TYPE_FOLDER.equals(type) && 
+    				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_FOLDER_ID) && 
+    				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_FOLDER_ID).equals("")) {
+    			String folderId = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_FOLDER_ID);
+    			if (binderIdMap.containsKey(Long.valueOf(folderId))) {
+    				String newFolderId = binderIdMap.get(Long.valueOf(folderId)).toString();
+    				mashupValues[i] = mashupValues[i].replaceFirst(",folderId="+folderId+",", ",folderId="+newFolderId+",");
+    				mashupValues[i] = mashupValues[i].replaceFirst(",zoneUUID=[^,;$]*", "");
+    			}
+    		} else if (ObjectKeys.MASHUP_TYPE_BINDER_URL.equals(type) && 
+    				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_BINDER_ID) && 
+    				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_BINDER_ID).equals("")) {
+    			String binderId = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_BINDER_ID);
+    			if (binderIdMap.containsKey(Long.valueOf(binderId))) {
+    				String newBinderId = binderIdMap.get(Long.valueOf(binderId)).toString();
+    				mashupValues[i] = mashupValues[i].replaceFirst(",binderId="+binderId+",", ",binderId="+newBinderId+",");
+    				mashupValues[i] = mashupValues[i].replaceFirst(",zoneUUID=[^,;$]*", "");
+    			}
+    		} else if (ObjectKeys.MASHUP_TYPE_ENTRY_URL.equals(type) && 
+    				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ENTRY_ID) && 
+    				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID).equals("")) {
+    			String entryId = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID);
+    			if (entryIdMap.containsKey(Long.valueOf(entryId))) {
+    				String newEntryId = entryIdMap.get(Long.valueOf(entryId)).toString();
+    				mashupValues[i] = mashupValues[i].replaceFirst(",entryId="+entryId+",", ",entryId="+newEntryId+",");
+    				mashupValues[i] = mashupValues[i].replaceFirst(",zoneUUID=[^,;$]*", "");
+    			}
     		}
     	}
     	String result = "";
