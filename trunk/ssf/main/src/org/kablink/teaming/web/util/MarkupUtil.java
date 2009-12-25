@@ -51,15 +51,23 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Element;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Html;
@@ -67,6 +75,8 @@ import org.kablink.util.Http;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.google.gwt.dom.client.Document;
 
 
 
@@ -108,6 +118,11 @@ public class MarkupUtil {
 	protected final static Pattern sectionPattern =Pattern.compile("(==[=]*)([^=]*)(==[=]*)");
 	protected final static Pattern httpPattern =Pattern.compile("^https*://[^/]*(/[^/]*)/s/readFile/(.*)$");
 	protected static Integer youtubeDivId = 0;
+
+	private static BinderModule binderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
+	private static FolderModule folderModule = (FolderModule) SpringContextUtil.getBean("folderModule");
+	private static DefinitionModule definitionModule = (DefinitionModule) SpringContextUtil.getBean("definitionModule");
+
 	/**
 	 * Parse a description looking for uploaded file references
 	 * 
@@ -378,8 +393,7 @@ public class MarkupUtil {
 
 			}
 			public String getRelativeTitleUrl(String normalizedTitle, String title) {
-				String zoneUUID = (String)searchResults.get(org.kablink.util.search.Constants.ZONE_UUID_FIELD);
-				if (zoneUUID == null) zoneUUID = "";
+				String zoneUUID = "";
 				return getTitleUrl((String)searchResults.get(org.kablink.util.search.Constants.BINDER_ID_FIELD), 
 						zoneUUID, normalizedTitle, title);
 			}
@@ -435,8 +449,9 @@ public class MarkupUtil {
 			public String getRelativeTitleUrl(String normalizedTitle, String title) {
 				CustomAttribute zoneUUIDattr = entity.getCustomAttribute(Constants.ZONE_UUID_FIELD);
 				String zoneUUID = "";
-				if (zoneUUIDattr != null) zoneUUID = (String) zoneUUIDattr.getValue();
-				return getTitleUrl(entity.getParentBinder().getId().toString(), 
+				Long binderId = entity.getId();
+				if (EntityType.folderEntry.equals(entity.getEntityType())) binderId = entity.getParentBinder().getId();
+				return getTitleUrl(binderId.toString(), 
 						zoneUUID, normalizedTitle, title);
 			}
 			public String getTitleUrl(String binderId, String zoneUUID, String normalizedTitle, String title) {
@@ -715,7 +730,8 @@ public class MarkupUtil {
 			}
 		    	
 	    	//When viewing the string, replace the markup title links with real links    [[page title]]
-			if (entityType.equals(EntityType.folderEntry.name()) && (type.equals(WebKeys.MARKUP_VIEW) || type.equals(WebKeys.MARKUP_EXPORT))) {
+			if ((entityType.equals(EntityType.folderEntry.name()) || entityType.equals(EntityType.folder.name())) && 
+					(type.equals(WebKeys.MARKUP_VIEW) || type.equals(WebKeys.MARKUP_EXPORT))) {
 		    	matcher  = pageTitleUrlTextPattern.matcher(outputBuf);
 				if (matcher.find()) {
 					loopDetector = 0;
@@ -936,6 +952,119 @@ public class MarkupUtil {
 			else return false;
 		} else {
 			return false;
+		}
+	}
+	
+	public static void fixupImportedLinks(final DefinableEntity entity, final Long originalEntityId,
+			final Map<Long, Long> binderIdMap, final Map<Long, Long> entryIdMap) {
+		final Map<String,Object> data = new HashMap<String,Object>(); // Changed data
+			
+		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
+			public void visit(Element entityElement, Element flagElement, Map args) {
+				//Get the type of this element
+				String type = entityElement.attributeValue("name", "");
+				Element nameProperty = (Element)entityElement.selectSingleNode("./properties/property[@name='name']");
+				if (nameProperty == null) return;
+				String attrName = nameProperty.attributeValue("value", "");
+				if (attrName.equals("")) return;
+				//Scan description and htmlEditorTextarea elements for "titleUrl" links to fix 
+				Description description = null;
+				if (type.equals("description")) {
+					description = entity.getDescription();
+				} else if (type.equals("htmlEditorTextarea")) {
+					description = (Description)entity.getCustomAttribute(attrName).getValue();
+				}
+				
+				boolean dataChanged = false;
+				if (description != null && !Validator.isNull(description.getText())) {
+			    	//Scan the text for {{titleUrl: binderId=xxx zoneUUID=xxx title=xxx}}
+					//  Remove the zoneUUID if it is the same as the current zone
+					StringBuffer outputBuf = new StringBuffer(description.getText());
+					Matcher matcher = titleUrlPattern.matcher(outputBuf.toString());
+					int loopDetector;
+					matcher = titleUrlPattern.matcher(outputBuf.toString());
+					if (matcher.find()) {
+						loopDetector = 0;
+						outputBuf = new StringBuffer();
+						do {
+							if (loopDetector++ > 2000) {
+								logger.error("Error processing markup [5]: " + description.getText());
+								break;
+							}
+							if (matcher.groupCount() < 2) continue;
+				    		String link = matcher.group();
+					    		
+							String s_binderId = "";
+							Matcher fieldMatcher = titleUrlBinderPattern.matcher(link);
+							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_binderId = fieldMatcher.group(1).trim();
+					    	if (!s_binderId.equals("")) {
+					    		Long sourceBinderId = Long.valueOf(s_binderId);
+					    		if (binderIdMap.containsKey(sourceBinderId) && 
+					    				!binderIdMap.get(sourceBinderId).toString().equals(s_binderId)) {
+					    			link = link.replaceFirst("binderId=" + s_binderId + " ", 
+					    					"binderId=" + binderIdMap.get(sourceBinderId).toString() + " ");
+					    		}
+					    	}
+							String s_zoneUUID = "";
+							fieldMatcher = titleUrlZoneUUIDPattern.matcher(link);
+							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) 
+								s_zoneUUID = fieldMatcher.group(1).trim();
+					    	if (!s_zoneUUID.equals("")) {
+					    		link = link.replaceFirst("zoneUUID=" + s_zoneUUID, "");
+					    	}
+			    			matcher.appendReplacement(outputBuf, link.toString().replace("$", "\\$"));
+				    	} while (matcher.find());
+						matcher.appendTail(outputBuf);
+						if (!outputBuf.toString().equals(description.getText())) {
+							description.setText(outputBuf.toString());
+							dataChanged = true;
+						}
+					}
+					
+					//Scan for permalinks to fix up
+					//TODO add code here
+					
+				}
+				
+				//Save any changes to the description
+				if (dataChanged) {
+					data.put(attrName, description.getText()); 
+				}
+				
+				//Scan for landing pages
+				if (type.equals("mashupCanvas")) {
+					String mashup = (String)entity.getCustomAttribute(attrName).getValue();
+					if (mashup != null && !mashup.equals("")) {
+						String newMashup = DefinitionHelper.fixupMashupCanvasForImport(mashup, binderIdMap, entryIdMap);
+						if (!mashup.equals(newMashup)) {
+							data.put(attrName, newMashup); 
+						}
+					}
+				}
+			}
+			
+			public String getFlagElementName() {
+				return "export";
+			}
+		};
+		definitionModule.walkDefinition(entity, visitor, null);
+		if (!data.isEmpty()) {
+			//Save any changes
+			if (EntityType.folderEntry.equals(entity.getEntityType())) {
+				try {
+					folderModule.modifyEntry(entity.getParentBinder().getId(), entity.getId(), 
+						new MapInputData(data), null, null, null, null);
+				} catch(Exception e) {
+					logger.error(e.getLocalizedMessage());
+				}
+			} else if (EntityType.workspace.equals(entity.getEntityType()) ||
+					EntityType.folder.equals(entity.getEntityType())) {
+				try {
+					binderModule.modifyBinder(entity.getId(), new MapInputData(data), null, null, null);
+				} catch(Exception e) {
+					logger.error(e.getLocalizedMessage());
+				}
+			}
 		}
 	}
 }

@@ -1167,7 +1167,6 @@ public class ExportHelper {
 					input.close();
 
 					Document tempDoc = getDocument(xmlStr, nameCache);
-
 					String defId = getDefinitionDatabaseId(tempDoc);
 					String internalId = getDefinitionInternalId(tempDoc);
 					String defName = getDefinitionName(tempDoc);
@@ -1385,8 +1384,17 @@ public class ExportHelper {
 	}
 	
 	private static void fixUpLinks(Map<Long, Long> binderIdMap, Map<Long, Long> entryIdMap) {
-		if (getZoneInfo().getId().equals("")) {
-			
+		Iterator itBinders = binderIdMap.entrySet().iterator();
+		while (itBinders.hasNext()) {
+			Map.Entry me = (Map.Entry) itBinders.next();
+			Binder binder = binderModule.getBinder((Long) me.getValue());
+			MarkupUtil.fixupImportedLinks(binder, (Long)me.getKey(), binderIdMap, entryIdMap);
+		}
+		Iterator itEntries = entryIdMap.entrySet().iterator();
+		while (itEntries.hasNext()) {
+			Map.Entry me = (Map.Entry) itEntries.next();
+			FolderEntry entry = folderModule.getEntry(null, (Long) me.getValue());
+			MarkupUtil.fixupImportedLinks(entry, (Long)me.getKey(), binderIdMap, entryIdMap);
 		}
 	}
 
