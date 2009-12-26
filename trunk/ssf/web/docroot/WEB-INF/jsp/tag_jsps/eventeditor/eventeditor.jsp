@@ -240,6 +240,9 @@
 		</tr>
 	</c:if>		
 	</table>
+	<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
+		<input type="hidden" name="${property_name}_dateExistedBefore" value="true" />
+	</c:if>
 	
 
 <c:set var="interval" value="1" />

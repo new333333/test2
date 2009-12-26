@@ -115,6 +115,9 @@
 		</tr>
 	</table>
 	
+	<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
+		<input type="hidden" name="${property_name}_dateExistedBefore" value="true" />
+	</c:if>
 	<input type="hidden" name="${property_name}" value="" />
 	
 </div>
@@ -169,6 +172,9 @@
 		</tr>
 	</table>
 	
+	<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name_per_user].value}">
+		<input type="hidden" name="${property_name_per_user}_dateExistedBefore" value="true" />
+	</c:if>
 	<input type="hidden" name="${property_name_per_user}" value="" />
 	
 </div>

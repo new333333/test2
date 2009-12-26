@@ -2023,8 +2023,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		    	hasRecur = Boolean.TRUE;
 		    }
 		    Event event = inputData.getEventValue(nameValue, hasDur, hasRecur);
-		    if (event != null) {
-		        event.setName(nameValue);
+		    if (event != null || inputData.exists(nameValue + "_dateExistedBefore")) {
+		        if (event != null) event.setName(nameValue);
 		        if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, event);
 		    }
 		} else if (itemName.equals("survey")) {
