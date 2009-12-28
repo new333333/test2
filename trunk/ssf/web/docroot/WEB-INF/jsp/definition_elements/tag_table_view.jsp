@@ -35,6 +35,19 @@
 <%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
+<%
+	// Bugzilla 566967:
+	//    Addresses button truncation issue.  IE doesn't honor padding in an
+	//    anchor's background image until the anchor is display:  block or
+	//    display:  inline-block.
+	String addAnchorStyle;
+	if (BrowserSniffer.is_ie(request)) {
+		addAnchorStyle = "style=\"display:  inline-block;\"";
+	} else {
+		addAnchorStyle = "";
+	}
+%>
+
 <table class="ss_tag_pane_color">
  <tbody>
 
@@ -51,7 +64,7 @@
       <!-- input type="text" class="ss_text" name="personalTag" / -->
 		<ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="personalTag" type="personalTags" displayValueOnly="true" width="70px" singleItem="true" accessibilityText="title.add.personal.tags" />
       
-      	<a class="ss_linkButton" href="javascript:;" 
+      	<a class="ss_linkButton" <%= addAnchorStyle %> href="javascript:;" 
           onClick="ss_tagAdd('${ss_tagViewNamespace}', '${ss_tagDivNumber}', '${ssBinder.id}', '${ss_tagObject.entityType}', '${ss_tagObject.id}');setTimeout('document.ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}.reset()', 100);return false;"
           <ssf:title tag="title.add.personal.tags" />
         ><span><ssf:nlt tag="button.add"/></span></a>
@@ -77,7 +90,7 @@
 		</ssf:ifAccessAllowed>
        
     	<ssf:ifAccessAllowed binder = "${ssBinder}" operation = "manageTag">  
-    	<a class="ss_linkButton" href="javascript:;" 
+    	<a class="ss_linkButton" <%= addAnchorStyle %> href="javascript:;" 
        	  onClick="ss_tagAdd('${ss_tagViewNamespace}', '${ss_tagDivNumber}', '${ssBinder.id}', '${ss_tagObject.entityType}', '${ss_tagObject.id}');setTimeout('document.ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}.reset()', 100);return false;"
        	  <ssf:title tag="title.add.community.tags" />
     	><span><ssf:nlt tag="button.add"/></span></a>
