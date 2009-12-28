@@ -55,7 +55,7 @@
   </div>
   </c:if>
 
-<c:if test="${ssDefinitionFamily != 'calendar'}">
+<c:if test="${ssDefinitionFamily != 'calendar' && ssDefinitionFamily != 'task'}">
   <div class="folders">
     <div class="folder-head">
        <ssf:nlt tag="mobile.entries"/>
@@ -116,6 +116,9 @@
 </c:if>
 <c:if test="${ssDefinitionFamily == 'calendar'}">
 	<%@ include file="/WEB-INF/jsp/mobile/show_calendar.jsp" %>
+</c:if>
+<c:if test="${ssDefinitionFamily == 'task'}">
+	<%@ include file="/WEB-INF/jsp/mobile/show_task_folder.jsp" %>
 </c:if>
 		
 <c:set var="ss_mobileBinderListShown" value="true" scope="request"/>

@@ -798,6 +798,20 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.FOLDERS, folders);
 		}
 
+		Map<String, Map> cacheEntryDef = new HashMap();
+    	List items = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+    	if (items != null) {
+	    	Iterator it = items.iterator();
+	    	while (it.hasNext()) {
+	    		Map entry = (Map)it.next();
+	    		String entryDefId = (String)entry.get(Constants.COMMAND_DEFINITION_FIELD);
+	    		if (cacheEntryDef.get(entryDefId) == null) {
+	    			cacheEntryDef.put(entryDefId, bs.getDefinitionModule().getEntryDefinitionElements(entryDefId));
+	    		}
+	    		entry.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, cacheEntryDef.get(entryDefId));
+	    	}
+    	}
+
 		//BinderHelper.addActionsHome(request, actions);
 		BinderHelper.addActionsWhatsNew(request, actions, binder);
 		BinderHelper.addActionsWhatsUnseen(request, actions, binder);
