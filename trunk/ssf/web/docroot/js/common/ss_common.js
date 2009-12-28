@@ -4564,7 +4564,7 @@ function ssFavorites(namespace) {
 function ss_moveThisTableRow(objToMove, namespace, upDown) {
     var toMove = ss_findOwningElement(objToMove, "tr");
     
-    if ( toMove instanceof HTMLTableRowElement )
+    if ( ss_isTR( toMove ) )
     {
     	if (upDown == 'up')
     	{
@@ -4611,7 +4611,7 @@ function ss_getPrevRow( tr )
 	var prevRow = null;
 	
 	// Are we dealing with an HTMLTableRowElement?
-	if ( tr instanceof HTMLTableRowElement )
+	if ( ss_isTR( tr ) )
 	{
 		var prevSibling;
 		
@@ -4619,7 +4619,7 @@ function ss_getPrevRow( tr )
 		prevSibling = tr.previousSibling;
 		while ( prevSibling != null && prevRow == null )
 		{
-			if ( prevSibling instanceof HTMLTableRowElement )
+			if ( ss_isTR( prevSibling ) )
 			{
 				prevRow = prevSibling;
 			}
@@ -4640,7 +4640,7 @@ function ss_getNextRow( tr )
 	var nextRow = null;
 	
 	// Are we dealing with an HTMLTableRowElement?
-	if ( tr instanceof HTMLTableRowElement )
+	if ( ss_isTR( tr ) )
 	{
 		var nextSibling;
 		
@@ -4648,7 +4648,7 @@ function ss_getNextRow( tr )
 		nextSibling = tr.nextSibling;
 		while ( nextSibling != null && nextRow == null )
 		{
-			if ( nextSibling instanceof HTMLTableRowElement )
+			if ( ss_isTR( nextSibling ) )
 			{
 				nextRow = nextSibling;
 			}
@@ -4659,6 +4659,18 @@ function ss_getNextRow( tr )
 	
 	return nextRow;
 }// end ss_getNextRow()
+
+
+/**
+ * Is the given element a TR?
+ */
+ function ss_isTR( element )
+ {
+ 	if ( element != null && element.tagName != null && element.tagName.toLowerCase() == 'tr' )
+ 		return true;
+ 		
+ 	return false;
+ }// end ss_isTR()
 
 
 function ss_findOwningElement(obj, eleName) {
