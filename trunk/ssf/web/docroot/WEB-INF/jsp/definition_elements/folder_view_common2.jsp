@@ -740,14 +740,27 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	       	 <c:if test="${!empty entry1[eleName2]}">
 <%
 	try {
-		java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd");
-	    String year = ((String)entry1.get(eleName2)).substring(0,4);
-		String month = ((String)entry1.get(eleName2)).substring(4,6);
-		String day = ((String)entry1.get(eleName2)).substring(6,8);
-		java.util.Date date = formatter.parse(year + "-" + month + "-" + day);
-%>
-	<fmt:formatDate value="<%= date %>" type="date" dateStyle="short" />
-<%
+		java.text.SimpleDateFormat formatter;
+		java.util.Date date;
+		String tdStamp = ((String) entry1.get(eleName2));
+	    String year  = tdStamp.substring(0, 4);
+		String month = tdStamp.substring(4, 6);
+		String day   = tdStamp.substring(6, 8);
+		if (8 < tdStamp.length()) {
+			String time = tdStamp.substring(8);
+			formatter = new java.text.SimpleDateFormat("yyyy-MM-dd:HHmm");
+			date = formatter.parse(year + "-" + month + "-" + day + ":" + time);
+			%>
+				<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= date %>" type="date" dateStyle="short" />
+			<%
+		}
+		else {
+			formatter = new java.text.SimpleDateFormat("yyyy-MM-dd");
+			date = formatter.parse(year + "-" + month + "-" + day);
+			%>
+				<fmt:formatDate timeZone="GMT" value="<%= date %>" type="date" dateStyle="short" />
+			<%
+		}
 	} catch(Exception e) {}
 %>
 	       	 </c:if>
