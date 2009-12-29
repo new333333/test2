@@ -24,6 +24,7 @@ package org.kablink.util;
 
 import javax.servlet.http.HttpServletRequest;
 
+
 /**
  * <a href="BrowserSniffer.java.html"><b><i>View Source</i></b></a>
  *
@@ -350,6 +351,8 @@ public class BrowserSniffer {
 		}
 		if (is_iphone(req)) return true;
 		if (is_blackberry(req)) return true;
+		if (is_droid(req)) return true;
+		if (is_otherMobile(req)) return true;
 		if (is_wap_xhtml(req)) return true;
 
 		return false;
@@ -416,6 +419,49 @@ public class BrowserSniffer {
 		else {
 			return false;
 		}
+	}
+
+	public static boolean is_droid(HttpServletRequest req) {
+		if (req == null) {
+			return false;
+		}
+
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
+
+		if (agent == null) {
+			return false;
+		}
+
+		agent = agent.toLowerCase();
+
+		if (agent.indexOf("android") != -1) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	public static boolean is_otherMobile(HttpServletRequest req) {
+		if (req == null) {
+			return false;
+		}
+
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
+		if (agent == null) {
+			return false;
+		}
+		agent = agent.toLowerCase();
+		
+		String mobileDeviceUserAgents = "nokia, pre/";
+		String[] mobileDevices = mobileDeviceUserAgents.split(",");
+		//mobileDevices = org.kablink.teaming.util.SPropsUtil.getStringArray("mobile.userAgents", org.kablink.teaming.util.Constants.COMMA);
+		for (int i = 0; i < mobileDevices.length; i++) {
+			if (agent.indexOf(mobileDevices[i]) != -1) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static boolean is_wml(HttpServletRequest req) {
