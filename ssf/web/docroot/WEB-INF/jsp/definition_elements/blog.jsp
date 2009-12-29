@@ -134,15 +134,13 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 <table>
 	<tbody>
 	 <tr>
-	   <td width="50%"></td>
 	   <td class="ss_blogLeftCol"><img class="ss_blogLeftCol" border="0" alt="" style="height:1px;"
 	     src="<html:imagesPath/>pics/1pix.gif"/></td>
 	   <td class="ss_blogRightCol"><img class="ss_blogRightCol" border="0" alt="" style="height:1px;"
 	     src="<html:imagesPath/>pics/1pix.gif"/></td>
-	   <td width="50%"></td>
 	 </tr>
 	 <tr>
-	   <td colspan="3" align="right">
+	   <td colspan="2" align="right">
 	     <div class="ss_navbar_inline ss_navbar_padRt">
 	     <ul>
 	     <c:forEach var="blogPage" items="${ssBlogPages}">
@@ -159,12 +157,8 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 	     </ul>
 	     </div>
 	   </td>
-	   <td width="50%">
-	   </td>
 	 </tr>
 	 <tr>
-	   <td width="50%">
-	   </td>
 	   <td class="ss_blogLeftCol" valign="top">
        <!-- Start Left Column -->
       <div class="ss_folder">
@@ -177,8 +171,6 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 <jsp:include page="/WEB-INF/jsp/sidebars/blog.jsp" />
 </div>
       	</td><!-- end of Right Column -->
-	   <td width="50%">
-	   </td>
     </tr>
 </tbody>
 </table>

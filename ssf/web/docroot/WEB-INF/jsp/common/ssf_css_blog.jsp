@@ -86,7 +86,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	vertical-align:top;
 	}
 .ss_blogLeftCol {
-	width: 550px !important;
+/*	width: 550px !important; */
+	width: 95%;
 	padding-top:8px;
     }
 .ss_blogRightCol {
