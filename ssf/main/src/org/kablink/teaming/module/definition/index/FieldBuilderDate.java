@@ -58,7 +58,7 @@ public class FieldBuilderDate extends AbstractFieldBuilder {
             return new Field[0];
         }
         else {
-            Field field = new Field(makeFieldName(dataElemName), DateTools.dateToString(val,DateTools.Resolution.DAY),Field.Store.YES,Field.Index.UN_TOKENIZED);
+            Field field = new Field(makeFieldName(dataElemName), DateTools.dateToString(val,DateTools.Resolution.MINUTE),Field.Store.YES,Field.Index.UN_TOKENIZED);
             return new Field[] {field};
         }
     }
