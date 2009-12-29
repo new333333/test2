@@ -532,6 +532,7 @@ function ss_openUrlInWindow(obj, windowName, width, height) {
 
 //Routine to show the permalink url so it can by cut/pasted
 function ss_showPermalink(obj, namespace) {
+	if (typeof namespace == 'undefined' && typeof ss_namespace != 'undefined') namespace = ss_namespace;
 	var divObj = document.getElementById('ss_permalink_display_div');
 	ss_toggleShowDiv('ss_permalink_display_div', namespace)	;
 }
