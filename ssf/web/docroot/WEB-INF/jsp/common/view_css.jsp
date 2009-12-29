@@ -48,6 +48,7 @@ var ss_urlBase = self.location.protocol + "//" + self.location.host;
 var ss_rootPath = "<html:rootPath/>";
 var ss_imagesPath = "<html:imagesPath/>";
 var ss_isAdapter="true";
+var ss_namespace = "${renderResponse.namespace}";
 var ss_tagSearchResultUrl = "<ssf:url windowState="maximized" 
     action="advanced_search" actionUrl="true"><ssf:param 
 	name="searchTags" value="ss_tagPlaceHolder"/><ssf:param 
