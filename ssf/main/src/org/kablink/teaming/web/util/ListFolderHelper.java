@@ -829,7 +829,8 @@ public class ListFolderHelper {
 							SortedSet<FolderEntry> pinnedFolderEntriesSet = bs.getFolderModule().getEntries(peSet);
 							List pinnedFolderEntriesList = new ArrayList();
 							for (FolderEntry entry : pinnedFolderEntriesSet) {
-								if (!(entry.isPreDeleted())) {
+								//Make sure the entry is not deleted and is still in this folder
+								if (!(entry.isPreDeleted()) && entry.getParentBinder().equals(folder)) {
 									org.apache.lucene.document.Document indexDoc = 
 										bs.getFolderModule().buildIndexDocumentFromEntry(entry.getParentBinder(), entry, null);
 									pinnedFolderEntriesList.add(indexDoc);
