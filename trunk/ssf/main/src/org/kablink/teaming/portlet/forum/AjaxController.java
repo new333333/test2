@@ -235,7 +235,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			} else if (op.equals(WebKeys.OPERATION_SET_SUNBURST_VISIBILITY)) {
 				ajaxSetSunburstVisibility(request, response);
 			} else if (op.equals(WebKeys.OPERATION_PIN_ENTRY)) {
-				if (WebHelper.isMethodPost(request)) ajaxPinEntry(request, response);
+				if (WebHelper.isMethodPost(request)) ajaxPinEntry(this, request, response);
 			}
 		}
 	}
@@ -2536,7 +2536,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		} catch(Exception e) {}
 	}
 	
-	private void ajaxPinEntry(ActionRequest request, 
+	private void ajaxPinEntry(AllModulesInjected bs, ActionRequest request, 
 			ActionResponse response) throws Exception {
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -2558,7 +2558,29 @@ public class AjaxController  extends SAbstractControllerRetry {
 			pinnedEntries = String.valueOf(entryId) + "," + pinnedEntries;
 		}
 		
-		getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_PINNED_ENTRIES, pinnedEntries);
+		//See if there are any pinned entries that shouldn't be in the list anymore
+		String finalPinnedEntries = "";
+		if (!pinnedEntries.equals("")) {
+			if (pinnedEntries.lastIndexOf(",") == pinnedEntries.length()-1) 
+				pinnedEntries = pinnedEntries.substring(0,pinnedEntries.length()-1);
+			String[] peArray = pinnedEntries.split(",");
+			List peSet = new ArrayList();
+			for (int j = 0; j < peArray.length; j++) {
+				String pe = peArray[j];
+				if (!pe.equals("")) {
+					peSet.add(Long.valueOf(pe));
+				}
+			}
+			SortedSet<FolderEntry> pinnedFolderEntriesSet = bs.getFolderModule().getEntries(peSet);
+			for (FolderEntry entry : pinnedFolderEntriesSet) {
+				//Make sure the entry is still in this folder
+				if (entry.getParentBinder().getId().equals(binderId)) {
+					if (!finalPinnedEntries.equals("")) finalPinnedEntries += ",";
+					finalPinnedEntries += entry.getId().toString();
+				}
+			}
+		}
+		getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_PINNED_ENTRIES, finalPinnedEntries);
 	}
 	
 	private ModelAndView ajaxGetSearchQueryName(RenderRequest request, RenderResponse response) throws PortletRequestBindingException {
