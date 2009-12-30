@@ -6479,7 +6479,7 @@ function ssEditAppConfig(menuDIV) {
 		eA.onclick = function(e) {ss_helpSystem.showInlineHelpSpotInfo(this, 'sidebar/edit_app_config', '', 0, 0, 10, 10);return false;};
 		eIMG       = document.createElement("img");
  		eIMG.alt   =
- 		eIMG.title = this.strings['sidebar.appConfig.Banner.Help'];
+ 		eIMG.title = this.strings['sidebar.appConfig.Banner.Alt.Help'];
  		eIMG.setAttribute("align", "absmiddle");
  		eIMG.setAttribute("border", "0");
  		eIMG.setAttribute("src", (ss_imagesPath + "pics/sym_s_help.gif"));
