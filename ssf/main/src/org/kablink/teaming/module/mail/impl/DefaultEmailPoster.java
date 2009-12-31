@@ -82,6 +82,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 	 * Inner class used to track where an entry's description comes
 	 * from.
 	 */
+	@SuppressWarnings("unused")
 	private static class DescInfo {
 		enum Type {
 			NONE,
@@ -89,24 +90,30 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 			HTML
 		};
 		private Type	m_descType;
-		private int		m_partDepth;
+		private int		m_descSavedAtMultiPartDepth;
 		private int		m_descSavedAtPartDepth;
+		private int		m_multiPartDepth;
+		private int		m_partDepth;
 		
 		DescInfo() {
-			m_descType             = Type.NONE;
-			m_descSavedAtPartDepth = (-1);
+			m_descType                  = Type.NONE;
+			m_descSavedAtMultiPartDepth =
+			m_descSavedAtPartDepth      = (-1);
 		}
 		
-		void partEntry() {                     m_partDepth += 1;}
-		void partExit()  {if (0 < m_partDepth) m_partDepth -= 1;}
+		void multiPartEntry() {                          m_multiPartDepth += 1;}
+		void multiPartExit()  {if (0 < m_multiPartDepth) m_multiPartDepth -= 1;}
+		void partEntry()      {                          m_partDepth += 1;     }
+		void partExit()       {if (0 < m_partDepth)      m_partDepth -= 1;     }
 		
 		/*
 		 * Marks a description of type descType as having been saved at
 		 * the current part depth.
 		 */
 		void descSaved(Type descType) {
-			m_descType             = descType;
-			m_descSavedAtPartDepth = m_partDepth;
+			m_descType                  = descType;
+			m_descSavedAtMultiPartDepth = m_multiPartDepth;
+			m_descSavedAtPartDepth      = m_partDepth;
 		}
 		
 		/*
@@ -398,7 +405,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 	@SuppressWarnings("unchecked")
 	protected void processMultiPart(Folder folder, MimeMultipart content, Map inputData, Map fileItems, List iCalendars, DescInfo descInfo) throws MessagingException, IOException {
 		try {
-			descInfo.partEntry();
+			descInfo.multiPartEntry();
 			int count = content.getCount();
 			for (int i=0; i<count; ++i ) {
 				BodyPart part = content.getBodyPart(i);
@@ -410,7 +417,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 				}
 			}
 		} finally {
-			descInfo.partExit();
+			descInfo.multiPartExit();
 		}
 	}
 
