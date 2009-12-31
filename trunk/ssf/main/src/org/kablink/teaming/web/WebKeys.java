@@ -916,6 +916,7 @@ public class WebKeys {
     public static final String MASHUP_BINDER_ENTRIES="ss_mashupBinderEntries"; 
     public static final String MASHUP_CSS="ss_mashupCss"; 
     public static final String MASHUP_ENTRIES="ss_mashupEntries"; 
+    public static final String MASHUP_ENTRY_REPLIES="ss_mashupEntryReplies"; 
     public static final String MASHUP_HIDE_MASTHEAD="ss_mashupHideMasthead"; 
     public static final String MASHUP_HIDE_SIDEBAR="ss_mashupHideSidebar"; 
     public static final String MASHUP_HIDE_FOOTER="ss_mashupHideFooter"; 
