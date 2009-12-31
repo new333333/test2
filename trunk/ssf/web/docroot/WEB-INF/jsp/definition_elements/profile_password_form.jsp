@@ -48,9 +48,10 @@
 	</c:if>
 	
 	<div class="ss_labelAbove"><ssf:nlt tag="__profile_password_new"/></div>
-	<input type="password" size="40" name="password" class="ss_text" autocomplete="off" />
+	<input type="password" size="40" name="password" class="ss_text" autocomplete="off" value="*****" />
 	<div class="ss_labelAbove"><ssf:nlt tag="__profile_password_again"/></div>
-	<input type="password" size="40" name="password2" class="ss_text" autocomplete="off" />
+	<input type="password" size="40" name="password2" class="ss_text" autocomplete="off" value="*****" />
+	<input type="hidden" name="password3" value="*****" />
   </c:if>
 </div>
 

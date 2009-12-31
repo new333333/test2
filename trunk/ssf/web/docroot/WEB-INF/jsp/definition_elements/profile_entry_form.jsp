@@ -89,9 +89,10 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 			id="password_original" class="ss_text" autocomplete="off" />
 	</c:if>
 	<div class="ss_labelAbove"><label for="password"><ssf:nlt tag="__profile_password_new"/></label></div>
-	<input type="password" size="40" name="password" id="password" class="ss_text" autocomplete="off" />
+	<input type="password" size="40" name="password" id="password" class="ss_text" autocomplete="off" value="*****" />
 	<div class="ss_labelAbove"><label for="password2"><ssf:nlt tag="__profile_password_again"/></label></div>
-	<input type="password" size="40" name="password2" id="password2" class="ss_text" autocomplete="off" />
+	<input type="password" size="40" name="password2" id="password2" class="ss_text" autocomplete="off" value="*****" />
+	<input type="hidden" name="password3" id="password3" value="*****" />
   </c:if>
 </div>
 

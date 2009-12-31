@@ -116,6 +116,7 @@ public class ModifyEntryController extends SAbstractController {
 					// Are the passwords entered by the user the same?
 		        	String password = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD);
 		        	String password2 = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD2);
+		        	String password3 = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD3);
 		        	if ( password == null || password2 == null || !password.equals(password2) ) {
 		        		// No
 		        		setupReloadPreviousPage(response, NLT.get("errorcode.password.mismatch"));
@@ -143,10 +144,16 @@ public class ModifyEntryController extends SAbstractController {
 		            		}
 		            	}
 		            }
+		            if (password3 != null && !password3.equals("") && password.equals("")) {
+                		//The user is trying to set a blank password, give an error
+		            	setupReloadPreviousPage(response, NLT.get("errorcode.password.invalid"));
+                		return;
+		            }
 		        	
-		            if ( inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD).equals("") )
-		            {
+		            if ( inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD).equals("") ||
+		            		password.equals(password3)) {
 		            	//Don't allow blank password (either on purpose or by accident)
+		            	//  password3 is a hidden field indicating what was put in the password field as a dummy value
 		            	Map writeableFormData = new HashMap(formData);
 		            	writeableFormData.remove(WebKeys.USER_PROFILE_PASSWORD);
 		            	inputData = new MapInputData(writeableFormData);
