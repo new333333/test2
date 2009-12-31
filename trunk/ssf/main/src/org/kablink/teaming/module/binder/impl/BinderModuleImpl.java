@@ -273,6 +273,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						WorkAreaOperation.GENERATE_REPORTS);
 				break;
 			case export:
+				Boolean exportAllowedByBinderOwner = SPropsUtil.getBoolean("export.availableToBinderOwners", false);
+				if (exportAllowedByBinderOwner) {
+					try {
+						getAccessControlManager().checkOperation(binder,
+								WorkAreaOperation.BINDER_ADMINISTRATION);
+						break;
+					} catch(AccessControlException e) {}
+				}
 				getAccessControlManager().checkOperation(
 						getCoreDao().loadZoneConfig(
 								RequestContextHolder.getRequestContext()

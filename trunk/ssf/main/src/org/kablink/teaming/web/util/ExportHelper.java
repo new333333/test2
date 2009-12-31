@@ -1590,11 +1590,11 @@ public class ExportHelper {
 					new DomInputData(doc, iCalModule), null, options).getId()
 					.longValue();
 
-			// add file attachments
-			addFileAttachments(binderId, newEntryId, topBinderId, doc, tempDir, reportMap, binderIdMap, entryIdMap);
-
 			// add entry reply id to entry id map
 			entryIdMap.put(entryId, newEntryId);
+
+			// add file attachments
+			addFileAttachments(binderId, newEntryId, topBinderId, doc, tempDir, reportMap, binderIdMap, entryIdMap);
 
 			// workflows
 			try {
@@ -1912,14 +1912,25 @@ public class ExportHelper {
 			if (binder == null || binder.equals(topBinder)) break;
 		}
 		if (entryId != null) {
-			Long originalEntryId = null;
-			for (Object id : entryIdMap.keySet()) {
-				if (entryIdMap.get(id).equals(entryId)) {
-					originalEntryId = (Long) id;
-					break;
+			Map reverseEntryIdMap = new HashMap();
+			for (Object id : entryIdMap.keySet()) reverseEntryIdMap.put(entryIdMap.get(id), id);
+			
+			Long originalEntryId = (Long)reverseEntryIdMap.get(entryId);
+
+			FolderEntry entry = folderModule.getEntry(binderId, entryId);
+			String entryPath = nft.format(originalEntryId);
+			if (entry != null && !entry.isTop()) {
+				FolderEntry parentEntry = entry;
+				while (!parentEntry.isTop()) {
+					parentEntry = parentEntry.getParentEntry();
+					Long originalParentEntryId = (Long)reverseEntryIdMap.get(parentEntry.getId());
+					if (originalParentEntryId != null) 
+						entryPath = nft.format(originalParentEntryId) + "_" + entryPath;
 				}
 			}
-			if (originalEntryId != null) pathName = pathName + "e" + nft.format(originalEntryId) + "/";
+			if (originalEntryId != null) {
+				pathName = pathName + "e" + entryPath + "/";
+			}
 		}
 		return pathName;
 	}
