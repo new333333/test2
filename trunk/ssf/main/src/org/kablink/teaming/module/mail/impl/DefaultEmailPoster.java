@@ -50,7 +50,6 @@ import javax.mail.Message;
 import javax.mail.MessageRemovedException;
 import javax.mail.MessagingException;
 import javax.mail.Session;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMultipart;
 
@@ -79,6 +78,81 @@ import org.springframework.util.FileCopyUtils;
 
 
 public class DefaultEmailPoster  extends CommonDependencyInjection implements EmailPoster {
+	/*
+	 * Inner class used to track where an entry's description comes
+	 * from.
+	 */
+	private static class DescInfo {
+		enum Type {
+			NONE,
+			PLAIN,
+			HTML
+		};
+		private Type	m_descType;
+		private int		m_partDepth;
+		private int		m_descSavedAtPartDepth;
+		
+		DescInfo() {
+			m_descType             = Type.NONE;
+			m_descSavedAtPartDepth = (-1);
+		}
+		
+		void partEntry() {                     m_partDepth += 1;}
+		void partExit()  {if (0 < m_partDepth) m_partDepth -= 1;}
+		
+		/*
+		 * Marks a description of type descType as having been saved at
+		 * the current part depth.
+		 */
+		void descSaved(Type descType) {
+			m_descType             = descType;
+			m_descSavedAtPartDepth = m_partDepth;
+		}
+		
+		/*
+		 * Returns true if a description of type descType should be
+		 * saved at the current part depth.
+		 */
+		boolean saveDesc(Type descType) {
+			// Invalid case...
+			if (Type.NONE == descType) {
+				// ...ignore.
+				return false;
+			}
+			
+			// If we haven't save a description yet...
+			if (Type.NONE == m_descType) {
+				// ...we can save any type now.
+				return true;
+			}
+			
+			// If we're saving a plain text description...
+			if (Type.PLAIN == descType) {
+				// ...we can only do so if it's from a part shallower
+				// ...than previously saved from.
+				return (m_descSavedAtPartDepth > m_partDepth);
+			}
+			
+			// If we're saving an HTML text description...
+			else if (Type.HTML == descType) {
+				// ...we can do so if its from a part shallower than
+				// ...previously saved from...
+				if (m_descSavedAtPartDepth > m_partDepth) {
+					return true;
+				}
+				
+				// ...or if it's overwriting a plain text description
+				// ...at the current depth (i.e., we allow an HTML
+				// ...description to overwrite a plain text
+				// ...description.)
+				return ((Type.PLAIN == m_descType) && (m_descSavedAtPartDepth == m_partDepth));
+			}
+
+			// No other types can be saved.
+			return false;
+		}
+	}
+	
     private FolderModule folderModule;
     public void setFolderModule(FolderModule folderModule) {
     	this.folderModule = folderModule;
@@ -166,7 +240,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 			}
 		}
 		Definition def = getReplyDefinition(folder, parentDocId);
-		processPart(folder, msg, inputData, fileItems, iCalendars);
+		processPart(folder, msg, inputData, fileItems, iCalendars, new DescInfo());
 		FolderEntry reply = getFolderModule().addReply(folder.getId(), parentDocId, def == null? null:def.getId(), new MapInputData(inputData), fileItems, null);
 		if(reply != null) {
 			try {
@@ -189,7 +263,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 			}
 		}
 		Definition def = getEntryDefinition(folder);
-		processPart(folder, msg, inputData, fileItems, iCalendars);
+		processPart(folder, msg, inputData, fileItems, iCalendars, new DescInfo());
 		AttendedEntries entryIdsFromICalendars = new AttendedEntries();
 		if (!fileItems.isEmpty()) {
 			entryIdsFromICalendars.addAll(processICalAttachments(folder, def, inputData, fileItems, iCalendars));
@@ -284,67 +358,85 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 	}
 	//override to provide alternate processing 
 	@SuppressWarnings("unchecked")
-	protected void processPart(Folder folder, Part part, Map inputData, Map fileItems, List iCalendars) throws MessagingException, IOException {
-		if (part.isMimeType(MailModule.CONTENT_TYPE_CALENDAR)) {
-			processICalendar(folder, part.getContent(), iCalendars);
-		} else { 
-			//old mailers may not use disposition, and instead put the name in the content-type
-			//java mail handles this.
-			String fileName = part.getFileName();
-			if (Validator.isNotNull(fileName) && !(part.isMimeType("text/html") && part instanceof Message)) {
-				fileItems.put(ObjectKeys.INPUT_FIELD_ENTITY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
-			} else if (part.isMimeType("text/html")) {
-				processHTML(folder, part.getContent(), inputData);
-			} else if (part.isMimeType("text/plain")) {
-				processText(folder, part.getContent(), inputData);
-			} else {
-				Object bContent = part.getContent();
-				if (bContent instanceof MimeMultipart) {
-					processMultiPart(folder, (MimeMultipart)bContent, inputData, fileItems, iCalendars);
-				} else if (bContent instanceof Part) {
-					//forwarded messages
-					processPart(folder, (Part)bContent, inputData, fileItems, iCalendars);
-				} else if (part.getContentType().startsWith("image/")) {
-					// no file name, no text/html,no text/plain, no multipart
-					// so check if it's inline image - this pattern is used by GroupWise (tested with 7.0.2)
+	protected void processPart(Folder folder, Part part, Map inputData, Map fileItems, List iCalendars, DescInfo descInfo) throws MessagingException, IOException {
+		try {
+			descInfo.partEntry();
+			if (part.isMimeType(MailModule.CONTENT_TYPE_CALENDAR)) {
+				processICalendar(folder, part.getContent(), iCalendars);
+			} else { 
+				//old mailers may not use disposition, and instead put the name in the content-type
+				//java mail handles this.
+				String fileName = part.getFileName();
+				if (Validator.isNotNull(fileName) && !(part.isMimeType("text/html") && part instanceof Message)) {
 					fileItems.put(ObjectKeys.INPUT_FIELD_ENTITY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
+				} else if (part.isMimeType("text/html")) {
+					processHTML(folder, part.getContent(), inputData, descInfo);
+				} else if (part.isMimeType("text/plain")) {
+					processText(folder, part.getContent(), inputData, descInfo);
+//!				} else if (part.isMimeType("message/rfc822")) {
+//!					// Ignore for now.  We'll address these when bug
+//!					// 566222 gets fixed.
+				} else {
+					Object bContent = part.getContent();
+					if (bContent instanceof MimeMultipart) {
+						processMultiPart(folder, (MimeMultipart)bContent, inputData, fileItems, iCalendars, descInfo);
+					} else if (bContent instanceof Part) {
+						//forwarded messages
+						processPart(folder, (Part)bContent, inputData, fileItems, iCalendars, descInfo);
+					} else if (part.getContentType().startsWith("image/")) {
+						// no file name, no text/html,no text/plain, no multipart
+						// so check if it's inline image - this pattern is used by GroupWise (tested with 7.0.2)
+						fileItems.put(ObjectKeys.INPUT_FIELD_ENTITY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
+					}
 				}
 			}
+		} finally {
+			descInfo.partExit();
 		}
 	}	
 	//override to provide alternate processing 
 	@SuppressWarnings("unchecked")
-	protected void processMultiPart(Folder folder, MimeMultipart content, Map inputData, Map fileItems, List iCalendars) throws MessagingException, IOException {
-		int count = content.getCount();
-		for (int i=0; i<count; ++i ) {
-			BodyPart part = content.getBodyPart(i);
-			Object bContent = part.getContent();
-			if (bContent instanceof MimeMultipart) {
-				processMultiPart(folder, (MimeMultipart)bContent, inputData, fileItems, iCalendars);
-			} else {
-				processPart(folder, part, inputData, fileItems, iCalendars);
+	protected void processMultiPart(Folder folder, MimeMultipart content, Map inputData, Map fileItems, List iCalendars, DescInfo descInfo) throws MessagingException, IOException {
+		try {
+			descInfo.partEntry();
+			int count = content.getCount();
+			for (int i=0; i<count; ++i ) {
+				BodyPart part = content.getBodyPart(i);
+				Object bContent = part.getContent();
+				if (bContent instanceof MimeMultipart) {
+					processMultiPart(folder, (MimeMultipart)bContent, inputData, fileItems, iCalendars, descInfo);
+				} else {
+					processPart(folder, part, inputData, fileItems, iCalendars, descInfo);
+				}
 			}
+		} finally {
+			descInfo.partExit();
 		}
 	}
 
 	
 	//override to provide alternate processing 
 	@SuppressWarnings("unchecked")
-	protected void processText(Folder folder, Object content, Map inputData) {
-		if (inputData.containsKey(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) return;
-		String[] val = new String[1];
-		val[0] = (String)content;
-		inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, val);			
-		inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_NONE));			
+	protected void processText(Folder folder, Object content, Map inputData, DescInfo descInfo) {
+//		if (inputData.containsKey(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) return;
+		if (descInfo.saveDesc(DescInfo.Type.PLAIN)) {
+			String[] val = new String[1];
+			val[0] = (String)content;
+			inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, val);			
+			inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_NONE));
+			descInfo.descSaved(DescInfo.Type.PLAIN);
+		}
 	}
 	//override to provide alternate processing 
 	@SuppressWarnings("unchecked")
-	protected void processHTML(Folder folder, Object content, Map inputData) {
-		if (inputData.containsKey(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) return;
-		String[] val = new String[1];
-		val[0] = (String)content;
-		inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, val);			
-		inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_HTML));			
+	protected void processHTML(Folder folder, Object content, Map inputData, DescInfo descInfo) {
+		if (descInfo.saveDesc(DescInfo.Type.HTML)) {
+			String[] val = new String[1];
+			val[0] = (String)content;
+			inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, val);			
+			inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_HTML));
+			descInfo.descSaved(DescInfo.Type.HTML);
+		}
 	}	
 	//override to provide alternate processing 
 	@SuppressWarnings("unchecked")
