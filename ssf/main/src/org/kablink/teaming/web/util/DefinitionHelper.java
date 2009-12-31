@@ -728,6 +728,7 @@ public class DefinitionHelper {
 	public static void buildMashupBeans(AllModulesInjected bs, DefinableEntity entity, 
 			Document definitionConfig, Map model, RenderRequest request ) {
 		Map mashupEntries = new HashMap();
+		Map mashupEntryReplies = new HashMap();
 		Map mashupBinders = new HashMap();
 		Map mashupBinderEntries = new HashMap();
     	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@type='data' and @name='mashupCanvas']/properties/property[@name='name']/@value");
@@ -784,6 +785,15 @@ public class DefinitionHelper {
 	        				mashupEntries.put(entry.getId().toString(), entry);
 	        				//If this is from another zone, put a "zone.entryId" link to the real entry in this zone
 	        				if (!zoneEntryId.equals("")) mashupEntries.put(zoneEntryId, entry);
+	        				
+	        				//If this is a custom jsp, give it the replies, too
+	        				if (ObjectKeys.MASHUP_TYPE_CUSTOM_JSP.equals(type)) {
+	        					boolean isPreDeleted = entry.isPreDeleted();
+	        					if (!isPreDeleted) {
+	        						Map folderEntries  = bs.getFolderModule().getEntryTree(entry.getParentFolder().getId(), entryId, true);
+	        						mashupEntryReplies.put(entry.getId().toString(), folderEntries);
+	        					}
+	        				}
 	        			} catch(Exception e) {
 	        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + MiscUtil.exToString(e) + "'):  1:  Ignored");
 	        			}
@@ -825,6 +835,20 @@ public class DefinitionHelper {
 	        				//If this is from another zone, put a "zone.entryId" link to the real entry in this zone
 	        				if (!zoneBinderId.equals("")) {
 	        					mashupBinderEntries.put(zoneBinderId, folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
+	        				}
+	        				//If this is a custom jsp, get the entry replies, too
+	        				if (ObjectKeys.MASHUP_TYPE_CUSTOM_JSP.equals(type)) {
+	        					List entries = (List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+	        					Iterator itEntries = entries.iterator();
+	        					while (itEntries.hasNext()) {
+	        						Map entry = (Map)itEntries.next();
+	        						String entryBinderId = (String)entry.get(Constants.BINDER_ID_FIELD);
+	        						String entryEntryId = (String)entry.get(Constants.DOCID_FIELD);
+	        						if (entryBinderId != null && entryEntryId != null) {
+		        						Map entryEntries  = bs.getFolderModule().getEntryTree(Long.valueOf(entryBinderId), Long.valueOf(entryEntryId), false);
+		        						mashupEntryReplies.put(entryEntryId, entryEntries);
+		        					}
+	        					}
 	        				}
 	        						
 	        			} catch(Exception e) {
@@ -924,6 +948,7 @@ public class DefinitionHelper {
     	model.put(WebKeys.MASHUP_BINDERS, mashupBinders);
     	model.put(WebKeys.MASHUP_BINDER_ENTRIES, mashupBinderEntries);
     	model.put(WebKeys.MASHUP_ENTRIES, mashupEntries);
+    	model.put(WebKeys.MASHUP_ENTRY_REPLIES, mashupEntryReplies);
     	String style = (String) model.get(WebKeys.MASHUP_STYLE);
     	if (style == null || style.equals("")) {
     		model.put(WebKeys.MASHUP_CSS, "css/mashup_dark.css");
