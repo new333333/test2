@@ -92,7 +92,7 @@
 							<hr>
 							<span class="ss_bold"><%= org.kablink.teaming.util.ReleaseInfo.getName() + " " + org.kablink.teaming.util.ReleaseInfo.getVersion() %>
 								<ssf:nlt tag="administration.report.title.license"/>:&nbsp;&nbsp;
-								<fmt:formatDate value="${ssCurrentDate}" timeZone="${ssUser.timeZone.ID}" type="both" timeStyle="short" dateStyle="short"/>
+								<fmt:formatDate value="${ssCurrentDate}" timeZone="${ssUser.timeZone.ID}" type="both" timeStyle="short" dateStyle="medium"/>
 							</span><br/>
 							<br/>
 							<span class="ss_bold"><ssf:nlt tag="license.current"/></span><br/>
@@ -107,14 +107,14 @@
 								</tr>
 								<tr>
 									<td><ssf:nlt tag="license.key.issued"/></td>
-									<td><fmt:formatDate value="${ssLicenseIssued}" timeZone="GMT" type="date" dateStyle="short"/></td>
+									<td><fmt:formatDate value="${ssLicenseIssued}" timeZone="GMT" type="date" dateStyle="medium"/></td>
 								</tr>
 								<tr>
 									<td><ssf:nlt tag="license.effective"/></td>
 									<td>
-										<fmt:formatDate value="${ssLicenseEffectiveStart}" timeZone="GMT" type="date" dateStyle="short"/>
+										<fmt:formatDate value="${ssLicenseEffectiveStart}" timeZone="GMT" type="date" dateStyle="medium"/>
 										&nbsp;-&nbsp;
-										<fmt:formatDate value="${ssLicenseEffectiveEnd}" timeZone="GMT" type="date" dateStyle="short"/>
+										<fmt:formatDate value="${ssLicenseEffectiveEnd}" timeZone="GMT" type="date" dateStyle="medium"/>
 									</td>
 								</tr>
 								<tr>
@@ -140,8 +140,8 @@
 							<br/>
 							<br/>
 							<span class="ss_bold"><ssf:nlt tag="administration.report.dates"/></span>
-							&nbsp;<fmt:formatDate value="${startDate}" timeZone="${ssUser.timeZone.ID}" type="both" timeStyle="short" dateStyle="short"/>
-							&nbsp;<ssf:nlt tag="smallWords.and"/>&nbsp;<fmt:formatDate value="${endDate}" timeZone="${ssUser.timeZone.ID}" type="both" timeStyle="short" dateStyle="short"/>
+							&nbsp;<fmt:formatDate value="${startDate}" timeZone="${ssUser.timeZone.ID}" type="both" timeStyle="short" dateStyle="medium"/>
+							&nbsp;<ssf:nlt tag="smallWords.and"/>&nbsp;<fmt:formatDate value="${endDate}" timeZone="${ssUser.timeZone.ID}" type="both" timeStyle="short" dateStyle="medium"/>
 							<br/>
 			<c:if test="${not empty ssLicenseData}"><%--
 						--%><c:set var="highWater" value="-1"/><%--
@@ -158,7 +158,7 @@
 							<table cellspacing="6" cellpadding="2">
 								<tr>
 									<td><ssf:nlt tag="license.users.highwater"/></td>
-									<td>${highWater}&nbsp;(<fmt:formatDate value="${highWaterDate}" timeZone="${ssUser.timeZone.ID}" type="both" dateStyle="short" timeStyle="short"/>)</td>
+									<td>${highWater}&nbsp;(<fmt:formatDate value="${highWaterDate}" timeZone="${ssUser.timeZone.ID}" type="both" dateStyle="medium" timeStyle="short"/>)</td>
 								</tr>
 								<tr>
 									<td><ssf:nlt tag="license.current.users"/></td><td>${currentUser}</td>
@@ -174,7 +174,7 @@
 								</tr>
 								<c:forEach var="datum" items="${ssLicenseData}" >
 									<tr>
-										<td><fmt:formatDate value="${datum.snapshotDate}" timeZone="${ssUser.timeZone.ID}" type="date" dateStyle="short"/></td>
+										<td><fmt:formatDate value="${datum.snapshotDate}" timeZone="${ssUser.timeZone.ID}" type="date" dateStyle="medium"/></td>
 										<td align="center">${datum.internalUserCount}</td>
 										<td align="center">${datum.externalUserCount}</td>
 										<td align="center">${datum.checksum}</td>
