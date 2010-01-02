@@ -52,7 +52,7 @@
 <c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
 <div align="center">
 	<div id="ss_diss_inset" class="discussionView">
-	  <div id="ss_diss_top" align="center">
+	  <div id="ss_diss_top" align="left">
 
 		<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 		  configElement="${item}" 
