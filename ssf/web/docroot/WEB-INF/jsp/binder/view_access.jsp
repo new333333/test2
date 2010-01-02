@@ -148,6 +148,16 @@
 	name="actionUrl" value="true"/><ssf:param 
 	name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
 	name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
+<c:if test="${ss_accessControlConfigureAllowed}">
+  <input type="button" class="ss_submit" name="showFormBtn" value="<ssf:nlt tag="access.configure"/>"
+  onClick='self.window.open("<ssf:url ><ssf:param 
+		name="action" value="configure_access_control"/><ssf:param 
+		name="actionUrl" value="true"/><ssf:param 
+		name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
+		name="workAreaType" value="${ssWorkArea.workAreaType}"
+		/></ssf:url>", "_blank");setTimeout("self.window.close();", 1000);return false;'>
+  &nbsp;&nbsp;&nbsp;
+</c:if>
   <input type="submit" class="ss_submit" name="closeBtn" 
     value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>

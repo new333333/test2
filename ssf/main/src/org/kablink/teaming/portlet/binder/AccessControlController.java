@@ -51,6 +51,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -138,9 +139,12 @@ public class AccessControlController extends AbstractBinderController {
 			model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(binder.getZoneId()));
 			model.put(WebKeys.BINDER, binder);
 			model.put(WebKeys.DEFINITION_ENTRY, binder);
+			model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, 
+					getAdminModule().testAccess(binder, AdminOperation.manageFunctionMembership));
 		}
 		
 		setupAccess(this, request, response, wArea, model);
+		
 
 		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			//Cannot do these things as guest

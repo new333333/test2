@@ -579,6 +579,7 @@ public class WebKeys {
 	// MODEL TAGS & Attributes
 	public static final String ACCESS_BRANDING = "ss_accessBranding";
 	public static final String ACCESS_CONTROL_MAP = "ss_accessControlMap";
+	public static final String ACCESS_CONTROL_CONFIGURE_ALLOWED = "ss_accessControlConfigureAllowed";
 	public static final String ACCESS_FUNCTIONS_COUNT = "ss_accessFunctionsCount";
 	public static final String ACCESS_GROUPS_COUNT = "ss_accessGroupsCount";
 	public static final String ACCESS_USERS_COUNT = "ss_accessUsersCount";
