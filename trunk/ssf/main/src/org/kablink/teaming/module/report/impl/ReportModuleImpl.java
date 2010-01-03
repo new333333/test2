@@ -474,15 +474,17 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return stats;
 	}
 
-	public List<Map<String,Object>> generateReport(Collection binderIds, boolean byUser, Date startDate, Date endDate) {
+	public List<Map<String,Object>> generateReport(Collection binderIds, boolean byTeamMembers, boolean byAllUsers, 
+			Date startDate, Date endDate) {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		
-    	List<Binder> binders = getCoreDao().loadObjects(binderIds, Binder.class, RequestContextHolder.getRequestContext().getZoneId());
+    	List<Binder> binders = getCoreDao().loadObjects(binderIds, Binder.class, 
+    			RequestContextHolder.getRequestContext().getZoneId());
     	
     	for (Binder binder:binders) {
     		try {
    			if (binder.isDeleted()) continue;
-    			generateReport(report, binder, byUser, startDate, endDate);
+    			generateReport(report, binder, byTeamMembers, byAllUsers, startDate, endDate);
     		} catch (Exception ex) {};
     		
     	}
@@ -522,14 +524,16 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return row;
 	}
 	
-	protected void generateReport(List<Map<String, Object>> report, Binder binder, final boolean byUser, final Date startDate, final Date endDate) {
+	protected void generateReport(List<Map<String, Object>> report, Binder binder, 
+			final boolean byTeamMembers, final boolean byAllUsers, 
+			final Date startDate, final Date endDate) {
 		getBinderModule().checkAccess(binder, BinderOperation.report);
 		final Long binderId = binder.getId();
 		final Collection<Long> userIds;
-		if(byUser) {
+		if(byTeamMembers) {
 				userIds = getBinderModule().getTeamMemberIds(binderId, true);
 				if (userIds.isEmpty()) {
-					addBlankRow(report, binder, byUser, null);
+					addBlankRow(report, binder, byTeamMembers, null);
 					return;
 				}
 		} else {
@@ -543,7 +547,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					ProjectionList proj = Projections.projectionList()
 									.add(Projections.groupProperty("transactionType"))
 									.add(Projections.rowCount());
-					if(byUser) {
+					if (byTeamMembers || byAllUsers) {
 						proj.add(Projections.groupProperty("startBy"));
 					}
 					Criteria crit = session.createCriteria(AuditTrail.class)
@@ -553,8 +557,10 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						.add(Restrictions.ge("startDate", startDate))
 						.add(Restrictions.lt("startDate", endDate))
 						.add(Restrictions.in("transactionType", activityTypes));
-					if(byUser) {
+					if (byTeamMembers) {
 						crit.add(Restrictions.in("startBy", userIds));
+					}
+					if (byTeamMembers || byAllUsers) {
 						crit.addOrder(Order.asc("startBy"));
 					}
 					auditTrail = crit.list();
@@ -567,23 +573,27 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		HashMap<String,Object> row = null;
 		for(Object o : result) {
 			Object[] col = (Object []) o;
-			if(byUser) { userId = (Long) col[2]; }
-			if(row == null || (byUser && !lastUserId.equals(userId))) {
-				row = addBlankRow(report, binder, byUser, userId);
+			if (byTeamMembers || byAllUsers) { userId = (Long) col[2]; }
+			if (row == null || ((byTeamMembers || byAllUsers) && !lastUserId.equals(userId))) {
+				if ((byTeamMembers || byAllUsers) && !lastUserId.equals(userId)) {
+					row = addBlankRow(report, binder, true, userId);
+				} else {
+					row = addBlankRow(report, binder, false, userId);
+				}
 				lastUserId = userId;
-				if(byUser) {
-					userIds.remove(userId);
+				if (byTeamMembers || byAllUsers) {
+					if (userIds != null && userIds.contains(userId)) userIds.remove(userId);
 				}
 			}
 			row.put((String) col[0], col[1]);
 		}
-		if(byUser) {
+		if (byTeamMembers || byAllUsers) {
 			for(Long id : userIds) {
-				addBlankRow(report, binder, byUser, id);
+				addBlankRow(report, binder, true, id);
 			}
 		}
-		if(!byUser && result.size() == 0) {
-			addBlankRow(report, binder, byUser, null);
+		if (!byTeamMembers && !byAllUsers && result.size() == 0) {
+			addBlankRow(report, binder, false, null);
 		}
 	}
 	

@@ -162,10 +162,15 @@ public class ReportDownloadController extends  SAbstractController {
 			boolean hasUsers = true;
 			if("binder".equals(reportType)) {
 				//Get the list of binders for reporting
-				hasUsers = ServletRequestUtils.getBooleanParameter(request, WebKeys.URL_BY_USER, false);
+				String byUsers = ServletRequestUtils.getStringParameter(request, WebKeys.URL_BY_USER, "");
+				boolean teamMembers = false;
+				boolean allUsers = false;
+				if (byUsers.equals(WebKeys.URL_BY_TEAM_MEMBERS)) teamMembers = true;
+				if (byUsers.equals(WebKeys.URL_BY_ALL_USERS)) allUsers = true;
+				if (!teamMembers && !allUsers) hasUsers = false;
 				Collection<Long> ids = TreeHelper.getSelectedIds(formData);
 
-				report = getReportModule().generateReport(ids, hasUsers, startDate, endDate);
+				report = getReportModule().generateReport(ids, teamMembers, allUsers, startDate, endDate);
 				columns = new String[]
 				                     {
 										ReportModule.BINDER_ID,
