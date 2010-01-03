@@ -119,6 +119,8 @@ public class WebKeys {
     public static final String URL_BLOG_REPLY="blogReply";
     public static final String URL_BLOG_REPLY_COUNT="blogReplyCount";
     public static final String URL_BY_USER="ss_byUser";
+    public static final String URL_BY_TEAM_MEMBERS="ss_byTeamMembers";
+    public static final String URL_BY_ALL_USERS="ss_byAllUsers";
 	public static final String URL_CAPTIVE="captive";
 	public static final String URL_CSS_SHEET="sheet";
 	public static final String URL_CSS_THEME="theme";

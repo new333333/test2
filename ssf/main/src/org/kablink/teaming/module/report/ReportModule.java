@@ -136,7 +136,7 @@ public interface ReportModule {
 	public void addLicenseStats(LicenseStats stats);
 	public LicenseStats getLicenseHighWaterMark(Calendar startDate, Calendar endDate);
 	
-	public List<Map<String, Object>> generateReport(Collection ids, boolean byUser, Date startDate, Date endDate);
+	public List<Map<String, Object>> generateReport(Collection ids, boolean byTeamMembers, boolean byAllUsers, Date startDate, Date endDate);
 	public List<Map<String, Object>> generateActivityReport(final Long binderId, final Long entryId);
 	public List<Map<String, Object>> generateActivityReportByUser(final Set<Long> userIds, final Date startDate, final Date endDate, final String reportType);
 	public List<Map<String,Object>> generateLoginReport(Date startDate, Date endDate, String optionType, String sortType, String sortType2, Set memberIds);
