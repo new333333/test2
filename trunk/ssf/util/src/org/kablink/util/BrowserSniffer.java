@@ -24,7 +24,6 @@ package org.kablink.util;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 /**
  * <a href="BrowserSniffer.java.html"><b><i>View Source</i></b></a>
  *
@@ -345,14 +344,17 @@ public class BrowserSniffer {
 		}
 	}
 
-	public static boolean is_mobile(HttpServletRequest req) {
+	public static boolean is_mobile(HttpServletRequest req) { 
+		return is_mobile(req, "");
+	}
+	public static boolean is_mobile(HttpServletRequest req, String userAgents) { 
 		if (req == null) {
 			return false;
 		}
 		if (is_iphone(req)) return true;
 		if (is_blackberry(req)) return true;
 		if (is_droid(req)) return true;
-		if (is_otherMobile(req)) return true;
+		if (is_otherMobile(req, userAgents)) return true;
 		if (is_wap_xhtml(req)) return true;
 
 		return false;
@@ -442,7 +444,7 @@ public class BrowserSniffer {
 		}
 	}
 
-	public static boolean is_otherMobile(HttpServletRequest req) {
+	public static boolean is_otherMobile(HttpServletRequest req, String userAgents) {
 		if (req == null) {
 			return false;
 		}
@@ -453,10 +455,10 @@ public class BrowserSniffer {
 		}
 		agent = agent.toLowerCase();
 		
-		String mobileDeviceUserAgents = "nokia, pre/";
-		String[] mobileDevices = mobileDeviceUserAgents.split(",");
-		//mobileDevices = org.kablink.teaming.util.SPropsUtil.getStringArray("mobile.userAgents", org.kablink.teaming.util.Constants.COMMA);
+		//See if there are user agents defined in ssf.properties (e.g., "nokia, pre/")
+		String[] mobileDevices = userAgents.split(",");
 		for (int i = 0; i < mobileDevices.length; i++) {
+			if (mobileDevices[i].equals("")) continue;
 			if (agent.indexOf(mobileDevices[i]) != -1) {
 				return true;
 			}

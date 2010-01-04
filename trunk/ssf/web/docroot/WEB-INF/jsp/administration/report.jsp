@@ -56,7 +56,8 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
   <div class="ss_buttonBarRight">
     <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" onclick="self.window.close(); return false;">
+    <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" 
+      onclick="self.window.close(); return false;">
   </div>
   <br/>
   <ssf:nlt tag="administration.report.dates"/>
@@ -78,22 +79,28 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
   <br/>				 
   <div id="ss_report_panel_forum">
    <br/>
-   <input type="radio" class="ss_radio" name="reportFlavor" value="activity" id="activity" checked="checked" onclick="showOptions(this);return true;"/><label class="ss_radio_label" for="activity"><ssf:nlt tag="administration.report.label.activity"/></label>
+   <input type="radio" class="ss_radio" name="reportFlavor" value="activity" id="activity" checked="checked" 
+     onclick="showOptions(this);return true;"/>
+     <label class="ss_radio_label" for="activity"><ssf:nlt tag="administration.report.label.activity"/></label>
    <div style="margin-left:30px;">
      <ssf:nlt tag="general.users"/>
    </div>
    <div id="ss_report_activityFlavorOptions" style="margin-left:40px;">
-   <input type="radio" class="ss_radio" name="ss_byUser" id="ss_none" value="ss_none" checked="checked"/>
+   <input type="radio" class="ss_radio" name="ss_byUser" id="ss_none" value="ss_none"/>
    <label class="ss_checkbox_label" for="ss_none"><ssf:nlt tag="None"/></label><br/>
    <input type="radio" class="ss_radio" name="ss_byUser" id="ss_byTeamMembers" value="ss_byTeamMembers" />
    <label class="ss_checkbox_label" for="ss_byTeamMembers"><ssf:nlt tag="team.members"/></label><br/>
-   <input type="radio" class="ss_radio" name="ss_byUser" id="ss_byAllUsers" value="ss_byAllUsers"/>
+   <input type="radio" class="ss_radio" name="ss_byUser" id="ss_byAllUsers" value="ss_byAllUsers" checked="checked"/>
    <label class="ss_checkbox_label" for="ss_byAllUsers"><ssf:nlt tag="administration.initial.group.alluser.title"/></label>
    </div>
-   <input type="radio" class="ss_radio" name="reportFlavor" value="workflow" id="workflow" onclick="showOptions(this);return true;"/><label class="ss_radio_label" for="workflow"><ssf:nlt tag="administration.report.label.workflow"/></label>
+   <input type="radio" class="ss_radio" name="reportFlavor" value="workflow" id="workflow" onclick="showOptions(this);return true;"/>
+     <label class="ss_radio_label" for="workflow"><ssf:nlt tag="administration.report.label.workflow"/></label>
    <div id="ss_report_workflowFlavorOptions" style="margin-left:20px;">
-     <input type="radio" class="ss_radio" name="ss_reportFlavor" value="averages" id="averages" checked="checked"/><label class="ss_radio_label" for="averages"><ssf:nlt tag="administration.report.label.averages"/></label><br/>
-     <input type="radio" class="ss_radio" name="ss_reportFlavor" value="current" id="current"/><label class="ss_radio_label" for="current"><ssf:nlt tag="administration.report.label.current"/></label><br/>   <br/>
+     <input type="radio" class="ss_radio" name="ss_reportFlavor" value="averages" id="averages" checked="checked"/>
+       <label class="ss_radio_label" for="averages"><ssf:nlt tag="administration.report.label.averages"/></label><br/>
+     <input type="radio" class="ss_radio" name="ss_reportFlavor" value="current" id="current"/>
+       <label class="ss_radio_label" for="current"><ssf:nlt tag="administration.report.label.current"/></label><br/>
+       <br/>
    </div>
    <br/>
    <br/>
@@ -110,7 +117,8 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
   <div class="ss_buttonBarLeft">
     <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" onclick="self.window.close(); return false;">
+    <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" 
+      onclick="self.window.close(); return false;">
   </div>
 </form>
 <br>

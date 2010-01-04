@@ -114,7 +114,8 @@ public class ViewPermalinkController  extends SAbstractController {
 	protected String processRequest(ActionRequest request) {
 		HttpServletRequest httpReq = WebHelper.getHttpServletRequest(request);
 		boolean isMobile = false;
-		if (httpReq != null) isMobile = BrowserSniffer.is_mobile(httpReq);
+		String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
+		if (httpReq != null) isMobile = BrowserSniffer.is_mobile(httpReq, userAgents);
 		//binderId is not longer required on all entries
 		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
