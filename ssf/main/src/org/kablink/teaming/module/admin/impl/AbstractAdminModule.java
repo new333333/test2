@@ -656,11 +656,16 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				for (int i=0; i<binders.size();) {
 					Binder child = binders.get(i);
 					if (!userId.equals(child.getOwnerId())) {
-						checkAccess(child, AdminOperation.manageFunctionMembership);
-						++i;
+						if (!testAccess(child, AdminOperation.manageFunctionMembership)) {
+							//The user doesn't have the access rights to change this one, so skip it
+							binders.remove(i);
+						} else {
+							++i;
+						}
 					} else {
 						binders.remove(i);  //already set, get out of list
 					}
+					//Add in all of the children of this binder to see if there are binders further down the tree to be changed
 					binders.addAll(child.getBinders());
 				}
 			}
