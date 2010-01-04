@@ -116,6 +116,9 @@ import org.springframework.web.multipart.MultipartFile;
  *
  */
 public class DefinitionModuleImpl extends CommonDependencyInjection implements DefinitionModule, InitializingBean  {
+	private static String[] entryInputDataMap;
+	private static int      entryInputDataMapCount = (-1);
+	
 	private Document definitionConfig;
 	private Element configRoot;
 	private DefinitionConfigurationBuilder definitionBuilderConfig;
@@ -1891,7 +1894,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
 			if (inputData.exists(nameValue)) {
 				Description description = new Description();
-				description.setText(inputData.getSingleValue(nameValue));
+				description.setText(mapInputData(inputData.getSingleValue(nameValue)));
 				String format = inputData.getSingleValue(nameValue + ".format");
 				if (format != null) {
 					description.setFormat(Integer.valueOf(format));
@@ -2339,9 +2342,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			if (inputData.exists(nameValue)) {
 				if (!inputData.isFieldsOnly() || fieldModificationAllowed) {
 					if (inputData.getValues(nameValue).length > 1) {
-						entryData.put(nameValue, inputData.getValues(nameValue));
+						entryData.put(nameValue, mapInputData(inputData.getValues(nameValue)));
 					} else {
-						entryData.put(nameValue, inputData.getSingleValue(nameValue));
+						entryData.put(nameValue, mapInputData(inputData.getSingleValue(nameValue)));
 					}
 				}
 			}
@@ -2634,4 +2637,91 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		return definitions;
 	}	
 
+	/*
+	 * Maps the input data String's in a String[] as per the mappings
+	 * defined in the ssf*.properties files.
+	 */
+	private static String[] mapInputData(String[] aIn) {
+		String[] aOut;
+		int aiCount = ((null == aIn) ? 0 : aIn.length);
+		aOut = new String[aiCount];
+		for (int i = 0; i < aiCount; i += 1) {
+			aOut[i] = mapInputData(aIn[i]);
+		}
+		return aOut;
+	}
+	
+	/*
+	 * Maps an input data String as per the mappings defined in the
+	 * ssf*.properties files.
+	 */
+	private static String mapInputData(String sIn) {
+		// If there is no String to map...
+		if ((null == sIn) || (0 == sIn.length())) {
+			// ...simply return what we were given.
+			return sIn;
+		}
+
+		// If there are no mappings defined...
+		initEntryInputDataMap();
+		if (0 == entryInputDataMapCount) {
+			// ...simply return what we were given.
+			return sIn;
+		}
+		
+		// Scan the mappings...
+		StringBuffer sbIn = new StringBuffer(sIn);
+		int changeCount = 0;
+		for (int i = 0; i < entryInputDataMapCount; i += 2) {
+			String fromS = entryInputDataMap[i]; int fromLen = fromS.length();
+			String toS   = entryInputDataMap[i + 1];
+			
+			// ...replacing all occurences of each pattern with its
+			// ...replacement value.
+			int pos;
+			while(true) {
+				pos = sbIn.indexOf(fromS);
+				if (0 > pos) {
+					break;
+				}
+				sbIn = sbIn.replace(pos, (pos + fromLen), toS);
+				changeCount += 1;
+			}
+		}
+		
+		// If we didn't perform any mappings...
+		String sOut;
+		if (0 == changeCount) {
+			// ...return what we were given...
+			sOut = sIn;
+		}
+		
+		else {
+			// ...otherwise, sbIn refers to a StringBuffer containing
+			// ...the input String with the mappings having been done.
+			// ...Return it.
+			sOut = sbIn.toString();
+		}
+		
+		return sOut;
+	}
+	
+	/*
+	 * Initializes the entry input data map if it hasn't already been
+	 * initialized.
+	 */
+	private static void initEntryInputDataMap() {
+		if ((-1) == entryInputDataMapCount) {
+			String entryInputDataMapS = SPropsUtil.getString("entry.inputdata.map", "");
+			if ((null != entryInputDataMapS) && (0 < entryInputDataMapS.length())) {
+				entryInputDataMap = entryInputDataMapS.split(",");
+				entryInputDataMapCount = ((null == entryInputDataMap) ? 0 : entryInputDataMap.length);
+				if (1 == (entryInputDataMapCount % 2)) entryInputDataMapCount -= 1;
+			}
+			else {
+				entryInputDataMap = new String[0];
+				entryInputDataMapCount = 0;
+			}
+		}
+	}
 }
