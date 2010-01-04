@@ -52,14 +52,14 @@ function ss_setEntryDivHeight() {
 				ss_entryHeightHighWaterMark = ss_minEntryDivHeight;
 				ss_setObjectHeight(wObj, ss_minEntryDivHeight);
 			}
-			setTimeout("ss_positionEntryDiv();", 100);
+			setTimeout("ss_positionEntryDiv(true);", 100);
 		}
 	} catch(e) {
 		ss_debug('ss_setEntryDivHeight failed: ' + e.message)
 	}
 }
 
-function ss_positionEntryDiv() {
+function ss_positionEntryDiv(true) {
 	ss_positioningEntryDiv = 1
 	ss_showEntryDiv()
 
@@ -100,7 +100,7 @@ function ss_showEntryDiv() {
 function ss_checkLayoutChange() {
 	//Reposition entry div, but only if not in the process of doing it
 	if (ss_positioningEntryDiv != 1) {
-		ss_positionEntryDiv();
+		ss_positionEntryDiv(true);
 	}
 }
 
@@ -110,7 +110,7 @@ ss_createOnLayoutChangeObj('ss_checkLayoutChange', ss_checkLayoutChange);
 
 function ss_showForumEntryInIframe(url) {
 	if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(null);
-	ss_positionEntryDiv();
+	ss_positionEntryDiv(true);
     var wObj = self.document.getElementById('ss_showentryframe')
 
 	if (ss_minEntryDivHeight > ss_entryHeightHighWaterMark) {

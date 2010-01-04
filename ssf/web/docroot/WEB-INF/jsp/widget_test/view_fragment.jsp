@@ -98,7 +98,7 @@ function ss_showEntryInDiv(str) {
 }
 
 function ss_showForumEntryInIframe(url) {
-	ss_positionEntryDiv();
+	ss_positionEntryDiv(true);
     var wObj
     wObj = self.document.getElementById('ss_showentryframe')
     

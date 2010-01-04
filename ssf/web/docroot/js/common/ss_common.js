@@ -4221,7 +4221,7 @@ function ss_showForumEntryInIframe_Overlay(url) {
     }
     try {wObj.focus();} catch(e){}
 
-	if (self.ss_positionEntryDiv) ss_positionEntryDiv();
+	if (self.ss_positionEntryDiv) ss_positionEntryDiv(true);
     
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
