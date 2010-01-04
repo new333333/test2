@@ -34,6 +34,10 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%  
+String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
+boolean isMobile = org.kablink.util.BrowserSniffer.is_mobile(request, userAgents);  
+%>
 <c:set var="ss_windowTitle" value='<%= NLT.get("login.please") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <ssf:ifadapter>
@@ -45,7 +49,7 @@
 </ssf:skipLink>
 <div class="ss_clear_float"></div>
 </ssf:ifadapter>
-<c:if test="${!empty ssMobileUrl && ss_mobileAccessEnabled}">
+<c:if test="${!empty ssMobileUrl && ss_mobileAccessEnabled} && <%= isMobile %>">
 <div align="right" style="width:100%;">
   <a href="${ssMobileUrl}" title="<ssf:nlt tag="mobile.login.info"/>">
     <span class="ss_fineprint" style="padding-right:10px;"><ssf:nlt tag="mobile.login"/></span>

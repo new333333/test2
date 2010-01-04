@@ -35,7 +35,8 @@
 <% //mailto link %><%--
 --%><%@ page import="org.kablink.util.BrowserSniffer" %><%--
 --%><%
-	boolean isMobile = BrowserSniffer.is_mobile(request);
+	String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
+	boolean isMobile = org.kablink.util.BrowserSniffer.is_mobile(request, userAgents);  
 %><%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %><%--
 --%><c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/><%--
 --%><c:set var="isMobileDevice" value="<%= isMobile %>"/>

@@ -34,8 +34,10 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<%  boolean isMobile = org.kablink.util.BrowserSniffer.is_mobile(request);  %>
-
+<%  
+String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
+boolean isMobile = org.kablink.util.BrowserSniffer.is_mobile(request, userAgents);  
+%>
 <c:if test="${!empty ssAddUserAllowed}">
 	<script type="text/javascript">
 		/**
