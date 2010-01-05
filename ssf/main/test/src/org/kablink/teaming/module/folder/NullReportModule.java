@@ -87,8 +87,7 @@ public class NullReportModule implements ReportModule {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Map<String, Object>> generateReport(Collection ids,
-			boolean byUser, Date startDate, Date endDate) {
+	public List<Map<String, Object>> generateReport(Collection ids, boolean byTeamMembers, boolean byAllUsers, Date startDate, Date endDate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
