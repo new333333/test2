@@ -49,22 +49,55 @@
 <c:set var="mashupEntry" value="${ss_mashupEntries[mashupEntryId]}"/>
 <c:set var="mashupEntryReplies" value="${ss_mashupEntryReplies[mashupEntryId]}"/>
 
-<div class="ss_mashup_entry_header">
- <span class="ss_size_20px ss_bold">${mashupEntry.title}</span>
-</div>
+<div class="ss_mashup_element">
+  <div class="ss_mashup_round_top"><div></div></div>
+  <div class="ss_mashup_folder_list_open">
+    <div >
+      <a href="<ssf:url crawlable="true" 
+		  	    adapter="true" portletName="ss_forum"    
+		        action="view_permalink" 
+		        binderId="${mashupEntry.parentFolder.id}"
+		        entryId="${mashupEntry.id}"
+		      ><ssf:param name="entityType" value="folderEntry"/>
+		      </ssf:url>"><span class="ss_size_20px ss_bold">${mashupEntry.title}</span></a>
+    </div>
+	<div class="ss_mashup_entry_content ss_smallprint">
+	  <span><ssf:showUser user="${mashupEntry.modification.principal}"/><span>
+	  <span style="padding-left:10px;"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+	   	value="${mashupEntry.modification.date}" type="both" 
+		timeStyle="short" dateStyle="medium" /></span>
+	</div>
+  
 	  
-<div class="ss_mashup_entry_content">
-  <ssf:markup entity="${mashupEntry}">${mashupEntry.description.text}</ssf:markup>
-  <div class="ss_clear"></div>
-</div>
+    <div class="ss_mashup_entry_content">
+      <ssf:markup entity="${mashupEntry}">${mashupEntry.description.text}</ssf:markup>
+      <div class="ss_clear"></div>
+    </div>
 
-<c:forEach var="reply" items="${mashupEntryReplies['folderEntryDescendants']}">
-<hr width="80%"/>
-<div class="ss_mashup_entry_content">
-  ${reply.title}
+    <c:forEach var="reply" items="${mashupEntryReplies['folderEntryDescendants']}" varStatus="status2">
+      <c:if test="${status2.count <= 10}">
+        <div style="padding-left:20px;">
+          <div class="ss_mashup_folder_list_open_title">
+            <a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"    
+				      action="view_permalink" 
+				      binderId="${reply.parentFolder.id}"
+				      entryId="${reply.id}"
+				      ><ssf:param name="entityType" value="folderEntry"/>
+				      </ssf:url>"><span>${reply.title}</span></a>
+          </div>
+	      <div style="padding-left:6px;" class="ss_smallprint">
+	        <span><ssf:showUser user="${reply.modification.principal}"/></span>
+	        <span style="padding-left:10px;"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+    			value="${reply.modification.date}" type="both" 
+ 			    timeStyle="short" dateStyle="medium" /></span>
+	      </div>
+          <div class="ss_mashup_entry_content">
+            <ssf:markup entity="${reply}">${reply.description.text}</ssf:markup>
+            <div class="ss_clear"></div>
+          </div>
+        </div>
+      </c:if>
+    </c:forEach>
+  </div>
+  <div class="ss_mashup_round_bottom"><div></div></div>
 </div>
-<div class="ss_mashup_entry_content">
-  <ssf:markup entity="${reply}">${reply.description.text}</ssf:markup>
-  <div class="ss_clear"></div>
-</div>
-</c:forEach>
