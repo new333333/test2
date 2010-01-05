@@ -36,12 +36,10 @@ import org.kablink.teaming.gwt.client.admin.ExtensionsConfig;
 import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.widgets.MastHead;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -124,60 +122,35 @@ public class GwtTeaming implements EntryPoint
 			// Create a Landing Page Editor and add it to the page.
 			lpEditor = new LandingPageEditor();
 			rootPanel.add( lpEditor );
+			
+			return;
 		}
 
-		// Are we in the the Landing Page Editor?
+		// Are we in the the Extensions page?
 		rootPanel = RootPanel.get( "gwtExtensionsConfigDiv" );
 		if ( rootPanel != null )
 		{
 			ExtensionsConfig cfgExtension;
 			
 			// Yes
-			// Create a Landing Page Editor and add it to the page.
+			// Create the Extensions ui and add it to the page.
 			cfgExtension = new ExtensionsConfig();
 			rootPanel.add( cfgExtension );
-		}
-		
-		
-		
-		if ( false )
-		{
-			final Label	tutorialPanelStateText = new Label();
-			AbstractImagePrototype img;
-			GwtRpcServiceAsync gwtRpcService;
-		
-			// create an async callback to handle the result of the request to get the tutorial panel state:
-			AsyncCallback<String> callback = new AsyncCallback<String>()
-			{
-				/**
-				 * 
-				 */
-				public void onFailure(Throwable t)
-				{
-					// display error text if we can't get the tutorial panel state:
-					tutorialPanelStateText.setText( "Failed to get the tutorial panel state" );
-				}
-		
-				/**
-				 * 
-				 * @param result
-				 */
-				public void onSuccess(String result)
-				{
-					// display the tutorial panel state in the label:
-					Window.alert( "1" );
-					tutorialPanelStateText.setText( m_stringMessages.testPanelState( result ) );
-				}
-			};
-		
-			tutorialPanelStateText.setText( m_stringMessages.testWaiting() );
-			gwtRpcService = getRpcService();
-			gwtRpcService.getTutorialPanelState( callback );
 			
-			img = m_imageBundle.landingPageEditorGraphic(); 
-		      
-			RootPanel.get().add( tutorialPanelStateText );
-			RootPanel.get().add( img.createImage() );
+			return;
 		}
+		
+		// Are we in the main page?
+		rootPanel = RootPanel.get( "gwtMainPageDiv" );
+		if ( rootPanel != null )
+		{
+			MastHead mastHead;
+			
+			mastHead = new MastHead();
+			rootPanel.add( mastHead );
+			
+			return;
+		}
+		
 	}// end onModuleLoad()
 }// end GwtTeaming
