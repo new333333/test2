@@ -61,6 +61,7 @@
 <% 
 	Element configEle = (Element)mashupEntry.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryDataItem' and @formItem='survey']");
 %>
+<c:set var="configEle" value="<%= configEle %>" />
 
 <div class="ss_mashup_element">
   <div class="ss_mashup_round_top"><div></div></div>
@@ -89,12 +90,14 @@
     </div>
 
   
+<c:if test="${!empty configEle}">
 <ssf:displayConfiguration 
   configDefinition="${mashupEntry.entryDef.definition}" 
   configElement="<%= configEle %>"
   configJspStyle="view" 
   entry="${mashupEntry}" 
   processThisItem="true" />
+</c:if>
   
   </div>
   <div class="ss_mashup_round_bottom"><div></div></div>
