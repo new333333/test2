@@ -79,6 +79,7 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -727,6 +728,7 @@ public class DefinitionHelper {
 	
 	public static void buildMashupBeans(AllModulesInjected bs, DefinableEntity entity, 
 			Document definitionConfig, Map model, RenderRequest request ) {
+		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
 		Map mashupEntries = new HashMap();
 		Map mashupEntryReplies = new HashMap();
 		Map mashupBinders = new HashMap();
@@ -785,6 +787,12 @@ public class DefinitionHelper {
 	        				mashupEntries.put(entry.getId().toString(), entry);
 	        				//If this is from another zone, put a "zone.entryId" link to the real entry in this zone
 	        				if (!zoneEntryId.equals("")) mashupEntries.put(zoneEntryId, entry);
+	        				
+	        				Map entryAccessMap = BinderHelper.getAccessControlEntityMapBean(model, entry);
+	        				if (bs.getFolderModule().testAccess(entry, FolderOperation.addReply)) 
+	        					entryAccessMap.put("addReply", new Boolean(true));
+	        				if (bs.getFolderModule().testAccess(entry, FolderOperation.modifyEntry)) 
+	        					entryAccessMap.put("modifyEntry", new Boolean(true));
 	        				
 	        				//If this is a custom jsp, give it the replies, too
 	        				if (ObjectKeys.MASHUP_TYPE_CUSTOM_JSP.equals(type)) {
@@ -847,6 +855,13 @@ public class DefinitionHelper {
 	        						if (entryBinderId != null && entryEntryId != null) {
 	        							FolderEntry fe = bs.getFolderModule().getEntry(Long.valueOf(entryBinderId), Long.valueOf(entryEntryId));
 	        							mashupEntries.put(entryEntryId, fe);
+	        							
+	        	        				Map entryAccessMap = BinderHelper.getAccessControlEntityMapBean(model, fe);
+	        	        				if (bs.getFolderModule().testAccess(fe, FolderOperation.addReply)) 
+	        	        					entryAccessMap.put("addReply", new Boolean(true));
+	        	        				if (bs.getFolderModule().testAccess(fe, FolderOperation.modifyEntry)) 
+	        	        					entryAccessMap.put("modifyEntry", new Boolean(true));
+
 		        						Map entryEntries  = bs.getFolderModule().getEntryTree(Long.valueOf(entryBinderId), Long.valueOf(entryEntryId), false);
 		        						mashupEntryReplies.put(entryEntryId, entryEntries);
 		        					}
