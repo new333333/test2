@@ -142,7 +142,7 @@ function ss_showModifyDiv(id) {
 	</fieldset>
 			
 	<div style="margin: 20px 0 10px 0; padding-right: 50px;">
-		<input style="min-width: 95px;" type="button" class="ss_submit" name="addGroupBtn" value="<ssf:nlt tag="administration.quotas.addGroupQuota"/>"
+		<input type="button" class="ss_submit" name="addGroupBtn" value="<ssf:nlt tag="administration.quotas.addGroupQuota"/>"
 		  onClick="showAddGroupsDiv();return false;"/>
 	</div>  
 	<!--Add Group DIV dialog-->
@@ -248,7 +248,7 @@ function ss_showModifyDiv(id) {
 	</c:if>
 	
 	<div style="margin: 20px 0 10px 0; padding-right: 50px;">
-		<input style="min-width: 95px" type="button" class="ss_submit" name="addUserBtn" value="<ssf:nlt tag="administration.quotas.addUserQuota"/>"
+		<input type="button" class="ss_submit" name="addUserBtn" value="<ssf:nlt tag="administration.quotas.addUserQuota"/>"
 	  onClick="showAddUsersDiv();return false;"/>
 	</div>  
 	<!--Add User DIV dialog-->
