@@ -135,7 +135,7 @@ public class ModifyEntryController extends SAbstractController {
 
 		            	//Check that the user knows the current password
 		            	Principal p = getProfileModule().getEntry(entryId);
-		            	if ( p instanceof User && !password.equals("") )
+		            	if ( p instanceof User && !password.equals("") && !password.equals(password3) )
 		            	{
 		            		// If the user didn't enter the current password or they entered it incorrectly, tell them about it.
 		            		if ( passwordOriginal.equals("") || !EncryptUtil.encryptPassword(passwordOriginal).equals(((User)p).getPassword())) {
@@ -147,7 +147,7 @@ public class ModifyEntryController extends SAbstractController {
 		            if (password3 != null && !password3.equals("") && password.equals("")) {
                 		//The user is trying to set a blank password, give an error
 		            	setupReloadPreviousPage(response, NLT.get("errorcode.password.invalid"));
-                		return;
+                		return; 
 		            }
 		        	
 		            if ( inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD).equals("") ||

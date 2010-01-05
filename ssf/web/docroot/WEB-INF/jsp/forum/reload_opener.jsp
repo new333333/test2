@@ -37,23 +37,25 @@
 function ss_doReload() {
 	// need to refresh list? (used on calendar view and task list view)
 	if (!window.ssScope) { ssScope = {}; };
-	if (self.ssScope && self.ssScope.refreshView) {
-		ssScope.refreshViewRoutine = self.ssScope.refreshView;
-	} else if (self.opener && self.opener.ssScope && self.opener.ssScope.refreshView) {
-		ssScope.refreshViewRoutine = self.opener.ssScope.refreshView;
-	} else if (self.opener && self.opener.opener && self.opener.opener.ssScope && self.opener.opener.ssScope.refreshView){
-		ssScope.refreshViewRoutine = self.opener.opener.ssScope.refreshView;
-	} else if (self.parent && self.parent.ssScope && self.parent.ssScope.refreshView) {
-		ssScope.refreshViewRoutine = self.parent.ssScope.refreshView;
-	} else if (self.parent && self.parent.parent && self.parent.parent.ssScope && self.parent.parent.ssScope.refreshView){
-		ssScope.refreshViewRoutine = self.parent.parent.ssScope.refreshView;
-	} else if (self.opener && self.opener.parent && self.opener.parent.ssScope && self.opener.parent.ssScope.refreshView){
-		ssScope.refreshViewRoutine = self.opener.parent.ssScope.refreshView;
-	} 
-	
-	if (ssScope.refreshViewRoutine) {
-		ssScope.refreshViewRoutine("${ssEntryId}");
-	}
+	try {
+		if (self.ssScope && self.ssScope.refreshView) {
+			ssScope.refreshViewRoutine = self.ssScope.refreshView;
+		} else if (self.opener && self.opener.ssScope && self.opener.ssScope.refreshView) {
+			ssScope.refreshViewRoutine = self.opener.ssScope.refreshView;
+		} else if (self.opener && self.opener.opener && self.opener.opener.ssScope && self.opener.opener.ssScope.refreshView){
+			ssScope.refreshViewRoutine = self.opener.opener.ssScope.refreshView;
+		} else if (self.parent && self.parent.ssScope && self.parent.ssScope.refreshView) {
+			ssScope.refreshViewRoutine = self.parent.ssScope.refreshView;
+		} else if (self.parent && self.parent.parent && self.parent.parent.ssScope && self.parent.parent.ssScope.refreshView){
+			ssScope.refreshViewRoutine = self.parent.parent.ssScope.refreshView;
+		} else if (self.opener && self.opener.parent && self.opener.parent.ssScope && self.opener.parent.ssScope.refreshView){
+			ssScope.refreshViewRoutine = self.opener.parent.ssScope.refreshView;
+		} 
+		
+		if (ssScope.refreshViewRoutine) {
+			ssScope.refreshViewRoutine("${ssEntryId}");
+		}
+	} catch(e) {}
 	if (self.opener && self.opener.ss_reloadUrl) {
 		var url = self.opener.ss_reloadUrl;
 		if (typeof self.opener.ss_reloadUrl${ssBinderId} != "undefined") 
