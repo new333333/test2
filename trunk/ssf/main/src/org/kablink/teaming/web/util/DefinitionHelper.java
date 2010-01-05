@@ -845,6 +845,8 @@ public class DefinitionHelper {
 	        						String entryBinderId = (String)entry.get(Constants.BINDER_ID_FIELD);
 	        						String entryEntryId = (String)entry.get(Constants.DOCID_FIELD);
 	        						if (entryBinderId != null && entryEntryId != null) {
+	        							FolderEntry fe = bs.getFolderModule().getEntry(Long.valueOf(entryBinderId), Long.valueOf(entryEntryId));
+	        							mashupEntries.put(entryEntryId, fe);
 		        						Map entryEntries  = bs.getFolderModule().getEntryTree(Long.valueOf(entryBinderId), Long.valueOf(entryEntryId), false);
 		        						mashupEntryReplies.put(entryEntryId, entryEntries);
 		        					}
