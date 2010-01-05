@@ -34,7 +34,7 @@
 %>
 <%
 /**
- * This is an example of a custom jsp for showing an entry on a landing page
+ * This is an example of a custom jsp for showing a survey entry on a landing page
  * 
  * The following special beans are set up for use in this jsp:
  *   mashup_attributes['entryId'] - the entry to be displayed
