@@ -46,12 +46,15 @@
 		<div class="ss_labelAbove"><ssf:nlt tag="__profile_password_original"/></div>
 		<input type="password" size="40" name="password_original" class="ss_text" autocomplete="off" />
 	</c:if>
-	
 	<div class="ss_labelAbove"><ssf:nlt tag="__profile_password_new"/></div>
-	<input type="password" size="40" name="password" class="ss_text" autocomplete="off" value="*****" />
+	<input type="password" size="40" name="password" class="ss_text" autocomplete="off" 
+	  <c:if test="${!empty ssDefinitionEntry.password}"> value="*****"</c:if> />
 	<div class="ss_labelAbove"><ssf:nlt tag="__profile_password_again"/></div>
-	<input type="password" size="40" name="password2" class="ss_text" autocomplete="off" value="*****" />
-	<input type="hidden" name="password3" value="*****" />
+	<input type="password" size="40" name="password2" class="ss_text" autocomplete="off" 
+	  <c:if test="${!empty ssDefinitionEntry.password}"> value="*****"</c:if> />
+	<c:if test="${!empty ssDefinitionEntry.password}">
+	  <input type="hidden" name="password3" value="*****" />
+	</c:if>
   </c:if>
 </div>
 
