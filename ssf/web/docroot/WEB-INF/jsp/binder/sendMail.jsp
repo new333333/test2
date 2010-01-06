@@ -35,7 +35,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <ssf:ifadapter>
-<body class="tundra" onload="javascript:saveLocation();">
+<body class="tundra">
 </ssf:ifadapter>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
@@ -48,6 +48,7 @@
 	function saveLocation() {
 		document.getElementById("sendMailLocation").value = self.window.location;
 	}
+	ss_createOnLoadObj("saveLocation_sendMail", saveLocation);
 </script>
 <div class="ss_style ss_portlet" style="padding:10px;">
   
