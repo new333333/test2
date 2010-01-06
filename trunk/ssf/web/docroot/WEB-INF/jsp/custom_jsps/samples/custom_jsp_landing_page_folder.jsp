@@ -91,7 +91,34 @@
 			    <ssf:markup search="${entryMap}">${entryMap._desc}</ssf:markup>
 			    <div class="ss_clear"></div>
 			  </c:if>
+
+<jsp:useBean id="mashupEntry" type="org.kablink.teaming.domain.DefinableEntity" />
+<% 
+	//See if this is a survey entry. If it is, just show the survey and not the replies
+	Element configEle = (Element)mashupEntry.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryDataItem' and @formItem='survey']");
+%>
+<c:set var="configEle" value="<%= configEle %>" />
+			<c:if test="${!empty configEle}">
+			  <c:set var="originalDefinitionEntry" value="${ssDefinitionEntry}"/>
+			  <c:set var="originalBinder" value="${ssBinder}"/>
+			  <c:set var="originalEntry" value="${ssEntry}"/>
+			  <c:set var="ssDefinitionEntry" value="${mashupEntry}" scope="request"/>
+			  <c:set var="ssBinder" value="${mashupEntry.parentFolder}" scope="request"/>
+			  <c:set var="ssEntry" value="${mashupEntry}" scope="request"/>
+			  <c:set var="property_name" value="survey" scope="request"/>
+			  <c:set var="property_caption" value="" scope="request"/>
+			  <ssf:displayConfiguration 
+			    configDefinition="${mashupEntry.entryDef.definition}" 
+			    configElement="<%= configEle %>"
+			    configJspStyle="view" 
+			    entry="${mashupEntry}" 
+			    processThisItem="true" />
+			  <c:set var="ssDefinitionEntry" value="${originalDefinitionEntry}" scope="request"/>
+			  <c:set var="ssBinder" value="${originalBinder}" scope="request"/>
+			  <c:set var="ssEntry" value="${originalEntry}" scope="request"/>
+			</c:if>
 		  
+			<c:if test="${empty configEle}">
 			  <c:forEach var="reply" items="${mashupEntryReplies['folderEntryDescendants']}" varStatus="status2">
 	    	   <c:if test="${status2.count <= 10}">
 				<div style="padding-left:20px;">
@@ -116,6 +143,7 @@
 				</div>
 			   </c:if>
 			  </c:forEach>
+			</c:if>
 			  
 			</div>
 		  </div>

@@ -34,6 +34,8 @@
 %>
 <%@ page import="java.util.Date" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<c:if test="${empty ss_surveyFormCounter}"><c:set var="ss_surveyFormCounter" value="0" scope="request"/></c:if>
+<c:set var="ss_surveyFormCounter" value="${ss_surveyFormCounter + 1}" scope="request"/>
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%
 	String caption1 = (String) request.getAttribute("property_caption");
@@ -93,7 +95,13 @@
 </c:if>
 
 
-<form id="ssSurveyForm_${property_name}" method="post">
+<form id="ssSurveyForm_${property_name}${ss_surveyFormCounter}" method="post"
+  action="<ssf:url adapter="true" portletName="ss_forum"    
+	actionUrl="true"
+	action="view_folder_entry" 
+	binderId="${mashupEntry.parentFolder.id}"
+	entryId="${mashupEntry.id}" />"
+>
 	<input type="hidden" name="attributeName" value="${property_name}" />
 	<c:set var="hasAnyQuestion" value="${fn:length(surveyModel.questions) > 0}" />
 
@@ -289,11 +297,11 @@
 			</c:when>
 			<c:otherwise>
 				<input type="button" value="<ssf:nlt tag="survey.vote"/>"
-					onclick="ssSurvey.vote('ssSurveyForm_${property_name}', ${ssBinder.id}, ${ssDefinitionEntry.id}, {<% int qraCount = 0; %><c:forEach var="question" items="${surveyModel.questions}"><c:if test="${question.requiredAnswer}"><% qraCount += 1; if (1 < qraCount) { %>,<% } %>${question.index}:[<c:if test="${question.type != 'input'}"><c:forEach var="answer" items="${question.answers}" varStatus="status">${answer.index}<c:if test="${!status.last}">,</c:if></c:forEach></c:if>]</c:if></c:forEach>}, '${ss_namespace}_${property_name}');"/>
+					onclick="ssSurvey.vote('ssSurveyForm_${property_name}${ss_surveyFormCounter}', ${ssBinder.id}, ${ssDefinitionEntry.id}, {<% int qraCount = 0; %><c:forEach var="question" items="${surveyModel.questions}"><c:if test="${question.requiredAnswer}"><% qraCount += 1; if (1 < qraCount) { %>,<% } %>${question.index}:[<c:if test="${question.type != 'input'}"><c:forEach var="answer" items="${question.answers}" varStatus="status">${answer.index}<c:if test="${!status.last}">,</c:if></c:forEach></c:if>]</c:if></c:forEach>}, '${ss_namespace}_${property_name}');"/>
 					
 				<c:if test="${showSurveyModifyForm}">
 					<input type="button" value="<ssf:nlt tag="survey.vote.remove"/>" 
-						onclick="ssSurvey.removeVote('ssSurveyForm_${property_name}', ${ssBinder.id}, ${ssDefinitionEntry.id});"/>
+						onclick="ssSurvey.removeVote('ssSurveyForm_${property_name}${ss_surveyFormCounter}', ${ssBinder.id}, ${ssDefinitionEntry.id});"/>
 					
 				</c:if>
 			</c:otherwise>		
