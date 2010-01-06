@@ -85,8 +85,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 		<div class="ss_labelAbove" id="${property_name}_label">
 		<label for="title">
 		  ${property_caption}<c:if test="${property_required}"><span 
-			  id="ss_required_${property_name}" title="<ssf:escapeJavaScript 
-			  value="<%= caption2 %>"/>" class="ss_required">*</span></c:if>
+			  id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if>
 		</label>
 		</div>
 <c:if test='${ssBinderMarker}'>
