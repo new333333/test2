@@ -6603,6 +6603,7 @@ function ssEditAppConfig(menuDIV) {
 		eTD          = eTR.insertCell(eTR.cells.length);
 		eTD.className = "ss_objlist_table_columnhead";
 		eTD.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Column.Extension']));
+		eTD.setAttribute("nowrap", "nowrap");
 
 		eTD           = eTR.insertCell(eTR.cells.length);
 		eTD.className = "ss_objlist_table_columnhead";
@@ -6612,6 +6613,7 @@ function ssEditAppConfig(menuDIV) {
 		eTD          = eTR.insertCell(eTR.cells.length);
 		eTD.className = "ss_objlist_table_columnhead";
 		eTD.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Column.Application']));
+		eTD.setAttribute("nowrap", "nowrap");
 		
 		eTD           = eTR.insertCell(eTR.cells.length);
 		eTD.className = "ss_objlist_table_columnhead";
