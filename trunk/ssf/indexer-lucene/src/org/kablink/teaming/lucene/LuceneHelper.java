@@ -214,7 +214,7 @@ public class LuceneHelper {
 			} else {
 				try {
 					// force unlock of the directory
-					IndexReader.unlock(FSDirectory.getDirectory(indexPath));
+					IndexReader.unlock(getFSDirectory(indexPath));
 					indexReader = IndexReader.open(indexPath);
 				} catch (IOException e) {
 					throw e;
@@ -225,6 +225,13 @@ public class LuceneHelper {
 
 	}
 
+	public static FSDirectory getFSDirectory(String indexPath) throws IOException {
+		FSDirectory fsDir = FSDirectory.getDirectory(indexPath);
+		if(logger.isDebugEnabled())
+			logger.debug("Obtained [" + fsDir.getClass().getName() + "] for [" + indexPath + "]");
+		return fsDir;
+	}
+	
 	private static IndexSearcher getNewSearcher(String indexPath)
 			throws IOException {
 		IndexSearcher indexSearcher = null;
@@ -234,7 +241,7 @@ public class LuceneHelper {
 			try {
 				if (indexExists(indexPath)) {
 					// force unlock of the directory
-					IndexReader.unlock(FSDirectory.getDirectory(indexPath));
+					IndexReader.unlock(getFSDirectory(indexPath));
 					indexSearcher = new IndexSearcher(indexPath);
 				} else {
 					if (initializeIndex(indexPath)) {
@@ -260,7 +267,7 @@ public class LuceneHelper {
 		} catch (Exception ie) {
 			try {
 				// force unlock of the directory
-				IndexReader.unlock(FSDirectory.getDirectory(indexPath));
+				IndexReader.unlock(getFSDirectory(indexPath));
 				indexWriter = new IndexWriter(indexPath,
 						new SsfIndexAnalyzer(), create);
 				indexWriter.setMaxMergeDocs(maxMerge);
@@ -379,7 +386,7 @@ public class LuceneHelper {
 		try {
 			if (indexExists(indexPath)) {
 				// force unlock of the directory
-				IndexReader.unlock(FSDirectory.getDirectory(indexPath));
+				IndexReader.unlock(getFSDirectory(indexPath));
 			}
 		} catch (Exception e) {
 			logger.info("Can't unlock Lucene lockfile: " + e.toString());

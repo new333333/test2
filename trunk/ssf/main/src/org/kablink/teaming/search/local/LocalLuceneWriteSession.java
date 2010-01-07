@@ -292,7 +292,7 @@ public class LocalLuceneWriteSession extends LocalLuceneSession implements Lucen
 		AclUpdater updater = null;
 		long startTime = System.currentTimeMillis();			
 		try {
-			Directory indDir = FSDirectory.getDirectory(indexPath);
+			Directory indDir = LuceneHelper.getFSDirectory(indexPath);
 			updater = new AclUpdater(indDir);
 			DocumentSelection docsel = updater.createDocSelection(q);
 			if (Validator.isNull(fieldvalue)) {
@@ -442,7 +442,7 @@ public class LocalLuceneWriteSession extends LocalLuceneSession implements Lucen
 			}
 			indexWriter.setUseCompoundFile(false);
 			try {
-				indexWriter.addIndexes(new Directory[] { FSDirectory.getDirectory(indexPath)});
+				indexWriter.addIndexes(new Directory[] { LuceneHelper.getFSDirectory(indexPath)});
 				indexWriter.close();
 			} catch (Exception ie) {
 				if (debugEnabled)
