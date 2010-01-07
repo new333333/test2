@@ -712,6 +712,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
  				.setParameterList("pList", tokenIds)
 			.list());
 		
+    	if(pIs.isEmpty()) return;
 		//start down the tree with ProcessInstances
 		tokenIds.clear();
 		List subTokens;
