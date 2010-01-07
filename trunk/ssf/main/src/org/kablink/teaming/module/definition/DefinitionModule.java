@@ -74,6 +74,7 @@ public interface DefinitionModule {
 		manageDefinition,
 	}
 	public Definition addDefinition(Document defDoc, Binder binder, boolean replace);
+	public Definition addDefinition(InputStream indoc, Binder binder, String name, String title, boolean replace, List errors) throws AccessControlException, DocumentException;
 	public Definition addDefinition(InputStream indoc, Binder binder, String name, String title, boolean replace) throws AccessControlException, DocumentException;
 	public Definition addDefinition(Binder binder, String name, String title, Integer type, InputDataAccessor inputData) throws AccessControlException;
 	/**
