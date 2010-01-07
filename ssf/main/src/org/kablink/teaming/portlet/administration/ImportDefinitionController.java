@@ -145,9 +145,9 @@ public class ImportDefinitionController extends  SAbstractController {
 		try {
 			if (binderId == null) {
 				
-				return getDefinitionModule().addDefinition(fIn, null, null, null, replace).getId();
+				return getDefinitionModule().addDefinition(fIn, null, null, null, replace, errors).getId();
 			} else {
-				return getDefinitionModule().addDefinition(fIn, getBinderModule().getBinder(binderId), null, null, replace).getId();				
+				return getDefinitionModule().addDefinition(fIn, getBinderModule().getBinder(binderId), null, null, replace, errors).getId();				
 			}
 		} catch (Exception fe) {
 			   // now lets output the errors as XML

@@ -195,10 +195,16 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    		else checkAccess(getCoreDao().loadBinder(def.getBinderId(), def.getZoneId()), def.getType(), operation);
    	}
 
-	public Definition addDefinition(InputStream indoc, Binder binder, String name, String title, boolean replace) 
+   	public Definition addDefinition(InputStream indoc, Binder binder, String name, String title, boolean replace) 
+	throws AccessControlException,DocumentException {
+   		List errors = new ArrayList();
+   		return addDefinition(indoc, binder, name, title, replace, errors);
+   	}
+   	
+	public Definition addDefinition(InputStream indoc, Binder binder, String name, String title, boolean replace, List errors) 
 		throws AccessControlException,DocumentException {
-/*The current xsd is really for the configuration file.  The export defintions don't follow all the rules,
-  xsd:sequence in particular.  Until we either fix this or build a new xsd, this validating code is disabled.
+	/*The current xsd is really for the configuration file.  The export defintions don't follow all the rules,
+	  xsd:sequence in particular.  Until we either fix this or build a new xsd, this validating code is disabled.
 		SAXReader xIn = new SAXReader(true);
         // The following code turns on XML schema-based validation
         // features specific to Apache Xerces2 parser. Therefore it
@@ -208,12 +214,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		xIn.setProperty(
                 "http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation",
                 DirPath.getDTDDirPath() + File.separator + "definition_builder_config.xsd");
-*/
+	 */
 		SAXReader xIn = new SAXReader(false);
 		Document doc = xIn.read(indoc);
 		String type = doc.getRootElement().attributeValue("type");
 	   	checkAccess(binder, Integer.valueOf(type), DefinitionOperation.manageDefinition);
-    	return doAddDefinition(doc, binder, name, title, replace);
+    	return doAddDefinition(doc, binder, name, title, replace, errors);
 
 	}
 	public Definition addDefinition(Document defDoc, Binder binder, boolean replace) {
@@ -248,6 +254,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 
     protected Definition doAddDefinition(Document doc, Binder binder, String name, String title, boolean replace) {
+    	List errors = new ArrayList();
+    	return doAddDefinition(doc, binder, name, title, replace, errors);
+    }
+    protected Definition doAddDefinition(Document doc, Binder binder, String name, String title, boolean replace, List errors) {
     	Element root = doc.getRootElement();
 		if (Validator.isNull(name)) name = root.attributeValue("name");
 		if (Validator.isNull(name)) name = DefinitionUtils.getPropertyValue(root, "name");
@@ -268,6 +278,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			try {
 				def = getCoreDao().loadReservedDefinition(internalId, zoneId);
 				//already exists
+				if (!replace) errors.add(NLT.get("definition.error.alreadyExistsByName") + " (" + name + ": " + title + ")");
 				if (!type.equals(def.getType()) ) 
 					throw new DefinitionInvalidException("definition.error.internalAlreadyExists", new Object[] {internalId});
 				if (!replace) return def;
@@ -290,15 +301,16 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						( (binder == null &&  ObjectKeys.RESERVED_BINDER_ID.equals(def.getBinderId()) ) ||
 						  (binder != null && binder.getId() == null ) ||
 						  (binder != null && binder.getId().equals(def.getBinderId())))) {
-						if (!type.equals(def.getType())) 
-							throw new DefinitionInvalidException("definition.error.idAlreadyExists", new Object[] {id});
-						if (!replace) return def;
-						//	update it
-						def.setName(name);
-						def.setTitle(title);
-						def.setInternalId(internalId);
-						setDefinition(def, doc);
-						return def;
+					if (!replace) errors.add(NLT.get("definition.error.alreadyExistsByName") + " (" + name + ": " + title + ")");
+					if (!type.equals(def.getType())) 
+						throw new DefinitionInvalidException("definition.error.idAlreadyExists", new Object[] {id});
+					if (!replace) return def;
+					//	update it
+					def.setName(name);
+					def.setTitle(title);
+					def.setInternalId(internalId);
+					setDefinition(def, doc);
+					return def;
 				}
 				id = null;
 			} catch (NoDefinitionByTheIdException nd) {
@@ -308,6 +320,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		try {
 			def = getCoreDao().loadDefinitionByName(binder, name, zoneId);
 			//found a definition using the name for this binder and zone
+			if (!replace) errors.add(NLT.get("definition.error.alreadyExistsByName") + " (" + name + ": " + title + ")");
 			if (!type.equals(def.getType())) 
 				throw new DefinitionInvalidException("definition.error.nameNotUnique", new Object[] {name});
 			if (!replace) return def;
