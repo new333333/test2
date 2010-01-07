@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.web.util;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -83,9 +84,11 @@ import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.DirPath;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.util.Validator;
@@ -978,7 +981,52 @@ public class DefinitionHelper {
     	}
 	}
 	
-	public static String fixupMashupCanvasForExport(String mashupValue) {
+    //Routine to perform any translations on the mashup config string
+    public static String fixUpMashupConfiguration(String mashupValue) {
+    	String[] mashupValues = mashupValue.split(";");
+    	for (int i = 0; i < mashupValues.length; i++) {
+    		String	attrValue;
+    		String[] mashupItemValues = mashupValues[i].split(",");
+			Map mashupItemAttributes = new HashMap();
+			attrValue = null;
+			if (mashupItemValues.length > 0) {
+				//Build a map of attributes
+				for (int j = 0; j < mashupItemValues.length; j++) {
+					int k = mashupItemValues[j].indexOf("=");
+					if (k > 0) {
+						String a = mashupItemValues[j].substring(0, k);
+						String v = mashupItemValues[j].substring(k+1, mashupItemValues[j].length());
+						attrValue = v;
+						mashupItemAttributes.put(a, v);
+					}
+				}
+			}
+
+			String type = mashupItemValues[0];
+    		if (ObjectKeys.MASHUP_TYPE_CUSTOM_JSP.equals(type) && 
+    				!mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_PATH_TYPE)) {
+    			String pathType = ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_PATH_TYPE_CUSTOM_JSP;
+    			//See if the jsp is part of an extension or really a custom_jsp
+    			String jspName = "";
+    			if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_NAME)) 
+    				jspName = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_NAME);
+    			if (!jspName.equals("")) {
+    				String fileName = DirPath.getExtensionBasePath() + File.separator + Utils.getZoneKey() + File.separator + jspName;
+    				File f = new File(fileName);
+    				if (f.isFile()) pathType = ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_PATH_TYPE_EXTENSION;
+    			}
+    			mashupValues[i] = mashupValues[i].replaceFirst(",", ",pathType="+pathType+",");
+    		}
+    	}
+    	String result = "";
+    	for (int i = 0; i < mashupValues.length; i++) {
+    		if (!result.equals("")) result += ";";
+    		result += mashupValues[i];
+    	}
+    	return result;
+    }
+
+    public static String fixupMashupCanvasForExport(String mashupValue) {
 		ZoneInfo zoneInfo = ExportHelper.getZoneInfo();
 		String zoneInfoId = zoneInfo.getId();
 		if (zoneInfoId == null) zoneInfoId = "";

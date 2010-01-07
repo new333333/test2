@@ -60,6 +60,9 @@ public class DirPath {
 	public static String getExtensionBasePath() {
 		return getWebappDirPathHidden("ext");
 	}
+	public static String getCustomJspsBasePath() {
+		return getWebappDirPathHidden("jsp/custom_jsps");
+	}
 	public static String getLibraryPath() {
 		return getWebinfDirPath() + File.separator + "lib";
 	}
