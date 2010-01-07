@@ -54,6 +54,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
@@ -62,6 +63,7 @@ import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.util.servlet.StringServletResponse;
@@ -123,9 +125,17 @@ public class MashupTag extends BodyTagSupport {
 						// Output the start of the mashup table element
 						String jsp = "/WEB-INF/jsp/tag_jsps/mashup/"+type+".jsp";
 						if (type.equals("customJsp") && !view.equals("form")) {
-							if (mashupItemAttributes.containsKey("customJsp") && 
-									!mashupItemAttributes.get("customJsp").equals("")) 
-								jsp = "/WEB-INF/jsp/custom_jsps/" + mashupItemAttributes.get("customJsp");
+							if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_NAME) && 
+									!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_NAME).equals("")) {
+								jsp = "/WEB-INF/jsp/custom_jsps/" + 
+									mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_NAME);
+								if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_PATH_TYPE) &&
+										mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_PATH_TYPE).
+										equals(ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_PATH_TYPE_EXTENSION)) {
+									jsp = "/WEB-INF/ext/" + Utils.getZoneKey() + "/" +
+										mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_NAME);
+								}
+							}
 						}
 						RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 						ServletRequest req = pageContext.getRequest();
