@@ -57,7 +57,8 @@ public class UrlUtil {
 			append("&ui=").
 			append(rc.getUserId()).
 			append("&pd=").
-			append(rc.getUser().getPrivateDigest(binderId));
+			append(rc.getUser().getPrivateDigest(binderId)).
+			append("&v=1");		//Append an unused string at the end in case a space is added to the url;
 		
 		return url.toString();
 	}
@@ -76,7 +77,8 @@ public class UrlUtil {
 			append("&ui=").
 			append(rc.getUserId()).
 			append("&pd=").
-			append(rc.getUser().getPrivateDigest(binderId));
+			append(rc.getUser().getPrivateDigest(binderId)).
+			append("&v=1");		//Append an unused string at the end in case a space is added to the url;
 		
 		return url.toString();
 	}
