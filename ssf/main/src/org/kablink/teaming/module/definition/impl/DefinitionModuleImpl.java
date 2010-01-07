@@ -73,6 +73,7 @@ import org.kablink.teaming.domain.DefinitionInvalidException;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
@@ -86,6 +87,7 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -103,10 +105,14 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.TreeHelper;
+import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
+import org.kablink.util.search.Constants;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -2322,8 +2328,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				}
 				
 				// Get the landing page mashup configuration string.
-				if ( inputData.exists( nameValue ) )
+				if ( inputData.exists( nameValue ) ) {
 					value = inputData.getSingleValue( nameValue );
+					value = DefinitionHelper.fixUpMashupConfiguration(value);
+				}
 	
 				if ( !inputData.isFieldsOnly() || fieldModificationAllowed )
 				{
@@ -2352,6 +2360,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				entryData.put(nameValuePerUser, inputData.getSingleValue(nameValuePerUser));
 		}    	
     }
+    
     public List<Definition> getAllDefinitions() {
 		// Controllers need access to definitions.  Allow world read
     	return coreDao.loadDefinitions(RequestContextHolder.getRequestContext().getZoneId());
