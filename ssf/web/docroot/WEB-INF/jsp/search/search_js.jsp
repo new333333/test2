@@ -59,6 +59,7 @@ var ss_currentTabId = "${tabId}";
 
 var ss_overwriteQuestion = "<ssf:nlt tag="search.save.overwriteQuestion"/>";
 var ss_noNameMsg="<ssf:nlt tag="search.save.noName"/>";
+var ss_invalidNameMsg="<ssf:nlt tag="search.save.invalidName"/>";
 var ss_days_0 = "<ssf:nlt tag="searchForm.lastActivity.0"/>"
 var ss_days_1 = "<ssf:nlt tag="searchForm.lastActivity.1"/>"
 var ss_days_3 = "<ssf:nlt tag="searchForm.lastActivity.3"/>"
