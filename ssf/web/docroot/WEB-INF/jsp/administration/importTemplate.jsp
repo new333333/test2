@@ -38,9 +38,11 @@
 <c:choose>
 	<c:when test="${ssOperation == 'import'}">
 		<c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_cfg.import") %>' scope="request"/>
+		<c:set var="ss_windowTitleTag" value="administration.configure_cfg.import" scope="request"/>
 	</c:when>
 	<c:otherwise>
 		<c:set var="ss_windowTitle" value='<%= NLT.get("administration.reload.templates") %>' scope="request"/>
+		<c:set var="ss_windowTitleTag" value="administration.reload.templates" scope="request"/>
 	</c:otherwise>
 </c:choose>
 
@@ -49,7 +51,7 @@
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
-<ssf:form titleTag="${ss_windowTitle}">
+<ssf:form titleTag="${ss_windowTitleTag}">
 
 <c:if test="${!empty ssErrorList}">
 <span class="ss_bold"><ssf:nlt tag="administration.errors"/></span>
