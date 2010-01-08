@@ -52,7 +52,7 @@
 			
 			<c:if test="${ss_pageNumber != 1 || ssPageEndIndex != ssTotalRecords}">
 				<span class="ss_go_to_page"><ssf:nlt tag="folder.GoToPage"/></span>
-				<input class="form-text" type="text" size="1" id="ssGoToPageInput${renderResponse.namespace}"/>
+				<input class="form-text" type="text" size="4" id="ssGoToPageInput${renderResponse.namespace}"/>
 				<a class="ss_linkButton" onclick="ss_goToSearchResultPageByInputValue('ssGoToPageInput${renderResponse.namespace}'); return false;" href="javascript: ;"><ssf:nlt tag="button.go"/></a>
 			</c:if>
 			<c:if test="${empty isDashboard || isDashboard == 'no'}">
