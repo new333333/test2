@@ -1044,6 +1044,15 @@ function ss_saveSearchQuery(inputId, errMsgBoxId) {
 	} else {
 		ss_hideDiv(errMsgBoxId);
 	}
+	var pattern = new RegExp("[^\\w \\.]");
+	if (pattern.test(queryName) ) {
+		var errMsgBoxObj = document.getElementById(errMsgBoxId);		
+		errMsgBoxObj.innerHTML = ss_invalidNameMsg;
+		ss_showDiv(errMsgBoxId);
+		inputObj.focus();
+		return;
+	}
+
 	if (!ss_nameAlreadyInUse(queryName) || (ss_overwrite(queryName))) {
 		var urlParams = {operation:"save_search_query", queryName:queryName, tabId:ss_currentTabId};
 		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
