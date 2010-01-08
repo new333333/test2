@@ -21,4 +21,4 @@ create table SS_SchemaInfo (schemaVersion number(19,0) not null, primary key (sc
 create index diskQuota_principal on SS_Principals (diskQuota);
 create index internalId_Binder on SS_Forums (internalId);
 create index internalId_Definition on SS_Definitions (internalId);
-INSERT INTO SS_SchemaInfo values (4);
+INSERT INTO SS_SchemaInfo values (5);
