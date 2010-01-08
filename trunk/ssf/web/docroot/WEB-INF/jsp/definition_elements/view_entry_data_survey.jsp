@@ -156,11 +156,13 @@
 				<ol>
 				<c:forEach var="answer" items="${question.answers}">
 					<c:if test="${question.type != 'input' || !empty answer.text}">
-						<li>
-							<c:if test="${question.type == 'multiple' || question.type == 'single'}">
-								<ssf:drawChart count="${answer.votesCount}" total="${question.totalResponses}"/>
-							</c:if>
-							<span class="ss_survey_answer" style="zoom:1;"><c:out value="${answer.text}" escapeXml="false"/></span>
+						<li style="vertical-align:top;">
+							<div style="display:inline-block;">
+								<c:if test="${question.type == 'multiple' || question.type == 'single'}">
+									<ssf:drawChart count="${answer.votesCount}" total="${question.totalResponses}"/>
+								</c:if>
+								<span class="ss_survey_answer" style="zoom:1;"><c:out value="${answer.text}" escapeXml="false"/></span>
+							</div>
 							<c:if test="${question.type == 'multiple' || question.type == 'single'}">
 								<div class="ss_clear"></div>
 							</c:if>
