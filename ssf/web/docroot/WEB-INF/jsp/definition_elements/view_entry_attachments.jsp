@@ -126,7 +126,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 		<a class="ss_tinyButton ss_fineprint ss_nowrap"  
 		  title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
 		  style="behavior: url(#default#AnchorClick);" 
-		  folder="${ssWebDavURL}" 
+		  folder="${ssWebDavURL}#" 
 		  <c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
 		    href="${ssWebDavURL}" 
 		    target="_blank"
