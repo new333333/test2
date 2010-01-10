@@ -358,18 +358,26 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 template.setName(name);
 		 template.setInternalId((internalId));
 		 doTemplate(template, config);
+		 
 		 //see if any child configs need to be copied
-		 List nodes = config.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_TEMPLATE);
-		 for (int i=0; i<nodes.size(); ++i) {
-			 Element element = (Element)nodes.get(i);
-			 TemplateBinder child = new TemplateBinder();
-			 template.addBinder(child);
-			 doTemplate(child, element);
-		 }
+		 doChildTemplates(template, config);
+		 
 		 //need to flush, if multiple loaded in 1 transaction the binderKey may not have been
 		 //flushed which could result in duplicates on the next save when loading multiple nfor updatetTemplates
 		 getCoreDao().flush();
 		 return template;
+	 }
+	 protected void doChildTemplates(TemplateBinder parent, Element config) {
+		 List nodes = config.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_TEMPLATE);
+		 if (nodes == null || nodes.isEmpty()) return;
+		 for (int i=0; i<nodes.size(); ++i) {
+			 Element element = (Element)nodes.get(i);
+			 TemplateBinder child = new TemplateBinder();
+			 parent.addBinder(child);
+			 doTemplate(child, element);
+			 //See if there are sub-binders to do under this binder
+			 doChildTemplates(child, element);
+		 }
 	 }
 	 protected void doTemplate(TemplateBinder template, Element config) {
 		 Integer type = Integer.valueOf(config.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_TYPE));
