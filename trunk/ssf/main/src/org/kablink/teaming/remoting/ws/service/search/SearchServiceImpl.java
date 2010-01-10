@@ -116,6 +116,10 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 					elementName="principal";
 				} else if(Constants.ENTRY_TYPE_GROUP.equalsIgnoreCase(entryType)) {
 					elementName="principal";
+				} else if(Constants.ENTRY_TYPE_APPLICATION.equalsIgnoreCase(entryType)) {
+					elementName="principal";
+				} else if(Constants.ENTRY_TYPE_APPLICATION_GROUP.equalsIgnoreCase(entryType)) {
+					elementName="principal";
 				}
 				resultElem = folderElement.addElement(elementName);
 				addEntryAttributes(resultElem, result, isPrincipal);
