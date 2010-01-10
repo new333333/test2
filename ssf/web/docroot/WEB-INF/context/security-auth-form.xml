@@ -35,11 +35,12 @@
         <s:intercept-url pattern="/i/**" filters="none" />
         <s:intercept-url pattern="/images/**" filters="none" />
         <s:intercept-url pattern="/js/**" filters="none" />
+        <s:intercept-url pattern="/redirect/**" filters="none" />
         
         <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_REMEMBERED,ROLE_ANONYMOUS" />
 
         <s:anonymous granted-authority="ROLE_ANONYMOUS" username="guest"  />
-        <s:logout logout-url="/s/portalLogout" logout-success-url="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login&amp;user.logout=true" />
+        <s:logout logout-url="/s/portalLogout" logout-success-url="/redirect/teaming?user.logout=true" />
 
     </s:http>
     

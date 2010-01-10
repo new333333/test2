@@ -207,8 +207,14 @@
 			<param-name>namespace</param-name>
 			<param-value>context/gwtRpc-servlet</param-value>
 		</init-param>
-        <load-on-startup>6</load-on-startup>
+        <load-on-startup>9</load-on-startup>
     </servlet>
+
+	<servlet>
+		<servlet-name>redirectServlet</servlet-name>
+		<servlet-class>org.kablink.teaming.web.servlet.RedirectServlet</servlet-class>
+		<load-on-startup>10</load-on-startup>
+	</servlet>
 
     <servlet-mapping>
         <servlet-name>gwtRpc</servlet-name>
@@ -253,6 +259,11 @@
 	<servlet-mapping>
 		<servlet-name>ical</servlet-name>
 		<url-pattern>/ical/*</url-pattern>
+	</servlet-mapping>	
+
+	<servlet-mapping>
+		<servlet-name>redirectServlet</servlet-name>
+		<url-pattern>/redirect/*</url-pattern>
 	</servlet-mapping>	
 
 	<session-config>
