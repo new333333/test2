@@ -2597,6 +2597,10 @@ public class BinderHelper {
 		
 		// get query and options from tab		
 		Document searchQuery = getSavedQuery(bs, queryName, bs.getProfileModule().getUserProperties(currentUser.getId()));
+		if (searchQuery == null) {
+			model.putAll(prepareSavedQueries(bs));
+			return model;
+		}
 		
 		// get page no and actualize options
 		// execute query
