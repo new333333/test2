@@ -33,7 +33,7 @@ EasyMock 1.2 (Java 1.3)
 Ehcache 1.3.0 (needed by Hibernate)
 ezmorph 1.0.1
 firebug-light 1.2
-gwt 1.7.0 (Google Web Toolkit)
+gwt 2.0.0 (Google Web Toolkit)
 Hibernate 3.2.6.ga
 ical4j 1.0-rc1
 icu4j 4.0.1 (needed by jasypt.jar)

@@ -4,9 +4,9 @@
 # Hack to recognize the Mac vs. Linux.
 GWT_TOOLS="../tools/gwt"
 if [ -z "$Apple_PubSub_Socket_Render" ] ; then
-	GWT_DEVJAR="gwt-dev-linux.jar"
+	GWT_DEVJAR="gwt-dev.jar"
 else
-	GWT_DEVJAR="gwt-dev-mac.jar"
+	GWT_DEVJAR="gwt-dev.jar"
 fi
 
 

@@ -37,9 +37,9 @@
 
 	
 	<!-- Define the GWT development jar. -->
-	<condition property="gwt.dev.jar" value="gwt-dev-linux.jar"  ><istrue value="${build.linux}"   /></condition>
-	<condition property="gwt.dev.jar" value="gwt-dev-mac.jar"    ><istrue value="${build.mac}"     /></condition>
-	<condition property="gwt.dev.jar" value="gwt-dev-windows.jar"><istrue value="${build.windows}" /></condition>
+	<condition property="gwt.dev.jar" value="gwt-dev.jar"  ><istrue value="${build.linux}"   /></condition>
+	<condition property="gwt.dev.jar" value="gwt-dev.jar"    ><istrue value="${build.mac}"     /></condition>
+	<condition property="gwt.dev.jar" value="gwt-dev.jar"><istrue value="${build.windows}" /></condition>
 
 	
 	<!-- Define the tool directories. -->
