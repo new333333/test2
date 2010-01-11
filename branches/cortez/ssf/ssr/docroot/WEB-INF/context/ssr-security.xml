@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans 
+    xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
+	
+	<beans:bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
+		<beans:property name="providerBeanNames">
+			<beans:list>
+				<beans:value>authenticationProvider</beans:value>
+			</beans:list>
+		</beans:property>
+		<beans:property name="authenticator"><beans:value>r_b</beans:value></beans:property>
+		<beans:property name="enableKey"><beans:value>remoting.basic.enable</beans:value></beans:property>
+	</beans:bean>
+
+	<beans:bean id="authenticationProvider" class="org.kablink.teaming.asmodule.spring.security.providers.AuthenticationModuleBridge"/>
+	
+    <http session-fixation-protection="newSession" realm="Teaming">
+        <intercept-url pattern="/secure/ws/**" access="IS_AUTHENTICATED_FULLY" />
+        <intercept-url pattern="/**" filters="none" />
+        <http-basic/>
+    </http>
+    
+</beans:beans>

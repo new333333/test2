@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<project name="ldap" basedir="." default="">
+	<property name="project.dir" value="../.." />
+
+	<import file="${project.dir}/build-common.xml"/>
+	
+	<property name="web.project.dir" value="${project.dir}/web/docroot/WEB-INF/classes/config" />
+	<property name="create.dir" value="${basedir}/create" />
+
+	<taskdef name="dbunit"
+	    classname="org.dbunit.ant.DbUnitTask">
+		<classpath>
+			<fileset dir="${project.dir}/lib" includes="*.jar" />
+		</classpath>
+	</taskdef>
+
+	<!--<target name="init-build">
+		<property file="${basedir}/build.${user.name}.properties" />
+		<property file="${basedir}/build.properties" />
+	</target>-->
+		
+  	<target name="generate-ldap-script" 
+  		description="Generate ldap import script used for populating users/groups.">
+		<path id="initpath">
+			<pathelement path="${classpath}" />
+			<fileset dir="${project.dir}/lib" includes="*.jar" />
+			<pathelement location="${web.project.dir}"/>
+		</path>
+
+  		<mkdir dir="${create.dir}"/>
+  		
+  		<!-- Make sure to compile the Java code we're about to run. -->
+  		<ant dir=".." target="compile" inheritAll="false" />
+  		<java 
+  			classname="org.kablink.teaming.tools.ldap.GenerateLdapList"
+  			classpathref="initpath"
+  			fork="true"
+  			dir="${basedir}"
+  			failonerror="true">
+ 			<arg value="zone-ext.cfg.xml" />
+  			<arg value="${create.dir}/loadprofiles.xml" />
+  		</java>
+ 
+    </target>
+
+
+	
+</project>

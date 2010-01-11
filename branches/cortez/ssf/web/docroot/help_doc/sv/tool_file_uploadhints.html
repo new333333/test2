@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html xml:lang="sv" lang="sv">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="sv" />
+<meta name="Content-Date" content="Mon, 04 Jun 2009 12:00:00 GMT" />
+<meta name="Generator" content="Novell Documentation" />
+<meta name="Generation-Date" content="Thursday, December 10, 2009" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2007" />
+
+<link rel="stylesheet" type="text/css" href="css/styles.css" />
+<link rel="stylesheet" type="text/css" href="css/expandable.css" />
+
+<title>Tips för filöverföringar</title>
+</head>
+<body>
+<script type="text/javascript" src="css/expandable.js"></script>
+
+<div class="sect1" id="tool_file_uploadhints">
+
+<h1 class="title"> Tips för filöverföringar</h1>
+
+<p class="para">Om du har problem med att överföra en stor fil kanske du kan åtgärda problemet genom att öka den fördefinierade mängden minne som används av Java-appletar.  Processen beskrivs i följande avsnitt.</p>
+<div class="sect2" id="bipun26">
+
+<h2 class="title"> Öka den fördefinierade mängden minne i Windows</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bipungz">
+<p class="para">Gå till Kontrollpanelen (klicka på <span class="guimenu">Start</span> &gt; <span class="guimenu">Inställningar</span> &gt; <span class="guimenu">Kontrollpanelen</span>).</p></li>
+<li class="step" id="bipunwc">
+<p class="para">Dubbelklicka på <span class="guimenu">Java</span>.</p>
+<p class="para">Kontrollpanelen för Java öppnas.</p></li>
+<li class="step" id="bipuoka">
+<p class="para">Klicka på fliken <span class="guimenu">Java</span>.</p></li>
+<li class="step" id="bipuorx">
+<p class="para">Klicka på <span class="guimenu">Visa</span> under <span class="guimenu">Inställningar för Java Applet Runtime</span>.</p></li>
+<li class="step" id="bipup4t">
+<p class="para">Lägg till <span class="command">-Xmx256m</span> som en Java-körningsparameter för varje Java Runtime-version.</p></li>
+<li class="step" id="bipupgl">
+<p class="para">Klicka på <span class="guimenu">OK</span>.</p>
+<p class="para">När du har ökat mängden minne för Java-appletar måste du stänga och starta om alla webbläsare för att ändringen ska börja gälla.</p></li></ol>
+</div>
+
+<p class="para">Med den här inställningen startar appleten som används för att överföra filer till en Teaming-mapp med 256 MB minne.  Om ett meddelande visas som anger att det inte finns tillräckligt med minne för att köra appleten kan du behöva minska det här värdet.</p>
+</span>
+
+</div>
+
+<div class="sect2" id="bipunbb">
+
+<h2 class="title"> Öka den fördefinierade mängden minne i Linux</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bjchmyk">
+<p class="para">Leta upp det JDK- eller JRE-paket som används för plugin-programmet.</p>
+<p class="para">Var JRE- eller JDK-paketet finns varierar beroende på datorn.</p></li>
+<li class="step" id="bjchn8n">
+<p class="para">Kör filen <span class="filename">ControlPanel</span> i katalogen <span class="filename">bin</span> i JRE- eller JDK-paketet.</p>
+<p class="para">Kontrollpanelen för öppnas.</p></li>
+<li class="step" id="bjchoed">
+<p class="para">Klicka på fliken <span class="guimenu">Java</span>.</p></li>
+<li class="step" id="bjchokg">
+<p class="para">Klicka på <span class="guimenu">Visa</span> under <span class="guimenu">Inställningar för Java Applet Runtime</span>.</p></li>
+<li class="step" id="bjchor1">
+<p class="para">Lägg till <span class="command">-Xmx256m</span> som en Java-körningsparameter för varje Java Runtime-version.</p></li>
+<li class="step" id="bjchotz">
+<p class="para">Klicka på <span class="guimenu">OK</span>.</p>
+<p class="para">När du har ökat mängden minne för Java-appletar måste du stänga och starta om alla webbläsare för att ändringen ska börja gälla.</p></li></ol>
+</div>
+
+<p class="para">Med den här inställningen startar appleten som används för att överföra filer till en Teaming-mapp med 256 MB minne.  Om ett meddelande visas som anger att det inte finns tillräckligt med minne för att köra appleten kan du behöva minska det här värdet.</p>
+</span>
+
+</div>
+
+</div>
+
+<p class="trademark"> Mer information finns i <a href="./legal.html">Juridisk information</a>.</p>
+</body>
+</html>

@@ -1,0 +1,11 @@
+Version 3:
+Cortez Schema changes
+
+Version 4:
+Additional Cortez Schema changes
+Made changes to the Extensions table: Added columns: Title, Version
+
+Version 5:
+Additional Cortez Schema changes
+Made changes to the SS_Forums table: Added index: internalId_Binder
+Made changes to the SS_Definitions table: Added index: internalId_Definition

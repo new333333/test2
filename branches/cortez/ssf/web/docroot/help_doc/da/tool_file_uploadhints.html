@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html xml:lang="da" lang="da">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="da" />
+<meta name="Content-Date" content="Mon, 04 Jun 2009 12:00:00 GMT" />
+<meta name="Generator" content="Novell Documentation" />
+<meta name="Generation-Date" content="Wednesday, December 09, 2009" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2007" />
+
+<link rel="stylesheet" type="text/css" href="css/styles.css" />
+<link rel="stylesheet" type="text/css" href="css/expandable.css" />
+
+<title>Tip til filoverførsel</title>
+</head>
+<body>
+<script type="text/javascript" src="css/expandable.js"></script>
+
+<div class="sect1" id="tool_file_uploadhints">
+
+<h1 class="title"> Tip til filoverførsel</h1>
+
+<p class="para">Hvis du har problemer med at overføre en fil, fordi filen er for stor, kan du muligvis løse dette problem ved at forøge standardmængden af hukommelse, der anvendes af Java-applets.  Processen er beskrevet i de følgende afsnit.</p>
+<div class="sect2" id="bipun26">
+
+<h2 class="title"> Forøge standardmængden af hukommelse i Windows</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bipungz">
+<p class="para">Navigér til Kontrolpanel (klik på <span class="guimenu">Start</span> &gt; <span class="guimenu">Indstillinger</span> &gt; <span class="guimenu">Kontrolpanel</span>).</p></li>
+<li class="step" id="bipunwc">
+<p class="para">Dobbeltklik på <span class="guimenu">Java</span>.</p>
+<p class="para">Java-kontrolpanelet startes.</p></li>
+<li class="step" id="bipuoka">
+<p class="para">Vælg fanen <span class="guimenu">Java</span>.</p></li>
+<li class="step" id="bipuorx">
+<p class="para">I afsnittet <span class="guimenu">Java Applet Runtime Settings</span> skal du klikke på <span class="guimenu">View</span>.</p></li>
+<li class="step" id="bipup4t">
+<p class="para">For hver af dine Java Runtime-versioner skal du tilføje <span class="command">-Xmx256m</span> som en Java-runtimeparameter.</p></li>
+<li class="step" id="bipupgl">
+<p class="para">Klik på <span class="guimenu">OK</span>.</p>
+<p class="para">Når størrelsen på standardhukommelsen er øget for Java-applets, skal du lukke alle browsere og genstarte dem, før ændringen træder i kraft.</p></li></ol>
+</div>
+
+<p class="para">Denne indstilling får den applet, der bruges til at overføre filer til en Teaming-mappe, til at starte op med 256 MB hukommelse.  Hvis appletten stadig angiver, at der ikke er tilstrækkelig hukommelse til at køre den, kan det være nødvendigt at formindske dette tal.</p>
+</span>
+
+</div>
+
+<div class="sect2" id="bipunbb">
+
+<h2 class="title"> Forøge standardmængden af hukommelse på Linux</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bjchmyk">
+<p class="para">Find den JRE eller JDK, der bruges til browserens plug-in.</p>
+<p class="para">Placeringen af JRE eller JDK varierer afhængigt af systemet.</p></li>
+<li class="step" id="bjchn8n">
+<p class="para">I mappen <span class="filename">bin</span> i JRE eller JDK skal du køre filen <span class="filename">ControlPanel</span>.</p>
+<p class="para">Kontrolpanelet startes.</p></li>
+<li class="step" id="bjchoed">
+<p class="para">Vælg fanen <span class="guimenu">Java</span>.</p></li>
+<li class="step" id="bjchokg">
+<p class="para">I afsnittet <span class="guimenu">Java Applet Runtime Settings</span> skal du klikke på <span class="guimenu">View</span>.</p></li>
+<li class="step" id="bjchor1">
+<p class="para">For hver af dine Java Runtime-versioner skal du tilføje <span class="command">-Xmx256m</span> som en Java-runtimeparameter.</p></li>
+<li class="step" id="bjchotz">
+<p class="para">Klik på <span class="guimenu">OK</span>.</p>
+<p class="para">Når størrelsen på standardhukommelsen er øget for Java-applets, skal du lukke alle browsere og genstarte dem, før ændringen træder i kraft.</p></li></ol>
+</div>
+
+<p class="para">Denne indstilling får den applet, der bruges til at overføre filer til en Teaming-mappe, til at starte op med 256 MB hukommelse.  Hvis appletten stadig angiver, at der ikke er tilstrækkelig hukommelse til at køre den, kan det være nødvendigt at formindske dette tal.</p>
+</span>
+
+</div>
+
+</div>
+
+<p class="trademark"> Yderligere oplysninger finder du under <a href="./legal.html">Juridiske meddelelser</a>.</p>
+</body>
+</html>
