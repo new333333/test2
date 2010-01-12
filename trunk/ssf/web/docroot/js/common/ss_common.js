@@ -6451,6 +6451,7 @@ function ssEditAppConfig(menuDIV) {
 		var	eCBOX;
 		var	eDIV;
 		var	eIMG;
+		var	eSPAN;
 		var	eTABLE;
 		var	eTD;
 		var	eTR;
@@ -6600,9 +6601,12 @@ function ssEditAppConfig(menuDIV) {
 		eTD.width     = "1%";
 		eTD.appendChild(document.createTextNode(this.NBSP));
 		
-		eTD          = eTR.insertCell(eTR.cells.length);
+		eTD           = eTR.insertCell(eTR.cells.length);
 		eTD.className = "ss_objlist_table_columnhead";
-		eTD.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Column.Extension']));
+		eSPAN         = document.createElement("span");
+		eSPAN.style.whiteSpace = "nowrap";
+		eSPAN.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Column.Extension']));
+		eTD.appendChild(eSPAN);
 		eTD.setAttribute("nowrap", "nowrap");
 
 		eTD           = eTR.insertCell(eTR.cells.length);
@@ -6610,9 +6614,12 @@ function ssEditAppConfig(menuDIV) {
 		eTD.width     = "1%";
 		eTD.appendChild(document.createTextNode(this.NBSP));
 		
-		eTD          = eTR.insertCell(eTR.cells.length);
+		eTD           = eTR.insertCell(eTR.cells.length);
 		eTD.className = "ss_objlist_table_columnhead";
-		eTD.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Column.Application']));
+		eSPAN         = document.createElement("span");
+		eSPAN.style.whiteSpace = "nowrap";
+		eSPAN.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Column.Application']));
+		eTD.appendChild(eSPAN);
 		eTD.setAttribute("nowrap", "nowrap");
 		
 		eTD           = eTR.insertCell(eTR.cells.length);
