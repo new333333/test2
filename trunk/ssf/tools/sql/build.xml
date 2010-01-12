@@ -11,7 +11,7 @@
 	<property name="main.hibernate.dir" value="${main.project.dir}/hibernate" />
 	<property name="create.dir" value="${basedir}/create" />
 	<property name="update.dir" value="${basedir}/update" />
-	<property name="update.version.dir" value="${basedir}/update-2.0.0-2.1.0" />
+	<property name="update.version.dir" value="${basedir}/update-2.1.0-2.2.0" />
 	<property name="cinternal.dir" value="${create.dir}/internal" />
 	<property name="uinternal.dir" value="${update.dir}/internal" />
 	
@@ -380,10 +380,10 @@
 		<move file="${update.dir}/source-tables-jbpm-${database.type}-temp.sql" tofile="${uinternal.dir}/source-tables-jbpm-${database.type}.sql"/> 
 		<echo file="${update.dir}/update-${database.type}.sql" message="${ddl.use.database}${line.separator}"/>
 		<concat destfile="${update.dir}/update-${database.type}.sql" append="true">
-			<fileset file="${basedir}/update-2.0.0-2.1.0/update-${database.type}-pre.sql" />
+			<fileset file="${basedir}/update-2.1.0-2.2.0/update-${database.type}-pre.sql" />
  	  	    <fileset dir="${uinternal.dir}"
   	  	         includes="update-tables-*-${database.type}.sql" />
-			<fileset file="${basedir}/update-2.0.0-2.1.0/update-${database.type}-post.sql" />
+			<fileset file="${basedir}/update-2.1.0-2.2.0/update-${database.type}-post.sql" />
  	  	</concat>
 		<concat destfile="${update.dir}/update-thisbuild-${database.type}.sql" append="true">
 	  	    <fileset dir="${uinternal.dir}"
