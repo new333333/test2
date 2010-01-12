@@ -53,6 +53,7 @@ public class RedirectServlet extends HttpServlet {
 			targetPath = targetPath.substring(1);
 		String root = WebUrlUtil.getSSFContextRootURL(req);
 		root = root.substring(0, root.length() - SPropsUtil.getString("ssf.ctx", "/ssf").length());
+        resp.setContentType("text/html;charset=UTF-8");
 		resp.sendRedirect(root+targetPath);
 	}
 }
