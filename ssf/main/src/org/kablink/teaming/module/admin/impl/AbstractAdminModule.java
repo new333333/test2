@@ -247,12 +247,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    			switch (operation) {
    			case manageFunctionMembership:
     			getAccessControlManager().checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);
-    			
-    			//is this featured disabled
-    			if( !SPropsUtil.getBoolean("extensions.manage.enabled", true) ) {
-					throw new AccessControlException();
-				}
-    			
     			break;
    			default:
    				throw new NotSupportedException(operation.toString(), "checkAccess");
