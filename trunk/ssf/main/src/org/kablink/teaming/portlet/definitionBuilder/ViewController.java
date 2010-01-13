@@ -93,24 +93,52 @@ public class ViewController extends SAbstractController {
 				if (operation.equals("addDefinition")) {
 					//Add a new definition type
 					String name = PortletRequestUtils.getStringParameter(request,"propertyId_name", "");
-					if (name.equals("")) response.setRenderParameter("ss_configErrorMessage", NLT.get("definition.error.nullname"));
-					String caption = PortletRequestUtils.getStringParameter(request, "propertyId_caption", "");
-					String operationItem = PortletRequestUtils.getStringParameter(request, "operationItem", "");
-					Integer type = PortletRequestUtils.getIntParameter(request, "definitionType_"+operationItem);
-					if (Validator.isNotNull(name) && type != null) {
-						if (binderId == null) {
-							Definition def = getDefinitionModule().addDefinition(null, name, caption, type, new MapInputData(formData));			
-							selectedItem = def.getId();
+					if (name.equals("")) {
+						response.setRenderParameter("ss_configErrorMessage", NLT.get("definition.error.nullname"));
+					} else {
+						String chars = "!@#\\$&%^*()+=?~[]{}";
+						String badChars = "";
+						for (int i = 0; i < chars.length(); i++) {
+							if (name.contains(String.valueOf(chars.charAt(i)))) badChars += chars.charAt(i);
+						}
+						if (!badChars.equals("")) {
+							response.setRenderParameter("ss_configErrorMessage", 
+									NLT.get("definition.error.invalidCharacter", new String[]{badChars}));
 						} else {
-							Definition def = getDefinitionModule().addDefinition(getBinderModule().getBinder(binderId), name, caption, type, new MapInputData(formData));			
-							selectedItem = def.getId();
-							
+							String caption = PortletRequestUtils.getStringParameter(request, "propertyId_caption", "");
+							String operationItem = PortletRequestUtils.getStringParameter(request, "operationItem", "");
+							Integer type = PortletRequestUtils.getIntParameter(request, "definitionType_"+operationItem);
+							if (Validator.isNotNull(name) && type != null) {
+								if (binderId == null) {
+									Definition def = getDefinitionModule().addDefinition(null, name, caption, type, new MapInputData(formData));			
+									selectedItem = def.getId();
+								} else {
+									Definition def = getDefinitionModule().addDefinition(getBinderModule().getBinder(binderId), name, caption, type, new MapInputData(formData));			
+									selectedItem = def.getId();
+									
+								}
+							}
 						}
 					}
 					
 				} else if (operation.equals("modifyDefinition")) {
 					//Modify the name of the selected item
-					getDefinitionModule().modifyDefinitionProperties(selectedItem,  new MapInputData(formData));
+					String name = PortletRequestUtils.getStringParameter(request,"propertyId_name", "");
+					if (name.equals("")) {
+						response.setRenderParameter("ss_configErrorMessage", NLT.get("definition.error.nullname"));
+					} else {
+						String chars = "!@#\\$&%^*()+=?~[]{}";
+						String badChars = "";
+						for (int i = 0; i < chars.length(); i++) {
+							if (name.contains(String.valueOf(chars.charAt(i)))) badChars += chars.charAt(i);
+						}
+						if (!badChars.equals("")) {
+							response.setRenderParameter("ss_configErrorMessage", 
+									NLT.get("definition.error.invalidCharacter", new String[]{badChars}));
+						} else {
+							getDefinitionModule().modifyDefinitionProperties(selectedItem,  new MapInputData(formData));
+						}
+					}
 					
 				} else if (operation.equals("setVisibility")) {
 					//Modify the name of the selected item
