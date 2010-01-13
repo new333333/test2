@@ -68,7 +68,8 @@ var m_landingPageConfig = null;
 m_landingPageConfig = { configData : '<ssf:escapeJavaScript value="${ssDefinitionEntry.customAttributes[property_name].value}" />', mashupPropertyName: '<ssf:escapeJavaScript value="${ss_mashupPropertyName}" />' };
 
 // Create an array of objects where each object holds the name and id of a file attachment.
-<jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Workspace" scope="request" />
+<c:if test="${!empty ssBinder}">
+<jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
 m_fileAttachments = 
 	[
 	<%
@@ -99,7 +100,7 @@ m_fileAttachments =
 		}// end for()
 	%>
 	];
-
+</c:if>
 
 function ss_mashup_deleteAll_${renderResponse.namespace}() {
 	if (confirm("<ssf:nlt tag="mashup.deleteEverythingConfirm"/>")) {
