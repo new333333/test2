@@ -63,15 +63,16 @@ public class DirPath {
 	public static String getCustomJspsBasePath() {
 		return getWebappDirPathHidden("jsp/custom_jsps");
 	}
-	public static String getLibraryPath() {
-		return getWebinfDirPath() + File.separator + "lib";
+	public static String getWebappRootDirPath() {
+		return SpringContextUtil.getWebappRootDirPath();
 	}
-	private static String getWebinfDirPath() {
-    	return SpringContextUtil.getWebappRootDirPath() + File.separator + "WEB-INF";
+	
+	public static String getWebinfDirPath() {
+    	return getWebappRootDirPath() + File.separator + "WEB-INF";
     }
     
     private static String getWebappDirPathVisible(String subdirName) {
-    	return SpringContextUtil.getWebappRootDirPath() + File.separator + subdirName;
+    	return getWebappRootDirPath() + File.separator + subdirName;
     }
     
     private static String getWebappDirPathHidden(String subdirName) {
