@@ -93,6 +93,7 @@ public class ViewController extends SAbstractController {
 				if (operation.equals("addDefinition")) {
 					//Add a new definition type
 					String name = PortletRequestUtils.getStringParameter(request,"propertyId_name", "");
+					if (name.equals("")) response.setRenderParameter("ss_configErrorMessage", NLT.get("definition.error.nullname"));
 					String caption = PortletRequestUtils.getStringParameter(request, "propertyId_caption", "");
 					String operationItem = PortletRequestUtils.getStringParameter(request, "operationItem", "");
 					Integer type = PortletRequestUtils.getIntParameter(request, "definitionType_"+operationItem);
