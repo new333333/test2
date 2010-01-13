@@ -40,6 +40,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -56,6 +57,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
+import org.kablink.teaming.portletadapter.portlet.PortletResponseImpl;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
@@ -303,6 +305,18 @@ public class ViewPermalinkController  extends SAbstractController {
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map<String,Object> model = new HashMap<String,Object>();
+
+		if ( response instanceof PortletResponseImpl )
+		{
+			HttpServletResponse httpServletResponse;
+			
+			// Set the http response header to no-cache so this page won't get cached.
+			httpServletResponse = ((PortletResponseImpl)response).getHttpServletResponse();
+			httpServletResponse.setHeader( "Pragma", "no-cache" );
+			httpServletResponse.setHeader( "Cache-Control", "no-cache" );
+			httpServletResponse.setDateHeader( "Expires", 0 );
+		}
+
 		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		String entityType= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, "");
