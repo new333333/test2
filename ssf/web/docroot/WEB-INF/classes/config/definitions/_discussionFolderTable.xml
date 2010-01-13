@@ -21,12 +21,6 @@
         <property name="required" value=""/> 
       </properties> 
     </item>  
-    <item name="folderAttributeList" caption="__attributeList" type="data" category="folderData" display="form" id="15"> 
-      <properties> 
-        <property name="caption" value="__attributeList"/>  
-        <property name="name" value="attributes"/> 
-      </properties> 
-    </item>  
     <item name="folderRemoteApp" caption="__remoteApp" type="data" category="folderData" display="form" id="10"> 
       <properties> 
         <property name="caption" value="__remoteApp"/>  
