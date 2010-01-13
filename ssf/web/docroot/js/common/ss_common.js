@@ -2643,6 +2643,7 @@ function ss_showNotLoggedInMsg() {
 }
 
 function ss_showLightbox(id, zIndex, opacity, className) {
+	ss_hideSpannedAreas();
 	if (id == null) id = "ss_light_box";
 	if (zIndex == null) zIndex = ssLightboxZ;
 	if (opacity == null) opacity = .5;
@@ -2678,6 +2679,7 @@ function ss_hideLightbox(id) {
 		lightBox.style.display = "none";
 		lightBox.parentNode.removeChild(lightBox);
 	}
+	ss_showSpannedAreas();
 }
 
 //Support routines for the help system
@@ -2766,6 +2768,7 @@ var ss_helpSystem = {
 			}
     		//Delete all of the highlighted nodes
     		this.clearHighlights();
+    		ss_showSpannedAreas();
 
     		dojo.fadeOut({node:lightBox, end: 0, delay:150, onEnd: function() {
     			var lightBox2 = document.getElementById('ss_help_light_box');
