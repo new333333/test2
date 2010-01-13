@@ -9,11 +9,11 @@
 */
 
 ({
-	'months-format-wide': ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"],
-	'months-format-abbr': ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"],
+	'months-format-wide': ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
+	'months-format-abbr': ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"],
 	'months-standAlone-narrow': ["G", "F", "M", "A", "M", "G", "L", "A", "S", "O", "N", "D"],
-	'days-format-wide': ["domenica", "lunedì", "martedì", "mercoledì", "giovedì", "venerdì", "sabato"],
-	'days-format-abbr': ["dom", "lun", "mar", "mer", "gio", "ven", "sab"],
+	'days-format-wide': ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"],
+	'days-format-abbr': ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"],
 	'days-standAlone-narrow': ["D", "L", "M", "M", "G", "V", "S"],
 
 	'dateFormat-full': "EEEE d MMMM yyyy",
