@@ -328,11 +328,11 @@ td.rightend
 	background: #666;
 	}
 fieldset{
-  	margin-top: 40px;
-  	margin-bottom: 40px;
-    margin-top: 6px;
-    margin-bottom: 4px;
-    border: 1px solid ${ss_style_border_color_light};
+  	margin-top: 40px !important;
+  	margin-bottom: 40px !important;
+    margin-top: 6px !important;
+    margin-bottom: 4px !important;
+    border: 1px solid ${ss_style_border_color_light} !important;
 	} 
 .ss_fieldset_login {
   	margin-top: 80px;
