@@ -697,6 +697,13 @@ public class ExportHelper {
 		entityElem.addAttribute("title", entity.getTitle());
 		addExportVersion(entityElem, entity);
 		addZoneId(entityElem, entity);
+
+		// if a folder
+		if (entity instanceof Binder) {
+			entityElem.addAttribute("libraryFolder", String.valueOf(((Binder) entity).isLibrary()));
+			entityElem.addAttribute("uniqueTitles", String.valueOf(((Binder) entity).isUniqueTitles()));
+		}
+
 		addEntitySignature(entityElem, entity);
 		
 		String entityUrl = "";
@@ -1469,6 +1476,19 @@ public class ExportHelper {
 					def.getId(), new DomInputData(doc, iCalModule),
 					new HashMap(), null).getId().longValue();
 			binderIdMap.put(binderId, newBinderId);
+			final Binder binder = loadBinder(newBinderId);
+			String libraryFolder = doc.getRootElement().attributeValue("libraryFolder", "");
+			if (libraryFolder.equalsIgnoreCase("true")) {
+				binder.setLibrary(true);
+			} else {
+				binder.setLibrary(false);
+			}
+			String uniqueTitles = doc.getRootElement().attributeValue("uniqueTitles", "");
+			if (uniqueTitles.equalsIgnoreCase("true")) {
+				binder.setUniqueTitles(true);
+			} else {
+				binder.setUniqueTitles(false);
+			}
 
 			// add file attachments
 			addBinderFileAttachments(newBinderId, topBinderId, binderIdMap, doc, tempDir, reportMap);
@@ -1477,7 +1497,6 @@ public class ExportHelper {
 			addTeamMembers(newBinderId, doc, nameCache);
 
 			// workflows
-			final Binder binder = loadBinder(newBinderId);
 			final Map rMap = reportMap;
 			final Map fNameCache = nameCache;
 			statusTicket.setStatus(NLT.get("administration.export_import.importing", new String[] {binder.getPathName()}));
