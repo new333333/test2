@@ -578,7 +578,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(
 				RequestContextHolder.getRequestContext().getZoneId());
 
-		User user = (User)getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());
+		User user = (User)getProfileDao().loadUserDeadOrAlive(userId, RequestContextHolder.getRequestContext().getZoneId());
 
 		long userQuota = zoneConf.getDiskQuotaUserDefault();
 
@@ -599,7 +599,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
 		//Set each users individual quota
      	for (Long id : userIds) {
-			User user = (User)getProfileDao().loadUser(id, RequestContextHolder.getRequestContext().getZoneId());
+			User user = (User)getProfileDao().loadUserDeadOrAlive(id, RequestContextHolder.getRequestContext().getZoneId());
 			user.setDiskQuota(megabytes);
      	}
 	}
@@ -643,7 +643,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    
    // Walk through the user's group memberships, determine the max quota of all the groups
    public void resetMaxGroupsDiskQuota(Long userId) {
-		User user = (User) getProfileDao().loadUser(userId,
+		User user = (User) getProfileDao().loadUserDeadOrAlive(userId,
 				RequestContextHolder.getRequestContext().getZoneId());
 		Long maxGroupsQuota = 0L;
 		List groups = user.getMemberOf();
