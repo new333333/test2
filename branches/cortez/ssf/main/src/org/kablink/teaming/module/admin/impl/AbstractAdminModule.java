@@ -102,6 +102,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.Html;
@@ -245,8 +246,14 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    		} else {
    			switch (operation) {
    			case manageFunctionMembership:
-    				getAccessControlManager().checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);
-   				break;
+    			getAccessControlManager().checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);
+    			
+    			//is this featured disabled
+    			if( !SPropsUtil.getBoolean("extensions.manage.enabled", true) ) {
+					throw new AccessControlException();
+				}
+    			
+    			break;
    			default:
    				throw new NotSupportedException(operation.toString(), "checkAccess");
   					
@@ -286,7 +293,11 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    				break;
 			case manageExtensions:
   				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
-   				break;
+  				//is this featured disabled
+    			if( !SPropsUtil.getBoolean("extensions.manage.enabled", true) ) {
+					throw new AccessControlException();
+				}
+  				break;
 			default:
    				throw new NotSupportedException(operation.toString(), "checkAccess");
 		}
