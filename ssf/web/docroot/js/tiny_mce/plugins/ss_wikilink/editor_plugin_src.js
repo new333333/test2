@@ -71,10 +71,10 @@
 		 */
 		getInfo : function() {
 			return {
-				longname : 'ss_wikilink plugin',
-				author : 'Some author',
-				authorurl : 'http://tinymce.moxiecode.com',
-				infourl : 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/ss_wikilink',
+				longname : 'Teaming Add Link to Another Entry',
+				author : 'Novell',
+				authorurl : 'http://kablink.org',
+				infourl : 'http://kablink.org',
 				version : "1.0"
 			};
 		}

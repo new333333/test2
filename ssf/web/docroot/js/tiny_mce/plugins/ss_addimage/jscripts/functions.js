@@ -10,7 +10,7 @@ function preinit() {
 	//tinyMCE.setWindowArg('mce_windowresize', false);
 
 	// Import external list url javascript
-	if (url = tinyMCE.getParam("external_image_list_url"))
+	if (url = tinyMCEPopup.getParam("external_image_list_url"))
 		document.write('<script language="javascript" type="text/javascript" src="' + tinyMCE.editor.documentBaseURI.toAbsolute(url) + '"></script>');
 }
 
@@ -31,7 +31,7 @@ function getImageSrc(str) {
 
 		src = src.substring(0, src.indexOf('\''));
 
-		if (tinyMCE.getParam('convert_urls'))
+		if (tinyMCEPopup.getParam('convert_urls'))
 			src = convertURL(src, null, true);
 
 		//alert("src = "+src)
@@ -81,7 +81,7 @@ function init() {
 		if (mceRealSrc != "") {
 			src = mceRealSrc;
 
-			if (tinyMCE.getParam('convert_urls'))
+			if (tinyMCEPopup.getParam('convert_urls'))
 				src = convertURL(src, elm, true);
 		}
 
@@ -127,7 +127,7 @@ function init() {
 		addClassesToList('classlist', 'ss_addimage');
 
 	// If option enabled default contrain proportions to checked
-	if (tinyMCE.getParam("ss_addimage_constrain_proportions", true))
+	if (tinyMCEPopup.getParam("ss_addimage_constrain_proportions", true))
 		formObj.constrain.checked = true;
 
 }
@@ -228,7 +228,7 @@ function insertAction() {
 		return
 	}
 
-	if (tinyMCE.getParam("accessibility_warnings")) {
+	if (tinyMCEPopup.getParam("accessibility_warnings")) {
 		if (formObj.alt.value == "") {
 			var answer = confirm(tinyMCEPopup.getLang('ss_addimage_dlg.missing_alt', '', true));
 			if (answer == true) {
@@ -328,7 +328,7 @@ function updateStyle() {
 	var formObj = document.forms[0];
 	var st = dom.parseStyle(formObj.style.value);
 
-	if (tinyMCE.getParam('inline_styles', false)) {
+	if (tinyMCEPopup.getParam('inline_styles', false)) {
 		st['width'] = formObj.width.value == '' ? '' : formObj.width.value + "px";
 		st['height'] = formObj.height.value == '' ? '' : formObj.height.value + "px";
 		st['border-width'] = formObj.border.value == '' ? '' : formObj.border.value + "px";
@@ -418,7 +418,7 @@ function showPreviewImage(src, start) {
 
 	var elm = document.getElementById('prev');
 
-	if (!start && tinyMCE.getParam("ss_addimage_update_dimensions_onchange", true))
+	if (!start && tinyMCEPopup.getParam("ss_addimage_update_dimensions_onchange", true))
 		resetImageData();
 
 	if (src == "")

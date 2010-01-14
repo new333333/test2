@@ -61,10 +61,10 @@
 
 		getInfo : function() {
 			return {
-				longname : 'SS Add image',
-				author : 'Moxiecode Systems AB',
-				authorurl : 'http://tinymce.moxiecode.com',
-				infourl : 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/ss_addimage',
+				longname : 'Teaming Add Image',
+				author : 'Peter Hurley - Novell',
+				authorurl : 'http://kablink.org',
+				infourl : 'http://kablink.org',
 				version : tinymce.majorVersion + "." + tinymce.minorVersion
 			};
 		}
