@@ -1,0 +1,20 @@
+tinyMCE.addI18n('ru.emotions_dlg',{
+title:"\r\n        \u0412\u0441\u0442\u0430\u0432\u0438\u0442\u044C \u0441\u043C\u0430\u0439\u043B\r\n      ",
+desc:"\r\n        \u0421\u043C\u0430\u0439\u043B\u0438\u043A\u0438\r\n      ",
+cool:"\r\n        Cool\r\n      ",
+cry:"\r\n        Cry\r\n      ",
+embarassed:"\r\n        Embarassed\r\n      ",
+foot_in_mouth:"\r\n        Foot in mouth\r\n      ",
+frown:"\r\n        Frown\r\n      ",
+innocent:"\r\n        Innocent\r\n      ",
+kiss:"\r\n        Kiss\r\n      ",
+laughing:"\r\n        Laughing\r\n      ",
+money_mouth:"\r\n        Money mouth\r\n      ",
+sealed:"\r\n        Sealed\r\n      ",
+smile:"\r\n        Smile\r\n      ",
+surprised:"\r\n        Surprised\r\n      ",
+tongue_out:"\r\n        Tongue out\r\n      ",
+undecided:"\r\n        Undecided\r\n      ",
+wink:"\r\n        Wink\r\n      ",
+yell:"\r\n        Yell\r\n      "
+});
