@@ -41,7 +41,7 @@
      <div style="padding-left:20px;">
      <ssf:nlt tag="editor.wikilink.tip2"><%--
        --%><ssf:param name="value" useBody="true"><%--
-           --%><img align="absmiddle" src="<html:rootPath/>js/tiny_mce/plugins/ss_wikilink/images/wikilink.gif" alt="Wikilink" title="" /><%--
+           --%><img align="absmiddle" src="<html:tinyMcePath/>plugins/ss_wikilink/images/wikilink.gif" alt="Wikilink" title="" /><%--
        --%></ssf:param><%--   
      --%></ssf:nlt>  <%--
      --%><ssf:inlineHelp jsp="workspaces_folders/entries/link_to_entry_markup"/><br/>

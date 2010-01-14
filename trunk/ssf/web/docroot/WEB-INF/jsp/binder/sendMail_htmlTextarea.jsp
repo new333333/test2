@@ -32,7 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<script type="text/javascript" src="<html:rootPath/>js/tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript" src="<html:tinyMcePath/>tiny_mce.js"></script>
 <script type="text/javascript">
 //need to shut off relative links and adding pictures for mail.
 tinyMCE.init(
