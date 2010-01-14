@@ -48,8 +48,8 @@
 <%@ include file="/WEB-INF/jsp/common/view_css.jsp" %>
 
 <title><ssf:nlt tag="wiki.link.popup.title"/></title>
-	<script language="javascript" type="text/javascript" src="<html:rootPath/>js/tiny_mce/tiny_mce_popup.js"></script>
-	<script language="javascript" type="text/javascript" src="<html:rootPath/>js/tiny_mce/plugins/ss_wikilink/jscripts/functions.js"></script>
+	<script language="javascript" type="text/javascript" src="<html:tinyMcePath/>tiny_mce_popup.js"></script>
+	<script language="javascript" type="text/javascript" src="<html:tinyMcePath/>plugins/ss_wikilink/jscripts/functions.js"></script>
 	<base target="_self" />
 </head>
 <body onload="tinyMCEPopup.executeOnLoad('init();');" style="display: none">

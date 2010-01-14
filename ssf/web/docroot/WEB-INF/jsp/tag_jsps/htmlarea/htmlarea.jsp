@@ -67,7 +67,7 @@
             --%><c:set var="wikiLinkBinderId" value="${ssBinderId}" scope="request" /><%--
     --%></c:if><%--
 --%></c:if><%--
---%><script type="text/javascript" src="<html:rootPath/>js/tiny_mce/tiny_mce.js"></script>
+--%><script type="text/javascript" src="<html:tinyMcePath/>tiny_mce.js"></script>
 <script type="text/javascript">
 <c:if test="${!empty ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 var ss_diskQuotaExceeded = ${ss_diskQuotaExceeded};
