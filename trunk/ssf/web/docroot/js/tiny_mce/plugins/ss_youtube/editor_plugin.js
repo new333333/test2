@@ -73,8 +73,8 @@
 		 */
 		getInfo : function() {
 			return {
-				longname : 'ss_youtube plugin',
-				author : 'Peter Hurley',
+				longname : 'Teaming YouTube Link',
+				author : 'Peter Hurley - Novell',
 				authorurl : 'http://kablink.org',
 				infourl : 'http://kablink.org',
 				version : "1.0"
