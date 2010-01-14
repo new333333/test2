@@ -45,9 +45,7 @@ import javax.servlet.http.HttpSession;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.module.authentication.UserIdNotUniqueException;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
-import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -140,7 +138,7 @@ public class LoginController  extends SAbstractControllerRetry {
 		String durangoUI;
 		
 		durangoUI = SPropsUtil.getString( "use-durango-ui", "");
-		if ( durangoUI != null && durangoUI.equalsIgnoreCase( "1" ) )
+		if ( false && durangoUI != null && durangoUI.equalsIgnoreCase( "1" ) )
 		{
 			return new ModelAndView( "forum/GwtMainPage", model );
 		}

@@ -44,7 +44,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
@@ -56,7 +55,6 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
-import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.portletadapter.portlet.PortletResponseImpl;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
@@ -74,6 +72,8 @@ import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
 
+import com.liferay.util.Http;
+
 
 /**
  * @author Peter Hurley
@@ -84,6 +84,8 @@ public class ViewPermalinkController  extends SAbstractController {
 		User user = null;
 		String sUrl;
 		try {
+			String durangoUI;
+			
 			if (!WebHelper.isUserLoggedIn(request) || RequestContextHolder.getRequestContext() == null) {
 				Long zoneId = WebHelper.getZoneIdByVirtualHost(request);
 				user = AccessUtils.getZoneGuestUser(zoneId);
@@ -101,6 +103,21 @@ public class ViewPermalinkController  extends SAbstractController {
 				user = RequestContextHolder.getRequestContext().getUser();
 				sUrl = processRequest(request);
 			}
+
+			durangoUI = SPropsUtil.getString( "use-durango-ui", "");
+			if ( durangoUI != null && durangoUI.equalsIgnoreCase( "1" ) )
+			{
+				String param;
+				
+				// Has this permalink already been seen by GWT?
+				param = PortletRequestUtils.getStringParameter( request, "seen_by_gwt", "");
+				if ( param == null || !param.equalsIgnoreCase( "1" ) )
+				{
+					// No, don't redirect the url.
+					return;
+				}
+			}
+			
 			response.sendRedirect(sUrl);
 		} catch  (AccessControlException ac) {
 			//User must log in to see this
@@ -305,7 +322,8 @@ public class ViewPermalinkController  extends SAbstractController {
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map<String,Object> model = new HashMap<String,Object>();
-
+		String durangoUI;
+		
 		if ( response instanceof PortletResponseImpl )
 		{
 			HttpServletResponse httpServletResponse;
@@ -338,6 +356,24 @@ public class ViewPermalinkController  extends SAbstractController {
 		else if("false".equals(captive))
 			url.setParameter(WebKeys.URL_CAPTIVE, "false");
 		model.put(WebKeys.URL, url.toString());
+
+		durangoUI = SPropsUtil.getString( "use-durango-ui", "");
+		if ( durangoUI != null && durangoUI.equalsIgnoreCase( "1" ) )
+		{
+			String param;
+			
+			// If this permalink has already been handled by the GWT page there will be
+			// a "seen_by_gwt" parameter on the url.
+			
+			// Has this permalink already been seen by GWT?
+			param = PortletRequestUtils.getStringParameter( request, "seen_by_gwt", "");
+			if ( param == null || !param.equalsIgnoreCase( "1" ) )
+			{
+				// No, let the gwt page handle this permalink
+				return new ModelAndView( "forum/GwtMainPage", model );
+			}
+		}
+		
 		if (!"true".equals(PortletRequestUtils.getStringParameter(request, "accessException")) &&
 				!"true".equals(PortletRequestUtils.getStringParameter(request, "noBinderByIdException"))) {
 			return new ModelAndView(WebKeys.VIEW_LOGIN_RETURN, model);
