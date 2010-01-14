@@ -609,26 +609,29 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		// iterate through the members of a group - set each members max group quota to the 
 	    // maximum value of all the groups they're a member of.
 	   Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		for (Long groupId : groupIds) {
-			Group group = (Group) getProfileDao().loadGroup(groupId, zoneId);
-			group.setDiskQuota(megabytes);
-			if (groupId != null) {
-				List gIds = new ArrayList();
-				gIds.add(groupId);
-				Set memberIds = getProfileDao().explodeGroups(gIds, zoneId);
-				List memberList = getProfileDao().loadUserPrincipals(memberIds, zoneId, false);
-				Iterator itUsers = memberList.iterator();
-				while (itUsers.hasNext()) {
-					Principal member = (Principal) itUsers.next();
-					if (member.getEntityType().equals(EntityIdentifier.EntityType.user)) {
-						User user = (User)member;
-						Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(user.getId(), zoneId);
-						List<Group> groups = getProfileDao().loadGroups(userGroupIds, zoneId);
-						Long maxGroupQuota = 0L;
-						for (Group g : groups) {
-							if (g.getDiskQuota() > maxGroupQuota) maxGroupQuota = g.getDiskQuota();
+	   Collection<GroupPrincipal> groupPrincipals = getProfileDao().loadGroupPrincipals(groupIds, zoneId, false);
+		for (GroupPrincipal gp : groupPrincipals) {
+			if (gp instanceof Group) {
+				Group group = (Group)gp;
+				if (group != null && group instanceof Group) {
+					group.setDiskQuota(megabytes);
+					List gIds = new ArrayList();
+					gIds.add(group.getId());
+					Set memberIds = getProfileDao().explodeGroups(gIds, zoneId);
+					List memberList = getProfileDao().loadUserPrincipals(memberIds, zoneId, false);
+					Iterator itUsers = memberList.iterator();
+					while (itUsers.hasNext()) {
+						Principal member = (Principal) itUsers.next();
+						if (member.getEntityType().equals(EntityIdentifier.EntityType.user)) {
+							User user = (User)member;
+							Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(user.getId(), zoneId);
+							List<Group> groups = getProfileDao().loadGroups(userGroupIds, zoneId);
+							Long maxGroupQuota = 0L;
+							for (Group g : groups) {
+								if (g.getDiskQuota() > maxGroupQuota) maxGroupQuota = g.getDiskQuota();
+							}
+							user.setMaxGroupsQuota(maxGroupQuota);
 						}
-						user.setMaxGroupsQuota(maxGroupQuota);
 					}
 				}
 			}
