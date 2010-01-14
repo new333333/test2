@@ -55,7 +55,7 @@
 
 			// Add a node change handler, selects the button in the UI when a image is selected
 			ed.onNodeChange.add(function(ed, cm, n) {
-				cm.setActive('ss_addimage', n.nodeName == 'IMG' && n.className == 'ss_addimage');
+				cm.setActive('ss_addimage', n.nodeName == 'IMG' && tinymce.trim(n.className) == 'ss_addimage');
 			});
 		},
 
