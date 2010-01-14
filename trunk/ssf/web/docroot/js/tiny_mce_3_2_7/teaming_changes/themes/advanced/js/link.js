@@ -78,7 +78,7 @@ var LinkDialog = {
 		}
 
 		// Don't move caret if selection was image
-		if (e.childNodes.length != 1 || e.firstChild.nodeName != 'IMG') {
+		if (e.childNodes && (e.childNodes.length != 1 || e.firstChild.nodeName != 'IMG')) {
 			ed.focus();
 			ed.selection.select(e);
 			ed.selection.collapse(0);
