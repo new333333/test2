@@ -124,7 +124,7 @@
 		<war
 			basedir="${web.dir}"
 			destfile="${war.file}"
-			excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml,WEB-INF/xslt/*.tmpl"
+			excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml,WEB-INF/xslt/*.tmpl,js/dojo.changes/**"
 			webxml="${web.dir}/WEB-INF/${generic.web.xml}"
 		>
 			<!-- No longer necessary
@@ -132,6 +132,8 @@
 				<attribute name="Class-Path" value="kablink-teaming-main.jar ${classpath.manifest.ss} ${classpath.manifest.3rd}" />
 			</manifest>-->
 		</war>
+		
+		<antcall target="add-dojo-changes"/>
 	
 		<antcall target="add-image-themes"/>
 	
@@ -140,6 +142,19 @@
 		<antcall target="add-messages-files"/>
 	</target>
 
+	<target name="add-dojo-changes">
+		<delete dir="temp"/>
+		
+		<copy todir="temp/js/dojo" overwrite="true">
+			<fileset dir="${web.dir}/js/dojo.changes" />
+		</copy>
+		
+		<war
+			basedir="temp"
+			destfile="${war.file}"
+			update="true"/>
+	</target>
+	
 	<target name="add-image-themes">
 		<delete dir="temp"/>
 	
@@ -212,15 +227,18 @@
 	
 	<target name="deploy-light">
 		<copy todir="${app.server.ssf.dir}" overwrite="true">
-			<fileset dir="${web.dir}"
-				includes="WEB-INF/context/applicationContext.xml,WEB-INF/context/additionalContext.xml,WEB-INF/context/security.xml"
-			/>
+			<fileset dir="${web.dir}">
+				<include name="WEB-INF/context/applicationContext.xml,WEB-INF/context/additionalContext.xml,WEB-INF/context/security.xml" />
+				<exclude name="js/dojo.changes/**" />
+			</fileset>
 		</copy>
 		<copy todir="${app.server.ssf.dir}">
-			<fileset dir="${web.dir}"
-				excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml,WEB-INF/xslt/*.tmpl"
-			/>
+			<fileset dir="${web.dir}">
+				<exclude name="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml,WEB-INF/xslt/*.tmpl" />
+				<exclude name="js/dojo.changes/**" />
+			</fileset>
 		</copy>
+		<antcall target="deploy-dojo-changes" />
 	</target>
 	
 	<target name="deploy-jsp-only">
@@ -233,9 +251,19 @@
 	
 	<target name="deploy-js-only">
 		<copy todir="${app.server.ssf.dir}/js">
-			<fileset dir="${web.dir}/js"
-				includes="**/*.js"
-			/>
+			<fileset dir="${web.dir}/js">
+				<include name="**/*.js" />
+				<exclude name="dojo.changes/**" />
+			</fileset>
+		</copy>
+		<antcall target="deploy-dojo-changes" />
+	</target>
+	
+	<target name="deploy-dojo-changes">
+		<copy todir="${app.server.ssf.dir}/js/dojo" overwrite="true">
+			<fileset dir="${web.dir}/js/dojo.changes">
+				<include name="**/*.js" />
+			</fileset>
 		</copy>
 	</target>
 	
