@@ -398,7 +398,7 @@ public class RelevanceDashboardHelper {
 		
 		List trackedPlaces = SearchUtils.getTrackedPlacesIds(bs, binder);
 		List<String> trackedPeopleIds = SearchUtils.getTrackedPeopleIds(bs, binder);
-		if (trackedPlaces.size() > 0) {
+		if (trackedPlaces.size() > 0 || trackedPeopleIds.size() > 0) {
 			Criteria crit = SearchUtils.entriesForTrackedPlacesAndPeople(bs, trackedPlaces, trackedPeopleIds);
 			Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
