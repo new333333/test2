@@ -112,9 +112,9 @@ public class SearchUtils {
 		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
 		
 		Disjunction disjunction = disjunction();
-		disjunction.add(in(ENTRY_ANCESTRY, userWorkspaces));
+		if (!userWorkspaces.isEmpty()) disjunction.add(in(ENTRY_ANCESTRY, userWorkspaces));
 		
-		disjunction.add(in(CREATORID_FIELD, trackedPeopleIds));
+		if (!trackedPeopleIds.isEmpty()) disjunction.add(in(CREATORID_FIELD, trackedPeopleIds));
 		crit.add(disjunction);
 
 		return crit;
