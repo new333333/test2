@@ -49,9 +49,6 @@ public class ResponseHeaderFilter implements Filter {
 
 	public void doFilter(ServletRequest req, ServletResponse res,
 			FilterChain chain) throws IOException, ServletException {
-		// Pass the request/response on.
-		chain.doFilter(req, res);
-		
 		// Apply the headers
 		if(res instanceof HttpServletResponse) {
 			HttpServletResponse response = (HttpServletResponse) res;
@@ -62,7 +59,7 @@ public class ResponseHeaderFilter implements Filter {
 				String paramName = (String) e.nextElement();
 				String headerName = null;
 				String scheme = null;
-				int index = paramName.indexOf(".");
+				int index = paramName.indexOf(":");
 				if(index < 0) {
 					headerName = paramName;
 				}
@@ -71,22 +68,23 @@ public class ResponseHeaderFilter implements Filter {
 					scheme = paramName.substring(index+1);
 				}
 				// Set the header only if it isn't already set.
-				if(!response.containsHeader("headerName")) {
+				if(!response.containsHeader(headerName)) {
 					if(scheme != null) {
 						// applies only if scheme matches
 						if(scheme.equalsIgnoreCase(req.getScheme()))
-							response.setHeader(headerName, fc.getInitParameter(headerName));
+							response.setHeader(headerName, fc.getInitParameter(paramName));
 					}
 					else {
 						// applies regardless of scheme
-						response.setHeader(headerName, fc.getInitParameter(headerName));
+						response.setHeader(headerName, fc.getInitParameter(paramName));
 					}
-				}
-				else {
-					int i = 10; // just to set break point
 				}
 			}
 		}
+		// Pass the request/response on. This allows application to selectively overwrite 
+		// the previous header values set above. That is, application has the final word
+		// over this general settings.
+		chain.doFilter(req, res);		
 	}
 
 	public void init(FilterConfig fc) throws ServletException {
