@@ -49,16 +49,42 @@ public class ResponseHeaderFilter implements Filter {
 
 	public void doFilter(ServletRequest req, ServletResponse res,
 			FilterChain chain) throws IOException, ServletException {
-		HttpServletResponse response = (HttpServletResponse) res;
-		
-		// Set the provided HTTP response parameters
-		for (Enumeration e = fc.getInitParameterNames(); e.hasMoreElements();) {
-			String headerName = (String) e.nextElement();
-			response.addHeader(headerName, fc.getInitParameter(headerName));
+		// Apply the headers
+		if(res instanceof HttpServletResponse) {
+			HttpServletResponse response = (HttpServletResponse) res;
+			
+			// Set the provided HTTP response parameters
+			for (Enumeration e = fc.getInitParameterNames(); e.hasMoreElements();) {
+				// Break the param name into header name and scheme name.
+				String paramName = (String) e.nextElement();
+				String headerName = null;
+				String scheme = null;
+				int index = paramName.indexOf(":");
+				if(index < 0) {
+					headerName = paramName;
+				}
+				else {
+					headerName = paramName.substring(0, index);
+					scheme = paramName.substring(index+1);
+				}
+				// Set the header only if it isn't already set.
+				if(!response.containsHeader(headerName)) {
+					if(scheme != null) {
+						// applies only if scheme matches
+						if(scheme.equalsIgnoreCase(req.getScheme()))
+							response.setHeader(headerName, fc.getInitParameter(paramName));
+					}
+					else {
+						// applies regardless of scheme
+						response.setHeader(headerName, fc.getInitParameter(paramName));
+					}
+				}
+			}
 		}
-		
-		// Pass the request/response on
-		chain.doFilter(req, response);
+		// Pass the request/response on. This allows application to selectively overwrite 
+		// the previous header values set above. That is, application has the final word
+		// over this general settings.
+		chain.doFilter(req, res);		
 	}
 
 	public void init(FilterConfig fc) throws ServletException {
