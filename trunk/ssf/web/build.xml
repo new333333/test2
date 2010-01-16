@@ -134,6 +134,7 @@
 		</war>
 		
 		<antcall target="add-dojo-changes"/>
+		<antcall target="add-tinymce-changes"/>
 	
 		<antcall target="add-image-themes"/>
 	
@@ -147,6 +148,19 @@
 		
 		<copy todir="temp/js/dojo" overwrite="true">
 			<fileset dir="${web.dir}/js/dojo.changes" />
+		</copy>
+		
+		<war
+			basedir="temp"
+			destfile="${war.file}"
+			update="true"/>
+	</target>
+	
+	<target name="add-tinymce-changes">
+		<delete dir="temp"/>
+		
+		<copy todir="temp/js/tiny_mce_3_2_7/tiny_mce" overwrite="true">
+			<fileset dir="${web.dir}/js/tiny_mce_3_2_7/teaming_changes" />
 		</copy>
 		
 		<war
@@ -239,6 +253,7 @@
 			</fileset>
 		</copy>
 		<antcall target="deploy-dojo-changes" />
+		<antcall target="deploy-tinymce-changes" />
 	</target>
 	
 	<target name="deploy-jsp-only">
@@ -257,12 +272,21 @@
 			</fileset>
 		</copy>
 		<antcall target="deploy-dojo-changes" />
+		<antcall target="deploy-tinymce-changes" />
 	</target>
 	
 	<target name="deploy-dojo-changes">
 		<copy todir="${app.server.ssf.dir}/js/dojo" overwrite="true">
 			<fileset dir="${web.dir}/js/dojo.changes">
 				<include name="**/*.js" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="deploy-tinymce-changes">
+		<copy todir="${app.server.ssf.dir}/js/tiny_mce_3_2_7/tiny_mce" overwrite="true">
+			<fileset dir="${web.dir}/js/tiny_mce_3_2_7/teaming_changes">
+				<include name="**/*.*" />
 			</fileset>
 		</copy>
 	</target>
