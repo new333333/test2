@@ -43,6 +43,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 
@@ -79,6 +80,7 @@ public class ElementBuilderMashupCanvas extends AbstractElementBuilder {
 				}
 			}
 		}
-    	return build(element, obj, dataElemType, dataElemName);
+		String mashupValue = DefinitionHelper.fixupMashupCanvasGraphics(obj.toString(), entity);
+    	return build(element, mashupValue, dataElemType, dataElemName);
     }
 }
