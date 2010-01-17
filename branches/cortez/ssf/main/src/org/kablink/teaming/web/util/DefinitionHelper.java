@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Collection;
+import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.SortedMap;
 import java.util.regex.Matcher;
@@ -68,6 +69,7 @@ import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
@@ -1067,6 +1069,44 @@ public class DefinitionHelper {
     				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID).equals("") &&
     				!mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ZONE_UUID)) {
     			mashupValues[i] = mashupValues[i].replaceFirst(",", ",zoneUUID="+zoneInfoId+",");
+    		}
+    	}
+    	String result = "";
+    	for (int i = 0; i < mashupValues.length; i++) {
+    		if (!result.equals("")) result += ";";
+    		result += mashupValues[i];
+    	}
+    	return result;
+	}
+
+    public static String fixupMashupCanvasGraphics(String mashupValue, DefinableEntity entity) {
+    	String[] mashupValues = mashupValue.split(";");
+    	for (int i = 0; i < mashupValues.length; i++) {
+    		String[] mashupItemValues = mashupValues[i].split(",");
+			Map mashupItemAttributes = new HashMap();
+			if (mashupItemValues.length > 0) {
+				//Build a map of attributes
+				for (int j = 0; j < mashupItemValues.length; j++) {
+					int k = mashupItemValues[j].indexOf("=");
+					if (k > 0) {
+						String a = mashupItemValues[j].substring(0, k);
+						String v = mashupItemValues[j].substring(k+1, mashupItemValues[j].length());
+						mashupItemAttributes.put(a, v);
+					}
+				}
+			}
+
+			String type = mashupItemValues[0];
+    		if (ObjectKeys.MASHUP_TYPE_GRAPHIC.equals(type) && 
+    				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_GRAPHIC) && 
+    				!mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_TITLE)) {
+    			String graphicId = (String) mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_GRAPHIC);
+    			SortedSet<FileAttachment> fileAtts = entity.getFileAttachments();
+    			for (FileAttachment fileAtt : fileAtts) {
+    				if (graphicId.equals(fileAtt.getId())) {
+    					mashupValues[i] = mashupValues[i].replaceFirst(",", ",title="+fileAtt.getFileItem().getName()+",");
+    				}
+    			}
     		}
     	}
     	String result = "";

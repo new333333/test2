@@ -1037,7 +1037,7 @@ public class MarkupUtil {
 				}
 				
 				//Scan for landing pages
-				if (type.equals("mashupCanvas")) {
+				if (type.equals("mashupCanvas") && entity.getCustomAttributes().containsKey(attrName)) {
 					String mashup = (String)entity.getCustomAttribute(attrName).getValue();
 					if (mashup != null && !mashup.equals("")) {
 						String newMashup = DefinitionHelper.fixupMashupCanvasForImport(mashup, binderIdMap, entryIdMap);
