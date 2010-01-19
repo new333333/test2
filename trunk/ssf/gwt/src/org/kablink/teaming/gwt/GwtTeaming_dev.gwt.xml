@@ -1,0 +1,12 @@
+<module rename-to="gwtteaming">
+	<!-- Inherit the core GwtTeaing stuff. -->
+	<inherits name='org.kablink.teaming.gwt.GwtTeaming' />
+	
+ 	<!-- Other 'development only' module inherits go here. -->
+ 	
+	<!-- Specify the app entry point class. -->
+	<entry-point class='org.kablink.teaming.gwt.client.GwtTeaming'/>
+    
+	<!-- Support for English only. -->
+	<set-property name="locale" value="default"/>	<!-- English only. -->
+</module>
