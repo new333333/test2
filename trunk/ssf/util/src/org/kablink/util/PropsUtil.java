@@ -33,12 +33,15 @@
 package org.kablink.util;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.Properties;
 
 public class PropsUtil {
 	// This is a singleton class. 
 	
 	private static PropsUtil instance; // A singleton instance
+	
+	private static Locale teamingLocale = null;
 	
 	private Properties props;
 	
@@ -191,5 +194,18 @@ public class PropsUtil {
 		return combinedPropertyList;
 	}
 
-
+	public static Locale getTeamingLocale() {
+		if (null == teamingLocale) {
+			String language = getString("i18n.default.locale.language", "");
+			String country  = getString("i18n.default.locale.country",  "");
+			if ((null != language) && (0 < language.length())) {
+				if ((null != country) && (0 < country.length())) teamingLocale = new Locale(language, country);
+				else                                             teamingLocale = new Locale(language);
+			}
+			else {
+				teamingLocale = Locale.getDefault();
+			}
+		}
+		return teamingLocale;
+	}
 }

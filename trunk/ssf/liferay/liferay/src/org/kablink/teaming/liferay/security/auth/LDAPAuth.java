@@ -58,6 +58,8 @@ import javax.naming.directory.SearchControls;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 
+import org.kablink.teaming.util.NLT;
+
 /**
  * <a href="LDAPAuth.java.html"><b><i>View Source</i></b></a>
  *
@@ -438,7 +440,7 @@ public class LDAPAuth implements Authenticator {
 				attrs, userMappings.getProperty("emailAddress"));
 		}
 
-		Locale locale = Locale.getDefault();
+		Locale locale = NLT.getTeamingLocale();
 		String firstName = LDAPUtil.getAttributeValue(
 			attrs, userMappings.getProperty("firstName"));
 		String middleName = LDAPUtil.getAttributeValue(

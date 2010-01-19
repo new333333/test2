@@ -61,6 +61,8 @@ public class NLT implements ApplicationContextAware {
 	
 	protected static Log logger = LogFactory.getLog(NLT.class);
 	
+	private static Locale teamingLocale = null;
+	
 	private static NLT nlt; // Singleton instance
 
 	private ApplicationContext ac;
@@ -84,6 +86,21 @@ public class NLT implements ApplicationContextAware {
 		return nlt;
 	}
 	
+	public static Locale getTeamingLocale() {
+		if (null == teamingLocale) {
+			String language = SPropsUtil.getString("i18n.default.locale.language", "");
+			String country  = SPropsUtil.getString("i18n.default.locale.country",  "");
+			if ((null != language) && (0 < language.length())) {
+				if ((null != country) && (0 < country.length())) teamingLocale = new Locale(language, country);
+				else                                             teamingLocale = new Locale(language);
+			}
+			else {
+				teamingLocale = Locale.getDefault();
+			}
+		}
+		return teamingLocale;
+	}
+	
 	private Locale getLocale() {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		if(rc != null) {
@@ -91,10 +108,10 @@ public class NLT implements ApplicationContextAware {
 			if(user != null)
 				return user.getLocale();
 			else
-				return Locale.getDefault();			
+				return getTeamingLocale();			
 		}
 		else {
-			return Locale.getDefault();
+			return getTeamingLocale();
 		}
 	}
 	

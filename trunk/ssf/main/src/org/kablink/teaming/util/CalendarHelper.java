@@ -76,10 +76,10 @@ public class CalendarHelper {
 			if(user != null)
 				return user.getLocale();
 			else
-				return Locale.getDefault();			
+				return NLT.getTeamingLocale();			
 		}
 		else {
-			return Locale.getDefault();
+			return NLT.getTeamingLocale();
 		}
 	}
 	

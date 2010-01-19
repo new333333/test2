@@ -101,7 +101,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 
    public Locale getLocale() {
        if (locale != null) return locale;
-       return Locale.getDefault();
+       return NLT.getTeamingLocale();
    	}
     public void setLocale(Locale locale) {
     	this.locale = locale;
