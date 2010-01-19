@@ -942,7 +942,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			    		}
 						if (userLocale == null) {
 							if (user != null) userLocale = user.getLocale();
-							else userLocale = Locale.getDefault();
+							else userLocale = NLT.getTeamingLocale();
 						}
 						Locale defLocale = new Locale(userLocale.toString());
 						if (localeValueEle != null && !localeValueEle.attributeValue("value", "").equals(""))

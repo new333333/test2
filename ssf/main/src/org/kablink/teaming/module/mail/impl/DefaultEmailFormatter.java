@@ -176,7 +176,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 					emailSet.add(emailAddrs[j].trim());
 			}
 				
-			Locale l = Locale.getDefault();
+			Locale l = NLT.getTeamingLocale();
 			Set address = (Set)languageMap.get(l);
 			if (address != null) address.addAll(emailSet);
 			else languageMap.put(l, emailSet);
@@ -324,7 +324,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 				emailSet.add(emailAddrs[j].trim());
 		}
 			
-		Locale l = Locale.getDefault();
+		Locale l = NLT.getTeamingLocale();
 		//see if an entry already exists for the entire list
 		boolean done = false;
 		for (int i=0; i<result.size(); ++i) {

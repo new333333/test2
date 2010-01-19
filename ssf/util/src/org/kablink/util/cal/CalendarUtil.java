@@ -35,6 +35,7 @@ import java.util.TimeZone;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.YearMonthDay;
+import org.kablink.util.PropsUtil;
 import org.kablink.util.SimpleCachePool;
 import org.kablink.util.Validator;
 
@@ -350,7 +351,7 @@ public class CalendarUtil {
 
 	public static boolean isFuture(int month, int year) {
 		return isFuture(
-			month, year, TimeZone.getDefault(), Locale.getDefault());
+			month, year, TimeZone.getDefault(), PropsUtil.getTeamingLocale());
 	}
 
 	public static boolean isFuture(int month, int year, TimeZone timeZone,
@@ -368,7 +369,7 @@ public class CalendarUtil {
 
 	public static boolean isFuture(int month, int day, int year) {
 		return isFuture(
-			month, day, year, TimeZone.getDefault(), Locale.getDefault());
+			month, day, year, TimeZone.getDefault(), PropsUtil.getTeamingLocale());
 	}
 
 	public static boolean isFuture(int month, int day, int year,
@@ -389,7 +390,7 @@ public class CalendarUtil {
 
 		return isFuture(
 			month, day, year, hour, minute, amPm, TimeZone.getDefault(),
-			Locale.getDefault());
+			PropsUtil.getTeamingLocale());
 	}
 
 	public static boolean isFuture(int month, int day, int year,

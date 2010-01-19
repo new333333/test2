@@ -40,6 +40,8 @@ import javax.portlet.Portlet;
 import javax.portlet.PreferencesValidator;
 import javax.servlet.ServletContext;
 
+import org.kablink.teaming.util.NLT;
+
 import com.liferay.portal.job.Scheduler;
 import com.liferay.portal.kernel.lar.PortletDataHandler;
 import com.liferay.portal.kernel.search.Indexer;
@@ -68,12 +70,12 @@ public class PortletContextWrapper extends com.liferay.portal.servlet.PortletCon
 		
 		if (resourceBundle == null) {
 			resourceBundle = (ResourceBundle) rscBundles.get(
-				Locale.getDefault().toString());
+				NLT.getTeamingLocale().toString());
 		}
 
 		if (resourceBundle == null) {
 			resourceBundle = (ResourceBundle) rscBundles.get(
-				Locale.getDefault().getLanguage());
+				NLT.getTeamingLocale().getLanguage());
 		}
 
 		return resourceBundle;

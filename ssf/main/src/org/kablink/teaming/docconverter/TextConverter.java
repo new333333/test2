@@ -60,6 +60,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.springframework.core.io.ClassPathResource;
@@ -141,7 +142,7 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 	
 	protected void getTextFromXML(File ofile, File transformFile, OutputStream out) throws DocumentException
     {	
-    	Locale l = Locale.getDefault();
+    	Locale l = NLT.getTeamingLocale();
 		Templates trans;
 		Transformer tranny = null;
 		org.dom4j.Document tempfile = null;

@@ -51,6 +51,7 @@ import javax.servlet.http.HttpSession;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.portletadapter.support.KeyNames;
 import org.kablink.teaming.portletadapter.support.PortletInfo;
+import org.kablink.util.PropsUtil;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -250,7 +251,7 @@ public class PortletRequestImpl implements PortletRequest, MultipartFileSupport,
 		Locale locale = req.getLocale();
 		
 		if(locale == null)
-			locale = Locale.getDefault();
+			locale = PropsUtil.getTeamingLocale();
 		
 		return locale;
 	}
