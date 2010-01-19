@@ -39,6 +39,65 @@
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.report.title.license") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
+	<script type="text/javascript">
+		/**
+		 * Validate the data entered by the user.  At this time we only validate the start year and end year.
+		 */
+		function validateLicenseReportForm()
+		{
+			var input;
+			var errMsg = null;
+
+			// Validate the start year.
+			input = document.getElementById( 'ss_startDate_year' );
+			if ( input != null )
+			{
+				if ( validateYear( input.value ) == false )
+					errMsg = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.error.invalidStartYear"/></ssf:escapeJavaScript>';
+			}
+
+			// Validate the end year.
+			input = document.getElementById( 'ss_endDate_year' );
+			if ( errMsg == null && input != null )
+			{
+				if ( validateYear( input.value ) == false )
+					errMsg = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.error.invalidEndYear"/></ssf:escapeJavaScript>';
+			}
+
+			// Did we find an error?
+			if ( errMsg != null )
+			{
+				// Yes
+				alert( errMsg );
+				return false;
+			}
+
+			// If we get here everything is fine.
+			return true;
+		}// end validateLicenseReportForm()
+
+
+		/**
+		 * Validate that the given text is a valid year.
+		 */
+		function validateYear( txt )
+		{
+			if ( txt == null )
+				return false;
+
+			// Year can only be 4 digits
+			if ( txt.length > 4 )
+				return false;
+
+			// Does the text parse to a valid number?
+			if ( isNaN( parseInt( txt ) ) )
+				return false;
+
+			// If we get here the text parses to a valid number.
+			return true;
+		}// end validateYear()
+	</script>
+
 	<div class="ss_pseudoPortal">
 		<div class="ss_style ss_portlet">
 			<c:set var="formName">${renderResponse.namespace}fm</c:set>
@@ -48,11 +107,12 @@
 					<tr>
 						<td>
 							<form class="ss_style ss_form" 
-								action="<ssf:url action="license_report" actionUrl="true"><ssf:param 
+									action="<ssf:url action="license_report" actionUrl="true"><ssf:param 
 									name="binderId" value="${ssBinder.id}"/><ssf:param 
 									name="binderType" value="${ssBinder.entityType}"/></ssf:url>" 
-								method="post" 
-								name="${formName}">
+									method="post" 
+									onsubmit="return validateLicenseReportForm();"
+									name="${formName}">
 								<input type="hidden" name="ss_reportType" value="license"/>
 								<div class="ss_buttonBarRight">
 							    	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
