@@ -38,7 +38,7 @@
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="postingAgentInternalId" value="<%= ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID %>"/>
-<c:set var="syncAgentInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
+<c:set var="syncAgentInternalId" value="<%= ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID %>"/>
   <div class="folders">
 	<div class="folder-content">
 <c:forEach var="entry" items="${ssWorkspaces}" >
