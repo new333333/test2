@@ -1,6 +1,6 @@
 <module rename-to="gwtteaming">
 	<!-- Inherit the core Web Toolkit stuff. -->
-	<inherits name='com.google.gwt.user.User'                             />
+	<inherits name='com.google.gwt.user.User' />
 	
 	<!-- When we start using SmartGWT uncomment the following 6 lines  -->
 	<!-- <inherits name='com.smartgwt.SmartGwtNoScript'                        /> -->
@@ -17,33 +17,11 @@
 	<!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
 	<!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
 
- 	<!-- Other module inherits go here.                             -->
+ 	<!-- Other generic module inherits go here.                     -->
 
-
-	<!-- Specify the app entry point class.                         -->
-	<entry-point class='org.kablink.teaming.gwt.client.GwtTeaming'/>
-    
 	<!-- Specify the application specific style sheet.              -->
 	<stylesheet src='GwtTeaming.css' />
-
-	<!-- Add support for other languages. -->
-	<set-property name="locale" value="default"/>				<!-- English               -->
-	<!-- <extend-property name="locale" values="da"    /> -->	<!-- Danish                -->
-	<!-- <extend-property name="locale" values="de"    /> -->	<!-- German                -->
-	<!-- <extend-property name="locale" values="es"    /> -->	<!-- Spanish               -->
-	<!-- <extend-property name="locale" values="fr"    /> -->	<!-- French                -->
-	<!-- <extend-property name="locale" values="hu_HU" /> -->	<!-- Hungarian             -->
-	<!-- <extend-property name="locale" values="it"    /> -->	<!-- Italian               -->
-	<!-- <extend-property name="locale" values="ja"    /> -->	<!-- Japanese              -->
-	<!-- <extend-property name="locale" values="nl"    /> -->	<!-- Dutch                 -->
-	<!-- <extend-property name="locale" values="pl"    /> -->	<!-- Polish                -->
-	<!-- <extend-property name="locale" values="pt_BR" /> -->	<!-- Portuguese            -->
-	<!-- <extend-property name="locale" values="ru_RU" /> -->	<!-- Russian               -->
-	<!-- <extend-property name="locale" values="sv"    /> -->	<!-- Sweedish              -->
-	<!-- <extend-property name="locale" values="uk_UA" /> -->	<!-- Ukrainian             -->
-	<!-- <extend-property name="locale" values="zh_CN" /> -->	<!-- Chinese - Simplified  -->
-	<!-- <extend-property name="locale" values="zh_TW" /> -->	<!-- Chinese - Traditional -->
-
+	
 	<!-- Limit support of which browsers we compile for.  Speeds up -->
 	<!-- compilation during development.                            -->
 	<set-property name="user.agent" value="gecko,gecko1_8,ie6,ie8,opera,safari"/>
