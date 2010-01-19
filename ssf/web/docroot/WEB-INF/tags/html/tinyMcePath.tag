@@ -1,1 +1,1 @@
-<%@ tag isELIgnored="false" body-content="empty" %>${pageContext.request.contextPath}/js/tiny_mce/
+<%@ tag isELIgnored="false" body-content="empty" %>${pageContext.request.contextPath}/js/tiny_mce_3_2_7/tiny_mce/
