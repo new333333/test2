@@ -108,14 +108,16 @@ public class UserProperties extends ZonedObject {
  		   }
  	   }
  	   //only update if it changes; to reduce writes
-    	if (userProperties.containsKey(key)) {
-    		if (value == null) userProperties.remove(key);
-    		else {
-    			Object currentVal = userProperties.get(key);
-    			if (!value.equals(currentVal)) userProperties.put(key, value);
-    		}	
-    	} else {
-    		if (value != null) userProperties.put(key, value);
+    	if (userProperties != null) {
+    		if (userProperties.containsKey(key)) {
+	    		if (value == null) userProperties.remove(key);
+	    		else {
+	    			Object currentVal = userProperties.get(key);
+	    			if (!value.equals(currentVal)) userProperties.put(key, value);
+	    		}	
+	    	} else {
+	    		if (value != null) userProperties.put(key, value);
+	    	}
     	}
     }    
 }

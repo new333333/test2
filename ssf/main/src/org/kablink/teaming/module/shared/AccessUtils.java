@@ -241,7 +241,7 @@ public class AccessUtils  {
 		} catch(AccessControlException ex) {
 			if (user != null && user.equals(entry.getCreation().getPrincipal())) {
 				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_READ);
-			}
+			} else throw ex;
 		}
     }
     private static void readCheck(User user, Binder binder, WorkflowSupport entry) throws AccessControlException {
