@@ -255,7 +255,9 @@ public class Event {
 	}
 
 	public void setTimeZoneSensitive(Boolean timeZoneSensitive) {
-		this.timeZoneSensitive = timeZoneSensitive;
+		// Bugzilla 553319:
+		//    Changing the time zone sensitive flag is ignored.  All
+		//    events are time zone sensitive by default.
 	}
 
 	public String getTimeZone() {

@@ -65,14 +65,7 @@
 	// - event imported in time zone 1 and updated into time zone 2
 	// - all day event
 %>
-<c:choose>
-	<c:when test="${initEvent.allDayEvent || !initEvent.timeZoneSensitive}">
-		<c:set var="timeZoneID" value="GMT" />
-	</c:when>
-	<c:otherwise>
-		<c:set var="timeZoneID" value="${ssUser.timeZone.ID}" />
-	</c:otherwise>
-</c:choose>
+<c:set var="timeZoneID" value="${ssUser.timeZone.ID}" />
 
 <%
 	/*
@@ -213,19 +206,7 @@
 				</td>
 			</tr>
 	</c:if>
-	<c:if test="${attMap.isTimeZoneSensitiveActive}">
-		<tr>
-			<td colspan="4">
-				<input type="checkbox" name="timeZoneSensitive_${evid}"
-					<c:if test="${initEvent.timeZoneSensitive}">
-						checked="checked"
-					</c:if> id="timeZoneSensitive_${evid}" value="true" /><label for="timeZoneSensitive_${evid}"><ssf:nlt tag="event.timeZoneSensitive" /></label>
-			</td>
-		</tr>
-	</c:if>	
-	<c:if test="${!attMap.isTimeZoneSensitiveActive}">
-		<input type="hidden" name="timeZoneSensitive_${evid}" id="timeZoneSensitive_${evid}" checked="checked" value="true" />
-	</c:if>	
+	<input type="hidden" name="timeZoneSensitive_${evid}" id="timeZoneSensitive_${evid}" checked="checked" value="true" />
 	<c:if test="${attMap.isFreeBusyActive}">
 		<tr>
 			<td colspan="4">

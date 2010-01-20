@@ -2900,8 +2900,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	public void setTimeZoneSensitive(boolean timeZoneSensitive) {
-		// v1.1 compatibility - default value was false (should be true) 
-		this.timeZoneSensitive = !timeZoneSensitive;
+		// Bugzilla 553319:
+		//    Changing the time zone sensitive flag is ignored.  All
+		//    events are time zone sensitive by default.
 	}
 	
 	/**
