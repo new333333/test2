@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
@@ -58,6 +59,7 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
@@ -199,6 +201,18 @@ public class ConfigureLdapController extends  SAbstractController {
 					setDefaultTimeZone( timeZone );
 				}
 				
+				// Get the selected locale from the form data.
+				String	localeId;
+				
+				value = (String[]) formData.get( WebKeys.DEFAULT_LOCALE );
+				if ( value != null )
+				{
+					localeId = value[0];
+				
+					// Save away the locale as the default locale used when creating a new user.
+					setDefaultLocale( localeId );
+				}
+				
 				// Save the ldap configuration.
 				getLdapModule().setLdapSchedule(schedule);
 
@@ -221,6 +235,7 @@ public class ConfigureLdapController extends  SAbstractController {
 			RenderResponse response) throws Exception {
 
 		String timeZone	= null;
+		String defaultLocaleId = null;
 		Map model = new HashMap();
 
     	Map attributes = new LinkedHashMap();
@@ -246,10 +261,42 @@ public class ConfigureLdapController extends  SAbstractController {
 		timeZone = getDefaultTimeZone();
 		model.put( WebKeys.DEFAULT_TIME_ZONE, timeZone );
 		
+		// Add the default locale to the response.
+		defaultLocaleId = getDefaultLocaleId();
+		model.put( WebKeys.DEFAULT_LOCALE, defaultLocaleId );
+		
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_LDAP, model);
 		
 	}
 	
+	/**
+	 * Return the id of the default locale.  This setting is used to set the locale on a user when
+	 * the user is created from an ldap sync.
+	 */
+	private String getDefaultLocaleId()
+	{
+		String		defaultLocaleId = "";
+		Workspace	topWorkspace;
+		
+		// Get the top workspace.  That is where global properties are stored.
+		topWorkspace = getWorkspaceModule().getTopWorkspace();
+		
+		// Get the default locale property.
+		defaultLocaleId = (String) topWorkspace.getProperty( ObjectKeys.GLOBAL_PROPERTY_DEFAULT_LOCALE );
+		if ( defaultLocaleId == null || defaultLocaleId.length() == 0 )
+		{
+			Locale locale;
+			
+			// Get the default system locale;
+			locale = NLT.getTeamingLocale();
+			if ( locale != null )
+				defaultLocaleId = locale.toString();
+		}
+		
+		return defaultLocaleId;
+	}// end getDefaultLocaleId()
+	
+
 	/**
 	 * Return the default time zone setting.  This setting is used to set the time zone on a user when
 	 * the user is created from an ldap sync.
@@ -272,12 +319,31 @@ public class ConfigureLdapController extends  SAbstractController {
 	
 
 	/**
+	 * Set the default locale setting.  This setting is used to set the locale  on a user when
+	 * the user is created from an ldap sync.
+	 */
+	private void setDefaultLocale( String localeId )
+	{
+		Workspace	topWorkspace;
+		
+		if ( localeId == null || localeId.length() == 0 )
+			return;
+		
+		// Get the top workspace.  That is where global properties are stored.
+		topWorkspace = getWorkspaceModule().getTopWorkspace();
+		
+		// Save the default locale id as a global property
+		topWorkspace.setProperty( ObjectKeys.GLOBAL_PROPERTY_DEFAULT_LOCALE, localeId );
+
+	}// end setDefaultTimeZone()
+	
+
+	/**
 	 * Set the default time zone setting.  This setting is used to set the time zone on a user when
 	 * the user is created from an ldap sync.
 	 */
 	private void setDefaultTimeZone( String timeZone )
 	{
-		String		defaultTimeZone;
 		Workspace	topWorkspace;
 		
 		if ( timeZone == null || timeZone.length() == 0 )

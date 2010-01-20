@@ -64,7 +64,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.hibernate.SessionFactory;
-import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
@@ -72,7 +71,6 @@ import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Group;
-import org.kablink.teaming.domain.IPrincipal;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.Membership;
@@ -82,7 +80,6 @@ import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.jobs.LdapSynchronization;
-import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.ldap.LdapModule;
@@ -99,9 +96,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.CollectionUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
-import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -525,6 +520,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			} else {
 				if (create) {
 					String	timeZone;
+					String localeId;
 					
 					Map userMods = new HashMap();
 					getUpdates(userAttributeNames, userAttributes, lAttrs, userMods);
@@ -537,6 +533,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					if ( timeZone != null && timeZone.length() > 0 )
 					{
 						userMods.put( ObjectKeys.FIELD_USER_TIMEZONE, timeZone );
+					}
+					
+					// Get the default locale.
+					localeId = getDefaultLocaleId();
+					if ( localeId != null && localeId.length() > 0 )
+					{
+						userMods.put( ObjectKeys.FIELD_USER_LOCALE, localeId );
 					}
 					
 					ldap_new.put(ssName, userMods); 
@@ -1164,6 +1167,37 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	}
 	
 	/**
+	 * Read the default locale id from the global properties
+	 * @param name
+	 * @return
+	 */
+	private String getDefaultLocaleId()
+	{
+		String			defaultLocaleId;
+		Workspace		topWorkspace;
+		WorkspaceModule	workspaceModule;
+		
+		// Get the top workspace.  That is where global properties are stored.
+		workspaceModule = (WorkspaceModule) SpringContextUtil.getBean( "workspaceModule" );
+		topWorkspace = workspaceModule.getTopWorkspace();
+		
+		// Get the default locale property.
+		defaultLocaleId = (String) topWorkspace.getProperty( ObjectKeys.GLOBAL_PROPERTY_DEFAULT_LOCALE );
+		if ( defaultLocaleId == null || defaultLocaleId.length() == 0 )
+		{
+			Locale locale;
+			
+			// Get the default system locale;
+			locale = NLT.getTeamingLocale();
+			if ( locale != null )
+				defaultLocaleId = locale.toString();
+		}
+		
+		return defaultLocaleId;
+	}// end getDefaultLocaleId()
+
+
+	/**
 	 * Read the default time zone from the global properties
 	 * @param name
 	 * @return
@@ -1294,24 +1328,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      */
     protected List<User> createUsers(Long zoneId, Map<String, Map> users, PartialLdapSyncResults syncResults ) {
 		//SimpleProfiler.setProfiler(new SimpleProfiler(false));
-		Locale userLocale = null;
-		String language = SPropsUtil.getString("i18n.default.locale.language", "");
-		String country = SPropsUtil.getString("i18n.default.locale.country", "");
-		if (!language.equals("")) {
-			if (!country.equals("")) userLocale = new Locale(language, country);
-			else userLocale = new Locale(language);
-		}
-    	String defaultLocale = "";
-    	if (userLocale != null) defaultLocale = userLocale.toString();
 		
 		ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
 		List newUsers = new ArrayList();
 		for (Iterator i=users.values().iterator(); i.hasNext();) {
 			Map attrs = (Map)i.next();
-			if (!attrs.containsKey(ObjectKeys.FIELD_USER_LOCALE) && !defaultLocale.equals("")) {
-				//Default the locale to what was chosen at install time
-				attrs.put(ObjectKeys.FIELD_USER_LOCALE, defaultLocale);
-			}
+
 			newUsers.add(new MapInputData(StringCheckUtil.check(attrs)));
 		}
 		//get default definition to use

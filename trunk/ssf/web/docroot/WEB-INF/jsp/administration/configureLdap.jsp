@@ -35,6 +35,8 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT"%>
 <%@ page import="java.util.Locale" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.TreeMap" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp"%>
 <c:set var="ss_windowTitle"
 	value='<%= NLT.get("administration.configure_ldap") %>' scope="request" />
@@ -140,6 +142,8 @@
 								class="ss_labelRight ss_normal"><ssf:nlt
 								tag="ldap.schedule.user.workspace.delete" /></span></label></td>
 						</tr>
+
+						<!-- Create a <select> control to hold the list of time zones. -->
 						<tr>
 							<td>
 								<label for="ssDefaultTimeZone">
@@ -169,6 +173,43 @@
 									<option value="<%= tz %>" <c:if test="${ssDefaultTimeZone == nextTimeZone}">selected</c:if> ><%= tz %></option>
 								<%
 									}// end for()
+								%>
+								</select>
+							</td>
+						</tr>
+
+						<!-- Create a <select> control to hold the list of locales. -->
+						<tr>
+							<td>
+								<label for="ssDefaultLocale">
+									<div style="margin-top: .25em;" class="ss_labelAbove"><ssf:nlt tag="ldap.config.default.locale" /></div>
+								</label>
+								<select name="ssDefaultLocaleId" id="ssDefaultLocaleId">
+								<%
+									User currentUser = null;
+									TreeMap<String,Locale> localeMap = null;
+
+									currentUser = (User)request.getAttribute( "ssUser" );
+									
+									// Get a sorted list of all the locales.
+									localeMap = NLT.getSortedLocaleList( currentUser );
+
+									// Add an <option> to the <select> control for every locale.
+									for ( Map.Entry<String, Locale> me: localeMap.entrySet() )
+									{
+										String localeDisplayName;
+										String localeId;
+										
+										// Get the name of the next locale.
+										localeDisplayName = me.getKey();
+										
+										// Get the id of the next locale.
+										localeId = me.getValue().toString();
+								%>
+										<c:set var="nextLocaleId" value="<%= localeId %>" />
+										<option value="<%= localeId %>" <c:if test="${ssDefaultLocaleId == nextLocaleId}">selected</c:if> ><%= localeDisplayName %></option>
+								<%
+									}
 								%>
 								</select>
 							</td>
