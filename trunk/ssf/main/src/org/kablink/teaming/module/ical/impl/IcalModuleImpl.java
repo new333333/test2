@@ -138,7 +138,7 @@ import org.kablink.util.cal.DayAndPosition;
 public class IcalModuleImpl extends CommonDependencyInjection implements IcalModule {
 	protected Log logger = LogFactory.getLog(getClass());
 	
-	private static final ProdId PROD_ID = new ProdId("-//SiteScape Inc//"
+	private static final ProdId PROD_ID = new ProdId("-//Novell Inc//"
 			+ ObjectKeys.PRODUCT_NAME_DEFAULT);
 
 	private BinderModule binderModule;
