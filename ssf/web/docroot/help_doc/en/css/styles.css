@@ -146,7 +146,6 @@ body {
 /* other inlines */	
 	em.msgtext {font-weight: bold; font-style: italic}
 	span.emphasis {font-style: italic}
-	span.remark {color: #660033;}
 
 /* superscript and subscript */	
 	span.subscript,span.superscript {font-size: 80%;}
