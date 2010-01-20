@@ -210,6 +210,7 @@ public interface ObjectKeys {
     public static final String BINDER_PROPERTY_UPGRADE_VERSION = "binderUpgradeVersion";
     
     // Global properties
+    public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE = "defaultLocale";
     public static final String GLOBAL_PROPERTY_DEFAULT_TIME_ZONE = "defaultTimeZone";
 
     public static final String CONFIG_PROPERTY_REPOSITORY = "repository";
