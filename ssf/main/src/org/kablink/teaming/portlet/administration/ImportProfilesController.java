@@ -46,6 +46,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -79,8 +80,9 @@ public class ImportProfilesController extends  SAbstractController {
 					String	msg;
 					
 					// There is something bogus about the content of the file the user is trying to import.
-					// Tell the user there is something wrong.
-					msg = docEx.getMessage();
+					// Tell the user there is something wrong.  We can't get a localized message from
+					// a DocumentException so we will provide a generic error message.
+					msg = NLT.get( "administration.import.profiles.error" );
 					response.setRenderParameter( WebKeys.EXCEPTION, msg );
 		    	}
 			} else {

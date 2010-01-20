@@ -57,7 +57,7 @@ function onloadCheckForErrors()
 		var errMsg;
 
 		// Yes, tell the user about it.
-		errMsg = '<ssf:escapeJavaScript><ssf:nlt tag="administration.import.profiles.error"/>${ssException}</ssf:escapeJavaScript>';
+		errMsg = '<ssf:escapeJavaScript>${ssException}</ssf:escapeJavaScript>';
 		alert( errMsg );
 	</c:if>
 	 
