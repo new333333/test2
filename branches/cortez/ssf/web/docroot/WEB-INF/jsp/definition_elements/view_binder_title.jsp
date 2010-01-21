@@ -69,12 +69,7 @@
 	    <c:if test="${empty ssDefinitionEntry.title}">
           <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
         </c:if>
-        <c:if test="${ssDefinitionEntry.definitionType != '12' || ssDefinitionEntry.parentBinder.entityType != 'profiles'}">
-          <span><c:out value="${ssDefinitionEntry.title}" escapeXml="true"/></span>
-        </c:if>
-        <c:if test="${ssDefinitionEntry.definitionType == '12' && ssDefinitionEntry.parentBinder.entityType == 'profiles'}">
-          <span><ssf:userTitle user="${ssDefinitionEntry.owner}" /></span>
-        </c:if>
+        <span><c:out value="${ssDefinitionEntry.title}" escapeXml="true"/></span>
       </a>
       </div>
       </li>
