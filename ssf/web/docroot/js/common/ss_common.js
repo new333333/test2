@@ -5075,9 +5075,12 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
 	        
             m += '<td><a class="ss_graymenu" href="mailto:' + emailAdr + '?body=' + bodyText +'">'+ss_ostatus_sendMail+' (' + emailAdr + ')...</a></td></tr>';
         }
-        m += '<tr>';
-        m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgvcard'+ssNamespace+'"></td>';
-        m += '<td><a class="ss_graymenu" href="' + vcard + '">'+ss_ostatus_outlook+'</a></td></tr>';	
+        // Bugzilla 532282:
+        //   Commented out the "Add to Your E-Mail Contacts" option
+        //   from the popup menu.
+        // m += '<tr>';
+        // m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgvcard'+ssNamespace+'"></td>';
+        // m += '<td><a class="ss_graymenu" href="' + vcard + '">'+ss_ostatus_outlook+'</a></td></tr>';	
     }
 
 	if (userId != '') {
