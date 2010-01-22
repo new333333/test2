@@ -39,6 +39,12 @@ dojo.require("dijit.dijit");
 dojo.requireLocalization("ssf.cldr","custom", null, "da,de,de-de,en,en-gb,en_us,es,es-es,fi,fi-fi,fr,fr-fr,hu,it,it-it,ROOT,ja,ja-jp,ko,ko-kr,nl,nl-nl,pl,pt,pt-br,sv,zh,zh-cn,zh-hk,zh-tw");
 dojo.date.locale.addCustomFormats("ssf.cldr","custom");
 
+// Bugzilla:  512176:
+//    Rewrote to use dojo's locale based date formatter to construct
+//    the correct format.  The following is used to which format is
+//    used.
+var calendarNav_DateFormat = "medium";
+
 function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard) {
 	
 	var binderId = binderId;
@@ -645,12 +651,17 @@ function ss_calendarEngine(
 	    },
 	    
 	    showCalendarDaysDescription: function(firstDayToShow) {
-	    	var descr = firstDayToShow.getDate() + " " + getMonthNameShort(firstDayToShow) + " " + firstDayToShow.getFullYear();
+	    	// Bugzilla:  512176:
+	    	//    Rewrote to use dojo's locale based date formatter to
+	    	//    construct the correct format.
+// Was:    	var descr = firstDayToShow.getDate() + " " + getMonthNameShort(firstDayToShow) + " " + firstDayToShow.getFullYear();
+			var descr = dojo.date.locale.format(firstDayToShow, {formatLength: calendarNav_DateFormat, selector:"date", locale: that.locale.lang});
 	
 	    	var lastDayToShow = dojo.date.add(firstDayToShow, "day", this.gridSize - 1);
 	    	if (daysDiff(firstDayToShow, lastDayToShow) != 0) {
 	    		descr += " - ";
-	    		descr += lastDayToShow.getDate() + " " + getMonthNameShort(lastDayToShow) + " " + lastDayToShow.getFullYear();	
+// Was:    		descr += lastDayToShow.getDate() + " " + getMonthNameShort(lastDayToShow) + " " + lastDayToShow.getFullYear();	
+				descr += dojo.date.locale.format(lastDayToShow, {formatLength: calendarNav_DateFormat, selector:"date", locale: that.locale.lang});
 	    	}
 	    	
 	    	this.showCalendarDescription(descr);
