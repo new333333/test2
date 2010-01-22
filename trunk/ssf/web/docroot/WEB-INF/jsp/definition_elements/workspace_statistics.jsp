@@ -39,12 +39,7 @@
 		<ul class="ss_nobullet">
 			<c:if test="${ssConfigJspStyle != 'template'}">		
 				<c:forEach var="selection" items="${ssBinder.folders}" varStatus="status">
-	  				<c:if test="${!empty selection &&
-							!empty selection.id &&
-							!empty selection.customAttributes['statistics'] &&
-							!empty selection.customAttributes['statistics'].value &&
-							!empty selection.customAttributes['statistics'].value.value}">		
-			
+	  				<c:if test="${!empty selection && !empty selection.id}">		
 						<li>
 							<a href="<ssf:url 
 			  				folderId="${selection.id}" 
@@ -53,17 +48,21 @@
 			  				<ssf:param name="newTab" value="1"/>
 			  				</ssf:url>"><c:out value="${selection.title}" escapeXml="false"/></a>
 		  				
-			  				<c:forEach var="definition" items="${selection.customAttributes['statistics'].value.value}">
-			  					<c:if test="${!empty definition.value}">
-				  					<c:forEach var="attribute" items="${definition.value}">
-				  						<c:if test="${!empty attribute.key && !empty attribute.value}">
-					  						<c:if test="${attribute.key == 'status'}">
-					  							<ssf:drawStatistic statistic="${attribute.value}" style="coloredBar ss_statusBar" showLabel="true" showLegend="true"/>
+			  				<c:if test="${!empty selection.customAttributes['statistics'] &&
+									!empty selection.customAttributes['statistics'].value &&
+									!empty selection.customAttributes['statistics'].value.value}">		
+				  				<c:forEach var="definition" items="${selection.customAttributes['statistics'].value.value}">
+				  					<c:if test="${!empty definition.value}">
+					  					<c:forEach var="attribute" items="${definition.value}">
+					  						<c:if test="${!empty attribute.key && !empty attribute.value}">
+						  						<c:if test="${attribute.key == 'status'}">
+						  							<ssf:drawStatistic statistic="${attribute.value}" style="coloredBar ss_statusBar" showLabel="true" showLegend="true"/>
+						  						</c:if>
 					  						</c:if>
-				  						</c:if>
-				  					</c:forEach>
-			  					</c:if>
-			  				</c:forEach>
+					  					</c:forEach>
+				  					</c:if>
+				  				</c:forEach>
+			  				</c:if>
 			  			</li>
 	  				</c:if>
 				</c:forEach>
