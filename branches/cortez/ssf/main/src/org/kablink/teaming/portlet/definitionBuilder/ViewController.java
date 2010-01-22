@@ -120,10 +120,13 @@ public class ViewController extends SAbstractController {
 				} else if (operation.equals("moveDefinition")) {
 					//Modify the name of the selected item
 					Long targetBinderId = PortletRequestUtils.getLongParameter(request, "targetId");
-					Definition def = getDefinitionModule().getDefinition(selectedItem);
-					getDefinitionModule().modifyVisibility(selectedItem, def.getVisibility(), targetBinderId);
-					response.setRenderParameter("binderId", targetBinderId.toString());
-
+					if (targetBinderId != null) {
+						Definition def = getDefinitionModule().getDefinition(selectedItem);
+						getDefinitionModule().modifyVisibility(selectedItem, def.getVisibility(), targetBinderId);
+						response.setRenderParameter("binderId", targetBinderId.toString());
+					} else {
+						response.setRenderParameter("ss_configErrorMessage", NLT.get("definition.error.unknowTarget"));
+					}
 				} else if (operation.equals("copyDefinition")) {
 					//Add a new definition type
 					String name = PortletRequestUtils.getStringParameter(request,"propertyId_name", "");
