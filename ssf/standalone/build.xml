@@ -25,6 +25,9 @@
 			<fileset dir="${app.server.dir}/common/lib/ext" includes="*.jar" />
 		</delete>
 		<delete failonerror="false">
+			<fileset dir="${app.server.dir}/shared/lib/ext" includes="*.jar" />
+		</delete>
+		<delete failonerror="false">
 			<fileset dir="${app.server.common.lib.dir}" includes="*.jar" />
 		</delete>		
 		<delete failonerror="false">
