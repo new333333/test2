@@ -148,7 +148,9 @@
  <tr><td>
    <span class="ss_labelAbove ss_bold"><ssf:nlt tag="sendMail.subject"/></span>
    <!-- just use title, not docNumber so calendar entries contain summary -->
-   <input class="ss_style" type="text" name="subject" id="subject" size="86" <c:if test="${!empty ssEntry}">value="${ssEntry.title}" </c:if>>
+   <input class="ss_style" type="text" name="subject" id="subject" size="86" 
+     <c:if test="${!empty ssEntry}">value="<ssf:escapeQuotes>${ssEntry.title}</ssf:escapeQuotes>" </c:if>
+   >
 </td></tr>
 <tr><td>
    <span class="ss_labelAbove ss_bold"><c:if test="${!empty ssEntry}"><ssf:nlt tag="entry.sendMail.body"/></c:if><c:if test="${empty ssEntry}"><ssf:nlt tag="sendMail.message"/></c:if></span>

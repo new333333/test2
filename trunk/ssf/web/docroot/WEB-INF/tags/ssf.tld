@@ -425,6 +425,12 @@
 	</tag>
 	
 	<tag>
+		<name>escapeQuotes</name>
+		<tag-class>org.kablink.teaming.taglib.EscapeQuotesTag</tag-class>
+		<body-content>JSP</body-content>
+	</tag>
+	
+	<tag>
 		<name>eventeditor</name>
 		<tag-class>org.kablink.teaming.taglib.Eventeditor</tag-class>
 		<body-content>JSP</body-content>
