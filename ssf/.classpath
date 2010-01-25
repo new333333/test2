@@ -134,5 +134,6 @@
 	<classpathentry kind="lib" path="tools/gwt/smartgwt-skins.jar"/>
 	<classpathentry kind="lib" path="tools/gwt/smartgwt.jar"/>
 	<classpathentry kind="lib" path="lib/json.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat-dbcp.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
