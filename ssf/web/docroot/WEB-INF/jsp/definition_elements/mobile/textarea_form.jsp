@@ -56,8 +56,10 @@
 	}
 %>
 <c:set var="textValue" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
+<c:set var="textFormat" value="${ssDefinitionEntry.customAttributes[property_name].value.format}"/>
 <c:if test="${property_name == 'description'}">
   <c:set var="textValue" value="${ssDefinitionEntry.description}"/>
+  <c:set var="textFormat" value="${ssDefinitionEntry.description.format}"/>
 </c:if>
 <div class="ss_entryContent">
 <span class="ss_labelAbove">
@@ -68,4 +70,10 @@
 <textarea name="<%= elementName %>" id="<%= elementName %>" wrap="virtual"
   rows="<%= rows %>" cols="37"
 ><c:out value="${textValue}"/></textarea>
+<c:if test="${empty textValue}">
+<input type="hidden" name="<%= elementName %>.format" value="2">
+</c:if>
+<c:if test="${!empty textValue}">
+<input type="hidden" name="<%= elementName %>.format" value="${textFormat}">
+</c:if>
 </div>

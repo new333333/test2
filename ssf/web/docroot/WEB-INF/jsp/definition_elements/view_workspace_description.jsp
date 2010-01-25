@@ -41,7 +41,7 @@
 </c:if>
 <div class="ss_entryContent">
  <c:if test="${textFormat == '2'}">
-   <pre>${ssDefinitionEntry.description.text}</pre>
+   <ssf:textFormat formatAction="textToHtml">${ssDefinitionEntry.description.text}</ssf:textFormat>
  </c:if>
  <c:if test="${textFormat != '2'}">
    <span>

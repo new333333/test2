@@ -39,6 +39,7 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.TextToHtml;
 import org.kablink.util.Html;
 
 
@@ -188,6 +189,12 @@ public class TextFormat extends BodyTagSupport {
 				
 				JspWriter jspOut = pageContext.getOut();
 				jspOut.print(summary.trim());
+				
+			} else if (formatAction.equals("textToHtml")) {
+				TextToHtml textToHtml = new TextToHtml();
+				textToHtml.parseText(textContent);
+				JspWriter jspOut = pageContext.getOut();
+				jspOut.print(textToHtml.toString()); 
 				
 			} else {
 				JspWriter jspOut = pageContext.getOut();

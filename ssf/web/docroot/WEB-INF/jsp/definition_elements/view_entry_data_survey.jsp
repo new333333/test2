@@ -41,7 +41,11 @@
 	String caption1 = (String) request.getAttribute("property_caption");
 	String caption2 = NLT.get("general.required.caption", new Object[]{caption1});
 %>
-<c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
+<c:if test="${empty ss_survey_randomizer}" >
+  <c:set var="ss_survey_randomizer" value="0" scope="request" />
+</c:if>
+<c:set var="ss_survey_randomizer" value="${ss_survey_randomizer + 1}" scope="request" />
+<c:set var="ss_survey_prefix" value="${renderResponse.namespace}_${ss_survey_randomizer}"/>
 <%
 	boolean overdue = false;
 	Date dueDate = null;
@@ -146,7 +150,7 @@
 	<c:if test="${showResults}">
 		<c:forEach var="question" items="${surveyModel.questions}" >
 			
-			<div class="ss_questionContainer" id="${ss_namespace}_${property_name}_question_${question.index}">
+			<div class="ss_questionContainer" id="${ss_survey_prefix}_${property_name}_question_${question.index}">
 				<p class="ss_survey_question" style="zoom:1;">
 					<c:out value="${question.question}" escapeXml="false"/><c:if 
 					  test="${question.requiredAnswer && !showResults}"><span 
@@ -233,29 +237,29 @@
 	<c:if test="${showSurveyForm || (showSurveyModifyForm && !ssUser.shared)}">
 	
 		<c:if test="${ssUser.shared}">
-			<div id="${ss_namespace}_${property_name}_guest_email_container">
-				<label for="${ss_namespace}_${property_name}_guest_email"><ssf:nlt tag="survey.vote.guest.email"/></label> 
-				<input type="text" name="guest_email" id="${ss_namespace}_${property_name}_guest_email" />
+			<div id="${ss_survey_prefix}_${property_name}_guest_email_container">
+				<label for="${ss_survey_prefix}_${property_name}_guest_email"><ssf:nlt tag="survey.vote.guest.email"/></label> 
+				<input type="text" name="guest_email" id="${ss_survey_prefix}_${property_name}_guest_email" />
 			</div>
 		</c:if>
 
 		<c:forEach var="question" items="${surveyModel.questions}" >
-			<div class="ss_questionContainer" id="${ss_namespace}_${property_name}_question_${question.index}">
+			<div class="ss_questionContainer" id="${ss_survey_prefix}_${property_name}_question_${question.index}">
 				<p class="ss_survey_question" style="zoom:1;">
 					<c:out value="${question.question}" escapeXml="false"/><c:if 
 					test="${question.requiredAnswer && !showResults}"><span 
 					id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if>
-					<a href="javascript: //" onclick="ssSurvey.clearAnswers(${question.index}, [<c:forEach var="answer" items="${question.answers}" varStatus="status">${answer.index}<c:if test="${!status.last}">,</c:if></c:forEach>], '${ss_namespace}_${property_name}')"><ssf:nlt tag="survey.clear"/></a>
+					<a href="javascript: //" onclick="ssSurvey.clearAnswers(${question.index}, [<c:forEach var="answer" items="${question.answers}" varStatus="status">${answer.index}<c:if test="${!status.last}">,</c:if></c:forEach>], '${ss_survey_prefix}_${property_name}')"><ssf:nlt tag="survey.clear"/></a>
 				</p>
 				
 				<c:if test="${question.type == 'multiple'}">
 					<ol>
 					<c:forEach var="answer" items="${question.answers}">
 						<li>
-							<input type="checkbox" style="width: 19px;" name="answer_${question.index}" id="${ss_namespace}_${property_name}_answer_${question.index}_${answer.index}" value="${answer.index}" 
+							<input type="checkbox" style="width: 19px;" name="answer_${question.index}" id="${ss_survey_prefix}_${property_name}_answer_${question.index}_${answer.index}" value="${answer.index}" 
 									<c:if test="${showSurveyModifyForm && answer.alreadyVotedCurrentUser}">checked="true"</c:if>
 								/>
-							<label for="${ss_namespace}_${property_name}_answer_${question.index}_${answer.index}"><c:out value="${answer.text}" escapeXml="false"/></label>
+							<label for="${ss_survey_prefix}_${property_name}_answer_${question.index}_${answer.index}"><c:out value="${answer.text}" escapeXml="false"/></label>
 						</li>
 					</c:forEach>
 					</ol>
@@ -264,10 +268,10 @@
 					<ol>
 					<c:forEach var="answer" items="${question.answers}">
 						<li>
-							<input type="radio" style="width: 19px;" name="answer_${question.index}" value="${answer.index}" id="${ss_namespace}_${property_name}_answer_${question.index}_${answer.index}"
+							<input type="radio" style="width: 19px;" name="answer_${question.index}" value="${answer.index}" id="${ss_survey_prefix}_${property_name}_answer_${question.index}_${answer.index}"
 									<c:if test="${showSurveyModifyForm && answer.alreadyVotedCurrentUser}">checked="true"</c:if>
 								/>
-							<label for="${ss_namespace}_${property_name}_answer_${question.index}_${answer.index}"><c:out value="${answer.text}" escapeXml="false"/></label>
+							<label for="${ss_survey_prefix}_${property_name}_answer_${question.index}_${answer.index}"><c:out value="${answer.text}" escapeXml="false"/></label>
 						</li>
 					</c:forEach>
 					</ol>
@@ -281,7 +285,7 @@
 								</c:if>
 						</c:forEach>
 					</c:if>
-					<input type="text" name="answer_${question.index}" id="${ss_namespace}_${property_name}_answer_${question.index}" 
+					<input type="text" name="answer_${question.index}" id="${ss_survey_prefix}_${property_name}_answer_${question.index}" 
 						<c:if test="${showSurveyModifyForm && !empty currentUserAnswer}">value="<c:out value="${currentUserAnswer}" escapeXml="false"/>"</c:if> />
 				</c:if>
 			</div>
@@ -299,7 +303,7 @@
 			</c:when>
 			<c:otherwise>
 				<input type="button" value="<ssf:nlt tag="survey.vote"/>"
-					onclick="ssSurvey.vote('ssSurveyForm_${property_name}${ss_surveyFormCounter}', ${ssBinder.id}, ${ssDefinitionEntry.id}, {<% int qraCount = 0; %><c:forEach var="question" items="${surveyModel.questions}"><c:if test="${question.requiredAnswer}"><% qraCount += 1; if (1 < qraCount) { %>,<% } %>${question.index}:[<c:if test="${question.type != 'input'}"><c:forEach var="answer" items="${question.answers}" varStatus="status">${answer.index}<c:if test="${!status.last}">,</c:if></c:forEach></c:if>]</c:if></c:forEach>}, '${ss_namespace}_${property_name}');"/>
+					onclick="ssSurvey.vote('ssSurveyForm_${property_name}${ss_surveyFormCounter}', ${ssBinder.id}, ${ssDefinitionEntry.id}, {<% int qraCount = 0; %><c:forEach var="question" items="${surveyModel.questions}"><c:if test="${question.requiredAnswer}"><% qraCount += 1; if (1 < qraCount) { %>,<% } %>${question.index}:[<c:if test="${question.type != 'input'}"><c:forEach var="answer" items="${question.answers}" varStatus="status">${answer.index}<c:if test="${!status.last}">,</c:if></c:forEach></c:if>]</c:if></c:forEach>}, '${ss_survey_prefix}_${property_name}');"/>
 					
 				<c:if test="${showSurveyModifyForm}">
 					<input type="button" value="<ssf:nlt tag="survey.vote.remove"/>" 

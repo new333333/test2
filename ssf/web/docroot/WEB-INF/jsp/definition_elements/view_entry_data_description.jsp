@@ -41,7 +41,7 @@
 <c:if test="${empty ss_element_display_style}">
 <ssf:editable entity="${ssDefinitionEntry}" element="description" aclMap="${ss_accessControlMap}">
  <c:if test="${textFormat == '2'}">
-   <pre>${ssDefinitionEntry.description.text}</pre>
+   <ssf:textFormat formatAction="textToHtml">${ssDefinitionEntry.description.text}</ssf:textFormat>
  </c:if>
  <c:if test="${textFormat != '2'}">
    <span>
@@ -61,7 +61,7 @@
   </td>
   <td valign="top">
 	<c:if test="${textFormat == '2'}">
-	  <pre>${ssDefinitionEntry.description.text}</pre>
+	  <ssf:textFormat formatAction="textToHtml">${ssDefinitionEntry.description.text}</ssf:textFormat>
 	</c:if>
     <c:if test="${textFormat != '2'}">
     <ssf:editable entity="${ssDefinitionEntry}" element="description" aclMap="${ss_accessControlMap}">

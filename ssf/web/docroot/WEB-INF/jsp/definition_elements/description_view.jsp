@@ -41,7 +41,7 @@
 --%><c:if test="${!empty ssDefinitionEntry.description.text}"><%--
     --%><ssf:editable entity="${ssDefinitionEntry}" element="description" aclMap="${ss_accessControlMap}"><%--
 		 --%><c:if test="${textFormat == '2'}"><%--
-		   --%><pre>${ssDefinitionEntry.description.text}</pre><%--
+		   --%><ssf:textFormat formatAction="textToHtml">${ssDefinitionEntry.description.text}</ssf:textFormat><%--
 		 --%></c:if><%--
 		 --%><c:if test="${textFormat != '2'}"><%--
 		   --%><span><%--
