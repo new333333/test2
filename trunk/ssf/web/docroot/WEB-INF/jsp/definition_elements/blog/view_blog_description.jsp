@@ -45,7 +45,7 @@
 <% //Description view %>
   <div class="ss_entryContent">
 	<% if ("2".equals(descriptionFormat)) { %>
-	  <pre><c:out value="<%= description %>" escapeXml="false"/></pre>
+	  <ssf:textFormat formatAction="textToHtml"><c:out value="<%= description %>" escapeXml="false"/></ssf:textFormat>
 	<% } else { %>
       <span><ssf:markup entity="${ssDefinitionEntry}"><c:out 
          value="<%= description %>" escapeXml="false"/></ssf:markup></span>
@@ -61,7 +61,7 @@
 <% //Description view %>
   <div class="ss_entryContent">
 	<% if ("2".equals(descriptionFormat)) { %>
-	  <pre><c:out value="<%= description %>" escapeXml="false"/></pre>
+	  <ssf:textFormat formatAction="textToHtml"><c:out value="<%= description %>" escapeXml="false"/></ssf:textFormat>
 	<% } else { %>
       <span><ssf:markup search="${ssDefinitionEntry}"><c:out 
          value="<%= description %>" escapeXml="false"/></ssf:markup></span>
