@@ -457,7 +457,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   	    <c:if test="${headerOut == '0'}"><c:set var="headerOut" value="1"/>
   	    <hr/>
   	    <span class="ss_bold"><ssf:nlt tag="definition.local"/></span><br/></c:if>
-	      <input type="checkbox" name="binderDefinition" value="${item.value.id}" id="all2_${item.value.id}" 
+	      <input type="checkbox" name="binderDefinitions" value="${item.value.id}" id="all2_${item.value.id}" 
 	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked <c:set var="folderViewCount" value="1"/></c:if>
 		      <c:out value="${disabled}"/>> <c:if test="${item.value.visibility == 3}"><del></c:if>
 		      <label for="all2_${item.value.id}">${item.key}<sup>&#134;</sup></label>
