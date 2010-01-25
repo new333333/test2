@@ -4,9 +4,6 @@
 	
  	<!-- Other 'development only' module inherits go here. -->
  	
-	<!-- Specify the app entry point class. -->
-	<entry-point class='org.kablink.teaming.gwt.client.GwtTeaming'/>
-    
 	<!-- Support for English only. -->
 	<set-property name="locale" value="default"/>	<!-- English only. -->
 </module>
