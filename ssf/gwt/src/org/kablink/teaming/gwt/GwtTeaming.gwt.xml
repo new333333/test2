@@ -19,7 +19,10 @@
 
  	<!-- Other generic module inherits go here.                     -->
 
-	<!-- Specify the application specific style sheet.              -->
+	<!-- Specify the app entry point class. -->
+	<entry-point class='org.kablink.teaming.gwt.client.GwtTeaming'/>
+    
+    <!-- Specify the application specific style sheet.              -->
 	<stylesheet src='GwtTeaming.css' />
 	
 	<!-- Limit support of which browsers we compile for.  Speeds up -->
