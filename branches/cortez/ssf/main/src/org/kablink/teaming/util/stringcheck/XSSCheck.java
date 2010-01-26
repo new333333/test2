@@ -152,7 +152,7 @@ public class XSSCheck implements StringCheck {
 		// We can use much faster reference comparison rather than string 
 		// value equality test due to the way we setup above.
 		
-		if (mode == MODE_TRUSTED_DISALLOW || mode == MODE_TRUSTED_STRIP) {
+		if (mode.equals(MODE_TRUSTED_DISALLOW) || mode.equals(MODE_TRUSTED_STRIP)) {
 			if (RequestContextHolder.getRequestContext() != null) {
 				User user = RequestContextHolder.getRequestContext().getUser();
 				if(getTrustedUserNames(user.getZoneId()).contains(user.getName()))
