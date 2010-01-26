@@ -395,9 +395,12 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 				folderEntry.setEntryName( entry.getTitle() );
 			
 				parentBinder = entry.getParentBinder();
-				parentBinderId = parentBinder.getId();
-				folderEntry.setParentBinderName( parentBinder.getPathName() );
-				folderEntry.setParentBinderId( parentBinderId );
+				if ( parentBinder != null )
+				{
+					parentBinderId = parentBinder.getId();
+					folderEntry.setParentBinderName( parentBinder.getPathName() );
+					folderEntry.setParentBinderId( parentBinderId );
+				}
 				
 				// Create a url that can be used to view this entry.
 				url = PermaLinkUtil.getPermalink( entry );
@@ -462,7 +465,8 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 				folder.setFolderName( binder.getTitle() );
 			
 				parentBinder = binder.getParentBinder();
-				folder.setParentBinderName( parentBinder.getPathName() );
+				if ( parentBinder != null )
+					folder.setParentBinderName( parentBinder.getPathName() );
 
 				// Create a url that can be used to view this folder.
 				url = PermaLinkUtil.getPermalink( binder );
