@@ -462,7 +462,8 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 				folder.setFolderName( binder.getTitle() );
 			
 				parentBinder = binder.getParentBinder();
-				folder.setParentBinderName( parentBinder.getPathName() );
+				if ( parentBinder != null )
+					folder.setParentBinderName( parentBinder.getPathName() );
 
 				// Create a url that can be used to view this folder.
 				url = PermaLinkUtil.getPermalink( binder );
