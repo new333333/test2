@@ -452,15 +452,13 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 			   			}
 
 			   			//delete customAttributeListElement definitions on this binder
-	    	   			session.createQuery("DELETE org.kablink.teaming.domain.CustomAttributeListElement where ownerId=:ownerId and ownerType=:entityType")
+	    	   			session.createQuery("DELETE org.kablink.teaming.domain.CustomAttributeListElement where ownerId=:ownerId")
 			   				.setLong("ownerId", binder.getId())
-			   				.setParameter("entityType", EntityIdentifier.EntityType.folder.name())
 			   				.executeUpdate();
 		   				
 	    	   		    //delete customAttributeListElement definitions on this binder
-	    	   			session.createQuery("DELETE org.kablink.teaming.domain.CustomAttribute where ownerId=:ownerId and ownerType=:entityType")
+	    	   			session.createQuery("DELETE org.kablink.teaming.domain.CustomAttribute where ownerId=:ownerId")
 			   				.setLong("ownerId", binder.getId())
-			   				.setParameter("entityType", EntityIdentifier.EntityType.folder.name())
 			   				.executeUpdate();
 
 			   			//delete mashup definitions on this binder
