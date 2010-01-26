@@ -75,14 +75,7 @@
 		        entryId="${mashupEntry.id}"
 		      ><ssf:param name="entityType" value="folderEntry"/>
 		      </ssf:url>"><span class="ss_size_20px ss_bold">${mashupEntry.title}</span></a>
-    </div>
-	<div class="ss_mashup_entry_content ss_smallprint">
-	  <span><ssf:showUser user="${mashupEntry.modification.principal}"/><span>
-	  <span style="padding-left:10px;"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-	   	value="${mashupEntry.modification.date}" type="both" 
-		timeStyle="short" dateStyle="medium" /></span>
-	</div>
-  
+    </div>  
 	  
     <div class="ss_mashup_entry_content">
       <ssf:markup entity="${mashupEntry}">${mashupEntry.description.text}</ssf:markup>
