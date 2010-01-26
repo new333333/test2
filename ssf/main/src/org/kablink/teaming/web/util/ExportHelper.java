@@ -1090,6 +1090,7 @@ public class ExportHelper {
 			Map reportMap) throws IOException, ExportException {
 		getNumberFormat();
 		
+		statusTicket.setStatus(NLT.get("loading.files") + "...");
 		Map<String, Principal> nameCache = new HashMap();
 		Binder binder = binderModule.getBinder(binderId);
 		ZipInputStream zIn = new ZipInputStream(fIn);
@@ -1129,6 +1130,8 @@ public class ExportHelper {
 			Map entryIdMap, Map binderIdMap, Map<String, Definition> definitionIdMap, StatusTicket statusTicket,
 			Map reportMap, Map<String, Principal> nameCache) throws IOException {
 
+		Binder topBinder = loadBinder(topBinderId);
+
 		SortedMap sortMap = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 		File[] tempChildren = currentDir.listFiles();
 
@@ -1155,8 +1158,6 @@ public class ExportHelper {
 
 					// adding definition to top binder locally if it does not
 					// already exist
-
-					Binder topBinder = loadBinder(topBinderId);
 
 					String xmlStr = null;
 
@@ -1197,6 +1198,11 @@ public class ExportHelper {
 							try {
 								def = definitionModule.getDefinitionByName(null, false, defName);
 							} catch(NoDefinitionByTheIdException e) {}
+							if (def == null) {
+								try {
+									def = definitionModule.getDefinitionByName(topBinder, false, defName);
+								} catch(NoDefinitionByTheIdException e) {}
+							}
 							if (def != null) definitionIdMap.put(defId, def);
 						}
 					}
@@ -1243,7 +1249,7 @@ public class ExportHelper {
 						Document tempDoc = getDocument(xmlStr, nameCache);
 						String defId = getEntityDefinitionId(tempDoc);
 						String defName = getEntityDefinitionName(tempDoc);
-						Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap);
+						Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap, topBinder);
 
 						if (def != null && ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF.equals(def.getId())) {
 							Definition newDef = definitionModule.getDefinitionByReservedId(ObjectKeys.DEFAULT_LIBRARY_ENTRY_DEF);
@@ -1446,7 +1452,7 @@ public class ExportHelper {
 	}
 	
 	private static Definition getTargetDefinition(String defId, String defName, 
-			Map<String, Definition> definitionIdMap, Map reportMap) {
+			Map<String, Definition> definitionIdMap, Map reportMap, Binder topBinder) {
 		Definition def = null;
 		if (definitionIdMap.containsKey(defId)) {
 			def = definitionIdMap.get(defId);
@@ -1455,9 +1461,14 @@ public class ExportHelper {
 				def = definitionModule.getDefinitionByName(null, false, defName);
 				if (def != null) definitionIdMap.put(defId, def);
 			} catch(Exception e) {
-				Integer c = (Integer)reportMap.get(errors);
-				reportMap.put(errors, ++c);
-				((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
+				try {
+					def = definitionModule.getDefinitionByName(topBinder, false, defName);
+					if (def != null) definitionIdMap.put(defId, def);
+				} catch(Exception e2) {
+					Integer c = (Integer)reportMap.get(errors);
+					reportMap.put(errors, ++c);
+					((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
+				}
 			}
 		}
 		return def;
@@ -1467,6 +1478,8 @@ public class ExportHelper {
 			String inputDataAsXML, long binderId, Long topBinderId, Map binderIdMap, 
 			Map<String, Definition> definitionIdMap, String tempDir, Map reportMap, 
 			StatusTicket statusTicket, Map<String, Principal> nameCache) {
+
+		final Binder topBinder = loadBinder(topBinderId);
 
 		final Document doc = getDocument(inputDataAsXML, nameCache);
 		final Map<String, Definition> fDefIdMap = new HashMap<String, Definition>(definitionIdMap);
@@ -1505,10 +1518,10 @@ public class ExportHelper {
 				public Object doInTransaction(TransactionStatus status) {
 
 					// binder settings
-					importSettingsList(doc, binder, fDefIdMap, rMap);
+					importSettingsList(doc, binder, fDefIdMap, rMap, topBinder);
 
 					// workflows
-					importWorkflows(doc, binder, fDefIdMap, rMap, fNameCache);
+					importWorkflows(doc, binder, fDefIdMap, rMap, fNameCache, topBinder);
 					return null;
 				}
 			});
@@ -1538,6 +1551,7 @@ public class ExportHelper {
 			Long entryId, StatusTicket statusTicket, Map reportMap,
 			Map<String, Principal> nameCache) {
 
+		final Binder topBinder = loadBinder(topBinderId);
 		final Document doc = getDocument(inputDataAsXML, nameCache);
 		String[] fileNames = new String[0];
 		Map options = new HashMap();
@@ -1564,7 +1578,7 @@ public class ExportHelper {
 				statusTicket.setStatus(NLT.get("administration.export_import.importingEntry", new String[] {entry.getTitle()}));
 				transactionTemplate.execute(new TransactionCallback() {
 					public Object doInTransaction(TransactionStatus status) {
-						importWorkflows(doc, entry, fDefinitionIdMap, rMap, fNameCache);
+						importWorkflows(doc, entry, fDefinitionIdMap, rMap, fNameCache, topBinder);
 						return null;
 					}
 				});
@@ -1597,6 +1611,7 @@ public class ExportHelper {
 			Map entryIdMap, Map binderIdMap, Map<String, Definition> definitionIdMap, 
 			Long entryId, Map reportMap, Map<String, Principal> nameCache) {
 
+		final Binder topBinder = loadBinder(topBinderId);
 		final Document doc = getDocument(inputDataAsXML, nameCache);
 
 		Map options = new HashMap();
@@ -1623,7 +1638,7 @@ public class ExportHelper {
 				final Map fNameCache = nameCache;
 				transactionTemplate.execute(new TransactionCallback() {
 					public Object doInTransaction(TransactionStatus status) {
-						importWorkflows(doc, entry, fDefinitionIdMap, rMap, fNameCache);
+						importWorkflows(doc, entry, fDefinitionIdMap, rMap, fNameCache, topBinder);
 						return null;
 					}
 				});
@@ -2138,7 +2153,8 @@ public class ExportHelper {
 	}
 
 	private static void importWorkflows(Document entityDoc, DefinableEntity entity, 
-			Map<String, Definition> definitionIdMap, Map reportMap, Map<String, Principal> nameCache) {
+			Map<String, Definition> definitionIdMap, Map reportMap, 
+			Map<String, Principal> nameCache, Binder topBinder) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String zoneUUID = entityDoc.getRootElement().attributeValue("zoneUUID", "");
 		
@@ -2161,7 +2177,7 @@ public class ExportHelper {
 			for (Element response : repsonses) {
 				String defId = response.attributeValue("definitionId", "");
 				String defName = response.attributeValue("definitionName", "");
-				Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap);
+				Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap, topBinder);
 				String question = response.attributeValue("responseName", "");
 				String responseValue = response.attributeValue("responseValue", "");
 				String responseDate = response.attributeValue("responseDate", "");
@@ -2204,7 +2220,7 @@ public class ExportHelper {
 				String defId = process.attributeValue("definitionId", "");
 				String defName = process.attributeValue("definitionName", "");
 				String state = process.attributeValue("state", "");
-				Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap);
+				Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap, topBinder);
 
 				EntityIdentifier entityIdentifier = new EntityIdentifier(entity
 						.getId(), EntityIdentifier.EntityType.folderEntry);
@@ -2255,7 +2271,7 @@ public class ExportHelper {
 				String defId = process.attributeValue("definitionId", "");
 				String defName = process.attributeValue("definitionName", "");
 				if (!defId.equals("")) {
-					Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap);
+					Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap, topBinder);
 					if (def != null) newDefinitionList.add(def.getId());
 				}
 			}
@@ -2273,8 +2289,8 @@ public class ExportHelper {
 				String workflowDefId = process.attributeValue("workflowDefinitionId", "");
 				String workflowDefName = process.attributeValue("workflowDefinitionName", "");
 				if (!entryDefId.equals("")) {
-					Definition entryDef = getTargetDefinition(entryDefId, entryDefName, definitionIdMap, reportMap);
-					Definition workflowDef = getTargetDefinition(workflowDefId, workflowDefName, definitionIdMap, reportMap);
+					Definition entryDef = getTargetDefinition(entryDefId, entryDefName, definitionIdMap, reportMap, topBinder);
+					Definition workflowDef = getTargetDefinition(workflowDefId, workflowDefName, definitionIdMap, reportMap, topBinder);
 					if (entryDef != null && workflowDef != null) 
 						workflowAssociations.put(entryDef.getId(), workflowDef.getId());
 				}
@@ -2286,7 +2302,7 @@ public class ExportHelper {
 	}
 
 	private static void importSettingsList(Document entityDoc, Binder binder, 
-			Map<String, Definition>definitionIdMap, Map reportMap) {
+			Map<String, Definition>definitionIdMap, Map reportMap, Binder topBinder) {
 
 		// current binder definitions
 
@@ -2300,7 +2316,7 @@ public class ExportHelper {
 		for (Element view : views) {
 			String defId = view.attributeValue("definitionId", "");
 			String defName = view.attributeValue("definitionName", "");
-			Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap);
+			Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap, topBinder);
 			if (def != null) {
 				// don't want to include mirrored file folder as an imported view setting
 				if (!def.getId().equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)) {
@@ -2317,7 +2333,7 @@ public class ExportHelper {
 		for (Element entry : entries) {
 			String defId = entry.attributeValue("definitionId", "");
 			String defName = entry.attributeValue("definitionName", "");
-			Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap);
+			Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap, topBinder);
 			if (def != null) {
 				// don't want to include mirrored file entry as an imported allowed entry setting
 				if (!def.getId().equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)) {

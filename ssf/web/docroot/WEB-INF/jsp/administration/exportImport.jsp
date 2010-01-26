@@ -137,13 +137,18 @@ function ss_getOperationStatus()
 		if (ss_statusSeen != 0) {
 			ss_exportingDone();
 			return
+		} else {
+			var obj = self.document.getElementById("ss_operation_status");
+			if (obj != null) obj.innerHTML = "";
 		}
 	}
 	if (typeof self.document.getElementById("ss_operation_status") != "undefined" && 
 			self.document.getElementById("ss_operation_status") != null &&
 			typeof self.document.getElementById("ss_operation_status").innerHTML != "undefined" &&
 			self.document.getElementById("ss_operation_status").innerHTML != null &&
-			self.document.getElementById("ss_operation_status").innerHTML != "") ss_statusSeen = 1;
+			self.document.getElementById("ss_operation_status").innerHTML != "") {
+		ss_statusSeen = 1;
+	}
 	
 	var ajaxRequest = new ss_AjaxRequest(ss_checkStatusUrl); //Create AjaxRequest object
 	ajaxRequest.addKeyValue("ss_statusId",ss_exportStatusTicket);
