@@ -64,95 +64,32 @@
 		<div class="ss_clear"></div>
 	  </div>
 	</c:if>
-
+	
+	<div class="ss_mashup_folder_list_open">
+	<ul style="margin:0px; padding:0px;">
 	<c:forEach var="entryMap" items="${ss_mashupBinderEntries[mashupBinderId]}" varStatus="status">
 		<c:set var="mashupEntryId" value="${entryMap['_docId']}"/>
 		<c:set var="mashupEntry" value="${ss_mashupEntries[mashupEntryId]}"/>
 		<c:set var="mashupEntryReplies" value="${ss_mashupEntryReplies[mashupEntryId]}"/>
 	    <c:if test="${empty mashup_attributes['entriesToShow'] || status.count <= mashup_attributes['entriesToShow']}">
-
-<jsp:useBean id="mashupEntry" type="org.kablink.teaming.domain.DefinableEntity" />
-<% 
-	//See if this is a survey entry. If it is, just show the survey and not the replies
-	Element configEle = (Element)mashupEntry.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryDataItem' and @formItem='survey']");
-%>
-<c:set var="configEle" value="<%= configEle %>" />
-
-	      <div class="ss_mashup_folder_list_open">
-			<div class="ss_mashup_folder_list_open_title">
+	      <li style="padding-bottom:6px;">
 		  	  <a href="<ssf:url crawlable="true" 
 		  	    adapter="true" portletName="ss_forum"    
 		        action="view_permalink" 
 		        binderId="${entryMap._binderId}"
 		        entryId="${entryMap._docId}"
 		      ><ssf:param name="entityType" value="folderEntry"/>
-		      </ssf:url>"><span>${entryMap.title}</span></a>
-			</div>
-		    <c:if test="${empty configEle}">
-                  <div style="padding-left:6px;" class="ss_smallprint">
-		        <span><ssf:showUser user="${mashupEntry.creation.principal}"/></span>
-		        <span style="padding-left:10px;"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-     			  value="${mashupEntry.modification.date}" type="both" 
+		      </ssf:url>"><span><strong>${entryMap.title}</strong></span></a>
+		    <div style="padding-left:16px;" class="ss_smallprint">
+		      <span><ssf:showUser user="${mashupEntry.modification.principal}"/></span>
+		      <span style="padding-left:10px;"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+     			value="${mashupEntry.modification.date}" type="both" 
 	 			timeStyle="short" dateStyle="medium" /></span>
-		      </div>
-                </c:if>
-			<div class="ss_mashup_folder_list_open_entry">
-			  <c:if test="${!empty entryMap._desc}">
-			    <ssf:markup search="${entryMap}">${entryMap._desc}</ssf:markup>
-			    <div class="ss_clear"></div>
-			  </c:if>
-
-			<c:if test="${!empty configEle}">
-			  <c:set var="originalDefinitionEntry" value="${ssDefinitionEntry}"/>
-			  <c:set var="originalBinder" value="${ssBinder}"/>
-			  <c:set var="originalEntry" value="${ssEntry}"/>
-			  <c:set var="ssDefinitionEntry" value="${mashupEntry}" scope="request"/>
-			  <c:set var="ssBinder" value="${mashupEntry.parentFolder}" scope="request"/>
-			  <c:set var="ssEntry" value="${mashupEntry}" scope="request"/>
-			  <c:set var="property_name" value="survey" scope="request"/>
-			  <c:set var="property_caption" value="" scope="request"/>
-			  <ssf:displayConfiguration 
-			    configDefinition="${mashupEntry.entryDef.definition}" 
-			    configElement="<%= configEle %>"
-			    configJspStyle="view" 
-			    entry="${mashupEntry}" 
-			    processThisItem="true" />
-			  <c:set var="ssDefinitionEntry" value="${originalDefinitionEntry}" scope="request"/>
-			  <c:set var="ssBinder" value="${originalBinder}" scope="request"/>
-			  <c:set var="ssEntry" value="${originalEntry}" scope="request"/>
-			</c:if>
-		  
-			<c:if test="${empty configEle}">
-			  <c:forEach var="reply" items="${mashupEntryReplies['folderEntryDescendants']}" varStatus="status2">
-	    	   <c:if test="${status2.count <= 10}">
-				<div style="padding-left:20px;">
-				  <div class="ss_mashup_folder_list_open_title">
-				    <a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"    
-				      action="view_permalink" 
-				      binderId="${reply.parentFolder.id}"
-				      entryId="${reply.id}"
-				      ><ssf:param name="entityType" value="folderEntry"/>
-				      </ssf:url>"><span>${reply.title}</span></a>
-				  </div>
-				  <div style="padding-left:6px;" class="ss_smallprint">
-				    <span><ssf:showUser user="${reply.modification.principal}"/></span>
-				    <span style="padding-left:10px;"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-		     			value="${reply.modification.date}" type="both" 
-			 			timeStyle="short" dateStyle="medium" /></span>
-				  </div>
-				  <div class="ss_mashup_entry_content">
-				    <ssf:markup entity="${reply}">${reply.description.text}</ssf:markup>
-				    <div class="ss_clear"></div>
-				  </div>
-				</div>
-			   </c:if>
-			  </c:forEach>
-			</c:if>
-			  
-			</div>
-		  </div>
-		  
-		</c:if>
+		    </div>
+		</li>
+	    </c:if>
 	</c:forEach>
+	</ul>
+	</div>
   <div class="ss_mashup_round_bottom"><div></div></div>
 </div>
