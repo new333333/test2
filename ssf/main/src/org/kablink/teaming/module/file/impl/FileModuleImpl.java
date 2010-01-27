@@ -1515,8 +1515,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			updateInfo.fileLength = Long.valueOf(fui.makeReentrant());
     		}
 		}
-		else {
+		else { // This condition can occur only for mirrored folder when synching inbound from the source 
 			updateInfo.versionName = RepositoryUtil.generateRandomVersionName();
+			updateInfo.fileLength = Long.valueOf(fui.makeReentrant());
 		}
 
 		return updateInfo;
