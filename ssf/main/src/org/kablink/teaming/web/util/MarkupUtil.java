@@ -64,6 +64,7 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.SPropsUtil;
@@ -363,8 +364,8 @@ public class MarkupUtil {
 	protected interface UrlBuilder {
 		public String getFileUrlByName(String fileName);
 		public String getFileUrlById(String fileId);
-		public String getRelativeTitleUrl(String normalizedTitle, String title);
-		public String getTitleUrl(String binderId, String zoneUUID, String normalizedTitle, String title);
+		public String getRelativeTitleUrl(String normalizedTitle, String title, Boolean isMobile);
+		public String getTitleUrl(String binderId, String zoneUUID, String normalizedTitle, String title, Boolean isMobile);
 		public String getRootUrl();
 		public String getImagesRootUrl();
 		public String getRootServletUrl();
@@ -372,6 +373,11 @@ public class MarkupUtil {
 	public static String markupStringReplacement(final RenderRequest req, final RenderResponse res, 
 			final HttpServletRequest httpReq, final HttpServletResponse httpRes,
 			final Map searchResults, String inputString, final String type) {
+		return markupStringReplacement(req, res, httpReq, httpRes, searchResults, inputString, type, false);
+	}
+	public static String markupStringReplacement(final RenderRequest req, final RenderResponse res, 
+			final HttpServletRequest httpReq, final HttpServletResponse httpRes,
+			final Map searchResults, String inputString, final String type, final Boolean isMobile) {
 		UrlBuilder builder = new UrlBuilder() {
 			public String getRootUrl() {
 				if (httpReq != null) return WebUrlUtil.getAdapterRootURL(httpReq, httpReq.isSecure());
@@ -397,34 +403,63 @@ public class MarkupUtil {
 				return getFileUrlByName(fileName.toString());
 
 			}
-			public String getRelativeTitleUrl(String normalizedTitle, String title) {
+			public String getRelativeTitleUrl(String normalizedTitle, String title, Boolean isMobile) {
 				String zoneUUID = "";
 				return getTitleUrl((String)searchResults.get(org.kablink.util.search.Constants.BINDER_ID_FIELD), 
-						zoneUUID, normalizedTitle, title);
+						zoneUUID, normalizedTitle, title, isMobile);
 			}
-			public String getTitleUrl(String binderId, String zoneUUID, String normalizedTitle, String title) {
+			public String getTitleUrl(String binderId, String zoneUUID, String normalizedTitle, String title, Boolean isMobile) {
 				if (WebKeys.MARKUP_EXPORT.equals(type) || res == null) {
 					return PermaLinkUtil.getTitlePermalink(Long.valueOf(binderId), zoneUUID, normalizedTitle);
 				}
+				String url = "";
 				PortletURL portletURL = portletURL = res.createActionURL();
 				portletURL.setParameter(WebKeys.URL_BINDER_ID, binderId);
+				if (Validator.isNotNull(zoneUUID)) portletURL.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
 				if (normalizedTitle != null && !normalizedTitle.equals("")) {
 					portletURL.setParameter(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
 					portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
 					portletURL.setParameter(WebKeys.URL_ENTRY_PAGE_TITLE, title);
+					url = portletURL.toString();
+					if (isMobile) {
+						AdaptedPortletURL adapterUrl = new AdaptedPortletURL(req, "ss_mobile", true);
+						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+						adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+						adapterUrl.setParameter(WebKeys.URL_ENTRY_TITLE, normalizedTitle);
+						adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_ENTRY);
+						if (Validator.isNotNull(zoneUUID)) adapterUrl.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
+						url = adapterUrl.toString();
+					}
 				} else {
-					portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+					if (isMobile) {
+						AdaptedPortletURL adapterUrl = new AdaptedPortletURL(req, "ss_mobile", true);
+						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+						adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+						adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FOLDER);
+						if (Validator.isNotNull(zoneUUID)) adapterUrl.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
+						url = adapterUrl.toString();
+					} else {
+						portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+						url = portletURL.toString();
+					}
 				}
-				return portletURL.toString();
+				return url;
 			}
 		};
 		return markupStringReplacement(req, res, httpReq, httpRes, builder,
-				(String)searchResults.get(org.kablink.util.search.Constants.DOCID_FIELD), (String)searchResults.get(org.kablink.util.search.Constants.ENTITY_FIELD), inputString, type);
+				(String)searchResults.get(org.kablink.util.search.Constants.DOCID_FIELD), 
+				(String)searchResults.get(org.kablink.util.search.Constants.ENTITY_FIELD), 
+				inputString, type, isMobile);
 	}
 	
 	public static String markupStringReplacement(final RenderRequest req, final RenderResponse res, 
 			final HttpServletRequest httpReq, final HttpServletResponse httpRes,
 			final DefinableEntity entity, String inputString, final String type) {
+		return markupStringReplacement(req, res, httpReq, httpRes, entity, inputString, type, false);
+	}
+	public static String markupStringReplacement(final RenderRequest req, final RenderResponse res, 
+			final HttpServletRequest httpReq, final HttpServletResponse httpRes,
+			final DefinableEntity entity, String inputString, final String type, final Boolean isMobile) {
 		UrlBuilder builder = new UrlBuilder() {
 			public String getRootUrl() {
 				if (httpReq != null) return WebUrlUtil.getAdapterRootURL(httpReq, httpReq.isSecure());
@@ -451,37 +486,59 @@ public class MarkupUtil {
 					return getFileUrlByName(fa.getFileItem().getName());
 				} catch (Exception ex) {return "";}
 			}
-			public String getRelativeTitleUrl(String normalizedTitle, String title) {
+			public String getRelativeTitleUrl(String normalizedTitle, String title, Boolean isMobile) {
 				CustomAttribute zoneUUIDattr = entity.getCustomAttribute(Constants.ZONE_UUID_FIELD);
 				String zoneUUID = "";
 				Long binderId = entity.getId();
 				if (EntityType.folderEntry.equals(entity.getEntityType())) binderId = entity.getParentBinder().getId();
 				return getTitleUrl(binderId.toString(), 
-						zoneUUID, normalizedTitle, title);
+						zoneUUID, normalizedTitle, title, isMobile);
 			}
-			public String getTitleUrl(String binderId, String zoneUUID, String normalizedTitle, String title) {
+			public String getTitleUrl(String binderId, String zoneUUID, String normalizedTitle, String title, Boolean isMobile) {
 				if (WebKeys.MARKUP_EXPORT.equals(type) || res == null) {
 					return PermaLinkUtil.getTitlePermalink(Long.valueOf(binderId), normalizedTitle);
 				}
-				PortletURL portletURL = portletURL = res.createActionURL();
+				String url = "";
+				
+				PortletURL portletURL = res.createActionURL();
 				portletURL.setParameter(WebKeys.URL_BINDER_ID, binderId);
 				if (Validator.isNotNull(zoneUUID)) portletURL.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
 				if (normalizedTitle != null && !normalizedTitle.equals("")) {
 					portletURL.setParameter(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
 					portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
 					portletURL.setParameter(WebKeys.URL_ENTRY_PAGE_TITLE, title);
+					url = portletURL.toString();
+					if (isMobile) {
+						AdaptedPortletURL adapterUrl = new AdaptedPortletURL(req, "ss_mobile", true);
+						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+						adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+						adapterUrl.setParameter(WebKeys.URL_ENTRY_TITLE, normalizedTitle);
+						adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_ENTRY);
+						if (Validator.isNotNull(zoneUUID)) adapterUrl.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
+						url = adapterUrl.toString();
+					}
 				} else {
-					portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+					if (isMobile) {
+						AdaptedPortletURL adapterUrl = new AdaptedPortletURL(req, "ss_mobile", true);
+						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+						adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+						adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FOLDER);
+						if (Validator.isNotNull(zoneUUID)) adapterUrl.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
+						url = adapterUrl.toString();
+					} else {
+						portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+						url = portletURL.toString();
+					}
 				}
-				return portletURL.toString();
+				return url;
 			}
 		};
 		return markupStringReplacement(req, res, httpReq, httpRes, builder,
-				entity.getId().toString(), entity.getEntityType().name(), inputString, type);
+				entity.getId().toString(), entity.getEntityType().name(), inputString, type, isMobile);
 	}
 	private static String markupStringReplacement(RenderRequest req, RenderResponse res, 
 			HttpServletRequest httpReq, HttpServletResponse httpRes, UrlBuilder builder, 
-			String entityId, String entityType, String inputString, String type) {
+			String entityId, String entityType, String inputString, String type, Boolean isMobile) {
 		if (Validator.isNull(inputString)) return inputString;  //don't waste time
 		StringBuffer outputBuf = new StringBuffer(inputString);
 		
@@ -628,7 +685,7 @@ public class MarkupUtil {
 			        	titleLink.append(title).append("</a>");
 			    	} else if (type.equals(WebKeys.MARKUP_VIEW)){
 			    		String webUrl = builder.getTitleUrl(s_binderId, s_zoneUUID, titleUrlPart,
-			    				WebHelper.getNormalizedTitle(normalizedTitle));
+			    				WebHelper.getNormalizedTitle(normalizedTitle), isMobile);
 			    		String showInParent = "false";
 			    		if (normalizedTitle == null || normalizedTitle.equals("")) showInParent = "true";
 			    		titleLink.append("<a href=\"").append(webUrl);
@@ -636,7 +693,7 @@ public class MarkupUtil {
 			    		titleLink.append("<span class=\"ss_title_link\">").append(title).append("</span></a>");
 			    	} else {
 			    		String webUrl = builder.getTitleUrl(s_binderId, s_zoneUUID, titleUrlPart,
-			    				WebHelper.getNormalizedTitle(normalizedTitle));
+			    				WebHelper.getNormalizedTitle(normalizedTitle), isMobile);
 			    		titleLink.append("<a href=\"").append(webUrl).append("\">").append(title).append("</a>");
 			    		
 			    	}
@@ -753,7 +810,7 @@ public class MarkupUtil {
 			    		if (Validator.isNotNull(normalizedTitle)) {
 			    			//Build the url to that entry
 				    		StringBuffer titleLink = new StringBuffer();				
-			    			String webUrl = builder.getRelativeTitleUrl(normalizedTitle, title);
+			    			String webUrl = builder.getRelativeTitleUrl(normalizedTitle, title, isMobile);
 			    			if (type.equals(WebKeys.MARKUP_VIEW)) {
 					    		String showInParent = "false";
 					    		if (normalizedTitle == null || normalizedTitle.equals("")) showInParent = "true";

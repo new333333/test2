@@ -224,7 +224,7 @@
 			    <div class="entry-content">
 			    	<ssf:textFormat 
 			      	  formatAction="limitedDescription" 
-			          textMaxWords="20"><ssf:markup search="${entryWn}">${entryWn._desc}</ssf:markup></ssf:textFormat>
+			          textMaxWords="20"><ssf:markup search="${entryWn}" mobile="true">${entryWn._desc}</ssf:markup></ssf:textFormat>
 		  	      <div class="ss_clear"></div>
 		  	    </div>
 			  </c:if>

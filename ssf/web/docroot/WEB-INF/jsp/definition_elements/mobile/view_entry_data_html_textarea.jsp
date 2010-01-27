@@ -38,7 +38,14 @@
  <div class="entry-caption"><c:out value="${property_caption}"/></div>
 </c:if>
  <div class="entry-element">
-  <span><ssf:markup entity="${ssDefinitionEntry}">${ssDefinitionEntry.customAttributes[property_name].value.text}</ssf:markup></span>
+  <c:if test="${textFormat != '2'}">
+    <span><ssf:markup entity="${ssDefinitionEntry}" mobile="true">${ssDefinitionEntry.customAttributes[property_name].value.text}</ssf:markup></span>
+  </c:if>
+  <c:if test="${textFormat == '2'}">
+    <ssf:markup entity="${ssDefinitionEntry}" mobile="true">
+      <ssf:textFormat formatAction="textToHtml">${ssDefinitionEntry.customAttributes[property_name].value.text}</ssf:textFormat>
+    </ssf:markup>
+  </c:if>
   <div class="ss_clear"></div>
  </div>
 </div>
