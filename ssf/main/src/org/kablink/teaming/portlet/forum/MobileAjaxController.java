@@ -1143,7 +1143,16 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				entryId = ((FolderEntry)entries.iterator().next()).getId();
 			}
 		}
-		if (entryId == null) return ajaxMobileShowFolder(bs, request, response);
+		if (entryId == null) {
+			//No entry exists by this title
+			Map model = new HashMap();
+			Binder binder = getBinderModule().getBinder(binderId);
+			BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
+			model.put(WebKeys.BINDER, binder);
+			model.put(WebKeys.TABS, Tabs.getTabs(request));
+			BinderHelper.setupMobileSearchBeans(bs, request, response, model);
+			return new ModelAndView("mobile/entry_does_not_exist", model);
+		}
 		return ajaxMobileShowEntry(bs, request, response, entryId);
 	}
 	private ModelAndView ajaxMobileShowEntry(AllModulesInjected bs, RenderRequest request, 

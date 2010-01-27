@@ -781,7 +781,26 @@ ul.ss_nobullet li {
 
 ul.ss_square li {
   list-style-type: square;
-} 
+}
+
+a.ss_linkButton:link, a.ss_linkButton:visited {
+ cursor: pointer;
+ <c:if test="<%= isIE %>">
+   		height: 20px; 
+   		margin: 1px;
+  		padding: 0px 7px 0px 7px;
+ </c:if>
+  text-align: center;
+  padding: 0px 6px 0px 6px;
+  font-size: 12px !important;
+  font-family: Arial, sans-serif;
+  white-space: nowrap;
+  text-decoration: none !important;
+  border: 1px solid #5A9A98;
+  background-image: url(images/mobile/background_inline_button_blue.gif);
+  background-repeat: repeat-x;
+	}	
+
 
 .my-item a {
 	padding: 5px 100px 5px 0px;
