@@ -39,10 +39,10 @@
 </c:if>
  <div class="entry-element">
   <c:if test="${textFormat != '2'}">
-    <span><ssf:markup entity="${ssDefinitionEntry}">${ssDefinitionEntry.customAttributes[property_name].value.text}</ssf:markup></span>
+    <span><ssf:markup entity="${ssDefinitionEntry}" mobile="true">${ssDefinitionEntry.customAttributes[property_name].value.text}</ssf:markup></span>
   </c:if>
   <c:if test="${textFormat == '2'}">
-    <ssf:markup entity="${ssDefinitionEntry}">
+    <ssf:markup entity="${ssDefinitionEntry}" mobile="true">
       <ssf:textFormat formatAction="textToHtml">${ssDefinitionEntry.customAttributes[property_name].value.text}</ssf:textFormat>
     </ssf:markup>
   </c:if>
