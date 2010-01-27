@@ -135,7 +135,7 @@
 			    		  <c:set var="truncatedDescription" ><ssf:textFormat 
 			      	  		formatAction="limitedDescription" 
 			          		textMaxWords="20"><ssf:markup 
-			          		search="${entry}">${entry._desc}</ssf:markup></ssf:textFormat></c:set>
+			          		search="${entry}" mobile="true">${entry._desc}</ssf:markup></ssf:textFormat></c:set>
 			          	  <c:if test="${!empty truncatedDescription}">
 						    <div class="entry-content">
 							  ${truncatedDescription}

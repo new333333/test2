@@ -96,7 +96,7 @@
 			    <div class="entry-content">
 			    	<ssf:textFormat 
 			      	  formatAction="limitedDescription" 
-			          textMaxWords="10"><ssf:markup search="${entryFol}">${entryFol._desc}</ssf:markup></ssf:textFormat>
+			          textMaxWords="10"><ssf:markup search="${entryFol}" mobile="true">${entryFol._desc}</ssf:markup></ssf:textFormat>
 		  	    <div class="ss_clear"></div>
 		  	    </div>
 			  </c:if>

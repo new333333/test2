@@ -41,12 +41,12 @@
 </c:if>
 <div class="entry-content">
  <c:if test="${textFormat == '2'}">
-	<ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" 
+	<ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" mobile="true"
      ><ssf:textFormat formatAction="textToHtml">${ssDefinitionEntry.description.text}</ssf:textFormat></ssf:markup>
  </c:if>
  <c:if test="${textFormat != '2'}">
    <span>
-     <ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" 
+     <ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" mobile="true"
      >${ssDefinitionEntry.description.text}</ssf:markup>
    </span>
  </c:if>
