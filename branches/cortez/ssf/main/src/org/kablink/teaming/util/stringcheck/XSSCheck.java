@@ -61,8 +61,8 @@ public class XSSCheck implements StringCheck {
 	private static final String MODE_TRUSTED_DISALLOW = "trusted.disallow";
 	private static final String MODE_TRUSTED_STRIP = "trusted.strip";
 	
-	private static final String PATTERN_STR1 = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|style|html|head|body|meta|xml|blink|link|iframe|frame|frameset|ilayer|layer|bgsound|base)(?:[\\s]+[^>]*>|>))";
-	private static final String PATTERN_STR1_FILE = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|blink|iframe|frame|frameset|ilayer|layer|bgsound|base)(?:[\\s]+[^>]*>|>))";
+	private static final String PATTERN_STR1 = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|style|html|head|body|meta|xml|blink|link|iframe|frame|frameset|form|ilayer|layer|bgsound|base)(?:[\\s]+[^>]*>|>))";
+	private static final String PATTERN_STR1_FILE = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|blink|iframe|frame|frameset|form|ilayer|layer|bgsound|base)(?:[\\s]+[^>]*>|>))";
 
 	private static final String PATTERN_STR2 = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|xml|meta|blockquote|del|ins|q)[\\s]*[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^>\\s]*script[\\s]*:[^>\\s]*))([^>]*>)";
 	private static final String PATTERN_STR2_FILE = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|xml|meta|blockquote|del|ins|q)[\\s]*[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*https?[\\s]*:[^>]*\\2|[^>\\s]*https?[\\s]*:[^>\\s]*))([^>]*>)";
