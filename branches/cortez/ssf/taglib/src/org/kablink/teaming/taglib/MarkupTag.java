@@ -57,6 +57,7 @@ public class MarkupTag extends BodyTagSupport {
 	private String type = WebKeys.MARKUP_VIEW;
     private Map searchResult=null;
 	private boolean leaveSectionsUnchanged = false;
+	private boolean mobile = false;
     
 	public void MarkupTag() {
 		setup();
@@ -95,10 +96,10 @@ public class MarkupTag extends BodyTagSupport {
 			
 			if (searchResult != null) {
 				translatedString = MarkupUtil.markupStringReplacement(renderRequest, renderResponse, 
-					httpReq, httpRes, searchResult, _bodyContent, type);
+					httpReq, httpRes, searchResult, _bodyContent, type, mobile);
 			} else if (entity != null) {
 				translatedString = MarkupUtil.markupStringReplacement(renderRequest, renderResponse, 
-						httpReq, httpRes, entity, _bodyContent, type);
+						httpReq, httpRes, entity, _bodyContent, type, mobile);
 			}
 			if (!this.leaveSectionsUnchanged) {
 				//Translate the "sections" markup
@@ -114,6 +115,7 @@ public class MarkupTag extends BodyTagSupport {
 		finally {
 			setup();
 			this.leaveSectionsUnchanged = false;
+			this.mobile = false;
 		}
 	}
 
@@ -131,6 +133,10 @@ public class MarkupTag extends BodyTagSupport {
 
 	public void setLeaveSectionsUnchanged(boolean leaveSectionsUnchanged) {
 	    this.leaveSectionsUnchanged = leaveSectionsUnchanged;
+	}
+
+	public void setMobile(boolean mobile) {
+	    this.mobile = mobile;
 	}
 
 }

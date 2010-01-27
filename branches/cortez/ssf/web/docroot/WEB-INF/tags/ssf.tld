@@ -425,6 +425,12 @@
 	</tag>
 	
 	<tag>
+		<name>escapeQuotes</name>
+		<tag-class>org.kablink.teaming.taglib.EscapeQuotesTag</tag-class>
+		<body-content>JSP</body-content>
+	</tag>
+	
+	<tag>
 		<name>eventeditor</name>
 		<tag-class>org.kablink.teaming.taglib.Eventeditor</tag-class>
 		<body-content>JSP</body-content>
@@ -996,6 +1002,12 @@
 		</attribute>		
 		<attribute>
 			<name>leaveSectionsUnchanged</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
+		</attribute>
+		<attribute>
+			<name>mobile</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>boolean</type>

@@ -81,6 +81,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -1128,7 +1129,21 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	}
 	private ModelAndView ajaxMobileShowEntry(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
-		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+		if (entryId == null) {
+			String zoneUUID = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
+			String title = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
+			Set entries = getFolderModule().getFolderEntryByNormalizedTitle(binderId, title, zoneUUID);
+			if (entries.size() == 1) {
+				FolderEntry entry = (FolderEntry)entries.iterator().next();
+				entryId = entry.getId();
+			} else if (entries.size() > 1) {
+				//There are multiple matches
+				entryId = ((FolderEntry)entries.iterator().next()).getId();
+			}
+		}
+		if (entryId == null) return ajaxMobileShowFolder(bs, request, response);
 		return ajaxMobileShowEntry(bs, request, response, entryId);
 	}
 	private ModelAndView ajaxMobileShowEntry(AllModulesInjected bs, RenderRequest request, 
