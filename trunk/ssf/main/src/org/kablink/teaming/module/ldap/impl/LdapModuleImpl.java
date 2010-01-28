@@ -670,37 +670,26 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		 */
 		public String[] getAttributeNamesToRead( LdapConnectionConfig ldapConnectionConfig )
 		{
-			Map<String,String> attributeMappings;
 			String[] attributeNames = null;
 			
-			// Get the mapping of ldap attribute names to Teaming field names.
-			attributeMappings = ldapConnectionConfig.getMappings();
+			// this.userAttributeNames holds the list of ldap attribute names that are
+			// found in the ldap configuration mapping.
 			
-			if ( attributeMappings != null )
+			if ( this.userAttributeNames != null )
 			{
 				int i;
-				Set<String> ldapNames;
-				Iterator<String> iterator;
 				String attrName;
-				
-				// Get a collection of the ldap names found in the mapping.
-				ldapNames = attributeMappings.keySet();
 				
 				// Create an array large enough to hold all the ldap attribute names found
 				// in the mapping plus the name of the attribute that uniquely identifies
 				// a user plus the ldap attribute that identifies a user.
-				attributeNames = new String[ldapNames.size() + 2];
+				attributeNames = new String[this.userAttributeNames.length + 2];
 				
-				// Go through the list of ldap names in the mapping and add each name to
-				// the our list.
-				// list of attribute names to read.
-				iterator = ldapNames.iterator();
-				for (i = 0; iterator.hasNext(); ++i)
+				for (i = 0; i < this.userAttributeNames.length; ++i)
 				{
-					// Get the next ldap attribute name and add it to our list.
-					attributeNames[i] = iterator.next();
+					attributeNames[i] = this.userAttributeNames[i];
 				}
-				
+
 				// Add the ldap attribute that is used to identify the user.
 				attrName = ldapConnectionConfig.getUserIdAttribute();
 				if ( attrName != null && attrName.length() > 0 )
@@ -725,10 +714,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 
 		Map userAttributes = config.getMappings();
 
+		userCoordinator.setAttributes(userAttributes);
+
 		// Get a list of the names of the attributes we want to read from the ldap directory for each user.
 		attributesToRead = userCoordinator.getAttributeNamesToRead( config );
-
-		userCoordinator.setAttributes(userAttributes);
 
 		Set la = new HashSet(userAttributes.keySet());
 		String userIdAttribute = config.getUserIdAttribute();
@@ -753,11 +742,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					fixedUpUserName = fixupName( userName );
 					fixedUpUserName = fixedUpUserName.trim();
 					
-					boolean newWay = false;
-					if ( newWay )
-						lAttrs = ctx.getAttributes( fixedUpUserName, attributesToRead );
-					else
-						lAttrs = ctx.getAttributes( fixedUpUserName );
+					lAttrs = ctx.getAttributes( fixedUpUserName, attributesToRead );
 					
 					Attribute id=null;
 					id = lAttrs.get(userIdAttribute);
