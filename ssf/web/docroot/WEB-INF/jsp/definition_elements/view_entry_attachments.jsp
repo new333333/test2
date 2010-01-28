@@ -158,8 +158,8 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	</c:if>
 	
 	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-	  <li style="float:left; padding:1px 10px 4px 0px;">
 	<% if (presence_service_enabled) { %>
+	  <li style="float:left; padding:1px 10px 4px 0px;">
 	  <a class="ss_tinyButton ss_fineprint ss_nowrap" 
 	    title="<ssf:nlt tag="attachMeeting.attachResults"/>" 
 	    href="javascript: ;" 
@@ -171,7 +171,6 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 		  onClick='alert("${ss_quotaMessage}");return false;'
 		</c:if>
 	    ><ssf:nlt tag="attachMeeting.attachResults"/></a>
-	<% } %>
 	
 	  <div id="ss_div_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 	    name="ss_div_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
@@ -186,7 +185,17 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 		</div>
 	  </div>
 	  </li>
+	<% } %>
 	</c:if>	
+
+	<c:if test="${!empty ssDefinitionEntry.fileAttachments}">
+	  <li style="float:left; padding:1px 10px 4px 0px;">
+		<a class="ss_tinyButton ss_fineprint ss_nowrap" 
+		  title="<ssf:nlt tag="entry.DownloadAllAttachmentsAsZip"/>" 
+		  href="<ssf:fileUrl zipUrl="true" entity="${ssDefinitionEntry}"/>" 
+		  ><ssf:nlt tag="entry.DownloadAllAttachments"/></a>
+	  </li>
+	</c:if>
 		
 	</ul>
 	</td>

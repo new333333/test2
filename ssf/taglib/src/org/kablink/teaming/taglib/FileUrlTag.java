@@ -57,6 +57,7 @@ public class FileUrlTag extends BodyTagSupport {
 	private DefinableEntity entity=null;
 	private String fileId=null;
 	private boolean baseUrl = false;
+	private boolean zipUrl = false;
 	public FileUrlTag() {
 		setup();
 	}
@@ -73,6 +74,7 @@ public class FileUrlTag extends BodyTagSupport {
 		entity = null;
 		webPath = WebKeys.ACTION_READ_FILE;
 		baseUrl = false;
+		zipUrl = false;
 	}
 	
 	public int doEndTag() throws JspException {
@@ -89,6 +91,9 @@ public class FileUrlTag extends BodyTagSupport {
 				if (this.baseUrl) {
 					//We are building a base url that has no file name
 					webUrl = WebUrlUtil.getFileUrl(req, WebKeys.ACTION_READ_FILE, entity, "");
+				} else if (this.zipUrl) {
+					//We are building a zip url that has no file name
+					webUrl = WebUrlUtil.getFileZipUrl(req, WebKeys.ACTION_READ_FILE, entity);
 				} else {
 					//try the first entity
 					Set<FileAttachment> atts = entity.getFileAttachments(); 
@@ -123,6 +128,9 @@ public class FileUrlTag extends BodyTagSupport {
 	}
 	public void setBaseUrl(boolean baseUrl) {
 	    this.baseUrl = baseUrl;
+	}
+	public void setZipUrl(boolean zipUrl) {
+	    this.zipUrl = zipUrl;
 	}
 }
 
