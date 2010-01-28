@@ -33,6 +33,8 @@
 package org.kablink.teaming.gwt.client.admin;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
@@ -41,6 +43,7 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -89,6 +92,15 @@ class ExtensionViewDetailsDlg extends PopupPanel implements ClickHandler {
 		mainPanel = new VerticalPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
+		String sDateDeployed = info.getDateDeployed();
+		DateTimeFormat dtFormat = DateTimeFormat.getFormat(GwtTeaming.getMessages().extensionsDlgDateFormat());
+		Date dateDeployed = new Date();
+		dtFormat.parse(info.getDateDeployed(), 0, dateDeployed);
+		if(dateDeployed != null)
+		{
+			sDateDeployed = dtFormat.format(dateDeployed);
+		}
+		
 		table = new FlexTable();
 		table.setCellSpacing( 2 );
 		int row = 0;
@@ -98,8 +110,9 @@ class ExtensionViewDetailsDlg extends PopupPanel implements ClickHandler {
 		table.setWidget( row, 0, new Label( GwtTeaming.getMessages().extensionsDlgVersion() ) );
 		table.setWidget( row, 1, new Label( info.getVersion() ) );
 		row++;
+		
 		table.setWidget( row, 0, new Label( GwtTeaming.getMessages().extensionsDlgDeployed() ) );
-		table.setWidget( row, 1, new Label( info.getDateDeployed() ) );
+		table.setWidget( row, 1, new Label( sDateDeployed ) );
 		row++;
 		table.setWidget( row, 0, new Label( GwtTeaming.getMessages().extensionsDlgZoneName() ) );
 		table.setWidget( row, 1, new Label( info.getZoneName() ) );
@@ -124,11 +137,15 @@ class ExtensionViewDetailsDlg extends PopupPanel implements ClickHandler {
 			} 
 		}
 		
+		
+		String sDateCreated = info.getDateCreated();
+		
+		
 		Anchor link = new Anchor(info.getAuthorSite(), authorSite);
 		table.setWidget( row, 1, link );
 		row++;
 		table.setWidget( row, 0, new Label( GwtTeaming.getMessages().extensionsDlgCreated() ) );
-		table.setWidget( row, 1, new Label( info.getDateCreated() ) );
+		table.setWidget( row, 1, new Label( sDateCreated ) );
 
 		mainPanel.add( table );
 		mainPanel.add(extensionPanelStateText);

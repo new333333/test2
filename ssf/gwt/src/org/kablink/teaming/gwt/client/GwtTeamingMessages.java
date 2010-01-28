@@ -176,5 +176,6 @@ public interface GwtTeamingMessages extends Messages
 	String extensionsDlgFilesTitle();
 	String extensionsDlgFilesError();
 	String extensionsDlgVersion();
+	String extensionsDlgDateFormat();
 	
 }// end GwtTeamingMessages
