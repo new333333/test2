@@ -663,14 +663,70 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			return dnUsers;
 
 		}
+		
+		/**
+		 * Return the list of attribute names we need to read from the ldap directory.  We get the list of
+		 * attributes to read from the ldap configuration that maps ldap attribute names to Teaming ids.
+		 */
+		public String[] getAttributeNamesToRead( LdapConnectionConfig ldapConnectionConfig )
+		{
+			Map<String,String> attributeMappings;
+			String[] attributeNames = null;
+			
+			// Get the mapping of ldap attribute names to Teaming field names.
+			attributeMappings = ldapConnectionConfig.getMappings();
+			
+			if ( attributeMappings != null )
+			{
+				int i;
+				Set<String> ldapNames;
+				Iterator<String> iterator;
+				String attrName;
+				
+				// Get a collection of the ldap names found in the mapping.
+				ldapNames = attributeMappings.keySet();
+				
+				// Create an array large enough to hold all the ldap attribute names found
+				// in the mapping plus the name of the attribute that uniquely identifies
+				// a user plus the ldap attribute that identifies a user.
+				attributeNames = new String[ldapNames.size() + 2];
+				
+				// Go through the list of ldap names in the mapping and add each name to
+				// the our list.
+				// list of attribute names to read.
+				iterator = ldapNames.iterator();
+				for (i = 0; iterator.hasNext(); ++i)
+				{
+					// Get the next ldap attribute name and add it to our list.
+					attributeNames[i] = iterator.next();
+				}
+				
+				// Add the ldap attribute that is used to identify the user.
+				attrName = ldapConnectionConfig.getUserIdAttribute();
+				if ( attrName != null && attrName.length() > 0 )
+				{
+					attributeNames[i] = attrName; 
+					++i;
+				}
+				
+				// Add the "entryUIID" attribute to the list of ldap attributes to read.
+				attributeNames[i] = "entryUUID";
+			}
+			
+			return attributeNames;
+		}// end getAttributeNamesToRead()
 	}// end UserCoordinator
 	
 	protected void syncUsers(Binder zone, LdapContext ctx, LdapConnectionConfig config, UserCoordinator userCoordinator) 
 		throws NamingException {
 		String ssName;
 		String [] sample = new String[0];
+		String[] attributesToRead;
 	 
 		Map userAttributes = config.getMappings();
+
+		// Get a list of the names of the attributes we want to read from the ldap directory for each user.
+		attributesToRead = userCoordinator.getAttributeNamesToRead( config );
 
 		userCoordinator.setAttributes(userAttributes);
 
@@ -688,6 +744,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				while (ctxSearch.hasMore()) {
 					String	userName;
 					String	fixedUpUserName;
+					Attributes lAttrs = null;
 					
 					Binding bd = (Binding)ctxSearch.next();
 					userName = bd.getNameInNamespace();
@@ -696,7 +753,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					fixedUpUserName = fixupName( userName );
 					fixedUpUserName = fixedUpUserName.trim();
 					
-					Attributes lAttrs = ctx.getAttributes( fixedUpUserName );
+					boolean newWay = false;
+					if ( newWay )
+						lAttrs = ctx.getAttributes( fixedUpUserName, attributesToRead );
+					else
+						lAttrs = ctx.getAttributes( fixedUpUserName );
+					
 					Attribute id=null;
 					id = lAttrs.get(userIdAttribute);
 					if (id == null) continue;
@@ -1157,11 +1219,22 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			} else if (att.size() == 1) {
 				mods.put(mapping.get(ldapAttrNames[i]), val);					
 			} else {
-				Set vals = new HashSet();
-				for (NamingEnumeration valEnum=att.getAll(); valEnum.hasMoreElements();) {
-					vals.add(valEnum.nextElement());
+				String combinedValues = "";
+				
+				// This attribute is a multi-valued attribute.  Teaming doesn't understand
+				// multi-valued attributes.  So we need to concatenate all of the values
+				// into one value.
+				for (NamingEnumeration valEnum=att.getAll(); valEnum.hasMoreElements();)
+				{
+					Object nextValue;
+					
+					nextValue = valEnum.nextElement();
+					
+					// We only know how to deal with Strings
+					combinedValues += nextValue.toString() + " ";
 				}
-				mods.put(mapping.get(ldapAttrNames[i]), vals.toArray(sample));
+
+				mods.put( mapping.get(ldapAttrNames[i]), combinedValues );
 			}
 		}		
 	}
