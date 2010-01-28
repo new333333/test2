@@ -70,6 +70,7 @@ public class WebUrlUtil {
 	public static final int FILE_URL_VERSION = 6;
 	public static final int FILE_URL_NAME = 7;
 	public static final int FILE_URL_ARG_LENGTH = 8;
+	public static final int FILE_URL_ZIP_ARG_LENGTH = 5;
 	
 	private static final Log logger = LogFactory.getLog(WebUrlUtil.class);
 

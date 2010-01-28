@@ -32,25 +32,40 @@
  */
 package org.kablink.teaming.servlet.forum;
 
+import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
+import javax.activation.FileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.tools.zip.ZipEntry;
+import org.apache.tools.zip.ZipOutputStream;
+import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.FileUtil;
+import org.springframework.mail.javamail.ConfigurableMimeFileTypeMap;
 import org.springframework.web.servlet.ModelAndView;
 
 public class ReadFileController extends AbstractReadFileController {
 	
+	private FileTypeMap mimeTypes = new ConfigurableMimeFileTypeMap();
 	
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -60,63 +75,120 @@ public class ReadFileController extends AbstractReadFileController {
 		
 		String[] args = pathInfo.split(Constants.SLASH);
 		//We expect the url to be formatted as /readFile/entityType/entryId/fileTime/fileVersion/filename.ext
+		//  or /readFile/entityType/entryId/zip
 		//To support sitescape forum, where folder structures were allowed on an entry, the url may contain more pathinfo.
 		//fileVersion=last, read latest
-		//fileTime is present for browser cachinge
+		//fileTime is present for browser caching
 		//filename is present for browser handling of relative files
-		if (args.length < WebUrlUtil.FILE_URL_ARG_LENGTH) return null;
-		
-		try {
-			DefinableEntity entity = getEntity(args[WebUrlUtil.FILE_URL_ENTITY_TYPE], Long.valueOf(args[WebUrlUtil.FILE_URL_ENTITY_ID]));
-			//Set up the beans needed by the jsps
-			FileAttachment fa = null;
-			if (args.length > WebUrlUtil.FILE_URL_ARG_LENGTH && entity instanceof FolderEntry) {
-				fa = getAttachment((FolderEntry)entity, Arrays.asList(args).subList(WebUrlUtil.FILE_URL_NAME, args.length).toArray());
-				//entity may have changed
-				if (fa != null) {
-					entity = fa.getOwner().getEntity();
+		if (args.length == WebUrlUtil.FILE_URL_ZIP_ARG_LENGTH && 
+				String.valueOf(args[WebUrlUtil.FILE_URL_FILE_ID]).equals("zip")) {
+			//The user wants a zip file of all attachments
+			try {
+				Boolean singleByte = SPropsUtil.getBoolean("export.filename.8bitsinglebyte.only", true);
+				DefinableEntity entity = getEntity(args[WebUrlUtil.FILE_URL_ENTITY_TYPE], Long.valueOf(args[WebUrlUtil.FILE_URL_ENTITY_ID]));
+				Set<Attachment> attachments = entity.getAttachments();
+				String fileName = getBinderModule().filename8BitSingleByteOnly(entity.getTitle() + ".zip", "files.zip", singleByte);
+				response.setContentType(mimeTypes.getContentType(fileName));
+				response.setHeader("Cache-Control", "private");
+				response.setHeader(
+							"Content-Disposition",
+							"attachment; filename=\"" + fileName + "\"");
+				
+				InputStream fileStream = null;
+				ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream());		
+			
+				//Standard zip encoding is cp437. (needed when chars are outside the ASCII range)
+				zipOut.setEncoding("cp437");
+				for (Attachment attachment : attachments) {
+					if (attachment instanceof FileAttachment) {
+						String attName = getBinderModule().filename8BitSingleByteOnly((FileAttachment)attachment, singleByte);
+	
+						try {
+							if (entity.getEntityType().equals(EntityType.folderEntry)) {
+								fileStream = getFileModule().readFile(entity.getParentBinder(), entity, (FileAttachment)attachment);
+							} else if (entity.getEntityType().equals(EntityType.folder) || 
+									entity.getEntityType().equals(EntityType.workspace)) {
+								fileStream = getFileModule().readFile((Binder)entity, entity, (FileAttachment)attachment);
+							} else {
+								zipOut.finish();
+								return null;
+							}
+	
+							zipOut.putNextEntry(new ZipEntry(attName));
+							FileUtil.copy(fileStream, zipOut);
+							zipOut.closeEntry();
+	
+							fileStream.close();
+						} catch (Exception e) {
+							logger.error(e);
+						}
+					}
 				}
-			} else {
-				fa = getAttachment(entity, args[WebUrlUtil.FILE_URL_NAME], args[WebUrlUtil.FILE_URL_VERSION], args[WebUrlUtil.FILE_URL_FILE_ID]);
-			}
-
-			if (fa != null) {
-				String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
-				String contentType = getFileTypeMap().getContentType(shortFileName);
-				response.setContentType(contentType);
-				boolean isHttps = request.getScheme().equalsIgnoreCase("https");
-				String cacheControl = "private";
-				if (isHttps) {
-					response.setHeader("Pragma", "public");
-					cacheControl += ", proxy-revalidate, s-maxage=0";
-				}
-				response.setHeader("Cache-Control", cacheControl);
-				String attachment = "";
-				if (FileHelper.checkIfAttachment(contentType)) attachment = "attachment; ";
-				response.setHeader("Content-Disposition",
-						attachment + "filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\"");
-				response.setHeader("Last-Modified", formatDate(fa.getModification().getDate()));	
-				try {
-					Binder parent = getBinder(entity);
-					response.setHeader("Content-Length", 
-							String.valueOf(FileHelper.getLength(parent, entity, fa)));
-					getFileModule().readFile(parent, entity, fa, response.getOutputStream());
-					getReportModule().addFileInfo(AuditType.download, fa);
-				}
-				catch(Exception e) {
-					response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
-				}
-			} else {
+				zipOut.finish();
+			
+				return null;
+			} catch(Exception e) {
+				//Bad format of url; just return null
 				response.getOutputStream().print(NLT.get("file.error.unknownFile"));
 			}
+			return null;
+		
+		} else if (args.length < WebUrlUtil.FILE_URL_ARG_LENGTH) {
+			return null;
+		
+		} else {
 			try {
-				response.getOutputStream().flush();
+				DefinableEntity entity = getEntity(args[WebUrlUtil.FILE_URL_ENTITY_TYPE], Long.valueOf(args[WebUrlUtil.FILE_URL_ENTITY_ID]));
+				//Set up the beans needed by the jsps
+				FileAttachment fa = null;
+				if (args.length > WebUrlUtil.FILE_URL_ARG_LENGTH && entity instanceof FolderEntry) {
+					fa = getAttachment((FolderEntry)entity, Arrays.asList(args).subList(WebUrlUtil.FILE_URL_NAME, args.length).toArray());
+					//entity may have changed
+					if (fa != null) {
+						entity = fa.getOwner().getEntity();
+					}
+				} else {
+					fa = getAttachment(entity, args[WebUrlUtil.FILE_URL_NAME], args[WebUrlUtil.FILE_URL_VERSION], args[WebUrlUtil.FILE_URL_FILE_ID]);
+				}
+	
+				if (fa != null) {
+					String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
+					String contentType = getFileTypeMap().getContentType(shortFileName);
+					response.setContentType(contentType);
+					boolean isHttps = request.getScheme().equalsIgnoreCase("https");
+					String cacheControl = "private";
+					if (isHttps) {
+						response.setHeader("Pragma", "public");
+						cacheControl += ", proxy-revalidate, s-maxage=0";
+					}
+					response.setHeader("Cache-Control", cacheControl);
+					String attachment = "";
+					if (FileHelper.checkIfAttachment(contentType)) attachment = "attachment; ";
+					response.setHeader("Content-Disposition",
+							attachment + "filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\"");
+					response.setHeader("Last-Modified", formatDate(fa.getModification().getDate()));	
+					try {
+						Binder parent = getBinder(entity);
+						response.setHeader("Content-Length", 
+								String.valueOf(FileHelper.getLength(parent, entity, fa)));
+						getFileModule().readFile(parent, entity, fa, response.getOutputStream());
+						getReportModule().addFileInfo(AuditType.download, fa);
+					}
+					catch(Exception e) {
+						response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
+					}
+				} else {
+					response.getOutputStream().print(NLT.get("file.error.unknownFile"));
+				}
+				try {
+					response.getOutputStream().flush();
+				}
+				catch(Exception ignore) {}
+	
+			} catch(Exception e) {
+				//Bad format of url; just return null
+				response.getOutputStream().print(NLT.get("file.error.unknownFile"));
 			}
-			catch(Exception ignore) {}
-
-		} catch(Exception e) {
-			//Bad format of url; just return null
-			response.getOutputStream().print(NLT.get("file.error.unknownFile"));
 		}
 		
 		return null;
