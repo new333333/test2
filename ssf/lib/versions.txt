@@ -60,7 +60,6 @@ Joda-Time 1.6
 jQuery 1.2.6 (Javascript library)
 jQuery UI Tabs 1.5.2 (Javascript library)
 Json-lib 1.1 for jdk15
-json (implementation of org.json.*)
 JSTL 1.0.5
 JSTL Implementation (from Apache) 1.0.6
 JTA 1.0.1b
