@@ -343,6 +343,9 @@ public class WebUrlUtil {
 	public static String getFileUrl(HttpServletRequest req, String action, DefinableEntity entity, String fileName) {
 		return getFileUrl(WebUrlUtil.getServletRootURL(req), action, entity, fileName);
 	}
+	public static String getFileZipUrl(HttpServletRequest req, String action, DefinableEntity entity) {
+		return getFileZipUrl(WebUrlUtil.getServletRootURL(req), action, entity);
+	}
 	public static String getFileUrl(String webPath, String action, DefinableEntity entity, String fileName) {
 		if (entity == null) return "";
 		FileAttachment fAtt = null;
@@ -358,6 +361,11 @@ public class WebUrlUtil {
 					entity.getEntityType().name(), null, String.valueOf(new Date().getTime()) , null, fileName);
 			
 		}
+	}
+	public static String getFileZipUrl(String webPath, String action, DefinableEntity entity) {
+		if (entity == null) return "";
+		return WebUrlUtil.getFileZipUrl(webPath, WebKeys.ACTION_READ_FILE, entity.getId().toString(), 
+					entity.getEntityType().name());			
 	}
 	public static String getFileUrl(PortletRequest req, String path, Map searchResults) {
 		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, 	searchResults);
@@ -482,6 +490,15 @@ public class WebUrlUtil {
 			fileName = StringUtils.replace(Http.encodeURL(fileName), "+", "%20");
 		}
 		webUrl.append(Constants.SLASH + fileName);  
+		return webUrl.toString();
+	}
+
+	public static String getFileZipUrl(String webPath, String action, String entityId, String entityType) {
+		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
+		StringBuffer webUrl = new StringBuffer(webPath + action);
+		webUrl.append(Constants.SLASH + entityType);
+		webUrl.append(Constants.SLASH + entityId);
+		webUrl.append(Constants.SLASH + "zip"); 
 		return webUrl.toString();
 	}
 

@@ -99,10 +99,13 @@ public class ReadFileController extends AbstractReadFileController {
 			
 				//Standard zip encoding is cp437. (needed when chars are outside the ASCII range)
 				zipOut.setEncoding("cp437");
+				Integer fileCounter = 1;
 				for (Attachment attachment : attachments) {
 					if (attachment instanceof FileAttachment) {
-						String attName = getBinderModule().filename8BitSingleByteOnly((FileAttachment)attachment, singleByte);
-	
+						String attExt = EntityIndexUtils.getFileExtension(attachment.getName());
+						String attName = getBinderModule().filename8BitSingleByteOnly(attachment.getName(), 
+								"__file"+fileCounter.toString(), singleByte); //Note: do not translate this name
+						fileCounter++;
 						try {
 							if (entity.getEntityType().equals(EntityType.folderEntry)) {
 								fileStream = getFileModule().readFile(entity.getParentBinder(), entity, (FileAttachment)attachment);
