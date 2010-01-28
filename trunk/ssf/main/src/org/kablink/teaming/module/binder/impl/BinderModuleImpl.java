@@ -2100,6 +2100,24 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 	
+	public String filename8BitSingleByteOnly(String fileName, String fallbackName, 
+			boolean _8BitSingleByteOnly) {
+		if (!_8BitSingleByteOnly) {
+			return fileName;
+		} else {
+			for (int i = 0; i < fileName.length(); i++) {
+				int c = (int) fileName.charAt(i);
+
+				if (c >= 0x20 && c < 0x7F) {
+					// it's ok
+				} else
+					return fallbackName;
+			}
+
+			return fileName;
+		}
+	}
+	
 	public Long getZoneBinderId(Long binderId, String zoneUUID, String entityType) {
 		if (Validator.isNull(zoneUUID)) return binderId;
 		List<Long> ids = getCoreDao().findZoneEntityIds(binderId, zoneUUID, entityType);
