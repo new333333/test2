@@ -45,90 +45,74 @@
 		<% /* Task Folder:  View Options. */ %>
 		<li class="ss_calendarNaviBarOption ss_taskViewOptions">
 			<ssf:nlt tag="task.navi.chooseView"/>:
-			<a class="ss_calDaySelectButton" href="<ssf:url 
-  				folderId="${ssBinder.id}" 
-  				action="${action}">
-	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
-	  				<ssf:param name="ssTaskFilterType" value="CLOSED"/>
-  				</ssf:url>"
-				alt="<ssf:nlt tag="alt.viewClosed"/>">
-					<input id="taskClosed" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'CLOSED'}">checked="true"</c:if>/> <label for="taskClosed"><ssf:nlt tag="alt.viewClosed"/></label>
-			</a>
+			<input id="taskClosed" type="radio" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'CLOSED'}">checked="true"</c:if>
+				onclick="window.location='<ssf:url 
+	  				folderId="${ssBinder.id}" 
+	  				action="${action}">
+		  				<ssf:param name="binderId" value="${ssBinder.id}"/>
+		  				<ssf:param name="ssTaskFilterType" value="CLOSED"/>
+	  				</ssf:url>'"/> <label for="taskClosed"><ssf:nlt tag="alt.viewClosed"/></label>
 		
-			<a class="ss_cal3DaysSelectButton" href="<ssf:url 
-  				folderId="${ssBinder.id}" 
-  				action="${action}">
-	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
-	  				<ssf:param name="ssTaskFilterType" value="DAY"/>
-  				</ssf:url>"
-				alt="<ssf:nlt tag="alt.viewToday"/>">
-					<input id="taskDay" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'DAY'}">checked="true"</c:if>/> <label for="taskDay"><ssf:nlt tag="alt.viewToday"/></label>
-			</a>
+			<input id="taskDay" type="radio" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'DAY'}">checked="true"</c:if>
+				onclick="window.location='<ssf:url 
+	  				folderId="${ssBinder.id}" 
+	  				action="${action}">
+		  				<ssf:param name="binderId" value="${ssBinder.id}"/>
+		  				<ssf:param name="ssTaskFilterType" value="DAY"/>
+	  				</ssf:url>'"/> <label for="taskDay"><ssf:nlt tag="alt.viewToday"/></label>
 
-			<a class="ss_cal5DaysSelectButton" href="<ssf:url 
-  				folderId="${ssBinder.id}" 
-  				action="${action}">
-	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
-	  				<ssf:param name="ssTaskFilterType" value="WEEK"/>
-  				</ssf:url>"
-				alt="<ssf:nlt tag="alt.viewWeek"/>">
-					<input id="taskWeek" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'WEEK'}">checked="true"</c:if>/> <label for="taskWeek"><ssf:nlt tag="alt.viewWeek"/></label>
-			</a>
+			<input id="taskWeek" type="radio" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'WEEK'}">checked="true"</c:if>
+				onclick="window.location='<ssf:url 
+	  				folderId="${ssBinder.id}" 
+	  				action="${action}">
+		  				<ssf:param name="binderId" value="${ssBinder.id}"/>
+		  				<ssf:param name="ssTaskFilterType" value="WEEK"/>
+	  				</ssf:url>'"/> <label for="taskWeek"><ssf:nlt tag="alt.viewWeek"/></label>
 
-			<a class="ss_cal7DaysSelectButton" href="<ssf:url 
-  				folderId="${ssBinder.id}" 
-  				action="${action}">
-	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
-	  				<ssf:param name="ssTaskFilterType" value="MONTH"/>
-  				</ssf:url>"
-				alt="<ssf:nlt tag="alt.viewMonth"/>">
-					<input id="taskMonth" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'MONTH'}">checked="true"</c:if>/> <label for="taskMonth"><ssf:nlt tag="alt.viewMonth"/></label>
-			</a>
+			<input id="taskMonth" type="radio" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'MONTH'}">checked="true"</c:if>
+				onclick="window.location='<ssf:url 
+	  				folderId="${ssBinder.id}" 
+	  				action="${action}">
+		  				<ssf:param name="binderId" value="${ssBinder.id}"/>
+		  				<ssf:param name="ssTaskFilterType" value="MONTH"/>
+	  				</ssf:url>'"/> <label for="taskMonth"><ssf:nlt tag="alt.viewMonth"/></label>
 
-			<a class="ss_calMonthSelectButton" href="<ssf:url 
-  				folderId="${ssBinder.id}" 
-  				action="${action}">
-	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
-	  				<ssf:param name="ssTaskFilterType" value="ACTIVE"/>
-  				</ssf:url>"
-				alt="<ssf:nlt tag="alt.viewAllActive"/>">
-					<input id="taskAllActive" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'ACTIVE'}">checked="true"</c:if>/> <label for="taskAllActive"><ssf:nlt tag="alt.viewAllActive"/></label>
-			</a>
+			<input id="taskAllActive" type="radio" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'ACTIVE'}">checked="true"</c:if>
+				onclick="window.location='<ssf:url 
+	  				folderId="${ssBinder.id}" 
+	  				action="${action}">
+		  				<ssf:param name="binderId" value="${ssBinder.id}"/>
+		  				<ssf:param name="ssTaskFilterType" value="ACTIVE"/>
+	  				</ssf:url>'"/> <label for="taskAllActive"><ssf:nlt tag="alt.viewAllActive"/></label>
 			
-			<a class="ss_calMonthSelectButton" href="<ssf:url 
-  				folderId="${ssBinder.id}" 
-  				action="${action}">
-	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
-	  				<ssf:param name="ssTaskFilterType" value="ALL"/>
-  				</ssf:url>"
-				alt="<ssf:nlt tag="alt.viewAll"/>">
-					<input id="taskAllEntries" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'ALL'}">checked="true"</c:if>/> <label for="taskAllEntries"><ssf:nlt tag="alt.viewAll"/></label>
-			</a>			
+			<input id="taskAllEntries" type="radio" name="ss_task_current_filter_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'ALL'}">checked="true"</c:if>
+				onclick="window.location='<ssf:url 
+	  				folderId="${ssBinder.id}" 
+	  				action="${action}">
+		  				<ssf:param name="binderId" value="${ssBinder.id}"/>
+		  				<ssf:param name="ssTaskFilterType" value="ALL"/>
+	  				</ssf:url>'"/> <label for="taskAllEntries"><ssf:nlt tag="alt.viewAll"/></label>
 		</li>
 
 		<c:if test="${ !empty ssShowFolderModeSelect && ssShowFolderModeSelect }">
 			<% /* Task Folder:  Mode Options. */ %>
 			<li class="ss_calendarNaviBarOption ss_taskViewOptions">
 				<ssf:nlt tag="task.navi.chooseMode"/>:
-				<a class="ss_calModeSelectButton" href="<ssf:url 
-	  				folderId="${ssBinder.id}" 
-	  				action="${action}">
-		  				<ssf:param name="binderId" value="${ssBinder.id}"/>
-		  				<ssf:param name="ssFolderModeType" value="VIRTUAL"/>
-	  				</ssf:url>"
-					alt="<ssf:nlt tag="task.navi.mode.alt.virtual"/>">
-						<input id="taskVirtual" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_folder_current_mode_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentFolderModeType == 'VIRTUAL'}">checked="true"</c:if>/> <label for="taskVirtual"><ssf:nlt tag="task.navi.mode.alt.virtual"/></label>
-				</a>
+				<input id="taskVirtual" type="radio" name="ss_folder_current_mode_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentFolderModeType == 'VIRTUAL'}">checked="true"</c:if>
+					onclick="window.location='<ssf:url 
+		  				folderId="${ssBinder.id}" 
+		  				action="${action}">
+			  				<ssf:param name="binderId" value="${ssBinder.id}"/>
+			  				<ssf:param name="ssFolderModeType" value="VIRTUAL"/>
+		  				</ssf:url>'"/> <label for="taskVirtual"><ssf:nlt tag="task.navi.mode.alt.virtual"/></label>
 
-				<a class="ss_calModeSelectButton" href="<ssf:url 
-	  				folderId="${ssBinder.id}" 
-	  				action="${action}">
-		  				<ssf:param name="binderId" value="${ssBinder.id}"/>
-		  				<ssf:param name="ssFolderModeType" value="PHYSICAL"/>
-	  				</ssf:url>"
-					alt="<ssf:nlt tag="task.navi.mode.alt.physical"/>">
-						<input id="taskPhysical" type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_folder_current_mode_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentFolderModeType == 'PHYSICAL'}">checked="true"</c:if>/> <label for="taskPhysical"><ssf:nlt tag="task.navi.mode.alt.physical"/></label>
-				</a>
+				<input id="taskPhysical" type="radio" name="ss_folder_current_mode_${renderResponse.namespace}_${ssBinder.id}" <c:if test="${ssCurrentFolderModeType == 'PHYSICAL'}">checked="true"</c:if>
+					onclick="window.location='<ssf:url 
+		  				folderId="${ssBinder.id}" 
+		  				action="${action}">
+			  				<ssf:param name="binderId" value="${ssBinder.id}"/>
+			  				<ssf:param name="ssFolderModeType" value="PHYSICAL"/>
+		  				</ssf:url>'"/> <label for="taskPhysical"><ssf:nlt tag="task.navi.mode.alt.physical"/></label>
 			</li>
 		</c:if>
 	</ul>
