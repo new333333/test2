@@ -63,6 +63,10 @@ function ss_saveDestinationBinderId(id) {
 	var formObj = document.getElementById("ss_move_form");
 	formObj.idChoices.value = "destination_" + id
 }
+function ss_submitMoveBinderForm() {
+	var formObj = document.getElementById("ss_move_form");
+	formObj.submit();
+}
 </script>
 
 <div class="ss_style ss_portlet">
@@ -106,8 +110,11 @@ function ss_saveDestinationBinderId(id) {
 <br/>
 <br/>
 
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
-<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" 
+  onClick="ss_startSpinner();setTimeout('ss_submitMoveBinderForm();', 500);return false;">
+<input type="button" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
+  onClick="self.window.close();return false;">
+<input type="hidden" name="okBtn" value="okBtn"/>
 </form>
 </ssf:form>
 </div>
