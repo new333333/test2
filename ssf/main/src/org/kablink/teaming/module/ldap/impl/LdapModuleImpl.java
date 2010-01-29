@@ -485,6 +485,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if (sync) {
 					Map userMods = new HashMap();
 					getUpdates(userAttributeNames, userAttributes, lAttrs, userMods);
+					
+					//!!! Redo the following code.
 					//remove this incase a mapping exists that is different than the uid attribute
 					userMods.remove(ObjectKeys.FIELD_PRINCIPAL_NAME);
 					if (row != null && row2 == null) {
@@ -506,8 +508,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						//this could only happen if the user_id_attribute has changed and the new name is already taken
 						logger.error(NLT.get("errorcode.ldap.duplicate", new Object[] {ssName, dn}));
 						//but apply updates to row anyway, just leave loginName unchanged
-						
 					}
+					//!!! end redo
+					
 					//otherwise equal and all is well
 					ldap_existing.put((Long)row[1], userMods);				
 				}
@@ -574,6 +577,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 				List results = createUsers(zoneId, ldap_new, syncResults );
 				ldap_new.clear();
+				
+				//!!! Do we need to do something here?  What is this doing?
 				// fill in mapping from distinquished name to id
 				for (int i=0; i<results.size(); ++i) {
 					User user = (User)results.get(i);
@@ -632,6 +637,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 				deletePrincipals(zoneId, notInLdap.keySet(), deleteWorkspace, syncResults );
 			}
+			
+			//!!! What is this doing?
 			//Set foreign names of users to self; needed to recognize synced names and mark attributes read-only
 			if (!delete && !notInLdap.isEmpty()) {
 		    	Map users = new HashMap();
@@ -741,7 +748,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Fixup the  by replacing all "/" with "\/".
 					fixedUpUserName = fixupName( userName );
 					fixedUpUserName = fixedUpUserName.trim();
-					
+
+					// Read the necessary attributes for this user from the ldap directory.
 					lAttrs = ctx.getAttributes( fixedUpUserName, attributesToRead );
 					
 					Attribute id=null;
@@ -768,6 +776,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					} else {
 						dn = relativeName;
 					}
+					//!!! How do we want to determine if a user is a duplicate?
 					if (userCoordinator.isDuplicate(dn)) {
 						logger.error(NLT.get("errorcode.ldap.duplicate", new Object[] {ssName, dn}));
 						continue;
