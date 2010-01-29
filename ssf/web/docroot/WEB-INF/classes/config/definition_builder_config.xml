@@ -2971,8 +2971,8 @@
 	<item name="transitionOnEntryData" caption="__transition_on_entry_data" type="transition" >
 		<properties>
 			<property name="allMustMatch" caption="__matchEntryData" type="radio" default="true">
-				<option name="true" caption="__matchAll" />
 				<option name="false" caption="__matchAny" />
+				<option name="true" caption="__matchAll" />
 				<help>ihelp.workflow.allMustMatch</help>
 			</property>
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
