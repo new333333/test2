@@ -139,12 +139,7 @@
 		    <c:if test="${empty nextBinder.title}">
 	          <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
 	        </c:if>
-        	<c:if test="${nextBinder.definitionType != '12' || nextBinder.parentBinder.entityType != 'profiles'}">
-          	  <span>${nextBinder.title}</span>
-        	</c:if>
-        	<c:if test="${nextBinder.definitionType == '12' && nextBinder.parentBinder.entityType == 'profiles'}">
-          	  <span><ssf:userTitle user="${nextBinder.owner}" /></span>
-        	</c:if>
+          	<span>${nextBinder.title}</span>
 	      </a><%  if (!parentTree2.empty()) {  %>&nbsp;&gt;&gt;&nbsp;&nbsp;<%  }  %>
 	      </div>
 	  </c:if>
