@@ -52,6 +52,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.portlet.PortletResponseImpl;
@@ -296,20 +297,26 @@ public class ListFolderController extends  SAbstractController {
 		}
 
 		if (binderId != null) {
+			Long zoneBinderId = getBinderModule().getZoneBinderId(binderId, zoneUUID, EntityType.folder.name());
+			if (zoneBinderId == null) {
+				Map<String,Object> model = new HashMap<String,Object>();
+				model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.folder.not.imported"));
+				return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
+			}
 			try {
-				Binder binder = getBinderModule().getBinder(binderId);
+				Binder binder = getBinderModule().getBinder(zoneBinderId);
 				if (binder.getEntityType().name().equals(EntityIdentifier.EntityType.workspace.name())) {
-					return WorkspaceTreeHelper.setupWorkspaceBeans(this, binderId, request, response, showTrash);
+					return WorkspaceTreeHelper.setupWorkspaceBeans(this, zoneBinderId, request, response, showTrash);
 				} else if (binder.getEntityType().name().equals(EntityIdentifier.EntityType.profiles.name())) {
-					return ProfilesBinderHelper.setupProfilesBinderBeans(this, binderId, request, response, showTrash);
+					return ProfilesBinderHelper.setupProfilesBinderBeans(this, zoneBinderId, request, response, showTrash);
 				}
 			} catch(NoBinderByTheIdException e) {
 				Map<String,Object> model = new HashMap<String,Object>();
-				model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {binderId.toString()}));
+				model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {zoneBinderId.toString()}));
 				return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
 			} catch(AccessControlException e) {
 		 		Map<String,Object> model = new HashMap<String,Object>();
-				BinderHelper.setupStandardBeans(this, request, response, model, binderId);
+				BinderHelper.setupStandardBeans(this, request, response, model, zoneBinderId);
 				if (WebHelper.isUserLoggedIn(request) && 
 						!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 					//Access is not allowed

@@ -526,6 +526,7 @@ public class MarkupUtil {
 						if (Validator.isNotNull(zoneUUID)) adapterUrl.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
 						url = adapterUrl.toString();
 					} else {
+						if (Validator.isNotNull(zoneUUID)) portletURL.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
 						portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 						url = portletURL.toString();
 					}
@@ -1072,7 +1073,7 @@ public class MarkupUtil {
 							fieldMatcher = titleUrlZoneUUIDPattern.matcher(link);
 							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) 
 								s_zoneUUID = fieldMatcher.group(1).trim();
-					    	if (!s_zoneUUID.equals("")) {
+					    	if (!s_zoneUUID.equals("") && s_zoneUUID.equals(ExportHelper.getZoneInfo().getId().toString())) {
 					    		link = link.replaceFirst("zoneUUID=" + s_zoneUUID, "");
 					    	}
 			    			matcher.appendReplacement(outputBuf, link.toString().replace("$", "\\$"));
