@@ -448,6 +448,7 @@ public class HTMLInputFilter
     		  vAlwaysAllowed.contains(" " + name.toLowerCase() + " ") ||
     		  vAlwaysAllowed.contains(" * ")) && 
     		  !vAlwaysDisAllowed.contains(" " + name.toLowerCase() + " ")) {
+        boolean problemFound = false;
         String params = "";
         
         Matcher m2 = pattern_process_tags4.matcher( body );
@@ -470,22 +471,26 @@ public class HTMLInputFilter
         for( int ii=0; ii<paramNames.size(); ii++ ) {
             paramName = paramNames.get(ii);
             paramQuote = paramQuotes.get(ii);
-          paramValue = paramValues.get(ii);
+            paramValue = paramValues.get(ii);
           
-          //debug( "paramName='" + paramName + "'" );
-          //debug( "paramValue='" + paramValue + "'" );
-          //debug( "allowed? " + vAllowed.get( name ).contains( paramName ) );
+            //debug( "paramName='" + paramName + "'" );
+            //debug( "paramValue='" + paramValue + "'" );
+            //debug( "allowed? " + vAllowed.get( name ).contains( paramName ) );
           
-          if ((vAllowed.containsKey( name.toLowerCase() ) && 
+            if ((vAllowed.containsKey( name.toLowerCase() ) && 
         		  vAllowed.get( name.toLowerCase() ).contains( paramName.toLowerCase() )) || 
         		  vAlwaysAllowedAttributes.contains(" " + paramName.toLowerCase() + " ") ||
         		  vAlwaysAllowedAttributes.contains(" * ") &&
         		  !vAlwaysDisAllowedAttributes.contains(" " + paramName.toLowerCase() + " ")) {
-            if (inArray( paramName.toLowerCase(), vProtocolAtts )) {
-              paramValue = processParamProtocol( paramValue );
+                if (inArray( paramName.toLowerCase(), vProtocolAtts )) {
+                    String originalParamValue = paramValue;
+                    paramValue = processParamProtocol( paramValue );
+                    if (!originalParamValue.equals(paramValue)) problemFound = true;
+                }
+                params += " " + paramName + "=" + paramQuote + paramValue + paramQuote;
+            } else {
+        	    problemFound = true;
             }
-            params += " " + paramName + "=" + paramQuote + paramValue + paramQuote;
-          }
         }
         
         if (inArray( name.toLowerCase(), vSelfClosingTags )) {
@@ -501,7 +506,13 @@ public class HTMLInputFilter
         } else {
         	ending = " /";
         }
-        return "<" + name + params + ending + ">";
+        if (problemFound) {
+        	//A problem was detected, so return the stripped string
+        	return "<" + name + params + ending + ">";
+        } else {
+        	//No problem was found, so return the original unchanged string
+        	return "<" + s + ">";
+        }
       } else {
         return "";
       }
