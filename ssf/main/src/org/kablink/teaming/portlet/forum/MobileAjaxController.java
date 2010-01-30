@@ -35,6 +35,7 @@ package org.kablink.teaming.portlet.forum;
 import static org.kablink.util.search.Restrictions.in;
 import static org.kablink.util.search.Restrictions.eq;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -604,6 +605,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			if (scope.equals("local")) options.put(ObjectKeys.SEARCH_ANCESTRY, binderId.toString());;
 			Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, options);
 			
+			//Set the title of the tab
+			DateFormat fmt = DateFormat.getTimeInstance(DateFormat.SHORT, user.getLocale());
+			fmt.setTimeZone(user.getTimeZone());
+			options.put(Tabs.TITLE, NLT.get("searchForm.button.label") + " " + fmt.format(new Date()));
 			Tabs.TabEntry tab = tabs.addTab(searchQuery, options);
 			
 			BinderHelper.prepareSearchResultPage(bs, results, model, searchQuery, options, tab);
