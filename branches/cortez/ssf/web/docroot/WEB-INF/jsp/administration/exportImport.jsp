@@ -163,7 +163,7 @@ function ss_submitExportForm() {
 	if (ss_buttonSelected == 'okBtn') {
 		formObj.action = '<ssf:url action="export_import" actionUrl="true" binderId="${binderId}"></ssf:url>&ss_statusId='+ss_exportStatusTicket
 		ss_statusSeen = 0;
-		ss_exportTimeout = setTimeout(ss_getOperationStatus, 500);
+		ss_exportTimeout = setTimeout(ss_getOperationStatus, 20);
 		return true;
 	} else {
 		formObj.action = '<ssf:url action="export_import" actionUrl="true" binderId="${binderId}"></ssf:url>'
@@ -183,7 +183,7 @@ function ss_startReportingStatus() {
 	ss_startSpinner();
 	ss_hideSpinnerImg();
 	ss_statusSeen = 0;
-	ss_exportTimeout = setTimeout(ss_getOperationStatus, 500);
+	ss_exportTimeout = setTimeout(ss_getOperationStatus, 20);
 }
 
 function ss_exportingDone() {

@@ -83,7 +83,7 @@ public class WebStatusTicket implements StatusTicket {
 	
 		WebStatusTicket ticket = (WebStatusTicket) session.getAttribute(id, PortletSession.APPLICATION_SCOPE);
 		if(ticket == null) {
-			return completedTicket;
+			return unknownTicket;
 		}
 		return ticket;
 	}
@@ -113,6 +113,11 @@ public class WebStatusTicket implements StatusTicket {
 	public String getStatus() {
 		return status;
 	}
+	
+	private static WebStatusTicket unknownTicket = new WebStatusTicket(null, "__UNKNOWN__") {
+			public String getStatus() { return ""; }
+			public boolean isDone() {return false;}
+	};
 	
 	private static WebStatusTicket completedTicket = new WebStatusTicket(null, "__COMPLETE__") {
 			public String getStatus() { return ""; }
