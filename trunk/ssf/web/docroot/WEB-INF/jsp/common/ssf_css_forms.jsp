@@ -332,6 +332,7 @@ fieldset{
   	margin-bottom: 40px !important;
     margin-top: 6px !important;
     margin-bottom: 4px !important;
+    padding: 4px 8px 9px 8px !important;
     border: 1px solid ${ss_style_border_color_light} !important;
 	} 
 .ss_fieldset_login {
