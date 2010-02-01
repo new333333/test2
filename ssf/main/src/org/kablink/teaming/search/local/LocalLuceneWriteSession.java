@@ -44,8 +44,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.index.AclUpdater;
-import org.apache.lucene.index.DocumentSelection;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
@@ -188,18 +186,6 @@ public class LocalLuceneWriteSession extends LocalLuceneSession implements Lucen
 
 	}
 
-	public void updateDocuments(Query query, String fieldname, String fieldvalue) {
-		SimpleProfiler.startProfiler("LocalLuceneSession.updateDocuments(Query,String,String");
-		
-		try {
-			updateDocs(query, fieldname, fieldvalue);
-		} catch (Exception e) {
-			throw new LuceneException("Error updating index [" + indexPath
-					+ "]", e);
-		}
-		SimpleProfiler.stopProfiler("LocalLuceneSession.updateDocs(Query,String,String");
-	}
-		
 	public void flush() {
 		// Because Liferay's Lucene functions (on which this implementation
 		// is based) are atomic in that it flushes out after each operation,
@@ -234,98 +220,7 @@ public class LocalLuceneWriteSession extends LocalLuceneSession implements Lucen
 		if(debugEnabled)
 			logger.debug("LocalLucene: optimize took: " + (endTime - startTime) + " milliseconds");
 	}
-	
-	private void updateDocs(Query q, String fieldname, String fieldvalue) {
-		SimpleProfiler.startProfiler("localLucene_updateDocs");
-		long start = 0L;
-		// block every read/write while updateDocs is in progress
-		synchronized (getRWLockObject()) {
-			// first Optimize the index.
-			IndexWriter indexWriter = null;
-
-			//LuceneHelper.closeAll();
-			LuceneHelper.closeWriter(indexPath);
-			LuceneHelper.closeReader(indexPath);
-			try {
-				// need this writer to check for segment count and optimization of the index.
-				// This allows searchers to remain open during optimize
-				indexWriter = LuceneHelper.getWriterForOptimize(indexPath);
-			} catch (IOException e) {
-				throw new LuceneException("Could not open writer on the index [" + this.indexPath
-								+ "]", e);
-			}
-			
-			try {
-				// open a searcher for use by other threads while we're updating
-				// the index.
-				//LuceneHelper.getSearcher(indexPath);
-				if (indexWriter.getSegmentCount() > 1) {
-					start = System.currentTimeMillis();
-					indexWriter.optimize();
-					if(debugEnabled)
-						logger.debug("LocalLucene: updateDocs(after optimize) took: "
-													+ (System.currentTimeMillis() - start)
-													+ " milliseconds");
-				
-				} 
-				indexWriter.close();
-				start = System.currentTimeMillis();
-				doUpdate(q, fieldname, fieldvalue);
-				if(debugEnabled)
-					logger.debug("LocalLucene: updateDocs(doUpdate) took: "
-													+ (System.currentTimeMillis() - start)
-													+ " milliseconds");
-			} catch (IOException ioe) {
-				throw new LuceneException(
-						"Could not update fields on the index ["
-								+ this.indexPath + " ], query is: "
-								+ q.toString() + " field: " + fieldname);
-			} finally {
-				SimpleProfiler.stopProfiler("localLucene_updateDocs");
-			}
-
-		}
-	}
-	
-
-	private void doUpdate(Query q, String fieldname, String fieldvalue) {
-		AclUpdater updater = null;
-		long startTime = System.currentTimeMillis();			
-		try {
-			Directory indDir = LuceneHelper.getFSDirectory(indexPath);
-			updater = new AclUpdater(indDir);
-			DocumentSelection docsel = updater.createDocSelection(q);
-			if (Validator.isNull(fieldvalue)) {
-				fieldvalue = "xx";
-				logger.error("Null acl value: " + q.toString());
-			}
-			if (docsel.size() != 0)
-				updater.addField(new Field(fieldname, fieldvalue,
-						Field.Store.NO, Field.Index.TOKENIZED),
-						new SsfIndexAnalyzer(), docsel);
-			synchronized (getSearchLockObject()) {
-				LuceneHelper.closeSearcher(indexPath);
-				updater.close();
-			}
-			updater = null;
-		} catch (IOException ioe) {
-			throw new LuceneException("Could not update fields on the index ["
-					+ this.indexPath + " ], query is: " + q.toString()
-					+ " field: " + fieldname);
-		} finally {
-			try {
-				if (updater != null)
-					updater.close();
-			} catch (Exception e) {
-				logger.warn(e);
-			}
-		}
 		
-		long endTime = System.currentTimeMillis();
-		if(debugEnabled)
-			logger.debug("LocalLucene: doUpdate took: " + (endTime - startTime) + " milliseconds");
-	}
-	
 	/**
 	 * Clear the index, only used at Zone creation
 	 * 

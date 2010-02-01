@@ -47,17 +47,6 @@ public interface LuceneWriteSession extends LuceneSession {
 	public void addDocuments(ArrayList docs) throws LuceneException;
 
 	/**
-	 * Update all documents matching the query.
-	 * 
-	 * @param query
-	 * @param fieldname
-	 * @param fieldvalue
-	 * @throws LuceneException
-	 */
-	public void updateDocuments(Query query, String fieldname, String fieldvalue)
-			throws LuceneException;
-	
-	/**
 	 * Delete all documents matching the term.
 	 * 
 	 * @param term
