@@ -101,7 +101,7 @@ import org.springframework.transaction.support.TransactionCallback;
  */
 public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	implements ProfileCoreProcessor {
-	DateFormat dateFmt = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT);
+	DateFormat dateFmt = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, NLT.getTeamingLocale() );
 	//inside write transaction    
 	public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
 		if(logger.isDebugEnabled())
