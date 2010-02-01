@@ -216,7 +216,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 <c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
 
 <div id="ss_changeOwnerMenu${renderResponse.namespace}" 
-  style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
+  style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF; z-index: 10;">
   <div align="right">
     <a href="javascript:;" onClick="ss_hideDiv('ss_changeOwnerMenu${renderResponse.namespace}');return false;">
       <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
