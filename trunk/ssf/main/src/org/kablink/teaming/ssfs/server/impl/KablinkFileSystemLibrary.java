@@ -509,35 +509,78 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 				// throw new AlreadyExistsException("Can not move or rename binder that is not file folder");
 				//throw new NoAccessException("Can not move or rename binder that is not file folder");
 			}
+			else {
+				// Move/rename a library folder
+				Map targetMap = new HashMap();
+				String targetInfo = objectInfo(targetUri, targetMap);
+				
+				if(getParentBinderPath(sourceMap).equals(getParentBinderPath(targetMap))) {
+					// Same parent, so this is rename. 
+					if(!targetInfo.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING)) {
+						// We can not perform the operation if the target object already exists, 
+						// regardless of the value of overwrite flag. We don't want to delete the 
+						// existing target. If that's what the client wants, it will have to 
+						// explicitly delete the target, and try renaming again. This is consistent 
+						// with the behavior of Windows Explorer.
+						throw new AlreadyExistsException("Cannot rename folder: An object with the same target name already exists");
+					}
+					else {
+						renameFolder(sourceUri, sourceMap, targetUri, targetMap);
+					}
+				}
+				else {
+					// Different parents, so this is move. 
+					if(!targetInfo.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING)) {
+						// We can not perform the operation if the target object already exists, 
+						// regardless of the value of overwrite flag. We don't want to delete the 
+						// existing target. If that's what the client wants, it will have to 
+						// explicitly delete the target, and try moving again. This is consistent 
+						// with the behavior of Windows Explorer.
+						throw new AlreadyExistsException("Cannot move folder: An object with the same target name already exists");
+					}
+					else {
+						moveFolder(sourceUri, sourceMap, targetUri, targetMap);
+					}
+				}
+			}
 		}
 		else if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_VIRTUAL_HELP_FILE)) {
 			throw new KablinkFileSystemException("Can not move or rename virtual help file", true);
 		}
-		
-		Map targetMap = new HashMap();
-		String targetInfo = objectInfo(targetUri, targetMap);
-		
-		if(!getParentBinderPath(sourceMap).equals(getParentBinderPath(targetMap))) {
-			// Because we only allow "rename" (no change to parent) but not "move"
-			// (parent change), we do not allow this operation unless both the 
-			// source and the target share the same parent. 
-			throw new KablinkFileSystemException("Cannot move: It is not allowed", true);
-		}
-		
-		if(!targetInfo.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING)) {
-			// Because we only allow "rename", we can not perform the operation
-			// if the target object already exists, regardless of the value of
-			// overwrite flag. We don't want to delete the existing target.
-			// If that's what the user wants, he will have to explicitly delete
-			// the target, and try renaming again. This is consistent with the 
-			// behavior of Windows Explorer.
-			throw new AlreadyExistsException("Cannot rename: An object with the name you specified already exists");
-		}
+		else if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_FILE)) {
+			// Move/rename a file.
+			Map targetMap = new HashMap();
+			String targetInfo = objectInfo(targetUri, targetMap);
 			
-		if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY))
-			renameFolder(sourceUri, sourceMap, targetUri, targetMap);
-		else
-			renameResource(sourceUri, sourceMap, targetUri, targetMap);
+			if(getParentBinderPath(sourceMap).equals(getParentBinderPath(targetMap))) {
+				// Same parent, so this is rename. 
+				if(!targetInfo.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING)) {
+					// We can not perform the operation if the target object already exists, 
+					// regardless of the value of overwrite flag. We don't want to delete the 
+					// existing target. If that's what the client wants, it will have to 
+					// explicitly delete the target, and try renaming again. This is consistent 
+					// with the behavior of Windows Explorer.
+					throw new AlreadyExistsException("Cannot rename file: An object with the same target name already exists");
+				}
+				else {
+					renameResource(sourceUri, sourceMap, targetUri, targetMap);
+				}
+			}
+			else {
+				// Different parents, so this is move. 
+				if(!targetInfo.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING)) {
+					// We can not perform the operation if the target object already exists, 
+					// regardless of the value of overwrite flag. We don't want to delete the 
+					// existing target. If that's what the client wants, it will have to 
+					// explicitly delete the target, and try moving again. This is consistent 
+					// with the behavior of Windows Explorer.
+					throw new AlreadyExistsException("Cannot move file: An object with the same target name already exists");
+				}
+				else {
+					moveResource(sourceUri, sourceMap, targetUri, targetMap);
+				}
+			}
+		}
 	}
 	
 	/**
@@ -981,6 +1024,16 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 		}
 	}
 	
+	private void moveFolder(Map sourceUri, Map sourceMap, Map targetUri, 
+			Map targetMap) throws NoAccessException {
+		try {
+			bs.getBinderModule().moveBinder(getLeafBinder(sourceMap).getId(), getParentBinder(targetMap).getId(), null);
+		}
+		catch(AccessControlException e) {
+			throw new NoAccessException(e.getLocalizedMessage());
+		} 
+	}
+	
 	private void renameResource(Map sourceUri, Map sourceMap, Map targetUri, 
 			Map targetMap) throws NoAccessException {
 		try {
@@ -1001,6 +1054,16 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 		catch (WriteEntryDataException e) {
 			throw new KablinkFileSystemException(e.getLocalizedMessage());
 		}
+	}
+	
+	private void moveResource(Map sourceUri, Map sourceMap, Map targetUri, 
+			Map targetMap) throws NoAccessException {
+		try {
+			bs.getFolderModule().moveEntry(null, getFolderEntry(sourceMap).getId(), getParentBinder(targetMap).getId(), null);
+		}
+		catch(AccessControlException e) {
+			throw new NoAccessException(e.getLocalizedMessage());
+		} 
 	}
 	
 	private InputStream getHelpFile() {
