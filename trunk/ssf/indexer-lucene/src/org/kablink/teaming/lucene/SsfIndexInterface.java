@@ -78,12 +78,6 @@ public interface SsfIndexInterface extends java.rmi.Remote {
 	public org.kablink.teaming.lucene.Hits search(String indexname, Query query,
 			Sort sort, int offset, int size) throws RemoteException;
 
-	public void updateDocument(String indexname, String uid, String fieldname,
-			String fieldvalue) throws RemoteException;
-
-	public void updateDocuments(String indexname, Query query,
-			String fieldname, String fieldvalue) throws RemoteException;
-		
 	public ArrayList getTags(String indexName, Query query, Long id, String tag, String type, boolean isSuper)
 	throws RemoteException;
 
