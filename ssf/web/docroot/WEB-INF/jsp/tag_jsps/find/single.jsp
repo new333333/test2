@@ -48,8 +48,8 @@
 <textarea 
     class="ss_combobox_autocomplete"
     rows="1"
-    cols="1"
-    style="width: ${ssFindElementWidth};"
+	cols="1"
+    style="overflow-x: auto;width: ${ssFindElementWidth};"
     name="${ssFindFormElement}" 
     id="ss_combobox_autocomplete_${prefix}"
     <c:if test="${!empty accessibilityTextNltized}">
