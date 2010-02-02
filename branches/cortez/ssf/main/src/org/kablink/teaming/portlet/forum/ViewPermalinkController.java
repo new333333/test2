@@ -229,24 +229,44 @@ public class ViewPermalinkController  extends SAbstractController {
 	 					}
 	 				}, user);
 	 			}
-	 			url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
-	 			url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
-	 			url.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_USER_ID_PLACE_HOLDER);
+				if (isMobile) {
+					url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MOBILE_AJAX);
+					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_WORKSPACE);
+		 			url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
+		 			url.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_USER_ID_PLACE_HOLDER);
+				} else {
+		 			url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
+		 			url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
+		 			url.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_USER_ID_PLACE_HOLDER);
+				}
 	 		} else {
 	 			Long workspaceId  = getProfileModule().getEntryWorkspaceId(Long.valueOf(entryId));
 	 			if (workspaceId == null) {
-		 			url.setParameter(WebKeys.URL_ACTION, "view_profile_entry");
-		 			url.setParameter(WebKeys.URL_BINDER_ID, getProfileModule().getProfileBinder().getId().toString());
-		 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-		 			url.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, "full");
+					if (isMobile) {
+						url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MOBILE_AJAX);
+						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_USER);
+			 			url.setParameter(WebKeys.URL_BINDER_ID, getProfileModule().getProfileBinder().getId().toString());
+			 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+					} else {
+			 			url.setParameter(WebKeys.URL_ACTION, "view_profile_entry");
+			 			url.setParameter(WebKeys.URL_BINDER_ID, getProfileModule().getProfileBinder().getId().toString());
+			 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+			 			url.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, "full");
+					}
 	 			} else {
-		 			entity = getBinderModule().getBinder(workspaceId);
-		 			url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
-		 			url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
+					if (isMobile) {
+			 			entity = getBinderModule().getBinder(workspaceId);
+						url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MOBILE_AJAX);
+						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_WORKSPACE);
+			 			url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
+					} else {
+			 			entity = getBinderModule().getBinder(workspaceId);
+			 			url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
+			 			url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
+					}
 	 			}
 	 		}
-		} 
-		
+		} 		
 		if("true".equals(captive))
 			url.setParameter(WebKeys.URL_CAPTIVE, "true");
 		else if("false".equals(captive))
