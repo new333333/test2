@@ -10,6 +10,7 @@
 		<ant dir="wsclient" target="clean" />
 		<ant dir="backgroundjob" target="clean" />
 		<ant dir="module-event-listeners" target="clean" />
+		<ant dir="extendedcontroller" target="clean" />
 	</target>
 
 	<target name="compile">
@@ -20,6 +21,7 @@
 		<ant dir="wsclient" target="compile" />
 		<ant dir="backgroundjob" target="compile" />
 		<ant dir="module-event-listeners" target="compile" />
+		<ant dir="extendedcontroller" target="compile" />
 	</target>
 	
 	<target name="build">
@@ -31,5 +33,6 @@
 		<ant dir="wsclient" target="build" />
 		<ant dir="backgroundjob" target="build" />
 		<ant dir="module-event-listeners" target="build" />
+		<ant dir="extendedcontroller" target="build" />
 	</target>
 </project>
