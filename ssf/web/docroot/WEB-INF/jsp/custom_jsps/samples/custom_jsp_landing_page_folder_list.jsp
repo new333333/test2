@@ -66,7 +66,7 @@
 	</c:if>
 	
 	<div class="ss_mashup_folder_list_open">
-	<ul style="margin:0px; padding:0px;">
+	<ul style="margin:0px; padding:12px;">
 	<c:forEach var="entryMap" items="${ss_mashupBinderEntries[mashupBinderId]}" varStatus="status">
 		<c:set var="mashupEntryId" value="${entryMap['_docId']}"/>
 		<c:set var="mashupEntry" value="${ss_mashupEntries[mashupEntryId]}"/>
