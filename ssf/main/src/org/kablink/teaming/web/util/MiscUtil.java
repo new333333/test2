@@ -248,10 +248,11 @@ public final class MiscUtil
 				if (0 < i) {
 					uidsBuf.append(",");
 				}
-				uidsBuf.append(uids[i]);
+				String uid = uids[i].trim();
+				uidsBuf.append(uid);
 				
 				// ...and to the ArrayList.
-				userIds.add(Long.valueOf(uids[i]));
+				userIds.add(Long.valueOf(uid));
 			}
 			
 			// If we were requested to put the string values into a
