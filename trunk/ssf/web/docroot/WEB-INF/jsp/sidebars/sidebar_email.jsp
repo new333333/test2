@@ -54,7 +54,7 @@
 			<c:if test="${ss_toolbar_sendmail_post}">
 				<c:set var="contributorIdList" value=""/>
 				<c:forEach var="contributorId" items="${ss_toolbar_sendmail_ids}">
-				  <c:if test="${!empty contributorIdList}"><c:set var="contributorIdList" value="${contributorIdList}, "/></c:if>
+				  <c:if test="${!empty contributorIdList}"><c:set var="contributorIdList" value="${contributorIdList},"/></c:if>
 				  <c:set var="contributorIdList" value="${contributorIdList}${contributorId}"/>
 				</c:forEach>
 					<form class="inline" action="${ss_toolbar_sendmail_url}" method="post" 
