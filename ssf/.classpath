@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
+	<classpathentry kind="src" path="samples/extendedcontroller/src"/>
 	<classpathentry kind="src" path="as-shared/src"/>
 	<classpathentry kind="src" path="as-common/src"/>
 	<classpathentry kind="src" path="tomcat/src"/>
