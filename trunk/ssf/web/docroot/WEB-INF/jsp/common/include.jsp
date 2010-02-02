@@ -52,7 +52,7 @@
 --%><span style="color:red;font-size:12px;font-family:impact,arial black;">${ssProductName} 2.2 Beta</span><%--
 --%></c:set><%--
 --%></c:if><%--
---%><c:set var="ss_watermarkxxx" value="" scope="request"/><%--
+--%><c:set var="ss_watermark" value="Durango" scope="request"/><%--
 --%><jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_head.jsp" />
 <!-- Mimic Internet Explorer 7 (Needed to make dojo work in IE8) -->
 <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" >
