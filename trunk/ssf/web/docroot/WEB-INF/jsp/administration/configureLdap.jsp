@@ -995,7 +995,7 @@ ssPage = {
 		$listDiv.append($newSearch);
 	},
 
-	createConnection : function(url, userIdAttribute, mappings, userSearches, groupSearches, principal, credentials)
+	createConnection : function(url, userIdAttribute, mappings, userSearches, groupSearches, principal, credentials, ldapGuidAttribute )
 	{
 		var label = "<ssf:nlt tag="ldap.connection.newConnection"/>";
 		if(url != "") { label = url; }
@@ -1003,6 +1003,7 @@ ssPage = {
 		var id = "ldapConn" + ssPage.nextId++;
 		var $pane = jQuery('#ldapTemplate').children().clone().hide().attr("id", id);
 		$pane.find(".ldapTitle span").text(label).end()
+		 	 .find( ".ldapGuidAttribute" ).val( ldapGuidAttribute ).end()
 			 .find(".ldapUrl").val(url).end()
 			 .find(".ldapUserIdAttribute").val(userIdAttribute).end()
 			 .find(".ldapMappings").val(mappings).end()
@@ -1100,7 +1101,7 @@ ssPage = {
 			return false;
 		}
 		
-		var $pane = ssPage.createConnection("", "uid", ssPage.defaultUserMappings, [], [], "", "");
+		var $pane = ssPage.createConnection("", "uid", ssPage.defaultUserMappings, [], [], "", "", "" );
 		return false;
 	},
 	
@@ -1256,6 +1257,10 @@ jQuery(document).ready(function() {
 						"<mappings>" + wrapWithCDATA( $this.find('.ldapMappings').val() ) + "</mappings>";
 			ldapDoc += "<principal>" + wrapWithCDATA( $this.find('.ldapPrincipal').val() ) + "</principal><credentials>" +
 						wrapWithCDATA( $this.find('.ldapCredentials').val() ) + "</credentials>";
+
+			// Add information about the ldap attribute that uniquely identifies a user or group.
+			ldapDoc += "<ldapGuidAttribute>" + wrapWithCDATA( $this.find( '.ldapGuidAttribute' ).val() ) + "</ldapGuidAttribute>";
+			
 			ldapDoc += "<userSearches>";
 			jQuery('.ldapUserSearches .ldapSearch', $this).each(makeSearch);
 			ldapDoc += "</userSearches>";
@@ -1314,7 +1319,8 @@ jQuery(document).ready(function() {
 									initialUserSearches,
 									initialGroupSearches,
 									"<ssf:escapeJavaScript>${config.principal}</ssf:escapeJavaScript>",
-									"<ssf:escapeJavaScript>${config.credentials}</ssf:escapeJavaScript>");
+									"<ssf:escapeJavaScript>${config.credentials}</ssf:escapeJavaScript>",
+									"<ssf:escapeJavaScript>${config.ldapGuidAttribute}</ssf:escapeJavaScript>");
 		$pane.append(jQuery('<span id="${config.id}" style="display:none" class="ldapId">${config.id}</span>'));
 	</c:forEach>
 	
@@ -1521,6 +1527,23 @@ jQuery(document).ready(function() {
 					<td><input class="ldapCredentials" id="ldapCredentials" type="password" value="" size="70" /></td>
 				</tr>
 			</table>
+
+			<div style="margin-top: 1.25em; margin-bottom: 1.25em;">
+				<table>
+					<tr>
+						<td></td>
+						<td nowrap><span class="ss_fineprint ss_bright"><ssf:nlt tag="ldap.guid.hint" /></span></td>
+					</tr>
+					<tr>
+						<td>
+							<label for="ldapGuidAttribute" style="margin-right: .5em;"><ssf:nlt tag="ldap.guid" /></label>
+						</td>
+						<td>
+							<input class="ldapGuidAttribute" id="ldapGuidAttribute" type="text" value="" size="30" />
+						</td>
+					</tr>
+				</table>
+			</div>
 
 			<fieldset class="ss_fieldset">
 				<legend class="ss_legend"><ssf:nlt tag="ldap.users" /></legend>

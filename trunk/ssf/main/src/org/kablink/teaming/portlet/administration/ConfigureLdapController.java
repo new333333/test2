@@ -43,8 +43,6 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import javax.naming.NamingException;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -52,13 +50,9 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.AuthenticationConfig;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.LdapConnectionConfig;
-import org.kablink.teaming.domain.LdapSyncException;
-import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.ldap.LdapSchedule;
-import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.web.WebKeys;
@@ -97,6 +91,11 @@ public class ConfigureLdapController extends  SAbstractController {
 					Document doc = DocumentHelper.parseText(PortletRequestUtils.getStringParameter(request, "ldapConfigDoc", "<doc/>"));
 					for(Object o : doc.selectNodes("//ldapConfig")) {
 						Node cNode = (Node) o;
+						String ldapGuidAttribute = null;
+						
+						// Get the ldap attribute that uniquely identifies a user or group.
+						ldapGuidAttribute = cNode.selectSingleNode( "ldapGuidAttribute" ).getText();
+						
 						String principal = cNode.selectSingleNode("principal").getText();
 						String credentials = cNode.selectSingleNode("credentials").getText();
 						String url = cNode.selectSingleNode("url").getText();
@@ -171,7 +170,7 @@ public class ConfigureLdapController extends  SAbstractController {
 							maps.put(vals[1].trim(), vals[0].trim());
 						}
 						LdapConnectionConfig c =
-							new LdapConnectionConfig(url, userIdAttribute, maps, userQueries, groupQueries, principal, credentials);
+							new LdapConnectionConfig(url, userIdAttribute, maps, userQueries, groupQueries, principal, credentials, ldapGuidAttribute );
 						Node idNode = cNode.selectSingleNode("id");
 						if(idNode != null) {
 							c.setId(idNode.getText());

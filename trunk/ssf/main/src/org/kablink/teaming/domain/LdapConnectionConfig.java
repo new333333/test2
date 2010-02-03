@@ -46,6 +46,8 @@ public class LdapConnectionConfig extends ZonedObject {
 	protected String url;
 
 	protected String userIdAttribute;
+	
+	protected String m_ldapGuidAttribute = null;	// ldap attribute used to uniquely identify a user or group.
 
 	protected Map<String, String> mappings;
 
@@ -65,7 +67,8 @@ public class LdapConnectionConfig extends ZonedObject {
 
 	public LdapConnectionConfig(String url, String userIdAttribute,
 			Map<String, String> mappings, List<SearchInfo> userSearches,
-			List<SearchInfo> groupSearches, String principal, String credentials) {
+			List<SearchInfo> groupSearches, String principal, String credentials,
+			String ldapGuidAttribute) {
 		setUrl(url);
 		setUserIdAttribute(userIdAttribute);
 		setMappings(mappings);
@@ -73,6 +76,7 @@ public class LdapConnectionConfig extends ZonedObject {
 		setGroupSearches(groupSearches);
 		setPrincipal(principal);
 		setCredentials(credentials);
+		setLdapGuidAttribute( ldapGuidAttribute );
 	}
 
 	public String getId() {
@@ -111,6 +115,24 @@ public class LdapConnectionConfig extends ZonedObject {
 		this.userIdAttribute = userIdAttribute;
 	}
 
+	/**
+	 * Get the ldap attribute that is used to uniquely identify a user or group.
+	 */
+	public String getLdapGuidAttribute()
+	{
+		return m_ldapGuidAttribute;
+	}// end getLdapGuidAttribute()
+	
+	
+	/**
+	 * Set the ldap attribute that is used to uniquely identify a user or group.
+	 */
+	public void setLdapGuidAttribute( String ldapGuidAttribute )
+	{
+		m_ldapGuidAttribute = ldapGuidAttribute;
+	}// end setLdapGuidAttribute()
+	
+	
 	public List<SearchInfo> getUserSearches() {
 		return userSearches;
 	}
