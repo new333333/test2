@@ -511,7 +511,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 					String userId = oldConfig.getUserIdMapping();
 					if (Validator.isNull(userId)) userId="uid";
 					LdapConnectionConfig connection = new LdapConnectionConfig(url, userId, 
-							oldConfig.getUserMappings(), userSearch, groupSearch, oldConfig.getUserPrincipal(), oldConfig.getUserCredential());
+							oldConfig.getUserMappings(), userSearch, groupSearch, oldConfig.getUserPrincipal(), oldConfig.getUserCredential(), null );
 					connection.setPosition(0);
 					connection.setZoneId(top.getId());
 					getCoreDao().save(connection);
