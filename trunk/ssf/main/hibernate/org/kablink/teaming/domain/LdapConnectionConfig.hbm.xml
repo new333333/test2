@@ -19,5 +19,6 @@
     <property name="principal"/>
     <property name="credentials" type="encrypted"/>
     <property name="position"/>
+    <property name="ldapGuidAttribute"/>
   </class>
 </hibernate-mapping>

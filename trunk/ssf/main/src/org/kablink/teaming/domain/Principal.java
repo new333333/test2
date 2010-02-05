@@ -70,6 +70,7 @@ public abstract class Principal extends Entry implements IPrincipal {
 	protected boolean disabled=false;
     protected String name;
     protected String foreignName="";
+    protected String ldapGuid="";
     protected List memberOf;//initialized by hiberate access=field
     protected Long workspaceId;
     protected List iMemberOf;
@@ -240,6 +241,26 @@ public abstract class Principal extends Entry implements IPrincipal {
     	this.foreignName = foreignName;
     }
     
+
+    /**
+     * @hibernate.property length="128"
+     * @return
+     */
+    public String getLdapGuid()
+    {
+    	return ldapGuid;
+    }// end getLdapGuid()
+
+    
+    /**
+     * 
+     */
+    public void setLdapGuid( String ldapGuid )
+    {
+    	this.ldapGuid = ldapGuid;
+    }// end setLdapGuid()
+    
+
     /**
      * This method will return true if this object is a "local" principal.  In other words, this
      * object was not sync'd from an ldap source.
