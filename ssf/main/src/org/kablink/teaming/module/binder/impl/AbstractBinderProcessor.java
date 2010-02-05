@@ -1910,6 +1910,30 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    
     }
     
+    private void updateRelevanceUUID(final FileAttachment fa, final String relevanceUUID) {
+    	if(org.springframework.transaction.support.TransactionSynchronizationManager.isCurrentTransactionReadOnly()) {
+    		// Reindexing case - Update the file metadata in a completely separate session.
+    		try {
+    	    	fa.setRelevanceUUID(relevanceUUID);
+    			getCoreDao().updateNewSessionWithoutUpdate(fa);
+    		}
+    		catch(Exception e) {
+    			// Important: Do not let this single failure to abort the entire (long-lasting) re-indexing process. 
+    			// The task should continue on.
+    			logger.warn("Error updating file attachment [" + fa.getId() + "] with relevance UUID [" + relevanceUUID + "]", e);
+    		}
+    	}
+    	else {
+    		// Use cases other than reindexing - Update the file metadata in the current session.
+	        getTransactionTemplate().execute(new TransactionCallback() {
+	        	public Object doInTransaction(TransactionStatus status) {
+	            	fa.setRelevanceUUID(relevanceUUID);
+	                return null;
+	        	}
+	        });
+    	}
+    }
+    
     //add common fields from binder for binder and its attachments
     protected void fillInIndexDocWithCommonPartFromBinder(org.apache.lucene.document.Document indexDoc, 
     		Binder binder, boolean fieldsOnly) {
