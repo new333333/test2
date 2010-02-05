@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -83,6 +83,7 @@ import org.kablink.teaming.calendar.StartEndDatesView;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.ApplicationPrincipal;
+import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Definition;
@@ -117,6 +118,8 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.portlet.binder.AccessControlController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.relevance.Relevance;
+import org.kablink.teaming.relevance.util.RelevanceUtils;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.filter.SearchFiltersBuilder;
 import org.kablink.teaming.security.AccessControlException;
@@ -524,6 +527,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 				   op.equals(WebKeys.OPERATION_TRASH_RESTORE_ALL)) {
 			return TrashHelper.ajaxTrashRequest(op, this, request, response);
 		}
+		else if (op.equals(WebKeys.OPERATION_GET_FILE_RELATIONSHIPS_BY_ENTRY)) {
+			return ajaxGetFileRelationshipsByEntry(request, response);
+		}
 		return ajaxReturn(request, response);
 	} 
 
@@ -714,6 +720,61 @@ public class AjaxController  extends SAbstractControllerRetry {
 					ObjectKeys.USER_PROPERTY_BUSINESS_CARD_PREFIX + scope, showBC);
 	}
 
+	/**
+	 * Returns the relationships to the files attached to the given
+	 * entry.
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	private ModelAndView ajaxGetFileRelationshipsByEntry(RenderRequest request, RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		
+		// Is relevance integration enabled?
+		Relevance re = RelevanceUtils.getRelevanceEngine();
+		if (re.isRelevanceEnabled()) {
+			// Yes!  Access the Binder...
+			String binderIdStr = PortletRequestUtils.getStringParameter( request, "binderId", "" );
+			Long binderId = Long.valueOf( binderIdStr );
+			
+			// ...FolderEntry...
+			String entryIdStr = PortletRequestUtils.getStringParameter( request, "entryId", "" );
+			Long entryId = Long.valueOf( entryIdStr );
+			FolderEntry fe = getFolderModule().getEntry(binderId, entryId);
+			
+			// ...and the Set<Attachment> of the Attachment's that are
+			// ...related to any of the Attachment's on that
+			// ...FolderEntry.
+			Set<Attachment> attSet = RelevanceUtils.getRelatedAttachments(this, fe);
+
+			// Did we find any Attachment's related to the FolderEntry?
+			if (!(attSet.isEmpty())) {
+				// Yes!  Map them to their User's and Workspace's...
+				Set<User>      userSet = RelevanceUtils.getAttachmentUsers(     attSet);
+				Set<Workspace> wsSet   = RelevanceUtils.getAttachmentWorkspaces(attSet);
+
+				// ...and add everything to the relationship Map.
+				buildRelationshipModel(model, attSet, userSet, wsSet);
+			}
+		}
+		
+		response.setContentType("text/json");
+		return new ModelAndView("forum/json/file_relationships", model);
+	}
+
+	/*
+	 * Adds information about Attachment relationships to mode.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void buildRelationshipModel(Map model, Set<Attachment> attSet, Set<User> userSet, Set<Workspace> wsSet) {
+		model.put("relatedAttachments", ((null == attSet)  ? new HashSet<Attachment>() : attSet));
+		model.put("relatedUsers",       ((null == userSet) ? new HashSet<User>()       : userSet));
+		model.put("relatedWorkspaces",  ((null == wsSet)   ? new HashSet<Workspace>()  : wsSet));
+	}
+	
 	/**
 	 * 
 	 * @param request

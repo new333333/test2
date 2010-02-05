@@ -94,6 +94,7 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
+import org.kablink.teaming.relevance.Relevance;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.repository.RepositorySession;
 import org.kablink.teaming.repository.RepositorySessionFactory;
@@ -115,6 +116,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.KeyValuePair;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -1014,6 +1016,17 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
    				Element verElem = fileElem.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_VERSIONARCHIVE);
    				verElem.addAttribute(ObjectKeys.XTAG_FILE_VERSION_NUMBER, pair.getKey()); 
    				verElem.addAttribute(ObjectKeys.XTAG_FILE_ARCHIVE_URI, pair.getValue());
+   			}
+   		}
+   		
+   		// If this attachment has a relevance UUID...
+   		String relevanceUUID = fAtt.getRelevanceUUID();
+   		if (MiscUtil.hasString(relevanceUUID)) {
+   			// ...and relevance integration is enabled...
+   			Relevance relevanceEngine = getRelevanceManager().getRelevanceEngine();
+   			if (relevanceEngine.isRelevanceEnabled()) {
+   				// ...remove it from relevance tracking.
+   				relevanceEngine.removeAttachmentUUID(relevanceUUID);
    			}
    		}
    		

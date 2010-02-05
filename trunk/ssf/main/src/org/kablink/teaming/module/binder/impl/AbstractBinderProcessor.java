@@ -106,6 +106,9 @@ import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.module.workflow.WorkflowModule;
+import org.kablink.teaming.relevance.RelevanceManager;
+import org.kablink.teaming.relevance.Relevance;
+import org.kablink.teaming.relevance.util.RelevanceUtils;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
@@ -123,6 +126,7 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.StatusTicket;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -1852,24 +1856,38 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      */
     protected void buildIndexDocumentFromFile
     	(org.apache.lucene.document.Document indexDoc, Binder binder, DefinableEntity entity, FileAttachment fa, FileUploadItem fui, Collection tags) {
-    	TextConverter converter = null;
-		String text = "";
-		
+
 		// Get the Text converter from manager
-		converter = textConverterManager.getConverter();
-		
-		try
-		{
+		String text = "";
+    	TextConverter converter = textConverterManager.getConverter();
+		try {
 			text = converter.convert(binder, entity, fa);
-				}
-		catch (Exception e)
-		{
-			// Most like conversion did not succeed, nothing client can do about this
-			// limitation of Software.
-			logger.error(e);
+		}
+		catch (Exception e) {
+			// Most likely conversion did not succeed, nothing client
+			// can do about this limitation of software.
+			logger.error("AbstractBinderProcessor.buildIndexDocumentFromFile( EXCEPTION:1 ):  ", e);
 		}
 			
-    	
+		// Is there a relevance engine engine enabled?
+    	Relevance relevanceEngine = getRelevanceManager().getRelevanceEngine();
+    	if (relevanceEngine.isRelevanceEnabled()) {
+			try {
+				// Yes!  Can it generate a relevance UUID for this
+				// file?
+				String relevanceUUID = relevanceEngine.addAttachment(binder, entity, fa);
+				if (MiscUtil.hasString(relevanceUUID)) {
+					// Yes!  Add it to the search index for the file.
+					text += (" " + RelevanceUtils.getSearchableUUID(relevanceUUID));
+				}
+			}
+			catch (Exception e) {
+				// Most likely relevance generation did not succeed,
+				// nothing client can do about this limitation of software.
+				logger.error("AbstractBinderProcessor.buildIndexDocumentFromFile( EXCEPTION:2 ):  ", e);
+			}
+    	}
+		
     	// Add document type
         BasicIndexUtils.addDocType(indexDoc, Constants.DOC_TYPE_ATTACHMENT, true);
         

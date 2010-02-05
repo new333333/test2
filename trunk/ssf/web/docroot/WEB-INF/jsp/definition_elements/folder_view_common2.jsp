@@ -33,6 +33,7 @@
  */
 %>
 <% // Folder listing %>
+<%@ page import="org.kablink.teaming.relevance.util.RelevanceUtils" %>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <c:if test="${empty ss_entryViewStyle}">
@@ -41,7 +42,9 @@
     <c:set var="ss_entryViewStyle" value="full" scope="request"/>
   </c:if>
 </c:if>
+
 <%
+boolean	handleRelatedFiles = RelevanceUtils.isRelevanceEnabled();
 boolean useAdaptor = true;
 List folderEntriesSeen = new ArrayList();
 if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(ssUser.getDisplayStyle()) &&
@@ -55,6 +58,18 @@ if (ssUserFolderProperties != null && ssUserFolderProperties.containsKey("folder
 if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") || 
 		ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";
 %>
+	<% if (handleRelatedFiles) { %>
+		<script type="text/javascript" src="<html:rootPath/>js/jquery/jquery.js"></script>
+		<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.core.js"></script>
+		<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.draggable.js"></script>
+		<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.droppable.js"></script>
+		
+		<script type="text/javascript">
+		</script>
+		
+		<script type="text/javascript" src="<html:rootPath/>js/common/ss_relatedFiles.js"></script>
+	<% } %>
+	
   <div align="left">
 		<% // filter toolbar %>
 	    <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
@@ -447,8 +462,9 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <c:forEach var="entry1" items="${ssFolderEntries}" >
 <c:set var="folderLineId" value="folderLine_${entry1._docId}"/>;
 <jsp:useBean id="entry1" type="java.util.HashMap" />
-<%  
-	if (!folderEntriesSeen.contains(entry1.get("_docId"))) {
+<%
+	String e1DocId = ((String) entry1.get("_docId"));
+	if (!folderEntriesSeen.contains(e1DocId)) {
 		folderEntriesSeen.add(entry1.get("_docId"));
 		String seenStyle = "";
 		String seenStyleAuthor = "";
@@ -474,6 +490,11 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 			String srFileID = entry1.get("_fileID").toString();
 			hasFile = true;
 			if (!srFileID.contains(",")) oneFile = true;
+		}
+		
+		boolean hasRelatedFiles = (handleRelatedFiles && hasFile);
+		if (hasRelatedFiles) {
+			hasRelatedFiles = RelevanceUtils.entityHasRelatedFiles(e1DocId);
 		}
 %>
 <c:set var="seenStyleburst" value=""/>
@@ -580,6 +601,18 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     		>--<ssf:nlt tag="entry.noTitle" />--</c:if><c:out value="${entry1.title}"/></span></a> 
 		</c:if> 		
 	</c:if>  	
+	
+	<% if (hasRelatedFiles) { %>
+	  <a
+	  	id="relatedFilesAnchor_<%= e1DocId %>"
+	  	href="#"
+	  	onClick="return ss_showRelatedFilesForEntry('relatedFilesAnchor_<%= e1DocId %>', '${ssBinder.id}', '<%= e1DocId %>');"><img
+	  		width="12" height="12"
+	  		align="text-bottom"
+			src="<html:imagesPath/>icons/related_files.png"
+			border="0" 
+         	title="<%= NLT.get("entry.hasRelatedFiles").replaceAll("\"", "&QUOT;") %>" /></a> 
+	<% } %>  	
   	
   </ssf:slidingTableColumn>
  </c:if>
@@ -848,3 +881,25 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	  </div>
 	</c:forEach>
 </c:if>
+
+<% if (handleRelatedFiles) { %>
+	<div id="ss_related_files" class="relatedfileslist" style="display: none">
+		<input type="hidden" id="ss_related_anchor_id" value="" />
+		<div class="ss_related_div">
+			<div class="ss_related_head"><ssf:nlt tag="entry.relatedFiles"/><a href="#"><img class="ss_related_close" src="<html:imagesPath/>icons/close_circle16.png" border="0" title="<%= NLT.get("entry.relatedClose").replaceAll("\"", "&QUOT;") %>"></a></div>
+			<div id="DIV_relatedFiles">
+				<div class="ss_related_item"><a class="ss_related_anchor" href="#">...real files go here...</a></div>
+			</div>
+	
+			<div class="ss_related_head"><ssf:nlt tag="entry.relatedWorkspaces"/></div>
+			<div id="DIV_relatedWorkspaces">
+				<div class="ss_related_item"><a class="ss_related_anchor" href="#">...real workspaces go here...</a></div>
+			</div>
+			
+			<div class="ss_related_head"><ssf:nlt tag="entry.relatedUsers"/></div>
+			<div id="DIV_relatedUsers">
+				<div class="ss_related_item"><a class="ss_related_anchor" href="#">...real users go here...</a></div>
+			</div>
+		</div>
+	</div>
+<% } %>

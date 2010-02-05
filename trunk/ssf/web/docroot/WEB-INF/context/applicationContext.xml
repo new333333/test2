@@ -576,6 +576,7 @@
 		<property name="resourceDriverManager"><ref bean="resourceDriverManager"/></property>
 		<property name="licenseManager"><ref bean="licenseManager"/></property>
 		<property name="accessTokenManager"><ref bean="accessTokenManager"/></property>
+		<property name="relevanceManager"><ref bean="relevanceManager"/></property>
 	</bean>
 	
 	<bean id="processorDependencyTemplate" parent="dependOnCommonServicesTemplate" abstract="true">
