@@ -132,8 +132,10 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	Map entryDataAll = addReply_toEntryData(parent, def, inputData, fileItems, ctx);
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileData = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
+	FolderEntry newEntry = null;
         try {
          	final FolderEntry entry = addReply_create(def, ctx);
+		newEntry = entry;
         	// The following part requires update database transaction.
         	getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
@@ -153,12 +155,19 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         	addReply_done(parent, entry, inputData, ctx);
 
         	if(filesErrors.getProblems().size() > 0) {
-        		// 	At least one error occured during the operation. 
+        		// 	At least one error occurred during the operation. 
         		throw new WriteFilesException(filesErrors, entry.getId());
         	}
         	else {
         		return entry;
         	}
+        } catch(WriteFilesException ex) {
+	       	//See if there was an entry created. If so, delete it.
+        	if (ex.getEntityId() != null && newEntry != null && ex.getEntityId().equals(newEntry.getId())) {
+        		deleteEntry(parent.getParentBinder(), newEntry, false, new HashMap());
+        		ex.setEntityId(null);
+        	}
+        	throw ex;
     	} finally {
         	cleanupFiles(fileData);
     		
