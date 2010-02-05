@@ -32,6 +32,7 @@
  */
 
 package org.kablink.teaming.module.ldap.impl;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -60,6 +61,7 @@ import javax.naming.directory.SearchControls;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -290,7 +292,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						continue;
 					}
 					Binding bd = (Binding)ctxSearch.next();
-					getUpdates(userAttributeNames, userAttributes,  ctx.getAttributes(bd.getNameInNamespace()), mods);
+					getUpdates( userAttributeNames, userAttributes,  ctx.getAttributes(bd.getNameInNamespace()), mods, config.getLdapGuidAttribute() );
 					if (bd.isRelative() && Validator.isNotNull(ctx.getNameInNamespace())) {
 						dn = bd.getNameInNamespace() + "," + ctx.getNameInNamespace();
 					} else {
@@ -471,7 +473,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			return dnUsers.containsKey(dn);
 		}
 
-		public void record(String dn, String ssName, Attributes lAttrs) throws NamingException
+		public void record(String dn, String ssName, Attributes lAttrs, String ldapGuidAttribute ) throws NamingException
 		{
 			if (logger.isDebugEnabled()) logger.debug("Retrieved user: '" + dn + "'");
 
@@ -484,7 +486,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				//user exists somewhere
 				if (sync) {
 					Map userMods = new HashMap();
-					getUpdates(userAttributeNames, userAttributes, lAttrs, userMods);
+					getUpdates( userAttributeNames, userAttributes, lAttrs, userMods, ldapGuidAttribute );
 					
 					//!!! Redo the following code.
 					//remove this incase a mapping exists that is different than the uid attribute
@@ -526,7 +528,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					String localeId;
 					
 					Map userMods = new HashMap();
-					getUpdates(userAttributeNames, userAttributes, lAttrs, userMods);
+					getUpdates( userAttributeNames, userAttributes, lAttrs, userMods, ldapGuidAttribute );
 					userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME, ssName);
 					userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
 					userMods.put(ObjectKeys.FIELD_ZONE, zoneId);
@@ -705,8 +707,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					++i;
 				}
 				
-				// Add the "entryUIID" attribute to the list of ldap attributes to read.
-				attributeNames[i] = "entryUUID";
+				// Add the name of the ldap guid attribute to the list of ldap attributes to read.
+				attrName = ldapConnectionConfig.getLdapGuidAttribute();
+				if ( attrName != null && attrName.length() > 0 )
+				{
+					attributeNames[i] = attrName;
+					++i;
+				}
 			}
 			
 			return attributeNames;
@@ -719,6 +726,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		String [] sample = new String[0];
 		String[] attributesToRead;
 	 
+		// Get the mapping of ldap attributes to Teaming field names
 		Map userAttributes = config.getMappings();
 
 		userCoordinator.setAttributes(userAttributes);
@@ -733,6 +741,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches()) {
 			if(Validator.isNotNull(searchInfo.getFilter())) {
+				String ldapGuidAttribute;
+
+				// Get the ldap attribute name that we will use for a guid.
+				ldapGuidAttribute = config.getLdapGuidAttribute();
+				
 				int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
 				SearchControls sch = new SearchControls(scope, 0, 0, (String [])la.toArray(sample), false, false);
 	
@@ -781,7 +794,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						logger.error(NLT.get("errorcode.ldap.duplicate", new Object[] {ssName, dn}));
 						continue;
 					}
-					userCoordinator.record(dn, ssName, lAttrs);
+					userCoordinator.record(dn, ssName, lAttrs, ldapGuidAttribute );
 				}
 			}
 		}
@@ -854,7 +867,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			this.groupAttributeNames = 	(String[])(groupAttributes.keySet().toArray(sample));
 		}
 
-		boolean record(String dn, String relativeName, Attributes lAttrs) throws NamingException
+		boolean record(String dn, String relativeName, Attributes lAttrs, String ldapGuidAttribute ) throws NamingException
 		{
 			boolean isSSGroup = false;
 			if (logger.isDebugEnabled()) logger.debug("Retrieved group: '" + dn + "'");
@@ -875,7 +888,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						//mapping may change the name and title
 						userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME,ssName);
 						userMods.put(ObjectKeys.FIELD_ENTITY_TITLE, dn);
-						getUpdates(groupAttributeNames, groupAttributes, lAttrs, userMods);
+						getUpdates( groupAttributeNames, groupAttributes, lAttrs, userMods, ldapGuidAttribute );
 						if (logger.isDebugEnabled()) logger.debug("Creating group:" + ssName);
 						Group group = createGroup(zoneId, ssName, userMods); 
 						if(group != null) {
@@ -892,7 +905,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if (sync) {
 					Map userMods = new HashMap();
 					if (logger.isDebugEnabled()) logger.debug("Updating group:" + ssName);
-					getUpdates(groupAttributeNames, groupAttributes, lAttrs, userMods);
+					getUpdates( groupAttributeNames, groupAttributes, lAttrs, userMods, ldapGuidAttribute );
 					updateGroup(zoneId, (Long)row[1], userMods);
 				} 
 				//exists in ldap, remove from missing list
@@ -1032,6 +1045,26 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			return (Object [])dnGroups.get(dn);
 		}
+
+	
+		/**
+		 * Return the list of attribute names we need to read from the ldap directory.
+		 */
+		public String[] getAttributeNamesToRead( LdapConnectionConfig ldapConnectionConfig )
+		{
+			String[] attributeNames = null;
+			String ldapGuidAttribute;
+			
+			// Get the name of the ldap attribute that holds the guid.
+			ldapGuidAttribute = ldapConnectionConfig.getLdapGuidAttribute();
+			
+			attributeNames = new String[3];
+			attributeNames[0] = "cn";
+			attributeNames[1] = "member";
+			attributeNames[2] = ldapGuidAttribute;
+			
+			return attributeNames;
+		}// end getAttributeNamesToRead()
 	}// end GroupCoordinator
 
 	protected void syncGroups(Binder zone, LdapContext ctx, LdapConnectionConfig config, GroupCoordinator groupCoordinator,
@@ -1040,8 +1073,18 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		//ssname=> forum info
 		String [] sample = new String[0];
 		//ldap dn => forum info
+		String[] attributesToRead;
+
+		// Get a list of the names of the attributes we want to read from the ldap directory for each user.
+		attributesToRead = groupCoordinator.getAttributeNamesToRead( config );
+
 		for(LdapConnectionConfig.SearchInfo searchInfo : config.getGroupSearches()) {
 			if(Validator.isNotNull(searchInfo.getFilter())) {
+				String ldapGuidAttribute;
+				
+				// Get the name of the ldap attribute we will use to get a guid from the ldap directory.
+				ldapGuidAttribute = config.getLdapGuidAttribute();
+				
 				Map groupAttributes = (Map) getZoneMap(zone.getName()).get(GROUP_ATTRIBUTES);
 				groupCoordinator.setAttributes(groupAttributes);
 				Set la = new HashSet(groupAttributes.keySet());
@@ -1061,7 +1104,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					fixedUpGroupName = fixupName( groupName );
 					fixedUpGroupName = fixedUpGroupName.trim();
 					
-					Attributes lAttrs = ctx.getAttributes( fixedUpGroupName );
+					Attributes lAttrs = ctx.getAttributes( fixedUpGroupName, attributesToRead );
 					
 					String relativeName = groupName.trim();
 					String dn;
@@ -1076,7 +1119,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 					//doing this one at a time is going to be slow for lots of groups
 					//not sure why it was changed for v2
-					if(groupCoordinator.record(dn, relativeName, lAttrs) && syncMembership) { 
+					if(groupCoordinator.record(dn, relativeName, lAttrs, ldapGuidAttribute ) && syncMembership ) { 
 						//Get map indexed by id
 						Object[] gRow = groupCoordinator.getGroup(dn);
 						if (gRow == null) continue; //not created
@@ -1200,7 +1243,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	}
 
 
-	protected static void getUpdates(String []ldapAttrNames, Map mapping, Attributes attrs, Map mods)  throws NamingException {
+	protected static void getUpdates(String []ldapAttrNames, Map mapping, Attributes attrs, Map mods, String ldapGuidAttribute )  throws NamingException {
 			
 		for (int i=0; i<ldapAttrNames.length; i++) {
 			Attribute att = attrs.get(ldapAttrNames[i]);
@@ -1230,7 +1273,41 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 				mods.put( mapping.get(ldapAttrNames[i]), combinedValues );
 			}
-		}		
+		}
+		
+		// Do we have an ldap guid attribute?
+		if ( ldapGuidAttribute != null )
+		{
+			Attribute attrib;
+			
+			// Get the ldap attribute.
+			attrib = attrs.get( ldapGuidAttribute );
+			if ( attrib != null )
+			{
+				Object value;
+				
+				value = attrib.get();
+				if ( value != null && value instanceof String )
+				{
+					String base64EncodedString;
+					
+					// Base64 encode the guid
+					try
+					{
+						byte[] byteArray;
+						
+						// Get the guid as a byte array.
+						byteArray = ((String)value).getBytes( "utf-8" );
+						
+						base64EncodedString = new String( Base64.encodeBase64( byteArray ), "utf-8" );
+						mods.put( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID, base64EncodedString );
+					} catch (UnsupportedEncodingException e)
+					{
+						// Nothing to do.
+					}
+				}
+			}
+		}
 	}
 	
 	/**

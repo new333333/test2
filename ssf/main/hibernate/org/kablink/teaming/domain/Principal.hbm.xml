@@ -40,6 +40,7 @@
     </map>
     <property name="name" length="128"/>
     <property name="foreignName" length="128" />
+    <property name="ldapGuid" length="128" />
 	<property name="theme" length="64"/>
 <properties name="nameKey" unique="true" update="false" insert="false">
 <property name="zoneId" update="false" insert="false"/>

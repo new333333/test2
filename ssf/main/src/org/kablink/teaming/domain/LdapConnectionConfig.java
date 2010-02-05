@@ -47,7 +47,7 @@ public class LdapConnectionConfig extends ZonedObject {
 
 	protected String userIdAttribute;
 	
-	protected String m_ldapGuidAttribute = null;	// ldap attribute used to uniquely identify a user or group.
+	protected String ldapGuidAttribute = null;	// ldap attribute used to uniquely identify a user or group.
 
 	protected Map<String, String> mappings;
 
@@ -120,7 +120,7 @@ public class LdapConnectionConfig extends ZonedObject {
 	 */
 	public String getLdapGuidAttribute()
 	{
-		return m_ldapGuidAttribute;
+		return ldapGuidAttribute;
 	}// end getLdapGuidAttribute()
 	
 	
@@ -129,7 +129,7 @@ public class LdapConnectionConfig extends ZonedObject {
 	 */
 	public void setLdapGuidAttribute( String ldapGuidAttribute )
 	{
-		m_ldapGuidAttribute = ldapGuidAttribute;
+		this.ldapGuidAttribute = ldapGuidAttribute;
 	}// end setLdapGuidAttribute()
 	
 	
