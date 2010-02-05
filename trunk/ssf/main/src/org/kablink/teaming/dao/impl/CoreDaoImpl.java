@@ -1541,6 +1541,24 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
     }
 
+    public Object updateNewSessionWithoutUpdate(Object obj) {
+		long begin = System.currentTimeMillis();
+		try {
+	      	SessionFactory sf = getSessionFactory();
+	    	Session s = sf.openSession();
+	    	try {
+	    		s.update(obj);
+	    		s.flush();
+	    	} finally {
+	    		s.close();
+	    	}
+	    	return obj;
+    	}
+    	finally {
+    		end(begin, "updateNewSessionWithoutUpdate(Object)");
+    	}	        
+    }
+
 	public List loadPostings(Long zoneId) {
 		long begin = System.currentTimeMillis();
 		try {
