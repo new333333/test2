@@ -83,6 +83,14 @@
     	<property name="openOfficeConverter"><ref bean="imageOpenOfficeConverter"/></property>
     </bean>
     
+	<!-- ============================== Relevance Engine ============================ -->
+    
+    <!--  Relevance manager integration. -->
+    <bean id="relevanceEngineImpl" class="org.kablink.teaming.relevance.impl.RelevanceEngine" />
+    <bean id="relevanceManager" class="org.kablink.teaming.relevance.impl.RelevanceManagerImpl">
+        <property name="relevanceEngine"><ref local="relevanceEngineImpl"/></property>
+    </bean>
+        
     <!-- ============================= File Integration Service ============================ -->
     
 	<bean id="resourceDriverManager" class="org.kablink.teaming.fi.connection.impl.NullResourceDriverManager"/>

@@ -449,6 +449,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_ELEMENT_VALUES = "get_element_values";
 	public static final String OPERATION_GET_ELEMENT_VALUE_DATA = "get_element_value_data";
 	public static final String OPERATION_GET_FAVORITES_TREE = "get_favorites_tree";
+	public static final String OPERATION_GET_FILE_RELATIONSHIPS_BY_ENTRY = "get_file_relationships_by_entry";
 	public static final String OPERATION_GET_FILTER_TYPE = "get_filter_type";
 	public static final String OPERATION_GET_GROUP_LIST = "get_group_list";
 	public static final String OPERATION_GET_RELEVANCE_DASHBOARD = "get_relevance_dashboard";
