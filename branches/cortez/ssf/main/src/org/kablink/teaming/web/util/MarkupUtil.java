@@ -298,6 +298,7 @@ public class MarkupUtil {
         	String remainderText = linkText.substring(i+4, linkText.length());
 
         	if (Validator.isNotNull(linkArgs)) {
+        		linkArgs = linkArgs.replaceFirst(titleUrlTextPattern.toString(), "");
         		description.setText(m.replaceFirst("{{titleUrl: " + linkArgs.replaceAll("%2B", "+") + " text=" + Html.stripHtml(titleText) + "}}" + remainderText));
         		m = iceCoreLinkPattern.matcher(description.getText());
 	    	}
@@ -644,7 +645,9 @@ public class MarkupUtil {
 				} while (matcher.find());
 				matcher.appendTail(outputBuf);
 			}
-	    	//Replace the markup {{titleUrl}} with real urls {{titleUrl: binderId=xxx title=xxx}}
+	    	//Replace the markup {{titleUrl}} with real urls {{titleUrl: binderId=xxx title=xxx text=yyy}}
+			//   In the "titleUrl": xxx is the normalized title of the entry. If null, it is a link to a folder.
+			//       And yyy is the link text (e.g., <a ...>yyy</a>
 			matcher = titleUrlPattern.matcher(outputBuf.toString());
 			if (matcher.find()) {
 				loopDetector = 0;
@@ -672,7 +675,6 @@ public class MarkupUtil {
 					String title = "";
 					fieldMatcher = titleUrlTextPattern.matcher(urlParts); //html stripped on input
 					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) title = fieldMatcher.group(1).trim();
-					if (normalizedTitle.equals("")) normalizedTitle = title;
 					if (title.equals("")) title = normalizedTitle;
 			        	
 					//build the link
@@ -682,7 +684,10 @@ public class MarkupUtil {
 			        	titleLink.append(s_binderId);
 			        	if (!s_zoneUUID.equals("")) titleLink.append(" zoneUUID=" + s_zoneUUID);
 			        	titleLink.append(" title=");
-			        	titleLink.append(Html.stripHtml(normalizedTitle)).append("\">");
+			        	titleLink.append(Html.stripHtml(normalizedTitle));
+			        	titleLink.append(" text=");
+			        	titleLink.append(Html.stripHtml(title));
+			        	titleLink.append("\">");
 			        	titleLink.append(title).append("</a>");
 			    	} else if (type.equals(WebKeys.MARKUP_VIEW)){
 			    		String webUrl = builder.getTitleUrl(s_binderId, s_zoneUUID, titleUrlPart,
