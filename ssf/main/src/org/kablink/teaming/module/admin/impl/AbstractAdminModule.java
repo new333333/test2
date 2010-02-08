@@ -246,8 +246,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    		} else {
    			switch (operation) {
    			case manageFunctionMembership:
-    			getAccessControlManager().checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);
-    			break;
+    				getAccessControlManager().checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);
+   				break;
    			default:
    				throw new NotSupportedException(operation.toString(), "checkAccess");
   					
@@ -287,10 +287,12 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    				break;
 			case manageExtensions:
   				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
+
   				//is this featured disabled
     			if( !SPropsUtil.getBoolean("extensions.manage.enabled", true) ) {
 					throw new AccessControlException();
 				}
+
   				break;
 			default:
    				throw new NotSupportedException(operation.toString(), "checkAccess");
@@ -866,7 +868,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
  			List<User> users = getCoreDao().loadObjects(cc, User.class, RequestContextHolder.getRequestContext().getZoneId());
  			for (User e:users) {
  				try {
- 					addrs.add(new InternetAddress(e.getEmailAddress().trim()));
+ 					if (!e.isDeleted() && !e.isDisabled()) addrs.add(new InternetAddress(e.getEmailAddress().trim()));
  				} catch (Exception ex) {
  					String errorMsg = ex.getLocalizedMessage();
  					String emailAddr = e.getEmailAddress();
