@@ -2097,12 +2097,14 @@ public class BinderHelper {
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
 		List<String> trackedPlaces = new ArrayList<String>();
+		List<String> trackedPeopleIds = new ArrayList<String>();
 		if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED)) {
 			Long userWsId = user.getWorkspaceId();
 			if (userWsId != null) {
 				Binder userWs = bs.getBinderModule().getBinder(userWsId);
 				trackedPlaces = SearchUtils.getTrackedPlacesIds(bs, userWs);
 			}
+			trackedPeopleIds = SearchUtils.getTrackedPeopleIds(bs, binder);
 		} else if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS)) {
 			Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId());
 			Iterator itTeams = myTeams.iterator();
@@ -2115,7 +2117,7 @@ public class BinderHelper {
 		}
 		List<Long> trackedBinderIds = new ArrayList<Long>();
 		for (String s_id : trackedPlaces) trackedBinderIds.add(Long.valueOf(s_id));
-		Criteria crit = SearchUtils.entriesForTrackedPlaces(bs, trackedPlaces);
+		Criteria crit = SearchUtils.entriesForTrackedPlacesAndPeople(bs, trackedPlaces, trackedPeopleIds);
 		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
 		model.put(WebKeys.WHATS_NEW_BINDER, results.get(ObjectKeys.SEARCH_ENTRIES));
