@@ -670,7 +670,6 @@ public class MarkupUtil {
 					String normalizedTitle = "";
 					fieldMatcher = titleUrlTitlePattern.matcher(urlParts);
 					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) normalizedTitle = fieldMatcher.group(1).trim();
-					String titleUrlPart = normalizedTitle;
 			        	
 					String title = "";
 					fieldMatcher = titleUrlTextPattern.matcher(urlParts); //html stripped on input
@@ -690,16 +689,16 @@ public class MarkupUtil {
 			        	titleLink.append("\">");
 			        	titleLink.append(title).append("</a>");
 			    	} else if (type.equals(WebKeys.MARKUP_VIEW)){
-			    		String webUrl = builder.getTitleUrl(s_binderId, s_zoneUUID, titleUrlPart,
-			    				WebHelper.getNormalizedTitle(normalizedTitle), isMobile);
+			    		String webUrl = builder.getTitleUrl(s_binderId, s_zoneUUID,
+			    				WebHelper.getNormalizedTitle(normalizedTitle), title, isMobile);
 			    		String showInParent = "false";
 			    		if (normalizedTitle == null || normalizedTitle.equals("")) showInParent = "true";
 			    		titleLink.append("<a href=\"").append(webUrl);
 			    		titleLink.append("\" onClick=\"if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this, "+showInParent+");\">");
 			    		titleLink.append("<span class=\"ss_title_link\">").append(title).append("</span></a>");
 			    	} else {
-			    		String webUrl = builder.getTitleUrl(s_binderId, s_zoneUUID, titleUrlPart,
-			    				WebHelper.getNormalizedTitle(normalizedTitle), isMobile);
+			    		String webUrl = builder.getTitleUrl(s_binderId, s_zoneUUID,
+			    				WebHelper.getNormalizedTitle(normalizedTitle), title, isMobile);
 			    		titleLink.append("<a href=\"").append(webUrl).append("\">").append(title).append("</a>");
 			    		
 			    	}
