@@ -66,6 +66,17 @@
 	</servlet-mapping>
 
 	<servlet>
+		<servlet-name>googleWave</servlet-name>
+		<servlet-class>org.kablink.teaming.samples.remoteapp.web.GoogleWaveServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>googleWave</servlet-name>
+		<url-pattern>/googleWave/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>helloWorld</servlet-name>
 		<servlet-class>org.kablink.teaming.samples.remoteapp.web.HelloWorldServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
