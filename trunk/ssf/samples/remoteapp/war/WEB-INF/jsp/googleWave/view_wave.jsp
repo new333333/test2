@@ -44,13 +44,19 @@
 <script src="http://wave-api.appspot.com/public/embed.js" type="text/javascript"></script>
 <script type="text/javascript"> 
 function googleWaveInitialize() { 
+	var divObj = self.document.getElementById("waveDiv");
+	divObj.style.display = "block";
+	divObj = self.document.getElementById("waveButton");
+	divObj.style.display = "none";
 	var wavePanel = new WavePanel('http://wave.google.com/a/wavesandbox.com/'); 
 	wavePanel.loadWave('wavesandbox.com!w+waveID'); 
 	wavePanel.init(document.getElementById('waveframe')); 
 }
-ss_createOnLoadObj("googleWaveInitialize", googleWaveInitialize);
 </script> 
  
-<div style="border:1px solid black;margin:6px;padding:6px 6px 20px 6px; height:400px;">
+<div id="waveDiv" style="display:none; border:1px solid black; margin:6px; padding:6px 6px 20px 6px; height:400px;">
     <div id="waveframe" style="width: 100%; height: 100%"></div> 
+</div>
+<div id="waveButton">
+<input type="button" class="ss_submit" onClick="googleWaveInitialize();return false;" value="Add a Google Wave" />
 </div>
