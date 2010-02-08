@@ -52,7 +52,7 @@ import org.kablink.teaming.util.AllModulesInjected;
  */
 public interface Relevance
 {
-	public String          addAttachment(Binder binder, DefinableEntity entity, final Attachment att);
+	public String          addAttachment(Binder binder, DefinableEntity entity, Attachment att);
 	public Attachment      getAttachment(AllModulesInjected bs, String relevanceUUID);
 	public Set<Attachment> getRelevantAttachments(AllModulesInjected bs, String relevanceUUID) throws IOException;
 	public Log             getRelevanceLogger();

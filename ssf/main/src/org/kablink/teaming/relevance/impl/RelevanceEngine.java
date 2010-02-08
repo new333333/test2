@@ -70,7 +70,7 @@ public class RelevanceEngine implements org.kablink.teaming.relevance.Relevance
 	 * 
 	 * @return
 	 */
-	public String addAttachment(Binder binder, DefinableEntity entity, final Attachment att) {
+	public String addAttachment(Binder binder, DefinableEntity entity, Attachment att) {
 		return null;
 	}
 	
