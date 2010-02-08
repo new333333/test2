@@ -868,7 +868,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
  			List<User> users = getCoreDao().loadObjects(cc, User.class, RequestContextHolder.getRequestContext().getZoneId());
  			for (User e:users) {
  				try {
- 					addrs.add(new InternetAddress(e.getEmailAddress().trim()));
+ 					if (!e.isDeleted() && !e.isDisabled()) addrs.add(new InternetAddress(e.getEmailAddress().trim()));
  				} catch (Exception ex) {
  					String errorMsg = ex.getLocalizedMessage();
  					String emailAddr = e.getEmailAddress();
