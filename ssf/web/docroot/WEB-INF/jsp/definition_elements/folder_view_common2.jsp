@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -58,18 +58,7 @@ if (ssUserFolderProperties != null && ssUserFolderProperties.containsKey("folder
 if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") || 
 		ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";
 %>
-	<% if (handleRelatedFiles) { %>
-		<script type="text/javascript" src="<html:rootPath/>js/jquery/jquery.js"></script>
-		<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.core.js"></script>
-		<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.draggable.js"></script>
-		<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.droppable.js"></script>
-		
-		<script type="text/javascript">
-		</script>
-		
-		<script type="text/javascript" src="<html:rootPath/>js/common/ss_relatedFiles.js"></script>
-	<% } %>
-	
+  <%@ include file="/WEB-INF/jsp/relevance/relevance_scripts.jsp" %>
   <div align="left">
 		<% // filter toolbar %>
 	    <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
@@ -882,24 +871,4 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	</c:forEach>
 </c:if>
 
-<% if (handleRelatedFiles) { %>
-	<div id="ss_related_files" class="relatedfileslist" style="display: none">
-		<input type="hidden" id="ss_related_anchor_id" value="" />
-		<div class="ss_related_div">
-			<div class="ss_related_head"><ssf:nlt tag="entry.relatedFiles"/><a href="#"><img class="ss_related_close" src="<html:imagesPath/>icons/close_circle16.png" border="0" title="<%= NLT.get("entry.relatedClose").replaceAll("\"", "&QUOT;") %>"></a></div>
-			<div id="DIV_relatedFiles">
-				<div class="ss_related_item"><a class="ss_related_anchor" href="#">...real files go here...</a></div>
-			</div>
-	
-			<div class="ss_related_head"><ssf:nlt tag="entry.relatedWorkspaces"/></div>
-			<div id="DIV_relatedWorkspaces">
-				<div class="ss_related_item"><a class="ss_related_anchor" href="#">...real workspaces go here...</a></div>
-			</div>
-			
-			<div class="ss_related_head"><ssf:nlt tag="entry.relatedUsers"/></div>
-			<div id="DIV_relatedUsers">
-				<div class="ss_related_item"><a class="ss_related_anchor" href="#">...real users go here...</a></div>
-			</div>
-		</div>
-	</div>
-<% } %>
+<%@ include file="/WEB-INF/jsp/relevance/relevance_view.jsp" %>
