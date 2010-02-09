@@ -32,44 +32,25 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-#ss_related_files {
-	position:absolute; 
-	z-index: 500;
-}
-
-.ss_related_div {
-	border: 1px #999999 solid;
-	position: relative;
-	font-weight: normal;
-	top: 0px;
-	right: 0px;
-	padding: 3px;
-	width: 225px;
-	background-color: #f6f6f6;
-}
-	
-.ss_related_head img {
-	position:absolute; 
-	top: 5px;
-	right: 8px;
-}
-.ss_related_head {
-	color: #333;
-	font-size: .7em;
-	text-transform: uppercase;
-	padding: .5em;
-	background: #ffe085;
-}
-.ss_related_item {
-	font-size: .85em;
-	white-space: nowrap;
-	padding: 3px 0;
-	margin-left: .75em;
-	overflow:hidden; 
-}
-
-.ss_related_anchor {
-	color: #1C5894 !important;
-	text-decoration: none !important;
-	outline: none !important;
-}
+<% // Relevance Integration - Scripts. %>
+<%@ page import="org.kablink.teaming.relevance.util.RelevanceUtils" %>
+<%
+	if (RelevanceUtils.isRelevanceEnabled()) {
+%>
+		<script type="text/javascript" src="<html:rootPath/>js/jquery/jquery.js"></script>
+		<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.core.js"></script>
+		<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.draggable.js"></script>
+		<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.droppable.js"></script>
+		
+		<script type="text/javascript">
+			<% /* Store the localized string that might need to */ %>
+			<% /* be displayed while running this page.         */ %>
+			var g_relevanceStrings = new Array();
+			g_relevanceStrings["entry.more"]					= "<ssf:nlt tag='entry.more'                   />";
+			g_relevanceStrings["entry.relatedFiles.None"]		= "<ssf:nlt tag='entry.relatedFiles.None'      />";
+			g_relevanceStrings["entry.relatedUsers.None"]		= "<ssf:nlt tag='entry.relatedUsers.None'      />";
+			g_relevanceStrings["entry.relatedWorkspaces.None"]	= "<ssf:nlt tag='entry.relatedWorkspaces.None' />";
+		</script>
+		
+		<script type="text/javascript" src="<html:rootPath/>js/common/ss_relatedFiles.js"></script>
+<% } %>

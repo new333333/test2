@@ -32,44 +32,28 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-#ss_related_files {
-	position:absolute; 
-	z-index: 500;
-}
-
-.ss_related_div {
-	border: 1px #999999 solid;
-	position: relative;
-	font-weight: normal;
-	top: 0px;
-	right: 0px;
-	padding: 3px;
-	width: 225px;
-	background-color: #f6f6f6;
-}
-	
-.ss_related_head img {
-	position:absolute; 
-	top: 5px;
-	right: 8px;
-}
-.ss_related_head {
-	color: #333;
-	font-size: .7em;
-	text-transform: uppercase;
-	padding: .5em;
-	background: #ffe085;
-}
-.ss_related_item {
-	font-size: .85em;
-	white-space: nowrap;
-	padding: 3px 0;
-	margin-left: .75em;
-	overflow:hidden; 
-}
-
-.ss_related_anchor {
-	color: #1C5894 !important;
-	text-decoration: none !important;
-	outline: none !important;
-}
+<% // Relevance Integration - View. %>
+<%@ page import="org.kablink.teaming.relevance.util.RelevanceUtils" %>
+<%
+	if (RelevanceUtils.isRelevanceEnabled()) {
+%>
+		<div id="ss_related_files" class="relatedfileslist" style="display: none">
+			<input type="hidden" id="ss_related_anchor_id" value="" />
+			<div class="ss_related_div">
+				<div class="ss_related_head"><ssf:nlt tag="entry.relatedFiles"/><a href="#"><img class="ss_related_close" src="<html:imagesPath/>icons/close_circle16.png" border="0" title="<%= NLT.get("entry.relatedClose").replaceAll("\"", "&QUOT;") %>"></a></div>
+				<div id="DIV_relatedFiles">
+					<div class="ss_related_item"><a class="ss_related_anchor" href="#">...real files go here...</a></div>
+				</div>
+		
+				<div class="ss_related_head"><ssf:nlt tag="entry.relatedWorkspaces"/></div>
+				<div id="DIV_relatedWorkspaces">
+					<div class="ss_related_item"><a class="ss_related_anchor" href="#">...real workspaces go here...</a></div>
+				</div>
+				
+				<div class="ss_related_head"><ssf:nlt tag="entry.relatedUsers"/></div>
+				<div id="DIV_relatedUsers">
+					<div class="ss_related_item"><a class="ss_related_anchor" href="#">...real users go here...</a></div>
+				</div>
+			</div>
+		</div>
+<% } %>

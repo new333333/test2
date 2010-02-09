@@ -734,6 +734,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		
 		// Is relevance integration enabled?
+		Set<Attachment> attSet;
+		Set<User>       userSet;
+		Set<Workspace>  wsSet;
 		Relevance re = RelevanceUtils.getRelevanceEngine();
 		if (re.isRelevanceEnabled()) {
 			// Yes!  Access the Binder...
@@ -745,22 +748,23 @@ public class AjaxController  extends SAbstractControllerRetry {
 			Long entryId = Long.valueOf( entryIdStr );
 			FolderEntry fe = getFolderModule().getEntry(binderId, entryId);
 			
-			// ...and the Set<Attachment> of the Attachment's that are
+			// ...the Set<Attachment> of the Attachment's that are
 			// ...related to any of the Attachment's on that
-			// ...FolderEntry.
-			Set<Attachment> attSet = RelevanceUtils.getRelatedAttachments(this, fe);
+			// ...FolderEntry...
+			attSet = RelevanceUtils.getRelatedAttachments(this, fe);
 
-			// Did we find any Attachment's related to the FolderEntry?
-			if (!(attSet.isEmpty())) {
-				// Yes!  Map them to their User's and Workspace's...
-				Set<User>      userSet = RelevanceUtils.getAttachmentUsers(     attSet);
-				Set<Workspace> wsSet   = RelevanceUtils.getAttachmentWorkspaces(attSet);
-
-				// ...and add everything to the relationship Map.
-				buildRelationshipModel(model, attSet, userSet, wsSet);
-			}
+			// ...and map the Set<Attachment> to their User's and
+			// ...Workspace's.
+			userSet = RelevanceUtils.getAttachmentUsers(     attSet);
+			wsSet   = RelevanceUtils.getAttachmentWorkspaces(attSet);
+		}
+		else {
+			attSet  = null;
+			userSet = null;
+			wsSet   = null;
 		}
 		
+		buildRelationshipModel(model, attSet, userSet, wsSet);
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/file_relationships", model);
 	}

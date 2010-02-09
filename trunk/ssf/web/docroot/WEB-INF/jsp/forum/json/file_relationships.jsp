@@ -37,6 +37,8 @@
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
+<%@ page import="org.kablink.teaming.domain.AnyOwner" %>
+<%@ page import="org.kablink.teaming.domain.DefinableEntity" %>
 <%@ page import="org.kablink.teaming.domain.FileAttachment" %>
 <%@ page import="org.kablink.teaming.domain.User" %>
 <%@ page import="org.kablink.teaming.domain.Workspace" %>
@@ -63,12 +65,17 @@
 			for (Iterator raIT = relatedAttachments.iterator(); raIT.hasNext();) {
 				count += 1;
 				FileAttachment fa = ((FileAttachment) raIT.next());
+				AnyOwner faOwner = fa.getOwner();
+				DefinableEntity faDE = faOwner.getEntity();
 				if (1 < count) {
 					%>,<%
 				}
 				%>[
 					"<%= StringEscapeUtils.escapeJavaScript(fa.getFileItem().getName()) %>",
-					"<%= StringEscapeUtils.escapeJavaScript(PermaLinkUtil.getFilePermalink(fa)) %>"
+					"<%= StringEscapeUtils.escapeJavaScript(PermaLinkUtil.getFilePermalink(fa)) %>",
+					
+					"<%= StringEscapeUtils.escapeJavaScript(faDE.getTitle()) %>",
+					"<%= StringEscapeUtils.escapeJavaScript(PermaLinkUtil.getPermalink(faDE)) %>"
 				]<%
 			}
 		%>

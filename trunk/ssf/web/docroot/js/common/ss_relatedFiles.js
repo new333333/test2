@@ -42,6 +42,10 @@ $(document).ready(function(){
 // true -> It does.  false -> It doesn't.
 var	ENABLE_RELATED_FILES_TRACING = false;
 
+// Controls the number of entries displayed in a related items section
+// before a 'more...' item is shown.
+var RELATED_ENTRIES_PER_SECTION = 5;
+
 
 /*
  * Called to handle the response from an AJAX operation on
@@ -62,9 +66,9 @@ function ajaxRelatedFilesByEntry_Response(data) {
 	}
 
 	// Otherwise, construct the relevance list DIV's...
-	buildRelationshipDIV("DIV_relatedFiles",      data.relatedFiles);
-	buildRelationshipDIV("DIV_relatedWorkspaces", data.relatedWorkspaces);
-	buildRelationshipDIV("DIV_relatedUsers",      data.relatedUsers);
+	buildRelationshipDIV("DIV_relatedFiles",      data.relatedFiles,      RELATED_ENTRIES_PER_SECTION, "entry.relatedFiles.None"     );
+	buildRelationshipDIV("DIV_relatedWorkspaces", data.relatedWorkspaces, RELATED_ENTRIES_PER_SECTION, "entry.relatedWorkspaces.None");
+	buildRelationshipDIV("DIV_relatedUsers",      data.relatedUsers,      RELATED_ENTRIES_PER_SECTION, "entry.relatedUsers.None"     );
 
 	// ...and show it.
 	positionAndShowList(
@@ -96,25 +100,56 @@ function ajaxRelatedFilesByEntry_Submit(binderId, entryId) {
  *       <a class="ss_related_anchor" href="...permalink...">...name...</a>
  * </div>
  */
-function buildRelationshipDIV(sDIV, aData) {
+function buildRelationshipDIV(sDIV, aData, iMaxPerSection, sNoRelationshipsKey) {
+	// Locate and empty the DIV we're to build.
 	eDIV = document.getElementById(sDIV);
 	emptyDIV(eDIV);
-	
-	var i;
-	var	aEach;
+
+	// Are there any relationships for this DIV?
 	var	eInnerDIV;
-	
 	var c = aData.length;
-	for (i = 0; i < c; i += 1) {
-		aEach = aData[i];
-		
+	if (0 == c) {
+		// No!  Just display a message saying that.
 		eInnerDIV = document.createElement("DIV");
 		eInnerDIV.className = "ss_related_item";
-		
-		eA = createAWithTEXT(eInnerDIV, aEach[1], aEach[0]);
-		
-		eInnerDIV.appendChild(eA);
+		eInnerDIV.appendChild(document.createTextNode(g_relevanceStrings[sNoRelationshipsKey]));
 		eDIV.appendChild(eInnerDIV);
+	}
+	
+	else {
+		var i;
+		var	aEach;
+		
+		// Yes, there are relationships for this DIV!  Scan them...
+		for (i = 0; i < c; i += 1) {
+			aEach = aData[i];
+			
+			// ...creating a DIV for each.
+			eInnerDIV = document.createElement("DIV");
+			eInnerDIV.className = "ss_related_item";
+			
+			if (iMaxPerSection == i) {
+				eA = createAWithTEXT(eInnerDIV, "#", g_relevanceStrings["entry.more"]);
+				eA.onclick = function() {
+					buildRelationshipDIV(sDIV, aData, (-1), sNoRelationshipsKey);
+				}
+				eInnerDIV.appendChild(eA);
+				eDIV.appendChild(eInnerDIV);
+				break;
+			}
+			
+			eA = createAWithTEXT(eInnerDIV, aEach[1], aEach[0]);
+			eInnerDIV.appendChild(eA);
+			
+			if ("DIV_relatedFiles" == sDIV) {
+				eInnerDIV.appendChild(document.createTextNode(" ("))
+				eA = createAWithTEXT(eInnerDIV, aEach[3], aEach[2]);
+				eInnerDIV.appendChild(eA);
+				eInnerDIV.appendChild(document.createTextNode(")"))
+			}
+			
+			eDIV.appendChild(eInnerDIV);
+		}
 	}
 }
 
