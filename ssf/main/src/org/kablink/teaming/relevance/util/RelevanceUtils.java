@@ -43,6 +43,7 @@ import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -61,8 +62,8 @@ import org.kablink.teaming.web.util.MiscUtil;
  */
 public final class RelevanceUtils
 {
-	/**
-	 * Class constructor to prevents this class from being
+	/*
+	 * Class constructor that prevents this class from being
 	 * instantiated.
 	 */
 	private RelevanceUtils()
@@ -74,42 +75,42 @@ public final class RelevanceUtils
 	 * Adds an Attachment to a Set<Attachment> if that Attachment is
 	 * not already in the Set.
 	 */
-	private static void addUniqueAttachmentToSet(Set<Attachment> attHS, Attachment att) {
+	private static void addUniqueAttachmentToSet(Set<Attachment> attSet, Attachment att) {
 		String attId = att.getId();
-		for (Iterator<Attachment> attIT = attHS.iterator(); attIT.hasNext();) {
+		for (Iterator<Attachment> attIT = attSet.iterator(); attIT.hasNext();) {
 			if (attId.equals(attIT.next().getId())) {
 				return;
 			}
 		}
-		attHS.add(att);
+		attSet.add(att);
 	}
 
 	/*
 	 * Adds a User to a Set<User> if that User is not already in the
 	 * Set.
 	 */
-	private static void addUniqueUserToSet(Set<User> userHS, User user) {
+	private static void addUniqueUserToSet(Set<User> userSet, User user) {
 		long userId = user.getId();
-		for (Iterator<User> userIT = userHS.iterator(); userIT.hasNext();) {
+		for (Iterator<User> userIT = userSet.iterator(); userIT.hasNext();) {
 			if (userId == userIT.next().getId()) {
 				return;
 			}
 		}
-		userHS.add(user);
+		userSet.add(user);
 	}
 
 	/*
 	 * Adds a Workspace to a Set<Workspace> if that Workspace is not
 	 * already in the Set.
 	 */
-	private static void addUniqueWorkspaceToSet(Set<Workspace> wsHS, Workspace ws) {
+	private static void addUniqueWorkspaceToSet(Set<Workspace> wsSet, Workspace ws) {
 		long wsId = ws.getId();
-		for (Iterator<Workspace> wsIT = wsHS.iterator(); wsIT.hasNext();) {
+		for (Iterator<Workspace> wsIT = wsSet.iterator(); wsIT.hasNext();) {
 			if (wsId == wsIT.next().getId()) {
 				return;
 			}
 		}
-		wsHS.add(ws);
+		wsSet.add(ws);
 	}
 
 	/**
@@ -141,8 +142,18 @@ public final class RelevanceUtils
 		// UUIDs.  Return false.
 		return false;
 	}
-	public static boolean entityHasRelatedFiles(String entityId) {
-		return entityHasRelatedFiles(Long.valueOf(entityId));
+	public static boolean entityHasRelatedFiles(String entityIdS) {
+		Long entityID;
+		try {
+			entityID = Long.valueOf(entityIdS);
+		}
+		catch (Exception e) {
+			// Although it should never happen, this is here mainly to
+			// handle numeric format exceptions.
+			getRelevanceEngine().getRelevanceLogger().error("RelevanceUtils.entityHasRelatedFiles( EXCEPTION ):  ", e);
+			entityID = null;
+		}
+		return ((null == entityID) ? false : entityHasRelatedFiles(entityID));
 	}
 	public static boolean entityHasRelatedFiles(Long entityId) {
 		FolderModule fm = ((FolderModule) SpringContextUtil.getBean("folderModule"));
@@ -151,8 +162,9 @@ public final class RelevanceUtils
 	}
 	
 	/**
-	 * Given a Set<Attachment>, returns a Set<User> that map
-	 * each Attachment to the user that last modified it.
+	 * Given a Set<Attachment>, returns a Set<User> that maps
+	 * each Attachment to the User that last modified it.  Note that
+	 * any given User is only included once in the resultant Set.
 	 * 
 	 * @param attSet The Set<Attachment> whose User's are being
 	 *    queried.
@@ -163,7 +175,13 @@ public final class RelevanceUtils
 		HashSet<User> reply = new HashSet<User>();
 		for (Iterator<Attachment> attIT = attSet.iterator(); attIT.hasNext();) {
 			Attachment att = attIT.next();
-			addUniqueUserToSet(reply, ((User) att.getModification().getPrincipal()));
+			UserPrincipal modifierPrincipal = att.getModification().getPrincipal();
+			if (modifierPrincipal instanceof User) {
+				addUniqueUserToSet(reply, ((User) modifierPrincipal));
+			}
+			else {
+				getRelevanceEngine().getRelevanceLogger().debug("RelevanceUtils.getAttachmentUsers( 'Non-User UserPrincipal ignored.' ):  Title:  '" + modifierPrincipal.getTitle() + "'");
+			}
 		}
 		
 		return reply;
@@ -189,7 +207,8 @@ public final class RelevanceUtils
 	
 	/**
 	 * Given a Set<Attachment>, returns a Set<Workspace> that
-	 * map each Attachment to its containing Workspace.
+	 * maps each Attachment to its containing Workspace.  Note that any
+	 * given Workspace is only included once in the resultant Set.
 	 * 
 	 * @param attSet The Set<Attachment> whose Workspace's are being
 	 *    queried.
@@ -208,7 +227,8 @@ public final class RelevanceUtils
 
 	/**
 	 * Returns a Set<Attachment> of all the Attachment's that are
-	 * related to the Attachment's on a FolderEntry.
+	 * related to the Attachment's on a FolderEntry.  Note that any
+	 * given Attachment is only included once in the resultant Set.
 	 * 
 	 * @param bs The AllModulesInjected that we're running under.
 	 * @param fe The FolderEntry whose related Attachment's are being

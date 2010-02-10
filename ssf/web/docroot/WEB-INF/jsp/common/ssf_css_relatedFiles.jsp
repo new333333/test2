@@ -44,7 +44,6 @@
 	top: 0px;
 	right: 0px;
 	padding: 3px;
-	width: 225px;
 	background-color: #f6f6f6;
 }
 	
