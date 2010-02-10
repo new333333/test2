@@ -68,6 +68,7 @@ import org.dom4j.Element;
 import org.hibernate.SessionFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.domain.Binder;
@@ -76,6 +77,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.Membership;
+import org.kablink.teaming.domain.NoPrincipalByTheNameException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -257,6 +259,363 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     	return zone;
     }
 
+    
+    /**
+     * For all users, sync the ldap attribute that holds the guid.  The name of the ldap
+     * attribute that holds the guid is found in the ldap configuration data.  You can get the
+     * name of the attribute by calling config.getLdapGuidAttribute().  For eDirectory, the name of
+     * the attribute is GUID and for Activie Directory, the name of the attribute is objectGUID.
+     * This method should be called whenever the user changes the the name of the ldap attribute
+     * that holds the guid (in the ldap configuration).
+     */
+    public void syncGuidAttributeForAllUsers( LdapConnectionConfig ldapConfig, LdapContext ldapContext, LdapSyncResults syncResults ) throws LdapSyncException
+    {
+		Workspace zone;
+		Long zoneId;
+		Map<Long, Map> usersToUpdate;
+		ProfileDao profileDao;
+		PartialLdapSyncResults modifiedUsersSyncResults;
+		String[] ldapAttributesToRead;
+		String ldapGuidAttribute;
+
+		// usersToUpdate will hold the users that need to be updated and the attributes to update.
+		// The key is the user's id and the value is the map of attributes.
+		usersToUpdate = new HashMap();
+
+		profileDao = getProfileDao();
+		
+		zone = RequestContextHolder.getRequestContext().getZone();
+		zoneId = zone.getId();
+
+		// Get the name of the ldap attribute that holds the guid.
+		ldapGuidAttribute = ldapConfig.getLdapGuidAttribute();
+		
+		// Specify the list of attributes to read from the ldap directory.
+		ldapAttributesToRead = new String[2];
+		ldapAttributesToRead[0] = ldapConfig.getUserIdAttribute();
+		ldapAttributesToRead[1] = ldapGuidAttribute;
+		
+		// Go through each user search criteria
+		for ( LdapConnectionConfig.SearchInfo searchInfo : ldapConfig.getUserSearches() )
+		{
+			if( Validator.isNotNull( searchInfo.getFilter() ) )
+			{
+				int scope;
+				SearchControls searchCtrls;
+				NamingEnumeration ctxSearch;
+
+				scope = (searchInfo.isSearchSubtree() ? SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
+				searchCtrls = new SearchControls( scope, 0, 0, ldapAttributesToRead, false, false );
+
+				try
+				{
+					// Search for users using the base dn and filter criteria.
+					ctxSearch = ldapContext.search( searchInfo.getBaseDn(), searchInfo.getFilter(), searchCtrls );
+					while ( ctxSearch.hasMore() )
+					{
+						String userName;
+						String fixedUpUserName;
+						String guid;
+						String teamingName;
+						Attributes lAttrs = null;
+						Attribute attrib;
+						Binding binding;
+	
+						teamingName = null;
+						
+						// Get the next user in the list.
+						binding = (Binding)ctxSearch.next();
+						userName = binding.getNameInNamespace();
+						
+						// Fixup the  by replacing all "/" with "\/".
+						fixedUpUserName = fixupName( userName );
+						fixedUpUserName = fixedUpUserName.trim();
+	
+						// Read the necessary attributes for this user from the ldap directory.
+						lAttrs = ldapContext.getAttributes( fixedUpUserName, ldapAttributesToRead );
+						
+						// Get the ldap attribute whose value is used for the users name in Teaming.
+						attrib = lAttrs.get( ldapConfig.getUserIdAttribute() );
+						if ( attrib != null && attrib.size() == 1 )
+						{
+							Object value;
+							
+							value = attrib.get();
+							if ( value != null && value instanceof String )
+							{
+								teamingName = (String) value;
+							}
+						}
+						
+						// Did we get the name of the user?
+						if ( teamingName == null )
+						{
+							// No
+							continue;
+						}
+	
+						// Is the name of this user a name that is used for a Teaming system user account?
+						// Currently there are 5 system user accounts named, "admin", "guest", "_postingAgent",
+						// "_jobProcessingAgent" and "_synchronizationAgent".
+						if ( MiscUtil.isSystemUserAccount( teamingName ) )
+						{
+							// Yes, skip this user.
+							continue;
+						}
+						
+						guid = null;
+	
+						// Do we have an ldap guid attribute?
+						if ( ldapGuidAttribute != null )
+						{
+							guid = getLdapGuidBase64Encoded( lAttrs, ldapGuidAttribute );
+						}
+	
+						// Does this user exist in Teaming.
+						try
+						{
+							Principal principal;
+							Map userMods;
+							
+							principal = profileDao.findPrincipalByName( teamingName, zoneId );
+	
+							// Create the map that will hold the attributes we want updated in the Teaming db.
+							userMods = new HashMap();
+							userMods.put( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID, guid );
+							
+							// Add this user to our list of users that need to be updated.
+							usersToUpdate.put( principal.getId(), userMods );
+						}
+						catch (NoPrincipalByTheNameException ex)
+						{
+							// Nothing to do, this just means the user doesn't exist.
+						}
+					}// end while()
+				}// end try
+		  		catch (NamingException ex)
+		  		{
+		  			LdapSyncException	ldapSyncEx;
+
+		  			// Yes
+		  			logError( NLT.get( "errorcode.ldap.context" ), ex );
+		  			
+		  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
+		  			// the LdapConnectionConfig object that was being used when the error happened.
+		  			ldapSyncEx = new LdapSyncException( ldapConfig, ex );
+		  			throw ldapSyncEx;
+		  		}
+			}
+		}// end for()
+
+		modifiedUsersSyncResults = null;
+		if ( syncResults != null )
+		{
+			// Yes
+			modifiedUsersSyncResults = syncResults.getModifiedUsers();
+		}
+		
+		// Update the users with the guid from the ldap directory.
+		updateUsers( zoneId, usersToUpdate, modifiedUsersSyncResults );
+		
+    }// end syncGuidAttributeForAllUsers()
+    
+    
+    /**
+     * For all groups, sync the ldap attribute that holds the guid.  The name of the ldap
+     * attribute that holds the guid is found in the ldap configuration data.  You can get the
+     * name of the attribute by calling config.getLdapGuidAttribute().  For eDirectory, the name of
+     * the attribute is GUID and for Activie Directory, the name of the attribute is objectGUID.
+     * This method should be called whenever the user changes the the name of the ldap attribute
+     * that holds the guid (in the ldap configuration).
+     */
+    public void syncGuidAttributeForAllGroups( LdapConnectionConfig ldapConfig, LdapContext ldapContext, LdapSyncResults syncResults ) throws LdapSyncException
+    {
+		Workspace zone;
+		Long zoneId;
+		ProfileDao profileDao;
+		PartialLdapSyncResults modifiedUsersSyncResults;
+		String[] ldapAttributesToRead;
+		String ldapGuidAttribute;
+
+		profileDao = getProfileDao();
+		
+		zone = RequestContextHolder.getRequestContext().getZone();
+		zoneId = zone.getId();
+
+		// Get the name of the ldap attribute that holds the guid.
+		ldapGuidAttribute = ldapConfig.getLdapGuidAttribute();
+		
+		// Specify the list of attributes to read from the ldap directory.
+		ldapAttributesToRead = new String[1];
+		ldapAttributesToRead[0] = ldapGuidAttribute;
+		
+		// Go through each group search criteria
+		for ( LdapConnectionConfig.SearchInfo searchInfo : ldapConfig.getGroupSearches() )
+		{
+			if( Validator.isNotNull( searchInfo.getFilter() ) )
+			{
+				int scope;
+				SearchControls searchCtrls;
+				NamingEnumeration ctxSearch;
+
+				scope = (searchInfo.isSearchSubtree() ? SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
+				searchCtrls = new SearchControls( scope, 0, 0, ldapAttributesToRead, false, false );
+
+				try
+				{
+					// Search for groups using the base dn and filter criteria.
+					ctxSearch = ldapContext.search( searchInfo.getBaseDn(), searchInfo.getFilter(), searchCtrls );
+					while ( ctxSearch.hasMore() )
+					{
+						String groupName;
+						String fullDN;
+						String guid;
+						Attributes lAttrs = null;
+						Binding binding;
+	
+						// Get the next group in the list.
+						binding = (Binding)ctxSearch.next();
+						groupName = binding.getNameInNamespace();
+						
+						// Fixup the  by replacing all "/" with "\/".
+						fullDN = fixupName( groupName );
+						fullDN = fullDN.trim();
+	
+						// Read the necessary attributes for this group from the ldap directory.
+						lAttrs = ldapContext.getAttributes( fullDN, ldapAttributesToRead );
+						
+						// Is the name of this group a name that is used for a Teaming system user account?
+						// Currently there are 5 system user accounts named, "admin", "guest", "_postingAgent",
+						// "_jobProcessingAgent" and "_synchronizationAgent".
+						if ( MiscUtil.isSystemUserAccount( fullDN ) )
+						{
+							// Yes, skip this user.
+							continue;
+						}
+						
+						guid = null;
+	
+						// Do we have an ldap guid attribute?
+						if ( ldapGuidAttribute != null )
+						{
+							guid = getLdapGuidBase64Encoded( lAttrs, ldapGuidAttribute );
+						}
+	
+						// Does this group exist in Teaming.
+						try
+						{
+							Principal principal;
+							Map userMods;
+							
+							principal = profileDao.findPrincipalByName( fullDN, zoneId );
+	
+							// Create the map that will hold the attributes we want updated in the Teaming db.
+							userMods = new HashMap();
+							userMods.put( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID, guid );
+
+							// Update this group with the value of the guid attribute from the ldap directory.
+							updateGroup( zoneId, principal.getId(), userMods, syncResults );
+						}
+						catch (NoPrincipalByTheNameException ex)
+						{
+							// Nothing to do, this just means the group doesn't exist.
+						}
+					}// end while()
+				}// end try
+		  		catch (NamingException ex)
+		  		{
+		  			LdapSyncException	ldapSyncEx;
+
+		  			// Yes
+		  			logError( NLT.get( "errorcode.ldap.context" ), ex );
+		  			
+		  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
+		  			// the LdapConnectionConfig object that was being used when the error happened.
+		  			ldapSyncEx = new LdapSyncException( ldapConfig, ex );
+		  			throw ldapSyncEx;
+		  		}
+			}
+		}// end for()
+    }// end syncGuidAttributeForAllGroups()
+    
+    
+    /**
+     * For all users and groups, sync the ldap attribute that holds the guid.  The name of the ldap
+     * attribute that holds the guid is found in the ldap configuration data.  You can get the
+     * name of the attribute by calling config.getLdapGuidAttribute().  For eDirectory, the name of
+     * the attribute is GUID and for Activie Directory, the name of the attribute is objectGUID.
+     * This method should be called whenever the user changes the the name of the ldap attribute
+     * that holds the guid (in the ldap configuration).
+     */
+    public void syncGuidAttributeForAllUsersAndGroups( LdapSyncResults syncResults ) throws LdapSyncException
+    {
+		Workspace zone;
+		Long zoneId;
+		List<LdapConnectionConfig> ldapConnectionConfigs;
+		
+		zone = RequestContextHolder.getRequestContext().getZone();
+		zoneId = zone.getId();
+
+		// Get the list of ldap configurations.
+		ldapConnectionConfigs = getCoreDao().loadLdapConnectionConfigs( zoneId );
+		
+		// Go through each ldap configuration
+		for( LdapConnectionConfig nextLdapConfig : ldapConnectionConfigs )
+		{
+	   		LdapContext ldapContext;
+	   		NamingException namingEx;
+
+	   		namingEx = null;
+	   		ldapContext = null;
+	  		try
+	  		{
+				// Get an ldap context for the given ldap configuration
+				ldapContext = getContext( zoneId, nextLdapConfig, false );
+				
+				// Sync the guid attributes for all users.
+				syncGuidAttributeForAllUsers( nextLdapConfig, ldapContext, syncResults );
+				
+				// Sync the guid attribute for all groups.
+				syncGuidAttributeForAllGroups( nextLdapConfig, ldapContext, syncResults );
+			}// end try
+	  		catch (NamingException ex)
+	  		{
+	  			namingEx = ex;
+	  		}
+	  		finally
+	  		{
+				if ( ldapContext != null )
+				{
+					try
+					{
+						// Close the ldap context.
+						ldapContext.close();
+					}
+					catch (NamingException ex)
+			  		{
+						namingEx = ex;
+			  		}
+				}
+			}
+	  		
+	  		// Did we encounter a problem?
+	  		if ( namingEx != null )
+	  		{
+	  			LdapSyncException	ldapSyncEx;
+
+	  			// Yes
+	  			logError( NLT.get( "errorcode.ldap.context" ), namingEx );
+	  			
+	  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
+	  			// the LdapConnectionConfig object that was being used when the error happened.
+	  			ldapSyncEx = new LdapSyncException( nextLdapConfig, namingEx );
+	  			throw ldapSyncEx;
+	  		}
+
+		}// end for()
+    }// end syncGuidAttributeForAllUsersAndGroups()
+    
+    
 	/**
 	 * Update a ssf user with an ldap person.  
 	 * @param zoneName
@@ -906,7 +1265,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					Map userMods = new HashMap();
 					if (logger.isDebugEnabled()) logger.debug("Updating group:" + ssName);
 					getUpdates( groupAttributeNames, groupAttributes, lAttrs, userMods, ldapGuidAttribute );
-					updateGroup(zoneId, (Long)row[1], userMods);
+					updateGroup( zoneId, (Long)row[1], userMods, m_ldapSyncResults );
 				} 
 				//exists in ldap, remove from missing list
 				notInLdap.remove(row[1]);
@@ -952,37 +1311,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				logger.error("'" + ssName + "':'" + groupData.get(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME) + "'");
 			}
 			return null;
-	    }
-
-	    /**
-	     * Update group with their own updates
-	     */    
-		protected void updateGroup(Long zoneId, final Long groupId, final Map groupMods) {
-			ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
-			List collections = new ArrayList();
-			collections.add("customAttributes");
-		   	List foundEntries = getCoreDao().loadObjects(Arrays.asList(new Long[] {groupId}), Group.class, zoneId, collections);
-		   	Map entries = new HashMap();
-		   	Group g = (Group)foundEntries.get(0);
-		   	entries.put(g, new MapInputData(StringCheckUtil.check(groupMods)));
-		    try {
-		    	PartialLdapSyncResults	syncResults	= null;
-		    	
-		    	// Do we have a place to store the list of modified groups?
-		    	if ( m_ldapSyncResults != null )
-		    	{
-		    		syncResults = m_ldapSyncResults.getModifiedGroups();
-		    	}
-		    	ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
-	            	pf, ProfileCoreProcessor.PROCESSOR_KEY);
-		    	processor.syncEntries(entries, null, syncResults );
-		    	IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
-		    	//flush from cache
-		    	getCoreDao().evict(g);
-		    } catch (Exception ex) {
-		    	//continue 
-		    	logError("Error updating groups", ex);	   		
-		    }
 	    }
 
 		protected void syncMembership(Long groupId, Enumeration valEnum)
@@ -1243,54 +1571,71 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	}
 
 
-	protected static void getUpdates(String []ldapAttrNames, Map mapping, Attributes attrs, Map mods, String ldapGuidAttribute )  throws NamingException {
-			
-		for (int i=0; i<ldapAttrNames.length; i++) {
-			Attribute att = attrs.get(ldapAttrNames[i]);
-			if (att == null) continue;
-			Object val = att.get();
-			if (val == null) {
-				mods.put(mapping.get(ldapAttrNames[i]), null);
-			} else if (att.size() == 0) {
-				continue;
-			} else if (att.size() == 1) {
-				mods.put(mapping.get(ldapAttrNames[i]), val);					
-			} else {
-				String combinedValues = "";
-				
-				// This attribute is a multi-valued attribute.  Teaming doesn't understand
-				// multi-valued attributes.  So we need to concatenate all of the values
-				// into one value.
-				for (NamingEnumeration valEnum=att.getAll(); valEnum.hasMoreElements();)
-				{
-					Object nextValue;
+	protected static void getUpdates(String []ldapAttrNames, Map mapping, Attributes attrs, Map mods, String ldapGuidAttribute )  throws NamingException
+	{
+		if ( ldapAttrNames != null )
+		{
+			for (int i=0; i<ldapAttrNames.length; i++) {
+				Attribute att = attrs.get(ldapAttrNames[i]);
+				if (att == null) continue;
+				Object val = att.get();
+				if (val == null) {
+					mods.put(mapping.get(ldapAttrNames[i]), null);
+				} else if (att.size() == 0) {
+					continue;
+				} else if (att.size() == 1) {
+					mods.put(mapping.get(ldapAttrNames[i]), val);					
+				} else {
+					String combinedValues = "";
 					
-					nextValue = valEnum.nextElement();
-					
-					// We only know how to deal with Strings
-					combinedValues += nextValue.toString() + " ";
+					// This attribute is a multi-valued attribute.  Teaming doesn't understand
+					// multi-valued attributes.  So we need to concatenate all of the values
+					// into one value.
+					for (NamingEnumeration valEnum=att.getAll(); valEnum.hasMoreElements();)
+					{
+						Object nextValue;
+						
+						nextValue = valEnum.nextElement();
+						
+						// We only know how to deal with Strings
+						combinedValues += nextValue.toString() + " ";
+					}
+	
+					mods.put( mapping.get(ldapAttrNames[i]), combinedValues );
 				}
-
-				mods.put( mapping.get(ldapAttrNames[i]), combinedValues );
 			}
 		}
 		
 		// Do we have an ldap guid attribute?
 		if ( ldapGuidAttribute != null )
 		{
-			Attribute attrib;
+			String base64EncodedString;
 			
-			// Get the ldap attribute.
-			attrib = attrs.get( ldapGuidAttribute );
-			if ( attrib != null )
+			base64EncodedString = getLdapGuidBase64Encoded( attrs, ldapGuidAttribute );
+			mods.put( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID, base64EncodedString );
+		}
+	}
+	
+	
+	/**
+	 * Base64 encode the guid we read from the ldap directory.
+	 */
+	private static String getLdapGuidBase64Encoded( Attributes attrs, String ldapGuidAttribute )
+	{
+		Attribute attrib;
+		String base64EncodedString = null;
+		
+		// Get the ldap attribute that holds the guid.
+		attrib = attrs.get( ldapGuidAttribute );
+		if ( attrib != null )
+		{
+			try
 			{
 				Object value;
 				
 				value = attrib.get();
 				if ( value != null && value instanceof String )
 				{
-					String base64EncodedString;
-					
 					// Base64 encode the guid
 					try
 					{
@@ -1300,15 +1645,20 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						byteArray = ((String)value).getBytes( "utf-8" );
 						
 						base64EncodedString = new String( Base64.encodeBase64( byteArray ), "utf-8" );
-						mods.put( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID, base64EncodedString );
 					} catch (UnsupportedEncodingException e)
 					{
 						// Nothing to do.
 					}
 				}
 			}
+			catch (NamingException ex)
+			{
+				// Nothing to do.
+			}
 		}
-	}
+
+		return base64EncodedString;
+	}// end getLdapGuidBase64Encoded()
 	
 	/**
 	 * Read the default locale id from the global properties
@@ -1424,6 +1774,39 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			logError("Error updating users", ex);	   		
 	   	}
 	}
+
+    /**
+     * Update group with their own updates
+     */    
+	protected void updateGroup( Long zoneId, final Long groupId, final Map groupMods, LdapSyncResults ldapSyncResults )
+	{
+		ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
+		List collections = new ArrayList();
+		collections.add("customAttributes");
+	   	List foundEntries = getCoreDao().loadObjects(Arrays.asList(new Long[] {groupId}), Group.class, zoneId, collections);
+	   	Map entries = new HashMap();
+	   	Group g = (Group)foundEntries.get(0);
+	   	entries.put(g, new MapInputData(StringCheckUtil.check(groupMods)));
+	    try {
+	    	PartialLdapSyncResults	syncResults	= null;
+	    	
+	    	// Do we have a place to store the list of modified groups?
+	    	if ( ldapSyncResults != null )
+	    	{
+	    		syncResults = ldapSyncResults.getModifiedGroups();
+	    	}
+	    	ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
+            	pf, ProfileCoreProcessor.PROCESSOR_KEY);
+	    	processor.syncEntries(entries, null, syncResults );
+	    	IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
+	    	//flush from cache
+	    	getCoreDao().evict(g);
+	    } catch (Exception ex) {
+	    	//continue 
+	    	logError("Error updating groups", ex);	   		
+	    }
+    }// end updateGroup()
+
 
     protected void updateMembership(Long groupId, Collection newMembers, PartialLdapSyncResults syncResults ) {
 		//have a list of users, now compare with what exists already
