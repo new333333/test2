@@ -898,7 +898,7 @@ ssPage = {
 	m_invalidBaseDnMsg : '<ssf:escapeJavaScript><ssf:nlt tag="ldap.error.invalidBaseDn"/></ssf:escapeJavaScript>',
 	m_isBaseDnValid : true,
 	m_baseDnCtrl : null,
-	m_validateLdapConfigOnSelect : true,
+	m_idOfInvalidConfiguration : null,
 	nextId : 1,
 	currentTab : 0,
 	defaultUserFilter: "${ssDefaultUserFilter}",
@@ -981,7 +981,7 @@ ssPage = {
 		// Add a link the user can click on that will display this ldap configuration.
 		var index = jQuery("#ulDiv > ul").tabs("length");
 		jQuery("#ulDiv > ul").tabs("add", '#'+ id, label);
-		ssPage.selectLdapConfigurationByIndex( index, false );
+		ssPage.selectLdapConfigurationByIndex( index );
 		
 		// The call to jQuery( "#ulDiv > ul").tabs( "add", '#' + id, label ) moves the <fieldset...> into
 		// the div that holds the <ul>.  This causes display problems on IE, see bug 491677.
@@ -1025,12 +1025,15 @@ ssPage = {
 
 			if ( baseDn == null || baseDn.length == 0 )
 			{
+				// Get the id of the configuration that is invalid.
+				ssPage.m_idOfInvalidConfiguration = $this.parent().parent().parent().parent().parent().attr( "id" );
 				ssPage.m_baseDnCtrl = $baseDn;
 				ssPage.m_isBaseDnValid = false;
 			}
 		};
 		
 		// Make sure the user has entered something for every base dn.
+		ssPage.m_idOfInvalidConfiguration = null;
 		ssPage.m_isBaseDnValid = true;
 		ssPage.m_baseDnCtrl = null;
 		jQuery( '#funkyDiv .ldapUserSearches .ldapSearch' ).each( validateBaseDn );
@@ -1039,8 +1042,9 @@ ssPage = {
 			// No, tell the user the base dn cannot be empty.
 			alert( ssPage.m_invalidBaseDnMsg );
 
-			// Give the focus to the appropriate control.
-			ssPage.m_baseDnCtrl.focus();
+			// Show the configuration that has the error.
+			if ( ssPage.m_idOfInvalidConfiguration != null )
+				setTimeout( ssPage.showInvalidLdapConfig, 50 );
 
 			return false;
 		}
@@ -1052,13 +1056,6 @@ ssPage = {
 	 * This function gets called when the user clicks on the "Add a new ldap connection" button.
 	 */
 	addConnection : function() {
-		// Make sure the user has entered a base dn for every ldap configuration.
-		if ( ssPage.validateAllLdapConfigurations() == false )
-		{
-			// If we get here it means that a base dn was empty.  validateAllLdapConfigurations() will tell the user about the problem.
-			return false;
-		}
-		
 		var $pane = ssPage.createConnection("", "uid", ssPage.defaultUserMappings, [], [], "", "");
 		return false;
 	},
@@ -1088,27 +1085,36 @@ ssPage = {
 	/**
 	 * Select the given ldap configuration.
 	 */
-	selectLdapConfigurationByIndex : function( index, doValidation )
+	selectLdapConfigurationByIndex : function( index )
 	{
-		ssPage.m_validateLdapConfigOnSelect = doValidation;
 		jQuery("#ulDiv > ul").tabs( "select", index );
-
-		ssPage.m_validateLdapConfigOnSelect = true;
 	},// end selectLdapConfigurationByIndex()
 
 
 	/**
 	 * Select the ldap configuration by id.
 	 */
-	selectLdapConfigurationById : function( id, doValidation )
+	selectLdapConfigurationById : function( id )
 	{
-		ssPage.m_validateLdapConfigOnSelect = doValidation;
 		jQuery( "#ulDiv > ul").tabs( "select", '#' + id );
-
-		ssPage.m_validateLdapConfigOnSelect = true;
 	},// end selectLdapConfigurationById()
 
 	
+	/**
+	 * Select the tab for the ldap configuration that is invalid.
+	 */
+	showInvalidLdapConfig : function()
+	{
+		if ( ssPage.m_idOfInvalidConfiguration != null )
+		{
+			ssPage.selectLdapConfigurationById( ssPage.m_idOfInvalidConfiguration );
+		
+			// Give the focus to the appropriate control.
+			ssPage.m_baseDnCtrl.focus();
+		}
+	},// end showInvalidLdapConfig()
+
+
 	/**
 	 * Select the tab for the ldap config with the id found in m_ldapConfigId.
 	 */
@@ -1129,7 +1135,7 @@ ssPage = {
 				if ( fldset != null && fldset.id != null )
 				{
 					// Select the tab associated with this ldap configuration.
-					ssPage.selectLdapConfigurationById( fldset.id, false );
+					ssPage.selectLdapConfigurationById( fldset.id );
 				}
 			}
 		}
@@ -1281,30 +1287,8 @@ jQuery(document).ready(function() {
 			ssPage.currentTab = ui.index;
 		});
 
-		/**
-		 * This event handler gets called when the user clicks on a link to one of the ldap configurations.
-		 * We will validate the data in the ldap configurations.  If it is invalid we will prevent the
-		 * user from moving to the selected ldap configuration.
-		 */
-		jQuery( '#ulDiv > ul' ).bind( 'tabsselect', function( event, ui )
-		{
-			// Do we need to do validation before we move to the selected ldap configuration?
-			if ( ssPage.m_validateLdapConfigOnSelect )
-			{
-				// Yes.
-				if ( ssPage.validateAllLdapConfigurations() == false )
-				{
-					// If we get here it means that the current ldap configuration is invalid.
-					// Returning false prevents the user from leaving the ldap configuration.
-					return false;
-				}
-			}
-
-			return true;
-		} );
-
 		// Remove the <li>Wah</li>
-		ssPage.selectLdapConfigurationByIndex( 0, false );
+		ssPage.selectLdapConfigurationByIndex( 0 );
 		jQuery("#ulDiv > ul").tabs("remove", 0);
 		
 		// Did an error happen while doing an ldap sync?
