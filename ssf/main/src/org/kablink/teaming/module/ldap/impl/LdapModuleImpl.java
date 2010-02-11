@@ -65,6 +65,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
+import org.dom4j.Document;
 import org.hibernate.SessionFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -95,6 +96,7 @@ import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.search.IndexSynchronizationManager;
+import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.CollectionUtil;
@@ -103,9 +105,11 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
+import org.kablink.util.search.Constants;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -131,9 +135,25 @@ import org.springframework.transaction.support.TransactionTemplate;
  */
 public class LdapModuleImpl extends CommonDependencyInjection implements LdapModule {
 	protected Log logger = LogFactory.getLog(getClass());
-	protected String [] principalAttrs = new String[]{ObjectKeys.FIELD_PRINCIPAL_NAME, ObjectKeys.FIELD_ID, ObjectKeys.FIELD_PRINCIPAL_DISABLED, 
-			ObjectKeys.FIELD_INTERNALID, ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME};
+	
+	protected String [] principalAttrs = new String[]{
+												ObjectKeys.FIELD_PRINCIPAL_NAME,
+												ObjectKeys.FIELD_ID,
+												ObjectKeys.FIELD_PRINCIPAL_DISABLED, 
+												ObjectKeys.FIELD_INTERNALID,
+												ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME,
+												ObjectKeys.FIELD_PRINCIPAL_LDAPGUID};
 
+	// The following constants are indexes into the array of Teaming attribute values
+	// that are returned from the loadObjects() call.  The value of these constants
+	// match the order of the attribute names found in principalAttrs.
+	private static final int PRINCIPAL_NAME = 0;
+	private static final int PRINCIPAL_ID = 1;
+	private static final int PRINCIPAL_DISABLED = 2;
+	private static final int PRINCIPAL_INTERNALID = 3;
+	private static final int PRINCIPAL_FOREIGN_NAME = 4;
+	private static final int PRINCIPAL_LDAP_GUID = 5;
+	
 	protected static final String[] sample = new String[0];
 	HashMap defaultProps = new HashMap(); 
 	protected HashMap zones = new HashMap();
@@ -258,6 +278,27 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     	zones.put(zoneName, zone);
     	return zone;
     }
+    
+    /**
+     * For the given name, find the Teaming id.
+     */
+    public Long getTeamingId(
+    	String name,
+		Map<String, Object[]> userMap )	// Key is the user name and value is an array of Teaming attribute values.
+    {
+    	Object[] attributeValues;
+    	Long id = null;
+    	
+    	// Does this user exist in Teaming?
+    	attributeValues = userMap.get( name );
+    	if ( attributeValues != null )
+    	{
+    		// Yes, get the users Teaming id.
+    		id = (Long) attributeValues[PRINCIPAL_ID]; 
+    	}
+    	
+      	return id;
+    }// end getTeamingId()
 
     
     /**
@@ -268,7 +309,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * This method should be called whenever the user changes the the name of the ldap attribute
      * that holds the guid (in the ldap configuration).
      */
-    public void syncGuidAttributeForAllUsers( LdapConnectionConfig ldapConfig, LdapContext ldapContext, LdapSyncResults syncResults ) throws LdapSyncException
+    public void syncGuidAttributeForAllUsers(
+    	LdapConnectionConfig ldapConfig,
+    	LdapContext ldapContext,
+		Map<String, Object[]> userMap,	// Key is the user name and value is an array of Teaming attribute values.
+    	LdapSyncResults syncResults ) throws LdapSyncException
     {
 		Workspace zone;
 		Long zoneId;
@@ -317,6 +362,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						String fixedUpUserName;
 						String guid;
 						String teamingName;
+						Long teamingId;
 						Attributes lAttrs = null;
 						Attribute attrib;
 						Binding binding;
@@ -363,32 +409,29 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							continue;
 						}
 						
-						guid = null;
-	
 						// Do we have an ldap guid attribute?
-						if ( ldapGuidAttribute != null )
-						{
-							guid = getLdapGuidBase64Encoded( lAttrs, ldapGuidAttribute );
-						}
-	
+						// Get the user's teaming id
+						teamingId = getTeamingId( teamingName, userMap );
+						
 						// Does this user exist in Teaming.
-						try
+						if ( teamingId != null )
 						{
-							Principal principal;
 							Map userMods;
 							
-							principal = profileDao.findPrincipalByName( teamingName, zoneId );
-	
+							// Yes
+							// Base64 encode the guid we read from the ldap directory.
+							guid = null;
+							if ( ldapGuidAttribute != null )
+							{
+								guid = getLdapGuidBase64Encoded( lAttrs, ldapGuidAttribute );
+							}
+
 							// Create the map that will hold the attributes we want updated in the Teaming db.
 							userMods = new HashMap();
 							userMods.put( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID, guid );
 							
 							// Add this user to our list of users that need to be updated.
-							usersToUpdate.put( principal.getId(), userMods );
-						}
-						catch (NoPrincipalByTheNameException ex)
-						{
-							// Nothing to do, this just means the user doesn't exist.
+							usersToUpdate.put( teamingId, userMods );
 						}
 					}// end while()
 				}// end try
@@ -552,9 +595,43 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		Workspace zone;
 		Long zoneId;
 		List<LdapConnectionConfig> ldapConnectionConfigs;
+		List userList;
+		Map<String, Object[]> userMap;
+		ObjectControls objCtrls;
+		FilterControls filterCtrls;
+		int i;
 		
 		zone = RequestContextHolder.getRequestContext().getZone();
 		zoneId = zone.getId();
+
+		// Get the list of users in this zone that are not deleted
+		objCtrls = new ObjectControls( User.class, principalAttrs );
+		filterCtrls = new FilterControls( ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE );
+		userList = coreDao.loadObjects( objCtrls, filterCtrls, zoneId ); 
+				
+		// userList is a list of arrays where each array holds the values of some
+		// of the user's Teaming attributes.  Create a map where the key is the
+		// user's name and the value is the array of Teaming attributes.
+		userMap = new TreeMap( String.CASE_INSENSITIVE_ORDER );
+		for (i = 0; i < userList.size(); ++i)
+		{
+			Object[] attributeValues;
+
+			attributeValues = (Object[]) userList.get( i );
+			
+			// If this user is not disabled and is not one of the system users, add the
+			// user to the map.
+			if ( ((Boolean)attributeValues[PRINCIPAL_DISABLED] == Boolean.FALSE) && (Validator.isNull( (String)attributeValues[this.PRINCIPAL_INTERNALID])) )
+			{
+				String name;
+
+				// Get the user's name.
+				name = (String)attributeValues[PRINCIPAL_NAME];
+				
+				// Map the name to the array of attribute values.
+				userMap.put( name, attributeValues );
+			}
+		}// end for()			
 
 		// Get the list of ldap configurations.
 		ldapConnectionConfigs = getCoreDao().loadLdapConnectionConfigs( zoneId );
@@ -573,7 +650,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				ldapContext = getContext( zoneId, nextLdapConfig, false );
 				
 				// Sync the guid attributes for all users.
-				syncGuidAttributeForAllUsers( nextLdapConfig, ldapContext, syncResults );
+				syncGuidAttributeForAllUsers( nextLdapConfig, ldapContext, userMap, syncResults );
 				
 				// Sync the guid attribute for all groups.
 				syncGuidAttributeForAllGroups( nextLdapConfig, ldapContext, syncResults );
@@ -672,7 +749,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * This routine alters group membership without updating the local caches.
 	 * Need to flush cache after use
 	 */
-	public void syncAll( LdapSyncResults syncResults ) throws LdapSyncException {
+	public void syncAll(
+		boolean syncUsersAndGroups,
+		boolean syncGuids,
+		LdapSyncResults syncResults ) throws LdapSyncException
+	{
+		// Sync guids if called for.
+		if ( syncGuids == true )
+			syncGuidAttributeForAllUsersAndGroups( syncResults );
+		
+		// If we don't need to sync users and groups then bail.
+		if ( syncUsersAndGroups == false )
+			return;
+		
 		Workspace zone = RequestContextHolder.getRequestContext().getZone();
 		LdapSchedule info = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
     	UserCoordinator userCoordinator = new UserCoordinator(zone,info.isUserSync(),info.isUserRegister(),

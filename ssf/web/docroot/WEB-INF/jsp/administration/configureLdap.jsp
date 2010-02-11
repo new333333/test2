@@ -96,11 +96,15 @@
 						<td>
 							<!-- This hidden input is used to store a unique id used to identify the sync results. -->
 							<input id="ldapSyncResultsId" name="ldapSyncResultsId" type="hidden" value="" />
+
+							<!-- This hidden input is used to store the flag that indicates whether to sync guids. -->
+							<input id="syncGuids" name="syncGuids" type="hidden" value="false" />
 			
 							<input type="checkbox" id="runnow" name="runnow"
 							<c:if test="${runnow}"> checked="checked" </c:if> /> <label
 							for="runnow"><span class="ss_labelRight ss_normal"><ssf:nlt
 							tag="ldap.schedule.now" /></span><br />
+
 						</label></td>
 					</tr>
 				</table>
@@ -807,7 +811,7 @@ function showSyncResultsDlg()
 /**
  * Issue an ajax request to start the ldap sync.
  */
-function startLdapSync()
+function startLdapSync( syncAllUsersAndGroups, syncGuids )
 {
 	var input;
 	var id;
@@ -838,6 +842,8 @@ function startLdapSync()
 	obj = new Object();
 	obj.operation = 'startLdapSync'
 	obj.ldapSyncResultsId = id;
+	obj.syncUsersAndGroups = syncAllUsersAndGroups;
+	obj.syncGuids = syncGuids;
 
 	// Build the url used in the ajax request.
 	url = ss_buildAdapterUrl( ss_AjaxBaseUrl, obj );
@@ -940,11 +946,13 @@ ssPage = {
 	m_isBaseDnValid : true,
 	m_baseDnCtrl : null,
 	m_idOfInvalidConfiguration : null,
+	m_ldapGuidAttributeNameChanged : false,
+	m_origLdapGuidAttributeNames : new Array(),
 	nextId : 1,
 	currentTab : 0,
 	defaultUserFilter: "${ssDefaultUserFilter}",
 	defaultGroupFilter: "${ssDefaultGroupFilter}",
-	
+
 	createBindings : function($container)
 	{
 		jQuery(".ldapUrl", $container).change(function() {
@@ -1037,6 +1045,9 @@ ssPage = {
 			funkyDiv = document.getElementById( 'funkyDiv2' );
 			funkyDiv.appendChild( fldset );
 		}
+
+		// Remember the original name of the ldap guid attribute.
+		ssPage.rememberLdapGuidAttributeName( id, ldapGuidAttribute );
 		
 		ssPage.createBindings($pane);
 		$pane.show();
@@ -1044,6 +1055,26 @@ ssPage = {
 	},
 
 
+	/**
+	 * Remember the original name of the ldap guid attribute for the given ldap configuration.
+	 */
+	rememberLdapGuidAttributeName : function( ldapConfigId, name )
+	{
+		// Save away the name using the ldap config id as the index into the associative array.
+		ssPage.m_origLdapGuidAttributeNames[ldapConfigId] = name;
+	},// end rememberLdapGuidAttributeName()
+	
+	
+	/**
+	 * Get the original name of the ldap guid attribute for the given ldap configuration.
+	 */
+	getOriginalLdapGuidAttributeName : function( ldapConfigId )
+	{
+		// The names are stored in an associative array with the config id as the index into the array.
+		return ssPage.m_origLdapGuidAttributeNames[ldapConfigId];
+	},// end getOriginalLdapGuidAttributeName()
+	
+	
 	/**
 	 * Find all base dns in all ldap configurations and make sure the user has entered something for the base dn.
 	 */
@@ -1206,7 +1237,66 @@ jQuery(document).ready(function() {
 			// If we get here it means that a base dn was empty.  validateAllLdapConfigurations() will tell the user about the problem.
 			return false;
 		}
-		
+
+		// Go through each ldap configuration and check to see if the name of the
+		// ldap guid attribute has changed.  If it has changed
+		// ssPage.m_ldapGuidAttributeNameChanged will be set to true
+		ssPage.m_ldapGuidAttributeNameChanged = false;
+		jQuery('#funkyDiv .ldapConfig').each(function()
+		{
+			var $this = jQuery( this );
+			var id;
+			var origName;
+			var newName;
+
+			// If we have already determined that the name of the ldap guid attribute changed
+			// then we can just return.
+			if ( ssPage.m_ldapGuidAttributeNameChanged == true )
+				return;
+			
+			// Get the id of this ldap configuration.
+			id = $this.attr("id");
+
+			// Get the original name of the ldap guid attribute.
+			origName = ssPage.getOriginalLdapGuidAttributeName( id );
+
+			// Get the new name of the ldap guid attribute.
+			newName = $this.find( '.ldapGuidAttribute' ).val();
+
+			// Did the name change?
+			if ( origName == null || origName.length == 0 )
+			{
+				if ( newName != null && newName.length > 0 )
+					ssPage.m_ldapGuidAttributeNameChanged = true;
+			}
+			else
+			{
+				if ( origName != newName )
+					ssPage.m_ldapGuidAttributeNameChanged = true;
+			}
+		});
+
+		// Did the ldap guid change?
+		if ( ssPage.m_ldapGuidAttributeNameChanged )
+		{
+			var input;
+			
+			// Yes
+			// Did the user check the 'Run Immediately' checkbox.
+			input = document.getElementById( 'runnow' );
+			if ( input.checked == false )
+			{
+				var msg;
+				
+				// Tell the user we need to sync the ldap guid because the ldap guid attribute name changed.
+				msg = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.syncGuids.Msg"/></ssf:escapeJavaScript>';
+				alert( msg );
+			}
+				
+			input = document.getElementById( 'syncGuids' );
+			input.value = 'true';
+		}
+
 		var wrapWithCDATA = function( str )
 		{
 			var		newStr;
@@ -1360,8 +1450,17 @@ jQuery(document).ready(function() {
 		// Are we supposed to start an ldap sync?
 		<c:if test="${!empty startLdapSync}">
 			// Yes
+			var syncAllUsersAndGroups = false;
+			var syncGuids = false;
+			
+			if ( '${syncAllUsersAndGroups}' == 'true' )
+				syncAllUsersAndGroups = true;
+
+			if ( '${syncGuids}' == 'true' )
+				syncGuids = true;
+			
 			// Start an ldap sync.
-			startLdapSync();
+			startLdapSync( syncAllUsersAndGroups, syncGuids );
 		</c:if>
 	});
 </script>
