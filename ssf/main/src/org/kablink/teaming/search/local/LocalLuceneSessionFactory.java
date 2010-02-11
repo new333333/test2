@@ -38,9 +38,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.lucene.LuceneHelper;
 import org.kablink.teaming.search.AbstractLuceneSessionFactory;
-import org.kablink.teaming.search.LuceneException;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.LuceneSession;
 import org.kablink.teaming.search.LuceneWriteSession;

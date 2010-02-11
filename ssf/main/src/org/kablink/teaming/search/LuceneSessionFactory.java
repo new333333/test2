@@ -34,6 +34,8 @@ package org.kablink.teaming.search;
 
 import java.util.Map;
 
+import org.kablink.teaming.lucene.LuceneException;
+
 /**
  * Creates <code>LuceneSession</code>s.
  * <p>

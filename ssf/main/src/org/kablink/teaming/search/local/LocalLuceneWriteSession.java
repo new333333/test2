@@ -32,401 +32,50 @@
  */
 package org.kablink.teaming.search.local;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-import org.kablink.teaming.lucene.ChineseAnalyzer;
-import org.kablink.teaming.lucene.LanguageTaster;
-import org.kablink.teaming.lucene.LuceneHelper;
-import org.kablink.teaming.lucene.SsfIndexAnalyzer;
-import org.kablink.teaming.search.LuceneException;
+import org.kablink.teaming.lucene.LuceneException;
+import org.kablink.teaming.lucene.LuceneProvider;
 import org.kablink.teaming.search.LuceneWriteSession;
-import org.kablink.teaming.util.ReflectHelper;
-import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.SimpleProfiler;
-import org.kablink.util.Validator;
-import org.kablink.util.search.Constants;
 
+public class LocalLuceneWriteSession implements LuceneWriteSession {
 
-public class LocalLuceneWriteSession extends LocalLuceneSession implements LuceneWriteSession {
-
-	private static final Log logger = LogFactory.getLog(LocalLuceneWriteSession.class);
-	
-	private static boolean debugEnabled = logger.isDebugEnabled();
+	private LuceneProvider luceneProvider;
 
 	public LocalLuceneWriteSession(String indexPath) {
-		this.indexPath = indexPath;		
+		luceneProvider = new LuceneProvider(indexPath);
 	}
 
 	public void addDocuments(ArrayList docs) {
-		SimpleProfiler.startProfiler("LocalLuceneSession.addDocuments");
-
-		IndexWriter indexWriter;
-		long startTime = System.currentTimeMillis();
-		//Runtime rt = Runtime.getRuntime();
-		//rt.gc();
-     	//rt.gc();
-    	//System.out.println("adddoc START Heap size( " + docs.size() + " docs): " + (rt.totalMemory() - rt.freeMemory()));
-
-		// block until updateDocs is completed
-		synchronized (getRWLockObject()) {
-			indexWriter = null;
-			
-			try {
-				indexWriter = LuceneHelper.getWriter(indexPath);
-			} catch (IOException e) {
-				throw new LuceneException(
-						"Could not open writer on the index [" + this.indexPath
-								+ "]", e);
-			}
-
-			try {
-				for (Iterator iter = docs.iterator(); iter.hasNext();) {
-					Document doc = (Document) iter.next();
-					if (doc.getField(Constants.UID_FIELD) == null)
-						throw new IllegalArgumentException(
-								"Document must contain a UID with field name "
-										+ Constants.UID_FIELD);
-					String tastingText = getTastingText(doc);
-					try {
-						SimpleProfiler.startProfiler("LocalLuceneSession.single_document");
-						indexWriter.addDocument(doc, getAnalyzer(tastingText));
-					} finally {
-						SimpleProfiler.stopProfiler("LocalLuceneSession.single_document");
-					}
-				}
-			} catch (IOException e) {
-				throw new LuceneException(
-						"Could not add document to the index [" + indexPath
-								+ "]", e);
-			} finally {
-				try {
-					indexWriter.flush();
-				} catch (Exception e) {
-					logger.warn(e);
-				}
-
-				/* 
-				 try {
-					indexWriter.close();
-				} catch (IOException e) {
-				}
-				*/
-			}
-		}
-
-		long endTime = System.currentTimeMillis();
-		if(debugEnabled)
-			logger.debug("LocalLucene: addDocuments took: " + (endTime - startTime) + " milliseconds");
-
-		SimpleProfiler.stopProfiler("LocalLuceneSession.addDocuments");
-		//rt.gc();
-     	//rt.gc();
-    	//System.out.println("adddoc END Heap size: " + (rt.totalMemory() - rt.freeMemory()));
+		luceneProvider.addDocuments(docs);
 	}
 
 	public void deleteDocuments(Term term) {
-		SimpleProfiler.startProfiler("LocalLuceneSession.deleteDocuments(Term)");
-		IndexWriter indexWriter;
-
-		long startTime = System.currentTimeMillis();
-
-		// block until updateDocs is completed
-		synchronized (getRWLockObject()) {
-			indexWriter = null;
-
-			try {
-				indexWriter = LuceneHelper.getWriter(indexPath); 
-			} catch (IOException e) {
-				throw new LuceneException(
-						"Could not open writer on the index [" + this.indexPath
-								+ "]", e);
-			}
-
-			try {
-				indexWriter.deleteDocuments(term);
-			} catch (IOException e) {
-				throw new LuceneException(
-						"Could not delete documents from the index ["
-								+ indexPath + "]", e);
-			} finally {
-				try {
-					indexWriter.flush();
-				} catch (Exception e) {
-					logger.warn(e);
-				}
-				/*
-				try {
-					indexReader.close();
-				} catch (IOException e) {
-				}
-				*/
-			}
-		}
-
-		long endTime = System.currentTimeMillis();
-		if(debugEnabled)
-			logger.debug("LocalLucene: deleteDocuments(term) took: " + (endTime - startTime) + " milliseconds");
-
-		SimpleProfiler.stopProfiler("LocalLuceneSession.deleteDocuments(Term)");
-
+		luceneProvider.deleteDocuments(term);
 	}
 
 	public void flush() {
-		// Because Liferay's Lucene functions (on which this implementation
-		// is based) are atomic in that it flushes out after each operation,
-		// there is no separate flush to perform. Nothing to do.
+		luceneProvider.flush();
 	}
 
 	public void optimize() {
-		long startTime = System.currentTimeMillis();
-
-		IndexWriter indexWriter = null;
-		try {
-			indexWriter = LuceneHelper.getWriterForOptimize(indexPath);
-		} catch (IOException e) {
-			throw new LuceneException("Could not open writer on the index ["
-					+ this.indexPath + "]", e);
-		}
-
-		try {
-			indexWriter.optimize();
-		} catch (IOException e) {
-			throw new LuceneException("Could not add document to the index ["
-					+ indexPath + "]", e);
-		} finally {
-			/*
-			try {
-				indexWriter.close();
-			} catch (IOException e) {
-			}
-			*/
-		}
-		long endTime = System.currentTimeMillis();
-		if(debugEnabled)
-			logger.debug("LocalLucene: optimize took: " + (endTime - startTime) + " milliseconds");
+		luceneProvider.optimize();
 	}
 		
-	/**
-	 * Clear the index, only used at Zone creation
-	 * 
-	 * @return
-	 * @throws LuceneException
-	 */
 	public void clearIndex() {
-		long startTime = System.currentTimeMillis();
-
-		LuceneHelper.closeAll(indexPath);
-		
-		try {
-			LuceneHelper.getWriter(indexPath, true, false);
-		} catch (IOException e) {
-			throw new LuceneException(
-					"Could not open writer on the index [" + this.indexPath
-							+ "]", e);
-		}
-		/*
-		try {
-			indexWriter.close();
-		} catch (Exception e) {}
-		*/
-		long endTime = System.currentTimeMillis();
-		if(debugEnabled)
-			logger.debug("LocalLucene: clearIndex took: " + (endTime - startTime) + " milliseconds");
-	}
-
-	private String getTastingText(Document doc) {
-		String text = "";
-		Field allText = doc.getField(Constants.ALL_TEXT_FIELD);
-		if (allText != null) 
-			text = allText.stringValue();
-		if (text.length() == 0) {
-			Field title = doc.getField(Constants.TITLE_FIELD);
-			if (title != null) 
-				text = title.stringValue();
-		}
-		if (text.length()> 1024) 
-			return text.substring(0,1024);
-		else return text;
-	}
-	
-	public static Analyzer getAnalyzer(String snippet) {
-		// pass the snippet to the language taster and see which
-		// analyzer to use
-		String language = LanguageTaster.taste(snippet.toCharArray());
-		if (language.equalsIgnoreCase(LanguageTaster.DEFAULT)) {
-			return defaultAnalyzer;
-		} else if (language.equalsIgnoreCase(LanguageTaster.CJK)) {
-			PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(new SsfIndexAnalyzer());
-			retAnalyzer.addAnalyzer(Constants.ALL_TEXT_FIELD, new ChineseAnalyzer());
-			retAnalyzer.addAnalyzer(Constants.DESC_FIELD, new ChineseAnalyzer());
-			retAnalyzer.addAnalyzer(Constants.TITLE_FIELD, new ChineseAnalyzer());
-			return retAnalyzer;
-		} else if (language.equalsIgnoreCase(LanguageTaster.HEBREW)) {
-			// return new HEBREWAnalyzer;
-			Analyzer analyzer = defaultAnalyzer;
-			String aName = SPropsUtil.getString("lucene.hebrew.analyzer", "");
-			if (!aName.equalsIgnoreCase("")) {
-				// load the hebrew analyzer here
-				try {
-					Class hebrewClass = ReflectHelper.classForName(aName);
-					analyzer = (Analyzer) hebrewClass.newInstance();
-				} catch (Exception e) {
-					logger.error("Could not initialize hebrew analyzer class: "
-							+ e.toString());
-				}
-			}
-			return analyzer;
-		} else {
-			// return new ARABICAnalyzer;
-			Analyzer analyzer = defaultAnalyzer;
-			String aName = SPropsUtil.getString("lucene.arabic.analyzer", "");
-			if (!aName.equalsIgnoreCase("")) {
-				// load the arabic analyzer here
-				try {
-					Class arabicClass = ReflectHelper.classForName(aName);
-					analyzer = (Analyzer) arabicClass.newInstance();
-				} catch (Exception e) {
-					logger.error("Could not initialize arabic analyzer class: "
-							+ e.toString());
-				}
-			}
-			return analyzer;
-		}
+		luceneProvider.clearIndex();
 	}
 	
 	public void backup() {
-		IndexWriter indexWriter = null;
-		String backupDir = indexPath;
-		
-		String bDir = SPropsUtil.getString("lucene.server.backup.dir","");
-		if (!bDir.equalsIgnoreCase("")) {
-			backupDir = bDir;
-		}
-		
-		synchronized (getRWLockObject()) {
-			LuceneHelper.closeAll(indexPath);
-			// create a name for the copy directory
-			SimpleDateFormat formatter =
-			new SimpleDateFormat (".yyyy.MM.dd.HH.mm.ss");
-			Date currentTime = new Date();
-			String dateString = formatter.format(currentTime);
-			String indexCopyPath = backupDir + dateString;
-			// merge to that dir
-			try {
-				indexWriter = new IndexWriter(indexCopyPath, new SsfIndexAnalyzer(),
-						true);
-			} catch (Exception ie) {
-				if (debugEnabled)
-					logger.debug(ie);
-				return;
-			}
-			indexWriter.setUseCompoundFile(false);
-			try {
-				indexWriter.addIndexes(new Directory[] { LuceneHelper.getFSDirectory(indexPath)});
-				indexWriter.close();
-			} catch (Exception ie) {
-				if (debugEnabled)
-					logger.debug(ie);	
-			} finally {
-				try {
-					indexWriter.close();
-				} catch (Exception e) {
-					if (debugEnabled) {
-						logger.debug(e);
-					}
-				}
-			}
-		}
+		luceneProvider.backup();
 	}
 
 	public void addDeleteDocuments(ArrayList docsToAddOrDelete) throws LuceneException {
-		SimpleProfiler.startProfiler("LocalLuceneSession.addDeleteDocuments");
-
-		IndexWriter indexWriter;
-		long startTime = System.currentTimeMillis();
-		//Runtime rt = Runtime.getRuntime();
-		//rt.gc();
-     	//rt.gc();
-    	//System.out.println("adddoc START Heap size( " + docs.size() + " docs): " + (rt.totalMemory() - rt.freeMemory()));
-
-		// block until updateDocs is completed
-		synchronized (getRWLockObject()) {
-			indexWriter = null;
-			
-			try {
-				indexWriter = LuceneHelper.getWriter(indexPath);
-			} catch (IOException e) {
-				throw new LuceneException(
-						"Could not open writer on the index [" + this.indexPath
-								+ "]", e);
-			}
-
-			try {
-				for(Object obj : docsToAddOrDelete) {
-					if(obj instanceof Document) {
-						Document doc = (Document) obj;
-						if (doc.getField(Constants.UID_FIELD) == null)
-							throw new IllegalArgumentException(
-									"Document must contain a UID with field name "
-											+ Constants.UID_FIELD);
-						String tastingText = getTastingText(doc);
-						try {
-							SimpleProfiler.startProfiler("LocalLuceneSession.single_add");
-							indexWriter.addDocument(doc, getAnalyzer(tastingText));
-						} finally {
-							SimpleProfiler.stopProfiler("LocalLuceneSession.single_add");
-						}						
-					}
-					else if(obj instanceof Term) {
-						indexWriter.deleteDocuments((Term) obj);
-					}
-					else {
-						throw new IllegalArgumentException("Invalid object type for indexing: " + obj.getClass().getName());
-					}
-				}
-			} catch (IOException e) {
-				throw new LuceneException(
-						"Could not add document to the index [" + indexPath
-								+ "]", e);
-			} finally {
-				try {
-					indexWriter.flush();
-				} catch (Exception e) {
-					logger.warn(e);
-				}
-
-				/* 
-				 try {
-					indexWriter.close();
-				} catch (IOException e) {
-				}
-				*/
-			}
-		}
-
-		long endTime = System.currentTimeMillis();
-		if(debugEnabled)
-			logger.debug("LocalLucene: addDeleteDocuments took: " + (endTime - startTime) + " milliseconds");
-
-		SimpleProfiler.stopProfiler("LocalLuceneSession.addDeleteDocuments");
-		//rt.gc();
-     	//rt.gc();
-    	//System.out.println("adddoc END Heap size: " + (rt.totalMemory() - rt.freeMemory()));	
+		luceneProvider.addDeleteDocuments(docsToAddOrDelete);
 	}
 
+	public void close() {
+		// Nothing to do
+	}
 }
