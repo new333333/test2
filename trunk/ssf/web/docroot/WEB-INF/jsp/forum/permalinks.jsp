@@ -51,7 +51,8 @@
     </td>
   </tr>
 
-  <c:if test="${!empty ssSimpleUrlNames}">
+  <c:if test="${!empty ssBinder && ssBinder.entityType == 'folder'}">
+   <c:if test="${!empty ssSimpleUrlNames}">
     <tr>
     <td valign="top" nowrap>
         <span><ssf:nlt tag="permalink.emailAddresses"/></span>
@@ -62,6 +63,7 @@
 	    </c:forEach>
       </td>
     </tr>
+   </c:if>
   </c:if>
 
   <c:if test="${!empty ss_toolbar_url_subscribe_rss}">
