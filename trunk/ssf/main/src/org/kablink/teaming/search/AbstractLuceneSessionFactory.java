@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.search;
 
+import org.kablink.teaming.lucene.LuceneException;
+
 public abstract class AbstractLuceneSessionFactory implements LuceneSessionFactory {
 
     public LuceneReadSession openReadSession() throws LuceneException {

@@ -36,6 +36,7 @@ import java.util.ArrayList;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
+import org.kablink.teaming.lucene.LuceneException;
 
 public interface LuceneWriteSession extends LuceneSession {
 	/**

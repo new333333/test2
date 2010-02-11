@@ -30,49 +30,31 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.search.local;
+package org.kablink.teaming.lucene;
 
-import java.util.HashMap;
-
-import org.apache.lucene.analysis.Analyzer;
-import org.kablink.teaming.lucene.SsfIndexAnalyzer;
-import org.kablink.teaming.search.LuceneSession;
-
-
-public abstract class LocalLuceneSession implements LuceneSession {
-	protected static Analyzer defaultAnalyzer = new SsfIndexAnalyzer();
-
-	protected static HashMap<String, Object> rwLockTable = new HashMap<String, Object>();
-	
-	protected static HashMap<String, Object> searchLockTable = new HashMap<String, Object>();
-	
-	protected String indexPath;
-	
-	public void close() {
-		// Nothing to do
-	}
-	
-	protected Object getRWLockObject() {
-		synchronized(RWLock.class) {
-			Object obj = rwLockTable.get(indexPath);
-			if (obj == null) {
-				obj = new Object();
-				rwLockTable.put(indexPath, obj);
-			}
-			return obj;
-		}
-	}
-	
-	protected Object getSearchLockObject () {
-		synchronized(SearchLock.class) {
-			Object obj = searchLockTable.get(indexPath);
-			if (obj == null) {
-				obj = new Object();
-				searchLockTable.put(indexPath, obj);
-			}
-			return obj;
-		}
-	}
+/**
+ * @author Jong Kim
+ *
+ */
+public class LuceneException extends RuntimeException {
+    public LuceneException() {
+        super();
+    }
+    public LuceneException(String message) {
+        super(message);
+    }
+    public LuceneException(String message, Throwable cause) {
+        super(message, cause);
+    }
+    public LuceneException(Throwable cause) {
+        super(cause);
+    }
+    public String toString() {
+    	if(getCause() != null) {
+    		return super.toString() + " / " + getCause().toString();
+    	}
+    	else {
+    		return super.toString();
+    	}
+    }
 }
-class RWLock {}
-class SearchLock {}

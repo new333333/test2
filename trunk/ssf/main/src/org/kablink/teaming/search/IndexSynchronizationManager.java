@@ -39,6 +39,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.kablink.teaming.SingletonViolationException;
+import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.util.search.Constants;
 
 

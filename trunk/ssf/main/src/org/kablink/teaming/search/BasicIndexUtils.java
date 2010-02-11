@@ -43,6 +43,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.web.WebKeys;
 
 import static org.kablink.util.search.Constants.*;
