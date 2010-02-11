@@ -43,11 +43,13 @@
 <%@ page import="org.kablink.teaming.domain.User" %>
 <%@ page import="org.kablink.teaming.domain.Workspace" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.web.util.MiscUtil" %>
 <%@ page import="org.kablink.teaming.web.util.PermaLinkUtil" %>
 
-<jsp:useBean id="relatedAttachments" type="java.util.Set" scope="request" />
-<jsp:useBean id="relatedUsers"       type="java.util.Set" scope="request" />
-<jsp:useBean id="relatedWorkspaces"  type="java.util.Set" scope="request" />
+<jsp:useBean id="relatedAttachments"   type="java.util.Set"    scope="request" />
+<jsp:useBean id="relatedUsers"         type="java.util.Set"    scope="request" />
+<jsp:useBean id="relatedWorkspaces"    type="java.util.Set"    scope="request" />
+<jsp:useBean id="relationshipErrorKey" type="java.lang.String" scope="request" />
 
 <%
 	int count;
@@ -121,8 +123,13 @@
 
 <c:if test="${empty relatedAttachments || empty relatedUsers || empty relatedWorkspaces}">
 {
+	<%
+		if (!(MiscUtil.hasString(relationshipErrorKey))) {
+			relationshipErrorKey = "entry.relatedDataMissing";
+		}
+	%>
 	status : 0,
-	errDesc : "<%= StringEscapeUtils.escapeJavaScript(NLT.get("entry.relatedDataMissing")) %>",
+	errDesc : "<%= StringEscapeUtils.escapeJavaScript(NLT.get(relationshipErrorKey)) %>",
 
 	relatedFiles : [],
 	relatedUsers : [],
