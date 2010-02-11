@@ -56,7 +56,7 @@ public class DefaultLdapSynchronization extends SSCronTriggerJob implements Ldap
 			throws JobExecutionException {
     	LdapModule ldap = (LdapModule)SpringContextUtil.getBean("ldapModule");
 		try {
-			ldap.syncAll( null );
+			ldap.syncAll( true, false, null );
 		} catch (LdapSyncException ldapSyncEx) {
 			NamingException	ne;
 			
