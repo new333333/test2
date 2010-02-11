@@ -732,6 +732,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 	@SuppressWarnings("unchecked")
 	private ModelAndView ajaxGetFileRelationshipsByEntry(RenderRequest request, RenderResponse response) throws Exception {
 		Map model = new HashMap();
+		String relationshipErrorKey = null;
 		
 		// Is relevance integration enabled?
 		Set<Attachment> attSet;
@@ -751,7 +752,25 @@ public class AjaxController  extends SAbstractControllerRetry {
 			// ...the Set<Attachment> of the Attachment's that are
 			// ...related to any of the Attachment's on that
 			// ...FolderEntry...
-			attSet = RelevanceUtils.getRelatedAttachments(this, fe);
+			try {
+				attSet = RelevanceUtils.getRelatedAttachments(this, fe);
+			}
+			catch (Exception e) {
+				attSet = new HashSet<Attachment>();
+				if ((e instanceof IOException) && e.getMessage().equalsIgnoreCase("In Process")) {
+					// As of the 20100128 (401) build of the relevance
+					// engine, we get this IOException if we call this
+					// too soon after adding files.  It seems that
+					// while the relevance engine is busy processing
+					// files, it can't handle requests for file
+					// relationships.
+					re.getRelevanceLogger().debug("AjaxController.ajaxGetFileRelationshipsByEntry( EXCEPTION:  'In Process' ):  FolderEntry:  '" + fe.getTitle() + "'");				
+					relationshipErrorKey = "entry.relevanceEngineBusy";
+				}
+				else {
+					re.getRelevanceLogger().error("AjaxController.ajaxGetFileRelationshipsByEntry( EXCEPTION ):  FolderEntry:  '" + fe.getTitle() + "'", e);				
+				}
+			}
 
 			// ...and map the Set<Attachment> to their User's and
 			// ...Workspace's.
@@ -764,7 +783,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			wsSet   = null;
 		}
 		
-		buildRelationshipModel(model, attSet, userSet, wsSet);
+		buildRelationshipModel(model, attSet, userSet, wsSet, relationshipErrorKey);
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/file_relationships", model);
 	}
@@ -773,10 +792,11 @@ public class AjaxController  extends SAbstractControllerRetry {
 	 * Adds information about Attachment relationships to mode.
 	 */
 	@SuppressWarnings("unchecked")
-	private static void buildRelationshipModel(Map model, Set<Attachment> attSet, Set<User> userSet, Set<Workspace> wsSet) {
-		model.put("relatedAttachments", ((null == attSet)  ? new HashSet<Attachment>() : attSet));
-		model.put("relatedUsers",       ((null == userSet) ? new HashSet<User>()       : userSet));
-		model.put("relatedWorkspaces",  ((null == wsSet)   ? new HashSet<Workspace>()  : wsSet));
+	private static void buildRelationshipModel(Map model, Set<Attachment> attSet, Set<User> userSet, Set<Workspace> wsSet, String relationshipErrorKey) {
+		model.put("relationshipErrorKey", ((null == relationshipErrorKey) ? ""                        : relationshipErrorKey));
+		model.put("relatedAttachments",   ((null == attSet)               ? new HashSet<Attachment>() : attSet));
+		model.put("relatedUsers",         ((null == userSet)              ? new HashSet<User>()       : userSet));
+		model.put("relatedWorkspaces",    ((null == wsSet)                ? new HashSet<Workspace>()  : wsSet));
 	}
 	
 	/**
