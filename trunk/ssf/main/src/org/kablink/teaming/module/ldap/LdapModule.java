@@ -56,6 +56,6 @@ public interface LdapModule {
 	public LdapSchedule getLdapSchedule();
 	public void setLdapSchedule(LdapSchedule schedule);
 
-	public void syncAll( LdapSyncResults syncResults ) throws LdapSyncException;
+	public void syncAll( boolean syncUsersAndGroups, boolean syncGuids, LdapSyncResults syncResults ) throws LdapSyncException;
 	public void syncUser(Long userId) throws NoUserByTheNameException,NamingException;
 }

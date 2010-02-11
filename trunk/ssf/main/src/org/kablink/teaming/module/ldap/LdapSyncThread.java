@@ -57,6 +57,8 @@ public class LdapSyncThread
 	private PortletSession		m_session = null;	// The session we stored this object in.
 	private String				m_id;
 	private LdapModule			m_ldapModule;
+	private boolean			m_syncUsersAndGroups;
+	private boolean			m_syncGuids;
 	
 	/**
 	 * Create an LdapSyncThread object.
@@ -64,7 +66,9 @@ public class LdapSyncThread
 	public static LdapSyncThread createLdapSyncThread(
 		RenderRequest	request,
 		String			id,				// Create the thread using this id
-		LdapModule		ldapModule )
+		LdapModule		ldapModule,
+		boolean			syncUsersAndGroups,
+		boolean			syncGuids )
 	{
 		LdapSyncThread	ldapSyncThread;
 		PortletSession 	session;
@@ -74,7 +78,7 @@ public class LdapSyncThread
 		if( session == null )
 			return null; // unable to allocate a new LdapSyncThread object.
 	
-		ldapSyncThread = new LdapSyncThread( session, id, ldapModule );
+		ldapSyncThread = new LdapSyncThread( session, id, ldapModule, syncUsersAndGroups, syncGuids );
 		
 		// Set the priority of the thread to be the lowest.
 		ldapSyncThread.setPriority( Thread.MIN_PRIORITY );
@@ -137,7 +141,9 @@ public class LdapSyncThread
 	private LdapSyncThread(
 		PortletSession	session,
 		String			id,
-		LdapModule		ldapModule )
+		LdapModule		ldapModule,
+		boolean			syncUsersAndGroups,
+		boolean			syncGuids )
 	{
 		// Initialize this object's super class.
 		super( id );
@@ -145,6 +151,8 @@ public class LdapSyncThread
 		m_id = id;
 		m_session = session;
 		m_ldapModule = ldapModule;
+		m_syncUsersAndGroups = syncUsersAndGroups;
+		m_syncGuids = syncGuids;
 		
 		// Create an LdapSyncResults object to hold the results of the sync.
 		m_ldapSyncResults = new LdapSyncResults( id );
@@ -173,7 +181,7 @@ public class LdapSyncThread
 		try
 		{
 			// Perform the sync.
-			m_ldapModule.syncAll( syncResults );
+			m_ldapModule.syncAll( m_syncUsersAndGroups, m_syncGuids, syncResults );
 			
 			// Signal that the sync has completed.
 			syncResults.completed();

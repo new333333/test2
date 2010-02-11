@@ -70,7 +70,11 @@ public class ConfigureLdapController extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			LdapSchedule schedule = getLdapModule().getLdapSchedule();
-			if (schedule != null) {
+			if (schedule != null)
+			{
+				boolean syncGuids;
+				boolean syncAllUsersAndGroups;
+				
 				schedule.getScheduleInfo().setSchedule(ScheduleHelper.getSchedule(request, null));
 				schedule.getScheduleInfo().setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));	
 				schedule.setUserDelete(PortletRequestUtils.getBooleanParameter(request, "userDelete", false));
@@ -215,14 +219,21 @@ public class ConfigureLdapController extends  SAbstractController {
 				// Save the ldap configuration.
 				getLdapModule().setLdapSchedule(schedule);
 
-				// Did the user choose to run the ldap sync right now?
-				boolean runNow = PortletRequestUtils.getBooleanParameter(request, "runnow", false);
-				if (runNow)
+				// Does the user want to sync guids?
+				syncGuids = PortletRequestUtils.getBooleanParameter( request, "syncGuids", false );
+				
+				// Does the user want to sync all users and groups?
+				syncAllUsersAndGroups = PortletRequestUtils.getBooleanParameter(request, "runnow", false);
+				
+				// Do we need to start a sync?
+				if ( syncGuids == true || syncAllUsersAndGroups == true )
 				{
 					// Yes
 					// Pass this fact back to the page.  When the page loads it will issue an ajax
 					// request to start the sync.
 					response.setRenderParameter( "startLdapSync", "true" );
+					response.setRenderParameter( "syncAllUsersAndGroups", Boolean.toString( syncAllUsersAndGroups ) );
+					response.setRenderParameter( "syncGuids", Boolean.toString( syncGuids ) );
 				}
 			}
 		} else
@@ -250,6 +261,8 @@ public class ConfigureLdapController extends  SAbstractController {
 		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 
 		model.put( "startLdapSync", request.getParameter( "startLdapSync" ) );
+		model.put( "syncAllUsersAndGroups", request.getParameter( "syncAllUsersAndGroups" ) );
+		model.put( "syncGuids", request.getParameter( "syncGuids" ) );
 
 		model.put(WebKeys.LDAP_CONFIG, getLdapModule().getLdapSchedule());
 		model.put(WebKeys.LDAP_CONNECTION_CONFIGS, getAuthenticationModule().getLdapConnectionConfigs());
