@@ -5277,6 +5277,7 @@ function ss_showProfileImg(obj, targetImgId) {
 		if (targetImgObj != null) {
 			var url = imgObj.src
 			url = ss_replaceSubStr(url, "viewType=thumbnail", "viewType=scaled")
+			url = ss_replaceSubStr(url, "/readThumbnail/", "/readScaledFile/")
 			targetImgObj.src = url;
 		}
 	}
