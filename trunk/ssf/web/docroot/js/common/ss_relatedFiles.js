@@ -44,7 +44,7 @@ var	ENABLE_RELATED_FILES_TRACING = false;
 
 // Controls the number of entries displayed in a related items section
 // before a 'more...' item is shown.
-var RELATED_ENTRIES_PER_SECTION = 5;
+var RELATED_ENTRIES_BLOCK_SIZE = 5;
 
 
 /*
@@ -66,9 +66,9 @@ function ajaxRelatedFilesByEntry_Response(data) {
 	}
 
 	// Otherwise, construct the relevance list DIV's...
-	buildRelationshipDIV("DIV_relatedFiles",      data.relatedFiles,      RELATED_ENTRIES_PER_SECTION, "entry.relatedFiles.None"     );
-	buildRelationshipDIV("DIV_relatedWorkspaces", data.relatedWorkspaces, RELATED_ENTRIES_PER_SECTION, "entry.relatedWorkspaces.None");
-	buildRelationshipDIV("DIV_relatedUsers",      data.relatedUsers,      RELATED_ENTRIES_PER_SECTION, "entry.relatedUsers.None"     );
+	buildRelationshipDIV("DIV_relatedFiles",      data.relatedFiles,      RELATED_ENTRIES_BLOCK_SIZE, "entry.relatedFiles.None"     );
+	buildRelationshipDIV("DIV_relatedWorkspaces", data.relatedWorkspaces, RELATED_ENTRIES_BLOCK_SIZE, "entry.relatedWorkspaces.None");
+	buildRelationshipDIV("DIV_relatedUsers",      data.relatedUsers,      RELATED_ENTRIES_BLOCK_SIZE, "entry.relatedUsers.None"     );
 
 	// ...and show it.
 	positionAndShowList(
@@ -131,7 +131,17 @@ function buildRelationshipDIV(sDIV, aData, iMaxPerSection, sNoRelationshipsKey) 
 			if (iMaxPerSection == i) {
 				eA = createAWithTEXT(eInnerDIV, "#", g_relevanceStrings["entry.more"]);
 				eA.onclick = function() {
-					buildRelationshipDIV(sDIV, aData, (-1), sNoRelationshipsKey);
+					// Track the current scroll position...
+					var xy = getScrollPosition();
+					
+					// ...display 'more...' information...
+					buildRelationshipDIV(sDIV, aData, (iMaxPerSection + RELATED_ENTRIES_BLOCK_SIZE), sNoRelationshipsKey);
+
+					// ...and scroll back to the original position.
+					var eRootDIV = document.getElementById("ss_related_files");
+					if (eRootDIV.scrollIntoView)
+						 eRootDIV.scrollIntoView(false);
+					else window.scrollTo(xy.x, xy.y);
 				}
 				eInnerDIV.appendChild(eA);
 				eDIV.appendChild(eInnerDIV);
@@ -221,6 +231,22 @@ function emptyDIV(eDIV) {
 }
 
 /*
+ * Called to update the scroll position widgets on the main form with
+ * with the current scroll position values.
+ */
+function getScrollPosition()
+{
+	var	x;
+	var	y;
+
+	if (document.all)	// IE versus everything else.
+		 {x = document.body.scrollLeft; y = document.body.scrollTop;}
+	else {x = window.pageXOffset;       y = window.pageYOffset;     }
+
+	return new xyPos(x, y);
+}
+
+/*
  * Positions and shows the root relevance list DIV.
  */
 function positionAndShowList(eDIV, eRelatedAnchor) {
@@ -264,4 +290,13 @@ function traceAjaxResponse(sPre, ajaxResponse) {
 		}
 		debugTrace(sPre + ":  \n\nData:  " + traceThis);
 	}
+}
+
+/*
+ * Constructor for the xyPos object.
+ */
+function xyPos(x, y)
+{
+	this.x = x;
+	this.y = y;
 }
