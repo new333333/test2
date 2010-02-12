@@ -952,12 +952,14 @@ function ss_selectRelevanceTab(obj, type, type3, binderId, namespace) {
 		//If in accessible mode, just jump to the url directly
 		self.location.href = url;
 	} else {
-		if (type == 'profile' || type == 'overview') {
-			//Special case for the profile and overview tabs; always refresh the whole page
+		if (type == 'profile' || type == 'overview' || type == 'tasks_and_calendars') {
+			//Special case for the profile, overview and tasks_and_calendars tabs; always refresh the whole page
 			if ( type == 'profile' )
 				url = window["ss_relevanceProfileUrl"+namespace];
-			else
+			else if ( type == 'overview' )
 				url = window["ss_relevanceOverviewUrl"+namespace];
+			else
+				url = window["ss_relevanceTasksAndCalendarsUrl"+namespace];
 				
 			url = ss_replaceSubStr(url, "ss_typePlaceHolder", type);
 			url = ss_replaceSubStr(url, "ss_type3PlaceHolder", type3);
