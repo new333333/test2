@@ -34,13 +34,15 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <ssf:ifadapter>
-<body onLoad="ss_positionWindow();" class="tundra">
+<body class="tundra">
 <script type="text/javascript">
 var ss_scrollHeightFudge = 60
 function ss_positionWindow() {
     var entryHeight = parseInt(self.document.body.scrollHeight) + ss_scrollHeightFudge
     window.innerHeight = entryHeight;
 }
+ss_createOnLoadObj("ss_positionWindow", ss_positionWindow);
+ss_createOnResizeObj("ss_setEditableSize", ss_setEditableSize);
 </script>
 </ssf:ifadapter>
 

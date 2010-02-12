@@ -5771,6 +5771,10 @@ function ss_editablePopUp(url, sourceDivId, sectionNumber) {
 	if (height < ss_minEditHeight) height = ss_minEditHeight;
 	if (width > parseInt(screen.width - ss_editScreenWidthOfset)) width = parseInt(screen.width - ss_editScreenWidthOfset)
 	if (height > parseInt(screen.height - ss_editScreenHeightOfset)) height = parseInt(screen.height - ss_editScreenHeightOfset)
+	var cookieWidth = ss_getCookie("ss_editableWidth");
+	var cookieHeight = ss_getCookie("ss_editableHeight");
+	if (cookieWidth != null && parseInt(cookieWidth) > width) width = parseInt(cookieWidth);
+	if (cookieHeight != null && parseInt(cookieHeight) > width) width = parseInt(cookieHeight);
 	if (typeof sectionNumber != "undefined") {
 		url = ss_replaceSubStr(url, "ss_sectionPlaceholder", sectionNumber);
 	} else {
@@ -5787,6 +5791,10 @@ function ss_editableHighlight(overOut, obj, divId) {
 	}
 }
 
+function ss_setEditableSize() {
+	ss_setCookie("ss_editableWidth", ss_getWindowWidth());
+	ss_setCookie("ss_editableHeight", ss_getWindowHeight());
+}
 
 function ss_submitParentForm(htmlObj) {
 	if (htmlObj.submit) {
@@ -8447,7 +8455,34 @@ function ss_unpack(s) {
    
 	return list;
 }
-   
+
+function ss_setCookie ( name, value, exp_y, exp_m, exp_d, path, domain, secure ) {
+	var cookie_string = name + "=" + escape ( value );
+
+	if ( exp_y ) {
+		var expires = new Date ( exp_y, exp_m, exp_d );
+		cookie_string += "; expires=" + expires.toGMTString();
+	}
+	if ( path )
+		cookie_string += "; path=" + escape ( path );
+	if ( domain )
+		cookie_string += "; domain=" + escape ( domain );  
+	if ( secure )
+		cookie_string += "; secure";  
+	document.cookie = cookie_string;
+}
+function ss_deleteCookie ( cookie_name ) {
+	var cookie_date = new Date ( );  // current date & time
+	cookie_date.setTime ( cookie_date.getTime() - 1 );
+	document.cookie = cookie_name += "=; expires=" + cookie_date.toGMTString();
+}
+function ss_getCookie ( cookie_name ) {
+	var results = document.cookie.match ( '(^|;) ?' + cookie_name + '=([^;]*)(;|$)' );
+	if ( results )
+		return ( unescape ( results[2] ) );
+	else
+		return null;
+}
 dojo.require("dijit.dijit");
 dojo.require("dojo.fx");
 dojo.require("dojo.io.iframe");

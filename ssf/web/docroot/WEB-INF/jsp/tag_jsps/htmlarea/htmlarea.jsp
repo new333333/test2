@@ -125,7 +125,7 @@ tinyMCE.init(
   theme_advanced_path: false,
   theme_advanced_buttons3_add: "tablecontrols", 
   theme_advanced_disable : "image,advimage",
-  theme_advanced_resizing_use_cookie : false});
+  theme_advanced_resizing_use_cookie : true});
 
 tinyMCE.addI18n('${ssUser.locale.language}.ss_addimage_dlg',{
 overQuota : "${ss_quotaMessage} ",
