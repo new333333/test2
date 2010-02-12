@@ -711,6 +711,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	
 			for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches()) {
 				try {
+					String[] attributesToRead;
+					Attributes lAttrs;
+
 					int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
 					SearchControls sch = new SearchControls(scope, 1, 0, userAttributeNames, false, false);
 		
@@ -724,7 +727,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						continue;
 					}
 					Binding bd = (Binding)ctxSearch.next();
-					getUpdates( userAttributeNames, userAttributes,  ctx.getAttributes(bd.getNameInNamespace()), mods, config.getLdapGuidAttribute() );
+
+					// Get the list of the ldap attribute names we want read from the ldap directory.
+					attributesToRead = getAttributeNamesToRead( userAttributeNames, config );
+					
+					lAttrs = ctx.getAttributes( bd.getNameInNamespace(), attributesToRead );
+					
+					getUpdates( userAttributeNames, userAttributes, lAttrs, mods, config.getLdapGuidAttribute() );
+					
 					if (bd.isRelative() && Validator.isNotNull(ctx.getNameInNamespace())) {
 						dn = bd.getNameInNamespace() + "," + ctx.getNameInNamespace();
 					} else {
@@ -1249,51 +1259,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		}
 		
-		/**
-		 * Return the list of attribute names we need to read from the ldap directory.  We get the list of
-		 * attributes to read from the ldap configuration that maps ldap attribute names to Teaming ids.
-		 */
-		public String[] getAttributeNamesToRead( LdapConnectionConfig ldapConnectionConfig )
-		{
-			String[] attributeNames = null;
-			
-			// this.userAttributeNames holds the list of ldap attribute names that are
-			// found in the ldap configuration mapping.
-			
-			if ( this.userAttributeNames != null )
-			{
-				int i;
-				String attrName;
-				
-				// Create an array large enough to hold all the ldap attribute names found
-				// in the mapping plus the name of the attribute that uniquely identifies
-				// a user plus the ldap attribute that identifies a user.
-				attributeNames = new String[this.userAttributeNames.length + 2];
-				
-				for (i = 0; i < this.userAttributeNames.length; ++i)
-				{
-					attributeNames[i] = this.userAttributeNames[i];
-				}
-
-				// Add the ldap attribute that is used to identify the user.
-				attrName = ldapConnectionConfig.getUserIdAttribute();
-				if ( attrName != null && attrName.length() > 0 )
-				{
-					attributeNames[i] = attrName; 
-					++i;
-				}
-				
-				// Add the name of the ldap guid attribute to the list of ldap attributes to read.
-				attrName = ldapConnectionConfig.getLdapGuidAttribute();
-				if ( attrName != null && attrName.length() > 0 )
-				{
-					attributeNames[i] = attrName;
-					++i;
-				}
-			}
-			
-			return attributeNames;
-		}// end getAttributeNamesToRead()
 	}// end UserCoordinator
 	
 	protected void syncUsers(Binder zone, LdapContext ctx, LdapConnectionConfig config, UserCoordinator userCoordinator) 
@@ -1308,7 +1273,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		userCoordinator.setAttributes(userAttributes);
 
 		// Get a list of the names of the attributes we want to read from the ldap directory for each user.
-		attributesToRead = userCoordinator.getAttributeNamesToRead( config );
+		attributesToRead = getAttributeNamesToRead( userCoordinator.userAttributeNames, config );
 
 		Set la = new HashSet(userAttributes.keySet());
 		String userIdAttribute = config.getUserIdAttribute();
@@ -1792,6 +1757,63 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	}
 
 
+	/**
+	 * Return the list of attribute names we need to read from the ldap directory.  We get the list of
+	 * attributes to read from the ldap configuration that maps ldap attribute names to Teaming ids.
+	 */
+	protected static String[] getAttributeNamesToRead(
+		String[] userAttributeNames,
+		LdapConnectionConfig ldapConnectionConfig )
+	{
+		String[] attributeNames = null;
+		
+		// this.userAttributeNames holds the list of ldap attribute names that are
+		// found in the ldap configuration mapping.
+		
+		if ( userAttributeNames != null )
+		{
+			int i;
+			String attrName;
+			
+			// Create an array large enough to hold all the ldap attribute names found
+			// in the mapping plus the name of the attribute that uniquely identifies
+			// a user plus the ldap attribute that identifies a user.
+			attributeNames = new String[userAttributeNames.length + 2];
+			
+			for (i = 0; i < userAttributeNames.length; ++i)
+			{
+				attributeNames[i] = userAttributeNames[i];
+			}
+
+			// Add the ldap attribute that is used to identify the user.
+			attrName = ldapConnectionConfig.getUserIdAttribute();
+			if ( attrName != null && attrName.length() > 0 )
+			{
+				attributeNames[i] = attrName; 
+				++i;
+			}
+			
+			// Add the name of the ldap guid attribute to the list of ldap attributes to read.
+			attrName = ldapConnectionConfig.getLdapGuidAttribute();
+			if ( attrName != null && attrName.length() > 0 )
+			{
+				attributeNames[i] = attrName;
+				++i;
+			}
+		}
+		
+		return attributeNames;
+	}// end getAttributeNamesToRead()
+
+	
+	/**
+	 * @param ldapAttrNames
+	 * @param mapping
+	 * @param attrs
+	 * @param mods
+	 * @param ldapGuidAttribute
+	 * @throws NamingException
+	 */
 	protected static void getUpdates(String []ldapAttrNames, Map mapping, Attributes attrs, Map mods, String ldapGuidAttribute )  throws NamingException
 	{
 		if ( ldapAttrNames != null )
