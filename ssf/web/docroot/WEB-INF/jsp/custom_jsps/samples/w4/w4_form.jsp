@@ -143,22 +143,4 @@ value="${ssDefinitionEntry.customAttributes['exempt'].value}" /></td></tr>
 <br/>
 <br />
 
-<b>Test select box:</b><br/>
 
-<c:set var="matchOne" value="0"/>
-<c:set var="matchTwo" value="0"/>
-<c:set var="matchThree" value="0"/>
-<c:set var="matchFour" value="0"/>
-<c:forEach var="selection" items="${ssDefinitionEntry.customAttributes['testSelection'].valueSet}" >
-<c:if test="${selection == 'one'}"><c:set var="matchOne" value="1"/></c:if>
-<c:if test="${selection == 'two'}"><c:set var="matchTwo" value="1"/></c:if>
-<c:if test="${selection == 'three'}"><c:set var="matchThree" value="1"/></c:if>
-<c:if test="${selection == 'four'}"><c:set var="matchFour" value="1"/></c:if>
-</c:forEach>
-
-<select name="testSelection" id="testSelection" multiple="multiple">
-<option value="one" name="one" id="one" <c:if test="${matchOne == 1}">selected="selected" </c:if>>One</option>
-<option value="two" name="two" id="two" <c:if test="${matchTwo == 1}">selected="selected" </c:if>>Two</option>
-<option value="three" name="three" id="three" <c:if test="${matchThree == 1}">selected="selected" </c:if>>Three</option>
-<option value="four" name="four" id="four" <c:if test="${matchFour == 1}">selected="selected" </c:if>>Four</option>
-</select>					
