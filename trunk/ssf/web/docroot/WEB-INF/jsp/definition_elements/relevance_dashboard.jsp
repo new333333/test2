@@ -47,6 +47,7 @@
 var ss_relevanceAjaxUrl${renderResponse.namespace};
 var ss_relevanceProfileUrl${renderResponse.namespace};
 var ss_relevanceOverviewUrl${renderResponse.namespace};
+var ss_relevanceTaskAndCalendarsUrl${renderResponse.namespace};
 if (ss_userDisplayStyle != "accessible") {
    ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url 
   		adapter="true" portletName="ss_forum" 
@@ -68,6 +69,11 @@ if (ss_userDisplayStyle != "accessible") {
         action="view_ws_listing" ><ssf:param 
       	name="binderId" value="ss_binderIdPlaceHolder"/><ssf:param 
 		name="type" value="overview" /><ssf:param 
+		name="page" value="0" /></ssf:url>";
+   ss_relevanceTasksAndCalendarsUrl${renderResponse.namespace} = "<ssf:url 
+        action="view_ws_listing" ><ssf:param 
+      	name="binderId" value="ss_binderIdPlaceHolder"/><ssf:param 
+		name="type" value="tasks_and_calendars" /><ssf:param 
 		name="page" value="0" /></ssf:url>";
 } else {
   <c:if test="${ssBinder.entityType == 'workspace'}">
