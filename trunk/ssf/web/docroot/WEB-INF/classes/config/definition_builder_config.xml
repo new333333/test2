@@ -504,6 +504,7 @@
 			<option name="entryBlogAttachments" caption="__entry_attachments" initial="true" />
 			<option name="entryBlogComments" caption="__entry_comments" initial="true" />
 			<option name="entryBlogReplies" caption="__entry_replies" />
+			<option_select path="//item[@category='entryViewData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 		</options>
 		
