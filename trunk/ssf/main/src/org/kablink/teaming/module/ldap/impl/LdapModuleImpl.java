@@ -65,7 +65,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
-import org.dom4j.Document;
 import org.hibernate.SessionFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -96,7 +95,6 @@ import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.search.IndexSynchronizationManager;
-import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.CollectionUtil;
@@ -105,11 +103,9 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
-import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
-import org.kablink.util.search.Constants;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -280,7 +276,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     }
     
     /**
-     * For the given name, find the Teaming id.
+     * For the given name, find the Teaming id in the given Map.
      */
     public Long getTeamingId(
     	String name,
@@ -771,6 +767,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	  		try {
 				ctx = getUserContext(zone.getId(), config);
 				logger.info("InitialContext: " + ctx.getNameInNamespace());
+				
 				syncUsers(zone, ctx, config, userCoordinator);
 			}
 	  		catch (NamingException namingEx)
@@ -849,11 +846,40 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	
 	class UserCoordinator
 	{
+		// m_listOfUsersByLdapGuid is a list of all users returned from the call to loadObjects(...)
+		// Key: ldap guid
+		// Value: array of values read from db.
+		Map<String, Object[]> m_listOfUsersByLdapGuid = new TreeMap(String.CASE_INSENSITIVE_ORDER);
+
+		// ssUsers is a list of all users returned from the call to loadObjects(...)
+		// Key: user name
+		// Value: array of values read from db.
 		Map<String, Object[]> ssUsers = new TreeMap(String.CASE_INSENSITIVE_ORDER);
+
+		// ssDnUsers is a list of all users returned from the call to loadObjects(...)
+		// Key: user dn
+		// Value: array of values read from db.
 		Map<String, Object[]> ssDnUsers = new TreeMap(String.CASE_INSENSITIVE_ORDER);
+		
+		// notInLdap is initially a list of all users returned from the call to loadObjects(...)
+		// When a user is read from the ldap directory they are removed from this list.
+		// Key: Teaming id
+		// Value: array of values read from db.
 		Map<Long, String> notInLdap = new TreeMap();
+		
+		// As we find existing users to be sync'd they are added to ldap_existing
+		// Key: Teaming id
+		// Value: array of values read from db.
 		Map<Long, Map> ldap_existing = new HashMap();
+		
+		// ldap_new will be a list of users we need to create.
+		// Key: user name
+		// Value: Map of attributes to be written to the db
 		Map<String, Map> ldap_new = new HashMap();
+		
+		// As we find existing users they are added to dnUsers.  Users that are created are added to dnUsers too.
+		// Key: user dn
+		// Value: array of values read from db.
 		Map<String, Object[]> dnUsers = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 
 		//Keep names that have been processed.  Use case_insensitive match cause 
@@ -882,6 +908,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			boolean deleteWorkspace,
 			LdapSyncResults syncResults )
 		{
+			ObjectControls objCtrls;
+			FilterControls filterCtrls;
+			
 			this.zoneId = zone.getId();
 			this.sync = sync;
 			this.create = create;
@@ -893,19 +922,35 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			modifySyncSize = GetterUtil.getLong(getLdapProperty(zone.getName(), "modify.flush.threshhold"), 100);
 
 			//get list of users in this zone and not deleted
-			List attrs = coreDao.loadObjects(new ObjectControls(User.class, principalAttrs), 
-					new FilterControls(ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE), zoneId);
-			//convert list of objects to a Map of forumNames 
-			for (int i=0; i<attrs.size(); ++i) {
-				Object[] row = (Object [])attrs.get(i);
-				String ssName = (String)row[0];
+			// Get the list of users in this zone that are not deleted
+			objCtrls = new ObjectControls( User.class, principalAttrs );
+			filterCtrls = new FilterControls( ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE );
+			List userList = coreDao.loadObjects( objCtrls, filterCtrls, zoneId ); 
+
+			// userList is a list of arrays where each array holds the values of some
+			// of the user's Teaming attributes.  Create a map where the key is the
+			// user's name and the value is the array of Teaming attributes.
+			for (int i=0; i<userList.size(); ++i) {
+				String ldapGuid;
+				Object[] attributeValues = (Object [])userList.get(i);
+				
+				String ssName = (String)attributeValues[PRINCIPAL_NAME];
+				
 				//map existing names to row
-				ssUsers.put(ssName, row);
+				ssUsers.put(ssName, attributeValues);
+				
 				//map existing DN to row
-				ssDnUsers.put((String)row[4], row);
+				ssDnUsers.put((String)attributeValues[PRINCIPAL_FOREIGN_NAME], attributeValues);
+				
+				// If this user has an ldap guid, add the user to the m_listOfUsersByLdapGuid
+				ldapGuid = (String) attributeValues[PRINCIPAL_LDAP_GUID];
+				if ( ldapGuid != null && ldapGuid.length() > 0 )
+					m_listOfUsersByLdapGuid.put( ldapGuid, attributeValues );
+				
 				//initialize all users as not found unless already disabled or reserved
-				if (((Boolean)row[2] == Boolean.FALSE) && (Validator.isNull((String)row[3]))) {
-					notInLdap.put((Long)row[1], ssName);
+				if (((Boolean)attributeValues[PRINCIPAL_DISABLED] == Boolean.FALSE) && (Validator.isNull((String)attributeValues[PRINCIPAL_INTERNALID])))
+				{
+					notInLdap.put((Long)attributeValues[PRINCIPAL_ID], ssName);
 				}
 			}			
 		}
@@ -921,52 +966,124 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			return dnUsers.containsKey(dn);
 		}
 
+		/**
+		 * 
+		 * @param dn
+		 * @param ssName
+		 * @param lAttrs
+		 * @param ldapGuidAttribute
+		 * @throws NamingException
+		 */
 		public void record(String dn, String ssName, Attributes lAttrs, String ldapGuidAttribute ) throws NamingException
 		{
-			if (logger.isDebugEnabled()) logger.debug("Retrieved user: '" + dn + "'");
+			boolean foundLdapGuid = false;
+			Object[] row = null; 
+			Object[] row2 = null;
+			String ldapGuid = null;
+			
+			
+			if (logger.isDebugEnabled())
+				logger.debug("Retrieved user: '" + dn + "'");
 
-			//use DN as 1st priority match.  This will catch changes in USER_ID_ATTRIBUTE
-			Object[] row = ssDnUsers.get(dn); 
-			if (row != null) notInLdap.remove(row[1]);
-			Object[] row2 = (Object[])ssUsers.get(ssName);
-			if (row2 != null) notInLdap.remove(row2[1]);
-			if (row != null || row2 != null) {
-				//user exists somewhere
-				if (sync) {
+			// Do we have the name of the ldap attribute that holds the guid?
+			if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
+			{
+				// Yes
+				// Get the ldap guid that was read from the ldap directory for this user.
+				ldapGuid = getLdapGuidBase64Encoded( lAttrs, ldapGuidAttribute );
+				
+				// Does the ldap user have a guid?
+				if ( ldapGuid != null && ldapGuid.length() > 0 )
+				{
+					// Yes
+					// Is there a user in Teaming that has this ldap guid?
+					row = m_listOfUsersByLdapGuid.get( ldapGuid ); 
+					if ( row != null )
+					{
+						// Yes
+						foundLdapGuid = true;
+						notInLdap.remove( row[PRINCIPAL_ID] );
+					}
+				}
+			}
+			
+			// Did we find the given ldap user in Teaming by their ldap guid?
+			if ( !foundLdapGuid )
+			{
+				// No, search for the ldap user in Teaming in other ways. 
+				//use DN as 1st priority match.  This will catch changes in USER_ID_ATTRIBUTE
+				row = ssDnUsers.get(dn); 
+				if (row != null)
+					notInLdap.remove(row[PRINCIPAL_ID]);
+				
+				row2 = (Object[])ssUsers.get(ssName);
+				if (row2 != null)
+					notInLdap.remove(row2[PRINCIPAL_ID]);
+			}
+			
+			// Does this ldap user already exist in Teaming?
+			if ( foundLdapGuid || (row != null || row2 != null) )
+			{
+				// Yes
+				// Does the ldap configuration say to sync users?
+				if ( sync )
+				{
 					Map userMods = new HashMap();
+					
+					// Yes
+					// Map the attributes read from the ldap directory to Teaming attributes.
 					getUpdates( userAttributeNames, userAttributes, lAttrs, userMods, ldapGuidAttribute );
 					
-					//!!! Redo the following code.
-					//remove this incase a mapping exists that is different than the uid attribute
-					userMods.remove(ObjectKeys.FIELD_PRINCIPAL_NAME);
-					if (row != null && row2 == null) {
-						//user_id_attribute must have changed, just changing the name
-						if (!foundNames.containsKey(ssName)) { //if haven't just added it
-							if (logger.isDebugEnabled()) logger.debug("id changed: " + row[0] + "->" + ssName);
-							userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME, ssName);
-							userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
-							row[0] = ssName;							
-						} //otherwise update the other fields, just leave old name
-					} else if (row == null && row2 != null) {
-						//name exists, DN will be updated.  Either moved or we are going to end up with a conflict
-						if (logger.isDebugEnabled()) logger.debug("dn changed: " + row2[4] + "->" + dn);
-						userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
-						row = row2;
-						row[4] = dn;
-					} else if (row != row2) {
-						//have 2 rows that want the same loginName
-						//this could only happen if the user_id_attribute has changed and the new name is already taken
-						logger.error(NLT.get("errorcode.ldap.duplicate", new Object[] {ssName, dn}));
-						//but apply updates to row anyway, just leave loginName unchanged
+					// Did we find the ldap user in Teaming by their ldap guid?
+					if ( foundLdapGuid )
+					{
+						// Yes
+						// We never want to change a user's name in Teaming.  Remove the "name" attribute
+						// from the list of attributes to be written to the db.
+						userMods.remove( ObjectKeys.FIELD_PRINCIPAL_NAME );
+
+						// Make sure the dn stored in Teaming is updated for this user.
+						userMods.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn );
+						row[PRINCIPAL_FOREIGN_NAME] = dn;
 					}
-					//!!! end redo
+					else
+					{
+						// No, we found the ldap user in Teaming by their dn or their name.
+						
+						//remove this incase a mapping exists that is different than the uid attribute
+						userMods.remove(ObjectKeys.FIELD_PRINCIPAL_NAME);
+						if (row != null && row2 == null) {
+							if (!foundNames.containsKey(ssName)) { //if haven't just added it
+								if (logger.isDebugEnabled())
+									logger.debug("id changed: " + row[PRINCIPAL_NAME] + "->" + ssName);
+								
+								userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
+							} //otherwise update the other fields, just leave old name
+						} else if (row == null && row2 != null) {
+							//name exists, DN will be updated.  Either moved or we are going to end up with a conflict
+							if (logger.isDebugEnabled())
+								logger.debug("dn changed: " + row2[PRINCIPAL_FOREIGN_NAME] + "->" + dn);
+							
+							userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
+							row = row2;
+							row[PRINCIPAL_FOREIGN_NAME] = dn;
+						} else if (row != row2) {
+							//have 2 rows that want the same loginName
+							//this could only happen if the user_id_attribute has changed and the new name is already taken
+							logger.error(NLT.get("errorcode.ldap.duplicate", new Object[] {ssName, dn}));
+							//but apply updates to row anyway, just leave loginName unchanged
+						}
+					}
 					
 					//otherwise equal and all is well
-					ldap_existing.put((Long)row[1], userMods);				
+					ldap_existing.put((Long)row[PRINCIPAL_ID], userMods);				
 				}
+				
 				//setup distinquished name for group sync
 				dnUsers.put(dn, row);
-			} else 	if (foundNames.containsKey(ssName)) {
+			}
+			else if (foundNames.containsKey(ssName))
+			{
 				//name just created - skip duplicate
 				logger.error(NLT.get("errorcode.ldap.duplicate", new Object[] {ssName, dn}));
 				return;
@@ -974,9 +1091,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if (create) {
 					String	timeZone;
 					String localeId;
-					
 					Map userMods = new HashMap();
+
 					getUpdates( userAttributeNames, userAttributes, lAttrs, userMods, ldapGuidAttribute );
+					
 					userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME, ssName);
 					userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
 					userMods.put(ObjectKeys.FIELD_ZONE, zoneId);
@@ -996,11 +1114,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 					
 					ldap_new.put(ssName, userMods); 
-					dnUsers.put(dn, new Object[]{ssName, null, Boolean.FALSE, null, dn});
+					dnUsers.put(dn, new Object[]{ssName, null, Boolean.FALSE, null, dn, ldapGuid});
 				}
 			}
+			
 			//keep track of users we have processed from ldap
-			foundNames.put(ssName, ssName); 
+			foundNames.put(ssName, ssName);
+			
 			//do updates after every 100 users
 			if (!ldap_existing.isEmpty() && (ldap_existing.size()%modifySyncSize == 0)) {
 				//doLog("Updating users:", ldap_existing);
@@ -1015,6 +1135,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				updateUsers(zoneId, ldap_existing, syncResults );
 				ldap_existing.clear();
 			}
+			
 			//do creates after every 100 users
 			if (!ldap_new.isEmpty() && (ldap_new.size()%createSyncSize == 0)) {				
 				doLog("Creating users:", ldap_new);
@@ -1028,12 +1149,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				List results = createUsers(zoneId, ldap_new, syncResults );
 				ldap_new.clear();
 				
-				//!!! Do we need to do something here?  What is this doing?
 				// fill in mapping from distinquished name to id
 				for (int i=0; i<results.size(); ++i) {
 					User user = (User)results.get(i);
 					row = (Object[])dnUsers.get(user.getForeignName());
-					row[1] = user.getId();
+					row[PRINCIPAL_ID] = user.getId();
+					row[PRINCIPAL_LDAP_GUID] = user.getLdapGuid();
 				}
 			}
 		}
@@ -1052,6 +1173,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 				updateUsers(zoneId, ldap_existing, syncResults );
 			}
+			
 			if (!ldap_new.isEmpty()) {
 				doLog("Creating users:", ldap_new);
 				PartialLdapSyncResults	syncResults = null;
@@ -1065,9 +1187,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				for (int i=0; i<results.size(); ++i) {
 					User user = (User)results.get(i);
 					Object[] row = (Object[])dnUsers.get(user.getForeignName());
-					row[1] = user.getId();
+					row[PRINCIPAL_ID] = user.getId();
+					row[PRINCIPAL_LDAP_GUID] = user.getLdapGuid();
 				}
 			}
+			
 			//if disable is enabled, remove users that were not found in ldap
 			if (delete && !notInLdap.isEmpty()) {
 				PartialLdapSyncResults	syncResults	= null;
@@ -1088,17 +1212,21 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				deletePrincipals(zoneId, notInLdap.keySet(), deleteWorkspace, syncResults );
 			}
 			
-			//!!! What is this doing?
+			//!!! Can we use the ldap guid as a better way of doing the following?
 			//Set foreign names of users to self; needed to recognize synced names and mark attributes read-only
 			if (!delete && !notInLdap.isEmpty()) {
 		    	Map users = new HashMap();
-				if (logger.isDebugEnabled()) logger.debug("Users not found in ldap:");
+				if (logger.isDebugEnabled())
+					logger.debug("Users not found in ldap:");
+				
 				for (Map.Entry<Long, String>me:notInLdap.entrySet()) {
 					Long id = me.getKey();
 					String name = me.getValue();
-					if (logger.isDebugEnabled()) logger.debug("'"+name+"'");
+					if (logger.isDebugEnabled())
+						logger.debug("'"+name+"'");
+					
 					Object row[] = (Object[])ssUsers.get(name);
-					if (!name.equalsIgnoreCase((String)row[4])) {//was synched from somewhere else	
+					if (!name.equalsIgnoreCase((String)row[PRINCIPAL_FOREIGN_NAME])) {//was synched from somewhere else	
 						Map updates = new HashMap();
 				    	updates.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, name);
 			    		users.put(id, updates);
@@ -1237,11 +1365,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					} else {
 						dn = relativeName;
 					}
+					
 					//!!! How do we want to determine if a user is a duplicate?
 					if (userCoordinator.isDuplicate(dn)) {
 						logger.error(NLT.get("errorcode.ldap.duplicate", new Object[] {ssName, dn}));
 						continue;
 					}
+					
 					userCoordinator.record(dn, ssName, lAttrs, ldapGuidAttribute );
 				}
 			}
@@ -1297,14 +1427,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			//convert list of objects to a Map of loginNames 
 			for (int i=0; i<attrs.size(); ++i) {
 				Object[] row = (Object [])attrs.get(i);
-				String ssName = (String)row[0];
+				String ssName = (String)row[PRINCIPAL_NAME];
 				ssGroups.put(ssName, row);
-				if (!Validator.isNull((String)row[4])) {
-					dnGroups.put(row[4], row);
+				if (!Validator.isNull((String)row[PRINCIPAL_FOREIGN_NAME])) {
+					dnGroups.put(row[PRINCIPAL_FOREIGN_NAME], row);
 				}
 				//initialize all groups as not found unless already disabled or reserved
-				if (((Boolean)row[2] == Boolean.FALSE) && (Validator.isNull((String)row[3]))) {
-					notInLdap.put((Long)row[1], ssName);
+				if (((Boolean)row[PRINCIPAL_DISABLED] == Boolean.FALSE) && (Validator.isNull((String)row[PRINCIPAL_INTERNALID]))) {
+					notInLdap.put((Long)row[PRINCIPAL_ID], ssName);
 				}
 			}
 		}
@@ -1349,15 +1479,17 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 				}
 			} else {
-				ssName = (String)row[0];
+				ssName = (String)row[PRINCIPAL_NAME];
 				if (sync) {
 					Map userMods = new HashMap();
-					if (logger.isDebugEnabled()) logger.debug("Updating group:" + ssName);
+					if (logger.isDebugEnabled())
+						logger.debug("Updating group:" + ssName);
+					
 					getUpdates( groupAttributeNames, groupAttributes, lAttrs, userMods, ldapGuidAttribute );
-					updateGroup( zoneId, (Long)row[1], userMods, m_ldapSyncResults );
+					updateGroup( zoneId, (Long)row[PRINCIPAL_ID], userMods, m_ldapSyncResults );
 				} 
 				//exists in ldap, remove from missing list
-				notInLdap.remove(row[1]);
+				notInLdap.remove(row[PRINCIPAL_ID]);
 				ldapGroups.put(dn, lAttrs);
 				isSSGroup = true;
 			}
@@ -1413,8 +1545,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				String mDn = ((String)valEnum.nextElement()).trim();
 				uRow = (Object[])dnUsers.get(mDn);
 				if (uRow == null) uRow = (Object[])dnGroups.get(mDn);
-				if (uRow == null || uRow[1] == null) continue; //never got created
-				membership.add(new Membership(groupId, (Long)uRow[1]));
+				if (uRow == null || uRow[PRINCIPAL_ID] == null) continue; //never got created
+				membership.add(new Membership(groupId, (Long)uRow[PRINCIPAL_ID]));
 			}
 
 			// Do we have a place to store the list of modified groups?
@@ -1540,7 +1672,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						//Get map indexed by id
 						Object[] gRow = groupCoordinator.getGroup(dn);
 						if (gRow == null) continue; //not created
-						Long groupId = (Long)gRow[1];
+						Long groupId = (Long)gRow[PRINCIPAL_ID];
 						if (groupId == null) continue; // never got created
 						List memberAttributes = (List) getZoneMap(zone.getName()).get(MEMBER_ATTRIBUTES);
 						Attribute att = null;
