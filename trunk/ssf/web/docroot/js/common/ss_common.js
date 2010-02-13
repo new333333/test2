@@ -1629,6 +1629,19 @@ function ssf_onLayoutChange(obj) {
     return true;
 }
 
+function ss_validateEntryTextFieldLength(sTitle) {
+	var titleLength = 0;
+	var count = 0;
+	for (count = 0; count < sTitle.length; count++) {
+		var s = sTitle.charAt(count);
+		titleLength++;
+		if (s.match("[\u0100-\uffff]") != null) titleLength++;
+		if (titleLength > 255) break;
+	}
+	if (count < sTitle.length) return sTitle.substring(0, count);
+	return sTitle;
+}
+
 function ss_getObjAbsX(obj) {
     return dojo.coords(obj, true).x;
     var x = 0
