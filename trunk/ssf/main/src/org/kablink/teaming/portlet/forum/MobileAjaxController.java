@@ -1181,6 +1181,13 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		folderEntries  = getFolderModule().getEntryTree(binderId, entryId);
 		if (folderEntries != null) {
 			entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
+			if (entry != null && (entry.isPreDeleted() || entry.isDeleted())) {
+				BinderHelper.addActionsRecentPlaces(request, actions, binderId);
+				BinderHelper.addActionsSpacer(request, actions);
+				BinderHelper.addActionsLogout(request, actions);
+				model.put("ss_actions", actions);
+				return new ModelAndView("mobile/entry_deleted", model);
+			}
 			model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MOBILE);
 			if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
 				DefinitionHelper.getDefaultEntryView(entry, model);
