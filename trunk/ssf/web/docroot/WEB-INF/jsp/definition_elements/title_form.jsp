@@ -113,18 +113,10 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 		</div>
 <script type="text/javascript">
 function ss_validateEntryTitle(eTitle) {
-	var sTitle = eTitle.value;
-	var titleLength = 0;
-	var count = 0;
-	for (count = 0; count < sTitle.length; count++) {
-		var s = sTitle.charAt(count);
-		titleLength++;
-		if (s.match("[\u0100-\uffff]") != null) titleLength++;
-		if (titleLength > 255) break;
-	}
-	if (count < sTitle.length) {
-		eTitle.value = sTitle.substring(0, count);
-		alert('<ssf:nlt tag="error.titleTooLong.truncated"/>');
+	var sTitle = ss_validateEntryTextFieldLength(eTitle.value);
+	if (sTitle != eTitle.value) {
+		eTitle.value = sTitle;
+		alert("<ssf:nlt tag="error.titleTooLong"/>");
 		window.setTimeout(
 			function() {
 				input_setCaretToEnd(eTitle);
