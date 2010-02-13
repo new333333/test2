@@ -93,16 +93,10 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
     ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
 </c:if>
 		<input type="text" class="ss_text" name="title" id="title" <%= width %> ${ss_fieldModifyInputAttribute}
-<c:choose>
-	<c:when test='${ssBinderMarker}'>
-		onchange="ss_ajaxValidate(ss_checkTitleUrl, this,'${property_name}_label', 'ss_titleCheck');"
-	</c:when>
-	<c:otherwise>
-		<c:if test="${!empty ssDefinitionEntry && ssDefinitionEntry.entityType == 'folderEntry'}">
-			onkeyup="ss_validateEntryTitle(this);"
-		</c:if>
-	</c:otherwise>
-</c:choose>
+		  onkeyup="ss_validateEntryTitle(this);"
+		  <c:if test='${ssBinderMarker}'>
+		    onchange="ss_ajaxValidate(ss_checkTitleUrl, this,'${property_name}_label', 'ss_titleCheck');"
+		  </c:if>
 		 <c:if test="${empty ssDefinitionEntry.title}">
 		   <c:if test="${empty ssEntryTitle && !empty ssEntry && empty ssDefinitionEntry}">
 		     value="<ssf:nlt tag="reply.re.title"><ssf:param 
@@ -120,14 +114,24 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 <script type="text/javascript">
 function ss_validateEntryTitle(eTitle) {
 	var sTitle = eTitle.value;
-	if (256 <= sTitle.length) {
-		eTitle.value = sTitle.substring(0, 255);
+	var titleLength = 0;
+	var count = 0;
+	for (count = 0; count < sTitle.length; count++) {
+		var s = sTitle.charAt(count);
+		titleLength++;
+		if (s.match("[\u0100-\uffff]") != null) titleLength++;
+		if (titleLength > 255) break;
+	}
+	if (count < sTitle.length) {
+		eTitle.value = sTitle.substring(0, count);
 		alert('<ssf:nlt tag="error.titleTooLong.truncated"/>');
 		window.setTimeout(
 			function() {
 				input_setCaretToEnd(eTitle);
 			}, 100 );
+		return false;
 	}
+	return true;
 }
 function ss_focusOnTitle() {
 	var formObj = self.document.getElementById('${ss_form_form_formName}')
@@ -139,6 +143,14 @@ function ss_focusOnTitle() {
 		}
 	}
 }
+function ss_checkTitleOnSubmit() {
+	var formObj = self.document.getElementById("${formName}");
+	if (formObj == null) return true;
+	var eTitle = formObj["title"];
+	if (eTitle == null) return true;
+	return ss_validateEntryTitle(eTitle);
+}
+ss_createOnSubmitObj("ss_checkTitleOnSubmit", "${formName}", ss_checkTitleOnSubmit);
 <c:if test="${empty ss_fieldModifyDisabled || ss_fieldModificationsAllowed}">
 ss_createOnLoadObj("ss_focusOnTitle", ss_focusOnTitle);
 </c:if>
