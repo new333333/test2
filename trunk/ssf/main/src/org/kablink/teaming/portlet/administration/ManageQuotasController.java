@@ -160,12 +160,14 @@ public class ManageQuotasController extends SAbstractController {
 			for (Long id : groupIds) {
 				List ids = new ArrayList();
 				ids.add(id);
-				if (quotaValues.get(id.toString()) != null) getProfileModule().setGroupDiskQuotas(ids, quotaValues.get(id.toString()));
+				if (id != null && quotaValues.get(id.toString()) != null) 
+					getProfileModule().setGroupDiskQuotas(ids, quotaValues.get(id.toString()));
 			}
 			for (Long id : userIds) {
 				List ids = new ArrayList();
 				ids.add(id);
-				if (quotaValues.get(id.toString()) != null) getProfileModule().setUserDiskQuotas(ids, quotaValues.get(id.toString()));
+				if (id != null && quotaValues.get(id.toString()) != null) 
+					getProfileModule().setUserDiskQuotas(ids, quotaValues.get(id.toString()));
 			}
 
 		} else {
