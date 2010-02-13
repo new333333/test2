@@ -150,6 +150,14 @@ var ${eName}_ok = 1;
  </c:if>
 	<script type="text/javascript">	
 		function ${eName}_onAtatchmentFormSubmit(formObj) {
+			var eNameObj = formObj['${eName}'];
+			if (eNameObj != null) {
+				var sTitle = ss_validateEntryTextFieldLength(eNameObj.value);
+				if (sTitle != eNameObj.value) {
+					alert("<ssf:nlt tag="error.fileNameTooLong"/>");
+					return false;
+				}
+			}
 			if (!window.uploadProgressBar) {// prevents many progress bars on one page
 			
 				// the uid binds upload request with upload status check request
