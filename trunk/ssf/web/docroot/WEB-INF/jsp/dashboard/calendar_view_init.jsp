@@ -130,19 +130,20 @@
 	ss_calendar_${prefix}.locale.allDay = "<ssf:nlt tag="calendar.allDay"/>";
 	ss_calendar_${prefix}.locale.noTitle = "--<ssf:nlt tag="entry.noTitle"/>--";
 											
+	if (!window["ssScope"]) { ssScope = {}; };
 	ss_addDashboardEvent("${componentId}", 
 						"onAfterShow",
 						function() {
+							ssScope.refreshView = function (entryId) {
+								ss_calendar_${prefix}.refreshEntryEvents(entryId);
+							}
 							ss_calendar_${prefix}.ss_initializeCalendar();
 						});
 	ss_addDashboardEvent("${componentId}", 
 						"onAfterHide",
 						function() {
+							ssScope.refreshView = null;
 							ss_calendar_${prefix}.ss_uninitializeCalendar();
 						});						
-	if (!window["ssScope"]) { ssScope = {}; };
-	ssScope.refreshView = function (entryId) {
-		ss_calendar_${prefix}.refreshEntryEvents(entryId);
-	}
 
 </script>
