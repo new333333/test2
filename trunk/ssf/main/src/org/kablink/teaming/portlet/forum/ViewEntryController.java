@@ -200,6 +200,8 @@ public class ViewEntryController extends  SAbstractController {
 		String zoneUUID = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
 		folderId = getBinderModule().getZoneBinderId(folderId, zoneUUID, EntityType.folder.name());
 		if (folderId == null) {
+			String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+			model.put(WebKeys.REFERER_URL, refererUrl);
 			model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.entry.not.imported"));
 			return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
 		}

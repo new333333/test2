@@ -405,10 +405,12 @@ public class AddEntryController extends SAbstractController {
 				if (folderEntryDefs.containsKey(entryType)) {
 					Definition currentDef = (Definition)folderEntryDefs.get(entryType);
 					DefinitionHelper.getDefinition(currentDef, model, "//item[@type='form']");
-					Element familyProperty = (Element) currentDef.getDefinition().getRootElement().selectSingleNode("//properties/property[@name='family']");
-					if (familyProperty != null) {
-						String family = familyProperty.attributeValue("value", "");
-						model.put(WebKeys.DEFINITION_FAMILY, family);
+					if (currentDef.getDefinition() != null) {
+						Element familyProperty = (Element) currentDef.getDefinition().getRootElement().selectSingleNode("//properties/property[@name='family']");
+						if (familyProperty != null) {
+							String family = familyProperty.attributeValue("value", "");
+							model.put(WebKeys.DEFINITION_FAMILY, family);
+						}
 					}
 				} else {
 					DefinitionHelper.getDefinition(null, model, "//item[@name='entryForm']");

@@ -675,18 +675,33 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxMobileShowFolder(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
+		//Setup the actions menu list
+		List actions = new ArrayList();
+		List new_actions = new ArrayList();
+		
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-		Binder binder = getBinderModule().getBinder(binderId);
+		Binder binder = null;
+		try {
+			binder = getBinderModule().getBinder(binderId);
+		} catch(NoBinderByTheIdException e) {
+			BinderHelper.addActionsRecentPlaces(request, actions, null);
+			BinderHelper.addActionsSpacer(request, actions);
+			BinderHelper.addActionsLogout(request, actions);
+			model.put("ss_actions", actions);
+			return new ModelAndView("mobile/binder_does_not_exist", model);
+		} catch(Exception e) {
+			BinderHelper.addActionsRecentPlaces(request, actions, null);
+			BinderHelper.addActionsSpacer(request, actions);
+			BinderHelper.addActionsLogout(request, actions);
+			model.put("ss_actions", actions);
+			return new ModelAndView("mobile/access_denied", model);
+		}
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 		BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 		UserProperties userProperties = (UserProperties)model.get(WebKeys.USER_PROPERTIES_OBJ);
 		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
 		Map options = new HashMap();		
 		Map folderEntries = null;
-		
-		//Setup the actions menu list
-		List actions = new ArrayList();
-		List new_actions = new ArrayList();
 		
 		if (binder== null) {
 			return ajaxMobileFrontPage(this, request, response);
@@ -932,6 +947,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			RenderResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser(); 
 		Map model = new HashMap();
+		//Setup the actions menu list
+		List actions = new ArrayList();
+		
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
 		if (entryId != null && getProfileModule().getProfileBinderId().equals(binderId)) {
@@ -946,8 +964,6 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 					model.put(WebKeys.BINDER, getProfileModule().getProfileBinder());
 					BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 					
-					//Setup the actions menu list
-					List actions = new ArrayList();
 					//BinderHelper.addActionsHome(request, actions);
 					BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 					BinderHelper.addActionsSpacer(request, actions);
@@ -968,8 +984,25 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		List folders = new ArrayList();
 		try {
 			binder = getWorkspaceModule().getWorkspace(Long.valueOf(binderId));
-		} catch (Exception ex) {
-			binder = getWorkspaceModule().getTopWorkspace();				
+		} catch(NoBinderByTheIdException e) {
+			BinderHelper.addActionsRecentPlaces(request, actions, null);
+			BinderHelper.addActionsSpacer(request, actions);
+			BinderHelper.addActionsLogout(request, actions);
+			model.put("ss_actions", actions);
+			return new ModelAndView("mobile/binder_does_not_exist", model);
+		} catch(Exception e) {
+			BinderHelper.addActionsRecentPlaces(request, actions, null);
+			BinderHelper.addActionsSpacer(request, actions);
+			BinderHelper.addActionsLogout(request, actions);
+			model.put("ss_actions", actions);
+			return new ModelAndView("mobile/access_denied", model);
+		}
+		if (binder.isDeleted() || binder.isPreDeleted()) {
+			BinderHelper.addActionsRecentPlaces(request, actions, null);
+			BinderHelper.addActionsSpacer(request, actions);
+			BinderHelper.addActionsLogout(request, actions);
+			model.put("ss_actions", actions);
+			return new ModelAndView("mobile/binder_does_not_exist", model);
 		}
 		model.put(WebKeys.BINDER, binder);
 		if (binder == null) {
@@ -1066,8 +1099,6 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.PREV_PAGE, prevPage);
 		model.put(WebKeys.FOLDERS, folders);
 
-		//Setup the actions menu list
-		List actions = new ArrayList();
 		//BinderHelper.addActionsHome(request, actions);
 		BinderHelper.addActionsWhatsNew(request, actions, binder);
 		BinderHelper.addActionsWhatsUnseen(request, actions, binder);
