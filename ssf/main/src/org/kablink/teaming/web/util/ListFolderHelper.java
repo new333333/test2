@@ -162,6 +162,8 @@ public class ListFolderHelper {
 		binderId = bs.getBinderModule().getZoneBinderId(binderId, zoneUUID, EntityType.folder.name());
 		if (binderId == null) {
 			Map<String,Object> model = new HashMap<String,Object>();
+			String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+			model.put(WebKeys.REFERER_URL, refererUrl);
 			model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.folder.not.imported"));
 			return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
 		}

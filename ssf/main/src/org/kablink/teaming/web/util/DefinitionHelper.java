@@ -309,7 +309,9 @@ public class DefinitionHelper {
 	}
 	
 	public static List getReplyListFromEntry(Definition def) {
-		List replyStyles = DefinitionUtils.getPropertyValueList(def.getDefinition().getRootElement(), "replyStyle");
+		Document defDoc = def.getDefinition();
+		if (defDoc == null) return null;
+		List replyStyles = DefinitionUtils.getPropertyValueList(defDoc.getRootElement(), "replyStyle");
 		if (!replyStyles.isEmpty()) {
 			if (replyStyles.size() == 1) {
 				String replyStyleId = (String)replyStyles.get(0);
