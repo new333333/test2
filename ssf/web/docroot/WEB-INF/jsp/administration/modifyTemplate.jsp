@@ -109,7 +109,9 @@ ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
 <div class="needed-because-of-ie-bug"><div id="ss_nameCheck" style="display:none; visibility:hidden;" 
       ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
 <span class="ss_labelLeft" id="ss_nameLabel"><label for="templateName"><ssf:nlt tag="administration.configure_cfg.name"/></label></span>
-<input type="text" name="templateName" id="templateName" size="50" value="${ssBinderConfig.name}" onchange="ss_ajaxValidate(ss_buildAdapterUrl(ss_AjaxBaseUrl,{operation:'check_template_name',binderId:'${ssBinderConfig.id}'}), this, 'ss_nameLabel', 'ss_nameCheck');"/>
+<input type="text" name="templateName" id="templateName" size="50" 
+  value="<ssf:escapeQuotes>${ssBinderConfig.name}</ssf:escapeQuotes>" 
+  onchange="ss_ajaxValidate(ss_buildAdapterUrl(ss_AjaxBaseUrl,{operation:'check_template_name',binderId:'${ssBinderConfig.id}'}), this, 'ss_nameLabel', 'ss_nameCheck');"/>
 </td></tr>
 </c:if>
 <tr><td>
@@ -199,8 +201,10 @@ ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
 <tr><td>
 <div class="needed-because-of-ie-bug"><div id="ss_nameCheck" style="display:none; visibility:hidden;" 
       ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
-<span class="ss_labelLeft" id="ss_nameLabel"><label for="templateName"><ssf:nlt tag="administration.configure_cfg.name"/></label></span>
-<input type="text" name="templateName" id="templateName" size="50" onchange="ss_ajaxValidate(ss_buildAdapterUrl(ss_AjaxBaseUrl,{operation:'check_template_name'}), this, 'ss_nameLabel', 'ss_nameCheck');"/>
+<span class="ss_labelLeft" id="ss_nameLabel"><label 
+  for="templateName"><ssf:nlt tag="administration.configure_cfg.name"/></label></span>
+<input type="text" name="templateName" id="templateName" size="50" 
+onchange="ss_ajaxValidate(ss_buildAdapterUrl(ss_AjaxBaseUrl,{operation:'check_template_name'}), this, 'ss_nameLabel', 'ss_nameCheck');"/>
 </td></tr><tr><td>
 <span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.title"/></span>
 <input type="text" name="title" size="50" value="" />
