@@ -116,7 +116,8 @@ ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
 </c:if>
 <tr><td>
 <span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.title"/></span>
-<input type="text" name="title" size="50" value="${ssBinderConfig.templateTitle}"/>
+<input type="text" name="title" size="50" 
+  value="<ssf:escapeQuotes>${ssBinderConfig.templateTitle}</ssf:escapeQuotes>"/>
 </td></tr>
 
 <tr><td>
@@ -192,8 +193,10 @@ ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
 		onSubmit="return ss_checkForm(this);">
 <input type="hidden" name="definitionType" value="${definitionType}"/>
 <div class="ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>" onClick="ss_buttonSelect('okBtn');">
-<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" onClick="ss_buttonSelect('cancelBtn');">
+<input type="submit" class="ss_submit" name="okBtn" 
+  value="<ssf:nlt tag="button.add"/>" onClick="ss_buttonSelect('okBtn');">
+<input type="submit" class="ss_submit" name="cancelBtn" 
+  value="<ssf:nlt tag="button.cancel"/>" onClick="ss_buttonSelect('cancelBtn');">
 </div>
 <h2><span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.add"/></span></h2>
 
