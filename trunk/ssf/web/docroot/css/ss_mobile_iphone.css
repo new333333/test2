@@ -299,7 +299,8 @@ span.pad-left20 select {
 .my-item img { 
 	vertical-align: middle;
 	margin-right: 5px;
-	}
+	border:0px;
+}
 
 /*  folder styles */
 .folders {

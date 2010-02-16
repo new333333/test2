@@ -46,15 +46,18 @@
 
 <div class="content">
 
+<c:set var="ss_hideMiniBlog" value="true" scope="request" />
 <%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
 
   <div class="folders">
     <div class="folder-content">
       <div class="folder-head"><ssf:nlt tag="sidebar.history"/></div>
 	  <c:forEach var="tab" items="${ss_tabs.tabList}">
-			<jsp:useBean id="tab" type="org.kablink.teaming.web.util.Tabs.TabEntry" />
-			  <c:set var="numTabs" value="${numTabs + 1}"/>
-			  <c:if test="${numTabs < 6}">
+		<jsp:useBean id="tab" type="org.kablink.teaming.web.util.Tabs.TabEntry" />
+		<c:set var="numTabs" value="${numTabs + 1}"/>
+			<c:if test="${numTabs < 6}">
+				<div class="entry">
+				  <div class="entry-title">
 					<a id="ss_tabbar_td${tab.tabId}" 
 					  <c:if test="${tab.type == 'binder'}">
 					    href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -79,26 +82,43 @@
 			  				<ssf:param name="operation" value="mobile_show_search_results"/>
 			  				</ssf:url>" 
 					  </c:if>
-					title="${tab.data.path}" >
-					<%
-						// Truncate long tab titles to 30 characters
-						int maxTitle = 30;
-					
-						try {
-							maxTitle = SPropsUtil.getInt("history.max.title");
-						} catch (PropertyNotFoundException e) {
-						}
-					
-						String tabTitle = (String)tab.getData().get("title");
-						if (tabTitle.length() > maxTitle) {
-							tabTitle = tabTitle.substring(0, maxTitle) + "...";
-						}
-					%>	
-				    <div class="folder-item">
-						<%= tabTitle %>
-					</div>
-				 </a>
-			   </c:if>
+					  title="${tab.data.path}" >
+					  ${tab.data.title}
+					</a>
+				  </div>
+			  	  <c:if test="${!empty tab.data.path}">
+				    <div class="entry-type">
+						<a id="ss_tabbar_td${tab.tabId}" 
+						  <c:if test="${tab.type == 'binder'}">
+						    href="<ssf:url adapter="true" portletName="ss_forum" 
+								folderId="${tab.binderId}" 
+								action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />" 
+						  </c:if>
+						  <c:if test="${tab.type == 'workspace'}">
+						    href="<ssf:url adapter="true" portletName="ss_forum" 
+								folderId="${tab.binderId}" 
+								action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />" 
+						  </c:if>
+						  <c:if test="${tab.type == 'profiles'}">
+						    href="<ssf:url adapter="true" portletName="ss_forum" 
+								folderId="${tab.binderId}" 
+								action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />" 
+						  </c:if>
+						  <c:if test="${tab.type == 'search'}">
+						    href="<ssf:url 
+				  				action="__ajax_mobile" >
+				  				<ssf:param name="tabId" value="${tab.tabId}"/>
+				  				<ssf:param name="operation" value="mobile_show_search_results"/>
+				  				<ssf:param name="operation" value="mobile_show_search_results"/>
+				  				</ssf:url>" 
+						  </c:if>
+						  title="${tab.data.path}" >
+						  <span>${tab.data.path}</span>
+						</a>
+				    </div>
+			  	  </c:if>
+				</div>
+		</c:if>
 	  </c:forEach>
 	</div>
   </div>

@@ -42,6 +42,8 @@
 
 <div class="content">
 
+<c:set var="ss_hideMiniBlog" value="true" scope="request" />
+<c:set var="ss_showFindPeopleResultsNextPrev" value="true" scope="request" />
 <%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
 
   <div class="folders">
@@ -58,43 +60,6 @@
 		  </form>
 		</div>
 	
-		<div align="right">
-		<table>
-		 <tr>
-		  <td>
-			<c:if test="${!empty ss_prevPage}">
-				<a href="<ssf:url adapter="true" portletName="ss_forum" 
-					action="__ajax_mobile" 
-					operation="mobile_find_people" 
-					actionUrl="false" ><ssf:param 
-					name="searchText" value="${ss_searchText}"/><ssf:param 
-					name="pageNumber" value="${ss_prevPage}"/></ssf:url>"
-				><img border="0" src="<html:rootPath/>images/mobile/nl_left_16.gif"/></a>
-			</c:if>
-			<c:if test="${empty ss_prevPage}">
-			  <img border="0" src="<html:rootPath/>images/mobile/nl_left_dis_16.gif"
-			  	<ssf:alt tag=""/> />
-			</c:if>
-		  </td>
-		  <td style="padding-left:20px;">
-			<c:if test="${!empty ss_nextPage}">
-				<a href="<ssf:url adapter="true" portletName="ss_forum" 
-					action="__ajax_mobile" 
-					operation="mobile_find_people" 
-					actionUrl="false" ><ssf:param 
-					name="searchText" value="${ss_searchText}"/><ssf:param 
-					name="pageNumber" value="${ss_nextPage}"/></ssf:url>"
-				><img border="0" src="<html:rootPath/>images/mobile/nl_right_16.gif"/></a>
-			</c:if>
-			<c:if test="${empty ss_nextPage}">
-			  <img border="0" src="<html:rootPath/>images/mobile/nl_right_dis_16.gif"
-			 	<ssf:alt tag=""/> />
-			</c:if>
-		  </td>
-		 </tr>
-		</table>
-		</div>
-
 	  <c:forEach var="user" items="${ssUsers}" >
 	    <div class="folder-item">
 			<c:if test="${!empty user['_workspaceId']}">
@@ -114,6 +79,10 @@
 		</div>
 	  </c:forEach>
 		
+      <div class="entry-actions">
+        <%@ include file="/WEB-INF/jsp/mobile/find_people_results_next_prev.jsp" %>
+      </div>
+
 	</div>
   </div>
 </div>

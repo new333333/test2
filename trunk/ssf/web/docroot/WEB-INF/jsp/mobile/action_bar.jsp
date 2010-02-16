@@ -136,6 +136,12 @@ function ss_logoff_from_sso(s) {
    <c:if test="${ss_showSearchResultsNextPrev}">
      <%@ include file="/WEB-INF/jsp/mobile/search_results_next_prev.jsp" %>
    </c:if>
+   <c:if test="${ss_showFindPlacesResultsNextPrev}">
+     <%@ include file="/WEB-INF/jsp/mobile/find_places_results_next_prev.jsp" %>
+   </c:if>
+   <c:if test="${ss_showFindPeopleResultsNextPrev}">
+     <%@ include file="/WEB-INF/jsp/mobile/find_people_results_next_prev.jsp" %>
+   </c:if>
    <c:if test="${ss_showWhatsNewNextPrev}">
      <%@ include file="/WEB-INF/jsp/mobile/whats_new_next_prev.jsp" %>
    </c:if>

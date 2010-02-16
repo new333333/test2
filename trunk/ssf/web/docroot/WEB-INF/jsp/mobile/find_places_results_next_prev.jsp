@@ -36,41 +36,30 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.HashMap" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ss_windowTitle" value='<%= NLT.get("navigation.myTeams") %>' scope="request"/>
-<%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
+	<c:if test="${!empty ss_prevPage}">
+		<a href="<ssf:url adapter="true" portletName="ss_forum" 
+			action="__ajax_mobile" 
+			operation="mobile_find_places" 
+			actionUrl="false" ><ssf:param 
+			name="searchText" value="${ss_searchText}"/><ssf:param 
+			name="pageNumber" value="${ss_prevPage}"/></ssf:url>"
+		><img border="0" src="<html:rootPath/>images/mobile/nl_left_20.png"/></a>
+	</c:if>
+	<c:if test="${empty ss_prevPage}">
+	  <img border="0" src="<html:rootPath/>images/mobile/nl_left_dis_20.png"
+	  	<ssf:alt tag=""/> />
+	</c:if>
 
-<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
-
-<div class="content">
-
-<c:set var="ss_hideMiniBlog" value="true" scope="request" />
-<%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
-
-  <div class="folders">
-    <div class="folder-content">
-	  <div class="folder-head"><ssf:nlt tag="navigation.myTeams"/></div>
-	  <c:forEach var="binder" items="${ss_mobileTeamsList}">
-			<jsp:useBean id="binder" type="java.util.Map" />
-			  <a 
-			  <c:if test="${binder._entityType == 'folder'}">
-			    href="<ssf:url adapter="true" portletName="ss_forum" folderId="${binder._docId}" 
-							action="__ajax_mobile" actionUrl="false" 
-							operation="mobile_show_folder" />"
-			  </c:if>
-			  <c:if test="${binder._entityType == 'workspace'}">
-			    href="<ssf:url adapter="true" portletName="ss_forum" binderId="${binder._docId}" 
-							action="__ajax_mobile" actionUrl="false" 
-							operation="mobile_show_workspace" />"
-			  </c:if>
-			  >
-  			<div class="folder-item">
-			  ${binder.title}
-			</div>
-			</a>
-	  </c:forEach>
-	</div>
-  </div>
-</div>
-
-</body>
-</html>
+	<c:if test="${!empty ss_nextPage}">
+		<a href="<ssf:url adapter="true" portletName="ss_forum" 
+			action="__ajax_mobile" 
+			operation="mobile_find_places" 
+			actionUrl="false" ><ssf:param 
+			name="searchText" value="${ss_searchText}"/><ssf:param 
+			name="pageNumber" value="${ss_nextPage}"/></ssf:url>"
+		><img border="0" src="<html:rootPath/>images/mobile/nl_right_20.png"/></a>
+	</c:if>
+	<c:if test="${empty ss_nextPage}">
+	  <img border="0" src="<html:rootPath/>images/mobile/nl_right_dis_20.png"
+	 	<ssf:alt tag=""/> />
+	</c:if>

@@ -1650,6 +1650,14 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				model.put(WebKeys.NEXT_PAGE, nextPage);
 				model.put(WebKeys.PREV_PAGE, prevPage);
 
+				//Setup the actions menu list
+				List actions = new ArrayList();
+				//BinderHelper.addActionsHome(request, actions);
+				BinderHelper.addActionsRecentPlaces(request, actions, binderId);
+				BinderHelper.addActionsSpacer(request, actions);
+				BinderHelper.addActionsLogout(request, actions);
+				model.put("ss_actions", actions);
+
 				return new ModelAndView(view, model);
 				
 			}
