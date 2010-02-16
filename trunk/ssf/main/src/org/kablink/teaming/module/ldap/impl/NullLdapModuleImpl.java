@@ -51,7 +51,7 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
 		return null;
 	}
 
-    public String readLdapGuidFromDirectory( String userName )
+    public String readLdapGuidFromDirectory( String userName, Long zoneId )
     {
     	return null;
     }

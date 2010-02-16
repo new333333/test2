@@ -83,6 +83,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.jobs.LdapSynchronization;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
@@ -94,6 +95,7 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
+import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -186,6 +188,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		this.definitionModule = definitionModule;
 	}
 
+	/**
+	 * @return
+	 */
+	private static ZoneModule getZoneModule()
+	{
+		return (ZoneModule) SpringContextUtil.getBean( "zoneModule" );
+	}// end getZoneModule()
+	
 	protected SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
@@ -229,8 +239,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		checkAccess(LdapOperation.manageLdap);
 		getSyncObject().setScheduleInfo(schedule.getScheduleInfo());
 	}
-    protected LdapSynchronization getSyncObject() {
-    	String jobClass = getLdapProperty(RequestContextHolder.getRequestContext().getZoneName(), SYNC_JOB);
+
+	/**
+	 * 
+	 * @param zoneName
+	 * @return
+	 */
+    protected LdapSynchronization getSyncObject( String zoneName )
+    {
+    	String jobClass = getLdapProperty( zoneName, SYNC_JOB );
        	if (Validator.isNotNull(jobClass)) {
     		try {
     			return (LdapSynchronization)ReflectHelper.getInstance(jobClass);
@@ -240,6 +257,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     	}
     	return (LdapSynchronization)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultLdapSynchronization.class);		   		
  
+    }// end getSyncObject()	
+	
+	protected LdapSynchronization getSyncObject()
+	{
+		return getSyncObject( RequestContextHolder.getRequestContext().getZoneName() );
     }	
 	
     private void logError(String msg, Exception e) {
@@ -695,16 +717,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * @param userName
      * @return
      */
-    public String readLdapGuidFromDirectory( String userName )
+    public String readLdapGuidFromDirectory( String userName, Long zoneId )
     {
-		Workspace zone;
 		LdapSchedule schedule;
+		String zoneName;
+		ZoneInfo zoneInfo;
 		Map mods;
 
-		zone = RequestContextHolder.getRequestContext().getZone();
-		schedule = new LdapSchedule( getSyncObject().getScheduleInfo(zone.getId() ) );
+		zoneInfo = getZoneModule().getZoneInfo( zoneId );
+		zoneName = zoneInfo.getZoneName();
+		
+		schedule = new LdapSchedule( getSyncObject( zoneName ).getScheduleInfo( zoneId ) );
 		mods = new HashMap();
-		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getZoneId()))
+		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs( zoneId ))
 		{
 			String ldapGuidAttribute;
 			
@@ -720,7 +745,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 				try
 				{
-					ctx = getUserContext(zone.getId(), config);
+					ctx = getUserContext( zoneId, config);
 				}
 				catch (NamingException ex)
 				{

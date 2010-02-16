@@ -41,6 +41,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
@@ -238,10 +239,16 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		try {
 			String ldapGuid;
 			LdapModule ldapModule;
+			Binder top;
+			Long zoneId;
 			
-			// Read this user's ldap guid from the ldap directory.
+			// Get the zone id from the zone name.
+	    	top = getCoreDao().findTopWorkspace( zoneName );
+	    	zoneId = top.getZoneId();
+
+	    	// Read this user's ldap guid from the ldap directory.
 			ldapModule = getLdapModule();
-			ldapGuid = ldapModule.readLdapGuidFromDirectory( username );
+			ldapGuid = ldapModule.readLdapGuidFromDirectory( username, zoneId );
 			
 			// Did we find an ldap guid for this user?
 			if ( ldapGuid != null && ldapGuid.length() > 0 )
