@@ -156,7 +156,7 @@
 	  <ssf:nlt tag="access.groups"/>
 	</c:if>
 	<c:if test="${!ssWorkArea.functionMembershipInherited}">
-	    <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addGroupsMenu${ss_namespace}', 40, 40);return false;">
+	    <a href="javascript:;" onClick="ss_clearTextareas();${ss_namespace}accessObj.showMenu(this, 'ss_addGroupsMenu${ss_namespace}', 40, 40);return false;">
 	      <ssf:nlt tag="access.addGroup"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
 	        src="<html:imagesPath/>pics/menudown.gif"/>
 	    </a>
@@ -247,7 +247,7 @@
 	  <ssf:nlt tag="access.users"/>
 	</c:if>
 	<c:if test="${!ssWorkArea.functionMembershipInherited}">
-	    <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addUsersMenu${ss_namespace}', 40, 40);return false;">
+	    <a href="javascript:;" onClick="ss_clearTextareas();${ss_namespace}accessObj.showMenu(this, 'ss_addUsersMenu${ss_namespace}', 40, 40);return false;">
 	      <ssf:nlt tag="access.addUser"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
 	      src="<html:imagesPath/>pics/menudown.gif"/></a>
     </c:if>
@@ -321,7 +321,7 @@
 	  <ssf:nlt tag="access.application.groups"/>
 	</c:if>
 	<c:if test="${!ssWorkArea.functionMembershipInherited}">
-	    <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addApplicationGroupsMenu${ss_namespace}', 40, 40);return false;">
+	    <a href="javascript:;" onClick="ss_clearTextareas();${ss_namespace}accessObj.showMenu(this, 'ss_addApplicationGroupsMenu${ss_namespace}', 40, 40);return false;">
 	      <ssf:nlt tag="access.addApplicationGroup"/>
 	      <c:if test="${ssWorkArea.workAreaType == 'zone'}">
 	        <span class="ss_smallprint" style="vertical-align: super;">*</span>
@@ -416,7 +416,7 @@
 	  <ssf:nlt tag="access.applications"/>
 	</c:if>
 	<c:if test="${!ssWorkArea.functionMembershipInherited}">
-	    <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addApplicationsMenu${ss_namespace}', 40, 40);return false;">
+	    <a href="javascript:;" onClick="ss_clearTextareas();${ss_namespace}accessObj.showMenu(this, 'ss_addApplicationsMenu${ss_namespace}', 40, 40);return false;">
 	      <ssf:nlt tag="access.addApplication"/>
 	      <c:if test="${ssWorkArea.workAreaType == 'zone'}">
 	        <span class="ss_smallprint" style="vertical-align: super;">*</span>
