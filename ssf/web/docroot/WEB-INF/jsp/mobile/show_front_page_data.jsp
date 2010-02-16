@@ -257,6 +257,57 @@
 			  </div>
 	  		</c:forEach>
         </c:if>
+
+    <c:if test="${!empty ss_prevPage || !empty ss_nextPage}">
+	  <div class="folder-head" style="letter-spacing: 0">
+		<table cellspacing="0" cellpadding="0" width="100%">
+	      <tr>
+			<td align="right">
+		  		<table cellspacing="0" cellpadding="0">
+					<tr>
+			  		<td>
+						<c:if test="${!empty ss_prevPage}">
+				  		<a href="<ssf:url adapter="true" portletName="ss_forum" 
+							folderId="${ssBinder.id}" 
+							action="__ajax_mobile" 
+							operation="mobile_show_front_page" 
+							actionUrl="false" ><ssf:param 
+							name="quickSearch" value="true"/><ssf:param 
+							name="searchText" value="${ss_searchText}"/><ssf:param 
+							name="tabId" value="${ss_tab_id}"/><ssf:param 
+							name="pageNumber" value="${ss_pageNumber-1}"/><ssf:param 
+							name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
+				  		><img border="0" src="<html:rootPath/>images/mobile/nl_left_20.png"/></a>
+						</c:if>
+						<c:if test="${empty ss_prevPage}">
+				  		  <img border="0" src="<html:rootPath/>images/mobile/nl_left_dis_20.png"/>
+						</c:if>
+			  		</td>
+			  		<td style="padding-left:20px;">
+						<c:if test="${!empty ss_nextPage}">
+				  		<a href="<ssf:url adapter="true" portletName="ss_forum" 
+							folderId="${ssBinder.id}" 
+							action="__ajax_mobile" 
+							operation="mobile_show_front_page" 
+							actionUrl="false" ><ssf:param 
+							name="quickSearch" value="true"/><ssf:param 
+							name="searchText" value="${ss_searchText}"/><ssf:param 
+							name="tabId" value="${ss_tab_id}"/><ssf:param 
+							name="pageNumber" value="${ss_pageNumber+1}"/><ssf:param 
+							name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
+				  		><img border="0" src="<html:rootPath/>images/mobile/nl_right_20.png"/></a>
+						</c:if>
+						<c:if test="${empty ss_nextPage}">
+				  		  <img border="0" src="<html:rootPath/>images/mobile/nl_right_dis_20.png"/>
+						</c:if>
+		      		</td>
+					</tr>
+		  		</table>
+			  </td>
+			</tr>
+		</table>
+	  </div>
+	</c:if>
   </div>
 </div>
 

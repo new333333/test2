@@ -46,6 +46,7 @@
 
 <div class="content">
 
+<c:set var="ss_hideMiniBlog" value="true" scope="request" />
 <c:set var="ss_showSearchResultsNextPrev" value="true" scope="request" />
 <%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
 
@@ -121,13 +122,13 @@
 							  timeStyle="short" dateStyle="medium" />
 						  </div>
 						</div>
-						<c:if test="${!empty entry.binderTitle}">
+						<c:if test="${!empty entry.binderPathName}">
 						  <div class="entry-type">
 							  <span>
 							    <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				  				  binderId="${entry._binderId}"
 				  				  action="__ajax_mobile" 
-				  				  operation="mobile_show_folder" />">${entry.binderTitle}</a>
+				  				  operation="mobile_show_folder" />">${entry.binderPathName}</a>
 							  </span>
 						  </div>
 						</c:if>
@@ -185,13 +186,13 @@
 							    </a>
 							  </span>
 							</div>
-						  <c:if test="${!empty entry.binderTitle}">
+						  <c:if test="${!empty entry.binderPathName}">
 						    <div>
 							  <span>
 							    <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				  				  binderId="${entry._binderId}"
 				  				  action="__ajax_mobile" 
-				  				  operation="mobile_show_folder" />">${entry.binderTitle}</a>
+				  				  operation="mobile_show_folder" />">${entry.binderPathName}</a>
 							  </span>
 						    </div>
 						  </c:if>
@@ -216,6 +217,7 @@
 							<c:out value="${entry.title}" escapeXml="true"/>
 							</a>
 						  </c:if>
+						</div>
 					      <c:if test="${!empty entry._entityPath}">
 						    <div class="entry-type">
 						     <span>
@@ -234,7 +236,6 @@
 						     </span>
 						    </div>
 					      </c:if>
-						</div>
 					  </div>
 					<%
 						entriesSeen.put(entry.get("_docId"), "1");

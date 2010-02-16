@@ -41,6 +41,7 @@
 
 <div class="content">
 
+<c:set var="ss_hideMiniBlog" value="true" scope="request" />
 <%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
 
   <div class="folders">

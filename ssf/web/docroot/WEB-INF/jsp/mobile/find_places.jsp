@@ -42,13 +42,15 @@
 
 <div class="content">
 
+<c:set var="ss_hideMiniBlog" value="true" scope="request" />
+<c:set var="ss_showFindPlacesResultsNextPrev" value="true" scope="request" />
 <%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
 
   <div class="folders">
     <div class="folder-content">
       <div class="folder-head"><ssf:nlt tag="mobile.searchResultsPlaces"/></div>
 	
-	<div>
+	<div style="text-align: left;" class="entry-actions">
 	  <form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
 					action="__ajax_mobile" actionUrl="true" 
 					binderId="${ssBinder.id}"
@@ -60,45 +62,9 @@
 	  </form>
 	</div>
 
-		<div align="right">
-		<table>
-		 <tr>
-		  <td>
-			<c:if test="${!empty ss_prevPage}">
-				<a href="<ssf:url adapter="true" portletName="ss_forum" 
-					action="__ajax_mobile" 
-					operation="mobile_find_places" 
-					actionUrl="false" ><ssf:param 
-					name="searchText" value="${ss_searchText}"/><ssf:param 
-					name="pageNumber" value="${ss_prevPage}"/></ssf:url>"
-				><img border="0" src="<html:rootPath/>images/mobile/nl_left_16.gif"/></a>
-			</c:if>
-			<c:if test="${empty ss_prevPage}">
-			  <img border="0" src="<html:rootPath/>images/mobile/nl_left_dis_16.gif"
-			  	<ssf:alt tag=""/> />
-			</c:if>
-		  </td>
-		  <td style="padding-left:20px;">
-			<c:if test="${!empty ss_nextPage}">
-				<a href="<ssf:url adapter="true" portletName="ss_forum" 
-					action="__ajax_mobile" 
-					operation="mobile_find_places" 
-					actionUrl="false" ><ssf:param 
-					name="searchText" value="${ss_searchText}"/><ssf:param 
-					name="pageNumber" value="${ss_nextPage}"/></ssf:url>"
-				><img border="0" src="<html:rootPath/>images/mobile/nl_right_16.gif"/></a>
-			</c:if>
-			<c:if test="${empty ss_nextPage}">
-			  <img border="0" src="<html:rootPath/>images/mobile/nl_right_dis_16.gif"
-			 	<ssf:alt tag=""/> />
-			</c:if>
-		  </td>
-		 </tr>
-		</table>
-		</div>
-
 		<c:forEach var="binder" items="${ssEntries}" >
-	      <div class="folder-item">
+	      <div class="entry">
+	       <div class="entry-title">
 			<a 
 			  <c:if test="${binder._entityType == 'folder'}">
 			    href="<ssf:url adapter="true" portletName="ss_forum" folderId="${binder._docId}" 
@@ -111,6 +77,7 @@
 							operation="mobile_show_workspace" />"
 			  </c:if>
 			>${binder.title}</a>
+		  </div>
 			<c:if test="${!empty binder._entityPath}">
 			  <div class="entry-type">
 				<span>
@@ -129,8 +96,12 @@
 				</span>
 			  </div>
 			 </c:if>
-		  </div>
+		 </div>
 		</c:forEach>
+
+      <div class="entry-actions">
+        <%@ include file="/WEB-INF/jsp/mobile/find_places_results_next_prev.jsp" %>
+      </div>
 
 	</div>
   </div>
