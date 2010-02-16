@@ -45,11 +45,9 @@ import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
-import javax.net.ssl.SSLContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.mina.filter.SSLFilter;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
@@ -64,6 +62,7 @@ import org.kablink.teaming.module.mail.EmailPoster;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.smtp.SMTPManager;
 import org.kablink.teaming.util.SessionUtil;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.subethamail.smtp.MessageContext;
@@ -71,113 +70,133 @@ import org.subethamail.smtp.MessageHandler;
 import org.subethamail.smtp.MessageHandlerFactory;
 import org.subethamail.smtp.RejectException;
 import org.subethamail.smtp.TooMuchDataException;
-import org.subethamail.smtp.command.StartTLSCommand;
-import org.subethamail.smtp.server.ConnectionContext;
+import org.subethamail.smtp.auth.LoginFailedException;
+import org.subethamail.smtp.auth.EasyAuthenticationHandlerFactory;
+import org.subethamail.smtp.auth.UsernamePasswordValidator;
 import org.subethamail.smtp.server.SMTPServer;
-import org.subethamail.smtp.server.io.DummySSLSocketFactory;
 
 
 public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPManager, SMTPManagerImplMBean, InitializingBean, DisposableBean {
 
-	protected Log logger = LogFactory.getLog(getClass());
+	private Log m_logger = LogFactory.getLog(getClass());
 	
-	protected boolean enabled = false;
-	protected boolean tls = false;
-	protected int port = 2525;
-	protected String bindAddress = null;
+	private boolean m_enabled = false;
+	private boolean m_tls = false;
+	private int m_port = 2525;
+	private String m_bindAddress = null;
+	private String m_username = null;
+	private String m_password = null;
 
-	protected SMTPServer server = null;
+	private SMTPServer m_server = null;
 	
 	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-		logger.debug("Inbound SMTP Server:  " + (enabled ? "Enabled." : "Disabled."));
+		m_enabled = enabled;
+		m_logger.debug("Inbound SMTP Server:  " + (enabled ? "Enabled." : "Disabled."));
 	}
 	public boolean isEnabled() {
-		return enabled;
+		return m_enabled;
 	}
 
 	public void setTls(boolean tls) {
-		this.tls = tls;
-		logger.debug("Inbound SMTP Server:  " + (tls ? "Will announce TLS support." : "Will not announce TLS support."));
+		m_tls = tls;
+		m_logger.debug("Inbound SMTP Server:  " + (tls ? "Will announce TLS support." : "Will not announce TLS support."));
 	}
 	public boolean isTls() {
-		return tls;
+		return m_tls;
 	}
 
 	public void setBindAddress(String bindAddress) {
-		if ((null != bindAddress) && (0 == bindAddress.length())) {
+		if (!(MiscUtil.hasString(bindAddress))) {
 			bindAddress = null;
 		}
-		this.bindAddress = bindAddress;
-		logger.debug("Inbound SMTP Server:  bindAddress is set to:  \"" + ((null == bindAddress) ? "null" : bindAddress) + "\".");
+		m_bindAddress = bindAddress;
+		m_logger.debug("Inbound SMTP Server:  m_bindAddress is set to:  \"" + ((null == bindAddress) ? "null" : bindAddress) + "\".");
 	}
 	public String getBindAddress() {
-		return bindAddress;
+		return m_bindAddress;
+	}
+	
+	public void setUsername(String username) {
+		if (!(MiscUtil.hasString(username))) {
+			username = null;
+		}
+		m_username = username;
+		m_logger.debug("Inbound SMTP Server:  m_username is set to:  \"" + ((null == username) ? "null" : username) + "\".");
+	}
+	public String getUsername() {
+		return m_username;
+	}
+	
+	public void setPassword(String password) {
+		if (!(MiscUtil.hasString(password))) {
+			password = null;
+		}
+		m_password = password;
+		m_logger.debug("Inbound SMTP Server:  m_password is set to:  \"" + ((null == password) ? "null" : "<sorry, it's not logged>") + "\".");
+	}
+	public String getPassword() {
+		return m_password;
 	}
 	
 	public void setPort(int port) {
-		this.port = port;
-		logger.debug("Inbound SMTP Server:  port is set to:  \"" + port + "\".");
+		m_port = port;
+		m_logger.debug("Inbound SMTP Server:  m_port is set to:  \"" + port + "\".");
 	}
 	public int getPort() {
-		return port;
+		return m_port;
 	}
 	
-	protected ZoneModule zoneModule;
-	public void setZoneModule(ZoneModule zoneModule)
-	{
-		this.zoneModule = zoneModule;
+	private ZoneModule m_zoneModule;
+	public void setZoneModule(ZoneModule zoneModule) {
+		m_zoneModule = zoneModule;
 	}
-	public ZoneModule getZoneModule()
-	{
-		return zoneModule;
+	public ZoneModule getZoneModule() {
+		return m_zoneModule;
 	}
 	
-	protected BinderModule binderModule;
-	public void setBinderModule(BinderModule binderModule)
-	{
-		this.binderModule = binderModule;
+	private BinderModule m_binderModule;
+	public void setBinderModule(BinderModule binderModule) {
+		m_binderModule = binderModule;
 	}
-	public BinderModule getBinderModule()
-	{
-		return binderModule;
+	public BinderModule getBinderModule() {
+		return m_binderModule;
 	}
 	
 	public void afterPropertiesSet() throws Exception {
-		// Is the inbound SMTP server is not enabled...
+		// Is the inbound SMTP m_server is not m_enabled...
 		if(!(isEnabled())) {
 			// ...bail.
 			return;
 		}
 		
-		// Which, if any, specific address is the inbound SMTP server
+		// Which, if any, specific address is the inbound SMTP m_server
 		// supposed to be bound to?
 		InetAddress	iNetAddr;
-		if ((null == this.bindAddress) || (0 == this.bindAddress.length())) {
+		if (!(MiscUtil.hasString(m_bindAddress))) {
 			iNetAddr = null;
-			logger.debug("Inbound SMTP Server:  No bindAddress, binding to all addresses.");
+			m_logger.debug("Inbound SMTP Server:  No m_bindAddress, binding to all addresses.");
 		}
-		else if (this.bindAddress.equals("localhost")) {
+		else if (m_bindAddress.equals("localhost")) {
 			iNetAddr = InetAddress.getLocalHost();
-			logger.debug("Inbound SMTP Server:  Binding to \"localhost\".");
+			m_logger.debug("Inbound SMTP Server:  Binding to \"localhost\".");
 		}
 		else {
 			try {
-				iNetAddr = InetAddress.getByName(bindAddress);
-				logger.debug("Inbound SMTP Server:  Binding to \"" + bindAddress + "\".");
+				iNetAddr = InetAddress.getByName(m_bindAddress);
+				m_logger.debug("Inbound SMTP Server:  Binding to \"" + m_bindAddress + "\".");
 			}
 			catch (UnknownHostException e) {
 				iNetAddr = null;
 				setEnabled(false);
-				logger.error("Inbound SMTP Server:  Cannot resolve bindAddress.  Inbound SMTP server will be disabled.", e);
+				m_logger.error("Inbound SMTP Server:  Cannot resolve m_bindAddress.  Inbound SMTP m_server will be disabled.", e);
 			}
 		}
-		logger.debug("Inbound SMTP Server:  " + ((null == iNetAddr) ? "Bound to all addresses." : "Bound to a specific address."));
+		m_logger.debug("Inbound SMTP Server:  " + ((null == iNetAddr) ? "Bound to all addresses." : "Bound to a specific address."));
 		
 		// If the bind address evaluation failed...
 		if(!(isEnabled())) {
 			// ...bail.
-			logger.debug("Inbound SMTP Server:  Address binding failed, inbound SMTP server is disabled.");
+			m_logger.debug("Inbound SMTP Server:  Address binding failed, inbound SMTP m_server is disabled.");
 			return;
 		}
 			
@@ -186,112 +205,105 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		// that the TLS handling needs to override.  If we don't do
 		// this first, it would override the SSLFilter setup in the TLS
 		// handling below.
-		this.server = new SMTPServer(new MessageHandlerFactory() {
-			public MessageHandler create(MessageContext ctx) {
-				return new Handler(ctx);
-			}
-		});
-		
-		// If the inbound SMTP server is supposed to support TLS...
-		if (this.tls) {
-			// ...put an SSLFilter into effect that has the proper
-			// ...cipher suites enabled in the SMTPServer's
-			// ...StartTLSCommand.
-			DummySSLSocketFactory socketFactory = new DummySSLSocketFactory();
-			SSLContext sslContext = socketFactory.getSSLContext();
-			String[] cipherSuites = sslContext.getSocketFactory().getSupportedCipherSuites();
-			if (logger.isDebugEnabled()) {
-				int cipherSuiteCount = ((null == cipherSuites) ? 0 : cipherSuites.length);
-				logger.debug("There are " + cipherSuiteCount + " supported cipher suites on the SSLContext.");
-				for (int i = 0; i < cipherSuiteCount; i += 1) {
-					logger.debug("...item " + (i + 1) + ":  " + cipherSuites[i]);
+		m_server = new SMTPServer(
+			// The MessageHandler to use for messages as they're
+			// received.
+			new MessageHandlerFactory() {
+				public MessageHandler create(MessageContext ctx) {
+					return new Handler();
 				}
 			}
-			SSLFilter sslFilter = new SSLFilter(sslContext);
-			sslFilter.setEnabledCipherSuites(cipherSuites);
-			StartTLSCommand.setSSLFilter(sslFilter);
+		);
+
+		// If we have both a username and password to authenticate
+		// with...
+		if (MiscUtil.hasString(m_username) && MiscUtil.hasString(m_password)) {
+			// ...set an AuthenticationHandler to handle it.
+			m_server.setAuthenticationHandlerFactory(new EasyAuthenticationHandlerFactory(new Authenticator()));
 		}
 		
-
 		// Finally, complete the initializations of the inbound SMTP
-		// server.
-		this.server.setAnnounceTLS(this.tls);
-		this.server.setBindAddress(iNetAddr);
-		this.server.setPort(this.port);
-		this.server.start();
+		// m_server.
+		m_server.setHideTLS(!m_tls);
+		m_server.setBindAddress(iNetAddr);
+		m_server.setPort(m_port);
+		m_server.start();
 	}
 
-	public void destroy() throws Exception
-	{
-		if(this.server != null)
-		{
-			this.server.stop();
+	public void destroy() throws Exception {
+		if(m_server != null) {
+			m_server.stop();
 		}
 	}
 
-	class Handler implements MessageHandler
-	{
-		MessageContext ctx;
-		String from;
-		List<Recipient> recipients; 
+	/*
+	 * Inner class that will service an authentication request into the
+	 * SMTP m_server. 
+	 */
+	private class Authenticator implements UsernamePasswordValidator {
+		public Authenticator() {
+			m_logger.debug("Inbound SMTP Server:  Authentication enabled.");
+		}
 		
-		public Handler(MessageContext ctx)
-		{
-			this.ctx = ctx;
-			this.recipients = new LinkedList<Recipient>();
+		public void login(String username, String password) throws LoginFailedException {
+			m_logger.debug("Inbound SMTP Server:  login('" + username + "')");
+			if ((!(MiscUtil.hasString(username))) || (!(username.equalsIgnoreCase(m_username))) ||
+			    (!(MiscUtil.hasString(password))) || (!(password.equals(m_password)))) {
+				m_logger.debug("...login failed.");
+				throw new LoginFailedException("Inbound SMTP server - Authentication Failed");
+			}
+			m_logger.debug("...login succeeded.");
+		}
+	}
+
+	/*
+	 * Inner class that manages messages received by the SMTP m_server.
+	 */
+	private class Handler implements MessageHandler {
+		private String m_from;
+		private List<Recipient> m_recipients; 
+		
+		public Handler() {
+			m_recipients = new LinkedList<Recipient>();
 		}
 
-		public List<String> getAuthenticationMechanisms()
-		{
-			return new ArrayList<String>();
+		public void done() {
+			// Nothing to do.
 		}
 		
-		public boolean auth(String clientInput, StringBuilder response, ConnectionContext ctx) throws RejectException
-		{
-			return true;
-		}
-
-		public void resetState()
-		{
+		public void from(String from) throws RejectException {
+			m_from = from;
 		}
 		
-		public void from(String from) throws RejectException
-		{
-			this.from = from;
-		}
-		
-		public void recipient(String recipient) throws RejectException
-		{
-			// Parse recipients now, so other recipients can be handled by someone else.
+		public void recipient(String recipient) throws RejectException {
+			// Parse m_recipients now, so other m_recipients can be handled
+			// by someone else.
 			String[] parts = recipient.split("@");
 			if(parts.length != 2)  throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " not known.");
 			String localPart = parts[0];
 			String hostname = parts[1];
-//			SessionUtil.sessionStartup();
-			try {
-				//no request context
-				Long zoneId = getZoneModule().getZoneIdByVirtualHost(hostname);
-				if (!getZoneModule().getZoneConfig(zoneId).getMailConfig().isSimpleUrlPostingEnabled()) {
-					throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable.  Simply URL posting is disabled.");
-				}
-				//skip modules to load info, so don't have to worry about user context
-				SimpleName simpleUrl = getCoreDao().loadSimpleNameByEmailAddress(localPart, zoneId);
-				if (simpleUrl == null || !simpleUrl.getBinderType().equals(EntityType.folder.name())) {
-					throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable.  Target entity is not a folder.");
-				}
-				Binder binder = getCoreDao().loadBinder(simpleUrl.getBinderId(), zoneId);
-				if(!binder.getPostingEnabled()) {
-					throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable.  Posting disabled on target binder.");
-				}
-				this.recipients.add(new Recipient(recipient, simpleUrl));
-			} finally {
-//				SessionUtil.sessionStop();	
+
+			// No request context.
+			Long zoneId = getZoneModule().getZoneIdByVirtualHost(hostname);
+			if (!getZoneModule().getZoneConfig(zoneId).getMailConfig().isSimpleUrlPostingEnabled()) {
+				throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable.  Simple URL posting is disabled.");
 			}
+			
+			// Skip modules to load info, so don't have to worry about
+			// user context.
+			SimpleName simpleUrl = getCoreDao().loadSimpleNameByEmailAddress(localPart, zoneId);
+			if (simpleUrl == null || !simpleUrl.getBinderType().equals(EntityType.folder.name())) {
+				throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable.  Target entity is not a folder.");
+			}
+			Binder binder = getCoreDao().loadBinder(simpleUrl.getBinderId(), zoneId);
+			if(!binder.getPostingEnabled()) {
+				throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable.  Posting disabled on target binder.");
+			}
+			m_recipients.add(new Recipient(recipient, simpleUrl));
 		}
 		
 		@SuppressWarnings("unchecked")
-		public void data(InputStream data) throws TooMuchDataException, IOException, RejectException
-		{
+		public void data(InputStream data) throws TooMuchDataException, IOException, RejectException {
 			SessionUtil.sessionStartup();
 			Session session = Session.getDefaultInstance(new Properties());
 			try {
@@ -299,18 +311,18 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 				msgs[0] = new MimeMessage(session, data);
 				boolean msgInitiallyDeleted = msgs[0].isSet(Flags.Flag.DELETED);
 				List errors = new ArrayList();
-				for(Recipient recipient : recipients) {
-					logger.debug("Delivering new message to " + recipient.email);			
+				for(Recipient recipient : m_recipients) {
+					m_logger.debug("Delivering new message to " + recipient.m_email);			
 					//Run as background processing agent, same as other posting jobs.  
-					User user = getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, recipient.simpleName.getZoneId());
+					User user = getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, recipient.m_simpleName.getZoneId());
 					RequestContextUtil.setThreadContext(user).resolve();
 					
-					Binder binder = getCoreDao().loadBinder(recipient.simpleName.getBinderId(),recipient.simpleName.getZoneId());
+					Binder binder = getCoreDao().loadBinder(recipient.m_simpleName.getBinderId(),recipient.m_simpleName.getZoneId());
 					EmailPoster processor = (EmailPoster)processorManager.getProcessor(binder,EmailPoster.PROCESSOR_KEY);
-					errors.addAll(processor.postMessages((Folder)binder, recipient.email, msgs, session, null));
+					errors.addAll(processor.postMessages((Folder)binder, recipient.m_email, msgs, session, null));
 					msgs[0].setFlag(Flags.Flag.DELETED, msgInitiallyDeleted);
 			   		RequestContextHolder.clear();
-			   		getCoreDao().clear(); // Clear session in case next from different zone.
+			   		getCoreDao().clear(); // Clear session in case next m_from different zone.
 				}
 				msgs[0].setFlag(Flags.Flag.DELETED, true);
 				if(errors.size() > 0) {
@@ -318,26 +330,24 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 					throw new RejectException(554, m.getSubject());
 				}
 			} catch (javax.mail.MessagingException ex) {
-				logger.debug("Error processing message to " + from + ": " + ex.getMessage());
+				m_logger.debug("Error processing message to " + m_from + ": " + ex.getMessage());
 				throw new RejectException(554, "Server error");
 			} finally {
 				SessionUtil.sessionStop();
 		   		RequestContextHolder.clear();
 			}
 		}
-	
-		public void resetMessageState()
-		{
-			from = null;
-			recipients = new LinkedList<Recipient>();
-		}
-		
-		protected class Recipient {
-			String email;
-			SimpleName simpleName;
+
+		/*
+		 * Inner class used to bind the email address of a recipient
+		 * with their simple name.
+		 */
+		private class Recipient {
+			private String m_email;
+			private SimpleName m_simpleName;
 			public Recipient(String email, SimpleName simpleName) {
-				this.email = email;
-				this.simpleName = simpleName;
+				m_email = email;
+				m_simpleName = simpleName;
 			}
 		}
 	}
