@@ -164,6 +164,9 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		for (LdapConnectionConfig config : getLdapConnectionConfigs(zoneId)) {
 			String search = "(" + config.getUserIdAttribute() + "={0})";
 			if (config.getUserSearches().size() > 0) {
+				Map<String, String> attributeMappings;
+				String ldapGuidAttributeName;
+				
 				DefaultSpringSecurityContextSource contextSource = null;
 				try {
 					String url;
@@ -198,8 +201,18 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 				}
 				contextSource.afterPropertiesSet();
 
-				SsfContextMapper contextMapper = new SsfContextMapper(
-						getZoneModule(), config.getMappings());
+				// Get the mapping of ldap attribute names to Teaming attribute names.
+				attributeMappings = config.getMappings();
+				
+				// Is the name of the ldap attribute that holds the ldap guid defined?
+				ldapGuidAttributeName = config.getLdapGuidAttribute();
+				if ( ldapGuidAttributeName != null && ldapGuidAttributeName.length() > 0 )
+				{
+					// Yes, map the name of the ldap attribute to the Teaming attribute, "ldapGuid"
+					attributeMappings.put( ldapGuidAttributeName, "ldapGuid" );
+				}
+				
+				SsfContextMapper contextMapper = new SsfContextMapper( getZoneModule(), attributeMappings );
 
 				for (LdapConnectionConfig.SearchInfo us : config
 						.getUserSearches()) {

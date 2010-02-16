@@ -34,6 +34,8 @@ package org.kablink.teaming.security.authentication.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.naming.NamingException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -45,6 +47,7 @@ import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.zone.ZoneException;
@@ -68,6 +71,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	private ProfileModule profileModule;
 	private String[] userModify;
 	private ReportModule reportModule;
+	private LdapModule ldapModule;
 
 	protected CoreDao getCoreDao() {
 		return coreDao;
@@ -104,6 +108,24 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	}
 
 	/**
+	 * 
+	 * @return
+	 */
+	protected LdapModule getLdapModule()
+	{
+		return ldapModule;
+	}
+	
+	/**
+	 * 
+	 * @param ldapModule
+	 */
+	public void setLdapModule( LdapModule ldapModule )
+	{
+		this.ldapModule = ldapModule;
+	}
+
+	/**
      * Called after bean is initialized.  
      */
  	public void afterPropertiesSet() {
@@ -113,12 +135,22 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	public User authenticate(String zoneName, String userName, String password,
 			boolean createUser, boolean passwordAutoSynch, boolean ignorePassword, 
 			Map updates, String authenticatorName) 
-		throws PasswordDoesNotMatchException, UserDoesNotExistException {
+		throws PasswordDoesNotMatchException, UserDoesNotExistException
+	{
 		validateZone(zoneName);
 		User user=null;
 		boolean hadSession = SessionUtil.sessionActive();
-		try {
-			if (!hadSession) SessionUtil.sessionStartup();	
+		boolean syncUser;
+		LdapModule ldapModule;
+	
+		ldapModule = getLdapModule();
+		syncUser = false;
+		
+		try
+		{
+			if (!hadSession)
+				SessionUtil.sessionStartup();	
+			
 			user = doAuthenticate(zoneName, userName, password, passwordAutoSynch, ignorePassword);
 			if (updates != null && !updates.isEmpty()) {
    				// We don't want to sync ldap attributes if the user is one of the 5
@@ -127,24 +159,23 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
    				if ( !MiscUtil.isSystemUserAccount( userName ) )
    				{
    					// No
-					Map mods = new HashMap();
-					for (int i = 0; i<userModify.length; ++i) {
-						Object val = updates.get(userModify[i]);
-						if (val != null) {
-							mods.put(userModify[i], val);
-						}					
-					}
-					if (!mods.isEmpty()) getProfileModule().modifyUserFromPortal(user, mods, null);
+   					syncUser = true;
    				}
 			}
-			if (user.getWorkspaceId() == null) getProfileModule().addUserWorkspace(user, null);
+			if (user.getWorkspaceId() == null)
+				getProfileModule().addUserWorkspace(user, null);
+			
 			if(authenticatorName != null)
 				getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
 		} 
 		catch (UserDoesNotExistException nu) {
  			if (createUser) {
  				user=getProfileModule().addUserFromPortal(userName, password, updates, null);
- 				if(user == null) throw nu;
+ 				if(user == null)
+ 					throw nu;
+
+ 				syncUser = true;
+ 				
  				if(authenticatorName != null)
  					getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
  			} 
@@ -152,6 +183,22 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		} finally {
 			if (!hadSession) SessionUtil.sessionStop();			
 		}
+
+		// Do we need to sync attributes from the ldap directory into Teaming for this user?
+		if ( syncUser && user != null )
+		{
+			// Yes
+			try
+			{
+				// The Teaming user name and the ldap user name may not be the same name.
+				ldapModule.syncUser( user.getName(), userName );
+			}
+			catch (NamingException ex)
+			{
+				// Nothing to do.
+			}
+		}
+		
 		return user;
 	}
 
@@ -189,7 +236,37 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		User user = null;
 
 		try {
-			user = getProfileDao().findUserByName(username, zoneName);
+			String ldapGuid;
+			LdapModule ldapModule;
+			
+			// Read this user's ldap guid from the ldap directory.
+			ldapModule = getLdapModule();
+			ldapGuid = ldapModule.readLdapGuidFromDirectory( username );
+			
+			// Did we find an ldap guid for this user?
+			if ( ldapGuid != null && ldapGuid.length() > 0 )
+			{
+				// Yes
+				try
+				{
+					ProfileModule profileModule;
+					
+					// Try to find the user in Teaming by their ldap guid.
+					profileModule = getProfileModule();
+					user = profileModule.findUserByLdapGuid( ldapGuid );
+				}
+				catch (NoUserByTheNameException ex)
+				{
+					// Nothing to do
+				}
+			}
+			
+			// Did we find the user by their ldap guid?
+			if ( user == null )
+			{
+				// No, try to find the user by their name.
+				user = getProfileDao().findUserByName(username, zoneName);
+			}
 		} catch (NoWorkspaceByTheNameException e) {
      		if (user == null) {
     			throw new UserDoesNotExistException("Unrecognized user [" 

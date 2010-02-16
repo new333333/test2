@@ -527,6 +527,7 @@
 			<property name="adminModule"><ref local="adminModule"/></property>						
 			<property name="profileModule"><ref local="profileModule"/></property>						
 			<property name="reportModule"><ref local="reportModule"/></property>						
+			<property name="ldapModule"><ref local="ldapModule"/></property>						
 	</bean>	
 	
 	<bean id="stringCheckUtil" class = "org.kablink.teaming.util.stringcheck.StringCheckUtil" depends-on="sPropsUtil">
