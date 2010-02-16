@@ -56,6 +56,11 @@ public interface LdapModule {
 	public LdapSchedule getLdapSchedule();
 	public void setLdapSchedule(LdapSchedule schedule);
 
+    public String readLdapGuidFromDirectory( String userName );
+
 	public void syncAll( boolean syncUsersAndGroups, boolean syncGuids, LdapSyncResults syncResults ) throws LdapSyncException;
+
+	public void syncUser( String teamingUserName, String ldapUserName ) throws NoUserByTheNameException,NamingException;
+	
 	public void syncUser(Long userId) throws NoUserByTheNameException,NamingException;
 }

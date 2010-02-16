@@ -134,4 +134,5 @@
   <query name="find-User-Company"><![CDATA[from org.kablink.teaming.domain.User user where lower(user.name)=:userName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
   <query name="find-User-Company-DeadOrAlive"><![CDATA[from org.kablink.teaming.domain.User user where lower(user.name)=:userName and user.zoneId=:zoneId]]></query>
   <query name="find-Principal-Company"><![CDATA[from org.kablink.teaming.domain.Principal user where lower(user.name)=:userName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
+  <query name="find-User-By-LdapGuid-Company"><![CDATA[from org.kablink.teaming.domain.User user where user.ldapGuid=:ldapGuid and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
 </hibernate-mapping>

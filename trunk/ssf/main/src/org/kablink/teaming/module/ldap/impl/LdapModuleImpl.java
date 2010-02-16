@@ -689,6 +689,113 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     }// end syncGuidAttributeForAllUsersAndGroups()
     
     
+    /**
+     * If the ldap configuration has the name of the ldap attribute that holds the guid then
+     * read the ldap guid from the ldap directory.
+     * @param userName
+     * @return
+     */
+    public String readLdapGuidFromDirectory( String userName )
+    {
+		Workspace zone;
+		LdapSchedule schedule;
+		Map mods;
+
+		zone = RequestContextHolder.getRequestContext().getZone();
+		schedule = new LdapSchedule( getSyncObject().getScheduleInfo(zone.getId() ) );
+		mods = new HashMap();
+		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getZoneId()))
+		{
+			String ldapGuidAttribute;
+			
+			// Does this ldap configuration have an ldap guid attribute defined?
+			ldapGuidAttribute = config.getLdapGuidAttribute();
+			if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
+			{
+				// Yes
+				LdapContext ctx;
+				String dn = null;
+				Map userAttributes;
+				String [] userAttributeNames;
+
+				try
+				{
+					ctx = getUserContext(zone.getId(), config);
+				}
+				catch (NamingException ex)
+				{
+					continue;
+				}
+				
+				// Get 
+				userAttributes = config.getMappings();
+				userAttributeNames = (String[])(userAttributes.keySet().toArray(sample));
+		
+				for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches())
+				{
+					try
+					{
+						String[] attributesToRead;
+						Attributes lAttrs;
+						int scope;
+						SearchControls sch;
+						String search;
+						String filter;
+						NamingEnumeration ctxSearch;
+						Binding bd;
+
+						scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
+						sch = new SearchControls(scope, 1, 0, userAttributeNames, false, false);
+			
+						search = "(" + config.getUserIdAttribute() + "=" + userName + ")";
+						filter = searchInfo.getFilter();
+						if(!Validator.isNull(filter))
+						{
+							search = "(&"+search+filter+")";
+						}
+						
+						ctxSearch = ctx.search( searchInfo.getBaseDn(), search, sch );
+						if (!ctxSearch.hasMore() )
+						{
+							continue;
+						}
+						
+						bd = (Binding)ctxSearch.next();
+
+						// Get the list of the ldap attribute names we want read from the ldap directory.
+						attributesToRead = getAttributeNamesToRead( userAttributeNames, config );
+						
+						lAttrs = ctx.getAttributes( bd.getNameInNamespace(), attributesToRead );
+						
+						getUpdates( userAttributeNames, userAttributes, lAttrs, mods, config.getLdapGuidAttribute() );
+
+						return (String)mods.get( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID );
+					}
+					catch (NamingException ex)
+					{
+						// Nothing to do.
+					}
+					finally
+					{
+						try
+						{
+							ctx.close();
+						}
+						catch (NamingException ex)
+						{
+							// Nothing to do
+						}
+					}
+
+				}// end for()
+			}
+		}// end for()
+		
+		// If we get here we either didn't find the user or we didn't read the ldap guid.
+		return null;
+    }// end readLdapGuidFromDirectory()
+    
+    
 	/**
 	 * Update a ssf user with an ldap person.  
 	 * @param zoneName
@@ -696,12 +803,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @throws NoUserByTheNameException
 	 * @throws NamingException
 	 */
-	public void syncUser(Long userId) 
-		throws NoUserByTheNameException, NamingException {
+	public void syncUser( String teamingUserName, String ldapUserName ) 
+		throws NoUserByTheNameException, NamingException
+	{
 		Workspace zone = RequestContextHolder.getRequestContext().getZone();
 
 		LdapSchedule schedule = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
-		User user = getProfileDao().loadUser(userId, schedule.getScheduleInfo().getZoneId());
 		Map mods = new HashMap();
 		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getZoneId())) {
 			LdapContext ctx = getUserContext(zone.getId(), config);
@@ -717,7 +824,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
 					SearchControls sch = new SearchControls(scope, 1, 0, userAttributeNames, false, false);
 		
-					String search = "(" + config.getUserIdAttribute() + "=" + user.getName() + ")";
+					String search = "(" + config.getUserIdAttribute() + "=" + ldapUserName + ")";
 					String filter = searchInfo.getFilter();
 					if(!Validator.isNull(filter)) {
 						search = "(&"+search+filter+")";
@@ -744,12 +851,35 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				} finally {
 					ctx.close();
 				}
-				updateUser(zone, user.getName(), mods);
+				updateUser(zone, teamingUserName, mods);
 				return;
 			}
 		}
-		throw new NoUserByTheNameException(user.getName());
-	}
+		throw new NoUserByTheNameException( teamingUserName );
+	}// end syncUser()
+	
+	/**
+	 * Update a ssf user with an ldap person.  
+	 * @param zoneName
+	 * @param loginName
+	 * @throws NoUserByTheNameException
+	 * @throws NamingException
+	 */
+	public void syncUser(Long userId) 
+		throws NoUserByTheNameException, NamingException
+	{
+		Workspace zone;
+		LdapSchedule schedule;
+		User user;
+		String userName;
+
+		zone = RequestContextHolder.getRequestContext().getZone();
+		schedule = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
+		user = getProfileDao().loadUser(userId, schedule.getScheduleInfo().getZoneId());
+
+		userName = user.getName();
+		syncUser( userName, userName );
+	}// end syncUser()
 	
 	/**
 	 * This routine alters group membership without updating the local caches.

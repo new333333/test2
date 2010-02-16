@@ -48,5 +48,6 @@ public class ParameterNames {
     public static final String ZONE_ID="zoneId";
     public static final String NAME="name";
     public static final String EMAIL_ADDRESS="emailAddress";
+    public static final String LDAP_UGID="ldapGuid";
 }
 

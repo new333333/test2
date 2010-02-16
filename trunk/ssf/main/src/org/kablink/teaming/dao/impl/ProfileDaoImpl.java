@@ -520,6 +520,49 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	   	}	        
  	}
 
+ 	/**
+ 	 * Find an user in the ss_principals table using the ldap guid.
+ 	 */
+ 	public User findUserByLdapGuid( final String ldapGuid, final Long zoneId ) 
+		throws NoPrincipalByTheNameException
+	{
+	   long begin = System.currentTimeMillis();
+	   try
+	   {
+	       User user = (User)getHibernateTemplate().execute(
+                new HibernateCallback()
+                {
+                    public Object doInHibernate(Session session) throws HibernateException
+                    {
+                 	   //only returns active users
+                 	   User user = (User)session.getNamedQuery( "find-User-By-LdapGuid-Company" )
+                             		.setString( ParameterNames.LDAP_UGID, ldapGuid )
+                             		.setLong( ParameterNames.ZONE_ID, zoneId )
+                             		.setCacheable( true )
+                             		.uniqueResult();
+                 	   
+                        //query ensures user is not deleted and not disabled
+                 	   if ( user == null )
+                 	   {
+                 		   throw new NoUserByTheNameException( ldapGuid ); 
+                       }
+                       
+                 	   return user;
+                    }
+                }
+             );		
+
+	       if (filterInaccessiblePrincipal(user) == null) 
+	    	   throw new NoUserByTheNameException( ldapGuid ); 
+
+	       return user;
+	   }
+	   finally
+	   {
+		   end(begin, "findUserByLdapGuid(String,Long)");
+	   }	        
+	}// end findUserByLdapGuid()
+
  	public Principal findPrincipalByName(final String name, final Long zoneId) 
  		throws NoPrincipalByTheNameException {
 		long begin = System.currentTimeMillis();

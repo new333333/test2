@@ -117,6 +117,9 @@ public interface ProfileDao {
  	public User findUserByName(String principalName, Long zoneId) 
 		throws NoUserByTheNameException;
 
+ 	public User findUserByLdapGuid( String ldapGuid, Long zoneId ) 
+ 		throws NoUserByTheNameException;
+
  	public Principal findPrincipalByName(String name, Long zoneId) 
  		throws NoPrincipalByTheNameException;
  	public Set<Long> getAllGroupMembership(Long principalId, Long zoneId);

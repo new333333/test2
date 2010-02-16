@@ -360,6 +360,14 @@ public interface ProfileModule {
     public SortedSet<User> getUsers(Collection<Long> userIds);
     public User findUserByName(String username) throws NoUserByTheNameException;
    
+    /**
+     * 
+     * @param ldapGuid
+     * @return
+     * @throws NoUserByTheNameException
+     */
+    public User findUserByLdapGuid( String ldapGuid ) throws NoUserByTheNameException;
+    
 	/**
 	 * Return a collection of user ids  They are either in the principal list
 	 * or members of groups in the principal list.

@@ -51,10 +51,22 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
 		return null;
 	}
 
+    public String readLdapGuidFromDirectory( String userName )
+    {
+    	return null;
+    }
+    
 	public void setLdapSchedule(LdapSchedule schedule) {
 	}
 
 	public void syncAll( boolean syncUsersAndGroups, boolean syncGuids, LdapSyncResults syncResults ) throws LdapSyncException {
+	}
+
+	/**
+	 * 
+	 */
+	public void syncUser( String teamingUserName, String ldapUserName ) throws NoUserByTheNameException, NamingException
+	{
 	}
 
 	public void syncUser(Long userId) throws NoUserByTheNameException, NamingException {

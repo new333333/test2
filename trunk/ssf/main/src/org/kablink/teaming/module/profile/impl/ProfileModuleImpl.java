@@ -1206,6 +1206,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		return getProfileDao().findUserByName(username, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	
+	/**
+	 * Find the User with the given ldap guid
+	 */
+	public User findUserByLdapGuid( String ldapGuid )  throws NoUserByTheNameException
+	{
+		return getProfileDao().findUserByLdapGuid( ldapGuid, RequestContextHolder.getRequestContext().getZoneId() );
+	}// end findUserByLdapGuid()
+	
 	public Collection<Principal> getPrincipalsByName(Collection<String> names) throws AccessControlException {
 		Map params = new HashMap();
 		params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());
