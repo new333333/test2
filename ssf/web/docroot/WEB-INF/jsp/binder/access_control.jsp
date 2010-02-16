@@ -41,6 +41,15 @@
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript" src="<html:rootPath />js/binder/ss_access.js"></script>
 <script type="text/javascript">
+function ss_clearTextareas() {
+	var taList = self.document.getElementsByTagName("textarea");
+	for (var i = 0; i < taList.length; i++) {
+		if (taList[i].id.indexOf("addPrincipalText${renderResponse.namespace}") >= 0 && 
+				taList[i].id.indexOf("${renderResponse.namespace}rolesForm") >= 0) {
+			taList[i].value = "";
+		}
+	}
+}
 function ss_treeShowIdAccessControl${renderResponse.namespace}(id, obj, action, namespace) {
 	ss_treeShowIdNoWS(id, obj, 'configure_access_control', namespace);
 }
