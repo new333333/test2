@@ -60,10 +60,13 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.ldap.LdapModule;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
@@ -268,6 +271,11 @@ public class WebHelper {
 		HttpSession ses = request.getSession();
 		final String infoId = (String) ses.getAttribute(WebKeys.TOKEN_INFO_ID);
 		if(infoId == null) { 
+			String ldapGuid;
+			LdapModule ldapModule;
+			final User user;
+			User tmpUser = null;
+			
 			String username = (String) ses.getAttribute(WebKeys.USER_NAME);
 			if(username == null) {
 				username = getRemoteUserName(request);
@@ -275,8 +283,35 @@ public class WebHelper {
 			if(username == null) {
 				username = SZoneConfig.getGuestUserName(getZoneNameByVirtualHost(request));
 			}
+			
+			// Read this user's ldap guid from the ldap directory.
+			ldapModule = getLdapModule();
+			ldapGuid = ldapModule.readLdapGuidFromDirectory( username, getZoneIdByVirtualHost( request ) );
+			
+			// Did we find an ldap guid for this user?
+			if ( ldapGuid != null && ldapGuid.length() > 0 )
+			{
+				// Yes
+				try
+				{
+					// Try to find the user in Teaming by their ldap guid.
+					tmpUser = getProfileDao().findUserByLdapGuid( ldapGuid, getZoneIdByVirtualHost( request ) );
+				}
+				catch (NoUserByTheNameException ex)
+				{
+					// Nothing to do
+				}
+			}
+
+			// Did we find the user by their ldap guid?
+			if ( tmpUser == null )
+			{
+				// No, try to find the user by their name.
+				tmpUser = getProfileDao().findUserByName(username, getZoneIdByVirtualHost(request));
+			}
+			
 			// put the context into the existing session
-			final User user = getProfileDao().findUserByName(username, getZoneIdByVirtualHost(request));
+			user = tmpUser;
 			putContext(ses, user);
 
 			if(!user.isShared() || 
@@ -521,6 +556,17 @@ public class WebHelper {
 	private static ZoneModule getZoneModule() {
 		return (ZoneModule) SpringContextUtil.getBean("zoneModule");
 	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	private static LdapModule getLdapModule()
+	{
+		return (LdapModule) SpringContextUtil.getBean( "ldapModule" );
+	}// end getLdapModule()
+	
+	
 	private static ProfileDao getProfileDao() {
 		return (ProfileDao) SpringContextUtil.getBean("profileDao");
 	}
