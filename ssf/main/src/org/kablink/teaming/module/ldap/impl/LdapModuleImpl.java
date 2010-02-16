@@ -1029,7 +1029,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// notInLdap is initially a list of all users returned from the call to loadObjects(...)
 		// When a user is read from the ldap directory they are removed from this list.
 		// Key: Teaming id
-		// Value: array of values read from db.
+		// Value: user name
 		Map<Long, String> notInLdap = new TreeMap();
 		
 		// As we find existing users to be sync'd they are added to ldap_existing
@@ -1500,12 +1500,26 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 	class GroupCoordinator
 	{
+		// m_listOfGroupsByLdapGuid is a list of all groups returned from the call to loadObjects(...)
+		// Key: ldap guid
+		// Value: array of values read from db.
+		Map<String, Object[]> m_listOfGroupsByLdapGuid = new TreeMap(String.CASE_INSENSITIVE_ORDER);
+
+		// ssGroups is a list of all groups returned from the call to loadObjects(...)
+		// Key: group name
+		// Value: array of values read from db.
 		Map ssGroups = new TreeMap(String.CASE_INSENSITIVE_ORDER);
-		//ssname groups that don't exists in ldap
+
+		// notInLdap is initially a list of all groups returned from the call to loadObjects(...)
+		// When a group is read from the ldap directory it removed from this list.
+		// Key: Teaming id
+		// Value: group name
 		Map<Long, String> notInLdap = new TreeMap();
-		//ldap group dn that have forum equivalents, contains membership attrs
-		Map ldapGroups = new TreeMap(String.CASE_INSENSITIVE_ORDER);
-		Map DnToRelative = new TreeMap(String.CASE_INSENSITIVE_ORDER);
+		
+		// dnGroups is a list of all groups returned from the call to loadObjects(...) plus
+		// any groups that we created during the sync process.
+		// Key: group dn
+		// Value: array of values read from db.
 		Map dnGroups = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 
 		Map groupAttributes;
@@ -1531,6 +1545,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			boolean delete,
 			LdapSyncResults syncResults )
 		{
+			ObjectControls objControls;
+			FilterControls filterControls;
+			
 			this.zoneId = zone.getId();
 			this.dnUsers = dnUsers;
 			this.sync = sync;
@@ -1541,19 +1558,36 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			createSyncSize = GetterUtil.getLong(getLdapProperty(zone.getName(), "create.flush.threshhold"), 100);
 			modifySyncSize = GetterUtil.getLong(getLdapProperty(zone.getName(), "modify.flush.threshhold"), 100);
 
-			//get list of existing groups.
-			List attrs = coreDao.loadObjects(new ObjectControls(Group.class, principalAttrs), 
-					new FilterControls(ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE), zone.getId());
+			// get list of existing groups in Teaming.
+			objControls = new ObjectControls( Group.class, principalAttrs );
+			filterControls = new FilterControls( ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE );
+			List attrs = coreDao.loadObjects( objControls, filterControls, zone.getId() );
+			
 			//convert list of objects to a Map of loginNames 
-			for (int i=0; i<attrs.size(); ++i) {
-				Object[] row = (Object [])attrs.get(i);
-				String ssName = (String)row[PRINCIPAL_NAME];
+			for (int i=0; i<attrs.size(); ++i)
+			{
+				String ldapGuid;
+				String ssName;
+				Object[] row;
+				
+				row = (Object [])attrs.get(i);
+				
+				ssName = (String)row[PRINCIPAL_NAME];
 				ssGroups.put(ssName, row);
-				if (!Validator.isNull((String)row[PRINCIPAL_FOREIGN_NAME])) {
+				
+				if (!Validator.isNull((String)row[PRINCIPAL_FOREIGN_NAME]))
+				{
 					dnGroups.put(row[PRINCIPAL_FOREIGN_NAME], row);
 				}
+				
+				// If this group has an ldap guid, add the group to the m_listOfGroupsByLdapGuid
+				ldapGuid = (String) row[PRINCIPAL_LDAP_GUID];
+				if ( ldapGuid != null && ldapGuid.length() > 0 )
+					m_listOfGroupsByLdapGuid.put( ldapGuid, row );
+				
 				//initialize all groups as not found unless already disabled or reserved
-				if (((Boolean)row[PRINCIPAL_DISABLED] == Boolean.FALSE) && (Validator.isNull((String)row[PRINCIPAL_INTERNALID]))) {
+				if (((Boolean)row[PRINCIPAL_DISABLED] == Boolean.FALSE) && (Validator.isNull((String)row[PRINCIPAL_INTERNALID])))
+				{
 					notInLdap.put((Long)row[PRINCIPAL_ID], ssName);
 				}
 			}
@@ -1565,57 +1599,122 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			this.groupAttributeNames = 	(String[])(groupAttributes.keySet().toArray(sample));
 		}
 
-		boolean record(String dn, String relativeName, Attributes lAttrs, String ldapGuidAttribute ) throws NamingException
+		/**
+		 * @param dn
+		 * @param relativeName
+		 * @param lAttrs
+		 * @param ldapGuidAttribute
+		 * @return
+		 * @throws NamingException
+		 */
+		boolean record(String dn, String teamingName, Attributes lAttrs, String ldapGuidAttribute ) throws NamingException
 		{
 			boolean isSSGroup = false;
-			if (logger.isDebugEnabled()) logger.debug("Retrieved group: '" + dn + "'");
-			
-			DnToRelative.put(dn, relativeName);
-			//see if group mapping exists
-			Object[] row = (Object [])dnGroups.get(dn);
+			boolean foundLdapGuid = false;
+			String ldapGuid = null;
 			String ssName;
-			if (row == null) { 
-				if (create) {
-					//see if name already exists
-					ssName = dnToGroupName(dn);
+			Object[] row = null;
+			
+			if (logger.isDebugEnabled())
+				logger.debug("Retrieved group: '" + dn + "'");
+			
+			// Do we have the name of the ldap attribute that holds the guid?
+			if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
+			{
+				// Yes
+				// Get the ldap guid that was read from the ldap directory for this user.
+				ldapGuid = getLdapGuidBase64Encoded( lAttrs, ldapGuidAttribute );
+				
+				// Does the ldap group have a guid?
+				if ( ldapGuid != null && ldapGuid.length() > 0 )
+				{
+					// Yes
+					// Is there a group in Teaming that has this ldap guid?
+					row = m_listOfGroupsByLdapGuid.get( ldapGuid ); 
+					if ( row != null )
+					{
+						// Yes
+						foundLdapGuid = true;
+						notInLdap.remove( row[PRINCIPAL_ID] );
+					}
+				}
+			}
+			
+			// Did we find the given ldap group in Teaming by their ldap guid?
+			if ( !foundLdapGuid )
+			{
+				// No, search for the ldap group in Teaming by its dn 
+				row = (Object [])dnGroups.get(dn);
+			}
+			
+			// Does this ldap group already exist in Teaming?
+			if ( foundLdapGuid == false && row == null )
+			{
+				// No, should we create the group?
+				if (create)
+				{
+					// Yes, see if name already exists
+					ssName = teamingName;
 					row = (Object[])ssGroups.get(ssName);
-					if (row != null) {
+					if (row != null)
+					{
 						logger.error(NLT.get("errorcode.ldap.groupexists", new Object[]{dn}));
-					} else {
+					}
+					else
+					{
 						Map userMods = new HashMap();
+						
 						//mapping may change the name and title
-						userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME,ssName);
-						userMods.put(ObjectKeys.FIELD_ENTITY_TITLE, dn);
 						getUpdates( groupAttributeNames, groupAttributes, lAttrs, userMods, ldapGuidAttribute );
-						if (logger.isDebugEnabled()) logger.debug("Creating group:" + ssName);
+						
+						userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME,ssName);
+						userMods.put(ObjectKeys.FIELD_ENTITY_TITLE, ssName);
+						userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
+						userMods.put(ObjectKeys.FIELD_ZONE, zoneId);
+
+						if (logger.isDebugEnabled())
+							logger.debug("Creating group:" + ssName);
+						
 						Group group = createGroup(zoneId, ssName, userMods); 
-						if(group != null) {
-							userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
-							userMods.put(ObjectKeys.FIELD_ZONE, zoneId);
-							dnGroups.put(dn, new Object[]{ssName, group.getId(), Boolean.FALSE, null, dn});
-							ldapGroups.put(dn, lAttrs);
+						if(group != null)
+						{
+							dnGroups.put(dn, new Object[]{ssName, group.getId(), Boolean.FALSE, null, dn, ldapGuid});
 							isSSGroup = true;
 						}
 					}
 				}
-			} else {
-				ssName = (String)row[PRINCIPAL_NAME];
-				if (sync) {
+			}
+			else
+			{
+				ssName = teamingName;
+				if (sync)
+				{
 					Map userMods = new HashMap();
 					if (logger.isDebugEnabled())
 						logger.debug("Updating group:" + ssName);
 					
+					// Map the attributes read from the ldap directory to Teaming attributes.
 					getUpdates( groupAttributeNames, groupAttributes, lAttrs, userMods, ldapGuidAttribute );
+
+					// We never want to change a group's name in Teaming.  Remove the "name" attribute
+					// from the list of attributes to be written to the db.
+					userMods.remove( ObjectKeys.FIELD_PRINCIPAL_NAME );
+
+					// Make sure the dn stored in Teaming is updated for this user.
+					userMods.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn );
+					userMods.put(ObjectKeys.FIELD_ENTITY_TITLE, ssName);
+					row[PRINCIPAL_FOREIGN_NAME] = dn;
+
 					updateGroup( zoneId, (Long)row[PRINCIPAL_ID], userMods, m_ldapSyncResults );
 				} 
+				
 				//exists in ldap, remove from missing list
 				notInLdap.remove(row[PRINCIPAL_ID]);
-				ldapGroups.put(dn, lAttrs);
 				isSSGroup = true;
 			}
 			
 			return isSSGroup;
-		}
+		}// end record()
 		
 	    /**
 	     * Create groups.
@@ -1765,6 +1864,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				while (ctxSearch.hasMore()) {
 					String groupName;
 					String fixedUpGroupName;
+					String teamingName;
+					Attribute id;
 					
 					Binding bd = (Binding)ctxSearch.next();
 					groupName = bd.getNameInNamespace();
@@ -1786,9 +1887,21 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					} else {
 						dn = relativeName;
 					}
+					
+					id = lAttrs.get( "cn" );
+					if ( id != null )
+					{
+						teamingName = idToName((String)id.get());
+					}
+					else
+						teamingName = dn;
+					
+					if ( teamingName == null )
+						continue;
+
 					//doing this one at a time is going to be slow for lots of groups
 					//not sure why it was changed for v2
-					if(groupCoordinator.record(dn, relativeName, lAttrs, ldapGuidAttribute ) && syncMembership ) { 
+					if(groupCoordinator.record(dn, teamingName, lAttrs, ldapGuidAttribute ) && syncMembership ) { 
 						//Get map indexed by id
 						Object[] gRow = groupCoordinator.getGroup(dn);
 						if (gRow == null) continue; //not created
