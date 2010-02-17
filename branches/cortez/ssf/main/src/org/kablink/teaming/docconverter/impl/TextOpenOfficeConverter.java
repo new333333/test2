@@ -219,10 +219,10 @@ public class TextOpenOfficeConverter
 			// Note the convertType's used are based on OpenOffice 3.0.
 			// See http://wiki.services.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0
 			String ifpLC = ifp.toLowerCase();
-			if      (ifpLC.endsWith(".odp") || ifpLC.endsWith(".ppt")) convertType = "XHTML Impress File";
-			else if (ifpLC.endsWith(".ods") || ifpLC.endsWith(".xls")) convertType = "XHTML Calc File";
-			else if (ifpLC.endsWith(".odg"))                           convertType = "XHTML Draw File";
-			else                                                       convertType = "XHTML Writer File";
+			if      (ifpLC.endsWith(".odp") || ifpLC.endsWith(".sxi") || ifpLC.endsWith(".ppt")) convertType = "XHTML Impress File";
+			else if (ifpLC.endsWith(".ods") ||                           ifpLC.endsWith(".xls")) convertType = "XHTML Calc File";
+			else if (ifpLC.endsWith(".odg"))                                                     convertType = "XHTML Draw File";
+			else                                                                                 convertType = "XHTML Writer File";
 
 			// Preparing properties for converting the document
 			propertyValues = new PropertyValue[2];
