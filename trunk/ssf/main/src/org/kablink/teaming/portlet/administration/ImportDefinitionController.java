@@ -124,7 +124,11 @@ public class ImportDefinitionController extends  SAbstractController {
 				for (String id:defs) {
 					if (id != null) getDefinitionModule().updateDefinitionReferences(id);
 				}
-				if (!errors.isEmpty()) response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
+				if (errors.isEmpty()) {
+					response.setRenderParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
+				} else {
+					response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
+				}
 			}
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			response.setRenderParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);

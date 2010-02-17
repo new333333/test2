@@ -395,7 +395,7 @@ public class BinderHelper {
 			model.put(WebKeys.LOGIN_URL, loginUrl.toString());
 			String logoutUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_LOGOUT;
 			String loginPostUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_LOGIN;
-			if(displayType.equals(MOBILE_PORTLET) || portletName.equals(MOBILE_PORTLET)) {
+			if(MOBILE_PORTLET.equals(displayType) || MOBILE_PORTLET.equals(portletName)) {
 				if(LOGOUT_SUCCESS_URL_MOBILE != null)
 					logoutUrl += "?logoutSuccessUrl=" + LOGOUT_SUCCESS_URL_MOBILE;
 				if(AUTHENTICATION_FAILURE_URL_MOBILE != null)
