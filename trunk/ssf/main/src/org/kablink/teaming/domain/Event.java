@@ -3274,7 +3274,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			Calendar end = new GregorianCalendar();
 			end.setTime(period.getEnd());
 			if (isAllDayEvent()) {
-				end.setTime(new org.joda.time.DateTime(period.getEnd()).minusDays(1).toDate());
+				start.setTime(new org.joda.time.DateTime(period.getStart()).plusMinutes(12*60 - 1).toDate());
+				end.setTime(new org.joda.time.DateTime(period.getStart()).plusMinutes(12*60 - 1).toDate());
 			}
 			
 			result.add(new Calendar[] { start, end }); 
