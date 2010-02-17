@@ -206,7 +206,6 @@
 				</td>
 			</tr>
 	</c:if>
-	<input type="hidden" name="timeZoneSensitive_${evid}" id="timeZoneSensitive_${evid}" checked="checked" value="true" />
 	<c:if test="${attMap.isFreeBusyActive}">
 		<tr>
 			<td colspan="4">
@@ -532,12 +531,13 @@
 				}
 			</c:if>
 
-			var eventTimeZoneSensitiveObj = document.getElementById("timeZoneSensitive_${evid}");
 			var startDateTimeZoneSensitiveObj = document.getElementById("${dateId}_timeZoneSensitive");
+			if (startDateTimeZoneSensitiveObj) {
+				startDateTimeZoneSensitiveObj.value = "true";
+			}
 			var endDateTimeZoneSensitiveObj = document.getElementById("${dateId2}_timeZoneSensitive");
-			if (eventTimeZoneSensitiveObj && startDateTimeZoneSensitiveObj && endDateTimeZoneSensitiveObj) {
-				startDateTimeZoneSensitiveObj.value = "" + eventTimeZoneSensitiveObj.checked;
-				endDateTimeZoneSensitiveObj.value = "" + eventTimeZoneSensitiveObj.checked;				
+			if (endDateTimeZoneSensitiveObj) {
+				endDateTimeZoneSensitiveObj.value = "true";				
 			}
 		
 			return true;
