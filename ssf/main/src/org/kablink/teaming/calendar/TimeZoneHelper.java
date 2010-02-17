@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.calendar;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeMap;
@@ -140,6 +142,16 @@ public class TimeZoneHelper {
 		cZoneIdConversion.put("NST", "Pacific/Auckland");
 		cZoneIdConversion.put("KST", "Asia/Seoul");
 		cZoneIdConversion.put("SBT", "Pacific/Guadalcanal");
+		
+	}
+	
+	//Special timezones that fall outside of the -11 to +12 hour rule. 
+	//Make sure to map these to a more normal id or our All Day events won't work
+	private static List<String> cZoneIdExclusion = new ArrayList();
+	static {
+		cZoneIdExclusion.add("Pacific/Enderbury");
+		cZoneIdExclusion.add("Pacific/Tongatapu");
+		cZoneIdExclusion.add("Pacific/Kiritimati");
 	}
 
 	private static TimeZone defaultTimeZone;
@@ -183,6 +195,7 @@ public class TimeZoneHelper {
 		if (cZoneIdConversion.containsKey(id)) {
 			return (String) cZoneIdConversion.get(id);
 		}
+		if (cZoneIdExclusion.contains(id)) return null;
 		
 		try {
 			DateTimeZone dateTimeZone = DateTimeZone.forID(id);
@@ -220,6 +233,7 @@ public class TimeZoneHelper {
 			if (id.length() == 3 && !id.equals("GMT")) continue; //UTC is only one left
 			String tzString = TimeZone.getTimeZone(id).getDisplayName(false, TimeZone.LONG, user.getLocale());
 			Integer o = TimeZone.getTimeZone(id).getRawOffset() / (1000*60*60);
+			if (o > 12 || 0 < -11) continue;  //Skip any timezones that are outside of our expected range or -11 to +12
 			offset = "(" + NLT.get("GMT") + " " + o.toString() + ":00) ";
 			String city = id;
 			if (id.indexOf("/") >= 0) city = id.substring(id.indexOf("/")+1);
