@@ -226,10 +226,10 @@ public class HtmlOpenOfficeConverter
 			// Note the convertType's used are based on OpenOffice 3.0.
 			// See http://wiki.services.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0
 			String ifpLC = ifp.toLowerCase();
-			if      (ifpLC.endsWith(".odp") || ifpLC.endsWith(".ppt")) convertType = "impress_html_Export";
-			else if (ifpLC.endsWith(".ods") || ifpLC.endsWith(".xls")) convertType = "HTML (StarCalc)";
-			else if (ifpLC.endsWith(".odg"))                           convertType = "draw_html_Export";
-			else                                                       convertType = "HTML (StarWriter)";
+			if      (ifpLC.endsWith(".odp") || ifpLC.endsWith(".sxi") || ifpLC.endsWith(".ppt")) convertType = "impress_html_Export";
+			else if (ifpLC.endsWith(".ods") ||                           ifpLC.endsWith(".xls")) convertType = "HTML (StarCalc)";
+			else if (ifpLC.endsWith(".odg"))                                                     convertType = "draw_html_Export";
+			else                                                                                 convertType = "HTML (StarWriter)";
 			
 			// Preparing properties for converting the document
 			propertyValues = new PropertyValue[2];
