@@ -275,6 +275,8 @@ Date nextDate = calendarNextDate.getTime();
 			if (entry2.containsKey(eventName + "#EndDate")) 
 				endDate = (java.util.Date)entry2.get(eventName + "#EndDate");
 			if (startDate == null) startDate = endDate;
+			String eventTimeZoneId = null;
+			if (entry2.containsKey(eventName + "#TimeZoneID")) eventTimeZoneId = (String)entry2.get(eventName + "#TimeZoneID");
 			if (startDate != null) {
 	%>
 	<c:set var="calMonthDate"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
@@ -298,10 +300,20 @@ Date nextDate = calendarNextDate.getTime();
     <c:set var="lastCalDayDate" value="${calDayDate}"/>
 	 <tr class="ss_mobile_calendar_entry_row">
 	   <td class="ss_mobile_calendar_time">
+		  <%
+		  	if (eventTimeZoneId != null) {
+		  %>
 		  <fmt:formatDate 
 		    timeZone="${ssUser.timeZone.ID}"
       		value="<%= startDate %>" type="time" timeStyle="short" 
       	  />
+      	  <%
+		  	} else {
+		  %>
+		  <span><ssf:nlt tag="event.allDay"/></span>
+		  <%
+		  	}
+		  %>
 	  	</td>
 	  	<td>
 		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
