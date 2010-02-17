@@ -141,7 +141,6 @@ public class DateHelper {
             }
             
             GregorianCalendar cal = new GregorianCalendar(); 
-            cal.setTimeInMillis(0);
             cal.set(Calendar.YEAR, Integer.parseInt(year));
             String month = inputData.getSingleValue(datePrefix + "month");
             if (month.equals("")) return null;
