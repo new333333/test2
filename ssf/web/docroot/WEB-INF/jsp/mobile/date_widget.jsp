@@ -45,7 +45,7 @@
   <c:set var="initYear"><fmt:formatDate value="${ss_dateWidgetDate}" pattern="yyyy" timeZone="${ssUser.timeZone.ID}"/></c:set>
 </c:if>
 	<select name="${ss_dateWidgetId}_date">
-	  <option value="" >--</option>
+	  <option value="0" >--</option>
 	  <option value="1" <c:if test="${initDay == '01'}">selected</c:if>>1</option>
 	  <option value="2" <c:if test="${initDay == '02'}">selected</c:if>>2</option>
 	  <option value="3" <c:if test="${initDay == '03'}">selected</c:if>>3</option>
@@ -80,7 +80,7 @@
 	</select>
 	
 	<select name="${ss_dateWidgetId}_month">
-	  <option value="" >--</option>
+	  <option value="0" >--</option>
 	  <option value="1" <c:if test="${initmonth == '01'}">selected</c:if>><ssf:nlt tag="calendar.abbreviation.january"/></option>
 	  <option value="2" <c:if test="${initmonth == '02'}">selected</c:if>><ssf:nlt tag="calendar.abbreviation.february"/></option>
 	  <option value="3" <c:if test="${initmonth == '03'}">selected</c:if>><ssf:nlt tag="calendar.abbreviation.march"/></option>
