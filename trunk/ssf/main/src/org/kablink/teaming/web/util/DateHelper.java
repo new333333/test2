@@ -144,6 +144,7 @@ public class DateHelper {
             cal.setTimeInMillis(0);
             cal.set(Calendar.YEAR, Integer.parseInt(year));
             String month = inputData.getSingleValue(datePrefix + "month");
+            if (month.equals("")) return null;
             int mn = Integer.parseInt(month);
             // the first (zero-th) select box is for unselected, or "--"
             // once the year is supplied, we default any other unselected fields
@@ -152,6 +153,7 @@ public class DateHelper {
             }
 
             String date = inputData.getSingleValue(datePrefix + "date");
+            if (date.equals("")) return null;
             int dd = Integer.parseInt(date);
             if (dd != 0) {
                 cal.set(Calendar.DAY_OF_MONTH, dd);
