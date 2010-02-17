@@ -415,7 +415,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		} else {
 			if (!(parentBinder instanceof Workspace))
 				throw new NotSupportedException(
-						"errorcode.notsupported.addbinder");
+						"errorcode.notsupported.addbinder.noWorkspace");
 			// allow users workspaces to be created for all users
 			if (parentBinder.isReserved()
 					&& ObjectKeys.PROFILE_ROOT_INTERNALID.equals(parentBinder
