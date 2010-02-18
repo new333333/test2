@@ -65,7 +65,12 @@
 	// - event imported in time zone 1 and updated into time zone 2
 	// - all day event
 %>
-<c:set var="timeZoneID" value="${ssUser.timeZone.ID}" />
+<c:if test="${initEvent.allDayEvent}">
+	<c:set var="timeZoneID" value="GMT" />
+</c:if>
+<c:if test="${!initEvent.allDayEvent}">
+	<c:set var="timeZoneID" value="${ssUser.timeZone.ID}" />
+</c:if>
 
 <%
 	/*
