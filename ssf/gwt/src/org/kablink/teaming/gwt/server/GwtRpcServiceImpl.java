@@ -38,13 +38,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.ExtensionInfo;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -52,7 +52,9 @@ import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
+import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
@@ -61,7 +63,6 @@ import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
-import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
@@ -348,14 +349,13 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 	/**
 	 * Return an Entry object for the given zone and entry id
 	 */
-	public GwtFolderEntry getEntry( String zoneUUID, String entryId ) throws Exception
+	public GwtFolderEntry getEntry( String zoneUUID, String entryId ) throws GwtTeamingException
 	{
 		FolderModule folderModule;
 		FolderEntry entry = null;
 		GwtFolderEntry folderEntry = null;
 		Binder parentBinder;
 		
-		//!!! Catch exceptions and do appropriate exception handling.
 		try
 		{
 			ZoneInfo zoneInfo;
@@ -407,10 +407,31 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 				folderEntry.setViewEntryUrl( url );
 			}
 		}
-		catch (Exception ex)
+		catch (NoFolderEntryByTheIdException nbEx)
 		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_FOLDER_ENTRY_BY_THE_ID_EXCEPTION );
 			throw ex;
 		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
+		catch (Exception e)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
+		}
+		
 		
 		return folderEntry;
 	}// end getEntry()
@@ -419,14 +440,13 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 	/**
 	 * Return a Folder object for the given folder id
 	 */
-	public GwtFolder getFolder( String zoneUUID, String folderId ) throws Exception
+	public GwtFolder getFolder( String zoneUUID, String folderId ) throws GwtTeamingException
 	{
 		BinderModule binderModule;
 		Binder binder = null;
 		GwtFolder folder = null;
 		Binder parentBinder;
 		
-		//!!! Catch exceptions and do appropriate exception handling.
 		try
 		{
 			ZoneInfo zoneInfo;
@@ -473,8 +493,28 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 				folder.setViewFolderUrl( url );
 			}
 		}
-		catch (Exception ex)
+		catch (NoBinderByTheIdException nbEx)
 		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
+		catch (Exception e)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
 			throw ex;
 		}
 		

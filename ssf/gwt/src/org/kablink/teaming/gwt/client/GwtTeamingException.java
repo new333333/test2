@@ -30,42 +30,60 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.service;
 
-import org.kablink.teaming.gwt.client.GwtFolder;
-import org.kablink.teaming.gwt.client.GwtFolderEntry;
-import org.kablink.teaming.gwt.client.GwtSearchCriteria;
-import org.kablink.teaming.gwt.client.GwtSearchResults;
-import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
-import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
-import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
+package org.kablink.teaming.gwt.client;
 
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-
+import com.google.gwt.user.client.rpc.IsSerializable;
+import com.google.gwt.user.client.rpc.SerializationException;
 
 /**
- * This interface defines the methods that can be called when we want to make a remote
- * procedure call.
+ * This can be used for all GWT Teaming exceptions.
  * @author jwootton
  *
  */
-@RemoteServiceRelativePath("gwtTeaming.rpc")
-public interface GwtRpcService extends RemoteService
+public class GwtTeamingException extends SerializationException
+	implements IsSerializable
 {
-	// Do a search given the criteria found in the GwtSearchCriteria object.
-	public GwtSearchResults executeSearch( GwtSearchCriteria searchCriteria ) throws Exception;
+	/**
+	 * This class defines all the possible types of exceptions that GwtTeamingException knows about.
+	 * @author jwootton
+	 *
+	 */
+	public enum ExceptionType implements IsSerializable
+	{
+		ACCESS_CONTROL_EXCEPTION,
+		NO_BINDER_BY_THE_ID_EXCEPTION,
+		NO_FOLDER_ENTRY_BY_THE_ID_EXCEPTION,
+		UNKNOWN;
+	}// end ExceptionType
 	
-	// Return an Entry object for the given entry id.
-	public GwtFolderEntry getEntry( String zoneUUID, String entryId ) throws GwtTeamingException;
-	
-	// Return a Folder object for the given folder id.
-	public GwtFolder getFolder( String zoneUUID, String folderId ) throws GwtTeamingException;
-	
-	public String getTutorialPanelState();
-	public ExtensionInfoClient[] getExtensionInfo();
-	public ExtensionInfoClient[] removeExtension(String id) throws ExtensionDefinitionInUseException;
-	public ExtensionFiles getExtensionFiles(String id, String zoneName);
 
-}// end GwtRpcService
+	private static final long serialVersionUID = -5972316795230937529L;
+	private ExceptionType m_type = ExceptionType.UNKNOWN;
+	
+	/**
+	 * 
+	 */
+	public GwtTeamingException()
+	{
+		m_type = ExceptionType.UNKNOWN;
+	}// end GwtTeamingException()
+	
+	/**
+	 * Return the type of exception we are dealing with.
+	 */
+	public ExceptionType getExceptionType()
+	{
+		return m_type;
+	}// end getExceptionType()
+
+	
+	/**
+	 * Set the type of exception we are dealing with.
+	 */
+	public void setExceptionType( ExceptionType type)
+	{
+		m_type = type;
+	}// end setExceptionType()
+	
+}// end GwtTeamingException
