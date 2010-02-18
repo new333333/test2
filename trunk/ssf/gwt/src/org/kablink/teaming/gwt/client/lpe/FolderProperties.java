@@ -35,6 +35,9 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
@@ -87,11 +90,31 @@ public class FolderProperties
 			{
 				String errMsg;
 				String cause;
+				GwtTeamingMessages messages;
 				
-				cause = t.getLocalizedMessage();
-				if ( cause == null )
-					cause = t.toString();
-				errMsg = GwtTeaming.getMessages().getFolderRPCFailed( cause );
+				messages = GwtTeaming.getMessages();
+				
+				if ( t instanceof GwtTeamingException )
+				{
+					ExceptionType type;
+				
+					// Determine what kind of exception happened.
+					type = ((GwtTeamingException)t).getExceptionType();
+					if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
+						cause = messages.errorAccessToFolderDenied( m_folderId );
+					else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
+						cause = messages.errorFolderDoesNotExist( m_folderId );
+					else
+						cause = messages.errorUnknownException();
+				}
+				else
+				{
+					cause = t.getLocalizedMessage();
+					if ( cause == null )
+						cause = t.toString();
+				}
+				
+				errMsg = messages.getFolderRPCFailed( cause );
 				Window.alert( errMsg );
 				m_rpcInProgress = false;
 			}// end onFailure()

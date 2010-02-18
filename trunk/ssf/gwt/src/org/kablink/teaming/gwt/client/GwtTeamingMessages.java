@@ -178,4 +178,11 @@ public interface GwtTeamingMessages extends Messages
 	String extensionsDlgVersion();
 	String extensionsDlgDateFormat();
 	
+	// Strings used for error messages
+	String errorAccessToEntryDenied( String entryId );
+	String errorAccessToFolderDenied( String folderId );
+	String errorEntryDoesNotExist( String entryId );
+	String errorFolderDoesNotExist( String folderId );
+	String errorUnknownException();
+
 }// end GwtTeamingMessages
