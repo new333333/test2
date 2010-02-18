@@ -33,6 +33,10 @@
  */
 %>
 <% //Date widget form element %>
+<c:if test="${empty timeZoneID}">
+	<c:set var="timeZoneID" value="${ssUser.timeZone.ID}" />
+</c:if>
+
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="org.kablink.teaming.util.CalendarHelper" %>
@@ -40,9 +44,9 @@
 <c:set var="initmonth" value="" />
 <c:set var="initYear" value="" />
 <c:if test="${!empty ss_dateWidgetDate}">
-  <c:set var="initDay"><fmt:formatDate value="${ss_dateWidgetDate}" pattern="dd" timeZone="${ssUser.timeZone.ID}"/></c:set>
-  <c:set var="initmonth"><fmt:formatDate value="${ss_dateWidgetDate}" pattern="MM" timeZone="${ssUser.timeZone.ID}"/></c:set>
-  <c:set var="initYear"><fmt:formatDate value="${ss_dateWidgetDate}" pattern="yyyy" timeZone="${ssUser.timeZone.ID}"/></c:set>
+  <c:set var="initDay"><fmt:formatDate value="${ss_dateWidgetDate}" pattern="dd" timeZone="${timeZoneID}"/></c:set>
+  <c:set var="initmonth"><fmt:formatDate value="${ss_dateWidgetDate}" pattern="MM" timeZone="${timeZoneID}"/></c:set>
+  <c:set var="initYear"><fmt:formatDate value="${ss_dateWidgetDate}" pattern="yyyy" timeZone="${timeZoneID}"/></c:set>
 </c:if>
 	<select name="${ss_dateWidgetId}_date">
 	  <option value="0" >--</option>
