@@ -111,7 +111,6 @@
 		<div style="padding:20px;"><ssf:nlt tag="folder.NoResults"/></div>
 	  </c:if>
 
-	</div>
   </div>
 </c:if>
 <c:if test="${ssDefinitionFamily == 'calendar'}">
