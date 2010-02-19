@@ -31,35 +31,63 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client.widgets;
+package org.kablink.teaming.gwt.client;
 
+
+import org.kablink.teaming.gwt.client.widgets.ContentControl;
+import org.kablink.teaming.gwt.client.widgets.FolderControl;
+import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
+import org.kablink.teaming.gwt.client.widgets.MastHead;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 
 
 /**
- * This widget will display the MastHead 
+ * This widget will display the main Teaming page
  */
-public class MastHead extends Composite
+public class GwtMainPage extends Composite
 {
+	private MastHead m_mastHead;
+	private MainMenuControl m_mainMenuCtrl;
+	private FolderControl m_folderCtrl;
+	private ContentControl m_contentCtrl;
+
 	/**
 	 * 
 	 */
-	public MastHead()
+	public GwtMainPage()
 	{
 		FlowPanel mainPanel;
-		Label label;
+		HorizontalPanel	hPanel;
 
 		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "gwtMastHead" );
-
-		label = new Label( "This is the Masthead" );
-		mainPanel.add( label );
-
+		mainPanel.addStyleName( "gwtMainPage" );
+		
+		// Add the MastHead to the page.
+		m_mastHead = new MastHead();
+		mainPanel.add( m_mastHead );
+		
+		// Add the main menu to the page.
+		m_mainMenuCtrl = new MainMenuControl();
+		mainPanel.add( m_mainMenuCtrl );
+		
+		// Create a horizontal panel to hold the folder control and the content control
+		hPanel = new HorizontalPanel();
+		
+		// Create the folder control.
+		m_folderCtrl = new FolderControl();
+		hPanel.add( m_folderCtrl );
+		
+		// Create the content control.
+		m_contentCtrl = new ContentControl();
+		hPanel.add( m_contentCtrl );
+		
+		mainPanel.add( hPanel );
+		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
-	}// end MastHead()
+	}// end GwtMainPage()
 
-}// end MastHead
+}// end GwtMainPage

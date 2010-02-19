@@ -40,26 +40,26 @@ import com.google.gwt.user.client.ui.Label;
 
 
 /**
- * This widget will display the MastHead 
+ * This widget will display Teaming's main menu control.
  */
-public class MastHead extends Composite
+public class MainMenuControl extends Composite
 {
 	/**
 	 * 
 	 */
-	public MastHead()
+	public MainMenuControl()
 	{
 		FlowPanel mainPanel;
 		Label label;
 
 		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "gwtMastHead" );
+		mainPanel.addStyleName( "gwtMainMenuControl" );
 
-		label = new Label( "This is the Masthead" );
+		label = new Label( "This is the MainMenuControl" );
 		mainPanel.add( label );
-
+		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
-	}// end MastHead()
+	}// end MainMenuControl()
 
-}// end MastHead
+}// end MainMenuControl

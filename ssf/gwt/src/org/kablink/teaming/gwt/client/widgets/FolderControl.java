@@ -40,26 +40,26 @@ import com.google.gwt.user.client.ui.Label;
 
 
 /**
- * This widget will display the MastHead 
+ * This widget will display the Folder control.
  */
-public class MastHead extends Composite
+public class FolderControl extends Composite
 {
 	/**
 	 * 
 	 */
-	public MastHead()
+	public FolderControl()
 	{
 		FlowPanel mainPanel;
 		Label label;
 
 		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "gwtMastHead" );
+		mainPanel.addStyleName( "gwtFolderControl" );
 
-		label = new Label( "This is the Masthead" );
+		label = new Label( "This is the FolderControl" );
 		mainPanel.add( label );
-
+		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
-	}// end MastHead()
+	}// end FolderControl()
 
-}// end MastHead
+}// end FolderControl
