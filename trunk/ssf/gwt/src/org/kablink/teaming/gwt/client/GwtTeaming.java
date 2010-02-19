@@ -156,62 +156,76 @@ public class GwtTeaming implements EntryPoint
 		rootPanel = RootPanel.get( "gwtMainPageDiv" );
 		if ( rootPanel != null )
 		{
-			FlowPanel flowPanel;
-			FlowPanel flowPanel2;
-			MastHead mastHead;
-			Button btn;
-			ClickHandler clkHandler;
-			Hidden hidden;
+			boolean experiment = false;
 			
-			// Has the main GWT page already been loaded.
-			if ( isGwtMainPageLoaded() )
+			if ( experiment == false )
 			{
-				String contentPanelUrl;
+				GwtMainPage mainPage;
 				
-				contentPanelUrl = getContentPanelUrl();
+				// Create the Teaming main page.
+				mainPage = new GwtMainPage();
+				rootPanel.add( mainPage );
+			}
+			else
+			{
+				FlowPanel flowPanel;
+				FlowPanel flowPanel2;
+				MastHead mastHead;
+				Button btn;
+				ClickHandler clkHandler;
+				Hidden hidden;
 				
-				Window.alert( "GwtMainPage.jsp is being loaded inside GwtMainPage.jsp " );
-				passUrlToMainPage( contentPanelUrl );
-				return;
+				// Has the main GWT page already been loaded.
+				if ( isGwtMainPageLoaded() )
+				{
+					String contentPanelUrl;
+					
+					contentPanelUrl = getContentPanelUrl();
+					
+					Window.alert( "GwtMainPage.jsp is being loaded inside GwtMainPage.jsp " );
+					passUrlToMainPage( contentPanelUrl );
+					return;
+				}
+				
+				flowPanel = new FlowPanel();
+				
+				// Add a hidden element that indicates that the main GWT page has already been loaded.
+				hidden = new Hidden();
+				hidden.setID( "gwtMainPageLoaded" );
+				flowPanel.add( hidden );
+				
+				mastHead = new MastHead();
+				flowPanel.add( mastHead );
+				
+				m_txtBox = new TextBox();
+				m_txtBox.setVisibleLength( 125 );
+				flowPanel.add( m_txtBox );
+				
+				clkHandler = new ClickHandler()
+				{
+					public void onClick( ClickEvent event )
+					{
+						String url;
+						
+						url = m_txtBox.getText();
+						setContentPanelUrl( url );
+						m_frame.setUrl( url );
+					}
+				};
+				btn = new Button( "Test", clkHandler );
+				flowPanel.add( btn );
+				
+				flowPanel2 = new FlowPanel();
+				flowPanel.add( flowPanel2 );
+				
+				m_frame = new Frame();
+				m_frame.setPixelSize( 700, 500 );
+				m_frame.getElement().setId( "gwtContentPanel" );
+				flowPanel2.add( m_frame );
+				
+				rootPanel.add( flowPanel );
 			}
 			
-			flowPanel = new FlowPanel();
-			
-			// Add a hidden element that indicates that the main GWT page has already been loaded.
-			hidden = new Hidden();
-			hidden.setID( "gwtMainPageLoaded" );
-			flowPanel.add( hidden );
-			
-			mastHead = new MastHead();
-			flowPanel.add( mastHead );
-			
-			m_txtBox = new TextBox();
-			m_txtBox.setVisibleLength( 125 );
-			flowPanel.add( m_txtBox );
-			
-			clkHandler = new ClickHandler()
-			{
-				public void onClick( ClickEvent event )
-				{
-					String url;
-					
-					url = m_txtBox.getText();
-					setContentPanelUrl( url );
-					m_frame.setUrl( url );
-				}
-			};
-			btn = new Button( "Test", clkHandler );
-			flowPanel.add( btn );
-			
-			flowPanel2 = new FlowPanel();
-			flowPanel.add( flowPanel2 );
-			
-			m_frame = new Frame();
-			m_frame.setPixelSize( 700, 500 );
-			m_frame.getElement().setId( "gwtContentPanel" );
-			flowPanel2.add( m_frame );
-			
-			rootPanel.add( flowPanel );
 			return;
 		}
 		

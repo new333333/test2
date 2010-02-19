@@ -36,30 +36,33 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Frame;
 
 
 /**
- * This widget will display the MastHead 
+ * This widget will display the Teaming content for a given folder/workspace
  */
-public class MastHead extends Composite
+public class ContentControl extends Composite
 {
+	private Frame m_frame;
+	
 	/**
 	 * 
 	 */
-	public MastHead()
+	public ContentControl()
 	{
 		FlowPanel mainPanel;
-		Label label;
 
 		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "gwtMastHead" );
+		mainPanel.addStyleName( "gwtContentControl" );
 
-		label = new Label( "This is the Masthead" );
-		mainPanel.add( label );
-
+		m_frame = new Frame();
+		m_frame.setPixelSize( 700, 500 );
+		m_frame.getElement().setId( "gwtContentControl" );
+		mainPanel.add( m_frame );
+		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
-	}// end MastHead()
+	}// end ContentControl()
 
-}// end MastHead
+}// end ContentControl
