@@ -445,14 +445,31 @@ public class BinderHelper {
 				model.put(WebKeys.USER_FOLDER_PROPERTIES_OBJ, userFolderProperties);
 				
 				Boolean brandingAccess = true;
+				Binder binder = null;
 				try {
-					Binder binder = bs.getBinderModule().getBinder(binderId);
+					binder = bs.getBinderModule().getBinder(binderId);
 					brandingAccess = bs.getBinderModule().checkAccess(binder.getBrandingSource().getId(), user);
 				} catch(AccessControlException e) {
 					brandingAccess = false;
 				} catch(Exception e) {}
+				model.put(WebKeys.BRANDING_BINDER, binder);
 				model.put(WebKeys.ACCESS_BRANDING, brandingAccess);
 			}
+		} else {
+			Boolean brandingAccess = true;
+			Binder topBinder = null;
+			try {
+				topBinder = bs.getWorkspaceModule().getTopWorkspace();
+				brandingAccess = bs.getBinderModule().checkAccess(topBinder.getBrandingSource().getId(), user);
+			} catch(AccessControlException e) {
+				try {
+					topBinder = bs.getWorkspaceModule().getWorkspace(user.getWorkspaceId());
+				} catch(Exception e2) {
+					brandingAccess = false;					
+				}
+			} catch(Exception e) {}
+			model.put(WebKeys.BRANDING_BINDER, topBinder);
+			model.put(WebKeys.ACCESS_BRANDING, brandingAccess);
 		}
 		if ("standalone".equals(SPropsUtil.getString("deployment.portal"))) {
 			model.put((WebKeys.STAND_ALONE), true);

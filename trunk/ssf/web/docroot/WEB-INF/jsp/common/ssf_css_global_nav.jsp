@@ -84,6 +84,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	/*  height:60px;       60 px is suggested. Don't forget to define specific height for graphics */
 	overflow:hidden;	/* This chops off any overhanging divs */
 	}	
+#ss_branding p {
+	margin-top: 0px !important;
+	padding: 0px !important;
+	}	
 		
 	/* MASTHEAD CODE */
 	
