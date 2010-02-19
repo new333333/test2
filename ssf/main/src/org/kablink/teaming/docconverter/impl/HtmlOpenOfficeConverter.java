@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,17 +30,14 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-/*
+
+/**
  * Created on Jun 24, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 package org.kablink.teaming.docconverter.impl;
 
 import java.io.File;
 
-//UNO API
 import com.sun.star.comp.helper.Bootstrap;
 import com.sun.star.bridge.XUnoUrlResolver;
 import com.sun.star.uno.XComponentContext;
@@ -54,11 +51,16 @@ import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiComponentFactory;
 
 import org.kablink.teaming.docconverter.HtmlConverter;
+import org.kablink.teaming.docconverter.util.OpenOfficeHelper;
+import org.kablink.teaming.web.util.MiscUtil;
+
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 
 /**
+ * Performs file conversions to HTML using OpenOffice.
+ * 
  * The <code>Converter</code> class uses the {@link Export Export} 
  * technology according to the properties provided in a given 
  * configuration file.  The configuration file is assumed to be 
@@ -66,6 +68,7 @@ import org.springframework.beans.factory.InitializingBean;
  *
  *	IMPORTANT: OpenOffice Server must be running; to start:
  *					% C:\Program Files\OpenOffice.org 2.0\program\soffice.exe "-accept=socket,port=8100;urp;"
+ *
  * @author rsordillo
  * @version 1.00
  * @see Export Export
@@ -215,21 +218,27 @@ public class HtmlOpenOfficeConverter
 			objectDocumentToStore = xcomponentloader.loadComponentFromURL(url, "_blank", 0, propertyValues);
 			if (objectDocumentToStore == null)
 			{
-				logger.error("OpenOffice Html Converter, could not load file: " + url);
+				logger.error("HtmlOpenOfficeConverter.convert( \"Could not load file '" + url + "'\" )");
 				return;
 			}
 			
 			// Getting an object that will offer a simple way to store a document to a URL.
 			xstorable = (XStorable) UnoRuntime.queryInterface(XStorable.class, objectDocumentToStore);
 	      
-			// Determine convert type based on input file name extension.
-			// Note the convertType's used are based on OpenOffice 3.0.
-			// See http://wiki.services.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0
-			String ifpLC = ifp.toLowerCase();
-			if      (ifpLC.endsWith(".odp") || ifpLC.endsWith(".sxi") || ifpLC.endsWith(".ppt")) convertType = "impress_html_Export";
-			else if (ifpLC.endsWith(".ods") ||                           ifpLC.endsWith(".xls")) convertType = "HTML (StarCalc)";
-			else if (ifpLC.endsWith(".odg"))                                                     convertType = "draw_html_Export";
-			else                                                                                 convertType = "HTML (StarWriter)";
+			// Determine the convert type based on the input file
+			// name's extension.
+			convertType = OpenOfficeHelper.getConvertType(
+				OpenOfficeHelper.ConvertType.VIEW,
+				OpenOfficeHelper.getExtension(ifp));
+			
+			// Did we arrive at a convert type for this file name
+			// extension?
+			if (!(MiscUtil.hasString(convertType))) {
+				// No!  Log the error and bail.
+				logger.error("HtmlOpenOfficeConverter.convert( \"Could not determine the convert type for '" + ifp + "' type files.\" )");
+				return;
+			}
+			logger.debug("HtmlOpenOfficeConverter.convert( \"Using convert type '" + convertType + "' for '" + url + "' \" )");
 			
 			// Preparing properties for converting the document
 			propertyValues = new PropertyValue[2];
