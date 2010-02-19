@@ -110,12 +110,6 @@ public class AdvancedSearchController extends AbstractBinderController {
 			return ajaxGetEntryAttributeValue(request, response);
 		}
 		Map<String,Object> model = new HashMap();
-		//Set up the standard beans
-		BinderHelper.setupStandardBeans(this, request, response, model);
-
-		if (request.getWindowState().equals(WindowState.NORMAL)) 
-			return BinderHelper.CommonPortletDispatch(this, request, response);
-		
 		String strBinderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		model.put(WebKeys.BINDER_ID, strBinderId);
 		Long binderId = null;
@@ -125,6 +119,12 @@ public class AdvancedSearchController extends AbstractBinderController {
 			model.put(WebKeys.BINDER, binder);
 		}
         
+		//Set up the standard beans
+		BinderHelper.setupStandardBeans(this, request, response, model, binderId);
+
+		if (request.getWindowState().equals(WindowState.NORMAL)) 
+			return BinderHelper.CommonPortletDispatch(this, request, response);
+		
         // this is necessary for the breadcrumbs and places choose
         try {
         	Workspace top = getWorkspaceModule().getTopWorkspace();

@@ -34,16 +34,9 @@
 %>
 <% //Branding view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${!empty ssBinder}">
-<c:set var="binder" value="${ssBinder}"/>
+<c:if test="${!empty ssBrandingBinder}">
+<c:set var="binder" value="${ssBrandingBinder}"/>
 <jsp:useBean id="binder" type="org.kablink.teaming.domain.Binder" />
-<%
-	//See if there is branding here or up the ancestor tree
-	while (binder != null) {
-		if (binder.getBranding() != null) break;
-		binder = binder.getParentBinder();
-	}
-%>
 <c:if test="${!empty binder && !empty binder.brandingSource.branding && ss_accessBranding}">
   <div id="ss_branding">
     <ssf:markup entity="${binder.brandingSource}">${binder.brandingSource.branding}</ssf:markup>

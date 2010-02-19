@@ -655,6 +655,7 @@ public class WebKeys {
 	public static final String BLOG_MONTH_TITLES="ssBlogMonthTitles"; 
 	public static final String BLOG_MONTH_URLS="ssBlogMonthUrls"; 
 	public static final String BLOG_REPLY="ssBlogReply";
+	public static final String BRANDING_BINDER="ssBrandingBinder";
 	public static final String IN_IFRAME_ADD_ENTRY="ssInIFrameAddEntry";
 	public static final String BLOG_REPLY_COUNT="ssBlogReplyCount"; 
     public static final String CALENDAR_IMPORT_TOOLBAR="ssCalendarImportToolbar";
