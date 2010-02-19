@@ -30,34 +30,20 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.lucene;
+package org.kablink.teaming.lucene.analyzer;
 
-/**
- * @author Roy
- *
- */
-public class TagObject implements Comparable {
+import java.io.Reader;
 
-		private String tagName;
-		private int tagFreq;
-		
-		public int getTagFreq() {
-			return tagFreq;
-		}
-		public void setTagFreq(int tagFreq) {
-			this.tagFreq = tagFreq;
-		}
-		public String getTagName() {
-			return tagName;
-		}
-		public void setTagName(String tagName) {
-			this.tagName = tagName;
-		}
-		
-		public int compareTo(Object anotherTag) throws ClassCastException {
-		    if (!(anotherTag instanceof TagObject))
-		      throw new ClassCastException("A tag object expected.");
-		    String anotherTagName = ((TagObject) anotherTag).getTagName();  
-		    return this.tagName.compareToIgnoreCase(anotherTagName);    
-		  }
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.CharTokenizer;
+import org.apache.lucene.analysis.TokenStream;
+
+public class NullAnalyzer extends Analyzer {
+	public TokenStream tokenStream(String fieldName, Reader reader) {
+		return new CharTokenizer(reader) {
+			protected boolean isTokenChar(char c) {
+				return true;
+			}
+		};
+	}
 }

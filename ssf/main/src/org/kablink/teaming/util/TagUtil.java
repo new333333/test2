@@ -47,7 +47,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.lucene.LanguageTaster;
+import org.kablink.teaming.lucene.util.LanguageTaster;
 
 
 

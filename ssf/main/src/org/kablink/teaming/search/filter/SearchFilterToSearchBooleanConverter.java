@@ -53,7 +53,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.lucene.LanguageTaster;
+import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.search.BasicIndexUtils;

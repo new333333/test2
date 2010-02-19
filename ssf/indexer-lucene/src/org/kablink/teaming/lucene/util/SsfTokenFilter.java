@@ -30,7 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.lucene;
+package org.kablink.teaming.lucene.util;
 
 import java.io.IOException;
 import org.apache.lucene.analysis.Token;

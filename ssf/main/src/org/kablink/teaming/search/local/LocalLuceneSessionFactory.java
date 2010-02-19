@@ -32,82 +32,38 @@
  */
 package org.kablink.teaming.search.local;
 
-import java.io.IOException;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import org.kablink.teaming.lucene.LuceneException;
-import org.kablink.teaming.lucene.LuceneHelper;
+import org.kablink.teaming.lucene.LuceneProviderManager;
 import org.kablink.teaming.search.AbstractLuceneSessionFactory;
 import org.kablink.teaming.search.LuceneReadSession;
-import org.kablink.teaming.search.LuceneSession;
 import org.kablink.teaming.search.LuceneWriteSession;
-import org.kablink.teaming.util.Constants;
-import org.kablink.teaming.util.FileHelper;
 import org.springframework.beans.factory.DisposableBean;
-
 
 public class LocalLuceneSessionFactory extends AbstractLuceneSessionFactory 
 implements DisposableBean, LocalLuceneSessionFactoryMBean {
     
-	private String indexRootDir;
-	private static ConcurrentHashMap<String,String> indexNameMap= new ConcurrentHashMap();
+	private LuceneProviderManager luceneProviderManager;
 	
+	public LuceneProviderManager getLuceneProviderManager() {
+		return luceneProviderManager;
+	}
 
+	public void setLuceneProviderManager(LuceneProviderManager luceneProviderManager) {
+		this.luceneProviderManager = luceneProviderManager;
+	}
+	
 	public LuceneReadSession openReadSession(String indexName) {
-        return (LuceneReadSession) openSession(indexName, true);
+        return new LocalLuceneReadSession(luceneProviderManager.getProvider(indexName));
     }
 	
 	public LuceneWriteSession openWriteSession(String indexName) {
-        return (LuceneWriteSession) openSession(indexName, false);
+        return new LocalLuceneWriteSession(luceneProviderManager.getProvider(indexName));
     }
 	
-	private LuceneSession openSession(String indexName, boolean read) {
-		String indexDirPath = getIndexDirPath(indexName);
-		
-		try {
-			FileHelper.mkdirsIfNecessary(indexDirPath);
-		} catch (IOException e) {
-			throw new LuceneException(e);
-		}
-		if (!indexNameMap.containsKey(indexName)) {
-			indexNameMap.put(indexName, indexDirPath);
-			LuceneHelper.unlock(indexDirPath);
-		}
-
-		if(read)
-			return new LocalLuceneReadSession(indexDirPath);
-		else
-			return new LocalLuceneWriteSession(indexDirPath);
-	}
-	
-	public void setIndexRootDir(String indexRootDir) {
-		if(indexRootDir.endsWith(Constants.SLASH))
-			this.indexRootDir = indexRootDir;
-		else
-			this.indexRootDir = indexRootDir + Constants.SLASH;
-	}
-	
-	public String getIndexRootDir() {
-		return indexRootDir;
-	}
-	
-	private String getIndexDirPath(String indexName) {
-		return indexRootDir + indexName;
-	}
-
 	public void destroy() throws Exception {
-		String indexDirPath = "";
-		if (indexNameMap.size() == 0) return;
-		Iterator iter = indexNameMap.keySet().iterator();
-		while (iter.hasNext()) {
-			indexDirPath = indexNameMap.get(iter.next());
-			LuceneHelper.closeAll(indexDirPath);
-			LuceneHelper.unlock(indexDirPath);
-		}
-		
+		luceneProviderManager.close();
 	}
 
 	public Map<String, String> getDisplayProperties() {

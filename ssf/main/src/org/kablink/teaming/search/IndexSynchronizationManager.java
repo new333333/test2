@@ -54,8 +54,6 @@ public class IndexSynchronizationManager {
 
 	private static final ThreadLocal requests = new ThreadLocal();
 	
-	private static final ThreadLocal autoFlushTL = new ThreadLocal();
-	
 	private static final ThreadLocal nodeNamesTL = new ThreadLocal();
 	
 	private static final ThreadLocal forceSequentialTL = new ThreadLocal();
@@ -119,32 +117,7 @@ public class IndexSynchronizationManager {
     		
     	getRequests().addDeleteRequest(term);
     }
-    
-    /**
-     * Application calls this method to change the auto flush mode associated
-     * with the current session. If set to <code>true</code>, the index
-     * update is made stable (i.e., flushed out to persistent storage) at the
-     * end of commit, and subsequent searches will see the changes
-     * immediately. Otherwise, the change may not be available for search
-     * immediately. The default value is <code>false</code>, and it is highly
-     * recommended not to change this mode, unless the application requires
-     * the change to be made available immediately upon the completion of the
-     * session.  
-     * <p>
-     * Note: Setting auto flush mode to <code>true</code> does not mean that
-     * the changes will be flushed out after each add or delete request.
-     * It will only be flushed out at the end of the commit after all add 
-     * and delete requests are sent to the indexer.   
-     * 
-     * @param autoFlush
-     */
-    public static void setAutoFlush(boolean autoFlush) {
-    	if(logger.isDebugEnabled())
-    		logger.debug("setAutoFlush(" + autoFlush + ")");
-    	
-        autoFlushTL.set(Boolean.valueOf(autoFlush));
-    }
-    
+        
     public static void setNodeNames(String[] nodeNames) {
     	if(logger.isDebugEnabled())
     		logger.debug("setNodeNames(" + nodeNames[0] + "...)");
@@ -255,8 +228,6 @@ public class IndexSynchronizationManager {
         ArrayList objs = getRequests().getList();
         if(objs.size() > 0) {
         	luceneSession.addDeleteDocuments(objs);
-            if(((Boolean) autoFlushTL.get()).booleanValue())
-                luceneSession.flush();
         }        
 		if(logger.isDebugEnabled())
 			logger.debug("Update to index: add [" + getRequests().getAddsCount() + "], delete [" + getRequests().getDeletesCount() + "] docs");
@@ -266,7 +237,6 @@ public class IndexSynchronizationManager {
     	Requests req = (Requests) requests.get();
     	if(req != null)
     		req.clear();
-        autoFlushTL.set(Boolean.FALSE);
     }
     
     private static class Requests {

@@ -62,7 +62,7 @@ import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
-import org.kablink.teaming.lucene.Hits;
+import org.kablink.teaming.lucene.util.Hits;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;

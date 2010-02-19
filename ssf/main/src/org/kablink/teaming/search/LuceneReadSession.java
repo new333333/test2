@@ -36,8 +36,8 @@ import java.util.ArrayList;
 
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
-import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.LuceneException;
+import org.kablink.teaming.lucene.util.Hits;
 
 
 /**

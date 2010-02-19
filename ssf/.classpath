@@ -48,7 +48,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jdom.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jta.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/log4j.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/lucene.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/quartz.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/trove.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/velocity.jar"/>
@@ -135,5 +134,6 @@
 	<classpathentry kind="lib" path="tools/gwt/smartgwt.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat-dbcp.jar"/>
 	<classpathentry kind="lib" path="tools/gwt/gwt-dev.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/lucene-core.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>

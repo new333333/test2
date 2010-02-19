@@ -35,7 +35,6 @@ package org.kablink.teaming.search;
 import java.util.ArrayList;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Query;
 import org.kablink.teaming.lucene.LuceneException;
 
 public interface LuceneWriteSession extends LuceneSession {
@@ -69,17 +68,6 @@ public interface LuceneWriteSession extends LuceneSession {
 	public void addDeleteDocuments(ArrayList docsToAddOrDelete) throws LuceneException;
 	
 	/**
-	 * Force the <code>LuceneSession</code> to flush.
-	 * <p>
-	 * Flushing is the process of synchronizing the underlying persistent store
-	 * (ie, index files on disk) with persistable state held in memory.
-	 * 
-	 * @throws LuceneException
-	 *
-	 */
-	public void flush() throws LuceneException;
-
-	/**
 	 * Force the <code>LuceneSession</code> to optimize the index. This helps reduce
 	 * the size of the index by removing deleted docs and renumbering the inner docs.
 	 * 
@@ -100,10 +88,7 @@ public interface LuceneWriteSession extends LuceneSession {
 	 * Note: This modifies the javadoc in {@link LuceneSession#close()}.
 	 * 
 	 * End the <code>LuceneSession</code> by disconnecting from the Lucene
-	 * service and cleaning up. Note that this does NOT implicitly perform
-	 * <code>flush</code> operation. In other words, <code>flush</code>
-	 * must be invoked explicitly by the caller before closing the session
-	 * if that was intended. Once <code>close</code> method is called, the 
+	 * service and cleaning up. Once <code>close</code> method is called, the 
 	 * session object is no longer usable.
 	 * 
 	 * @throws LuceneException
