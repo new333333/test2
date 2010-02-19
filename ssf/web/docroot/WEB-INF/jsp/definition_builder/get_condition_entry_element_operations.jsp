@@ -48,6 +48,7 @@
                      ssEntryDefinitionElementData[conditionElementName].type == 'checkbox' || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'date'  || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'date_time'  || 
+       				 ssEntryDefinitionElementData[conditionElementName].type == 'text'  || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'user_list'}">
 	   <span class="ss_bold"><ssf:nlt tag="definition.selectEntryOperation"/></span><br/>
 	   <select
@@ -88,6 +89,10 @@
 		     </c:if>
 		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'radio'}">
 		         <option value="equals"><ssf:nlt tag="definition.operation_equals" text="Equals"/></option>
+		     </c:if>
+		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'text'}">
+		         <option value="equals"><ssf:nlt tag="definition.operation_equals" text="Equals"/></option>
+		         <option value="contains"><ssf:nlt tag="definition.operation_containsText" text="Contains text string"/></option>
 		     </c:if>
 		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'user_list'}">
 		         <option value="equals"><ssf:nlt tag="definition.operation_equals" text="Equals"/></option>

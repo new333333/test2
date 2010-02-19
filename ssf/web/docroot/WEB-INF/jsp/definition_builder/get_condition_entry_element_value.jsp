@@ -48,6 +48,7 @@
                      ssEntryDefinitionElementData[conditionElementName].type == 'radio' || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'date'  || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'date_time'  || 
+       				 ssEntryDefinitionElementData[conditionElementName].type == 'text'  || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'user_list'}">
 		   
 		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'event'}">
@@ -131,6 +132,11 @@
 		         <option value="<c:out value="${elementValue.key}"/>"><c:out value="${elementValue.value}"/></option>
 		       </c:forEach>
 		     </select>
+		   </c:if>
+		   
+		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'text'}">
+			 <span class="ss_bold"><ssf:nlt tag="definition.select_text"/></span><br/>
+			 <input type="text" name="conditionElementValue" id="conditionElementValue" size="30"/>
 		   </c:if>
 		   
 		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'user_list'}">
