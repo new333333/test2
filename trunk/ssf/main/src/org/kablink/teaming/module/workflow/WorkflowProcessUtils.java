@@ -573,6 +573,8 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 									} else {
 										if (!currentVal.toString().equals(value)) currentMatch=false;
 									}
+								} else if ("contains".equals(operation)) {
+									if (!currentVal.toString().contains(value)) currentMatch=false;									
 								} else if ("checked".equals(operation)) {
 									if (currentVal.toString().equals("false")) currentMatch=false;									
 								} else if ("checkedNot".equals(operation)) {

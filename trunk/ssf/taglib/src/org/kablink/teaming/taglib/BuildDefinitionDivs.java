@@ -1061,6 +1061,8 @@ public class BuildDefinitionDivs extends TagSupport {
 									sb.append("<td valign=\"top\" style=\"padding-left:4px;\">");
 									if (operation.equals("equals")) {
 										sb.append(NLT.get("definition.operation_equals"));
+									} else if (operation.equals("contains")) {
+										sb.append(NLT.get("definition.operation_containsText"));
 									} else if (operation.equals("started")) {
 										sb.append(NLT.get("definition.operation_started"));
 									} else if (operation.equals("ended")) {
