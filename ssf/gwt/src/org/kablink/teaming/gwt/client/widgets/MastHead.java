@@ -34,8 +34,12 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 
 
@@ -50,13 +54,55 @@ public class MastHead extends Composite
 	public MastHead()
 	{
 		FlowPanel mainPanel;
-		Label label;
+		FlowPanel panel;
+		AbstractImagePrototype abstractImg;
+		Image img;
 
 		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "gwtMastHead" );
-
-		label = new Label( "This is the Masthead" );
-		mainPanel.add( label );
+		mainPanel.addStyleName( "mastHead" );
+		
+		// Create the panel that will hold the graphic that is displayed on the left of the mast head
+		{
+			panel = new FlowPanel();
+			panel.addStyleName( "mastHeadGraphicPanel" );
+	
+			// Add an image to the panel.
+			abstractImg = GwtTeaming.getImageBundle().mastHeadNovellGraphic();
+			img = abstractImg.createImage();
+			img.setWidth( "500" );
+			img.setHeight( "75" );
+			panel.add( img );
+		
+			mainPanel.add( panel );
+		}
+		
+		// Create the panel that will hold the global actions such as "My workspace", "My Teams" etc
+		{
+			Label name;
+			
+			panel = new FlowPanel();
+			panel.addStyleName( "mastHeadGlobalActionsPanel" );
+			
+			// Create a label that holds the logged-in user's name.
+			name = new Label( "Jonathan Smithsonian" );
+			name.addStyleName( "mastHeadUserName" );
+			panel.add( name );
+			
+			mainPanel.add( panel );
+		}
+		
+		// Create the panel that will hold the logo.
+		{
+			panel = new FlowPanel();
+			panel.addStyleName( "mastHeadLogoPanel" );
+			
+			// Add an image to the panel.
+			abstractImg = GwtTeaming.getImageBundle().mastHeadNovellLogo();
+			img = abstractImg.createImage();
+			panel.add( img );
+		
+			mainPanel.add( panel );
+		}
 
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );

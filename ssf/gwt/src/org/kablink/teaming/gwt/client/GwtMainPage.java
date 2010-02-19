@@ -60,10 +60,10 @@ public class GwtMainPage extends Composite
 	public GwtMainPage()
 	{
 		FlowPanel mainPanel;
-		HorizontalPanel	hPanel;
+		FlowPanel panel;
 
 		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "gwtMainPage" );
+		mainPanel.addStyleName( "mainTeamingPage" );
 		
 		// Add the MastHead to the page.
 		m_mastHead = new MastHead();
@@ -73,18 +73,21 @@ public class GwtMainPage extends Composite
 		m_mainMenuCtrl = new MainMenuControl();
 		mainPanel.add( m_mainMenuCtrl );
 		
-		// Create a horizontal panel to hold the folder control and the content control
-		hPanel = new HorizontalPanel();
+		// Create a panel to hold the folder control and the content control
+		panel = new FlowPanel();
+		panel.addStyleName( "mainContentPanel" );
 		
 		// Create the folder control.
 		m_folderCtrl = new FolderControl();
-		hPanel.add( m_folderCtrl );
+		m_folderCtrl.addStyleName( "mainFolderControl" );
+		panel.add( m_folderCtrl );
 		
 		// Create the content control.
 		m_contentCtrl = new ContentControl();
-		hPanel.add( m_contentCtrl );
+		m_contentCtrl.addStyleName( "mainContentControl" );
+		panel.add( m_contentCtrl );
 		
-		mainPanel.add( hPanel );
+		mainPanel.add( panel );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
