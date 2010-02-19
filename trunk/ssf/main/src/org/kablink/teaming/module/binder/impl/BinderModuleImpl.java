@@ -111,8 +111,8 @@ import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.lucene.Hits;
-import org.kablink.teaming.lucene.TagObject;
+import org.kablink.teaming.lucene.util.Hits;
+import org.kablink.teaming.lucene.util.TagObject;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.definition.DefinitionModule;
@@ -447,6 +447,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket,
 			String[] nodeNames, IndexErrors errors) {
+		long startTime = System.currentTimeMillis();
 		getCoreDao().flush(); // just incase
 		try {
 			// make list of binders we have access to first
@@ -471,58 +472,58 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 			}
 			Set<Long> done = new HashSet();
-			if (checked.isEmpty())
-				return done;
-
-			IndexSynchronizationManager.setNodeNames(nodeNames);
-			try {
-				if (clearAll) {
-					LuceneWriteSession luceneSession = getLuceneSessionFactory()
-							.openWriteSession(nodeNames);
-					try {
-						luceneSession.clearIndex();
-
-					} catch (Exception e) {
-						logger.info("Exception:" + e);
-					} finally {
-						luceneSession.close();
+			if (!checked.isEmpty()) {
+				IndexSynchronizationManager.setNodeNames(nodeNames);
+				try {
+					if (clearAll) {
+						LuceneWriteSession luceneSession = getLuceneSessionFactory()
+								.openWriteSession(nodeNames);
+						try {
+							luceneSession.clearIndex();
+	
+						} catch (Exception e) {
+							logger.info("Exception:" + e);
+						} finally {
+							luceneSession.close();
+						}
+					} else {
+						// delete all sub-binders - walk the ancestry list
+						// and delete all the entries under each folderid.
+						for (Binder binder : checked) {
+							IndexSynchronizationManager.deleteDocuments(new Term(
+									Constants.ENTRY_ANCESTRY, binder.getId()
+											.toString()));
+						}
 					}
-				} else {
-					// delete all sub-binders - walk the ancestry list
-					// and delete all the entries under each folderid.
 					for (Binder binder : checked) {
-						IndexSynchronizationManager.deleteDocuments(new Term(
-								Constants.ENTRY_ANCESTRY, binder.getId()
-										.toString()));
+						done.addAll(loadBinderProcessor(binder).indexTree(binder,
+								done, statusTicket, errors));
 					}
+					// Normally, all updates to the index are managed by the
+					// framework so that
+					// the index update won't be made until after the related
+					// database transaction
+					// has committed successfully. This is to avoid the index going
+					// out of synch
+					// with the database under rollback situation. However, in this
+					// particular
+					// case, we need to take an exception and flush out all index
+					// changes before
+					// returning from the method so that the select node ids set
+					// above can be
+					// applied during the flush. This does not violate the original
+					// design intention
+					// because, unlike other business operations, this operation is
+					// specifically
+					// written for index update only, and there is no corresponding
+					// update transaction
+					// on the database.
+					IndexSynchronizationManager.applyChanges();
+				} finally {
+					IndexSynchronizationManager.clearNodeNames();
 				}
-				for (Binder binder : checked) {
-					done.addAll(loadBinderProcessor(binder).indexTree(binder,
-							done, statusTicket, errors));
-				}
-				// Normally, all updates to the index are managed by the
-				// framework so that
-				// the index update won't be made until after the related
-				// database transaction
-				// has committed successfully. This is to avoid the index going
-				// out of synch
-				// with the database under rollback situation. However, in this
-				// particular
-				// case, we need to take an exception and flush out all index
-				// changes before
-				// returning from the method so that the select node ids set
-				// above can be
-				// applied during the flush. This does not violate the original
-				// design intention
-				// because, unlike other business operations, this operation is
-				// specifically
-				// written for index update only, and there is no corresponding
-				// update transaction
-				// on the database.
-				IndexSynchronizationManager.applyChanges();
-			} finally {
-				IndexSynchronizationManager.clearNodeNames();
 			}
+			logger.info("indexTree took " + (System.currentTimeMillis()-startTime) + " ms");
 			return done;
 		} finally {
 			// It is important to call this at the end of the processing no

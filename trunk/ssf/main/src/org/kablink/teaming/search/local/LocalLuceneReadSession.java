@@ -34,8 +34,6 @@ package org.kablink.teaming.search.local;
 
 import java.util.ArrayList;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -49,30 +47,26 @@ import org.kablink.teaming.search.LuceneReadSession;
  */
 public class LocalLuceneReadSession implements LuceneReadSession {
 
-	private static final Log logger = LogFactory.getLog(LocalLuceneReadSession.class);
-
-	private static boolean debugEnabled = logger.isDebugEnabled();
-	
 	private LuceneProvider luceneProvider;
 
-	public LocalLuceneReadSession(String indexPath) {
-		luceneProvider = new LuceneProvider(indexPath);	
+	public LocalLuceneReadSession(LuceneProvider luceneProvider) {
+		this.luceneProvider = luceneProvider;
 	}
 
-	public org.kablink.teaming.lucene.Hits search(Query query) {
+	public org.kablink.teaming.lucene.util.Hits search(Query query) {
 		return this.search(query, 0, -1);
 	}
 
-	public org.kablink.teaming.lucene.Hits search(Query query, int offset,
+	public org.kablink.teaming.lucene.util.Hits search(Query query, int offset,
 			int size) {
 		return luceneProvider.search(query, offset, size);
 	}
 
-	public org.kablink.teaming.lucene.Hits search(Query query, Sort sort) {
+	public org.kablink.teaming.lucene.util.Hits search(Query query, Sort sort) {
 		return this.search(query, sort, 0, -1);
 	}
 
-	public org.kablink.teaming.lucene.Hits search(Query query, Sort sort,
+	public org.kablink.teaming.lucene.util.Hits search(Query query, Sort sort,
 			int offset, int size) {
 		return luceneProvider.search(query, sort, offset, size);
 	}
@@ -120,6 +114,6 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 	}	
 
 	public void close() {
-		// Nothing to do
+		// luceneProvider is stateless, and there is no resource to release here.
 	}
 }

@@ -30,79 +30,37 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.lucene;
+package org.kablink.teaming.lucene.analyzer;
 
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.Reader;
 
-import org.apache.lucene.document.Document;
-
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.CharTokenizer;
+import org.apache.lucene.analysis.TokenStream;
+import org.kablink.teaming.lucene.util.SsfTokenFilter;
 
 /**
- *
- * @author Jong Kim
- *
+ * The <tt>MixedCaseAnalyzer</tt> returns a stream of tokens which are composed of 
+ * only alpha-numeric characters. The tokens are separated by non-alphanumeric characters.
+ * If a token contains any uppercase characters, this analyzer also returns a lowercase 
+ * version of the token at the same word position.
  */
-public class Hits implements Serializable {
-
-    private int size;
-    private Document[] documents;
-    private float[] scores;
-    private int totalHits = 0;
-
-    public Hits(int length) {
-        this.size = length;
-        documents = new Document[length];
-        scores = new float[length];
-    }
-
-    public Document doc(int n) {
-        return documents[n];
-    }
-
-    public int length() {
-        return this.size;
-    }
-
-    public float score(int n) {
-        return scores[n];
-    }
-
-    public static Hits transfer(org.apache.lucene.search.Hits hits,
-            int offset, int maxSize) throws IOException {
-        if (hits == null) return new Hits(0);
-    	int length = hits.length();
-        if (maxSize > 0) {
-          length = Math.min(hits.length() - offset, maxSize);
-        }
-        if (length <= 0) return new Hits(0);
-        Hits ss_hits = new Hits(length);
-        for(int i = 0; i < length; i++) {
-            ss_hits.setDoc(hits.doc(offset + i), i);
-            ss_hits.setScore(hits.score(offset + i), i);
-        }
-        return ss_hits;
-    }
-
-    public void setDoc(Document doc, int n) {
-        documents[n] = doc;
-    }
-
-    public void setScore(float score, int n) {
-        scores[n] = score;
-    }
-
-	/**
-	 * @return Returns the totalHits.
-	 */
-	public int getTotalHits() {
-		return totalHits;
-	}
-
-	/**
-	 * @param totalHits The totalHits to set.
-	 */
-	public void setTotalHits(int totalHits) {
-		this.totalHits = totalHits;
-	}
+public class MixedCaseAnalyzer extends Analyzer
+{
+  public TokenStream tokenStream(String fieldName, Reader reader) 
+  {
+    TokenStream result = new SsfTokenFilter(
+    
+    new CharTokenizer(reader) 
+    {
+      // Returns true if a c should be included in the current token.
+      // Otherwise, false (and a new token begins)
+      protected boolean isTokenChar(char c) 
+      {
+        return Character.isLetterOrDigit(c);
+      }
+    });
+    
+    return result;
+  }
 }

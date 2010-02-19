@@ -30,7 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.lucene;
+package org.kablink.teaming.lucene.analyzer;
 
 import java.io.Reader;
 
@@ -38,12 +38,23 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharTokenizer;
 import org.apache.lucene.analysis.TokenStream;
 
-public class NullAnalyzer extends Analyzer {
-	public TokenStream tokenStream(String fieldName, Reader reader) {
-		return new CharTokenizer(reader) {
-			protected boolean isTokenChar(char c) {
-				return true;
-			}
-		};
-	}
+/**
+ * The SsfQueryAnalyzer returns a case preserved stream of tokens.
+ * Tokens are separated by non-alphanumeric characters.  
+ */
+public class SsfQueryAnalyzer extends Analyzer
+{
+  public TokenStream tokenStream(String fieldName, Reader reader) 
+  {
+    return new CharTokenizer(reader) 
+    {     
+      // Returns true if this character should be included in the current token.
+      // Otherwise, return false - signalling that a new token should begin
+      protected boolean isTokenChar(char c) 
+      {
+    	  //changed (RKLEIN) to allow other characters in data; especially '_' in workflow states
+    	  return Character.isLetterOrDigit(c) || (c == '_');
+      }
+    };
+  }
 }

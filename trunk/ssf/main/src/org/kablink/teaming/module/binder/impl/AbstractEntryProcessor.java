@@ -65,7 +65,7 @@ import org.kablink.teaming.domain.WorkflowResponse;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
-import org.kablink.teaming.lucene.Hits;
+import org.kablink.teaming.lucene.util.Hits;
 import org.kablink.teaming.module.binder.impl.EntryDataErrors.Problem;
 import org.kablink.teaming.module.binder.processor.EntryProcessor;
 import org.kablink.teaming.module.definition.DefinitionUtils;
@@ -952,8 +952,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	if (includeEntries == false) return errors;
     	IndexErrors entryErrors = indexEntries(binder, deleteIndex, true);
     	errors.add(entryErrors);
-    	//force the index to sync
-    	IndexSynchronizationManager.setAutoFlush(true);
     	IndexSynchronizationManager.applyChanges(0);
     	return errors;
     }

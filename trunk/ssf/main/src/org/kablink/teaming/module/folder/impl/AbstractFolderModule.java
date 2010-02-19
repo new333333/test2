@@ -93,7 +93,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.jobs.FolderDelete;
 import org.kablink.teaming.jobs.ZoneSchedule;
-import org.kablink.teaming.lucene.Hits;
+import org.kablink.teaming.lucene.util.Hits;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionModule;

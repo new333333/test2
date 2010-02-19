@@ -30,31 +30,79 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.lucene;
+package org.kablink.teaming.lucene.util;
 
-import java.io.Reader;
+import java.io.IOException;
+import java.io.Serializable;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.CharTokenizer;
-import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.document.Document;
+
 
 /**
- * The SsfQueryAnalyzer returns a case preserved stream of tokens.
- * Tokens are separated by non-alphanumeric characters.  
+ *
+ * @author Jong Kim
+ *
  */
-public class SsfQueryAnalyzer extends Analyzer
-{
-  public TokenStream tokenStream(String fieldName, Reader reader) 
-  {
-    return new CharTokenizer(reader) 
-    {     
-      // Returns true if this character should be included in the current token.
-      // Otherwise, return false - signalling that a new token should begin
-      protected boolean isTokenChar(char c) 
-      {
-    	  //changed (RKLEIN) to allow other characters in data; especially '_' in workflow states
-    	  return Character.isLetterOrDigit(c) || (c == '_');
-      }
-    };
-  }
+public class Hits implements Serializable {
+
+    private int size;
+    private Document[] documents;
+    private float[] scores;
+    private int totalHits = 0;
+
+    public Hits(int length) {
+        this.size = length;
+        documents = new Document[length];
+        scores = new float[length];
+    }
+
+    public Document doc(int n) {
+        return documents[n];
+    }
+
+    public int length() {
+        return this.size;
+    }
+
+    public float score(int n) {
+        return scores[n];
+    }
+
+    public static Hits transfer(org.apache.lucene.search.Hits hits,
+            int offset, int maxSize) throws IOException {
+        if (hits == null) return new Hits(0);
+    	int length = hits.length();
+        if (maxSize > 0) {
+          length = Math.min(hits.length() - offset, maxSize);
+        }
+        if (length <= 0) return new Hits(0);
+        Hits ss_hits = new Hits(length);
+        for(int i = 0; i < length; i++) {
+            ss_hits.setDoc(hits.doc(offset + i), i);
+            ss_hits.setScore(hits.score(offset + i), i);
+        }
+        return ss_hits;
+    }
+
+    public void setDoc(Document doc, int n) {
+        documents[n] = doc;
+    }
+
+    public void setScore(float score, int n) {
+        scores[n] = score;
+    }
+
+	/**
+	 * @return Returns the totalHits.
+	 */
+	public int getTotalHits() {
+		return totalHits;
+	}
+
+	/**
+	 * @param totalHits The totalHits to set.
+	 */
+	public void setTotalHits(int totalHits) {
+		this.totalHits = totalHits;
+	}
 }

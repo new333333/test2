@@ -87,7 +87,7 @@ import org.kablink.teaming.jobs.BinderReindex;
 import org.kablink.teaming.jobs.DefaultMirroredFolderSynchronization;
 import org.kablink.teaming.jobs.MirroredFolderSynchronization;
 import org.kablink.teaming.jobs.ScheduleInfo;
-import org.kablink.teaming.lucene.Hits;
+import org.kablink.teaming.lucene.util.Hits;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;

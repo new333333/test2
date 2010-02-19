@@ -33,6 +33,4 @@
 package org.kablink.teaming.search.local;
 
 public interface LocalLuceneSessionFactoryMBean {
-
-	public String getIndexRootDir();
 }

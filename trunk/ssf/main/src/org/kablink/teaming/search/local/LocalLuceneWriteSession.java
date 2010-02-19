@@ -43,8 +43,8 @@ public class LocalLuceneWriteSession implements LuceneWriteSession {
 
 	private LuceneProvider luceneProvider;
 
-	public LocalLuceneWriteSession(String indexPath) {
-		luceneProvider = new LuceneProvider(indexPath);
+	public LocalLuceneWriteSession(LuceneProvider luceneProvider) {
+		this.luceneProvider = luceneProvider;
 	}
 
 	public void addDocuments(ArrayList docs) {
@@ -55,8 +55,8 @@ public class LocalLuceneWriteSession implements LuceneWriteSession {
 		luceneProvider.deleteDocuments(term);
 	}
 
-	public void flush() {
-		luceneProvider.flush();
+	public void addDeleteDocuments(ArrayList docsToAddOrDelete) throws LuceneException {
+		luceneProvider.addDeleteDocuments(docsToAddOrDelete);
 	}
 
 	public void optimize() {
@@ -67,15 +67,7 @@ public class LocalLuceneWriteSession implements LuceneWriteSession {
 		luceneProvider.clearIndex();
 	}
 	
-	public void backup() {
-		luceneProvider.backup();
-	}
-
-	public void addDeleteDocuments(ArrayList docsToAddOrDelete) throws LuceneException {
-		luceneProvider.addDeleteDocuments(docsToAddOrDelete);
-	}
-
 	public void close() {
-		// Nothing to do
+		// luceneProvider automatically takes care of flush/commit, and there is no resource to release here.
 	}
 }

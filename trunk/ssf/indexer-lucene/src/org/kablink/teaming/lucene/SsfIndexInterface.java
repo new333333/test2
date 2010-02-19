@@ -60,22 +60,18 @@ public interface SsfIndexInterface extends java.rmi.Remote {
 	
 	public void commit(String indexname) throws RemoteException;
 
-	public void stop(String indexname) throws RemoteException;
-	
-	public void stop() throws RemoteException;
-
 	public void optimize(String indexname) throws RemoteException;
 
-	public org.kablink.teaming.lucene.Hits search(String indexname, Query query)
+	public org.kablink.teaming.lucene.util.Hits search(String indexname, Query query)
 			throws RemoteException;
 
-	public org.kablink.teaming.lucene.Hits search(String indexname, Query query,
+	public org.kablink.teaming.lucene.util.Hits search(String indexname, Query query,
 			int offset, int size) throws RemoteException;
 
-	public org.kablink.teaming.lucene.Hits search(String indexname, Query query,
+	public org.kablink.teaming.lucene.util.Hits search(String indexname, Query query,
 			Sort sort) throws RemoteException;
 
-	public org.kablink.teaming.lucene.Hits search(String indexname, Query query,
+	public org.kablink.teaming.lucene.util.Hits search(String indexname, Query query,
 			Sort sort, int offset, int size) throws RemoteException;
 
 	public ArrayList getTags(String indexName, Query query, Long id, String tag, String type, boolean isSuper)

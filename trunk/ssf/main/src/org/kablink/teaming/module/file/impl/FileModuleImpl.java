@@ -80,7 +80,7 @@ import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.FileAttachment.FileLock;
-import org.kablink.teaming.lucene.Hits;
+import org.kablink.teaming.lucene.util.Hits;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.ContentFilter;

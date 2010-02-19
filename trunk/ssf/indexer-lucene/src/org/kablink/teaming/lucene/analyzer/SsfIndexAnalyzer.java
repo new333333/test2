@@ -30,13 +30,14 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.lucene;
+package org.kablink.teaming.lucene.analyzer;
 
 import java.io.Reader;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharTokenizer;
 import org.apache.lucene.analysis.TokenStream;
+import org.kablink.teaming.lucene.util.SsfTokenFilter;
 
 /**
  * The SsfIndexAnalyzer returns a stream of tokens which are composed of 
