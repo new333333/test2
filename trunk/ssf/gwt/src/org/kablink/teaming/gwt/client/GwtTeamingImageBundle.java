@@ -44,6 +44,9 @@ import com.google.gwt.user.client.ui.ImageBundle;
  */
 public interface GwtTeamingImageBundle extends ImageBundle
 {
+	@Resource("org/kablink/teaming/gwt/public/images/browse_hierarchy.png")
+	public AbstractImagePrototype browseHierarchy();
+
 	@Resource("org/kablink/teaming/gwt/public/images/edit_10.png")
 	public AbstractImagePrototype edit10();
 
@@ -85,6 +88,12 @@ public interface GwtTeamingImageBundle extends ImageBundle
 
 	@Resource("org/kablink/teaming/gwt/public/images/lpe_utility_element.gif")
 	public AbstractImagePrototype landingPageEditorUtilityElement();
+	
+	@Resource("org/kablink/teaming/gwt/public/images/mast_head_novell_graphic.png")
+	public AbstractImagePrototype mastHeadNovellGraphic();
+
+	@Resource("org/kablink/teaming/gwt/public/images/mast_head_novell_logo.png")
+	public AbstractImagePrototype mastHeadNovellLogo();
 
 	@Resource("org/kablink/teaming/gwt/public/images/next_16.gif")
 	public AbstractImagePrototype next16();
@@ -97,6 +106,18 @@ public interface GwtTeamingImageBundle extends ImageBundle
 
 	@Resource("org/kablink/teaming/gwt/public/images/previous_disabled_16.gif")
 	public AbstractImagePrototype previousDisabled16();
+
+	@Resource("org/kablink/teaming/gwt/public/images/slide_down.png")
+	public AbstractImagePrototype slideDown();
+
+	@Resource("org/kablink/teaming/gwt/public/images/slide_left.png")
+	public AbstractImagePrototype slideLeft();
+
+	@Resource("org/kablink/teaming/gwt/public/images/slide_right.png")
+	public AbstractImagePrototype slideRight();
+
+	@Resource("org/kablink/teaming/gwt/public/images/slide_up.png")
+	public AbstractImagePrototype slideUp();
 
 	@Resource("org/kablink/teaming/gwt/public/images/spinner16x16.gif")
 	public AbstractImagePrototype spinner16();

@@ -34,8 +34,13 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 
 
@@ -44,20 +49,89 @@ import com.google.gwt.user.client.ui.Label;
  */
 public class MainMenuControl extends Composite
 {
+	private Image m_slideLeftImg;
+	private Image m_slideRightImg;
+	private Image m_slideUpImg;
+	private Image m_slideDownImg;
+	private Image m_browseHierarchyImg;
+	
 	/**
 	 * 
 	 */
 	public MainMenuControl()
 	{
 		FlowPanel mainPanel;
-		Label label;
+		FlowPanel panel;
+		AbstractImagePrototype abstractImg;
 
 		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "gwtMainMenuControl" );
-
-		label = new Label( "This is the MainMenuControl" );
-		mainPanel.add( label );
+		mainPanel.addStyleName( "mainMenuControl" );
 		
+		// Add the "slide left/right" actions.
+		{
+			panel = new FlowPanel();
+			panel.addStyleName( "mainMenuNavControl" );
+			panel.addStyleName( "mainMenuLeftRightNavControl" );
+			
+			//!!! Put these images in an anchor.
+			
+			// Add the slide-left image to the menu.
+			abstractImg = GwtTeaming.getImageBundle().slideLeft();
+			m_slideLeftImg = abstractImg.createImage();
+			m_slideLeftImg.addStyleName( "paddingTop2px" );
+			panel.add( m_slideLeftImg );
+			
+			// Add the slide-right image to the menu and hide it.
+			abstractImg = GwtTeaming.getImageBundle().slideRight();
+			m_slideRightImg = abstractImg.createImage();
+			m_slideRightImg.addStyleName( "paddingTop2px" );
+			m_slideRightImg.setVisible( false );
+			panel.add( m_slideRightImg );
+			
+			mainPanel.add( panel );
+		}
+
+		// Add the "slide up/down" actions.
+		{
+			panel = new FlowPanel();
+			panel.addStyleName( "mainMenuNavControl" );
+			panel.addStyleName( "mainMenuUpDownNavControl" );
+			
+			//!!! Put these images in an anchor.
+			
+			// Add the slide-up image to the menu.
+			abstractImg = GwtTeaming.getImageBundle().slideUp();
+			m_slideUpImg = abstractImg.createImage();
+			m_slideUpImg.addStyleName( "paddingTop2px" );
+			panel.add( m_slideUpImg );
+			
+			// Add the slide-down image to the menu and hide it.
+			abstractImg = GwtTeaming.getImageBundle().slideDown();
+			m_slideDownImg = abstractImg.createImage();
+			m_slideDownImg.addStyleName( "paddingTop2px" );
+			m_slideDownImg.setVisible( false );
+			panel.add( m_slideDownImg );
+			
+			mainPanel.add( panel );
+		}
+
+		// Add the "browse hierarchy" action.
+		{
+			panel = new FlowPanel();
+			panel.addStyleName( "mainMenuNavControl" );
+			panel.addStyleName( "mainMenuUpBrowseHierarchyControl" );
+			
+			//!!! Put this image in an anchor.
+			
+			// Add the browse hierarchy image to the menu.
+			abstractImg = GwtTeaming.getImageBundle().browseHierarchy();
+			m_browseHierarchyImg = abstractImg.createImage();
+			m_browseHierarchyImg.addStyleName( "paddingTop2px" );
+			panel.add( m_browseHierarchyImg );
+			
+			mainPanel.add( panel );
+		}
+
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
 	}// end MainMenuControl()

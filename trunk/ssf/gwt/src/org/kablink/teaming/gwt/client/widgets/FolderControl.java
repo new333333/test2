@@ -53,9 +53,15 @@ public class FolderControl extends Composite
 		Label label;
 
 		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "gwtFolderControl" );
+		mainPanel.addStyleName( "folderControl" );
 
-		label = new Label( "This is the FolderControl" );
+		label = new Label( "Jonathan Smithsonian" );
+		label.addStyleName( "folderControlHeader" );
+		mainPanel.add( label );
+		
+		label = new Label( "folder1" );
+		mainPanel.add( label );
+		label = new Label( "folder2" );
 		mainPanel.add( label );
 		
 		// All composites must call initWidget() in their constructors.

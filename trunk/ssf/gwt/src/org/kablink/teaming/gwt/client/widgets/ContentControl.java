@@ -54,11 +54,12 @@ public class ContentControl extends Composite
 		FlowPanel mainPanel;
 
 		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "gwtContentControl" );
+		mainPanel.addStyleName( "contentControl" );
 
 		m_frame = new Frame();
 		m_frame.setPixelSize( 700, 500 );
-		m_frame.getElement().setId( "gwtContentControl" );
+		m_frame.getElement().setId( "contentControl" );
+		m_frame.setUrl( "" );
 		mainPanel.add( m_frame );
 		
 		// All composites must call initWidget() in their constructors.

@@ -110,6 +110,33 @@
 	white-space: nowrap;
 }
 
+/* Style used by the Folder Control */
+.folderControl
+{
+	background-color: #EFEEEC;
+	padding: 0 0 15px;
+	position: relative;
+	width: 230px;
+	z-index: 100;
+}
+
+/* Style for the header in the folder control */
+.folderControlHeader
+{
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-radius-topleft: 5px;
+	-webkit-border-radius-topright: 5px;
+	background: #85BCC3 url(images/header_blend_teal_bg.png) repeat-x scroll center bottom;
+	background-position:bottom;
+	color: #FFFFFF;
+	font-size: 0.85em;
+	font-weight: bold;
+	letter-spacing: 0.02em;
+	margin-bottom: 0.5em;
+	padding: 5px;
+}
+
 /* */
 .fontSize75em
 {
@@ -520,6 +547,86 @@
 	margin-right: .25em;
 }
 
+/* Style used for the panel that holds the content control. */
+.mainContentControl
+{
+	left: 240px;
+	margin-left: 8px;
+	position: absolute;
+	top: 0px;
+}
+
+/* Style used for the content panel in Teaming's main page. */
+.mainContentPanel
+{
+	background-image: url(images/stripes_bg.png);
+	background-repeat: repeat;
+	height: 100%;
+	position: relative;
+}
+
+/* Style used for the folder control found in Teaming's main page. */
+.mainFolderControl
+{
+	margin: 8px;
+}
+
+/* Style used for the menu in Teaming's main page. */
+.mainMenuControl
+{
+	background: transparent url(images/main_menu_bg.png) repeat-x scroll 0 0;
+	height: 20px;
+	left: 0;
+	padding: 2px 0 4px;
+	position: relative;
+	top: 0;
+	white-space: nowrap;
+	width: 100%;
+	z-index: 300;
+}
+
+/* Style use for the browse hierarchy control in the main menu. */
+.mainMenuUpBrowseHierarchyControl
+{
+	left: 70px;
+}
+
+/* Style used for the navigation controls in the main menu. */
+.mainMenuNavControl
+{
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	background: transparent url(images/trans10_black_blend_bg.png) repeat scroll center bottom;
+	height: 20px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	text-align: center;
+	top: 2px;
+	width 28px;
+	z-index: 310;
+}
+
+/* Style used for the left/right navigation controls in the main menu. */
+.mainMenuLeftRightNavControl
+{
+	left: 8px;
+}
+
+/* Style used for the up/down navigation control in the main menu. */
+.mainMenuUpDownNavControl
+{
+	left: 39px;
+}
+
+/* Style for the panel that holds the main Teaming page. */
+.mainTeamingPage
+{
+	font-family: Arial,Helvetica,sans-serif;
+	font-style: normal;
+	font-size: medium;
+}
+
 /* Style used to create a bottom margin of .10em */
 .marginBottom15em
 {
@@ -548,6 +655,63 @@
 .margin-right-5
 {
 	margin-right: 5px;
+}
+
+/* Style used with the mast head */
+.mastHead
+{
+	background: transparent url(images/mast_head_bg.png) repeat-x scroll 0 0;
+	height: 75px;
+	overflow: hidden;
+	position: relative;
+	width: 100%;
+	z-index: 2;
+}
+
+/* Style used with the panel that holds the global actions in the mast head. */
+.mastHeadGlobalActionsPanel
+{
+	left: 300px;
+	position: relative;
+	top: 23px;
+	white-space: nowrap;
+	z-index: 20;
+}
+
+/* Style used with the panel that holds the graphic that is displayed on the left side of the mast head. */
+.mastHeadGraphicPanel
+{
+	left: 0;
+	position: absolute;
+	top: 0;
+	z-index: 0;
+}
+
+/* Style used with the panel that holds the graphic that is displayed on the right side of the mast head. */
+.mastHeadLogoPanel
+{
+	position: absolute;
+	right: 15px;
+	top: 10px;
+	z-index: 1;
+}
+
+/* Style used with the panel that holds the logged-in user's name in the mast head. */
+.mastHeadUserName
+{
+	color: #FFFFFF;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 0.95em;
+	font-style: italic;
+	letter-spacing: 0.05em;
+	overflow: hidden;
+	width: 250px;
+}
+
+/* Style used to add padding-top: 2px; */
+.paddingTop2px
+{
+	padding-top: 2px;
 }
 
 /* Use this style if you want to set text-decoration: none */
