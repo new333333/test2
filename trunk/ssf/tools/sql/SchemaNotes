@@ -9,3 +9,12 @@ Version 5:
 Additional Cortez Schema changes
 Made changes to the SS_Forums table: Added index: internalId_Binder
 Made changes to the SS_Definitions table: Added index: internalId_Definition
+
+Version 6:
+alter table SS_LdapConnectionConfig add column ldapGuidAttribute varchar(255);
+alter table SS_Principals add column ldapGuid varchar(128);
+create index ldapGuid_principal on SS_Principals (ldapGuid);
+
+Version 7:
+Updated Quartz to version 1.7.2
+This included new Quartz create scripts and requires changes to the upgrade scripts
