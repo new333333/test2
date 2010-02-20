@@ -1836,6 +1836,33 @@
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription" />
 	</item>
 	
+	<item name="number" caption="__number" type="data" category="commonEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
+				<help>ihelp.designers.data_name</help>
+			</property>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
+				<help>ihelp.designers.field_modification</help>
+			</property>
+			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
+				<help>ihelp.designers.user_version</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/number_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderText" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderText" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderText" />
+		<notify />
+	</item>
+	
 	<item name="selectbox" caption="__selectbox" type="data" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>

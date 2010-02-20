@@ -49,6 +49,7 @@
        				 ssEntryDefinitionElementData[conditionElementName].type == 'date'  || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'date_time'  || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'text'  || 
+       				 ssEntryDefinitionElementData[conditionElementName].type == 'number'  || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'user_list'}">
 		   
 		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'event'}">
@@ -136,6 +137,11 @@
 		   
 		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'text'}">
 			 <span class="ss_bold"><ssf:nlt tag="definition.select_text"/></span><br/>
+			 <input type="text" name="conditionElementValue" id="conditionElementValue" size="30"/>
+		   </c:if>
+		   
+		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'number'}">
+			 <span class="ss_bold"><ssf:nlt tag="definition.select_number"/></span><br/>
 			 <input type="text" name="conditionElementValue" id="conditionElementValue" size="30"/>
 		   </c:if>
 		   
