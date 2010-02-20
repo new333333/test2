@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.module.workflow;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -575,6 +577,24 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 									}
 								} else if ("contains".equals(operation)) {
 									if (!currentVal.toString().contains(value)) currentMatch=false;									
+								} else if ("greaterThan".equals(operation)) {
+									NumberFormat numForm = NumberFormat.getInstance();
+									try {
+										Number n1 = numForm.parse(currentVal.toString());
+										Number n2 = numForm.parse(value);
+										if (n1.doubleValue() <= n2.doubleValue()) currentMatch=false;									
+									} catch (ParseException e) {
+										currentMatch=false;
+									}
+								} else if ("lessThan".equals(operation)) {
+									NumberFormat numForm = NumberFormat.getInstance();
+									try {
+										Number n1 = numForm.parse(currentVal.toString());
+										Number n2 = numForm.parse(value);
+										if (n1.doubleValue() >= n2.doubleValue()) currentMatch=false;									
+									} catch (ParseException e) {
+										currentMatch=false;
+									}
 								} else if ("checked".equals(operation)) {
 									if (currentVal.toString().equals("false")) currentMatch=false;									
 								} else if ("checkedNot".equals(operation)) {

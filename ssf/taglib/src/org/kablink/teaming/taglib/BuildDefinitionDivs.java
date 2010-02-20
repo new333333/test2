@@ -1063,6 +1063,10 @@ public class BuildDefinitionDivs extends TagSupport {
 										sb.append(NLT.get("definition.operation_equals"));
 									} else if (operation.equals("contains")) {
 										sb.append(NLT.get("definition.operation_containsText"));
+									} else if (operation.equals("greaterThan")) {
+										sb.append(NLT.get("definition.operation_greaterThan"));
+									} else if (operation.equals("lessThan")) {
+										sb.append(NLT.get("definition.operation_lessThan"));
 									} else if (operation.equals("started")) {
 										sb.append(NLT.get("definition.operation_started"));
 									} else if (operation.equals("ended")) {

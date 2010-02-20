@@ -8474,6 +8474,13 @@ function ss_unpack(s) {
 	return list;
 }
 
+function ss_checkIfNumber(s) {
+	var pattern1 = new RegExp("^-?[0-9]*\\.?[0-9]*$");
+	var pattern2 = new RegExp("^-?\\.$");
+	if (pattern2.test(ss_trim(s))) return false;
+	return pattern1.test(ss_trim(s));
+}
+
 function ss_setCookie ( name, value, exp_y, exp_m, exp_d, path, domain, secure ) {
 	var cookie_string = name + "=" + escape ( value );
 

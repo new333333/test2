@@ -50,7 +50,7 @@
 	} else if (itemType.equals("description")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/blog/view_blog_description.jsp" %><%
 
-	} else if (itemType.equals("text")) {
+	} else if (itemType.equals("text") || itemType.equals("number")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/blog/view_blog_data_text.jsp" %><%
 		
 	} else if (itemType.equals("htmlEditorTextarea")) {

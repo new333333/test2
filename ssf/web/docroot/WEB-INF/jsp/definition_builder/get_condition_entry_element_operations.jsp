@@ -49,6 +49,7 @@
        				 ssEntryDefinitionElementData[conditionElementName].type == 'date'  || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'date_time'  || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'text'  || 
+       				 ssEntryDefinitionElementData[conditionElementName].type == 'number'  || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'user_list'}">
 	   <span class="ss_bold"><ssf:nlt tag="definition.selectEntryOperation"/></span><br/>
 	   <select
@@ -93,6 +94,11 @@
 		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'text'}">
 		         <option value="equals"><ssf:nlt tag="definition.operation_equals" text="Equals"/></option>
 		         <option value="contains"><ssf:nlt tag="definition.operation_containsText" text="Contains text string"/></option>
+		     </c:if>
+		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'number'}">
+		         <option value="equals"><ssf:nlt tag="definition.operation_equals" text="Equals"/></option>
+		         <option value="greaterThan"><ssf:nlt tag="definition.operation_greaterThan" text="Greater than"/></option>
+		         <option value="lessThan"><ssf:nlt tag="definition.operation_lessThan" text="Less than"/></option>
 		     </c:if>
 		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'user_list'}">
 		         <option value="equals"><ssf:nlt tag="definition.operation_equals" text="Equals"/></option>
