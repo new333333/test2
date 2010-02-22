@@ -30,38 +30,20 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.search.local;
+package org.kablink.util;
 
-import java.util.Collections;
-import java.util.Map;
+import java.lang.management.ManagementFactory;
 
-import org.kablink.teaming.lucene.LuceneProviderManager;
-import org.kablink.teaming.search.AbstractLuceneSessionFactory;
-import org.kablink.teaming.search.LuceneReadSession;
-import org.kablink.teaming.search.LuceneWriteSession;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
-public class LocalLuceneSessionFactory extends AbstractLuceneSessionFactory 
-implements LocalLuceneSessionFactoryMBean {
-    
-	private LuceneProviderManager luceneProviderManager;
-	
-	public LuceneProviderManager getLuceneProviderManager() {
-		return luceneProviderManager;
-	}
+public class MBeanUtil {
 
-	public void setLuceneProviderManager(LuceneProviderManager luceneProviderManager) {
-		this.luceneProviderManager = luceneProviderManager;
-	}
-	
-	public LuceneReadSession openReadSession(String indexName) {
-        return new LocalLuceneReadSession(luceneProviderManager.getProvider(indexName));
-    }
-	
-	public LuceneWriteSession openWriteSession(String indexName) {
-        return new LocalLuceneWriteSession(luceneProviderManager.getProvider(indexName));
-    }
-	
-	public Map<String, String> getDisplayProperties() {
-		return Collections.EMPTY_MAP; // unsupported
+	public static void register(Object object, String name) throws Exception {
+		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+		
+		ObjectName objectName = new ObjectName(name);
+		
+		mbs.registerMBean(object, objectName);
 	}
 }

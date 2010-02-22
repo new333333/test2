@@ -73,6 +73,8 @@ public class LuceneProvider extends IndexSupport {
 	
 	private static Analyzer defaultAnalyzer = new SsfIndexAnalyzer();
 	
+	private LuceneProviderManager luceneProviderManager;
+	
 	private Directory directory;
 	private IndexWriter indexWriter;
 	private SearcherManager searcherManager;
@@ -81,9 +83,11 @@ public class LuceneProvider extends IndexSupport {
 	
 	private CommitStat commitStat;
 	
-	public LuceneProvider(String indexName, String indexDirPath) throws LuceneException {
+	public LuceneProvider(String indexName, String indexDirPath, LuceneProviderManager luceneProviderManager) throws LuceneException {
 		super(indexName);
 
+		this.luceneProviderManager = luceneProviderManager;
+		
 		if(Validator.isNull(indexDirPath))
 			throw new IllegalArgumentException("Index directory path must be specified");
 		
@@ -846,6 +850,10 @@ public class LuceneProvider extends IndexSupport {
 		catch (Exception e) {
 			return Class.forName(name);
 		}
+	}
+	
+	LuceneProviderManager getLuceneProviderManager() {
+		return luceneProviderManager;
 	}
 	
 	CommitStat getCommitStat() {
