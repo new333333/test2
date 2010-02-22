@@ -33,9 +33,7 @@
 package org.kablink.teaming.lucene;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -46,6 +44,20 @@ import org.apache.lucene.search.BooleanQuery;
 
 import org.kablink.util.PropsUtil;
 
+/**
+ * This class manages <code>LuceneProvider</code> instances.  
+ * 
+ * IMPORTANT: Typically, a spring bean is shut down by the application context invoking a method
+ * on the bean that was registered as a shutdown method, for example, by implementing
+ * <code>org.springframework.beans.factory.DisposableBean</code> interface. 
+ * Although the usual mechanism is fine for most beans, it isn't so for this particular bean. 
+ * Graciously closing this bean under all circumstances is critical to ensure that all pending 
+ * changes are flushed/committed to disk and that all indexes are closed properly. Not doing so 
+ * can result in loss of data or corrupt index, although the latter is rare. To meet that more
+ * stringent requirement, the cleanup method is registered with the JVM itself as a shutdown
+ * hook.
+ *
+ */
 public class LuceneProviderManager {
 
 	private static final int DEFAULT_MAX_BOOLEAN_CLAUSES = 10000;
@@ -60,6 +72,8 @@ public class LuceneProviderManager {
 	private ConcurrentMap<String,LuceneProvider> providerMap = new ConcurrentHashMap<String,LuceneProvider>();
 	
 	private Log logger = LogFactory.getLog(getClass());
+	
+	private boolean closed = false;
 	
 	public LuceneProviderManager(String indexRootDirPath) throws LuceneException {
 		if(indexRootDirPath == null)
@@ -95,6 +109,17 @@ public class LuceneProviderManager {
 		BooleanQuery.setMaxClauseCount(maxBooleans);
 		if(logger.isDebugEnabled())
 			logger.debug("Max boolean clause count is set to " + maxBooleans);
+		
+		// Register JVM shutdown hook
+		Runtime.getRuntime().addShutdownHook(
+				new Thread("LuceneProviderManagerShutdownHook") {
+					public void run() {
+						logger.info("Shutdown hook thread running");
+						LuceneProviderManager.this.close();
+					}
+				});
+		if(logger.isDebugEnabled())
+			logger.debug("Shutdown hook thread is registered");
 	}
 	
 	public LuceneProvider getProvider(String indexName) throws LuceneException {
@@ -113,8 +138,11 @@ public class LuceneProviderManager {
 	}
 	
 	public void close() {
-		for(LuceneProvider provider: providerMap.values()) {
-			provider.close();
+		if(!closed) {
+			for(LuceneProvider provider: providerMap.values()) {
+				provider.close();
+			}
+			closed = true;
 		}
 	}
 	
@@ -128,7 +156,9 @@ public class LuceneProviderManager {
 	}
 	
 	private LuceneProvider createProvider(String indexName) throws LuceneException {
-		return new LuceneProvider(indexName, getIndexDirPath(indexName));
+		LuceneProvider provider = new LuceneProvider(indexName, getIndexDirPath(indexName));
+		provider.open();
+		return provider;
 	}
 	
 	private String getIndexDirPath(String indexName) {
