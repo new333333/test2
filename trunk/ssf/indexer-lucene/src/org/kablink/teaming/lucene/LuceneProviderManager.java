@@ -48,14 +48,13 @@ import org.kablink.util.PropsUtil;
  * This class manages <code>LuceneProvider</code> instances.  
  * 
  * IMPORTANT: Typically, a spring bean is shut down by the application context invoking a method
- * on the bean that was registered as a shutdown method, for example, by implementing
- * <code>org.springframework.beans.factory.DisposableBean</code> interface. 
- * Although the usual mechanism is fine for most beans, it isn't so for this particular bean. 
- * Graciously closing this bean under all circumstances is critical to ensure that all pending 
+ * on the bean that was registered as a shutdown method. Although the usual mechanism is sufficient 
+ * for most beans, it isn't so for this particular bean. 
+ * Graciously closing this bean under all circumstances is critical to ensuring that all pending 
  * changes are flushed/committed to disk and that all indexes are closed properly. Not doing so 
  * can result in loss of data or corrupt index, although the latter is rare. To meet that more
- * stringent requirement, the cleanup method is registered with the JVM itself as a shutdown
- * hook.
+ * stringent requirement, the cleanup method is also registered with the JVM itself as a shutdown
+ * hook. The cleanup method is idempotent, so it is ok if it is called more than once.
  *
  */
 public class LuceneProviderManager {
