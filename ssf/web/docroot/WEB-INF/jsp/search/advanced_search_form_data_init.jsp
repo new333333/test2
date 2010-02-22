@@ -66,12 +66,23 @@ function ss_initSearchOptions() {
 		</c:if>
 		<c:if test="${!empty ss_filterMap.additionalFilters.workflow}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.workflow}">
-				ss_addInitializedWorkflow("<ssf:escapeJavaScript value="${block.searchWorkflow}"/>", [<%--
-				--%><c:forEach var="step" items="${block.filterWorkflowStateName}" varStatus="loopStatus"><%--
-					--%>"<ssf:escapeJavaScript value="${step}"/>"<c:if test="${!loopStatus.last}">, </c:if><%--
-				--%></c:forEach><%--
-				--%>]);<%--
-			--%></c:forEach>
+				<c:set var="wf_blockId" value="${block.searchWorkflow}"/>
+				<c:set var="wf_stepNamesChecked" value=""/>
+				<c:set var="wf_stepNames" value=""/>
+				<c:set var="wf_stepCaptions" value=""/>
+				<c:forEach var="step" items="${block.filterWorkflowStateName}" varStatus="loopStatus">
+					<c:set var="wf_stepNamesChecked">${wf_stepNamesChecked}<c:if test="${!loopStatus.first}">, </c:if>"<ssf:escapeJavaScript value="${step}"/>"</c:set>
+				</c:forEach>
+				<c:forEach var="wf" items="${ssWorkflowDefinitionMap}">
+				  <c:if test="${wf.id == wf_blockId}">
+					<c:forEach var="step2" items="${wf.steps}" varStatus="loopStatus2">
+						<c:set var="wf_stepCaptions">${wf_stepCaptions}<c:if test="${!loopStatus2.first}">, </c:if>"<ssf:escapeJavaScript value="${step2.title}"/>"</c:set>
+					</c:forEach>
+				  </c:if>
+				</c:forEach>
+				ss_addInitializedWorkflow("<ssf:escapeJavaScript value="${block.searchWorkflow}"/>", <%--
+				--%>[${wf_stepNamesChecked}], [${wf_stepCaptions}]);
+			</c:forEach>
 		</c:if>
 		<c:if test="${!empty ss_filterMap.additionalFilters.entry}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.entry}">
