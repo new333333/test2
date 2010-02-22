@@ -34,7 +34,6 @@ package org.kablink.teaming.lucene;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.kablink.util.PropsUtil;
 
 public class CommitThread extends Thread {
 
@@ -45,20 +44,16 @@ public class CommitThread extends Thread {
     
     private String indexName;
     private LuceneProvider luceneProvider;
-    
-    private int commitNumberOps;
-    private long commitTimeInterval; // in milli second
 
     public CommitThread(String indexName, LuceneProvider luceneProvider) {
     	super("CT-" + indexName);
     	this.indexName = indexName;
     	this.luceneProvider = luceneProvider;
     	
-		this.commitNumberOps = PropsUtil.getInt("lucene.index.commit.number.ops", 1000);
-		long interval = PropsUtil.getInt("lucene.index.commit.time.interval", 3600);
-		this.commitTimeInterval = interval * 1000;
+    	int commitTimeInterval = luceneProvider.getLuceneProviderManager().getCommitTimeInterval();
+    	int commitNumberOps = luceneProvider.getLuceneProviderManager().getCommitNumberOps();
     	
-    	logger.info("Commit thread instantiated: commitNumberDocs=" + commitNumberOps + ", commitTimeInterval=" + interval);
+    	logger.info("Commit thread instantiated: commitNumberDocs=" + commitNumberOps + ", commitTimeInterval=" + commitTimeInterval);
     }
     
     public void run() {
@@ -99,7 +94,7 @@ public class CommitThread extends Thread {
     // called with monitor locked
     private boolean weGotWorkToDo(LuceneProvider.CommitStat commitStat) {
     	boolean result = false;
-    	if(commitStat.getNumberOfOpsSinceLastCommit() >= commitNumberOps) {
+    	if(commitStat.getNumberOfOpsSinceLastCommit() >= luceneProvider.getLuceneProviderManager().getCommitNumberOps()) {
     		// We have enough docs to commit.
     		result = true;
     	}
@@ -108,7 +103,7 @@ public class CommitThread extends Thread {
     		// This does not necessarily mean that we really do have some uncommitted change. 
     		// The way Lucene works, there is no way to determine this 100% accurately and
     		// that's not something we must have. Approximation is good enough.
-    		if(System.currentTimeMillis() - commitStat.getFirstOpTimeSinceLastCommit() >= commitTimeInterval)
+    		if(System.currentTimeMillis() - commitStat.getFirstOpTimeSinceLastCommit() >= luceneProvider.getLuceneProviderManager().getCommitTimeInterval()*1000L)
         		result = true;
     	}
     	if(logger.isDebugEnabled())
@@ -122,12 +117,12 @@ public class CommitThread extends Thread {
     private long timeoutTilNextCommit(LuceneProvider.CommitStat commitStat) {
     	long timeout;
     	if(commitStat.getNumberOfOpsSinceLastCommit() > 0 && commitStat.getFirstOpTimeSinceLastCommit() > 0) {
-    		timeout = commitStat.getFirstOpTimeSinceLastCommit() + commitTimeInterval - System.currentTimeMillis();
+    		timeout = commitStat.getFirstOpTimeSinceLastCommit() + luceneProvider.getLuceneProviderManager().getCommitTimeInterval()*1000L - System.currentTimeMillis();
     		if(timeout <= 0)
     			timeout = 1;
     	}
     	else {
-    		timeout = commitTimeInterval;
+    		timeout = luceneProvider.getLuceneProviderManager().getCommitTimeInterval()*1000L;
     	}
     	if(logger.isDebugEnabled())
     		logger.debug("Called timeoutTilNextCommit(), result=" + timeout);

@@ -30,38 +30,15 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.search.local;
+package org.kablink.teaming.lucene;
 
-import java.util.Collections;
-import java.util.Map;
+public interface LuceneProviderManagerMBean {
 
-import org.kablink.teaming.lucene.LuceneProviderManager;
-import org.kablink.teaming.search.AbstractLuceneSessionFactory;
-import org.kablink.teaming.search.LuceneReadSession;
-import org.kablink.teaming.search.LuceneWriteSession;
-
-public class LocalLuceneSessionFactory extends AbstractLuceneSessionFactory 
-implements LocalLuceneSessionFactoryMBean {
-    
-	private LuceneProviderManager luceneProviderManager;
+	int getCommitNumberOps();
 	
-	public LuceneProviderManager getLuceneProviderManager() {
-		return luceneProviderManager;
-	}
-
-	public void setLuceneProviderManager(LuceneProviderManager luceneProviderManager) {
-		this.luceneProviderManager = luceneProviderManager;
-	}
+	void setCommitNumberOps(int commitNumberOps);
 	
-	public LuceneReadSession openReadSession(String indexName) {
-        return new LocalLuceneReadSession(luceneProviderManager.getProvider(indexName));
-    }
+	int getCommitTimeInterval();
 	
-	public LuceneWriteSession openWriteSession(String indexName) {
-        return new LocalLuceneWriteSession(luceneProviderManager.getProvider(indexName));
-    }
-	
-	public Map<String, String> getDisplayProperties() {
-		return Collections.EMPTY_MAP; // unsupported
-	}
+	void setCommitTimeInterval(int commitTimeInterval);
 }

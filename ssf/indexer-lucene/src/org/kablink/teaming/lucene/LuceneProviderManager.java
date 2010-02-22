@@ -42,28 +42,37 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.search.BooleanQuery;
 
+import org.kablink.util.MBeanUtil;
 import org.kablink.util.PropsUtil;
 
 /**
  * This class manages <code>LuceneProvider</code> instances.  
  * 
  * IMPORTANT: Typically, a spring bean is shut down by the application context invoking a method
- * on the bean that was registered as a shutdown method. Although the usual mechanism is sufficient 
- * for most beans, it isn't so for this particular bean. 
+ * on the bean that was registered as a shutdown method, for example, by implementing
+ * <code>org.springframework.beans.factory.DisposableBean</code> interface. Although the normal 
+ * mechanism is sufficient for most beans, it isn't so for this particular one. 
  * Graciously closing this bean under all circumstances is critical to ensuring that all pending 
  * changes are flushed/committed to disk and that all indexes are closed properly. Not doing so 
  * can result in loss of data or corrupt index, although the latter is rare. To meet that more
- * stringent requirement, the cleanup method is also registered with the JVM itself as a shutdown
- * hook. The cleanup method is idempotent, so it is ok if it is called more than once.
+ * stringent requirement, the cleanup procedure of this class is also registered with the JVM 
+ * itself as a shutdown hook. The cleanup method is idempotent, so it is ok if it is called more 
+ * than once.
  *
  */
-public class LuceneProviderManager {
+public class LuceneProviderManager implements LuceneProviderManagerMBean {
 
 	private static final int DEFAULT_MAX_BOOLEAN_CLAUSES = 10000;
+	private static final int DEFAULT_COMMIT_NUMBER_OPS = 1000;
+	private static final int DEFAULT_COMMIT_TIME_INTERVAL = 600; // = 10 minutes
 	private static final String SLASH = "/";
 
 	private String indexRootDirPath;
+	private String mbeanObjectName;
 	
+    private volatile int commitNumberOps;
+    private volatile int commitTimeInterval; // in second
+
 	// Access to this map is protected by "this"
 	private Map<String,Object> lockMap = new HashMap<String,Object>();
 	
@@ -72,9 +81,9 @@ public class LuceneProviderManager {
 	
 	private Log logger = LogFactory.getLog(getClass());
 	
-	private boolean closed = false;
+	private volatile boolean closed = false;
 	
-	public LuceneProviderManager(String indexRootDirPath) throws LuceneException {
+	public void setIndexRootDirPath(String indexRootDirPath) {
 		if(indexRootDirPath == null)
 			indexRootDirPath = "";
 		if(!indexRootDirPath.endsWith(SLASH))
@@ -83,9 +92,14 @@ public class LuceneProviderManager {
 			throw new IllegalArgumentException("Index root directory path must be specified");
 		else
 			this.indexRootDirPath = indexRootDirPath;
-		
 		logger.info("Index root directory path is set to [" + indexRootDirPath + "]");
-		
+	}
+	
+	public void setMbeanObjectName(String mbeanObjectName) {
+		this.mbeanObjectName = mbeanObjectName;
+	}
+	
+	public void initialize() throws LuceneException {
 		File indexRootDir = new File(indexRootDirPath);
 		if (indexRootDir.exists()) {
 			if (!indexRootDir.isDirectory()) {
@@ -104,10 +118,22 @@ public class LuceneProviderManager {
 			}
 		}
 
+		this.commitNumberOps = PropsUtil.getInt("lucene.index.commit.number.ops", DEFAULT_COMMIT_NUMBER_OPS);
+		this.commitTimeInterval = PropsUtil.getInt("lucene.index.commit.time.interval", DEFAULT_COMMIT_TIME_INTERVAL);
+
 		int maxBooleans = PropsUtil.getInt("lucene.max.booleans", DEFAULT_MAX_BOOLEAN_CLAUSES);
 		BooleanQuery.setMaxClauseCount(maxBooleans);
 		if(logger.isDebugEnabled())
 			logger.debug("Max boolean clause count is set to " + maxBooleans);
+		
+		// Register MBean
+		try {
+			MBeanUtil.register(this, mbeanObjectName);
+			if(logger.isDebugEnabled())
+				logger.debug("MBean with name " + mbeanObjectName + " is registered");
+		} catch (Exception e) {
+			logger.warn("Error registering MBean with name " + mbeanObjectName, e);
+		}
 		
 		// Register JVM shutdown hook
 		Runtime.getRuntime().addShutdownHook(
@@ -123,8 +149,8 @@ public class LuceneProviderManager {
 	
 	public LuceneProvider getProvider(String indexName) throws LuceneException {
 		// We control accesses to the global provider map such that only accesses to the "same" index are synchronized.
-		// That is, we prevent more than one provider from being created for the same index. But for different indexes,
-		// the creation process can proceed in parallel.
+		// That is, we prevent more than one provider from being created for the same index. But between different indexes,
+		// accesses to providers (and related creation process) can proceed in parallel.
 		Object lock = obtainLock(indexName);
 		synchronized(lock) {
 			LuceneProvider provider = providerMap.get(indexName);
@@ -138,10 +164,12 @@ public class LuceneProviderManager {
 	
 	public void close() {
 		if(!closed) {
+			// Set this flag immediately before beginning the actual rundown process. 
+			// It helps to prevent other thread from entering this block of code simultaneously.
+			closed = true;
 			for(LuceneProvider provider: providerMap.values()) {
 				provider.close();
 			}
-			closed = true;
 		}
 	}
 	
@@ -155,13 +183,33 @@ public class LuceneProviderManager {
 	}
 	
 	private LuceneProvider createProvider(String indexName) throws LuceneException {
-		LuceneProvider provider = new LuceneProvider(indexName, getIndexDirPath(indexName));
+		LuceneProvider provider = new LuceneProvider(indexName, getIndexDirPath(indexName), this);
 		provider.open();
 		return provider;
 	}
 	
 	private String getIndexDirPath(String indexName) {
 		return indexRootDirPath + indexName;
+	}
+
+	@Override
+	public int getCommitNumberOps() {
+		return commitNumberOps;
+	}
+
+	@Override
+	public int getCommitTimeInterval() {
+		return commitTimeInterval;
+	}
+
+	@Override
+	public void setCommitNumberOps(int commitNumberOps) {
+		this.commitNumberOps = commitNumberOps;
+	}
+
+	@Override
+	public void setCommitTimeInterval(int commitTimeInterval) {
+		this.commitTimeInterval = commitTimeInterval;
 	}
 
 }
