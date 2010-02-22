@@ -192,22 +192,18 @@ public class LuceneProviderManager implements LuceneProviderManagerMBean {
 		return indexRootDirPath + indexName;
 	}
 
-	@Override
 	public int getCommitNumberOps() {
 		return commitNumberOps;
 	}
 
-	@Override
 	public int getCommitTimeInterval() {
 		return commitTimeInterval;
 	}
 
-	@Override
 	public void setCommitNumberOps(int commitNumberOps) {
 		this.commitNumberOps = commitNumberOps;
 	}
 
-	@Override
 	public void setCommitTimeInterval(int commitTimeInterval) {
 		this.commitTimeInterval = commitTimeInterval;
 	}
