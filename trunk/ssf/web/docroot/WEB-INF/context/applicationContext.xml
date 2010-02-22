@@ -1262,43 +1262,43 @@ text/calendar											  ics
 	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
 	    <property name="beans">
 	      <map>
-	        <entry key="SiteScape:type=Indexing,name=luceneSessionFactory">
+	        <entry key="Teaming:type=Indexing,name=luceneSessionFactory">
 	          <ref bean="luceneSessionFactory"/>
 	        </entry>
-	        <entry key="SiteScape:type=Converter,name=htmlOpenOfficeConverter">
+	        <entry key="Teaming:type=Converter,name=htmlOpenOfficeConverter">
 	          <ref local="htmlOpenOfficeConverter"/>
 	        </entry>
-	        <entry key="SiteScape:type=Converter,name=textOpenOfficeConverter">
+	        <entry key="Teaming:type=Converter,name=textOpenOfficeConverter">
 	          <ref local="textOpenOfficeConverter"/>
 	        </entry>
-	        <entry key="SiteScape:type=Converter,name=imageOpenOfficeConverter">
+	        <entry key="Teaming:type=Converter,name=imageOpenOfficeConverter">
 	          <ref local="imageOpenOfficeConverter"/>
 	        </entry>
-	        <entry key="SiteScape:type=Module,name=rssModule">
+	        <entry key="Teaming:type=Module,name=rssModule">
 	          <ref local="rssModule"/>
 	        </entry>
-			<entry key="SiteScape:type=Repository,name=simpleFileRepository">
+			<entry key="Teaming:type=Repository,name=simpleFileRepository">
 	          <ref local="simpleFileRepository"/>
 	        </entry>
-	        <entry key="SiteScape:type=Repository,name=jackrabbitRepository">
+	        <entry key="Teaming:type=Repository,name=jackrabbitRepository">
 	          <ref local="jackrabbitRepository"/>
 	        </entry>
-	        <!--<entry key="SiteScape:type=Repository,name=webdavRepository">
+	        <!--<entry key="Teaming:type=Repository,name=webdavRepository">
 	          <ref local="webdavRepository"/>
 	        </entry>-->
-	        <entry key="SiteScape:type=Realtime,name=presenceService">
+	        <entry key="Teaming:type=Realtime,name=presenceService">
 	          <ref local="presenceService"/>
 	        </entry>
-	        <entry key="SiteScape:type=Module,name=icBrokerModule">
+	        <entry key="Teaming:type=Module,name=icBrokerModule">
 	          <ref local="icBrokerModule"/>
 	        </entry>
-	        <entry key="SiteScape:type=Hibernate,name=hibernateStatisticsService">
+	        <entry key="Teaming:type=Hibernate,name=hibernateStatisticsService">
 	          <ref local="hibernateStatisticsService"/>
 	        </entry>
-	        <entry key="SiteScape:type=Module,name=folderModule">
+	        <entry key="Teaming:type=Module,name=folderModule">
 	          <ref bean="folderModuleTarget"/>
 	        </entry>
-	        <entry key="SiteScape:type=Server,name=smtpService">
+	        <entry key="Teaming:type=Server,name=smtpService">
 	          <ref local="smtpService"/>
 	        </entry>
 	      </map>
