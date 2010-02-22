@@ -71,9 +71,9 @@ function ss_callRemoveSearchOption(orderNo) {
 }
 
 
-function ss_addInitializedWorkflow(wfIdValue, stepsValue) {
+function ss_addInitializedWorkflow(wfIdValue, stepsValue, stepTitles) {
 	ss_optionsArray[ss_userOptionsCounter]='workflow';
-	var wfWidget = ss_addWorkflow(ss_userOptionsCounter, wfIdValue, stepsValue);
+	var wfWidget = ss_addWorkflow(ss_userOptionsCounter, wfIdValue, stepsValue, stepTitles);
 	ss_userOptionsCounter++;
 }
 
@@ -110,7 +110,7 @@ function ss_addInitializedAuthor(userId, userName) {
 	ss_userOptionsCounter++;
 }
 
-function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
+function ss_addWorkflow(orderNo, wfIdValue, stepsValue, stepTitles) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
 	
@@ -136,8 +136,10 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 
     if (typeof stepsValue != "undefined" && ("" + stepsValue) != "") {
 		var steps = "" + stepsValue;
+		var titles = "" + stepTitles;
 		for (var i in steps.split(",")) {
 			var step = steps.split(",")[i];
+			var stepTitle = titles.split(",")[i];
 			var liObj = document.createElement("li");
 			stepsContainer.appendChild(liObj);
 			var chckboxId = stepsContainer.id + wfIdValue + step;
@@ -150,7 +152,7 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 			chkbox.checked = true;
 			var label = document.createElement("label");
 			label.setAttribute("style", "padding-left: 5px;");
-			label.appendChild(document.createTextNode(step));
+			label.appendChild(document.createTextNode(stepTitle));
 			liObj.appendChild(label);
 			label.htmlFor =  chckboxId;
 		}
