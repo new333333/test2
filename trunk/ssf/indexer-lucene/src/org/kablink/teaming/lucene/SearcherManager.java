@@ -34,25 +34,21 @@ package org.kablink.teaming.lucene;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 
-public class SearcherManager {
-	private Log logger = LogFactory.getLog(getClass());
+public class SearcherManager extends IndexSupport {
 
-	private String indexName;
 	private IndexSearcher currentSearcher;
 	private IndexWriter writer;
 	
 	public SearcherManager(String indexName, IndexWriter writer) throws IOException {
-		this.indexName = indexName;
+		super(indexName);
 		this.writer = writer;
 		currentSearcher = new IndexSearcher(writer.getReader());
 		warm(currentSearcher);
-		writer.setMergedSegmentWarmer( // D
+		writer.setMergedSegmentWarmer(
 				new IndexWriter.IndexReaderWarmer() {
 					public void warm(IndexReader reader) throws IOException {
 						SearcherManager.this.warm(new IndexSearcher(reader));
@@ -169,18 +165,6 @@ public class SearcherManager {
 	private void ensureOpen() throws IllegalStateException {
 		if(currentSearcher == null)
 			throw new IllegalStateException("this SearcherManager is closed");
-	}
-	
-	private void logInfo(String msg) {
-		logger.info("(" + indexName + ") " + msg);
-	}
-	
-	private void logDebug(String msg) {
-		logger.debug("(" + indexName + ") " + msg);
-	}
-	
-	private void logTrace(String msg) {
-		logger.trace("(" + indexName + ") " + msg);
 	}
 	
 	private void end(long begin, String methodName) {

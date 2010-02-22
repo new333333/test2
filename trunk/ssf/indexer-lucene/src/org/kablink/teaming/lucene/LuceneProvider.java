@@ -40,13 +40,10 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
@@ -69,28 +66,26 @@ import org.kablink.util.PropsUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
-public class LuceneProvider {
+public class LuceneProvider extends IndexSupport {
 	
 	private static final String FIND_TYPE_PERSONAL_TAGS = "personalTags";
 	private static final String FIND_TYPE_COMMUNITY_TAGS = "communityTags";
 	
 	private static Analyzer defaultAnalyzer = new SsfIndexAnalyzer();
 	
-	private String indexName;
-	
-	private Log logger = LogFactory.getLog(getClass());
-	
 	private Directory directory;
 	private IndexWriter indexWriter;
 	private SearcherManager searcherManager;
 	
+	private CommitThread commitThread;
+	
+	private CommitStat commitStat;
+	
 	public LuceneProvider(String indexName, String indexDirPath) throws LuceneException {
-		// Validate arguments
-		if(Validator.isNull(indexName))
-			throw new IllegalArgumentException("Index name must be specified");
+		super(indexName);
+
 		if(Validator.isNull(indexDirPath))
 			throw new IllegalArgumentException("Index directory path must be specified");
-		this.indexName = indexName;
 		
 		// Make sure that the index directory exists
 		File indexDir = new File(indexDirPath);
@@ -143,7 +138,20 @@ public class LuceneProvider {
 			throw newLuceneException("Could not open searcher manager", e);
 		}
 		
+		commitStat = new CommitStat();
+		
+		commitThread = new CommitThread(indexName, this);
+		// Don't start the thread here yet.
+		
 		logInfo("Lucene provider instantiated");
+	}
+	
+	public void open() {
+		// The sole purpose of this method is to start the thread that was created in
+		// the constructor. Since the thread refers to "this" object, starting it before
+		// "this" object is fully instantiated is a BAD practice for concurrent programming.
+		commitThread.start();
+		logDebug("Commit thread started");
 	}
 	
 	private void createIndex(Directory dir) throws LockObtainFailedException, IOException {
@@ -194,10 +202,11 @@ public class LuceneProvider {
 			throw newLuceneException("Could not add document to the index", e);
 		}
 
-		end(startTime, "addDocuments", docs.size());
+		commitStat.update(docs.size());
 		
-		// TODO To be removed $$$$$
-		commit();
+		commitThread.someDocsProcessed();
+		
+		end(startTime, "addDocuments", docs.size());
 	}
 
 	public void deleteDocuments(Term term) throws LuceneException {
@@ -212,10 +221,10 @@ public class LuceneProvider {
 					"Could not delete documents from the index", e);
 		}
 
+		commitStat.update(1);
+		commitThread.someDocsProcessed();
+
 		end(startTime, "deleteDocuments(Term)");
-		
-		// TODO To be removed $$$$$
-		commit();
 	}
 
 	public void addDeleteDocuments(ArrayList docsToAddOrDelete) throws LuceneException {
@@ -253,13 +262,15 @@ public class LuceneProvider {
 			}
 		}
 
+		commitStat.update(docsToAddOrDelete.size());
+		commitThread.someDocsProcessed();
+
 		end(startTime, "addDeleteDocuments", docsToAddOrDelete.size());
-		
-		// TODO To be removed $$$$$
-		commit();
 	}
 
 	public void optimize() throws LuceneException {
+		// optimize and commit are independent of each other.
+		
 		long startTime = System.currentTimeMillis();
 
 		try {
@@ -310,6 +321,11 @@ public class LuceneProvider {
 			throw newLuceneException("Could not open searcher manager", e);
 		}
 
+		// As result of clearing the index, the in-memory and the disk states are in synch.
+		// This call helps prevent the background thread from unnecessarily and prematurely
+		// attempting to commit changes to the index.
+		commitStat.reset();
+		
 		end(startTime, "clearIndex");
 	}
 
@@ -711,7 +727,7 @@ public class LuceneProvider {
 		} catch (IOException e) {
 			throw newLuceneException("Error committing index writer", e);		
 		}
-		logDebug("Index writer committed");// TODO should be logInfo $$$$$
+		logInfo("Index writer committed");
 	}
 	
 	private void reopenIndexSearcher() throws LuceneException {
@@ -729,6 +745,8 @@ public class LuceneProvider {
 	public void commit() throws LuceneException {
 		long startTime = System.currentTimeMillis();
 
+		commitStat.reset();
+		
 		commitIndexWriter();
 		
 		// The IndexReader.isCurrent() method that SearcherManager relies on to detect changes
@@ -737,13 +755,26 @@ public class LuceneProvider {
 		// force the searcher manager to reopen the searcher whenever a commit is performed
 		// on the writer. 
 		reopenIndexSearcher();
-
+		
 		end(startTime, "commit");
+	}
+
+	private void shutdownCommitThread() throws InterruptedException {
+		commitThread.setStop();
+		commitThread.join();
+		logDebug("Commit thread shut down successfully");
 	}
 	
 	public void close() {
 		long startTime = System.currentTimeMillis();
 
+		// Shutdown commit thread
+		try {
+			shutdownCommitThread();
+		} catch (InterruptedException e) {
+			logWarn("This shouldn't happen", e);
+		}
+		
 		// Close searcher manager
 		try {
 			searcherManager.close();
@@ -800,26 +831,6 @@ public class LuceneProvider {
 		}
 	}
 	
-	private void logError(String msg, Throwable t) {
-		logger.error("(" + indexName + ") " + msg, t);
-	}
-	
-	private void logWarn(String msg) {
-		logger.warn("(" + indexName + ") " + msg);
-	}
-	
-	private void logInfo(String msg) {
-		logger.info("(" + indexName + ") " + msg);
-	}
-	
-	private void logDebug(String msg) {
-		logger.debug("(" + indexName + ") " + msg);
-	}
-	
-	private void logTrace(String msg) {
-		logger.trace("(" + indexName + ") " + msg);
-	}
-	
 	private LuceneException newLuceneException(String msg) {
 		return new LuceneException("(" + indexName + ") " + msg);
 	}
@@ -834,6 +845,49 @@ public class LuceneProvider {
 		}
 		catch (Exception e) {
 			return Class.forName(name);
+		}
+	}
+	
+	CommitStat getCommitStat() {
+		// Returns a copy, which is read-only from the caller's point of view.
+		return commitStat.copy();
+	}
+	
+	class CommitStat {
+		// Time of first add/delete operation since the beginning of last commit or synch
+	    private long firstOpTimeSinceLastCommit; 
+	    // Number of add/delete operations since beginning of latest commit or synch
+	    private int numberOfOpsSinceLastCommit; 
+		
+	    // requires monitor so that the two variables can be modified atomically
+	    private synchronized void reset() {
+			logTrace("Called CommitStat.reset()");
+			firstOpTimeSinceLastCommit = 0;
+			numberOfOpsSinceLastCommit = 0;	
+	    }
+	    
+	    // requires monitor so that the two variables can be modified atomically
+	    private synchronized void update(int opsCount) {
+			logTrace("Called CommitStat.update() with opsCount=" + opsCount);
+			numberOfOpsSinceLastCommit += opsCount;
+			if(firstOpTimeSinceLastCommit == 0)
+				firstOpTimeSinceLastCommit = System.currentTimeMillis();
+		}
+		
+	    // requires monitor so that the copy contains consistent values between the two variables. 
+	    private synchronized CommitStat copy() {
+	    	CommitStat copy = new CommitStat();
+	    	copy.firstOpTimeSinceLastCommit = this.firstOpTimeSinceLastCommit;
+	    	copy.numberOfOpsSinceLastCommit = this.numberOfOpsSinceLastCommit;
+	    	return copy;
+	    }
+	    
+		long getFirstOpTimeSinceLastCommit() {
+			return firstOpTimeSinceLastCommit;
+		}
+		
+		int getNumberOfOpsSinceLastCommit() {
+			return numberOfOpsSinceLastCommit;
 		}
 	}
 }
