@@ -1061,6 +1061,7 @@ function ss_showDashboardPageDiv(s, divId) {
 	divObj.innerHTML = s;
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
+	ss_showEmailLinks();
 }
 
 function ss_showWhatsNewPage(obj, binderId, type, currentPage, direction, divId, namespace) {
@@ -3626,6 +3627,7 @@ function ss_showComponentCallback(s, data) {
 		//Signal that the layout changed
 		if (ssf_onLayoutChange) ssf_onLayoutChange();
 		ss_callDashboardEvent(data.componentId, "onAfterShow");
+		ss_showEmailLinks();
 	}
 }
 function ss_hideComponentCallback(s, data) {
