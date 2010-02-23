@@ -50,6 +50,7 @@ public class FolderControl extends Composite
 	public FolderControl()
 	{
 		FlowPanel mainPanel;
+		FlowPanel panel;
 		Label label;
 
 		mainPanel = new FlowPanel();
@@ -59,10 +60,15 @@ public class FolderControl extends Composite
 		label.addStyleName( "folderControlHeader" );
 		mainPanel.add( label );
 		
+		panel = new FlowPanel();
+		panel.addStyleName( "folderControlBody" );
+		
 		label = new Label( "folder1" );
-		mainPanel.add( label );
+		panel.add( label );
 		label = new Label( "folder2" );
-		mainPanel.add( label );
+		panel.add( label );
+		
+		mainPanel.add( panel );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );

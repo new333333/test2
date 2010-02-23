@@ -113,11 +113,8 @@
 /* Style used by the Folder Control */
 .folderControl
 {
-	background-color: #EFEEEC;
 	padding: 0 0 15px;
-	position: relative;
 	width: 230px;
-	z-index: 100;
 }
 
 /* Style for the header in the folder control */
@@ -133,9 +130,15 @@
 	font-size: 0.85em;
 	font-weight: bold;
 	letter-spacing: 0.02em;
-	margin-bottom: 0.5em;
 	padding: 5px;
 }
+
+/* Style for the body of the folder control. */
+.folderControlBody
+{
+	background-color: #EFEEEC;
+	padding: 5px;
+}	
 
 /* */
 .fontSize75em
@@ -550,17 +553,14 @@
 /* Style used for the panel that holds the content control. */
 .mainContentControl
 {
-	left: 240px;
-	margin-left: 8px;
+	left: 246px;
 	position: absolute;
-	top: 0px;
+	top: 8px;
 }
 
 /* Style used for the content panel in Teaming's main page. */
 .mainContentPanel
 {
-	background-image: url(images/stripes_bg.png);
-	background-repeat: repeat;
 	height: 100%;
 	position: relative;
 }
@@ -568,14 +568,17 @@
 /* Style used for the folder control found in Teaming's main page. */
 .mainFolderControl
 {
-	margin: 8px;
+	left: 8px;
+	position: absolute;
+	top: 8px;
+	z-index: 100;
 }
 
 /* Style used for the menu in Teaming's main page. */
 .mainMenuControl
 {
 	background: transparent url(images/main_menu_bg.png) repeat-x scroll 0 0;
-	height: 20px;
+	height: 19px;
 	left: 0;
 	padding: 2px 0 4px;
 	position: relative;
@@ -603,7 +606,7 @@
 	position: absolute;
 	text-align: center;
 	top: 2px;
-	width 28px;
+	width: 28px;
 	z-index: 310;
 }
 
@@ -622,6 +625,8 @@
 /* Style for the panel that holds the main Teaming page. */
 .mainTeamingPage
 {
+	background-image: url(images/stripes_bg.png);
+	background-repeat: repeat;
 	font-family: Arial,Helvetica,sans-serif;
 	font-style: normal;
 	font-size: medium;
