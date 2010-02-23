@@ -165,6 +165,8 @@
 			<prop key="org.quartz.plugin.triggHistory.class">org.quartz.plugins.history.LoggingJobHistoryPlugin</prop>
 			<prop key="org.quartz.jobStore.driverDelegateClass">${org.quartz.jobStore.driverDelegateClass}</prop>
 			<prop key="org.quartz.jobStore.selectWithLockSQL">${org.quartz.jobStore.selectWithLockSQL}</prop>
+			<prop key="org.quartz.scheduler.instanceId">${org.quartz.scheduler.instanceId}</prop>
+			<prop key="org.quartz.jobStore.isClustered">${org.quartz.jobStore.isClustered}</prop>
 		</props>
 		</property>
 		<property name="jobListeners">
