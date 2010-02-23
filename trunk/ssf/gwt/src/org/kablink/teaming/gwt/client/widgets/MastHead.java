@@ -36,7 +36,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -55,7 +55,7 @@ public class MastHead extends Composite
 	{
 		FlowPanel mainPanel;
 		FlowPanel panel;
-		AbstractImagePrototype abstractImg;
+		ImageResource imageResource;
 		Image img;
 
 		mainPanel = new FlowPanel();
@@ -67,8 +67,8 @@ public class MastHead extends Composite
 			panel.addStyleName( "mastHeadGraphicPanel" );
 	
 			// Add an image to the panel.
-			abstractImg = GwtTeaming.getImageBundle().mastHeadNovellGraphic();
-			img = abstractImg.createImage();
+			imageResource = GwtTeaming.getImageBundle().mastHeadNovellGraphic();
+			img = new Image(imageResource);
 			img.setWidth( "500" );
 			img.setHeight( "75" );
 			panel.add( img );
@@ -97,8 +97,8 @@ public class MastHead extends Composite
 			panel.addStyleName( "mastHeadLogoPanel" );
 			
 			// Add an image to the panel.
-			abstractImg = GwtTeaming.getImageBundle().mastHeadNovellLogo();
-			img = abstractImg.createImage();
+			imageResource = GwtTeaming.getImageBundle().mastHeadNovellLogo();
+			img = new Image(imageResource);
 			panel.add( img );
 		
 			mainPanel.add( panel );

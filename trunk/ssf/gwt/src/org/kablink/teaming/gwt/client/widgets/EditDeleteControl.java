@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,8 +36,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -66,7 +65,7 @@ public class EditDeleteControl extends Composite
 		DeleteHandler deleteHandler )// Gets called when the user clicks on the "delete" link.
 	{
 		FlowPanel mainPanel;
-		AbstractImagePrototype abstractImg;
+		ImageResource imageResource;
 		Image img;
 		
 		m_editHandler = editHandler;
@@ -81,8 +80,8 @@ public class EditDeleteControl extends Composite
 			m_editAnchor.addClickHandler( this );
 			m_editAnchor.addStyleName( "editDeleteControlAnchor" );
 			
-			abstractImg = GwtTeaming.getImageBundle().edit10();
-			img = abstractImg.createImage();
+			imageResource = GwtTeaming.getImageBundle().edit10();
+			img = new Image(imageResource);
 			img.addStyleName( "margin-right-5" );
 			
 			// Add the edit image to the anchor.
@@ -97,8 +96,8 @@ public class EditDeleteControl extends Composite
 			m_deleteAnchor.addClickHandler( this );
 			m_deleteAnchor.addStyleName( "editDeleteControlAnchor" );
 			
-			abstractImg = GwtTeaming.getImageBundle().delete10();
-			img = abstractImg.createImage();
+			imageResource = GwtTeaming.getImageBundle().delete10();
+			img = new Image(imageResource);
 
 			// Add the delete image to the anchor.
 			m_deleteAnchor.getElement().appendChild( img.getElement() );
