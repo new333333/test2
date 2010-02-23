@@ -123,8 +123,8 @@ public class LuceneProviderManager implements LuceneProviderManagerMBean {
 
 		int maxBooleans = PropsUtil.getInt("lucene.max.booleans", DEFAULT_MAX_BOOLEAN_CLAUSES);
 		BooleanQuery.setMaxClauseCount(maxBooleans);
-		if(logger.isDebugEnabled())
-			logger.debug("Max boolean clause count is set to " + maxBooleans);
+		
+		logger.info("commitNumberOps=" + commitNumberOps + ", commitTimeInterval=" + commitTimeInterval + ", maxBooleanClauseCount=" + maxBooleans);
 		
 		// Register MBean
 		try {
@@ -201,10 +201,12 @@ public class LuceneProviderManager implements LuceneProviderManagerMBean {
 	}
 
 	public void setCommitNumberOps(int commitNumberOps) {
+		logger.info("Setting commitNumberOps to " + commitNumberOps);
 		this.commitNumberOps = commitNumberOps;
 	}
 
 	public void setCommitTimeInterval(int commitTimeInterval) {
+		logger.info("Setting commitTimeInterval to " + commitTimeInterval);
 		this.commitTimeInterval = commitTimeInterval;
 	}
 
