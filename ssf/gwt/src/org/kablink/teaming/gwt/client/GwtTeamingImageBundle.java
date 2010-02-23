@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,8 +33,8 @@
 
 package org.kablink.teaming.gwt.client;
 
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.ImageBundle;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
 
 
 /**
@@ -42,86 +42,86 @@ import com.google.gwt.user.client.ui.ImageBundle;
  * 
  * @author jwootton
  */
-public interface GwtTeamingImageBundle extends ImageBundle
+public interface GwtTeamingImageBundle extends ClientBundle
 {
-	@Resource("org/kablink/teaming/gwt/public/images/browse_hierarchy.png")
-	public AbstractImagePrototype browseHierarchy();
+	@Source("org/kablink/teaming/gwt/public/images/browse_hierarchy.png")
+	public ImageResource browseHierarchy();
 
-	@Resource("org/kablink/teaming/gwt/public/images/edit_10.png")
-	public AbstractImagePrototype edit10();
+	@Source("org/kablink/teaming/gwt/public/images/edit_10.png")
+	public ImageResource edit10();
 
-	@Resource("org/kablink/teaming/gwt/public/images/edit_16.gif")
-	public AbstractImagePrototype edit16();
+	@Source("org/kablink/teaming/gwt/public/images/edit_16.gif")
+	public ImageResource edit16();
 
-	@Resource("org/kablink/teaming/gwt/public/images/delete_10.png")
-	public AbstractImagePrototype delete10();
+	@Source("org/kablink/teaming/gwt/public/images/delete_10.png")
+	public ImageResource delete10();
 
-	@Resource("org/kablink/teaming/gwt/public/images/delete_16.gif")
-	public AbstractImagePrototype delete16();
+	@Source("org/kablink/teaming/gwt/public/images/delete_16.gif")
+	public ImageResource delete16();
 
-	@Resource("org/kablink/teaming/gwt/public/images/lpe_custom_jsp.gif")
-	public AbstractImagePrototype landingPageEditorCustomJsp();
+	@Source("org/kablink/teaming/gwt/public/images/lpe_custom_jsp.gif")
+	public ImageResource landingPageEditorCustomJsp();
 
-	@Resource("org/kablink/teaming/gwt/public/images/lpe_entry16.png")
-	public AbstractImagePrototype landingPageEditorEntry();
+	@Source("org/kablink/teaming/gwt/public/images/lpe_entry16.png")
+	public ImageResource landingPageEditorEntry();
 
-	@Resource("org/kablink/teaming/gwt/public/images/lpe_folder.gif")
-	public AbstractImagePrototype landingPageEditorFolder();
+	@Source("org/kablink/teaming/gwt/public/images/lpe_folder.gif")
+	public ImageResource landingPageEditorFolder();
 
-	@Resource("org/kablink/teaming/gwt/public/images/lpe_graphic16.png")
-	public AbstractImagePrototype landingPageEditorGraphic();
+	@Source("org/kablink/teaming/gwt/public/images/lpe_graphic16.png")
+	public ImageResource landingPageEditorGraphic();
 
-	@Resource("org/kablink/teaming/gwt/public/images/lpe_link_entry.gif")
-	public AbstractImagePrototype landingPageEditorLinkEntry();
+	@Source("org/kablink/teaming/gwt/public/images/lpe_link_entry.gif")
+	public ImageResource landingPageEditorLinkEntry();
 
-	@Resource("org/kablink/teaming/gwt/public/images/lpe_link_folder.gif")
-	public AbstractImagePrototype landingPageEditorLinkFolder();
+	@Source("org/kablink/teaming/gwt/public/images/lpe_link_folder.gif")
+	public ImageResource landingPageEditorLinkFolder();
 
-	@Resource("org/kablink/teaming/gwt/public/images/lpe_link_url.gif")
-	public AbstractImagePrototype landingPageEditorLinkUrl();
+	@Source("org/kablink/teaming/gwt/public/images/lpe_link_url.gif")
+	public ImageResource landingPageEditorLinkUrl();
 
-	@Resource("org/kablink/teaming/gwt/public/images/lpe_list16b.png")
-	public AbstractImagePrototype landingPageEditorList();
+	@Source("org/kablink/teaming/gwt/public/images/lpe_list16b.png")
+	public ImageResource landingPageEditorList();
 
-	@Resource("org/kablink/teaming/gwt/public/images/lpe_table_16.png")
-	public AbstractImagePrototype landingPageEditorTable();
+	@Source("org/kablink/teaming/gwt/public/images/lpe_table_16.png")
+	public ImageResource landingPageEditorTable();
 
-	@Resource("org/kablink/teaming/gwt/public/images/lpe_utility_element.gif")
-	public AbstractImagePrototype landingPageEditorUtilityElement();
+	@Source("org/kablink/teaming/gwt/public/images/lpe_utility_element.gif")
+	public ImageResource landingPageEditorUtilityElement();
 	
-	@Resource("org/kablink/teaming/gwt/public/images/mast_head_novell_graphic.png")
-	public AbstractImagePrototype mastHeadNovellGraphic();
+	@Source("org/kablink/teaming/gwt/public/images/mast_head_novell_graphic.png")
+	public ImageResource mastHeadNovellGraphic();
 
-	@Resource("org/kablink/teaming/gwt/public/images/mast_head_novell_logo.png")
-	public AbstractImagePrototype mastHeadNovellLogo();
+	@Source("org/kablink/teaming/gwt/public/images/mast_head_novell_logo.png")
+	public ImageResource mastHeadNovellLogo();
 
-	@Resource("org/kablink/teaming/gwt/public/images/next_16.gif")
-	public AbstractImagePrototype next16();
+	@Source("org/kablink/teaming/gwt/public/images/next_16.gif")
+	public ImageResource next16();
 
-	@Resource("org/kablink/teaming/gwt/public/images/next_disabled_16.gif")
-	public AbstractImagePrototype nextDisabled16();
+	@Source("org/kablink/teaming/gwt/public/images/next_disabled_16.gif")
+	public ImageResource nextDisabled16();
 
-	@Resource("org/kablink/teaming/gwt/public/images/previous_16.gif")
-	public AbstractImagePrototype previous16();
+	@Source("org/kablink/teaming/gwt/public/images/previous_16.gif")
+	public ImageResource previous16();
 
-	@Resource("org/kablink/teaming/gwt/public/images/previous_disabled_16.gif")
-	public AbstractImagePrototype previousDisabled16();
+	@Source("org/kablink/teaming/gwt/public/images/previous_disabled_16.gif")
+	public ImageResource previousDisabled16();
 
-	@Resource("org/kablink/teaming/gwt/public/images/slide_down.png")
-	public AbstractImagePrototype slideDown();
+	@Source("org/kablink/teaming/gwt/public/images/slide_down.png")
+	public ImageResource slideDown();
 
-	@Resource("org/kablink/teaming/gwt/public/images/slide_left.png")
-	public AbstractImagePrototype slideLeft();
+	@Source("org/kablink/teaming/gwt/public/images/slide_left.png")
+	public ImageResource slideLeft();
 
-	@Resource("org/kablink/teaming/gwt/public/images/slide_right.png")
-	public AbstractImagePrototype slideRight();
+	@Source("org/kablink/teaming/gwt/public/images/slide_right.png")
+	public ImageResource slideRight();
 
-	@Resource("org/kablink/teaming/gwt/public/images/slide_up.png")
-	public AbstractImagePrototype slideUp();
+	@Source("org/kablink/teaming/gwt/public/images/slide_up.png")
+	public ImageResource slideUp();
 
-	@Resource("org/kablink/teaming/gwt/public/images/spinner16x16.gif")
-	public AbstractImagePrototype spinner16();
+	@Source("org/kablink/teaming/gwt/public/images/spinner16x16.gif")
+	public ImageResource spinner16();
 
-	@Resource("org/kablink/teaming/gwt/public/images/warn_icon16.gif")
-	public AbstractImagePrototype warningIcon16();
+	@Source("org/kablink/teaming/gwt/public/images/warn_icon16.gif")
+	public ImageResource warningIcon16();
 }// end GwtTeamingImageBundle

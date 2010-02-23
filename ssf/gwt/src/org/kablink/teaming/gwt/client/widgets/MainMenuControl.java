@@ -36,12 +36,10 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
 
 
 /**
@@ -62,7 +60,7 @@ public class MainMenuControl extends Composite
 	{
 		FlowPanel mainPanel;
 		FlowPanel panel;
-		AbstractImagePrototype abstractImg;
+		ImageResource imageResource;
 
 		mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "mainMenuControl" );
@@ -76,14 +74,14 @@ public class MainMenuControl extends Composite
 			//!!! Put these images in an anchor.
 			
 			// Add the slide-left image to the menu.
-			abstractImg = GwtTeaming.getImageBundle().slideLeft();
-			m_slideLeftImg = abstractImg.createImage();
+			imageResource = GwtTeaming.getImageBundle().slideLeft();
+			m_slideLeftImg = new Image(imageResource);
 			m_slideLeftImg.addStyleName( "paddingTop2px" );
 			panel.add( m_slideLeftImg );
 			
 			// Add the slide-right image to the menu and hide it.
-			abstractImg = GwtTeaming.getImageBundle().slideRight();
-			m_slideRightImg = abstractImg.createImage();
+			imageResource = GwtTeaming.getImageBundle().slideRight();
+			m_slideRightImg = new Image(imageResource);
 			m_slideRightImg.addStyleName( "paddingTop2px" );
 			m_slideRightImg.setVisible( false );
 			panel.add( m_slideRightImg );
@@ -100,14 +98,14 @@ public class MainMenuControl extends Composite
 			//!!! Put these images in an anchor.
 			
 			// Add the slide-up image to the menu.
-			abstractImg = GwtTeaming.getImageBundle().slideUp();
-			m_slideUpImg = abstractImg.createImage();
+			imageResource = GwtTeaming.getImageBundle().slideUp();
+			m_slideUpImg = new Image(imageResource);
 			m_slideUpImg.addStyleName( "paddingTop2px" );
 			panel.add( m_slideUpImg );
 			
 			// Add the slide-down image to the menu and hide it.
-			abstractImg = GwtTeaming.getImageBundle().slideDown();
-			m_slideDownImg = abstractImg.createImage();
+			imageResource = GwtTeaming.getImageBundle().slideDown();
+			m_slideDownImg = new Image(imageResource);
 			m_slideDownImg.addStyleName( "paddingTop2px" );
 			m_slideDownImg.setVisible( false );
 			panel.add( m_slideDownImg );
@@ -124,8 +122,8 @@ public class MainMenuControl extends Composite
 			//!!! Put this image in an anchor.
 			
 			// Add the browse hierarchy image to the menu.
-			abstractImg = GwtTeaming.getImageBundle().browseHierarchy();
-			m_browseHierarchyImg = abstractImg.createImage();
+			imageResource = GwtTeaming.getImageBundle().browseHierarchy();
+			m_browseHierarchyImg = new Image(imageResource);
 			m_browseHierarchyImg.addStyleName( "paddingTop2px" );
 			panel.add( m_browseHierarchyImg );
 			

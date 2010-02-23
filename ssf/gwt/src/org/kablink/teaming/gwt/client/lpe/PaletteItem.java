@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,7 +37,7 @@ import com.google.gwt.event.dom.client.HasMouseDownHandlers;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -53,7 +53,7 @@ public abstract class PaletteItem extends Composite
 	implements HasMouseDownHandlers
 {
 	private DragProxy m_dragProxy = null;
-	private AbstractImagePrototype m_abstractImg;
+	private ImageResource m_imageResource;
 	private String m_text;
 	
 	
@@ -65,7 +65,7 @@ public abstract class PaletteItem extends Composite
 		/**
 		 * 
 		 */
-		public DragProxy( 	AbstractImagePrototype abstractImg, String text )
+		public DragProxy( 	ImageResource imageResource, String text )
 		{
 			// Turn off the 'auto-hide' behavior.
 			super( false );
@@ -84,7 +84,7 @@ public abstract class PaletteItem extends Composite
 			panel.addStyleName( "lpeDragProxy" );
 
 			// Add the image to this widget
-			img = abstractImg.createImage();
+			img = new Image(imageResource);
 			img.addStyleName( "lpePaletteItemImg" );
 			panel.add( img );
 			
@@ -100,7 +100,7 @@ public abstract class PaletteItem extends Composite
 	/**
 	 * 
 	 */
-	public PaletteItem( AbstractImagePrototype abstractImg, String text )
+	public PaletteItem( ImageResource imageResource, String text )
 	{
 		FlowPanel	panel;
 		InlineLabel	label;
@@ -113,7 +113,7 @@ public abstract class PaletteItem extends Composite
 		panel.addStyleName( "lpePaletteItem" );
 
 		// Add the image to this widget
-		img = abstractImg.createImage();
+		img = new Image(imageResource);
 		img.addStyleName( "lpePaletteItemImg" );
 		panel.add( img );
 		
@@ -121,7 +121,7 @@ public abstract class PaletteItem extends Composite
 		label = new InlineLabel( text );
 		panel.add( label );
 		
-		m_abstractImg = abstractImg;
+		m_imageResource = imageResource;
 		m_text = text;
 		
 		// All composites must call initWidget() in their constructors.
@@ -152,7 +152,7 @@ public abstract class PaletteItem extends Composite
 		if ( m_dragProxy == null )
 		{
 			// Create a drag proxy that will be displayed when the user drags this palette item.
-			m_dragProxy = new DragProxy( m_abstractImg, m_text );
+			m_dragProxy = new DragProxy( m_imageResource, m_text );
 		}
 		
 		return m_dragProxy;
