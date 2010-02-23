@@ -39,9 +39,11 @@ import org.kablink.teaming.gwt.client.widgets.FolderControl;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
 import org.kablink.teaming.gwt.client.widgets.MastHead;
 
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 
 
 /**
@@ -61,9 +63,13 @@ public class GwtMainPage extends Composite
 	{
 		FlowPanel mainPanel;
 		FlowPanel panel;
+		Element bodyElement;
 
+		// Set the class name on the <body> element to "mainGwtTeamingPage"
+		bodyElement = RootPanel.getBodyElement();
+		bodyElement.setClassName( "mainTeamingPage" );
+		
 		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "mainTeamingPage" );
 		
 		// Add the MastHead to the page.
 		m_mastHead = new MastHead();
