@@ -35,9 +35,9 @@ package org.kablink.teaming.gwt.client;
 
 
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
-import org.kablink.teaming.gwt.client.widgets.FolderControl;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
 import org.kablink.teaming.gwt.client.widgets.MastHead;
+import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
@@ -53,7 +53,7 @@ public class GwtMainPage extends Composite
 {
 	private MastHead m_mastHead;
 	private MainMenuControl m_mainMenuCtrl;
-	private FolderControl m_folderCtrl;
+	private WorkspaceTreeControl m_wsTreeCtrl;
 	private ContentControl m_contentCtrl;
 
 	/**
@@ -79,14 +79,14 @@ public class GwtMainPage extends Composite
 		m_mainMenuCtrl = new MainMenuControl();
 		mainPanel.add( m_mainMenuCtrl );
 		
-		// Create a panel to hold the folder control and the content control
+		// Create a panel to hold the WorkspaceTree control and the content control
 		panel = new FlowPanel();
 		panel.addStyleName( "mainContentPanel" );
 		
-		// Create the folder control.
-		m_folderCtrl = new FolderControl();
-		m_folderCtrl.addStyleName( "mainFolderControl" );
-		panel.add( m_folderCtrl );
+		// Create the WorkspaceTree control.
+		m_wsTreeCtrl = new WorkspaceTreeControl();
+		m_wsTreeCtrl.addStyleName( "mainWorkspaceTreeControl" );
+		panel.add( m_wsTreeCtrl );
 		
 		// Create the content control.
 		m_contentCtrl = new ContentControl();

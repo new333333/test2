@@ -110,15 +110,15 @@
 	white-space: nowrap;
 }
 
-/* Style used by the Folder Control */
-.folderControl
+/* Style used by the WorkspaceTree Control */
+.workspaceTreeControl
 {
 	padding: 0 0 15px;
 	width: 230px;
 }
 
-/* Style for the header in the folder control */
-.folderControlHeader
+/* Style for the header in the WorkspaceTree control */
+.workspaceTreeControlHeader
 {
 	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
@@ -133,8 +133,8 @@
 	padding: 5px;
 }
 
-/* Style for the body of the folder control. */
-.folderControlBody
+/* Style for the body of the WorkspaceTree control. */
+.workspaceTreeControlBody
 {
 	background-color: #EFEEEC;
 	padding: 5px;
@@ -565,8 +565,8 @@
 	position: relative;
 }
 
-/* Style used for the folder control found in Teaming's main page. */
-.mainFolderControl
+/* Style used for the WorkspaceTree control found in Teaming's main page. */
+.mainWorkspaceTreeControl
 {
 	left: 8px;
 	position: absolute;
