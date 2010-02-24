@@ -59,6 +59,9 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/delete_16.gif")
 	public ImageResource delete16();
 
+	@Source("org/kablink/teaming/gwt/public/images/gwt.png")
+	public ImageResource gwtUI();
+
 	@Source("org/kablink/teaming/gwt/public/images/lpe_custom_jsp.gif")
 	public ImageResource landingPageEditorCustomJsp();
 

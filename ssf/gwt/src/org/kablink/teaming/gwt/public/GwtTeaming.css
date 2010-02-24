@@ -594,6 +594,12 @@
 	left: 70px;
 }
 
+/* Style use for the GWT UI control in the main menu. */
+.mainMenuGwtUIControl
+{
+	left: 101px;
+}
+
 /* Style used for the navigation controls in the main menu. */
 .mainMenuNavControl
 {

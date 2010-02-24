@@ -67,5 +67,6 @@ public interface GwtRpcService extends RemoteService
 	public ExtensionInfoClient[] getExtensionInfo();
 	public ExtensionInfoClient[] removeExtension(String id) throws ExtensionDefinitionInUseException;
 	public ExtensionFiles getExtensionFiles(String id, String zoneName);
+	public String getUserWorkspacePermalink();
 
 }// end GwtRpcService

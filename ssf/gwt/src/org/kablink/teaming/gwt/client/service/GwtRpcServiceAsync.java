@@ -62,5 +62,6 @@ public interface GwtRpcServiceAsync
 	public void getExtensionInfo( AsyncCallback<ExtensionInfoClient[]> callback );
 	public void removeExtension(String id, AsyncCallback<ExtensionInfoClient[]> callback);
 	public void getExtensionFiles(String id, String zoneName, AsyncCallback<ExtensionFiles> callback);
+	public void getUserWorkspacePermalink(AsyncCallback<String> callback);
 
 }// end GwtRpcServiceAsync
