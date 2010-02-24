@@ -287,6 +287,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 										.getZoneId()),
 						WorkAreaOperation.ZONE_ADMINISTRATION);
 				break;
+			case readEntries:
+				getAccessControlManager().checkOperation(binder,
+						WorkAreaOperation.READ_ENTRIES);
+				break;
+			case viewBinderTitle:
+				getAccessControlManager().checkOperation(binder,
+						WorkAreaOperation.VIEW_BINDER_TITLE);
+				break;
 			default:
 				throw new NotSupportedException(operation.toString(),
 						"checkAccess");
@@ -323,9 +331,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			AccessControlException {
 		Binder binder = loadBinder(binderId);
 		// Check if the user has "read" access to the binder.
-		if (!(binder instanceof TemplateBinder))
-			getAccessControlManager().checkOperation(binder,
-					WorkAreaOperation.READ_ENTRIES);
+		if (!(binder instanceof TemplateBinder)) {
+			try {
+				getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+			} catch(AccessControlException ace) {
+				getAccessControlManager().checkOperation(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
+			}
+		}
 
 		return binder;
 	}
@@ -338,12 +350,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		} catch (NoBinderByTheIdException e) {
 			return false;
 		}
-
 		// Check if the user has "read" access to the binder.
-		if (binder != null && !(binder instanceof TemplateBinder))
-			value = getAccessControlManager().testOperation(user, binder,
-					WorkAreaOperation.READ_ENTRIES);
-
+		if (binder != null && !(binder instanceof TemplateBinder)) {
+			value = getAccessControlManager().testOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
+			if (!value) {
+				value = getAccessControlManager().testOperation(user, binder, WorkAreaOperation.VIEW_BINDER_TITLE);
+			}
+		}
 		return value;
 	}
 
@@ -1292,8 +1305,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				if(((Workspace) binder).isPreDeleted())
 					continue;						
 			}
-			getAccessControlManager().checkOperation(binder,
-					WorkAreaOperation.READ_ENTRIES);
+			try {
+				getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+			} catch(AccessControlException ace) {
+				getAccessControlManager().checkOperation(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
+			}
 			return binder;
 		}
 
@@ -1725,8 +1741,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					if (f.isDeleted() || f.isPreDeleted())
 						continue;
 					// Check if the user has "read" access to the folder.
-					if (!getAccessControlManager().testOperation(f,
-							WorkAreaOperation.READ_ENTRIES))
+					if (!getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES) && 
+							!getAccessControlManager().testOperation(f, WorkAreaOperation.VIEW_BINDER_TITLE))
 						continue;
 					next = current.addElement(DomTreeBuilder.NODE_CHILD);
 					if (domTreeHelper.setupDomElement(
@@ -1746,8 +1762,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					if (w.isDeleted() || w.isPreDeleted())
 						continue;
 					// Check if the user has "read" access to the workspace.
-					if (!getAccessControlManager().testOperation(w,
-							WorkAreaOperation.READ_ENTRIES))
+					if (!getAccessControlManager().testOperation(w, WorkAreaOperation.READ_ENTRIES) && 
+							!getAccessControlManager().testOperation(w, WorkAreaOperation.VIEW_BINDER_TITLE))
 						continue;
 					next = current.addElement(DomTreeBuilder.NODE_CHILD);
 					buildBinderDomTree(next, w, c, domTreeHelper, levels);

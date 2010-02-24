@@ -209,7 +209,15 @@ public class AccessUtils  {
 	}	
 
 	public static Set getReadAccessIds(Binder binder) {
-        return getInstance().getAccessControlManager().getWorkAreaAccessControl(binder, WorkAreaOperation.READ_ENTRIES);     	 
+		return getReadAccessIds(binder, false);
+	}
+	public static Set getReadAccessIds(Binder binder, boolean includeTitleAcl) {
+        Set readEntries = getInstance().getAccessControlManager().getWorkAreaAccessControl(binder, WorkAreaOperation.READ_ENTRIES);
+        if (includeTitleAcl) {
+        	Set readTitles = getInstance().getAccessControlManager().getWorkAreaAccessControl(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
+        	readEntries.addAll(readTitles);
+        }
+        return readEntries;
 	}     	
 	
 	public static void readCheck(User user, DefinableEntity entity) throws AccessControlException {

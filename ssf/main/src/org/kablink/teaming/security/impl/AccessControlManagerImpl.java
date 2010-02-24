@@ -179,7 +179,9 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		if ((user.isSuper() || isSynchronizationWork(user, workAreaOperation)) && 
 				(application == null || application.isTrusted())) 
 			return true;
-		if (!workAreaOperation.equals(WorkAreaOperation.READ_ENTRIES) && !getLicenseManager().validLicense())return false;
+		if (!workAreaOperation.equals(WorkAreaOperation.READ_ENTRIES) && 
+				!workAreaOperation.equals(WorkAreaOperation.VIEW_BINDER_TITLE) && 
+				!getLicenseManager().validLicense())return false;
 		if (workArea.isFunctionMembershipInherited()) {
 			WorkArea parentWorkArea = workArea.getParentWorkArea();
 			if (parentWorkArea == null)
@@ -242,12 +244,14 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
         	}
         	
         	//Make sure the user is allowed to see the workarea at all
-        	if (WorkAreaOperation.READ_ENTRIES.equals(workAreaOperation)) {
+        	if (WorkAreaOperation.READ_ENTRIES.equals(workAreaOperation) || 
+        			WorkAreaOperation.VIEW_BINDER_TITLE.equals(workAreaOperation)) {
            		//This user shouldn't see anything about this workarea
         		throw new OperationAccessControlExceptionNoName(user.getName(), 
             			workAreaOperation.toString());
         	}
-        	if (testOperation(user, workArea, workArea, WorkAreaOperation.READ_ENTRIES)) {
+        	if (testOperation(user, workArea, workArea, WorkAreaOperation.READ_ENTRIES) ||
+        			testOperation(user, workArea, workArea, WorkAreaOperation.VIEW_BINDER_TITLE)) {
         		throw new OperationAccessControlException(user.getName(), 
         			workAreaOperation.toString(), workArea.toString());
         	} else {

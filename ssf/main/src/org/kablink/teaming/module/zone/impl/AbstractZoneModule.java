@@ -551,6 +551,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			}
 			addGlobalFunctions(zoneConfig, ids);
 		}
+		if (version.intValue() <= 4) {
+			//add new role
+			addViewBinderTitleRole(top);
+		}
   	}
  	/**
  	 * Fix up duplicate definitions.  1.0 allowed definitions with the same name
@@ -1154,6 +1158,16 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		
+		//generate functionId
+		getFunctionManager().addFunction(function);
+		return function;
+	}
+
+	private Function addViewBinderTitleRole(Workspace top) {
+		Function function = new Function();
+		function.setZoneId(top.getId());
+		function.setName(ObjectKeys.ROLE_TITLE_VIEW_BINDER_TITLE);
+		function.addOperation(WorkAreaOperation.VIEW_BINDER_TITLE);
 		//generate functionId
 		getFunctionManager().addFunction(function);
 		return function;

@@ -256,7 +256,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		}
 	}
 	protected void checkReadAccess(ProfileBinder binder) {
-    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);		
+    	try {
+    		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+    	} catch(AccessControlException ace) {
+    		getAccessControlManager().checkOperation(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
+    	}
 	}
 	protected void checkReadAccess(Principal principal) {
     	AccessUtils.readCheck(principal);
@@ -1641,7 +1645,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			  continue;
 		  }
 		  if (se.getEntity() instanceof Binder) {
-				if (!getAccessControlManager().testOperation(user, (Binder)se.getEntity(), WorkAreaOperation.READ_ENTRIES)) {
+				if (!getAccessControlManager().testOperation(user, (Binder)se.getEntity(), WorkAreaOperation.READ_ENTRIES) && 
+						!getAccessControlManager().testOperation(user, (Binder)se.getEntity(), WorkAreaOperation.VIEW_BINDER_TITLE)) {
 					shares.remove(i);
 				} else {
 					++i;

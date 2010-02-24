@@ -1913,7 +1913,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //add common fields from binder for binder and its attachments
     protected void fillInIndexDocWithCommonPartFromBinder(org.apache.lucene.document.Document indexDoc, 
     		Binder binder, boolean fieldsOnly) {
-    	EntityIndexUtils.addReadAccess(indexDoc, binder, fieldsOnly);
+    	EntityIndexUtils.addReadAccess(indexDoc, binder, fieldsOnly, true);
 
     	EntityIndexUtils.addNormTitle(indexDoc, binder, fieldsOnly);
     	

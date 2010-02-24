@@ -313,7 +313,12 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 		Folder folder = loadFolder(folderId);
 	
 		// Check if the user has "read" access to the folder.
-		getAccessControlManager().checkOperation(folder, WorkAreaOperation.READ_ENTRIES);
+		try {
+			getAccessControlManager().checkOperation(folder, WorkAreaOperation.READ_ENTRIES);
+		} catch(AccessControlException ace) {
+			//Can't read it, so try seeing if the folder title is readable
+			getAccessControlManager().checkOperation(folder, WorkAreaOperation.VIEW_BINDER_TITLE);
+		}
 		return folder;        
 	}
 	
@@ -1084,7 +1089,8 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	for(Object o : folder.getFolders()) {
     		Folder f = (Folder) o;
     		if (f.isDeleted() || f.isPreDeleted()) continue;
-    		if(getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
+    		if(getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES) ||
+    				getAccessControlManager().testOperation(f, WorkAreaOperation.VIEW_BINDER_TITLE))
     			titles.add(f.getTitle());
     	}
     	
@@ -1100,7 +1106,8 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	for(Object o : folder.getFolders()) {
     		Folder f = (Folder) o;
     		if (f.isDeleted() || f.isPreDeleted()) continue;
-    		if(getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
+    		if(getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES) || 
+    				getAccessControlManager().testOperation(f, WorkAreaOperation.VIEW_BINDER_TITLE))
     			subFolders.add(f);
     	}
     	

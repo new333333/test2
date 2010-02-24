@@ -87,14 +87,22 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
         }
         if (workspace.isDeleted()) throw new NoBinderByTheIdException(workspace.getId());
 		// Check if the user has "read" access to the workspace.
-		getAccessControlManager().checkOperation(workspace, WorkAreaOperation.READ_ENTRIES);
+		try {
+			getAccessControlManager().checkOperation(workspace, WorkAreaOperation.READ_ENTRIES);
+		} catch(AccessControlException ace) {
+			getAccessControlManager().checkOperation(workspace, WorkAreaOperation.VIEW_BINDER_TITLE);
+		}
  
        return workspace;
     }
     public Workspace getTopWorkspace() {
 		Workspace top = RequestContextHolder.getRequestContext().getZone();
 		// Check if the user has "read" access to the workspace.
-		getAccessControlManager().checkOperation(top, WorkAreaOperation.READ_ENTRIES);
+		try {
+			getAccessControlManager().checkOperation(top, WorkAreaOperation.READ_ENTRIES);
+		} catch(AccessControlException ace) {
+			getAccessControlManager().checkOperation(top, WorkAreaOperation.VIEW_BINDER_TITLE);
+		}
 		return top;
     }
    	public SortedSet<Binder> getWorkspaceTree(Long id) throws AccessControlException {
@@ -111,7 +119,8 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     		// before testing its access control.
     		if ((b instanceof Folder) || (b instanceof Workspace)) {
     			// Check if the user has "read" access to the binder.
-    			if (getAccessControlManager().testOperation(b, WorkAreaOperation.READ_ENTRIES))
+    			if (getAccessControlManager().testOperation(b, WorkAreaOperation.READ_ENTRIES) ||
+    					getAccessControlManager().testOperation(b, WorkAreaOperation.VIEW_BINDER_TITLE))
     				tree.add(b);
     		}
         }
@@ -134,7 +143,8 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
        				if(((Workspace) b).isPreDeleted()) continue;
        			}
        		    // Check if the user has "read" access to the binder.
-       			if(getAccessControlManager().testOperation(b, WorkAreaOperation.READ_ENTRIES))
+       			if (getAccessControlManager().testOperation(b, WorkAreaOperation.READ_ENTRIES) ||
+       					getAccessControlManager().testOperation(b, WorkAreaOperation.VIEW_BINDER_TITLE))
        				titles.add(b.getTitle());
        		}
         }

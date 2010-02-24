@@ -122,6 +122,7 @@ import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilterRequestParser;
 import org.kablink.teaming.search.filter.SearchFilterToMapConverter;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.LongIdUtil;
@@ -415,6 +416,8 @@ public class BinderHelper {
 					if (binder instanceof Folder) {
 						model.put(WebKeys.IS_BINDER_MIRRORED_FOLDER, ((Folder)binder).isMirrored());
 					}
+					model.put(WebKeys.BINDER_READ_ENTRIES, bs.getBinderModule().testAccess(binder, BinderOperation.readEntries));
+					model.put(WebKeys.BINDER_VIEW_BINDER_TITLE, bs.getBinderModule().testAccess(binder, BinderOperation.viewBinderTitle));
 				} catch(Exception e) {
 					logger.debug("BinderHelper.setupStandardBeans(Exception:  '" + MiscUtil.exToString(e) + "')");
 					BinderHelper.getBinderAccessibleUrl(bs, null, null, request, response, model);
@@ -915,7 +918,10 @@ public class BinderHelper {
 
 	public static void addActionsFullView(AllModulesInjected bs, RenderRequest request, List actions, 
 			Long binderId, Long entryId) {
-		Binder binder = bs.getBinderModule().getBinder(binderId);
+		Binder binder = null;
+		try {
+			binder = bs.getBinderModule().getBinder(binderId);
+		} catch(AccessControlException ace) {}
 		if (binder != null) {
 			Map action = new HashMap();
 			action.put("title", NLT.get("mobile.teamingUI"));
@@ -1390,10 +1396,8 @@ public class BinderHelper {
 				try {
 					tree = bs.getBinderModule().getDomBinderTree(parentBinder.getId(), 
 							new WsDomTreeBuilder(null, true, bs, helper),0);
-				} catch (AccessControlException ac) {
-					break;
-				}
-				navigationLinkMap.put(parentBinder.getId(), tree);
+					navigationLinkMap.put(parentBinder.getId(), tree);
+				} catch (AccessControlException ac) {}
 				parentBinder = ((Binder)parentBinder).getParentBinder();
 			}
 		}

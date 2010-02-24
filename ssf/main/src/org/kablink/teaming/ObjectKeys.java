@@ -176,6 +176,7 @@ public interface ObjectKeys {
     public static final String ROLE_TITLE_VISITOR="__role.visitor";
     public static final String ROLE_TITLE_PARTICIPANT="__role.participant";
     public static final String ROLE_TITLE_GUEST_PARTICIPANT="__role.guestParticipant";
+    public static final String ROLE_TITLE_VIEW_BINDER_TITLE="__role.viewBinderTitle";
     public static final String ROLE_TITLE_TEAM_MEMBER="__role.teamMember";
     public static final String ROLE_TITLE_BINDER_ADMIN="__role.binderAdmin";
     public static final String ROLE_TITLE_WORKSPACE_CREATOR="__role.workspaceCreator";
