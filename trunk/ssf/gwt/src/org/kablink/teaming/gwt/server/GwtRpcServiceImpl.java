@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.ExtensionInfo;
@@ -623,5 +624,9 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
     	return extFiles;
 	}
 
-    
+
+	public String getUserWorkspacePermalink() {
+		Binder userWS = getBinderModule().getBinder(RequestContextHolder.getRequestContext().getUser().getWorkspaceId());
+		return PermaLinkUtil.getPermalink(userWS);
+	}
 }// end GwtRpcServiceImpl

@@ -35,8 +35,14 @@ package org.kablink.teaming.gwt.client.widgets;
 
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -129,9 +135,55 @@ public class MainMenuControl extends Composite
 			
 			mainPanel.add( panel );
 		}
+		
+		
+		// Add the "GWT UI" action.
+		{
+			Anchor gwtUIAnchor = new Anchor();
+			gwtUIAnchor.addClickHandler(new ClickHandler(){
+				public void onClick(ClickEvent event) {
+					GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
+					rpcService.getUserWorkspacePermalink(new AsyncCallback<String>() {
+						public void onFailure(Throwable t) {}
+						public void onSuccess(String userWorkspaceURL)  {
+							jsToggleGwtUI();
+							jsLoadUserWorkspaceURL(userWorkspaceURL);
+						}
+						
+						private native void jsToggleGwtUI() /*-{
+							// Toggle the GWT UI state.
+							window.top.ss_toggleGwtUI();
+						}-*/;
 
+						private native void jsLoadUserWorkspaceURL(String userWorkspaceURL) /*-{
+							// Give the GWT UI state toggling 1/2
+							// second to complete and reload the user
+							// workspace.
+							window.setTimeout(
+								function() {
+									window.top.location.href = userWorkspaceURL;
+								},
+								500);
+						}-*/;
+					});
+				}
+				
+			});
+			
+			imageResource = GwtTeaming.getImageBundle().gwtUI();
+			Image gwtUIImg = new Image(imageResource);
+			gwtUIImg.addStyleName( "paddingTop2px" );
+			gwtUIAnchor.getElement().appendChild(gwtUIImg.getElement());
+			
+			panel = new FlowPanel();
+			panel.addStyleName("mainMenuNavControl");
+			panel.addStyleName("mainMenuGwtUIControl");
+			panel.add(gwtUIAnchor);
+			mainPanel.add(panel);
+		}
+		
+		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
 	}// end MainMenuControl()
-
 }// end MainMenuControl
