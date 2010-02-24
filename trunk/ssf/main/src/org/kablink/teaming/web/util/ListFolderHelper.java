@@ -1490,6 +1490,7 @@ public class ListFolderHelper {
 		Toolbar whatsNewToolbar = new Toolbar();
 		Toolbar emailSubscriptionToolbar = new Toolbar();
 		Toolbar trashToolbar = new Toolbar();
+		Toolbar gwtUIToolbar = new Toolbar();
 		
 		boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
 		boolean isAppletSupported = SsfsUtil.supportApplets(request);
@@ -2067,6 +2068,9 @@ public class ListFolderHelper {
 		// trash
 		TrashHelper.buildTrashToolbar(user, folder, model, qualifiers, trashToolbar);
 
+		// GWT UI
+		MiscUtil.buildGwtUIToolbar(user, folder, model, qualifiers, gwtUIToolbar);
+
 		// start meeting
 		if (bs.getIcBrokerModule().isEnabled() && 
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
@@ -2175,6 +2179,7 @@ public class ListFolderHelper {
 		model.put(WebKeys.WHATS_NEW_TOOLBAR,  whatsNewToolbar.getToolbar());
 		model.put(WebKeys.EMAIL_SUBSCRIPTION_TOOLBAR,  emailSubscriptionToolbar.getToolbar());
 		model.put(WebKeys.TRASH_TOOLBAR,  trashToolbar.getToolbar());
+		model.put(WebKeys.GWT_UI_TOOLBAR,  gwtUIToolbar.getToolbar());
 	}
 	
 

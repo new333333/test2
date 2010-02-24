@@ -148,6 +148,8 @@ import org.kablink.teaming.web.upload.ProgressListenerSessionResolver;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.FixupFolderDefsThread;
+import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.UserAppConfig;
 import org.kablink.teaming.web.util.Favorites;
@@ -530,6 +532,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 		else if (op.equals(WebKeys.OPERATION_GET_FILE_RELATIONSHIPS_BY_ENTRY)) {
 			return ajaxGetFileRelationshipsByEntry(request, response);
 		}
+		else if (op.equals(WebKeys.OPERATION_TOGGLE_GWT_UI)) {
+			return ajaxToggleGwtUI(request, response);
+		}
 		return ajaxReturn(request, response);
 	} 
 
@@ -799,6 +804,24 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put("relatedWorkspaces",    ((null == wsSet)                ? new HashSet<Workspace>()  : wsSet));
 	}
 	
+	/**
+	 * Toggles the current GWT UI mode.
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	private ModelAndView ajaxToggleGwtUI(RenderRequest request, RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		Binder userWS = getBinderModule().getBinder(RequestContextHolder.getRequestContext().getUser().getWorkspaceId());
+		model.put("userWorkspaceURL", PermaLinkUtil.getPermalink(userWS));
+		MiscUtil.setGwtUIActive(request, (!(MiscUtil.isGwtUIActive(request))));
+		response.setContentType("text/json");
+		return new ModelAndView("forum/json/toggle_gwtUI", model);
+	}
+
 	/**
 	 * 
 	 * @param request

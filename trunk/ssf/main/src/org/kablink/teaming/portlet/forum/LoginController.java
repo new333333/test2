@@ -135,11 +135,8 @@ public class LoginController  extends SAbstractControllerRetry {
 			return new ModelAndView("mobile/show_login_form", model);
 		}
 		
-		String durangoUI;
-		
-		durangoUI = SPropsUtil.getString( "use-durango-ui", "");
-		if ( false && durangoUI != null && durangoUI.equalsIgnoreCase( "1" ) )
-		{
+		boolean durangoUI = MiscUtil.isGwtUIActive(request);
+		if (false && durangoUI) {
 			return new ModelAndView( "forum/GwtMainPage", model );
 		}
 		

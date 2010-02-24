@@ -239,6 +239,9 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
 	                	--%><c:if test="${!empty toolbarMenu.value.qualifiers.icon && !empty toolbarMenu.value.qualifiers.iconFloatRight}"><%--
 	                		--%> class="ss_toolbar_iconfloatright" <%--
 		                --%></c:if><%--
+	                	--%><c:if test="${!empty toolbarMenu.value.qualifiers.icon && !empty toolbarMenu.value.qualifiers.iconGwtUI}"><%--
+	                		--%> class="ss_toolbar_gwtui" <%--
+		                --%></c:if><%--
 	                --%>><%--
 
 --%><%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view_helpspots.jsp" %><%--
@@ -296,9 +299,15 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
                 	--%><c:if test="${!empty toolbarMenu.value.qualifiers.icon && !empty toolbarMenu.value.qualifiers.iconFloatRight}"><%--
                 		--%> class="ss_toolbar_iconfloatright" <%--
 	                --%></c:if><%--
+                	--%><c:if test="${!empty toolbarMenu.value.qualifiers.icon && !empty toolbarMenu.value.qualifiers.iconGwtUI}"><%--
+                		--%> class="ss_toolbar_gwtui" <%--
+	                --%></c:if><%--
                     --%>><%--
                     --%><c:if test="${!empty toolbarMenu.value.qualifiers.icon}"><%--
                         --%><img border="0" <%--
+	                	--%><c:if test="${!empty toolbarMenu.value.qualifiers.icon && !empty toolbarMenu.value.qualifiers.iconGwtUI}"><%--
+	                		--%> class="ss_toolbar_gwtui" <%--
+		                --%></c:if><%--
                         --%> src="<html:imagesPath/>icons/<c:out value="${toolbarMenu.value.qualifiers.icon}" />" <%--
                         --%> title="<c:out value="${toolbarMenu.value.title}" />" ><%--
                     --%></c:if><%--

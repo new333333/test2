@@ -537,6 +537,7 @@ public class WebKeys {
     public static final String OPERATION_VIEW_ACCESS = "view_access";
     public static final String OPERATION_VIEW_ERROR_MESSAGE = "view_error_message";
 	public static final String OPERATION_WIKILINK_FORM = "wikilink_form";
+	public static final String OPERATION_TOGGLE_GWT_UI = "toggle_gwtUI";
 	
 	public static final String OPERATION_SAVE_SEARCH_SORT_INFO="save_search_sort_info";
 	public static final String OPERATION_SAVE_SEARCH_PAGE_INFO="save_search_page_info";
@@ -1115,6 +1116,7 @@ public class WebKeys {
     public static final String TOOLBAR_URL_WEBDAV="ss_toolbar_url_webdav";
     public static final String TOP_WORKSPACE="ss_topWorkspace";
     public static final String TRASH_TOOLBAR = "ssTrashToolbar";
+    public static final String GWT_UI_TOOLBAR = "ssGwtUIToolbar";
     public static final String TUTORIAL_NAME = "ss_tutorial_name";
     public static final String TUTORIAL_PANEL_STATE = "ss_tutorial_panel_state";
     public static final String TRACKED_PLACES_PAGE="ss_trackedPlacesPage";

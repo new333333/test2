@@ -84,8 +84,6 @@ public class ViewPermalinkController  extends SAbstractController {
 		User user = null;
 		String sUrl;
 		try {
-			String durangoUI;
-			
 			if (!WebHelper.isUserLoggedIn(request) || RequestContextHolder.getRequestContext() == null) {
 				Long zoneId = WebHelper.getZoneIdByVirtualHost(request);
 				user = AccessUtils.getZoneGuestUser(zoneId);
@@ -104,8 +102,8 @@ public class ViewPermalinkController  extends SAbstractController {
 				sUrl = processRequest(request);
 			}
 
-			durangoUI = SPropsUtil.getString( "use-durango-ui", "");
-			if ( durangoUI != null && durangoUI.equalsIgnoreCase( "1" ) )
+			boolean durangoUI = MiscUtil.isGwtUIActive(request);
+			if (durangoUI)
 			{
 				String param;
 				
@@ -343,7 +341,6 @@ public class ViewPermalinkController  extends SAbstractController {
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map<String,Object> model = new HashMap<String,Object>();
-		String durangoUI;
 		
 		if ( response instanceof PortletResponseImpl )
 		{
@@ -378,8 +375,8 @@ public class ViewPermalinkController  extends SAbstractController {
 			url.setParameter(WebKeys.URL_CAPTIVE, "false");
 		model.put(WebKeys.URL, url.toString());
 
-		durangoUI = SPropsUtil.getString( "use-durango-ui", "");
-		if ( durangoUI != null && durangoUI.equalsIgnoreCase( "1" ) )
+		boolean durangoUI = MiscUtil.isGwtUIActive(request);
+		if (durangoUI)
 		{
 			String param;
 			

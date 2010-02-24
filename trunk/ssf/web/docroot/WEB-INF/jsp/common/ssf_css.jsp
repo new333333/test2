@@ -1215,6 +1215,16 @@ span.ss_toolbar_iconfloatright {
 li.ss_toolbar_iconfloatright {
 	padding-top: 2px !important;
 }
+span.ss_toolbar_gwtui {
+	padding-top: 0px   !important;
+}  
+li.ss_toolbar_gwtui {
+	padding-top: 2px !important;
+}
+img.ss_toolbar_gwtui {
+	height: 16px !important;
+	width:  16px !important;
+}  
 .ss_toolbar_menu {
   position: absolute;
   visibility: hidden;

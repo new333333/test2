@@ -301,6 +301,7 @@ public class ProfilesBinderHelper {
 		Toolbar footerToolbar = new Toolbar();
 		Toolbar whatsNewToolbar = new Toolbar();
 		Toolbar trashToolbar = new Toolbar();
+		Toolbar gwtUIToolbar = new Toolbar();
 		
 		AdaptedPortletURL adapterUrl;
 		//The "Administration" menu
@@ -391,6 +392,9 @@ public class ProfilesBinderHelper {
 		//Trash
 		TrashHelper.buildTrashToolbar(user, binder, model, qualifiers, trashToolbar);
 
+		//GWT UI
+		MiscUtil.buildGwtUIToolbar(user, binder, model, qualifiers, gwtUIToolbar);
+
 		//Color themes (removed for now)
 		if (0 == 1 && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			qualifiers = new HashMap();
@@ -409,6 +413,7 @@ public class ProfilesBinderHelper {
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 		model.put(WebKeys.WHATS_NEW_TOOLBAR,  whatsNewToolbar.getToolbar());
 		model.put(WebKeys.TRASH_TOOLBAR,  trashToolbar.getToolbar());
+		model.put(WebKeys.GWT_UI_TOOLBAR,  gwtUIToolbar.getToolbar());
 	}
 	
 	protected static Toolbar buildViewEntryToolbar (AllModulesInjected bs, RenderRequest request, RenderResponse response, ProfileBinder binder) {
