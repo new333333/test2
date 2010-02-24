@@ -49,4 +49,7 @@
  <c:if test="${!empty ssTrashToolbar}">
   <ssf:toolbar toolbar="${ssTrashToolbar}" style="ss_actions_bar1 ss_actions_bar" item="true" />
  </c:if>
+ <c:if test="${!empty ssGwtUIToolbar}">
+  <ssf:toolbar toolbar="${ssGwtUIToolbar}" style="ss_actions_bar1 ss_actions_bar" item="true" />
+ </c:if>
 </ssf:toolbar>

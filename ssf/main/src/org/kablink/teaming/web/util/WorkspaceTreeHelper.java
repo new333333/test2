@@ -646,6 +646,7 @@ public class WorkspaceTreeHelper {
 		Toolbar folderActionsToolbar = new Toolbar();
 		Toolbar whatsNewToolbar = new Toolbar();
 		Toolbar trashToolbar = new Toolbar();
+		Toolbar gwtUIToolbar = new Toolbar();
 		Map qualifiers;
 		AdaptedPortletURL adapterUrl;
 
@@ -1007,6 +1008,9 @@ public class WorkspaceTreeHelper {
 		// trash
 		TrashHelper.buildTrashToolbar(user, workspace, model, qualifiers, trashToolbar);
 
+		// GWT UI
+		MiscUtil.buildGwtUIToolbar(user, workspace, model, qualifiers, gwtUIToolbar);
+
 		// start meeting
 		if (bs.getIcBrokerModule().isEnabled() && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
@@ -1070,6 +1074,7 @@ public class WorkspaceTreeHelper {
 		model.put(WebKeys.WHATS_NEW_TOOLBAR,  whatsNewToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_ACTIONS_TOOLBAR,  folderActionsToolbar.getToolbar());
 		model.put(WebKeys.TRASH_TOOLBAR,  trashToolbar.getToolbar());
+		model.put(WebKeys.GWT_UI_TOOLBAR,  gwtUIToolbar.getToolbar());
 	}
 	
 	private static String[] collectContributorIds(Workspace workspace) {
