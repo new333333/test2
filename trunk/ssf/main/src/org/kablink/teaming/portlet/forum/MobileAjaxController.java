@@ -1034,8 +1034,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			Set wsUsers = new HashSet();
 			Long userId = binder.getCreation().getPrincipal().getId();
 			if (userId != null) wsUsers.add(userId);
-			SortedSet wsUsers2 = getProfileModule().getUsers(wsUsers);
-			if (wsUsers2.size() > 0) model.put(WebKeys.WORKSPACE_CREATOR, wsUsers2.first());
+			try {
+				SortedSet wsUsers2 = getProfileModule().getUsers(wsUsers);
+				if (wsUsers2.size() > 0) model.put(WebKeys.WORKSPACE_CREATOR, wsUsers2.first());
+			} catch(Exception e) {}
 		}
 		if (binder.getId().equals(getProfileModule().getProfileBinderId())) {
 			//This is the profiles binder.

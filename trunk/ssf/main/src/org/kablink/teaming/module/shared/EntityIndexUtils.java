@@ -563,7 +563,10 @@ public class EntityIndexUtils {
     }
     // Get ids for folder read access.  Replace owner indicator with search owner search flag. Replace team indicator with team owner search flag
     public static String getFolderAclString(Binder binder) {
-		Set binderIds = AccessUtils.getReadAccessIds(binder);
+    	return getFolderAclString(binder, false);
+    }
+    public static String getFolderAclString(Binder binder, boolean includeTitleAcl) {
+		Set binderIds = AccessUtils.getReadAccessIds(binder, includeTitleAcl);
    		String ids = LongIdUtil.getIdsAsString(binderIds);
        	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), Constants.READ_ACL_TEAM);
        	ids = ids.replaceFirst(ObjectKeys.OWNER_USER_ID.toString(), Constants.READ_ACL_BINDER_OWNER);
@@ -573,8 +576,11 @@ public class EntityIndexUtils {
     
     //Add acl fields for binder for storage in search engine
     private static void addBinderAcls(Document doc, Binder binder) {
+    	addBinderAcls(doc, binder, false);
+    }
+    private static void addBinderAcls(Document doc, Binder binder, boolean includeTitleAcl) {
 		//get real binder access
-		doc.add(new Field(Constants.FOLDER_ACL_FIELD, getFolderAclString(binder), Field.Store.NO, Field.Index.TOKENIZED));
+		doc.add(new Field(Constants.FOLDER_ACL_FIELD, getFolderAclString(binder, includeTitleAcl), Field.Store.NO, Field.Index.TOKENIZED));
 		//get team members
 		doc.add(new Field(Constants.TEAM_ACL_FIELD, binder.getTeamMemberString(), Field.Store.NO, Field.Index.TOKENIZED));
 		//add binder owner
@@ -585,9 +591,12 @@ public class EntityIndexUtils {
     }
     //Add acl fields for binder for storage in dom4j documents.
     //In this case replace owner with real owner in _folderAcl
- 	//The extra field is not necessary cause bulk updateing is not done
+ 	//The extra field is not necessary cause bulk updating is not done
     private static void addBinderAcls(org.dom4j.Element parent, Binder binder) {
-		Set binderIds = AccessUtils.getReadAccessIds(binder);
+    	addBinderAcls(parent, binder, false);
+    }
+    private static void addBinderAcls(org.dom4j.Element parent, Binder binder, boolean includeTitleAcl) {
+		Set binderIds = AccessUtils.getReadAccessIds(binder, includeTitleAcl);
       	if (binderIds.remove(ObjectKeys.OWNER_USER_ID)) binderIds.add(binder.getOwnerId());
       	String ids = LongIdUtil.getIdsAsString(binderIds);
        	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), Constants.READ_ACL_TEAM);
@@ -599,17 +608,23 @@ public class EntityIndexUtils {
    }
     
     public static void addReadAccess(Document doc, Binder binder, boolean fieldsOnly) {
+    	addReadAccess(doc, binder, fieldsOnly, false);
+    }
+    public static void addReadAccess(Document doc, Binder binder, boolean fieldsOnly, boolean includeTitleAcl) {
     	//set entryAcl to "all" and 
 		doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL, Field.Store.NO, Field.Index.TOKENIZED));
 		//add binder acls
-		addBinderAcls(doc, binder);
+		addBinderAcls(doc, binder, includeTitleAcl);
     }
     public static void addReadAccess(org.dom4j.Element parent, Binder binder, boolean fieldsOnly) {
+    	addReadAccess(parent, binder, fieldsOnly, false);
+    }
+    public static void addReadAccess(org.dom4j.Element parent, Binder binder, boolean fieldsOnly, boolean includeTitleAcl) {
     	//set entryAcl to all
    		Element  acl = parent.addElement(Constants.ENTRY_ACL_FIELD);
  		acl.setText(Constants.READ_ACL_ALL);
 		//add binder access
-   		addBinderAcls(parent, binder);
+   		addBinderAcls(parent, binder, includeTitleAcl);
     }
     private static String getWfEntryAccess(WorkflowSupport wEntry) {
 		//get principals given read access 

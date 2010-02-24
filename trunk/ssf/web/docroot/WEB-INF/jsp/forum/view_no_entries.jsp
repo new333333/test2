@@ -38,8 +38,9 @@
 <div class="ss_style ss_portlet">
 <span class="ss_bold">
 	<c:if test="${empty ssEmptyTrash}">
-		<ssf:nlt tag="binder.no_entries"/>
-		<%
+		<c:if test="${ssBinderReadEntries}">
+		  <ssf:nlt tag="binder.no_entries"/>
+		  <%
 			String	binderEntryDefsS = ((String) renderRequest.getAttribute("ssBinderEntryDefs"));
 			if ((null != binderEntryDefsS) && (0 < binderEntryDefsS.length())) {
 				int	binderEntryDefs = Integer.parseInt(binderEntryDefsS);
@@ -51,6 +52,15 @@
 					<% } %>
 				<% } %>
 			<% } %>
+		</c:if>
+		<c:if test="${!ssBinderReadEntries && ssBinderViewBinderTitle}">
+			<ssf:nlt tag="binder.viewBinderTitleOnly1"/><br/><br/>
+			<ssf:nlt tag="binder.viewBinderTitleOnly2">
+			  <ssf:param name="value" useBody="true">
+			    <ssf:showUser user="${ssBinder.owner}"/>
+			  </ssf:param>
+			</ssf:nlt>
+		</c:if>
 	</c:if>
 	<c:if test="${!empty ssEmptyTrash}">
 		<ssf:nlt tag="binder.no_trash"/>

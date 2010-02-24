@@ -81,6 +81,8 @@ public interface BinderModule {
 		manageTeamMembers,
 		modifyBinder,
 		moveBinder,
+		readEntries,
+		viewBinderTitle,
 		report,
 		setProperty,	
 		changeEntryTimestamps,

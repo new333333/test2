@@ -637,6 +637,8 @@ public class WebKeys {
 	public static final String BINDER_DEFINITION_TYPE="ssBinderDefinitionType";
 	public static final String BINDER_ENTRIES="ssBinderEntries";
 	public static final String BINDER_DATA="ssBinderData";
+	public static final String BINDER_READ_ENTRIES="ssBinderReadEntries";
+	public static final String BINDER_VIEW_BINDER_TITLE="ssBinderViewBinderTitle";
 	public static final String BINDERS="ss_binders";
 	public static final String BINDERS_SUB_BINDERS="ss_bindersSubBinders";
 	public static final String BINDER_TEMPLATE_NAME="ssBinderTemplateName";

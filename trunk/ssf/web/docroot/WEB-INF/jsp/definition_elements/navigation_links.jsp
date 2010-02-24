@@ -80,29 +80,10 @@
 	   <c:if test="${empty ssNavigationLinkTree[nextBinder.id]}">
 	   <div class="ss_treeWidget">
 	    <img class="ss_twNoPlusMinus" border="0" alt="" src="<html:imagesPath/>pics/1pix.gif" />
-	  	<a 
-		  <c:if test="${nextBinder.entityType == 'folder'}">
-  			href="<ssf:url 
-  			folderId="${nextBinder.id}" 
-  			action="view_folder_listing"/>"
-		  </c:if>
-		  <c:if test="${nextBinder.entityType == 'workspace'}">
-  		  	href="<ssf:url 
-  		  	folderId="${nextBinder.id}" 
-  		  	action="view_ws_listing"/>"
-		  </c:if>
-		  <c:if test="${nextBinder.entityType == 'profiles'}">
-  	  	  	href="<ssf:url 
-  		  	folderId="${nextBinder.id}" 
-  		  	action="view_profile_listing"/>"
-		  </c:if>
-  		  onClick="return(ss_navigation_goto(this.href));"
-	  	  >
 	      <c:if test="${empty nextBinder.title}" >
 			--<ssf:nlt tag="entry.noTitle" />--
 	  	  </c:if>
 	  	  <c:out value="${nextBinder.title}" />
-		</a>
 	  </div>
    	  </c:if>
       <c:if test="${!empty ssNavigationLinkTree[nextBinder.id]}">
