@@ -34,9 +34,12 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 
+import org.kablink.teaming.gwt.client.RequestInfo;
+import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -48,21 +51,27 @@ import com.google.gwt.user.client.ui.Label;
  */
 public class MastHead extends Composite
 {
+	private RequestInfo m_requestInfo = null;
+	private BrandingPanel m_level1BrandingPanel = null;
+	private BrandingPanel m_level2BrandingPanel = null;
+	
 	/**
-	 * 
+	 * This class displays branding, either level1(corporate) or level2(sub)
 	 */
-	public MastHead()
+	public class BrandingPanel extends Composite
 	{
-		FlowPanel mainPanel;
-		FlowPanel panel;
-		ImageResource imageResource;
-		Image img;
-
-		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "mastHead" );
+		private String m_binderId = null;	// Id of the binder we are displaying branding for.
+		private GwtBrandingData m_brandingData = null;	// Branding data for the given binder.
 		
-		// Create the panel that will hold the graphic that is displayed on the left of the mast head
+		/**
+		 * 
+		 */
+		public BrandingPanel()
 		{
+			ImageResource imageResource;
+			Image img;
+			FlowPanel panel;
+			
 			panel = new FlowPanel();
 			panel.addStyleName( "mastHeadGraphicPanel" );
 	
@@ -73,8 +82,48 @@ public class MastHead extends Composite
 			img.setHeight( "75" );
 			panel.add( img );
 		
-			mainPanel.add( panel );
-		}
+			// Create a BrandingData object that will hold the branding data for the given binder.
+			m_brandingData = new GwtBrandingData();
+			
+			// All composites must call initWidget() in their constructors.
+			initWidget( panel );
+		}// end BrandingPanel()
+		
+		
+		/**
+		 * 
+		 */
+		public void setBinderId( String binderId )
+		{
+			m_binderId = binderId;
+			
+			// Get the branding data for the given binder.
+			m_brandingData.setBinderId( binderId );
+		}// end setBinderId()
+	}// end Branding
+	
+	
+	/**
+	 * 
+	 */
+	public MastHead( RequestInfo requestInfo )
+	{
+		FlowPanel mainPanel;
+		FlowPanel panel;
+
+		m_requestInfo = requestInfo;
+		
+		mainPanel = new FlowPanel();
+		mainPanel.addStyleName( "mastHead" );
+		
+		// Create the panel that will hold the level-1 or corporate branding
+		m_level1BrandingPanel = new BrandingPanel();
+		mainPanel.add( m_level1BrandingPanel );
+		
+		// Create the panel that will hold the level-2 or sub branding.
+		m_level2BrandingPanel = new BrandingPanel();
+		m_level2BrandingPanel.setBinderId( m_requestInfo.getBinderId() );
+		mainPanel.add( m_level2BrandingPanel );
 		
 		// Create the panel that will hold the global actions such as "My workspace", "My Teams" etc
 		{
@@ -93,6 +142,9 @@ public class MastHead extends Composite
 		
 		// Create the panel that will hold the logo.
 		{
+			ImageResource imageResource;
+			Image img;
+
 			panel = new FlowPanel();
 			panel.addStyleName( "mastHeadLogoPanel" );
 			
@@ -107,5 +159,5 @@ public class MastHead extends Composite
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
 	}// end MastHead()
-
+	
 }// end MastHead
