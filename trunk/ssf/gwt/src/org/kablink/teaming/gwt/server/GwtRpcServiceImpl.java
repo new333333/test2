@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.ExtensionInfo;
@@ -60,6 +59,8 @@ import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
+import org.kablink.teaming.gwt.server.util.GwtServerHelper;
+import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -82,7 +83,7 @@ import org.kablink.util.search.Constants;
  * @author jwootton
  *
  */
-public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
+public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	implements GwtRpcService
 {
 
@@ -625,8 +626,28 @@ public class GwtRpcServiceImpl  extends AbstractAllModulesInjected
 	}
 
 
+	/**
+	 * Returns a permalink to the currently logged in user's workspace.
+	 * 
+	 * @return
+	 */
 	public String getUserWorkspacePermalink() {
-		Binder userWS = getBinderModule().getBinder(RequestContextHolder.getRequestContext().getUser().getWorkspaceId());
+		Binder userWS = getBinderModule().getBinder(GwtServerHelper.getCurrentUser().getWorkspaceId());
 		return PermaLinkUtil.getPermalink(userWS);
+	}
+	
+
+	/**
+	 * Returns a TreeInfo object containing the display information for
+	 * the binder referred to by binderId from the perspective of the
+	 * currently logged in user.
+	 * 
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public TreeInfo getTreeInfo(String binderId) {
+		Binder binder = getBinderModule().getBinder(Long.parseLong(binderId));
+		return GwtServerHelper.buildTreeInfoFromBinder(this, binder, true);
 	}
 }// end GwtRpcServiceImpl

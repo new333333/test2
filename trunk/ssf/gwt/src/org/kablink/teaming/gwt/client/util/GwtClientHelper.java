@@ -31,52 +31,18 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client.widgets;
-
-
-import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.RequestInfo;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.util.TreeInfo;
-
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
+package org.kablink.teaming.gwt.client.util;
 
 
 /**
- * This widget will display the WorkspaceTree control.
- * 
+ * Helper methods for the GWT UI client code.
+ *
  * @author drfoster@novell.com
  */
-public class WorkspaceTreeControl extends Composite {
-	private RequestInfo m_requestInfo;
-	
-	/**
-	 * Constructs a WorkspaceTreeControl based on the information
-	 * in the RequestInfo object.
-	 * 
-	 * @param requestInfo
+public class GwtClientHelper {
+	/*
+	 * Inhibits this class from being instantiated. 
 	 */
-	public WorkspaceTreeControl(RequestInfo requestInfo) {
-		m_requestInfo = requestInfo;
-
-		final FlowPanel mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "workspaceTreeControl" );
-		
-		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
-		rpcService.getTreeInfo(m_requestInfo.getBinderId(), new AsyncCallback<TreeInfo>() {
-			public void onFailure(Throwable t) {
-				Window.alert(t.toString());
-			}
-			public void onSuccess(TreeInfo ti)  {
-				ti.render(mainPanel);
-			}
-		});
-		
-
-		// All composites must call initWidget() in their constructors.
-		initWidget( mainPanel );
+	private GwtClientHelper() {
 	}
 }
