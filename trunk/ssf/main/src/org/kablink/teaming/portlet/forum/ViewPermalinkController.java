@@ -83,6 +83,8 @@ public class ViewPermalinkController  extends SAbstractController {
 	public void handleActionRequestAfterValidation(final ActionRequest request, ActionResponse response) throws Exception {
 		User user = null;
 		String sUrl;
+		AdaptedPortletURL adaptedPortletUrl = null;
+		
 		try {
 			if (!WebHelper.isUserLoggedIn(request) || RequestContextHolder.getRequestContext() == null) {
 				Long zoneId = WebHelper.getZoneIdByVirtualHost(request);
@@ -92,14 +94,25 @@ public class ViewPermalinkController  extends SAbstractController {
 					response.setRenderParameters(request.getParameterMap());
 					return;
 				}
-				sUrl = (String)RunasTemplate.runas(new RunasCallback() {
+				adaptedPortletUrl = (AdaptedPortletURL)RunasTemplate.runas(new RunasCallback() {
 					public Object doAs() {
 						return processRequest(request);
 					}
 				}, user);
+				
+				sUrl = adaptedPortletUrl.toString();
+		    	if(logger.isDebugEnabled()) {
+		    		logger.debug("Permalink followed: " + sUrl);
+		    	}
+				
 			} else {
 				user = RequestContextHolder.getRequestContext().getUser();
-				sUrl = processRequest(request);
+				adaptedPortletUrl = processRequest(request);
+				sUrl = adaptedPortletUrl.toString();
+		    	if(logger.isDebugEnabled())
+		    	{
+		    		logger.debug("Permalink followed: " + sUrl);
+		    	}
 			}
 
 			boolean durangoUI = MiscUtil.isGwtUIActive(request);
@@ -111,7 +124,22 @@ public class ViewPermalinkController  extends SAbstractController {
 				param = PortletRequestUtils.getStringParameter( request, "seen_by_gwt", "");
 				if ( param == null || !param.equalsIgnoreCase( "1" ) )
 				{
+					String binderId = "";
+					String urlStr = "";
+
 					// No, don't redirect the url.
+					// Add the binder id to the response.
+					if ( adaptedPortletUrl != null )
+					{
+						binderId = adaptedPortletUrl.getParameterSingleValue( WebKeys.URL_BINDER_ID );
+						if ( binderId == null )
+						   binderId = "";
+						   
+						urlStr = adaptedPortletUrl.toString();
+					}
+					
+					response.setRenderParameter( WebKeys.URL_BINDER_ID, binderId );
+					response.setRenderParameter( "adaptedUrl", urlStr );
 					return;
 				}
 			}
@@ -128,7 +156,13 @@ public class ViewPermalinkController  extends SAbstractController {
 			response.setRenderParameter("noBinderByIdException", "true");
 		}
 	}
-	protected String processRequest(ActionRequest request) {
+
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
+	protected AdaptedPortletURL processRequest(ActionRequest request) {
 		HttpServletRequest httpReq = WebHelper.getHttpServletRequest(request);
 		boolean isMobile = false;
 		String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
@@ -147,9 +181,26 @@ public class ViewPermalinkController  extends SAbstractController {
 		} catch(Exception ignore) {
 			logger.debug("ViewPermalinkController.ProcessRequest(Exception:  '" + MiscUtil.exToString(ignore) + "'):  Ignored");
 		};
+		
 		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
- 		if (Validator.isNotNull(fileId)) return getFileUrlById(request, entityType, binderId, entryId, fileId);
- 		if (Validator.isNotNull(fileName)) return getFileUrlByName(request, entityType, binderId, entryId, fileName);
+ 		
+ 		if (Validator.isNotNull(fileId))
+ 		{
+ 		   String urlStr;
+ 		   
+ 		   urlStr = getFileUrlById(request, entityType, binderId, entryId, fileId);
+ 		   url = new AdaptedPortletURL( urlStr );
+ 		   return url;
+      }
+      
+ 		if (Validator.isNotNull(fileName))
+ 		{
+ 		   String urlStr;
+ 		   
+ 		   urlStr =getFileUrlByName(request, entityType, binderId, entryId, fileName);
+ 		   url = new AdaptedPortletURL( urlStr );
+ 		   return url;
+      }
 
 		boolean binderPreDeleted;
 		if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) { //folderEntry
@@ -288,12 +339,9 @@ public class ViewPermalinkController  extends SAbstractController {
 		else if("false".equals(captive))
 			url.setParameter(WebKeys.URL_CAPTIVE, "false");
 				
-		String sUrl = url.toString();
-    	if(logger.isDebugEnabled()) {
-    		logger.debug("Permalink followed: " + sUrl);
-    	}
-    	return sUrl;
+    	return url;
 	}
+	
 	protected String getFileUrlById(ActionRequest request, EntityIdentifier.EntityType entityType, String binderId, String entryId, String fileId) {
 		DefinableEntity entity;
 		if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) { //folderEntry
@@ -387,7 +435,17 @@ public class ViewPermalinkController  extends SAbstractController {
 			param = PortletRequestUtils.getStringParameter( request, "seen_by_gwt", "");
 			if ( param == null || !param.equalsIgnoreCase( "1" ) )
 			{
+			   String urlStr;
+			   
 				// No, let the gwt page handle this permalink
+				
+				// Add the binder id to the response.
+				model.put( WebKeys.URL_BINDER_ID, binderId );
+
+            // Add the adapted portlet url to the reponse.
+		      urlStr = PortletRequestUtils.getStringParameter( request, "adaptedUrl", "" );
+				model.put( "adaptedUrl", urlStr );
+
 				return new ModelAndView( "forum/GwtMainPage", model );
 			}
 		}

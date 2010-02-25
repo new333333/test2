@@ -34,15 +34,16 @@
 package org.kablink.teaming.gwt.client;
 
 
+import org.kablink.teaming.gwt.client.lpe.LandingPageConfig;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
 import org.kablink.teaming.gwt.client.widgets.MastHead;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 
 
@@ -64,6 +65,7 @@ public class GwtMainPage extends Composite
 		FlowPanel mainPanel;
 		FlowPanel panel;
 		Element bodyElement;
+		RequestInfo requestInfo;
 
 		// Set the class name on the <body> element to "mainGwtTeamingPage"
 		bodyElement = RootPanel.getBodyElement();
@@ -71,8 +73,11 @@ public class GwtMainPage extends Composite
 		
 		mainPanel = new FlowPanel();
 		
+		// Get information about the request we are dealing with.
+		requestInfo = getRequestInfo();
+		
 		// Add the MastHead to the page.
-		m_mastHead = new MastHead();
+		m_mastHead = new MastHead( requestInfo );
 		mainPanel.add( m_mastHead );
 		
 		// Add the main menu to the page.
@@ -99,4 +104,14 @@ public class GwtMainPage extends Composite
 		initWidget( mainPanel );
 	}// end GwtMainPage()
 
+
+	/**
+	 * Use JSNI to grab the JavaScript object that holds the information about the request dealing with.
+	 */
+	private native RequestInfo getRequestInfo() /*-{
+		// Return a reference to the JavaScript variable called, m_requestInfo.
+		return $wnd.m_requestInfo;
+	}-*/;
+	
+	
 }// end GwtMainPage

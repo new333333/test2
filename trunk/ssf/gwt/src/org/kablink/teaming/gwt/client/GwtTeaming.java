@@ -202,7 +202,7 @@ public class GwtTeaming implements EntryPoint
 				hidden.setID( "gwtMainPageLoaded" );
 				flowPanel.add( hidden );
 				
-				mastHead = new MastHead();
+				mastHead = new MastHead( null );
 				flowPanel.add( mastHead );
 				
 				m_txtBox = new TextBox();

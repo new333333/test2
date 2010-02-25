@@ -1,4 +1,3 @@
-<%
 /**
  * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
@@ -31,43 +30,37 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<!-- The HTML 4.01 Transitional DOCTYPE declaration-->
-<!-- above set at the top of the file will set     -->
-<!-- the browser's rendering engine into           -->
-<!-- "Quirks Mode". Replacing this declaration     -->
-<!-- with a "Standards Mode" doctype is supported, -->
-<!-- but may lead to some differences in layout.   -->
+package org.kablink.teaming.gwt.client;
 
-<!-- Modified December 31, 2009 9:42 (GWT) -->
-
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp"     %>
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-
-    <title>GwtTeaming</title>
-    
-	<script type="text/javascript" language="javascript">
-		// Save away information such as the binder id and the adapted url for the request we are working with.
-		// Through an overlay we will access m_requestInfo from java.
-		var m_requestInfo = { binderId : '${binderId}', adaptedUrl : '${adaptedUrl}' };
-	</script>
-
-	<script type="text/javascript" language="javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
-  </head>
-
-  <body>
-
-    <!-- OPTIONAL: include this if you want history support -->
-    <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
-
-	<!-- This div will hold the content of the main Teaming page. -->
-	<div id="gwtMainPageDiv">
-	</div>
-  </body>
-</html>
+/**
+ * This class is used in rpc calls and represents branding data.
+ * @author jwootton
+ *
+ */
+public class GwtBrandingData
+	implements IsSerializable
+{
+	// The binder this branding data is from.  If m_binderId is null then the branding data is global
+	private String m_binderId = null;
+	
+	/**
+	 * 
+	 */
+	public GwtBrandingData()
+	{
+		m_binderId = null;
+	}// end GwtBrandingData()
+	
+	
+	/**
+	 * 
+	 */
+	public void setBinderId( String binderId )
+	{
+		m_binderId = binderId;
+	}// end setBinderId()
+	
+}// end GwtBrandingData

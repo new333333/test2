@@ -173,6 +173,28 @@ public class AdaptedPortletURL {
 		this.port = port;
 	}
 	
+	/**
+	 * Return the value of the given parameter.
+	 */
+	public String getParameterSingleValue( String paramName )
+	{
+		String value = null;
+		
+		if ( params != null )
+		{
+		   String[] values;
+		   
+		   values = (String[])params.get( paramName );
+		   if ( values != null && values.length > 0 )
+		   {
+		      value = (String) values[0];
+		   }
+      }
+		
+		return value;
+	}// end getParameterSingleValue()
+	
+	
 	public void setParameter(String name, String value) {
 		if ((name == null) || (value == null)) {
 			throw new IllegalArgumentException();
