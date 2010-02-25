@@ -89,7 +89,7 @@ public class GwtMainPage extends Composite
 		panel.addStyleName( "mainContentPanel" );
 		
 		// Create the WorkspaceTree control.
-		m_wsTreeCtrl = new WorkspaceTreeControl();
+		m_wsTreeCtrl = new WorkspaceTreeControl(requestInfo);
 		m_wsTreeCtrl.addStyleName( "mainWorkspaceTreeControl" );
 		panel.add( m_wsTreeCtrl );
 		

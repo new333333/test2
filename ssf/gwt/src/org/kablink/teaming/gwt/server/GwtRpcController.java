@@ -37,6 +37,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -58,9 +60,10 @@ public class GwtRpcController extends RemoteServiceServlet
 	implements
         Controller, ServletContextAware
 {
+	private Log 				m_logger = LogFactory.getLog(GwtRpcController.class);
     private ServletContext		m_servletContext;
     private RemoteService		m_remoteService;
-    private Class				m_remoteServiceClass;
+	private Class				m_remoteServiceClass;
 
     /**
      * 
@@ -128,4 +131,11 @@ public class GwtRpcController extends RemoteServiceServlet
         m_remoteServiceClass = m_remoteService.getClass();
     }// end setRemoteService()
 
+    /**
+     * Traces any unexpected failures and bubbles up the exception.
+     */
+    protected void doUnexpectedFailure(Throwable t) {
+    	m_logger.debug("GwtRpcController.doUnexpectedFailure(EXCEPTION):  ", t);
+    	super.doUnexpectedFailure(t);
+    }
 }// end GwtRpcController
