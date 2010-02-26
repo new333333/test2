@@ -75,22 +75,27 @@ public class LuceneProvider extends IndexSupport {
 	
 	private LuceneProviderManager luceneProviderManager;
 	
+	private String indexDirPath;
 	private Directory directory;
-	private IndexWriter indexWriter;
-	private SearcherManager searcherManager;
 	
 	private CommitThread commitThread;
 	
-	private CommitStat commitStat;
-	
+	// access protected by "this"
+	private IndexingResource indexingResource;
+
 	public LuceneProvider(String indexName, String indexDirPath, LuceneProviderManager luceneProviderManager) throws LuceneException {
 		super(indexName);
 
-		this.luceneProviderManager = luceneProviderManager;
-		
 		if(Validator.isNull(indexDirPath))
 			throw new IllegalArgumentException("Index directory path must be specified");
+		this.indexDirPath = indexDirPath;
 		
+		this.luceneProviderManager = luceneProviderManager;
+		
+		logDebug("Lucene provider instantiated");
+	}
+	
+	public void initialize() {
 		// Make sure that the index directory exists
 		File indexDir = new File(indexDirPath);
 		if(indexDir.exists()) {
@@ -128,34 +133,14 @@ public class LuceneProvider extends IndexSupport {
 			throw newLuceneException("Could not create index", e);
 		}
 		
-		// Open index writer
-		try {
-			indexWriter = openIndexWriter(directory, false);
-		} catch (IOException e) {
-			throw newLuceneException("Could not open index writer", e);
-		}
-		
-		// Open searcher manager
-		try {
-			searcherManager = new SearcherManager(indexName, indexWriter);
-		} catch (IOException e) {
-			throw newLuceneException("Could not open searcher manager", e);
-		}
-		
-		commitStat = new CommitStat();
+		openIndexingResource(false);
 		
 		commitThread = new CommitThread(indexName, this);
-		// Don't start the thread here yet.
 		
-		logInfo("Lucene provider instantiated");
-	}
-	
-	public void open() {
-		// The sole purpose of this method is to start the thread that was created in
-		// the constructor. Since the thread refers to "this" object, starting it before
-		// "this" object is fully instantiated is a BAD practice for concurrent programming.
 		commitThread.start();
 		logDebug("Commit thread started");
+		
+		logInfo("Lucene provider initialized");
 	}
 	
 	private void createIndex(Directory dir) throws LockObtainFailedException, IOException {
@@ -175,14 +160,15 @@ public class LuceneProvider extends IndexSupport {
 		int maxFields = PropsUtil.getInt("lucene.max.fieldlength", 10000);
 		int maxMerge = PropsUtil.getInt("lucene.max.merge.docs", 1000);
 		int mergeFactor = PropsUtil.getInt("lucene.merge.factor", 10);
+		boolean useCompoundFile = PropsUtil.getBoolean("lucene.use.compound.file", true);
 
 		IndexWriter writer = new IndexWriter(dir, new SsfIndexAnalyzer(), create, new MaxFieldLength(maxFields));
 		
 		writer.setMaxMergeDocs(maxMerge);
 		writer.setMergeFactor(mergeFactor);
-		writer.setUseCompoundFile(false);
+		writer.setUseCompoundFile(useCompoundFile);
 
-		logInfo("Opened index writer: create=" + create + ", maxMerge=" + maxMerge + ", mergeFactor=" + mergeFactor + ", maxFields=" + maxFields);
+		logInfo("Opened index writer: create=" + create + ", maxMerge=" + maxMerge + ", mergeFactor=" + mergeFactor + ", maxFields=" + maxFields + ", useCompoundFile=" + useCompoundFile);
 		
 		return writer;
 	}
@@ -198,7 +184,7 @@ public class LuceneProvider extends IndexSupport {
 							"Document must contain a UID with field name "
 									+ Constants.UID_FIELD);
 				String tastingText = getTastingText(doc);
-				indexWriter.addDocument(doc, getAnalyzer(tastingText));
+				getIndexingResource().getIndexWriter().addDocument(doc, getAnalyzer(tastingText));
 				if(logger.isTraceEnabled())
 					logTrace("Called addDocument on writer with doc [" + doc.toString() + "]");
 			}
@@ -206,7 +192,7 @@ public class LuceneProvider extends IndexSupport {
 			throw newLuceneException("Could not add document to the index", e);
 		}
 
-		commitStat.update(docs.size());
+		getIndexingResource().getCommitStat().update(docs.size());
 		
 		commitThread.someDocsProcessed();
 		
@@ -217,7 +203,7 @@ public class LuceneProvider extends IndexSupport {
 		long startTime = System.currentTimeMillis();
 
 		try {
-			indexWriter.deleteDocuments(term);
+			getIndexingResource().getIndexWriter().deleteDocuments(term);
 			if(logger.isTraceEnabled())
 				logTrace("Called deleteDocuments on writer with term [" + term.toString() + "]");
 		} catch (IOException e) {
@@ -225,7 +211,7 @@ public class LuceneProvider extends IndexSupport {
 					"Could not delete documents from the index", e);
 		}
 
-		commitStat.update(1);
+		getIndexingResource().getCommitStat().update(1);
 		commitThread.someDocsProcessed();
 
 		end(startTime, "deleteDocuments(Term)");
@@ -243,7 +229,7 @@ public class LuceneProvider extends IndexSupport {
 									+ Constants.UID_FIELD);
 				String tastingText = getTastingText(doc);
 				try {
-					indexWriter.addDocument(doc, getAnalyzer(tastingText));
+					getIndexingResource().getIndexWriter().addDocument(doc, getAnalyzer(tastingText));
 				} catch (IOException e) {
 					throw newLuceneException("Could not add document to the index", e);					
 				}						
@@ -253,7 +239,7 @@ public class LuceneProvider extends IndexSupport {
 			else if(obj instanceof Term) {
 				Term term = (Term) obj;
 				try {
-					indexWriter.deleteDocuments(term);
+					getIndexingResource().getIndexWriter().deleteDocuments(term);
 				} catch (IOException e) {
 					throw newLuceneException(
 							"Could not delete documents from the index", e);
@@ -266,28 +252,44 @@ public class LuceneProvider extends IndexSupport {
 			}
 		}
 
-		commitStat.update(docsToAddOrDelete.size());
+		getIndexingResource().getCommitStat().update(docsToAddOrDelete.size());
 		commitThread.someDocsProcessed();
 
 		end(startTime, "addDeleteDocuments", docsToAddOrDelete.size());
 	}
 
 	public void optimize() throws LuceneException {
-		// optimize and commit are independent of each other.
-		
-		long startTime = System.currentTimeMillis();
-
-		try {
-			indexWriter.optimize();
-			if(logger.isTraceEnabled())
-				logTrace("Called optimize on writer");
-		} catch (IOException e) {
-			throw new LuceneException("Could not optimize the index", e);
-		} 
-		
-		end(startTime, "optimize");
+		getIndexingResource().optimize();
 	}
 			
+	private void closeIndexingResource() {
+		getIndexingResource().close();
+	}
+	
+	private void openIndexingResource(boolean create) throws LuceneException {
+		IndexWriter writer = null;
+		SearcherManager manager = null;
+		
+		// Open index writer
+		try {
+			writer = openIndexWriter(directory, create);
+		} catch (IOException e) {
+			if(create)
+				throw newLuceneException("Could not create index writer", e);
+			else
+				throw newLuceneException("Could not open index writer", e);
+		}
+		
+		// Open searcher manager
+		try {
+			manager = new SearcherManager(indexName, writer);
+		} catch (IOException e) {
+			throw newLuceneException("Could not open searcher manager", e);
+		}
+		
+		setIndexingResource(new IndexingResource(writer, manager, new CommitStat()));
+	}
+	
 	/**
 	 * Clear the index, only used at Zone deletion or re-indexing from the top workspace
 	 * 
@@ -297,40 +299,12 @@ public class LuceneProvider extends IndexSupport {
 	public void clearIndex() throws LuceneException {
 		long startTime = System.currentTimeMillis();
 
-		// Close existing searcher manager
-		try {
-			searcherManager.close();
-		} catch (IOException e) {
-			logError("Error closing searcher manager", e);
-		}
-		
-		// Close existing index writer
-		try {
-			closeIndexWriter();
-		} catch (IOException e) {
-			logError("Error closing index writer", e);
-		}
+		closeIndexingResource();
 		
 		// Open a new index writer overwriting the existing index
-		try {
-			indexWriter = openIndexWriter(directory, true);
-		} catch (IOException e) {
-			throw newLuceneException("Could not create index writer", e);
-		}
-		
-		// Open a new searcher manager
-		try {
-			searcherManager = new SearcherManager(indexName, indexWriter);
-		} catch (IOException e) {
-			throw newLuceneException("Could not open searcher manager", e);
-		}
-
-		// As result of clearing the index, the in-memory and the disk states are in synch.
-		// This call helps prevent the background thread from unnecessarily and prematurely
-		// attempting to commit changes to the index.
-		commitStat.reset();
-		
-		end(startTime, "clearIndex");
+		openIndexingResource(true);
+				
+		logInfo("clearIndex completed. It took " + (System.currentTimeMillis()-startTime) + " milliseconds");
 	}
 
 	private String getTastingText(Document doc) {
@@ -395,9 +369,10 @@ public class LuceneProvider extends IndexSupport {
 		return this.search(query, 0, -1);
 	}
 
-	private IndexSearcher getIndexSearcher() throws LuceneException {
+	private IndexSearcherHandle getIndexSearcherHandle() throws LuceneException {
+		SearcherManager manager = getIndexingResource().getSearcherManager();
 		try {
-			searcherManager.maybeReopen();
+			manager.maybeReopen();
 		} catch (InterruptedException e) {
 			// In the current code base, this can not and should not occur. So we will simply throw a regular exception.
 			// In the future when we may add sophistication to the search manager an interrupt may actually mean something.
@@ -405,12 +380,12 @@ public class LuceneProvider extends IndexSupport {
 		} catch (IOException e) {
 			throw newLuceneException("Error getting index searcher", e);
 		}
-		return searcherManager.get();
+		return new IndexSearcherHandle(manager.get(), manager);
 	}
 	
-	private void releaseIndexSearcher(IndexSearcher indexSearcher) {
+	private void releaseIndexSearcherHandle(IndexSearcherHandle indexSearcherHandle) {
 		try {
-			searcherManager.release(indexSearcher);
+			indexSearcherHandle.getSearcherManager().release(indexSearcherHandle.getIndexSearcher());
 		} catch (IOException e) {
 			logError("Error releasing index searcher", e);
 		}	
@@ -420,10 +395,10 @@ public class LuceneProvider extends IndexSupport {
 			int size) throws LuceneException {
 		long startTime = System.currentTimeMillis();
 
-		IndexSearcher indexSearcher = getIndexSearcher();
+		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
 		try {
-			org.apache.lucene.search.Hits hits = indexSearcher
+			org.apache.lucene.search.Hits hits = indexSearcherHandle.getIndexSearcher()
 					.search(query);
 			if (size < 0)
 				size = hits.length();
@@ -437,7 +412,7 @@ public class LuceneProvider extends IndexSupport {
 		} catch (IOException e) {
 			throw newLuceneException("Error searching index", e);
 		} finally {
-			releaseIndexSearcher(indexSearcher);
+			releaseIndexSearcherHandle(indexSearcherHandle);
 		}
 	}
 
@@ -449,18 +424,18 @@ public class LuceneProvider extends IndexSupport {
 			int offset, int size) throws LuceneException {
 		long startTime = System.currentTimeMillis();
 
-		IndexSearcher indexSearcher = getIndexSearcher();
+		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
 		Hits hits = null;
 
 		try {
 			if (sort == null)
-				hits = indexSearcher.search(query);
+				hits = indexSearcherHandle.getIndexSearcher().search(query);
 			else
 				try {
-					hits = indexSearcher.search(query, sort);
+					hits = indexSearcherHandle.getIndexSearcher().search(query, sort);
 				} catch (Exception ex) {
-					hits = indexSearcher.search(query);
+					hits = indexSearcherHandle.getIndexSearcher().search(query);
 				}
 			if (size < 0)
 				size = hits.length();
@@ -474,7 +449,7 @@ public class LuceneProvider extends IndexSupport {
 		} catch (IOException e) {
 			throw newLuceneException("Error searching index", e);
 		} finally {
-			releaseIndexSearcher(indexSearcher);
+			releaseIndexSearcherHandle(indexSearcherHandle);
 		}
 	}
 
@@ -515,12 +490,12 @@ public class LuceneProvider extends IndexSupport {
 		TreeSet<TagObject> results = new TreeSet<TagObject>();
 		ArrayList<TagObject> resultTags = new ArrayList<TagObject>();
 
-		IndexSearcher indexSearcher = getIndexSearcher();
+		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
 		try {
-			final BitSet userDocIds = new BitSet(indexSearcher.getIndexReader().maxDoc());
+			final BitSet userDocIds = new BitSet(indexSearcherHandle.getIndexSearcher().getIndexReader().maxDoc());
 			if (!isSuper) {
-				indexSearcher.search(query, new HitCollector() {
+				indexSearcherHandle.getIndexSearcher().search(query, new HitCollector() {
 					public void collect(int doc, float score) {
 						userDocIds.set(doc);
 					}
@@ -552,10 +527,10 @@ public class LuceneProvider extends IndexSupport {
 					preTagLength = preTag.length();
 					tag = preTag + tag;
 				}
-				TermEnum enumerator = indexSearcher.getIndexReader().terms(new Term(
+				TermEnum enumerator = indexSearcherHandle.getIndexSearcher().getIndexReader().terms(new Term(
 						fields[i], tag));
 
-				TermDocs termDocs = indexSearcher.getIndexReader().termDocs();
+				TermDocs termDocs = indexSearcherHandle.getIndexSearcher().getIndexReader().termDocs();
 				if (enumerator.term() == null) {
 					// no matches
 					return null;
@@ -592,7 +567,7 @@ public class LuceneProvider extends IndexSupport {
 			// logic as is, since that's the way it was previously written.
 			logError("Error getting tags", e);
 		} finally {
-			releaseIndexSearcher(indexSearcher);
+			releaseIndexSearcherHandle(indexSearcherHandle);
 		}
 
 		resultTags.addAll(results);
@@ -600,9 +575,7 @@ public class LuceneProvider extends IndexSupport {
 		end(startTime, "getTagsWithFrequency", query, resultTags.size());
 
 		return resultTags;
-
 	}
-
 	
 	/**
 	 * Get all the sort titles that this user can see, and return a skip list
@@ -627,21 +600,21 @@ public class LuceneProvider extends IndexSupport {
 		int count = 0;
 		String lastTerm = "";
 
-		IndexSearcher indexSearcher = getIndexSearcher();
+		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
 		try {
-			final BitSet userDocIds = new BitSet(indexSearcher.getIndexReader().maxDoc());
+			final BitSet userDocIds = new BitSet(indexSearcherHandle.getIndexSearcher().getIndexReader().maxDoc());
 			
-			indexSearcher.search(query, new HitCollector() {
+			indexSearcherHandle.getIndexSearcher().search(query, new HitCollector() {
 				public void collect(int doc, float score) {
 					userDocIds.set(doc);
 				}
 			});
 			String field = Constants.NORM_TITLE;
-				TermEnum enumerator = indexSearcher.getIndexReader().terms(new Term(
+				TermEnum enumerator = indexSearcherHandle.getIndexSearcher().getIndexReader().terms(new Term(
 						field, start));
 
-				TermDocs termDocs = indexSearcher.getIndexReader().termDocs();
+				TermDocs termDocs = indexSearcherHandle.getIndexSearcher().getIndexReader().termDocs();
 				if (enumerator.term() == null) {
 					// no matches
 					return null;
@@ -693,7 +666,7 @@ public class LuceneProvider extends IndexSupport {
 			// logic as is, since that's the way it was previously written.
 			logError("Error getting titles", e);
 		} finally {
-			releaseIndexSearcher(indexSearcher);
+			releaseIndexSearcherHandle(indexSearcherHandle);
 		}
 
 		String[] retArray = new String[titles.size()];
@@ -725,92 +698,33 @@ public class LuceneProvider extends IndexSupport {
 		return resultTitles;
 	}
 	
-	private void commitIndexWriter() throws LuceneException {
-		try {
-			indexWriter.commit();
-		} catch (IOException e) {
-			throw newLuceneException("Error committing index writer", e);		
-		}
-		logInfo("Index writer committed");
-	}
-	
-	private void reopenIndexSearcher() throws LuceneException {
-		try {
-			searcherManager.forceReopen();
-		} catch (InterruptedException e) {
-			// In the current code base, this can not and should not occur. So we will simply throw a regular exception.
-			// In the future when we may add sophistication to the search manager an interrupt may actually mean something.
-			throw newLuceneException("Error reopening index searcher", e);
-		} catch (IOException e) {
-			throw newLuceneException("Error reopening index searcher", e);
-		}
-	}
-	
 	public void commit() throws LuceneException {
-		long startTime = System.currentTimeMillis();
-
-		commitStat.reset();
-		
-		commitIndexWriter();
-		
-		// The IndexReader.isCurrent() method that SearcherManager relies on to detect changes
-		// returns true if the changes are already committed from the writer. So, it fails to
-		// recognize the need to reopen the searcher at the time of search. So, we need to
-		// force the searcher manager to reopen the searcher whenever a commit is performed
-		// on the writer. 
-		reopenIndexSearcher();
-		
-		end(startTime, "commit");
+		getIndexingResource().commit();
 	}
 
-	private void shutdownCommitThread() throws InterruptedException {
-		commitThread.setStop();
-		commitThread.join();
-		logDebug("Commit thread shut down successfully");
-	}
-	
 	public void close() {
 		long startTime = System.currentTimeMillis();
 
 		// Shutdown commit thread
 		try {
-			shutdownCommitThread();
+			commitThread.setStop();
+			commitThread.join();
+			logDebug("Commit thread shut down successfully");
 		} catch (InterruptedException e) {
 			logWarn("This shouldn't happen", e);
 		}
 		
-		// Close searcher manager
-		try {
-			searcherManager.close();
-		} catch (IOException e) {
-			logError("Error closing searcher manager", e);
-		}
-		
-		// Close index writer
-		try {
-			closeIndexWriter();
-		} catch (IOException e) {
-			logError("Error closing index writer", e);
-		}
+		closeIndexingResource();
 		
 		// Close directory
 		try {
-			closeDirectory();
+			directory.close();
+			logDebug("Directory closed");
 		} catch (IOException e) {
 			logError("Error closing directory", e);
 		}
 		
-		end(startTime, "close");
-	}
-		
-	private void closeDirectory() throws IOException {
-		directory.close();
-		logInfo("Directory closed");
-	}
-	
-	private void closeIndexWriter() throws IOException {
-		indexWriter.close();
-		logInfo("Index writer closed");
+		logInfo("Closed. It took " + (System.currentTimeMillis()-startTime) + " milliseconds");
 	}
 	
 	private void end(long begin, String methodName) {
@@ -856,9 +770,11 @@ public class LuceneProvider extends IndexSupport {
 		return luceneProviderManager;
 	}
 	
-	CommitStat getCommitStat() {
-		// Returns a copy, which is read-only from the caller's point of view.
-		return commitStat.copy();
+	synchronized IndexingResource getIndexingResource() {
+		return indexingResource;
+	}
+	synchronized void setIndexingResource(IndexingResource resource) {
+		this.indexingResource = resource;
 	}
 	
 	class CommitStat {
@@ -896,6 +812,118 @@ public class LuceneProvider extends IndexSupport {
 		
 		int getNumberOfOpsSinceLastCommit() {
 			return numberOfOpsSinceLastCommit;
+		}
+	}
+
+	class IndexingResource {
+		// This is immutable class, so these fields do not require monitor protection.
+		private IndexWriter indexWriter;
+		private SearcherManager searcherManager;
+		private CommitStat commitStat;
+		
+		IndexingResource(IndexWriter writer, SearcherManager manager, CommitStat stat) {
+			this.indexWriter = writer;
+			this.searcherManager = manager;
+			this.commitStat = stat;
+		}		
+		IndexWriter getIndexWriter() {
+			return indexWriter;
+		}
+		SearcherManager getSearcherManager() {
+			return searcherManager;
+		}
+		CommitStat getCommitStat() {
+			return commitStat;
+		}
+		
+		void commit() throws LuceneException {
+			long startTime = System.currentTimeMillis();
+
+			// save these values before resetting it
+			long firstOpTimeSinceLastCommit = this.getCommitStat().getFirstOpTimeSinceLastCommit();
+			int numberOfOpsSinceLastCommit = this.getCommitStat().getNumberOfOpsSinceLastCommit();
+			
+			this.getCommitStat().reset();
+			
+			try {
+				this.getIndexWriter().commit();
+				logDebug("Index writer committed");
+			} catch (IOException e) {
+				throw newLuceneException("Error committing index writer", e);		
+			}
+
+			
+			// The IndexReader.isCurrent() method that SearcherManager relies on to detect changes
+			// returns true if the changes are already committed from the writer. So, it fails to
+			// recognize the need to reopen the searcher at the time of search. So, we need to
+			// force the searcher manager to reopen the searcher whenever a commit is performed
+			// on the writer. 
+			try {
+				this.getSearcherManager().forceReopen();
+			} catch (InterruptedException e) {
+				// In the current code base, this can not and should not occur. So we will simply throw a regular exception.
+				// In the future when we may add sophistication to the search manager an interrupt may actually mean something.
+				throw newLuceneException("Error reopening index searcher", e);
+			} catch (IOException e) {
+				throw newLuceneException("Error reopening index searcher", e);
+			}
+			
+			logInfo("Committed, firstOpTimeSinceLastCommit=" + firstOpTimeSinceLastCommit + 
+					", numberOfOpsSinceLastCommit=" + numberOfOpsSinceLastCommit + 
+					". It took " + (System.currentTimeMillis()-startTime) + " milliseconds");		
+		}
+		
+		void optimize() throws LuceneException {
+			// optimize and commit are independent of each other.
+			
+			long startTime = System.currentTimeMillis();
+			logInfo("Optimize started...");
+
+			try {
+				getIndexingResource().getIndexWriter().optimize();
+				if(logger.isTraceEnabled())
+					logTrace("Called optimize on writer");
+			} catch (IOException e) {
+				throw new LuceneException("Could not optimize the index", e);
+			} 
+			
+			logInfo("Optimize completed. It took " + (System.currentTimeMillis()-startTime) + " milliseconds");
+		}
+		
+		void close() {
+			// Close existing searcher manager
+			try {
+				this.getSearcherManager().close();
+			} catch (IOException e) {
+				logError("Error closing searcher manager", e);
+			}
+			
+			// Close existing index writer
+			try {
+				this.getIndexWriter().close();
+				logDebug("Index writer closed");
+			} catch (IOException e) {
+				logError("Error closing index writer", e);
+			}
+
+			this.getCommitStat().reset();
+		}
+	}
+	
+	// This class is used to help keep track of which SearcherManager that a particular
+	// IndexSearcher instance originated from. 
+	class IndexSearcherHandle {
+		private IndexSearcher searcher;
+		private SearcherManager manager;
+		IndexSearcherHandle(IndexSearcher searcher, SearcherManager manager) {
+			this.searcher = searcher;
+			this.manager = manager;
+		}
+		IndexSearcher getIndexSearcher() {
+			return searcher;
+		}
+		SearcherManager getSearcherManager() {
+			return manager;
 		}
 	}
 }

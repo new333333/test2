@@ -184,7 +184,7 @@ public class LuceneProviderManager implements LuceneProviderManagerMBean {
 	
 	private LuceneProvider createProvider(String indexName) throws LuceneException {
 		LuceneProvider provider = new LuceneProvider(indexName, getIndexDirPath(indexName), this);
-		provider.open();
+		provider.initialize();
 		return provider;
 	}
 	
@@ -210,4 +210,19 @@ public class LuceneProviderManager implements LuceneProviderManagerMBean {
 		this.commitTimeInterval = commitTimeInterval;
 	}
 
+	public void optimize() {
+		logSystemResource();
+		for(LuceneProvider provider: providerMap.values()) {
+			// Optimize the index merging segments
+			provider.optimize();
+			// Call commit to release resources and free up disk spaces.
+			provider.commit();
+		}
+		logSystemResource();
+	}
+
+	private void logSystemResource() {
+		if(logger.isDebugEnabled())
+			logger.debug("free memory=" + Runtime.getRuntime().freeMemory() + ", max memory=" + Runtime.getRuntime().maxMemory() + ", total memory=" + Runtime.getRuntime().totalMemory());
+	}
 }
