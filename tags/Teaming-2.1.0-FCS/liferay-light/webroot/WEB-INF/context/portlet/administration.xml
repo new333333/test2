@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../../dtd/spring-beans.dtd">
+<beans>
+
+	<!-- Controllers -->
+	
+	<bean id="deprecatedController" class="org.kablink.teaming.liferaylight.portlet.DeprecatedController" />
+
+	<!-- Handlers -->
+	
+	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
+			<property name="portletModeParameterMap">
+			<map>
+				<entry key="view">
+					<map>
+						<entry key="definition_builder"><ref bean="deprecatedController"/></entry>
+						<entry key="viewDefinitionXml"><ref bean="deprecatedController"/></entry>
+						<entry key="configure_ldap"><ref bean="deprecatedController"/></entry>
+						<entry key="configure_roles"><ref bean="deprecatedController"/></entry>
+						<entry key="configure_posting_job"><ref bean="deprecatedController"/></entry>
+						<entry key="configure_index"><ref bean="deprecatedController"/></entry>
+						<entry key="configure_configuration"><ref bean="deprecatedController"/></entry>
+						<entry key="import_definition"><ref bean="deprecatedController"/></entry>
+						<entry key="export_definition"><ref bean="deprecatedController"/></entry>
+						<entry key="get_log_files"><ref bean="deprecatedController"/></entry>
+						<entry key="import_profiles"><ref bean="deprecatedController"/></entry>
+						<entry key="manage_groups"><ref bean="deprecatedController"/></entry>
+						<entry key="view_change_log"><ref bean="deprecatedController"/></entry>
+						<entry key="configure_access_control"><ref bean="deprecatedController"/></entry>
+						<entry key="configure_definitions"><ref bean="deprecatedController"/></entry>
+						<entry key="modify_dashboard"><ref bean="deprecatedController"/></entry>
+						<entry key="login_report"><ref bean="deprecatedController"/></entry>
+						<entry key="license_report"><ref bean="deprecatedController"/></entry>
+						<entry key="manage_license"><ref bean="deprecatedController"/></entry>
+						<entry key="activity_report"><ref bean="deprecatedController"/></entry>
+						<entry key="quota_report"><ref bean="deprecatedController"/></entry>
+						<entry key="workflow_report"><ref bean="deprecatedController"/></entry>
+						<entry key="view_folder_listing"><ref bean="deprecatedController"/></entry>
+						<entry key="view_ws_listing"><ref bean="deprecatedController"/></entry>
+						<entry key="view_credits"><ref bean="deprecatedController"/></entry>
+					</map>
+				</entry>
+				<entry key="edit">
+					<map>
+					</map>
+				</entry>
+				<entry key="help">
+					<map>
+					</map>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="portletModeHandlerMapping" parent="portletModeHandlerMappingTemplate">
+		<property name="portletModeMap">
+			<map>
+				<entry key="view"><ref bean="deprecatedController"/></entry>
+				<entry key="edit"><ref bean="deprecatedController"/></entry>
+			</map>
+		</property>
+	</bean>
+
+</beans>

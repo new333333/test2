@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="bauwh8v" pid="bauwh8v" name="Chapter" level="0" number="4"> <text>Administration Policies</text> </target>
+
+ <target id="bawfnzu" pid="bauwh8v" name="Procedure" level="1" number="1"> <text>Select Contacts &#62; Manage Contacts and Buddies to open the Manage Contacts and Users Window.</text> </target>
+
+ <target id="bawfnzv" pid="bauwh8v" name="Step" level="2" number="1"> <text>Select Contacts &#62; Manage Contacts and Buddies to open the Manage Contacts and Users Window.</text> </target>
+
+ <target id="bawfo0h" pid="bauwh8v" name="Step" level="2" number="2"> <text>Select Admin &#62; Manage Policies to open the Policy Manager Window.</text> </target>
+
+ <target id="bawfo0j" pid="bauwh8v" name="Step" level="2" number="3"> <text>An administrator can edit, copy, delete, and create policies:</text> </target>
+
+ <target id="bawfpq1" pid="bauwh8v" name="Procedure" level="1" number="1"> <text>Select the policy you want to apply to this user from the Policy drop-down list, and click OK.</text> </target>
+
+ <target id="bawfpqb" pid="bauwh8v" name="Step" level="2" number="1"> <text>Select the policy you want to apply to this user from the Policy drop-down list, and click OK.</text> </target>
+
+ <target id="bawfpqd" pid="bauwh8v" name="Step" level="2" number="2"> <text>The new policy for the user is in effect the next time that user signs on.</text> </target>
+
+ <target id="bf9qsv3" pid="bauwh8v" name="Figure" level="1" number="Figure 4-1"> <text>Policy Settings</text> </target>
+
+ <target id="bf9qsv4" pid="bauwh8v" name="FormalPara" level="2" number="w"> <text>Save Password:</text> </target>
+
+ <target id="bf9qsv5" pid="bauwh8v" name="FormalPara" level="2" number="w"> <text>Conferencing IM:</text> </target>
+
+ <target id="bf9qsv6" pid="bauwh8v" name="FormalPara" level="2" number="w"> <text>Download Public Meetings:</text> </target>
+
+ <target id="bf9qsv7" pid="bauwh8v" name="FormalPara" level="2" number="w"> <text>Download Community Address Book:</text> </target>
+
+ <target id="bf9qsv8" pid="bauwh8v" name="FormalPara" level="2" number="w"> <text>Share Desktop:</text> </target>
+
+ <target id="bf9qsv9" pid="bauwh8v" name="FormalPara" level="2" number="w"> <text>Share Application:</text> </target>
+
+ <target id="bf9qsva" pid="bauwh8v" name="FormalPara" level="2" number="w"> <text>Share PowerPoint:</text> </target>
+
+ <target id="bf9qsvb" pid="bauwh8v" name="FormalPara" level="2" number="w"> <text>Share Document:</text> </target>
+
+ <target id="bf9qsvc" pid="bauwh8v" name="FormalPara" level="2" number="w"> <text>Share Whiteboard:</text> </target>
+
+ <target id="bf9qsvd" pid="bauwh8v" name="FormalPara" level="2" number="w"> <text>Remote Control:</text> </target>
+
+ <target id="bf9qsve" pid="bauwh8v" name="FormalPara" level="2" number="w"> <text>Number of Presence Monitors:</text> </target>
+
+ <target id="bf9qsvf" pid="bauwh8v" name="FormalPara" level="2" number="w"> <text>Invitee PIN Length:</text> </target>
+
+ <target id="bf9qsvg" pid="bauwh8v" name="FormalPara" level="2" number="w"> <text>User Meeting ID Length:</text> </target>
+
+ <target id="bf9qsvm" pid="bauwh8v" name="FormalPara" level="2" number="w"> <text>Lock Timeout (minutes):</text> </target>
+
+ <target id="bf9qsvn" pid="bauwh8v" name="FormalPara" level="2" number="w"> <text>Session Timeout (minutes):</text> </target>
+
+</targets>

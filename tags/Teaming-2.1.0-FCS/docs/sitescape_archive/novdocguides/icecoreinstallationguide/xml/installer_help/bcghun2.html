@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="Generator" content="Novell Documentation" />
+<meta name="Generation-Date" content="Wednesday, May 28, 2008 16:11" />
+<meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2008" />
+
+<style type="text/css">
+  @import url(ui/styles.css);
+</style>
+
+<title>Novell Teaming Backup and Restore Procedures</title>
+<script type="text/javascript">
+  var prev_link = "b9vchnb.html";
+  var next_link = "bbevpqp.html";
+  var parentfile = "../b9vcafr.html";
+  var parenttoc = "../toc_b9vcafr.html";
+  if(parent.location != location) { parent.loadMenu(); }
+</script>
+<script type="text/javascript" src="ui/jsglobal.js"></script>
+</head>
+
+<body>
+<script type="text/javascript" src="ui/topnav.js"></script>
+
+<div class="sect1"  id="bcghun2">
+
+<h1 class="title"> Novell Teaming Backup and Restore Procedures</h1>
+
+<p class="para">If your system has a period of minimal activity (such as at 1:00 AM) you can do the backups without taking the system offline. If you perform this step every night, it is usually possible to restore without problems. The worst case scenario would be that the Lucene directory was caught adding an entry when the snapshot was taken. This can be remedied by re-building the search index from the <span class="guimenu">Teaming Administration</span> portlet.</p>
+<h2 class="bridgehead" id="bcgi04o"> Method 1:</h2>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bcghwrj">
+<p class="para">Take the system down on a scheduled basis. </p></li>
+<li class="step" id="bcghwvo">
+<p class="para">During the down period:</p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="bcghx2p">
+<p class="para">Take a snapshot of the database</p></li>
+<li class="step" id="bcghx47">
+<p class="para">Make a backup copy of the Lucene index, default location is:</p><pre class="screen">
+/opt/icecore/luceneserver/liferay.com
+</pre></li>
+<li class="step" id="bcghx5q">
+<p class="para">Make a backup of the file repositories that are in use, for example:</p><pre class="screen">
+/home/icecoredata/filerepository
+</pre></li></ol>
+</div>
+</li>
+<li class="step" id="bcghww0">
+<p class="para">Restart your ICEcore system.</p></li></ol>
+</div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>This approach is the most conservative. It guarantees a consistent snapshot of your whole system. However, doing a backup of the file repository can take a long time depending on your backup approach.</p></div>
+
+<h2 class="bridgehead" id="bcghxe1"> Method 2:</h2>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bcgi04p">
+<p class="para">Take the system down on a scheduled basis. </p></li>
+<li class="step" id="bcgi04q">
+<p class="para">During the down period:</p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="bcgi04r">
+<p class="para">Take a snapshot of the database</p></li>
+<li class="step" id="bcgi04s">
+<p class="para">Make a backup copy of the Lucene index</p></li></ol>
+</div>
+</li>
+<li class="step" id="bcghyza">
+<p class="para">Bring the system back online.</p></li>
+<li class="step" id="bcghz42">
+<p class="para"> After the system is running again, start the backup of the file repositories. </p></li></ol>
+</div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>This approach minimizes the down time. However, it is possible that during a restore after a catastrophic failure the files may be out of synchronization with the metadata. This does cause any problems when running the system, but users may find that slightly newer versions of the files exist in the restored system than were present at the time of the database snapshot. This is usually a good thing.</p></div>
+
+</div>
+
+<p class="trademark"> For more information, see <a href="legal.html">Legal Notices</a>.</p>
+
+<script type="text/javascript" src="ui/bottomnav.js"></script>
+</body>
+</html>

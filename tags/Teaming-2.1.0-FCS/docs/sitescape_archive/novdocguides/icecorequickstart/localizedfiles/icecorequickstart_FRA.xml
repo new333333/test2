@@ -1,0 +1,528 @@
+﻿<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//Novell//DTD NovDoc XML V1.0//EN" "novdocx.dtd">
+
+<!--========================================================================
+ "   ICEcore Quick Start Guide "
+
+ Copyright © 2006 Novell, Inc. All rights reserved. No part of this publication
+ may be reproduced, photocopied, stored on a retrieval system, or transmitted
+ without the express written consent of the publisher.
+
+ Novell, Inc.
+ 404 Wyman Street, Suite 500
+ Waltham, MA 02451
+ U.S.A.
+ www.novell.com
+
+
+ ESTIMATED PAGE COUNT (based on 200 words per page): 9
+ ESTIMATED HTML PAGE COUNT (number of html pages for novell.com): 3
+
+
+ WORD COUNT
+
+       Count    Doctype    Title
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        1887    chapter       ICEcore Quick Start Guide 
+
+
+ GRAPHICS REFERENCED IN BOOK
+
+       Count       Filename
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           2       tagsicon.png
+           2       workspacetreeiconminus.png
+           2       toolbar_favorites.png
+           2       search.png
+           6       myworkspace_igloo.png
+           2       workspacetreeicon.png
+           2       presenceicons.png
+           2       toolbar_favorites_big_.png
+           2       backbutton.png
+           2       helpicon-orange.png
+           2       helpicon.png
+
+
+ CROSS-REFERENCES
+
+       Count       Type
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           0       xref
+           0       link
+           0       ulink-xrefext
+           0       ulink-xrefexttext
+           1       ulink
+
+
+ URLS REFERENCED IN ULINKS
+
+       URL
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       http://www.novell.com/company/legal/trademarks/tmlist.html
+
+========================================================================-->
+
+<chapter role="quickstart" conformance="none,doc,no,,56" id="quickstart" revision="05/01/07" lang="en" xml:base="icecorequickstart.xml">
+ <title>
+  Guide de d&eacute;marrage rapide de <productname>ICEcore</productname>
+ </title>
+ <para>&Eacute;quipes + Multiconf&eacute;rences</para>
+ <para>1.0</para>
+ <para>Juillet 2007</para>
+ <sect1 id="b20g4u4">
+  <title>
+   <productname>ICEcore</productname> <superscript/>
+  </title>
+  <para>Les fonctions &Eacute;quipes + Multiconf&eacute;rences de Novell sont mises en application en utilisant la technologie <productname>ICEcore</productname>. Dans ce document, le terme &quot;<productname>ICEcore</productname>&quot; s'applique &agrave; toutes les versions de <productname>ICEcore</productname>, sauf indication du contraire. Pour plus d'informations sur les fonctions de <productname>ICEcore</productname>, reportez-vous au Manuel d'utilisation et &agrave; l'Aide en ligne de <productname>ICEcore</productname>.
+  </para>
+  <sect2 id="b9ygnf7">
+   <title>Explorer le portlet de bienvenue</title>
+   <para>Quand vous vous connectez &agrave; <productname>ICEcore</productname> pour la premi&egrave;re fois, vous voyez un portlet de <guimenu>Bienvenue</guimenu> comprenant des liens aux manuels <productname>ICEcore</productname> et &agrave; une page Web de mise en route.
+   </para>
+  </sect2>
+  <sect2 id="b9ygpwl">
+   <title>Aller o&ugrave; vous le souhaitez en utilisant le navigateur <productname>ICEcore</productname>
+   </title>
+   <para>Le <guimenu>Navigateur</guimenu> est un ensemble d'outils qui vous m&egrave;ne &agrave; tout emplacement de <productname>ICEcore</productname> o&ugrave; vous souhaitez aller. Les outils du <guimenu>Navigateur</guimenu> suivants apparaissent dans de nombreuses pages de <productname>ICEcore</productname> :
+   </para>
+   <formalpara id="b9yh7oz">
+    <title>Mon espace de travail -</title>
+    <para>Cliquez sur l'ic&ocirc;ne <guimenu>Mon espace de travail</guimenu> <inlinemediaobject><imageobject role="fo"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="png"/></imageobject></inlinemediaobject> pour ouvrir votre espace de travail personnel ; celui-ci contient votre <guimenu>Profil</guimenu>, vos dossiers, votre <guimenu>Livre d'invit&eacute;s</guimenu>, ainsi que d'autres accessoires.
+    </para>
+   </formalpara>
+   <formalpara id="b9yh8ci">
+    <title>Favoris -</title>
+    <para>Cliquez sur l'ic&ocirc;ne <guimenu>Favoris</guimenu> <inlinemediaobject><imageobject role="fo"><imagedata fileref="toolbar_favorites_big_.png" width="12.44pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="toolbar_favorites_big_.png" width="12.44pt" format="png"/></imageobject></inlinemediaobject> pour ouvrir le menu <guimenu>Favoris</guimenu> dans lequel vous pouvez ouvrir des liens vers vos emplacements favoris et modifier votre liste de favoris. Pour ajouter un emplacement favori, naviguez jusqu'&agrave; l'emplacement que vous souhaitez ajouter, cliquez sur l'ic&ocirc;ne <guimenu>Favoris</guimenu> et s&eacute;lectionnez <guimenu>Ajouter cette page</guimenu>.
+    </para>
+   </formalpara>
+   <formalpara id="b9yh8jx">
+    <title>Recherche rapide -</title>
+    <para>Entrez tout type de terme &agrave; rechercher dans la zone <guimenu>Recherche rapide</guimenu> et cliquez sur <inlinemediaobject><imageobject role="fo"><imagedata fileref="search.png" width="14.40pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="search.png" width="14.40pt" format="png"/></imageobject></inlinemediaobject> pour afficher un dossier <guimenu>Recherche rapide</guimenu> contenant les r&eacute;sultats de la recherche. Pour afficher des options de recherche suppl&eacute;mentaires, cliquez sur <guimenu>Avanc&eacute;</guimenu>.
+    </para>
+   </formalpara>
+   <formalpara id="b9yh8t6">
+    <title>Rechercher des personnes, rechercher des emplacements, rechercher des balises -</title>
+    <para>Servez-vous de ces zones pour rechercher l'espace de travail personnel d'un utilisateur, des espaces de travail ou des dossiers, et des &eacute;l&eacute;ments balis&eacute;s. (Voir la terminologie ci-dessous.)</para>
+   </formalpara>
+   <formalpara id="b9yh90l">
+    <title>Arborescence des espaces de travail -</title>
+    <para>Cliquez sur le signe plus (+) situ&eacute; &agrave; c&ocirc;t&eacute; de l'ic&ocirc;ne de l'arborescence des espaces de travail <inlinemediaobject><imageobject role="fo"><imagedata fileref="workspacetreeicon.png" width="15.71pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="workspacetreeicon.png" width="15.71pt" format="png"/></imageobject></inlinemediaobject> pour d&eacute;velopper celle-ci. Cette arborescence est compos&eacute;e de trois branches principales : <guimenu>Espaces de travail globaux</guimenu>, <guimenu>Espaces de travail</guimenu> <guimenu>personnels</guimenu> et <guimenu>Espaces de travail d'&eacute;quipe</guimenu>. D&eacute;veloppez une de ces cat&eacute;gories et &quot;forez vers le bas&quot; jusqu'&agrave; ce que vous arriviez &agrave; l'espace de travail souhait&eacute;. Pour r&eacute;duire une branche, cliquez sur le signe moins (-) qui se trouve &agrave; gauche de celle-ci : <inlinemediaobject><imageobject role="fo"><imagedata fileref="workspacetreeiconminus.png" width="15.71pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="workspacetreeiconminus.png" width="15.71pt" format="png"/></imageobject></inlinemediaobject>
+    </para>
+   </formalpara>
+   <formalpara id="b9yh9cf">
+    <title>Aide -</title>
+    <para>Pour lire les informations sur une section sp&eacute;cifique de la page, cliquez sur l'ic&ocirc;ne <guimenu>Aide</guimenu> <inlinemediaobject><imageobject role="fo"><imagedata fileref="helpicon.png" width="8.00pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="helpicon.png" width="8.00pt" format="png"/></imageobject></inlinemediaobject> pour passer au mode <guimenu>Aide</guimenu>, puis cliquez sur une des nouvelles ic&ocirc;nes d'informations <inlinemediaobject><imageobject role="fo"><imagedata fileref="helpicon-orange.png" width="8.00pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="helpicon-orange.png" width="8.00pt" format="png"/></imageobject></inlinemediaobject> qui s'affichent. Pour quitter le mode <guimenu>Aide</guimenu>, cliquez n'importe o&ugrave;, sauf sur une nouvelle ic&ocirc;ne ou un nouveau panneau d'<guimenu>information</guimenu>.
+    </para>
+   </formalpara>
+  </sect2>
+  <sect2 id="b9ygxtu">
+   <title>Configurer votre liste de copains</title>
+   <para>Votre <guimenu>Liste de copains</guimenu> vous aide &agrave; g&eacute;rer les informations sur les personnes que vous devez contacter fr&eacute;quemment. Ajoutez ces personnes &agrave; votre liste de copains sans attendre pour vous faciliter les communications avec elles.
+   </para>
+   <procedure id="b9ygyei">
+    <step id="b9ygyej" performance="required">
+     <para>Cliquez sur <guimenu>Ajouter des copains</guimenu>.
+     </para>
+    </step>
+    <step id="b9ygyf2" performance="required">
+     <para>Commencez &agrave; taper un nom dans la zone <guimenu>Utilisateurs</guimenu> ou dans la zone <guimenu>Groupes</guimenu>. Une liste d&eacute;roulante affiche les noms qui correspondent. S&eacute;lectionnez un nom et cliquez sur <guimenu>Appliquer</guimenu> pour ajouter ce nom &agrave; votre liste.
+     </para>
+    </step>
+    <step id="b9ygyf4" performance="required">
+     <para>Ajoutez autant de noms que vous le souhaitez en cliquant sur <guimenu>Appliquer</guimenu> apr&egrave;s chacun d'entre eux.
+     </para>
+    </step>
+    <step id="b9ygyf6" performance="required">
+     <para>Pour supprimer un nom, cliquez sur l'ic&ocirc;ne <guimenu>X</guimenu> situ&eacute;e apr&egrave;s le nom puis cliquez sur <guimenu>Appliquer</guimenu>.
+     </para>
+    </step>
+    <step id="b9ygyfe" performance="required">
+     <para>Lorsque vous avez termin&eacute;, cliquez sur <guimenu>Fermer</guimenu>. Les nouveaux noms sont affich&eacute;s dans la liste des copains.
+     </para>
+    </step>
+   </procedure>
+   <sect3 id="b9yh0or">
+    <title>Conseils pour l'utilisation de votre liste de copains :</title>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>Une ic&ocirc;ne situ&eacute;e &agrave; gauche du nom d'un copain indique ses informations de pr&eacute;sence, c'est-&agrave;-dire son &eacute;tat de connexion :</para>
+      <para>
+       <inlinemediaobject><imageobject role="fo"><imagedata fileref="presenceicons.png" width="50.40pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="presenceicons.png" width="50.40pt" format="png"/></imageobject></inlinemediaobject> <guimenu>En ligne, Absent, Hors ligne, Inconnu</guimenu>
+      </para>
+     </listitem>
+     <listitem>
+      <para>Pour communiquer avec un copain, cliquez sur son ic&ocirc;ne de pr&eacute;sence et s&eacute;lectionnez une option dans le menu qui s'affiche.</para>
+     </listitem>
+     <listitem>
+      <para>Pour actualiser les informations de pr&eacute;sence, cliquez sur <guimenu>Actualiser</guimenu>.
+      </para>
+     </listitem>
+     <listitem>
+      <para>Pour afficher les informations de pr&eacute;sence d'un copain ou pour naviguer jusqu'&agrave; son espace de travail, cliquez sur le nom du copain.</para>
+     </listitem>
+    </itemizedlist>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yh3r4">
+   <title>Ajouter des informations et une photo dans votre espace de travail personnel.</title>
+   <procedure id="b9yh3y4">
+    <step id="b9yh3y5" performance="required">
+     <para>Dans le navigateur, cliquez sur <inlinemediaobject><imageobject role="fo"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="png"/></imageobject></inlinemediaobject> <guimenu>Mon espace de travail</guimenu> pour aller &agrave; votre espace de travail personnel.
+     </para>
+    </step>
+    <step id="b9yh44k" performance="required">
+     <para>Dans la barre de menus de votre espace de travail, cliquez sur <guimenu>Modifier le profil</guimenu>.
+     </para>
+    </step>
+    <step id="b9yh44n" performance="required">
+     <para>Dans la fen&ecirc;tre <guimenu>Modifier le profil</guimenu>, entrez les informations qui manquent (le cas &eacute;ch&eacute;ant). Ces informations sont visibles pour les autres utilisateurs et sont &eacute;galement utilis&eacute;es par <productname>ICEcore</productname> et Zon pour vous contacter par t&eacute;l&eacute;phone, e-mail et messagerie instantan&eacute;e.
+     </para>
+    </step>
+    <step id="b9yh44r" performance="required">
+     <para>Ajoutez une image. Cliquez sur <guimenu> Parcourir… </guimenu>pour rechercher un fichier graphique sur votre ordinateur puis cliquez sur <guimenu>OK</guimenu>. L'image est affich&eacute;e dans la zone <guimenu>Photo</guimenu> de votre profil.
+     </para>
+    </step>
+    <step id="b9yh44v" performance="required">
+     <para>Cliquez sur <inlinemediaobject><imageobject role="fo"><imagedata fileref="backbutton.png" width="8.29pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="backbutton.png" width="8.29pt" format="png"/></imageobject></inlinemediaobject> pour retourner dans la page initiale.
+     </para>
+    </step>
+   </procedure>
+   <sect3 id="b9yh4la">
+    <title>Conseils pour l'ajout de photos &agrave; votre profil :</title>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>Vous pouvez ajouter autant d'images que vous le souhaitez, mais vous devez le faire une &agrave; la fois.</para>
+     </listitem>
+     <listitem>
+      <para>Des miniatures de toutes vos images sont affich&eacute;es sous vos informations de contact. Quand vous d&eacute;placez la souris sur une miniature, l'image est affich&eacute;e dans la zone Photo. Pour remplacer l'image qui se trouve d&eacute;j&agrave; dans la zone <guimenu>Photo</guimenu> par une de vos autres images, cliquez sur la miniature de l'image.
+      </para>
+     </listitem>
+     <listitem>
+      <para>Pour ajouter une image prise sur le Web, commencez par l'enregistrer sur votre ordinateur.</para>
+     </listitem>
+     <listitem>
+      <para>Pour supprimer une image de votre espace de travail personnel, cliquez sur <guimenu>Modifier le profil</guimenu>. S&eacute;lectionnez les images &agrave; supprimer en cliquant sur leur case &agrave; cocher. Cliquez ensuite sur <guimenu>OK</guimenu>.
+      </para>
+     </listitem>
+    </itemizedlist>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yh9yk">
+   <title>Pour ajouter votre premi&egrave;re entr&eacute;e de blog :</title>
+   <procedure id="b9yha2w">
+    <step id="b9yha2x" performance="required">
+     <para>Cliquez sur <inlinemediaobject><imageobject role="fo"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="png"/></imageobject></inlinemediaobject> <guimenu>Mon espace de travail</guimenu> pour afficher votre espace de travail personnel.
+     </para>
+     <para>Votre espace de travail a d&eacute;j&agrave; un blog par d&eacute;faut nomm&eacute; &quot;<guimenu>Blog</guimenu>&quot;.
+     </para>
+    </step>
+    <step id="b9yha4m" performance="required">
+     <para>D&eacute;veloppez votre arborescence d'espace de travail personnel situ&eacute;e en haut de votre espace de travail.</para>
+    </step>
+    <step id="barbs6a" performance="required">
+     <para>Cliquez sur <guimenu>Blog</guimenu>.
+     </para>
+    </step>
+    <step id="b9yhak2" performance="required">
+     <para>Dans la barre de menus qui se trouve au-dessus du calendrier de blog, s&eacute;lectionnez l'option de menu <guimenu>Nouveau</guimenu> &gt; <guimenu>Entr&eacute;e de blog</guimenu>.
+     </para>
+    </step>
+    <step id="b9yhank" performance="required">
+     <para>Dans le formulaire <guimenu>Entr&eacute;e de blog</guimenu> qui s'affiche, tapez le titre de votre entr&eacute;e de blog dans la zone <guimenu>Titre</guimenu>.
+     </para>
+    </step>
+    <step id="b9yhann" performance="required">
+     <para>Dans la zone <guimenu>Description</guimenu>, tapez le contenu de votre entr&eacute;e de blog (servez-vous des outils de formatage de l'&eacute;diteur pour mettre votre entr&eacute;e en forme).
+     </para>
+    </step>
+    <step id="ban5k3d" performance="required">
+     <para>Sous <guimenu>Pi&egrave;ces jointes</guimenu>, vous pouvez s&eacute;lectionner sur votre ordinateur un fichier &agrave; joindre &agrave; cette entr&eacute;e de blog. 
+     </para>
+    </step>
+    <step id="b9yhanq" performance="required">
+     <para>Cliquez sur <guimenu>OK</guimenu> pour ajouter l'entr&eacute;e &agrave; votre blog.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="barc23u">
+   <title>Pour ajouter un commentaire &agrave; l'entr&eacute;e de blog d'une autre personne :</title>
+   <procedure id="b9yhb5c">
+    <step id="b9yhb5d" performance="required">
+     <para>Naviguez au blog auquel vous souhaitez ajouter un commentaire.</para>
+    </step>
+    <step id="barc49f" performance="required">
+     <para>Cliquez sur <guimenu>Ajouter un commentaire</guimenu> sous l'entr&eacute;e de blog &agrave; laquelle vous souhaitez ajouter un commentaire.
+     </para>
+    </step>
+    <step id="b9yhb8l" performance="required">
+     <para> Dans le formulaire qui s'affiche, tapez le titre de votre commentaire de blog dans la zone <guimenu>Titre</guimenu>.
+     </para>
+    </step>
+    <step id="b9yhb8o" performance="required">
+     <para>Tapez votre commentaire dans la zone <guimenu>Description</guimenu>.
+     </para>
+    </step>
+    <step id="b9yhb8r" performance="required">
+     <para>Cliquez sur <guimenu>OK</guimenu>. Votre commentaire s'affiche sous l'entr&eacute;e de blog.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="b9yhbh7">
+   <title>Travailler avec des &eacute;quipes</title>
+   <para>
+    <productname>ICEcore</productname> a &eacute;t&eacute; con&ccedil;u pour le travail en &eacute;quipe. Cr&eacute;ez un espace de travail d'&eacute;quipe puis ajoutez des dossiers dans cet espace de travail. Une fois l'&eacute;quipe configur&eacute;e, vous pouvez communiquer facilement avec les membres de votre &eacute;quipe.
+   </para>
+   <sect3 id="b9yhc1x">
+    <title>Pour cr&eacute;er un espace de travail d'&eacute;quipe :</title>
+    <procedure id="b9yhc47">
+     <step id="b9yhc48" performance="required">
+      <para> Dans le <guimenu>Navigateur</guimenu>, cliquez sur le lien <guimenu>Espaces de travail d'&eacute;quipe</guimenu> dans l'arborescence des espaces de travail.
+      </para>
+     </step>
+     <step id="b9yhcrt" performance="required">
+      <para> Sous l'onglet <guimenu>Espaces de travail d'&eacute;quipe</guimenu>, cliquez sur <guimenu>Ajouter un espace de travail d'&eacute;quipe</guimenu>.
+      </para>
+     </step>
+     <step id="b9yhcrw" performance="required">
+      <para> Dans le champ <guimenu>Titre de l'espace de travail</guimenu>, tapez le nom du nouvel espace de travail.
+      </para>
+     </step>
+     <step id="b9yhd8a" performance="required">
+      <para>Sous <guimenu>Membres de l'&eacute;quipe</guimenu>, s&eacute;lectionnez les <guimenu>Utilisateurs</guimenu> et les <guimenu>Groupes</guimenu> que vous souhaitez ajouter comme membres de l'&eacute;quipe dans cet espace de travail. Tapez un ou deux caract&egrave;res dans un des deux champs et s&eacute;lectionnez l'utilisateur ou le groupe que vous souhaitez ajouter dans la liste d&eacute;roulante qui s'affiche.
+      </para>
+     </step>
+     <step id="ban5was" performance="required">
+      <para>Sous <guimenu>Dossiers d'espaces de travail</guimenu>, s&eacute;lectionnez les types de dossiers que vous souhaitez inclure dans cet espace de travail.
+      </para>
+     </step>
+     <step id="ban5xsb" performance="required">
+      <para>Pour envoyer un e-mail aux membres de votre &eacute;quipe, s&eacute;lectionnez l'option <guimenu>Annoncer la cr&eacute;ation de cet espace de travail &agrave; l'&eacute;quipe</guimenu> et tapez le message que vous souhaitez envoyer.
+      </para>
+     </step>
+     <step id="b9yhcs0" performance="required">
+      <para>Cliquez sur <guimenu>OK</guimenu>. Le nouvel espace de travail est ajout&eacute; en tant que sous-espace de travail.
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+   <sect3 id="b9yhd12">
+    <title>Pour ajouter des membres &agrave; un espace de travail d'&eacute;quipe :</title>
+    <procedure id="b9yhd13">
+     <step id="b9yhd14" performance="required">
+      <para>Naviguez jusqu'&agrave; l'espace de travail d'&eacute;quipe.</para>
+     </step>
+     <step id="barc7bf" performance="required">
+      <para>Cliquez sur <guimenu>Ajouter ou supprimer des membres de l'&eacute;quipe</guimenu>.
+      </para>
+     </step>
+     <step id="ban6gcy" performance="required">
+      <para>Dans la fen&ecirc;tre <guimenu>Ajouter ou supprimer des membres de l'&eacute;quipe</guimenu>, cliquez dans les champs <guimenu>Utilisateurs</guimenu> ou <guimenu>Groupes</guimenu>, commencez &agrave; taper le nom de l'utilisateur ou du groupe et s&eacute;lectionnez le nom dans la liste d&eacute;roulante qui s'affiche.
+      </para>
+     </step>
+     <step id="barc9md" performance="required">
+      <para>R&eacute;p&eacute;tez ces &eacute;tapes pour chaque utilisateur ou groupe que vous souhaitez ajouter.</para>
+     </step>
+     <step id="barc9ek" performance="required">
+      <para>Cliquez sur <guimenu>OK</guimenu>.
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+   <sect3 id="b9yhd15">
+    <title>Pour afficher les membres du groupe :</title>
+    <procedure id="b9yhd16">
+     <step id="b9yhd17" performance="required">
+      <para>S&eacute;lectionnez l'espace de travail ou le dossier auquel l'&eacute;quipe est associ&eacute;e.</para>
+     </step>
+     <step id="b9yhdtq" performance="required">
+      <para>Dans la barre de menus, cliquez sur <guimenu>&Eacute;quipe</guimenu>.
+      </para>
+     </step>
+     <step id="b9yhdts" performance="required">
+      <para> S&eacute;lectionnez <guimenu>Afficher les membres de l'&eacute;quipe</guimenu>.
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yhe5q">
+   <title>Travailler avec les favoris</title>
+   <para>Servez-vous de la fonction <guimenu>Favoris</guimenu> pour les emplacements que vous visitez souvent.
+   </para>
+   <sect3 id="b9yheeb">
+    <title>Pour ajouter un emplacement aux favoris : </title>
+    <procedure id="b9yhf14">
+     <step id="b9yhf15" performance="required">
+      <para>Naviguez jusqu'&agrave; l'espace de travail ou au dossier que vous souhaitez ajouter.</para>
+     </step>
+     <step id="b9yhf4f" performance="required">
+      <para>Cliquez sur <inlinemediaobject><imageobject role="fo"><imagedata fileref="toolbar_favorites.png" width="8.51pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="toolbar_favorites.png" width="8.51pt" format="png"/></imageobject></inlinemediaobject> pour ouvrir le panneau <guimenu>Favoris</guimenu>.
+      </para>
+     </step>
+     <step id="b9yhf4i" performance="required">
+      <para>S&eacute;lectionnez <guimenu>Ajouter cette page</guimenu>. L'espace de travail ou le dossier est ajout&eacute; au bas de la liste des <guimenu>Favoris</guimenu>.
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yhfng">
+   <title>Se servir des balises</title>
+   <para>Les balises sont une fonctionnalit&eacute; puissante permettant de d&eacute;couvrir, &eacute;valuer et extraire les informations. Les utilisateurs affectent des mots-cl&eacute;s, appel&eacute;s balises, aux espaces de travail, dossiers et entr&eacute;es. Les balises sont d&eacute;sign&eacute;es comme &eacute;tant de communaut&eacute; (partag&eacute;es) ou personnelles (priv&eacute;es). Vous pouvez ensuite utiliser ces balises dans les recherches. Le moteur de recherche utilise &eacute;galement des balises pour trier les r&eacute;sultats des recherches par ordre de pertinence.</para>
+   <para>Cliquez sur l'ic&ocirc;ne <guimenu>Balises</guimenu> <inlinemediaobject><imageobject role="fo"><imagedata fileref="tagsicon.png" width="24.87pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="tagsicon.png" width="24.87pt" format="png"/></imageobject></inlinemediaobject> pour ajouter des balises <guimenu>Personnelles</guimenu> et de <guimenu>Communaut&eacute;</guimenu> &agrave; un &eacute;l&eacute;ment.
+   </para>
+   <para>Pour davantage d'informations sur les balises, reportez-vous au Manuel d'utilisation de <productname>ICEcore</productname>.
+   </para>
+  </sect2>
+  <sect2 id="ban6z9s">
+   <title>Recherche avanc&eacute;e</title>
+   <para>Servez-vous de la recherche avanc&eacute;e pour trouver les informations sp&eacute;cifiques que vous recherchez sans avoir &agrave; naviguer dans de nombreux espaces de travail et dossiers.</para>
+   <sect3 id="ban748r">
+    <title>Pour effectuer une recherche avanc&eacute;e :</title>
+    <procedure id="ban729o">
+     <step id="ban729p" performance="required">
+      <para>Dans la section Rechercher, cliquez sur <guimenu>Avanc&eacute;</guimenu>. La fen&ecirc;tre <guimenu>Recherche avanc&eacute;e</guimenu> s'affiche.
+      </para>
+     </step>
+     <step id="ban75mv" performance="required">
+      <para>Dans le champ <guimenu>Texte</guimenu>, tapez du texte associ&eacute; &agrave; l'&eacute;l&eacute;ment que vous recherchez.
+      </para>
+     </step>
+     <step id="ban76s5" performance="required">
+      <para>Si vous savez qui a cr&eacute;&eacute; (ou ajout&eacute;) l'&eacute;l&eacute;ment dans <productname>ICEcore</productname>, tapez son nom dans le champ <guimenu>Auteurs</guimenu>.
+      </para>
+     </step>
+     <step id="ban78ko" performance="required">
+      <para>Si vous savez que cette information est dot&eacute;e d'une balise, tapez la balise associ&eacute;e dans le champ <guimenu>Balises</guimenu>.
+      </para>
+     </step>
+     <step id="ban790r" performance="required">
+      <para>Sous <guimenu>Emplacements</guimenu>, s&eacute;lectionnez l'option que vous souhaitez utiliser :
+      </para>
+      <itemizedlist mark="bullet" spacing="normal">
+       <listitem>
+        <para>Servez-vous des options de l'arborescence des espaces de travail pour s&eacute;lectionner des zones sp&eacute;cifiques dans lesquelles faire la recherche :</para>
+        <orderedlist spacing="normal">
+         <listitem>
+          <para>Cliquez sur le signe plus (+) situ&eacute; &agrave; c&ocirc;t&eacute; de  <emphasis>Espace de travail</emphasis>.
+          </para>
+         </listitem>
+         <listitem>
+          <para>S&eacute;lectionnez les zones dans lesquelles vous souhaitez faire la recherche (si vous le souhaitez, continuez &agrave; forer vers le bas dans une zone).</para>
+         </listitem>
+        </orderedlist>
+       </listitem>
+       <listitem>
+        <para>Servez-vous de l'option <guimenu>rechercher tous les sous-emplacements</guimenu> pour effectuer la recherche dans tous les dossiers et espaces de travail.
+        </para>
+       </listitem>
+      </itemizedlist>
+     </step>
+     <step id="ban7dim" performance="required">
+      <para>&Agrave; c&ocirc;t&eacute; de l'option <guimenu>Lister les r&eacute;sultats</guimenu>, servez-vous des listes d&eacute;roulantes pour s&eacute;lectionner le nombre de r&eacute;sultats et le nombre de mots (par r&eacute;sultat) que vous souhaitez extraire au cours de la recherche. 
+      </para>
+     </step>
+     <step id="ban7eau" performance="required">
+      <para>Cliquez sur <guimenu>Rechercher</guimenu>.
+      </para>
+      <para>Les r&eacute;sultats de la recherche apparaissent dans une liste qui se trouve sous la zone <guimenu>Recherche avanc&eacute;e</guimenu>. &Agrave; gauche de l'&eacute;cran, <productname>ICEcore</productname> affiche des informations sur les principaux emplacements, personnes et balises associ&eacute;s &agrave; votre recherche.
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+   <sect3 id="ban7gsc">
+    <title>Pour utiliser des options de recherche avanc&eacute;e suppl&eacute;mentaires :</title>
+    <procedure id="ban7hhh">
+     <step id="ban7hhi" performance="required">
+      <para>Dans la section Rechercher, cliquez sur <guimenu>Avanc&eacute;</guimenu>. L'onglet <guimenu>Recherche avanc&eacute;e</guimenu> s'affiche.
+      </para>
+     </step>
+     <step id="ban7ho8" performance="required">
+      <para>Dans le coin sup&eacute;rieur droit de la zone <guimenu>Recherche avanc&eacute;e</guimenu>, cliquez sur <guimenu>Autres options</guimenu>.
+      </para>
+     </step>
+     <step id="ban7i1a" performance="required">
+      <para>Les options suivantes sont disponibles :</para>
+      <itemizedlist mark="bullet" spacing="normal">
+       <listitem>
+        <para>
+         <guimenu>Auteurs</guimenu>- Cette option vous permet d'entrer le nom d'un ou de plusieurs auteurs.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Balises</guimenu>- Cette option vous permet d'entrer le nom d'une ou de plusieurs balises.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Flux de travail</guimenu>- Cette option vous permet d'entrer le nom d'un ou de plusieurs &eacute;tats de flux de travail.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Attributs d'entr&eacute;e</guimenu>- Cette option vous permet d'entrer le nom d'un ou de plusieurs types d'entr&eacute;es.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Derni&egrave;re activit&eacute; en jours</guimenu>- Cette option vous permet de limiter la recherche aux &eacute;l&eacute;ments qui ont fait l'objet d'activit&eacute; pendant un nombre de jours d&eacute;fini.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Dates de cr&eacute;ation</guimenu>- Cette option vous permet de limiter la recherche aux &eacute;l&eacute;ments qui ont &eacute;t&eacute; cr&eacute;&eacute;s pendant une ou plusieurs plages de temps.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Dates de modification</guimenu>- Cette option vous permet de limiter la recherche aux &eacute;l&eacute;ments qui ont &eacute;t&eacute; modifi&eacute;s pendant une ou plusieurs plages de temps.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Type d'&eacute;l&eacute;ment</guimenu>- Cette option vous permet de limiter la recherche &agrave; un ou plusieurs types d'&eacute;l&eacute;ments.
+        </para>
+       </listitem>
+      </itemizedlist>
+      <note>
+       <para>Tapez quelques caract&egrave;res et la plupart des champs g&eacute;n&egrave;rent une liste d&eacute;roulante d'options. Cliquez sur Autres crit&egrave;res pour entrer des crit&egrave;res de recherche suppl&eacute;mentaires pour une option.</para>
+      </note>
+     </step>
+    </procedure>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yhg5l">
+   <title>Terminologie</title>
+   <formalpara id="b9yhgfo">
+    <title>liste de copains -</title>
+    <para>Une liste des personnes que vous contactez fr&eacute;quemment.</para>
+   </formalpara>
+   <formalpara id="b9yhhqt">
+    <title>entr&eacute;e -</title>
+    <para>Un &eacute;l&eacute;ment contenu dans un dossier.</para>
+   </formalpara>
+   <formalpara id="b9yhhqu">
+    <title>dossier -</title>
+    <para>Un conteneur renfermant des entr&eacute;es et d'autres dossiers. Chaque dossier a un type, tel que  <guimenu>blog</guimenu>, <guimenu>Wiki</guimenu> ou <guimenu>calendrier</guimenu>.
+    </para>
+   </formalpara>
+   <formalpara id="b9yhhqv">
+    <title>pr&eacute;sence -</title>
+    <para>L'&eacute;tat qui consiste &agrave; &ecirc;tre connect&eacute; &agrave; un service de communication et disponible pour communiquer. Les informations de pr&eacute;sence sont indiqu&eacute;es par des ic&ocirc;nes d'&eacute;tat.</para>
+   </formalpara>
+   <formalpara id="b9yiiuq">
+    <title>espace de travail -</title>
+    <para>Un conteneur renfermant des dossiers et d'autres espaces de travail.</para>
+   </formalpara>
+  </sect2>
+ </sect1>
+ <sect1 role="legalinfo" id="b20g58r">
+  <title>Avis l&eacute;gal</title>
+  <para>Copyright &copy; 2007 Novell, Inc. Tous droits r&eacute;serv&eacute;s. Aucune partie de cette publication ne peut &ecirc;tre reproduite, photocopi&eacute;e, stock&eacute;e sur un syst&egrave;me d'extraction ou transmise sans le consentement &eacute;crit express de l'&eacute;diteur. Pour une liste des marques Novell, reportez-vous &agrave; la <ulink url="http://www.novell.com/company/legal/trademarks/tmlist.html">liste des marques de commerce et de service de Novell</ulink>. Toutes les marques de tiers sont d&eacute;tenues par leurs propri&eacute;taires respectifs. Un symbole de marque (&reg;, TM, etc.) indique une marque Novell, un ast&eacute;risque (*) indique une marque de tiers.
+  </para>
+ </sect1>
+</chapter>

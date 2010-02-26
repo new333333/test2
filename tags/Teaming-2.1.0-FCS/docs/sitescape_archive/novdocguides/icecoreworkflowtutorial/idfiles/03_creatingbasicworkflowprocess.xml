@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9wxwmh" pid="b9wxwmh" name="Chapter" level="0" number="3"> <text>Creating a Basic Workflow Process</text> </target>
+
+ <target id="b9wxx06" pid="b9wxwmh" name="BridgeHead" level="1"> <text>What's in this Chapter?</text> </target>
+
+ <target id="b9wxxr0" pid="b9wxxr0" name="Sect1" level="1" number="3.1"> <text>Prerequisites for the Exercises</text> </target>
+
+ <target id="b9wxzwu" pid="b9wxzwu" name="Sect1" level="1" number="3.2"> <text>Define the Workflow Process</text> </target>
+
+ <target id="b9wy3yo" pid="b9wxzwu" name="Procedure" level="2" number="1"> <text>Access the Time Off Requests discussion forum.</text> </target>
+
+ <target id="b9wy3yp" pid="b9wxzwu" name="Step" level="3" number="1"> <text>Access the Time Off Requests discussion forum.</text> </target>
+
+ <target id="b9wy4bf" pid="b9wxzwu" name="Step" level="3" number="2"> <text>Click Tools on the toolbar.</text> </target>
+
+ <target id="b9wy4bi" pid="b9wxzwu" name="Step" level="3" number="3"> <text>Click Administration in the menu. </text> </target>
+
+ <target id="b9wy4bk" pid="b9wxzwu" name="Step" level="3" number="4"> <text>Scroll to the "Customize commands and workflows in this forum" section and click Develop workflow processes. </text> </target>
+
+ <target id="b9wy4bm" pid="b9wxzwu" name="Step" level="3" number="5"> <text>If you have existing workflow processes in this discussion forum, you must click the Add a workflow link on the toolbar to create a new workflow process (if you have no other existing workflow processes, skip this step).</text> </target>
+
+ <target id="b9wy4bq" pid="b9wxzwu" name="Step" level="3" number="6"> <text>In the "Workflow name" text box in the working area of the page, enter the workflow name.</text> </target>
+
+ <target id="b9wy4bx" pid="b9wxzwu" name="Step" level="3" number="7"> <text>Click OK. </text> </target>
+
+ <target id="b9wxzwv" pid="b9wxzwv" name="Sect1" level="1" number="3.3"> <text>Add States to the Workflow</text> </target>
+
+ <target id="b9wytso" pid="b9wxzwv" name="row" level="2"> <text>Task</text> </target>
+
+ <target id="b9wytsp" pid="b9wxzwv" name="row" level="2"> <text>Complete time off request form</text> </target>
+
+ <target id="b9wyuu6" pid="b9wxzwv" name="row" level="2"> <text>Send request</text> </target>
+
+ <target id="b9wyuu7" pid="b9wxzwv" name="row" level="2"> <text>Review request</text> </target>
+
+ <target id="b9wyuu8" pid="b9wxzwv" name="row" level="2"> <text>Approve request</text> </target>
+
+ <target id="b9wyuu9" pid="b9wxzwv" name="row" level="2"> <text>Deny request</text> </target>
+
+ <target id="b9wyuua" pid="b9wxzwv" name="row" level="2"> <text>Record request</text> </target>
+
+ <target id="b9wyv92" pid="b9wxzwv" name="BridgeHead" level="2"> <text>To add states to the Time Off Request workflow process:</text> </target>
+
+ <target id="b9wyvcc" pid="b9wxzwv" name="Procedure" level="2" number="1"> <text>Click Add or delete states, or modify the initial state from the list of workflow tools. </text> </target>
+
+ <target id="b9wyvcd" pid="b9wxzwv" name="Step" level="3" number="1"> <text>Click Add or delete states, or modify the initial state from the list of workflow tools. </text> </target>
+
+ <target id="b9wyw0j" pid="b9wxzwv" name="Step" level="3" number="2"> <text>When the "Add or delete states, or modify the initial state" form appears in the working area of the page, enter one state name on each line. </text> </target>
+
+ <target id="b9wyw0l" pid="b9wxzwv" name="Step" level="3" number="3"> <text>Click the Add states button. </text> </target>
+
+ <target id="b9wxzww" pid="b9wxzww" name="Sect1" level="1" number="3.4"> <text>Define Transitions for the Workflow</text> </target>
+
+ <target id="b9wz9g0" pid="b9wxzww" name="row" level="2"> <text>State</text> </target>
+
+ <target id="b9wz9g1" pid="b9wxzww" name="row" level="2"> <text>Submit</text> </target>
+
+ <target id="b9wzdzb" pid="b9wxzww" name="row" level="2"> <text>Review</text> </target>
+
+ <target id="b9wzdzc" pid="b9wxzww" name="row" level="2"> <text>Approve</text> </target>
+
+ <target id="b9wzdzd" pid="b9wxzww" name="row" level="2"> <text>Deny</text> </target>
+
+ <target id="b9wzdze" pid="b9wxzww" name="row" level="2"> <text>Record</text> </target>
+
+ <target id="b9wzax3" pid="b9wxzww" name="Sect2" level="2" number="3.4.1"> <text>Create Transition from Submit State to Review State</text> </target>
+
+ <target id="b9wzb6z" pid="b9wxzww" name="BridgeHead" level="3"> <text>To create a manual transition:</text> </target>
+
+ <target id="b9wzbjl" pid="b9wxzww" name="Procedure" level="3" number="1"> <text>Using the flowchart, click the Submit oval.</text> </target>
+
+ <target id="b9wzbjm" pid="b9wxzww" name="Step" level="4" number="1"> <text>Using the flowchart, click the Submit oval.</text> </target>
+
+ <target id="b9wzbkt" pid="b9wxzww" name="Step" level="4" number="2"> <text>Click the Add or delete transitions tool in the "Edit the current state" section.</text> </target>
+
+ <target id="b9wzbkv" pid="b9wxzww" name="Step" level="4" number="3"> <text>Click the condition Manual transition (group 1). </text> </target>
+
+ <target id="b9wzbkx" pid="b9wxzww" name="Step" level="4" number="4"> <text>In the "to cause a transition to:" list, click Review.</text> </target>
+
+ <target id="b9wzbkz" pid="b9wxzww" name="Step" level="4" number="5"> <text>Click the Add transition and close button.</text> </target>
+
+ <target id="b9wzen2" pid="b9wxzww" name="Sect2" level="2" number="3.4.2"> <text>Create Transitions from Review</text> </target>
+
+ <target id="b9wzf3n" pid="b9wxzww" name="BridgeHead" level="3"> <text>To create two manual transitions from Review:</text> </target>
+
+ <target id="b9wzf7o" pid="b9wxzww" name="Procedure" level="3" number="1"> <text>In the flowchart, click the oval for the Review state.</text> </target>
+
+ <target id="b9wzf7p" pid="b9wxzww" name="Step" level="4" number="1"> <text>In the flowchart, click the oval for the Review state.</text> </target>
+
+ <target id="b9wzfdp" pid="b9wxzww" name="Step" level="4" number="2"> <text> In the "Edit the current state" tools, click Add or delete transitions. </text> </target>
+
+ <target id="b9wzfo8" pid="b9wxzww" name="Step" level="4" number="3"> <text>In the "Select the conditions that must be true:" list, click Manual transition (group 1).</text> </target>
+
+ <target id="b9wzfdr" pid="b9wxzww" name="Step" level="4" number="4"> <text>In the "to cause a transition to:" list click Approve.</text> </target>
+
+ <target id="b9wzfdu" pid="b9wxzww" name="Step" level="4" number="5"> <text> Click the Add transition and continue button.</text> </target>
+
+ <target id="b9wzfdw" pid="b9wxzww" name="Step" level="4" number="6"> <text>Once the window refreshes, click Manual transition (group 1), and then click Deny. </text> </target>
+
+ <target id="b9wzfe3" pid="b9wxzww" name="Step" level="4" number="7"> <text>Click the Add transition and close button.</text> </target>
+
+ <target id="b9wzinu" pid="b9wxzww" name="Sect2" level="2" number="3.4.3"> <text>Transition from Approve to Record</text> </target>
+
+ <target id="b9wzj6l" pid="b9wxzww" name="BridgeHead" level="3"> <text>Create a manual transition from Approve to Record:</text> </target>
+
+ <target id="b9wzj9s" pid="b9wxzww" name="Procedure" level="3" number="1"> <text> Click on the Approve oval in the flowchart.</text> </target>
+
+ <target id="b9wzj9t" pid="b9wxzww" name="Step" level="4" number="1"> <text> Click on the Approve oval in the flowchart.</text> </target>
+
+ <target id="b9wzjed" pid="b9wxzww" name="Step" level="4" number="2"> <text>Click Add or delete transitions.</text> </target>
+
+ <target id="b9wzjef" pid="b9wxzww" name="Step" level="4" number="3"> <text>Once the "Add or delete transition" form appears, click Manual transition (group 1) and then click Record.</text> </target>
+
+ <target id="b9wzjei" pid="b9wxzww" name="Step" level="4" number="4"> <text>Click Add transition and close.</text> </target>
+
+ <target id="b9wxzwx" pid="b9wxzwx" name="Sect1" level="1" number="3.5"> <text>Testing the New Workflow Process </text> </target>
+
+ <target id="b9wzkqw" pid="b9wxzwx" name="BridgeHead" level="2"> <text>To test a manual transition:</text> </target>
+
+ <target id="b9wzktx" pid="b9wxzwx" name="Procedure" level="2" number="1"> <text>Log in as John Hall.</text> </target>
+
+ <target id="b9wzkty" pid="b9wxzwx" name="Step" level="3" number="1"> <text>Log in as John Hall.</text> </target>
+
+ <target id="b9wzkze" pid="b9wxzwx" name="Step" level="3" number="2"> <text>Go to the Time Off Requests discussion forum. </text> </target>
+
+ <target id="b9wzkzh" pid="b9wxzwx" name="Step" level="3" number="3"> <text>Add a discussion topic using the Add menu option. </text> </target>
+
+ <target id="b9wzkzk" pid="b9wxzwx" name="Step" level="3" number="4"> <text>Type in the information and click OK.</text> </target>
+
+ <target id="b9wzkzm" pid="b9wxzwx" name="Step" level="3" number="5"> <text>On the toolbar, click Tools, and click Initiate a workflow process. </text> </target>
+
+ <target id="b9wzkzp" pid="b9wxzwx" name="Step" level="3" number="6"> <text>On the form that appears, click the radio button next to the name of the Time Off Request workflow process, then click OK.</text> </target>
+
+ <target id="b9wzkzr" pid="b9wxzwx" name="Step" level="3" number="7"> <text>To test the transitions, make sure that the "Change state to:" drop-down list is set to Review, and click OK. </text> </target>
+
+ <target id="b9wzkzv" pid="b9wxzwx" name="Step" level="3" number="8"> <text>View the top folder of the discussion forum by clicking on the linked folder title toward the top of the entry.</text> </target>
+
+ <target id="b9wzonw" pid="b9wxzwx" name="BridgeHead" level="2"> <text>To Test the Remaining Transitions (Exercise):</text> </target>
+
+ <target id="b9wxzwy" pid="b9wxzwy" name="Sect1" level="1" number="3.6"> <text>Summary</text> </target>
+
+ <target id="b9wxzwz" pid="b9wxzwz" name="Sect1" level="1" number="3.7"> <text>Next Steps</text> </target>
+
+</targets>

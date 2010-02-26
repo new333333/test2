@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="Generator" content="Novell Documentation" />
+<meta name="Generation-Date" content="Wednesday, May 28, 2008 16:11" />
+<meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2008" />
+
+<style type="text/css">
+  @import url(ui/styles.css);
+</style>
+
+<title>Steps for Installing Novell Teaming</title>
+<script type="text/javascript">
+  var prev_link = "b9vchn5.html";
+  var next_link = "b9vchn7.html";
+  var parentfile = "../b9vcafr.html";
+  var parenttoc = "../toc_b9vcafr.html";
+  if(parent.location != location) { parent.loadMenu(); }
+</script>
+<script type="text/javascript" src="ui/jsglobal.js"></script>
+</head>
+
+<body>
+<script type="text/javascript" src="ui/topnav.js"></script>
+
+<div class="sect1"  id="b9vchn6">
+
+<h1 class="title"> Steps for Installing Novell Teaming</h1>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="b9ptkcc">
+<p class="para">Install the JDK.</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">The Sun JDK 1.5.0_011 (or higher) or the IBM JDK version 1.5 is supported. </p></li>
+<li class="listitem">
+<p class="listitem">Java 1.6 is currently not supported.</p></li></ul></div>
+
+<p class="para">You can download the Sun JDK from <a href="http://java.sun.com/products/archive" class="ulink">java.sun.com</a>. Select the “JDK/JRE - 5.0” product line and download the JDK. </p>
+<p class="para">The IBM JDK 1.5 is available on the SLES 10 distribution. Use YAST to select and install the IBM JDK. Larger deployments with 64-bit hardware should seriously consider using the 64-bit JDK, because it allows increased memory allocation and better performance.</p>
+<p class="para">On the Sun site, you can ignore the notes in the 64-bit JDK about “Java Web Start” and “applets,” because Novell Teaming is neither of those.)</p></li>
+<li class="step" id="bbevhpb">
+<p class="para">Set the <span class="literal">JAVA_HOME</span> environment variable on your computer to the correct JDK path and name on your system.</p>
+<p class="para">For example:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">On Linux: <span class="literal">export JAVA_HOME=/usr/java/jdk_1.5.0_11</span></p></li>
+<li class="listitem">
+<p class="listitem">On Windows: <span class="literal">JAVA_HOME=C:\Program Files\Java\jdk1.5.0_11</span></p></li></ul></div>
+
+<div class="warning">
+<p class="para"><em class="title">WARNING:</em>In Windows, you must set the JAVA_HOME environment variable. Also, close and re-open any command prompt windows after setting this variable.</p></div>
+</li>
+<li class="step" id="b9ptl7r">
+<p class="para">Install and Configure the Database Server. See <a href="b9vchn7.html">Database Planning</a>.</p></li>
+<li class="step" id="b9ptld7">
+<p class="para">Download the appropriate Novell Teaming kit and unzip it.</p></li>
+<li class="step" id="bbijs99">
+<p class="para">If you want to run the indexing service in Novell Teaming on a different machine from Novell Teaming, install the Lucene Index Server on the other machine. See <a href="bbijvt7.html">Installing a Standalone Lucene Index Server</a>.</p></li>
+<li class="step" id="b9ptlgi">
+<p class="para">Run the installer from where you unzipped the Novell Teaming kit. See <a href="installer.html">Running the Installer</a>.</p>
+<p class="para">The installer is named one of the following, according to your operating system:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+                <span class="literal">installer-liferay.exe</span>
+              </p></li>
+<li class="listitem">
+<p class="listitem">
+                <span class="literal">installer-liferay.linux</span>
+              </p></li></ul></div>
+
+<p class="para">If you are doing an upgrade, use your existing <span class="literal">license-key.xml </span>and <span class="literal">installer.xml</span> files by placing them in the same directory as the installer program. If you are doing a new installation, use your <span class="literal">license-key.xml</span> by placing it in the same directory as the installer program. The<span class="literal"> license-key.xml </span>file required to install the product is provided with the software kit (but is not included in the kit).</p></li>
+<li class="step" id="b9ptlgm">
+<p class="para"><a href="b9vchnb.html"></a>Start and stop Novell Teaming. See <a href="b9vchnb.html">Starting and Stopping Novell Teaming</a>.</p>
+<div class="informalfigure">
+                <img src="images/icecorediagram_a.png" alt="System diagram" />
+              </div>
+</li></ol>
+</div>
+
+</div>
+
+<p class="trademark"> For more information, see <a href="legal.html">Legal Notices</a>.</p>
+
+<script type="text/javascript" src="ui/bottomnav.js"></script>
+</body>
+</html>
