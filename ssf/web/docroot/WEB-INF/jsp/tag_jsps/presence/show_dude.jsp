@@ -72,13 +72,13 @@
 
 <%
 	String presenceUserTitle = presence_user_title;
-	presenceUserTitle = presenceUserTitle.replaceAll("'", "\\\\'");
+	presenceUserTitle = presenceUserTitle.replaceAll("\\\\", "").replaceAll("'", "\\\\'");
 	String presenceUserZonName = presence_user_zonName;
-	presenceUserZonName = presenceUserZonName.replaceAll("'", "\\\\'");
+	presenceUserZonName = presenceUserZonName.replaceAll("\\\\", "").replaceAll("'", "\\\\'");
 	String presenceUserEmailAddress = presence_user_emailAddress;
-	presenceUserEmailAddress = presenceUserEmailAddress.replaceAll("'", "\\\\'");
+	presenceUserEmailAddress = presenceUserEmailAddress.replaceAll("\\\\", "").replaceAll("'", "\\\\'");
 	String presenceUserSkypeId = presence_user_skypeId;
-	presenceUserSkypeId = presenceUserSkypeId.replaceAll("'", "\\\\'");
+	presenceUserSkypeId = presenceUserSkypeId.replaceAll("\\\\", "").replaceAll("'", "\\\\'");
 	String presenceUserEmailAddressName = "";
 	String presenceUserEmailAddressHost = "";
 	if (!presenceUserEmailAddress.equals("") && presenceUserEmailAddress.indexOf("@") > 0) {
