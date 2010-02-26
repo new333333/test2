@@ -185,4 +185,6 @@ public interface GwtTeamingMessages extends Messages
 	String errorFolderDoesNotExist( String folderId );
 	String errorUnknownException();
 
+	// Strings used with the MastHead
+	String getBrandingRPCFailed( String cause );
 }// end GwtTeamingMessages
