@@ -54,7 +54,7 @@ public class SearcherManager extends IndexSupport {
 						SearcherManager.this.warm(new IndexSearcher(reader));
 					}
 				});
-		logInfo("Searcher manager instantiated");
+		logDebug("Searcher manager instantiated");
 	}
 
 	protected void warm(IndexSearcher searcher)
@@ -145,14 +145,14 @@ public class SearcherManager extends IndexSupport {
 	}
 
 	public synchronized void close() throws IOException {
-		// TODO $$$$$$$$ What am I supposed to do here? 
-		// currentSearcher.close() does nothing, 
-		// should I call currentSearcher.getIndexReader().close() or releaseInternal(currentSearcher)?
+		// Release current searcher. This will cause the current reader to be closed. 
+		releaseInternal(currentSearcher);
+		
 		currentSearcher = null;
 		
 		// Don't close writer, since it is not owned by this class.
 		
-		logInfo("Searcher manager closed");
+		logDebug("Searcher manager closed");
 	}
 	
 	private synchronized void swapSearcher(IndexSearcher newSearcher)

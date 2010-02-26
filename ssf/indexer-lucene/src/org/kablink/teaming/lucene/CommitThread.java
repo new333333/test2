@@ -34,6 +34,7 @@ package org.kablink.teaming.lucene;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.lucene.LuceneProvider.IndexingResource;
 
 public class CommitThread extends Thread {
 
@@ -58,13 +59,16 @@ public class CommitThread extends Thread {
     
     public void run() {
     	long timeout;
-    	LuceneProvider.CommitStat commitStat;
+    	IndexingResource indexingResource;
     	while(true) {
     		synchronized(this) {
-    			commitStat = luceneProvider.getCommitStat();
-    			while(!stop && !weGotWorkToDo(commitStat)) {
+    			// It is crucial that we call this (to get an indexing resource) 
+    			// for each iteration (as opposed to getting it once outside of
+    			// the loop) because different instances can come and go over time.
+    			indexingResource = luceneProvider.getIndexingResource();
+    			while(!stop && !weGotWorkToDo(indexingResource.getCommitStat())) {
     				try {
-    					timeout = timeoutTilNextCommit(commitStat);
+    					timeout = timeoutTilNextCommit(indexingResource.getCommitStat());
     					if(logger.isDebugEnabled())
     						logger.debug("About to call wait() with timeout=" + timeout);
 						wait(timeout);
@@ -73,7 +77,7 @@ public class CommitThread extends Thread {
 					} catch (InterruptedException e) {
 						logger.warn("This shouldn't happen", e);
 					}
-					commitStat = luceneProvider.getCommitStat();
+	    			indexingResource = luceneProvider.getIndexingResource();
     			}
     			if(stop) {
     				logger.info("Stop request in place. Exiting commit thread.");

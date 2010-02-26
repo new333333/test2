@@ -41,4 +41,6 @@ public interface LuceneProviderManagerMBean {
 	int getCommitTimeInterval();
 	
 	void setCommitTimeInterval(int commitTimeInterval);
+	
+	void optimize();
 }
