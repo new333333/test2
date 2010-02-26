@@ -379,6 +379,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_UPGRADE_DEFINITIONS = "upgradeDefinitions";
     public static final String USER_PROPERTY_UPGRADE_TEMPLATES = "upgradeTemplates";
     public static final String USER_PROPERTY_UPGRADE_SEARCH_INDEX = "upgradeSearchIndex";
+    public static final String USER_PROPERTY_EXPANDED_BINDERS_LIST = "expandedBindersList";
     public static final String USER_THEME_DEFAULT="default";
     
     //workflow definition names

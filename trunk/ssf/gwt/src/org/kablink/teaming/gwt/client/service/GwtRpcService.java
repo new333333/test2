@@ -77,4 +77,6 @@ public interface GwtRpcService extends RemoteService
 	public ExtensionFiles getExtensionFiles(String id, String zoneName);
 	public String getUserWorkspacePermalink();
 	public TreeInfo getTreeInfo(String binderId);
+	public Boolean expandTreeNode(String binderId);
+	public Boolean collapseTreeNode(String binderId);
 }// end GwtRpcService
