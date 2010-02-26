@@ -33,6 +33,7 @@
 package org.kablink.teaming.web.util;
 
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -421,4 +422,22 @@ public final class MiscUtil
 			gwtUIToolbar.addToolbarMenu("1_gwtUI", "GWT UI", "javascript: //;", qualifiers);
 		}
 	}
+	
+	/**
+	 * Performs a collated compare on two strings without generating any
+	 * exceptions.
+	 * 
+	 * @param s1
+	 * @param s2
+	 * 
+	 * @return
+	 */
+	public static int safeSColatedCompare(String s1, String s2) {
+		Collator collator = Collator.getInstance();
+		collator.setStrength(Collator.IDENTICAL);
+		return
+			collator.compare(
+				((null == s1) ? "" : s1),
+				((null == s2) ? "" : s2) );
+   }
 }// end MiscUtil

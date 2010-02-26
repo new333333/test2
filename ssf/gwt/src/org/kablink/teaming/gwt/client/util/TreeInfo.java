@@ -36,9 +36,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
+import org.kablink.teaming.gwt.client.RequestInfo;
+
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
+
 
 /**
  * Class used to communicate workspace tree information between the
@@ -49,6 +55,17 @@ import com.google.gwt.user.client.ui.Label;
  *
  */
 public class TreeInfo implements IsSerializable {
+	private ArrayList<TreeInfo> m_childBindersAL = new ArrayList<TreeInfo>();
+	private BinderType m_binderType = BinderType.OTHER;
+	private boolean m_binderExpanded;
+	private FolderType m_folderType = FolderType.NOT_A_FOLDER;
+	private int m_binderChildren = 0;
+	private String m_binderIconName;
+	private String m_binderId;
+	private String m_binderTitle = "";
+	private String m_binderPermalink = "";
+	private WorkspaceType m_wsType = WorkspaceType.NOT_A_WORKSPACE;
+
 	/**
 	 * The type of Binder referenced by this TreeInfo object.  
 	 */
@@ -71,6 +88,7 @@ public class TreeInfo implements IsSerializable {
 		MINIBLOG,
 		PHOTOALBUM,
 		TASK,
+		TRASH,
 		SURVEY,
 		WIKI,
 		
@@ -83,27 +101,24 @@ public class TreeInfo implements IsSerializable {
 	 * referenced by this TreeInfo object.  
 	 */
 	public enum WorkspaceType implements IsSerializable {
+		GLOBAL_ROOT,
+		PROFILE_ROOT,
 		TEAM,
+		TEAM_ROOT,
+		TOP,
 		USER,
 		
 		OTHER,
 		NOT_A_WORKSPACE,
 	}
 	
-	private ArrayList<TreeInfo> m_childBindersAL = new ArrayList<TreeInfo>();
-	private BinderType m_binderType = BinderType.OTHER;
-	private FolderType m_folderType = FolderType.NOT_A_FOLDER;
-	private int m_binderChildren = 0;
-	private String m_binderId;
-	private String m_binderTitle = "";
-	private WorkspaceType m_wsType = WorkspaceType.NOT_A_WORKSPACE;
-
 	/**
 	 * Constructor method.
 	 * 
 	 * No parameters as per GWT serialization requirements.
 	 */
 	public TreeInfo() {
+		// Nothing to do.
 	}
 	
 	/**
@@ -117,6 +132,16 @@ public class TreeInfo implements IsSerializable {
 	}
 
 	/**
+	 * Returns the name of the Binder icon for the Binder corresponding
+	 * to this TreeInfo object.
+	 * 
+	 * @return
+	 */
+	public String getBinderIconName() {
+		return m_binderIconName;
+	}
+
+	/**
 	 * Returns the Binder ID for the Binder corresponding to this
 	 * TreeInfo object.
 	 * 
@@ -124,6 +149,16 @@ public class TreeInfo implements IsSerializable {
 	 */
 	public String getBinderId() {
 		return m_binderId;
+	}
+
+	/**
+	 * Returns the permalink to the Binder corresponding to this
+	 * TreeInfo object.
+	 * 
+	 * @return
+	 */
+	public String getBinderPermalink() {
+		return m_binderPermalink;
 	}
 
 	/**
@@ -147,12 +182,40 @@ public class TreeInfo implements IsSerializable {
 	}
 	
 	/**
-	 * If this TreeInfo object refers to a Folder, returns its type.
+	 * Returns the GWT ImageResource of the image to display next to
+	 * the Binder.
 	 * 
 	 * @return
 	 */
-	public FolderType getFolderType() {
-		return ((BinderType.FOLDER == m_binderType) ? m_folderType : FolderType.NOT_A_FOLDER);
+	public ImageResource getBinderImage() {
+//!		...this needs to be implemented...
+		
+		ImageResource reply = null;
+		GwtTeamingWorkspaceTreeImageBundle images = GwtTeaming.getWorkspaceTreeImageBundle();
+		switch (getBinderType()) {
+		case FOLDER:
+			switch (getFolderType()) {
+			case BLOG:        reply = images.folder_comment();  break;
+			case CALENDAR:    reply = images.folder_calendar(); break;
+			case DISCUSSION:  reply = images.folder_comment();  break;
+			case FILE:        reply = images.folder_file();     break;
+			case MINIBLOG:    reply = images.folder_comment();  break;
+			case PHOTOALBUM:  reply = images.folder_photo();    break;
+			case TASK:        reply = images.folder_task();     break;
+			case TRASH:       reply = images.folder_trash();    break;
+			case SURVEY:                                        break;
+			case WIKI:                                          break;
+			case OTHER:                                         break;
+			}
+		case WORKSPACE:
+			switch (getWorkspaceType()) {
+			case TEAM:   break;
+			case USER:   break;
+			case OTHER:  break;
+			}
+		}
+		
+		return reply;
 	}
 	
 	/**
@@ -166,12 +229,51 @@ public class TreeInfo implements IsSerializable {
 	}
 	
 	/**
+	 * Returns the GWT ImageResource of the image to display for the
+	 * expander next to the Binder.  If no expander should be shown,
+	 * null is returned.
+	 * 
+	 * @return
+	 */
+	public ImageResource getExpanderImage() {
+		ImageResource reply = null;
+		
+		if (0 < getBinderChildren()) {
+			GwtTeamingWorkspaceTreeImageBundle images = GwtTeaming.getWorkspaceTreeImageBundle();
+			if (isBinderExpanded())
+			     reply = images.tree_closer();
+			else reply = images.tree_opener();
+		}
+
+		return reply;
+	}
+	
+	/**
+	 * If this TreeInfo object refers to a Folder, returns its type.
+	 * 
+	 * @return
+	 */
+	public FolderType getFolderType() {
+		return ((BinderType.FOLDER == m_binderType) ? m_folderType : FolderType.NOT_A_FOLDER);
+	}
+
+	/**
 	 * If this TreeInfo object refers to a Workspace, returns its type.
 	 * 
 	 * @return
 	 */
 	public WorkspaceType getWorkspaceType() {
 		return ((BinderType.WORKSPACE == m_binderType) ? m_wsType : WorkspaceType.NOT_A_WORKSPACE);
+	}
+
+	/**
+	 * Returns the the Binder corresponding to this TreeInfo object
+	 * should be expanded and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isBinderExpanded() {
+		return m_binderExpanded;
 	}
 
 	/**
@@ -197,10 +299,11 @@ public class TreeInfo implements IsSerializable {
 	/**
 	 * Called to render the information in this TreeInfo object into a
 	 * FlowPanel.
-	 * 
+	 *
+	 * @param ri
 	 * @param targetPanel
 	 */
-	public void render(FlowPanel targetPanel) {
+	public void render(RequestInfo ri, FlowPanel targetPanel) {
 		Label label = new Label(getBinderTitle());
 		label.addStyleName( "workspaceTreeControlHeader" );
 		targetPanel.add( label );
@@ -218,6 +321,25 @@ public class TreeInfo implements IsSerializable {
 	}
 
 	/**
+	 * Store a count of the children of a Binder.
+	 * 
+	 * @param binderChildren
+	 */
+	public void setBinderChildren(int binderChildren) {
+		m_binderChildren = binderChildren;
+	}
+	
+	/**
+	 * Stores the name of the icon for the Binder.
+	 * 
+	 * @param binderIconName
+	 */
+	public void setBinderIconName(String binderIconName) {
+		m_binderIconName = binderIconName;
+		
+	}
+	
+	/**
 	 * Stores the ID of a Binder.
 	 * 
 	 * @param binderId
@@ -231,14 +353,23 @@ public class TreeInfo implements IsSerializable {
 	}
 
 	/**
-	 * Store a count of the children of a Binder.
+	 * Stores whether the Binder should be expanded.
 	 * 
-	 * @param binderChildren
+	 * @param binderExpanded
 	 */
-	public void setBinderChildren(int binderChildren) {
-		m_binderChildren = binderChildren;
+	public void setBinderExpanded(boolean binderExpanded) {
+		m_binderExpanded = binderExpanded;
 	}
-	
+
+	/**
+	 * Stores a Binder's permalink in this TreeInfo object.
+	 * 
+	 * @param binderPermalink
+	 */
+	public void setBinderPermalink(String binderPermalink) {
+		m_binderPermalink = binderPermalink;
+	}
+
 	/**
 	 * Stores a Binder's title in this TreeInfo object.
 	 * 

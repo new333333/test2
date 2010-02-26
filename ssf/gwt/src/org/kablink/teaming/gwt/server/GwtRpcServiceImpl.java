@@ -46,6 +46,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
@@ -76,7 +77,6 @@ import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.search.Constants;
-
 
 
 /**
@@ -709,15 +709,61 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 	/**
 	 * Returns a TreeInfo object containing the display information for
-	 * the binder referred to by binderId from the perspective of the
+	 * the Binder referred to by binderId from the perspective of the
 	 * currently logged in user.
+	 * 
+	 * @param binderIdS
+	 * 
+	 * @return
+	 */
+	public TreeInfo getTreeInfo(String binderIdS) {
+		// Access the Binder's nearest containing Workspace...
+		long binderId = Long.parseLong(binderIdS);
+		Binder binder = getBinderModule().getBinder(binderId);
+		Workspace binderWS = BinderHelper.getBinderWorkspace(binder);
+		
+		// ...note that the Workspace should always be expanded...
+		Long binderWSId = binderWS.getId();
+		ArrayList<Long> expandedBindersList = new ArrayList<Long>();
+		expandedBindersList.add(binderWSId);
+
+		// ...calculate which additional Binder's must be expanded to
+		// ...show the requested Binder...
+		long binderWSIdVal = binderWSId.longValue();
+		if (binderId != binderWSIdVal) {
+			binder = binder.getParentBinder();
+			while (binder.getId().longValue() != binderWSIdVal) {
+				expandedBindersList.add(binder.getId());
+			}
+		}
+		
+		// ...and build the TreeInfo for it.
+		return GwtServerHelper.buildTreeInfoFromBinder(this, binderWS, expandedBindersList);
+	}
+	
+	/**
+	 * Saves the fact that the Binder for the given ID should be
+	 * collapsed for the current User.
 	 * 
 	 * @param binderId
 	 * 
 	 * @return
 	 */
-	public TreeInfo getTreeInfo(String binderId) {
-		Binder binder = getBinderModule().getBinder(Long.parseLong(binderId));
-		return GwtServerHelper.buildTreeInfoFromBinder(this, binder, true);
+	public Boolean collapseTreeNode(String binderId) {
+		GwtServerHelper.collapseTreeNode(this, Long.parseLong(binderId));
+		return Boolean.TRUE;
+	}
+
+	/**
+	 * Saves the fact that the Binder for the given ID should be
+	 * expanded for the current User.
+	 * 
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public Boolean expandTreeNode(String binderId) {
+		GwtServerHelper.expandTreeNode(this, Long.parseLong(binderId));
+		return Boolean.TRUE;
 	}
 }// end GwtRpcServiceImpl

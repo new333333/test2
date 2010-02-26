@@ -71,7 +71,7 @@ public class WorkspaceTreeControl extends Composite {
 				Window.alert(t.toString());
 			}
 			public void onSuccess(TreeInfo ti)  {
-				ti.render(mainPanel);
+				ti.render(m_requestInfo, mainPanel);
 			}
 		});
 		
