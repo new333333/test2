@@ -89,8 +89,11 @@ public class DefaultBinderReindex extends SimpleTriggerJob implements BinderRein
 		//the number of changes could be large, and some databases won't accept it (mssql packet size 1M)
 		int count = 0;
 		int binderIndex=0;
+		GregorianCalendar now = new GregorianCalendar();
+		long ms = now.getTimeInMillis();
+		String tms = String.valueOf(now.getTimeInMillis());
 		while (binderIndex < binderIds.size()) { 
-			String userIdString = user.getId().toString() + " " + user.getModification().getDate().toString() + " " + String.valueOf(count);
+			String userIdString = user.getId().toString() + " " + user.getModification().getDate().toString() + " " + tms + " " + String.valueOf(count);
 			//each job is new
 			JobDataMap data = new JobDataMap();
 			data.put(ZONEID,user.getZoneId());
