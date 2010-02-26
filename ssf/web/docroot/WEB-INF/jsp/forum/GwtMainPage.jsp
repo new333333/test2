@@ -55,7 +55,7 @@
 	<script type="text/javascript" language="javascript">
 		// Save away information such as the binder id and the adapted url for the request we are working with.
 		// Through an overlay we will access m_requestInfo from java.
-		var m_requestInfo = { binderId : '${binderId}', adaptedUrl : '${adaptedUrl}' };
+		var m_requestInfo = { binderId : '${binderId}', userName : '${userFullName}', adaptedUrl : '${adaptedUrl}' };
 	</script>
 
 	<script type="text/javascript" language="javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>

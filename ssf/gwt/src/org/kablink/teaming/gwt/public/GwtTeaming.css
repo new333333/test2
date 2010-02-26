@@ -672,7 +672,6 @@
 .mastHead
 {
 	background: transparent url(images/mast_head_bg.png) repeat-x scroll 0 0;
-	height: 75px;
 	overflow: hidden;
 	position: relative;
 	width: 100%;
@@ -682,19 +681,16 @@
 /* Style used with the panel that holds the global actions in the mast head. */
 .mastHeadGlobalActionsPanel
 {
-	left: 300px;
-	position: relative;
-	top: 23px;
+	right: 10px;
+	position: absolute;
+	top: 5px;
 	white-space: nowrap;
 	z-index: 20;
 }
 
 /* Style used with the panel that holds the graphic that is displayed on the left side of the mast head. */
-.mastHeadGraphicPanel
+.mastHeadBrandingPanel
 {
-	left: 0;
-	position: absolute;
-	top: 0;
 	z-index: 0;
 }
 
@@ -715,8 +711,6 @@
 	font-size: 0.95em;
 	font-style: italic;
 	letter-spacing: 0.05em;
-	overflow: hidden;
-	width: 250px;
 }
 
 /* Style used to add padding-top: 2px; */

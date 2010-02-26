@@ -48,6 +48,7 @@ import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
@@ -346,6 +347,75 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		return searchResults;
 	}// end executeSearch()
+	
+
+	/**
+	 * Return a GwtBrandingData object from the corporate branding.
+	 */
+	public GwtBrandingData getCorporateBrandingData()
+	{
+		//!!! Finish
+		return new GwtBrandingData();
+	}// end getCorporateBrandingData()
+	
+	
+	/**
+	 * Return a GwtBrandingData object for the given binder.
+	 */
+	public GwtBrandingData getBinderBrandingData( String binderId ) throws GwtTeamingException
+	{
+		BinderModule binderModule;
+		Binder binder;
+		Long binderIdL;
+		GwtBrandingData brandingData;
+		
+		brandingData = new GwtBrandingData();
+		
+		try
+		{
+			binderModule = getBinderModule();
+	
+			binderIdL = new Long( binderId );
+			
+			// Get the binder object.
+			if ( binderIdL != null )
+			{
+				String branding;
+				
+				binder = binderModule.getBinder( binderIdL );
+				
+				// Get the branding for the binder.
+				branding = binder.getBranding();
+				brandingData.setBranding( branding );
+			}
+		}
+		catch (NoBinderByTheIdException nbEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
+		catch (Exception e)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
+		}
+		
+		return brandingData;
+	}// end getBinderBrandingData()
 	
 	
 	/**

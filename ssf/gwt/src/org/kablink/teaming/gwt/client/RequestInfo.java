@@ -63,5 +63,11 @@ public class RequestInfo extends JavaScriptObject
 	 * Return the binder id.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
 	public final native String getBinderId() /*-{ return this.binderId; }-*/;
+	
+	
+	/**
+	 * Return the user's name.  This class is an overlay on the JavaScript object called m_requestInfo.
+	 */
+	public final native String getUserName() /*-{ return this.userName; }-*/;
 
 }// end RequestInfo

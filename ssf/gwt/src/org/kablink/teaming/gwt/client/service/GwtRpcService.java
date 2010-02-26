@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.service;
 
+import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
@@ -57,6 +58,12 @@ public interface GwtRpcService extends RemoteService
 {
 	// Do a search given the criteria found in the GwtSearchCriteria object.
 	public GwtSearchResults executeSearch( GwtSearchCriteria searchCriteria ) throws Exception;
+	
+	// Return a GwtBrandingData object for the given binder.
+	public GwtBrandingData getBinderBrandingData( String binderId ) throws GwtTeamingException;
+	
+	// Return a GwtBrandingData object for the corporate branding.
+	public GwtBrandingData getCorporateBrandingData();
 	
 	// Return an Entry object for the given entry id.
 	public GwtFolderEntry getEntry( String zoneUUID, String entryId ) throws GwtTeamingException;

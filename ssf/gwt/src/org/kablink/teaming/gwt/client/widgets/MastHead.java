@@ -34,12 +34,18 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 
+import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
+import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -52,7 +58,7 @@ import com.google.gwt.user.client.ui.Label;
 public class MastHead extends Composite
 {
 	private RequestInfo m_requestInfo = null;
-	private BrandingPanel m_level1BrandingPanel = null;
+//	private BrandingPanel m_level1BrandingPanel = null;
 	private BrandingPanel m_level2BrandingPanel = null;
 	
 	/**
@@ -60,8 +66,17 @@ public class MastHead extends Composite
 	 */
 	public class BrandingPanel extends Composite
 	{
+		private FlowPanel m_panel;
+		private Image m_novellTeamingImg = null;
+
 		private String m_binderId = null;	// Id of the binder we are displaying branding for.
+
 		private GwtBrandingData m_brandingData = null;	// Branding data for the given binder.
+
+		// m_rpcCallback is our callback that gets called when the ajax request to get the branding
+		// data completes.
+		private AsyncCallback<GwtBrandingData> m_rpcCallback = null;
+		
 		
 		/**
 		 * 
@@ -69,25 +84,93 @@ public class MastHead extends Composite
 		public BrandingPanel()
 		{
 			ImageResource imageResource;
-			Image img;
-			FlowPanel panel;
 			
-			panel = new FlowPanel();
-			panel.addStyleName( "mastHeadGraphicPanel" );
+			m_panel = new FlowPanel();
+			m_panel.addStyleName( "mastHeadBrandingPanel" );
 	
-			// Add an image to the panel.
+			// Create a Novell Teaming image that will be used in case there is no branding.
 			imageResource = GwtTeaming.getImageBundle().mastHeadNovellGraphic();
-			img = new Image(imageResource);
-			img.setWidth( "500" );
-			img.setHeight( "75" );
-			panel.add( img );
+			m_novellTeamingImg = new Image(imageResource);
+			m_novellTeamingImg.setWidth( "500" );
+			m_novellTeamingImg.setHeight( "75" );
 		
-			// Create a BrandingData object that will hold the branding data for the given binder.
-			m_brandingData = new GwtBrandingData();
+			// Create the callback that will be used when we issue an ajax call to get a GwtBrandingData object.
+			m_rpcCallback = new AsyncCallback<GwtBrandingData>()
+			{
+				/**
+				 * 
+				 */
+				public void onFailure( Throwable t )
+				{
+					String errMsg;
+					String cause;
+					GwtTeamingMessages messages;
+					
+					messages = GwtTeaming.getMessages();
+					
+					if ( t instanceof GwtTeamingException )
+					{
+						ExceptionType type;
+					
+						// Determine what kind of exception happened.
+						type = ((GwtTeamingException)t).getExceptionType();
+						if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
+							cause = messages.errorAccessToFolderDenied( m_binderId );
+						else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
+							cause = messages.errorFolderDoesNotExist( m_binderId );
+						else
+							cause = messages.errorUnknownException();
+					}
+					else
+					{
+						cause = t.getLocalizedMessage();
+						if ( cause == null )
+							cause = t.toString();
+					}
+					
+					errMsg = messages.getBrandingRPCFailed( cause );
+					Window.alert( errMsg );
+				}// end onFailure()
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				public void onSuccess( GwtBrandingData brandingData )
+				{
+					m_brandingData = brandingData;
+					
+					// Update this panel with the branding data.
+					updatePanel();
+				}// end onSuccess()
+			};
 			
 			// All composites must call initWidget() in their constructors.
-			initWidget( panel );
+			initWidget( m_panel );
 		}// end BrandingPanel()
+		
+		
+		/**
+		 * Issue an ajax request to get the branding data from the server.
+		 */
+		public void getDataFromServer()
+		{
+			GwtRpcServiceAsync rpcService;
+			
+			rpcService = GwtTeaming.getRpcService();
+			
+			// Do we have a binder id?
+			if ( m_binderId != null )
+			{
+				// Yes, Issue an ajax request to get the branding data for the given binder.
+				rpcService.getBinderBrandingData( m_binderId, m_rpcCallback );
+			}
+			else
+			{
+				// Issue an ajax request to get the corporate branding data.
+				rpcService.getCorporateBrandingData( m_rpcCallback );
+			}
+		}// end getDataFromServer()
 		
 		
 		/**
@@ -96,11 +179,42 @@ public class MastHead extends Composite
 		public void setBinderId( String binderId )
 		{
 			m_binderId = binderId;
-			
-			// Get the branding data for the given binder.
-			m_brandingData.setBinderId( binderId );
 		}// end setBinderId()
-	}// end Branding
+		
+		
+		/**
+		 * Update this panel with the data found in m_brandingData. 
+		 */
+		public void updatePanel()
+		{
+			// Remove any existing branding from this panel.
+			m_panel.clear();
+			
+			if ( m_brandingData != null )
+			{
+				String html;
+				
+				// Get the branding html.
+				html = m_brandingData.getBranding();
+				
+				// Do we have any branding?
+				if ( html != null && html.length() > 0 )
+				{
+					Element element;
+					
+					// Yes
+					// Replace the content of this panel with the branding html.
+					element = m_panel.getElement();
+					element.setInnerHTML( html );
+				}
+				else
+				{
+					// No, use the Novell Teaming image for the branding.
+					m_panel.add( m_novellTeamingImg );
+				}
+			}
+		}// end updatePanel()
+	}// end BrandingPanel
 	
 	
 	/**
@@ -117,8 +231,8 @@ public class MastHead extends Composite
 		mainPanel.addStyleName( "mastHead" );
 		
 		// Create the panel that will hold the level-1 or corporate branding
-		m_level1BrandingPanel = new BrandingPanel();
-		mainPanel.add( m_level1BrandingPanel );
+//		m_level1BrandingPanel = new BrandingPanel();
+//		mainPanel.add( m_level1BrandingPanel );
 		
 		// Create the panel that will hold the level-2 or sub branding.
 		m_level2BrandingPanel = new BrandingPanel();
@@ -133,7 +247,7 @@ public class MastHead extends Composite
 			panel.addStyleName( "mastHeadGlobalActionsPanel" );
 			
 			// Create a label that holds the logged-in user's name.
-			name = new Label( "Jonathan Smithsonian" );
+			name = new Label( requestInfo.getUserName() );
 			name.addStyleName( "mastHeadUserName" );
 			panel.add( name );
 			
@@ -141,6 +255,7 @@ public class MastHead extends Composite
 		}
 		
 		// Create the panel that will hold the logo.
+		if ( false )
 		{
 			ImageResource imageResource;
 			Image img;
@@ -158,6 +273,10 @@ public class MastHead extends Composite
 
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
+		
+		// Issue an ajax request to retrieve the corporate and binder branding data.
+//		m_level1BrandingPanel.getDataFromServer();
+		m_level2BrandingPanel.getDataFromServer();
 	}// end MastHead()
 	
 }// end MastHead

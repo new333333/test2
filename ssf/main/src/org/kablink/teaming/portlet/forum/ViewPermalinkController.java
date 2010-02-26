@@ -126,6 +126,9 @@ public class ViewPermalinkController  extends SAbstractController {
 				{
 					String binderId = "";
 					String urlStr = "";
+					String fullName;
+					String firstName;
+					String lastName;
 
 					// No, don't redirect the url.
 					// Add the binder id to the response.
@@ -138,8 +141,30 @@ public class ViewPermalinkController  extends SAbstractController {
 						urlStr = adaptedPortletUrl.toString();
 					}
 					
+					// Add the id of the binder we are working with.
 					response.setRenderParameter( WebKeys.URL_BINDER_ID, binderId );
+					
+					// Add the adapted portlet url.
 					response.setRenderParameter( "adaptedUrl", urlStr );
+					
+					// Add the user's name.
+					firstName = user.getFirstName();
+					lastName = user.getLastName();
+					if ( firstName != null )
+					{
+						fullName = firstName;
+						if ( lastName != null )
+							fullName += " " + lastName;
+					}
+					else if ( lastName != null )
+					{
+						fullName = lastName;
+					}
+					else
+						fullName = user.getName();
+						
+					fullName += " (" + user.getName() + ")";
+					response.setRenderParameter( "userFullName", fullName );
 					return;
 				}
 			}
@@ -436,16 +461,21 @@ public class ViewPermalinkController  extends SAbstractController {
 			if ( param == null || !param.equalsIgnoreCase( "1" ) )
 			{
 			   String urlStr;
+			   String userName;
 			   
 				// No, let the gwt page handle this permalink
 				
 				// Add the binder id to the response.
 				model.put( WebKeys.URL_BINDER_ID, binderId );
 
-            // Add the adapted portlet url to the reponse.
-		      urlStr = PortletRequestUtils.getStringParameter( request, "adaptedUrl", "" );
+				// Add the adapted portlet url to the reponse.
+				urlStr = PortletRequestUtils.getStringParameter( request, "adaptedUrl", "" );
 				model.put( "adaptedUrl", urlStr );
 
+				// Add the user's name to the response.
+				userName = PortletRequestUtils.getStringParameter( request, "userFullName", "" );
+				model.put( "userFullName", userName );
+				
 				return new ModelAndView( "forum/GwtMainPage", model );
 			}
 		}

@@ -32,11 +32,12 @@
  */
 package org.kablink.teaming.gwt.client;
 
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * This class is used in rpc calls and represents branding data.
+ * This class is used to hold branding data.
  * @author jwootton
  *
  */
@@ -46,21 +47,43 @@ public class GwtBrandingData
 	// The binder this branding data is from.  If m_binderId is null then the branding data is global
 	private String m_binderId = null;
 	
+	// Branding data read from the db.  The data is html.
+	private String m_html = null;
+	
 	/**
 	 * 
 	 */
 	public GwtBrandingData()
 	{
 		m_binderId = null;
+		m_html = null;
 	}// end GwtBrandingData()
 	
 	
 	/**
 	 * 
 	 */
-	public void setBinderId( String binderId )
+	public String getBinderId()
 	{
-		m_binderId = binderId;
-	}// end setBinderId()
+		return m_binderId;
+	}// end getBinderId()
+	
+	
+	/**
+	 * Return the branding as html.
+	 */
+	public String getBranding()
+	{
+		return m_html;
+	}// end setBranding()
+	
+	
+	/**
+	 * Set the branding html.
+	 */
+	public void setBranding( String html )
+	{
+		m_html = html;
+	}// end setBranding()
 	
 }// end GwtBrandingData
