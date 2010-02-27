@@ -40,6 +40,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 
 import org.jasypt.encryption.pbe.PBEStringEncryptor;
@@ -47,6 +48,7 @@ import org.jasypt.properties.EncryptableProperties;
 import org.jasypt.properties.PropertyValueEncryptionUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
+import org.kablink.util.FileUtil;
 import org.kablink.util.Validator;
 import org.kablink.teaming.ConfigurationException;
 import org.apache.commons.codec.binary.Base64;
@@ -73,28 +75,40 @@ public class EncryptedClassPathConfigFiles extends PropertiesClassPathConfigFile
     	encryptor.setPassword(key);
     	if (eResource != null) {
     	   	Properties tempProps = new Properties();
-        	tempProps.load(eResource.getInputStream());
-        	//encrypt and get key
-        	String  ePropNames = props.getProperty("kablink.encryption.key.names");
-        	if (Validator.isNotNull(ePropNames)) {
-        		String []eProps = ePropNames.split(",");
-        		//see if any properties need to be encrypted
-        		boolean needUpdate = false;
-        		for (int i=0; i<eProps.length; ++i) {
-        			String val = tempProps.getProperty(eProps[i].trim());
-        			if (Validator.isNull(val)) continue;//not supplied
-        			if (!PropertyValueEncryptionUtils.isEncryptedValue(val)) {
-        				val = encryptor.encrypt(val);
-        				tempProps.setProperty(eProps[i], "ENC("+ val +")");
-        				needUpdate = true;
-        			}
-        		}
-        		if (needUpdate) {
-        			// We call writePropertiesToFile() instead of calling Properties.store()
-        			// because Properties.store() will escape certain characters.  See bug 477366
-        			writePropertiesToFile( tempProps, eResource.getFile() );
-        		}
-        	}
+    	   	InputStream is = eResource.getInputStream();
+    	   	try {
+	        	tempProps.load(is);
+	        	//encrypt and get key
+	        	String  ePropNames = props.getProperty("kablink.encryption.key.names");
+	        	if (Validator.isNotNull(ePropNames)) {
+	        		String origStr = FileUtil.readAsString(eResource.getFile(), "8859_1");
+	        		String []eProps = ePropNames.split(",");
+	        		//see if any properties need to be encrypted
+	        		boolean needUpdate = false;
+	        		for (int i=0; i<eProps.length; ++i) {
+	        			String val = tempProps.getProperty(eProps[i].trim());
+	        			if (Validator.isNull(val)) continue;//not supplied
+	        			if (!PropertyValueEncryptionUtils.isEncryptedValue(val)) {
+	        				String encVal = encryptor.encrypt(val);
+	        				int beginIndex = origStr.indexOf(eProps[i]);
+	        				int index = origStr.indexOf("=", beginIndex+eProps[i].length());
+	        				index = origStr.indexOf(val, index+1);
+	        				String strToReplace = origStr.substring(beginIndex, index+val.length());
+	        				String strToReplaceWith = eProps[i] + "=ENC("+ encVal +")";
+	        				origStr.replace(strToReplace, strToReplaceWith);
+	        				needUpdate = true;
+	        			}
+	        		}
+	        		if (needUpdate) {
+	        			// We call writePropertiesToFile() instead of calling Properties.store()
+	        			// because Properties.store() will escape certain characters.  See bug 477366
+	        			writePropertiesToFile( origStr, eResource.getFile() );
+	        		}
+	        	}
+    	   	}
+    	   	finally {
+    	   		is.close();
+    	   	}
         	props.putAll(tempProps);
     	}
     	props = new EncryptableProperties(props, encryptor);
@@ -127,7 +141,7 @@ public class EncryptedClassPathConfigFiles extends PropertiesClassPathConfigFile
      * See bug 477366
      */
     private void writePropertiesToFile(
-    	Properties	properties,
+    	String		content,
     	File		file )
     		throws IOException
     {
@@ -142,21 +156,8 @@ public class EncryptedClassPathConfigFiles extends PropertiesClassPathConfigFile
         aWriter.write( "#" + new Date().toString() );
         aWriter.newLine();
 
-        // Spin through the list of key/value pairs and write them to the file.
-	    for (keys = properties.keys(); keys.hasMoreElements();)
-	    {
-	        String key;
-	        String val;
-	        
-	        // Write the next key/value pair to the file.
-	        key = (String)keys.nextElement();
-	        val = (String)properties.get( key );
-	        aWriter.write( key + "=" );
-	        if ( val != null )
-	        	aWriter.write( val );
-	        aWriter.newLine();
-	    }
-
+        aWriter.write(content);
+        
 	    aWriter.flush();
 	    aWriter.close();
     }// end writePropertiesToFile()
