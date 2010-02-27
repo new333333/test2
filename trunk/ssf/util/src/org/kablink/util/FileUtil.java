@@ -33,6 +33,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 
@@ -293,6 +294,22 @@ public class FileUtil {
 		return sb.toString().trim();
 	}
 
+	public static String readAsString(File file, String charset) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset));
+		try {
+			StringBuilder sb = new StringBuilder();
+			char[] buffer = new char[BUFFER_SIZE];
+			int count = 0;
+			while((count = br.read(buffer)) != -1) {
+				sb.append(buffer, 0, count);
+			}
+			return sb.toString();
+		}
+		finally {
+			br.close();
+		}
+	}
+	
 	public static File[] sortFiles(File[] files) {
 		Arrays.sort(files, new FileComparator());
 
