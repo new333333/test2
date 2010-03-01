@@ -671,11 +671,36 @@
 /* Style used with the mast head */
 .mastHead
 {
-	background: transparent url(images/mast_head_bg.png) repeat-x scroll 0 0;
-	overflow: hidden;
 	position: relative;
 	width: 100%;
+	z-index: 0;
+}
+
+/* Style used for the background panel in the masthead. */
+.mastHeadBgPanel
+{
+	left: 0px;
+	position: absolute;
+	top: 0px;
+	width: 100%;
+	z-index: 1;
+}
+
+/* Style used for the panel that holds all the content in the masthead. */
+.mastHeadContentPanel
+{
+	background: transparent;
+	left: 0px;
+	position: absolute;
+	top: 0px;
+	width: 100%;
 	z-index: 2;
+}
+
+/* Style used with the panel that holds the graphic that is displayed on the left side of the mast head. */
+.mastHeadBrandingPanel
+{
+	z-index: 3;
 }
 
 /* Style used with the panel that holds the global actions in the mast head. */
@@ -686,12 +711,6 @@
 	top: 5px;
 	white-space: nowrap;
 	z-index: 20;
-}
-
-/* Style used with the panel that holds the graphic that is displayed on the left side of the mast head. */
-.mastHeadBrandingPanel
-{
-	z-index: 0;
 }
 
 /* Style used with the panel that holds the graphic that is displayed on the right side of the mast head. */

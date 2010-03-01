@@ -92,6 +92,9 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/lpe_utility_element.gif")
 	public ImageResource landingPageEditorUtilityElement();
 	
+	@Source("org/kablink/teaming/gwt/public/images/mast_head_bg.png")
+	public ImageResource mastHeadBackgroundImage();
+
 	@Source("org/kablink/teaming/gwt/public/images/mast_head_novell_graphic.png")
 	public ImageResource mastHeadNovellGraphic();
 
