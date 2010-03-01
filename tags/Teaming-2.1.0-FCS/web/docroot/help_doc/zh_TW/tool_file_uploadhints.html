@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html xml:lang="zh-tw" lang="zh-tw">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="zh-tw" />
+<meta name="Content-Date" content="Mon, 04 Jun 2009 12:00:00 GMT" />
+<meta name="Generator" content="Novell Documentation" />
+<meta name="Generation-Date" content="Thursday, December 10, 2009" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2007" />
+
+<link rel="stylesheet" type="text/css" href="css/styles.css" />
+<link rel="stylesheet" type="text/css" href="css/expandable.css" />
+
+<title>檔案上載提示</title>
+</head>
+<body>
+<script type="text/javascript" src="css/expandable.js"></script>
+
+<div class="sect1" id="tool_file_uploadhints">
+
+<h1 class="title"> 檔案上載提示</h1>
+
+<p class="para">如果上載檔案時因檔案太大而發生問題，可以增大 Java Applet 預設使用的記憶體量來解決此問題。該程序將在以下幾部分中予以說明。</p>
+<div class="sect2" id="bipun26">
+
+<h2 class="title"> 在 Windows 上增加預設記憶體量</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bipungz">
+<p class="para">導覽至「控制台」(按一下<span class="guimenu">「開始」</span>&gt;<span class="guimenu">「設定」</span>&gt;<span class="guimenu">「控制台」</span>)。</p></li>
+<li class="step" id="bipunwc">
+<p class="para">連按兩下<span class="guimenu">「Java」</span>。</p>
+<p class="para">此時會啟動「Java 控制面板」。</p></li>
+<li class="step" id="bipuoka">
+<p class="para">選取<span class="guimenu">「Java」</span>索引標籤。</p></li>
+<li class="step" id="bipuorx">
+<p class="para">在<span class="guimenu">「Java Applet 執行階段設定」</span>區段中，按一下<span class="guimenu">「檢視」</span>。</p></li>
+<li class="step" id="bipup4t">
+<p class="para">對於每個 Java 執行階段版本，新增 <span class="command">-Xmx256m</span> 做為 Java 執行階段參數。</p></li>
+<li class="step" id="bipupgl">
+<p class="para">按一下<span class="guimenu">「確定」</span>。</p>
+<p class="para">增大 Java Applet 的預設記憶體大小之後，必須結束所有瀏覽器，然後重新啟動這些瀏覽器，這樣才能使變更生效。</p></li></ol>
+</div>
+
+<p class="para">此設定會導致將檔案上載至 Teaming 資料夾所使用的 Applet，在啟動時使用 256 MB 的記憶體。如果 Applet 仍然指示因記憶體不足而無法執行，則可能需要減小此數字。</p>
+</span>
+
+</div>
+
+<div class="sect2" id="bipunbb">
+
+<h2 class="title"> 在 Linux 上增大預設記憶體量</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bjchmyk">
+<p class="para">找到用於瀏覽器外掛程式的 JRE 或 JDK。</p>
+<p class="para">JRE 或 JDK 的位置因系統而異。</p></li>
+<li class="step" id="bjchn8n">
+<p class="para">在 JRE 或 JDK 的 <span class="filename">bin</span> 目錄中，執行 <span class="filename">ControlPanel</span> 檔案。</p>
+<p class="para">此時會啟動「控制台」。</p></li>
+<li class="step" id="bjchoed">
+<p class="para">選取<span class="guimenu">「Java」</span>索引標籤。</p></li>
+<li class="step" id="bjchokg">
+<p class="para">在<span class="guimenu">「Java Applet 執行階段設定」</span>區段中，按一下<span class="guimenu">「檢視」</span>。</p></li>
+<li class="step" id="bjchor1">
+<p class="para">對於每個 Java 執行階段版本，新增 <span class="command">-Xmx256m</span> 做為 Java 執行階段參數。</p></li>
+<li class="step" id="bjchotz">
+<p class="para">按一下<span class="guimenu">「確定」</span>。</p>
+<p class="para">增大 Java Applet 的預設記憶體大小之後，必須結束所有瀏覽器，然後重新啟動這些瀏覽器，這樣才能使變更生效。</p></li></ol>
+</div>
+
+<p class="para">此設定會導致將檔案上載至 Teaming 資料夾所使用的 Applet，在啟動時使用 256 MB 的記憶體。如果 Applet 仍然指示因記憶體不足而無法執行，可能必須減小此數字。</p>
+</span>
+
+</div>
+
+</div>
+
+<p class="trademark"> 有關更詳細的資訊，請參閱 <a href="./legal.html">法律聲明</a>。</p>
+</body>
+</html>

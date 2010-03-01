@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../../dtd/spring-beans.dtd">
+<beans>
+
+	<!-- Controllers -->
+	
+	<bean id="teamingController" class="org.kablink.teaming.samples.portal.jsr168.TeamingController" />
+
+	<!-- Handlers -->
+	
+	<bean id="portletModeHandlerMapping" class="org.springframework.web.portlet.handler.PortletModeHandlerMapping">
+		<property name="portletModeMap">
+			<map>
+				<entry key="view"><ref bean="teamingController"/></entry>
+				<entry key="edit"><ref bean="teamingController"/></entry>
+			</map>
+		</property>
+	</bean>
+
+</beans>

@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9xzt9v" pid="b9xzt9v" name="Chapter" level="0" number="2"> <text>Installation Procedures</text> </target>
+
+ <target id="bffyj4a" pid="bffyj4a" name="Sect1" level="1" number="2.1"> <text>Supported Platforms</text> </target>
+
+ <target id="bffzkc1" pid="bffyj4a" name="Sect2" level="2" number="2.1.1"> <text>Supported Servers</text> </target>
+
+ <target id="bfgyi6f" pid="bffyj4a" name="Sect2" level="2" number="2.1.2"> <text>Minimum Server Configuration</text> </target>
+
+ <target id="bfcfagx" pid="bffyj4a" name="Sect2" level="2" number="2.1.3"> <text>Supported Client Environments</text> </target>
+
+ <target id="b9xzzfu" pid="b9xzzfu" name="Sect1" level="1" number="2.2"> <text>Installation Prerequisites</text> </target>
+
+ <target id="b9y02nm" pid="b9xzzfu" name="Sect2" level="2" number="2.2.1"> <text>Conferencing Server Requirements</text> </target>
+
+ <target id="bffzkj3" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>Before running the installer, you need to install the following packages:</text> </target>
+
+ <target id="b9y04gs" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>Installing the neon, postgresql, and postgresql-server packages:</text> </target>
+
+ <target id="b9y04i4" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>Time synchronization:</text> </target>
+
+ <target id="b9y04jj" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>Emacs:</text> </target>
+
+ <target id="b9y04l5" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>License key:</text> </target>
+
+ <target id="b9y03br" pid="b9xzzfu" name="Sect2" level="2" number="2.2.2"> <text>Network Requirements</text> </target>
+
+ <target id="b9y0576" pid="b9xzzfu" name="Sect2" level="2" number="2.2.3"> <text>Firewall Requirements</text> </target>
+
+ <target id="b9y05hb" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>XML router IPs:</text> </target>
+
+ <target id="b9y09f4" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>Desktop/Application Sharing IPs:</text> </target>
+
+ <target id="b9y09f5" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>Web portal IPs:</text> </target>
+
+ <target id="b9y09f6" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>(Optional) DMZ Configuration:</text> </target>
+
+ <target id="b9y0732" pid="b9xzzfu" name="Sect2" level="2" number="2.2.4"> <text>DNS and Hostname Requirements</text> </target>
+
+ <target id="b9y07ee" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>Three hostnames:</text> </target>
+
+ <target id="b9y09f7" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>Fully qualified domain name:</text> </target>
+
+ <target id="b9y09f8" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>Unique hostnames (multiple machines):</text> </target>
+
+ <target id="baucvfd" pid="b9xzzfu" name="Procedure" level="3" number="1"> <text>Open YaST Administrator Settings, select Network Devices, and then select Network Card.</text> </target>
+
+ <target id="baucvfe" pid="b9xzzfu" name="Step" level="4" number="1"> <text>Open YaST Administrator Settings, select Network Devices, and then select Network Card.</text> </target>
+
+ <target id="baucvm6" pid="b9xzzfu" name="Step" level="4" number="2"> <text>Click Next, select the desired network interface, then click Edit.</text> </target>
+
+ <target id="baucw96" pid="b9xzzfu" name="Step" level="4" number="3"> <text>Click Advanced, then select Additional Addresses from the drop-down list.</text> </target>
+
+ <target id="baucwcp" pid="b9xzzfu" name="Step" level="4" number="4"> <text>Click Add, then specify the IP addresses and netmasks appropriate for your network.</text> </target>
+
+ <target id="bf99q1o" pid="b9xzzfu" name="Step" level="4" number="5"> <text>Click OK.</text> </target>
+
+ <target id="bbkkpl3" pid="b9xzzfu" name="Sect2" level="2" number="2.2.5"> <text>VoIP Requirements</text> </target>
+
+ <target id="b9y07b6" pid="b9xzzfu" name="Sect2" level="2" number="2.2.6"> <text>Load Balancer Requirements</text> </target>
+
+ <target id="bbj2ipj" pid="bbj2ipj" name="Sect1" level="1" number="2.3"> <text>Security</text> </target>
+
+ <target id="b9y00b8" pid="b9y00b8" name="Sect1" level="1" number="2.4"> <text>Preparing for Installation</text> </target>
+
+ <target id="bf99wkf" pid="b9y00b8" name="Sect2" level="2" number="2.4.1"> <text>(Optional) Using ssh()</text> </target>
+
+ <target id="bf99wkg" pid="b9y00b8" name="Sect2" level="2" number="2.4.2"> <text>Unpacking the Files</text> </target>
+
+ <target id="bf99wkh" pid="b9y00b8" name="Sect2" level="2" number="2.4.3"> <text>Back Up the Directory</text> </target>
+
+ <target id="bf9s9j9" pid="b9y00b8" name="Sect2" level="2" number="2.4.4"> <text>Installing and Configuring the NMS Boards</text> </target>
+
+ <target id="bfcfktc" pid="b9y00b8" name="Procedure" level="3" number="1"> <text>Change directories to the sitescape-conferencing directory:</text> </target>
+
+ <target id="bfcfktd" pid="b9y00b8" name="Step" level="4" number="1"> <text>Change directories to the sitescape-conferencing directory:</text> </target>
+
+ <target id="bdj45gn" pid="b9y00b8" name="Step" level="4" number="2"> <text>Download the NMS software to the sitescape-conferencing directory from http://www.novell.com/downloads (http://www.novell.com/downloads) or get them from your support representative.</text> </target>
+
+ <target id="bcfz446" pid="b9y00b8" name="Step" level="4" number="3"> <text>Run the following commands, to install the NMS software:</text> </target>
+
+ <target id="bdj3ygm" pid="b9y00b8" name="Step" level="4" number="4"> <text>Make sure NMS ctdaemon is set to start up on boot and is running:</text> </target>
+
+ <target id="bfcg7qw" pid="b9y00b8" name="Step" level="4" number="5"> <text>Change directories back to the  sitescape-conferencing directory:</text> </target>
+
+ <target id="bfcg8ug" pid="b9y00b8" name="Step" level="4" number="6"> <text>Run nmsconfig and enter information for detected boards (refer to the nmsconfig section for more information on nmsconfig):</text> </target>
+
+ <target id="bfcgcqp" pid="b9y00b8" name="Procedure" level="3" number="1"> <text>Download the NMS software from http://www.novell.com/downloads (http://www.novell.com/downloads) or get them from your support representative.</text> </target>
+
+ <target id="bfcgcqq" pid="b9y00b8" name="Step" level="4" number="1"> <text>Download the NMS software from http://www.novell.com/downloads (http://www.novell.com/downloads) or get them from your support representative.</text> </target>
+
+ <target id="bfcgcqr" pid="b9y00b8" name="Step" level="4" number="2"> <text>Run the following commands, to install the NMS software:</text> </target>
+
+ <target id="bfcgcqs" pid="b9y00b8" name="Step" level="4" number="3"> <text>Make sure NMS ctdaemon is set to start up on boot and is running:</text> </target>
+
+ <target id="bfcgcqt" pid="b9y00b8" name="Step" level="4" number="4"> <text>Untar the Conferencing software:</text> </target>
+
+ <target id="bfcgcqu" pid="b9y00b8" name="Step" level="4" number="5"> <text>Change directories to the sitescape-conferencing directory:</text> </target>
+
+ <target id="bfcgcqv" pid="b9y00b8" name="Step" level="4" number="6"> <text>Run nmsconfig and enter information for detected boards (refer to the nmsconfig section for more information on nmsconfig):</text> </target>
+
+ <target id="bfcgbvi" pid="b9y00b8" name="Step" level="4" number="7"> <text>Copy the voiceinfo.sh file to the sitescape-conferencing directory on the Conferencing server.</text> </target>
+
+ <target id="b9y0d1l" pid="b9y0d1l" name="Sect1" level="1" number="2.5"> <text>Installing the Conferencing Server </text> </target>
+
+ <target id="bf99vab" pid="b9y0d1l" name="Procedure" level="2" number="1"> <text>Verify that the Installation Prerequisites are in place and that you have performed all pre-installation steps, see "Preparing for Installation" on page 15.</text> </target>
+
+ <target id="bf99vac" pid="b9y0d1l" name="Step" level="3" number="1"> <text>Verify that the Installation Prerequisites are in place and that you have performed all pre-installation steps, see "Preparing for Installation" on page 15.</text> </target>
+
+ <target id="bf99vae" pid="b9y0d1l" name="Step" level="3" number="2"> <text>Unpack the files.</text> </target>
+
+ <target id="bf99vaf" pid="b9y0d1l" name="Step" level="3" number="3"> <text>Back up the sitescape-conferencing directory (if applicable).</text> </target>
+
+ <target id="bf9a4m9" pid="b9y0d1l" name="Step" level="3" number="4"> <text>Open the sitescape-conferencing directory.</text> </target>
+
+ <target id="bf9a4ma" pid="b9y0d1l" name="Step" level="3" number="5"> <text>Run: ./install.sh, which prompts you for the configuration information, license key and then installs the software, see "Running the Installer on SLES:" on page 18:</text> </target>
+
+ <target id="bf9a03q" pid="b9y0d1l" name="Sect2" level="2" number="2.5.1"> <text>Running the Installer on SLES:</text> </target>
+
+ <target id="bc22nue" pid="b9y0d1l" name="Procedure" level="3" number="1"> <text>Unpack the distribution compressed tar archive (sitescape-conferencing-&#60;version&#62;.tar.gz): </text> </target>
+
+ <target id="bc22nuf" pid="b9y0d1l" name="Step" level="4" number="1"> <text>Unpack the distribution compressed tar archive (sitescape-conferencing-&#60;version&#62;.tar.gz): </text> </target>
+
+ <target id="bc22oy7" pid="b9y0d1l" name="Step" level="4" number="2"> <text> Copy the license key to the sitescape-conferencing directory that contains install.sh (the directory files exist after you unpack the compressed tar archive): </text> </target>
+
+ <target id="bc22qaz" pid="b9y0d1l" name="Step" level="4" number="3"> <text>Change directories to the sitescape-conferencing directory that contains install.sh:</text> </target>
+
+ <target id="bcbdn7d" pid="b9y0d1l" name="Step" level="4" number="4"> <text>(Optional) If you plan on running Active Directory* LDAP Synchronization, edit the ldap.xml.in file in the cluster-prototype directory. (For more information, see Appendix E, "LDAP User Authentication," on page 51):</text> </target>
+
+ <target name="SubSteps" level="5"> <text>Open the ldap.xml.in file.</text> </target>
+
+ <target id="bcbdodl" pid="b9y0d1l" name="Step" level="6" number="4a"> <text>Open the ldap.xml.in file.</text> </target>
+
+ <target id="bcbdolr" pid="b9y0d1l" name="Step" level="6" number="4b"> <text>Comment out the eDirectory attributes section and uncomment out the ActiveDirectory attributes section.</text> </target>
+
+ <target id="bcbdpqq" pid="b9y0d1l" name="Step" level="6" number="4c"> <text>Save the file.</text> </target>
+
+ <target id="bc22sau" pid="b9y0d1l" name="Step" level="4" number="5"> <text>Run the installer:</text> </target>
+
+ <target id="bc22t5s" pid="b9y0d1l" name="Step" level="4" number="6"> <text>When the installer prompts you to accept the license agreement (the default is N), enter Y:</text> </target>
+
+ <target id="bc22vgc" pid="b9y0d1l" name="Step" level="4" number="7"> <text>When the installer prompts you to proceed, enter Y:</text> </target>
+
+ <target id="bc22x5o" pid="b9y0d1l" name="Step" level="4" number="8"> <text>When the installer prompts you to select whether this is a new install or an upgrade (the default is N), enter Y to run a new installation:</text> </target>
+
+ <target id="bc22x5q" pid="b9y0d1l" name="Step" level="4" number="9"> <text>When the installer prompts you to enter a name for the install (the default is ourzon), enter the name you want to use for the install:</text> </target>
+
+ <target id="bc22x5s" pid="b9y0d1l" name="Step" level="4" number="10"> <text>When the installer prompts you to initialize the database for a new install (the default is Y), you must enter Y here for a new installation or the database service does not start:</text> </target>
+
+ <target id="bc2izri" pid="b9y0d1l" name="Step" level="4" number="11"> <text>Provide a password when the installer prompts you to enter a password for the new administrator account that the installer creates for Conferencing (this should be set for security reasons, because the Administrator account needs to be a controlled environment):</text> </target>
+
+ <target id="bc2j4li" pid="b9y0d1l" name="Step" level="4" number="12"> <text>The installer prompts you whether to enable SSL/TLS security (the default is Y):</text> </target>
+
+ <target id="bc2j4lr" pid="b9y0d1l" name="Step" level="4" number="13"> <text>The installer prompts you to enter the path and name of the certificate for the XML router (the default is /opt/iic/conf/server.pem), enter the default certificate:</text> </target>
+
+ <target id="bc2j9gx" pid="b9y0d1l" name="Step" level="4" number="14"> <text>Use the following path when the installer prompts you to enter the path and name of the certificate for the Web Server:</text> </target>
+
+ <target id="bc2jem9" pid="b9y0d1l" name="Step" level="4" number="15"> <text>When the installer prompts you to identify whether you are installing on a Single-Host or a Multiple-Host installation (the default is Y), select N if you have multiple servers, and the installer prompts you to enter the additional information for a Multiple-Host installation:</text> </target>
+
+ <target id="bc2jhxp" pid="b9y0d1l" name="Step" level="4" number="16"> <text>When the installer prompts you to enter the IP address for the XML router, enter the address:</text> </target>
+
+ <target id="bc536c9" pid="b9y0d1l" name="Step" level="4" number="17"> <text>Enter a value when the installer prompts you to enter the hostname of the conferencing server: </text> </target>
+
+ <target id="bc536cb" pid="b9y0d1l" name="Step" level="4" number="18"> <text>When the installer prompts you to enter the IP address for the Web portal, enter the address:</text> </target>
+
+ <target id="bc536ce" pid="b9y0d1l" name="Step" level="4" number="19"> <text>When the installer prompts you to enter the portal name, enter the name: </text> </target>
+
+ <target id="bc53b9d" pid="b9y0d1l" name="Step" level="4" number="20"> <text>When the installer prompts you to enter the IP address for the App-Share, enter the address:</text> </target>
+
+ <target id="bc53g24" pid="b9y0d1l" name="Step" level="4" number="21"> <text>Enter a value when the installer prompts you to enter the Hostname for the desktop App-Share:</text> </target>
+
+ <target id="bc53g25" pid="b9y0d1l" name="Step" level="4" number="22"> <text>Enter a value when the installer prompts you to select whether you are running Conferencing Bridge (the default is N). If you enter Y, the installer prompts you to enter the bridge information:</text> </target>
+
+ <target id="bc53g26" pid="b9y0d1l" name="Step" level="4" number="23"> <text>Enter a value when the installer prompts you to select whether you want to change the system administration e-mail configuration (the default is N). If you enter Y, the installer prompts you to enter the new e-mail address configuration information instead of using default configuration:</text> </target>
+
+ <target id="bc53g27" pid="b9y0d1l" name="Step" level="4" number="24"> <text>The installer prompts you to verify what you have entered up to this point. Enter Y if the information is correct or enter N if you need to make any changes: </text> </target>
+
+ <target id="bc53g28" pid="b9y0d1l" name="Step" level="4" number="25"> <text>Enter a value when the installer prompts you to select whether you want to change the mailer configuration:</text> </target>
+
+ <target id="bc53g29" pid="b9y0d1l" name="Step" level="4" number="26"> <text>Enter a value when the installer prompts you to select whether you want to change the database backup configuration:</text> </target>
+
+ <target id="bc53g2a" pid="b9y0d1l" name="Step" level="4" number="27"> <text>Enter a value when the installer prompts you to select whether you want to change the meeting archive maintenance configuration:</text> </target>
+
+ <target id="bc53g2b" pid="b9y0d1l" name="Step" level="4" number="28"> <text>Enter a value when the installer prompts you to select whether you want to change the document share repository maintenance configuration:</text> </target>
+
+ <target id="bc53nx5" pid="b9y0d1l" name="Step" level="4" number="29"> <text>Enter a value when the installer prompts you to select whether you want to change the audit logs:</text> </target>
+
+ <target id="bc53nx6" pid="b9y0d1l" name="Step" level="4" number="30"> <text>Enter a value when the installer prompts you to select whether you want to change the logging configuration:</text> </target>
+
+ <target id="bc53nx7" pid="b9y0d1l" name="Step" level="4" number="31"> <text>Enter a value when the installer prompts you to select whether you want to change the real-time call user-reservations logs:</text> </target>
+
+ <target id="bc53nx8" pid="b9y0d1l" name="Step" level="4" number="32"> <text>Enter a value when the installer prompts you to select whether you want to change the security configuration:</text> </target>
+
+ <target id="bc53nx9" pid="b9y0d1l" name="Step" level="4" number="33"> <text>Enter a value when the installer prompts you to select whether you want to change the LDAP configuration:</text> </target>
+
+ <target id="bc53nxa" pid="b9y0d1l" name="Step" level="4" number="34"> <text>Enter a value when the installer prompts you to select whether you want to change the system e-mail header configuration:</text> </target>
+
+ <target id="bc53nxb" pid="b9y0d1l" name="Step" level="4" number="35"> <text>Enter a value when the installer prompts you to select whether you want to change the e-mail template:</text> </target>
+
+ <target id="bc53nxc" pid="b9y0d1l" name="Step" level="4" number="36"> <text>Enter a value when the installer prompts you to select whether you want to change the meeting invitation template:</text> </target>
+
+ <target id="bc53nxd" pid="b9y0d1l" name="Step" level="4" number="37"> <text>Enter a value when the installer prompts you to select whether you want to change the summary e-mail template:</text> </target>
+
+ <target id="bc53nxe" pid="b9y0d1l" name="Step" level="4" number="38"> <text>Enter a value when the installer prompts you to select whether you want to change the meeting archive e-mail template:</text> </target>
+
+ <target id="bc53nxf" pid="b9y0d1l" name="Step" level="4" number="39"> <text>When the installer lists all the services running on the local host, press Enter to continue: </text> </target>
+
+ <target id="bc53nxg" pid="b9y0d1l" name="Step" level="4" number="40"> <text>When the installer lists all the configuration information, press Enter to continue: </text> </target>
+
+ <target id="bc53tdg" pid="b9y0d1l" name="Step" level="4" number="41"> <text>Enter a value when the installer prompts you to select whether you are satisfied with the configuration (the default is Y).  Enter N to change the configuration:</text> </target>
+
+ <target id="bf9a03r" pid="b9y0d1l" name="Sect2" level="2" number="2.5.2"> <text>Initial Address Book Configuration (Synchronization)</text> </target>
+
+ <target id="b9y00b9" pid="b9y00b9" name="Sect1" level="1" number="2.6"> <text>Installing the Conferencing System Components</text> </target>
+
+ <target id="b9y0hd9" pid="b9y00b9" name="Sect2" level="2" number="2.6.1"> <text>Initial Installation</text> </target>
+
+ <target id="b9y0fb1" pid="b9y00b9" name="Procedure" level="3" number="1"> <text>Create and name a new Conferencing installation. See "Installing the Conferencing Server" on page 17.</text> </target>
+
+ <target id="bbprvys" pid="b9y00b9" name="Step" level="4" number="1"> <text>Create and name a new Conferencing installation. See "Installing the Conferencing Server" on page 17.</text> </target>
+
+ <target id="b9y0fcg" pid="b9y00b9" name="Step" level="4" number="2"> <text> Initialize the PostgreSQL database.</text> </target>
+
+ <target id="bc534ue" pid="b9y00b9" name="Step" level="4" number="3"> <text>Identify a single-host or a multiple-host installation.</text> </target>
+
+ <target id="b9y0fde" pid="b9y00b9" name="Step" level="4" number="4"> <text>Provide the IPs and the hostnames for the XML Router, Web Portal and Desktop/App Server.</text> </target>
+
+ <target id="b9y0fdj" pid="b9y00b9" name="Step" level="4" number="5"> <text>(Optional) Install a Conferencing Voice Bridge.</text> </target>
+
+ <target id="b9y0his" pid="b9y00b9" name="Sect2" level="2" number="2.6.2"> <text>System Administration E-mail Configuration (Optional)</text> </target>
+
+ <target id="bf9ad60" pid="b9y00b9" name="Procedure" level="3" number="1"> <text>Perform Step 1 through Step 22 in Section 2.5.1, "Running the Installer on SLES:," on page 18. In Step 23, use the following procedure to configure your list of e-mail addresses.</text> </target>
+
+ <target id="bf9ac94" pid="b9y00b9" name="Step" level="4" number="1"> <text>Perform Step 1 through Step 22 in Section 2.5.1, "Running the Installer on SLES:," on page 18. In Step 23, use the following procedure to configure your list of e-mail addresses.</text> </target>
+
+ <target id="bf9ac95" pid="b9y00b9" name="Step" level="4" number="2"> <text>Type the system administrator's e-mail address. </text> </target>
+
+ <target id="bf9ac96" pid="b9y00b9" name="Step" level="4" number="3"> <text> To configure multiple e-mail addresses, type the first e-mail address (for example admin@company.com) and press Enter. At the next EMAIL&#62;&#62;&#62;&#62; prompt, type the second e-mail address and press Enter, etc.</text> </target>
+
+ <target id="bf9aewu" pid="b9y00b9" name="Step" level="4" number="4"> <text>Continue with Step 24 in Section 2.5.1, "Running the Installer on SLES:," on page 18.</text> </target>
+
+ <target id="b9y0kfb" pid="b9y00b9" name="Sect2" level="2" number="2.6.3"> <text>Mailer Configuration (Optional)</text> </target>
+
+ <target id="bf9apvd" pid="b9y00b9" name="Procedure" level="3" number="1"> <text>Perform Step 1 through Step 24 in Section 2.5.1, "Running the Installer on SLES:," on page 18. In Step 25, use the following procedure to configure your mailer.</text> </target>
+
+ <target id="bf9apve" pid="b9y00b9" name="Step" level="4" number="1"> <text>Perform Step 1 through Step 24 in Section 2.5.1, "Running the Installer on SLES:," on page 18. In Step 25, use the following procedure to configure your mailer.</text> </target>
+
+ <target id="bf9aji0" pid="b9y00b9" name="Step" level="4" number="2"> <text> Identify the SMTP Server.</text> </target>
+
+ <target id="bf9aji1" pid="b9y00b9" name="Step" level="4" number="3"> <text>Configure the SMTP Server's User and Password Authentication.</text> </target>
+
+ <target id="bf9apvf" pid="b9y00b9" name="Step" level="4" number="4"> <text>Continue with Step 26 in Section 2.5.1, "Running the Installer on SLES:," on page 18.</text> </target>
+
+ <target id="b9y0l01" pid="b9y00b9" name="Sect2" level="2" number="2.6.4"> <text>Database Backup Configuration (Optional)</text> </target>
+
+ <target id="bf9apvg" pid="b9y00b9" name="Procedure" level="3" number="1"> <text>Perform Step 1 through Step 25 in Section 2.5.1, "Running the Installer on SLES:," on page 18. In Step 26, use the following procedure to configure database backups.</text> </target>
+
+ <target id="bf9apvh" pid="b9y00b9" name="Step" level="4" number="1"> <text>Perform Step 1 through Step 25 in Section 2.5.1, "Running the Installer on SLES:," on page 18. In Step 26, use the following procedure to configure database backups.</text> </target>
+
+ <target id="bf9apvi" pid="b9y00b9" name="Step" level="4" number="2"> <text>Identify the directory where you want to store the database backups.</text> </target>
+
+ <target id="bf9apvj" pid="b9y00b9" name="Step" level="4" number="3"> <text>Configure the number of days backups are kept.</text> </target>
+
+ <target id="bf9apvk" pid="b9y00b9" name="Step" level="4" number="4"> <text>Define when backups are performed.</text> </target>
+
+ <target id="bf9apvl" pid="b9y00b9" name="Step" level="4" number="5"> <text>Continue with Step 27 in Section 2.5.1, "Running the Installer on SLES:," on page 18.</text> </target>
+
+ <target id="b9y0m2n" pid="b9y00b9" name="Sect2" level="2" number="2.6.5"> <text>Meeting Archive and Document Sharing Repository Configurations (Optional)</text> </target>
+
+ <target id="bf9apvm" pid="b9y00b9" name="Procedure" level="3" number="1"> <text>Perform Step 1 through Step 26 in Section 2.5.1, "Running the Installer on SLES:," on page 18. In Step 27 and Step 28, use the following procedure to configure your Meeting and Document Sharing (DocShare) Archive Repositories.</text> </target>
+
+ <target id="bf9apvn" pid="b9y00b9" name="Step" level="4" number="1"> <text>Perform Step 1 through Step 26 in Section 2.5.1, "Running the Installer on SLES:," on page 18. In Step 27 and Step 28, use the following procedure to configure your Meeting and Document Sharing (DocShare) Archive Repositories.</text> </target>
+
+ <target id="bf9apvo" pid="b9y00b9" name="Step" level="4" number="2"> <text>Determine the repository maximum size. Set the repository size in MBs.</text> </target>
+
+ <target id="bf9apvp" pid="b9y00b9" name="Step" level="4" number="3"> <text>Identify the action to take if the archive repository maximum is exceeded. The two available options are to automatically clean up archives that have not been accessed within the last 30 days, or to send e-mail notification to the systems administrator with no automatic archive deletion.</text> </target>
+
+ <target id="bf9apvq" pid="b9y00b9" name="Step" level="4" number="4"> <text>Determine what time of day the archive maintenance occurs.</text> </target>
+
+ <target id="bf9apvr" pid="b9y00b9" name="Step" level="4" number="5"> <text>If automatic maintenance was specified in Step 2, do the following:</text> </target>
+
+ <target name="SubSteps" level="5"> <text>Determine the minimum target repository size after automatic clean up.</text> </target>
+
+ <target id="bf9apvs" pid="b9y00b9" name="Step" level="6" number="5a"> <text>Determine the minimum target repository size after automatic clean up.</text> </target>
+
+ <target id="bf9apvt" pid="b9y00b9" name="Step" level="6" number="5b"> <text> Identify the minimum days-since-accessed that an archive can be deleted during the automated clean up procedure. For example, if the minimum days-since-accessed was set to 60 days, the automated clean up procedure does not delete archives that have been accessed within the past 60 days.</text> </target>
+
+ <target id="bf9apvu" pid="b9y00b9" name="Step" level="6" number="5c"> <text>Determine if the archives should be permanently deleted, or moved into another designated folder, which must be monitored manually by the system administrator.</text> </target>
+
+ <target id="bf9apvv" pid="b9y00b9" name="Step" level="4" number="6"> <text>Continue with Step 29 in Section 2.5.1, "Running the Installer on SLES:," on page 18.</text> </target>
+
+ <target id="b9y0ny2" pid="b9y00b9" name="Sect2" level="2" number="2.6.6"> <text>Chat Audit Log Configuration (Optional)</text> </target>
+
+ <target id="bf9apic" pid="b9y00b9" name="Procedure" level="3" number="1"> <text>Perform Step 1 through Step 28 in Section 2.5.1, "Running the Installer on SLES:," on page 18. In Step 29 and Step 30, use the following procedure to configure your chat audit logging.</text> </target>
+
+ <target id="bf9apvw" pid="b9y00b9" name="Step" level="4" number="1"> <text>Perform Step 1 through Step 28 in Section 2.5.1, "Running the Installer on SLES:," on page 18. In Step 29 and Step 30, use the following procedure to configure your chat audit logging.</text> </target>
+
+ <target id="bf9apid" pid="b9y00b9" name="Step" level="4" number="2"> <text>For Step 29, select where the logs should be stored:</text> </target>
+
+ <target id="bf9atxf" pid="b9y00b9" name="Step" level="4" number="3"> <text>For Step 30, edit the log configuration:</text> </target>
+
+ <target name="InformalTable" level="5"> <text>Field </text> </target>
+
+ <target id="b9y0pw0" pid="b9y00b9" name="row" level="6"> <text>Field </text> </target>
+
+ <target id="b9y0pw1" pid="b9y00b9" name="row" level="6"> <text>timestamp</text> </target>
+
+ <target id="b9y0r43" pid="b9y00b9" name="row" level="6"> <text>from_id</text> </target>
+
+ <target id="b9y0r44" pid="b9y00b9" name="row" level="6"> <text>from_name</text> </target>
+
+ <target id="b9y0r45" pid="b9y00b9" name="row" level="6"> <text>delivery</text> </target>
+
+ <target id="b9y0r46" pid="b9y00b9" name="row" level="6"> <text>to_id</text> </target>
+
+ <target id="b9y0r47" pid="b9y00b9" name="row" level="6"> <text>to_name</text> </target>
+
+ <target id="b9y0r48" pid="b9y00b9" name="row" level="6"> <text>message</text> </target>
+
+ <target id="bf9apvx" pid="b9y00b9" name="Step" level="4" number="4"> <text>Continue with Step 31 in Section 2.5.1, "Running the Installer on SLES:," on page 18.</text> </target>
+
+ <target id="b9y0s79" pid="b9y00b9" name="Sect2" level="2" number="2.6.7"> <text>Event Logging Configuration (Optional)</text> </target>
+
+ <target id="b9y0uyq" pid="b9y00b9" name="Procedure" level="3" number="1"> <text>Perform Step 1 through Step 30 in Section 2.5.1, "Running the Installer on SLES:," on page 18. In Step 31, use the following procedure to set the event logging:</text> </target>
+
+ <target id="bf9bkp0" pid="b9y00b9" name="Step" level="4" number="1"> <text>Perform Step 1 through Step 30 in Section 2.5.1, "Running the Installer on SLES:," on page 18. In Step 31, use the following procedure to set the event logging:</text> </target>
+
+ <target id="b9y0uyr" pid="b9y00b9" name="Step" level="4" number="2"> <text>Set default logging levels for system components.</text> </target>
+
+ <target id="b9y0v0o" pid="b9y00b9" name="Step" level="4" number="3"> <text>Determine at what size the logs should be rotated.</text> </target>
+
+ <target id="b9y0v0v" pid="b9y00b9" name="Step" level="4" number="4"> <text>Configure the number of rotated logs that should be kept.</text> </target>
+
+ <target id="b9y0v0z" pid="b9y00b9" name="Step" level="4" number="5"> <text>Configure real time, call, user and reservation logging.</text> </target>
+
+ <target id="bf9bkp1" pid="b9y00b9" name="Step" level="4" number="6"> <text>Continue with Step 32 in Section 2.5.1, "Running the Installer on SLES:," on page 18.</text> </target>
+
+ <target id="b9y15iv" pid="b9y00b9" name="Sect2" level="2" number="2.6.8"> <text>Port Forwarding (Optional)</text> </target>
+
+ <target id="b9y15qu" pid="b9y00b9" name="Sect2" level="2" number="2.6.9"> <text>XML Router Security</text> </target>
+
+ <target id="bcb9zhr" pid="b9y00b9" name="Sect2" level="2" number="2.6.10"> <text>Configuring LDAP Synchronization (Optional)</text> </target>
+
+ <target id="bcba2lq" pid="b9y00b9" name="Procedure" level="3" number="1"> <text>Perform Step 1 through Step 32 in Section 2.5.1, "Running the Installer on SLES:," on page 18. In Step 33, use the following procedure to configure your list of e-mail addresses.</text> </target>
+
+ <target id="bf9afmr" pid="b9y00b9" name="Step" level="4" number="1"> <text>Perform Step 1 through Step 32 in Section 2.5.1, "Running the Installer on SLES:," on page 18. In Step 33, use the following procedure to configure your list of e-mail addresses.</text> </target>
+
+ <target id="bcba2lr" pid="b9y00b9" name="Step" level="4" number="2"> <text>Type y, then press Enter.</text> </target>
+
+ <target id="bcba2sh" pid="b9y00b9" name="Step" level="4" number="3"> <text>Type y, then press Enter.</text> </target>
+
+ <target id="bcba3k6" pid="b9y00b9" name="Step" level="4" number="4"> <text>Type e for Edit to define your first LDAP server, then press Enter.</text> </target>
+
+ <target id="bcbay56" pid="b9y00b9" name="Step" level="4" number="5"> <text>Type 1 for the server number, then press Enter.</text> </target>
+
+ <target id="bcbdir2" pid="b9y00b9" name="Step" level="4" number="6"> <text>Specify the URL in the following format, then press Enter.</text> </target>
+
+ <target id="bcbdwgb" pid="b9y00b9" name="Step" level="4" number="7"> <text>Specify the Admin-equivalent username with full context, then press Enter.</text> </target>
+
+ <target id="bcbec5d" pid="b9y00b9" name="Step" level="4" number="8"> <text>Type the password for the Admin-equivalent user, then press Enter.</text> </target>
+
+ <target id="bcbecur" pid="b9y00b9" name="Step" level="4" number="9"> <text>Specify the eDirectory/ActiveDirectory container that defines the search scope, then press Enter.</text> </target>
+
+ <target id="bcbsi89" pid="b9y00b9" name="Step" level="4" number="10"> <text>Press Enter to accept the default value.</text> </target>
+
+ <target id="bcbsek6" pid="b9y00b9" name="Step" level="4" number="11"> <text>Press Enter to accept the default value.</text> </target>
+
+ <target id="bcbsekz" pid="b9y00b9" name="Step" level="4" number="12"> <text>Press Enter to accept the default value.</text> </target>
+
+ <target id="bcbsg4l" pid="b9y00b9" name="Step" level="4" number="13"> <text>To add more LDAP servers to the list, type a for Add, press Enter, then repeat Step 5 through Step 12, adjusting the information as needed for each LDAP server.</text> </target>
+
+ <target id="bcbsiqc" pid="b9y00b9" name="Step" level="4" number="14"> <text>If you make a mistake and need to remove an LDAP server from the list, type d for Delete, press Enter, type the number of the server to delete, then press Enter, type y to confirm, then press Enter again.</text> </target>
+
+ <target id="bcbsj8v" pid="b9y00b9" name="Step" level="4" number="15"> <text>When you are finished listing LDAP servers, type q for Quit, then press Enter.</text> </target>
+
+ <target id="bcbsji6" pid="b9y00b9" name="Step" level="4" number="16"> <text>Continue with Step 34 in Section 2.5.1, "Running the Installer on SLES:," on page 18.</text> </target>
+
+ <target id="b9y16eo" pid="b9y00b9" name="Sect2" level="2" number="2.6.11"> <text>Template Configuration (Optional)</text> </target>
+
+ <target id="bc53gyw" pid="bc53gyw" name="Sect1" level="1" number="2.7"> <text>Starting and Stopping the Cluster</text> </target>
+
+ <target id="b9y00ba" pid="b9y00ba" name="Sect1" level="1" number="2.8"> <text>Conferencing Administration Console</text> </target>
+
+ <target id="bf9bjsk" pid="b9y00ba" name="Sect2" level="2" number="2.8.1"> <text>Logging In to the Administration Console</text> </target>
+
+ <target id="bf9bk0g" pid="b9y00ba" name="Sect2" level="2" number="2.8.2"> <text>Creating Conferencing Communities</text> </target>
+
+ <target id="b9y19ck" pid="b9y19ck" name="Sect1" level="1" number="2.9"> <text>Conferencing Client Installation</text> </target>
+
+ <target id="b9y020c" pid="b9y19ck" name="Sect2" level="2" number="2.9.1"> <text>Conferencing Client Components</text> </target>
+
+ <target id="bf99vah" pid="b9y19ck" name="Procedure" level="3" number="1"> <text> Launch the Administration Console (see the Conferencing Operations Guide for more information).</text> </target>
+
+ <target id="bf99vai" pid="b9y19ck" name="Step" level="4" number="1"> <text> Launch the Administration Console (see the Conferencing Operations Guide for more information).</text> </target>
+
+ <target id="bf99vaj" pid="b9y19ck" name="Step" level="4" number="2"> <text> Create new Communities with the Administration Console.</text> </target>
+
+ <target id="bf99vak" pid="b9y19ck" name="Step" level="4" number="3"> <text> Install a Conferencing Client.</text> </target>
+
+ <target id="bf99val" pid="b9y19ck" name="Step" level="4" number="4"> <text>Use the Conferencing Client to create users and perform other administrative tasks.</text> </target>
+
+ <target id="baudo10" pid="b9y19ck" name="Sect2" level="2" number="2.9.2"> <text>Installing the Conferencing Client</text> </target>
+
+ <target id="baudj98" pid="b9y19ck" name="Procedure" level="3" number="1"> <text>After installing the Conferencing server, you can download the Conferencing client from the following URLs:</text> </target>
+
+ <target id="baudj99" pid="b9y19ck" name="Step" level="4" number="1"> <text>After installing the Conferencing server, you can download the Conferencing client from the following URLs:</text> </target>
+
+ <target id="baudmhm" pid="b9y19ck" name="Step" level="4" number="2"> <text>Select Open or Run to invoke the installer after the download completes.</text> </target>
+
+ <target id="bauv26x" pid="b9y19ck" name="Sect2" level="2" number="2.9.3"> <text>Installing the Pidgin Instant Chat Client</text> </target>
+
+ <target id="bauv2eh" pid="b9y19ck" name="Procedure" level="3" number="1"> <text>Download the pidgin.exe (Windows) or pidgin.rpm (Linux) executable file to your desktop. The URLs for downloading these files should be in your invitation e-mail.</text> </target>
+
+ <target id="bauv2ei" pid="b9y19ck" name="Step" level="4" number="1"> <text>Download the pidgin.exe (Windows) or pidgin.rpm (Linux) executable file to your desktop. The URLs for downloading these files should be in your invitation e-mail.</text> </target>
+
+ <target id="bauv2z1" pid="b9y19ck" name="Step" level="4" number="2"> <text>In Linux and Windows, double-click the pidgin (.rpm or .exe) installer (placed on the desktop during download), or select Open or Run to invoke the installer. It might take a while for the installation to begin on the Linux desktop.</text> </target>
+
+ <target id="bauv346" pid="b9y19ck" name="Step" level="4" number="3"> <text>In the Installer Language dialog that appears, select your language from the drop-down list. The installer wizard walks you through the installation process. The defaults should be fine for your install, though you might want to select the Shortcut &#62; Desktop option.</text> </target>
+
+ <target id="bauv3as" pid="b9y19ck" name="Step" level="4" number="4"> <text>Click Finish to complete the installation process. The integrated Pidgin instant chat client is now installed and ready for use.</text> </target>
+
+</targets>

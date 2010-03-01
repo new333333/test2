@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html xml:lang="pl" lang="pl">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="pl" />
+<meta name="Content-Date" content="Mon, 04 Jun 2009 12:00:00 GMT" />
+<meta name="Generator" content="Novell Documentation" />
+<meta name="Generation-Date" content="Thursday, December 10, 2009" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2007" />
+
+<link rel="stylesheet" type="text/css" href="css/styles.css" />
+<link rel="stylesheet" type="text/css" href="css/expandable.css" />
+
+<title>Podpowiedzi przekazywania pliku</title>
+</head>
+<body>
+<script type="text/javascript" src="css/expandable.js"></script>
+
+<div class="sect1" id="tool_file_uploadhints">
+
+<h1 class="title"> Podpowiedzi przekazywania pliku</h1>
+
+<p class="para">Jeśli występują problemy z wysyłaniem pliku, ponieważ jest zbyt duży, można naprawić ten problem zwiększając ilość pamięci używanej przez aplety Java. Proces opisano w kolejnych rozdziałach.</p>
+<div class="sect2" id="bipun26">
+
+<h2 class="title"> Zwiększanie domyślnej ilości pamięci w systemie Windows</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bipungz">
+<p class="para">Należy przejść do panelu sterowania (kliknąć przycisk <span class="guimenu">Start</span> &gt; <span class="guimenu">Ustawienia</span> &gt; <span class="guimenu">Panel sterowania</span>).</p></li>
+<li class="step" id="bipunwc">
+<p class="para">Następnie należy kliknąć dwukrotnie ikonę <span class="guimenu">Java</span>.</p>
+<p class="para">Uruchomiony zostanie Panel sterowania maszyny Java.</p></li>
+<li class="step" id="bipuoka">
+<p class="para">Proszę wybrać kartę <span class="guimenu">Java</span>.</p></li>
+<li class="step" id="bipuorx">
+<p class="para">W części <span class="guimenu">Java Applet Runtime Settings</span> proszę kliknąć przycisk <span class="guimenu">View</span>.</p></li>
+<li class="step" id="bipup4t">
+<p class="para">Dla każdej z wersji środowiska uruchomieniowego Java proszę dodać <span class="command">-Xmx256m</span> jako parametr środowiska uruchomieniowego Java.</p></li>
+<li class="step" id="bipupgl">
+<p class="para">Proszę nacisnąć przycisk <span class="guimenu">OK</span>.</p>
+<p class="para">Aby zwiększenie domyślnego rozmiaru pamięci dla apletów Java odniosło skutek, należy zakończyć działanie wszystkich przeglądarek i uruchomić je ponownie.</p></li></ol>
+</div>
+
+<p class="para">To ustawienie powoduje uruchamianie apletu używanego do wysyłania plików do folderu Teaming z 256 MB pamięci. Jeśli aplet wciąż wskazuje, że nie ma wystarczającej pamięci do uruchomienia apletu, konieczne może być zmniejszenie tej liczby.</p>
+</span>
+
+</div>
+
+<div class="sect2" id="bipunbb">
+
+<h2 class="title"> Zwiększanie domyślnej ilości pamięci w systemie Linux</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bjchmyk">
+<p class="para">Proszę zlokalizować środowisko JRE lub JDK używane przez dodatek typu plug-in przeglądarki.</p>
+<p class="para">Położenie JRE i JDK różni się w zależności od systemu.</p></li>
+<li class="step" id="bjchn8n">
+<p class="para">W katalogu <span class="filename">bin</span> środowiska JRE lub JDK proszę uruchomić plik <span class="filename">ControlPanel</span>.</p>
+<p class="para">Uruchomiony zostanie Panel sterowania.</p></li>
+<li class="step" id="bjchoed">
+<p class="para">Proszę wybrać kartę <span class="guimenu">Java</span>.</p></li>
+<li class="step" id="bjchokg">
+<p class="para">W części <span class="guimenu">Java Applet Runtime Settings</span> proszę kliknąć przycisk <span class="guimenu">View</span>.</p></li>
+<li class="step" id="bjchor1">
+<p class="para">Dla każdej z wersji środowiska uruchomieniowego Java proszę dodać <span class="command">-Xmx256m</span> jako parametr środowiska uruchomieniowego Java.</p></li>
+<li class="step" id="bjchotz">
+<p class="para">Proszę nacisnąć przycisk <span class="guimenu">OK</span>.</p>
+<p class="para">Aby zwiększenie domyślnego rozmiaru pamięci dla apletów Java odniosło skutek, należy zakończyć działanie wszystkich przeglądarek i uruchomić je ponownie.</p></li></ol>
+</div>
+
+<p class="para">To ustawienie powoduje uruchamianie apletu używanego do wysyłania plików do folderu Teaming z 256 MB pamięci. Jeśli aplet wciąż wskazuje, że nie ma wystarczającej pamięci do uruchomienia apletu, konieczne może być zmniejszenie tej liczby.</p>
+</span>
+
+</div>
+
+</div>
+
+<p class="trademark"> Aby uzyskać więcej informacji, patrz sekcja <a href="./legal.html">Informacje prawne</a>.</p>
+</body>
+</html>

@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?elementcount count="340"?>
+
+
+
+<!DOCTYPE chapter PUBLIC "-//Novell//DTD NovDoc XML V1.0//EN" "novdocx.dtd">
+
+<!--========================================================================
+ "Zon Quick Start Guide"
+
+ Copyright &copy; 2006 Novell, Inc. All rights reserved. No part of this publication
+ may be reproduced, photocopied, stored on a retrieval system, or transmitted
+ without the express written consent of the publisher.
+
+ Novell, Inc.
+ 404 Wyman Street, Suite 500
+ Waltham, MA 02451
+ U.S.A.
+ www.novell.com
+
+
+ ESTIMATED PAGE COUNT (based on 200 words per page): 8
+ ESTIMATED HTML PAGE COUNT (number of html pages for novell.com): 3
+
+
+ WORD COUNT
+
+       Count    Doctype    Title
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        1659    chapter    Zon Quick Start Guide
+
+
+ CROSS-REFERENCES
+
+       Count       Type
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           0       xref
+           0       link
+           0       ulink-xrefext
+           0       ulink-xrefexttext
+           1       ulink
+
+
+ URLS REFERENCED IN ULINKS
+
+       URL
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       http://www.novell.com/company/legal/trademarks/tmlist.html
+
+========================================================================-->
+
+<chapter role="quickstart" conformance="none,doc,no,,56" id="quickstart" revision="01/01/03" lang="ja" xml:base="zonquickstart.xml">
+ <title>Zon クイックスタート ガイド</title>
+ <para>Conferencing</para>
+ <para>1.0</para>
+ <para>July, 2007</para>
+ <sect1 id="b20g4u4">
+  <title>
+   <productname>Zon</productname>
+  </title>
+  <para>Novell Conferencing は<productname>Zon</productname> 技術を使って実装されています。 本書の &ldquo; <productname>Zon</productname>&rdquo; という用語は他に指定のない限りすべてのバージョンの <productname>Zon</productname>を指します。 <productname>Zon</productname> の機能についての詳細は <productname>Zon</productname> ユーザガイドならびにオンラインヘルプを参照してください。
+  </para>
+  <sect2 id="baq6f78">
+   <title><productname>Zon</productname> クライアントの起動：
+   </title>
+   <para>Linux または Windows で、<productname>Zon</productname> デスクトップ アイコン（インストール時にデスクトップに作成されます）をダブルクリックします。
+   </para>
+   <para>デスクトップ アイコンが表示されていない場合、次を実行します：</para>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <para>Windowsでは、スタート&gt; <guimenu>すべてのプログラム</guimenu> &gt; <productname>Zon</productname> <guimenu>Meeting</guimenu> &gt; <productname>Zon</productname> <guimenu>Meeting</guimenu> を選択します。
+     </para>
+    </listitem>
+    <listitem>
+     <para>Linuxでは、<guimenu>コンピュータ</guimenu> を選択し、<guimenu>他のアプリケーション</guimenu> をクリックした後、<guimenu>新しいアプリケーション</guimenu> または<guimenu>通信</guimenu> の下にある <productname>Zon</productname> アイコンを選択します。
+     </para>
+    </listitem>
+   </itemizedlist>
+   <para><productname>Zon</productname> クライアントが表示され、サインオンができる状態になります。
+   </para>
+  </sect2>
+  <sect2 id="baq6h99">
+   <title>サインオン：</title>
+   <procedure id="baq6htf">
+    <step id="baq6htg" performance="required">
+     <para>クライアントを開きます。</para>
+    </step>
+    <step id="baq6hze" performance="required">
+     <para><guimenu>スクリーンネーム</guimenu>フィールドで、自分のスクリーンネームを入力するか、メニューから選択します。 
+     </para>
+     <itemizedlist mark="bullet" spacing="normal">
+      <listitem>
+       <para>スクリーンネームとは、ユーザが登録した一意の名前です。 </para>
+      </listitem>
+      <listitem>
+       <para><productname>Zon</productname>や他のユーザはスクリーンネームによってあなたを識別します。
+       </para>
+      </listitem>
+      <listitem>
+       <para>スクリーンネームは大文字小文字を区別します。また、スペースを含めることはできません。</para>
+      </listitem>
+      <listitem>
+       <para>スクリーンネームは英数字のみが使用可能で、ASCII以外の文字を含めることはできません。 （例えば、bathgate222 や gbookworm は許可されますが、 bathgate 222 や gbook~worm は許可されません。）</para>
+      </listitem>
+     </itemizedlist>
+     <note>
+      <para>最初にログインした後、スクリーンネームは <guimenu>スクリーンネーム</guimenu> メニューに表示されます。
+      </para>
+     </note>
+    </step>
+    <step id="baq6j5p" performance="required">
+     <para><guimenu>パスワード</guimenu> フィールドに、パスワードを入力します。
+     </para>
+    </step>
+    <step id="baq6k0g" performance="required">
+     <para>オプション設定：</para>
+     <itemizedlist mark="bullet" spacing="normal">
+      <listitem>
+       <para>サインオンとミーティングへの参加を同時に行うには、ミーティングのPINあるいはミーティングIDを<guimenu>ミーティングPin</guimenu>フィールドに入力します。
+       </para>
+      </listitem>
+      <listitem>
+       <para>パスワードを保存するには、<guimenu>パスワードを保存</guimenu>オプションを選択します。 （管理者によりこのオプションを使用する権限が与えられていない場合、このオプションは表示されません。）
+       </para>
+      </listitem>
+      <listitem>
+       <para><productname>Zon</productname> 起動時に自動的にサインオンするようにするには、<guimenu>自動サインオン</guimenu>オプションを選択します（推奨）。
+       </para>
+      </listitem>
+      <listitem>
+       <para>ネットワーク接続が存在しない場合にお使いのクライアントを再接続するには、<guimenu>コネクションが確立されていない場合に再試行を継続</guimenu>オプションを選択します（推奨）。
+       </para>
+      </listitem>
+     </itemizedlist>
+    </step>
+    <step id="baq6l52" performance="required">
+     <para><guimenu>サインオン</guimenu>をクリックしてログインします。
+     </para>
+     <para><productname>Zon</productname>メインウィンドウが開き、ミーティング リストが表示されます。
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq6nma">
+   <title>コンタクト情報のセットアップ：</title>
+   <procedure id="baq6ooj">
+    <step id="baq6ook" performance="required">
+     <para>メイン ウィンドウから<guimenu>オプション&gt; マイ コンタクト情報を編集...</guimenu> を選択します。
+     </para>
+     <para><guimenu>ユーザを編集</guimenu>ウィンドウが表示されます。
+     </para>
+    </step>
+    <step id="baq6osr" performance="required">
+     <para>ユーザの個人情報を編集します（これらのフィールドについての詳細は、<productname>Zon</productname> オンラインヘルプ、または<productname>Zon</productname> ユーザガイドを参照してください）。 
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq6pi9">
+   <title>バディを追加：</title>
+   <procedure id="baq6pru">
+    <step id="baq6prv" performance="required">
+     <para>メニューから <guimenu>コンタクト&gt; コンタクトとバディの管理</guimenu> を選択します。
+     </para>
+    </step>
+    <step id="baq6qmc" performance="required">
+     <para><guimenu>コンタクト</guimenu> ウィンドウの <guimenu>コミュニティのアドレス帳</guimenu> に含まれる任意のグループから１つあるいは複数のコンタクトを選択します（複数のコンタクトを選択する際には CTRL または SHIFT キーを使用します）。 <guimenu>コミュニティのアドレス帳</guimenu>が表示されない場合、これを表示する権限を管理者があなたに与えていないことを意味します。 その場合は、<guimenu>検索</guimenu> を使ってバディを探してください。
+     </para>
+    </step>
+    <step id="baq6qxy" performance="required">
+     <para>選択されたコンタクトの１つを右クリックし、<guimenu> パーソナル バディに追加</guimenu> を選択します。 （パーソナル バディはすべて<guimenu>パーソナル アドレス帳</guimenu>に表示されます。）
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq6rli">
+   <title>パーソナル バディリストにコミュニティ外のユーザを追加する：</title>
+   <procedure id="baq6rqr">
+    <step id="baq6rqs" performance="required">
+     <para>メニューから <guimenu>コンタクト&gt; コンタクトとバディの管理</guimenu> を選択します。 
+     </para>
+    </step>
+    <step id="baq6rza" performance="required">
+     <para><guimenu>パーソナル アドレス帳</guimenu>を右クリックし、<guimenu>スクリーン名によりバディを追加...</guimenu>を選択します。
+     </para>
+    </step>
+    <step id="baq6rzc" performance="required">
+     <para>コンタクトのスクリーン名をダイアログボックスに入力し、<guimenu>OK</guimenu>をクリックします。
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq6sa8">
+   <title>コンタクトの情報を編集：</title>
+   <procedure id="baq6sqw">
+    <step id="baq6sqx" performance="required">
+     <para>メニューから <guimenu>コンタクト&gt; コンタクトとバディの管理...</guimenu> を選択します。
+     </para>
+    </step>
+    <step id="baq6szk" performance="required">
+     <para>[コンタクト管理] ウィンドウで、編集したいコンタクトを選択します。</para>
+    </step>
+    <step id="baq6szm" performance="required">
+     <para><guimenu>編集</guimenu> をクリックします。
+     </para>
+     <para><guimenu>ユーザを編集</guimenu>ウィンドウが表示されます。
+     </para>
+    </step>
+    <step id="baq6szp" performance="required">
+     <para>コンタクト情報を編集します（これらのフィールドについての詳細は、<productname>Zon</productname> オンラインヘルプ、または<productname>Zon</productname> ユーザガイドを参照してください）。 
+     </para>
+    </step>
+    <step id="baq6szs" performance="required">
+     <para><guimenu>OK</guimenu> をクリックします。
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq6tyk">
+   <title>インスタント ミーティングを開始：</title>
+   <para>ミーティングを行いたい時間に、インスタント ミーティングを起動します（事前に定義された参加者がおらず、開始時間がスケジュール済みでない場合）。</para>
+   <procedure id="baq6vmf">
+    <step id="baq6vmg" performance="required">
+     <para>ミーティング リストから、<guimenu>マイ インスタント ミーティング</guimenu>の下にある.<guimenu>マイ ミーティング</guimenu>を選択します。
+     </para>
+    </step>
+    <step id="baq6vpo" performance="required">
+     <para><guimenu>開始</guimenu> をクリックします。
+     </para>
+     <para><guimenu>ミーティング設定</guimenu>ウィンドウが表示されます。
+     </para>
+    </step>
+    <step id="baq6vpq" performance="required">
+     <para>コンタクトを追加します。以下の「ミーティング招待者を追加」を参照してください。</para>
+    </step>
+    <step id="baq6vps" performance="required">
+     <para>ミーティングのオプションを設定します（これらのフィールドについての詳細は、<productname>Zon</productname> オンラインヘルプ、または<productname>Zon</productname> ユーザガイドを参照してください）。
+     </para>
+    </step>
+    <step id="baq6vpv" performance="required">
+     <para><guimenu>ミーティングの開始</guimenu> をクリックします。
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq75i3">
+   <title>ミーティングに参加：</title>
+   <procedure id="baq75lh">
+    <step id="baq75li" performance="required">
+     <para>参加したいミーティングを選択します。 </para>
+    </step>
+    <step id="baq75or" performance="required">
+     <para><guimenu>参加</guimenu> をクリックします。 
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq6xij">
+   <title>スケジュール済みミーティングを新たに作成：</title>
+   <para>スケジュール済みミーティングとは、参加者が事前に定義されており、オプションで開始時間の設定されたミーティングです。 時間を設定したスケジュール済みミーティングを作成すると、この時間が電子メール招待メッセージによりミーティング参加者に配信されます。 スケジュール済みミーティングは、設定された時間に関係なくいつでも開始できます。</para>
+   <note>
+    <para>招待者をスケジュール済みミーティングのモデレータに設定すると、その招待者はスケジュール済みミーティングを開始できる永続的なモデレータになりますが、あなたの作成したスケジュール済みミーティングを編集することはできません。</para>
+   </note>
+   <procedure id="baq6xkw">
+    <step id="baq6xkx" performance="required">
+     <para><guimenu>新規スケジュール</guimenu>をクリックします。 <guimenu>ミーティング設定</guimenu>ウィンドウが表示されます。
+     </para>
+     <note>
+      <para>ミーティングがスケジュールされるまで、［ミーティングID］と［ミーティングPIN］は空白です。</para>
+     </note>
+    </step>
+    <step id="baq6ykx" performance="required">
+     <para>コンタクトを追加します。以下の「ミーティング招待者を追加」を参照してください。</para>
+    </step>
+    <step id="baq6z77" performance="required">
+     <para>ミーティングのオプションを設定します（これらのフィールドについての詳細は、<productname>Zon</productname> オンラインヘルプ、または<productname>Zon</productname> ユーザガイドを参照してください）。
+     </para>
+    </step>
+    <step id="baq6z7a" performance="required">
+     <para><guimenu>ミーティングをスケジュール設定する</guimenu>をクリックします。
+     </para>
+    </step>
+    <step id="baq6zjn" performance="required">
+     <para>電子メールによる通知を選択している場合、招待状を送るにあたってのダイアログが表示されます：</para>
+     <itemizedlist mark="bullet" spacing="normal">
+      <listitem>
+       <para>招待するすべての人に対し、事前に電子メールによる招待を受け取っている人も含めて通知するには、<guimenu>電子メールをずべての招待参加者に送信</guimenu> を選択します。
+       </para>
+      </listitem>
+      <listitem>
+       <para>直前の操作で追加した招待者だけに送信するには、<guimenu>	電子メールを新たな招待参加者のみに送信</guimenu> を選択します。 新しいミーティングの場合には、全員が新たに追加された招待者ですので、すべての人に招待メールが送信されます。
+       </para>
+      </listitem>
+      <listitem>
+       <para>電子メールによる通知を送信したくない場合には、<guimenu>電子メールを送信しない</guimenu> を選択します。
+       </para>
+      </listitem>
+     </itemizedlist>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq70m7">
+   <title>ミーティング招待者を追加：</title>
+   <para>コンタクトをミーティングに追加するには、 <guimenu>ミーティング設定</guimenu>ウィンドウから<guimenu>コンタクトを選択</guimenu>ウィンドウを開き、ミーティングに招待したいすべてのコンタクトおよびグループを追加します。 コンタクトではない人も<guimenu>ミーティング設定</guimenu>ウィンドウから追加することができます。以下の「コンタクトではない人を招待する」 を参照してください。
+   </para>
+   <procedure id="baq71x0">
+    <step id="baq71x1" performance="required">
+     <para><guimenu>ミーティング設定</guimenu>ウィンドウから、<guimenu>コンタクトを表示...</guimenu>を選択します。
+     </para>
+    </step>
+    <step id="baq720t" performance="required">
+     <para><guimenu>コンタクトを選択</guimenu>ウィンドウから、ミーティングに招待したいコンタクトおよびグループを選択します（複数のコンタクト、グループを選択するにはCtrlキーおよびShiftキーを使用します）。
+     </para>
+    </step>
+    <step id="baq720v" performance="required">
+     <para><guimenu>ミーティングへ招待</guimenu> をクリックします。
+     </para>
+     <para><guimenu>コンタクトを選択</guimenu> ウィンドウが閉じ、選択したコンタクトとグループが <guimenu>ミーティング設定</guimenu>ウィンドウの<guimenu>招待参加者</guimenu> リストに表示されます。
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq738b">
+   <title>コンタクトではない人を招待する：</title>
+   <procedure id="baq73jd">
+    <step id="baq73je" performance="required">
+     <para><guimenu>ミーティング設定</guimenu>ウィンドウから、<guimenu>新規招待...</guimenu>を選択します。
+     </para>
+     <para>空白のコンタクト情報ウィンドウが表示されます。</para>
+    </step>
+    <step id="baq73n4" performance="required">
+     <para>新しいコンタクトの情報を入力します（「コンタクトの情報を編集」を参照してください）。
+     </para>
+    </step>
+    <step id="baq73n6" performance="required">
+     <para><guimenu>OK</guimenu> をクリックします。
+     </para>
+     <para>コンタクト情報ウィンドウが閉じ、新しいコンタクトが <guimenu>ミーティング設定</guimenu>ウィンドウの<guimenu>招待参加者</guimenu> リストに表示されます。
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq70g2">
+   <title>スケジュール済みミーティングを開始：</title>
+   <procedure id="baq74gr">
+    <step id="baq74gs" performance="required">
+     <para>スケジュール済みミーティング、あるいはあなたがモデレータに指定されているミーティングの一つを選択します。</para>
+    </step>
+    <step id="baq74ru" performance="required">
+     <para><guimenu>開始</guimenu> をクリックします。 <guimenu>ミーティング設定</guimenu>ウィンドウが表示されます。
+     </para>
+    </step>
+    <step id="baq74lu" performance="required">
+     <para>ミーティングに招待したいコンタクトがあれば、追加します。</para>
+    </step>
+    <step id="baq74lw" performance="required">
+     <para>必要に応じて、ミーティングのオプションを編集します（これらのフィールドについての詳細は、<productname>Zon</productname> オンラインヘルプ、または<productname>Zon</productname> ユーザガイドを参照してください）。
+     </para>
+    </step>
+    <step id="baq74lx" performance="required">
+     <para>ウィンドウ下部の<guimenu>ミーティングの開始</guimenu>ボタンをクリックします。
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq79ni">
+   <title>コミュニティのミーティングを検索：</title>
+   <procedure id="baq79r5">
+    <step id="baq79r6" performance="required">
+     <para><guimenu>ミーティング リスト</guimenu>ウィンドウの<guimenu>検索...</guimenu>をクリックします。 <guimenu>ミーティング検索</guimenu>ウィンドウが表示されます。
+     </para>
+    </step>
+    <step id="baq79z8" performance="required">
+     <para>検索を保存するには、<guimenu>名前を付けて保存...</guimenu>をクリックし、検索の名前を入力し、<guimenu>OK</guimenu>をクリックします。 （保存された検索は、<guimenu>検索名</guimenu> ドロップダウンリストに表示されます。）
+     </para>
+    </step>
+    <step id="baq7ago" performance="required">
+     <para><guimenu>日付幅</guimenu> を選択します。
+     </para>
+    </step>
+    <step id="barpq5z" performance="required">
+     <para>検索に対する<guimenu>検索条件</guimenu> を選択します（複数のオプションを選択することにより検索を絞り込むことができます）。 これらの条件についての詳細は、<productname>Zon</productname> オンラインヘルプ、または<productname>Zon</productname> ユーザガイドを参照してください。
+     </para>
+    </step>
+    <step id="baq7atv" performance="required">
+     <para>この検索に対して取得したい結果の数を設定するには、［結果数］フィールドに数値を入力します（デフォルトは100件です）。</para>
+    </step>
+    <step id="baq7dn5" performance="required">
+     <para><guimenu>直ちに検索</guimenu> をクリックします。
+     </para>
+     <para>検索の結果は、<guimenu>コミュニティの検索結果</guimenu> の下にグループとして表示されます。 指定された制限値を超える検索結果がある場合には、検索結果を右クリックして<guimenu>さらに検索</guimenu>を選択します。
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq768h">
+   <title>ミーティング ID または PIN によるミーティングへの参加：</title>
+   <para>ミーティングPINは特定のミーティング内の特定の参加者を示すのにミーティングサーバが用いる個人識別子です。 ミーティングIDは特定のミーティングを示す一般的な識別子です（特定の参加者を識別するものではありません）。</para>
+   <procedure id="baq76bp">
+    <step id="baq76bq" performance="required">
+     <para>メニューから <guimenu>ミーティング&gt; 	ミーティング ID または PIN による参加...</guimenu> を選択します。
+     </para>
+     <para><guimenu>ミーティングに参加</guimenu>ダイアログが表示されます。
+     </para>
+    </step>
+    <step id="baq76eq" performance="required">
+     <para><guimenu>ミーティングに参加</guimenu>ダイアログ内のフィールドに<guimenu>ミーティングID</guimenu> または <guimenu>PIN</guimenu> 番号を入力します。 ミーティングサーバがあなたを識別できるよう、可能な限りミーティングPINを使ってミーティングに参加してください。 あなたがモデレータをつとめる予定である場合には、ミーティングPINを必ず使用する必要があります。
+     </para>
+    </step>
+    <step id="baq76et" performance="required">
+     <para><guimenu>OK</guimenu> をクリックします。
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="bata1vm">
+   <title>ミーティングでデスクトップやアプリケーションを共有する：</title>
+   <para>ミーティングに参加している間に、すべての参加者とデスクトップやアプリケーションを共有することができます。 また、他の参加者に、あなたのデスクトップや共有アプリケーションに対するリモートコントロールを許可することもできます（次の手順を参照）。</para>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <para>デスクトップを共有するには、メニューから<guimenu>共有 &gt; デスクトップを共有</guimenu>を選択します。
+     </para>
+    </listitem>
+    <listitem>
+     <para>アプリケーションを共有するには、<guimenu>共有&gt; アプリケーションを共有</guimenu> を選択し、アプリケーションを<guimenu>アプリケーションを共有</guimenu>ウィンドウから選択し、<guimenu>OK</guimenu>をクリックします。
+     </para>
+    </listitem>
+   </itemizedlist>
+   <para>共有セッションが開き、すべての参加者が <guimenu>ミーティング</guimenu>ウィンドウの<guimenu>アプリケーション共有</guimenu> タブから共有されたデスクトップやアプリケーションを見ることができます。 <guimenu>共有コントロール パネル</guimenu> はウィンドウの右上セクションにあります。 共有セッションを終了するには、<guimenu>共有コントロール パネル</guimenu>の<guimenu>共有を停止</guimenu>をクリックします。
+   </para>
+  </sect2>
+  <sect2 id="bata8cb">
+   <title>参加者にリモート制御を承認：</title>
+   <procedure id="bata8sd">
+    <step id="bata8se" performance="required">
+     <para>１名あるいは複数の参加者を選択します。</para>
+    </step>
+    <step id="bata9bd" performance="required">
+     <para>メニューから<guimenu>参加者&gt; 参加者にリモート制御を承認</guimenu> を選択することにより、共有セッションを通じてリモート制御権限を承承認します（参加者の名前の横に<guimenu>[リモート制御]</guimenu> と表示されます）。
+     </para>
+     <note>
+      <para>参加者が共有ウィンドウ内をクリックすると、共有セッションのリモート制御権を獲得します。 あなたがマウスをクリック、あるいはキーボード上のキーを押すことにより、共有セッションの制御は自動的にあなたに戻ります。</para>
+     </note>
+    </step>
+   </procedure>
+  </sect2>
+ </sect1>
+ <sect1 role="legalinfo" id="b20g58r">
+  <title>法的注意事項</title>
+  <para>Copyright &copy; 2007 Novell, Inc. All rights reserved. この文書のいかなる部分も、発行者の書面による明示の同意無く複製、コピー、データベースに保存あるいは転送を行ってはなりません。 Novell の商標については、 <ulink url="http://www.novell.com/company/legal/trademarks/tmlist.html">Novell Trademark and Service Mark list</ulink> をご覧ください。 すべての第三者商標は各所有者の財産です。 商標記号（&reg;、TM等）はNovellの商標を意味します。アスタリスク（＊）は第三者の商標を意味します。
+  </para>
+ </sect1>
+</chapter>
