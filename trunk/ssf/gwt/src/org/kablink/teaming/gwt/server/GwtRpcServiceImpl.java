@@ -75,6 +75,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ExportHelper;
+import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.search.Constants;
 
@@ -381,11 +382,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			if ( binderIdL != null )
 			{
 				String branding;
+				Binder brandingSourceBinder;
 				
 				binder = binderModule.getBinder( binderIdL );
 				
-				// Get the branding for the binder.
-				branding = binder.getBranding();
+				// Get the binder where branding comes from.
+				brandingSourceBinder = binder.getBrandingSource();
+				
+				// Get the branding that should be applied for this binder.
+				branding = brandingSourceBinder.getBranding();
+				
+				// Parse the branding and replace any markup with the appropriate url.  For example,
+				// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
+				branding = MarkupUtil.markupStringReplacement( null, null, null, null, brandingSourceBinder, branding, "view" );
+	
 				brandingData.setBranding( branding );
 			}
 		}

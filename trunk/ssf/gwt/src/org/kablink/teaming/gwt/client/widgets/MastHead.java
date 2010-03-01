@@ -43,7 +43,9 @@ import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
@@ -58,8 +60,11 @@ import com.google.gwt.user.client.ui.Label;
 public class MastHead extends Composite
 {
 	private RequestInfo m_requestInfo = null;
-//	private BrandingPanel m_level1BrandingPanel = null;
+//!!!	private BrandingPanel m_level1BrandingPanel = null;
 	private BrandingPanel m_level2BrandingPanel = null;
+	private Image m_backgroundImg = null;
+	private FlowPanel m_mainMastheadPanel = null;
+	private FlowPanel m_mastheadContentPanel = null;
 	
 	/**
 	 * This class displays branding, either level1(corporate) or level2(sub)
@@ -90,7 +95,7 @@ public class MastHead extends Composite
 	
 			// Create a Novell Teaming image that will be used in case there is no branding.
 			imageResource = GwtTeaming.getImageBundle().mastHeadNovellGraphic();
-			m_novellTeamingImg = new Image(imageResource);
+			m_novellTeamingImg = new Image( imageResource );
 			m_novellTeamingImg.setWidth( "500" );
 			m_novellTeamingImg.setHeight( "75" );
 		
@@ -151,7 +156,8 @@ public class MastHead extends Composite
 		
 		
 		/**
-		 * Issue an ajax request to get the branding data from the server.
+		 * Issue an ajax request to get the branding data from the server.  Our AsyncCallback
+		 * will be called when this request completes.
 		 */
 		public void getDataFromServer()
 		{
@@ -213,6 +219,27 @@ public class MastHead extends Composite
 					m_panel.add( m_novellTeamingImg );
 				}
 			}
+			
+			// Set the height of the background image to be equal to the height of the masthead.
+			// We can't do this right now because the browser hasn't rendered anything yet.  So set a timer to do the work later.
+			{
+				Timer timer;
+				
+				timer = new Timer()
+				{
+					/**
+					 * 
+					 */
+					@Override
+					public void run()
+					{
+						// Adjust the height of the masthead to be equal to the height of the masthead content panel.
+						adjustMastheadHeight();
+					}// end run()
+				};
+				
+				timer.schedule( 250 );
+			}
 		}// end updatePanel()
 	}// end BrandingPanel
 	
@@ -222,22 +249,41 @@ public class MastHead extends Composite
 	 */
 	public MastHead( RequestInfo requestInfo )
 	{
-		FlowPanel mainPanel;
 		FlowPanel panel;
+		FlowPanel bgPanel;
 
 		m_requestInfo = requestInfo;
 		
-		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "mastHead" );
+		m_mainMastheadPanel = new FlowPanel();
+		m_mainMastheadPanel.addStyleName( "mastHead" );
+		
+		// Create a panel that will hold the background image.
+		{
+			bgPanel = new FlowPanel();
+			bgPanel.addStyleName( "mastHeadBgPanel" );
+			m_mainMastheadPanel.add( bgPanel );
+
+			// Get the background image.
+			m_backgroundImg = new Image( m_requestInfo.getImagesPath() + "pics/masthead/mast_head_bg.png" );
+			m_backgroundImg.setWidth( "100%" );
+			bgPanel.add( m_backgroundImg );
+		}
+		
+		// Create a panel that will hold the branding and everything else
+		{
+			m_mastheadContentPanel = new FlowPanel();
+			m_mastheadContentPanel.addStyleName( "mastHeadContentPanel" );
+			m_mainMastheadPanel.add( m_mastheadContentPanel );
+		}
 		
 		// Create the panel that will hold the level-1 or corporate branding
-//		m_level1BrandingPanel = new BrandingPanel();
-//		mainPanel.add( m_level1BrandingPanel );
+//!!!		m_level1BrandingPanel = new BrandingPanel();
+//		contentPanel.add( m_level1BrandingPanel );
 		
 		// Create the panel that will hold the level-2 or sub branding.
 		m_level2BrandingPanel = new BrandingPanel();
 		m_level2BrandingPanel.setBinderId( m_requestInfo.getBinderId() );
-		mainPanel.add( m_level2BrandingPanel );
+		m_mastheadContentPanel.add( m_level2BrandingPanel );
 		
 		// Create the panel that will hold the global actions such as "My workspace", "My Teams" etc
 		{
@@ -251,32 +297,32 @@ public class MastHead extends Composite
 			name.addStyleName( "mastHeadUserName" );
 			panel.add( name );
 			
-			mainPanel.add( panel );
+			m_mastheadContentPanel.add( panel );
 		}
 		
-		// Create the panel that will hold the logo.
-		if ( false )
-		{
-			ImageResource imageResource;
-			Image img;
-
-			panel = new FlowPanel();
-			panel.addStyleName( "mastHeadLogoPanel" );
-			
-			// Add an image to the panel.
-			imageResource = GwtTeaming.getImageBundle().mastHeadNovellLogo();
-			img = new Image(imageResource);
-			panel.add( img );
-		
-			mainPanel.add( panel );
-		}
-
 		// All composites must call initWidget() in their constructors.
-		initWidget( mainPanel );
+		initWidget( m_mainMastheadPanel );
 		
 		// Issue an ajax request to retrieve the corporate and binder branding data.
-//		m_level1BrandingPanel.getDataFromServer();
+//!!!		m_level1BrandingPanel.getDataFromServer();
 		m_level2BrandingPanel.getDataFromServer();
 	}// end MastHead()
+
+	
+	/**
+	 * Set the height of the masthead to be equal to the content of the masthead.  Also,
+	 * set the height of the background image so it fills the entire masthead.
+	 */
+	public void adjustMastheadHeight()
+	{
+		int height;
+		String heightStr;
+		
+		// Set the height of the background image to be equal to the height of the content of the masthead.
+		height = m_mastheadContentPanel.getOffsetHeight();
+		heightStr = Integer.toString( height );
+		m_backgroundImg.setHeight( heightStr );
+		m_mainMastheadPanel.setHeight( heightStr );
+	}// end adjustMastheadHeight()
 	
 }// end MastHead
