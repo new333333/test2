@@ -1,8 +1,0 @@
-"product","Novell Teaming","no description"
-"product_short","Teaming","no description"
-"conf_prod_name","Novell Conferencing","no description"
-"conf_prod_name_short","Conferencing","no description"
-"thrdmrk","*","no description"
-"mdash","-","no description"
-"ycc_runlevel","System Services (Runlevel)","no description"
-"euro","&#x20AC;","no description"
