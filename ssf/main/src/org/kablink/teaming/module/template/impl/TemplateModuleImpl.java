@@ -67,6 +67,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.dashboard.DashboardModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
@@ -672,7 +673,8 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	}
 	//no transaction - Adding the top binder can lead to optimisitic lock exceptions.
 	//In order to reduce the risk, we try to shorten the transaction time by managing it ourselves
-	public Binder addBinder(final Long configId, final Long parentBinderId, final String title, final String name) throws AccessControlException {
+	public Binder addBinder(final Long configId, final Long parentBinderId, final String title, final String name) 
+			throws AccessControlException {
 		//The first add is independent of the others.  In this case the transaction is short 
 		//and managed by processors.  
 		
@@ -683,33 +685,35 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		ctx.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
 		final Binder top = addBinderInternal(cfg, parent, title, name, ctx);
 		ctx.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE); //don't bother indexing, until copyBinderAttributes done
-		//now that we have registered the sortKey in the parent binder, we use a longer transaction to complete 
-		//it - there shouldn't be any contention here since the binder is new and doesn't need to reference its parent
-		getTransactionTemplate().execute(new TransactionCallback() {
-	        	public Object doInTransaction(TransactionStatus status) {
-	        //need to reload incase addFolder/workspace used retry loop where session cache is flushed by exception
-	        TemplateBinder cfg = getCoreDao().loadTemplate(configId, RequestContextHolder.getRequestContext().getZoneId());
- 			addBinderFinish(cfg, top);
- 			//after children are added, resolve relative selections
- 			List<Binder>binders = new ArrayList();
- 			binders.add(top);
- 			while (!binders.isEmpty()) {
- 				Binder b = binders.remove(0);
- 				binders.addAll(b.getBinders());
- 				try {
- 					EntityDashboard dashboard = getCoreDao().loadEntityDashboard(b.getEntityIdentifier());
- 					if (dashboard != null) {
- 						DashboardHelper.resolveRelativeBinders(b.getBinders(), dashboard);
- 					}
- 				} catch (Exception ex) {
- 					//at this point just log errors  index has already been updated
- 					//	if throw errors, rollback will take effect and must manualy remove from index
- 					logger.error("Error adding dashboard " + ex.getLocalizedMessage());
- 				}
- 			}
- 			return null;
-	     }});
-		IndexSynchronizationManager.applyChanges(); //get them commited, binders are
+		if (top != null) {
+			//now that we have registered the sortKey in the parent binder, we use a longer transaction to complete 
+			//it - there shouldn't be any contention here since the binder is new and doesn't need to reference its parent
+			getTransactionTemplate().execute(new TransactionCallback() {
+		        	public Object doInTransaction(TransactionStatus status) {
+		        //need to reload in case addFolder/workspace used retry loop where session cache is flushed by exception
+		        TemplateBinder cfg = getCoreDao().loadTemplate(configId, RequestContextHolder.getRequestContext().getZoneId());
+	 			addBinderFinish(cfg, top);
+	 			//after children are added, resolve relative selections
+	 			List<Binder>binders = new ArrayList();
+	 			binders.add(top);
+	 			while (!binders.isEmpty()) {
+	 				Binder b = binders.remove(0);
+	 				binders.addAll(b.getBinders());
+	 				try {
+	 					EntityDashboard dashboard = getCoreDao().loadEntityDashboard(b.getEntityIdentifier());
+	 					if (dashboard != null) {
+	 						DashboardHelper.resolveRelativeBinders(b.getBinders(), dashboard);
+	 					}
+	 				} catch (Exception ex) {
+	 					//at this point just log errors  index has already been updated
+	 					//	if throw errors, rollback will take effect and must manualy remove from index
+	 					logger.error("Error adding dashboard " + ex.getLocalizedMessage());
+	 				}
+	 			}
+	 			return null;
+		     }});
+		}
+		IndexSynchronizationManager.applyChanges(); //get them committed, binders are
 		return top;
 
 	}
@@ -770,12 +774,16 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	   }	    	
 	   //get binder created
 	   try {
-			   binder = getCoreDao().loadBinder(getBinderModule().addBinder(parentBinder.getId(), def.getId(), inputData, fileItems, ctx).getId(), zoneId);
+			binder = getCoreDao().loadBinder(getBinderModule().addBinder(parentBinder.getId(), def.getId(), inputData, fileItems, ctx).getId(), zoneId);
 	   } catch (WriteFilesException wf) {
 		   //don't fail, but log it
   			logger.error("Error creating binder from template: ", wf);
   			binder = getCoreDao().loadBinder(wf.getEntityId(), zoneId);
-	   }
+	   } catch (WriteEntryDataException e) {
+		   //don't fail, but log it
+ 			logger.error("Error creating binder from template: ", e);
+ 			binder = null;
+	}
 	   return binder;
 	}
 	/**

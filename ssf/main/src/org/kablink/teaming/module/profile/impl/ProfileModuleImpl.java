@@ -1028,7 +1028,9 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   		} catch (WriteFilesException wf) {
    			logger.error("Error create user workspace: ", wf);
    			
-   		} finally {
+   		} catch (WriteEntryDataException e) {
+   			logger.error("Error create user workspace: ", e);
+		} finally {
    			//	leave new context for indexing
    			RequestContextHolder.setRequestContext(oldCtx);				
    		}

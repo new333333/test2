@@ -32,7 +32,11 @@
  */
 package org.kablink.teaming.module.definition.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.StringBufferInputStream;
+import java.io.StringReader;
 import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -84,6 +88,8 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.impl.EntryDataErrors;
+import org.kablink.teaming.module.binder.impl.EntryDataErrors.Problem;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
@@ -115,6 +121,10 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.multipart.MultipartFile;
+import org.w3c.tidy.TagTable;
+import org.w3c.tidy.Tidy;
+import org.w3c.tidy.TidyMessage;
+import org.w3c.tidy.TidyMessageListener;
 
 
 /**
@@ -1831,8 +1841,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Map entryDataAll = new HashMap();
 		Map entryData = new HashMap();
 		List fileData = new ArrayList();
+		EntryDataErrors entryDataErrors = new EntryDataErrors();
 		entryDataAll.put(ObjectKeys.DEFINITION_ENTRY_DATA, entryData);
 		entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA, fileData);
+		entryDataAll.put(ObjectKeys.DEFINITION_ERRORS, entryDataErrors);
 
 		if (definitionTree != null) {
 			//root is the root of the entry's definition
@@ -1873,7 +1885,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				String nameValue = "_zoneUUID";
 				//Process this special value
 				processInputDataItem(itemName, nameValue, inputData, entryData,
-			    		fileItems, fileData, null, titleGenerated, titleSource);
+			    		fileItems, fileData, entryDataErrors, null, titleGenerated, titleSource);
 				
 				//While going through the entry's elements, keep track of the current form name (needed to process date elements)
 				List<Element> itItems = entryFormItem.selectNodes(".//item[@type='data']");
@@ -1886,7 +1898,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					
 					//Process the data item depending on its item name
 					processInputDataItem(itemName, nameValue, inputData, entryData,
-				    		fileItems, fileData, nextItem, titleGenerated, titleSource);
+				    		fileItems, fileData, entryDataErrors, nextItem, titleGenerated, titleSource);
 				}
 			}
 		}
@@ -1896,7 +1908,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     
     //Routine to process entry data depending on the type of data it is
     private void processInputDataItem(String itemName, String nameValue, InputDataAccessor inputData, Map entryData,
-    		Map fileItems, List fileData, Element nextItem, boolean titleGenerated, String titleSource) {
+    		Map fileItems, List fileData, EntryDataErrors entryDataErrors, Element nextItem, boolean titleGenerated, String titleSource) {
         User user = RequestContextHolder.getRequestContext().getUser();
 		String nameValuePerUser = nameValue + "." + user.getName();
 		String s_userVersionAllowed = "false";
@@ -1913,10 +1925,24 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
 			if (inputData.exists(nameValue)) {
 				Description description = new Description();
-				description.setText(mapInputData(inputData.getSingleValue(nameValue)));
-				String format = inputData.getSingleValue(nameValue + ".format");
-				if (format != null) {
-					description.setFormat(Integer.valueOf(format));
+				String text = mapInputData(inputData.getSingleValue(nameValue));
+				ByteArrayInputStream sr = new ByteArrayInputStream(text.getBytes());
+				ByteArrayOutputStream sw = new ByteArrayOutputStream();
+				TidyMessageListener tml = new TidyMessageListener();
+				Tidy tidy = new Tidy();
+				tidy.setQuiet(true);
+				tidy.setShowWarnings(false);
+				tidy.setMessageListener(tml);
+				tidy.setPrintBodyOnly(true);
+				org.w3c.dom.Document doc = tidy.parseDOM(sr, sw);
+				if (tml.isErrors() || tidy.getParseErrors() > 0) {
+					entryDataErrors.addProblem(new Problem(Problem.INVALID_HTML, null));
+				} else {
+					description.setText(sw.toString());
+					String format = inputData.getSingleValue(nameValue + ".format");
+					if (format != null) {
+						description.setFormat(Integer.valueOf(format));
+					}
 				}
 				//Deal with any markup language transformations before storing the description
 				MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
@@ -2744,6 +2770,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				entryInputDataMap = new String[0];
 				entryInputDataMapCount = 0;
 			}
+		}
+	}
+	
+	private class TidyMessageListener implements org.w3c.tidy.TidyMessageListener {
+		private int errorCount = 0;
+		public void messageReceived(TidyMessage message) {
+			message.toString();
+			errorCount++;
+		}
+		public boolean isErrors() {
+			if (errorCount > 0) return true;
+			return false;
 		}
 	}
 }

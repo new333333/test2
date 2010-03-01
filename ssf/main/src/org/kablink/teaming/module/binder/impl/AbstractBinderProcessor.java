@@ -212,7 +212,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //no transaction    
     public Binder addBinder(final Binder parent, Definition def, Class clazz, 
     		final InputDataAccessor inputData, Map fileItems, Map options) 
-    	throws AccessControlException, WriteFilesException {
+    	throws AccessControlException, WriteFilesException, WriteEntryDataException {
         // This default implementation is coded after template pattern. 
       	if (parent.isZone())
       		throw new NotSupportedException("errorcode.notsupported.addbinder");
@@ -226,9 +226,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         Map entryDataAll = addBinder_toEntryData(parent, def, inputData, fileItems,ctx);
         sp.stop("addBinder_toEntryData");
         
-        final Map entryData = (Map) entryDataAll.get("entryData");
-        
-         List fileUploadItems = (List) entryDataAll.get("fileData");
+        final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
+        List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
+        EntryDataErrors entryDataErrors = (EntryDataErrors) entryDataAll.get(ObjectKeys.DEFINITION_ERRORS);
+        if (entryDataErrors.getProblems().size() > 0) {
+        	//An error occurred processing the entry Data
+        	throw new WriteEntryDataException(entryDataErrors);
+        }
        
     	try {
 	        sp.start("addBinder_create");
@@ -332,8 +336,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		return getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
     	} else {
     		HashMap map = new HashMap();
-    		map.put("entryData", new HashMap());
-    		map.put("fileData", new LinkedList());
+    		map.put(ObjectKeys.DEFINITION_ENTRY_DATA, new HashMap());
+    		map.put(ObjectKeys.DEFINITION_FILE_DATA, new LinkedList());
+    		map.put(ObjectKeys.DEFINITION_ERRORS, new EntryDataErrors());
     		return map;
     	}
     }
@@ -587,7 +592,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //no transaction    
     public void modifyBinder(final Binder binder, final InputDataAccessor inputData, 
     		Map fileItems, final Collection deleteAttachments, Map options) 
-    		throws AccessControlException, WriteFilesException {
+    		throws AccessControlException, WriteFilesException, WriteEntryDataException {
 	
     	SimpleProfiler sp = new SimpleProfiler(false);
     	
@@ -598,8 +603,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    Map entryDataAll = modifyBinder_toEntryData(binder, inputData, fileItems, ctx);
 	    sp.stop("modifyBinder_toEntryData");
 	    
-	    final Map entryData = (Map) entryDataAll.get("entryData");
-	    List fileUploadItems = (List) entryDataAll.get("fileData");
+	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
+	    List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
+	    EntryDataErrors entryDataErrors = (EntryDataErrors) entryDataAll.get(ObjectKeys.DEFINITION_ERRORS);
+        if (entryDataErrors.getProblems().size() > 0) {
+        	//An error occurred processing the entry Data
+        	throw new WriteEntryDataException(entryDataErrors);
+        }
 
 	    try {
 		    

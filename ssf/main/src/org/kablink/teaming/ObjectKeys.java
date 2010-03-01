@@ -167,6 +167,7 @@ public interface ObjectKeys {
     //map keys from definition module
     public static final String DEFINITION_ENTRY_DATA="entryData";
     public static final String DEFINITION_FILE_DATA="fileData";
+    public static final String DEFINITION_ERRORS="errors";
     public static final String DEFINITION_TEAM_TYPE="team";
 	public static final String DEFINITION_WORKSPACE_REMOTE_APPLICATION="workspaceRemoteApp";
 	public static final String DEFINITION_FOLDER_REMOTE_APPLICATION="folderRemoteApp";

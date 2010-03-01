@@ -75,6 +75,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.jobs.UserTitleChange;
 import org.kablink.teaming.module.binder.impl.AbstractEntryProcessor;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.ldap.LdapSyncResults.PartialLdapSyncResults;
@@ -315,7 +316,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 					   for (Binder child:binders) {
 						   excludeIds.add(child.getId());
 					   }
-				   } catch (WriteFilesException wf) {};
+				   	} catch (WriteFilesException wf) {
+			   		} catch (WriteEntryDataException wf) {};
 				   
 			   }
 		   }
