@@ -68,6 +68,8 @@ import org.kablink.util.search.Constants;
 
 public class LuceneProvider extends IndexSupport {
 	
+	private static final int UNSPECIFIED_INT = -1;
+	
 	private static final String FIND_TYPE_PERSONAL_TAGS = "personalTags";
 	private static final String FIND_TYPE_COMMUNITY_TAGS = "communityTags";
 	
@@ -158,17 +160,25 @@ public class LuceneProvider extends IndexSupport {
 		}
 		
 		int maxFields = PropsUtil.getInt("lucene.max.fieldlength", 10000);
-		int maxMerge = PropsUtil.getInt("lucene.max.merge.docs", 1000);
+		int maxMerge = PropsUtil.getInt("lucene.max.merge.docs", UNSPECIFIED_INT);
 		int mergeFactor = PropsUtil.getInt("lucene.merge.factor", 10);
-		boolean useCompoundFile = PropsUtil.getBoolean("lucene.use.compound.file", true);
+		int ramBufferSizeMb = PropsUtil.getInt("lucene.ram.buffer.size.mb", 256);
+		boolean useCompoundFile = PropsUtil.getBoolean("lucene.use.compound.file", false);
 
 		IndexWriter writer = new IndexWriter(dir, new SsfIndexAnalyzer(), create, new MaxFieldLength(maxFields));
 		
-		writer.setMaxMergeDocs(maxMerge);
+		if(maxMerge >= 0)
+			writer.setMaxMergeDocs(maxMerge);
 		writer.setMergeFactor(mergeFactor);
 		writer.setUseCompoundFile(useCompoundFile);
+		writer.setRAMBufferSizeMB(ramBufferSizeMb);
 
-		logInfo("Opened index writer: create=" + create + ", maxMerge=" + maxMerge + ", mergeFactor=" + mergeFactor + ", maxFields=" + maxFields + ", useCompoundFile=" + useCompoundFile);
+		logInfo("Opened index writer: create=" + create + 
+				", maxFields=" + maxFields + 
+				", maxMerge=" + ((maxMerge >= 0)? maxMerge : "Unspecified") + 
+				", mergeFactor=" + mergeFactor + 
+				", ramBufferSizeMb=" + ramBufferSizeMb + 
+				", useCompoundFile=" + useCompoundFile);
 		
 		return writer;
 	}
