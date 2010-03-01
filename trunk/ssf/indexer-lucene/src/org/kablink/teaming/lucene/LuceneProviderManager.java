@@ -220,6 +220,17 @@ public class LuceneProviderManager implements LuceneProviderManagerMBean {
 		}
 		logSystemResource();
 	}
+	
+	public void optimize(int maxNumSegments) {
+		logSystemResource();
+		for(LuceneProvider provider: providerMap.values()) {
+			// Optimize the index merging segments
+			provider.optimize(maxNumSegments);
+			// Call commit to release resources and free up disk spaces.
+			provider.commit();
+		}
+		logSystemResource();
+	}	
 
 	private void logSystemResource() {
 		if(logger.isDebugEnabled())

@@ -262,6 +262,10 @@ public class LuceneProvider extends IndexSupport {
 		getIndexingResource().optimize();
 	}
 			
+	public void optimize(int maxNumSegments) throws LuceneException {
+		getIndexingResource().optimize(maxNumSegments);
+	}
+			
 	private void closeIndexingResource() {
 		getIndexingResource().close();
 	}
@@ -881,6 +885,23 @@ public class LuceneProvider extends IndexSupport {
 
 			try {
 				getIndexingResource().getIndexWriter().optimize();
+				if(logger.isTraceEnabled())
+					logTrace("Called optimize on writer");
+			} catch (IOException e) {
+				throw new LuceneException("Could not optimize the index", e);
+			} 
+			
+			logInfo("Optimize completed. It took " + (System.currentTimeMillis()-startTime) + " milliseconds");
+		}
+		
+		void optimize(int maxNumSegments) throws LuceneException {
+			// optimize and commit are independent of each other.
+			
+			long startTime = System.currentTimeMillis();
+			logInfo("Optimize(" + maxNumSegments + ") started...");
+
+			try {
+				getIndexingResource().getIndexWriter().optimize(maxNumSegments);
 				if(logger.isTraceEnabled())
 					logTrace("Called optimize on writer");
 			} catch (IOException e) {
