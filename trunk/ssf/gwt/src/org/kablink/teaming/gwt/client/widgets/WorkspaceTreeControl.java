@@ -34,6 +34,9 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
@@ -52,6 +55,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
  */
 public class WorkspaceTreeControl extends Composite {
 	private RequestInfo m_requestInfo;
+	private List<OnSelectHandler> m_onSelectHandlers = new ArrayList<OnSelectHandler>();
 	
 	/**
 	 * Constructs a WorkspaceTreeControl based on the information
@@ -62,6 +66,7 @@ public class WorkspaceTreeControl extends Composite {
 	public WorkspaceTreeControl(RequestInfo requestInfo) {
 		m_requestInfo = requestInfo;
 
+		final WorkspaceTreeControl wsTree = this;
 		final FlowPanel mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "workspaceTreeControl" );
 		
@@ -71,12 +76,31 @@ public class WorkspaceTreeControl extends Composite {
 				Window.alert(t.toString());
 			}
 			public void onSuccess(TreeInfo ti)  {
-				ti.render(m_requestInfo, mainPanel);
+				ti.render(m_requestInfo, wsTree, mainPanel);
 			}
 		});
 		
 
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
+	}
+
+	/**
+	 * Called to add an OnSelectHandler to this WorkspaceTreeControl.
+	 * 
+	 * @param onSelectHandler
+	 */
+	public void addOnSelectHandler(OnSelectHandler onSelectHandler) {
+		m_onSelectHandlers.add(onSelectHandler);
+	}
+
+	/**
+	 * Returns the List<OnSelectHandler> of the on select handlers
+	 * registered with the WorkspaceTreeControl.
+	 * 
+	 * @return
+	 */
+	public List<OnSelectHandler> getOnSelectHandlersList() {
+		return m_onSelectHandlers;
 	}
 }

@@ -45,4 +45,15 @@ public class GwtClientHelper {
 	 */
 	private GwtClientHelper() {
 	}
+	
+	/**
+	 * Returns true is s refers to a non null, non 0 length String and
+	 * false otherwise.
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public static boolean hasString(String s) {
+		return ((null != s) && (0 < s.length()));
+	}
 }
