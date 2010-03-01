@@ -43,4 +43,6 @@ public interface LuceneProviderManagerMBean {
 	void setCommitTimeInterval(int commitTimeInterval);
 	
 	void optimize();
+	
+	void optimize(int maxNumSegments);
 }
