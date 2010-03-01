@@ -43,12 +43,10 @@ public class CommitThread extends Thread {
 	// access protected by "this"
     private boolean stop = false;
     
-    private String indexName;
     private LuceneProvider luceneProvider;
 
     public CommitThread(String indexName, LuceneProvider luceneProvider) {
     	super("CT-" + indexName);
-    	this.indexName = indexName;
     	this.luceneProvider = luceneProvider;
     	
     	int commitTimeInterval = luceneProvider.getLuceneProviderManager().getCommitTimeInterval();
@@ -147,8 +145,18 @@ public class CommitThread extends Thread {
      * Called to indicate that one or more docs (adds and/or deletes) have been processed.
      */
     public synchronized void someDocsProcessed() {
-    	if(logger.isTraceEnabled())
-    		logger.trace("Called someDocsProcessed() on " + getName());
-    	notifyAll();
+    	// Instead of waking up the thread and have it check for potential work, we check
+    	// for work here in calling thread and wake up the thread only if there seems to
+    	// be work for the thread to do. This way, we eliminates inefficiency caused by
+    	// unnecessary and excessive context switching.
+    	if(weGotWorkToDo(luceneProvider.getIndexingResource().getCommitStat())) {
+        	if(logger.isTraceEnabled())
+        		logger.trace("Called someDocsProcessed() on " + getName() + ": Notifying the thread");
+    		notifyAll();
+    	}
+    	else {
+        	if(logger.isTraceEnabled())
+        		logger.trace("Called someDocsProcessed() on " + getName() + ": No need to notify the thread");    		
+    	}
     }
 }
