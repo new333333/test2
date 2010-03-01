@@ -51,6 +51,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -99,7 +100,9 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.impl.EntryDataErrors;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.binder.impl.EntryDataErrors.Problem;
 import org.kablink.teaming.module.binder.processor.EntryProcessor;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
@@ -117,6 +120,7 @@ import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.util.DomInputData;
 import org.kablink.teaming.search.SearchFieldResult;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
@@ -1531,6 +1535,18 @@ public class ExportHelper {
 			Integer c = (Integer)reportMap.get(errors);
 			reportMap.put(errors, ++c);
 			((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
+			throw new RemotingException(e);
+		} catch (AccessControlException e) {
+			throw new RemotingException(e);
+		} catch (WriteEntryDataException e) {
+			Integer c = (Integer)reportMap.get(errors);
+			EntryDataErrors errors = e.getErrors();
+			List problems = errors.getProblems();
+			for (int i = 0; i < problems.size(); i++) {
+				((List)reportMap.get(errorList)).add(problems.get(i).toString());
+				c++;
+			}
+			reportMap.put(errors, c);
 			throw new RemotingException(e);
 		}
 	}

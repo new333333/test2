@@ -110,7 +110,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
 	public Entry addEntry(final Binder binder, Definition def, Class clazz, 
     		final InputDataAccessor inputData, Map fileItems, Map options) 
-    	throws WriteFilesException, WriteEntryDataException {
+    	throws WriteFilesException, WriteEntryDataException, WriteEntryDataException {
         // This default implementation is coded after template pattern. 
         
         final Map ctx = new HashMap();
@@ -125,6 +125,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
+        entryDataErrors = (EntryDataErrors) entryDataAll.get(ObjectKeys.DEFINITION_ERRORS);
+        if (entryDataErrors.getProblems().size() > 0) {
+        	//An error occurred processing the entry Data
+        	throw new WriteEntryDataException(entryDataErrors);
+        }
         Entry newEntry = null;
         try {
         	
@@ -323,8 +328,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	Map entryDataAll = new HashMap();
 	        Map entryData = new HashMap();
 			List fileData = new ArrayList();
+			EntryDataErrors entryDataErrors = new EntryDataErrors();
 			entryDataAll.put(ObjectKeys.DEFINITION_ENTRY_DATA, entryData);
 			entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA, fileData);
+			entryDataAll.put(ObjectKeys.DEFINITION_ERRORS, entryDataErrors);
  			if (inputData.exists(ObjectKeys.FIELD_ENTITY_TITLE)) entryData.put(ObjectKeys.FIELD_ENTITY_TITLE, inputData.getSingleValue("title"));
 			if (inputData.exists(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) {
 				Description description = new Description();
@@ -466,6 +473,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	
 	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	    List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
+	    entryDataErrors = (EntryDataErrors) entryDataAll.get(ObjectKeys.DEFINITION_ERRORS);
+        if (entryDataErrors.getProblems().size() > 0) {
+        	//An error occurred processing the entry Data
+        	throw new WriteEntryDataException(entryDataErrors);
+        }
         
 	    try {	    	
 	    	SimpleProfiler.startProfiler("modifyEntry_transactionExecute");
@@ -627,6 +639,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
            	Map entryDataAll = new HashMap();
 	        entryDataAll.put(ObjectKeys.DEFINITION_ENTRY_DATA,  new HashMap());
 	        entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA,  new ArrayList());
+	        entryDataAll.put(ObjectKeys.DEFINITION_ERRORS,  new EntryDataErrors());
 	        return entryDataAll;
         }
     }

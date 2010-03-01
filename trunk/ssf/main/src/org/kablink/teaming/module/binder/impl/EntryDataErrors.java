@@ -71,11 +71,13 @@ public class EntryDataErrors implements Serializable {
 		private static final long serialVersionUID = 1L;
 		
 		// Problem types
-		public static int GENERAL_PROBLEM								= 0;
+		public static int GENERAL_PROBLEM = 0;
+		public static int INVALID_HTML = 1;
 		
 		// Message codes corresponding to each problem type.
 		public static String[] typeCodes = {
-			"general.error.anErrorOccurred"
+			"general.error.anErrorOccurred",
+			"general.error.invalidHTML"
 		};
 		
 		private int type; // required - one of the constants defined above

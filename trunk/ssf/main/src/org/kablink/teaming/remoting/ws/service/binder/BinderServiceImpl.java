@@ -61,6 +61,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.rss.util.UrlUtil;
 import org.kablink.teaming.module.shared.EmptyInputData;
@@ -78,6 +79,7 @@ import org.kablink.teaming.remoting.ws.model.TrashBrief;
 import org.kablink.teaming.remoting.ws.model.TrashCollection;
 import org.kablink.teaming.remoting.ws.util.DomInputData;
 import org.kablink.teaming.remoting.ws.util.ModelInputData;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -116,6 +118,10 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			return getBinderModule().addBinder(new Long(parentId), definitionId, 
 					new DomInputData(doc, getIcalModule()), new HashMap(), null).getId().longValue();
 		} catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		} catch (AccessControlException e) {
+			throw new RemotingException(e);
+		} catch (WriteEntryDataException e) {
 			throw new RemotingException(e);
 		}
 	}
@@ -261,6 +267,10 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 					new ModelInputData(binder), new HashMap(), options).getId().longValue();
 		} catch(WriteFilesException e) {
 			throw new RemotingException(e);
+		} catch (AccessControlException e) {
+			throw new RemotingException(e);
+		} catch (WriteEntryDataException e) {
+			throw new RemotingException(e);
 		}
 	}
 	
@@ -322,6 +332,10 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
+		} catch (AccessControlException e) {
+			throw new RemotingException(e);
+		} catch (WriteEntryDataException e) {
+			throw new RemotingException(e);
 		}			
 	}
 	public void binder_uploadFile(String accessToken, long binderId, String fileUploadDataItemName, String fileName) {
@@ -337,7 +351,11 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			deletes.add(att.getId());
 			getBinderModule().modifyBinder(binderId, new EmptyInputData(), null, deletes, null);
 			
-		}	catch(WriteFilesException e) {
+		} catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		} catch (AccessControlException e) {
+			throw new RemotingException(e);
+		} catch (WriteEntryDataException e) {
 			throw new RemotingException(e);
 		}			
 
@@ -537,8 +555,11 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			// Finally invoke the business method. 
 			getBinderModule().modifyBinder(new Long(binderId),  
 				new EmptyInputData(), fileItems, null, null);
-		}
-		catch(WriteFilesException e) {
+		} catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		} catch (AccessControlException e) {
+			throw new RemotingException(e);
+		} catch (WriteEntryDataException e) {
 			throw new RemotingException(e);
 		}
 	}

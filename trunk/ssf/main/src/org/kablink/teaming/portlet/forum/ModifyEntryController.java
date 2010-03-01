@@ -326,7 +326,7 @@ public class ModifyEntryController extends SAbstractController {
 		
 		if (!errorMsg.equals("")) {
 			model.put(WebKeys.ERROR_MESSAGE, errorMsg);
-			String path = "forum/reload_opener";
+			String path = "forum/reload_previous_page";
 			return new ModelAndView(path, model);
 		}
 		String elementToEdit = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ELEMENT_TO_EDIT, "");

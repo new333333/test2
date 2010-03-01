@@ -393,7 +393,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	// no transaction by default
 	public Binder addBinder(Long parentBinderId, String definitionId,
 			InputDataAccessor inputData, Map fileItems, Map options)
-			throws AccessControlException, WriteFilesException {
+			throws AccessControlException, WriteFilesException, WriteEntryDataException {
 		Binder parentBinder = loadBinder(parentBinderId);
 		Definition def = null;
 		if (Validator.isNotNull(definitionId)) {
@@ -566,7 +566,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
     //no transaction
     public void modifyBinder(Long binderId, String fileDataItemName, String fileName, InputStream content)
-			throws AccessControlException, WriteFilesException {
+			throws AccessControlException, WriteFilesException, WriteEntryDataException {
     	MultipartFile mf = new SimpleMultipartFile(fileName, content);
     	Map<String, MultipartFile> fileItems = new HashMap<String, MultipartFile>();
     	if(fileDataItemName == null)
@@ -578,7 +578,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     // no transaction
 	public void modifyBinder(Long binderId, InputDataAccessor inputData,
 			Map fileItems, Collection<String> deleteAttachments, Map options)
-			throws AccessControlException, WriteFilesException {
+			throws AccessControlException, WriteFilesException, WriteEntryDataException {
 		final Binder binder = loadBinder(binderId);
 
 		if (inputData.exists(ObjectKeys.FIELD_BINDER_MIRRORED)) {

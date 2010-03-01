@@ -99,10 +99,11 @@ public interface BinderModule {
      * @return
      * @throws AccessControlException
      * @throws WriteFilesException
+     * @throws WriteEntryDataException
      */
     public Binder addBinder(Long parentId, String definitionId, InputDataAccessor inputData,
        		Map fileItems, Map options)
-    	throws AccessControlException, WriteFilesException;
+    	throws AccessControlException, WriteFilesException, WriteEntryDataException;
 	/**
 	 * Check access to a binder, throwing an exception if access is denied.
 	 * @param binder
@@ -428,9 +429,10 @@ public interface BinderModule {
      * @param content content of the file as an input stream
      * @throws AccessControlException
      * @throws WriteFilesException
+	 * @throws WriteEntryDataException 
      */
 	public void modifyBinder(Long binderId, String fileDataItemName, String fileName, InputStream content)
-		throws AccessControlException, WriteFilesException;
+		throws AccessControlException, WriteFilesException, WriteEntryDataException;
     /**
      * Modify a binder.  Optionally include files to add and attachments to delete 
      * @param binderId
@@ -440,10 +442,11 @@ public interface BinderModule {
      * @param options - processing options or null
      * @throws AccessControlException
      * @throws WriteFilesException
+     * @throws WriteEntryDataException
      */
     public void modifyBinder(Long binderId, InputDataAccessor inputData, 
     		Map fileItems, Collection<String> deleteAttachments, Map options)
-    	throws AccessControlException, WriteFilesException;
+    	throws AccessControlException, WriteFilesException, WriteEntryDataException;
     /**
      * Modify who gets email notifications. 
      * @param binderId

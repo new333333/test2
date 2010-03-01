@@ -41,6 +41,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Subscription;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.model.DefinableEntity;
@@ -48,6 +49,7 @@ import org.kablink.teaming.remoting.ws.model.FolderEntry;
 import org.kablink.teaming.remoting.ws.model.Timestamp;
 import org.kablink.teaming.remoting.ws.util.DomInputData;
 import org.kablink.teaming.remoting.ws.util.ModelInputData;
+import org.kablink.teaming.security.AccessControlException;
 
 
 public class MigrationServiceImpl extends FolderServiceImpl implements
@@ -118,6 +120,10 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 			return binder.getId().longValue();
 		} catch(WriteFilesException e) {
 			throw new RemotingException(e);
+		} catch (AccessControlException e) {
+			throw new RemotingException(e);
+		} catch (WriteEntryDataException e) {
+			throw new RemotingException(e);
 		}
 	}
 
@@ -142,6 +148,10 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 				getBinderModule().setDefinitionsInherited(binder.getId(), true);
 			return binder.getId().longValue();
 		} catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		} catch (AccessControlException e) {
+			throw new RemotingException(e);
+		} catch (WriteEntryDataException e) {
 			throw new RemotingException(e);
 		}
 	}

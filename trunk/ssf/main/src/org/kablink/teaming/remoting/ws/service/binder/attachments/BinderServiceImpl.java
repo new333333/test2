@@ -36,11 +36,13 @@ import java.io.File;
 import java.util.Map;
 
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.util.attachments.AttachmentsHelper;
 import org.kablink.teaming.remoting.ws.util.attachments.CalendarHelper;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.util.Validator;
 
 public class BinderServiceImpl extends org.kablink.teaming.remoting.ws.service.binder.BinderServiceImpl {
@@ -60,6 +62,10 @@ public class BinderServiceImpl extends org.kablink.teaming.remoting.ws.service.b
 				new EmptyInputData(), fileItems, null, null);
 		}
 		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		} catch (AccessControlException e) {
+			throw new RemotingException(e);
+		} catch (WriteEntryDataException e) {
 			throw new RemotingException(e);
 		}
 	}

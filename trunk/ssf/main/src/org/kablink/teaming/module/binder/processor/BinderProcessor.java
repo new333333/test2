@@ -40,6 +40,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.search.IndexErrors;
@@ -57,7 +58,7 @@ public interface BinderProcessor {
     public static final String PROCESSOR_KEY = "processorKey_binderCoreProcessor";
 
     public Binder addBinder(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Map options) 
-    	throws AccessControlException, WriteFilesException;
+    	throws AccessControlException, WriteFilesException, WriteEntryDataException;
     public Binder copyBinder(Binder source, Binder destination, Map options);
     public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) throws AccessControlException;
   	//return search results
@@ -74,7 +75,7 @@ public interface BinderProcessor {
     public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors);
       
  	public void modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments, Map options) 
-		throws AccessControlException, WriteFilesException;
+		throws AccessControlException, WriteFilesException, WriteEntryDataException;
     public void moveBinder(Binder source, Binder destination, Map options);
     /**
      * Fix up a binder after its parent have been moved

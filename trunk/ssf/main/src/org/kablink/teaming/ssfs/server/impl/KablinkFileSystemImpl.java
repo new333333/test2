@@ -39,6 +39,7 @@ import java.util.Map;
 import javax.activation.FileTypeMap;
 
 import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.ssfs.AlreadyExistsException;
 import org.kablink.teaming.ssfs.CrossContextConstants;
 import org.kablink.teaming.ssfs.LockException;
@@ -186,7 +187,7 @@ implements KablinkFileSystem {
 	
 	public void moveObject(Map sourceUri, Map targetUri, boolean overwrite)
 	throws NoAccessException, NoSuchObjectException, 
-	AlreadyExistsException, TypeMismatchException {
+	AlreadyExistsException, TypeMismatchException, WriteEntryDataException {
 		if(isInternal(sourceUri))
 			ssfsInt.moveObject(sourceUri, targetUri, overwrite);
 		else
