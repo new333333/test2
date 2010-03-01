@@ -110,20 +110,46 @@
 	white-space: nowrap;
 }
 
+/* Style for the anchor next to a Binder in  WorkspaceTree control. */
+.workspaceTreeBinderAnchor
+{
+	color: #1C5894;
+	text-decoration: none;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 1em;
+}
+
+/* Style for the image next to a Binder in  WorkspaceTree control. */
+.workspaceTreeBinderImg
+{
+	padding-right: 2px;
+}
+
+/* Style for the expander image next to a Binder in  WorkspaceTree control. */
+.workspaceTreeExpanderImg
+{
+	margin-top: 10px;
+}
+
 /* Style used by the WorkspaceTree Control */
 .workspaceTreeControl
 {
-	padding: 0 0 15px;
+	background-color: #EFEEEC;
+	padding: 0 0 10px;
 	width: 230px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-moz-border-radius-bottomleft: 5px;
+	-moz-border-radius-bottomright: 5px;
+	-webkit-border-radius-topleft: 5px;
+	-webkit-border-radius-topright: 5px;
+	-webkit-border-radius-bottomleft: 5px;
+	-webkit-border-radius-bottomright: 5px;
 }
 
 /* Style for the header in the WorkspaceTree control */
 .workspaceTreeControlHeader
 {
-	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
-	-webkit-border-radius-topleft: 5px;
-	-webkit-border-radius-topright: 5px;
 	background: #85BCC3 url(images/header_blend_teal_bg.png) repeat-x scroll center bottom;
 	background-position:bottom;
 	color: #FFFFFF;
@@ -131,14 +157,22 @@
 	font-weight: bold;
 	letter-spacing: 0.02em;
 	padding: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-radius-topleft: 5px;
+	-webkit-border-radius-topright: 5px;
 }
 
 /* Style for the body of the WorkspaceTree control. */
 .workspaceTreeControlBody
 {
-	background-color: #EFEEEC;
-	padding: 5px;
-}	
+}
+
+/* Style for each row in the body of the WorkspaceTree control. */
+.workspaceTreeControlRow
+{
+	padding-top: 10px;
+}
 
 /* */
 .fontSize75em

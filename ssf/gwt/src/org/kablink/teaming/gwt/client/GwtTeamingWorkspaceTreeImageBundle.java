@@ -43,15 +43,6 @@ import com.google.gwt.resources.client.ImageResource;
  * @author drfoster
  */
 public interface GwtTeamingWorkspaceTreeImageBundle extends ClientBundle {
-	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/entry_blog.png")
-	public ImageResource entry_blog();
-	
-	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/entry_file.gif")
-	public ImageResource entry_file();
-	
-	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/entry_task.png")
-	public ImageResource entry_task();
-	
 	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_calendar.png")
 	public ImageResource folder_calendar();
 	
@@ -60,6 +51,9 @@ public interface GwtTeamingWorkspaceTreeImageBundle extends ClientBundle {
 	
 	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_file.gif")
 	public ImageResource folder_file();
+	
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_generic.gif")
+	public ImageResource folder_generic();
 	
 	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_photo.png")
 	public ImageResource folder_photo();
@@ -70,9 +64,24 @@ public interface GwtTeamingWorkspaceTreeImageBundle extends ClientBundle {
 	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_trash.png")
 	public ImageResource folder_trash();
 	
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_workspace.gif")
+	public ImageResource folder_workspace();
+	
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/spacer_1px.gif")
+	public ImageResource spacer_1px();
+	
 	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/tree_closer.png")
 	public ImageResource tree_closer();
 	
 	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/tree_opener.png")
 	public ImageResource tree_opener();
+	
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/workspace_generic.gif")
+	public ImageResource workspace_generic();
+	
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/workspace_personal.gif")
+	public ImageResource workspace_personal();
+	
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/workspace_team.gif")
+	public ImageResource workspace_team();
 }

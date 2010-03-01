@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client;
 
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.ClientBundle.Source;
 
 
 /**
@@ -130,4 +131,13 @@ public interface GwtTeamingImageBundle extends ClientBundle
 
 	@Source("org/kablink/teaming/gwt/public/images/warn_icon16.gif")
 	public ImageResource warningIcon16();
+	
+	@Source("org/kablink/teaming/gwt/public/images/entry_blog.png")
+	public ImageResource entry_blog();
+	
+	@Source("org/kablink/teaming/gwt/public/images/entry_file.gif")
+	public ImageResource entry_file();
+	
+	@Source("org/kablink/teaming/gwt/public/images/entry_task.png")
+	public ImageResource entry_task();
 }// end GwtTeamingImageBundle

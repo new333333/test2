@@ -39,11 +39,26 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
 import org.kablink.teaming.gwt.client.RequestInfo;
+import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.widgets.OnSelectHandler;
+import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 
 
 /**
@@ -55,7 +70,7 @@ import com.google.gwt.user.client.ui.Label;
  *
  */
 public class TreeInfo implements IsSerializable {
-	private ArrayList<TreeInfo> m_childBindersAL = new ArrayList<TreeInfo>();
+	private List<TreeInfo> m_childBindersAL = new ArrayList<TreeInfo>();
 	private BinderType m_binderType = BinderType.OTHER;
 	private boolean m_binderExpanded;
 	private FolderType m_folderType = FolderType.NOT_A_FOLDER;
@@ -65,6 +80,11 @@ public class TreeInfo implements IsSerializable {
 	private String m_binderTitle = "";
 	private String m_binderPermalink = "";
 	private WorkspaceType m_wsType = WorkspaceType.NOT_A_WORKSPACE;
+	
+	private final static int BINDER_HEIGHT_INT   = 16; private final static String BINDER_HEIGHT   = (BINDER_HEIGHT_INT   + "px");
+	private final static int BINDER_WIDTH_INT    = 16; private final static String BINDER_WIDTH    = (BINDER_WIDTH_INT    + "px");
+	private final static int EXPANDER_HEIGHT_INT = 16; private final static String EXPANDER_HEIGHT = (EXPANDER_HEIGHT_INT + "px");
+	private final static int EXPANDER_WIDTH_INT  = 16; private final static String EXPANDER_WIDTH  = (EXPANDER_WIDTH_INT  + "px");
 
 	/**
 	 * The type of Binder referenced by this TreeInfo object.  
@@ -111,6 +131,124 @@ public class TreeInfo implements IsSerializable {
 		OTHER,
 		NOT_A_WORKSPACE,
 	}
+
+	/*
+	 * Inner class that implements clicking on the various tree
+	 * expansion widgets.
+	 */
+	private static class Expander implements ClickHandler {
+		private Grid m_grid;
+		private Image m_expanderImg;
+		private int m_gridRow;
+		private RequestInfo m_ri;
+		private TreeInfo m_ti;
+		private WorkspaceTreeControl m_wsTree;
+
+		/**
+		 * Class constructor.
+		 * 
+		 * @param ti
+		 * @param wsTree
+		 * @param grid
+		 * @param gridRow
+		 * @param expanderImg
+		 */
+		public Expander(RequestInfo ri, WorkspaceTreeControl wsTree, TreeInfo ti, Grid grid, int gridRow, Image expanderImg) {
+			// Simply store the parameters.
+			m_ri = ri;
+			m_wsTree = wsTree;
+			m_ti = ti;
+			m_grid = grid;
+			m_gridRow = gridRow;
+			m_expanderImg = expanderImg;
+		}
+
+		/**
+		 * Called when the expander is clicked.
+		 * 
+		 * @param event
+		 */
+		public void onClick(ClickEvent event) {
+			GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
+				
+			// Are we collapsing the row?
+			if (m_ti.isBinderExpanded()) {
+				// Yes!  Can we mark the row as being closed?
+				rpcService.collapseTreeNode(m_ti.m_binderId, new AsyncCallback<Boolean>() {
+					public void onFailure(Throwable t)       {}
+					public void onSuccess(Boolean   success) {
+						// Yes!  Update the TreeInfo, re-render the
+						// row and change the row's Anchor Image to a
+						// tree_opener.
+						m_ti.setBinderExpanded(false);
+						reRenderRow(m_ri, m_wsTree, m_grid, m_gridRow, m_ti);
+						m_expanderImg.setResource(GwtTeaming.getWorkspaceTreeImageBundle().tree_opener());
+					}
+				});
+			}
+				
+			else {
+				// No, we aren't collapsing it!  We must be expanding
+				// it.  Can we get a TreeInfo the expansion?
+				rpcService.expandTreeNode(m_ti.m_binderId, new AsyncCallback<TreeInfo>() {
+					public void onFailure(Throwable t) {}
+					public void onSuccess(TreeInfo expandedTI) {
+						// Yes!  Update the TreeInfo, and if there are
+						// any expanded rows, render them and change the
+						// row's Anchor Image to a tree_closer.
+						m_ti.setBinderExpanded(true);
+						m_ti.setChildBindersList(expandedTI.getChildBindersList());
+						if (0 < m_ti.getBinderChildren()) {
+							reRenderRow(m_ri, m_wsTree, m_grid, m_gridRow, m_ti);
+						}
+						m_expanderImg.setResource(GwtTeaming.getWorkspaceTreeImageBundle().tree_closer());
+					}
+				});
+					
+			}
+		}
+	}
+	
+	/*
+	 * Inner class that implements clicking on the various Binder
+	 * links in the tree.
+	 */
+	public static class Selector implements ClickHandler {
+		private String m_binderId;
+		private WorkspaceTreeControl m_wsTree;
+
+		/**
+		 * Class constructor.
+		 * 
+		 * @param wsTree
+		 * @param binderId
+		 */
+		public Selector(WorkspaceTreeControl wsTree, String binderId) {
+			// Simply store the parameters.
+			m_wsTree = wsTree;
+			m_binderId = binderId;
+		}
+		
+		/**
+		 * Called when the row selector is clicked.
+		 * 
+		 * @param event
+		 */
+		public void onClick(ClickEvent event) {
+			// If we're connected to a WorkspaceTreeControl that's got
+			// some OnSelectHandler's registered...
+			List<OnSelectHandler> oshList = ((null == m_wsTree) ? null : m_wsTree.getOnSelectHandlersList());
+			if ((null != oshList) && (0 < oshList.size())) {
+				// Scan them...
+				for (Iterator<OnSelectHandler> oshIT = oshList.iterator(); oshIT.hasNext(); ) {
+					// Calling each OnSelectHandler with the ID of the
+					// selected Binder.
+					oshIT.next().onSelect(m_binderId);
+				}
+			}
+		}
+	}
+
 	
 	/**
 	 * Constructor method.
@@ -119,6 +257,14 @@ public class TreeInfo implements IsSerializable {
 	 */
 	public TreeInfo() {
 		// Nothing to do.
+	}
+
+	/*
+	 * Removes the widgets from a Grid row.
+	 */
+	private static void clearRow(Grid grid, int row) {
+		grid.remove(grid.getWidget(row, 0));
+		grid.remove(grid.getWidget(row, 1));
 	}
 	
 	/**
@@ -207,12 +353,25 @@ public class TreeInfo implements IsSerializable {
 			case WIKI:                                          break;
 			case OTHER:                                         break;
 			}
+			
+			if (null == reply) {
+				reply = images.folder_generic();
+			}
+			
+			break;
+			
 		case WORKSPACE:
 			switch (getWorkspaceType()) {
-			case TEAM:   break;
-			case USER:   break;
+			case TEAM:   reply = images.workspace_team();     break;
+			case USER:   reply = images.workspace_personal(); break;
 			case OTHER:  break;
 			}
+			
+			if (null == reply) {
+				reply = images.workspace_generic();
+			}
+			
+			break;
 		}
 		
 		return reply;
@@ -301,25 +460,134 @@ public class TreeInfo implements IsSerializable {
 	 * FlowPanel.
 	 *
 	 * @param ri
+	 * @param wsTree
 	 * @param targetPanel
 	 */
-	public void render(RequestInfo ri, FlowPanel targetPanel) {
+	public void render(RequestInfo ri, WorkspaceTreeControl wsTree, FlowPanel targetPanel) {
+		// Create the WorkspaceTree control's header...
 		Label label = new Label(getBinderTitle());
-		label.addStyleName( "workspaceTreeControlHeader" );
-		targetPanel.add( label );
+		label.addStyleName("workspaceTreeControlHeader");
+		targetPanel.add(label);
+
+		// ...its content panel...
+		Grid grid = new Grid();
+		grid.resizeColumns(2);
+		grid.addStyleName("workspaceTreeControlBody");
+		targetPanel.add(grid);
 		
-		FlowPanel panel = new FlowPanel();
-		panel.addStyleName( "workspaceTreeControlBody" );
-		
+		// ...and if there are any rows to display...
 		for (Iterator<TreeInfo> tii = getChildBindersList().iterator(); tii.hasNext(); ) {
-			TreeInfo ti = tii.next();
-			label = new Label(ti.getBinderTitle());
-			panel.add( label );
+			// ...render them.
+			int row = grid.getRowCount();
+			grid.insertRow(row);
+			renderRow(ri, wsTree, grid, row, tii.next());
 		}
+	}
+	
+	/*
+	 * Called to render an individual row in the WorkspaceTree control.
+	 */
+	private static void renderRow(RequestInfo ri, WorkspaceTreeControl wsTree, Grid grid, int row, TreeInfo ti) {
+		// Is this row expandable?
+		Widget expanderWidget;
+		Image expanderImg;
+		ImageResource expanderImgRes = ti.getExpanderImage();
+		boolean showExpander = (null != expanderImgRes);
+		if (showExpander) {
+			// Yes!  Put an expander Anchor to allow expanding and
+			// collapsing of its contents.
+			expanderImg = new Image(expanderImgRes);
+			expanderImg.addStyleName("workspaceTreeExpanderImg");
+			Anchor expanderA = new Anchor();
+			expanderA.getElement().appendChild(expanderImg.getElement());
+			expanderA.addClickHandler(new Expander(ri, wsTree, ti, grid, row, expanderImg));
+			expanderWidget = expanderA;
+		}
+		else {
+			// No, it isn't expandable!  Put a 16x16 spacer in place of
+			// the expander.
+			expanderImgRes = GwtTeaming.getWorkspaceTreeImageBundle().spacer_1px();
+			expanderImg = new Image(expanderImgRes);
+			expanderImg.setWidth(EXPANDER_WIDTH);
+			expanderImg.setHeight(EXPANDER_HEIGHT);
+			expanderWidget = expanderImg;
+		}
+
+		// Generate the widgets to select the Binder.
+		HorizontalPanel hp = new HorizontalPanel();
+		Image binderImg;
+		String binderIconName = ti.getBinderIconName();
+		if (GwtClientHelper.hasString(binderIconName)) {
+			binderImg = new Image();
+			binderImg.setUrl(ri.getImagesPath() + binderIconName);
+		}
+		else {
+			ImageResource binderImgRes = ti.getBinderImage();
+			if (null == binderImgRes) {
+				binderImgRes = GwtTeaming.getWorkspaceTreeImageBundle().spacer_1px();
+				binderImg = new Image(binderImgRes);
+			}
+			else {
+				binderImg = new Image(binderImgRes);
+			}
+			binderImg.setVisibleRect(0, 0, BINDER_WIDTH_INT, BINDER_HEIGHT_INT);
+		}
+		binderImg.addStyleName("workspaceTreeBinderImg");
+		binderImg.setWidth(BINDER_WIDTH);
+		binderImg.setHeight(BINDER_HEIGHT);
+		hp.add(binderImg);
+		Label selectorLabel = new Label(ti.getBinderTitle());
+		selectorLabel.addStyleName("workspaceTreeBinderAnchor");
+		hp.add(selectorLabel);
+		hp.addStyleName("workspaceTreeControlRow");
+		Anchor selectorA = new Anchor();
+		selectorA.getElement().appendChild(hp.getElement());
+		selectorA.addClickHandler(new Selector(wsTree, ti.getBinderId()));
 		
-		targetPanel.add( panel );
+		// Add the row to the Grid.
+		grid.setWidget(row, 0, expanderWidget);
+		grid.setWidget(row, 1, selectorA);
+		
+		CellFormatter cf = grid.getCellFormatter();
+		cf.setWidth(row, 1, "100%");
+		
+		// Is the row showing an expander?
+		if (showExpander) {
+			// Yes!  Align it to the top of its cell.
+			cf.setAlignment(
+				row,
+				0,
+				HasHorizontalAlignment.ALIGN_LEFT,
+				HasVerticalAlignment.ALIGN_TOP);
+
+			// Is the row expanded?
+			if (ti.isBinderExpanded()) {
+				// Yes!  Then we need to render its contents.
+				VerticalPanel vp = new VerticalPanel();
+				Widget w = grid.getWidget(row, 1);
+				grid.remove(w);
+				vp.add(w);
+				Grid expansionGrid = new Grid();
+				expansionGrid.resizeColumns(2);
+				vp.add(expansionGrid);
+				grid.setWidget(row, 1, vp);
+				for (Iterator<TreeInfo> tii = ti.getChildBindersList().iterator(); tii.hasNext(); ) {
+					int expansionRow = expansionGrid.getRowCount();
+					expansionGrid.insertRow(expansionRow);
+					renderRow(ri, wsTree, expansionGrid, expansionRow, tii.next());
+				}
+			}
+		}
 	}
 
+	/*
+	 * Clears and re-renders a TreeInfo object into a Grid row.
+	 */
+	private static void reRenderRow(RequestInfo ri, WorkspaceTreeControl wsTree, Grid grid, int row, TreeInfo ti) {
+		clearRow(grid, row);
+		renderRow(ri, wsTree, grid, row, ti);
+	}
+	
 	/**
 	 * Store a count of the children of a Binder.
 	 * 
@@ -392,6 +660,17 @@ public class TreeInfo implements IsSerializable {
 		if      (m_binderType == BinderType.FOLDER)    {m_folderType = FolderType.OTHER;        m_wsType = WorkspaceType.NOT_A_WORKSPACE;}
 		else if (m_binderType == BinderType.WORKSPACE) {m_folderType = FolderType.NOT_A_FOLDER; m_wsType = WorkspaceType.OTHER;}
 		else                                           {m_folderType = FolderType.NOT_A_FOLDER; m_wsType = WorkspaceType.NOT_A_WORKSPACE;}
+	}
+	
+	/**
+	 * Stores an ArrayList<TreeInfo> of the Binder's contained in the
+	 * Binder corresponding to this TreeInfo.
+	 * 
+	 * @return
+	 */
+	public void setChildBindersList(List<TreeInfo> childBindersList) {
+		m_childBindersAL = childBindersList;
+		m_binderChildren = ((null == m_childBindersAL) ? 0 : m_childBindersAL.size());
 	}
 	
 	/**

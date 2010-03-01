@@ -72,6 +72,6 @@ public interface GwtRpcServiceAsync
 	public void getExtensionFiles(String id, String zoneName, AsyncCallback<ExtensionFiles> callback);
 	public void getUserWorkspacePermalink(AsyncCallback<String> callback);
 	public void getTreeInfo(String binderId, AsyncCallback<TreeInfo> callback);
-	public void expandTreeNode(String binderId, AsyncCallback<Boolean> callback);
+	public void expandTreeNode(String binderId, AsyncCallback<TreeInfo> callback);
 	public void collapseTreeNode(String binderId, AsyncCallback<Boolean> callback);
 }// end GwtRpcServiceAsync

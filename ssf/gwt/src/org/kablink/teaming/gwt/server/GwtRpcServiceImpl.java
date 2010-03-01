@@ -765,15 +765,23 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}
 
 	/**
-	 * Saves the fact that the Binder for the given ID should be
-	 * expanded for the current User.
+	 * Builds a TreeInfo for the Binder being expanded and stores the
+	 * fact that it's been expanded.
 	 * 
 	 * @param binderId
 	 * 
 	 * @return
 	 */
-	public Boolean expandTreeNode(String binderId) {
-		GwtServerHelper.expandTreeNode(this, Long.parseLong(binderId));
-		return Boolean.TRUE;
+	public TreeInfo expandTreeNode(String binderIdS) {
+		// Access the Binder...
+		long binderId = Long.parseLong(binderIdS);
+		Binder binder = getBinderModule().getBinder(binderId);
+		
+		// ...note that the Binder will now be expanded...
+		ArrayList<Long> expandedBindersList = new ArrayList<Long>();
+		expandedBindersList.add(binderId);
+
+		// ...and build the TreeInfo for it.
+		return GwtServerHelper.buildTreeInfoFromBinder(this, binder, expandedBindersList);
 	}
 }// end GwtRpcServiceImpl
