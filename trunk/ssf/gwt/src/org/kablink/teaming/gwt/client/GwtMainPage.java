@@ -39,8 +39,12 @@ import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
 import org.kablink.teaming.gwt.client.widgets.MastHead;
 import org.kablink.teaming.gwt.client.widgets.OnSelectHandler;
+import org.kablink.teaming.gwt.client.widgets.OnSizeChangeHandler;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
@@ -52,12 +56,14 @@ import com.google.gwt.user.client.ui.RootPanel;
  * This widget will display the main Teaming page
  */
 public class GwtMainPage extends Composite
-	implements OnSelectHandler
+	implements OnSelectHandler, OnSizeChangeHandler, ResizeHandler
 {
 	private MastHead m_mastHead;
 	private MainMenuControl m_mainMenuCtrl;
 	private WorkspaceTreeControl m_wsTreeCtrl;
 	private ContentControl m_contentCtrl;
+	private FlowPanel m_contentPanel;
+
 
 	/**
 	 * 
@@ -65,7 +71,6 @@ public class GwtMainPage extends Composite
 	public GwtMainPage()
 	{
 		FlowPanel mainPanel;
-		FlowPanel panel;
 		Element bodyElement;
 		RequestInfo requestInfo;
 
@@ -74,12 +79,14 @@ public class GwtMainPage extends Composite
 		bodyElement.setClassName( "mainTeamingPage" );
 		
 		mainPanel = new FlowPanel();
+		mainPanel.addStyleName( "mainTeamingPagePanel" );
 		
 		// Get information about the request we are dealing with.
 		requestInfo = getRequestInfo();
 		
 		// Add the MastHead to the page.
 		m_mastHead = new MastHead( requestInfo );
+		m_mastHead.addOnSizeChangeHandler( this );
 		mainPanel.add( m_mastHead );
 		
 		// Add the main menu to the page.
@@ -87,24 +94,29 @@ public class GwtMainPage extends Composite
 		mainPanel.add( m_mainMenuCtrl );
 		
 		// Create a panel to hold the WorkspaceTree control and the content control
-		panel = new FlowPanel();
-		panel.addStyleName( "mainContentPanel" );
+		m_contentPanel = new FlowPanel();
+		m_contentPanel.addStyleName( "mainContentPanel" );
 		
 		// Create the WorkspaceTree control.
 		m_wsTreeCtrl = new WorkspaceTreeControl(requestInfo);
 		m_wsTreeCtrl.addStyleName( "mainWorkspaceTreeControl" );
 		m_wsTreeCtrl.addOnSelectHandler( this );
-		panel.add( m_wsTreeCtrl );
+		m_contentPanel.add( m_wsTreeCtrl );
 		
 		// Create the content control.
 		m_contentCtrl = new ContentControl();
 		m_contentCtrl.addStyleName( "mainContentControl" );
-		panel.add( m_contentCtrl );
+//!!!		m_contentCtrl.setUrl( requestInfo.getAdaptedUrl() + "&captive=true" );
+		m_contentPanel.add( m_contentCtrl );
 		
-		mainPanel.add( panel );
+		mainPanel.add( m_contentPanel );
+		
+		// Add a ResizeHandler to the browser so we'll know when the user resizes the browser.
+		Window.addResizeHandler( this );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
+
 	}// end GwtMainPage()
 
 
@@ -126,13 +138,94 @@ public class GwtMainPage extends Composite
 		{
 			OnSelectBinderInfo binderInfo;
 			String binderId;
-			
+
+			// Tell the masthead to update the branding for the newly selected binder.
 			binderInfo = (OnSelectBinderInfo) obj;
 			binderId = binderInfo.getBinderId().toString();
 			m_mastHead.setBinderId( binderId );
+			
+			// Tell the content panel to view the binder.
+			m_contentCtrl.setUrl( binderInfo.getBinderUrl() );
 		}
 		else
 			Window.alert( "in onSelect() and obj is not an OnSelectBinderInfo object" );
 	}// end onSelect()
+
 	
+	/**
+	 * This method gets called when the browser gets resized.
+	 */
+	public void onResize( ResizeEvent event )
+	{
+		// Adjust the height and width of the controls on this page.
+		relayoutPage( true );
+	}// end onResize()
+	
+	
+	/**
+	 * This method will be called when one of the controls on this page changes size.
+	 */
+	public void onSizeChange( Object obj )
+	{
+		// Adjust the height and width of the controls on this page.
+		relayoutPage( false );
+	}// end onSelect()
+
+	
+	/**
+	 * Adjust the height and width of the controls on this page.  Currently the only
+	 * control we adjust is the ContentControl.
+	 */
+	public void relayoutPage( boolean layoutImmediately )
+	{
+		int width;
+		int height;
+
+		// Are we supposed to relayout now?
+		if ( layoutImmediately == true )
+		{
+			// Yes
+			// Calculate how wide the ContentControl should be.
+			{
+				int clientWidth;
+				
+				// Get the width of the browser window's client area.
+				clientWidth = Window.getClientWidth();
+				
+				width = clientWidth - m_contentCtrl.getAbsoluteLeft() - 10; 
+			}
+			
+			// Calculate how high the ContentControl should be.
+			{
+				int clientHeight;
+				
+				// Get the height of the browser window's client area.
+				clientHeight = Window.getClientHeight();
+				
+				height = clientHeight - m_contentPanel.getAbsoluteTop() - 20;
+			}
+			
+			m_contentCtrl.setDimensions( width, height );
+		}
+		else
+		{
+			Timer timer;
+
+			// No, set a timer and then relayout.
+			timer = new Timer()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void run()
+				{
+					relayoutPage( true );
+				}// end run()
+			};
+			
+			timer.schedule( 250 );
+		}
+	}// end relayoutPage()
+
 }// end GwtMainPage
