@@ -98,11 +98,11 @@ public class MarkupUtil {
 	protected final static Pattern attachedImagePattern = Pattern.compile("(<img [^>]*class=\"\\s*ss_addimage_att\\s*\"[^>]*>)");
 	
 	protected final static Pattern iceCoreLinkPattern = Pattern.compile("(<a [^>]*class=\"\\s*ss_icecore_link\\s*\"[^>]*>)(.*)");
-	protected final static Pattern iceCoreLinkRelPattern = Pattern.compile("rel=\"([^\"]*)");
+	protected final static Pattern iceCoreLinkRelPattern = Pattern.compile("rel=\\s*\"([^\"]*)");
 	protected final static Pattern iceCoreLinkAPattern = Pattern.compile("</a>");
 	
 	protected final static Pattern youtubeLinkPattern = Pattern.compile("(<a [^>]*class=\"\\s*ss_youtube_link\\s*\"[^>]*>)([^<]*)</a>");
-	protected final static Pattern youtubeLinkRelPattern = Pattern.compile("rel=\"([^\"]*)");
+	protected final static Pattern youtubeLinkRelPattern = Pattern.compile("rel=\\s*\"([^\"]*)");
 	
 	protected final static Pattern attachmentUrlPattern = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})");
 	protected final static Pattern v1AttachmentFileIdPattern = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})");
