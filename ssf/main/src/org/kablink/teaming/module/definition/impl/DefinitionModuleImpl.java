@@ -1955,7 +1955,25 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		} else if (itemName.equals("folderBranding") || itemName.equals("workspaceBranding")) {
 			if (inputData.exists(nameValue)) {
 				Description description = new Description();
-				description.setText(inputData.getSingleValue(nameValue));
+				String text = mapInputData(inputData.getSingleValue(nameValue));
+				ByteArrayInputStream sr = new ByteArrayInputStream(text.getBytes());
+				ByteArrayOutputStream sw = new ByteArrayOutputStream();
+				TidyMessageListener tml = new TidyMessageListener();
+				Tidy tidy = new Tidy();
+				tidy.setQuiet(true);
+				tidy.setShowWarnings(false);
+				tidy.setMessageListener(tml);
+				tidy.setPrintBodyOnly(true);
+				org.w3c.dom.Document doc = tidy.parseDOM(sr, sw);
+				if (tml.isErrors() || tidy.getParseErrors() > 0) {
+					entryDataErrors.addProblem(new Problem(Problem.INVALID_HTML, null));
+				} else {
+					description.setText(sw.toString());
+					String format = inputData.getSingleValue(nameValue + ".format");
+					if (format != null) {
+						description.setFormat(Integer.valueOf(format));
+					}
+				}
 				//Deal with any markup language transformations before storing the description
 				MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
 				MarkupUtil.scanDescriptionForAttachmentFileUrls(description);
