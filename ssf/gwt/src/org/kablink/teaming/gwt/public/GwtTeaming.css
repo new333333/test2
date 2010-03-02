@@ -740,9 +740,9 @@
 /* Style used with the panel that holds the global actions in the mast head. */
 .mastHeadGlobalActionsPanel
 {
-	right: 10px;
+	right: 20px;
 	position: absolute;
-	top: 5px;
+	top: 15px;
 	white-space: nowrap;
 	z-index: 20;
 }
@@ -763,8 +763,34 @@
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 0.95em;
 	font-style: italic;
+	left: -4px;
 	letter-spacing: 0.05em;
+	position: relative;
+	text-align: right;
+	top: -10px;
 }
+
+/* Style used for links in the masthead. */
+.mastHeadLink
+{
+	color: #1C5894;
+	cursor: pointer;
+	margin-left: 4px;
+	text-decoration: none;
+}
+
+/* Style used for the mouse-over hint for the links in the masthead. */
+.mastHeadMouseOverHint
+{
+	color: #FFFFFF;
+	font-size: 0.7em;
+	overflow: hidden;
+	position: absolute;
+	right: 0px;
+	text-align: center;
+	top: -15px;
+	width: 150px;
+	z-index: 20;
 
 /* Style used to add padding-top: 2px; */
 .paddingTop2px

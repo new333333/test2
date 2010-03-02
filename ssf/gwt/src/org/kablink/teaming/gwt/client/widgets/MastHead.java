@@ -43,28 +43,50 @@ import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
  * This widget will display the MastHead 
  */
 public class MastHead extends Composite
+	implements ClickHandler, MouseOutHandler, MouseOverHandler
 {
 	private RequestInfo m_requestInfo = null;
+	private String m_mastheadBinderId = null;
 //!!!	private BrandingPanel m_level1BrandingPanel = null;
 	private BrandingPanel m_level2BrandingPanel = null;
 	private Image m_backgroundImg = null;
 	private FlowPanel m_mainMastheadPanel = null;
 	private FlowPanel m_mastheadContentPanel = null;
+	private Image m_adminImg1 = null;
+	private Image m_adminImg2 = null;
+	private Image m_myWorkspaceImg1 = null;
+	private Image m_myWorkspaceImg2 = null;
+	private Image m_logoutImg1 = null;
+	private Image m_logoutImg2 = null;
+	private Image m_helpImg1 = null;
+	private Image m_helpImg2 = null;
+	private Anchor m_adminLink = null;
+	private Anchor m_myWorkspaceLink = null;
+	private Anchor m_logoutLink = null;
+	private Anchor m_helpLink = null;
+	private InlineLabel m_mouseOverHint = null;
 	
 	/**
 	 * This class displays branding, either level1(corporate) or level2(sub)
@@ -74,7 +96,7 @@ public class MastHead extends Composite
 		private FlowPanel m_panel;
 		private Image m_novellTeamingImg = null;
 
-		private String m_binderId = null;	// Id of the binder we are displaying branding for.
+		private String m_panelBinderId = null;	// Id of the binder we are displaying branding for.
 
 		private GwtBrandingData m_brandingData = null;	// Branding data for the given binder.
 
@@ -120,9 +142,9 @@ public class MastHead extends Composite
 						// Determine what kind of exception happened.
 						type = ((GwtTeamingException)t).getExceptionType();
 						if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
-							cause = messages.errorAccessToFolderDenied( m_binderId );
+							cause = messages.errorAccessToFolderDenied( m_panelBinderId );
 						else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
-							cause = messages.errorFolderDoesNotExist( m_binderId );
+							cause = messages.errorFolderDoesNotExist( m_panelBinderId );
 						else
 							cause = messages.errorUnknownException();
 					}
@@ -159,17 +181,17 @@ public class MastHead extends Composite
 		 * Issue an ajax request to get the branding data from the server.  Our AsyncCallback
 		 * will be called when this request completes.
 		 */
-		public void getDataFromServer()
+		private void getDataFromServer()
 		{
 			GwtRpcServiceAsync rpcService;
 			
 			rpcService = GwtTeaming.getRpcService();
 			
 			// Do we have a binder id?
-			if ( m_binderId != null )
+			if ( m_panelBinderId != null )
 			{
 				// Yes, Issue an ajax request to get the branding data for the given binder.
-				rpcService.getBinderBrandingData( m_binderId, m_rpcCallback );
+				rpcService.getBinderBrandingData( m_panelBinderId, m_rpcCallback );
 			}
 			else
 			{
@@ -184,7 +206,15 @@ public class MastHead extends Composite
 		 */
 		public void setBinderId( String binderId )
 		{
-			m_binderId = binderId;
+			// Did the binder id change?
+			if ( m_panelBinderId == null || m_panelBinderId.equalsIgnoreCase( binderId ) == false )
+			{
+				// Yes
+				m_panelBinderId = binderId;
+
+				// Issue an ajax request to retrieve the binder branding data.
+				getDataFromServer();
+			}
 		}// end setBinderId()
 		
 		
@@ -218,30 +248,14 @@ public class MastHead extends Composite
 					// No, use the Novell Teaming image for the branding.
 					m_panel.add( m_novellTeamingImg );
 				}
-			}
-			
-			// Set the height of the background image to be equal to the height of the masthead.
-			// We can't do this right now because the browser hasn't rendered anything yet.  So set a timer to do the work later.
-			{
-				Timer timer;
-				
-				timer = new Timer()
-				{
-					/**
-					 * 
-					 */
-					@Override
-					public void run()
-					{
-						// Adjust the height of the masthead to be equal to the height of the masthead content panel.
-						adjustMastheadHeight();
-					}// end run()
-				};
-				
-				timer.schedule( 250 );
+
+				// Adjust the height of the masthead to be equal to the height of the masthead content panel.
+				adjustMastheadHeight();
 			}
 		}// end updatePanel()
 	}// end BrandingPanel
+	
+	
 	
 	
 	/**
@@ -282,30 +296,144 @@ public class MastHead extends Composite
 		
 		// Create the panel that will hold the level-2 or sub branding.
 		m_level2BrandingPanel = new BrandingPanel();
-		m_level2BrandingPanel.setBinderId( m_requestInfo.getBinderId() );
 		m_mastheadContentPanel.add( m_level2BrandingPanel );
 		
 		// Create the panel that will hold the global actions such as "My workspace", "My Teams" etc
 		{
-			Label name;
+			InlineLabel name;
+			ImageResource imgResource;
+			Element linkElement;
 			
 			panel = new FlowPanel();
 			panel.addStyleName( "mastHeadGlobalActionsPanel" );
 			
 			// Create a label that holds the logged-in user's name.
-			name = new Label( requestInfo.getUserName() );
+			name = new InlineLabel( requestInfo.getUserName() );
 			name.addStyleName( "mastHeadUserName" );
 			panel.add( name );
+			
+			// Create a place to hold the mouse-over hint.
+			m_mouseOverHint = new InlineLabel();
+			m_mouseOverHint.addStyleName( "mastHeadMouseOverHint" );
+			panel.add( m_mouseOverHint );
+			
+			// Add the "My workspace" link.
+			{
+				m_myWorkspaceLink = new Anchor();
+				m_myWorkspaceLink.addStyleName( "mastHeadLink" );
+				m_myWorkspaceLink.addClickHandler( this );
+				m_myWorkspaceLink.addMouseOutHandler( this );
+				m_myWorkspaceLink.addMouseOverHandler( this );
+				linkElement = m_myWorkspaceLink.getElement();
+				
+				// Add the mouse-out image to the link.
+				imgResource = GwtTeaming.getImageBundle().myWorkspace1();
+				m_myWorkspaceImg1 = new Image( imgResource );
+				linkElement.appendChild( m_myWorkspaceImg1.getElement() );
+
+				// Add the mouse-over image to the link.
+				imgResource = GwtTeaming.getImageBundle().myWorkspace2();
+				m_myWorkspaceImg2 = new Image( imgResource );
+				m_myWorkspaceImg2.setVisible( false );
+				linkElement.appendChild( m_myWorkspaceImg2.getElement() );
+				
+				panel.add( m_myWorkspaceLink );
+			}
+			
+			// Add the "Administration" link.
+			{
+				m_adminLink = new Anchor();
+				m_adminLink.addStyleName( "mastHeadLink" );
+				m_adminLink.addClickHandler( this );
+				m_adminLink.addMouseOutHandler( this );
+				m_adminLink.addMouseOverHandler( this );
+				linkElement = m_adminLink.getElement();
+				
+				// Add the mouse-out image to the link.
+				imgResource = GwtTeaming.getImageBundle().administration1();
+				m_adminImg1 = new Image( imgResource );
+				linkElement.appendChild( m_adminImg1.getElement() );
+				
+				// Add the mouse-over image to the link.
+				imgResource = GwtTeaming.getImageBundle().administration2();
+				m_adminImg2 = new Image( imgResource );
+				m_adminImg2.setVisible( false );
+				linkElement.appendChild( m_adminImg2.getElement() );
+				
+				panel.add( m_adminLink );
+			}
+			
+			// Add the "Logout" link.
+			{
+				m_logoutLink = new Anchor();
+				m_logoutLink.addStyleName( "mastHeadLink" );
+				m_logoutLink.addClickHandler( this );
+				m_logoutLink.addMouseOutHandler( this );
+				m_logoutLink.addMouseOverHandler( this );
+				linkElement = m_logoutLink.getElement();
+				
+				// Add the mouse-out image to the link.
+				imgResource = GwtTeaming.getImageBundle().logout1();
+				m_logoutImg1 = new Image( imgResource );
+				linkElement.appendChild( m_logoutImg1.getElement() );
+				
+				// Add the mouse-over image to the link.
+				imgResource = GwtTeaming.getImageBundle().logout2();
+				m_logoutImg2 = new Image( imgResource );
+				m_logoutImg2.setVisible( false );
+				linkElement.appendChild( m_logoutImg2.getElement() );
+				
+				panel.add( m_logoutLink );
+			}
+			
+			// Add the "Help" link.
+			{
+				m_helpLink = new Anchor();
+				m_helpLink.addStyleName( "mastHeadLink" );
+				m_helpLink.addClickHandler( this );
+				m_helpLink.addMouseOutHandler( this );
+				m_helpLink.addMouseOverHandler( this );
+				linkElement = m_helpLink.getElement();
+				
+				// Add the mouse-out image to the link.
+				imgResource = GwtTeaming.getImageBundle().help1();
+				m_helpImg1 = new Image( imgResource );
+				linkElement.appendChild( m_helpImg1.getElement() );
+				
+				// Add the mouse-over image to the link.
+				imgResource = GwtTeaming.getImageBundle().help2();
+				m_helpImg2 = new Image( imgResource );
+				m_helpImg2.setVisible( false );
+				linkElement.appendChild( m_helpImg2.getElement() );
+				
+				panel.add( m_helpLink );
+			}
 			
 			m_mastheadContentPanel.add( panel );
 		}
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( m_mainMastheadPanel );
-		
-		// Issue an ajax request to retrieve the corporate and binder branding data.
-//!!!		m_level1BrandingPanel.getDataFromServer();
-		m_level2BrandingPanel.getDataFromServer();
+
+		// Tell the branding panel the binder it is working with.  We can't do this right now
+		// because the browser hasn't rendered anything yes.  So set a timer to do the work later.
+		{
+			Timer timer;
+			
+			timer = new Timer()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void run()
+				{
+					setBinderId( m_requestInfo.getBinderId() );
+				}// end run()
+			};
+			
+			timer.schedule( 250 );
+		}
 	}// end MastHead()
 
 	
@@ -324,5 +452,134 @@ public class MastHead extends Composite
 		m_backgroundImg.setHeight( heightStr );
 		m_mainMastheadPanel.setHeight( heightStr );
 	}// end adjustMastheadHeight()
+
+	
+	/**
+	 * This method gets called when the user clicks on something in the masthead.
+	 */
+	public void onClick( ClickEvent event )
+	{
+		Widget eventSource;
+		
+		// Get the widget that was clicked on.
+		eventSource = (Widget) event.getSource();
+
+		if ( eventSource == m_adminLink )
+		{
+			
+		}
+		else if ( eventSource == m_myWorkspaceLink )
+		{
+			
+		}
+		else if ( eventSource == m_logoutLink )
+		{
+			
+		}
+		else if ( eventSource == m_helpLink )
+		{
+			
+		}
+	}// end onClick()
+	
+	
+	/**
+	 * This method gets called when the user mouses out of something in the masthead.
+	 */
+	public void onMouseOut( MouseOutEvent event )
+	{
+		Widget eventSource;
+		
+		// Get the widget that was clicked on.
+		eventSource = (Widget) event.getSource();
+		
+		// Display the mouse-out image for the appropriate link.
+		if ( eventSource == m_adminLink )
+		{
+			m_adminImg1.setVisible( true );
+			m_adminImg2.setVisible( false );
+		}
+		else if ( eventSource == m_myWorkspaceLink )
+		{
+			m_myWorkspaceImg1.setVisible( true );
+			m_myWorkspaceImg2.setVisible( false );
+		}
+		else if ( eventSource == m_logoutLink )
+		{
+			m_logoutImg1.setVisible( true );
+			m_logoutImg2.setVisible( false );
+		}
+		else if ( eventSource == m_helpLink )
+		{
+			m_helpImg1.setVisible( true );
+			m_helpImg2.setVisible( false );
+		}
+
+		// Remove the mouse-over hint.
+		m_mouseOverHint.setText( "" );
+	}// onMouseOut()
+	
+	
+	/**
+	 * This method gets called when the user mouses over something in the masthead.
+	 */
+	public void onMouseOver( MouseOverEvent event )
+	{
+		Widget eventSource;
+		String hint = "";
+		
+		// Get the widget that was clicked on.
+		eventSource = (Widget) event.getSource();
+		
+		// Display the mouse-over image for the appropriate link.
+		if ( eventSource == m_adminLink )
+		{
+			m_adminImg1.setVisible( false );
+			m_adminImg2.setVisible( true );
+			
+			hint = GwtTeaming.getMessages().administrationHint();
+		}
+		else if ( eventSource == m_myWorkspaceLink )
+		{
+			m_myWorkspaceImg1.setVisible( false );
+			m_myWorkspaceImg2.setVisible( true );
+			
+			hint = GwtTeaming.getMessages().myWorkspaceHint();
+		}
+		else if ( eventSource == m_logoutLink )
+		{
+			m_logoutImg1.setVisible( false );
+			m_logoutImg2.setVisible( true );
+			
+			hint = GwtTeaming.getMessages().logoutHint();
+		}
+		else if ( eventSource == m_helpLink )
+		{
+			m_helpImg1.setVisible( false );
+			m_helpImg2.setVisible( true );
+			
+			hint = GwtTeaming.getMessages().helpHint();
+		}
+		
+		// Update the mouse-over hint.
+		m_mouseOverHint.setText( hint );
+	}// onMouseOver()
+	
+	
+	/**
+	 * Set the id of the binder the masthead is dealing with.
+	 */
+	public void setBinderId( String binderId )
+	{
+		// Did the binder id change?
+		if ( m_mastheadBinderId == null || m_mastheadBinderId.equalsIgnoreCase( binderId ) == false )
+		{
+			// Yes
+			m_mastheadBinderId = binderId;
+
+			// Update the branding in the branding panel.
+			m_level2BrandingPanel.setBinderId( binderId );
+		}
+	}// end setBinderId()
 	
 }// end MastHead
