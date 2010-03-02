@@ -1934,6 +1934,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				tidy.setShowWarnings(false);
 				tidy.setMessageListener(tml);
 				tidy.setPrintBodyOnly(true);
+				tidy.setInputEncoding("UTF-8");
 				org.w3c.dom.Document doc = tidy.parseDOM(sr, sw);
 				if (tml.isErrors() || tidy.getParseErrors() > 0) {
 					entryDataErrors.addProblem(new Problem(Problem.INVALID_HTML, null));
@@ -1964,6 +1965,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				tidy.setShowWarnings(false);
 				tidy.setMessageListener(tml);
 				tidy.setPrintBodyOnly(true);
+				tidy.setInputEncoding("UTF-8");
 				org.w3c.dom.Document doc = tidy.parseDOM(sr, sw);
 				if (tml.isErrors() || tidy.getParseErrors() > 0) {
 					entryDataErrors.addProblem(new Problem(Problem.INVALID_HTML, null));
