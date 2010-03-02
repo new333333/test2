@@ -77,6 +77,7 @@ import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.search.Constants;
 
 
@@ -747,8 +748,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 		}
 		
-		// ...and build the TreeInfo for it.
-		return GwtServerHelper.buildTreeInfoFromBinder(this, binderWS, expandedBindersList);
+		// ...build the TreeInfo for it...
+		TreeInfo reply = GwtServerHelper.buildTreeInfoFromBinder(this, binderWS, expandedBindersList);
+		
+		// ...and if the Binder supports Trash access...
+		boolean allowTrash = TrashHelper.allowUserTrashAccess(GwtServerHelper.getCurrentUser());
+		if (allowTrash && (!(binder.isMirrored()))) {
+			// ...add a TreeInfo to the reply's children for it.
+			GwtServerHelper.addTrashFolder(this, reply, binder);
+		}
+		
+		// If we get here, reply refers to the TreeInfo for the Binder
+		// requested.  Return it.
+		return reply;
 	}
 	
 	/**

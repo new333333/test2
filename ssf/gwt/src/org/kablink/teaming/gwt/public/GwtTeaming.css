@@ -128,14 +128,14 @@
 /* Style for the expander image next to a Binder in  WorkspaceTree control. */
 .workspaceTreeExpanderImg
 {
-	margin-top: 10px;
+	margin-top: 8px;
 }
 
 /* Style used by the WorkspaceTree Control */
 .workspaceTreeControl
 {
 	background-color: #EFEEEC;
-	padding: 0 0 10px;
+	padding: 0 0 8px;
 	width: 230px;
 	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
@@ -171,7 +171,7 @@
 /* Style for each row in the body of the WorkspaceTree control. */
 .workspaceTreeControlRow
 {
-	padding-top: 10px;
+	padding-top: 8px;
 }
 
 /* */

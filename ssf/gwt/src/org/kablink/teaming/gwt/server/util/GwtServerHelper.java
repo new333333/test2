@@ -48,9 +48,12 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo.BinderType;
+import org.kablink.teaming.gwt.client.util.TreeInfo.FolderType;
 import org.kablink.teaming.gwt.client.util.TreeInfo.WorkspaceType;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -98,6 +101,49 @@ public class GwtServerHelper {
 	 */
 	private GwtServerHelper() {
 		// Nothing to do.
+	}
+
+	/**
+	 * Adds a Trash folder to the TreeInfo.
+	 * 
+	 * Note:  At the point this gets called, it is assumed that the
+	 *        caller has done whatever checks need to be done to
+	 *        validate the user's access to the trash on this folder.
+	 * 
+	 * @param bs
+	 * @param ti
+	 * @param binder
+	 */
+	public static void addTrashFolder(AllModulesInjected bs, TreeInfo ti, Binder binder) {
+		// Find the TreeInfo in question and copy it so we can make a
+		// trash TreeInfo out of it.
+		TreeInfo binderTI = findBinderTI(ti, String.valueOf(binder.getId()));
+		TreeInfo trashTI = binderTI.copyBaseTI();
+		
+		// Change the copy to a trash TreeInfo.
+		if (BinderType.FOLDER == trashTI.getBinderType())
+			 trashTI.setFolderType(   FolderType.TRASH   );
+		else trashTI.setWorkspaceType(WorkspaceType.TRASH);
+		trashTI.setBinderExpanded(false);
+		trashTI.setBinderIconName(null);
+		trashTI.setBinderTitle(NLT.get("profile.abv.element.trash"));
+		String trashUrl = trashTI.getBinderPermalink();
+		String marker;
+		boolean useAmpersand = (0 < trashUrl.indexOf("a/do?"));
+		if (useAmpersand)
+			 marker = ("&" + WebKeys.URL_SHOW_TRASH + "=true");
+		else marker = ("/" + WebKeys.URL_SHOW_TRASH + "/true");
+		trashUrl += marker;
+		trashTI.setBinderPermalink(trashUrl);
+
+		// Finally, add the trash TreeInfo to the base TreeInfo's list
+		// of children.
+		List<TreeInfo> childBindersList = ti.getChildBindersList();
+		if (null == childBindersList) {
+			childBindersList = new ArrayList<TreeInfo>();
+		}
+		childBindersList.add(trashTI);
+		ti.setChildBindersList(childBindersList);
 	}
 
 	/**
@@ -225,7 +271,7 @@ public class GwtServerHelper {
 			userProperties.setProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST, usersExpandedBindersList);
 		}
 	}
-	
+
 	/**
 	 * Saves the fact that the Binder for the given ID should be
 	 * expanded for the current User.
@@ -257,7 +303,7 @@ public class GwtServerHelper {
 		// properties?
 		if (updateUsersList) {
 			// Yes!  Add this Binder ID to it and write it.
-			usersExpandedBindersList.add(binderId);
+			usersExpandedBindersList.add(0, binderId);
 			userProperties.setProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST, usersExpandedBindersList);
 		}
 	}
@@ -268,6 +314,38 @@ public class GwtServerHelper {
 	 */
 	public static User getCurrentUser() {
 		return RequestContextHolder.getRequestContext().getUser();
+	}
+
+	/*
+	 * Returns the TreeInfo from another TreeInfo that references a
+	 * specific Binder ID.
+	 */
+	private static TreeInfo findBinderTI(TreeInfo ti, String binderId) {
+		// If this TreeInfo is for the binder in question...
+		if (ti.getBinderId().equals(binderId)) {
+			// ...return it.
+			return ti;
+		}
+
+		// Otherwise, if the TreeInfo has child Binder's...
+		List<TreeInfo> childBindersList = ti.getChildBindersList();
+		if ((null != childBindersList) && (0 < childBindersList.size())) {
+			// ...scan them...
+			for (Iterator<TreeInfo> tii = childBindersList.iterator(); tii.hasNext(); ) {
+				// ...and if one of them references the Binder ID in
+				// ...question...
+				TreeInfo childTI = tii.next();
+				TreeInfo reply = findBinderTI(childTI, binderId);
+				if (null != reply) {
+					// ...return it.
+					return reply;
+				}
+			}
+		}
+
+		// If we get here, the binder ID was nowhere to be found in the
+		// TreeInfo.  Return null.
+		return null;
 	}
 
 	/**
@@ -290,7 +368,7 @@ public class GwtServerHelper {
 		for (Iterator bi = allSubBinders.iterator(); bi.hasNext(); ) {
 			Binder subBinder = ((Binder) bi.next());
 			if (bs.getBinderModule().testAccess(subBinder, BinderOperation.readEntries)) {
-				reply.add(subBinder);
+				reply.add(0, subBinder);
 			}
 		}
 		
@@ -338,7 +416,7 @@ public class GwtServerHelper {
 			if (!(isLongInList(l, expandedBindersList))) {
 				// No!  Added it to it and force the changes to be
 				// written to the User's list.
-				expandedBindersList.add(l);
+				expandedBindersList.add(0, l);
 				updateUsersList = true;
 			}
 		}

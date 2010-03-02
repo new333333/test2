@@ -72,8 +72,6 @@ import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
 
-import com.liferay.util.Http;
-
 
 /**
  * @author Peter Hurley
@@ -199,6 +197,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		String fileName= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_NAME, "");
 		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
 		String captive = PortletRequestUtils.getStringParameter(request, WebKeys.URL_CAPTIVE, null);
+		String showTrash = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SHOW_TRASH, "");
 		EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.none;
 		DefinableEntity entity = null;
 		try {
@@ -363,6 +362,10 @@ public class ViewPermalinkController  extends SAbstractController {
 			url.setParameter(WebKeys.URL_CAPTIVE, "true");
 		else if("false".equals(captive))
 			url.setParameter(WebKeys.URL_CAPTIVE, "false");
+		
+		if (MiscUtil.hasString(showTrash)) {
+			url.setParameter(WebKeys.URL_SHOW_TRASH, showTrash);
+		}
 				
     	return url;
 	}
