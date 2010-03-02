@@ -153,7 +153,7 @@ public class TreeInfo implements IsSerializable {
 		 * @param gridRow
 		 * @param expanderImg
 		 */
-		public Expander(RequestInfo ri, WorkspaceTreeControl wsTree, TreeInfo ti, Grid grid, int gridRow, Image expanderImg) {
+		Expander(RequestInfo ri, WorkspaceTreeControl wsTree, TreeInfo ti, Grid grid, int gridRow, Image expanderImg) {
 			// Simply store the parameters.
 			m_ri = ri;
 			m_wsTree = wsTree;
@@ -213,20 +213,20 @@ public class TreeInfo implements IsSerializable {
 	 * Inner class that implements clicking on the various Binder
 	 * links in the tree.
 	 */
-	public static class Selector implements ClickHandler {
-		private String m_binderId;
+	private static class Selector implements ClickHandler {
+		private TreeInfo m_ti;
 		private WorkspaceTreeControl m_wsTree;
 
 		/**
 		 * Class constructor.
 		 * 
 		 * @param wsTree
-		 * @param binderId
+		 * @param ti
 		 */
-		public Selector(WorkspaceTreeControl wsTree, String binderId) {
+		Selector(WorkspaceTreeControl wsTree, TreeInfo ti) {
 			// Simply store the parameters.
 			m_wsTree = wsTree;
-			m_binderId = binderId;
+			m_ti = ti;
 		}
 		
 		/**
@@ -243,7 +243,7 @@ public class TreeInfo implements IsSerializable {
 				for (Iterator<OnSelectHandler> oshIT = oshList.iterator(); oshIT.hasNext(); ) {
 					// Calling each OnSelectHandler with the ID of the
 					// selected Binder.
-					oshIT.next().onSelect(m_binderId);
+					oshIT.next().onSelect(m_ti.buildOnSelectBinderInfo());
 				}
 			}
 		}
@@ -259,6 +259,16 @@ public class TreeInfo implements IsSerializable {
 		// Nothing to do.
 	}
 
+	/**
+	 * Returns an OnSelectBinderInfo object that corresponds to this
+	 * TreeInfo object.
+	 * 
+	 * @return
+	 */
+	public OnSelectBinderInfo buildOnSelectBinderInfo() {
+		return new OnSelectBinderInfo(this);
+	}
+	
 	/*
 	 * Removes the widgets from a Grid row.
 	 */
@@ -542,7 +552,7 @@ public class TreeInfo implements IsSerializable {
 		hp.addStyleName("workspaceTreeControlRow");
 		Anchor selectorA = new Anchor();
 		selectorA.getElement().appendChild(hp.getElement());
-		selectorA.addClickHandler(new Selector(wsTree, ti.getBinderId()));
+		selectorA.addClickHandler(new Selector(wsTree, ti));
 		
 		// Add the row to the Grid.
 		grid.setWidget(row, 0, expanderWidget);
