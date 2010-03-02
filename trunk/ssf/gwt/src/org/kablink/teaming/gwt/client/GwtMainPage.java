@@ -34,10 +34,11 @@
 package org.kablink.teaming.gwt.client;
 
 
-import org.kablink.teaming.gwt.client.lpe.LandingPageConfig;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
 import org.kablink.teaming.gwt.client.widgets.MastHead;
+import org.kablink.teaming.gwt.client.widgets.OnSelectHandler;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
 import com.google.gwt.user.client.Window;
@@ -51,6 +52,7 @@ import com.google.gwt.user.client.ui.RootPanel;
  * This widget will display the main Teaming page
  */
 public class GwtMainPage extends Composite
+	implements OnSelectHandler
 {
 	private MastHead m_mastHead;
 	private MainMenuControl m_mainMenuCtrl;
@@ -91,6 +93,7 @@ public class GwtMainPage extends Composite
 		// Create the WorkspaceTree control.
 		m_wsTreeCtrl = new WorkspaceTreeControl(requestInfo);
 		m_wsTreeCtrl.addStyleName( "mainWorkspaceTreeControl" );
+		m_wsTreeCtrl.addOnSelectHandler( this );
 		panel.add( m_wsTreeCtrl );
 		
 		// Create the content control.
@@ -113,5 +116,23 @@ public class GwtMainPage extends Composite
 		return $wnd.m_requestInfo;
 	}-*/;
 	
+	
+	/**
+	 * This method will be called when the user selects a binder from the workspace tree control.
+	 */
+	public void onSelect( Object obj )
+	{
+		if ( obj instanceof OnSelectBinderInfo )
+		{
+			OnSelectBinderInfo binderInfo;
+			String binderId;
+			
+			binderInfo = (OnSelectBinderInfo) obj;
+			binderId = binderInfo.getBinderId().toString();
+			m_mastHead.setBinderId( binderId );
+		}
+		else
+			Window.alert( "in onSelect() and obj is not an OnSelectBinderInfo object" );
+	}// end onSelect()
 	
 }// end GwtMainPage

@@ -186,5 +186,9 @@ public interface GwtTeamingMessages extends Messages
 	String errorUnknownException();
 
 	// Strings used with the MastHead
+	String administrationHint();
 	String getBrandingRPCFailed( String cause );
+	String helpHint();
+	String logoutHint();
+	String myWorkspaceHint();
 }// end GwtTeamingMessages

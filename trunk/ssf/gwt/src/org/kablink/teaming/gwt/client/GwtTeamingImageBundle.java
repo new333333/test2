@@ -45,6 +45,12 @@ import com.google.gwt.resources.client.ClientBundle.Source;
  */
 public interface GwtTeamingImageBundle extends ClientBundle
 {
+	@Source("org/kablink/teaming/gwt/public/images/administration1.png")
+	public ImageResource administration1();
+
+	@Source("org/kablink/teaming/gwt/public/images/administration2.png")
+	public ImageResource administration2();
+
 	@Source("org/kablink/teaming/gwt/public/images/browse_hierarchy.png")
 	public ImageResource browseHierarchy();
 
@@ -62,6 +68,12 @@ public interface GwtTeamingImageBundle extends ClientBundle
 
 	@Source("org/kablink/teaming/gwt/public/images/gwt.png")
 	public ImageResource gwtUI();
+
+	@Source("org/kablink/teaming/gwt/public/images/help1.png")
+	public ImageResource help1();
+
+	@Source("org/kablink/teaming/gwt/public/images/help2.png")
+	public ImageResource help2();
 
 	@Source("org/kablink/teaming/gwt/public/images/lpe_custom_jsp.gif")
 	public ImageResource landingPageEditorCustomJsp();
@@ -93,6 +105,12 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/lpe_utility_element.gif")
 	public ImageResource landingPageEditorUtilityElement();
 	
+	@Source("org/kablink/teaming/gwt/public/images/logout1.png")
+	public ImageResource logout1();
+
+	@Source("org/kablink/teaming/gwt/public/images/logout2.png")
+	public ImageResource logout2();
+
 	@Source("org/kablink/teaming/gwt/public/images/mast_head_bg.png")
 	public ImageResource mastHeadBackgroundImage();
 
@@ -101,6 +119,12 @@ public interface GwtTeamingImageBundle extends ClientBundle
 
 	@Source("org/kablink/teaming/gwt/public/images/mast_head_novell_logo.png")
 	public ImageResource mastHeadNovellLogo();
+
+	@Source("org/kablink/teaming/gwt/public/images/my_workspace1.png")
+	public ImageResource myWorkspace1();
+
+	@Source("org/kablink/teaming/gwt/public/images/my_workspace2.png")
+	public ImageResource myWorkspace2();
 
 	@Source("org/kablink/teaming/gwt/public/images/next_16.gif")
 	public ImageResource next16();
