@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Frame;
@@ -52,6 +53,7 @@ public class ContentControl extends Composite
 	public ContentControl()
 	{
 		FlowPanel mainPanel;
+		Element element;
 
 		mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "contentControl" );
@@ -61,6 +63,10 @@ public class ContentControl extends Composite
 		m_frame.getElement().setId( "contentControl" );
 		m_frame.setUrl( "" );
 		mainPanel.add( m_frame );
+		
+		// Give the iframe a name so that view_workarea_navbar.jsp, doesn't set the url of the browser.
+		element = m_frame.getElement();
+		element.setAttribute( "name", "gwtContentIframe" );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
