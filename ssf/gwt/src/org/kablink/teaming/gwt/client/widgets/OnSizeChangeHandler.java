@@ -33,53 +33,13 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
-
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Frame;
-
-
 /**
- * This widget will display the Teaming content for a given folder/workspace
+ * 
+ * @author jwootton
+ *
  */
-public class ContentControl extends Composite
+public interface OnSizeChangeHandler
 {
-	private Frame m_frame;
-	
-	/**
-	 * 
-	 */
-	public ContentControl()
-	{
-		FlowPanel mainPanel;
-
-		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "contentControl" );
-
-		m_frame = new Frame();
-		m_frame.setPixelSize( 700, 500 );
-		m_frame.getElement().setId( "contentControl" );
-		m_frame.setUrl( "" );
-		mainPanel.add( m_frame );
-		
-		// All composites must call initWidget() in their constructors.
-		initWidget( mainPanel );
-	}// end ContentControl()
-	
-	
-	/**
-	 * Set the width and height of this control.
-	 */
-	public void setDimensions( int width, int height )
-	{
-		m_frame.setPixelSize( width, height );
-	}// end setDimensions()
-	
-	/**
-	 * This method will set the url used by the iframe.
-	 */
-	public void setUrl( String url )
-	{
-		m_frame.setUrl( url );
-	}// end setUrl()
-}// end ContentControl
+	// This method gets called when a widgets size changed.
+	public void onSizeChange( Object obj );
+}// end onSizeChangeHandler

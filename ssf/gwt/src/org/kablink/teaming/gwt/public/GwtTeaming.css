@@ -662,7 +662,7 @@
 	left: 39px;
 }
 
-/* Style for the panel that holds the main Teaming page. */
+/* Style for the main Teaming page. */
 .mainTeamingPage
 {
 	background-image: url(images/stripes_bg.png);
@@ -670,6 +670,13 @@
 	font-family: Arial,Helvetica,sans-serif;
 	font-style: normal;
 	font-size: medium;
+}
+
+/* Style for the panel that holds the main Teaming page. */
+.mainTeamingPagePanel
+{
+	height: 100%;
+	width: 100%;
 }
 
 /* Style used to create a bottom margin of .10em */
