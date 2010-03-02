@@ -1674,7 +1674,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	   	    	getCoreDao().evict(tags);
 	   	    	getCoreDao().evict(b);
 			}
-	  		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshhold", 100));
+	  		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshold", 100));
 		}
    		return ids;
 
@@ -1713,7 +1713,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			getCoreDao().evict(b);
 		}
 		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt(
-				"lucene.flush.threshhold", 100));
+				"lucene.flush.threshold", 100));
 
 		return errors;
 

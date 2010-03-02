@@ -985,7 +985,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
  //   	getCoreDao().flush();
  //   	SimpleProfiler.stopProfiler("indexEntries_flush");
   		SFQuery query = indexEntries_getQuery(binder);
-  		int threshhold = SPropsUtil.getInt("lucene.flush.threshhold", 100);
+  		int threshhold = SPropsUtil.getInt("lucene.flush.threshold", 100);
        	try {       
        		List batch = new ArrayList();
   			List docs = new ArrayList();

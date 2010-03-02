@@ -63,8 +63,11 @@ import org.kablink.util.PropsUtil;
 public class LuceneProviderManager implements LuceneProviderManagerMBean {
 
 	private static final int DEFAULT_MAX_BOOLEAN_CLAUSES = 10000;
-	private static final int DEFAULT_COMMIT_NUMBER_OPS = 1000;
+	private static final int DEFAULT_COMMIT_NUMBER_OPS = 5000;
 	private static final int DEFAULT_COMMIT_TIME_INTERVAL = 600; // = 10 minutes
+	private static final boolean DEFAULT_CHECK_FOR_WORK_IN_CALLING_THREAD = false;
+	
+	
 	private static final String SLASH = "/";
 
 	private String indexRootDirPath;
@@ -72,6 +75,7 @@ public class LuceneProviderManager implements LuceneProviderManagerMBean {
 	
     private volatile int commitNumberOps;
     private volatile int commitTimeInterval; // in second
+    private volatile boolean commitCheckForWorkInCallingThread;
 
 	// Access to this map is protected by "this"
 	private Map<String,Object> lockMap = new HashMap<String,Object>();
@@ -120,11 +124,15 @@ public class LuceneProviderManager implements LuceneProviderManagerMBean {
 
 		this.commitNumberOps = PropsUtil.getInt("lucene.index.commit.number.ops", DEFAULT_COMMIT_NUMBER_OPS);
 		this.commitTimeInterval = PropsUtil.getInt("lucene.index.commit.time.interval", DEFAULT_COMMIT_TIME_INTERVAL);
+		this.commitCheckForWorkInCallingThread = PropsUtil.getBoolean("lucene.index.commit.check.for.work.in.calling.thread", DEFAULT_CHECK_FOR_WORK_IN_CALLING_THREAD);
 
 		int maxBooleans = PropsUtil.getInt("lucene.max.booleans", DEFAULT_MAX_BOOLEAN_CLAUSES);
 		BooleanQuery.setMaxClauseCount(maxBooleans);
 		
-		logger.info("commitNumberOps=" + commitNumberOps + ", commitTimeInterval=" + commitTimeInterval + ", maxBooleanClauseCount=" + maxBooleans);
+		logger.info("commitNumberOps=" + commitNumberOps + 
+				", commitTimeInterval=" + commitTimeInterval + 
+				", commitCheckForWorkInCallingThread=" + commitCheckForWorkInCallingThread + 
+				", maxBooleanClauseCount=" + maxBooleans);
 		
 		// Register MBean
 		try {
@@ -200,6 +208,10 @@ public class LuceneProviderManager implements LuceneProviderManagerMBean {
 		return commitTimeInterval;
 	}
 
+	public boolean getCommitCheckForWorkInCallingThread() {
+		return commitCheckForWorkInCallingThread;
+	}
+	
 	public void setCommitNumberOps(int commitNumberOps) {
 		logger.info("Setting commitNumberOps to " + commitNumberOps);
 		this.commitNumberOps = commitNumberOps;
@@ -208,6 +220,11 @@ public class LuceneProviderManager implements LuceneProviderManagerMBean {
 	public void setCommitTimeInterval(int commitTimeInterval) {
 		logger.info("Setting commitTimeInterval to " + commitTimeInterval);
 		this.commitTimeInterval = commitTimeInterval;
+	}
+	
+	public void setCommitCheckForWorkInCallingThread(boolean commitCheckForWorkInCallingThread) {
+		logger.info("Setting commitCheckForWorkInCallingThread to " + commitCheckForWorkInCallingThread);
+		this.commitCheckForWorkInCallingThread = commitCheckForWorkInCallingThread;
 	}
 
 	public void optimize() {
