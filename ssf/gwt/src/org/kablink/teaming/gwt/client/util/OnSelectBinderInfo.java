@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 
 /**
  * Class used to communicate about the selected binder in calls between
@@ -39,9 +41,15 @@ package org.kablink.teaming.gwt.client.util;
  * 
  * @author drfoster@novell.com
  */
-public class OnSelectBinderInfo {
+public class OnSelectBinderInfo implements IsSerializable {
+	private boolean m_isPermalinkUrl;
 	private Long m_binderId;
-	private String m_binderUrl = "";
+	private String m_binderUrl;
+
+	// Various marker strings used to recognize the format of a URL.
+	private final static String AMPERSAND_FORMAT_MARKER = "a/do?";
+	private final static String GWT_MARKER = "seen_by_gwt";
+	private final static String PERMALINK_MARKER = "view_permalink";
 
 	/**
 	 * Constructor method.  (1 of 3)
@@ -49,7 +57,8 @@ public class OnSelectBinderInfo {
 	 * @param ti
 	 */
 	public OnSelectBinderInfo(TreeInfo ti) {
-		this(ti.getBinderId(), ti.getBinderPermalink());
+		// Always use the final form of the constructor.
+		this(Long.parseLong(ti.getBinderId()), ti.getBinderPermalink());
 	}
 
 	/**
@@ -59,6 +68,7 @@ public class OnSelectBinderInfo {
 	 * @param binderUrl
 	 */
 	public OnSelectBinderInfo(String binderId, String binderUrl) {
+		// Always use the final form of the constructor.
 		this(Long.parseLong(binderId), binderUrl);
 	}
 	
@@ -67,10 +77,25 @@ public class OnSelectBinderInfo {
 	 * 
 	 * @param binderId
 	 * @param binderUrl
+	 * @param urlType
 	 */
 	public OnSelectBinderInfo(Long binderId, String binderUrl) {
+		// Store the parameters...
 		m_binderId = binderId;
 		m_binderUrl = binderUrl;
+
+		// ...determine if the URL is a permalink...
+		m_isPermalinkUrl = (0 < binderUrl.indexOf(PERMALINK_MARKER));
+		
+		// ...and if it is and it doesn't have a GWT marker...
+		if (m_isPermalinkUrl && (0 > m_binderUrl.indexOf(GWT_MARKER))) {
+			// ...add a GWT marker.
+			String gwtMarker;
+			if (0 < binderUrl.indexOf(AMPERSAND_FORMAT_MARKER))
+				 gwtMarker = ("&" + GWT_MARKER + "=1");
+			else gwtMarker = ("/" + GWT_MARKER + "/1");
+			m_binderUrl += gwtMarker;
+		}
 	}
 	
 	/**
@@ -89,5 +114,15 @@ public class OnSelectBinderInfo {
 	 */
 	public String getBinderUrl() {
 		return m_binderUrl;
+	}
+
+	/**
+	 * Returns true if the Binder URL is a permalink and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isPermalinkUrl() {
+		return m_isPermalinkUrl;
 	}
 }
