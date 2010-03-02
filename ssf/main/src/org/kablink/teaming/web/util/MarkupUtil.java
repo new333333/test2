@@ -84,24 +84,24 @@ import com.google.gwt.dom.client.Document;
 public class MarkupUtil {
 	protected static Log logger = LogFactory.getLog(MarkupUtil.class);
 	//From Doc: All of the state involved in performing a match resides in the matcher, so many matchers can share the same pattern. 
-	protected final static Pattern uploadImagePattern = Pattern.compile("(<img [^>]*src=\"[^\"]*viewType=ss_viewUploadFile[^>]*>)");
-	protected final static Pattern urlSrcPattern = Pattern.compile("src *= *\"([^\"]*)\"");
+	protected final static Pattern uploadImagePattern = Pattern.compile("(<img [^>]*src\\s*=\\s*\"[^\"]*viewType=ss_viewUploadFile[^>]*>)");
+	protected final static Pattern urlSrcPattern = Pattern.compile("src\\s*=\\s*\"([^\"]*)\"");
 	
 	protected final static Pattern fileIdPattern = Pattern.compile("fileId=([^\\&\"]*)");
 	protected final static Pattern binderIdPattern = Pattern.compile("binderId=([^\\&\"]*)");
 	protected final static Pattern entryIdPattern = Pattern.compile("entryId=([^\\&\"]*)");
 	protected final static Pattern entityTypePattern = Pattern.compile("entityType=([^\\&\"]*)");
 	
-	protected final static Pattern v1AttachmentUrlPattern = Pattern.compile("(<img [^>]*src=\"[^>]*viewType=ss_viewAttachmentFile[^>]*>)");
-	protected final static Pattern readFileImagePattern = Pattern.compile("(<img [^>]*src=\"[^>]*/readFile/[^>]*>)");
+	protected final static Pattern v1AttachmentUrlPattern = Pattern.compile("(<img [^>]*src\\s*=\\s*\"[^>]*viewType=ss_viewAttachmentFile[^>]*>)");
+	protected final static Pattern readFileImagePattern = Pattern.compile("(<img [^>]*src\\s*=\\s*\"[^>]*/readFile/[^>]*>)");
 	protected final static Pattern readFilePathPattern = Pattern.compile("/readFile/[^\"]*");
-	protected final static Pattern attachedImagePattern = Pattern.compile("(<img [^>]*class=\"\\s*ss_addimage_att\\s*\"[^>]*>)");
+	protected final static Pattern attachedImagePattern = Pattern.compile("(<img [^>]*class\\s*=\\s*\"\\s*ss_addimage_att\\s*\"[^>]*>)");
 	
-	protected final static Pattern iceCoreLinkPattern = Pattern.compile("(<a [^>]*class=\"\\s*ss_icecore_link\\s*\"[^>]*>)(.*)");
-	protected final static Pattern iceCoreLinkRelPattern = Pattern.compile("rel=\\s*\"([^\"]*)");
+	protected final static Pattern iceCoreLinkPattern = Pattern.compile("(<a [^>]*class\\s*=\\s*\"\\s*ss_icecore_link\\s*\"[^>]*>)(.*)");
+	protected final static Pattern iceCoreLinkRelPattern = Pattern.compile("rel\\s*=\\s*\"([^\"]*)");
 	protected final static Pattern iceCoreLinkAPattern = Pattern.compile("</a>");
 	
-	protected final static Pattern youtubeLinkPattern = Pattern.compile("(<a [^>]*class=\"\\s*ss_youtube_link\\s*\"[^>]*>)([^<]*)</a>");
+	protected final static Pattern youtubeLinkPattern = Pattern.compile("(<a [^>]*class\\s*=\\s*\"\\s*ss_youtube_link\\s*\"[^>]*>)([^<]*)</a>");
 	protected final static Pattern youtubeLinkRelPattern = Pattern.compile("rel=\\s*\"([^\"]*)");
 	
 	protected final static Pattern attachmentUrlPattern = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})");
