@@ -34,6 +34,7 @@ package org.kablink.teaming.lucene;
 
 import java.io.IOException;
 
+import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
@@ -77,16 +78,24 @@ public class SearcherManager extends IndexSupport {
 		notifyAll();
 	}
 
-	public void maybeReopen() throws InterruptedException, IOException {
+	private IndexReader reopenReader(IndexReader reader) throws IOException {
 		long startTime = System.currentTimeMillis();
 
+		IndexReader newReader = reader.reopen();
+
+		end(startTime, "reopenReader");			
+		
+		return newReader;
+	}
+	
+	public void maybeReopen() throws InterruptedException, IOException {
 		ensureOpen();
 		startReopen();
 		try {
 			final IndexSearcher searcher = getInternal();
 			try {
 				if(!currentSearcher.getIndexReader().isCurrent()) {
-					IndexReader newReader = currentSearcher.getIndexReader().reopen();
+					IndexReader newReader = reopenReader(currentSearcher.getIndexReader());
 					IndexSearcher newSearcher = new IndexSearcher(newReader);
 					swapSearcher(newSearcher);
 				}
@@ -97,18 +106,16 @@ public class SearcherManager extends IndexSupport {
 			doneReopen();
 		}
 		
-		end(startTime, "maybeReopen");
+		logTrace("maybeReopen called");
 	}
 
 	public void forceReopen() throws InterruptedException, IOException {
-		long startTime = System.currentTimeMillis();
-
 		ensureOpen();
 		startReopen();
 		try {
 			final IndexSearcher searcher = getInternal();
 			try {
-				IndexReader newReader = currentSearcher.getIndexReader().reopen();
+				IndexReader newReader = reopenReader(currentSearcher.getIndexReader());
 				IndexSearcher newSearcher = new IndexSearcher(newReader);
 				swapSearcher(newSearcher);
 			} finally {
@@ -118,7 +125,7 @@ public class SearcherManager extends IndexSupport {
 			doneReopen();
 		}
 		
-		end(startTime, "forceReopen");
+		logTrace("forceReopen called");
 	}
 
 	public synchronized IndexSearcher get() {

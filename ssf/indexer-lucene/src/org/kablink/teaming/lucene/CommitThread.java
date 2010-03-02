@@ -145,18 +145,25 @@ public class CommitThread extends Thread {
      * Called to indicate that one or more docs (adds and/or deletes) have been processed.
      */
     public synchronized void someDocsProcessed() {
-    	// Instead of waking up the thread and have it check for potential work, we check
-    	// for work here in calling thread and wake up the thread only if there seems to
-    	// be work for the thread to do. This way, we eliminates inefficiency caused by
-    	// unnecessary and excessive context switching.
-    	if(weGotWorkToDo(luceneProvider.getIndexingResource().getCommitStat())) {
-        	if(logger.isTraceEnabled())
-        		logger.trace("Called someDocsProcessed() on " + getName() + ": Notifying the thread");
-    		notifyAll();
+    	if(luceneProvider.getLuceneProviderManager().getCommitCheckForWorkInCallingThread()) {
+        	// Instead of waking up the thread and have it check for potential work, we check
+        	// for work here in calling thread and wake up the thread only if there seems to
+        	// be work for the thread to do.
+        	if(weGotWorkToDo(luceneProvider.getIndexingResource().getCommitStat())) {
+            	if(logger.isTraceEnabled())
+            		logger.trace("Called someDocsProcessed() on " + getName() + ": Notifying the thread");
+        		notifyAll();
+        	}
+        	else {
+            	if(logger.isTraceEnabled())
+            		logger.trace("Called someDocsProcessed() on " + getName() + ": No need to notify the thread");    		
+        	}    		
     	}
     	else {
+    		// Wake up the thread so that it can check for potential work.
         	if(logger.isTraceEnabled())
-        		logger.trace("Called someDocsProcessed() on " + getName() + ": No need to notify the thread");    		
+        		logger.trace("Called someDocsProcessed() on " + getName() + ": Always notifying the thread");    		
+        	notifyAll();    		
     	}
     }
 }
