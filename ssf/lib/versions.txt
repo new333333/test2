@@ -64,6 +64,7 @@ JSTL 1.0.5
 JSTL Implementation (from Apache) 1.0.6
 JTA 1.0.1b
 JTDS 1.2.2
+JTidy r938
 juh.jar (from OpenOffice 2.0)
 jurt.jar (from OpenOffice 2.0)
 jut.jar (from OpenOffice 2.0)
