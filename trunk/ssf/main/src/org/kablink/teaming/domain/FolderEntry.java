@@ -33,11 +33,14 @@
 package org.kablink.teaming.domain;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.ArrayList;
+
+import org.kablink.teaming.security.function.WorkArea;
 
 import com.sun.org.apache.bcel.internal.generic.ISTORE;
 
@@ -335,4 +338,61 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
 	public void setPreDeletedBy(Long preDeletedBy) {
 		this.preDeletedBy = preDeletedBy;
 	}
+	
+	
+    //*****************WorkArea interface stuff***********/
+    public WorkArea getParentWorkArea() {
+        //For replies, get the top entry as the parent
+        return this.getTopEntry();
+    }
+    public Set getChildWorkAreas() {
+    	//We don't allow access controls to be set for replies
+    	return new HashSet();
+    }
+	/**
+	 * @hibernate.property not-null="true"
+	 * @return
+	 */
+    public boolean isFunctionMembershipInherited() {
+    	if (this.isTop()) {
+    		//The top entry does not inherit
+    		return false;
+    	} else {
+    		//Replies always inherit from the parent
+    		return true;
+    	}
+    }
+    public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
+    }
+	public boolean isFunctionMembershipInheritanceSupported() {
+    	if (this.isTop()) {
+    		//The top entry does not inherit
+    		return false;
+    	} else {
+    		//Replies always inherit from the parent
+    		return true;
+    	}
+    }
+    public Long getOwnerId() {
+    	Principal owner = getOwner();
+    	if (owner == null)	return null;
+    	return owner.getId();
+    }
+     /**
+      * Return the owner of the binder.
+      * The owner default to the creator.
+      * Used in access management.
+      * @hibernate.many-to-one
+      */
+  	public Principal getOwner() {
+ 	   	HistoryStamp creation = getCreation();
+     	if ((creation != null) && creation.getPrincipal() != null) {
+     		return creation.getPrincipal();
+     	}
+     	return null;
+ 		
+ 	}
+ 	public void setOwner(Principal owner) {
+ 	}
+     /*****************End WorkArea interface stuff***********/
 }

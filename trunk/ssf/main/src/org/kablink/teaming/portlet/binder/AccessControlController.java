@@ -48,6 +48,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
@@ -84,6 +85,9 @@ public class AccessControlController extends AbstractBinderController {
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKAREA_TYPE, "");	
 		if (EntityIdentifier.EntityType.zone.name().equals(type)) {
 			workArea = getZoneModule().getZoneConfig(workAreaId);
+		} else if (EntityIdentifier.EntityType.folderEntry.name().equals(type)) {
+			FolderEntry entry = getFolderModule().getEntry(null, workAreaId);
+			workArea = entry;
 		} else {
 			workArea = getBinderModule().getBinder(workAreaId);
 		}
@@ -131,6 +135,9 @@ public class AccessControlController extends AbstractBinderController {
 			ZoneConfig zone = getZoneModule().getZoneConfig(workAreaId);
 			model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(zone.getZoneId()));
 			wArea = zone;
+		} else if (EntityIdentifier.EntityType.folderEntry.name().equals(type)) {
+			FolderEntry entry = getFolderModule().getEntry(null, workAreaId);
+			wArea = entry;
 		} else {
 			Binder binder = getBinderModule().getBinder(workAreaId);			
 			//Build the navigation beans
