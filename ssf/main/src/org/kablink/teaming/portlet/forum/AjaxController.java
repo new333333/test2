@@ -1889,6 +1889,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKAREA_TYPE);	
 		if (EntityIdentifier.EntityType.valueOf(type).isBinder()) {
 			workArea = getBinderModule().getBinder(workAreaId);
+		} else if (EntityIdentifier.EntityType.folderEntry.name().equals(type)) {
+			FolderEntry entry = getFolderModule().getEntry(null, workAreaId);
+			workArea = entry;
 		} else {
 			workArea = getZoneModule().getZoneConfig(workAreaId);
 

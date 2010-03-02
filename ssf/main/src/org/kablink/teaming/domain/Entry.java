@@ -32,12 +32,19 @@
  */
 package org.kablink.teaming.domain;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.kablink.teaming.security.function.WorkArea;
+
 
 /**
  * This class is used to marker a class that is not a <code>Binder</code>
  */
-public abstract class Entry extends DefinableEntity  {
+public abstract class Entry extends DefinableEntity implements WorkArea {
  
+    protected boolean hasAclSet = false;
+
     public Entry() {
     }
 
@@ -52,5 +59,76 @@ public abstract class Entry extends DefinableEntity  {
     public boolean isTop() {
     	return true;
     }
+	public boolean hasAclSet() {
+		return hasAclSet;
+	}
+	public void setHasAclSet(boolean hasAclSet) {
+		this.hasAclSet = hasAclSet;
+	}
+    
+    //*****************WorkArea interface stuff***********/
+    public Long getWorkAreaId() {
+        return getId();
+    }
+    public String getWorkAreaType() {
+        return getEntityType().name();
+    }
+    public WorkArea getParentWorkArea() {
+        //This is the top entry. There is no inheritance from the parent binder.
+        return null;
+    }
+    public Set getChildWorkAreas() {
+    	return new HashSet();
+    }
+	/**
+	 * @hibernate.property not-null="true"
+	 * @return
+	 */
+    public boolean isFunctionMembershipInherited() {
+    	return false;
+    }
+    public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
+    }
+     public boolean isFunctionMembershipInheritanceSupported() {
+    	return false;
+    }
+     public Long getOwnerId() {
+    	Principal owner = getOwner();
+    	if (owner == null)	return null;
+    	return owner.getId();
+    }
+     /**
+      * Return the owner of the binder.
+      * The owner default to the creator.
+      * Used in access management.
+      * @hibernate.many-to-one
+      */
+  	public Principal getOwner() {
+ 	   	HistoryStamp creation = getCreation();
+     	if ((creation != null) && creation.getPrincipal() != null) {
+     		return creation.getPrincipal();
+     	}
+     	return null;
+ 		
+ 	}
+ 	public void setOwner(Principal owner) {
+ 	}
+     public boolean isTeamMembershipInherited() {
+    	return false;   	
+    }
+    public void setTeamMembershipInherited(boolean teamMembershipInherited) {
+    }
+    /**
+     * Return the team member ids
+     * @return
+     */
+    public Set<Long> getTeamMemberIds() {
+    	return new HashSet<Long>();
+    	
+    }
+     public void setTeamMemberIds(Set<Long> memberIds) {
+     }
+     /*****************End WorkArea interface stuff***********/
+
 
 }
