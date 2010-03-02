@@ -462,7 +462,10 @@ public class MastHead extends Composite
 		String heightStr;
 		
 		// Set the height of the background image to be equal to the height of the content of the masthead.
+		// Have a minimum height of 50 pixels.
 		height = m_mastheadContentPanel.getOffsetHeight();
+		if ( height < 50 )
+			height = 50;
 		heightStr = Integer.toString( height );
 		m_backgroundImg.setHeight( heightStr );
 		m_mainMastheadPanel.setHeight( heightStr );
