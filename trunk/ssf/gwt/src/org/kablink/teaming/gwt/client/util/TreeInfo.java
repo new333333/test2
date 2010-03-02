@@ -126,6 +126,7 @@ public class TreeInfo implements IsSerializable {
 		TEAM,
 		TEAM_ROOT,
 		TOP,
+		TRASH,
 		USER,
 		
 		OTHER,
@@ -278,6 +279,33 @@ public class TreeInfo implements IsSerializable {
 	}
 	
 	/**
+	 * Creates a copy TreeInfo with the base information from this
+	 * TreeInfo.
+	 * 
+	 * @return
+	 */
+	public TreeInfo copyBaseTI() {
+		// Create the target TreeInfo...
+		TreeInfo reply = new TreeInfo();
+
+		// ...copy the information from this TreeInfo... 
+		reply.setBinderType(     getBinderType()     );
+		reply.setFolderType(     getFolderType()     );
+		reply.setBinderExpanded( isBinderExpanded()  );
+		reply.setBinderIconName( getBinderIconName() );
+		reply.setBinderId(       getBinderId()       );
+		reply.setBinderTitle(    getBinderTitle()    );
+		reply.setBinderPermalink(getBinderPermalink());
+		reply.setWorkspaceType(  getWorkspaceType()  );
+		
+		// ...store an empty child Binder's List<TreeInfo>...
+		reply.setChildBindersList(new ArrayList<TreeInfo>());
+
+		// ...and return it.
+		return reply;
+	}
+	
+	/**
 	 * Returns the number of children in the Binder corresponding to
 	 * this TreeInfo object.
 	 * 
@@ -372,9 +400,14 @@ public class TreeInfo implements IsSerializable {
 			
 		case WORKSPACE:
 			switch (getWorkspaceType()) {
-			case TEAM:   reply = images.workspace_team();     break;
-			case USER:   reply = images.workspace_personal(); break;
-			case OTHER:  break;
+			case GLOBAL_ROOT:                                        break;
+			case PROFILE_ROOT:                                       break;
+			case TEAM:          reply = images.workspace_team();     break;
+			case TEAM_ROOT:                                          break;
+			case TOP:                                                break;
+			case TRASH:         reply = images.workspace_trash();    break;
+			case USER:          reply = images.workspace_personal(); break;
+			case OTHER:                                              break;
 			}
 			
 			if (null == reply) {

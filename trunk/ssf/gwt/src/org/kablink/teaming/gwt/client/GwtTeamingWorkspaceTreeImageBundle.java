@@ -84,4 +84,7 @@ public interface GwtTeamingWorkspaceTreeImageBundle extends ClientBundle {
 	
 	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/workspace_team.gif")
 	public ImageResource workspace_team();
+	
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/workspace_trash.png")
+	public ImageResource workspace_trash();
 }
