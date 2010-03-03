@@ -379,7 +379,7 @@ public class LuceneProvider extends IndexSupport {
 		}
 	}
 	
-	public org.kablink.teaming.lucene.util.Hits search(Query query) throws LuceneException {
+	public org.kablink.teaming.lucene.Hits search(Query query) throws LuceneException {
 		return this.search(query, 0, -1);
 	}
 
@@ -405,7 +405,7 @@ public class LuceneProvider extends IndexSupport {
 		}	
 	}
 	
-	public org.kablink.teaming.lucene.util.Hits search(Query query, int offset,
+	public org.kablink.teaming.lucene.Hits search(Query query, int offset,
 			int size) throws LuceneException {
 		long startTime = System.currentTimeMillis();
 
@@ -416,7 +416,7 @@ public class LuceneProvider extends IndexSupport {
 					.search(query);
 			if (size < 0)
 				size = hits.length();
-			org.kablink.teaming.lucene.util.Hits tempHits = org.kablink.teaming.lucene.util.Hits
+			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
 					.transfer(hits, offset, size);
 			tempHits.setTotalHits(hits.length());
 
@@ -430,11 +430,11 @@ public class LuceneProvider extends IndexSupport {
 		}
 	}
 
-	public org.kablink.teaming.lucene.util.Hits search(Query query, Sort sort) throws LuceneException {
+	public org.kablink.teaming.lucene.Hits search(Query query, Sort sort) throws LuceneException {
 		return this.search(query, sort, 0, -1);
 	}
 
-	public org.kablink.teaming.lucene.util.Hits search(Query query, Sort sort,
+	public org.kablink.teaming.lucene.Hits search(Query query, Sort sort,
 			int offset, int size) throws LuceneException {
 		long startTime = System.currentTimeMillis();
 
@@ -453,7 +453,7 @@ public class LuceneProvider extends IndexSupport {
 				}
 			if (size < 0)
 				size = hits.length();
-			org.kablink.teaming.lucene.util.Hits tempHits = org.kablink.teaming.lucene.util.Hits
+			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
 					.transfer(hits, offset, size);
 			tempHits.setTotalHits(hits.length());
 
