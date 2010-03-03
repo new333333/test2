@@ -106,7 +106,7 @@ public class GwtMainPage extends Composite
 		// Create the content control.
 		m_contentCtrl = new ContentControl();
 		m_contentCtrl.addStyleName( "mainContentControl" );
-//!!!		m_contentCtrl.setUrl( requestInfo.getAdaptedUrl() + "&captive=true" );
+		m_contentCtrl.setUrl( requestInfo.getAdaptedUrl() + "&captive=true" );
 		m_contentPanel.add( m_contentCtrl );
 		
 		mainPanel.add( m_contentPanel );
