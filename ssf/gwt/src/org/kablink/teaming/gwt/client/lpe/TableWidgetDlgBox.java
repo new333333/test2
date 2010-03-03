@@ -34,10 +34,10 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import java.util.ArrayList;
 
+import org.kablink.teaming.gwt.client.EditCanceledHandler;
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
-import org.kablink.teaming.gwt.client.widgets.EditCanceledHandler;
-import org.kablink.teaming.gwt.client.widgets.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.event.dom.client.ChangeEvent;

@@ -66,6 +66,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
@@ -130,7 +131,8 @@ public class ViewPermalinkController  extends SAbstractController {
 					String lastName;
 
 					// No, don't redirect the url.
-					// Add the binder id to the response.
+
+					// Get the url that we would have redirected to.
 					if ( adaptedPortletUrl != null )
 					{
 						binderId = adaptedPortletUrl.getParameterSingleValue( WebKeys.URL_BINDER_ID );
@@ -145,6 +147,16 @@ public class ViewPermalinkController  extends SAbstractController {
 					
 					// Add the adapted portlet url.
 					response.setRenderParameter( "adaptedUrl", urlStr );
+					
+					// Add the url that will take the user to their workspace.
+					{
+						String myWSUrl = "";
+
+						myWSUrl = PermaLinkUtil.getPermalink( user );
+						
+						// Add the "my workspace" url to the response.
+						response.setRenderParameter( "myWorkspaceUrl", myWSUrl );
+					}
 					
 					// Add the user's name.
 					firstName = user.getFirstName();
@@ -473,6 +485,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			{
 			   String urlStr;
 			   String userName;
+			   String myWSUrl;
 			   
 				// No, let the gwt page handle this permalink
 				
@@ -486,6 +499,10 @@ public class ViewPermalinkController  extends SAbstractController {
 				// Add the user's name to the response.
 				userName = PortletRequestUtils.getStringParameter( request, "userFullName", "" );
 				model.put( "userFullName", userName );
+				
+				// Add the "my workspace" url to the response.
+				myWSUrl = PortletRequestUtils.getStringParameter( request, "myWorkspaceUrl", "" );
+				model.put( "myWorkspaceUrl", myWSUrl );
 				
 				return new ModelAndView( "forum/GwtMainPage", model );
 			}

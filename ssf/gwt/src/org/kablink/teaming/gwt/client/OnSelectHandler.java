@@ -31,15 +31,15 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client.widgets;
+package org.kablink.teaming.gwt.client;
 
 /**
  * 
  * @author jwootton
  *
  */
-public interface EditSuccessfulHandler
+public interface OnSelectHandler
 {
-	// This method gets called when an edit is successful
-	public boolean editSuccessful( Object obj );
-}// end EditSuccessfulHandler
+	// This method gets called when an object is selected.
+	public void onSelect( Object obj );
+}// end onSelect()

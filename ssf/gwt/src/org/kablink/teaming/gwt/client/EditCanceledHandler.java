@@ -31,15 +31,15 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client.widgets;
+package org.kablink.teaming.gwt.client;
 
 /**
  * 
  * @author jwootton
  *
  */
-public interface OnSelectHandler
+public interface EditCanceledHandler
 {
-	// This method gets called when an object is selected.
-	public void onSelect( Object obj );
-}// end onSelect()
+	// This method is called when an edit is canceled.
+	public boolean editCanceled();
+}// end EditCanceledHandler()

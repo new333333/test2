@@ -38,11 +38,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.ActionHandler;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.OnSizeChangeHandler;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.TeamingAction;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
@@ -72,6 +75,7 @@ public class MastHead extends Composite
 	implements ClickHandler, MouseOutHandler, MouseOverHandler
 {
 	private List<OnSizeChangeHandler> m_onSizeChangeHandlers = new ArrayList<OnSizeChangeHandler>();
+	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	private RequestInfo m_requestInfo = null;
 	private String m_mastheadBinderId = null;
 //!!!	private BrandingPanel m_level1BrandingPanel = null;
@@ -441,6 +445,16 @@ public class MastHead extends Composite
 		}
 	}// end MastHead()
 
+
+	/**
+	 * Called to add an ActionHandler to this MastHead
+	 * @param actionHandler
+	 */
+	public void addActionHandler( ActionHandler actionHandler )
+	{
+		m_actionHandlers.add( actionHandler );
+	}// end addActionHandler()
+	
 	
 	/**
 	 * Called to add an OnSizeChangeHandler to this MastHead.
@@ -489,21 +503,26 @@ public class MastHead extends Composite
 		// Get the widget that was clicked on.
 		eventSource = (Widget) event.getSource();
 
-		if ( eventSource == m_adminLink )
+		// Notify all ActionHandler that have registered.
+		for (Iterator<ActionHandler> actionHandlerIT = m_actionHandlers.iterator(); actionHandlerIT.hasNext(); )
 		{
-			
-		}
-		else if ( eventSource == m_myWorkspaceLink )
-		{
-			
-		}
-		else if ( eventSource == m_logoutLink )
-		{
-			
-		}
-		else if ( eventSource == m_helpLink )
-		{
-			
+			// Calling each ActionHandler
+			if ( eventSource == m_adminLink )
+			{
+				actionHandlerIT.next().handleAction( TeamingAction.ADMINISTRATION, null );
+			}
+			else if ( eventSource == m_myWorkspaceLink )
+			{
+				actionHandlerIT.next().handleAction( TeamingAction.MY_WORKSPACE, null );
+			}
+			else if ( eventSource == m_logoutLink )
+			{
+				actionHandlerIT.next().handleAction( TeamingAction.LOGOUT, null );
+			}
+			else if ( eventSource == m_helpLink )
+			{
+				actionHandlerIT.next().handleAction( TeamingAction.HELP, null );
+			}
 		}
 	}// end onClick()
 	

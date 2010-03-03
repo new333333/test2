@@ -31,15 +31,15 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client.widgets;
+package org.kablink.teaming.gwt.client;
 
 /**
  * 
  * @author jwootton
  *
  */
-public interface OnSizeChangeHandler
+public interface EditSuccessfulHandler
 {
-	// This method gets called when a widgets size changed.
-	public void onSizeChange( Object obj );
-}// end onSizeChangeHandler
+	// This method gets called when an edit is successful
+	public boolean editSuccessful( Object obj );
+}// end EditSuccessfulHandler

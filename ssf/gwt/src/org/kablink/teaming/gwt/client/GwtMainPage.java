@@ -38,8 +38,6 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
 import org.kablink.teaming.gwt.client.widgets.MastHead;
-import org.kablink.teaming.gwt.client.widgets.OnSelectHandler;
-import org.kablink.teaming.gwt.client.widgets.OnSizeChangeHandler;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -56,13 +54,14 @@ import com.google.gwt.user.client.ui.RootPanel;
  * This widget will display the main Teaming page
  */
 public class GwtMainPage extends Composite
-	implements OnSelectHandler, OnSizeChangeHandler, ResizeHandler
+	implements ActionHandler, OnSelectHandler, OnSizeChangeHandler, ResizeHandler
 {
 	private MastHead m_mastHead;
 	private MainMenuControl m_mainMenuCtrl;
 	private WorkspaceTreeControl m_wsTreeCtrl;
 	private ContentControl m_contentCtrl;
 	private FlowPanel m_contentPanel;
+	private RequestInfo m_requestInfo;
 
 
 	/**
@@ -72,7 +71,6 @@ public class GwtMainPage extends Composite
 	{
 		FlowPanel mainPanel;
 		Element bodyElement;
-		RequestInfo requestInfo;
 
 		// Set the class name on the <body> element to "mainGwtTeamingPage"
 		bodyElement = RootPanel.getBodyElement();
@@ -82,11 +80,12 @@ public class GwtMainPage extends Composite
 		mainPanel.addStyleName( "mainTeamingPagePanel" );
 		
 		// Get information about the request we are dealing with.
-		requestInfo = getRequestInfo();
+		m_requestInfo = getRequestInfo();
 		
 		// Add the MastHead to the page.
-		m_mastHead = new MastHead( requestInfo );
+		m_mastHead = new MastHead( m_requestInfo );
 		m_mastHead.addOnSizeChangeHandler( this );
+		m_mastHead.addActionHandler( this );
 		mainPanel.add( m_mastHead );
 		
 		// Add the main menu to the page.
@@ -98,7 +97,7 @@ public class GwtMainPage extends Composite
 		m_contentPanel.addStyleName( "mainContentPanel" );
 		
 		// Create the WorkspaceTree control.
-		m_wsTreeCtrl = new WorkspaceTreeControl(requestInfo);
+		m_wsTreeCtrl = new WorkspaceTreeControl( m_requestInfo );
 		m_wsTreeCtrl.addStyleName( "mainWorkspaceTreeControl" );
 		m_wsTreeCtrl.addOnSelectHandler( this );
 		m_contentPanel.add( m_wsTreeCtrl );
@@ -106,7 +105,7 @@ public class GwtMainPage extends Composite
 		// Create the content control.
 		m_contentCtrl = new ContentControl();
 		m_contentCtrl.addStyleName( "mainContentControl" );
-		m_contentCtrl.setUrl( requestInfo.getAdaptedUrl() + "&captive=true" );
+		m_contentCtrl.setUrl( m_requestInfo.getAdaptedUrl() + "&captive=true" );
 		m_contentPanel.add( m_contentCtrl );
 		
 		mainPanel.add( m_contentPanel );
@@ -127,6 +126,40 @@ public class GwtMainPage extends Composite
 		// Return a reference to the JavaScript variable called, m_requestInfo.
 		return $wnd.m_requestInfo;
 	}-*/;
+	
+	
+	/**
+	 * Handle the action that was requested by the user somewhere in the main page.
+	 * For example, the user clicked on "My Workspace" in the masthead.
+	 */
+	public void handleAction( TeamingAction action, Object obj )
+	{
+		String url = "";
+		
+		switch (action)
+		{
+		case ADMINISTRATION:
+			Window.alert( "Administration is not implemented yet." );
+			break;
+			
+		case HELP:
+			Window.alert( "Help is not implemented yet." );
+			break;
+
+		case LOGOUT:
+			Window.alert( "Logout is not implemented yet." );
+			break;
+			
+		case MY_WORKSPACE:
+			// Change the browser's url.
+			Window.Location.replace( m_requestInfo.getMyWorkspaceUrl() );
+			break;
+		
+		default:
+			Window.alert( "Unknown action selected: " + action.getUnlocalizedDesc() );
+			break;
+		}
+	}// end handleAction()
 	
 	
 	/**

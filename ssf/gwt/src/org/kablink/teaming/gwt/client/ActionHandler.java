@@ -31,15 +31,15 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client.widgets;
+package org.kablink.teaming.gwt.client;
 
 /**
  * 
  * @author jwootton
  *
  */
-public interface EditCanceledHandler
+public interface ActionHandler
 {
-	// This method is called when an edit is canceled.
-	public boolean editCanceled();
-}// end EditCanceledHandler()
+	// This method gets called when the user wants to take an action.  For example, logout.
+	public void handleAction( TeamingAction action, Object obj );
+}// end ActionHandler

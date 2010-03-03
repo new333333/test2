@@ -32,9 +32,9 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.EditCanceledHandler;
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.widgets.EditCanceledHandler;
-import org.kablink.teaming.gwt.client.widgets.EditSuccessfulHandler;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
