@@ -418,7 +418,7 @@ public final class MiscUtil
 			qualifiers.put("title", "Enable GWT UI");
 			qualifiers.put("icon", "gwt.png");
 			qualifiers.put("iconGwtUI", "true");
-			qualifiers.put("onClick", "ss_toggleGwtUI();return false;");
+			qualifiers.put("onClick", "ss_toggleGwtUI(true);return false;");
 			gwtUIToolbar.addToolbarMenu("1_gwtUI", "GWT UI", "javascript: //;", qualifiers);
 		}
 	}
