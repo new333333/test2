@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,52 +30,40 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client;
 
-import com.google.gwt.core.client.JavaScriptObject;
 
 
 /**
- * This class wraps a JavaScript object that holds information about the request we are working with.
+ * This class defines all the possible types of actions that a user can request from the GWT main page.
  * @author jwootton
  *
  */
-public class RequestInfo extends JavaScriptObject
+public enum TeamingAction
 {
+	ADMINISTRATION( "Invoke Administration Page" ),
+	HELP( "Help" ),
+	LOGOUT( "Logout" ),
+	MY_WORKSPACE( "My Workspace" );
+
+	private final String m_unlocalizedDesc;
+	
 	/**
-	 * Overlay types always have a protected, zero-arg constructors.
+	 * 
 	 */
-	protected RequestInfo()
+	private TeamingAction( String unlocalizedDesc )
 	{
-	}// end RequestInfo()
-
-	
-	/**
-	 * Return the adapted url.  This class is an overlay on the JavaScript object called m_requestInfo.
-	 */
-	public final native String getAdaptedUrl() /*-{ return this.adaptedUrl; }-*/;
-
-
-	/**
-	 * Return the binder id.  This class is an overlay on the JavaScript object called m_requestInfo.
-	 */
-	public final native String getBinderId() /*-{ return this.binderId; }-*/;
+		m_unlocalizedDesc = unlocalizedDesc;
+	}// end TeamingAction()
 	
 	
 	/**
-	 * Return the user's name.  This class is an overlay on the JavaScript object called m_requestInfo.
+	 * 
 	 */
-	public final native String getUserName() /*-{ return this.userName; }-*/;
-
-	/**
-	 * Return the path to Teaming's images.  This class is an overlay on the JavaScript object called m_requestInfo.
-	 */
-	public final native String getImagesPath() /*-{ return this.imagesPath; }-*/;
-
+	public String getUnlocalizedDesc()
+	{
+		return m_unlocalizedDesc;
+	}// end getUnlocalizedDesc()
 	
-	/**
-	 * Return the "my workspace" url.  This class is an overlay on the JavaScript object called m_requestInfo.
-	 */
-	public final native String getMyWorkspaceUrl() /*-{ return this.myWSUrl; }-*/;
-
-}// end RequestInfo
+}// end TeamingAction

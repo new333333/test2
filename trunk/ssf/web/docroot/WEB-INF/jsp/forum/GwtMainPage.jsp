@@ -58,7 +58,8 @@
 			binderId : '${binderId}',
 			userName : '${userFullName}',
 			adaptedUrl : '${adaptedUrl}',
-			imagesPath : '<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>'
+			imagesPath : '<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
+			myWSUrl : '${myWorkspaceUrl}'
 		};
 	</script>
 

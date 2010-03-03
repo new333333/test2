@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.DeleteHandler;
+import org.kablink.teaming.gwt.client.EditHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.dom.client.ClickEvent;
