@@ -63,6 +63,7 @@ import org.hibernate.engine.SessionFactoryImplementor;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.LongIdComparator;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.KablinkDao;
 import org.kablink.teaming.dao.util.FilterControls;
@@ -1730,6 +1731,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	       	final String id = zoneUUID + "." + entityId;
 	       	final String type = entityType;
 	       	final String key = org.kablink.util.search.Constants.ZONE_UUID_FIELD;
+	       	final String thisZoneId = String.valueOf(RequestContextHolder.getRequestContext().getZoneId());
 	       	return (List<Long>)getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                public Object doInHibernate(Session session) throws HibernateException {
@@ -1737,10 +1739,10 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	                	List readObjs = new ArrayList();
 	                	List objs = null;
 	                	if (type.equals(EntityType.folderEntry.name())) {
-	    					objs = session.createQuery("SELECT owner From org.kablink.teaming.domain.CustomAttribute WHERE name='" + key + "' AND stringValue='" + id + "' AND ownerType='folderEntry'")
+	    					objs = session.createQuery("SELECT owner From org.kablink.teaming.domain.CustomAttribute WHERE name='" + key + "' AND stringValue='" + id + "' AND ownerType='folderEntry' AND zoneId='" + thisZoneId + "'")
 				   			.list();
 	                	} else {
-	    					objs = session.createQuery("SELECT owner From org.kablink.teaming.domain.CustomAttribute WHERE name='" + key + "' AND stringValue='" + id + "' AND (ownerType='folder' OR ownerType='workspace')")
+	    					objs = session.createQuery("SELECT owner From org.kablink.teaming.domain.CustomAttribute WHERE name='" + key + "' AND stringValue='" + id + "' AND (ownerType='folder' OR ownerType='workspace') AND zoneId='" + thisZoneId + "'")
 				   			.list();
 	                	}
 				       	readObjs.add(objs);
