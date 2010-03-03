@@ -393,7 +393,7 @@ public class ProfilesBinderHelper {
 		TrashHelper.buildTrashToolbar(user, binder, model, qualifiers, trashToolbar);
 
 		//GWT UI
-		MiscUtil.buildGwtUIToolbar(user, binder, model, qualifiers, gwtUIToolbar);
+		MiscUtil.buildGwtUIToolbar(request, user, binder, model, qualifiers, gwtUIToolbar);
 
 		//Color themes (removed for now)
 		if (0 == 1 && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {

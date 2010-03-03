@@ -44,6 +44,7 @@ import java.util.Map;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
+import javax.servlet.http.HttpSession;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.AuthenticationConfig;
@@ -53,6 +54,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
@@ -403,6 +405,7 @@ public final class MiscUtil
 	/**
 	 * Builds the GWT UI toolbar for a binder.
 	 * 
+	 * @param request
 	 * @param user
 	 * @param binder
 	 * @param model
@@ -410,9 +413,9 @@ public final class MiscUtil
 	 * @param gwtUIToolbar
 	 */
 	@SuppressWarnings("unchecked")
-	public static void buildGwtUIToolbar(User user, Binder binder, Map model, Map qualifiers, Toolbar gwtUIToolbar) {
-		// If the GWT UI is enabled...
-		if (isGwtUIEnabled()) {
+	public static void buildGwtUIToolbar(RenderRequest request, User user, Binder binder, Map model, Map qualifiers, Toolbar gwtUIToolbar) {
+		// If the GWT UI is enabled and we're not in captive mode...
+		if (isGwtUIEnabled() && (!(isCaptive(request)))) {
 			// ...add the GWT UI button to the menu bar.
 			qualifiers = new HashMap();
 			qualifiers.put("title", "Enable GWT UI");
@@ -421,6 +424,30 @@ public final class MiscUtil
 			qualifiers.put("onClick", "ss_toggleGwtUI(true);return false;");
 			gwtUIToolbar.addToolbarMenu("1_gwtUI", "GWT UI", "javascript: //;", qualifiers);
 		}
+	}
+
+	/**
+	 * Returns true if we're in captive mode, based on the
+	 * RenderRequest and false otherwise.
+	 * 
+	 * @param request
+	 * 
+	 * @return
+	 */
+	public static boolean isCaptive(RenderRequest request) {
+		String captiveParam = PortletRequestUtils.getStringParameter(request, WebKeys.URL_CAPTIVE, "");
+		boolean reply;
+		if (hasString(captiveParam)) {
+			reply = Boolean.valueOf(captiveParam);
+		}
+		else {
+	        HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
+	        Boolean captive = ((Boolean) session.getAttribute(WebKeys.CAPTIVE));
+	        if (null == captive)
+	        	 reply = false;
+	        else reply = captive.booleanValue();
+		}
+		return reply;
 	}
 	
 	/**
