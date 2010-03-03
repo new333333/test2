@@ -8514,28 +8514,31 @@ function ss_getCookie ( cookie_name ) {
 function ss_escapeSQ(s) {
 	return ss_replaceSubStrAll(s, "'", "\\'");
 }
-function ss_toggleGwtUI() {
-	ajaxToggleGwtUI_Submit();
+function ss_toggleGwtUI(goToUserWorkspace) {
+	ajaxToggleGwtUI_Submit(goToUserWorkspace);
 }
 /*
  * Called to handle the response from an AJAX operation to
  * toggle the GWT UI mode.
  */
-function ajaxToggleGwtUI_Response(data) {
-	document.location.href = data.userWorkspaceURL;
+function ajaxToggleGwtUI_Response(data, goToUserWorkspace) {
+	if (goToUserWorkspace) {
+		document.location.href = data.userWorkspaceURL;
+	}
 }
 
 /*
  * Called to submit an AJAX request to toggle the GWT UI.
  */
-function ajaxToggleGwtUI_Submit() {
+function ajaxToggleGwtUI_Submit(goToUserWorkspace) {
 	ss_get_url(
 		ss_buildAdapterUrl(
 			ss_AjaxBaseUrl,
 			{
 				operation:"toggle_gwtUI",
 			}),
-		ajaxToggleGwtUI_Response);
+		ajaxToggleGwtUI_Response,
+		goToUserWorkspace);
 }
 
 dojo.require("dijit.dijit");

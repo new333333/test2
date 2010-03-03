@@ -146,12 +146,12 @@ public class MainMenuControl extends Composite
 						public void onFailure(Throwable t) {}
 						public void onSuccess(String userWorkspaceURL)  {
 							jsToggleGwtUI();
-							jsLoadUserWorkspaceURL(userWorkspaceURL);
+							jsLoadUserWorkspaceURL(userWorkspaceURL + "&captive=false");
 						}
 						
 						private native void jsToggleGwtUI() /*-{
 							// Toggle the GWT UI state.
-							window.top.ss_toggleGwtUI();
+							window.top.ss_toggleGwtUI(false);
 						}-*/;
 
 						private native void jsLoadUserWorkspaceURL(String userWorkspaceURL) /*-{
