@@ -2069,7 +2069,7 @@ public class ListFolderHelper {
 		TrashHelper.buildTrashToolbar(user, folder, model, qualifiers, trashToolbar);
 
 		// GWT UI
-		MiscUtil.buildGwtUIToolbar(user, folder, model, qualifiers, gwtUIToolbar);
+		MiscUtil.buildGwtUIToolbar(request, user, folder, model, qualifiers, gwtUIToolbar);
 
 		// start meeting
 		if (bs.getIcBrokerModule().isEnabled() && 

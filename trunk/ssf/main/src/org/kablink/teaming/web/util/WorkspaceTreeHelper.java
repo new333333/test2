@@ -1009,7 +1009,7 @@ public class WorkspaceTreeHelper {
 		TrashHelper.buildTrashToolbar(user, workspace, model, qualifiers, trashToolbar);
 
 		// GWT UI
-		MiscUtil.buildGwtUIToolbar(user, workspace, model, qualifiers, gwtUIToolbar);
+		MiscUtil.buildGwtUIToolbar(request, user, workspace, model, qualifiers, gwtUIToolbar);
 
 		// start meeting
 		if (bs.getIcBrokerModule().isEnabled() && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
