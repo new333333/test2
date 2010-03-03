@@ -1926,20 +1926,29 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			if (inputData.exists(nameValue)) {
 				Description description = new Description();
 				String text = mapInputData(inputData.getSingleValue(nameValue));
-				ByteArrayInputStream sr = new ByteArrayInputStream(text.getBytes());
-				ByteArrayOutputStream sw = new ByteArrayOutputStream();
-				TidyMessageListener tml = new TidyMessageListener();
-				Tidy tidy = new Tidy();
-				tidy.setQuiet(true);
-				tidy.setShowWarnings(false);
-				tidy.setMessageListener(tml);
-				tidy.setPrintBodyOnly(true);
-				tidy.setInputEncoding("UTF-8");
-				org.w3c.dom.Document doc = tidy.parseDOM(sr, sw);
-				if (tml.isErrors() || tidy.getParseErrors() > 0) {
-					entryDataErrors.addProblem(new Problem(Problem.INVALID_HTML, null));
+				if (SPropsUtil.getBoolean("HTML.validate", true)) {
+					ByteArrayInputStream sr = new ByteArrayInputStream(text.getBytes());
+					ByteArrayOutputStream sw = new ByteArrayOutputStream();
+					TidyMessageListener tml = new TidyMessageListener();
+					Tidy tidy = new Tidy();
+					tidy.setQuiet(true);
+					tidy.setShowWarnings(false);
+					tidy.setMessageListener(tml);
+					tidy.setPrintBodyOnly(true);
+					tidy.setInputEncoding("UTF-8");
+					org.w3c.dom.Document doc = tidy.parseDOM(sr, sw);
+					if (tml.isErrors() || tidy.getParseErrors() > 0) {
+						entryDataErrors.addProblem(new Problem(Problem.INVALID_HTML, null));
+					} else {
+						description.setText(sw.toString());
+						String format = inputData.getSingleValue(nameValue + ".format");
+						if (format != null) {
+							description.setFormat(Integer.valueOf(format));
+						}
+					}
 				} else {
-					description.setText(sw.toString());
+					//HTML validation is turned off, just use whatever the user passed in
+					description.setText(text);
 					String format = inputData.getSingleValue(nameValue + ".format");
 					if (format != null) {
 						description.setFormat(Integer.valueOf(format));
@@ -1957,20 +1966,29 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			if (inputData.exists(nameValue)) {
 				Description description = new Description();
 				String text = mapInputData(inputData.getSingleValue(nameValue));
-				ByteArrayInputStream sr = new ByteArrayInputStream(text.getBytes());
-				ByteArrayOutputStream sw = new ByteArrayOutputStream();
-				TidyMessageListener tml = new TidyMessageListener();
-				Tidy tidy = new Tidy();
-				tidy.setQuiet(true);
-				tidy.setShowWarnings(false);
-				tidy.setMessageListener(tml);
-				tidy.setPrintBodyOnly(true);
-				tidy.setInputEncoding("UTF-8");
-				org.w3c.dom.Document doc = tidy.parseDOM(sr, sw);
-				if (tml.isErrors() || tidy.getParseErrors() > 0) {
-					entryDataErrors.addProblem(new Problem(Problem.INVALID_HTML, null));
+				if (SPropsUtil.getBoolean("HTML.validate", true)) {
+					ByteArrayInputStream sr = new ByteArrayInputStream(text.getBytes());
+					ByteArrayOutputStream sw = new ByteArrayOutputStream();
+					TidyMessageListener tml = new TidyMessageListener();
+					Tidy tidy = new Tidy();
+					tidy.setQuiet(true);
+					tidy.setShowWarnings(false);
+					tidy.setMessageListener(tml);
+					tidy.setPrintBodyOnly(true);
+					tidy.setInputEncoding("UTF-8");
+					org.w3c.dom.Document doc = tidy.parseDOM(sr, sw);
+					if (tml.isErrors() || tidy.getParseErrors() > 0) {
+						entryDataErrors.addProblem(new Problem(Problem.INVALID_HTML, null));
+					} else {
+						description.setText(sw.toString());
+						String format = inputData.getSingleValue(nameValue + ".format");
+						if (format != null) {
+							description.setFormat(Integer.valueOf(format));
+						}
+					}
 				} else {
-					description.setText(sw.toString());
+					//HTML validation is turned off, just use whatever the user passed in
+					description.setText(text);
 					String format = inputData.getSingleValue(nameValue + ".format");
 					if (format != null) {
 						description.setFormat(Integer.valueOf(format));
