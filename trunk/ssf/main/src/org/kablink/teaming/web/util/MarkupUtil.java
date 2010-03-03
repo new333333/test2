@@ -104,6 +104,14 @@ public class MarkupUtil {
 	protected final static Pattern youtubeLinkPattern = Pattern.compile("(<a [^>]*class\\s*=\\s*\"\\s*ss_youtube_link\\s*\"[^>]*>)([^<]*)</a>");
 	protected final static Pattern youtubeLinkRelPattern = Pattern.compile("rel=\\s*\"([^\"]*)");
 	
+	protected final static Pattern permaLinkUrlPattern = Pattern.compile("(href\\s*=\\s*[\"']https?://[^\\s]*/ssf/a/c/[^\\s]*/action/view_permalink/[^\\s\"']*)");
+	protected final static Pattern permaLinkHrefPattern = Pattern.compile("(href\\s*=\\s*[\"'])https?://[^\\s]*/ssf/a/c/[^\\s]*/action/view_permalink/[^\\s\"']*");
+	protected final static Pattern permaLinkEntityTypePattern = Pattern.compile("/entityType/([^\\s/]*)");
+	protected final static Pattern permaLinkEntryIdPattern = Pattern.compile("/entryId/([^\\s/]*)");
+	protected final static Pattern permaLinkEntryTitlePattern = Pattern.compile("/title/([^\\s/]*)");
+	protected final static Pattern permaLinkBinderIdPattern = Pattern.compile("/binderId/([^\\s/]*)");
+	protected final static Pattern permaLinkZoneUUIDPattern = Pattern.compile("/zoneUUID/([^\\s/]*)");
+
 	protected final static Pattern attachmentUrlPattern = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})");
 	protected final static Pattern v1AttachmentFileIdPattern = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})");
 	protected final static Pattern titleUrlPattern = Pattern.compile("(\\{\\{titleUrl: ([^\\}]*)\\}\\})");
@@ -840,7 +848,7 @@ public class MarkupUtil {
      	return outputBuf.toString();
 	}
 	
-	//Routine to fix up descriptios before exporting them
+	//Routine to fix up descriptions before exporting them
 	public static String markupStringReplacementForExport(String inputString) {
     	//Fixup the markup {{titleUrl}} with zoneUUID {{titleUrl: binderId=xxx zoneUUID=xxx title=xxx text=xxx}}
 		StringBuffer outputBuf = new StringBuffer(inputString);
@@ -883,10 +891,34 @@ public class MarkupUtil {
 	    	} while (matcher.find());
 			matcher.appendTail(outputBuf);
 		}
+		//Fixup permalinks
+		matcher = permaLinkUrlPattern.matcher(outputBuf.toString());
+		if (matcher.find()) {
+			loopDetector = 0;
+			outputBuf = new StringBuffer();
+			do {
+				if (loopDetector++ > 2000) {
+					logger.error("Error processing markup [5.1]: " + inputString);
+					return outputBuf.toString();
+				}
+				if (matcher.groupCount() < 1) continue;
+				String s_url = matcher.group(1);
+				String s_zoneUUID = "";
+				Matcher fieldMatcher = permaLinkZoneUUIDPattern.matcher(s_url);
+				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_zoneUUID = fieldMatcher.group(1);
+				if (s_zoneUUID.equals("")) {
+					ZoneInfo zoneInfo = ExportHelper.getZoneInfo();
+					s_url = s_url.replaceFirst("/action/view_permalink/", "/action/view_permalink/zoneUUID/" + String.valueOf(zoneInfo.getId()) + "/");
+				}
+		    		
+    			matcher.appendReplacement(outputBuf, s_url);
+	    	} while (matcher.find());
+			matcher.appendTail(outputBuf);
+		}
      	return outputBuf.toString();
 	}
 	
-	//Routine to fix up descriptios before exporting them
+	//Routine to fix up descriptions before exporting them
 	public static String markupStringReplacementForMashupCanvasExport(String inputString) {
 		return DefinitionHelper.fixupMashupCanvasForExport(inputString);
 	}
@@ -1090,7 +1122,77 @@ public class MarkupUtil {
 					}
 					
 					//Scan for permalinks to fix up
-					//TODO add code here
+					outputBuf = new StringBuffer(description.getText());
+					matcher = permaLinkUrlPattern.matcher(outputBuf.toString());
+					if (matcher.find()) {
+						loopDetector = 0;
+						outputBuf = new StringBuffer();
+						do {
+							if (loopDetector++ > 2000) {
+								logger.error("Error processing markup [5.2]: " + description.getText());
+								break;
+							}
+							if (matcher.groupCount() < 1) continue;
+							String s_url = matcher.group(1);
+							String s_entryId = "";
+							Matcher fieldMatcher = permaLinkEntryIdPattern.matcher(s_url);
+							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_entryId = fieldMatcher.group(1);
+							String s_entryTitle = "";
+							fieldMatcher = permaLinkEntryTitlePattern.matcher(s_url);
+							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_entryTitle = fieldMatcher.group(1);
+							String s_binderId = "";
+							fieldMatcher = permaLinkBinderIdPattern.matcher(s_url);
+							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_binderId = fieldMatcher.group(1);
+							String s_entityType = "";
+							fieldMatcher = permaLinkEntityTypePattern.matcher(s_url);
+							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_entityType = fieldMatcher.group(1);
+							String s_zoneUUID = "";
+							fieldMatcher = permaLinkZoneUUIDPattern.matcher(s_url);
+							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_zoneUUID = fieldMatcher.group(1);
+							String href = "";
+							fieldMatcher = permaLinkHrefPattern.matcher(s_url);
+							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) href = fieldMatcher.group(1);
+							if (!s_zoneUUID.equals("")) {
+								//This permalink was exported from another system. See if it can be recast to this system
+								String url = "";
+								if (!s_binderId.equals("") && binderIdMap.containsKey(Long.valueOf(s_binderId)) && 
+										(EntityType.folder.name().equals(s_entityType)) || 
+										EntityType.workspace.name().equals(s_entityType)) {
+									s_binderId = String.valueOf(binderIdMap.get(Long.valueOf(s_binderId)));
+									url = PermaLinkUtil.getPermalink(Long.valueOf(s_binderId), EntityType.valueOf(s_entityType));
+								}
+								if (!s_entryId.equals("") && entryIdMap.containsKey(Long.valueOf(s_entryId)) &&
+										EntityType.folderEntry.name().equals(s_entityType)) {
+									s_entryId = String.valueOf(entryIdMap.get(Long.valueOf(s_entryId)));
+									url = PermaLinkUtil.getPermalink(Long.valueOf(s_entryId), EntityType.valueOf(s_entityType));
+								}
+								if (!url.equals("")) {
+									s_url = href + url;
+								
+								} else {
+									//Recast the url to this system without doing the id translation
+									if (!s_binderId.equals("") &&  (EntityType.folder.name().equals(s_entityType)) || 
+											EntityType.workspace.name().equals(s_entityType)) {
+										url = PermaLinkUtil.getPermalink(Long.valueOf(s_binderId), EntityType.valueOf(s_entityType));
+									}
+									if (!s_entryId.equals("") && EntityType.folderEntry.name().equals(s_entityType)) {
+										url = PermaLinkUtil.getPermalink(Long.valueOf(s_entryId), EntityType.valueOf(s_entityType));
+									}
+									if (!url.equals("")) {
+										url += "&zoneUUID=" + s_zoneUUID;
+										s_url = href + url;
+									}
+								}
+							}
+					    		
+			    			matcher.appendReplacement(outputBuf, s_url);
+				    	} while (matcher.find());
+						matcher.appendTail(outputBuf);
+						if (!outputBuf.toString().equals(description.getText())) {
+							description.setText(outputBuf.toString());
+							dataChanged = true;
+						}
+					}
 					
 				}
 				

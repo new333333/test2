@@ -53,6 +53,7 @@ import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.PortletResponseImpl;
@@ -191,6 +192,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
 		if (httpReq != null) isMobile = BrowserSniffer.is_mobile(httpReq, userAgents);
 		//binderId is not longer required on all entries
+		String zoneUUID= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
 		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		String fileId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");
@@ -232,17 +234,23 @@ public class ViewPermalinkController  extends SAbstractController {
 				entity = getFolderModule().getEntry(null, Long.valueOf(entryId));
 				url.setParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());
 				url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+				if (!zoneUUID.equals("")) url.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
 				url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MOBILE_AJAX);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_ENTRY);
 			} else {
 				//entries move so the binderId may not be valid
 				if (Validator.isNotNull(entryId)) {
+					Long targetEntryId = getFolderModule().getZoneEntryId(Long.valueOf(entryId), zoneUUID);
+					if (targetEntryId != null) entryId = targetEntryId.toString();
 					entity = getFolderModule().getEntry(null, Long.valueOf(entryId));
 					url.setParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());
 					url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 				} else {
+					Long targetBinderId = getBinderModule().getZoneBinderId(Long.valueOf(binderId), zoneUUID, entityType.name());
+					if (targetBinderId != null) binderId = String.valueOf(targetBinderId);
 					entity = getBinderModule().getBinder(Long.valueOf(binderId));
-					url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
+					url.setParameter(WebKeys.URL_BINDER_ID, binderId);
+					if (!zoneUUID.equals("")) url.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
 					url.setParameter(WebKeys.URL_ENTRY_TITLE, entryTitle);
 				}
 				
