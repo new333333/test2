@@ -53,20 +53,20 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 		this.luceneProvider = luceneProvider;
 	}
 
-	public org.kablink.teaming.lucene.util.Hits search(Query query) {
+	public org.kablink.teaming.lucene.Hits search(Query query) {
 		return this.search(query, 0, -1);
 	}
 
-	public org.kablink.teaming.lucene.util.Hits search(Query query, int offset,
+	public org.kablink.teaming.lucene.Hits search(Query query, int offset,
 			int size) {
 		return luceneProvider.search(query, offset, size);
 	}
 
-	public org.kablink.teaming.lucene.util.Hits search(Query query, Sort sort) {
+	public org.kablink.teaming.lucene.Hits search(Query query, Sort sort) {
 		return this.search(query, sort, 0, -1);
 	}
 
-	public org.kablink.teaming.lucene.util.Hits search(Query query, Sort sort,
+	public org.kablink.teaming.lucene.Hits search(Query query, Sort sort,
 			int offset, int size) {
 		return luceneProvider.search(query, sort, offset, size);
 	}
