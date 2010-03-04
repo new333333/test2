@@ -1058,6 +1058,13 @@ public class MarkupUtil {
 	public static void fixupImportedLinks(final DefinableEntity entity, final Long originalEntityId,
 			final Map<Long, Long> binderIdMap, final Map<Long, Long> entryIdMap) {
 		final Map<String,Object> data = new HashMap<String,Object>(); // Changed data
+		CustomAttribute ca_zoneUUID = entity.getCustomAttribute("_zoneUUID");
+		String s_zoneUUID = "";
+		if (ca_zoneUUID != null) s_zoneUUID = (String)ca_zoneUUID.getValue();
+		if (s_zoneUUID != null && s_zoneUUID.contains(".")) {
+			s_zoneUUID = s_zoneUUID.substring(0, s_zoneUUID.indexOf("."));
+		}
+		final String entity_zoneUUID = s_zoneUUID;
 			
 		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
 			public void visit(Element entityElement, Element flagElement, Map args) {
@@ -1146,13 +1153,13 @@ public class MarkupUtil {
 							String s_entityType = "";
 							fieldMatcher = permaLinkEntityTypePattern.matcher(s_url);
 							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_entityType = fieldMatcher.group(1);
-							String s_zoneUUID = "";
+							String s_zoneUUID = entity_zoneUUID;
 							fieldMatcher = permaLinkZoneUUIDPattern.matcher(s_url);
 							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_zoneUUID = fieldMatcher.group(1);
 							String href = "";
 							fieldMatcher = permaLinkHrefPattern.matcher(s_url);
 							if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) href = fieldMatcher.group(1);
-							if (!s_zoneUUID.equals("")) {
+							if (s_zoneUUID != null && !s_zoneUUID.equals("")) {
 								//This permalink was exported from another system. See if it can be recast to this system
 								String url = "";
 								if (!s_binderId.equals("") && binderIdMap.containsKey(Long.valueOf(s_binderId)) && 
