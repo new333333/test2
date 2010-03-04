@@ -36,10 +36,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.ActionHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
-import org.kablink.teaming.gwt.client.OnSelectHandler;
 import org.kablink.teaming.gwt.client.RequestInfo;
+import org.kablink.teaming.gwt.client.TeamingAction;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
@@ -248,16 +249,16 @@ public class TreeInfo implements IsSerializable {
 		 */
 		public void onClick(ClickEvent event) {
 			// If we're connected to a WorkspaceTreeControl that's got
-			// some OnSelectHandler's registered...
+			// some ActionHandler's registered...
 			m_ti.selectBinder();
-			List<OnSelectHandler> oshList = ((null == m_wsTree) ? null : m_wsTree.getOnSelectHandlersList());
-			if ((null != oshList) && (0 < oshList.size())) {
+			List<ActionHandler> ahList = ((null == m_wsTree) ? null : m_wsTree.getActionHandlersList());
+			if ((null != ahList) && (0 < ahList.size())) {
 				// Scan them...
 				OnSelectBinderInfo osbi = m_ti.buildOnSelectBinderInfo();
-				for (Iterator<OnSelectHandler> oshIT = oshList.iterator(); oshIT.hasNext(); ) {
-					// Calling each OnSelectHandler with an
+				for (Iterator<ActionHandler> ahIT = ahList.iterator(); ahIT.hasNext(); ) {
+					// Calling each ActionHandler with an
 					// OnSelectBinderInfo object.
-					oshIT.next().onSelect(osbi);
+					ahIT.next().handleAction(TeamingAction.SELECTION_CHANGED, osbi);
 				}
 			}
 		}

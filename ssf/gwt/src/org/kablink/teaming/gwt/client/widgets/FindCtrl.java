@@ -37,11 +37,12 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 
+import org.kablink.teaming.gwt.client.ActionHandler;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
-import org.kablink.teaming.gwt.client.OnSelectHandler;
+import org.kablink.teaming.gwt.client.TeamingAction;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
 import com.google.gwt.dom.client.NativeEvent;
@@ -74,7 +75,7 @@ import com.google.gwt.user.client.ui.TextBox;
  *
  */
 public class FindCtrl extends Composite
-	implements ClickHandler, Event.NativePreviewHandler, KeyUpHandler, OnSelectHandler
+	implements ClickHandler, Event.NativePreviewHandler, KeyUpHandler, ActionHandler
 {
 	/**
 	 * This widget is used to hold an item from a search result.
@@ -141,7 +142,7 @@ public class FindCtrl extends Composite
 	public class SearchResultsWidget extends Composite
 		implements ClickHandler
 	{
-		private OnSelectHandler m_onSelectHandler;
+		private ActionHandler m_actionHandler;
 		private FlowPanel m_mainPanel;
 		private FlowPanel m_contentPanel;
 		private Image m_prevDisabledImg;
@@ -157,14 +158,14 @@ public class FindCtrl extends Composite
 		/**
 		 * 
 		 */
-		public SearchResultsWidget( OnSelectHandler onSelectHandler )
+		public SearchResultsWidget( ActionHandler actionHandler )
 		{
 			FlowPanel footer;
 			InlineLabel searching;
 			Image spinnerImg;
 
-			// Remember the OnSelectHandler we need to call when the user selects an item from the list of search results.
-			m_onSelectHandler = onSelectHandler;
+			// Remember the ActionHandler we need to call when the user selects an item from the list of search results.
+			m_actionHandler = actionHandler;
 			
 			m_mainPanel = new FlowPanel();
 			m_mainPanel.addStyleName( "findSearchResults" );
@@ -382,8 +383,8 @@ public class FindCtrl extends Composite
 		 */
 		public void onClick( ClickEvent clickEvent )
 		{
-			// If we have an OnSelectHandler, call it.
-			if ( m_onSelectHandler != null )
+			// If we have an ActionHandler, call it.
+			if ( m_actionHandler != null )
 			{
 				GwtTeamingItem selectedItem;
 				
@@ -395,7 +396,7 @@ public class FindCtrl extends Composite
 					tmp = (SearchResultItemWidget) clickEvent.getSource();
 					selectedItem = tmp.getTeamingItem();
 					
-					m_onSelectHandler.onSelect( selectedItem );
+					m_actionHandler.handleAction( TeamingAction.SELECTION_CHANGED, selectedItem );
 				}
 			}
 		}// end onClick()
@@ -435,7 +436,7 @@ public class FindCtrl extends Composite
 	private TextBox m_txtBox;
 	private SearchResultsWidget m_searchResultsWidget;
 	private Object m_selectedObj = null;
-	private OnSelectHandler m_onSelectHandler;
+	private ActionHandler m_actionHandler;
 	private AsyncCallback<GwtSearchResults> m_searchResultsCallback;
 	private Timer m_timer = null;
 	private Timer m_searchTimer = null;
@@ -447,7 +448,7 @@ public class FindCtrl extends Composite
 	 * 
 	 */
 	public FindCtrl(
-		OnSelectHandler onSelectHandler,  // We will call this handler when the user selects an item from the search results.
+		ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
 		GwtSearchCriteria.SearchType searchType )
 	{
 		FlowPanel mainPanel;
@@ -475,7 +476,7 @@ public class FindCtrl extends Composite
 		Event.addNativePreviewHandler( this );
 		
 		// Remember the handler we should call when the user selects an item from the search results.
-		m_onSelectHandler = onSelectHandler;
+		m_actionHandler = actionHandler;
 		
 		// Create the callback that will be used when we issue an ajax call to do a search.
 		m_searchResultsCallback = new AsyncCallback<GwtSearchResults>()
@@ -741,27 +742,30 @@ public class FindCtrl extends Composite
 	/**
 	 * This method gets called when the user clicks on an item from a search result.
 	 */
-	public void onSelect( Object obj )
+	public void handleAction( TeamingAction ta, Object obj )
 	{
-		// Make sure we were handed a GwtTeamingItem.
-		if ( obj instanceof GwtTeamingItem )
+		if ( TeamingAction.SELECTION_CHANGED == ta )
 		{
-			String name;
-			GwtTeamingItem selectedItem;
-			
-			selectedItem = (GwtTeamingItem) obj;
-			
-			// Get the name of the selected item.
-			name = selectedItem.getShortDisplayName();
-			
-			// Put the name of the selected item in the text box.
-			m_txtBox.setText( name );
-			
-			// If we were passed an OnSelectHandler, call it.
-			if ( m_onSelectHandler != null )
-				m_onSelectHandler.onSelect( selectedItem );
+			// Make sure we were handed a GwtTeamingItem.
+			if ( obj instanceof GwtTeamingItem )
+			{
+				String name;
+				GwtTeamingItem selectedItem;
+				
+				selectedItem = (GwtTeamingItem) obj;
+				
+				// Get the name of the selected item.
+				name = selectedItem.getShortDisplayName();
+				
+				// Put the name of the selected item in the text box.
+				m_txtBox.setText( name );
+				
+				// If we were passed an ActionHandler, call it.
+				if ( m_actionHandler != null )
+					m_actionHandler.handleAction( TeamingAction.SELECTION_CHANGED, selectedItem );
+			}
 		}
-	}// end onSelect()
+	}// end handleAction()
 	
 	
 	/**

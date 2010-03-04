@@ -32,12 +32,13 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.ActionHandler;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.OnSelectHandler;
+import org.kablink.teaming.gwt.client.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
@@ -62,7 +63,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  */
 public class EntryWidgetDlgBox extends DlgBox
-	implements OnSelectHandler
+	implements ActionHandler
 {
 	private CheckBox m_showTitleCkBox = null;
 	private FindCtrl m_findCtrl = null;
@@ -228,19 +229,22 @@ public class EntryWidgetDlgBox extends DlgBox
 	/**
 	 * This method gets called when the user selects an item from the search results in the "find" control.
 	 */
-	public void onSelect( Object selectedObj )
+	public void handleAction( TeamingAction ta, Object selectedObj )
 	{
-		// Make sure we are dealing with a GwtFolderEntry object.
-		if ( selectedObj instanceof GwtFolderEntry )
+		if (TeamingAction.SELECTION_CHANGED == ta )
 		{
-			GwtFolderEntry gwtFolderEntry;
-			
-			gwtFolderEntry = (GwtFolderEntry) selectedObj;
-			m_entryId = gwtFolderEntry.getEntryId();
-			
-			// Hide the search-results widget.
-			m_findCtrl.hideSearchResults();
+			// Make sure we are dealing with a GwtFolderEntry object.
+			if ( selectedObj instanceof GwtFolderEntry )
+			{
+				GwtFolderEntry gwtFolderEntry;
+				
+				gwtFolderEntry = (GwtFolderEntry) selectedObj;
+				m_entryId = gwtFolderEntry.getEntryId();
+				
+				// Hide the search-results widget.
+				m_findCtrl.hideSearchResults();
+			}
 		}
-	}// end onSelect()
+	}// end handleAction()
 	
 }// end EntryWidgetDlgBox

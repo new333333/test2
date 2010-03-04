@@ -32,13 +32,14 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.ActionHandler;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.OnSelectHandler;
+import org.kablink.teaming.gwt.client.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
@@ -67,7 +68,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  */
 public class CustomJspWidgetDlgBox extends DlgBox
-	implements KeyPressHandler, OnSelectHandler
+	implements KeyPressHandler, ActionHandler
 {
 	private TextBox m_jspNameTxtBox = null;
 	private CheckBox m_assocFolderCkBox = null;
@@ -548,30 +549,33 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	/**
 	 * This method gets called when the user selects an item from the search results in the "find" control.
 	 */
-	public void onSelect( Object selectedObj )
+	public void handleAction( TeamingAction ta, Object selectedObj )
 	{
-		// Are we dealing with a GwtFolder object?
-		if ( selectedObj instanceof GwtFolder )
+		if ( TeamingAction.SELECTION_CHANGED == ta )
 		{
-			GwtFolder gwtFolder;
-			
-			gwtFolder = (GwtFolder) selectedObj;
-			m_folderId = gwtFolder.getFolderId();
-			
-			// Hide the search-results widget.
-			m_folderFindCtrl.hideSearchResults();
+			// Are we dealing with a GwtFolder object?
+			if ( selectedObj instanceof GwtFolder )
+			{
+				GwtFolder gwtFolder;
+				
+				gwtFolder = (GwtFolder) selectedObj;
+				m_folderId = gwtFolder.getFolderId();
+				
+				// Hide the search-results widget.
+				m_folderFindCtrl.hideSearchResults();
+			}
+			// Are we dealing with a GwtFolderEntry object?
+			else if ( selectedObj instanceof GwtFolderEntry )
+			{
+				GwtFolderEntry gwtFolderEntry;
+				
+				gwtFolderEntry = (GwtFolderEntry) selectedObj;
+				m_entryId = gwtFolderEntry.getEntryId();
+				
+				// Hide the search-results widget.
+				m_entryFindCtrl.hideSearchResults();
+			}
 		}
-		// Are we dealing with a GwtFolderEntry object?
-		else if ( selectedObj instanceof GwtFolderEntry )
-		{
-			GwtFolderEntry gwtFolderEntry;
-			
-			gwtFolderEntry = (GwtFolderEntry) selectedObj;
-			m_entryId = gwtFolderEntry.getEntryId();
-			
-			// Hide the search-results widget.
-			m_entryFindCtrl.hideSearchResults();
-		}
-	}// end onSelect()
+	}// end handleAction()
 	
 }// end CustomJspWidgetDlgBox
