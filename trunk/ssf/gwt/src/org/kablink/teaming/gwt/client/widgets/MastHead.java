@@ -41,7 +41,6 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.ActionHandler;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.OnSizeChangeHandler;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -74,7 +73,6 @@ import com.google.gwt.user.client.ui.Widget;
 public class MastHead extends Composite
 	implements ClickHandler, MouseOutHandler, MouseOverHandler
 {
-	private List<OnSizeChangeHandler> m_onSizeChangeHandlers = new ArrayList<OnSizeChangeHandler>();
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	private RequestInfo m_requestInfo = null;
 	private String m_mastheadBinderId = null;
@@ -457,16 +455,6 @@ public class MastHead extends Composite
 	
 	
 	/**
-	 * Called to add an OnSizeChangeHandler to this MastHead.
-	 * 
-	 * @param onSizeChangeHandler
-	 */
-	public void addOnSizeChangeHandler( OnSizeChangeHandler onSizeChangeHandler )
-	{
-		m_onSizeChangeHandlers.add( onSizeChangeHandler );
-	}
-
-	/**
 	 * Set the height of the masthead to be equal to the content of the masthead.  Also,
 	 * set the height of the background image so it fills the entire masthead.
 	 */
@@ -485,10 +473,10 @@ public class MastHead extends Composite
 		m_mainMastheadPanel.setHeight( heightStr );
 		
 		// Notify all OnSizeChangeHandler that have registered.
-		for (Iterator<OnSizeChangeHandler> oschIT = m_onSizeChangeHandlers.iterator(); oschIT.hasNext(); )
+		for (Iterator<ActionHandler> oschIT = m_actionHandlers.iterator(); oschIT.hasNext(); )
 		{
 			// Calling each OnSizeChangeHandler
-			oschIT.next().onSizeChange( this );
+			oschIT.next().handleAction( TeamingAction.SIZE_CHANGED, this );
 		}
 	}// end adjustMastheadHeight()
 

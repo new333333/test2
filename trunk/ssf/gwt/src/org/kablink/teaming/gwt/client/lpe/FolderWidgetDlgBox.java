@@ -32,12 +32,13 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.ActionHandler;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.OnSelectHandler;
+import org.kablink.teaming.gwt.client.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
@@ -66,7 +67,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  */
 public class FolderWidgetDlgBox extends DlgBox
-	implements KeyPressHandler, OnSelectHandler
+	implements KeyPressHandler, ActionHandler
 {
 	private CheckBox m_showTitleCkBox = null;
 	private CheckBox m_showDescCkBox = null;
@@ -346,19 +347,22 @@ public class FolderWidgetDlgBox extends DlgBox
 	/**
 	 * This method gets called when the user selects an item from the search results in the "find" control.
 	 */
-	public void onSelect( Object selectedObj )
+	public void handleAction( TeamingAction ta, Object selectedObj )
 	{
-		// Make sure we are dealing with a GwtFolder object.
-		if ( selectedObj instanceof GwtFolder )
+		if ( TeamingAction.SELECTION_CHANGED == ta )
 		{
-			GwtFolder gwtFolder;
-			
-			gwtFolder = (GwtFolder) selectedObj;
-			m_folderId = gwtFolder.getFolderId();
-			
-			// Hide the search-results widget.
-			m_findCtrl.hideSearchResults();
+			// Make sure we are dealing with a GwtFolder object.
+			if ( selectedObj instanceof GwtFolder )
+			{
+				GwtFolder gwtFolder;
+				
+				gwtFolder = (GwtFolder) selectedObj;
+				m_folderId = gwtFolder.getFolderId();
+				
+				// Hide the search-results widget.
+				m_findCtrl.hideSearchResults();
+			}
 		}
-	}// end onSelect()
+	}// end handleAction()
 	
 }// end FolderWidgetDlgBox

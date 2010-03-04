@@ -45,7 +45,9 @@ public enum TeamingAction
 	ADMINISTRATION( "Invoke Administration Page" ),
 	HELP( "Help" ),
 	LOGOUT( "Logout" ),
-	MY_WORKSPACE( "My Workspace" );
+	MY_WORKSPACE( "My Workspace" ),
+	SELECTION_CHANGED( "The User Changed a Selection Somewhere" ),
+	SIZE_CHANGED( "The Size of Something Changed" );
 
 	private final String m_unlocalizedDesc;
 	

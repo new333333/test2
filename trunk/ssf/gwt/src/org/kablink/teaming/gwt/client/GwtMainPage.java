@@ -54,7 +54,7 @@ import com.google.gwt.user.client.ui.RootPanel;
  * This widget will display the main Teaming page
  */
 public class GwtMainPage extends Composite
-	implements ActionHandler, OnSelectHandler, OnSizeChangeHandler, ResizeHandler
+	implements ActionHandler, ResizeHandler
 {
 	private MastHead m_mastHead;
 	private MainMenuControl m_mainMenuCtrl;
@@ -84,7 +84,6 @@ public class GwtMainPage extends Composite
 		
 		// Add the MastHead to the page.
 		m_mastHead = new MastHead( m_requestInfo );
-		m_mastHead.addOnSizeChangeHandler( this );
 		m_mastHead.addActionHandler( this );
 		mainPanel.add( m_mastHead );
 		
@@ -99,7 +98,7 @@ public class GwtMainPage extends Composite
 		// Create the WorkspaceTree control.
 		m_wsTreeCtrl = new WorkspaceTreeControl( m_requestInfo );
 		m_wsTreeCtrl.addStyleName( "mainWorkspaceTreeControl" );
-		m_wsTreeCtrl.addOnSelectHandler( this );
+		m_wsTreeCtrl.addActionHandler( this );
 		m_contentPanel.add( m_wsTreeCtrl );
 		
 		// Create the content control.
@@ -154,6 +153,14 @@ public class GwtMainPage extends Composite
 			// Change the browser's url.
 			Window.Location.replace( m_requestInfo.getMyWorkspaceUrl() );
 			break;
+			
+		case SELECTION_CHANGED:
+			selectionChanged( obj );
+			break;
+		
+		case SIZE_CHANGED:
+			sizeChanged( obj );
+			break;
 		
 		default:
 			Window.alert( "Unknown action selected: " + action.getUnlocalizedDesc() );
@@ -165,7 +172,7 @@ public class GwtMainPage extends Composite
 	/**
 	 * This method will be called when the user selects a binder from the workspace tree control.
 	 */
-	public void onSelect( Object obj )
+	private void selectionChanged( Object obj )
 	{
 		if ( obj instanceof OnSelectBinderInfo )
 		{
@@ -182,7 +189,7 @@ public class GwtMainPage extends Composite
 		}
 		else
 			Window.alert( "in onSelect() and obj is not an OnSelectBinderInfo object" );
-	}// end onSelect()
+	}// end selectionChanged()
 
 	
 	/**
@@ -198,11 +205,11 @@ public class GwtMainPage extends Composite
 	/**
 	 * This method will be called when one of the controls on this page changes size.
 	 */
-	public void onSizeChange( Object obj )
+	private void sizeChanged( Object obj )
 	{
 		// Adjust the height and width of the controls on this page.
 		relayoutPage( false );
-	}// end onSelect()
+	}// end sizeChanged()
 
 	
 	/**
