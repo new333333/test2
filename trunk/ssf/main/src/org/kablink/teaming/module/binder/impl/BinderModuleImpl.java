@@ -110,6 +110,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.util.TagObject;
@@ -2138,7 +2139,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public Long getZoneBinderId(Long binderId, String zoneUUID, String entityType) {
 		if (Validator.isNull(zoneUUID)) return binderId;
 		List<Long> ids = getCoreDao().findZoneEntityIds(binderId, zoneUUID, entityType);
-		if (ids.isEmpty()) return null;
+		if (ids.isEmpty()) {
+			ZoneInfo zoneInfo = ExportHelper.getZoneInfo();
+			if (zoneInfo.getId().equals(zoneUUID)) return binderId;
+			return null;
+		}
 		return ids.get(0);
 	}
 	
