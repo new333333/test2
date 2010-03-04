@@ -238,7 +238,7 @@ public class ViewPermalinkController  extends SAbstractController {
  		   urlStr = getFileUrlById(request, entityType, binderId, entryId, fileId);
  		   url = new AdaptedPortletURL( urlStr );
  		   return url;
-      }
+        }
       
  		if (Validator.isNotNull(fileName))
  		{
@@ -247,7 +247,7 @@ public class ViewPermalinkController  extends SAbstractController {
  		   urlStr =getFileUrlByName(request, entityType, binderId, entryId, fileName);
  		   url = new AdaptedPortletURL( urlStr );
  		   return url;
-      }
+        }
 
 		boolean binderPreDeleted;
 		if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) { //folderEntry
@@ -312,7 +312,11 @@ public class ViewPermalinkController  extends SAbstractController {
 				}
 			}
 		} else	if (entityType.isBinder() || entityType.equals(EntityIdentifier.EntityType.none)) {
-			entity = getBinderModule().getBinder(Long.valueOf(binderId));
+			Long targetBinderId = getBinderModule().getZoneBinderId(Long.valueOf(binderId), zoneUUID, entityType.name());
+			if (targetBinderId != null) {
+				binderId = String.valueOf(targetBinderId);
+				entity = getBinderModule().getBinder(Long.valueOf(binderId));
+			}
 			if (null != entity) {
 				if      (entity instanceof Workspace) binderPreDeleted = ((Workspace) entity).isPreDeleted();
 				else if (entity instanceof Folder)    binderPreDeleted = ((Folder)    entity).isPreDeleted();
@@ -331,6 +335,10 @@ public class ViewPermalinkController  extends SAbstractController {
 					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_WORKSPACE);
 				} else {
 					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FOLDER);				
+				}
+				if (!zoneUUID.equals("") && targetBinderId == null) {
+					//Go to the mobile ui to show the error message
+					url.setParameter(WebKeys.URL_BINDER_ID, "");
 				}
 			} else {
 				if (entityType.equals(EntityIdentifier.EntityType.workspace)) {
