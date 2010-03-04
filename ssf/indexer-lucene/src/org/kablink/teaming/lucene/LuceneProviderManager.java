@@ -64,7 +64,7 @@ import org.kablink.util.PropsUtil;
 public class LuceneProviderManager implements LuceneProviderManagerMBean {
 
 	private static final int DEFAULT_MAX_BOOLEAN_CLAUSES = 10000;
-	private static final int DEFAULT_COMMIT_NUMBER_OPS = 5000;
+	private static final int DEFAULT_COMMIT_NUMBER_OPS = 10000;
 	private static final int DEFAULT_COMMIT_TIME_INTERVAL = 600; // = 10 minutes
 	private static final boolean DEFAULT_CHECK_FOR_WORK_IN_CALLING_THREAD = false;
 	
