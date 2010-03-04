@@ -748,8 +748,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 		}
 		
-		// ...build the TreeInfo for it...
+		// ...build the TreeInfo for it with the appropriate Binder
+		// ...selected...
 		TreeInfo reply = GwtServerHelper.buildTreeInfoFromBinder(this, binderWS, expandedBindersList);
+		GwtServerHelper.findBinderTI(reply, binderIdS).setBinderSelected(true);
+
 		
 		// ...and if the Binder supports Trash access...
 		boolean allowTrash = TrashHelper.allowUserTrashAccess(GwtServerHelper.getCurrentUser());
