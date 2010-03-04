@@ -80,10 +80,11 @@ import org.springframework.web.portlet.ModelAndView;
  *
  */
 public class ViewPermalinkController  extends SAbstractController {
-	public void handleActionRequestAfterValidation(final ActionRequest request, ActionResponse response) throws Exception {
+	public void handleActionRequestAfterValidation(final ActionRequest request, final ActionResponse response) throws Exception {
 		User user = null;
-		String sUrl;
+		String sUrl = null;
 		AdaptedPortletURL adaptedPortletUrl = null;
+		response.setRenderParameters(request.getParameterMap());
 		
 		try {
 			if (!WebHelper.isUserLoggedIn(request) || RequestContextHolder.getRequestContext() == null) {
@@ -96,27 +97,31 @@ public class ViewPermalinkController  extends SAbstractController {
 				}
 				adaptedPortletUrl = (AdaptedPortletURL)RunasTemplate.runas(new RunasCallback() {
 					public Object doAs() {
-						return processRequest(request);
+						return processRequest(request, response);
 					}
 				}, user);
 				
-				sUrl = adaptedPortletUrl.toString();
-		    	if(logger.isDebugEnabled()) {
-		    		logger.debug("Permalink followed: " + sUrl);
-		    	}
+				if (adaptedPortletUrl != null) {
+					sUrl = adaptedPortletUrl.toString();
+			    	if(logger.isDebugEnabled()) {
+			    		logger.debug("Permalink followed: " + sUrl);
+			    	}
+				}
 				
 			} else {
 				user = RequestContextHolder.getRequestContext().getUser();
-				adaptedPortletUrl = processRequest(request);
-				sUrl = adaptedPortletUrl.toString();
-		    	if(logger.isDebugEnabled())
-		    	{
-		    		logger.debug("Permalink followed: " + sUrl);
-		    	}
+				adaptedPortletUrl = processRequest(request, response);
+				if (adaptedPortletUrl != null) {
+					sUrl = adaptedPortletUrl.toString();
+			    	if(logger.isDebugEnabled())
+			    	{
+			    		logger.debug("Permalink followed: " + sUrl);
+			    	}
+				}
 			}
 
 			boolean durangoUI = MiscUtil.isGwtUIActive(request);
-			if (durangoUI)
+			if (durangoUI && adaptedPortletUrl != null)
 			{
 				String param;
 				
@@ -180,7 +185,11 @@ public class ViewPermalinkController  extends SAbstractController {
 				}
 			}
 			
-			response.sendRedirect(sUrl);
+			if (sUrl != null) {
+				response.sendRedirect(sUrl);
+			} else {
+				//There is no mapping to this entity, so fall through the render handler
+			}
 		} catch  (AccessControlException ac) {
 			//User must log in to see this
 			response.setRenderParameters(request.getParameterMap());
@@ -198,7 +207,7 @@ public class ViewPermalinkController  extends SAbstractController {
 	 * @param request
 	 * @return
 	 */
-	protected AdaptedPortletURL processRequest(ActionRequest request) {
+	protected AdaptedPortletURL processRequest(ActionRequest request, ActionResponse response) {
 		HttpServletRequest httpReq = WebHelper.getHttpServletRequest(request);
 		boolean isMobile = false;
 		String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
@@ -253,17 +262,26 @@ public class ViewPermalinkController  extends SAbstractController {
 				//entries move so the binderId may not be valid
 				if (Validator.isNotNull(entryId)) {
 					Long targetEntryId = getFolderModule().getZoneEntryId(Long.valueOf(entryId), zoneUUID);
-					if (targetEntryId != null) entryId = targetEntryId.toString();
-					entity = getFolderModule().getEntry(null, Long.valueOf(entryId));
-					url.setParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());
-					url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+					if (targetEntryId == null) {
+						response.setRenderParameter("notImportedException", "true");
+						return null;
+					} else {
+						entryId = targetEntryId.toString();
+						entity = getFolderModule().getEntry(null, Long.valueOf(entryId));
+						url.setParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());
+						url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+					}
 				} else {
 					Long targetBinderId = getBinderModule().getZoneBinderId(Long.valueOf(binderId), zoneUUID, entityType.name());
-					if (targetBinderId != null) binderId = String.valueOf(targetBinderId);
-					entity = getBinderModule().getBinder(Long.valueOf(binderId));
-					url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-					if (!zoneUUID.equals("")) url.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
-					url.setParameter(WebKeys.URL_ENTRY_TITLE, entryTitle);
+					if (targetBinderId == null) {
+						response.setRenderParameter("notImportedException", "true");
+						return null;
+					} else {
+						binderId = String.valueOf(targetBinderId);
+						entity = getBinderModule().getBinder(Long.valueOf(binderId));
+						url.setParameter(WebKeys.URL_BINDER_ID, binderId);
+						url.setParameter(WebKeys.URL_ENTRY_TITLE, entryTitle);
+					}
 				}
 				
 				boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
@@ -509,7 +527,8 @@ public class ViewPermalinkController  extends SAbstractController {
 		}
 		
 		if (!"true".equals(PortletRequestUtils.getStringParameter(request, "accessException")) &&
-				!"true".equals(PortletRequestUtils.getStringParameter(request, "noBinderByIdException"))) {
+				!"true".equals(PortletRequestUtils.getStringParameter(request, "noBinderByIdException")) &&
+				!"true".equals(PortletRequestUtils.getStringParameter(request, "notImportedException"))) {
 			return new ModelAndView(WebKeys.VIEW_LOGIN_RETURN, model);
 		}
 		
@@ -528,6 +547,10 @@ public class ViewPermalinkController  extends SAbstractController {
 					//Access is not allowed
 				if ("true".equals(PortletRequestUtils.getStringParameter(request, "noBinderByIdException"))) {
 					model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {binderId}));
+					return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
+				}
+				if ("true".equals(PortletRequestUtils.getStringParameter(request, "notImportedException"))) {
+					model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.entry.not.imported", new String[] {binderId}));
 					return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
 				}
 				return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);

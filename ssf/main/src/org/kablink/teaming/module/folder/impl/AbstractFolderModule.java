@@ -90,6 +90,7 @@ import org.kablink.teaming.domain.Visits;
 import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.jobs.FolderDelete;
 import org.kablink.teaming.jobs.ZoneSchedule;
@@ -124,6 +125,7 @@ import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
+import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -1300,7 +1302,11 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	public Long getZoneEntryId(Long entryId, String zoneUUID) {
 		if (Validator.isNull(zoneUUID)) return entryId;
 		List<Long> ids = getCoreDao().findZoneEntityIds(entryId, zoneUUID, EntityType.folderEntry.name());
-		if (ids.isEmpty()) return null;
+		if (ids.isEmpty()) {
+			ZoneInfo zoneInfo = ExportHelper.getZoneInfo();
+			if (zoneInfo.getId().equals(zoneUUID)) return entryId;
+			return null;
+		}
 		return ids.get(0);
 	}
 
