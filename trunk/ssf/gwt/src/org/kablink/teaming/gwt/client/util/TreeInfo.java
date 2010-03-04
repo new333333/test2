@@ -43,6 +43,8 @@ import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -53,6 +55,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -73,18 +76,26 @@ public class TreeInfo implements IsSerializable {
 	private List<TreeInfo> m_childBindersAL = new ArrayList<TreeInfo>();
 	private BinderType m_binderType = BinderType.OTHER;
 	private boolean m_binderExpanded;
+	private boolean m_binderSelected;
 	private FolderType m_folderType = FolderType.NOT_A_FOLDER;
 	private int m_binderChildren = 0;
 	private String m_binderIconName;
 	private String m_binderId;
 	private String m_binderTitle = "";
 	private String m_binderPermalink = "";
+	private String m_binderTrashPermalink = "";
 	private WorkspaceType m_wsType = WorkspaceType.NOT_A_WORKSPACE;
 	
 	private final static int BINDER_HEIGHT_INT   = 16; private final static String BINDER_HEIGHT   = (BINDER_HEIGHT_INT   + "px");
 	private final static int BINDER_WIDTH_INT    = 16; private final static String BINDER_WIDTH    = (BINDER_WIDTH_INT    + "px");
 	private final static int EXPANDER_HEIGHT_INT = 16; private final static String EXPANDER_HEIGHT = (EXPANDER_HEIGHT_INT + "px");
 	private final static int EXPANDER_WIDTH_INT  = 16; private final static String EXPANDER_WIDTH  = (EXPANDER_WIDTH_INT  + "px");
+	
+	private final static String EXTENSION_ID_BASE            = "workspaceTreeBinder_";
+	private final static String EXTENSION_ID_SELECTOR_BASE   = (EXTENSION_ID_BASE + "Selector_");
+	private final static String EXTENSION_ID_SELECTOR_ID     = (EXTENSION_ID_BASE + "SelectorId");
+	private final static String EXTENSION_ID_TRASH_BASE      = (EXTENSION_ID_BASE + "Trash_");
+	private final static String EXTENSION_ID_TRASH_PERMALINK = (EXTENSION_ID_BASE + "TrashPermalink");
 
 	/**
 	 * The type of Binder referenced by this TreeInfo object.  
@@ -238,13 +249,15 @@ public class TreeInfo implements IsSerializable {
 		public void onClick(ClickEvent event) {
 			// If we're connected to a WorkspaceTreeControl that's got
 			// some OnSelectHandler's registered...
+			m_ti.selectBinder();
 			List<OnSelectHandler> oshList = ((null == m_wsTree) ? null : m_wsTree.getOnSelectHandlersList());
 			if ((null != oshList) && (0 < oshList.size())) {
 				// Scan them...
+				OnSelectBinderInfo osbi = m_ti.buildOnSelectBinderInfo();
 				for (Iterator<OnSelectHandler> oshIT = oshList.iterator(); oshIT.hasNext(); ) {
-					// Calling each OnSelectHandler with the ID of the
-					// selected Binder.
-					oshIT.next().onSelect(m_ti.buildOnSelectBinderInfo());
+					// Calling each OnSelectHandler with an
+					// OnSelectBinderInfo object.
+					oshIT.next().onSelect(osbi);
 				}
 			}
 		}
@@ -267,7 +280,27 @@ public class TreeInfo implements IsSerializable {
 	 * @return
 	 */
 	public OnSelectBinderInfo buildOnSelectBinderInfo() {
-		return new OnSelectBinderInfo(this);
+		// Construct an OnSelectBinderInfo for this TreeInfo object.
+		OnSelectBinderInfo reply = new OnSelectBinderInfo(this);
+		
+		// Is this TreeInfo object the trash Binder?
+		if (isBinderTrash()) {
+			// Yes!  Is there another Binder selected?
+			String selectedId = Document.get().getElementById(EXTENSION_ID_SELECTOR_ID).getAttribute("value");
+			if (GwtClientHelper.hasString(selectedId)) {
+				// Yes!  Then we'll return it's trash permalink URL and
+				// not the URL from the trash.  This will cause the
+				// trash to display on the selected Binder and not on
+				// the workspace, unless no Binder is selected.
+				Element selectedElement = Document.get().getElementById(selectedId);
+				String trashPermalink = selectedElement.getAttribute(EXTENSION_ID_TRASH_PERMALINK);
+				reply.setBinderUrl(trashPermalink);
+			}
+		}
+		
+		// If we get here, reply refers to the OnSelectBinderInfo
+		// object for this TreeInfo.  Return it.
+		return reply;
 	}
 	
 	/*
@@ -289,14 +322,16 @@ public class TreeInfo implements IsSerializable {
 		TreeInfo reply = new TreeInfo();
 
 		// ...copy the information from this TreeInfo... 
-		reply.setBinderType(     getBinderType()     );
-		reply.setFolderType(     getFolderType()     );
-		reply.setBinderExpanded( isBinderExpanded()  );
-		reply.setBinderIconName( getBinderIconName() );
-		reply.setBinderId(       getBinderId()       );
-		reply.setBinderTitle(    getBinderTitle()    );
-		reply.setBinderPermalink(getBinderPermalink());
-		reply.setWorkspaceType(  getWorkspaceType()  );
+		reply.setBinderType(          getBinderType()          );
+		reply.setFolderType(          getFolderType()          );
+		reply.setBinderExpanded(      isBinderExpanded()       );
+		reply.setBinderSelected(      isBinderSelected()       );
+		reply.setBinderIconName(      getBinderIconName()      );
+		reply.setBinderId(            getBinderId()            );
+		reply.setBinderTitle(         getBinderTitle()         );
+		reply.setBinderPermalink(     getBinderPermalink()     );
+		reply.setBinderTrashPermalink(getBinderTrashPermalink());
+		reply.setWorkspaceType(       getWorkspaceType()       );
 		
 		// ...store an empty child Binder's List<TreeInfo>...
 		reply.setChildBindersList(new ArrayList<TreeInfo>());
@@ -353,6 +388,16 @@ public class TreeInfo implements IsSerializable {
 	 */
 	public String getBinderTitle() {
 		return m_binderTitle;
+	}
+
+	/**
+	 * Returns the permalink to the trash for the Binder corresponding
+	 * to this TreeInfo object.
+	 * 
+	 * @return
+	 */
+	public String getBinderTrashPermalink() {
+		return m_binderTrashPermalink;
 	}
 
 	/**
@@ -459,6 +504,17 @@ public class TreeInfo implements IsSerializable {
 		return ((BinderType.FOLDER == m_binderType) ? m_folderType : FolderType.NOT_A_FOLDER);
 	}
 
+	/*
+	 * Returns the ID to use for the selector for this TreeInfo.
+	 */
+	private String getSelectorId() {
+		String reply;
+		if (isBinderTrash())
+			 reply = (EXTENSION_ID_TRASH_BASE    + getBinderId());
+		else reply = (EXTENSION_ID_SELECTOR_BASE + getBinderId());
+		return reply;
+	}
+	
 	/**
 	 * If this TreeInfo object refers to a Workspace, returns its type.
 	 * 
@@ -469,7 +525,7 @@ public class TreeInfo implements IsSerializable {
 	}
 
 	/**
-	 * Returns the the Binder corresponding to this TreeInfo object
+	 * Returns true if the Binder corresponding to this TreeInfo object
 	 * should be expanded and false otherwise.
 	 * 
 	 * @return
@@ -486,6 +542,26 @@ public class TreeInfo implements IsSerializable {
 	 */
 	public boolean isBinderFolder() {
 		return (BinderType.FOLDER == m_binderType);
+	}
+	
+	/**
+	 * Returns true if the Binder corresponding to this TreeInfo object
+	 * should be selected and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isBinderSelected() {
+		return m_binderSelected;
+	}
+
+	/**
+	 * Returns true if this TreeInfo object refers a trash Binder and
+	 * false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isBinderTrash() {
+		return ((FolderType.TRASH == getFolderType()) || (WorkspaceType.TRASH == getWorkspaceType()));
 	}
 	
 	/**
@@ -507,10 +583,21 @@ public class TreeInfo implements IsSerializable {
 	 * @param targetPanel
 	 */
 	public void render(RequestInfo ri, WorkspaceTreeControl wsTree, FlowPanel targetPanel) {
+		// Create a hidden <INPUT> that we'll use to store the ID of
+		// the currently selected Binder.
+		Hidden selectedId = new Hidden();
+		selectedId.getElement().setId(EXTENSION_ID_SELECTOR_ID);
+		targetPanel.add(selectedId);
+		
 		// Create the WorkspaceTree control's header...
-		Label label = new Label(getBinderTitle());
-		label.addStyleName("workspaceTreeControlHeader");
-		targetPanel.add(label);
+		Label selectorLabel = new Label(getBinderTitle());
+		selectorLabel.addStyleName("workspaceTreeControlHeader");
+		selectorLabel.getElement().setId(getSelectorId());
+		selectorLabel.getElement().setAttribute(EXTENSION_ID_TRASH_PERMALINK, getBinderTrashPermalink());
+		Anchor selectorA = new Anchor();
+		selectorA.getElement().appendChild(selectorLabel.getElement());
+		selectorA.addClickHandler(new Selector(wsTree, this));
+		targetPanel.add(selectorA);
 
 		// ...its content panel...
 		Grid grid = new Grid();
@@ -540,7 +627,7 @@ public class TreeInfo implements IsSerializable {
 			// Yes!  Put an expander Anchor to allow expanding and
 			// collapsing of its contents.
 			expanderImg = new Image(expanderImgRes);
-			expanderImg.addStyleName("workspaceTreeExpanderImg");
+			expanderImg.addStyleName("workspaceTreeBinderExpanderImg");
 			Anchor expanderA = new Anchor();
 			expanderA.getElement().appendChild(expanderImg.getElement());
 			expanderA.addClickHandler(new Expander(ri, wsTree, ti, grid, row, expanderImg));
@@ -581,11 +668,23 @@ public class TreeInfo implements IsSerializable {
 		hp.add(binderImg);
 		Label selectorLabel = new Label(ti.getBinderTitle());
 		selectorLabel.addStyleName("workspaceTreeBinderAnchor");
+		selectorLabel.getElement().setId(ti.getSelectorId());
+		if (!(ti.isBinderTrash())) {
+			selectorLabel.getElement().setAttribute(
+				EXTENSION_ID_TRASH_PERMALINK,
+				ti.getBinderTrashPermalink());
+		}
 		hp.add(selectorLabel);
 		hp.addStyleName("workspaceTreeControlRow");
 		Anchor selectorA = new Anchor();
 		selectorA.getElement().appendChild(hp.getElement());
 		selectorA.addClickHandler(new Selector(wsTree, ti));
+
+		// If this Binder is supposed to be selected...
+		if (ti.isBinderSelected()) {
+			// ...select it.
+			ti.selectBinder();
+		}
 		
 		// Add the row to the Grid.
 		grid.setWidget(row, 0, expanderWidget);
@@ -682,12 +781,30 @@ public class TreeInfo implements IsSerializable {
 	}
 
 	/**
+	 * Stores whether the Binder should be selected.
+	 * 
+	 * @param binderSelected
+	 */
+	public void setBinderSelected(boolean binderSelected) {
+		m_binderSelected = binderSelected;
+	}
+
+	/**
 	 * Stores a Binder's title in this TreeInfo object.
 	 * 
 	 * @param binderTitle
 	 */
 	public void setBinderTitle(String binderTitle) {
 		m_binderTitle = binderTitle;
+	}
+
+	/**
+	 * Stores a Binder's trash permalink in this TreeInfo object.
+	 * 
+	 * @param binderTrashPermalink
+	 */
+	public void setBinderTrashPermalink(String binderTrashPermalink) {
+		m_binderTrashPermalink = binderTrashPermalink;
 	}
 
 	/**
@@ -756,5 +873,30 @@ public class TreeInfo implements IsSerializable {
 		
 		// ...and store it.
 		m_wsType = wsType;
+	}
+
+	/*
+	 * Does whatever is necessary UI wise to select the Binder
+	 * represented by this TreeInfo.
+	 */
+	private void selectBinder() {
+		// If this isn't a trash Binder...
+		if (!(isBinderTrash())) {
+			// ...mark it as having been selected.
+			String selectedId_New = getSelectorId();
+			Element selectorLabel_New = Document.get().getElementById(selectedId_New);
+			selectorLabel_New.addClassName("workspaceTreeBinderSelected");
+
+			// ...mark any previous selection as not being selected...
+			Element selectorId = Document.get().getElementById(EXTENSION_ID_SELECTOR_ID);
+			String selectedId_Old = selectorId.getAttribute("value");
+			if (GwtClientHelper.hasString(selectedId_Old)) {
+				Element selectorLabel_Old = Document.get().getElementById(selectedId_Old);
+				selectorLabel_Old.removeClassName("workspaceTreeBinderSelected");
+			}
+			
+			// ...and store the new ID as having been selected.
+			selectorId.setAttribute("value", selectedId_New);
+		}
 	}
 }

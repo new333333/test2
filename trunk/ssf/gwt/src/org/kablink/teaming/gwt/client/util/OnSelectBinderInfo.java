@@ -82,15 +82,19 @@ public class OnSelectBinderInfo implements IsSerializable {
 	 */
 	public OnSelectBinderInfo(Long binderId, String binderUrl) {
 		// Store the parameters...
-		m_binderId = binderId;
-		m_binderUrl = binderUrl;
+		setBinderId(binderId);
+		setBinderUrl(binderUrl);
 
-		// ...determine if the URL is a permalink...
-		m_isPermalinkUrl = (0 < binderUrl.indexOf(PERMALINK_MARKER));
+	}
 
-		// ...add a captive marker...
+	/*
+	 * Performs any URL fixing that's required based on the format of
+	 * the URL.
+	 */
+	private void fixupUrl() {
+		// Add a captive marker...
 		String marker;
-		boolean useAmpersand = (0 < binderUrl.indexOf(AMPERSAND_FORMAT_MARKER));
+		boolean useAmpersand = (0 < m_binderUrl.indexOf(AMPERSAND_FORMAT_MARKER));
 		if (useAmpersand)
 			 marker = ("&" + CAPTIVE_MARKER + "=true");
 		else marker = ("/" + CAPTIVE_MARKER + "/true");
@@ -99,6 +103,7 @@ public class OnSelectBinderInfo implements IsSerializable {
 		}
 		
 		// ...and if the URL is a permalink...
+		m_isPermalinkUrl = (0 < m_binderUrl.indexOf(PERMALINK_MARKER));
 		if (m_isPermalinkUrl) {
 			// ...and it doesn't have a GWT marker...
 			if (useAmpersand)
@@ -137,5 +142,22 @@ public class OnSelectBinderInfo implements IsSerializable {
 	 */
 	public boolean isPermalinkUrl() {
 		return m_isPermalinkUrl;
+	}
+	
+	/*
+	 * Stores the Binder ID into this OnSelectBinderInfo object.
+	 */
+	private void setBinderId(Long binderId) {
+		m_binderId = binderId;
+	}
+	
+	/**
+	 * Stores a Binder URL into this OnSelectBinderInfo object.
+	 * 
+	 * @param binderUrl
+	 */
+	public void setBinderUrl(String binderUrl) {
+		m_binderUrl = binderUrl;
+		fixupUrl();
 	}
 }

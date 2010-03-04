@@ -125,16 +125,12 @@ public class GwtServerHelper {
 			 trashTI.setFolderType(   FolderType.TRASH   );
 		else trashTI.setWorkspaceType(WorkspaceType.TRASH);
 		trashTI.setBinderExpanded(false);
+		trashTI.setBinderSelected(false);
 		trashTI.setBinderIconName(null);
 		trashTI.setBinderTitle(NLT.get("profile.abv.element.trash"));
-		String trashUrl = trashTI.getBinderPermalink();
-		String marker;
-		boolean useAmpersand = (0 < trashUrl.indexOf("a/do?"));
-		if (useAmpersand)
-			 marker = ("&" + WebKeys.URL_SHOW_TRASH + "=true");
-		else marker = ("/" + WebKeys.URL_SHOW_TRASH + "/true");
-		trashUrl += marker;
-		trashTI.setBinderPermalink(trashUrl);
+		String trashUrl = getTrashPermalink(trashTI.getBinderPermalink());
+		trashTI.setBinderPermalink(     trashUrl);
+		trashTI.setBinderTrashPermalink(trashUrl);
 
 		// Finally, add the trash TreeInfo to the base TreeInfo's list
 		// of children.
@@ -166,7 +162,9 @@ public class GwtServerHelper {
 		reply.setBinderId(binder.getId());
 		reply.setBinderTitle(binder.getTitle());
 		reply.setBinderChildren(binder.getBinderCount());
-		reply.setBinderPermalink(PermaLinkUtil.getPermalink(binder));
+		String binderPermalink = PermaLinkUtil.getPermalink(binder);
+		reply.setBinderPermalink(binderPermalink);
+		reply.setBinderTrashPermalink(getTrashPermalink(binderPermalink));
 		if (binder instanceof Workspace) {
 			reply.setBinderType(BinderType.WORKSPACE);
 			WorkspaceType wsType = WorkspaceType.OTHER;
@@ -316,11 +314,11 @@ public class GwtServerHelper {
 		return RequestContextHolder.getRequestContext().getUser();
 	}
 
-	/*
+	/**
 	 * Returns the TreeInfo from another TreeInfo that references a
 	 * specific Binder ID.
 	 */
-	private static TreeInfo findBinderTI(TreeInfo ti, String binderId) {
+	public static TreeInfo findBinderTI(TreeInfo ti, String binderId) {
 		// If this TreeInfo is for the binder in question...
 		if (ti.getBinderId().equals(binderId)) {
 			// ...return it.
@@ -348,6 +346,21 @@ public class GwtServerHelper {
 		return null;
 	}
 
+	/*
+	 * Takes a Binder permalink and does what's necessary to bring up
+	 * the trash on that Binder.
+	 */
+	private static String getTrashPermalink(String binderPermalink) {
+		String reply = binderPermalink;
+		String marker;
+		boolean useAmpersand = (0 < reply.indexOf("a/do?"));
+		if (useAmpersand)
+			 marker = ("&" + WebKeys.URL_SHOW_TRASH + "=true");
+		else marker = ("/" + WebKeys.URL_SHOW_TRASH + "/true");
+		reply += marker;
+		return reply;
+	}
+	
 	/**
 	 * Returns a List<Binder> of the child Binder's of binder that are
 	 * visible to the user.

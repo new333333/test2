@@ -110,7 +110,8 @@
 	white-space: nowrap;
 }
 
-/* Style for the anchor next to a Binder in  WorkspaceTree control. */
+
+/* Styles for binders in a WorkspaceTree control. */
 .workspaceTreeBinderAnchor
 {
 	color: #1C5894;
@@ -118,20 +119,20 @@
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 1em;
 }
-
-/* Style for the image next to a Binder in  WorkspaceTree control. */
+.workspaceTreeBinderExpanderImg
+{
+	margin-top: 8px;
+}
 .workspaceTreeBinderImg
 {
 	padding-right: 2px;
 }
-
-/* Style for the expander image next to a Binder in  WorkspaceTree control. */
-.workspaceTreeExpanderImg
+.workspaceTreeBinderSelected
 {
-	margin-top: 8px;
+	font-weight: bold;
 }
 
-/* Style used by the WorkspaceTree Control */
+/* Styles used by the WorkspaceTree Control. */
 .workspaceTreeControl
 {
 	background-color: #EFEEEC;
@@ -146,8 +147,9 @@
 	-webkit-border-radius-bottomleft: 5px;
 	-webkit-border-radius-bottomright: 5px;
 }
-
-/* Style for the header in the WorkspaceTree control */
+.workspaceTreeControlBody
+{
+}
 .workspaceTreeControlHeader
 {
 	background: #85BCC3 url(images/header_blend_teal_bg.png) repeat-x scroll center bottom;
@@ -162,17 +164,11 @@
 	-webkit-border-radius-topleft: 5px;
 	-webkit-border-radius-topright: 5px;
 }
-
-/* Style for the body of the WorkspaceTree control. */
-.workspaceTreeControlBody
-{
-}
-
-/* Style for each row in the body of the WorkspaceTree control. */
 .workspaceTreeControlRow
 {
 	padding-top: 8px;
 }
+
 
 /* */
 .fontSize75em
