@@ -45,4 +45,8 @@ public interface LuceneProviderManagerMBean {
 	void optimize();
 	
 	void optimize(int maxNumSegments);
+	
+	boolean getInfoStreamEnabled();
+
+	void setInfoStreamEnabled(boolean infoStreamEnabled);
 }

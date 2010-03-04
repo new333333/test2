@@ -40,6 +40,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.BooleanQuery;
 
 import org.kablink.util.MBeanUtil;
@@ -129,10 +130,16 @@ public class LuceneProviderManager implements LuceneProviderManagerMBean {
 		int maxBooleans = PropsUtil.getInt("lucene.max.booleans", DEFAULT_MAX_BOOLEAN_CLAUSES);
 		BooleanQuery.setMaxClauseCount(maxBooleans);
 		
+		boolean enableInfoStream = PropsUtil.getBoolean("lucene.enable.info.stream", false);
+		
 		logger.info("commitNumberOps=" + commitNumberOps + 
 				", commitTimeInterval=" + commitTimeInterval + 
 				", commitCheckForWorkInCallingThread=" + commitCheckForWorkInCallingThread + 
-				", maxBooleanClauseCount=" + maxBooleans);
+				", maxBooleanClauseCount=" + maxBooleans +
+				", enableInfoStream=" + enableInfoStream);
+		
+		if(enableInfoStream)
+			IndexWriter.setDefaultInfoStream(System.out);
 		
 		// Register MBean
 		try {
@@ -252,5 +259,13 @@ public class LuceneProviderManager implements LuceneProviderManagerMBean {
 	private void logSystemResource() {
 		if(logger.isDebugEnabled())
 			logger.debug("free memory=" + Runtime.getRuntime().freeMemory() + ", max memory=" + Runtime.getRuntime().maxMemory() + ", total memory=" + Runtime.getRuntime().totalMemory());
+	}
+	
+	public boolean getInfoStreamEnabled() {
+		return (IndexWriter.getDefaultInfoStream() != null);
+	}
+
+	public void setInfoStreamEnabled(boolean infoStreamEnabled) {
+		IndexWriter.setDefaultInfoStream(((infoStreamEnabled)? System.out : null));
 	}
 }
