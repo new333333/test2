@@ -285,6 +285,10 @@ public class LuceneProvider extends IndexSupport {
 		getIndexingResource().optimize();
 	}
 			
+	public void expungeDeletes() throws LuceneException {
+		getIndexingResource().expungeDeletes();
+	}
+			
 	public void optimize(int maxNumSegments) throws LuceneException {
 		getIndexingResource().optimize(maxNumSegments);
 	}
@@ -952,6 +956,24 @@ public class LuceneProvider extends IndexSupport {
 			} 
 			
 			logInfo("Optimize completed. It took " + (System.currentTimeMillis()-startTime) + " milliseconds");
+		}
+		
+		void expungeDeletes() throws LuceneException {
+			long startTime = System.currentTimeMillis();
+			logInfo("ExpungeDeletes started...");
+
+			try {
+				getIndexingResource().getIndexWriter().expungeDeletes();
+				if(logger.isTraceEnabled())
+					logTrace("Called expungeDeletes on writer");
+			} catch (IOException e) {
+				throw new LuceneException("Could not expunge deletes from the index", e);
+			} catch (OutOfMemoryError e) {
+				getIndexingResource().closeOOM(e);
+				throw e;
+			} 
+			
+			logInfo("ExpungeDeletes completed. It took " + (System.currentTimeMillis()-startTime) + " milliseconds");
 		}
 		
 		void close() {
