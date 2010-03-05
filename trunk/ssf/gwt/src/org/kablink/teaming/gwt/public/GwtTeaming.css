@@ -121,7 +121,8 @@
 }
 .workspaceTreeBinderExpanderImg
 {
-	margin-top: 8px;
+	cursor: pointer;
+	margin-top: 4px;
 }
 .workspaceTreeBinderImg
 {
@@ -129,26 +130,20 @@
 }
 .workspaceTreeBinderSelected
 {
-	font-weight: bold;
 }
 
 /* Styles used by the WorkspaceTree Control. */
 .workspaceTreeControl
 {
-	background-color: #EFEEEC;
+	background-color: #E6E6E4;
 	padding: 0 0 8px;
 	width: 230px;
-	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
-	-moz-border-radius-bottomleft: 5px;
-	-moz-border-radius-bottomright: 5px;
-	-webkit-border-radius-topleft: 5px;
-	-webkit-border-radius-topright: 5px;
-	-webkit-border-radius-bottomleft: 5px;
-	-webkit-border-radius-bottomright: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 .workspaceTreeControlBody
 {
+	padding-top: 4px;
 }
 .workspaceTreeControlHeader
 {
@@ -159,14 +154,26 @@
 	font-weight: bold;
 	letter-spacing: 0.02em;
 	padding: 5px;
-	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
-	-webkit-border-radius-topleft: 5px;
-	-webkit-border-radius-topright: 5px;
+	-moz-border-radius: 5px 5px 0px 0px;
+	-webkit-border-radius: 5px 5px 0px 0px;
 }
 .workspaceTreeControlRow
 {
-	padding-top: 8px;
+	padding: 4px;
+	cursor: pointer;
+}
+.workspaceTreeControlRowHover
+{
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	background: #E6F2F7;
+}
+.workspaceTreeControlRowSelected
+{
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	background: #FFFFFF;
+	font-weight: bold;
 }
 
 
