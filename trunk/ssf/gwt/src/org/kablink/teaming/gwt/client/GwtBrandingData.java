@@ -50,6 +50,16 @@ public class GwtBrandingData
 	// Branding data read from the db.  The data is html.
 	private String m_html = null;
 	
+	// Color of the font to be used to display the user's name in the masthead.
+	private String m_fontColor = "";
+	
+	// Color to be used as the background color of the masthead.
+	private String m_bgColor = "";
+	
+	// Image to be used as the background of the masthead.
+	private String m_bgImg = null;
+	
+	
 	/**
 	 * 
 	 */
@@ -59,6 +69,22 @@ public class GwtBrandingData
 		m_html = null;
 	}// end GwtBrandingData()
 	
+	
+	/**
+	 * Return the color to be used as the background color of the masthead. 
+	 */
+	public String getBgColor()
+	{
+		return m_bgColor;
+	}// end getBgColor()
+	
+	/**
+	 * Return the image to be used as the background of the masthead. 
+	 */
+	public String getBgImage()
+	{
+		return m_bgImg;
+	}// end getBgImg()
 	
 	/**
 	 * 
@@ -79,11 +105,48 @@ public class GwtBrandingData
 	
 	
 	/**
+	 * Return the color of the font the be used to display the user's name in the masthead.
+	 */
+	public String getFontColor()
+	{
+		return m_fontColor;
+	}// end getFontColor()
+	
+	
+	/**
+	 * Set the color to be used as the background color in the masthead.
+	 */
+	public void setBgColor( String color )
+	{
+		m_bgColor = color;
+	}// end setBgColor()
+	
+
+	/**
+	 * Set the image to be used as the background image in the masthead.
+	 */
+	public void setBgImage( String bgImg )
+	{
+		m_bgImg = bgImg;
+	}// end setBgImage()
+	
+
+	/**
 	 * Set the branding html.
 	 */
 	public void setBranding( String html )
 	{
 		m_html = html;
 	}// end setBranding()
+	
+
+	/**
+	 * Set the color of the font to be used to display the user's name in the masthead.
+	 */
+	public void setFontColor( String fontColor )
+	{
+		m_fontColor = fontColor;
+	}// end setFontColor()
+	
 	
 }// end GwtBrandingData
