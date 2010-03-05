@@ -44,6 +44,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
@@ -200,6 +201,9 @@ public class LuceneProvider extends IndexSupport {
 			}
 		} catch (IOException e) {
 			throw newLuceneException("Could not add document to the index", e);
+		} catch (OutOfMemoryError e) {
+			getIndexingResource().closeOOM(e);
+			throw e;
 		}
 
 		getIndexingResource().getCommitStat().update(docs.size());
@@ -219,6 +223,9 @@ public class LuceneProvider extends IndexSupport {
 		} catch (IOException e) {
 			throw newLuceneException(
 					"Could not delete documents from the index", e);
+		} catch (OutOfMemoryError e) {
+			getIndexingResource().closeOOM(e);
+			throw e;
 		}
 
 		getIndexingResource().getCommitStat().update(1);
@@ -242,6 +249,9 @@ public class LuceneProvider extends IndexSupport {
 					getIndexingResource().getIndexWriter().addDocument(doc, getAnalyzer(tastingText));
 				} catch (IOException e) {
 					throw newLuceneException("Could not add document to the index", e);					
+				} catch (OutOfMemoryError e) {
+					getIndexingResource().closeOOM(e);
+					throw e;
 				}						
 				if(logger.isTraceEnabled())
 					logTrace("Called addDocument on writer with doc [" + doc.toString() + "]");
@@ -253,6 +263,9 @@ public class LuceneProvider extends IndexSupport {
 				} catch (IOException e) {
 					throw newLuceneException(
 							"Could not delete documents from the index", e);
+				} catch (OutOfMemoryError e) {
+					getIndexingResource().closeOOM(e);
+					throw e;
 				}
 				if(logger.isTraceEnabled())
 					logTrace("Called deleteDocuments on writer with term [" + term.toString() + "]");
@@ -425,6 +438,9 @@ public class LuceneProvider extends IndexSupport {
 			return tempHits;
 		} catch (IOException e) {
 			throw newLuceneException("Error searching index", e);
+		} catch (OutOfMemoryError e) {
+			getIndexingResource().closeOOM(e);
+			throw e;
 		} finally {
 			releaseIndexSearcherHandle(indexSearcherHandle);
 		}
@@ -462,6 +478,9 @@ public class LuceneProvider extends IndexSupport {
 			return tempHits;
 		} catch (IOException e) {
 			throw newLuceneException("Error searching index", e);
+		} catch (OutOfMemoryError e) {
+			getIndexingResource().closeOOM(e);
+			throw e;
 		} finally {
 			releaseIndexSearcherHandle(indexSearcherHandle);
 		}
@@ -580,6 +599,9 @@ public class LuceneProvider extends IndexSupport {
 			// Note: I don't know why/if this is the right thing. But I'm leaving the
 			// logic as is, since that's the way it was previously written.
 			logError("Error getting tags", e);
+		} catch (OutOfMemoryError e) {
+			getIndexingResource().closeOOM(e);
+			throw e;
 		} finally {
 			releaseIndexSearcherHandle(indexSearcherHandle);
 		}
@@ -679,6 +701,9 @@ public class LuceneProvider extends IndexSupport {
 			// Note: I don't know why/if this is the right thing. But I'm leaving the
 			// logic as is, since that's the way it was previously written.
 			logError("Error getting titles", e);
+		} catch (OutOfMemoryError e) {
+			getIndexingResource().closeOOM(e);
+			throw e;
 		} finally {
 			releaseIndexSearcherHandle(indexSearcherHandle);
 		}
@@ -864,8 +889,10 @@ public class LuceneProvider extends IndexSupport {
 				logDebug("Index writer committed");
 			} catch (IOException e) {
 				throw newLuceneException("Error committing index writer", e);		
+			} catch (OutOfMemoryError e) {
+				getIndexingResource().closeOOM(e);
+				throw e;
 			}
-
 			
 			// The IndexReader.isCurrent() method that SearcherManager relies on to detect changes
 			// returns true if the changes are already committed from the writer. So, it fails to
@@ -899,6 +926,9 @@ public class LuceneProvider extends IndexSupport {
 					logTrace("Called optimize on writer");
 			} catch (IOException e) {
 				throw new LuceneException("Could not optimize the index", e);
+			} catch (OutOfMemoryError e) {
+				getIndexingResource().closeOOM(e);
+				throw e;
 			} 
 			
 			logInfo("Optimize completed. It took " + (System.currentTimeMillis()-startTime) + " milliseconds");
@@ -916,6 +946,9 @@ public class LuceneProvider extends IndexSupport {
 					logTrace("Called optimize on writer");
 			} catch (IOException e) {
 				throw new LuceneException("Could not optimize the index", e);
+			} catch (OutOfMemoryError e) {
+				getIndexingResource().closeOOM(e);
+				throw e;
 			} 
 			
 			logInfo("Optimize completed. It took " + (System.currentTimeMillis()-startTime) + " milliseconds");
@@ -938,6 +971,23 @@ public class LuceneProvider extends IndexSupport {
 			}
 
 			this.getCommitStat().reset();
+		}
+		
+		void closeOOM(OutOfMemoryError e) {
+			// Close the writer immediately so that we can prevent index corruption.
+			// Should only be used for emergency closing upon OOM error.
+			try {
+				this.getIndexWriter().close();
+			} catch (Throwable t) {
+				try {
+					logError("Error closing index writer upon OOM", t);
+				}
+				catch(Throwable ignore) {}
+			}
+			try {
+				logError("Fatal OOM error occurred", e);
+			}
+			catch(Throwable ignore) {}
 		}
 	}
 	
