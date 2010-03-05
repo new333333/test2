@@ -78,6 +78,7 @@ import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
+import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.search.Constants;
 
 
@@ -398,6 +399,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				branding = MarkupUtil.markupStringReplacement( null, null, null, null, brandingSourceBinder, branding, "view" );
 	
 				brandingData.setBranding( branding );
+				
+				//!!! Remove the next section.
+				if ( false )
+				{
+					String fileUrl;
+					String webPath;
+					
+					// Get a url to the file.
+					webPath = WebUrlUtil.getServletRootURL();
+					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, binder, "Thayne-balloon.jpg" );
+					brandingData.setBgImageUrl( fileUrl );
+				}
 			}
 		}
 		catch (NoBinderByTheIdException nbEx)

@@ -52,6 +52,8 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.LoadEvent;
+import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -98,22 +100,21 @@ public class MastHead extends Composite
 	private Anchor m_logoutLink = null;
 	private Anchor m_helpLink = null;
 	private InlineLabel m_mouseOverHint = null;
+	// m_rpcCallback is our callback that gets called when the ajax request to get the branding
+	// data completes.
+	private AsyncCallback<GwtBrandingData> m_rpcCallback = null;
+	
+	
 	
 	/**
 	 * This class displays branding, either level1(corporate) or level2(sub)
 	 */
 	public class BrandingPanel extends Composite
+		implements LoadHandler
 	{
 		private FlowPanel m_panel;
 		private Image m_novellTeamingImg = null;
 
-		private String m_panelBinderId = null;	// Id of the binder we are displaying branding for.
-
-		// m_rpcCallback is our callback that gets called when the ajax request to get the branding
-		// data completes.
-		private AsyncCallback<GwtBrandingData> m_rpcCallback = null;
-		
-		
 		/**
 		 * 
 		 */
@@ -130,99 +131,21 @@ public class MastHead extends Composite
 			m_novellTeamingImg.setWidth( "500" );
 			m_novellTeamingImg.setHeight( "75" );
 		
-			// Create the callback that will be used when we issue an ajax call to get a GwtBrandingData object.
-			m_rpcCallback = new AsyncCallback<GwtBrandingData>()
-			{
-				/**
-				 * 
-				 */
-				public void onFailure( Throwable t )
-				{
-					String errMsg;
-					String cause;
-					GwtTeamingMessages messages;
-					
-					messages = GwtTeaming.getMessages();
-					
-					if ( t instanceof GwtTeamingException )
-					{
-						ExceptionType type;
-					
-						// Determine what kind of exception happened.
-						type = ((GwtTeamingException)t).getExceptionType();
-						if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
-							cause = messages.errorAccessToFolderDenied( m_panelBinderId );
-						else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
-							cause = messages.errorFolderDoesNotExist( m_panelBinderId );
-						else
-							cause = messages.errorUnknownException();
-					}
-					else
-					{
-						cause = t.getLocalizedMessage();
-						if ( cause == null )
-							cause = t.toString();
-					}
-					
-					errMsg = messages.getBrandingRPCFailed( cause );
-					Window.alert( errMsg );
-				}// end onFailure()
-		
-				/**
-				 * 
-				 * @param result
-				 */
-				public void onSuccess( GwtBrandingData brandingData )
-				{
-					// Update the masthead with the branding data we just retrieved.
-					updateMasthead( brandingData );
-				}// end onSuccess()
-			};
-			
 			// All composites must call initWidget() in their constructors.
 			initWidget( m_panel );
 		}// end BrandingPanel()
 		
 		
 		/**
-		 * Issue an ajax request to get the branding data from the server.  Our AsyncCallback
-		 * will be called when this request completes.
+		 * This method gets called when an image in the branding gets loaded.  We will need
+		 * to adjust the height of the masthead.
 		 */
-		private void getDataFromServer()
+		public void onLoad( LoadEvent event )
 		{
-			GwtRpcServiceAsync rpcService;
-			
-			rpcService = GwtTeaming.getRpcService();
-			
-			// Do we have a binder id?
-			if ( m_panelBinderId != null )
-			{
-				// Yes, Issue an ajax request to get the branding data for the given binder.
-				rpcService.getBinderBrandingData( m_panelBinderId, m_rpcCallback );
-			}
-			else
-			{
-				// Issue an ajax request to get the corporate branding data.
-				rpcService.getCorporateBrandingData( m_rpcCallback );
-			}
-		}// end getDataFromServer()
-		
-		
-		/**
-		 * 
-		 */
-		public void setBinderId( String binderId )
-		{
-			// Did the binder id change?
-			if ( m_panelBinderId == null || m_panelBinderId.equalsIgnoreCase( binderId ) == false )
-			{
-				// Yes
-				m_panelBinderId = binderId;
-
-				// Issue an ajax request to retrieve the binder branding data.
-				getDataFromServer();
-			}
-		}// end setBinderId()
+			// Adjust the height of the masthead to take into consideration this new image
+			// that has been loaded.
+			adjustMastheadHeight();
+		}// end onLoad()
 		
 		
 		/**
@@ -252,8 +175,24 @@ public class MastHead extends Composite
 				}
 				else
 				{
-					// No, use the Novell Teaming image for the branding.
-					m_panel.add( m_novellTeamingImg );
+					String brandingImgUrl;
+					
+					// Do we have an image to use as the branding?
+					brandingImgUrl = brandingData.getBrandingImageUrl();
+					if ( brandingImgUrl != null && brandingImgUrl.length() > 0 )
+					{
+						Image img;
+						
+						// Yes, create the image and add it to the panel.
+						img = new Image( brandingImgUrl );
+						img.addLoadHandler( this );
+						m_panel.add( img );
+					}
+					else
+					{
+						// No, use the Novell Teaming image for the branding.
+						m_panel.add( m_novellTeamingImg );
+					}
 				}
 			}
 		}// end updatePanel()
@@ -271,6 +210,55 @@ public class MastHead extends Composite
 		
 		m_mainMastheadPanel = new FlowPanel();
 		m_mainMastheadPanel.addStyleName( "mastHead" );
+		
+		// Create the callback that will be used when we issue an ajax call to get a GwtBrandingData object.
+		m_rpcCallback = new AsyncCallback<GwtBrandingData>()
+		{
+			/**
+			 * 
+			 */
+			public void onFailure( Throwable t )
+			{
+				String errMsg;
+				String cause;
+				GwtTeamingMessages messages;
+				
+				messages = GwtTeaming.getMessages();
+				
+				if ( t instanceof GwtTeamingException )
+				{
+					ExceptionType type;
+				
+					// Determine what kind of exception happened.
+					type = ((GwtTeamingException)t).getExceptionType();
+					if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
+						cause = messages.errorAccessToFolderDenied( m_mastheadBinderId );
+					else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
+						cause = messages.errorFolderDoesNotExist( m_mastheadBinderId );
+					else
+						cause = messages.errorUnknownException();
+				}
+				else
+				{
+					cause = t.getLocalizedMessage();
+					if ( cause == null )
+						cause = t.toString();
+				}
+				
+				errMsg = messages.getBrandingRPCFailed( cause );
+				Window.alert( errMsg );
+			}// end onFailure()
+	
+			/**
+			 * 
+			 * @param result
+			 */
+			public void onSuccess( GwtBrandingData brandingData )
+			{
+				// Update the masthead with the branding data we just retrieved.
+				updateMasthead( brandingData );
+			}// end onSuccess()
+		};
 		
 		// Create a panel that will hold the background image.
 		{
@@ -485,6 +473,30 @@ public class MastHead extends Composite
 
 	
 	/**
+	 * Issue an ajax request to get the branding data from the server.  Our AsyncCallback
+	 * will be called when this request completes.
+	 */
+	private void getBrandingDataFromServer()
+	{
+		GwtRpcServiceAsync rpcService;
+		
+		rpcService = GwtTeaming.getRpcService();
+		
+		// Do we have a binder id?
+		if ( m_mastheadBinderId != null )
+		{
+			// Yes, Issue an ajax request to get the branding data for the given binder.
+			rpcService.getBinderBrandingData( m_mastheadBinderId, m_rpcCallback );
+		}
+		else
+		{
+			// Issue an ajax request to get the corporate branding data.
+			rpcService.getCorporateBrandingData( m_rpcCallback );
+		}
+	}// end getBrandingDataFromServer()
+	
+	
+	/**
 	 * This method gets called when the user clicks on something in the masthead.
 	 */
 	public void onClick( ClickEvent event )
@@ -612,8 +624,9 @@ public class MastHead extends Composite
 			// Yes
 			m_mastheadBinderId = binderId;
 
-			// Update the branding in the branding panel.
-			m_level2BrandingPanel.setBinderId( binderId );
+			// Issue an ajax call to get the branding data for the given binder.  When we get the
+			// response to this request our async callback will be called.
+			getBrandingDataFromServer();
 		}
 	}// end setBinderId()
 
@@ -629,7 +642,7 @@ public class MastHead extends Composite
 			
 			// For the given branding data, adjust the background color or background image.
 			{
-				String bgImg;
+				String bgImgUrl;
 				String bgColor;
 				Style mastheadBgPanelStyle;
 				Element mastheadBgPanelElement;
@@ -647,16 +660,19 @@ public class MastHead extends Composite
 				mastheadBgPanelStyle.clearBackgroundColor();
 
 				// Is a background image specified in the branding data?
-				bgImg = brandingData.getBgImage();
-				if ( bgImg != null && bgImg.length() > 0 )
+				bgImgUrl = brandingData.getBgImageUrl();
+				if ( bgImgUrl != null && bgImgUrl.length() > 0 )
 				{
+					Image img;
+					
 					// Yes
-					//!!! Finish
 					// Add the new background image to the masthead.
-					// Do something
+					img = new Image( bgImgUrl );
+					img.setWidth( "100%" );
+					m_mastheadBgPanel.add( img );
 					
 					// Remember the background image we are using.
-					// m_bgImg = ???;
+					m_bgImg = img;
 					
 					// No need to use the default background image since a background image was specified.
 					useDefaultBgImg = false;
