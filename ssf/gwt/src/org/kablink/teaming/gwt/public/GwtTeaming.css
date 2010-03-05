@@ -737,12 +737,14 @@
 /* Style used with the panel that holds the graphic that is displayed on the left side of the mast head. */
 .mastHeadBrandingPanel
 {
+	font-size: 12px;
 	z-index: 3;
 }
 
 /* Style used with the panel that holds the global actions in the mast head. */
 .mastHeadGlobalActionsPanel
 {
+	color: #FFFFFF;
 	right: 20px;
 	position: absolute;
 	top: 15px;
@@ -762,7 +764,6 @@
 /* Style used with the panel that holds the logged-in user's name in the mast head. */
 .mastHeadUserName
 {
-	color: #FFFFFF;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 0.95em;
 	font-style: italic;
@@ -785,7 +786,6 @@
 /* Style used for the mouse-over hint for the links in the masthead. */
 .mastHeadMouseOverHint
 {
-	color: #FFFFFF;
 	font-size: 0.7em;
 	overflow: hidden;
 	position: absolute;

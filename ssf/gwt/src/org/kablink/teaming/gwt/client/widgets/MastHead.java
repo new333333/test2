@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -76,11 +77,14 @@ public class MastHead extends Composite
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	private RequestInfo m_requestInfo = null;
 	private String m_mastheadBinderId = null;
+	private FlowPanel m_mainMastheadPanel = null;
+	private FlowPanel m_mastheadBgPanel;
+	private FlowPanel m_mastheadContentPanel = null;
 //!!!	private BrandingPanel m_level1BrandingPanel = null;
 	private BrandingPanel m_level2BrandingPanel = null;
-	private Image m_backgroundImg = null;
-	private FlowPanel m_mainMastheadPanel = null;
-	private FlowPanel m_mastheadContentPanel = null;
+	private FlowPanel m_globalActionsPanel;
+	private Image m_defaultBgImg = null;
+	private Image m_bgImg = null;
 	private Image m_adminImg1 = null;
 	private Image m_adminImg2 = null;
 	private Image m_myWorkspaceImg1 = null;
@@ -104,8 +108,6 @@ public class MastHead extends Composite
 		private Image m_novellTeamingImg = null;
 
 		private String m_panelBinderId = null;	// Id of the binder we are displaying branding for.
-
-		private GwtBrandingData m_brandingData = null;	// Branding data for the given binder.
 
 		// m_rpcCallback is our callback that gets called when the ajax request to get the branding
 		// data completes.
@@ -172,10 +174,8 @@ public class MastHead extends Composite
 				 */
 				public void onSuccess( GwtBrandingData brandingData )
 				{
-					m_brandingData = brandingData;
-					
-					// Update this panel with the branding data.
-					updatePanel();
+					// Update the masthead with the branding data we just retrieved.
+					updateMasthead( brandingData );
 				}// end onSuccess()
 			};
 			
@@ -228,17 +228,17 @@ public class MastHead extends Composite
 		/**
 		 * Update this panel with the data found in m_brandingData. 
 		 */
-		public void updatePanel()
+		public void updatePanel( GwtBrandingData brandingData )
 		{
 			// Remove any existing branding from this panel.
 			m_panel.clear();
 			
-			if ( m_brandingData != null )
+			if ( brandingData != null )
 			{
 				String html;
 				
 				// Get the branding html.
-				html = m_brandingData.getBranding();
+				html = brandingData.getBranding();
 				
 				// Do we have any branding?
 				if ( html != null && html.length() > 0 )
@@ -255,9 +255,6 @@ public class MastHead extends Composite
 					// No, use the Novell Teaming image for the branding.
 					m_panel.add( m_novellTeamingImg );
 				}
-
-				// Adjust the height of the masthead to be equal to the height of the masthead content panel.
-				adjustMastheadHeight();
 			}
 		}// end updatePanel()
 	}// end BrandingPanel
@@ -270,9 +267,6 @@ public class MastHead extends Composite
 	 */
 	public MastHead( RequestInfo requestInfo )
 	{
-		FlowPanel panel;
-		FlowPanel bgPanel;
-
 		m_requestInfo = requestInfo;
 		
 		m_mainMastheadPanel = new FlowPanel();
@@ -280,14 +274,15 @@ public class MastHead extends Composite
 		
 		// Create a panel that will hold the background image.
 		{
-			bgPanel = new FlowPanel();
-			bgPanel.addStyleName( "mastHeadBgPanel" );
-			m_mainMastheadPanel.add( bgPanel );
+			m_mastheadBgPanel = new FlowPanel();
+			m_mastheadBgPanel.addStyleName( "mastHeadBgPanel" );
+			m_mainMastheadPanel.add( m_mastheadBgPanel );
 
-			// Get the background image.
-			m_backgroundImg = new Image( m_requestInfo.getImagesPath() + "pics/masthead/mast_head_bg.png" );
-			m_backgroundImg.setWidth( "100%" );
-			bgPanel.add( m_backgroundImg );
+			// Get the default background image and add it to the masthead.
+			m_defaultBgImg = new Image( m_requestInfo.getImagesPath() + "pics/masthead/mast_head_bg.png" );
+			m_defaultBgImg.setWidth( "100%" );
+			m_bgImg = m_defaultBgImg;
+			m_mastheadBgPanel.add( m_defaultBgImg );
 		}
 		
 		// Create a panel that will hold the branding and everything else
@@ -311,18 +306,18 @@ public class MastHead extends Composite
 			ImageResource imgResource;
 			Element linkElement;
 			
-			panel = new FlowPanel();
-			panel.addStyleName( "mastHeadGlobalActionsPanel" );
+			m_globalActionsPanel = new FlowPanel();
+			m_globalActionsPanel.addStyleName( "mastHeadGlobalActionsPanel" );
 			
 			// Create a label that holds the logged-in user's name.
 			name = new InlineLabel( requestInfo.getUserName() );
 			name.addStyleName( "mastHeadUserName" );
-			panel.add( name );
+			m_globalActionsPanel.add( name );
 			
 			// Create a place to hold the mouse-over hint.
 			m_mouseOverHint = new InlineLabel();
 			m_mouseOverHint.addStyleName( "mastHeadMouseOverHint" );
-			panel.add( m_mouseOverHint );
+			m_globalActionsPanel.add( m_mouseOverHint );
 			
 			// Add the "My workspace" link.
 			{
@@ -344,7 +339,7 @@ public class MastHead extends Composite
 				m_myWorkspaceImg2.setVisible( false );
 				linkElement.appendChild( m_myWorkspaceImg2.getElement() );
 				
-				panel.add( m_myWorkspaceLink );
+				m_globalActionsPanel.add( m_myWorkspaceLink );
 			}
 			
 			// Add the "Administration" link.
@@ -367,7 +362,7 @@ public class MastHead extends Composite
 				m_adminImg2.setVisible( false );
 				linkElement.appendChild( m_adminImg2.getElement() );
 				
-				panel.add( m_adminLink );
+				m_globalActionsPanel.add( m_adminLink );
 			}
 			
 			// Add the "Logout" link.
@@ -390,7 +385,7 @@ public class MastHead extends Composite
 				m_logoutImg2.setVisible( false );
 				linkElement.appendChild( m_logoutImg2.getElement() );
 				
-				panel.add( m_logoutLink );
+				m_globalActionsPanel.add( m_logoutLink );
 			}
 			
 			// Add the "Help" link.
@@ -413,10 +408,10 @@ public class MastHead extends Composite
 				m_helpImg2.setVisible( false );
 				linkElement.appendChild( m_helpImg2.getElement() );
 				
-				panel.add( m_helpLink );
+				m_globalActionsPanel.add( m_helpLink );
 			}
 			
-			m_mastheadContentPanel.add( panel );
+			m_mastheadContentPanel.add( m_globalActionsPanel );
 		}
 		
 		// All composites must call initWidget() in their constructors.
@@ -469,8 +464,16 @@ public class MastHead extends Composite
 		if ( height < 50 )
 			height = 50;
 		heightStr = Integer.toString( height );
-		m_backgroundImg.setHeight( heightStr );
+		
+		// Are we using a background image?
+		if ( m_bgImg != null )
+		{
+			// Yes
+			m_bgImg.setHeight( heightStr );
+		}
+
 		m_mainMastheadPanel.setHeight( heightStr );
+		m_mastheadBgPanel.setHeight( heightStr );
 		
 		// Notify all OnSizeChangeHandler that have registered.
 		for (Iterator<ActionHandler> oschIT = m_actionHandlers.iterator(); oschIT.hasNext(); )
@@ -613,5 +616,101 @@ public class MastHead extends Composite
 			m_level2BrandingPanel.setBinderId( binderId );
 		}
 	}// end setBinderId()
+
 	
+	/**
+	 * Update the masthead with the branding information found in m_brandingData.
+	 */
+	public void updateMasthead( GwtBrandingData brandingData )
+	{
+		if ( brandingData != null )
+		{
+			String fontColor;
+			
+			// For the given branding data, adjust the background color or background image.
+			{
+				String bgImg;
+				String bgColor;
+				Style mastheadBgPanelStyle;
+				Element mastheadBgPanelElement;
+				boolean useDefaultBgImg = true;;
+
+				// Remove any background image that may currently be set on the masthead.
+				if ( m_bgImg != null )
+				{
+					m_bgImg.removeFromParent();
+				}
+
+				// Remove any background color that may currently be set on the masthead.
+				mastheadBgPanelElement = m_mastheadBgPanel.getElement();
+				mastheadBgPanelStyle = mastheadBgPanelElement.getStyle();
+				mastheadBgPanelStyle.clearBackgroundColor();
+
+				// Is a background image specified in the branding data?
+				bgImg = brandingData.getBgImage();
+				if ( bgImg != null && bgImg.length() > 0 )
+				{
+					// Yes
+					//!!! Finish
+					// Add the new background image to the masthead.
+					// Do something
+					
+					// Remember the background image we are using.
+					// m_bgImg = ???;
+					
+					// No need to use the default background image since a background image was specified.
+					useDefaultBgImg = false;
+				}
+				
+				// Is a background color specified in the branding data?
+				bgColor = brandingData.getBgColor();
+				if ( bgColor != null && bgColor.length() > 0 )
+				{
+					// Yes, set the color of the masthead background to the appropriate color.
+					mastheadBgPanelStyle.setBackgroundColor( bgColor );
+
+					// No need to use the default background image since a background color was specified.
+					useDefaultBgImg = false;
+				}
+				
+				// Do we need to use the default background image?
+				if ( useDefaultBgImg )
+				{
+					// Yes
+					// Add the default background image to the masthead.
+					m_mastheadBgPanel.add( m_defaultBgImg );
+					m_bgImg = m_defaultBgImg;
+				}
+			}
+			
+			// For the given branding data, adjust the color of the font used in the "global actions" part of the masthead.
+			{
+				Element element;
+				Style style;
+				
+				element = m_globalActionsPanel.getElement();
+				style = element.getStyle();
+				
+				// Do we have a font color?
+				fontColor = brandingData.getFontColor();
+				if ( fontColor != null && fontColor.length() > 0 )
+				{
+					// Yes
+					// Change the color of the font used to display the user's name.
+					style.setColor( fontColor );
+				}
+				else
+				{
+					// Go back to the font color defined in the style sheet.
+					style.clearColor();
+				}
+			}
+			
+			// Update the actual branding part of the masthead.
+			m_level2BrandingPanel.updatePanel( brandingData ); 
+			
+			// Adjust the height of the masthead to be equal to the height of the masthead content panel.
+			adjustMastheadHeight();
+		}
+	}// end updateMasthead()
 }// end MastHead
