@@ -256,6 +256,17 @@ public class LuceneProviderManager implements LuceneProviderManagerMBean {
 		logSystemResource();
 	}	
 
+	public void expungeDeletes() {
+		logSystemResource();
+		for(LuceneProvider provider: providerMap.values()) {
+			// Expunge deletes from the index
+			provider.expungeDeletes();
+			// Call commit to release resources and free up disk spaces.
+			provider.commit();
+		}
+		logSystemResource();
+	}
+	
 	private void logSystemResource() {
 		if(logger.isDebugEnabled())
 			logger.debug("free memory=" + Runtime.getRuntime().freeMemory() + ", max memory=" + Runtime.getRuntime().maxMemory() + ", total memory=" + Runtime.getRuntime().totalMemory());
