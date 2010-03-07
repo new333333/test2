@@ -59,6 +59,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -573,7 +574,30 @@ public class EntityIndexUtils {
        	if (Validator.isNull(ids)) return Constants.EMPTY_ACL_FIELD;
         return ids;
     }
+    public static String getEntryAclString(Binder binder, Entry entry) {
+    	if (entry.hasEntryAcl()) {
+			Set entryIds = AccessUtils.getReadAccessIds(entry);
+	   		String ids = LongIdUtil.getIdsAsString(entryIds);
+	       	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), Constants.READ_ACL_TEAM);
+	       	ids = ids.replaceFirst(ObjectKeys.OWNER_USER_ID.toString(), Constants.READ_ACL_BINDER_OWNER);
+	        if (entry.checkFolderAcl()) ids += Constants.READ_ACL_ALL;
+	       	if (Validator.isNull(ids)) return Constants.EMPTY_ACL_FIELD;
+	        return ids;
+    	} else {
+    		return Constants.READ_ACL_ALL;
+    	}
+    }
     
+    private static void addEntryAcls(Document doc, Binder binder, Entry entry) {
+		//get real entry access
+		doc.add(new Field(Constants.ENTRY_ACL_FIELD, getEntryAclString(binder, entry), Field.Store.NO, Field.Index.TOKENIZED));
+    }
+
+    private static void addDefaultEntryAcls(Document doc, Binder binder, Entry entry) {
+		//get default entry access
+		doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL, Field.Store.NO, Field.Index.TOKENIZED));
+    }
+
     //Add acl fields for binder for storage in search engine
     private static void addBinderAcls(Document doc, Binder binder) {
     	addBinderAcls(doc, binder, false);
@@ -663,15 +687,33 @@ public class EntityIndexUtils {
     	if (entry instanceof WorkflowSupport) {
     		WorkflowSupport wEntry = (WorkflowSupport)entry;
        		// Add the Entry_ACL field
-       		doc.add(new Field(Constants.ENTRY_ACL_FIELD, getWfEntryAccess(wEntry), Field.Store.NO, Field.Index.TOKENIZED));
+       		if (wEntry.hasAclSet()) {
+       			doc.add(new Field(Constants.ENTRY_ACL_FIELD, getWfEntryAccess(wEntry), Field.Store.NO, Field.Index.TOKENIZED));
+       		}
+       		//add entry access
+    		if (((Entry)entry).hasEntryAcl()) {
+    			addEntryAcls(doc, binder, (Entry)entry);
+    		} else if (!wEntry.hasAclSet() && !((Entry)entry).hasEntryAcl()) {
+    			addDefaultEntryAcls(doc, binder, (Entry)entry);
+    		}
+       		//add binder access
+    		addBinderAcls(doc, binder);
+
+    	} else if (entry instanceof Entry) {
+       		// Add the Entry_ACL field
+    		if (((Entry)entry).hasEntryAcl()) {
+    			addEntryAcls(doc, binder, (Entry)entry);
+    		} else {
+    			addDefaultEntryAcls(doc, binder, (Entry)entry);
+    		}
        		//add binder access
     		addBinderAcls(doc, binder);
 
     	} else if (entry instanceof User) {
-            		// Add the Entry_ACL field
-           		doc.add(new Field(Constants.ENTRY_ACL_FIELD, getUserEntryAccess((User)entry), Field.Store.NO, Field.Index.TOKENIZED));
-           		//add binder access
-        		addBinderAcls(doc, binder);
+            // Add the Entry_ACL field
+           	doc.add(new Field(Constants.ENTRY_ACL_FIELD, getUserEntryAccess((User)entry), Field.Store.NO, Field.Index.TOKENIZED));
+           	//add binder access
+        	addBinderAcls(doc, binder);
 
     	} else {
     		addReadAccess(doc, binder, fieldsOnly);

@@ -77,6 +77,7 @@ public class Constants {
 	public static final String ENTITY_TYPE_FOLDER = "folder";
 	public static final String ENTITY_TYPE_FOLDER_ENTRY = "folderEntry";
 	public static final String BINDER_OWNER_ACL_FIELD = "_bOwnerAcl";
+	public static final String ENTRY_OWNER_ACL_FIELD = "_eOwnerAcl";
 	public static final String TEAM_ACL_FIELD = "_teamAcl";
 	public static final String TAG_FIELD = "_tagField";
 	public static final String ACL_TAG_FIELD = "_aclTagField";

@@ -137,7 +137,6 @@ public abstract class WorkflowControlledEntry extends Entry
     	return null;
     }
 	public boolean hasAclSet() {
-		if (super.hasAclSet()) return true;
 		Set states = getWorkflowStates();
 	    if ((states == null) || states.isEmpty()) return false;
 	    return true;
