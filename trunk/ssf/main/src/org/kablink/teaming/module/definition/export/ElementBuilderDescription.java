@@ -59,7 +59,7 @@ public class ElementBuilderDescription extends AbstractElementBuilder {
 		} else if (obj != null) {
 			if(element != null) {
 				element.setText(MarkupUtil.markupStringReplacementForExport(obj.toString()));
-				element.addAttribute("format", String.valueOf(Description.FORMAT_NONE));
+				element.addAttribute("format", String.valueOf(Description.FORMAT_HTML));
 				ZoneInfo zoneInfo = ExportHelper.getZoneInfo();
 				element.addAttribute("zoneUUID", String.valueOf(zoneInfo.getId()));
 			}
