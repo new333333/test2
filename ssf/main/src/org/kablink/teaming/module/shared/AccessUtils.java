@@ -107,7 +107,7 @@ public class AccessUtils  {
 	public static boolean checkAccess(Element parent, Set<String> userIds) {	
 		//KEEP IN SYNC WITH QUERYBUILDER.GETACLCLAUSE 
 		//Don't exactly duplicate all the optimizations in the search engine.
-		//The folder owner is stored in toe folderAcl field, not a separate field cause bulk updates are never done
+		//The folder owner is stored in the folderAcl field, not a separate field cause bulk updates are never done
 		/* if widen(the default), then acl query is:
 		 * access to folder ((entryAcl:all and folderAcl:1,2,3) OR (entryAcl:all and folderAcl:team and teamAcl:1,2,3) OR
 		 * access to entry (entryAcl:1,2,3) OR (entryAcl:team AND teamAcl:1,2,3)) 
@@ -219,6 +219,10 @@ public class AccessUtils  {
         }
         return readEntries;
 	}     	
+	public static Set getReadAccessIds(Entry entry) {
+        Set readEntries = getInstance().getAccessControlManager().getWorkAreaAccessControl((WorkArea) entry, WorkAreaOperation.READ_ENTRIES);
+        return readEntries;
+	}     	
 	
 	public static void readCheck(User user, DefinableEntity entity) throws AccessControlException {
 		if (entity.getEntityType().equals(EntityIdentifier.EntityType.workspace) || 
@@ -249,36 +253,60 @@ public class AccessUtils  {
 		} catch(AccessControlException ex) {
 			if (user != null && user.equals(entry.getCreation().getPrincipal())) {
 				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_READ);
-			} else {
-				try {
-					getInstance().getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.READ_ENTRIES);
-				} catch(AccessControlException ex2) {
-					throw ex;
-				}
 			}
 		}
     }
     private static void readCheck(User user, Binder binder, WorkflowSupport entry) throws AccessControlException {
-		if (!entry.hasAclSet()) {
+		if (!entry.hasAclSet() && !((Entry)entry).hasEntryAcl()) {
+			//There are no specific entry level ACLs in play. Just check the folder access settings
 			readCheck(user, binder, (Entry)entry);
+		
 		} else if (SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) {
- 			//just check entry acl, ignore binder
- 			try {
- 				checkAccess(user, binder, entry, WfAcl.AccessType.read);
- 			} catch (AccessControlException ex) {
- 				if (entry.isWorkAreaAccess(WfAcl.AccessType.read)) { 		
- 					readCheck(user, binder, (Entry)entry);
- 				} else throw ex;
- 			}
+ 			//We are allowing "widening", so just check entry ACL; ignore binder unless all else fails
+			try {
+				//See if there is an entry acl allowing read
+				getInstance().getAccessControlManager().checkOperation(user, (Entry)entry, WorkAreaOperation.READ_ENTRIES);
+			} catch(AccessControlException ex) {
+	 			//There is no entry level access, now try to see if folder level access is allowed
+				if (((Entry)entry).checkFolderAcl() || entry.isWorkAreaAccess(WfAcl.AccessType.read)) {
+					try {
+		 				readCheck(user, binder, (Entry)entry);
+					} catch(AccessControlException ex2) {
+						try {
+							//There is no entry level access or folder level access, now try to see if there is a workflow ACL
+			 				checkAccess(user, binder, entry, WfAcl.AccessType.read);
+			 			} catch (AccessControlException ex3) {
+			 				//No access
+			 				throw ex;
+			 			}
+					}
+				} else {
+					try {
+						//There is no entry level access or folder level access, now try to see if there is a workflow ACL
+		 				checkAccess(user, binder, entry, WfAcl.AccessType.read);
+		 			} catch (AccessControlException ex3) {
+		 				//No access
+		 				throw ex;
+		 			}
+				}
+			}
  			
  		} else {
- 			//must have READ access to binder AND entry
- 			//see if pass binder test
+ 			//"widening" not allowed, so we must have READ access to both the binder AND the entry
+ 			//First, see if we pass the binder test
  			readCheck(user, binder, (Entry)entry);
- 			//	see if binder default is enough
- 			if (entry.isWorkAreaAccess(WfAcl.AccessType.read)) return;
- 			//This basically AND's the binder and entry, since we already passed the binder
- 			checkAccess(user, binder, entry, WfAcl.AccessType.read);
+ 			
+ 			//OK, binder test passed, see if binder test is enough. Check for "binder acl" in either entry ACL or workflow ACL. 
+ 			if (entry.isWorkAreaAccess(WfAcl.AccessType.read) || ((Entry)entry).checkFolderAcl()) return;
+ 			
+ 			//We have passed the binder ACL test, but we must now check for entry level access
+			try {
+				//See if there is an entry ACL allowing read
+				getInstance().getAccessControlManager().checkOperation(user, (Entry)entry, WorkAreaOperation.READ_ENTRIES);
+			} catch(AccessControlException ex) {
+				//There is no entry level access, now try to see if there is a workflow ACL
+ 				checkAccess(user, binder, entry, WfAcl.AccessType.read);
+			}
   		}
 	}
     
