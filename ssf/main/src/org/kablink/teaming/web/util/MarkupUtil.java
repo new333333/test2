@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1060,7 +1061,12 @@ public class MarkupUtil {
 		final Map<String,Object> data = new HashMap<String,Object>(); // Changed data
 		CustomAttribute ca_zoneUUID = entity.getCustomAttribute("_zoneUUID");
 		String s_zoneUUID = "";
-		if (ca_zoneUUID != null) s_zoneUUID = (String)ca_zoneUUID.getValue();
+		if (ca_zoneUUID.getValueType() == CustomAttribute.STRING) {
+			s_zoneUUID = (String)ca_zoneUUID.getValue();
+		} else if (ca_zoneUUID.getValueType() == CustomAttribute.SET) {
+			Object[] UUIDs = ca_zoneUUID.getValueSet().toArray();
+			s_zoneUUID = UUIDs[0].toString();
+		}
 		if (s_zoneUUID != null && s_zoneUUID.contains(".")) {
 			s_zoneUUID = s_zoneUUID.substring(0, s_zoneUUID.indexOf("."));
 		}
