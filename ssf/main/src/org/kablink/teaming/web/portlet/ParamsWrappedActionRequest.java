@@ -48,6 +48,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletSession;
 import javax.portlet.WindowState;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -250,6 +251,26 @@ public class ParamsWrappedActionRequest implements ActionRequest, HttpServletReq
 			return ((HttpServletRequestReachable)req).getHttpServletRequest();
 		else
 			throw new UnsupportedOperationException(); // This shouldn't happen...
+	}
+
+	public String getMethod() {
+		return req.getMethod();
+	}
+
+	public Cookie[] getCookies() {
+		return req.getCookies();
+	}
+
+	public Map<String, String[]> getPrivateParameterMap() {
+		return req.getPrivateParameterMap();
+	}
+
+	public Map<String, String[]> getPublicParameterMap() {
+		return req.getPublicParameterMap();
+	}
+
+	public String getWindowID() {
+		return req.getWindowID();
 	}
 	
 }

@@ -34,8 +34,12 @@ package org.kablink.teaming.web.portlet.handler;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.EventRequest;
+import javax.portlet.EventResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
 
 import org.springframework.web.portlet.HandlerInterceptor;
 import org.springframework.web.portlet.ModelAndView;
@@ -68,6 +72,32 @@ public class AbstractInterceptor implements HandlerInterceptor {
 			RenderRequest request, RenderResponse response, Object handler, Exception ex)
 			throws Exception {
 		
+	}
+
+	public void afterEventCompletion(EventRequest arg0, EventResponse arg1,
+			Object arg2, Exception arg3) throws Exception {
+
+	}
+
+	public void afterResourceCompletion(ResourceRequest arg0,
+			ResourceResponse arg1, Object arg2, Exception arg3)
+			throws Exception {
+
+	}
+
+	public void postHandleResource(ResourceRequest arg0, ResourceResponse arg1,
+			Object arg2, ModelAndView arg3) throws Exception {
+
+	}
+
+	public boolean preHandleEvent(EventRequest arg0, EventResponse arg1,
+			Object arg2) throws Exception {
+		return true;
+	}
+
+	public boolean preHandleResource(ResourceRequest arg0,
+			ResourceResponse arg1, Object arg2) throws Exception {
+		return true;
 	}
 
 }

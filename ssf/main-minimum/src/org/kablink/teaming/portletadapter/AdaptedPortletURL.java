@@ -248,6 +248,10 @@ public class AdaptedPortletURL {
 		this.params = newParams;
 	}
 
+	public Map getParameterMap() {
+		return params;
+	}
+	
 	public void setSecure(boolean sec) throws PortletSecurityException {
 		this.secure = Boolean.valueOf(sec);
 	}

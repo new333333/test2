@@ -194,4 +194,11 @@ public class PortletContextImpl implements PortletContext {
 		return ctxName;
 	}
 
+	public Enumeration<String> getContainerRuntimeOptions() {
+		return new Enumeration<String>() {
+		    public boolean hasMoreElements() { return false; }
+		    public String nextElement() { return null; }
+		};
+	}
+
 }

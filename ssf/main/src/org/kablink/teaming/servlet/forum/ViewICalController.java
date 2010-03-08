@@ -51,7 +51,7 @@ import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.servlet.SAbstractController;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -63,8 +63,8 @@ public class ViewICalController extends SAbstractController {
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {		
 
-		Long binderId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
-		Long entryId = new Long(RequestUtils.getRequiredStringParameter(request, WebKeys.URL_ENTRY_ID));
+		Long binderId = new Long(ServletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
+		Long entryId = new Long(ServletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_ENTRY_ID));
 		Map folderEntries = getFolderModule().getEntryTree(binderId, entryId);
 		FolderEntry entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
 		

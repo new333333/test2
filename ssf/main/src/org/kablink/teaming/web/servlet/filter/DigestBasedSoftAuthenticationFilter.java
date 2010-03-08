@@ -55,7 +55,7 @@ import org.kablink.teaming.security.authentication.UserDoesNotExistException;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.WebHelper;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 
 
 public class DigestBasedSoftAuthenticationFilter implements Filter {
@@ -67,7 +67,7 @@ public class DigestBasedSoftAuthenticationFilter implements Filter {
 
 	public void doFilter(ServletRequest request, ServletResponse response, 
 			FilterChain chain) throws IOException, ServletException {
-		//String zoneName = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "zn");
+		//String zoneName = ServletRequestUtils.getRequiredStringParameter((HttpServletRequest) request, "zn");
 		String zoneName = WebHelper.getZoneNameByVirtualHost(request);
 		Long userId = null;
 		String binderId = "";
@@ -76,9 +76,9 @@ public class DigestBasedSoftAuthenticationFilter implements Filter {
 		RequestContextHolder.clear();
 
 		try {
-			userId = RequestUtils.getRequiredLongParameter((HttpServletRequest) request, "ui");
-			binderId = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "bi"); 		
-			privateDigest = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "pd"); 
+			userId = ServletRequestUtils.getRequiredLongParameter((HttpServletRequest) request, "ui");
+			binderId = ServletRequestUtils.getRequiredStringParameter((HttpServletRequest) request, "bi"); 		
+			privateDigest = ServletRequestUtils.getRequiredStringParameter((HttpServletRequest) request, "pd"); 
 		} catch(Exception e) {
 			logger.warn("RSS: "+e.getLocalizedMessage());
 		}

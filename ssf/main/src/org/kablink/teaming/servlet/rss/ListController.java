@@ -44,7 +44,7 @@ import org.kablink.teaming.security.function.OperationAccessControlExceptionNoNa
 import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.web.servlet.SAbstractController;
 import org.kablink.teaming.web.util.WebHelper;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -57,7 +57,7 @@ public class ListController extends SAbstractController {
 	@Override
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// Get the list of RSS items and write it to servlet response as XML.
-		Long binderId = new Long(RequestUtils.getRequiredStringParameter(request, "bi"));
+		Long binderId = new Long(ServletRequestUtils.getRequiredStringParameter(request, "bi"));
 		Binder binder = null;
 		authErr = false;
 		binderExists = true;

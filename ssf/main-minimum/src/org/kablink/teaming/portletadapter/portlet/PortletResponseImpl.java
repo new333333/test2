@@ -33,7 +33,11 @@
 package org.kablink.teaming.portletadapter.portlet;
 
 import javax.portlet.PortletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Element;
 
 public class PortletResponseImpl implements PortletResponse, HttpServletResponseReachable {
 
@@ -65,5 +69,21 @@ public class PortletResponseImpl implements PortletResponse, HttpServletResponse
 	
 	public HttpServletResponse getHttpServletResponse() {
 		return res;
+	}
+
+	public void addProperty(Cookie cookie) {
+		res.addCookie(cookie);
+	}
+
+	public void addProperty(String key, Element element) {
+		throw new UnsupportedOperationException();
+	}
+
+	public Element createElement(String tagName) throws DOMException {
+		throw new UnsupportedOperationException();
+	}
+
+	public String getNamespace() {
+		throw new UnsupportedOperationException();
 	}
 }

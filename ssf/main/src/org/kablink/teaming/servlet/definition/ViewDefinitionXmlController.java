@@ -42,14 +42,14 @@ import org.kablink.teaming.web.servlet.SAbstractController;
 import org.kablink.util.Validator;
 import org.springframework.web.servlet.ModelAndView;
 
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 
 public class ViewDefinitionXmlController extends SAbstractController {
 	
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {		
 
-		String id = RequestUtils.getStringParameter(request, "id", "");
+		String id = ServletRequestUtils.getStringParameter(request, "id", "");
 
 		String data = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 		if (!Validator.isNull(id) ) {

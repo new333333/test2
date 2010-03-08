@@ -49,7 +49,7 @@ import org.kablink.teaming.ical.util.ICalUtils;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.web.servlet.SAbstractController;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -67,7 +67,7 @@ public class GetController extends SAbstractController {
 	@Override
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		Long binderId = new Long(RequestUtils.getRequiredStringParameter(request, "bi"));
+		Long binderId = new Long(ServletRequestUtils.getRequiredStringParameter(request, "bi"));
 		if (binderId == null) {
 			return null;
 		}
@@ -82,7 +82,7 @@ public class GetController extends SAbstractController {
 		}
 		response.setHeader("Cache-Control", cacheControl);
 		
-		Long entryId = RequestUtils.getLongParameter(request, "entry");
+		Long entryId = ServletRequestUtils.getLongParameter(request, "entry");
 		if (entryId != null) {
 			FolderEntry entry  = getFolderModule().getEntry(binderId, entryId);
 			CalendarOutputter calendarOutputter = ICalUtils.getCalendarOutputter();

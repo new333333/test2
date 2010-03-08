@@ -47,7 +47,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.servlet.SAbstractController;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebHelper;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -86,11 +86,11 @@ public class PortalLoginController extends SAbstractController {
 				return new ModelAndView(view, model);
 			}
 			
-			String username = RequestUtils.getStringParameter(request, "j_username", "");
-			String password = RequestUtils.getStringParameter(request, "j_password", "");			
-			String remember = RequestUtils.getStringParameter(request, "remember");
-			String url = RequestUtils.getStringParameter(request, "spring-security-redirect", "");			
-			boolean forceNew = RequestUtils.getBooleanParameter(request, "_forcenew", false);
+			String username = ServletRequestUtils.getStringParameter(request, "j_username", "");
+			String password = ServletRequestUtils.getStringParameter(request, "j_password", "");			
+			String remember = ServletRequestUtils.getStringParameter(request, "remember");
+			String url = ServletRequestUtils.getStringParameter(request, "spring-security-redirect", "");			
+			boolean forceNew = ServletRequestUtils.getBooleanParameter(request, "_forcenew", false);
 			model.put(WebKeys.URL, url);
 
 			if(!(forceNew && SPropsUtil.getBoolean(PORTAL_LOGIN_FORCENEW_ALLOWED, false))) {
@@ -146,7 +146,7 @@ public class PortalLoginController extends SAbstractController {
 			getPortalLogin().logoutPortal(request, response);
 
 			view = WebKeys.VIEW_LOGOUT_RETURN;
-			String url = RequestUtils.getStringParameter(request, "spring-security-redirect", "");
+			String url = ServletRequestUtils.getStringParameter(request, "spring-security-redirect", "");
 			if (url.equals("")) {
 				if (userId != null) {
 					url = PermaLinkUtil.getUserPermalink(request, userId.toString());

@@ -45,7 +45,7 @@ import javax.servlet.http.HttpSession;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.servlet.SAbstractController;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -64,8 +64,8 @@ public class ViewCssController extends SAbstractController {
 				ses.setAttribute("ssCssDate", cssDate);
 			}
 		}
-		String theme = RequestUtils.getStringParameter(request, WebKeys.URL_CSS_THEME, "");
-		String sheet = RequestUtils.getStringParameter(request, WebKeys.URL_CSS_SHEET, "");
+		String theme = ServletRequestUtils.getStringParameter(request, WebKeys.URL_CSS_THEME, "");
+		String sheet = ServletRequestUtils.getStringParameter(request, WebKeys.URL_CSS_SHEET, "");
 		Map model = new HashMap();
 		if (!theme.equals("")) model.put(WebKeys.CSS_THEME, theme);
 		response.setContentType("text/css");			

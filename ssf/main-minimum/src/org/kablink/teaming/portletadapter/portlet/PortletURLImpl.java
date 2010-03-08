@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.portletadapter.portlet;
 
+import java.io.IOException;
+import java.io.Writer;
+
 import javax.portlet.PortletMode;
 import javax.portlet.PortletModeException;
 import javax.portlet.PortletURL;
@@ -56,5 +59,37 @@ public class PortletURLImpl extends AdaptedPortletURL implements PortletURL {
 	public void setPortletMode(PortletMode portletMode) throws PortletModeException {
 		// Non-standard: simply ignore
 		//throw new UnsupportedOperationException();
+	}
+
+	public PortletMode getPortletMode() {
+		return null;
+	}
+
+	public WindowState getWindowState() {
+		return null;
+	}
+
+	public void removePublicRenderParameter(String arg0) {
+		throw new UnsupportedOperationException();
+
+	}
+
+	public void addProperty(String arg0, String arg1) {
+		throw new UnsupportedOperationException();
+
+	}
+
+	public void setProperty(String arg0, String arg1) {
+		throw new UnsupportedOperationException();
+	}
+
+	public void write(Writer arg0) throws IOException {
+		throw new UnsupportedOperationException();
+
+	}
+
+	public void write(Writer arg0, boolean arg1) throws IOException {
+		throw new UnsupportedOperationException();
+
 	}
 }

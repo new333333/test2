@@ -66,7 +66,7 @@ import org.kablink.util.BrowserSniffer;
 import org.kablink.util.FileUtil;
 import org.kablink.util.Http;
 import org.kablink.util.Validator;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -87,11 +87,11 @@ public class ViewFileController extends SAbstractController {
             HttpServletResponse response) throws Exception {		
 
 		FileAttachment fa = null;
-		String viewType = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_VIEW_TYPE, ""); 
-		String fileId = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, ""); 
-		String fileTitle = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_TITLE, ""); 
+		String viewType = ServletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_VIEW_TYPE, ""); 
+		String fileId = ServletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, ""); 
+		String fileTitle = ServletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_TITLE, ""); 
 		if (!fileTitle.equals("")) fileTitle = Http.decodeURL(fileTitle);
-		String fileTime = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_TIME, ""); 
+		String fileTime = ServletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_TIME, ""); 
 		if (viewType.equals(WebKeys.FILE_VIEW_TYPE_ZIPPED)) {
 			streamZipFile(request, response, fileId, fileTitle);
 		}
@@ -115,22 +115,22 @@ public class ViewFileController extends SAbstractController {
 			response.getOutputStream().flush();
 			
 		} else {
-			String strBinderId = RequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
-			String strEntryId = RequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+			String strBinderId = ServletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
+			String strEntryId = ServletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 			Long entryId = null;
 			if (!strEntryId.equals("")) entryId = Long.valueOf(strEntryId);
-			String downloadFile = RequestUtils.getStringParameter(request, WebKeys.URL_DOWNLOAD_FILE, "");
+			String downloadFile = ServletRequestUtils.getStringParameter(request, WebKeys.URL_DOWNLOAD_FILE, "");
 			DefinableEntity entity=null;
 			Binder parent;
-			String strEntityType = RequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.none.toString());
+			String strEntityType = ServletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.none.toString());
 			EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.valueOf(strEntityType);
 			if (entityType.isBinder()) {
 				//the entry is the binder
-				if (entryId == null) entryId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
+				if (entryId == null) entryId = new Long(ServletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 				entity = getBinderModule().getBinder(entryId);
 				parent = (Binder) entity;
 			} else if (entryId != null) {
-				Long binderId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
+				Long binderId = new Long(ServletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 				if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) {
 					entity = getFolderModule().getEntry(binderId, entryId);
 				} else if (entityType.equals(EntityIdentifier.EntityType.none)) {
@@ -158,7 +158,7 @@ public class ViewFileController extends SAbstractController {
 					if (entity instanceof FolderEntry) parent = ((FolderEntry)entity).getParentBinder();
 				}
 			} else {
-				Long binderId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
+				Long binderId = new Long(ServletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 				parent = getBinderModule().getBinder(binderId);
 				entity = parent;
 			}
@@ -188,7 +188,7 @@ public class ViewFileController extends SAbstractController {
 			}
 			if (topAtt != null) {
 				//see if we want a version
-				String versionId = RequestUtils.getStringParameter(request, WebKeys.URL_VERSION_ID, ""); 
+				String versionId = ServletRequestUtils.getStringParameter(request, WebKeys.URL_VERSION_ID, ""); 
 				if (Validator.isNull(versionId)) {
 					fa = topAtt;
 				} else {
@@ -230,7 +230,7 @@ public class ViewFileController extends SAbstractController {
 				 * on the server machine. Part of "View as HTML" functionality.
 				 */
 				try {
-					String fileName = RequestUtils.getStringParameter(request, "filename", ""); 
+					String fileName = ServletRequestUtils.getStringParameter(request, "filename", ""); 
 					if (viewType.equals("url"))
 					{
 						response.setContentType("text/html");

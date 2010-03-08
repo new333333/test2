@@ -37,6 +37,7 @@ import java.util.Map;
 
 import javax.portlet.Portlet;
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,7 +54,7 @@ import org.kablink.teaming.web.servlet.ParamsWrappedHttpServletRequest;
 import org.kablink.teaming.web.servlet.SAbstractController;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -74,7 +75,7 @@ public class PortletAdapterController extends SAbstractController {
 	protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		req = getRequest(req);
 		
-		String portletName = RequestUtils.getRequiredStringParameter(req,
+		String portletName = ServletRequestUtils.getRequiredStringParameter(req,
 				KeyNames.PORTLET_URL_PORTLET_NAME);
 
 		PortletInfo portletInfo = (PortletInfo) AdaptedPortlets.getPortletInfo(portletName);
@@ -84,7 +85,7 @@ public class PortletAdapterController extends SAbstractController {
 
 		Portlet portlet = portletInfo.getPortlet();
 
-		int actionInt = RequestUtils.getIntParameter(req,
+		int actionInt = ServletRequestUtils.getIntParameter(req,
 				KeyNames.PORTLET_URL_ACTION, 0);
 
 		try {
@@ -99,6 +100,7 @@ public class PortletAdapterController extends SAbstractController {
 				
 				actionReq.defineObjects(portletInfo.getPortletConfig(), actionRes);
 
+				actionReq.setAttribute(PortletRequest.LIFECYCLE_PHASE, PortletRequest.ACTION_PHASE);
 				portlet.processAction(actionReq, actionRes);
 				
 				String redirectLocation = actionRes.getRedirectLocation();
@@ -107,7 +109,7 @@ public class PortletAdapterController extends SAbstractController {
 					return null;
 				}
 				
-				params = actionRes.getRenderParameters();
+				params = actionRes.getRenderParameterMap();
 				
 				params.put(KeyNames.PORTLET_URL_PORTLET_NAME, new String[] {portletName});
 			} 
@@ -124,6 +126,7 @@ public class PortletAdapterController extends SAbstractController {
 			renderRes.setContentType("text/html; charset=" + charEncoding);
 			renderReq.defineObjects(portletInfo.getPortletConfig(), renderRes);
 			
+			renderReq.setAttribute(PortletRequest.LIFECYCLE_PHASE, PortletRequest.RENDER_PHASE);
 			portlet.render(renderReq, renderRes);
 			
 		} catch (PortletException e) {

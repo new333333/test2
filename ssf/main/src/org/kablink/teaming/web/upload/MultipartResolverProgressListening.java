@@ -45,7 +45,7 @@ import org.kablink.teaming.portletadapter.support.AdaptedPortlets;
 import org.kablink.teaming.portletadapter.support.KeyNames;
 import org.kablink.teaming.portletadapter.support.PortletInfo;
 import org.kablink.teaming.web.WebKeys;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
@@ -63,9 +63,9 @@ public class MultipartResolverProgressListening extends
 		FileUpload fileUpload = prepareFileUpload(encoding);
 
 		try {
-			String portletName = RequestUtils.getRequiredStringParameter(
+			String portletName = ServletRequestUtils.getRequiredStringParameter(
 					request, KeyNames.PORTLET_URL_PORTLET_NAME);
-			String uploadRequestUid = RequestUtils.getStringParameter(request,
+			String uploadRequestUid = ServletRequestUtils.getStringParameter(request,
 					WebKeys.URL_UPLOAD_REQUEST_UID, "");
 
 			PortletInfo portletInfo = (PortletInfo) AdaptedPortlets
