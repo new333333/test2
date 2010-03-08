@@ -53,7 +53,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/velocity.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/hibernate3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxen.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/portlet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/cglib.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jtds.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bsh.jar"/>
@@ -65,7 +64,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/commons-discovery.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/saaj.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/wsdl4j.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/wss4j.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xmlrpc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/addressing.jar"/>
@@ -136,5 +134,24 @@
 	<classpathentry kind="lib" path="tools/gwt/gwt-dev.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/lucene-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jtidy.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.aop.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.asm.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.aspects.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.beans.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.context.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.context.support.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.expression.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.instrument.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.instrument.tomcat.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.jdbc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.orm.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.oxm.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.test.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.transaction.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.web.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.web.portlet.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.web.servlet.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/portlet-api-2.0.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
