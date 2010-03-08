@@ -50,19 +50,8 @@ public class GwtBrandingData
 	// Branding data read from the db.  The data is html.
 	private String m_html = null;
 	
-	// Image to be used for the branding.  If m_html has a value it will be
-	// used for the branding instead of m_brandingImgUrl
-	private String m_brandingImgUrl = null;
-	
-	// Color of the font to be used to display the user's name in the masthead.
-	private String m_fontColor = "";
-	
-	// Color to be used as the background color of the masthead.
-	private String m_bgColor = "";
-	
-	// Image to be used as the background of the masthead.
-	private String m_bgImgUrl = null;
-	
+	// Additional branding information such as font color, branding image url, background color and background image url.
+	private GwtBrandingDataExt m_brandingExt = null;
 	
 	/**
 	 * 
@@ -71,6 +60,7 @@ public class GwtBrandingData
 	{
 		m_binderId = null;
 		m_html = null;
+		m_brandingExt = new GwtBrandingDataExt();
 	}// end GwtBrandingData()
 	
 	
@@ -79,7 +69,7 @@ public class GwtBrandingData
 	 */
 	public String getBgColor()
 	{
-		return m_bgColor;
+		return m_brandingExt.getBackgroundColor();
 	}// end getBgColor()
 	
 	/**
@@ -87,7 +77,7 @@ public class GwtBrandingData
 	 */
 	public String getBgImageUrl()
 	{
-		return m_bgImgUrl;
+		return m_brandingExt.getBackgroundImgUrl();
 	}// end getBgImgUrl()
 	
 	/**
@@ -113,7 +103,7 @@ public class GwtBrandingData
 	 */
 	public String getBrandingImageUrl()
 	{
-		return m_brandingImgUrl;
+		return m_brandingExt.getBrandingImgUrl();
 	}// end getBrandingImgUrl()
 	
 	/**
@@ -121,7 +111,7 @@ public class GwtBrandingData
 	 */
 	public String getFontColor()
 	{
-		return m_fontColor;
+		return m_brandingExt.getFontColor();
 	}// end getFontColor()
 	
 	
@@ -130,7 +120,7 @@ public class GwtBrandingData
 	 */
 	public void setBgColor( String color )
 	{
-		m_bgColor = color;
+		m_brandingExt.setBackgroundColor( color );
 	}// end setBgColor()
 	
 
@@ -139,7 +129,7 @@ public class GwtBrandingData
 	 */
 	public void setBgImageUrl( String bgImgUrl )
 	{
-		m_bgImgUrl = bgImgUrl;
+		m_brandingExt.setBackgroundImgUrl( bgImgUrl );
 	}// end setBgImageUrl()
 	
 
@@ -153,11 +143,20 @@ public class GwtBrandingData
 	
 
 	/**
+	 * 
+	 */
+	public void setBrandingExt( GwtBrandingDataExt brandingExt )
+	{
+		m_brandingExt = brandingExt;
+	}// end setBrandingExt()
+	
+	
+	/**
 	 * Set the image to be used as the branding.
 	 */
 	public void setBrandingImageUrl( String brandingImgUrl )
 	{
-		m_brandingImgUrl = brandingImgUrl;
+		m_brandingExt.setBrandingImgUrl( brandingImgUrl );
 	}// end setBrandingImageUrl()
 	
 
@@ -166,8 +165,7 @@ public class GwtBrandingData
 	 */
 	public void setFontColor( String fontColor )
 	{
-		m_fontColor = fontColor;
+		m_brandingExt.setFontColor( fontColor );
 	}// end setFontColor()
-	
 	
 }// end GwtBrandingData

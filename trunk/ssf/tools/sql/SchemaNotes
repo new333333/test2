@@ -18,3 +18,5 @@ create index ldapGuid_principal on SS_Principals (ldapGuid);
 Version 7:
 Updated Quartz to version 1.7.2
 This included new Quartz create scripts and requires changes to the upgrade scripts
+Added the brandingExt field to ss_forums table
+

@@ -88,7 +88,8 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected int binderCount=0;
     protected HKey binderKey;
     protected int nextBinderNumber=1;
-    protected String branding; 
+    protected String branding;
+    protected String brandingExt;	// Additional branding information such as background color, font color, background image.
     protected Boolean postingEnabled;
     protected String type;
     public Binder() {
@@ -118,6 +119,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		 resourceDriverName = source.resourceDriverName;
 		 resourcePath = source.resourcePath;
 		 branding = source.branding;
+		 brandingExt = source.brandingExt;
 		 //don't copy postingDef, notificationDef, internalId, binders, or pathName
  
      }
@@ -638,6 +640,21 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     public void setBranding(String branding) {
     	this.branding = branding; 
     }
+    
+    /**
+     * Return the BrandingExt object that holds the additional branding information.
+     * @return
+     */
+    public String getBrandingExt()
+    {
+    	return brandingExt;
+    }// end getBrandingExt()
+    
+    
+    public void setBrandingExt ( String brandingExt )
+    {
+    	this.brandingExt = brandingExt; 
+    }// end setBrandingExt()
     
     /**
      * @hibernate.property
