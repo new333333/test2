@@ -50,8 +50,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 /**
  * This interface defines the methods that can be called when we want to make a remote
  * procedure call.
+ * 
  * @author jwootton
- *
  */
 @RemoteServiceRelativePath("gwtTeaming.rpc")
 public interface GwtRpcService extends RemoteService
@@ -75,8 +75,16 @@ public interface GwtRpcService extends RemoteService
 	public ExtensionInfoClient[] getExtensionInfo();
 	public ExtensionInfoClient[] removeExtension(String id) throws ExtensionDefinitionInUseException;
 	public ExtensionFiles getExtensionFiles(String id, String zoneName);
+	
+	// Returns a permalink to the currently logged in user's workspace.
 	public String getUserWorkspacePermalink();
-	public TreeInfo getTreeInfo(String binderId);
-	public TreeInfo expandTreeNode(String binderId);
-	public Boolean collapseTreeNode(String binderId);
+	
+	// The following are used in the implementation of the various
+	// forms of the WorkspaceTreeControl.
+	public TreeInfo getHorizontalTree(  String binderId);
+	public TreeInfo getHorizontalNode(  String binderId);
+	public TreeInfo getVerticalTree(    String binderId);
+	public TreeInfo getVerticalNode(    String binderId);
+	public Boolean  persistNodeCollapse(String binderId);
+	public Boolean  persistNodeExpand(  String binderId);
 }// end GwtRpcService

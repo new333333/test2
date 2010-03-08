@@ -33,38 +33,13 @@
 package org.kablink.teaming.gwt.client.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.ActionHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
-import org.kablink.teaming.gwt.client.RequestInfo;
-import org.kablink.teaming.gwt.client.TeamingAction;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.IsSerializable;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.Hidden;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -79,31 +54,14 @@ public class TreeInfo implements IsSerializable {
 	private List<TreeInfo> m_childBindersAL = new ArrayList<TreeInfo>();
 	private BinderType m_binderType = BinderType.OTHER;
 	private boolean m_binderExpanded;
-	private boolean m_binderSelected;
 	private FolderType m_folderType = FolderType.NOT_A_FOLDER;
 	private int m_binderChildren = 0;
-	private int m_binderRenderDepth = (-1); 
 	private String m_binderIconName;
 	private String m_binderId;
 	private String m_binderTitle = "";
 	private String m_binderPermalink = "";
 	private String m_binderTrashPermalink = "";
 	private WorkspaceType m_wsType = WorkspaceType.NOT_A_WORKSPACE;
-	
-	private final static int BINDER_HEIGHT_INT   = 16; private final static String BINDER_HEIGHT   = (BINDER_HEIGHT_INT   + "px");
-	private final static int BINDER_WIDTH_INT    = 16; private final static String BINDER_WIDTH    = (BINDER_WIDTH_INT    + "px");
-	private final static int EXPANDER_HEIGHT_INT = 16; private final static String EXPANDER_HEIGHT = (EXPANDER_HEIGHT_INT + "px");
-	private final static int EXPANDER_WIDTH_INT  = 16; private final static String EXPANDER_WIDTH  = (EXPANDER_WIDTH_INT  + "px");
-	
-	private final static String EXTENSION_ID_BASE            = "workspaceTreeBinder_";
-	private final static String EXTENSION_ID_SELECTOR_ANCHOR = "selectorAnchor_";
-	private final static String EXTENSION_ID_SELECTOR_BASE   = (EXTENSION_ID_BASE + "Selector_");
-	private final static String EXTENSION_ID_SELECTOR_ID     = (EXTENSION_ID_BASE + "SelectorId");
-	private final static String EXTENSION_ID_TRASH_BASE      = (EXTENSION_ID_BASE + "Trash_");
-	private final static String EXTENSION_ID_TRASH_PERMALINK = (EXTENSION_ID_BASE + "TrashPermalink");
-	
-	private final static int SELECTOR_GRID_DEPTH_OFFSET	=  16;	// Based on empirical evidence.
-	private final static int SELECTOR_GRID_WIDTH        = 210;	// Based on the width of 230 in the workspaceTreeControl style
 	
 	/**
 	 * The type of Binder referenced by this TreeInfo object.  
@@ -152,165 +110,6 @@ public class TreeInfo implements IsSerializable {
 		NOT_A_WORKSPACE,
 	}
 
-	/*
-	 * Inner class that implements clicking on the various tree
-	 * expansion widgets.
-	 */
-	private static class Expander implements ClickHandler {
-		private Grid m_grid;
-		private Image m_expanderImg;
-		private int m_gridRow;
-		private RequestInfo m_ri;
-		private TreeInfo m_ti;
-		private WorkspaceTreeControl m_wsTree;
-
-		/**
-		 * Class constructor.
-		 * 
-		 * @param ti
-		 * @param wsTree
-		 * @param grid
-		 * @param gridRow
-		 * @param expanderImg
-		 */
-		Expander(RequestInfo ri, WorkspaceTreeControl wsTree, TreeInfo ti, Grid grid, int gridRow, Image expanderImg) {
-			// Simply store the parameters.
-			m_ri = ri;
-			m_wsTree = wsTree;
-			m_ti = ti;
-			m_grid = grid;
-			m_gridRow = gridRow;
-			m_expanderImg = expanderImg;
-		}
-
-		/**
-		 * Called when the expander is clicked.
-		 * 
-		 * @param event
-		 */
-		public void onClick(ClickEvent event) {
-			GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
-				
-			// Are we collapsing the row?
-			if (m_ti.isBinderExpanded()) {
-				// Yes!  Can we mark the row as being closed?
-				rpcService.collapseTreeNode(m_ti.m_binderId, new AsyncCallback<Boolean>() {
-					public void onFailure(Throwable t)       {}
-					public void onSuccess(Boolean   success) {
-						// Yes!  Update the TreeInfo, re-render the
-						// row and change the row's Anchor Image to a
-						// tree_opener.
-						m_ti.setBinderExpanded(false);
-						reRenderRow(m_ri, m_wsTree, m_grid, m_gridRow, m_ti);
-						m_expanderImg.setResource(GwtTeaming.getWorkspaceTreeImageBundle().tree_opener());
-					}
-				});
-			}
-				
-			else {
-				// No, we aren't collapsing it!  We must be expanding
-				// it.  Can we get a TreeInfo the expansion?
-				rpcService.expandTreeNode(m_ti.m_binderId, new AsyncCallback<TreeInfo>() {
-					public void onFailure(Throwable t) {}
-					public void onSuccess(TreeInfo expandedTI) {
-						// Yes!  Update the TreeInfo, and if there are
-						// any expanded rows, render them and change the
-						// row's Anchor Image to a tree_closer.
-						m_ti.setBinderExpanded(true);
-						m_ti.setChildBindersList(expandedTI.getChildBindersList());
-						if (0 < m_ti.getBinderChildren()) {
-							reRenderRow(m_ri, m_wsTree, m_grid, m_gridRow, m_ti);
-						}
-						m_expanderImg.setResource(GwtTeaming.getWorkspaceTreeImageBundle().tree_closer());
-					}
-				});
-					
-			}
-		}
-	}
-	
-	/*
-	 * Inner class that implements clicking on the various Binder
-	 * links in the tree.
-	 */
-	private static class Selector implements ClickHandler {
-		private TreeInfo m_ti;
-		private WorkspaceTreeControl m_wsTree;
-
-		/**
-		 * Class constructor.
-		 * 
-		 * @param wsTree
-		 * @param ti
-		 */
-		Selector(WorkspaceTreeControl wsTree, TreeInfo ti) {
-			// Simply store the parameters.
-			m_wsTree = wsTree;
-			m_ti = ti;
-		}
-		
-		/**
-		 * Called when the row selector is clicked.
-		 * 
-		 * @param event
-		 */
-		public void onClick(ClickEvent event) {
-			// If we're connected to a WorkspaceTreeControl that's got
-			// some ActionHandler's registered...
-			m_ti.selectBinder();
-			List<ActionHandler> ahList = ((null == m_wsTree) ? null : m_wsTree.getActionHandlersList());
-			if ((null != ahList) && (0 < ahList.size())) {
-				// Scan them...
-				OnSelectBinderInfo osbi = m_ti.buildOnSelectBinderInfo();
-				for (Iterator<ActionHandler> ahIT = ahList.iterator(); ahIT.hasNext(); ) {
-					// Calling each ActionHandler with an
-					// OnSelectBinderInfo object.
-					ahIT.next().handleAction(TeamingAction.SELECTION_CHANGED, osbi);
-				}
-			}
-		}
-	}
-
-
-	/*
-	 * Inner class used to handle mouse events for a Binder selector.  
-	 */
-	private static class SelectorMouseHandler implements MouseOverHandler, MouseOutHandler {
-		private String m_selectorGridId;
-		
-		/**
-		 * Class constructor.
-		 * 
-		 * @param selectorGridId
-		 */
-		SelectorMouseHandler(String selectorGridId) {
-			// Simply store the parameters.
-			m_selectorGridId = selectorGridId;
-		}
-		
-		/**
-		 * Called when the mouse leaves a Binder selector.
-		 * 
-		 * @param me
-		 */
-		public void onMouseOut(MouseOutEvent me) {
-			// Simply remove the hover style.
-			Element selectorPanel_New = Document.get().getElementById(m_selectorGridId);
-			selectorPanel_New.removeClassName("workspaceTreeControlRowHover");
-		}
-		
-		/**
-		 * Called when the mouse enters a Binder selector.
-		 * 
-		 * @param me
-		 */
-		public void onMouseOver(MouseOverEvent me) {
-			// Simply add the hover style.
-			Element selectorPanel_New = Document.get().getElementById(m_selectorGridId);
-			selectorPanel_New.addClassName("workspaceTreeControlRowHover");
-		}
-	}
-	
 	/**
 	 * Constructor method.
 	 * 
@@ -320,44 +119,6 @@ public class TreeInfo implements IsSerializable {
 		// Nothing to do.
 	}
 
-	/**
-	 * Returns an OnSelectBinderInfo object that corresponds to this
-	 * TreeInfo object.
-	 * 
-	 * @return
-	 */
-	public OnSelectBinderInfo buildOnSelectBinderInfo() {
-		// Construct an OnSelectBinderInfo for this TreeInfo object.
-		OnSelectBinderInfo reply = new OnSelectBinderInfo(this);
-		
-		// Is this TreeInfo object the trash Binder?
-		if (isBinderTrash()) {
-			// Yes!  Is there another Binder selected?
-			String selectedId = Document.get().getElementById(EXTENSION_ID_SELECTOR_ID).getAttribute("value");
-			if (GwtClientHelper.hasString(selectedId)) {
-				// Yes!  Then we'll return it's trash permalink URL and
-				// not the URL from the trash.  This will cause the
-				// trash to display on the selected Binder and not on
-				// the workspace, unless no Binder is selected.
-				Element selectedElement = Document.get().getElementById(selectedId);
-				String trashPermalink = selectedElement.getAttribute(EXTENSION_ID_TRASH_PERMALINK);
-				reply.setBinderUrl(trashPermalink);
-			}
-		}
-		
-		// If we get here, reply refers to the OnSelectBinderInfo
-		// object for this TreeInfo.  Return it.
-		return reply;
-	}
-	
-	/*
-	 * Removes the widgets from a Grid row.
-	 */
-	private static void clearRow(Grid grid, int row) {
-		grid.remove(grid.getWidget(row, 0));
-		grid.remove(grid.getWidget(row, 1));
-	}
-	
 	/**
 	 * Creates a copy TreeInfo with the base information from this
 	 * TreeInfo.
@@ -372,7 +133,6 @@ public class TreeInfo implements IsSerializable {
 		reply.setBinderType(          getBinderType()          );
 		reply.setFolderType(          getFolderType()          );
 		reply.setBinderExpanded(      isBinderExpanded()       );
-		reply.setBinderSelected(      isBinderSelected()       );
 		reply.setBinderIconName(      getBinderIconName()      );
 		reply.setBinderId(            getBinderId()            );
 		reply.setBinderTitle(         getBinderTitle()         );
@@ -425,15 +185,6 @@ public class TreeInfo implements IsSerializable {
 	 */
 	public String getBinderPermalink() {
 		return m_binderPermalink;
-	}
-
-	/**
-	 * Returns the depth this TreeInfo was last rendered at.
-	 * 
-	 * @return
-	 */
-	public int getBinderRenderDepth() {
-		return m_binderRenderDepth;
 	}
 
 	/**
@@ -560,17 +311,6 @@ public class TreeInfo implements IsSerializable {
 		return ((BinderType.FOLDER == m_binderType) ? m_folderType : FolderType.NOT_A_FOLDER);
 	}
 
-	/*
-	 * Returns the ID to use for the selector for this TreeInfo.
-	 */
-	private String getSelectorId() {
-		String reply;
-		if (isBinderTrash())
-			 reply = (EXTENSION_ID_TRASH_BASE    + getBinderId());
-		else reply = (EXTENSION_ID_SELECTOR_BASE + getBinderId());
-		return reply;
-	}
-	
 	/**
 	 * If this TreeInfo object refers to a Workspace, returns its type.
 	 * 
@@ -601,16 +341,6 @@ public class TreeInfo implements IsSerializable {
 	}
 	
 	/**
-	 * Returns true if the Binder corresponding to this TreeInfo object
-	 * should be selected and false otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isBinderSelected() {
-		return m_binderSelected;
-	}
-
-	/**
 	 * Returns true if this TreeInfo object refers a trash Binder and
 	 * false otherwise.
 	 * 
@@ -628,182 +358,6 @@ public class TreeInfo implements IsSerializable {
 	 */
 	public boolean isBinderWorkspace() {
 		return (BinderType.WORKSPACE == m_binderType);
-	}
-	
-	/**
-	 * Called to render the information in this TreeInfo object into a
-	 * FlowPanel.
-	 *
-	 * @param ri
-	 * @param wsTree
-	 * @param targetPanel
-	 */
-	public void render(RequestInfo ri, WorkspaceTreeControl wsTree, FlowPanel targetPanel) {
-		// Create a hidden <INPUT> that we'll use to store the ID of
-		// the currently selected Binder.
-		Hidden selectedId = new Hidden();
-		selectedId.getElement().setId(EXTENSION_ID_SELECTOR_ID);
-		targetPanel.add(selectedId);
-		
-		// Create the WorkspaceTree control's header...
-		Label selectorLabel = new Label(getBinderTitle());
-		selectorLabel.addStyleName("workspaceTreeControlHeader");
-		selectorLabel.getElement().setId(getSelectorId());
-		selectorLabel.getElement().setAttribute(EXTENSION_ID_TRASH_PERMALINK, getBinderTrashPermalink());
-		Anchor selectorA = new Anchor();
-		selectorA.getElement().appendChild(selectorLabel.getElement());
-		selectorA.addClickHandler(new Selector(wsTree, this));
-		targetPanel.add(selectorA);
-
-		// ...its content panel...
-		Grid grid = new Grid();
-		grid.setCellSpacing(0);
-		grid.setCellPadding(0);
-		grid.resizeColumns(2);
-		grid.addStyleName("workspaceTreeControlBody");
-		targetPanel.add(grid);
-		
-		// ...and if there are any rows to display...
-		for (Iterator<TreeInfo> tii = getChildBindersList().iterator(); tii.hasNext(); ) {
-			// ...render them.
-			int row = grid.getRowCount();
-			grid.insertRow(row);
-			renderRow(ri, wsTree, grid, row, tii.next(), 0);
-		}
-	}
-	
-	/*
-	 * Called to render an individual row in the WorkspaceTree control.
-	 */
-	private static void renderRow(RequestInfo ri, WorkspaceTreeControl wsTree, Grid grid, int row, TreeInfo ti, int renderDepth) {
-		// Store the depth at which we're rendering this Binder.
-		ti.setBinderRenderDepth(renderDepth);
-		
-		// Is this row expandable?
-		Widget expanderWidget;
-		Image expanderImg;
-		ImageResource expanderImgRes = ti.getExpanderImage();
-		boolean showExpander = (null != expanderImgRes);
-		if (showExpander) {
-			// Yes!  Put an expander Anchor to allow expanding and
-			// collapsing of its contents.
-			expanderImg = new Image(expanderImgRes);
-			expanderImg.addStyleName("workspaceTreeBinderExpanderImg");
-			Anchor expanderA = new Anchor();
-			expanderA.getElement().appendChild(expanderImg.getElement());
-			expanderA.addClickHandler(new Expander(ri, wsTree, ti, grid, row, expanderImg));
-			expanderWidget = expanderA;
-		}
-		else {
-			// No, it isn't expandable!  Put a 16x16 spacer in place of
-			// the expander.
-			expanderImgRes = GwtTeaming.getWorkspaceTreeImageBundle().spacer_1px();
-			expanderImg = new Image(expanderImgRes);
-			expanderImg.setWidth(EXPANDER_WIDTH);
-			expanderImg.setHeight(EXPANDER_HEIGHT);
-			expanderWidget = expanderImg;
-		}
-
-		// Generate the widgets to select the Binder.
-		Grid selectorGrid = new Grid(1, 3);
-		selectorGrid.setCellSpacing(0);
-		selectorGrid.setCellPadding(0);
-		Image binderImg;
-		String binderIconName = ti.getBinderIconName();
-		if (GwtClientHelper.hasString(binderIconName)) {
-			binderImg = new Image();
-			binderImg.setUrl(ri.getImagesPath() + binderIconName);
-		}
-		else {
-			ImageResource binderImgRes = ti.getBinderImage();
-			if (null == binderImgRes) {
-				binderImgRes = GwtTeaming.getWorkspaceTreeImageBundle().spacer_1px();
-				binderImg = new Image(binderImgRes);
-			}
-			else {
-				binderImg = new Image(binderImgRes);
-			}
-			binderImg.setVisibleRect(0, 0, BINDER_WIDTH_INT, BINDER_HEIGHT_INT);
-		}
-		binderImg.addStyleName("workspaceTreeBinderImg");
-		binderImg.setWidth(BINDER_WIDTH);
-		binderImg.setHeight(BINDER_HEIGHT);
-		selectorGrid.setWidget(0, 0, binderImg);
-		Label selectorLabel = new Label(ti.getBinderTitle());
-		selectorLabel.setWordWrap(false);
-		selectorLabel.addStyleName("workspaceTreeBinderAnchor");
-		selectorLabel.getElement().setId(ti.getSelectorId());
-		if (!(ti.isBinderTrash())) {
-			selectorLabel.getElement().setAttribute(
-				EXTENSION_ID_TRASH_PERMALINK,
-				ti.getBinderTrashPermalink());
-		}
-		selectorGrid.setWidget(0, 1, selectorLabel);
-		selectorGrid.setWidget(0, 2, new Label("\u00A0"));
-		selectorGrid.getCellFormatter().setWidth(0, 2, "100%");
-		selectorGrid.setWidth(String.valueOf(SELECTOR_GRID_WIDTH - (SELECTOR_GRID_DEPTH_OFFSET * renderDepth)) + "px");
-		Anchor selectorA = new Anchor();
-		selectorA.getElement().appendChild(selectorGrid.getElement());
-		selectorA.addClickHandler(new Selector(wsTree, ti));
-		selectorA.setWidth("100%");
-		String selectorGridId = (EXTENSION_ID_SELECTOR_ANCHOR + ti.getSelectorId());
-		selectorGrid.getElement().setId(selectorGridId);
-		selectorGrid.addStyleName("workspaceTreeControlRow");
-
-		// If this Binder is supposed to be selected...
-		if (ti.isBinderSelected()) {
-			// ...select it.
-			ti.selectBinder();
-		}
-		
-		// Add the row to the Grid.
-		grid.setWidget(row, 0, expanderWidget);
-		grid.setWidget(row, 1, selectorA);
-
-		// Install a mouse handler on the selector Anchor so that we
-		// can manage hover overs on them.
-		SelectorMouseHandler smh = new SelectorMouseHandler(selectorGridId);
-		selectorA.addMouseOverHandler(smh);
-		selectorA.addMouseOutHandler( smh);
-		
-		// Is the row showing an expander?
-		if (showExpander) {
-			// Yes!  Align it to the top of its cell.
-			grid.getCellFormatter().setAlignment(
-				row,
-				0,
-				HasHorizontalAlignment.ALIGN_LEFT,
-				HasVerticalAlignment.ALIGN_TOP);
-
-			// Is the row expanded?
-			if (ti.isBinderExpanded()) {
-				// Yes!  Then we need to render its contents.
-				VerticalPanel vp = new VerticalPanel();
-				vp.setSpacing(0);
-				Widget w = grid.getWidget(row, 1);
-				grid.remove(w);
-				vp.add(w);
-				Grid expansionGrid = new Grid();
-				expansionGrid.setCellSpacing(0);
-				expansionGrid.setCellPadding(0);
-				expansionGrid.resizeColumns(2);
-				vp.add(expansionGrid);
-				grid.setWidget(row, 1, vp);
-				for (Iterator<TreeInfo> tii = ti.getChildBindersList().iterator(); tii.hasNext(); ) {
-					int expansionRow = expansionGrid.getRowCount();
-					expansionGrid.insertRow(expansionRow);
-					renderRow(ri, wsTree, expansionGrid, expansionRow, tii.next(), (renderDepth + 1));
-				}
-			}
-		}
-	}
-
-	/*
-	 * Clears and re-renders a TreeInfo object into a Grid row.
-	 */
-	private static void reRenderRow(RequestInfo ri, WorkspaceTreeControl wsTree, Grid grid, int row, TreeInfo ti) {
-		clearRow(grid, row);
-		renderRow(ri, wsTree, grid, row, ti, ti.getBinderRenderDepth());
 	}
 	
 	/**
@@ -854,24 +408,6 @@ public class TreeInfo implements IsSerializable {
 	 */
 	public void setBinderPermalink(String binderPermalink) {
 		m_binderPermalink = binderPermalink;
-	}
-
-	/**
-	 * Store the depth this TreeInfo was last rendered at.
-	 * 
-	 * @param binderRenderDepth
-	 */
-	public void setBinderRenderDepth(int binderRenderDepth) {
-		m_binderRenderDepth = binderRenderDepth;
-	}
-	
-	/**
-	 * Stores whether the Binder should be selected.
-	 * 
-	 * @param binderSelected
-	 */
-	public void setBinderSelected(boolean binderSelected) {
-		m_binderSelected = binderSelected;
 	}
 
 	/**
@@ -958,35 +494,5 @@ public class TreeInfo implements IsSerializable {
 		
 		// ...and store it.
 		m_wsType = wsType;
-	}
-
-	/*
-	 * Does whatever is necessary UI wise to select the Binder
-	 * represented by this TreeInfo.
-	 */
-	private void selectBinder() {
-		// If this isn't a trash Binder...
-		if (!(isBinderTrash())) {
-			// ...mark it as having been selected.
-			String selectedId_New = getSelectorId();
-			Element selectorLabel_New = Document.get().getElementById(selectedId_New);
-			selectorLabel_New.addClassName("workspaceTreeBinderSelected");
-			Element selectorPanel_New = Document.get().getElementById(EXTENSION_ID_SELECTOR_ANCHOR + selectedId_New);
-			selectorPanel_New.addClassName("workspaceTreeControlRowSelected");
-
-			// ...mark any previous selection as not being selected...
-			Element selectorId = Document.get().getElementById(EXTENSION_ID_SELECTOR_ID);
-			String selectedId_Old = selectorId.getAttribute("value");
-			if (GwtClientHelper.hasString(selectedId_Old)) {
-				Element selectorLabel_Old = Document.get().getElementById(selectedId_Old);
-				selectorLabel_Old.removeClassName("workspaceTreeBinderSelected");
-				
-				Element selectorPanel_Old = Document.get().getElementById(EXTENSION_ID_SELECTOR_ANCHOR + selectedId_Old);
-				selectorPanel_Old.removeClassName("workspaceTreeControlRowSelected");
-			}
-			
-			// ...and store the new ID as having been selected.
-			selectorId.setAttribute("value", selectedId_New);
-		}
 	}
 }

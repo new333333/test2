@@ -125,7 +125,6 @@ public class GwtServerHelper {
 			 trashTI.setFolderType(   FolderType.TRASH   );
 		else trashTI.setWorkspaceType(WorkspaceType.TRASH);
 		trashTI.setBinderExpanded(false);
-		trashTI.setBinderSelected(false);
 		trashTI.setBinderIconName(null);
 		trashTI.setBinderTitle(NLT.get("profile.abv.element.trash"));
 		String trashUrl = getTrashPermalink(trashTI.getBinderPermalink());
@@ -151,12 +150,20 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static TreeInfo buildTreeInfoFromBinder(AllModulesInjected bs, Binder binder, List<Long> expandedBindersList) {
+	public static TreeInfo buildTreeInfoFromBinder(AllModulesInjected bs, Binder binder) {
 		// Always use the private implementation of this method.
-		return buildTreeInfoFromBinderImpl(bs, binder, expandedBindersList, true);
+		return buildTreeInfoFromBinderImpl(bs, binder, null, false, 0);
 	}
 	
-	private static TreeInfo buildTreeInfoFromBinderImpl(AllModulesInjected bs, Binder binder, List<Long> expandedBindersList, boolean mergeUsersExpansions) {
+	public static TreeInfo buildTreeInfoFromBinder(AllModulesInjected bs, Binder binder, List<Long> expandedBindersList) {
+		// Always use the private implementation of this method.
+		return buildTreeInfoFromBinderImpl(bs, binder, expandedBindersList, (null != expandedBindersList), 0);
+	}
+	
+	/*
+	 * Builds a TreeInfo object for a given Binder.
+	 */
+	private static TreeInfo buildTreeInfoFromBinderImpl(AllModulesInjected bs, Binder binder, List<Long> expandedBindersList, boolean mergeUsersExpansions, int depth) {
 		// Construct the base TreeInfo for the Binder.
 		TreeInfo reply = new TreeInfo();
 		reply.setBinderId(binder.getId());
@@ -196,7 +203,7 @@ public class GwtServerHelper {
 		}
 
 		// Should this Binder should be expanded?
-		boolean expandBinder = isLongInList(binder.getId(), expandedBindersList);
+		boolean expandBinder = ((0 == depth) || isLongInList(binder.getId(), expandedBindersList));
 		reply.setBinderExpanded(expandBinder);
 		if (expandBinder) {
 			// Yes!  Scan the Binder's children...
@@ -205,7 +212,7 @@ public class GwtServerHelper {
 			for (Iterator<Binder> bi = childBinderList.iterator(); bi.hasNext(); ) {
 				// ...creating a TreeInfo for each...
 				Binder subBinder = bi.next();
-				TreeInfo subWsTI = buildTreeInfoFromBinderImpl(bs, subBinder, expandedBindersList, false);
+				TreeInfo subWsTI = buildTreeInfoFromBinderImpl(bs, subBinder, expandedBindersList, false, (depth + 1));
 				childTIList.add(subWsTI);
 			}
 			
@@ -235,7 +242,7 @@ public class GwtServerHelper {
 	 * @param binderId
 	 */
 	@SuppressWarnings("unchecked")
-	public static void collapseTreeNode(AllModulesInjected bs, Long binderId) {
+	public static void persistNodeCollapse(AllModulesInjected bs, Long binderId) {
 		// Access the current User's expanded Binder's list.
 		UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
 		List<Long> usersExpandedBindersList = ((List<Long>) userProperties.getProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST));
@@ -280,7 +287,7 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static void expandTreeNode(AllModulesInjected bs, Long binderId) {
+	public static void persistNodeExpand(AllModulesInjected bs, Long binderId) {
 		// Access the current User's expanded Binder's list.
 		UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
 		List<Long> usersExpandedBindersList = ((List<Long>) userProperties.getProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST));

@@ -47,7 +47,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 /**
  * 
  * @author jwootton
- *
  */
 public interface GwtRpcServiceAsync
 {
@@ -70,8 +69,16 @@ public interface GwtRpcServiceAsync
 	public void getExtensionInfo( AsyncCallback<ExtensionInfoClient[]> callback );
 	public void removeExtension(String id, AsyncCallback<ExtensionInfoClient[]> callback);
 	public void getExtensionFiles(String id, String zoneName, AsyncCallback<ExtensionFiles> callback);
+	
+	// Returns a permalink to the currently logged in user's workspace.
 	public void getUserWorkspacePermalink(AsyncCallback<String> callback);
-	public void getTreeInfo(String binderId, AsyncCallback<TreeInfo> callback);
-	public void expandTreeNode(String binderId, AsyncCallback<TreeInfo> callback);
-	public void collapseTreeNode(String binderId, AsyncCallback<Boolean> callback);
+	
+	// The following are used in the implementation of the various
+	// forms of the WorkspaceTreeControl.
+	public void getHorizontalTree(  String binderId, AsyncCallback<TreeInfo> callback);
+	public void getHorizontalNode(  String binderId, AsyncCallback<TreeInfo> callback);
+	public void getVerticalTree(    String binderId, AsyncCallback<TreeInfo> callback);
+	public void getVerticalNode(    String binderId, AsyncCallback<TreeInfo> callback);
+	public void persistNodeCollapse(String binderId, AsyncCallback<Boolean>  callback);
+	public void persistNodeExpand(  String binderId, AsyncCallback<Boolean>  callback);
 }// end GwtRpcServiceAsync
