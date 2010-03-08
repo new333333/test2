@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.portlet.PortletContext;
@@ -255,6 +256,14 @@ public class PortletSessionImpl implements PortletSession {
 	private String getPortletScopeName(String name) {
 		return PORTLET_SCOPE_NAMESPACE + portletName + Constants.QUESTION +
 			name;
+	}
+
+	public Map<String, Object> getAttributeMap() {
+		throw new UnsupportedOperationException();
+	}
+
+	public Map<String, Object> getAttributeMap(int scope) {
+		throw new UnsupportedOperationException();
 	}
 
 }

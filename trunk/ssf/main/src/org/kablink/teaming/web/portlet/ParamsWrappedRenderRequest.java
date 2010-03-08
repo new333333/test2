@@ -44,6 +44,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletSession;
 import javax.portlet.WindowState;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
@@ -221,6 +222,26 @@ public class ParamsWrappedRenderRequest implements RenderRequest, HttpServletReq
 			return ((HttpServletRequestReachable)req).getHttpServletRequest();
 		else
 			throw new UnsupportedOperationException(); // This shouldn't happen...
+	}
+
+	public String getETag() {
+		return req.getETag();
+	}
+
+	public Cookie[] getCookies() {
+		return req.getCookies();
+	}
+
+	public Map<String, String[]> getPrivateParameterMap() {
+		return req.getPrivateParameterMap();
+	}
+
+	public Map<String, String[]> getPublicParameterMap() {
+		return req.getPublicParameterMap();
+	}
+
+	public String getWindowID() {
+		return req.getWindowID();
 	}
 
 }

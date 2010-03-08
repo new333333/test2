@@ -33,7 +33,9 @@
 package org.kablink.teaming.portletadapter.portlet;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -45,6 +47,7 @@ import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.WindowState;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -310,5 +313,25 @@ public class PortletRequestImpl implements PortletRequest, MultipartFileSupport,
 	
 	public PortletContext getPortletContext() {
 		return portletContext;
+	}
+
+	public Cookie[] getCookies() {
+		return req.getCookies();
+	}
+
+	public Map<String, String[]> getPrivateParameterMap() {
+		throw new UnsupportedOperationException();
+		//return Collections.EMPTY_MAP;
+		//return new HashMap<String,String[]>();
+	}
+
+	public Map<String, String[]> getPublicParameterMap() {
+		throw new UnsupportedOperationException();
+		//return Collections.EMPTY_MAP;
+		//return new HashMap<String,String[]>();
+	}
+
+	public String getWindowID() {
+		throw new UnsupportedOperationException();
 	}
 }

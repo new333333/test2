@@ -103,4 +103,8 @@ public class RenderRequestImpl extends PortletRequestImpl implements RenderReque
 		setAttribute(JAVAX_PORTLET_REQUEST, this);
 		setAttribute(JAVAX_PORTLET_RESPONSE, res);
 	}
+
+	public String getETag() {
+		return null;
+	}
 }

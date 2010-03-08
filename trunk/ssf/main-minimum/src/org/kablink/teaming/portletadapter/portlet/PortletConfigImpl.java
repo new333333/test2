@@ -40,6 +40,8 @@ import java.util.ResourceBundle;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
 
 public class PortletConfigImpl implements PortletConfig {
 
@@ -84,5 +86,41 @@ public class PortletConfigImpl implements PortletConfig {
 
 	public Enumeration getInitParameterNames() {
 		return Collections.enumeration(params.keySet());
+	}
+
+	public Map<String, String[]> getContainerRuntimeOptions() {
+		return Collections.EMPTY_MAP;
+	}
+
+	public String getDefaultNamespace() {
+		return XMLConstants.NULL_NS_URI;
+	}
+
+	public Enumeration<QName> getProcessingEventQNames() {
+		return new Enumeration<QName>() {
+		    public boolean hasMoreElements() { return false; }
+		    public QName nextElement() { return null; }
+		};
+	}
+
+	public Enumeration<String> getPublicRenderParameterNames() {
+		return new Enumeration<String>() {
+		    public boolean hasMoreElements() { return false; }
+		    public String nextElement() { return null; }
+		};
+	}
+
+	public Enumeration<QName> getPublishingEventQNames() {
+		return new Enumeration<QName>() {
+		    public boolean hasMoreElements() { return false; }
+		    public QName nextElement() { return null; }
+		};
+	}
+
+	public Enumeration<Locale> getSupportedLocales() {
+		return new Enumeration<Locale>() {
+		    public boolean hasMoreElements() { return false; }
+		    public Locale nextElement() { return null; }
+		};
 	}
 }

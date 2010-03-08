@@ -88,4 +88,8 @@ public class ActionRequestImpl extends PortletRequestImpl implements ActionReque
 		setAttribute(JAVAX_PORTLET_REQUEST, this);
 		setAttribute(JAVAX_PORTLET_RESPONSE, res);
 	}
+
+	public String getMethod() {
+		return getHttpServletRequest().getMethod();
+	}
 }

@@ -36,7 +36,9 @@ import java.io.IOException;
 
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletRequestDispatcher;
+import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.servlet.RequestDispatcher;
@@ -59,6 +61,26 @@ public class PortletRequestDispatcherImpl implements PortletRequestDispatcher {
 		try {
 			rd.include(((RenderRequestImpl)request).getHttpServletRequest(),
 					((RenderResponseImpl) response).getHttpServletResponse());
+		} catch (ServletException e) {
+			throw new PortletException(e);
+		} 
+	}
+
+	public void forward(PortletRequest request, PortletResponse response)
+			throws PortletException, IOException {
+		try {
+			rd.forward(((PortletRequestImpl)request).getHttpServletRequest(),
+					((PortletResponseImpl) response).getHttpServletResponse());
+		} catch (ServletException e) {
+			throw new PortletException(e);
+		} 
+	}
+
+	public void include(PortletRequest request, PortletResponse response)
+			throws PortletException, IOException {
+		try {
+			rd.include(((PortletRequestImpl)request).getHttpServletRequest(),
+					((PortletResponseImpl) response).getHttpServletResponse());
 		} catch (ServletException e) {
 			throw new PortletException(e);
 		} 

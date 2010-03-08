@@ -52,7 +52,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.servlet.ParamsWrappedHttpServletRequest;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -74,7 +74,7 @@ public class BasePortletAdapterController extends AbstractController {
 	protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		req = getRequest(req);
 		
-		String portletName = RequestUtils.getRequiredStringParameter(req,
+		String portletName = ServletRequestUtils.getRequiredStringParameter(req,
 				KeyNames.PORTLET_URL_PORTLET_NAME);
 
 		PortletInfo portletInfo = (PortletInfo) AdaptedPortlets.getPortletInfo(portletName);
@@ -84,7 +84,7 @@ public class BasePortletAdapterController extends AbstractController {
 
 		Portlet portlet = portletInfo.getPortlet();
 
-		int actionInt = RequestUtils.getIntParameter(req,
+		int actionInt = ServletRequestUtils.getIntParameter(req,
 				KeyNames.PORTLET_URL_ACTION, 0);
 
 		try {
@@ -107,7 +107,7 @@ public class BasePortletAdapterController extends AbstractController {
 					return null;
 				}
 				
-				params = actionRes.getRenderParameters();
+				params = actionRes.getRenderParameterMap();
 				
 				params.put(KeyNames.PORTLET_URL_PORTLET_NAME, new String[] {portletName});
 			} 

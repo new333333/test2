@@ -35,11 +35,15 @@ package org.kablink.teaming.portletadapter.portlet;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Locale;
 
+import javax.portlet.CacheControl;
+import javax.portlet.PortletMode;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceURL;
 import javax.servlet.http.HttpServletResponse;
 
 import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
@@ -207,6 +211,18 @@ public class RenderResponseImpl extends PortletResponseImpl implements RenderRes
 	
 	private PortletURL createPortletURL(boolean action) {
 		return new PortletURLImpl(req.getHttpServletRequest(), portletName, action);
+	}
+
+	public void setNextPossiblePortletModes(Collection<PortletMode> arg0) {
+		throw new UnsupportedOperationException();
+	}
+
+	public ResourceURL createResourceURL() {
+		throw new UnsupportedOperationException();		
+	}
+
+	public CacheControl getCacheControl() {
+		throw new UnsupportedOperationException();				
 	}
 
 }

@@ -54,7 +54,7 @@ import org.kablink.teaming.security.authentication.DigestDoesNotMatchException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.WebHelper;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 
 
 public class DigestBasedHardAuthenticationFilter implements Filter {
@@ -66,11 +66,11 @@ public class DigestBasedHardAuthenticationFilter implements Filter {
 
 	public void doFilter(ServletRequest request, ServletResponse response, 
 			FilterChain chain) throws IOException, ServletException {
-		//String zoneName = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "zn");
+		//String zoneName = ServletRequestUtils.getRequiredStringParameter((HttpServletRequest) request, "zn");
 		String zoneName = WebHelper.getZoneNameByVirtualHost(request);
-		Long userId = RequestUtils.getRequiredLongParameter((HttpServletRequest) request, "ui");
-		String binderId = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "bi"); 		
-		String privateDigest = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "pd"); 
+		Long userId = ServletRequestUtils.getRequiredLongParameter((HttpServletRequest) request, "ui");
+		String binderId = ServletRequestUtils.getRequiredStringParameter((HttpServletRequest) request, "bi"); 		
+		String privateDigest = ServletRequestUtils.getRequiredStringParameter((HttpServletRequest) request, "pd"); 
 		
 		try {
 			RequestContextHolder.clear();

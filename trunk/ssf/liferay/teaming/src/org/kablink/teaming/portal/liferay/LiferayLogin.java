@@ -46,7 +46,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.kablink.teaming.portal.AbstractPortalLogin;
 import org.kablink.teaming.servlet.portal.PortalLoginException;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 
 
 public class LiferayLogin extends AbstractPortalLogin {

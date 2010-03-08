@@ -33,6 +33,7 @@
 package org.kablink.teaming.portletadapter.portlet;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -44,6 +45,7 @@ import javax.portlet.PortletModeException;
 import javax.portlet.WindowState;
 import javax.portlet.WindowStateException;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.namespace.QName;
 
 public class ActionResponseImpl extends PortletResponseImpl implements ActionResponse {
 
@@ -158,11 +160,36 @@ public class ActionResponseImpl extends PortletResponseImpl implements ActionRes
 	}
 
 	// This method is specific to ActionResponseImpl.
-	public Map getRenderParameters() {
+	public Map getRenderParameterMap() {
 		return params;
 	}
 	
 	public String getRedirectLocation() {
 		return redirectLocation;
 	}
+
+	public void sendRedirect(String location, String renderUrlParamName) throws IOException {
+		throw new UnsupportedOperationException();
+	}
+
+	public PortletMode getPortletMode() {
+		return null;
+	}
+
+	public WindowState getWindowState() {
+		return null;
+	}
+
+	public void removePublicRenderParameter(String arg0) {
+		throw new UnsupportedOperationException();
+	}
+
+	public void setEvent(QName arg0, Serializable arg1) {
+		throw new UnsupportedOperationException();
+	}
+
+	public void setEvent(String arg0, Serializable arg1) {
+		throw new UnsupportedOperationException();
+	}
+
 }
