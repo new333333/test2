@@ -38,6 +38,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Node;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -50,6 +55,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
+import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
@@ -381,6 +387,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			if ( binderIdL != null )
 			{
 				String branding;
+				GwtBrandingDataExt brandingExt;
 				Binder brandingSourceBinder;
 				
 				binder = binderModule.getBinder( binderIdL );
@@ -397,16 +404,100 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 				brandingData.setBranding( branding );
 				
-				//!!! Remove the next section.
-				if ( false )
+				// Get the additional branding information.
 				{
-					String fileUrl;
-					String webPath;
+					String xmlStr;
 					
-					// Get a url to the file.
-					webPath = WebUrlUtil.getServletRootURL();
-					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, binder, "Thayne-balloon.jpg" );
-					brandingData.setBgImageUrl( fileUrl );
+					brandingExt = new GwtBrandingDataExt();
+
+					// Get the xml that represents the branding data.  The following is an example of what the xml should look like.
+					// 	<brandingData fontColor="" brandingImgUrl="some name">
+					// 		<background color="" imgUrl="" />
+					// 	</brandingData>
+					xmlStr = binder.getBrandingExt();
+					
+					if ( xmlStr != null )
+					{
+						try
+			    		{
+			    			Document doc;
+			    			Node node;
+			    			Node attrNode;
+		        			String imgName;
+							String fileUrl;
+							String webPath;
+							
+							webPath = WebUrlUtil.getServletRootURL();
+
+							// Parse the xml string into an xml document.
+							doc = DocumentHelper.parseText( xmlStr );
+			    			
+			    			// Get the root element.
+			    			node = doc.getRootElement();
+			    			
+			    			// Get the font color.
+			    			attrNode = node.selectSingleNode( "@fontColor" );
+			    			if ( attrNode != null )
+			    			{
+			        			String fontColor;
+			
+			        			fontColor = attrNode.getText();
+			        			brandingExt.setFontColor( fontColor );
+			    			}
+			    			
+			    			// Get the url for the branding image
+			    			attrNode = node.selectSingleNode( "@brandingImgUrl" );
+			    			if ( attrNode != null )
+			    			{
+			        			imgName = attrNode.getText();
+
+			    				if ( imgName != null && imgName.length() > 0 )
+			    				{
+			    					// Get a url to the file.
+			    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, binder, imgName );
+			    					brandingExt.setBrandingImgUrl( fileUrl );
+			    				}
+			    			}
+			    			
+			    			// Get the <background color="" imgUrl="" /> node
+			    			node = node.selectSingleNode( "background" );
+			    			if ( node != null )
+			    			{
+			    				// Get the background color.
+			    				attrNode = node.selectSingleNode( "@color" );
+			    				if ( attrNode != null )
+			    				{
+			        				String bgColor;
+			
+			        				bgColor = attrNode.getText();
+			        				brandingExt.setBackgroundColor( bgColor );
+			    				}
+			    				
+			    				// Get the url of the background image.
+			    				attrNode = node.selectSingleNode( "@imgUrl" );
+			    				if ( attrNode != null )
+			    				{
+			        				imgName = attrNode.getText();
+
+				    				if ( imgName != null && imgName.length() > 0 )
+				    				{
+				    					// Get a url to the file.
+				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, binder, imgName );
+				    					brandingExt.setBackgroundImgUrl( fileUrl );
+				    				}
+			    				}
+			    			}
+			    		}
+			    		catch(Exception e)
+			    		{
+			    			Log logger;
+
+			    			logger = LogFactory.getLog( getClass() );
+			    			logger.warn( "Unable to parse branding ext " + xmlStr );
+			    		}
+					}
+					
+					brandingData.setBrandingExt( brandingExt );
 				}
 			}
 		}
