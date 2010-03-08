@@ -37,6 +37,7 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1221,6 +1222,32 @@ public class MarkupUtil {
 						String newMashup = DefinitionHelper.fixupMashupCanvasForImport(mashup, binderIdMap, entryIdMap);
 						if (!mashup.equals(newMashup)) {
 							data.put(attrName, newMashup); 
+							//Add in the other mashup attributes so they get set correctly when the binder is modified
+							Map ca = entity.getCustomAttributes();
+							if (ca.containsKey(attrName + DefinitionModule.MASHUP_SHOW_BRANDING))
+								data.put(attrName + DefinitionModule.MASHUP_SHOW_BRANDING, 
+										entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_SHOW_BRANDING).getValue().toString());
+							if (ca.containsKey(attrName + DefinitionModule.MASHUP_SHOW_FAVORITES_AND_TEAMS))
+								data.put(attrName + DefinitionModule.MASHUP_SHOW_FAVORITES_AND_TEAMS, 
+										entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_SHOW_FAVORITES_AND_TEAMS).getValue().toString());
+							if (ca.containsKey(attrName + DefinitionModule.MASHUP_SHOW_NAVIGATION))
+								data.put(attrName + DefinitionModule.MASHUP_SHOW_NAVIGATION, 
+										entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_SHOW_NAVIGATION).getValue().toString());
+							if (ca.containsKey(attrName + DefinitionModule.MASHUP_HIDE_MASTHEAD))
+								data.put(attrName + DefinitionModule.MASHUP_HIDE_MASTHEAD, 
+										entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_HIDE_MASTHEAD).getValue().toString());
+							if (ca.containsKey(attrName + DefinitionModule.MASHUP_HIDE_SIDEBAR))
+								data.put(attrName + DefinitionModule.MASHUP_HIDE_SIDEBAR, 
+										entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_HIDE_SIDEBAR).getValue().toString());
+							if (ca.containsKey(attrName + DefinitionModule.MASHUP_HIDE_TOOLBAR))
+								data.put(attrName + DefinitionModule.MASHUP_HIDE_TOOLBAR, 
+										entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_HIDE_TOOLBAR).getValue().toString());
+							if (ca.containsKey(attrName + DefinitionModule.MASHUP_HIDE_FOOTER))
+								data.put(attrName + DefinitionModule.MASHUP_HIDE_FOOTER, 
+										entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_HIDE_FOOTER).getValue().toString());
+							if (ca.containsKey(attrName + DefinitionModule.MASHUP_STYLE))
+								data.put(attrName + DefinitionModule.MASHUP_STYLE, 
+										entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_STYLE).getValue().toString());
 						}
 					}
 				}
