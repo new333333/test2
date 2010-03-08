@@ -49,9 +49,10 @@ import com.google.gwt.user.client.ui.Image;
 
 /**
  * This widget will display Teaming's main menu control.
+ * 
+ * @author drfoster@novell.com
  */
-public class MainMenuControl extends Composite
-{
+public class MainMenuControl extends Composite {
 	private Image m_slideLeftImg;
 	private Image m_slideRightImg;
 	private Image m_slideUpImg;
@@ -59,130 +60,119 @@ public class MainMenuControl extends Composite
 	private Image m_browseHierarchyImg;
 	
 	/**
-	 * 
+	 * Constructor method.
 	 */
-	public MainMenuControl()
-	{
+	public MainMenuControl() {
 		FlowPanel mainPanel;
 		FlowPanel panel;
 		ImageResource imageResource;
 
 		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "mainMenuControl" );
+		mainPanel.addStyleName("mainMenuControl");
 		
 		// Add the "slide left/right" actions.
-		{
-			panel = new FlowPanel();
-			panel.addStyleName( "mainMenuNavControl" );
-			panel.addStyleName( "mainMenuLeftRightNavControl" );
-			
-			//!!! Put these images in an anchor.
-			
-			// Add the slide-left image to the menu.
-			imageResource = GwtTeaming.getImageBundle().slideLeft();
-			m_slideLeftImg = new Image(imageResource);
-			m_slideLeftImg.addStyleName( "paddingTop2px" );
-			panel.add( m_slideLeftImg );
-			
-			// Add the slide-right image to the menu and hide it.
-			imageResource = GwtTeaming.getImageBundle().slideRight();
-			m_slideRightImg = new Image(imageResource);
-			m_slideRightImg.addStyleName( "paddingTop2px" );
-			m_slideRightImg.setVisible( false );
-			panel.add( m_slideRightImg );
-			
-			mainPanel.add( panel );
-		}
+		panel = new FlowPanel();
+		panel.addStyleName("mainMenuNavControl");
+		panel.addStyleName("mainMenuLeftRightNavControl");
+		
+		//!!! Put these images in an anchor.
+		
+		// Add the slide-left image to the menu.
+		imageResource = GwtTeaming.getImageBundle().slideLeft();
+		m_slideLeftImg = new Image(imageResource);
+		m_slideLeftImg.addStyleName("mainMenuButton");
+		panel.add(m_slideLeftImg);
+		
+		// Add the slide-right image to the menu and hide it.
+		imageResource = GwtTeaming.getImageBundle().slideRight();
+		m_slideRightImg = new Image(imageResource);
+		m_slideRightImg.addStyleName("mainMenuButton");
+		m_slideRightImg.setVisible(false);
+		panel.add(m_slideRightImg);
+		
+		mainPanel.add(panel);
 
 		// Add the "slide up/down" actions.
-		{
-			panel = new FlowPanel();
-			panel.addStyleName( "mainMenuNavControl" );
-			panel.addStyleName( "mainMenuUpDownNavControl" );
-			
-			//!!! Put these images in an anchor.
-			
-			// Add the slide-up image to the menu.
-			imageResource = GwtTeaming.getImageBundle().slideUp();
-			m_slideUpImg = new Image(imageResource);
-			m_slideUpImg.addStyleName( "paddingTop2px" );
-			panel.add( m_slideUpImg );
-			
-			// Add the slide-down image to the menu and hide it.
-			imageResource = GwtTeaming.getImageBundle().slideDown();
-			m_slideDownImg = new Image(imageResource);
-			m_slideDownImg.addStyleName( "paddingTop2px" );
-			m_slideDownImg.setVisible( false );
-			panel.add( m_slideDownImg );
-			
-			mainPanel.add( panel );
-		}
+		panel = new FlowPanel();
+		panel.addStyleName("mainMenuNavControl");
+		panel.addStyleName("mainMenuUpDownNavControl");
+		
+		//!!! Put these images in an anchor.
+		
+		// Add the slide-up image to the menu.
+		imageResource = GwtTeaming.getImageBundle().slideUp();
+		m_slideUpImg = new Image(imageResource);
+		m_slideUpImg.addStyleName("mainMenuButton");
+		panel.add(m_slideUpImg);
+		
+		// Add the slide-down image to the menu and hide it.
+		imageResource = GwtTeaming.getImageBundle().slideDown();
+		m_slideDownImg = new Image(imageResource);
+		m_slideDownImg.addStyleName("mainMenuButton");
+		m_slideDownImg.setVisible(false);
+		panel.add(m_slideDownImg);
+		
+		mainPanel.add(panel);
 
 		// Add the "browse hierarchy" action.
-		{
-			panel = new FlowPanel();
-			panel.addStyleName( "mainMenuNavControl" );
-			panel.addStyleName( "mainMenuUpBrowseHierarchyControl" );
-			
-			//!!! Put this image in an anchor.
-			
-			// Add the browse hierarchy image to the menu.
-			imageResource = GwtTeaming.getImageBundle().browseHierarchy();
-			m_browseHierarchyImg = new Image(imageResource);
-			m_browseHierarchyImg.addStyleName( "paddingTop2px" );
-			panel.add( m_browseHierarchyImg );
-			
-			mainPanel.add( panel );
-		}
+		panel = new FlowPanel();
+		panel.addStyleName("mainMenuNavControl");
+		panel.addStyleName("mainMenuUpBrowseHierarchyControl");
 		
+		//!!! Put this image in an anchor.
+		
+		// Add the browse hierarchy image to the menu.
+		imageResource = GwtTeaming.getImageBundle().browseHierarchy();
+		m_browseHierarchyImg = new Image(imageResource);
+		m_browseHierarchyImg.addStyleName("mainMenuButton");
+		panel.add(m_browseHierarchyImg);
+		
+		mainPanel.add(panel);
 		
 		// Add the "GWT UI" action.
-		{
-			Anchor gwtUIAnchor = new Anchor();
-			gwtUIAnchor.addClickHandler(new ClickHandler(){
-				public void onClick(ClickEvent event) {
-					GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
-					rpcService.getUserWorkspacePermalink(new AsyncCallback<String>() {
-						public void onFailure(Throwable t) {}
-						public void onSuccess(String userWorkspaceURL)  {
-							jsToggleGwtUI();
-							jsLoadUserWorkspaceURL(userWorkspaceURL + "&captive=false");
-						}
-						
-						private native void jsToggleGwtUI() /*-{
-							// Toggle the GWT UI state.
-							window.top.ss_toggleGwtUI(false);
-						}-*/;
+		Anchor gwtUIAnchor = new Anchor();
+		gwtUIAnchor.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
+				rpcService.getUserWorkspacePermalink(new AsyncCallback<String>() {
+					public void onFailure(Throwable t) {}
+					public void onSuccess(String userWorkspaceURL)  {
+						jsToggleGwtUI();
+						jsLoadUserWorkspaceURL(userWorkspaceURL + "&captive=false");
+					}
+					
+					private native void jsToggleGwtUI() /*-{
+						// Toggle the GWT UI state.
+						window.top.ss_toggleGwtUI(false);
+					}-*/;
 
-						private native void jsLoadUserWorkspaceURL(String userWorkspaceURL) /*-{
-							// Give the GWT UI state toggling 1/2
-							// second to complete and reload the user
-							// workspace.
-							window.setTimeout(
-								function() {
-									window.top.location.href = userWorkspaceURL;
-								},
-								500);
-						}-*/;
-					});
-				}
-				
-			});
+					private native void jsLoadUserWorkspaceURL(String userWorkspaceURL) /*-{
+						// Give the GWT UI state toggling 1/2
+						// second to complete and reload the user
+						// workspace.
+						window.setTimeout(
+							function() {
+								window.top.location.href = userWorkspaceURL;
+							},
+							500);
+					}-*/;
+				});
+			}
 			
-			imageResource = GwtTeaming.getImageBundle().gwtUI();
-			Image gwtUIImg = new Image(imageResource);
-			gwtUIImg.addStyleName( "paddingTop2px" );
-			gwtUIAnchor.getElement().appendChild(gwtUIImg.getElement());
-			
-			panel = new FlowPanel();
-			panel.addStyleName("mainMenuNavControl");
-			panel.addStyleName("mainMenuGwtUIControl");
-			panel.add(gwtUIAnchor);
-			mainPanel.add(panel);
-		}
+		});
 		
+		imageResource = GwtTeaming.getImageBundle().gwtUI();
+		Image gwtUIImg = new Image(imageResource);
+		gwtUIImg.addStyleName("mainMenuButton");
+		gwtUIAnchor.getElement().appendChild(gwtUIImg.getElement());
+		
+		panel = new FlowPanel();
+		panel.addStyleName("mainMenuNavControl");
+		panel.addStyleName("mainMenuGwtUIControl");
+		panel.add(gwtUIAnchor);
+		mainPanel.add(panel);
 		
 		// All composites must call initWidget() in their constructors.
-		initWidget( mainPanel );
-	}// end MainMenuControl()
-}// end MainMenuControl
+		initWidget(mainPanel);
+	}
+}

@@ -33,7 +33,6 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,10 +40,13 @@ import org.kablink.teaming.gwt.client.ActionHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.TreeDisplayHorizontal;
+import org.kablink.teaming.gwt.client.util.TreeDisplayVertical;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -59,27 +61,56 @@ public class WorkspaceTreeControl extends Composite {
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	
 	/**
+	 * The mode this WorkspaceTreeControl is running in.
+	 * 
+	 * HORIZONTAL:  Typically used in the Teaming bread crumbs.
+	 * VERTICAL:    Typically used in the Teaming sidebar. 
+	 */
+	public enum TreeMode {
+		HORIZONTAL,
+		VERTICAL,
+	}
+	
+	/**
 	 * Constructs a WorkspaceTreeControl based on the information
 	 * in the RequestInfo object.
 	 * 
 	 * @param requestInfo
 	 */
-	public WorkspaceTreeControl(RequestInfo requestInfo) {
+	public WorkspaceTreeControl(RequestInfo requestInfo, TreeMode tm) {
 		m_requestInfo = requestInfo;
 
+		final String selectedBinderId = m_requestInfo.getBinderId();
 		final WorkspaceTreeControl wsTree = this;
 		final FlowPanel mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "workspaceTreeControl" );
 		
 		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
-		rpcService.getTreeInfo(m_requestInfo.getBinderId(), new AsyncCallback<TreeInfo>() {
-			public void onFailure(Throwable t) {
-				Window.alert(t.toString());
-			}
-			public void onSuccess(TreeInfo ti)  {
-				ti.render(m_requestInfo, wsTree, mainPanel);
-			}
-		});
+		switch (tm) {
+		case HORIZONTAL:
+			rpcService.getHorizontalTree(selectedBinderId, new AsyncCallback<TreeInfo>() {
+				public void onFailure(Throwable t) {
+					Window.alert(t.toString());
+				}
+				public void onSuccess(TreeInfo ti)  {
+					TreeDisplayHorizontal tdh = new TreeDisplayHorizontal(ti);
+					tdh.render(selectedBinderId, m_requestInfo, wsTree, mainPanel);
+				}
+			});
+			
+			break;
+			
+		case VERTICAL:
+			rpcService.getVerticalTree(selectedBinderId, new AsyncCallback<TreeInfo>() {
+				public void onFailure(Throwable t) {
+					Window.alert(t.toString());
+				}
+				public void onSuccess(TreeInfo ti)  {
+					TreeDisplayVertical tdv = new TreeDisplayVertical(ti);
+					tdv.render(selectedBinderId, m_requestInfo, wsTree, mainPanel);
+				}
+			});
+		}
 		
 
 		// All composites must call initWidget() in their constructors.

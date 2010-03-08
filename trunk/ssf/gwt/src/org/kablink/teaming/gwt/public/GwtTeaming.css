@@ -123,6 +123,7 @@
 {
 	cursor: pointer;
 	margin-top: 4px;
+	margin-left: 2px;
 }
 .workspaceTreeBinderImg
 {
@@ -154,6 +155,7 @@
 	font-weight: bold;
 	letter-spacing: 0.02em;
 	padding: 5px;
+	cursor: pointer;
 	-moz-border-radius: 5px 5px 0px 0px;
 	-webkit-border-radius: 5px 5px 0px 0px;
 }
@@ -663,6 +665,13 @@
 .mainMenuUpDownNavControl
 {
 	left: 39px;
+}
+
+/* Styles used for buttons on the main menu. */
+.mainMenuButton
+{
+	padding-top: 2px;
+	cursor: pointer;
 }
 
 /* Style for the main Teaming page. */

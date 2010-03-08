@@ -85,14 +85,11 @@ import org.kablink.util.search.Constants;
 /**
  * 
  * @author jwootton
- *
  */
 public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	implements GwtRpcService
 {
-
-
-/**
+	/**
 	 * This method is meant to search for applications or entries or groups or places or tags or teams or users.
 	 */
 	@SuppressWarnings("unchecked")
@@ -736,23 +733,87 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * the Binder referred to by binderId from the perspective of the
 	 * currently logged in user.
 	 * 
+	 * The information returned is typically used for driving a
+	 * horizontal WorkspaceTreeControl widget.
+	 * 
 	 * @param binderIdS
 	 * 
 	 * @return
 	 */
-	public TreeInfo getTreeInfo(String binderIdS) {
+	public TreeInfo getHorizontalTree(String binderIdS) {
+		// Access the Binder's nearest containing Workspace...
+		long binderId = Long.parseLong(binderIdS);
+		Binder binder = getBinderModule().getBinder(binderId);
+		Binder topBinder = binder;
+		
+		ArrayList<Long> bindersList = new ArrayList<Long>();
+		while (true) {
+			bindersList.add(binder.getId());
+			binder = binder.getParentBinder();
+			if (null == binder) {
+				break;
+			}
+			topBinder = binder;
+		}
+
+		// ...and build the TreeInfo for the request Binder.
+		TreeInfo reply = GwtServerHelper.buildTreeInfoFromBinder(
+			this,
+			topBinder,
+			bindersList);
+
+
+		// If we get here, reply refers to the TreeInfo for the Binder
+		// requested.  Return it.
+		return reply;
+	}
+	
+	/**
+	 * Builds a TreeInfo for a Binder being expanded.
+	 * 
+	 * The information returned is typically used for driving a
+	 * horizontal WorkspaceTreeControl widget.
+	 * 
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public TreeInfo getHorizontalNode(String binderIdS) {
+		// Access the Binder...
+		long binderId = Long.parseLong(binderIdS);
+		Binder binder = getBinderModule().getBinder(binderId);
+
+		// ...and build the TreeInfo for it.
+		return GwtServerHelper.buildTreeInfoFromBinder(this, binder);
+	}
+	
+	/**
+	 * Returns a TreeInfo object containing the display information for
+	 * the Binder referred to by binderId from the perspective of the
+	 * currently logged in user.  Information about the Binder
+	 * expansion states for the current user is integrated into the
+	 * TreeInfo returned.
+	 * 
+	 * The information returned is typically used for driving a
+	 * vertical WorkspaceTreeControl widget.
+	 * 
+	 * @param binderIdS
+	 * 
+	 * @return
+	 */
+	public TreeInfo getVerticalTree(String binderIdS) {
 		// Access the Binder's nearest containing Workspace...
 		long binderId = Long.parseLong(binderIdS);
 		Binder binder = getBinderModule().getBinder(binderId);
 		Workspace binderWS = BinderHelper.getBinderWorkspace(binder);
-		
+
 		// ...note that the Workspace should always be expanded...
 		Long binderWSId = binderWS.getId();
 		ArrayList<Long> expandedBindersList = new ArrayList<Long>();
 		expandedBindersList.add(binderWSId);
 
-		// ...calculate which additional Binder's must be expanded to
-		// ...show the requested Binder...
+		// ...calculate which additional Binder's that must be expanded
+		// ...to show the requested Binder...
 		long binderWSIdVal = binderWSId.longValue();
 		if (binderId != binderWSIdVal) {
 			binder = binder.getParentBinder();
@@ -761,12 +822,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 		}
 		
-		// ...build the TreeInfo for it with the appropriate Binder
-		// ...selected...
-		TreeInfo reply = GwtServerHelper.buildTreeInfoFromBinder(this, binderWS, expandedBindersList);
-		GwtServerHelper.findBinderTI(reply, binderIdS).setBinderSelected(true);
+		// ...build the TreeInfo for the request Binder...
+		TreeInfo reply = GwtServerHelper.buildTreeInfoFromBinder(
+			this,
+			binderWS,
+			expandedBindersList);
 
-		
+
 		// ...and if the Binder supports Trash access...
 		boolean allowTrash = TrashHelper.allowUserTrashAccess(GwtServerHelper.getCurrentUser());
 		if (allowTrash && (!(binder.isMirrored()))) {
@@ -780,6 +842,30 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}
 	
 	/**
+	 * Builds a TreeInfo for the Binder being expanded and stores the
+	 * fact that it has been expanded.
+	 * 
+	 * The information returned is typically used for driving a
+	 * vertical WorkspaceTreeControl widget.
+	 * 
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public TreeInfo getVerticalNode(String binderIdS) {
+		// Access the Binder...
+		long binderId = Long.parseLong(binderIdS);
+		Binder binder = getBinderModule().getBinder(binderId);
+
+		// ...note that the Binder will now be expanded...
+		ArrayList<Long> expandedBindersList = new ArrayList<Long>();
+		expandedBindersList.add(binderId);
+
+		// ...and build the TreeInfo for it.
+		return GwtServerHelper.buildTreeInfoFromBinder(this, binder, expandedBindersList);
+	}
+	
+	/**
 	 * Saves the fact that the Binder for the given ID should be
 	 * collapsed for the current User.
 	 * 
@@ -787,29 +873,21 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public Boolean collapseTreeNode(String binderId) {
-		GwtServerHelper.collapseTreeNode(this, Long.parseLong(binderId));
+	public Boolean persistNodeCollapse(String binderId) {
+		GwtServerHelper.persistNodeCollapse(this, Long.parseLong(binderId));
 		return Boolean.TRUE;
 	}
 
 	/**
-	 * Builds a TreeInfo for the Binder being expanded and stores the
-	 * fact that it's been expanded.
+	 * Saves the fact that the Binder for the given ID should be
+	 * expanded for the current User.
 	 * 
 	 * @param binderId
 	 * 
 	 * @return
 	 */
-	public TreeInfo expandTreeNode(String binderIdS) {
-		// Access the Binder...
-		long binderId = Long.parseLong(binderIdS);
-		Binder binder = getBinderModule().getBinder(binderId);
-		
-		// ...note that the Binder will now be expanded...
-		ArrayList<Long> expandedBindersList = new ArrayList<Long>();
-		expandedBindersList.add(binderId);
-
-		// ...and build the TreeInfo for it.
-		return GwtServerHelper.buildTreeInfoFromBinder(this, binder, expandedBindersList);
+	public Boolean persistNodeExpand(String binderId) {
+		GwtServerHelper.persistNodeExpand(this, Long.parseLong(binderId));
+		return Boolean.TRUE;
 	}
 }// end GwtRpcServiceImpl
