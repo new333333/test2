@@ -8535,7 +8535,7 @@ function ajaxToggleGwtUI_Submit(goToUserWorkspace) {
 		ss_buildAdapterUrl(
 			ss_AjaxBaseUrl,
 			{
-				operation:"toggle_gwtUI",
+				operation:"toggle_gwtUI"
 			}),
 		ajaxToggleGwtUI_Response,
 		goToUserWorkspace);
