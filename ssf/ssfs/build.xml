@@ -84,7 +84,9 @@
  			<fileset dir="resources/slide-war" />
 		</copy>
 		<copy file="${jar.file}" todir="${temp.dir}/WEB-INF/lib" />
+		<!-- Since we share a single spring library between all web apps, we no longer have to copy this
 		<copy file="${basedir}/../lib/spring.jar" todir="${temp.dir}/WEB-INF/lib" />
+		-->
 		<copy file="${basedir}/../lib/spring-security-core.jar" todir="${temp.dir}/WEB-INF/lib" />
 	</target>
 	
