@@ -38,6 +38,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Frame;
+import com.google.gwt.user.client.ui.NamedFrame;
 
 
 /**
@@ -45,7 +46,7 @@ import com.google.gwt.user.client.ui.Frame;
  */
 public class ContentControl extends Composite
 {
-	private Frame m_frame;
+	private NamedFrame m_frame;
 	
 	/**
 	 * 
@@ -53,20 +54,16 @@ public class ContentControl extends Composite
 	public ContentControl()
 	{
 		FlowPanel mainPanel;
-		Element element;
 
 		mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "contentControl" );
 
-		m_frame = new Frame();
+		// Give the iframe a name so that view_workarea_navbar.jsp, doesn't set the url of the browser.
+		m_frame = new NamedFrame( "gwtContentIframe" );
 		m_frame.setPixelSize( 700, 500 );
 		m_frame.getElement().setId( "contentControl" );
 		m_frame.setUrl( "" );
 		mainPanel.add( m_frame );
-		
-		// Give the iframe a name so that view_workarea_navbar.jsp, doesn't set the url of the browser.
-		element = m_frame.getElement();
-		element.setAttribute( "name", "gwtContentIframe" );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
