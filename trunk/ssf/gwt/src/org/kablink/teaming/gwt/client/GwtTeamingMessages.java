@@ -191,4 +191,10 @@ public interface GwtTeamingMessages extends Messages
 	String helpHint();
 	String logoutHint();
 	String myWorkspaceHint();
+	
+	// Strings used in the main menu.
+	String mainMenuAltBrowseHierarchy();
+	String mainMenuAltGwtUI();
+	String mainMenuAltLeftNavHideShow();
+	String mainMenuAltMastHeadHideShow();
 }// end GwtTeamingMessages

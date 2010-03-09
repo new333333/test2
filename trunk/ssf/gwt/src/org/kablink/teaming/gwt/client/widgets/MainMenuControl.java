@@ -33,10 +33,17 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import com.google.gwt.dom.client.Style;
+import org.kablink.teaming.gwt.client.ActionHandler;
+import org.kablink.teaming.gwt.client.ActionRequestor;
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.TeamingAction;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -44,8 +51,6 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -58,49 +63,14 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author drfoster@novell.com
  */
-public class MainMenuControl extends Composite {
-	/*
-	 * Inner classed used to track clicks on the GWT UI button.
-	 */
-	private static class GwtUISelector implements ClickHandler {
-		/**
-		 * Called when the button is clicked.
-		 * 
-		 * @param event
-		 */
-		public void onClick(ClickEvent event) {
-			GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
-			rpcService.getUserWorkspacePermalink(new AsyncCallback<String>() {
-				public void onFailure(Throwable t) {}
-				public void onSuccess(String userWorkspaceURL)  {
-					jsToggleGwtUI();
-					jsLoadUserWorkspaceURL(userWorkspaceURL + "&captive=false");
-				}
-				
-				private native void jsToggleGwtUI() /*-{
-					// Toggle the GWT UI state.
-					window.top.ss_toggleGwtUI(false);
-				}-*/;
-
-				private native void jsLoadUserWorkspaceURL(String userWorkspaceURL) /*-{
-					// Give the GWT UI state toggling 1/2
-					// second to complete and reload the user
-					// workspace.
-					window.setTimeout(
-						function() {
-							window.top.location.href = userWorkspaceURL;
-						},
-						500);
-				}-*/;
-			});
-		}
-	}
+public class MainMenuControl extends Composite implements ActionRequestor {
+	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	
 	/*
 	 * Inner class used to handle mouse events for menu buttons.  
 	 */
 	private static class MenuButtonHover implements MouseOverHandler, MouseOutHandler {
-		private Widget m_buttonWidget;
+		private Widget m_buttonWidget;	// The Widget the hover is for.
 		
 		/**
 		 * Class constructor.
@@ -134,54 +104,54 @@ public class MainMenuControl extends Composite {
 	}
 	
 	/*
-	 * Inner class that implements clicking on button on the menu.
+	 * Inner class that implements clicking on buttons on the menu.
 	 */
-	private static class MenuButtonSelector implements ClickHandler {
-		private String m_action;
+	private class MenuButtonSelector implements ClickHandler {
+		private TeamingAction m_action;	// The TeamingAction to fire when this button is clicked.
 
 		/**
 		 * Class constructor.
 		 * 
 		 * @param action
 		 */
-		MenuButtonSelector(String action) {
+		MenuButtonSelector(TeamingAction action) {
 			// Simply store the parameters.
 			m_action = action;
 		}
 		
 		/**
-		 * Called when the menu button is clicked.
+		 * Called when the button is clicked.
 		 * 
 		 * @param event
 		 */
 		public void onClick(ClickEvent event) {
 			// Fire the action.
-			Window.alert("MainMenuControl.MenuButtonSelector.onClick( 'NOT IMPLEMENTED' ):  " + m_action);
+			triggerAction(m_action);
 		}
 	}
 
 
 	/*
-	 * Inner class that implements clicking on toggle on the menu.
+	 * Inner class that implements clicking on toggles on the menu.
 	 */
-	private static class MenuToggleSelector implements ClickHandler {
-		private boolean m_isBase;
-		private Anchor m_menuAnchor;
-		private Image m_altImg;
-		private Image m_baseImg;
-		private String m_altAction;
-		private String m_baseAction;
+	private class MenuToggleSelector implements ClickHandler {
+		private Anchor m_menuAnchor;		// The toggle's Anchor widget.
+		private boolean m_isBase;			// true -> Toggle is set to the base action.  false -> It's set to the alternate action.
+		private Image m_altImg;				// The Anchor's Image for the alternate action.
+		private Image m_baseImg;			// The Anchor's Image for the base      action.
+		private TeamingAction m_altAction;	// The alternate TeamingAction.
+		private TeamingAction m_baseAction;	// The base      TeamingAction.
 
 		/**
 		 * Class constructor.
 		 * 
 		 * @param menuAnchor
 		 * @param baseImg
-		 * @param altImg
 		 * @param baseAction
+		 * @param altImg
 		 * @param altAction
 		 */
-		MenuToggleSelector(Anchor menuAnchor, Image baseImg, Image altImg, String baseAction, String altAction) {
+		MenuToggleSelector(Anchor menuAnchor, Image baseImg, TeamingAction baseAction, Image altImg, TeamingAction altAction) {
 			// Store the parameters...
 			m_menuAnchor = menuAnchor;
 			m_altImg = altImg;
@@ -195,16 +165,16 @@ public class MainMenuControl extends Composite {
 		}
 		
 		/**
-		 * Called when the menu button is clicked.
+		 * Called when the toggle is clicked.
 		 * 
 		 * @param event
 		 */
 		public void onClick(ClickEvent event) {
 			// Fire the action...
-			String action = (m_isBase ? m_baseAction : m_altAction);
-			Window.alert("MainMenuControl.MenuButtonToggle.onClick( 'NOT IMPLEMENTED' ):  " + action);
+			TeamingAction action = (m_isBase ? m_baseAction : m_altAction);
+			triggerAction(action);
 			
-			// ...and toggle the state of the image.
+			// ...and toggle the state of the Anchor.
 			Image addImg;
 			Image removeImg;
 			if (m_isBase) {
@@ -224,6 +194,9 @@ public class MainMenuControl extends Composite {
 	 * Constructor method.
 	 */
 	public MainMenuControl() {
+		GwtTeamingImageBundle images   = GwtTeaming.getImageBundle();
+		GwtTeamingMessages    messages = GwtTeaming.getMessages();
+		
 		// Create the menu's main FlowPanel...
 		FlowPanel mainPanel = new FlowPanel();
 		mainPanel.addStyleName("mainMenuControl");
@@ -231,25 +204,25 @@ public class MainMenuControl extends Composite {
 		// ...add the slide-left/right toggle...
 		FlowPanel panel = new FlowPanel();
 		panel.addStyleName("mainMenuButton mainMenuButton_LeftRight subhead-control-bg1 roundcornerSM");
-		createMenuToggle(panel, GwtTeaming.getImageBundle().slideLeft(),  GwtTeaming.getImageBundle().slideRight(), "slideLeft", "slideRight");
+		createMenuToggle(panel, images.slideLeft(), messages.mainMenuAltLeftNavHideShow(), TeamingAction.HIDE_LEFT_NAVIGATION, images.slideRight(), messages.mainMenuAltLeftNavHideShow(), TeamingAction.SHOW_LEFT_NAVIGATION);
 		mainPanel.add(panel);
 
 		// ...add the slide-up/down toggle...
 		panel = new FlowPanel();
 		panel.addStyleName("mainMenuButton mainMenuButton_UpDown subhead-control-bg1 roundcornerSM");
-		createMenuToggle(panel, GwtTeaming.getImageBundle().slideUp(),   GwtTeaming.getImageBundle().slideDown(), "slideUp", "slideDown");
+		createMenuToggle(panel, images.slideUp(), messages.mainMenuAltMastHeadHideShow(), TeamingAction.HIDE_MASTHEAD, images.slideDown(), messages.mainMenuAltMastHeadHideShow(), TeamingAction.SHOW_MASTHEAD);
 		mainPanel.add(panel);
 
 		// ...add the browse hierarchy button...
 		panel = new FlowPanel();
 		panel.addStyleName("mainMenuButton mainMenuButton_BrowseHierarchy subhead-control-bg1 roundcornerSM");
-		createMenuButton(panel, GwtTeaming.getImageBundle().browseHierarchy(), new MenuButtonSelector("browseHierarchy"));
+		createMenuButton(panel, images.browseHierarchy(), messages.mainMenuAltBrowseHierarchy(), new MenuButtonSelector(TeamingAction.BROWSE_HIERARCHY));
 		mainPanel.add(panel);
 		
 		// ...and add the GWT UI button.
 		panel = new FlowPanel();
 		panel.addStyleName("mainMenuButton mainMenuButton_GwtUI subhead-control-bg1 roundcornerSM");
-		createMenuButton(panel, GwtTeaming.getImageBundle().gwtUI(), new GwtUISelector());
+		createMenuButton(panel, images.gwtUI(), messages.mainMenuAltGwtUI(), new MenuButtonSelector(TeamingAction.TOGGLE_GWT_UI));
 		mainPanel.add(panel);
 		
 		// Finally, all composites must call initWidget() in their
@@ -257,19 +230,41 @@ public class MainMenuControl extends Composite {
 		initWidget(mainPanel);
 	}
 
+	/**
+	 * Called to add an ActionHandler to this MainMenuControl.
+	 * 
+	 * Implements the ActionRequestor.addActionHandler() method.
+	 * 
+	 * @param actionHandler
+	 */
+	public void addActionHandler(ActionHandler actionHandler) {
+		m_actionHandlers.add( actionHandler );
+	}
+	
+	
 	/*
 	 * Creates an image based button on the menu bar.
 	 */
-	private static Anchor createMenuButton(FlowPanel panel, ImageResource imgRes, ClickHandler ch) {
+	private Anchor createMenuButton(FlowPanel panel, ImageResource imgRes, String imgTitle, ClickHandler ch) {
+		// Create the Image...
 		Image img = new Image(imgRes);
+		img.setTitle(imgTitle);
 		img.addStyleName("mainMenuButton_WidgetImage");
+		
+		// ...create the Anchor...
 		Anchor a = new Anchor();
 		a.addStyleName("mainMenuButton_WidgetAnchor");
+		
+		// ...tie things together...
 		a.getElement().appendChild(img.getElement());
 		a.addClickHandler(ch);
+		
+		// ...add mouse over handling...
 		MenuButtonHover hover = new MenuButtonHover(panel);
 		a.addMouseOverHandler(hover);
 		a.addMouseOutHandler( hover);
+		
+		// ...and add the Anchor to the panel and return it.
 		panel.add(a);
 		return a;
 	}
@@ -277,18 +272,47 @@ public class MainMenuControl extends Composite {
 	/*
 	 * Creates an image based toggle on the menu bar.
 	 */
-	private static Anchor createMenuToggle(FlowPanel panel, ImageResource baseImgRes, ImageResource altImgRes, String baseAction, String altAction) {
+	private Anchor createMenuToggle(FlowPanel panel, ImageResource baseImgRes, String baseTitle, TeamingAction baseAction, ImageResource altImgRes, String altTitle, TeamingAction altAction) {
+		// Create the alternate Image...
 		Image altImg = new Image(altImgRes);
+		altImg.setTitle(altTitle);
 		altImg.addStyleName("mainMenuButton_WidgetImage");
+		
+		// ...create the base Image...
 		Image baseImg = new Image(baseImgRes);
+		baseImg.setTitle(baseTitle);
 		baseImg.addStyleName("mainMenuButton_WidgetImage");
+		
+		// ...create the Anchor...
 		Anchor a = new Anchor();
 		a.addStyleName("mainMenuButton_WidgetAnchor");
-		a.addClickHandler(new MenuToggleSelector(a, baseImg, altImg, baseAction, altAction));
+		
+		// ...tie things together...
+		a.addClickHandler(new MenuToggleSelector(a, baseImg, baseAction, altImg, altAction));
+		
+		// ...add mouse hover handling...
 		MenuButtonHover hover = new MenuButtonHover(panel);
 		a.addMouseOverHandler(hover);
 		a.addMouseOutHandler( hover);
+		
+		// ...and add the Anchor to the panel and return it.
 		panel.add(a);
 		return a;
+	}
+
+	/*
+	 * Fires a TeamingAction at the registered ActionHandler's.
+	 */
+	private void triggerAction(TeamingAction action) {
+		// Always use the final form of the method.
+		triggerAction(action, null);
+	}
+	
+	private void triggerAction(TeamingAction action, Object obj) {
+		// Scan the ActionHandler's that have been registered...
+		for (Iterator<ActionHandler> ahIT = m_actionHandlers.iterator(); ahIT.hasNext(); ) {
+			// ...firing the action at each.
+			ahIT.next().handleAction(action, obj);
+		}
 	}
 }

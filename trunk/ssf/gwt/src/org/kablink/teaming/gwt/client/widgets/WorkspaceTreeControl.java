@@ -34,11 +34,14 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.ActionHandler;
+import org.kablink.teaming.gwt.client.ActionRequestor;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
+import org.kablink.teaming.gwt.client.TeamingAction;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.TreeDisplayHorizontal;
 import org.kablink.teaming.gwt.client.util.TreeDisplayVertical;
@@ -46,7 +49,6 @@ import org.kablink.teaming.gwt.client.util.TreeInfo;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -56,7 +58,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
  * 
  * @author drfoster@novell.com
  */
-public class WorkspaceTreeControl extends Composite {
+public class WorkspaceTreeControl extends Composite implements ActionRequestor {
 	private RequestInfo m_requestInfo;
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	
@@ -120,6 +122,8 @@ public class WorkspaceTreeControl extends Composite {
 	/**
 	 * Called to add an ActionHandler to this WorkspaceTreeControl.
 	 * 
+	 * Implements the ActionRequestor.addActionHandler() method.
+	 * 
 	 * @param actionHandler
 	 */
 	public void addActionHandler(ActionHandler actionHandler) {
@@ -127,12 +131,21 @@ public class WorkspaceTreeControl extends Composite {
 	}
 
 	/**
-	 * Returns the List<ActionHandler> of the action handlers
-	 * registered with the WorkspaceTreeControl.
+	 * Fires a TeamingAction at the registered ActionHandler's.
 	 * 
-	 * @return
+	 * @param action
+	 * @param obj
 	 */
-	public List<ActionHandler> getActionHandlersList() {
-		return m_actionHandlers;
+	public void triggerAction(TeamingAction action) {
+		// Always use the final form of the method.
+		triggerAction(action, null);
+	}
+	
+	public void triggerAction(TeamingAction action, Object obj) {
+		// Scan the ActionHandler's that have been registered...
+		for (Iterator<ActionHandler> ahIT = m_actionHandlers.iterator(); ahIT.hasNext(); ) {
+			// ...firing the action at each.
+			ahIT.next().handleAction(action, obj);
+		}
 	}
 }

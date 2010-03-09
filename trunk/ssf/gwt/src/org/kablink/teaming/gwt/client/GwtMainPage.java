@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client;
 
 
+import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
@@ -46,6 +47,7 @@ import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -90,6 +92,7 @@ public class GwtMainPage extends Composite
 		
 		// Add the main menu to the page.
 		m_mainMenuCtrl = new MainMenuControl();
+		m_mainMenuCtrl.addActionHandler( this );
 		mainPanel.add( m_mainMenuCtrl );
 		
 		// Create a panel to hold the WorkspaceTree control and the content control
@@ -160,7 +163,20 @@ public class GwtMainPage extends Composite
 		case SIZE_CHANGED:
 			sizeChanged( obj );
 			break;
-		
+			
+		case TOGGLE_GWT_UI:
+			toggleGwtUI();
+			break;
+
+		case BROWSE_HIERARCHY:
+		case HIDE_LEFT_NAVIGATION:
+		case HIDE_MASTHEAD:
+		case SHOW_LEFT_NAVIGATION:
+		case SHOW_MASTHEAD:
+//!			...these need to be implemented...
+			Window.alert( "Action not implemented:  " + action.getUnlocalizedDesc() );
+			break;
+			
 		default:
 			Window.alert( "Unknown action selected: " + action.getUnlocalizedDesc() );
 			break;
@@ -168,8 +184,9 @@ public class GwtMainPage extends Composite
 	}// end handleAction()
 	
 	
-	/**
-	 * This method will be called when the user selects a binder from the workspace tree control.
+	/*
+	 * This method will be called when the user selects a binder from
+	 * the workspace tree control.
 	 */
 	private void selectionChanged( Object obj )
 	{
@@ -210,6 +227,37 @@ public class GwtMainPage extends Composite
 		relayoutPage( false );
 	}// end sizeChanged()
 
+	
+	/*
+	 * Toggles the state of the GWT UI. 
+	 */
+	private void toggleGwtUI()
+	{
+		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
+		rpcService.getUserWorkspacePermalink( new AsyncCallback<String>()
+		{
+			public void onFailure( Throwable t ) {}
+			public void onSuccess( String userWorkspaceURL )
+			{
+				jsToggleGwtUI();
+				jsLoadUserWorkspaceURL( userWorkspaceURL + "&captive=false" );
+			}// end onSuccess()
+			
+			private native void jsToggleGwtUI()
+			/*-{
+				// Toggle the GWT UI state.
+				window.top.ss_toggleGwtUI( false );
+			}-*/; // end jsToggleGwtUI()
+
+			private native void jsLoadUserWorkspaceURL( String userWorkspaceURL )
+			/*-{
+				// Give the GWT UI state toggling 1/2
+				// second to complete and reload the user
+				// workspace.
+				window.setTimeout( function(){window.top.location.href = userWorkspaceURL;}, 500 );
+			}-*/; // end jsLoadUserWorkspace()
+		}); // end AsyncCallback()
+	}// end toggleGwtUI()
 	
 	/**
 	 * Adjust the height and width of the controls on this page.  Currently the only

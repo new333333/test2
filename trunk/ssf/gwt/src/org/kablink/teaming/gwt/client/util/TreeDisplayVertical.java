@@ -34,9 +34,7 @@ package org.kablink.teaming.gwt.client.util;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
-import org.kablink.teaming.gwt.client.ActionHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.TeamingAction;
@@ -208,19 +206,10 @@ public class TreeDisplayVertical {
 		 * @param event
 		 */
 		public void onClick(ClickEvent event) {
-			// If we're connected to a WorkspaceTreeControl that's got
-			// some ActionHandler's registered...
+			// Select the Binder and tell the WorkspaceTreeControl to
+			// handle it.
 			selectBinder(m_ti);
-			List<ActionHandler> ahList = ((null == m_wsTree) ? null : m_wsTree.getActionHandlersList());
-			if ((null != ahList) && (0 < ahList.size())) {
-				// Scan them...
-				OnSelectBinderInfo osbi = buildOnSelectBinderInfo(m_ti);
-				for (Iterator<ActionHandler> ahIT = ahList.iterator(); ahIT.hasNext(); ) {
-					// Calling each ActionHandler with an
-					// OnSelectBinderInfo object.
-					ahIT.next().handleAction(TeamingAction.SELECTION_CHANGED, osbi);
-				}
-			}
+			m_wsTree.triggerAction(TeamingAction.SELECTION_CHANGED, buildOnSelectBinderInfo(m_ti));
 		}
 	}
 
