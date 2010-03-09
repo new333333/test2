@@ -16,8 +16,8 @@
     <property name="preDeletedBy"/>
 	<property name="deleted"/>
 	<property name="subscribed"/>
-	<property name="hasEntryAcl"/>
-	<property name="checkFolderAcl"/>
+	<property name="hasEntryAcl" access="field"/>
+	<property name="checkFolderAcl" access="field"/>
     <map inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="customAttributes">
       <key column="folderEntry"/>
       <map-key type="string" column="name"/>
