@@ -104,18 +104,9 @@ Slide WebDAV client library 2.1
 Slide Roles 2.2-pre1 (for ssfs)
 Slide Stores 2.2-pre1 (for ssfs)
 smartgwt 1.2 (GWT Widget Library)
-
-Spring 3.0.1.RELEASE - Teaming uses this subset: aop, asm, aspects, beans, context, context support, core, expression, instrument, instrument tomcat, jdbc, orm, oxm, test, transaction, web, web portlet, web servlet
-
-Spring 2.5.6
-Spring test 2.5.6 (comes with Spring)
-Spring MVC spring-webmvc 2.5.6 (comes with Spring)
-Spring Portlet spring-webmvc-portlet 2.5.6 (comes with Spring)
-
+Spring 3.0.1.RELEASE 
 Spring Security 2.0.5
-
 Spring LDAP 1.3.0.RELEASE
-
 Struts 1.2.9 (removed META-INF/MANIFEST.MF) - Copied from Liferay 4.1.2
 SubEthaSMTP subethasmtp.jar 3.1.3
 swfobject 2.1 (Javascript library)
