@@ -671,7 +671,7 @@ public class ViewEntryController extends  SAbstractController {
 					//The "Workflow" menu
 					Map qualifiers = new HashMap();
 					qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.entryWorkflowMenu");
-					toolbar.addToolbarMenu("6_workflow", NLT.get("toolbar.entryWorkflow"), "", qualifiers);
+					toolbar.addToolbarMenu("7_workflow", NLT.get("toolbar.entryWorkflow"), "", qualifiers);
 					
 					//See if there are workflows running
 					Map runningWorkflowDefs = new HashMap();
@@ -768,6 +768,19 @@ public class ViewEntryController extends  SAbstractController {
 				}
 			}
 			
+			if (getFolderModule().testAccess(entry, FolderOperation.readEntry)) {
+				//The "Access Control" menu
+				accessControlEntryMap.put("accessControl", new Boolean(true));
+				Map qualifiers = new HashMap();
+				qualifiers.put("popup", new Boolean(true));
+				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.accessControlMenu");
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
+				url.setParameter(WebKeys.URL_WORKAREA_ID, entryId); 
+				url.setParameter(WebKeys.URL_WORKAREA_TYPE, entry.getWorkAreaType()); 
+				toolbar.addToolbarMenu("6_accessControl", NLT.get("toolbar.menu.accessControl"), url, qualifiers);
+			}
+			
 			if (getFolderModule().testAccess(entry, FolderOperation.report)) {
 				accessControlEntryMap.put("report", new Boolean(true));
 				Map qualifiers = new HashMap();
@@ -803,7 +816,7 @@ public class ViewEntryController extends  SAbstractController {
 					url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 					url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
 					url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-					toolbar.addToolbarMenu("7_setHomepage", NLT.get("toolbar.setWikiHomepage"), url, qualifiers);
+					toolbar.addToolbarMenu("9_setHomepage", NLT.get("toolbar.setWikiHomepage"), url, qualifiers);
 				}
 			}	
 			
@@ -816,7 +829,7 @@ public class ViewEntryController extends  SAbstractController {
 				adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SHARE_THIS_BINDER);
 				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-				toolbar.addToolbarMenu("8_shareThis", NLT.get("toolbar.shareThis"), adapterUrl.toString(), qualifiers);
+				toolbar.addToolbarMenu("9_shareThis", NLT.get("toolbar.shareThis"), adapterUrl.toString(), qualifiers);
 			}
 		}
 
