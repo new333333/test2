@@ -84,4 +84,6 @@ public interface SsfIndexInterface extends java.rmi.Remote {
 			int skipsize) throws RemoteException;
 	
 	public void clearIndex(String indexname) throws RemoteException;
+	
+	public void shutdown() throws RemoteException;
 }

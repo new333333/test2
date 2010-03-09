@@ -38,11 +38,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public class PropsUtil {
 	// This is a singleton class. 
+	
+	// IMPORTANT: DO NOT ADD LOGGER TO THIS CLASS!!
 	
 	private static final String NEWLINE = System.getProperty("line.separator");
 
@@ -51,8 +50,6 @@ public class PropsUtil {
 	private Properties props;
 	
 	private static Locale teamingLocale = null;
-	
-	protected Log logger = LogFactory.getLog(getClass());
 
 	public PropsUtil() {
 		if(instance != null)
@@ -203,24 +200,7 @@ public class PropsUtil {
 		return combinedPropertyList;
 	}
 	
-	public void printEnvironment() {
-		if(logger.isInfoEnabled()) {
-			logger.info(getReleaseInfo());
-			logger.info("System properties" + NEWLINE + toStringML(System.getProperties()) + NEWLINE);
-			logger.info("System environment" + NEWLINE + toStringML(System.getenv()) + NEWLINE);
-		}
-		else {
-			System.out.println(getReleaseInfo());
-			System.out.println("System properties" + NEWLINE + toStringML(System.getProperties()) + NEWLINE);
-			System.out.println("System environment" + NEWLINE + toStringML(System.getenv()) + NEWLINE);		
-		}	
-	}
-	
-	protected String getReleaseInfo() {
-		return getString("release.version", "No information about release version");
-	}
-	
-	private String toStringML(Map map) {
+	public static String toStringML(Map map) {
 		StringBuffer buf = new StringBuffer();
 		buf.append("{");
 

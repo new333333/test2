@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.util.PropsUtil;
 import org.springframework.beans.factory.InitializingBean;
@@ -65,6 +67,8 @@ public class SPropsUtil extends PropsUtil implements InitializingBean {
 	public static final String WIDEN_ACCESS="entryacl.widens.folderacl";
 	public static final String SIMPLEURL_CTX = "simpleurl.ctx";
 
+	protected Log logger = LogFactory.getLog(getClass());
+
 	public SPropsUtil() {
 		if(instance != null)
 			throw new SingletonViolationException(SPropsUtil.class);
@@ -77,11 +81,16 @@ public class SPropsUtil extends PropsUtil implements InitializingBean {
     }
 
 	public void afterPropertiesSet() throws Exception {
-		printEnvironment();
+		if(logger.isInfoEnabled()) {
+			logger.info(ReleaseInfo.getReleaseInfo());
+			logger.info("System properties" + Constants.NEWLINE + toStringML(System.getProperties()));
+			logger.info("System environment" + Constants.NEWLINE + toStringML(System.getenv()));
+		}
+		else {
+			System.out.println(ReleaseInfo.getReleaseInfo());
+			System.out.println("System properties" + Constants.NEWLINE + toStringML(System.getProperties()));
+			System.out.println("System environment" + Constants.NEWLINE + toStringML(System.getenv()));		
+		}	
 	}
 
-	protected String getReleaseInfo() {
-		return ReleaseInfo.getReleaseInfo();
-	}
-	
 }
