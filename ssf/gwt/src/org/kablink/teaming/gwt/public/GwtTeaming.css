@@ -111,7 +111,7 @@
 }
 
 
-/* Styles for binders in a WorkspaceTree control. */
+/* Styles used by the WorkspaceTreeControl. */
 .workspaceTreeBinderAnchor
 {
 	color: #1C5894;
@@ -132,8 +132,6 @@
 .workspaceTreeBinderSelected
 {
 }
-
-/* Styles used by the WorkspaceTree Control. */
 .workspaceTreeControl
 {
 	background-color: #E6E6E4;
@@ -613,38 +611,9 @@
 	z-index: 100;
 }
 
-/* Style used for the menu in Teaming's main page. */
-.mainMenuControl
+/* Styles used by the MainMenuControl. */
+.mainMenuButton
 {
-	background: transparent url(images/main_menu_bg.png) repeat-x scroll 0 0;
-	height: 19px;
-	left: 0;
-	padding: 2px 0 4px;
-	position: relative;
-	top: 0;
-	white-space: nowrap;
-	width: 100%;
-	z-index: 300;
-}
-
-/* Style use for the browse hierarchy control in the main menu. */
-.mainMenuUpBrowseHierarchyControl
-{
-	left: 70px;
-}
-
-/* Style use for the GWT UI control in the main menu. */
-.mainMenuGwtUIControl
-{
-	left: 101px;
-}
-
-/* Style used for the navigation controls in the main menu. */
-.mainMenuNavControl
-{
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	background: transparent url(images/trans10_black_blend_bg.png) repeat scroll center bottom;
 	height: 20px;
 	overflow: hidden;
 	padding: 0;
@@ -654,25 +623,43 @@
 	width: 28px;
 	z-index: 310;
 }
-
-/* Style used for the left/right navigation controls in the main menu. */
-.mainMenuLeftRightNavControl
+.mainMenuButton_BrowseHierarchy
+{
+	left: 70px;
+}
+.mainMenuButton_GwtUI
+{
+	left: 101px;
+}
+.mainMenuButton_LeftRight
 {
 	left: 8px;
 }
-
-/* Style used for the up/down navigation control in the main menu. */
-.mainMenuUpDownNavControl
+.mainMenuButton_UpDown
 {
 	left: 39px;
 }
-
-/* Styles used for buttons on the main menu. */
-.mainMenuButton
+.mainMenuButton_WidgetAnchor
 {
-	padding-top: 2px;
 	cursor: pointer;
 }
+.mainMenuButton_WidgetImage
+{
+	margin-top: 2px;
+}
+.mainMenuControl
+{
+	background: transparent url(images/main_menu_bg.png) repeat-x scroll 0 0;
+	height: 20px;
+	left: 0;
+	padding: 2px 0 4px;
+	position: relative;
+	top: 0;
+	white-space: nowrap;
+	width: 100%;
+	z-index: 300;
+}
+
 
 /* Style for the main Teaming page. */
 .mainTeamingPage
@@ -810,6 +797,7 @@
 	top: -15px;
 	width: 150px;
 	z-index: 20;
+}
 
 /* Style used to add padding-top: 2px; */
 .paddingTop2px
@@ -868,4 +856,42 @@
 	position: absolute;
 	right: 5px;
 	top: 0px;
+}
+
+/* Styles used for rounded corners on things. */
+.roundcorner
+{
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+}
+.roundcornerSM
+{
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+.roundcornerSM-bottom
+{
+	-moz-border-radius-bottomleft: 5px;
+	-moz-border-radius-bottomright: 5px;
+	-webkit-border-radius-bottomleft: 5px;
+	-webkit-border-radius-bottomright: 5px;
+}
+.roundcornerLG
+{
+	-moz-border-radius: 40px;
+	-webkit-border-radius: 40px;
+}
+
+
+/* Styles uses for sub-header and button backgrounds. */
+.subhead-control-bg1, .btn-bg1
+{
+	background: url(images/trans10_black_blend.png) repeat;
+	background-position:bottom;
+}
+.subhead-control-bg2, .btn-bg2
+{
+	color: #fff;
+	background: url(images/blue_slice.png) repeat-x;
+	background-position: bottom;
 }
