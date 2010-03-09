@@ -171,5 +171,8 @@ ALTER TABLE SSQRTZ_TRIGGERS ADD
   (TRIGGER_NAME,TRIGGER_GROUP) REFERENCES SSQRTZ_TRIGGERS (TRIGGER_NAME,TRIGGER_GROUP);
 
 alter table SS_Forums add brandingExt text null;
+alter table SS_Functions add scope varchar(16);
+alter table SS_FolderEntries add hasEntryAcl tinyint null;
+alter table SS_FolderEntries add checkFolderAcl tinyint null;
 
 INSERT INTO SS_SchemaInfo values (7);

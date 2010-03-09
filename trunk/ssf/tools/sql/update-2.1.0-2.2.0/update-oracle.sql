@@ -35,4 +35,7 @@ ALTER TABLE SSQRTZ_fired_triggers MODIFY JOB_NAME VARCHAR2(200);
 ALTER TABLE SSQRTZ_fired_triggers MODIFY JOB_GROUP VARCHAR2(200);
 ALTER TABLE SSQRTZ_scheduler_state MODIFY INSTANCE_NAME VARCHAR2(200);
 ALTER TABLE SS_Forums add brandingExt CLOB;
+ALTER TABLE SS_Functions add scope varchar2(16 char);
+ALTER TABLE SS_FolderEntries add hasEntryAcl number(1,0);
+ALTER TABLE SS_FolderEntries add checkFolderAcl number(1,0);
 INSERT INTO SS_SchemaInfo values (7);
