@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.ZonedObject;
 import org.kablink.teaming.util.CollectionUtil;
 import org.kablink.util.Validator;
@@ -60,6 +61,7 @@ public class Function extends ZonedObject {
     private Set operationNames; // Used for persistence only
     private long lockVersion; // Used for optimistic locking support
     private String internalId;
+    private String scope; //Used to segment roles between zone, binder and entry
     private boolean zoneWide=false;
 	/**
 	 * @hibernate.id generator-class="native" type="long"  unsaved-value="null"
@@ -118,6 +120,29 @@ public class Function extends ZonedObject {
 				" They include letters, numbers, spaces, underscores, and periods.");
         
         this.name = name;
+    }
+
+    /**
+     * @hibernate.property length="16" not-null="false" 
+     */
+    public String getScope() {
+    	if (scope == null) {
+    		if (this.isZoneWide()) {
+    			scope = ObjectKeys.ROLE_TYPE_ZONE;
+    		} else {
+    			scope = ObjectKeys.ROLE_TYPE_BINDER;
+    		}
+    	}
+        return scope;
+    }
+    public void setScope(String scope) {
+        if (!scope.equals(ObjectKeys.ROLE_TYPE_COMMON) &&
+        		!scope.equals(ObjectKeys.ROLE_TYPE_ZONE) &&
+        		!scope.equals(ObjectKeys.ROLE_TYPE_BINDER) && 
+        		!scope.equals(ObjectKeys.ROLE_TYPE_ENTRY))
+            throw new IllegalArgumentException("Type must be 'common', 'zone', 'binder' or 'entry'.");
+        
+        this.scope = scope;
     }
 
     /**

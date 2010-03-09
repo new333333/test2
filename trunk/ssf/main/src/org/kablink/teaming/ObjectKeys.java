@@ -173,6 +173,12 @@ public interface ObjectKeys {
 	public static final String DEFINITION_FOLDER_REMOTE_APPLICATION="folderRemoteApp";
 	public static final String DEFINITION_ENTRY_REMOTE_APPLICATION="entryRemoteApp";	
     
+    //Default role types
+    public static final String ROLE_TYPE_ZONE="zone";
+    public static final String ROLE_TYPE_BINDER="binder";
+    public static final String ROLE_TYPE_ENTRY="entry";
+    public static final String ROLE_TYPE_COMMON="common";
+    
     //Default role titles
     public static final String ROLE_TITLE_VISITOR="__role.visitor";
     public static final String ROLE_TITLE_PARTICIPANT="__role.participant";
