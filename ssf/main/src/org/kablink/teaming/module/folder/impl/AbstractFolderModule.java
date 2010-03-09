@@ -257,7 +257,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			case reserveEntry:
 			case copyEntry:
 			case moveEntry:
-				AccessUtils.modifyCheck(entry);   
+				AccessUtils.operationCheck(entry, WorkAreaOperation.MODIFY_ENTRIES);   
 				break;
 			case modifyEntryFields:
 				AccessUtils.modifyFieldCheck(entry);   
@@ -265,19 +265,19 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			case restoreEntry:
 			case preDeleteEntry:
 			case deleteEntry:
-				AccessUtils.deleteCheck(entry);   		
+				AccessUtils.operationCheck(entry, WorkAreaOperation.DELETE_ENTRIES);   		
 				break;
 			case overrideReserveEntry:
 				AccessUtils.overrideReserveEntryCheck(entry);
 				break;
 			case addReply:
-		    	getAccessControlManager().checkOperation(entry.getParentBinder(), WorkAreaOperation.ADD_REPLIES);
+				AccessUtils.operationCheck(entry, WorkAreaOperation.ADD_REPLIES);
 		    	break;				
 			case manageTag:
-				getAccessControlManager().checkOperation(entry.getParentBinder(), WorkAreaOperation.ADD_COMMUNITY_TAGS);
+				AccessUtils.operationCheck(entry, WorkAreaOperation.ADD_COMMUNITY_TAGS);
 				break;
 			case report:
-				getAccessControlManager().checkOperation(entry.getParentBinder(), WorkAreaOperation.GENERATE_REPORTS);
+				AccessUtils.operationCheck(entry, WorkAreaOperation.GENERATE_REPORTS);
 				break;
 			default:
 				throw new NotSupportedException(operation.toString(), "checkAccess");
