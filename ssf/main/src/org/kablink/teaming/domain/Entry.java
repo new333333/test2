@@ -43,8 +43,8 @@ import org.kablink.teaming.security.function.WorkArea;
  */
 public abstract class Entry extends DefinableEntity implements WorkArea {
  
-    protected boolean hasEntryAcl = false;
-    protected boolean checkFolderAcl = true;
+    protected Boolean hasEntryAcl = Boolean.FALSE;
+    protected Boolean checkFolderAcl = Boolean.TRUE;
 
     public Entry() {
     }
@@ -61,13 +61,18 @@ public abstract class Entry extends DefinableEntity implements WorkArea {
     	return true;
     }
 	public boolean hasEntryAcl() {
-		return hasEntryAcl;
+		if (hasEntryAcl == null) {
+			return false;
+		} else {
+			return hasEntryAcl;
+		}
 	}
 	public void setHasEntryAcl(boolean hasEntryAcl) {
 		this.hasEntryAcl = hasEntryAcl;
 	}
 	public boolean checkFolderAcl() {
-		return checkFolderAcl;
+		if (checkFolderAcl == null) return true;
+		else return checkFolderAcl;
 	}
 	public void setCheckFolderAcl(boolean checkFolderAcl) {
 		this.checkFolderAcl = checkFolderAcl;
