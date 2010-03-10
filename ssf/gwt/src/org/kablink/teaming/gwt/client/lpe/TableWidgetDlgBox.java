@@ -137,7 +137,7 @@ public class TableWidgetDlgBox extends DlgBox
 	 * Create all the controls that make up the dialog box.
 	 */
 	@SuppressWarnings("unchecked")
-	public Panel createContent( PropertiesObj props )
+	public Panel createContent( Object props )
 	{
 		TableProperties properties;
 		Label			label;

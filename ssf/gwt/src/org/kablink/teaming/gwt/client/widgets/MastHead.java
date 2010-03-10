@@ -104,6 +104,7 @@ public class MastHead extends Composite
 	// m_rpcCallback is our callback that gets called when the ajax request to get the branding
 	// data completes.
 	private AsyncCallback<GwtBrandingData> m_rpcCallback = null;
+	private GwtBrandingData m_brandingData = null;
 	
 	
 	
@@ -256,6 +257,9 @@ public class MastHead extends Composite
 			 */
 			public void onSuccess( GwtBrandingData brandingData )
 			{
+				// Remember the branding data we are working with.
+				m_brandingData = brandingData;
+				
 				// Update the masthead with the branding data we just retrieved.
 				updateMasthead( brandingData );
 			}// end onSuccess()
@@ -472,6 +476,15 @@ public class MastHead extends Composite
 		}
 	}// end adjustMastheadHeight()
 
+	
+	/**
+	 * Return the branding data we are working with.
+	 */
+	public GwtBrandingData getBrandingData()
+	{
+		return m_brandingData;
+	}// end GwtBrandingData()
+	
 	
 	/**
 	 * Issue an ajax request to get the branding data from the server.  Our AsyncCallback

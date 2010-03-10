@@ -18,6 +18,12 @@
 	font-weight: bold;
 }
 
+/* Styles used for text in the content of a dialog box. */
+.dlgContent
+{
+	font-family: Arial,Helvetica,sans-serif;
+}
+
 /* Styles used with the panel that wraps a drop widget. */
 .dropWidgetWrapperPanel
 {
@@ -708,6 +714,12 @@
 	margin-right: 5px;
 }
 
+/* Style used to create a top margin of 5 px. */
+.marginTop5
+{
+	margin-top: 5px;
+}
+
 /* Style used with the mast head */
 .mastHead
 {
@@ -824,6 +836,7 @@
 	border-color: #BABDB6;
 	border-style: solid solid solid;
 	border-width: medium 2px 2px;
+	font-family: Arial,Helvetica,sans-serif;
 }
 
 /* Styles for the content of a dialog box. */
