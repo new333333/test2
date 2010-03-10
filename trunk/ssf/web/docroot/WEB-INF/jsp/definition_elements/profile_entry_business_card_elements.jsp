@@ -41,6 +41,9 @@
 		//Get the form item being displayed
 		Element item = (Element) request.getAttribute("item");
 %>
+
+This is the profile entry business card elements:
+
 <c:if test="${ssUser.id == ssDefinitionEntry.id}">
     <c:set var="scopeBusinessCard" value="mine"/>
     <c:if test="${!empty ssUserProperties.businessCardShow_mine && !ssUserProperties.businessCardShow_mine}">

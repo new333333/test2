@@ -38,9 +38,42 @@
 <%
 		//Get the form item being displayed
 		Element item = (Element) request.getAttribute("item");
+		
+		//Get the entry type of this definition (folder, file, or event)
+		String formViewStyle = "profileStd";
+		Element formViewTypeEle = (Element)item.selectSingleNode("properties/property[@name='type']");
+		if (formViewTypeEle != null) formViewStyle = formViewTypeEle.attributeValue("value", "profileStd");
+
 %>
 
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="<%= item %>" 
-  configJspStyle="${ssConfigJspStyle}" 
-  entry="${ssDefinitionEntry}" />
+<div id="ss_topic_box">
+	<div id="ss_topic_box_h1">
+	  <a href="<ssf:url crawlable="true"
+           adapter="true" portletName="ss_forum"
+           folderId="${ssBinderId}" 
+           action="view_ws_listing"><ssf:param 
+		   name="profile" value="0" /></ssf:url>">
+	    <c:if test="${empty ssDefinitionEntry.title}">
+          <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
+        </c:if>
+        <span><c:out value="${ssDefinitionEntry.title}" escapeXml="true"/></span>
+      </a> 
+	</div>
+</div>
+
+
+<c:set var="ss_formViewStyle" value="<%= formViewStyle %>" scope="request" />
+<jsp:useBean id="ss_formViewStyle" type="String" scope="request" />
+
+<c:choose>
+  <c:when test="${ss_formViewStyle == 'profileGWT'}">
+		Loading the GWT jsp here...
+		<jsp:include page="/WEB-INF/jsp/definition_elements/profile_GWT.jsp" />
+  </c:when>
+  <c:otherwise>
+	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  		configElement="<%= item %>" 
+  		configJspStyle="${ssConfigJspStyle}" 
+  		entry="${ssDefinitionEntry}" />
+  </c:otherwise>  
+</c:choose>

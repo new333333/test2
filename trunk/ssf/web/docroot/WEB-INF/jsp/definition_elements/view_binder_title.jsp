@@ -70,7 +70,14 @@
           <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
         </c:if>
         <span><c:out value="${ssDefinitionEntry.title}" escapeXml="true"/></span>
-      </a>
+      </a> 
+	  <a class="profile-a"  href="<ssf:url crawlable="true"
+           adapter="true" portletName="ss_forum"
+           folderId="${ssDefinitionEntry.id}" 
+           action="view_ws_listing" ><ssf:param 
+		   name="profile" value="1" /></ssf:url>">
+		<ssf:nlt tag="relevance.tab.profile"/>
+  	  </a>
       </div>
       </li>
       </ul>
