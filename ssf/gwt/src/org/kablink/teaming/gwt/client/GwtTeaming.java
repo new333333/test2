@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client;
 
 import org.kablink.teaming.gwt.client.admin.ExtensionsConfig;
 import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
+import org.kablink.teaming.gwt.client.profile.GwtProfilePage;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.widgets.MastHead;
@@ -234,6 +235,19 @@ public class GwtTeaming implements EntryPoint
 				rootPanel.add( flowPanel );
 			}
 			
+			return;
+		}
+		
+		
+		// Are we loading the profile page?
+		rootPanel = RootPanel.get( "gwtProfileDiv" );
+		if ( rootPanel != null )
+		{
+			GwtProfilePage profilePage;
+			
+			profilePage = new GwtProfilePage();
+			rootPanel.add( profilePage );
+					
 			return;
 		}
 		

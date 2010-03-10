@@ -45,7 +45,6 @@
 
 <script type="text/javascript">
 var ss_relevanceAjaxUrl${renderResponse.namespace};
-var ss_relevanceProfileUrl${renderResponse.namespace};
 var ss_relevanceOverviewUrl${renderResponse.namespace};
 var ss_relevanceTaskAndCalendarsUrl${renderResponse.namespace};
 if (ss_userDisplayStyle != "accessible") {
@@ -60,11 +59,6 @@ if (ss_userDisplayStyle != "accessible") {
 		name="binderId" value="ss_binderIdPlaceHolder" /><ssf:param 
 		name="namespace" value="${renderResponse.namespace}" /><ssf:param 
 		name="rn" value="ss_rnPlaceHolder" /></ssf:url>";
-   ss_relevanceProfileUrl${renderResponse.namespace} = "<ssf:url 
-        action="view_ws_listing" ><ssf:param 
-      	name="binderId" value="ss_binderIdPlaceHolder"/><ssf:param 
-		name="type" value="profile" /><ssf:param 
-		name="page" value="0" /></ssf:url>";
    ss_relevanceOverviewUrl${renderResponse.namespace} = "<ssf:url 
         action="view_ws_listing" ><ssf:param 
       	name="binderId" value="ss_binderIdPlaceHolder"/><ssf:param 
@@ -111,7 +105,7 @@ if (ss_userDisplayStyle != "accessible") {
 	<% /* Do we have a current tab? */ %>
 	<c:if test="${empty ssRDCurrentTab}">
 		<% /* No, set the current tab to the "Profile" tab. */ %>
-		<c:set var="ssRDCurrentTab" value="profile" scope="request"/>
+		<c:set var="ssRDCurrentTab" value="overview" scope="request"/>
 
 		<% /* Is the user looking at their own workspace? */ %>
 		<c:if test="${ssBinder.id == ssUser.workspaceId}">
@@ -181,17 +175,6 @@ if (ss_userDisplayStyle != "accessible") {
 			onclick="ss_selectRelevanceTab(this, 'miniblogs', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
 			<span><ssf:nlt tag="relevance.tab.miniblogs"/></span></a></li>
 	  </ssf:ifLoggedIn>
-		<% /* Add the "Profile" tab */ %>
-		<c:if test="${!empty ssRelevanceDashboardConfigElement}">
-			<c:if test="${empty ssRDCurrentTab}"><c:set var="ssRDCurrentTab" value="profile" scope="request"/></c:if>
-			<li <c:if test="${ssRDCurrentTab == 'profile'}">class="ss_tabsCCurrent"</c:if>>
-				<a <c:if test="${ssRDCurrentTab == 'profile'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
-					href="javascript: ;"
-					onclick="ss_selectRelevanceTab(this, 'profile', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
-					<span><ssf:nlt tag="relevance.tab.profile"/></span>
-				</a>
-			</li>
-		</c:if>
 	</c:if>	
   </ul>
 </div>
@@ -218,7 +201,6 @@ ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
   <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tasks_and_calendars_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'activities'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'miniblogs'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/miniblogs_tab.jsp" /></c:if>
-  <c:if test="${ssRDCurrentTab == 'profile'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/profile.jsp" /></c:if>
 </c:if>
 </div>
 </div>

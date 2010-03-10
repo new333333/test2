@@ -35,10 +35,20 @@
 <% //View a workspace %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<div class="ss_style ss_portlet">
 
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="${item}" 
-  configJspStyle="${ssConfigJspStyle}"
-  entry="${ssDefinitionEntry}" />
-</div>
+<c:choose>
+	<c:when test="${showProfile == 'true'}">
+		<div class="ss_style ss_portlet">
+			<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/profile.jsp" />
+		</div>
+	</c:when>
+	<c:otherwise>
+		<div class="ss_style ss_portlet">
+		<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+		  configElement="${item}" 
+		  configJspStyle="${ssConfigJspStyle}"
+		  entry="${ssDefinitionEntry}" />
+		</div>
+	</c:otherwise>
+</c:choose>
+		

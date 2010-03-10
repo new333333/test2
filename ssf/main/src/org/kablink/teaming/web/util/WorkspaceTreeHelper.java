@@ -289,6 +289,20 @@ public class WorkspaceTreeHelper {
 
 						//Get the dashboard initial tab if one was passed in
 						String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
+						String profile = PortletRequestUtils.getStringParameter(request,"profile", "");
+						if(type.equals("")) {
+							if(profile.equals("")){
+								if(user.getWorkspaceId().equals( binder.getId()) ) {
+									model.put("showProfile", false);
+								} else {
+									model.put("showProfile", true);
+								}
+							} else 	if(profile.equals("1")){
+								model.put("showProfile", true);
+							} else {
+								model.put("showProfile", false);
+							}
+						}
 				        RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, request, response, 
 				        		binder.getId(), type, model);
 					} catch (Exception ex) {

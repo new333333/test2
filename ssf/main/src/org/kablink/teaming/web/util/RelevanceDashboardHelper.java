@@ -104,7 +104,6 @@ public class RelevanceDashboardHelper {
 				model.put("ssRDCurrentTab", type);
 			}
 		}
-		if (type.equals("")) type = ObjectKeys.RELEVANCE_DASHBOARD_PROFILE;
 		
 		//Figure out if this is a user workspace; dashboards are relative to the user workspace owner
         if (binderId == null) binderId = user.getWorkspaceId();
@@ -121,13 +120,7 @@ public class RelevanceDashboardHelper {
 			model.put(WebKeys.CONFIG_ELEMENT_RELEVANCE_DASHBOARD, relevanceElement);
 		}
 
-		if (ObjectKeys.RELEVANCE_DASHBOARD_PROFILE.equals(type)) {
-			if (!setupProfileBeans(bs, request, response, userWorkspace, model)) {
-				//The profile isn't being shown in the dashboard, so get the what's new beans instead
-				setupWhatsNewDashboardBeans(bs, request, response, userWorkspace, model);
-			}
-			
-		} else if (ObjectKeys.RELEVANCE_DASHBOARD_TASKS_AND_CALENDARS.equals(type)) {
+		if (ObjectKeys.RELEVANCE_DASHBOARD_TASKS_AND_CALENDARS.equals(type)) {
 			setupTasksBeans(bs, userWorkspace, model); 
 			setupTrackedCalendarBeans(bs, userWorkspace, model);
 			setupTrackedItemsBeans(bs, userWorkspace, model);
