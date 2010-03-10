@@ -241,11 +241,10 @@ public class GwtServerHelper {
 	 * @param bs
 	 * @param binderId
 	 */
-	@SuppressWarnings("unchecked")
 	public static void persistNodeCollapse(AllModulesInjected bs, Long binderId) {
 		// Access the current User's expanded Binder's list.
 		UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
-		List<Long> usersExpandedBindersList = ((List<Long>) userProperties.getProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST));
+		List<Long> usersExpandedBindersList = getExpandedBindersList(userProperties);
 
 		// If there's no list...
 		if (null == usersExpandedBindersList) {
@@ -273,7 +272,7 @@ public class GwtServerHelper {
 		// properties?
 		if (updateUsersList) {
 			// Yes!  Write it.
-			userProperties.setProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST, usersExpandedBindersList);
+			setExpandedBindersList(userProperties, usersExpandedBindersList);
 		}
 	}
 
@@ -286,11 +285,10 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static void persistNodeExpand(AllModulesInjected bs, Long binderId) {
 		// Access the current User's expanded Binder's list.
 		UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
-		List<Long> usersExpandedBindersList = ((List<Long>) userProperties.getProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST));
+		List<Long> usersExpandedBindersList = getExpandedBindersList(userProperties);
 
 		// If there's no list...
 		boolean updateUsersList = (null == usersExpandedBindersList);
@@ -309,7 +307,7 @@ public class GwtServerHelper {
 		if (updateUsersList) {
 			// Yes!  Add this Binder ID to it and write it.
 			usersExpandedBindersList.add(0, binderId);
-			userProperties.setProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST, usersExpandedBindersList);
+			setExpandedBindersList(userProperties, usersExpandedBindersList);
 		}
 	}
 	
@@ -353,6 +351,26 @@ public class GwtServerHelper {
 		return null;
 	}
 
+	/*
+	 * Returns a cloned copy of the expanded Binder's list from the
+	 * UserProperties.
+	 */
+	@SuppressWarnings("unchecked")
+	private static List<Long> getExpandedBindersList(UserProperties userProperties) {
+		List<Long> reply;
+		List<Long> userList = ((List<Long>) userProperties.getProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST));
+		if (null == userList) {
+			reply = null;
+		}
+		else {
+			reply = new ArrayList<Long>();
+			for (Iterator<Long> lIT = userList.iterator(); lIT.hasNext(); ) {
+				reply.add(lIT.next());
+			}
+		}
+		return reply;
+	}
+	
 	/*
 	 * Takes a Binder permalink and does what's necessary to bring up
 	 * the trash on that Binder.
@@ -415,11 +433,10 @@ public class GwtServerHelper {
 	 * preferences into those in expandedBindersList.  If the resultant
 	 * lists differ, they are written back to the User's preferences
 	 */
-	@SuppressWarnings("unchecked")
 	private static void mergeBinderExpansions(AllModulesInjected bs, List<Long> expandedBindersList) {
 		// Access the current User's expanded Binder's list.
 		UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
-		List<Long> usersExpandedBindersList = ((List<Long>) userProperties.getProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST));
+		List<Long> usersExpandedBindersList = getExpandedBindersList(userProperties);
 
 		// Make sure we have two non-null lists to work with.
 		if (null == expandedBindersList)      expandedBindersList      = new ArrayList<Long>();
@@ -445,7 +462,14 @@ public class GwtServerHelper {
 		// properties?
 		if (updateUsersList) {
 			// Yes!  Write it.
-			userProperties.setProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST, expandedBindersList);
+			setExpandedBindersList(userProperties, expandedBindersList);
 		}
+	}
+	
+	/*
+	 * Stores the expanded Binder's List in a UserProperties.
+	 */
+	private static void setExpandedBindersList(UserProperties userProperties, List<Long> expandedBindersList) {
+		userProperties.setProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST, expandedBindersList);
 	}
 }

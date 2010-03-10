@@ -87,12 +87,12 @@ public class GwtMainPage extends Composite
 		
 		// Add the MastHead to the page.
 		m_mastHead = new MastHead( m_requestInfo );
-		m_mastHead.addActionHandler( this );
+		registerActionHandler( m_mastHead );
 		mainPanel.add( m_mastHead );
 		
 		// Add the main menu to the page.
 		m_mainMenuCtrl = new MainMenuControl();
-		m_mainMenuCtrl.addActionHandler( this );
+		registerActionHandler( m_mainMenuCtrl );
 		mainPanel.add( m_mainMenuCtrl );
 		
 		// Create a panel to hold the WorkspaceTree control and the content control
@@ -102,7 +102,7 @@ public class GwtMainPage extends Composite
 		// Create the WorkspaceTree control.
 		m_wsTreeCtrl = new WorkspaceTreeControl( m_requestInfo, TreeMode.VERTICAL );
 		m_wsTreeCtrl.addStyleName( "mainWorkspaceTreeControl" );
-		m_wsTreeCtrl.addActionHandler( this );
+		registerActionHandler( m_wsTreeCtrl );
 		m_contentPanel.add( m_wsTreeCtrl );
 		
 		// Create the content control.
@@ -315,4 +315,14 @@ public class GwtMainPage extends Composite
 		}
 	}// end relayoutPage()
 
+	/*
+	 * Does what's necessary to wire the GwtMainPage to an
+	 * ActionRequestor.
+	 */
+	private void registerActionHandler( ActionRequestor actionRequestor )
+	{
+		// For now, all we need to do is add the GwtMainPage as an
+		// ActionHandler to the ActionRequestor.
+		actionRequestor.addActionHandler( this );
+	}// end registerActionHandler()
 }// end GwtMainPage
