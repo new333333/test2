@@ -43,6 +43,7 @@ package org.kablink.teaming.gwt.client;
 public enum TeamingAction
 {
 	ADMINISTRATION( "Invoke Administration Page" ),
+	EDIT_BRANDING( "Edit Branding" ),
 	BROWSE_HIERARCHY( "Browse Teaming's Hierarchy" ),
 	HELP( "Help" ),
 	HIDE_LEFT_NAVIGATION( "Hide the Left Navigation Panel" ),

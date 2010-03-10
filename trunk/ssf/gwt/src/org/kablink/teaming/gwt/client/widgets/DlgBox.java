@@ -85,7 +85,7 @@ public abstract class DlgBox extends PopupPanel
 	/**
 	 * Get the Composite that holds the widgets that make up the content of the dialog box.
 	 */
-	public abstract Panel createContent( PropertiesObj propertiesObj );
+	public abstract Panel createContent( Object propertiesObj );
 	
 	/**
 	 * Create the header, content and footer for the dialog box.
@@ -94,7 +94,7 @@ public abstract class DlgBox extends PopupPanel
 		String	caption,
 		EditSuccessfulHandler editSuccessfulHandler,// We will call this handler when the user presses the ok button
 		EditCanceledHandler editCanceledHandler, 	// This gets called when the user presses the Cancel button
-		PropertiesObj properties ) 					// Where properties used in the dialog are read from and saved to.
+		Object properties ) 					// Where properties used in the dialog are read from and saved to.
 	{
 		FlowPanel	panel;
 		Panel		content;
@@ -170,7 +170,7 @@ public abstract class DlgBox extends PopupPanel
 	/**
 	 * This method will gather up the data from the controls in the dialog box.
 	 */
-	public abstract PropertiesObj getDataFromDlg();
+	public abstract Object getDataFromDlg();
 	
 	
 	/**
@@ -210,7 +210,7 @@ public abstract class DlgBox extends PopupPanel
 		// Did the user click on ok?
 		if ( source == m_okBtn )
 		{
-			PropertiesObj props;
+			Object props;
 			
 			// Yes
 			// Get the data from the controls in the dialog box.
@@ -226,7 +226,8 @@ public abstract class DlgBox extends PopupPanel
 				if ( m_editSuccessfulHandler != null )
 				{
 					// Yes
-					m_editSuccessfulHandler.editSuccessful( props );
+					if ( m_editSuccessfulHandler.editSuccessful( props ) )
+						hide();
 				}
 			}
 			
@@ -241,7 +242,8 @@ public abstract class DlgBox extends PopupPanel
 			if ( m_editCanceledHandler != null )
 			{
 				// Yes
-				m_editCanceledHandler.editCanceled();
+				if ( m_editCanceledHandler.editCanceled() )
+					hide();
 			}
 		}
 	}// end onClick()

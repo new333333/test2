@@ -37,6 +37,7 @@ package org.kablink.teaming.gwt.client;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
+import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
 import org.kablink.teaming.gwt.client.widgets.MastHead;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
@@ -123,6 +124,64 @@ public class GwtMainPage extends Composite
 
 
 	/**
+	 * Invoke the "Edit Branding" dialog.
+	 */
+	private void editBranding()
+	{
+		EditBrandingDlg dlgBox;
+		GwtBrandingData brandingData;
+		EditSuccessfulHandler successHandler;
+		EditCanceledHandler cancelHandler;
+		int x;
+		int y;
+		
+		// Get the branding data the masthead is currently working with.
+		brandingData = m_mastHead.getBrandingData();
+		
+		// Get the position of the content control.
+		x = m_contentCtrl.getAbsoluteLeft();
+		y = m_contentCtrl.getAbsoluteTop();
+		
+		// Hide the content control.
+		m_contentCtrl.setVisible( false );
+		
+		// Create a handler that will be called when the user presses the ok button in the dialog.
+		successHandler = new EditSuccessfulHandler()
+		{
+			/**
+			 * This method gets called when user user presses ok in the "Edit Branding" dialog.
+			 */
+			public boolean editSuccessful( Object obj )
+			{
+				// Show the content control again.
+				m_contentCtrl.setVisible( true );
+				
+				return true;
+			}// end editSuccessful()
+		};
+		
+		// Create a handler that will be called when the user presses the cancel button in the dialog.
+		cancelHandler = new EditCanceledHandler()
+		{
+			/**
+			 * This method gets called when the user presses cancel in the "Edit Branding" dialog.
+			 */
+			public boolean editCanceled()
+			{
+				// Show the content control again.
+				m_contentCtrl.setVisible( true );
+				
+				return true;
+			}// end editCanceled()
+		};
+		
+		dlgBox = new EditBrandingDlg( successHandler, cancelHandler, false, true, x, y, brandingData );
+		dlgBox.show();
+		
+	}// end editBranding()
+
+	
+	/**
 	 * Use JSNI to grab the JavaScript object that holds the information about the request dealing with.
 	 */
 	private native RequestInfo getRequestInfo() /*-{
@@ -143,8 +202,13 @@ public class GwtMainPage extends Composite
 			Window.alert( "Administration is not implemented yet." );
 			break;
 			
+		case EDIT_BRANDING:
+			editBranding();
+			break;
+			
 		case HELP:
 			Window.alert( "Help is not implemented yet." );
+			editBranding();
 			break;
 
 		case LOGOUT:

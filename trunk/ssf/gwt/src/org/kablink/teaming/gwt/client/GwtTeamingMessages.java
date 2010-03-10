@@ -192,9 +192,25 @@ public interface GwtTeamingMessages extends Messages
 	String logoutHint();
 	String myWorkspaceHint();
 	
+	// Strings used in the edit branding dialog.
+	String advancedBtn();
+	String backgroundColorLabel();
+	String brandingDlgHeader();
+	String backgroundImgLabel();
+	String noImagesAvailable();
+	String noRepeatLabel();
+	String repeatLabel();
+	String repeatXLabel();
+	String repeatYLabel();
+	String sampleText();
+	String textColorLabel();
+	String useBrandingImgLabel();
+	String useAdvancedBrandingLabel();
+	
 	// Strings used in the main menu.
 	String mainMenuAltBrowseHierarchy();
 	String mainMenuAltGwtUI();
 	String mainMenuAltLeftNavHideShow();
 	String mainMenuAltMastHeadHideShow();
+
 }// end GwtTeamingMessages

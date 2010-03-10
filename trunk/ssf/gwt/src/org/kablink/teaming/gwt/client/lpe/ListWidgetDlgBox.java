@@ -78,7 +78,7 @@ public class ListWidgetDlgBox extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
-	public Panel createContent( PropertiesObj props )
+	public Panel createContent( Object props )
 	{
 		ListProperties properties;
 		Label			label;
