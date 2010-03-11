@@ -38,6 +38,8 @@ import java.util.Set;
 import org.apache.lucene.document.Field;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.search.BasicIndexUtils;
+import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.util.Html;
 import org.kablink.util.search.Constants;
 
 
@@ -47,6 +49,12 @@ import org.kablink.util.search.Constants;
  */
 public class FieldBuilderDescription extends AbstractFieldBuilder {
     
+	boolean indexDescriptionFieldAsis;
+	
+	public FieldBuilderDescription() {
+		indexDescriptionFieldAsis = SPropsUtil.getBoolean("index.description.field.asis", false);
+	}
+	
     protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
         // This default text implementation ignores args.
         
@@ -59,19 +67,27 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
         
         if(text == null || text.length() == 0)
             return new Field[0];
+        
+        String strippedText;
+        
+        if(indexDescriptionFieldAsis)
+        	strippedText = text;
+        else
+        	strippedText = Html.stripHtml(text);
             
         //only real description field is stored as a field
         if ("description".equals(dataElemName)) {
-        	Field descField = new Field(Constants.DESC_FIELD, text, Field.Store.YES, Field.Index.TOKENIZED); 
+        	Field descField = new Field(Constants.DESC_FIELD, text, Field.Store.YES, Field.Index.NO); 
+        	Field descTextField = new Field(Constants.DESC_TEXT_FIELD, strippedText, Field.Store.NO, Field.Index.ANALYZED); 
         	Field descFormatField = new Field(Constants.DESC_FORMAT_FIELD, String.valueOf(val.getFormat()), Field.Store.YES, Field.Index.TOKENIZED); 
          	if (fieldsOnly) {
-         		return new Field[] {descField, descFormatField};
+         		return new Field[] {descField, descTextField, descFormatField};
          	} else {
-        		Field allTextField = BasicIndexUtils.allTextField(text);
-         		return new Field[] {allTextField, descField, descFormatField};
+        		Field allTextField = BasicIndexUtils.allTextField(strippedText);
+         		return new Field[] {allTextField, descField, descTextField, descFormatField};
          	}
         } else if (!fieldsOnly){
-         	Field allTextField = BasicIndexUtils.allTextField(text);
+         	Field allTextField = BasicIndexUtils.allTextField(strippedText);
          	return new Field[] {allTextField};
        } else {
     	   return new Field[0];
