@@ -15,17 +15,34 @@
 
 	<cacheManagerEventListenerFactory class="" properties="" />
 
-	<!-- Uncomment the following in a clustered configuration. Also make sure to uncomment the 
-	     cacheEventListenerFactory and bootstrapCacheLoaderFactory elements defined below for 
-	     defaultCache as well as each cache that you want to cluster. -->
-
 	<cacheManagerPeerProviderFactory
 		class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
 		properties="peerDiscovery=automatic,multicastGroupAddress=232.0.0.1,multicastGroupPort=4446,timeToLive=1"
 	/>
+	
 	<cacheManagerPeerListenerFactory
 		class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
 	/>
+
+	<!-- If the above default configurations do not work in your environment because your
+	     host is multihomed and you want to bind this cache to an interface that is not the 
+	     default interface of the machine, then you can specify the IP of the specific interface 
+	     to be used for this cache by adding "hostName=fully_qualified_ip" to the "properties" 
+	     attribute above as per the following example:
+	     
+	<cacheManagerPeerProviderFactory
+                    class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
+                    properties="hostName=198.76.54.32,
+                                peerDiscovery=automatic, multicastGroupAddress=232.0.0.1,
+                                multicastGroupPort=4446, timeToLive=1"
+    />
+                                
+	<cacheManagerPeerListenerFactory
+	    class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
+	    properties="hostName=198.76.54.32"
+	/>
+	
+	-->
 
     <!-- Default Cache configuration. Hibernate will use this settings unless
          custom configurations are defined below for individual domain objects. 

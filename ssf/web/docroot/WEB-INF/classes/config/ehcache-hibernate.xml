@@ -1,4 +1,7 @@
 <ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ehcache.xsd">
+	<!-- This configuration is safe only for a single-node deployment. 
+	     Use ehcache-hibernate-clustered.xml for use within a cluster. --> 
+	
     <!-- Sets the path to the directory where cache .data files are created.
 
          If the path is a Java System Property it is replaced by its value in the running VM.
@@ -8,24 +11,10 @@
          user.dir - User's current working directory
          java.io.tmpdir - Default temp file path 
          
-         The directory must be node specific if running within a cluster. 
-         In other words, it must be local not shared.
         -->
     <diskStore path="java.io.tmpdir/teaming/ehcache/hibernate"/>
 
 	<cacheManagerEventListenerFactory class="" properties="" />
-
-	<!-- Uncomment the following in a clustered configuration. Also make sure to uncomment the 
-	     cacheEventListenerFactory and bootstrapCacheLoaderFactory elements defined below for 
-	     defaultCache as well as each cache that you want to cluster. -->
-
-	<!--<cacheManagerPeerProviderFactory
-		class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
-		properties="peerDiscovery=automatic,multicastGroupAddress=232.0.0.1,multicastGroupPort=4446,timeToLive=1"
-	/>
-	<cacheManagerPeerListenerFactory
-		class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
-	/>-->
 
     <!-- Default Cache configuration. Hibernate will use this settings unless
          custom configurations are defined below for individual domain objects. 
@@ -48,10 +37,6 @@
         timeToIdleSeconds="600"
         timeToLiveSeconds="86400"
         overflowToDisk="false">
-        <!--<cacheEventListenerFactory
-			class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-			properties="replicatePuts=false,replicateUpdatesViaCopy=false" />
-		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
 	</defaultCache>
 
     <!-- Predefined caches.  Add your cache configuration settings here.
@@ -68,9 +53,6 @@
 		maxElementsInMemory="5000"
 		eternal="true"
 		overflowToDisk="false">
-        <!--<cacheEventListenerFactory
-			class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
-		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
 	</cache>
 
 	<cache 
@@ -79,8 +61,6 @@
 	    eternal="false"
 	    timeToLiveSeconds="3600"
 	    overflowToDisk="false">
-		<!--<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
-		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
 	</cache>
 	
 	<cache 
@@ -89,7 +69,5 @@
 	    eternal="false"
 	    timeToLiveSeconds="86400"
 	    overflowToDisk="false">
-		<!--<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
-		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
 	</cache>
 </ehcache>	
