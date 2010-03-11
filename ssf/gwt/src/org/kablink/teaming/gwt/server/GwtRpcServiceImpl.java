@@ -416,7 +416,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					brandingExt = new GwtBrandingDataExt();
 
 					// Get the xml that represents the branding data.  The following is an example of what the xml should look like.
-					// 	<brandingData fontColor="" brandingImgName="some name">
+					// 	<brandingData fontColor="" brandingImgName="some name" brandingType="image/advanced">
 					// 		<background color="" imgName="" />
 					// 	</brandingData>
 					xmlStr = binder.getBrandingExt();
@@ -464,6 +464,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			    					
 			    					brandingExt.setBrandingImgName( imgName );
 			    				}
+			    			}
+			    			
+			    			// Get the type of branding, "advanced" or "image"
+			    			attrNode = node.selectSingleNode( "@brandingType" );
+			    			if ( attrNode != null )
+			    			{
+			    				String type;
+			    				
+			    				type = attrNode.getText();
+			    				if ( type != null && type.equalsIgnoreCase( GwtBrandingDataExt.BRANDING_TYPE_IMAGE ) )
+			    					brandingExt.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_IMAGE );
+			    				else
+			    					brandingExt.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_ADVANCED );
 			    			}
 			    			
 			    			// Get the <background color="" imgName="" /> node

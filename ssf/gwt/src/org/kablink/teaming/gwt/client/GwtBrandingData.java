@@ -132,6 +132,14 @@ public class GwtBrandingData
 	}// end getBrandingImgUrl()
 	
 	/**
+	 * Return the type of branding, "advanced" or "image" 
+	 */
+	public String getBrandingType()
+	{
+		return m_brandingExt.getBrandingType();
+	}// end getBrandingType()
+	
+	/**
 	 * Return the color of the font the be used to display the user's name in the masthead.
 	 */
 	public String getFontColor()
@@ -211,6 +219,14 @@ public class GwtBrandingData
 	}// end setBrandingImageUrl()
 	
 
+	/**
+	 * Set the type of branding, "advanced" or "image" 
+	 */
+	public void setBrandingType( String type )
+	{
+		m_brandingExt.setBrandingType( type );
+	}// end setBrandingType()
+	
 	/**
 	 * Set the color of the font to be used to display the user's name in the masthead.
 	 */

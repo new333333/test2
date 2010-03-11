@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client;
 
 
+import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
@@ -66,6 +67,8 @@ public class GwtMainPage extends Composite
 	private ContentControl m_contentCtrl;
 	private FlowPanel m_contentPanel;
 	private RequestInfo m_requestInfo;
+	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
+	private EditCanceledHandler m_editBrandingCancelHandler = null;
 
 
 	/**
@@ -130,8 +133,6 @@ public class GwtMainPage extends Composite
 	{
 		EditBrandingDlg dlgBox;
 		GwtBrandingData brandingData;
-		EditSuccessfulHandler successHandler;
-		EditCanceledHandler cancelHandler;
 		int x;
 		int y;
 		
@@ -146,39 +147,108 @@ public class GwtMainPage extends Composite
 		m_contentCtrl.setVisible( false );
 		
 		// Create a handler that will be called when the user presses the ok button in the dialog.
-		successHandler = new EditSuccessfulHandler()
+		if ( m_editBrandingSuccessHandler == null )
 		{
-			/**
-			 * This method gets called when user user presses ok in the "Edit Branding" dialog.
-			 */
-			public boolean editSuccessful( Object obj )
+			m_editBrandingSuccessHandler = new EditSuccessfulHandler()
 			{
-				// Show the content control again.
-				m_contentCtrl.setVisible( true );
-		
-				// Update the masthead with the new data.
-				m_mastHead.refreshMasthead();
+				private AsyncCallback<Boolean> rpcSaveCallback = null;
+				private String binderId = m_mastHead.getBinderId();
 				
-				return true;
-			}// end editSuccessful()
-		};
+				/**
+				 * This method gets called when user user presses ok in the "Edit Branding" dialog.
+				 */
+				public boolean editSuccessful( Object obj )
+				{
+					// Create the callback that will be used when we issue an ajax request to save the branding data.
+					if ( rpcSaveCallback == null )
+					{
+						rpcSaveCallback = new AsyncCallback<Boolean>()
+						{
+							/**
+							 * 
+							 */
+							public void onFailure( Throwable t )
+							{
+								String errMsg;
+								String cause;
+								GwtTeamingMessages messages;
+								
+								messages = GwtTeaming.getMessages();
+								
+								if ( t instanceof GwtTeamingException )
+								{
+									ExceptionType type;
+								
+									// Determine what kind of exception happened.
+									type = ((GwtTeamingException)t).getExceptionType();
+									if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
+										cause = messages.errorAccessToFolderDenied( binderId );
+									else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
+										cause = messages.errorFolderDoesNotExist( binderId );
+									else
+										cause = messages.errorUnknownException();
+								}
+								else
+								{
+									cause = t.getLocalizedMessage();
+									if ( cause == null )
+										cause = t.toString();
+								}
+								
+								errMsg = messages.getBrandingRPCFailed( cause );
+								Window.alert( errMsg );
+							}// end onFailure()
+					
+							/**
+							 * 
+							 * @param result
+							 */
+							public void onSuccess( Boolean result )
+							{
+								// Update the masthead with the new branding data.
+								m_mastHead.refreshMasthead();
+							}// end onSuccess()
+						};
+					}
+			
+					// Issue an ajax request to save the branding data.
+					{
+						GwtRpcServiceAsync rpcService;
+						
+						rpcService = GwtTeaming.getRpcService();
+						
+						// Issue an ajax request to save the branding data to the db.  rpcSaveCallback will
+						// be called when we get the response back.
+						rpcService.saveBrandingData( m_mastHead.getBinderId(), (GwtBrandingData)obj, rpcSaveCallback );
+					}
+
+					// Show the content control again.
+					m_contentCtrl.setVisible( true );
+					
+					return true;
+				}// end editSuccessful()
+			};
+		}
 		
 		// Create a handler that will be called when the user presses the cancel button in the dialog.
-		cancelHandler = new EditCanceledHandler()
+		if ( m_editBrandingCancelHandler == null )
 		{
-			/**
-			 * This method gets called when the user presses cancel in the "Edit Branding" dialog.
-			 */
-			public boolean editCanceled()
+			m_editBrandingCancelHandler = new EditCanceledHandler()
 			{
-				// Show the content control again.
-				m_contentCtrl.setVisible( true );
-				
-				return true;
-			}// end editCanceled()
-		};
+				/**
+				 * This method gets called when the user presses cancel in the "Edit Branding" dialog.
+				 */
+				public boolean editCanceled()
+				{
+					// Show the content control again.
+					m_contentCtrl.setVisible( true );
+					
+					return true;
+				}// end editCanceled()
+			};
+		}
 		
-		dlgBox = new EditBrandingDlg( successHandler, cancelHandler, false, true, x, y, brandingData );
+		dlgBox = new EditBrandingDlg( m_editBrandingSuccessHandler, m_editBrandingCancelHandler, false, true, x, y, brandingData );
 		dlgBox.show();
 		
 	}// end editBranding()

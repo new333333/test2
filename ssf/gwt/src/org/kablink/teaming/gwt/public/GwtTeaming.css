@@ -715,9 +715,15 @@
 }
 
 /* Style used to create a top margin of 5 px. */
-.marginTop5
+.marginTop5px
 {
 	margin-top: 5px;
+}
+
+/* Style used to create a top margin of 10 px. */
+.marginTop10px
+{
+	margin-top: 10px;
 }
 
 /* Style used with the mast head */

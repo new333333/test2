@@ -40,6 +40,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.ActionHandler;
 import org.kablink.teaming.gwt.client.ActionRequestor;
+import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.RequestInfo;
@@ -160,25 +161,17 @@ public class MastHead extends Composite
 			
 			if ( brandingData != null )
 			{
-				String html;
+				String brandingType;
 				
-				// Get the branding html.
-				html = brandingData.getBranding();
+				// Get the type of branding the user wants to do.
+				brandingType = brandingData.getBrandingType();
 				
-				// Do we have any branding?
-				if ( html != null && html.length() > 0 )
-				{
-					Element element;
-					
-					// Yes
-					// Replace the content of this panel with the branding html.
-					element = m_panel.getElement();
-					element.setInnerHTML( html );
-				}
-				else
+				// Should we do branding using an image?  
+				if ( brandingType != null && brandingType.equalsIgnoreCase( GwtBrandingDataExt.BRANDING_TYPE_IMAGE ) )
 				{
 					String brandingImgUrl;
-					
+
+					// Yes
 					// Do we have an image to use as the branding?
 					brandingImgUrl = brandingData.getBrandingImageUrl();
 					if ( brandingImgUrl != null && brandingImgUrl.length() > 0 )
@@ -194,6 +187,25 @@ public class MastHead extends Composite
 					{
 						// No, use the Novell Teaming image for the branding.
 						m_panel.add( m_novellTeamingImg );
+					}
+				}
+				else
+				{
+					String html;
+
+					// Default to advanced branding.  This is the branding that is defined in the "branding" field in the ss_forums table.
+					// Get the branding html.
+					html = brandingData.getBranding();
+					
+					// Do we have any branding?
+					if ( html != null && html.length() > 0 )
+					{
+						Element element;
+						
+						// Yes
+						// Replace the content of this panel with the branding html.
+						element = m_panel.getElement();
+						element.setInnerHTML( html );
 					}
 				}
 			}
@@ -478,6 +490,47 @@ public class MastHead extends Composite
 
 	
 	/**
+	 * Display the mouse-out image for the give widget and remove the mouse-over hint.
+	 */
+	private void doMouseOutActions( Widget eventSource )
+	{
+		// Display the mouse-out image for the appropriate link.
+		if ( eventSource == m_adminLink )
+		{
+			m_adminImg1.setVisible( true );
+			m_adminImg2.setVisible( false );
+		}
+		else if ( eventSource == m_myWorkspaceLink )
+		{
+			m_myWorkspaceImg1.setVisible( true );
+			m_myWorkspaceImg2.setVisible( false );
+		}
+		else if ( eventSource == m_logoutLink )
+		{
+			m_logoutImg1.setVisible( true );
+			m_logoutImg2.setVisible( false );
+		}
+		else if ( eventSource == m_helpLink )
+		{
+			m_helpImg1.setVisible( true );
+			m_helpImg2.setVisible( false );
+		}
+
+		// Remove the mouse-over hint.
+		m_mouseOverHint.setText( "" );
+	}// end doMouseOutActions()
+	
+	
+	/**
+	 * Return the binder id we are working with.
+	 */
+	public String getBinderId()
+	{
+		return m_mastheadBinderId;
+	}// end getBinderId()
+	
+	
+	/**
 	 * Return the branding data we are working with.
 	 */
 	public GwtBrandingData getBrandingData()
@@ -509,7 +562,7 @@ public class MastHead extends Composite
 		}
 	}// end getBrandingDataFromServer()
 	
-	
+
 	/**
 	 * This method gets called when the user clicks on something in the masthead.
 	 */
@@ -520,6 +573,9 @@ public class MastHead extends Composite
 		// Get the widget that was clicked on.
 		eventSource = (Widget) event.getSource();
 
+		// Display the mouse out-image for the link that was clicked on and hide the hint.
+		doMouseOutActions( eventSource );
+		
 		// Notify all ActionHandler that have registered.
 		for (Iterator<ActionHandler> actionHandlerIT = m_actionHandlers.iterator(); actionHandlerIT.hasNext(); )
 		{
@@ -554,30 +610,8 @@ public class MastHead extends Composite
 		// Get the widget that was clicked on.
 		eventSource = (Widget) event.getSource();
 		
-		// Display the mouse-out image for the appropriate link.
-		if ( eventSource == m_adminLink )
-		{
-			m_adminImg1.setVisible( true );
-			m_adminImg2.setVisible( false );
-		}
-		else if ( eventSource == m_myWorkspaceLink )
-		{
-			m_myWorkspaceImg1.setVisible( true );
-			m_myWorkspaceImg2.setVisible( false );
-		}
-		else if ( eventSource == m_logoutLink )
-		{
-			m_logoutImg1.setVisible( true );
-			m_logoutImg2.setVisible( false );
-		}
-		else if ( eventSource == m_helpLink )
-		{
-			m_helpImg1.setVisible( true );
-			m_helpImg2.setVisible( false );
-		}
-
-		// Remove the mouse-over hint.
-		m_mouseOverHint.setText( "" );
+		// Display the mouse-out image for the link that mouse left and hide the hint.
+		doMouseOutActions( eventSource );
 	}// onMouseOut()
 	
 	
