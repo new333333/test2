@@ -197,6 +197,7 @@ public interface GwtTeamingMessages extends Messages
 	String backgroundColorLabel();
 	String brandingDlgHeader();
 	String backgroundImgLabel();
+	String imgNone();
 	String noImagesAvailable();
 	String noRepeatLabel();
 	String repeatLabel();

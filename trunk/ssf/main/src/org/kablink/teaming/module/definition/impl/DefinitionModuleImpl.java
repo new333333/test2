@@ -2000,7 +2000,19 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				MarkupUtil.scanDescriptionForICLinks(description);
 				MarkupUtil.scanDescriptionForYouTubeLinks(description);
 				MarkupUtil.scanDescriptionForExportTitleUrls(description);
-				if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, description.getText());
+				if (!inputData.isFieldsOnly() || fieldModificationAllowed)
+				{
+					entryData.put(nameValue, description.getText());
+					
+					// Add any extended branding we might have.
+					if ( inputData.exists( "brandingExt" ) )
+					{
+						String brandingExt;
+
+						brandingExt = mapInputData( inputData.getSingleValue( "brandingExt" ) );
+						entryData.put( "brandingExt", brandingExt );
+					}
+				}
 			}
 		} else if (itemName.equals("folderAttributeList")) {
 			//The values are the names of the attribute sets

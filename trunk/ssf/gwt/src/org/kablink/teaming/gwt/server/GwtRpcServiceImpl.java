@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,6 +48,8 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.ExtensionInfo;
+import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
@@ -73,6 +76,7 @@ import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
@@ -376,6 +380,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		GwtBrandingData brandingData;
 		
 		brandingData = new GwtBrandingData();
+		brandingData.setBinderId( binderId );
 		
 		try
 		{
@@ -411,8 +416,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					brandingExt = new GwtBrandingDataExt();
 
 					// Get the xml that represents the branding data.  The following is an example of what the xml should look like.
-					// 	<brandingData fontColor="" brandingImgUrl="some name">
-					// 		<background color="" imgUrl="" />
+					// 	<brandingData fontColor="" brandingImgName="some name">
+					// 		<background color="" imgName="" />
 					// 	</brandingData>
 					xmlStr = binder.getBrandingExt();
 					
@@ -445,8 +450,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			        			brandingExt.setFontColor( fontColor );
 			    			}
 			    			
-			    			// Get the url for the branding image
-			    			attrNode = node.selectSingleNode( "@brandingImgUrl" );
+			    			// Get the name of the branding image
+			    			attrNode = node.selectSingleNode( "@brandingImgName" );
 			    			if ( attrNode != null )
 			    			{
 			        			imgName = attrNode.getText();
@@ -456,10 +461,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			    					// Get a url to the file.
 			    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, binder, imgName );
 			    					brandingExt.setBrandingImgUrl( fileUrl );
+			    					
+			    					brandingExt.setBrandingImgName( imgName );
 			    				}
 			    			}
 			    			
-			    			// Get the <background color="" imgUrl="" /> node
+			    			// Get the <background color="" imgName="" /> node
 			    			node = node.selectSingleNode( "background" );
 			    			if ( node != null )
 			    			{
@@ -473,8 +480,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			        				brandingExt.setBackgroundColor( bgColor );
 			    				}
 			    				
-			    				// Get the url of the background image.
-			    				attrNode = node.selectSingleNode( "@imgUrl" );
+			    				// Get the name of the background image.
+			    				attrNode = node.selectSingleNode( "@imgName" );
 			    				if ( attrNode != null )
 			    				{
 			        				imgName = attrNode.getText();
@@ -484,6 +491,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				    					// Get a url to the file.
 				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, binder, imgName );
 				    					brandingExt.setBackgroundImgUrl( fileUrl );
+				    					
+				    					brandingExt.setBackgroundImgName( imgName );
 				    				}
 			    				}
 			    			}
@@ -619,6 +628,68 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		return folderEntry;
 	}// end getEntry()
+	
+	
+	/**
+	 * Return a list of the names of the files that are attachments for the given binder
+	 */
+	public ArrayList<String> getFileAttachments( String binderId ) throws GwtTeamingException
+	{
+		ArrayList<String> fileNames;
+		
+		fileNames = new ArrayList<String>();
+
+		try
+		{
+			Long binderIdL;
+			BinderModule binderModule;
+			Binder binder = null;
+			SortedSet<FileAttachment> attachments;
+
+			binderModule = getBinderModule();
+
+			// Get the binder object.
+			binderIdL = new Long( binderId );
+			binder = binderModule.getBinder( binderIdL );
+			
+			attachments = binder.getFileAttachments();
+	        for(FileAttachment fileAttachment : attachments)
+	        {
+	        	String fileName;
+	    		FileItem fileItem;
+	        	
+	           	fileItem = fileAttachment.getFileItem();
+				fileName = fileItem.getName();
+				fileNames.add( fileName );
+			}// end for()
+		}
+		catch (NoBinderByTheIdException nbEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
+		catch (Exception e)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
+		}
+
+        return fileNames;
+	}// end getFileAttachments()
 	
 	
 	/**
@@ -981,4 +1052,78 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		GwtServerHelper.persistNodeExpand(this, Long.parseLong(binderId));
 		return Boolean.TRUE;
 	}
+
+
+	/**
+	 * Save the given branding data to the given binder.
+	 */
+	public Boolean saveBrandingData( String binderId, GwtBrandingData brandingData ) throws GwtTeamingException
+	{
+		BinderModule binderModule;
+		Long binderIdL;
+		
+		try
+		{
+			binderModule = getBinderModule();
+	
+			binderIdL = new Long( binderId );
+			
+			// Get the binder object.
+			if ( binderIdL != null )
+			{
+				String branding;
+				GwtBrandingDataExt brandingExt;
+				HashMap<String, Object> hashMap;
+				MapInputData dataMap;
+				
+				// Create a Map that holds the branding and extended branding.
+				hashMap = new HashMap<String, Object>();
+				
+				// Add the old-style branding to the map.
+				//!!! Do we need to do something with the html found in the branding?
+				branding = brandingData.getBranding();
+				if ( branding == null )
+					branding = "";
+				hashMap.put( "branding", branding );
+
+				// Add the exteneded branding data to the map.
+				branding = brandingData.getBrandingAsXmlString();
+				if ( branding == null )
+					branding = "";
+				hashMap.put( "brandingExt", branding );
+				
+				// Update the binder with the new branding data.
+				dataMap = new MapInputData( hashMap );
+				binderModule.modifyBinder( binderIdL, dataMap, null, null, null );
+			}
+		}
+		catch (NoBinderByTheIdException nbEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
+		catch (Exception e)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
+		}
+		
+		return Boolean.TRUE;
+	}// end saveBrandingData()
+	
+	
 }// end GwtRpcServiceImpl

@@ -626,6 +626,17 @@ public class MastHead extends Composite
 		m_mouseOverHint.setText( hint );
 	}// onMouseOver()
 	
+
+	/**
+	 * Refresh the masthead by issuing an ajax request to get the branding data . 
+	 */
+	public void refreshMasthead()
+	{
+		// Issue an ajax call to get the branding data for the given binder.  When we get the
+		// response to this request our async callback will be called.
+		getBrandingDataFromServer();
+	}// end refreshMasthead()
+	
 	
 	/**
 	 * Set the id of the binder the masthead is dealing with.

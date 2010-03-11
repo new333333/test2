@@ -73,12 +73,20 @@ public class GwtBrandingData
 	}// end getBgColor()
 	
 	/**
+	 * Return the name of the image to be used as the background of the masthead. 
+	 */
+	public String getBgImageName()
+	{
+		return m_brandingExt.getBackgroundImgName();
+	}// end getBgImageName()
+	
+	/**
 	 * Return the image to be used as the background of the masthead. 
 	 */
 	public String getBgImageUrl()
 	{
 		return m_brandingExt.getBackgroundImgUrl();
-	}// end getBgImgUrl()
+	}// end getBgImageUrl()
 	
 	/**
 	 * 
@@ -97,6 +105,23 @@ public class GwtBrandingData
 		return m_html;
 	}// end setBranding()
 	
+	
+	/**
+	 * Return the extened branding as an xml string.
+	 */
+	public String getBrandingAsXmlString()
+	{
+		return m_brandingExt.getBrandingExtAsXmlString();
+	}// end getBrandingAsXmlString()
+	
+	
+	/**
+	 * Return the name of the image to be used as the branding. 
+	 */
+	public String getBrandingImageName()
+	{
+		return m_brandingExt.getBrandingImgName();
+	}// end getBrandingImgName()
 	
 	/**
 	 * Return the image to be used as the branding. 
@@ -132,6 +157,24 @@ public class GwtBrandingData
 		m_brandingExt.setBackgroundImgUrl( bgImgUrl );
 	}// end setBgImageUrl()
 	
+	
+	/**
+	 * Set the name of the image to be used as the background image in the masthead.
+	 */
+	public void setBgImageName( String bgImgName )
+	{
+		m_brandingExt.setBackgroundImgName( bgImgName );
+	}// end setBgImageName()
+	
+	
+	/**
+	 * Set the binder id we are working with.
+	 */
+	public void setBinderId( String binderId )
+	{
+		m_binderId = binderId;
+	}// end setBinderId()
+	
 
 	/**
 	 * Set the branding html.
@@ -150,6 +193,14 @@ public class GwtBrandingData
 		m_brandingExt = brandingExt;
 	}// end setBrandingExt()
 	
+	
+	/**
+	 * Set the name of the image to be used as the branding. 
+	 */
+	public void setBrandingImageName( String imgName )
+	{
+		m_brandingExt.setBrandingImgName( imgName );
+	}// end setBrandingImgName()
 	
 	/**
 	 * Set the image to be used as the branding.

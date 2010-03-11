@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.service;
 
+import java.util.ArrayList;
+
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
@@ -68,6 +70,9 @@ public interface GwtRpcService extends RemoteService
 	// Return an Entry object for the given entry id.
 	public GwtFolderEntry getEntry( String zoneUUID, String entryId ) throws GwtTeamingException;
 	
+	// Return a list of the names of the files that are attachments of the given binder.
+	public ArrayList<String> getFileAttachments( String binderId ) throws GwtTeamingException;
+	
 	// Return a Folder object for the given folder id.
 	public GwtFolder getFolder( String zoneUUID, String folderId ) throws GwtTeamingException;
 	
@@ -87,4 +92,7 @@ public interface GwtRpcService extends RemoteService
 	public TreeInfo getVerticalNode(    String binderId);
 	public Boolean  persistNodeCollapse(String binderId);
 	public Boolean  persistNodeExpand(  String binderId);
+	
+	// Save the branding data to the given binder.
+	public Boolean saveBrandingData( String binderId, GwtBrandingData brandingData ) throws GwtTeamingException;
 }// end GwtRpcService

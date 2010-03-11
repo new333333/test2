@@ -155,6 +155,9 @@ public class GwtMainPage extends Composite
 			{
 				// Show the content control again.
 				m_contentCtrl.setVisible( true );
+		
+				// Update the masthead with the new data.
+				m_mastHead.refreshMasthead();
 				
 				return true;
 			}// end editSuccessful()
