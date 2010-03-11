@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.TeamingAction;
+import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -51,6 +52,7 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -107,16 +109,19 @@ public class MainMenuControl extends Composite implements ActionRequestor {
 	 * Inner class that implements clicking on buttons on the menu.
 	 */
 	private class MenuButtonSelector implements ClickHandler {
+		private FlowPanel m_panel;		// The FlowPanel containing the menu button.
 		private TeamingAction m_action;	// The TeamingAction to fire when this button is clicked.
 
 		/**
 		 * Class constructor.
 		 * 
 		 * @param action
+		 * @param actionObject
 		 */
-		MenuButtonSelector(TeamingAction action) {
+		MenuButtonSelector(TeamingAction action, FlowPanel panel) {
 			// Simply store the parameters.
 			m_action = action;
+			m_panel = panel;
 		}
 		
 		/**
@@ -126,7 +131,16 @@ public class MainMenuControl extends Composite implements ActionRequestor {
 		 */
 		public void onClick(ClickEvent event) {
 			// Fire the action.
-			triggerAction(m_action);
+			Object actionObject;
+			if (TeamingAction.BROWSE_HIERARCHY == m_action) {
+				int left = m_panel.getAbsoluteLeft();
+				int top  = m_panel.getParent().getElement().getAbsoluteBottom();
+				actionObject = new OnBrowseHierarchyInfo(top, left);
+			}
+			else {
+				actionObject = null;
+			}
+			triggerAction(m_action, actionObject);
 		}
 	}
 
@@ -216,13 +230,13 @@ public class MainMenuControl extends Composite implements ActionRequestor {
 		// ...add the browse hierarchy button...
 		panel = new FlowPanel();
 		panel.addStyleName("mainMenuButton mainMenuButton_BrowseHierarchy subhead-control-bg1 roundcornerSM");
-		createMenuButton(panel, images.browseHierarchy(), messages.mainMenuAltBrowseHierarchy(), new MenuButtonSelector(TeamingAction.BROWSE_HIERARCHY));
+		createMenuButton(panel, images.browseHierarchy(), messages.mainMenuAltBrowseHierarchy(), new MenuButtonSelector(TeamingAction.BROWSE_HIERARCHY, panel));
 		mainPanel.add(panel);
 		
 		// ...and add the GWT UI button.
 		panel = new FlowPanel();
 		panel.addStyleName("mainMenuButton mainMenuButton_GwtUI subhead-control-bg1 roundcornerSM");
-		createMenuButton(panel, images.gwtUI(), messages.mainMenuAltGwtUI(), new MenuButtonSelector(TeamingAction.TOGGLE_GWT_UI));
+		createMenuButton(panel, images.gwtUI(), messages.mainMenuAltGwtUI(), new MenuButtonSelector(TeamingAction.TOGGLE_GWT_UI, panel));
 		mainPanel.add(panel);
 		
 		// Finally, all composites must call initWidget() in their
