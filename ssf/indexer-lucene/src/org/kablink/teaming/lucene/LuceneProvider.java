@@ -362,7 +362,7 @@ public class LuceneProvider extends IndexSupport {
 		} else if (language.equalsIgnoreCase(LanguageTaster.CJK)) {
 			PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(new SsfIndexAnalyzer());
 			retAnalyzer.addAnalyzer(Constants.ALL_TEXT_FIELD, new ChineseAnalyzer());
-			retAnalyzer.addAnalyzer(Constants.DESC_FIELD, new ChineseAnalyzer());
+			retAnalyzer.addAnalyzer(Constants.DESC_TEXT_FIELD, new ChineseAnalyzer());
 			retAnalyzer.addAnalyzer(Constants.TITLE_FIELD, new ChineseAnalyzer());
 			return retAnalyzer;
 		} else if (language.equalsIgnoreCase(LanguageTaster.HEBREW)) {
