@@ -43,6 +43,9 @@ import com.google.gwt.resources.client.ImageResource;
  * @author drfoster
  */
 public interface GwtTeamingWorkspaceTreeImageBundle extends ClientBundle {
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/breadcrumb_close.png")
+	public ImageResource breadcrumb_close();
+
 	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_calendar.png")
 	public ImageResource folder_calendar();
 	

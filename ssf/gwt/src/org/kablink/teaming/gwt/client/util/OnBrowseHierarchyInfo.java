@@ -30,50 +30,38 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
-package org.kablink.teaming.gwt.client;
-
+package org.kablink.teaming.gwt.client.util;
 
 
 /**
- * This class defines all the possible types of actions that a user can request from the GWT main page.
- * @author jwootton
- *
+ * Class used to communicate information about a browse hierarchy
+ * request between the MainMenuControl and its registered
+ * ActionHandler's.
+ * 
+ * @author drfoster@novell.com
  */
-public enum TeamingAction
-{
-	ADMINISTRATION( "Invoke Administration Page" ),
-	EDIT_BRANDING( "Edit Branding" ),
-	BROWSE_HIERARCHY( "Browse Teaming's Hierarchy" ),
-	HELP( "Help" ),
-	HIDE_LEFT_NAVIGATION( "Hide the Left Navigation Panel" ),
-	HIDE_MASTHEAD( "Hide the Header" ),
-	HIERARCHY_BROWSER_CLOSED( "Teaming's Hierarchy Browser Has Been Closed" ),
-	LOGOUT( "Logout" ),
-	MY_WORKSPACE( "My Workspace" ),
-	SELECTION_CHANGED( "The User Changed a Selection Somewhere" ),
-	SHOW_LEFT_NAVIGATION( "Show the Left Navigation Panel" ),
-	SHOW_MASTHEAD( "Show the Header" ),
-	SIZE_CHANGED( "The Size of Something Changed" ),
-	TOGGLE_GWT_UI( "Toggles the State of the GWT UI" );
-
-	private final String m_unlocalizedDesc;
+public class OnBrowseHierarchyInfo {
+	private int m_left = (-1);
+	private int m_top  = (-1);
 	
 	/**
+	 * Constructor method.
 	 * 
+	 * @param top
+	 * @param left
 	 */
-	private TeamingAction( String unlocalizedDesc )
-	{
-		m_unlocalizedDesc = unlocalizedDesc;
-	}// end TeamingAction()
-	
+	public OnBrowseHierarchyInfo(int top, int left) {
+		// Simply store the parameters.
+		m_left = left;
+		m_top  = top;
+	}
 	
 	/**
+	 * Returns the absolute position the hierarchy browser is to be
+	 * displayed at.
 	 * 
+	 * @return
 	 */
-	public String getUnlocalizedDesc()
-	{
-		return m_unlocalizedDesc;
-	}// end getUnlocalizedDesc()
-	
-}// end TeamingAction
+	public int getLeft() {return m_left;}
+	public int getTop()  {return m_top;}
+}

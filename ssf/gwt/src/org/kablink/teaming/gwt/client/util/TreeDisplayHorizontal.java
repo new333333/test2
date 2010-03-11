@@ -32,11 +32,17 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
+import org.kablink.teaming.gwt.client.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
-import com.google.gwt.user.client.Window;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 
 
 /**
@@ -50,16 +56,72 @@ public class TreeDisplayHorizontal {
 	@SuppressWarnings("unused")
 	private TreeInfo	m_rootTI;	// The root TreeInfo object being displayed.
 	
+	/*
+	 * Inner class that implements clicking the close button.
+	 */
+	private static class CloseButtonSelector implements ClickHandler {
+		private WorkspaceTreeControl m_wsTree;
+		
+		/**
+		 * Class constructor.
+		 * 
+		 * @param action
+		 * @param actionObject
+		 */
+		CloseButtonSelector(WorkspaceTreeControl wsTree) {
+			// Simply store the parameters.
+			m_wsTree = wsTree;
+		}
+		
+		/**
+		 * Called when the button is clicked.
+		 * 
+		 * @param event
+		 */
+		public void onClick(ClickEvent event) {
+			// Fire the action.
+			m_wsTree.triggerAction(TeamingAction.HIERARCHY_BROWSER_CLOSED);
+		}
+	}
+
+
 	/**
 	 * Constructor method.
+	 * 
+	 * @param rootTI
 	 */
 	public TreeDisplayHorizontal(TreeInfo rootTI) {
 		// Simply store the parameters.
 		m_rootTI = rootTI;
 	}
 
+	/*
+	 * Creates a FlowPanel for the close push button.
+	 */
+	private static FlowPanel createClosePanel(WorkspaceTreeControl wsTree) {
+		// Create the panel...
+		FlowPanel panel = new FlowPanel();
+		
+		// ...create the Image...
+		Image img = new Image(GwtTeaming.getWorkspaceTreeImageBundle().breadcrumb_close());
+		img.addStyleName("mainBreadCrumb_CloseImg");
+		img.setTitle(GwtTeaming.getMessages().treeCloseBreadCrumbs());
+		
+		// ...create the Anchor...
+		Anchor a = new Anchor();
+		a.addStyleName("mainBreadCrumb_CloseA");
+		
+		// ...tie things together...
+		a.getElement().appendChild(img.getElement());
+		a.addClickHandler(new CloseButtonSelector(wsTree));
+		
+		// ...and add the Anchor to the panel and return it.
+		panel.add(a);
+		return panel;
+	}
+
 	/**
-	 * Called to render the information in this TreeInfo object into a
+	 * Called to render the information in a TreeInfo object into a
 	 * FlowPanel.
 	 *
 	 * @param ri
@@ -67,6 +129,17 @@ public class TreeDisplayHorizontal {
 	 * @param targetPanel
 	 */
 	public void render(String selectedBinderId, RequestInfo ri, WorkspaceTreeControl wsTree, FlowPanel targetPanel) {
-		Window.alert("TreeDisplayHorizontal.render( 'The horizontal WorkspaceTreeControl has not been implemented yet.' )");
+		FlowPanel closePanel = createClosePanel(wsTree);
+		targetPanel.add(closePanel);
+		
+		FlowPanel contentPanel = new FlowPanel();
+		contentPanel.addStyleName("mainBreadCrumb_Content");
+		
+		Label toDoLabel = new Label("TreeDisplayHorizontal.render( 'The horizontal WorkspaceTreeControl has not been implemented yet.' )");
+		toDoLabel.addStyleName("mainBreadCrumb_ContentEach");
+		toDoLabel.setWordWrap(false);
+		contentPanel.add(toDoLabel);
+		
+		targetPanel.add(contentPanel);
 	}
 }

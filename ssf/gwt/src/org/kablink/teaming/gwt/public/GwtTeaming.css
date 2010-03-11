@@ -617,6 +617,41 @@
 	z-index: 100;
 }
 
+/* Styles used by the bread crumb navigator. */
+.mainBreadCrumb_Browser
+{
+	position: absolute;
+	z-index: 310;
+	right: 20px;
+	overflow: auto;
+	padding: 5px;
+	padding-bottom: 20px;
+	background: url(images/trans50_black.png) repeat;
+	width: auto;
+}
+.mainBreadCrumb_CloseA
+{
+	cursor: pointer;
+}
+.mainBreadCrumb_CloseImg
+{
+}
+.mainBreadCrumb_Content
+{
+	color: #fff;
+	font-size: .85em;
+	margin: 0px 20px;
+}
+.mainBreadCrumb_ContentEach
+{
+	position: relative;
+	margin-right: 15px;
+}
+.mainBreadCrumb_ContentEach a
+{
+	color: #fff;
+}
+
 /* Styles used by the MainMenuControl. */
 .mainMenuButton
 {

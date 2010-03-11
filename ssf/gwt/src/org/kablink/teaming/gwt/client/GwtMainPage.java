@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client;
 
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg;
@@ -53,6 +54,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.dom.client.Style;
 
 
 /**
@@ -64,8 +66,10 @@ public class GwtMainPage extends Composite
 	private MastHead m_mastHead;
 	private MainMenuControl m_mainMenuCtrl;
 	private WorkspaceTreeControl m_wsTreeCtrl;
+	private WorkspaceTreeControl m_breadCrumbBrowser;
 	private ContentControl m_contentCtrl;
 	private FlowPanel m_contentPanel;
+	private FlowPanel m_teamingRootPanel;
 	private RequestInfo m_requestInfo;
 	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
 	private EditCanceledHandler m_editBrandingCancelHandler = null;
@@ -76,15 +80,14 @@ public class GwtMainPage extends Composite
 	 */
 	public GwtMainPage()
 	{
-		FlowPanel mainPanel;
 		Element bodyElement;
 
 		// Set the class name on the <body> element to "mainGwtTeamingPage"
 		bodyElement = RootPanel.getBodyElement();
 		bodyElement.setClassName( "mainTeamingPage" );
 		
-		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "mainTeamingPagePanel" );
+		m_teamingRootPanel = new FlowPanel();
+		m_teamingRootPanel.addStyleName( "mainTeamingPagePanel" );
 		
 		// Get information about the request we are dealing with.
 		m_requestInfo = getRequestInfo();
@@ -92,12 +95,12 @@ public class GwtMainPage extends Composite
 		// Add the MastHead to the page.
 		m_mastHead = new MastHead( m_requestInfo );
 		registerActionHandler( m_mastHead );
-		mainPanel.add( m_mastHead );
+		m_teamingRootPanel.add( m_mastHead );
 		
 		// Add the main menu to the page.
 		m_mainMenuCtrl = new MainMenuControl();
 		registerActionHandler( m_mainMenuCtrl );
-		mainPanel.add( m_mainMenuCtrl );
+		m_teamingRootPanel.add( m_mainMenuCtrl );
 		
 		// Create a panel to hold the WorkspaceTree control and the content control
 		m_contentPanel = new FlowPanel();
@@ -115,13 +118,13 @@ public class GwtMainPage extends Composite
 		m_contentCtrl.setUrl( m_requestInfo.getAdaptedUrl() + "&captive=true" );
 		m_contentPanel.add( m_contentCtrl );
 		
-		mainPanel.add( m_contentPanel );
+		m_teamingRootPanel.add( m_contentPanel );
 		
 		// Add a ResizeHandler to the browser so we'll know when the user resizes the browser.
 		Window.addResizeHandler( this );
 		
 		// All composites must call initWidget() in their constructors.
-		initWidget( mainPanel );
+		initWidget( m_teamingRootPanel );
 
 	}// end GwtMainPage()
 
@@ -306,6 +309,13 @@ public class GwtMainPage extends Composite
 			break;
 
 		case BROWSE_HIERARCHY:
+			runBreadCrumbBrowser( obj );
+			break;
+			
+		case HIERARCHY_BROWSER_CLOSED:
+			closeBreadCrumbBrowser();
+			break;
+			
 		case HIDE_LEFT_NAVIGATION:
 		case HIDE_MASTHEAD:
 		case SHOW_LEFT_NAVIGATION:
@@ -395,6 +405,57 @@ public class GwtMainPage extends Composite
 			}-*/; // end jsLoadUserWorkspace()
 		}); // end AsyncCallback()
 	}// end toggleGwtUI()
+	
+	
+	/*
+	 * Called to run the Teaming hierarchy (i.e., bread crumb) browser.
+	 */
+	private void runBreadCrumbBrowser( Object obj )
+	{
+		// If we're already running a bread crumb browser...
+		if ( m_breadCrumbBrowser != null )
+		{
+			// ...we simply ignore requests to open one.
+			return;
+			
+		}
+		
+		if ( obj instanceof OnBrowseHierarchyInfo )
+		{
+			OnBrowseHierarchyInfo bhi;
+			Style bcbStyle;
+			
+			// A WorkspaceTreeControl in horizontal mode serves as the
+			// bread crumb browser.  Create one...
+			m_breadCrumbBrowser = new WorkspaceTreeControl( m_requestInfo, TreeMode.HORIZONTAL );
+			m_breadCrumbBrowser.addStyleName( "mainBreadCrumb_Browser roundcornerSM-bottom" );
+			registerActionHandler( m_breadCrumbBrowser );
+			m_teamingRootPanel.add( m_breadCrumbBrowser );
+			
+			// ...and position it as per the browse hierarchy request.
+			bhi = ((OnBrowseHierarchyInfo) obj);
+			bcbStyle = m_breadCrumbBrowser.getElement().getStyle();
+			bcbStyle.setLeft( bhi.getLeft(), Style.Unit.PX );
+			bcbStyle.setTop( bhi.getTop(), Style.Unit.PX );
+			
+		}
+		else
+			Window.alert( "in runBreadCrumbBrowser() and obj is not an OnBrowseHierarchyInfo object" );
+	}// end runBreadCrumbBrowser()
+	
+	/*
+	 * Called when the current Teaming hierarchy (i.e., bread crumb)
+	 * browser has been closed.
+	 */
+	private void closeBreadCrumbBrowser()
+	{
+		if (null != m_breadCrumbBrowser)
+		{
+			m_teamingRootPanel.remove( m_breadCrumbBrowser );
+			m_breadCrumbBrowser = null;
+		}
+	}// end closeBreadCrumbBrowser()
+
 	
 	/**
 	 * Adjust the height and width of the controls on this page.  Currently the only

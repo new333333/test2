@@ -76,8 +76,9 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor {
 	/**
 	 * Constructs a WorkspaceTreeControl based on the information
 	 * in the RequestInfo object.
-	 * 
+	 *
 	 * @param requestInfo
+	 * @param tm
 	 */
 	public WorkspaceTreeControl(RequestInfo requestInfo, TreeMode tm) {
 		m_requestInfo = requestInfo;

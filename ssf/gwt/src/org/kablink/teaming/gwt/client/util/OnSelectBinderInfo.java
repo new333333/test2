@@ -32,16 +32,14 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 
 /**
- * Class used to communicate about the selected binder in calls between
- * the WorkspaceTreeControl on its OnSelectHandler's.
+ * Class used to communicate information about a selected binder
+ * between the WorkspaceTreeControl and its registered ActionHandler's.
  * 
  * @author drfoster@novell.com
  */
-public class OnSelectBinderInfo implements IsSerializable {
+public class OnSelectBinderInfo {
 	private boolean m_isPermalinkUrl;
 	private Long m_binderId;
 	private String m_binderUrl;
