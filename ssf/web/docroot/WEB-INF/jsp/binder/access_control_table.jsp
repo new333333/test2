@@ -32,7 +32,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-
 <div id="${ss_accessControlTableDivId}" class="ss_portlet ss_style ss_form">
 <TABLE class="ss_table">
 <THEAD>
@@ -216,7 +215,8 @@
   </c:if>
   style="padding-right:10px;"/>
 </c:if>
-<c:if test="${!empty ssFunctionMap[function].ssGroups[group.id] && (ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
+<c:if test="${!empty ssFunctionMap[function].ssGroups[group.id] && 
+		(ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
     <input type="checkbox" 
     <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"
@@ -225,7 +225,8 @@
     title="<ssf:nlt tag="access.select"/>" 
    checked="checked" /> 
 </c:if>
-<c:if test="${empty ssFunctionMap[function].ssGroups[group.id] && (ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
+<c:if test="${empty ssFunctionMap[function].ssGroups[group.id] && 
+		(ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
     <input type="checkbox" 
     <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"
@@ -289,7 +290,8 @@
   </c:if>
     style="padding-right:10px;"/>
 </c:if>
-<c:if test="${!empty ssFunctionMap[function].ssUsers[user.id] && (ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
+<c:if test="${!empty ssFunctionMap[function].ssUsers[user.id] && 
+		(ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
     <input type="checkbox" 
     <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"
@@ -298,7 +300,8 @@
     title="<ssf:nlt tag="access.select"/>" 
     checked="checked" />
 </c:if>
-<c:if test="${empty ssFunctionMap[function].ssUsers[user.id] && (ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
+<c:if test="${empty ssFunctionMap[function].ssUsers[user.id] && 
+		(ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
     <input type="checkbox" 
     <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"
@@ -314,6 +317,7 @@
 
 </TBODY>
 
+<c:if test="${empty ss_hideApplications}">
 <THEAD>
 <TR>
   <TH class="ss_table_paragraph_bld">
@@ -344,7 +348,9 @@
 </c:forEach>
 </TR>
 </THEAD>
+</c:if>
 
+<c:if test="${empty ss_hideApplications}">
 <TBODY>
 <c:set var="counter" value="0"/>
 <c:forEach var="group" items="${ss_accessSortedApplicationGroups}">
@@ -408,7 +414,9 @@
 </TR>
 </c:forEach>
 </TBODY>
+</c:if>
 
+<c:if test="${empty ss_hideApplications}">
 <THEAD>
 <TR>
   <TH class="ss_table_paragraph_bld">
@@ -438,7 +446,9 @@
 </c:forEach>
 </TR>
 </THEAD>
+</c:if>
 
+<c:if test="${empty ss_hideApplications}">
 <TBODY>
 <c:set var="counter" value="0"/>
 <c:forEach var="application" items="${ss_accessSortedApplications}">
@@ -484,6 +494,7 @@
 </c:forEach>
 
 </TBODY>
+</c:if>
 
 </TABLE>
 </div>

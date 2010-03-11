@@ -72,8 +72,15 @@
 	action="<ssf:url action="configure_roles" actionUrl="true"/>">
 		
 	<label for="roleName"><span class="ss_bold"><ssf:nlt tag="administration.configure_roles.name" text="Name"/></span></label>
-	<input type="text" class="ss_text" size="70" name="roleName" id="roleName" maxlength="64"><br>
-		
+	<input type="text" class="ss_text" size="70" name="roleName" id="roleName" maxlength="64"><br/><br/>
+
+	<label for="roleType"><span class="ss_bold"><ssf:nlt tag="administration.configure_roles.scope" text="Type"/></span></label>
+	<select name="roleScope" id="roleScope">
+	  <option value="binder" selected><ssf:nlt tag="administration.configure_role.type.binder"/></option>
+	  <option value="entry"><ssf:nlt tag="administration.configure_role.type.entry"/></option>
+	</select>
+	<br/>
+	<br/>		
 	<c:forEach var="operation" items="${ssWorkAreaOperations}">
 		<input type="checkbox" name="<c:out value="${operation.value}"/>"
 			id="<c:out value="${operation.value}"/>">
@@ -91,37 +98,81 @@
 <br>
 <h3><ssf:nlt tag="administration.configure_roles.existing" text="Currently defined roles"/></h3>
 
-<c:forEach var="function" items="${ssFunctions}">
-<jsp:useBean id="function" type="org.kablink.teaming.security.function.Function" />
-<ssf:expandableArea title='<%= NLT.getDef(function.getName()) %>'>
+
+<h4><ssf:nlt tag="administration.configure_roles.existing.binder" /></h4>
+<c:forEach var="function2" items="${ssFunctions}">
+<jsp:useBean id="function2" type="org.kablink.teaming.security.function.Function" />
+<c:if test="${function2.scope == 'binder'}">
+<ssf:expandableArea title='<%= NLT.getDef(function2.getName()) %>'>
 <form class="ss_style ss_form" method="post" 
 	action="<ssf:url action="configure_roles" actionUrl="true"/>">
-	<label for="${function.name}"><span class="ss_bold"><ssf:nlt tag="administration.configure_roles.name" text="Name"/></span></label>
+	<label for="role_${function2.name}"><span class="ss_bold"><ssf:nlt tag="administration.configure_roles.name" text="Name"/></span></label>
 	<input type="text" class="ss_text" size="70" name="roleName" 
-		id="${function.name}" value="${function.name}"><br>
+		id="role_${function2.name}" value="${function2.name}"><br><br>
+	<label for="scope_${function2.name}"><span class="ss_bold"><ssf:nlt tag="administration.configure_roles.scope" text="Scope"/></span></label>
+	<select name="roleScope" id="scope_${function2.name}">
+	  <option value="binder" selected><ssf:nlt tag="administration.configure_role.type.binder"/></option>
+	  <option value="entry"><ssf:nlt tag="administration.configure_role.type.entry"/></option>
+	</select><br><br>
 	<c:forEach var="operation" items="${ssWorkAreaOperations}">
 		<c:set var="checked" value=""/>
-		<c:forEach var="roleOperation" items="${function.operations}">
+		<c:forEach var="roleOperation" items="${function2.operations}">
 			<c:if test="${roleOperation.name == operation.value}">
 				<c:set var="checked" value="checked"/>
 			</c:if>
 		</c:forEach>
 		<input type="checkbox" name="<c:out value="${operation.value}"/>"
-			id="<c:out value="${function.name}_${operation.value}"/>" <c:out value="${checked}"/>>
-		<label for="<c:out value="${function.name}_${operation.value}"/>"><c:out value="${operation.key}"/><br></label>
+			id="<c:out value="${function2.name}_${operation.value}"/>" <c:out value="${checked}"/>>
+		<label for="<c:out value="${function2.name}_${operation.value}"/>"><c:out value="${operation.key}"/><br></label>
 	</c:forEach>		
-	<input type="hidden" name="roleId" value="${function.id}">
+<input type="hidden" name="roleId" value="${function2.id}">
 <div class="ss_buttonBarLeft">
 	<input type="submit" class="ss_submit" name="modifyBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>">
 	<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete" text="Delete"/>">
-
 </div>
 </form>
 <br/>
 </ssf:expandableArea>
-
+</c:if>
 </c:forEach>
+<br/>
 
+<h4><ssf:nlt tag="administration.configure_roles.existing.entry" /></h4>
+<c:forEach var="function3" items="${ssFunctions}">
+<jsp:useBean id="function3" type="org.kablink.teaming.security.function.Function" />
+<c:if test="${function3.scope == 'entry'}">
+<ssf:expandableArea title='<%= NLT.getDef(function3.getName()) %>'>
+<form class="ss_style ss_form" method="post" 
+	action="<ssf:url action="configure_roles" actionUrl="true"/>">
+	<label for="role_${function3.name}"><span class="ss_bold"><ssf:nlt tag="administration.configure_roles.name" text="Name"/></span></label>
+	<input type="text" class="ss_text" size="70" name="roleName" 
+		id="role_${function3.name}" value="${function3.name}"><br><br>
+	<label for="scope_${function3.name}"><span class="ss_bold"><ssf:nlt tag="administration.configure_roles.scope" text="Scope"/></span></label>
+	<select name="roleScope" id="scope_${function3.name}">
+	  <option value="binder"><ssf:nlt tag="administration.configure_role.type.binder"/></option>
+	  <option value="entry" selected><ssf:nlt tag="administration.configure_role.type.entry"/></option>
+	</select><br><br>
+	<c:forEach var="operation" items="${ssWorkAreaOperations}">
+		<c:set var="checked" value=""/>
+		<c:forEach var="roleOperation" items="${function3.operations}">
+			<c:if test="${roleOperation.name == operation.value}">
+				<c:set var="checked" value="checked"/>
+			</c:if>
+		</c:forEach>
+		<input type="checkbox" name="<c:out value="${operation.value}"/>"
+			id="<c:out value="${function3.name}_${operation.value}"/>" <c:out value="${checked}"/>>
+		<label for="<c:out value="${function3.name}_${operation.value}"/>"><c:out value="${operation.key}"/><br></label>
+	</c:forEach>		
+<input type="hidden" name="roleId" value="${function3.id}">
+<div class="ss_buttonBarLeft">
+	<input type="submit" class="ss_submit" name="modifyBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>">
+	<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete" text="Delete"/>">
+</div>
+</form>
+<br/>
+</ssf:expandableArea>
+</c:if>
+</c:forEach>
 <br/>
 
 <form class="ss_style ss_form" name="${renderResponse.namespace}rolesForm" method="post" 

@@ -44,6 +44,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.NotSupportedException;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.FunctionExistsException;
@@ -75,10 +76,12 @@ public class ConfigureRolesController extends  SAbstractController {
 				}
 			}
 			String roleName = "";
+			String roleScope = ObjectKeys.ROLE_TYPE_BINDER;
 			try {
 				roleName = PortletRequestUtils.getStringParameter(request, "roleName").trim();
+				roleScope = PortletRequestUtils.getStringParameter(request, "roleScope").trim();
 				if (!roleName.equals(""))
-					getAdminModule().addFunction(roleName, operations);
+					getAdminModule().addFunction(roleName, operations, roleScope);
 				else
 					throw new IllegalArgumentException(NLT.get("errorcode.role.mustHaveName"));
 			} catch (FunctionExistsException ns) {

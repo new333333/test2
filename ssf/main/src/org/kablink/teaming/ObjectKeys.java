@@ -177,9 +177,13 @@ public interface ObjectKeys {
     public static final String ROLE_TYPE_ZONE="zone";
     public static final String ROLE_TYPE_BINDER="binder";
     public static final String ROLE_TYPE_ENTRY="entry";
-    public static final String ROLE_TYPE_COMMON="common";
     
     //Default role titles
+    public static final String ROLE_TITLE_READ="__role.read";
+    public static final String ROLE_TITLE_READ_REPLY="__role.readReply";
+    public static final String ROLE_TITLE_WRITE="__role.write";
+    public static final String ROLE_TITLE_DELETE="__role.delete";
+    public static final String ROLE_TITLE_CHANGE_ACL="__role.changeAcl";
     public static final String ROLE_TITLE_VISITOR="__role.visitor";
     public static final String ROLE_TITLE_PARTICIPANT="__role.participant";
     public static final String ROLE_TITLE_GUEST_PARTICIPANT="__role.guestParticipant";

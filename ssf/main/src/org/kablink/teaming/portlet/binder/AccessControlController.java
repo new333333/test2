@@ -48,6 +48,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
@@ -99,6 +100,7 @@ public class AccessControlController extends AbstractBinderController {
 			Map functionMemberships = new HashMap();
 			getAccessResults(request, functionMemberships);
 			getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
+			if (workArea instanceof Entry) getAdminModule().setEntryHasAcl(workArea, Boolean.TRUE);
 			if(logger.isDebugEnabled())
 				logger.debug(SimpleProfiler.toStr());
 			SimpleProfiler.clearProfiler();
@@ -138,14 +140,15 @@ public class AccessControlController extends AbstractBinderController {
 		} else if (EntityIdentifier.EntityType.folderEntry.name().equals(type)) {
 			FolderEntry entry = getFolderModule().getEntry(null, workAreaId);
 			wArea = entry;
+			model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(entry.getZoneId()));
 		} else {
 			Binder binder = getBinderModule().getBinder(workAreaId);			
 			//Build the navigation beans
 			BinderHelper.buildNavigationLinkBeans(this, binder, model);
 			wArea = binder;
-			model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(binder.getZoneId()));
 			model.put(WebKeys.BINDER, binder);
 			model.put(WebKeys.DEFINITION_ENTRY, binder);
+			model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(binder.getZoneId()));
 			model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, 
 					getAdminModule().testAccess(binder, AdminOperation.manageFunctionMembership));
 		}
@@ -161,7 +164,11 @@ public class AccessControlController extends AbstractBinderController {
 		if (operation.equals(WebKeys.OPERATION_VIEW_ACCESS)) {
 			return new ModelAndView(WebKeys.VIEW_ACCESS_TO_BINDER, model);
 		} else {
-			return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL, model);
+			if (wArea instanceof Entry) {
+				return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL_ENTRY, model);
+			} else {
+				return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL, model);
+			}
 		}
 	}
 	//shared with binderconfig 
@@ -205,7 +212,9 @@ public class AccessControlController extends AbstractBinderController {
 	}
 	//used by ajax controller
 	public static void setupAccess(AllModulesInjected bs, RenderRequest request, RenderResponse response, WorkArea wArea, Map model) {
-		List functions = bs.getAdminModule().getFunctions();
+		String scope = ObjectKeys.ROLE_TYPE_BINDER;
+		if (wArea instanceof Entry) scope = ObjectKeys.ROLE_TYPE_BINDER;
+		List functions = bs.getAdminModule().getFunctions(scope);
 		List membership;
 		boolean zoneWide = wArea.getWorkAreaType().equals(EntityIdentifier.EntityType.zone.name());
 		if (wArea.isFunctionMembershipInherited()) {

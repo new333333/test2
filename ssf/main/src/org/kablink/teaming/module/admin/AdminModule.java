@@ -92,7 +92,7 @@ public interface AdminModule {
 	 * @param operations
 	 * @throws AccessControlException
 	 */
-	public void addFunction(String name, Set<WorkAreaOperation>operations) throws AccessControlException;
+	public void addFunction(String name, Set<WorkAreaOperation>operations, String scope) throws AccessControlException;
 	/**
 	 * Add a posting definition, used to receive incoming mail
 	 * @param updates
@@ -143,6 +143,7 @@ public interface AdminModule {
      * @return
      */
     public List<Function> getFunctions();
+    public List<Function> getFunctions(String scope);
     /**
      * Get the current schedule information for digest email notifications.
     * @return
@@ -165,6 +166,10 @@ public interface AdminModule {
  
     public void modifyFunction(Long functionId, Map<String, Object> updates) throws AccessControlException;
     public void modifyPosting(String postingId, Map<String, Object> updates)throws AccessControlException;
+    
+    public void setEntryHasAcl(final WorkArea workArea, final Boolean hasAcl);
+    public void setEntryCheckFolderAcl(final WorkArea workArea, final Boolean checkFolderAcl);
+    
 	/**
 	 * Send a mail message to a collection of users and/or explicit email address.  Include attachments  from entries if specified  
 	 * @param entry - may be null
