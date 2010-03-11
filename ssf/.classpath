@@ -79,7 +79,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jcr.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/slide-jaas.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/slide-kernel.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ehcache.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jasypt.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/java_uno_accessbridge.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/java_uno.jar"/>
@@ -153,5 +152,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/org.springframework.web.portlet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/org.springframework.web.servlet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/portlet-api-2.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ehcache-core.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
