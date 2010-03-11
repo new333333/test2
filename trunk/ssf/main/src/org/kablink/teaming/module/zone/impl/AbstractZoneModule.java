@@ -555,6 +555,14 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			//add new role
 			addViewBinderTitleRole(top);
 		}
+		if (version.intValue() <= 5) {
+			Function readRole = addEntryReadRole(top);
+			Function readReplyRole = addEntryReadReplyRole(top);
+			Function writeRole = addEntryWriteRole(top);
+			Function deleteRole = addEntryDeleteRole(top);
+			Function changeAclRole = addEntryChangeAclRole(top);
+		}
+
   	}
  	/**
  	 * Fix up duplicate definitions.  1.0 allowed definitions with the same name
@@ -828,6 +836,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		Group group = addAllUserGroup(profiles, stamp);
     		ApplicationGroup applicationGroup = addAllApplicationGroup(profiles, stamp);
 	
+    		Function readRole = addEntryReadRole(top);
+    		Function readReplyRole = addEntryReadReplyRole(top);
+    		Function writeRole = addEntryWriteRole(top);
+    		Function deleteRole = addEntryDeleteRole(top);
+    		Function changeAclRole = addEntryChangeAclRole(top);
     		Function visitorsRole = addVisitorsRole(top);
     		Function participantsRole = addParticipantsRole(top);
     		Function guestParticipantRole = addGuestParticipantRole(top);
@@ -1124,6 +1137,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		Function function = new Function();
 		function.setZoneId(top.getId());
 		function.setName(ObjectKeys.ROLE_TITLE_VISITOR);
+		function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
 
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
@@ -1136,6 +1150,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		Function function = new Function();
 		function.setZoneId(top.getId());
 		function.setName(ObjectKeys.ROLE_TITLE_PARTICIPANT);
+		function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
 
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
@@ -1153,6 +1168,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		Function function = new Function();
 		function.setZoneId(top.getId());
 		function.setName(ObjectKeys.ROLE_TITLE_GUEST_PARTICIPANT);
+		function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
 
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
@@ -1167,6 +1183,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		Function function = new Function();
 		function.setZoneId(top.getId());
 		function.setName(ObjectKeys.ROLE_TITLE_VIEW_BINDER_TITLE);
+		function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
 		function.addOperation(WorkAreaOperation.VIEW_BINDER_TITLE);
 		//generate functionId
 		getFunctionManager().addFunction(function);
@@ -1177,6 +1194,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		Function function = new Function();
 		function.setZoneId(top.getId());
 		function.setName(ObjectKeys.ROLE_TITLE_TEAM_MEMBER);
+		function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATOR_MODIFY);
@@ -1197,6 +1215,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		Function function = new Function();
 		function.setZoneId(top.getId());
 		function.setName(ObjectKeys.ROLE_TITLE_BINDER_ADMIN);
+		function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
 		//add all them remove a few
 		for (Iterator iter=WorkAreaOperation.getWorkAreaOperations(); iter.hasNext();) {
 			function.addOperation((WorkAreaOperation)iter.next());			
@@ -1226,6 +1245,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		Function function = new Function();
 		function.setZoneId(top.getId());
 		function.setName(ObjectKeys.ROLE_TITLE_WORKSPACE_CREATOR);
+		function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
 		function.addOperation(WorkAreaOperation.CREATE_WORKSPACES);
 		//generate functionId
 		getFunctionManager().addFunction(function);
@@ -1242,6 +1262,76 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		ms.setMemberIds(members);
 		getCoreDao().save(ms);
 		
+	}
+	private Function addEntryReadRole(Workspace top) {
+		Function function = new Function();
+		function.setZoneId(top.getId());
+		function.setName(ObjectKeys.ROLE_TITLE_READ);
+		function.setScope(ObjectKeys.ROLE_TYPE_ENTRY);
+
+		function.addOperation(WorkAreaOperation.READ_ENTRIES);
+		
+		//generate functionId
+		getFunctionManager().addFunction(function);		
+		return function;
+	}
+	private Function addEntryReadReplyRole(Workspace top) {
+		Function function = new Function();
+		function.setZoneId(top.getId());
+		function.setName(ObjectKeys.ROLE_TITLE_READ_REPLY);
+		function.setScope(ObjectKeys.ROLE_TYPE_ENTRY);
+
+		function.addOperation(WorkAreaOperation.READ_ENTRIES);
+		function.addOperation(WorkAreaOperation.ADD_REPLIES);
+		
+		//generate functionId
+		getFunctionManager().addFunction(function);		
+		return function;
+	}
+	private Function addEntryWriteRole(Workspace top) {
+		Function function = new Function();
+		function.setZoneId(top.getId());
+		function.setName(ObjectKeys.ROLE_TITLE_WRITE);
+		function.setScope(ObjectKeys.ROLE_TYPE_ENTRY);
+
+		function.addOperation(WorkAreaOperation.READ_ENTRIES);
+		function.addOperation(WorkAreaOperation.ADD_REPLIES);
+		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
+		
+		//generate functionId
+		getFunctionManager().addFunction(function);
+		return function;
+	}
+	private Function addEntryDeleteRole(Workspace top) {
+		Function function = new Function();
+		function.setZoneId(top.getId());
+		function.setName(ObjectKeys.ROLE_TITLE_DELETE);
+		function.setScope(ObjectKeys.ROLE_TYPE_ENTRY);
+
+		function.addOperation(WorkAreaOperation.READ_ENTRIES);
+		function.addOperation(WorkAreaOperation.ADD_REPLIES);
+		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
+		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
+		
+		//generate functionId
+		getFunctionManager().addFunction(function);
+		return function;
+	}
+	private Function addEntryChangeAclRole(Workspace top) {
+		Function function = new Function();
+		function.setZoneId(top.getId());
+		function.setName(ObjectKeys.ROLE_TITLE_CHANGE_ACL);
+		function.setScope(ObjectKeys.ROLE_TYPE_ENTRY);
+
+		function.addOperation(WorkAreaOperation.READ_ENTRIES);
+		function.addOperation(WorkAreaOperation.ADD_REPLIES);
+		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
+		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
+		function.addOperation(WorkAreaOperation.BINDER_ADMINISTRATION);
+		
+		//generate functionId
+		getFunctionManager().addFunction(function);
+		return function;
 	}
 	private void addGlobalFunctions(ZoneConfig zoneConfig, List ids) {
 		Set members = new HashSet(ids);
@@ -1260,6 +1350,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());
 			function.setName(ObjectKeys.ROLE_ZONE_ADMINISTRATION);
+			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
 			function.setInternalId(ObjectKeys.FUNCTION_SITE_ADMIN_INTERNALID);
 			function.addOperation(WorkAreaOperation.ZONE_ADMINISTRATION);
 			function.setZoneWide(true);
@@ -1273,6 +1364,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());
 			function.setName(ObjectKeys.ROLE_ADD_GUEST_ACCESS);
+			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
 			function.setInternalId(ObjectKeys.FUNCTION_ADD_GUEST_ACCESS_INTERNALID);
 			function.addOperation(WorkAreaOperation.ADD_GUEST_ACCESS);
 			function.setZoneWide(true);
@@ -1286,6 +1378,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());
 			function.setName(ObjectKeys.ROLE_TOKEN_REQUESTER);
+			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
 			function.setInternalId(ObjectKeys.FUNCTION_TOKEN_REQUESTER_INTERNALID);
 			function.addOperation(WorkAreaOperation.TOKEN_REQUEST);
 			function.setZoneWide(true);
@@ -1298,6 +1391,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());
 			function.setName(ObjectKeys.ROLE_ONLY_SEE_GROUP_MEMBERS);
+			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
 			function.setInternalId(ObjectKeys.FUNCTION_ONLY_SEE_GROUP_MEMBERS_INTERNALID);
 			function.addOperation(WorkAreaOperation.ONLY_SEE_GROUP_MEMBERS);
 			function.setZoneWide(true);
@@ -1310,6 +1404,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());
 			function.setName(ObjectKeys.ROLE_OVERRIDE_ONLY_SEE_GROUP_MEMBERS);
+			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
 			function.setInternalId(ObjectKeys.FUNCTION_OVERRIDE_ONLY_SEE_GROUP_MEMBERS_INTERNALID);
 			function.addOperation(WorkAreaOperation.OVERRIDE_ONLY_SEE_GROUP_MEMBERS);
 			function.setZoneWide(true);

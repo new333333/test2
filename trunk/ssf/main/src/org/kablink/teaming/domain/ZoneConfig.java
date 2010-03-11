@@ -36,7 +36,7 @@ import java.util.HashSet;
 
 import org.kablink.teaming.security.function.WorkArea;
 public class ZoneConfig extends ZonedObject implements WorkArea {
-	public static Integer ZONE_LATEST_VERSION=5;
+	public static Integer ZONE_LATEST_VERSION=6;
 	private Integer upgradeVersion=ZONE_LATEST_VERSION; 
 	private AuthenticationConfig authenticationConfig;
 	private Boolean mobileAccessEnabled; // access="field"

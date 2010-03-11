@@ -520,10 +520,11 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			logger.error("Cannot read startup configuration:", ex);
 		}
 	}
-	public void addFunction(String name, Set<WorkAreaOperation> operations) {
+	public void addFunction(String name, Set<WorkAreaOperation> operations, String scope) {
 		checkAccess(AdminOperation.manageFunction);
 		Function function = new Function();
 		function.setName(name);
+		function.setScope(scope);
 		function.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
 		function.setOperations(operations);
 		
@@ -569,6 +570,15 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     public List<Function> getFunctions() {
 		//let anyone read them			
     	return functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
+    }
+    public List<Function> getFunctions(String scope) {
+		//let anyone read them			
+    	List<Function> functions = functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
+    	List<Function> functionsPruned = new ArrayList<Function>();
+    	for (Function f : functions) {
+    		if (scope.equals(f.getScope())) functionsPruned.add(f);
+    	}
+    	return functionsPruned;
     }
 	//no transaction
     public void setWorkAreaFunctionMemberships(final WorkArea workArea, final Map<Long, Set<Long>> functionMemberships) {
@@ -781,6 +791,24 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
         	binder.setModification(new HistoryStamp(user));
         	loadBinderProcessor(binder).processChangeLog(binder, operation);
        	}
+	}
+	
+	public void setEntryHasAcl(final WorkArea workArea, final Boolean hasAcl) {
+        //Set the entry acl flag
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+           		if (workArea instanceof Entry) ((Entry)workArea).setHasEntryAcl(hasAcl);
+				return null;
+        	}});
+	}
+
+	public void setEntryCheckFolderAcl(final WorkArea workArea, final Boolean checkFolderAcl) {
+        //Set the entry acl flag
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+           		if (workArea instanceof Entry) ((Entry)workArea).setCheckFolderAcl(checkFolderAcl);
+				return null;
+        	}});
 	}
 
     public Map<String, Object> sendMail(Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, Collection<Long> ccIds, 

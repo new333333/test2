@@ -136,11 +136,10 @@ public class Function extends ZonedObject {
         return scope;
     }
     public void setScope(String scope) {
-        if (!scope.equals(ObjectKeys.ROLE_TYPE_COMMON) &&
-        		!scope.equals(ObjectKeys.ROLE_TYPE_ZONE) &&
+        if (!scope.equals(ObjectKeys.ROLE_TYPE_ZONE) &&
         		!scope.equals(ObjectKeys.ROLE_TYPE_BINDER) && 
         		!scope.equals(ObjectKeys.ROLE_TYPE_ENTRY))
-            throw new IllegalArgumentException("Type must be 'common', 'zone', 'binder' or 'entry'.");
+            throw new IllegalArgumentException("Type must be 'zone', 'binder' or 'entry'.");
         
         this.scope = scope;
     }
