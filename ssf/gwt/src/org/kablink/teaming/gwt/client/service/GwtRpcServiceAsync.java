@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.service;
 
+import java.util.ArrayList;
+
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 
@@ -62,6 +64,9 @@ public interface GwtRpcServiceAsync
 	// Return an Entry object for the given entry id.
 	public void getEntry( String zoneUUID, String entryId, AsyncCallback<GwtFolderEntry> callback );
 	
+	// Return a list of the names of the files that are attachments of the given binder.
+	public void getFileAttachments( String binderId, AsyncCallback<ArrayList<String>> callback );
+
 	// Return a Folder object for the given folder id.
 	public void getFolder( String zoneUUID, String folderId, AsyncCallback<GwtFolder> callback );
 	
@@ -81,4 +86,7 @@ public interface GwtRpcServiceAsync
 	public void getVerticalNode(    String binderId, AsyncCallback<TreeInfo> callback);
 	public void persistNodeCollapse(String binderId, AsyncCallback<Boolean>  callback);
 	public void persistNodeExpand(  String binderId, AsyncCallback<Boolean>  callback);
+
+	// Save the branding data to the given binder.
+	public void saveBrandingData( String binderId, GwtBrandingData brandingData, AsyncCallback<Boolean> callback );
 }// end GwtRpcServiceAsync

@@ -46,8 +46,10 @@ public class GwtBrandingDataExt
 {
 	private static final long serialVersionUID = -7837015105719505381L;
 	private String m_fontColor = null;
+	private String m_brandingImgName = null;
 	private String m_brandingImgUrl = null;
 	private String m_backgroundColor = null;
+	private String m_backgroundImgName = null;
 	private String m_backgroundImgUrl = null;
 
 
@@ -71,6 +73,15 @@ public class GwtBrandingDataExt
 	/**
 	 * 
 	 */
+	public String getBackgroundImgName()
+	{
+		return m_backgroundImgName;
+	}// end getBackgroundImgName()
+	
+
+	/**
+	 * 
+	 */
 	public String getBackgroundImgUrl()
 	{
 		return m_backgroundImgUrl;
@@ -79,17 +90,17 @@ public class GwtBrandingDataExt
 
 	/**
 	 * Return the branding information as an xml string.  The following is an example of what the xml looks like:
-	 * 	<brandingData fontColor="" brandingImgUrl="some name">
-	 * 		<background color="" imgUrl="" />
+	 * 	<brandingData fontColor="" brandingImgName="some name">
+	 * 		<background color="" imgName="" />
 	 * 	</brandingData>
 	 */
 	public String getBrandingExtAsXmlString()
 	{
 		StringBuffer xml;
 		String fontColor;
-		String brandingImgUrl;
+		String brandingImgName;
 		String bgColor;
-		String bgImgUrl;
+		String bgImgName;
 
 		xml = new StringBuffer();
     	
@@ -99,14 +110,14 @@ public class GwtBrandingDataExt
     	xml.append( " fontColor=\"" );
     	fontColor = getFontColor();
     	if ( fontColor != null && fontColor.length() > 0 )
-    		xml.append( wrapWithCDATA( fontColor ) );
+    		xml.append( fontColor );
     	xml.append( "\"" );
     	
-    	// Add the brandingImgUrl attribute.
-    	xml.append( " brandingImgUrl=\"" );
-    	brandingImgUrl = getBrandingImgUrl();
-    	if ( brandingImgUrl != null && brandingImgUrl.length() > 0 )
-    		xml.append( wrapWithCDATA( brandingImgUrl ) );
+    	// Add the brandingImgName attribute.
+    	xml.append( " brandingImgName=\"" );
+    	brandingImgName = getBrandingImgName();
+    	if ( brandingImgName != null && brandingImgName.length() > 0 )
+    		xml.append( brandingImgName );
     	xml.append( "\"" );
     	
     	// Close the <brandingData tag.
@@ -119,14 +130,14 @@ public class GwtBrandingDataExt
     	xml.append( " color=\"" );
     	bgColor = getBackgroundColor();
     	if ( bgColor != null && bgColor.length() > 0 )
-    		xml.append( wrapWithCDATA( bgColor ) );
+    		xml.append( bgColor );
     	xml.append( "\"" );
     	
-    	// Add the imgUrl attribute
-    	xml.append( " imgUrl=\"" );
-    	bgImgUrl = getBackgroundImgUrl();
-    	if ( bgImgUrl != null && bgImgUrl.length() > 0 )
-    		xml.append( wrapWithCDATA( bgImgUrl ) );
+    	// Add the imgName attribute
+    	xml.append( " imgName=\"" );
+    	bgImgName = getBackgroundImgName();
+    	if ( bgImgName != null && bgImgName.length() > 0 )
+    		xml.append( bgImgName );
     	xml.append( "\"" );
     	
     	// Close the <background tag
@@ -139,6 +150,15 @@ public class GwtBrandingDataExt
 	}// end getBrandingExtAsXmlString()
 	
 	
+	/**
+	 * 
+	 */
+	public String getBrandingImgName()
+	{
+		return m_brandingImgName;
+	}// end getBrandingImgName()
+	
+
 	/**
 	 * 
 	 */
@@ -169,12 +189,30 @@ public class GwtBrandingDataExt
 	/**
 	 * 
 	 */
+	public void setBackgroundImgName( String imgName )
+	{
+		m_backgroundImgName = imgName;
+	}// end setBackgroundImgName()
+
+
+	/**
+	 * 
+	 */
 	public void setBackgroundImgUrl( String imgUrl )
 	{
 		m_backgroundImgUrl = imgUrl;
 	}// end setBackgroundImgUrl()
 
 
+	/**
+	 * 
+	 */
+	public void setBrandingImgName( String imgName )
+	{
+		m_brandingImgName = imgName;
+	}// end setBrandingImgName()
+
+	
 	/**
 	 * 
 	 */
