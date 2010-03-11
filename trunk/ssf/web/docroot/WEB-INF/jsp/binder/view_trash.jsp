@@ -98,12 +98,12 @@
 	<% /* Store the localized error messages that might need to */ %>
 	<% /* display while running this page.                      */ %>
 	var g_trashStrings = new Array();
-	g_trashStrings["trash.error.NoItemsSelected"]							= "<ssf:nlt tag='trash.error.NoItemsSelected'                          />";
-	g_trashStrings["trash.confirm.Purge"]									= "<ssf:nlt tag='trash.confirm.Purge'                                  />";
-	g_trashStrings["trash.confirm.Purge.DeleteSourceOnMirroredSubFolders"]	= "<ssf:nlt tag='trash.confirm.Purge.DeleteSourceOnMirroredSubFolders' />";
-	g_trashStrings["trash.confirm.PurgeAll"]								= "<ssf:nlt tag='trash.confirm.PurgeAll'                               />";
-	g_trashStrings["trash.confirm.PurgeAll.WithSelections"]					= "<ssf:nlt tag='trash.confirm.PurgeAll.WithSelections'                />";
-	g_trashStrings["trash.confirm.RestoreAll.WithSelections"]				= "<ssf:nlt tag='trash.confirm.RestoreAll.WithSelections'              />";
+	g_trashStrings["trash.error.NoItemsSelected"]							= "<ssf:escapeJavaScript><ssf:nlt tag='trash.error.NoItemsSelected'                          /></ssf:escapeJavaScript>";
+	g_trashStrings["trash.confirm.Purge"]									= "<ssf:escapeJavaScript><ssf:nlt tag='trash.confirm.Purge'                                  /></ssf:escapeJavaScript>";
+	g_trashStrings["trash.confirm.Purge.DeleteSourceOnMirroredSubFolders"]	= "<ssf:escapeJavaScript><ssf:nlt tag='trash.confirm.Purge.DeleteSourceOnMirroredSubFolders' /></ssf:escapeJavaScript>";
+	g_trashStrings["trash.confirm.PurgeAll"]								= "<ssf:escapeJavaScript><ssf:nlt tag='trash.confirm.PurgeAll'                               /></ssf:escapeJavaScript>";
+	g_trashStrings["trash.confirm.PurgeAll.WithSelections"]					= "<ssf:escapeJavaScript><ssf:nlt tag='trash.confirm.PurgeAll.WithSelections'                /></ssf:escapeJavaScript>";
+	g_trashStrings["trash.confirm.RestoreAll.WithSelections"]				= "<ssf:escapeJavaScript><ssf:nlt tag='trash.confirm.RestoreAll.WithSelections'              /></ssf:escapeJavaScript>";
 </script>
 
 <div id="ss_trashDiv${ss_namespace}" align="center">
