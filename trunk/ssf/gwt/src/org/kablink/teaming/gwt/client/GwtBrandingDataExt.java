@@ -54,6 +54,7 @@ public class GwtBrandingDataExt
 	private String m_backgroundColor = null;
 	private String m_backgroundImgName = null;
 	private String m_backgroundImgUrl = null;
+	private boolean m_stretchBgImg = false;
 	private String m_brandingType = BRANDING_TYPE_ADVANCED;
 
 
@@ -84,6 +85,15 @@ public class GwtBrandingDataExt
 	
 
 	/**
+	 * Return whether or not the background img should be stretched. 
+	 */
+	public boolean getBackgroundImgStretchValue()
+	{
+		return m_stretchBgImg;
+	}// end getBackgroundImgStretchValue()
+	
+	
+	/**
 	 * 
 	 */
 	public String getBackgroundImgUrl()
@@ -94,8 +104,8 @@ public class GwtBrandingDataExt
 
 	/**
 	 * Return the branding information as an xml string.  The following is an example of what the xml looks like:
-	 * 	<brandingData fontColor="" brandingImgName="some name">
-	 * 		<background color="" imgName="" />
+	 * 	<brandingData fontColor="" brandingImgName="some name" brandingType="image/advanced">
+	 * 		<background color="" imgName="" stretchImg="true/false" />
 	 * 	</brandingData>
 	 */
 	public String getBrandingExtAsXmlString()
@@ -106,6 +116,7 @@ public class GwtBrandingDataExt
 		String bgColor;
 		String bgImgName;
 		String type;
+		boolean stretch;
 
 		xml = new StringBuffer();
     	
@@ -150,6 +161,12 @@ public class GwtBrandingDataExt
     	bgImgName = getBackgroundImgName();
     	if ( bgImgName != null && bgImgName.length() > 0 )
     		xml.append( bgImgName );
+    	xml.append( "\"" );
+    	
+    	// Add the stretchImg attribute
+    	xml.append( " stretchImg=\"" );
+    	stretch = getBackgroundImgStretchValue();
+   		xml.append( Boolean.toString( stretch ) );
     	xml.append( "\"" );
     	
     	// Close the <background tag
@@ -216,6 +233,15 @@ public class GwtBrandingDataExt
 	}// end setBackgroundImgName()
 
 
+	/**
+	 * Set whether or not the background img should be stretched. 
+	 */
+	public void setBackgroundImgStretchValue( boolean stretch )
+	{
+		m_stretchBgImg = stretch;
+	}// end setBackgroundImgStretchValue()
+	
+	
 	/**
 	 * 
 	 */
