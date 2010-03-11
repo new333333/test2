@@ -51,6 +51,7 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -73,10 +74,7 @@ public class EditBrandingDlg extends DlgBox
 	private RadioButton m_useAdvancedBrandingRb;
 	private ListBox m_brandingImgListbox;
 	private ListBox m_backgroundImgListbox;
-	private RadioButton m_noRepeatRb;
-	private RadioButton m_repeatRb;
-	private RadioButton m_repeatXRb;
-	private RadioButton m_repeatYRb;
+	private CheckBox m_stretchBgImgCb;
 	private TextBox m_backgroundColorTextbox;
 	private TextBox m_textColorTextbox;
 	private TextBox m_sampleText;
@@ -220,17 +218,9 @@ public class EditBrandingDlg extends DlgBox
 			table.setWidget( nextRow, 1, m_backgroundImgListbox );
 			++nextRow;
 			
-			// Add the radio buttons that will be used to select how the background image repeats.
-			m_noRepeatRb = new RadioButton( "backgroundRepeat", GwtTeaming.getMessages().noRepeatLabel() );
-			m_repeatRb = new RadioButton( "backgroundRepeat", GwtTeaming.getMessages().repeatLabel() );
-			m_repeatXRb = new RadioButton( "backgroundRepeat", GwtTeaming.getMessages().repeatXLabel() );
-			m_repeatYRb = new RadioButton( "backgroundRepeat", GwtTeaming.getMessages().repeatYLabel() );
-			hPanel = new HorizontalPanel();
-			hPanel.add( m_noRepeatRb );
-			hPanel.add( m_repeatRb );
-			hPanel.add( m_repeatXRb );
-			hPanel.add( m_repeatYRb );
-			table.setWidget( nextRow, 1, hPanel );
+			// Add a "stretch image" checkbox.
+			m_stretchBgImgCb = new CheckBox( GwtTeaming.getMessages().stretchImg() );
+			table.setWidget( nextRow, 1, m_stretchBgImgCb );
 			++nextRow;
 		}
 		
@@ -377,6 +367,9 @@ public class EditBrandingDlg extends DlgBox
 			brandingData.setBgImageName( imgName );
 		}
 		
+		// Get the "stretch background image" value.
+		brandingData.setBgImageStretchValue( m_stretchBgImgCb.getValue() );
+		
 		// Get the background color from the dialog
 		brandingData.setBgColor( m_backgroundColorTextbox.getText() );
 		
@@ -428,6 +421,9 @@ public class EditBrandingDlg extends DlgBox
 			m_useBrandingImgRb.setValue( true );
 		else
 			m_useAdvancedBrandingRb.setValue( true );
+		
+		// Initialize the "stretch image" checkbox.
+		m_stretchBgImgCb.setValue( brandingData.getBgImageStretchValue() );
 		
 		// Add the background color to the appropriate textbox.
 		m_backgroundColorTextbox.setText( brandingData.getBgColor() );
@@ -518,31 +514,31 @@ public class EditBrandingDlg extends DlgBox
 		m_brandingImgListbox.clear();
 		m_backgroundImgListbox.clear();
 		
-		// Add each file name to the "branding image" listbox and to the "background image" listbox.
-		for (i = 0; listOfFileAttachments != null && i < listOfFileAttachments.size(); ++i)
-		{
-			String fileName;
-			
-			fileName = listOfFileAttachments.get( i );
-			m_brandingImgListbox.addItem( fileName, fileName );
-			m_backgroundImgListbox.addItem( fileName, fileName );
-		}
-		
 		// Do we have any file attachments?
-		if ( i == 0 )
-		{
-			// No
-			// Add an entry called "No available images" to the listboxes.
-			m_brandingImgListbox.addItem( GwtTeaming.getMessages().noImagesAvailable(), m_noAvailableImages );
-			m_backgroundImgListbox.addItem( GwtTeaming.getMessages().noImagesAvailable(), m_noAvailableImages );
-		}
-		else
+		if ( listOfFileAttachments.size() > 0 )
 		{
 			// Yes
 			// Add an entry called "None" to the listboxes.  The user can select "None" if
 			// they don't want to use a branding or background image.
 			m_brandingImgListbox.addItem( GwtTeaming.getMessages().imgNone(), m_noImage );
 			m_backgroundImgListbox.addItem( GwtTeaming.getMessages().imgNone(), m_noImage );
+
+			// Add each file name to the "branding image" listbox and to the "background image" listbox.
+			for (i = 0; listOfFileAttachments != null && i < listOfFileAttachments.size(); ++i)
+			{
+				String fileName;
+				
+				fileName = listOfFileAttachments.get( i );
+				m_brandingImgListbox.addItem( fileName, fileName );
+				m_backgroundImgListbox.addItem( fileName, fileName );
+			}
+		}
+		else
+		{
+			// No
+			// Add an entry called "No available images" to the listboxes.
+			m_brandingImgListbox.addItem( GwtTeaming.getMessages().noImagesAvailable(), m_noAvailableImages );
+			m_backgroundImgListbox.addItem( GwtTeaming.getMessages().noImagesAvailable(), m_noAvailableImages );
 		}
 		
 		// Select the branding image file in the listbox that is defined in the original branding data.

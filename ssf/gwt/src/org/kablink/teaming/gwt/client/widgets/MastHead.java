@@ -76,7 +76,7 @@ import com.google.gwt.user.client.ui.Widget;
  * This widget will display the MastHead 
  */
 public class MastHead extends Composite
-	implements ActionRequestor, ClickHandler, MouseOutHandler, MouseOverHandler
+	implements ActionRequestor, ClickHandler, LoadHandler, MouseOutHandler, MouseOverHandler
 {
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	private RequestInfo m_requestInfo = null;
@@ -185,8 +185,12 @@ public class MastHead extends Composite
 					}
 					else
 					{
-						// No, use the Novell Teaming image for the branding.
-						m_panel.add( m_novellTeamingImg );
+						// No, Does the user want to use the default Novell/Kablink Teaming image?
+						if ( false )
+						{
+							// Yes, use the Novell Teaming image for the branding.
+							m_panel.add( m_novellTeamingImg );
+						}
 					}
 				}
 				else
@@ -474,7 +478,36 @@ public class MastHead extends Composite
 		if ( m_bgImg != null )
 		{
 			// Yes
-			m_bgImg.setHeight( heightStr );
+			// Are we using the default background image?
+			if ( m_bgImg != m_defaultBgImg )
+			{
+				// No, Should we stretch the background image?
+				if ( m_brandingData.getBgImageStretchValue() )
+				{
+					// Yes
+					m_bgImg.setHeight( heightStr );
+					m_bgImg.setWidth( "100%" );
+				}
+				else
+				{
+					int bgImgHeight;
+					
+					// No, get the height of the background image.
+					bgImgHeight = m_bgImg.getHeight();
+					
+					// Is the height of the bg image bigger than the height of the masthead content?
+					if ( bgImgHeight > height )
+					{
+						// Yes, use the height of the bg image for the height of the masthead.
+						heightStr = Integer.toString( bgImgHeight );
+					}
+				}
+			}
+			else
+			{
+				// Yes
+				m_bgImg.setHeight( heightStr );
+			}
 		}
 
 		m_mainMastheadPanel.setHeight( heightStr );
@@ -598,6 +631,18 @@ public class MastHead extends Composite
 			}
 		}
 	}// end onClick()
+	
+	
+	/**
+	 * This method gets called when an image in the branding gets loaded.  We will need
+	 * to adjust the height of the masthead.
+	 */
+	public void onLoad( LoadEvent event )
+	{
+		// Adjust the height of the masthead to take into consideration this new image
+		// that has been loaded.
+		adjustMastheadHeight();
+	}// end onLoad()
 	
 	
 	/**
@@ -727,7 +772,7 @@ public class MastHead extends Composite
 					// Yes
 					// Add the new background image to the masthead.
 					img = new Image( bgImgUrl );
-					img.setWidth( "100%" );
+					img.addLoadHandler( this );
 					m_mastheadBgPanel.add( img );
 					
 					// Remember the background image we are using.

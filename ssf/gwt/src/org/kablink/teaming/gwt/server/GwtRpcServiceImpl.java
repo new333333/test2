@@ -479,7 +479,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			    					brandingExt.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_ADVANCED );
 			    			}
 			    			
-			    			// Get the <background color="" imgName="" /> node
+			    			// Get the <background color="" imgName="" stretchImg="" /> node
 			    			node = node.selectSingleNode( "background" );
 			    			if ( node != null )
 			    			{
@@ -507,6 +507,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				    					
 				    					brandingExt.setBackgroundImgName( imgName );
 				    				}
+			    				}
+
+			    				// Get the value of whether or not to stretch the background image.
+	        					brandingExt.setBackgroundImgStretchValue( true );
+			    				attrNode = node.selectSingleNode( "@stretchImg" );
+			    				if ( attrNode != null )
+			    				{
+			        				String stretch;
+			
+			        				stretch = attrNode.getText();
+			        				if ( stretch != null && stretch.equalsIgnoreCase( "false" ) )
+			        					brandingExt.setBackgroundImgStretchValue( false );
 			    				}
 			    			}
 			    		}

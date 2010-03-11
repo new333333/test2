@@ -80,6 +80,16 @@ public class GwtBrandingData
 		return m_brandingExt.getBackgroundImgName();
 	}// end getBgImageName()
 	
+
+	/**
+	 * Return whether or not to stretch the background image.
+	 */
+	public boolean getBgImageStretchValue()
+	{
+		return m_brandingExt.getBackgroundImgStretchValue();
+	}// end getBgImageStretchValue()
+	
+	
 	/**
 	 * Return the image to be used as the background of the masthead. 
 	 */
@@ -173,6 +183,15 @@ public class GwtBrandingData
 	{
 		m_brandingExt.setBackgroundImgName( bgImgName );
 	}// end setBgImageName()
+	
+	
+	/**
+	 * Set whether or not to stretch the background image.
+	 */
+	public void setBgImageStretchValue( boolean stretch )
+	{
+		m_brandingExt.setBackgroundImgStretchValue( stretch );
+	}// end setBgImageStretchValue()
 	
 	
 	/**
