@@ -150,14 +150,14 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static TreeInfo buildTreeInfoFromBinder(AllModulesInjected bs, Binder binder) {
-		// Always use the private implementation of this method.
-		return buildTreeInfoFromBinderImpl(bs, binder, null, false, 0);
-	}
-	
 	public static TreeInfo buildTreeInfoFromBinder(AllModulesInjected bs, Binder binder, List<Long> expandedBindersList) {
 		// Always use the private implementation of this method.
 		return buildTreeInfoFromBinderImpl(bs, binder, expandedBindersList, (null != expandedBindersList), 0);
+	}
+	
+	public static TreeInfo buildTreeInfoFromBinder(AllModulesInjected bs, Binder binder) {
+		// Always use the private implementation of this method.
+		return buildTreeInfoFromBinderImpl(bs, binder, null, false, 0);
 	}
 	
 	/*
@@ -235,84 +235,8 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Saves the fact that the Binder for the given ID should be
-	 * collapsed for the current User.
-	 *
-	 * @param bs
-	 * @param binderId
-	 */
-	public static void persistNodeCollapse(AllModulesInjected bs, Long binderId) {
-		// Access the current User's expanded Binder's list.
-		UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
-		List<Long> usersExpandedBindersList = getExpandedBindersList(userProperties);
-
-		// If there's no list...
-		if (null == usersExpandedBindersList) {
-			// ...we don't have to do anything since we only store
-			// ...the IDs of expanded binders.  Bail.
-			return;
-		}
-
-		// Scan the User's expanded Binder's list.
-		boolean updateUsersList = false;
-		long binderIdVal = binderId.longValue();
-		for (Iterator<Long> lIT = usersExpandedBindersList.iterator(); lIT.hasNext(); ) {
-			// Is this the Binder in question?
-			Long l = lIT.next();
-			if (l.longValue() == binderIdVal) {
-				// Yes, remove it from the list, force the list to be
-				// written back out and quit looking.
-				usersExpandedBindersList.remove(l);
-				updateUsersList = true;
-				break;
-			}
-		}
-		
-		// Do we need to write an expanded Binder's list to the User's
-		// properties?
-		if (updateUsersList) {
-			// Yes!  Write it.
-			setExpandedBindersList(userProperties, usersExpandedBindersList);
-		}
-	}
-
-	/**
-	 * Saves the fact that the Binder for the given ID should be
-	 * expanded for the current User.
-	 * 
-	 * @param bs
-	 * @param binderId
-	 * 
-	 * @return
-	 */
-	public static void persistNodeExpand(AllModulesInjected bs, Long binderId) {
-		// Access the current User's expanded Binder's list.
-		UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
-		List<Long> usersExpandedBindersList = getExpandedBindersList(userProperties);
-
-		// If there's no list...
-		boolean updateUsersList = (null == usersExpandedBindersList);
-		if (updateUsersList) {
-			// ...we need to create one...
-			usersExpandedBindersList = new ArrayList<Long>();
-		}
-		
-		else {
-			// ...otherwise, we look for the Binder ID in that list.
-			updateUsersList = (!(isLongInList(binderId, usersExpandedBindersList)));
-		}
-		
-		// Do we need to write an expanded Binder's list to the User's
-		// properties?
-		if (updateUsersList) {
-			// Yes!  Add this Binder ID to it and write it.
-			usersExpandedBindersList.add(0, binderId);
-			setExpandedBindersList(userProperties, usersExpandedBindersList);
-		}
-	}
-	
-	/**
 	 * Returns the User object of the currently logged in user.
+	 * 
 	 * @return
 	 */
 	public static User getCurrentUser() {
@@ -322,6 +246,11 @@ public class GwtServerHelper {
 	/**
 	 * Returns the TreeInfo from another TreeInfo that references a
 	 * specific Binder ID.
+	 * 
+	 * @param ti
+	 * @param binderId
+	 * 
+	 * @return
 	 */
 	public static TreeInfo findBinderTI(TreeInfo ti, String binderId) {
 		// If this TreeInfo is for the binder in question...
@@ -356,18 +285,9 @@ public class GwtServerHelper {
 	 * UserProperties.
 	 */
 	@SuppressWarnings("unchecked")
-	private static List<Long> getExpandedBindersList(UserProperties userProperties) {
-		List<Long> reply;
-		List<Long> userList = ((List<Long>) userProperties.getProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST));
-		if (null == userList) {
-			reply = null;
-		}
-		else {
-			reply = new ArrayList<Long>();
-			for (Iterator<Long> lIT = userList.iterator(); lIT.hasNext(); ) {
-				reply.add(lIT.next());
-			}
-		}
+	private static List<Long> getExpandedBindersList(AllModulesInjected bs) {
+		UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
+		List<Long> reply= ((List<Long>) userProperties.getProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST));
 		return reply;
 	}
 	
@@ -429,23 +349,67 @@ public class GwtServerHelper {
 	}
 	
 	/*
+	 * Returns true if two List<Long>'s contain different values and
+	 * false otherwise.
+	 */
+	private static boolean longListsDiffer(List<Long> list1, List<Long> list2) {
+		// If the lists differ in size...
+		int c1 = ((null == list1) ? 0 : list1.size());
+		int c2 = ((null == list2) ? 0 : list2.size());
+		if (c1 != c2) {
+			// ...they're different.
+			return true;
+		}
+		
+		// If they're both empty...
+		if (0 == c1) {
+			// ...they're the same.
+			return false;
+		}
+
+		// Scan the Long's in the first list.
+		for (Iterator<Long> l1IT = list1.iterator(); l1IT.hasNext(); ) {
+			long l1 = l1IT.next().longValue();
+			boolean found1in2 = false;
+			
+			// Scan the Long's in the second list.
+			for (Iterator<Long> l2IT = list2.iterator(); l2IT.hasNext(); ) {
+				// If we find a Long from the first list in the second
+				// list...
+				long l2 = l2IT.next().longValue();
+				found1in2 = (l1 == l2);
+				if (found1in2) {
+					// ...quit looking.
+					break;
+				}
+			}
+			
+			// If we failed to find a Long from the first list in the
+			// second list...
+			if (!found1in2) {
+				// ...the lists are different.
+				return true;
+			}
+		}
+		
+		// If we get here, the lists are the same.  Return
+		// false.
+		return false;
+	}
+	
+	/*
 	 * Merges the expanded Binder list from the current User's
 	 * preferences into those in expandedBindersList.  If the resultant
 	 * lists differ, they are written back to the User's preferences
 	 */
 	private static void mergeBinderExpansions(AllModulesInjected bs, List<Long> expandedBindersList) {
 		// Access the current User's expanded Binder's list.
-		UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
-		List<Long> usersExpandedBindersList = getExpandedBindersList(userProperties);
+		List<Long> usersExpandedBindersList = getExpandedBindersList(bs);
 
 		// Make sure we have two non-null lists to work with.
 		if (null == expandedBindersList)      expandedBindersList      = new ArrayList<Long>();
 		if (null == usersExpandedBindersList) usersExpandedBindersList = new ArrayList<Long>();
 
-		// If the lists differ in size, will have write the new list
-		// back to the User's properties no matter what.
-		boolean updateUsersList = (expandedBindersList.size() != usersExpandedBindersList.size());
-		
 		// Scan the Binder ID's in the User's expanded Binder's list.
 		for (Iterator<Long> lIT = usersExpandedBindersList.iterator(); lIT.hasNext(); ) {
 			// Is this Binder ID in the list we were given?
@@ -454,22 +418,99 @@ public class GwtServerHelper {
 				// No!  Added it to it and force the changes to be
 				// written to the User's list.
 				expandedBindersList.add(0, l);
-				updateUsersList = true;
 			}
 		}
 
 		// Do we need to write an expanded Binder's list to the User's
 		// properties?
+		if (longListsDiffer(usersExpandedBindersList, expandedBindersList)) {
+			// Yes!  Write it.
+			setExpandedBindersList(bs, expandedBindersList);
+		}
+	}
+	
+	/**
+	 * Saves the fact that the Binder for the given ID should be
+	 * collapsed for the current User.
+	 *
+	 * @param bs
+	 * @param binderId
+	 */
+	public static void persistNodeCollapse(AllModulesInjected bs, Long binderId) {
+		// Access the current User's expanded Binder's list.
+		List<Long> usersExpandedBindersList = getExpandedBindersList(bs);
+
+		// If there's no list...
+		if (null == usersExpandedBindersList) {
+			// ...we don't have to do anything since we only store
+			// ...the IDs of expanded binders.  Bail.
+			return;
+		}
+
+		// Scan the User's expanded Binder's list.
+		boolean updateUsersList = false;
+		long binderIdVal = binderId.longValue();
+		for (Iterator<Long> lIT = usersExpandedBindersList.iterator(); lIT.hasNext(); ) {
+			// Is this the Binder in question?
+			Long l = lIT.next();
+			if (l.longValue() == binderIdVal) {
+				// Yes, remove it from the list, force the list to be
+				// written back out and quit looking.
+				usersExpandedBindersList.remove(l);
+				updateUsersList = true;
+				break;
+			}
+		}
+		
+		// Do we need to write an expanded Binder's list to the User's
+		// properties?
 		if (updateUsersList) {
 			// Yes!  Write it.
-			setExpandedBindersList(userProperties, expandedBindersList);
+			setExpandedBindersList(bs, usersExpandedBindersList);
+		}
+	}
+
+	/**
+	 * Saves the fact that the Binder for the given ID should be
+	 * expanded for the current User.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 */
+	public static void persistNodeExpand(AllModulesInjected bs, Long binderId) {
+		// Access the current User's expanded Binder's list.
+		List<Long> usersExpandedBindersList = getExpandedBindersList(bs);
+
+		// If there's no list...
+		boolean updateUsersList = (null == usersExpandedBindersList);
+		if (updateUsersList) {
+			// ...we need to create one...
+			usersExpandedBindersList = new ArrayList<Long>();
+		}
+		
+		else {
+			// ...otherwise, we look for the Binder ID in that list.
+			updateUsersList = (!(isLongInList(binderId, usersExpandedBindersList)));
+		}
+		
+		// Do we need to write an expanded Binder's list to the User's
+		// properties?
+		if (updateUsersList) {
+			// Yes!  Add this Binder ID to it and write it.
+			usersExpandedBindersList.add(0, binderId);
+			setExpandedBindersList(bs, usersExpandedBindersList);
 		}
 	}
 	
 	/*
 	 * Stores the expanded Binder's List in a UserProperties.
 	 */
-	private static void setExpandedBindersList(UserProperties userProperties, List<Long> expandedBindersList) {
-		userProperties.setProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST, expandedBindersList);
+	private static void setExpandedBindersList(AllModulesInjected bs, List<Long> expandedBindersList) {
+		bs.getProfileModule().setUserProperty(
+			null,
+			ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST,
+			((null == expandedBindersList) ?
+				new ArrayList<Long>()      :
+				expandedBindersList));
 	}
 }
