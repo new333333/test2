@@ -501,7 +501,7 @@ public class SearchFilter {
 	
 	private void addEntryAttributeValues(Element parent, String defId, String attributeName, String[] fieldValues, String valueType) {
 		if (valueType != null && valueType.equals("description")) {
-			attributeName="_desc";
+			attributeName=Constants.DESC_TEXT_FIELD;
 		}
 		
 		if ("event".equals(valueType)) {

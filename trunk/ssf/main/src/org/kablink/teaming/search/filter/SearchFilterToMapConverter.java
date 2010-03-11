@@ -294,7 +294,7 @@ public class SearchFilterToMapConverter {
 		if (entryFieldId == null || entryFieldId.equals("")) {
 			return block;
 		}
-		if (entryFieldId.equals("_desc")) {
+		if (entryFieldId.equals(Constants.DESC_TEXT_FIELD)) {
 			entryFieldId = "description";
 		}		
 		

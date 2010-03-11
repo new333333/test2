@@ -196,7 +196,7 @@ public class SearchObject {
 		PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(new NullAnalyzer());
 		retAnalyzer.addAnalyzer(Constants.ALL_TEXT_FIELD, new ChineseAnalyzer());
 		retAnalyzer.addAnalyzer(Constants.TITLE_FIELD, new ChineseAnalyzer());
-		retAnalyzer.addAnalyzer(Constants.DESC_FIELD, new ChineseAnalyzer());
+		retAnalyzer.addAnalyzer(Constants.DESC_TEXT_FIELD, new ChineseAnalyzer());
 		return retAnalyzer;
 	}
 }
