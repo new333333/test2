@@ -44,6 +44,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GwtBrandingDataExt
 	implements IsSerializable
 {
+	public static final String BRANDING_TYPE_ADVANCED = "advanced";
+	public static final String BRANDING_TYPE_IMAGE = "image";
+	
 	private static final long serialVersionUID = -7837015105719505381L;
 	private String m_fontColor = null;
 	private String m_brandingImgName = null;
@@ -51,6 +54,7 @@ public class GwtBrandingDataExt
 	private String m_backgroundColor = null;
 	private String m_backgroundImgName = null;
 	private String m_backgroundImgUrl = null;
+	private String m_brandingType = BRANDING_TYPE_ADVANCED;
 
 
 	/**
@@ -101,6 +105,7 @@ public class GwtBrandingDataExt
 		String brandingImgName;
 		String bgColor;
 		String bgImgName;
+		String type;
 
 		xml = new StringBuffer();
     	
@@ -118,6 +123,13 @@ public class GwtBrandingDataExt
     	brandingImgName = getBrandingImgName();
     	if ( brandingImgName != null && brandingImgName.length() > 0 )
     		xml.append( brandingImgName );
+    	xml.append( "\"" );
+    	
+    	// Add the brandingType attribute.
+    	xml.append( " brandingType=\"" );
+    	type = getBrandingType();
+    	if ( type != null && type.length() > 0 )
+    		xml.append( type );
     	xml.append( "\"" );
     	
     	// Close the <brandingData tag.
@@ -176,6 +188,15 @@ public class GwtBrandingDataExt
 		return m_fontColor;
 	}// end getFontColor()
 	
+	
+	/**
+	 * 
+	 */
+	public String getBrandingType()
+	{
+		return m_brandingType;
+	}// end getBrandingType();
+	
 
 	/**
 	 * 
@@ -220,6 +241,15 @@ public class GwtBrandingDataExt
 	{
 		m_brandingImgUrl = imgUrl;
 	}// end setBrandingImgUrl()
+	
+	
+	/**
+	 * 
+	 */
+	public void setBrandingType( String type )
+	{
+		m_brandingType = type;
+	}// end setBrandingType()
 
 	
 	/**

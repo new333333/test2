@@ -222,9 +222,6 @@ public abstract class DlgBox extends PopupPanel
 			if ( props != null )
 			{
 				// Yes
-				// Give the implementation of this dialog the opportunity to save the data.
-				saveData( props );
-				
 				// Do we have a handler we need to call?
 				if ( m_editSuccessfulHandler != null )
 				{
@@ -250,16 +247,6 @@ public abstract class DlgBox extends PopupPanel
 			}
 		}
 	}// end onClick()
-	
-	/**
-	 * Save the data in the dialog to whereever it needs to be saved to.
-	 * This method is usually overridden.
-	 */
-	public void saveData( Object data )
-	{
-		
-	}// end saveData()
-	
 	
 	/**
 	 * Show this dialog.

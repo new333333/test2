@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
+import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -54,6 +55,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
@@ -79,7 +81,6 @@ public class EditBrandingDlg extends DlgBox
 	private TextBox m_textColorTextbox;
 	private TextBox m_sampleText;
 	private AsyncCallback<ArrayList<String>> m_rpcReadCallback = null;
-	private AsyncCallback<Boolean> m_rpcSaveCallback = null;
 	private GwtBrandingData m_origBrandingData;		// The original branding data we started with.
 	private final String m_noAvailableImages = "no available images";
 	private final String m_noImage = "no image";
@@ -154,54 +155,6 @@ public class EditBrandingDlg extends DlgBox
 			}// end onSuccess()
 		};
 		
-		// Create the callback that will be used when we issue an ajax call to save the branding data.
-		m_rpcSaveCallback = new AsyncCallback<Boolean>()
-		{
-			/**
-			 * 
-			 */
-			public void onFailure( Throwable t )
-			{
-				String errMsg;
-				String cause;
-				GwtTeamingMessages messages;
-				
-				messages = GwtTeaming.getMessages();
-				
-				if ( t instanceof GwtTeamingException )
-				{
-					ExceptionType type;
-				
-					// Determine what kind of exception happened.
-					type = ((GwtTeamingException)t).getExceptionType();
-					if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
-						cause = messages.errorAccessToFolderDenied( m_origBrandingData.getBinderId() );
-					else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
-						cause = messages.errorFolderDoesNotExist( m_origBrandingData.getBinderId() );
-					else
-						cause = messages.errorUnknownException();
-				}
-				else
-				{
-					cause = t.getLocalizedMessage();
-					if ( cause == null )
-						cause = t.toString();
-				}
-				
-				errMsg = messages.getBrandingRPCFailed( cause );
-				Window.alert( errMsg );
-			}// end onFailure()
-	
-			/**
-			 * 
-			 * @param result
-			 */
-			public void onSuccess( Boolean result )
-			{
-				// Nothing to do.
-			}// end onSuccess()
-		};
-		
 		// Create the header, content and footer of this dialog box.
 		createAllDlgContent( GwtTeaming.getMessages().brandingDlgHeader(), editSuccessfulHandler, editCanceledHandler, brandingData ); 
 	}// end EditBrandingDlg()
@@ -213,6 +166,7 @@ public class EditBrandingDlg extends DlgBox
 	public Panel createContent( Object props )
 	{
 		FlowPanel mainPanel = null;
+		Label spacer;
 		FlexTable table = null;
 		GwtBrandingData brandingData;
 		HorizontalPanel hPanel;
@@ -249,6 +203,12 @@ public class EditBrandingDlg extends DlgBox
 			++nextRow;
 		}
 		
+		// Add an empty row to add some space between the "use advanced branding" radio button and the "background image" listbox.
+		spacer = new Label( " " );
+		spacer.addStyleName( "marginTop10px" );
+		table.setWidget( nextRow, 0, spacer );
+		++nextRow;
+		
 		// Add the controls for "Background Image"
 		{
 			table.setText( nextRow, 0, GwtTeaming.getMessages().backgroundImgLabel() );
@@ -257,7 +217,6 @@ public class EditBrandingDlg extends DlgBox
 			// User user can select of of these files to use as the background image.
 			m_backgroundImgListbox = new ListBox( false );
 			m_backgroundImgListbox.setVisibleItemCount( 1 );
-			m_backgroundImgListbox.addStyleName( "marginTop5" );
 			table.setWidget( nextRow, 1, m_backgroundImgListbox );
 			++nextRow;
 			
@@ -274,6 +233,12 @@ public class EditBrandingDlg extends DlgBox
 			table.setWidget( nextRow, 1, hPanel );
 			++nextRow;
 		}
+		
+		// Add an empty row to add some space between the "background image" listbox and the "background color" textbox.
+		spacer = new Label( " " );
+		spacer.addStyleName( "marginTop10px" );
+		table.setWidget( nextRow, 0, spacer );
+		++nextRow;
 		
 		// Add the controls for "Background color"
 		{
@@ -358,6 +323,18 @@ public class EditBrandingDlg extends DlgBox
 		brandingData = new GwtBrandingData();
 		brandingData.setBinderId( m_origBrandingData.getBinderId() );
 		
+		// Get whether "use branding image" or "used advanced branding" is selected.
+		{
+			String type;
+			
+			if ( m_useAdvancedBrandingRb.getValue() == true )
+				type = GwtBrandingDataExt.BRANDING_TYPE_ADVANCED;
+			else
+				type = GwtBrandingDataExt.BRANDING_TYPE_IMAGE;
+			
+			brandingData.setBrandingType( type );
+		}
+		
 		// Get the selected branding image.
 		{
 			// Is something selected in the "branding image" listbox?
@@ -439,35 +416,29 @@ public class EditBrandingDlg extends DlgBox
 	 */
 	public void init( GwtBrandingData brandingData )
 	{
+		String type;
+		
 		// Issue an ajax request to get the list of file attachments for this binder.
 		// When we get the response, updateListOfFileAttachments() will be called.
 		getListOfFileAttachmentsFromServer();
+
+		// Select the appropriate checkbox depending on whether "use branding image" or "use advanced branding" is selected.
+		type = brandingData.getBrandingType();
+		if ( type != null && type.equalsIgnoreCase( GwtBrandingDataExt.BRANDING_TYPE_IMAGE ) )
+			m_useBrandingImgRb.setValue( true );
+		else
+			m_useAdvancedBrandingRb.setValue( true );
 		
 		// Add the background color to the appropriate textbox.
 		m_backgroundColorTextbox.setText( brandingData.getBgColor() );
 		
 		// Add the text color to the appropriate textbox.
-		this.m_textColorTextbox.setText( brandingData.getFontColor() );
+		m_textColorTextbox.setText( brandingData.getFontColor() );
 		
 		// Update the sample text with the given background color and font color.
 		updateSampleTextBgColor();
 		updateSampleTextColor();
 	}// end init()
-	
-	
-	/**
-	 * Issue an ajax request to save the branding data to the db.
-	 */
-	public void saveData( Object data )
-	{
-		GwtRpcServiceAsync rpcService;
-
-		rpcService = GwtTeaming.getRpcService();
-		
-		// Issue an ajax request to save the branding data to the db.
-		rpcService.saveBrandingData( m_origBrandingData.getBinderId(), (GwtBrandingData)data, m_rpcSaveCallback );
-		
-	}// end saveData()
 	
 	
 	/**
