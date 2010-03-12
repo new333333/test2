@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtFolder;
@@ -86,12 +87,12 @@ public interface GwtRpcService extends RemoteService
 	
 	// The following are used in the implementation of the various
 	// forms of the WorkspaceTreeControl.
-	public TreeInfo getHorizontalTree(  String binderId);
-	public TreeInfo getHorizontalNode(  String binderId);
-	public TreeInfo getVerticalTree(    String binderId);
-	public TreeInfo getVerticalNode(    String binderId);
-	public Boolean  persistNodeCollapse(String binderId);
-	public Boolean  persistNodeExpand(  String binderId);
+	public List<TreeInfo> getHorizontalTree(  String binderId);
+	public TreeInfo       getHorizontalNode(  String binderId);
+	public TreeInfo       getVerticalTree(    String binderId);
+	public TreeInfo       getVerticalNode(    String binderId);
+	public Boolean        persistNodeCollapse(String binderId);
+	public Boolean        persistNodeExpand(  String binderId);
 	
 	// Save the branding data to the given binder.
 	public Boolean saveBrandingData( String binderId, GwtBrandingData brandingData ) throws GwtTeamingException;

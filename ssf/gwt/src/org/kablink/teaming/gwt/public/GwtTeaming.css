@@ -629,27 +629,38 @@
 	background: url(images/trans50_black.png) repeat;
 	width: auto;
 }
-.mainBreadCrumb_CloseA
+.breadCrumb_Browser
+{
+}
+.breadCrumb_CloseA
 {
 	cursor: pointer;
 }
-.mainBreadCrumb_CloseImg
+.breadCrumb_CloseImg
 {
 }
-.mainBreadCrumb_Content
+.breadCrumb_Content
 {
-	color: #fff;
+	color: #FFFFFF;
 	font-size: .85em;
 	margin: 0px 20px;
 }
-.mainBreadCrumb_ContentEach
+.breadCrumb_ContentNode
 {
-	position: relative;
-	margin-right: 15px;
 }
-.mainBreadCrumb_ContentEach a
+.breadCrumb_ContentNode_ExpanderImg
 {
-	color: #fff;
+	cursor: pointer;
+	margin-top: 2px;
+	margin-right: 2px;
+}
+.breadCrumb_ContentNode_Anchor
+{
+	cursor: pointer;
+	color: #FFFFFF;
+	margin-top: 2px;
+	margin-right: 15px;
+	font-size: 1.1em;
 }
 
 /* Styles used by the MainMenuControl. */
@@ -945,7 +956,7 @@
 }
 .subhead-control-bg2, .btn-bg2
 {
-	color: #fff;
+	color: #FFFFFF;
 	background: url(images/blue_slice.png) repeat-x;
 	background-position: bottom;
 }

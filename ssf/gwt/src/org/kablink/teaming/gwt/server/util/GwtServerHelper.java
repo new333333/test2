@@ -235,6 +235,24 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Builds a TreeInfo object for a given Binder, using a List<Long>
+	 * of Binder IDs for its children.
+	 *
+	 * @param bs
+	 * @param bindersList
+	 * 
+	 * @return
+	 */
+	public static List<TreeInfo> buildTreeInfoFromBinderList(AllModulesInjected bs, List<Long> bindersList) {
+		ArrayList<TreeInfo> reply = new ArrayList<TreeInfo>();
+		for (Iterator<Long> lIT = bindersList.iterator(); lIT.hasNext(); ) {
+			Binder binder = bs.getBinderModule().getBinder(lIT.next());
+			reply.add(buildTreeInfoFromBinderImpl(bs, binder, null, false, (-1)));
+		}
+		return reply;
+	}
+	
+	/**
 	 * Returns the User object of the currently logged in user.
 	 * 
 	 * @return

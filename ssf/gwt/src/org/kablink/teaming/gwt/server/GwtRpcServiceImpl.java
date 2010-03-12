@@ -916,9 +916,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 
 	/**
-	 * Returns a TreeInfo object containing the display information for
-	 * the Binder referred to by binderId from the perspective of the
-	 * currently logged in user.
+	 * Returns a List<TreeInfo> containing the display information for
+	 * the Binder hierarchy referred to by binderId from the
+	 * perspective of the currently logged in user.
 	 * 
 	 * The information returned is typically used for driving a
 	 * horizontal WorkspaceTreeControl widget.
@@ -927,26 +927,23 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public TreeInfo getHorizontalTree(String binderIdS) {
+	public List<TreeInfo> getHorizontalTree(String binderIdS) {
 		// Access the Binder's nearest containing Workspace...
 		long binderId = Long.parseLong(binderIdS);
 		Binder binder = getBinderModule().getBinder(binderId);
-		Binder topBinder = binder;
 		
 		ArrayList<Long> bindersList = new ArrayList<Long>();
 		while (true) {
-			bindersList.add(binder.getId());
+			bindersList.add(0, binder.getId());
 			binder = binder.getParentBinder();
 			if (null == binder) {
 				break;
 			}
-			topBinder = binder;
 		}
 
 		// ...and build the TreeInfo for the request Binder.
-		TreeInfo reply = GwtServerHelper.buildTreeInfoFromBinder(
+		List<TreeInfo> reply = GwtServerHelper.buildTreeInfoFromBinderList(
 			this,
-			topBinder,
 			bindersList);
 
 
@@ -1097,7 +1094,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			if ( binderIdL != null )
 			{
 				String branding;
-				GwtBrandingDataExt brandingExt;
 				HashMap<String, Object> hashMap;
 				MapInputData dataMap;
 				
