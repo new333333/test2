@@ -80,6 +80,7 @@ import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
+import org.kablink.teaming.module.binder.processor.EntryProcessor;
 import org.kablink.teaming.module.dashboard.DashboardModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.file.FileModule;
@@ -256,6 +257,10 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	}
 	private BinderProcessor loadBinderProcessor(Binder binder) {
 		return (BinderProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
+	}
+
+	private EntryProcessor loadEntryProcessor(Entry entry) {
+		return (EntryProcessor)getProcessorManager().getProcessor(entry.getParentBinder(), entry.getParentBinder().getProcessorKey(EntryProcessor.PROCESSOR_KEY));
 	}
 
    	/**
@@ -658,6 +663,13 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		if (!origional.equals(current) && (workArea instanceof Binder)) {
 			Binder binder = (Binder)workArea;
 			loadBinderProcessor(binder).indexFunctionMembership(binder, true);
+		} else if (!origional.equals(current) && (workArea instanceof Entry)) {
+			Entry entry = (Entry)workArea;
+			List entries = new ArrayList();
+			entries.add(entry);
+			Set<Entry> children = entry.getChildWorkAreas();
+			for (Entry e : children) entries.add(e);
+			loadEntryProcessor(entry).indexEntries(entries);
 		}
 	}
 

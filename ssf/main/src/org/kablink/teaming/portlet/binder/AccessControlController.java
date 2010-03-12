@@ -99,8 +99,8 @@ public class AccessControlController extends AbstractBinderController {
 			SimpleProfiler.setProfiler(new SimpleProfiler("lucene"));
 			Map functionMemberships = new HashMap();
 			getAccessResults(request, functionMemberships);
-			getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
 			if (workArea instanceof Entry) getAdminModule().setEntryHasAcl(workArea, Boolean.TRUE);
+			getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
 			if(logger.isDebugEnabled())
 				logger.debug(SimpleProfiler.toStr());
 			SimpleProfiler.clearProfiler();
@@ -213,7 +213,7 @@ public class AccessControlController extends AbstractBinderController {
 	//used by ajax controller
 	public static void setupAccess(AllModulesInjected bs, RenderRequest request, RenderResponse response, WorkArea wArea, Map model) {
 		String scope = ObjectKeys.ROLE_TYPE_BINDER;
-		if (wArea instanceof Entry) scope = ObjectKeys.ROLE_TYPE_BINDER;
+		if (wArea instanceof Entry) scope = ObjectKeys.ROLE_TYPE_ENTRY;
 		List functions = bs.getAdminModule().getFunctions(scope);
 		List membership;
 		boolean zoneWide = wArea.getWorkAreaType().equals(EntityIdentifier.EntityType.zone.name());

@@ -61,6 +61,10 @@ public abstract class Entry extends DefinableEntity implements WorkArea {
     	return true;
     }
 	public boolean hasEntryAcl() {
+		if (this instanceof FolderEntry && !((FolderEntry)this).isTop()) {
+			//This is a reply to a folder entry. Check the top entry instead
+			return ((FolderEntry)this).getTopEntry().hasEntryAcl();
+		}
 		if (hasEntryAcl == null) {
 			return false;
 		} else {
@@ -71,6 +75,10 @@ public abstract class Entry extends DefinableEntity implements WorkArea {
 		this.hasEntryAcl = hasEntryAcl;
 	}
 	public boolean checkFolderAcl() {
+		if (this instanceof FolderEntry && !((FolderEntry)this).isTop()) {
+			//This is a reply to a folder entry. Check the top entry instead
+			return ((FolderEntry)this).getTopEntry().checkFolderAcl();
+		}
 		if (checkFolderAcl == null) return true;
 		else return checkFolderAcl;
 	}
