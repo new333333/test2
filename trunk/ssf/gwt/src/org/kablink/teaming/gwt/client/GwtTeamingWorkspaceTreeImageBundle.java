@@ -70,7 +70,7 @@ public interface GwtTeamingWorkspaceTreeImageBundle extends ClientBundle {
 	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_workspace.gif")
 	public ImageResource folder_workspace();
 	
-	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/spacer_1px.gif")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/spacer_1px.png")
 	public ImageResource spacer_1px();
 	
 	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/tree_closer.png")

@@ -35,9 +35,7 @@ package org.kablink.teaming.gwt.client.util;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
-import org.kablink.teaming.gwt.client.TeamingAction;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
@@ -70,17 +68,14 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  *
  */
-public class TreeDisplayVertical {
+public class TreeDisplayVertical extends TreeDisplayBase {
 	private HashMap<String,Integer> m_renderDepths;		// A map of the depths the Binder's are are displayed at.
 	private long 					m_selectedBinderId;	// The ID of the currently selected binder.
-	private TreeInfo				m_rootTI;			// The root TreeInfo object being displayed.
 
 	// The follow controls the height and width of the images displayed
 	// by this object.
-	private final static int BINDER_HEIGHT_INT   = 16; private final static String BINDER_HEIGHT   = (BINDER_HEIGHT_INT   + "px");
-	private final static int BINDER_WIDTH_INT    = 16; private final static String BINDER_WIDTH    = (BINDER_WIDTH_INT    + "px");
-	private final static int EXPANDER_HEIGHT_INT = 16; private final static String EXPANDER_HEIGHT = (EXPANDER_HEIGHT_INT + "px");
-	private final static int EXPANDER_WIDTH_INT  = 16; private final static String EXPANDER_WIDTH  = (EXPANDER_WIDTH_INT  + "px");
+	private final static int BINDER_HEIGHT_INT = 16; private final static String BINDER_HEIGHT = (BINDER_HEIGHT_INT + "px");
+	private final static int BINDER_WIDTH_INT  = 16; private final static String BINDER_WIDTH  = (BINDER_WIDTH_INT  + "px");
 
 	// The following are used for widget IDs assigned to various
 	// objects in a running WorkspaceTreeControl.
@@ -91,36 +86,26 @@ public class TreeDisplayVertical {
 	private final static String EXTENSION_ID_TRASH_BASE      = (EXTENSION_ID_BASE + "Trash_");
 	private final static String EXTENSION_ID_TRASH_PERMALINK = (EXTENSION_ID_BASE + "TrashPermalink");
 
-	// The following controls the grid size and nested offsets for the
-	// WOrkspaceTreeControl.
-	private final static int SELECTOR_GRID_DEPTH_OFFSET	=  16;	// Based on empirical evidence.
-	private final static int SELECTOR_GRID_WIDTH        = 208;	// Based on the width of 230 in the workspaceTreeControl style
-	
 	/*
 	 * Inner class that implements clicking on the various tree
 	 * expansion widgets.
 	 */
-	private class Expander implements ClickHandler {
+	private class BinderExpander implements ClickHandler {
 		private Grid m_grid;
 		private Image m_expanderImg;
 		private int m_gridRow;
-		private RequestInfo m_ri;
 		private TreeInfo m_ti;
-		private WorkspaceTreeControl m_wsTree;
 
 		/**
 		 * Class constructor.
 		 * 
 		 * @param ti
-		 * @param wsTree
 		 * @param grid
 		 * @param gridRow
 		 * @param expanderImg
 		 */
-		Expander(RequestInfo ri, WorkspaceTreeControl wsTree, TreeInfo ti, Grid grid, int gridRow, Image expanderImg) {
+		BinderExpander(TreeInfo ti, Grid grid, int gridRow, Image expanderImg) {
 			// Simply store the parameters.
-			m_ri = ri;
-			m_wsTree = wsTree;
 			m_ti = ti;
 			m_grid = grid;
 			m_gridRow = gridRow;
@@ -133,7 +118,7 @@ public class TreeDisplayVertical {
 		 * @param event
 		 */
 		public void onClick(ClickEvent event) {
-			final GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
+			final GwtRpcServiceAsync rpcService = getRpcService();
 				
 			// Are we collapsing the row?
 			if (m_ti.isBinderExpanded()) {
@@ -145,8 +130,8 @@ public class TreeDisplayVertical {
 						// row and change the row's Anchor Image to a
 						// tree_opener.
 						m_ti.setBinderExpanded(false);
-						reRenderRow(m_ri, m_wsTree, m_grid, m_gridRow, m_ti);
-						m_expanderImg.setResource(GwtTeaming.getWorkspaceTreeImageBundle().tree_opener());
+						reRenderRow(m_grid, m_gridRow, m_ti);
+						m_expanderImg.setResource(getImages().tree_opener());
 					}
 				});
 			}
@@ -169,9 +154,9 @@ public class TreeDisplayVertical {
 								m_ti.setBinderExpanded(true);
 								m_ti.setChildBindersList(expandedTI.getChildBindersList());
 								if (0 < m_ti.getBinderChildren()) {
-									reRenderRow(m_ri, m_wsTree, m_grid, m_gridRow, m_ti);
+									reRenderRow(m_grid, m_gridRow, m_ti);
 								}
-								m_expanderImg.setResource(GwtTeaming.getWorkspaceTreeImageBundle().tree_closer());
+								m_expanderImg.setResource(getImages().tree_closer());
 							}
 						});
 					}
@@ -181,43 +166,9 @@ public class TreeDisplayVertical {
 	}
 	
 	/*
-	 * Inner class that implements clicking on the various Binder
-	 * links in the tree.
-	 */
-	private class Selector implements ClickHandler {
-		private TreeInfo m_ti;
-		private WorkspaceTreeControl m_wsTree;
-
-		/**
-		 * Class constructor.
-		 * 
-		 * @param wsTree
-		 * @param ti
-		 */
-		Selector(WorkspaceTreeControl wsTree, TreeInfo ti) {
-			// Simply store the parameters.
-			m_wsTree = wsTree;
-			m_ti = ti;
-		}
-		
-		/**
-		 * Called when the row selector is clicked.
-		 * 
-		 * @param event
-		 */
-		public void onClick(ClickEvent event) {
-			// Select the Binder and tell the WorkspaceTreeControl to
-			// handle it.
-			selectBinder(m_ti);
-			m_wsTree.triggerAction(TeamingAction.SELECTION_CHANGED, buildOnSelectBinderInfo(m_ti));
-		}
-	}
-
-
-	/*
 	 * Inner class used to handle mouse events for a Binder selector.  
 	 */
-	private static class SelectorMouseHandler implements MouseOverHandler, MouseOutHandler {
+	private static class BinderSelectorMouseHandler implements MouseOverHandler, MouseOutHandler {
 		private String m_selectorGridId;
 		
 		/**
@@ -225,7 +176,7 @@ public class TreeDisplayVertical {
 		 * 
 		 * @param selectorGridId
 		 */
-		SelectorMouseHandler(String selectorGridId) {
+		BinderSelectorMouseHandler(String selectorGridId) {
 			// Simply store the parameters.
 			m_selectorGridId = selectorGridId;
 		}
@@ -256,20 +207,26 @@ public class TreeDisplayVertical {
 	/**
 	 * Constructor method.
 	 */
-	public TreeDisplayVertical(TreeInfo rootTI) {
-		// Simply store the parameters.
-		m_rootTI = rootTI;
+	public TreeDisplayVertical(RequestInfo requestInfo, WorkspaceTreeControl wsTree, TreeInfo rootTI) {
+		// Construct the super class...
+		super(requestInfo, wsTree, rootTI);
+		
+		// ...and initialize everything else.
 		m_selectedBinderId = (-1);
 		m_renderDepths = new HashMap<String,Integer>();
 	}
 
 	/**
-	 * Returns an OnSelectBinderInfo object that corresponds to this
+	 * Returns an OnSelectBinderInfo object that corresponds to a
 	 * TreeInfo object.
+	 * 
+	 * Implements TreeDisplayBase.buildOnSelectBinderInfo().
+	 * 
+	 * @param ti
 	 * 
 	 * @return
 	 */
-	public OnSelectBinderInfo buildOnSelectBinderInfo(TreeInfo ti) {
+	OnSelectBinderInfo buildOnSelectBinderInfo(TreeInfo ti) {
 		// Construct an OnSelectBinderInfo for this TreeInfo object.
 		OnSelectBinderInfo reply = new OnSelectBinderInfo(ti);
 		
@@ -340,10 +297,9 @@ public class TreeDisplayVertical {
 	 *
 	 * @param selectedBinderId
 	 * @param ri
-	 * @param wsTree
 	 * @param targetPanel
 	 */
-	public void render(String selectedBinderId, RequestInfo ri, WorkspaceTreeControl wsTree, FlowPanel targetPanel) {
+	public void render(String selectedBinderId, FlowPanel targetPanel) {
 		// Track the Binder that's to be initially selected.
 		setSelectedBinderId(selectedBinderId);
 		
@@ -354,13 +310,13 @@ public class TreeDisplayVertical {
 		targetPanel.add(selectedId);
 		
 		// Create the WorkspaceTree control's header...
-		Label selectorLabel = new Label(m_rootTI.getBinderTitle());
+		Label selectorLabel = new Label(getRootTreeInfo().getBinderTitle());
 		selectorLabel.addStyleName("workspaceTreeControlHeader");
-		selectorLabel.getElement().setId(getSelectorId(m_rootTI));
-		selectorLabel.getElement().setAttribute(EXTENSION_ID_TRASH_PERMALINK, m_rootTI.getBinderTrashPermalink());
+		selectorLabel.getElement().setId(getSelectorId(getRootTreeInfo()));
+		selectorLabel.getElement().setAttribute(EXTENSION_ID_TRASH_PERMALINK, getRootTreeInfo().getBinderTrashPermalink());
 		Anchor selectorA = new Anchor();
 		selectorA.getElement().appendChild(selectorLabel.getElement());
-		selectorA.addClickHandler(new Selector(wsTree, m_rootTI));
+		selectorA.addClickHandler(new BinderSelector(getRootTreeInfo()));
 		targetPanel.add(selectorA);
 
 		// ...its content panel...
@@ -372,18 +328,18 @@ public class TreeDisplayVertical {
 		targetPanel.add(grid);
 		
 		// ...and if there are any rows to display...
-		for (Iterator<TreeInfo> tii = m_rootTI.getChildBindersList().iterator(); tii.hasNext(); ) {
+		for (Iterator<TreeInfo> tii = getRootTreeInfo().getChildBindersList().iterator(); tii.hasNext(); ) {
 			// ...render them.
 			int row = grid.getRowCount();
 			grid.insertRow(row);
-			renderRow(ri, wsTree, grid, row, tii.next(), 0);
+			renderRow(grid, row, tii.next(), 0);
 		}
 	}
 	
 	/*
 	 * Called to render an individual row in the WorkspaceTree control.
 	 */
-	private void renderRow(RequestInfo ri, WorkspaceTreeControl wsTree, Grid grid, int row, TreeInfo ti, int renderDepth) {
+	private void renderRow(Grid grid, int row, TreeInfo ti, int renderDepth) {
 		// Store the depth at which we're rendering this Binder.
 		setRenderDepth(ti, renderDepth);
 		
@@ -399,13 +355,13 @@ public class TreeDisplayVertical {
 			expanderImg.addStyleName("workspaceTreeBinderExpanderImg");
 			Anchor expanderA = new Anchor();
 			expanderA.getElement().appendChild(expanderImg.getElement());
-			expanderA.addClickHandler(new Expander(ri, wsTree, ti, grid, row, expanderImg));
+			expanderA.addClickHandler(new BinderExpander(ti, grid, row, expanderImg));
 			expanderWidget = expanderA;
 		}
 		else {
 			// No, it isn't expandable!  Put a 16x16 spacer in place of
 			// the expander.
-			expanderImgRes = GwtTeaming.getWorkspaceTreeImageBundle().spacer_1px();
+			expanderImgRes = getImages().spacer_1px();
 			expanderImg = new Image(expanderImgRes);
 			expanderImg.setWidth(EXPANDER_WIDTH);
 			expanderImg.setHeight(EXPANDER_HEIGHT);
@@ -420,12 +376,12 @@ public class TreeDisplayVertical {
 		String binderIconName = ti.getBinderIconName();
 		if (GwtClientHelper.hasString(binderIconName)) {
 			binderImg = new Image();
-			binderImg.setUrl(ri.getImagesPath() + binderIconName);
+			binderImg.setUrl(getImagesPath() + binderIconName);
 		}
 		else {
 			ImageResource binderImgRes = ti.getBinderImage();
 			if (null == binderImgRes) {
-				binderImgRes = GwtTeaming.getWorkspaceTreeImageBundle().spacer_1px();
+				binderImgRes = getImages().spacer_1px();
 				binderImg = new Image(binderImgRes);
 			}
 			else {
@@ -452,7 +408,7 @@ public class TreeDisplayVertical {
 		selectorGrid.setWidth(String.valueOf(SELECTOR_GRID_WIDTH - (SELECTOR_GRID_DEPTH_OFFSET * renderDepth)) + "px");
 		Anchor selectorA = new Anchor();
 		selectorA.getElement().appendChild(selectorGrid.getElement());
-		selectorA.addClickHandler(new Selector(wsTree, ti));
+		selectorA.addClickHandler(new BinderSelector(ti));
 		selectorA.setWidth("100%");
 		String selectorGridId = (EXTENSION_ID_SELECTOR_ANCHOR + getSelectorId(ti));
 		selectorGrid.getElement().setId(selectorGridId);
@@ -470,9 +426,9 @@ public class TreeDisplayVertical {
 
 		// Install a mouse handler on the selector Anchor so that we
 		// can manage hover overs on them.
-		SelectorMouseHandler smh = new SelectorMouseHandler(selectorGridId);
-		selectorA.addMouseOverHandler(smh);
-		selectorA.addMouseOutHandler( smh);
+		BinderSelectorMouseHandler bsmh = new BinderSelectorMouseHandler(selectorGridId);
+		selectorA.addMouseOverHandler(bsmh);
+		selectorA.addMouseOutHandler( bsmh);
 		
 		// Is the row showing an expander?
 		if (showExpander) {
@@ -500,7 +456,7 @@ public class TreeDisplayVertical {
 				for (Iterator<TreeInfo> tii = ti.getChildBindersList().iterator(); tii.hasNext(); ) {
 					int expansionRow = expansionGrid.getRowCount();
 					expansionGrid.insertRow(expansionRow);
-					renderRow(ri, wsTree, expansionGrid, expansionRow, tii.next(), (renderDepth + 1));
+					renderRow(expansionGrid, expansionRow, tii.next(), (renderDepth + 1));
 				}
 			}
 		}
@@ -509,16 +465,20 @@ public class TreeDisplayVertical {
 	/*
 	 * Clears and re-renders a TreeInfo object into a Grid row.
 	 */
-	private void reRenderRow(RequestInfo ri, WorkspaceTreeControl wsTree, Grid grid, int row, TreeInfo ti) {
+	private void reRenderRow(Grid grid, int row, TreeInfo ti) {
 		clearRow(grid, row);
-		renderRow(ri, wsTree, grid, row, ti, getRenderDepth(ti));
+		renderRow(grid, row, ti, getRenderDepth(ti));
 	}
 	
-	/*
+	/**
 	 * Does whatever is necessary UI wise to select the Binder
-	 * represented by this TreeInfo.
+	 * represented by a TreeInfo.
+	 * 
+	 * Implementation of TreeDisplayBase.selectBinder().
+	 * 
+	 * @param ti
 	 */
-	private static void selectBinder(TreeInfo ti) {
+	void selectBinder(TreeInfo ti) {
 		// If this isn't a trash Binder...
 		if (!(ti.isBinderTrash())) {
 			// ...mark it as having been selected.

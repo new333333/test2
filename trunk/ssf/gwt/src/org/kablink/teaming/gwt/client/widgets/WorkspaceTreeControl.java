@@ -86,31 +86,32 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor {
 		final String selectedBinderId = m_requestInfo.getBinderId();
 		final WorkspaceTreeControl wsTree = this;
 		final FlowPanel mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "workspaceTreeControl" );
 		
 		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
 		switch (tm) {
 		case HORIZONTAL:
-			rpcService.getHorizontalTree(selectedBinderId, new AsyncCallback<TreeInfo>() {
+			mainPanel.addStyleName( "breadCrumb_Browser" );
+			rpcService.getHorizontalTree(selectedBinderId, new AsyncCallback<List<TreeInfo>>() {
 				public void onFailure(Throwable t) {
 					Window.alert(t.toString());
 				}
-				public void onSuccess(TreeInfo ti)  {
-					TreeDisplayHorizontal tdh = new TreeDisplayHorizontal(ti);
-					tdh.render(selectedBinderId, m_requestInfo, wsTree, mainPanel);
+				public void onSuccess(List<TreeInfo> tiList)  {
+					TreeDisplayHorizontal tdh = new TreeDisplayHorizontal(m_requestInfo, wsTree, tiList);
+					tdh.render(mainPanel);
 				}
 			});
 			
 			break;
 			
 		case VERTICAL:
+			mainPanel.addStyleName( "workspaceTreeControl" );
 			rpcService.getVerticalTree(selectedBinderId, new AsyncCallback<TreeInfo>() {
 				public void onFailure(Throwable t) {
 					Window.alert(t.toString());
 				}
 				public void onSuccess(TreeInfo ti)  {
-					TreeDisplayVertical tdv = new TreeDisplayVertical(ti);
-					tdv.render(selectedBinderId, m_requestInfo, wsTree, mainPanel);
+					TreeDisplayVertical tdv = new TreeDisplayVertical(m_requestInfo, wsTree, ti);
+					tdv.render(selectedBinderId, mainPanel);
 				}
 			});
 		}
