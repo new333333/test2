@@ -376,6 +376,7 @@ public class AccessUtils  {
     
 	private static void operationCheck(User user, Binder binder, WorkflowSupport entry, WorkAreaOperation operation) {
 		WfAcl.AccessType accessType = WfAcl.AccessType.delete;
+		if (WorkAreaOperation.READ_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.read;
 		if (WorkAreaOperation.MODIFY_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.write;
 		if (WorkAreaOperation.DELETE_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.delete;
  		if (!entry.hasAclSet()) {

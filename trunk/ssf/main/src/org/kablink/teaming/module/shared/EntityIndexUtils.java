@@ -575,6 +575,10 @@ public class EntityIndexUtils {
         return ids;
     }
     public static String getEntryAclString(Binder binder, Entry entry) {
+    	if (entry instanceof FolderEntry && !((FolderEntry)entry).isTop()) {
+    		//This is a reply to a folder entry. Get the acl of the top entry
+    		entry = ((FolderEntry)entry).getTopEntry();
+    	}
     	if (entry.hasEntryAcl()) {
 			Set entryIds = AccessUtils.getReadAccessIds(entry);
 	   		String ids = LongIdUtil.getIdsAsString(entryIds);
@@ -692,6 +696,9 @@ public class EntityIndexUtils {
        		}
        		//add entry access
     		if (((Entry)entry).hasEntryAcl()) {
+    			addEntryAcls(doc, binder, (Entry)entry);
+    		} else if (entry instanceof FolderEntry && !((FolderEntry)entry).isTop() && ((FolderEntry)entry).getTopEntry().hasEntryAcl()) {
+    			//This is a reply to an folder entry, set the acl the same as the top entry
     			addEntryAcls(doc, binder, (Entry)entry);
     		} else if (!wEntry.hasAclSet() && !((Entry)entry).hasEntryAcl()) {
     			addDefaultEntryAcls(doc, binder, (Entry)entry);
