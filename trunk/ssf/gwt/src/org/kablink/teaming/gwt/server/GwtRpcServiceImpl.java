@@ -414,6 +414,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					String xmlStr;
 					
 					brandingExt = new GwtBrandingDataExt();
+					
+					// Is there old-style branding?
+					if ( branding != null && branding.length() > 0 )
+					{
+						// Yes
+						brandingExt.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_ADVANCED );
+					}
+					else
+					{
+						// No
+						brandingExt.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_IMAGE );
+					}
 
 					// Get the xml that represents the branding data.  The following is an example of what the xml should look like.
 					// 	<brandingData fontColor="" brandingImgName="some name" brandingType="image/advanced">
@@ -458,11 +470,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 			    				if ( imgName != null && imgName.length() > 0 )
 			    				{
-			    					// Get a url to the file.
-			    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, binder, imgName );
-			    					brandingExt.setBrandingImgUrl( fileUrl );
-			    					
 			    					brandingExt.setBrandingImgName( imgName );
+
+			    					// Is the image name "__no image__" or "__default teaming image__"?
+			    					// These are special names that don't represent a real image file name.
+			    					if ( !imgName.equalsIgnoreCase( "__no image__" ) && !imgName.equalsIgnoreCase( "__default teaming image__" ) )
+			    					{
+			    						// No, Get a url to the file.
+				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, binder, imgName );
+				    					brandingExt.setBrandingImgUrl( fileUrl );
+			    					}
 			    				}
 			    			}
 			    			

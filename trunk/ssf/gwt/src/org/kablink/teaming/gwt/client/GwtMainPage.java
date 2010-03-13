@@ -63,6 +63,8 @@ import com.google.gwt.dom.client.Style;
 public class GwtMainPage extends Composite
 	implements ActionHandler, ResizeHandler
 {
+	public static boolean m_novellTeaming = true;
+	
 	private MastHead m_mastHead;
 	private MainMenuControl m_mainMenuCtrl;
 	private WorkspaceTreeControl m_wsTreeCtrl;
@@ -91,6 +93,7 @@ public class GwtMainPage extends Composite
 		
 		// Get information about the request we are dealing with.
 		m_requestInfo = getRequestInfo();
+		m_novellTeaming = m_requestInfo.isNovellTeaming();
 		
 		// Add the MastHead to the page.
 		m_mastHead = new MastHead( m_requestInfo );

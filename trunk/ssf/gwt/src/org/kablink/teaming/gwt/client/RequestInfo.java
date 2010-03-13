@@ -78,4 +78,10 @@ public class RequestInfo extends JavaScriptObject
 	 */
 	public final native String getMyWorkspaceUrl() /*-{ return this.myWSUrl; }-*/;
 
+	
+	/**
+	 * Return the flag that tells us if we are running Novell Teaming.
+	 */
+	public final native boolean isNovellTeaming() /*-{ return this.isNovellTeaming; }-*/;
+
 }// end RequestInfo

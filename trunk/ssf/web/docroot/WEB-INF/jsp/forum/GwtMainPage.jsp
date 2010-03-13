@@ -59,7 +59,8 @@
 			userName : '${userFullName}',
 			adaptedUrl : '${adaptedUrl}',
 			imagesPath : '<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
-			myWSUrl : '${myWorkspaceUrl}'
+			myWSUrl : '${myWorkspaceUrl}',
+			isNovellTeaming : ${isNovellTeaming},
 		};
 	</script>
 

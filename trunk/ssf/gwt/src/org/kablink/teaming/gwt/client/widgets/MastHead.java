@@ -78,6 +78,9 @@ import com.google.gwt.user.client.ui.Widget;
 public class MastHead extends Composite
 	implements ActionRequestor, ClickHandler, LoadHandler, MouseOutHandler, MouseOverHandler
 {
+	public static final String NO_IMAGE = "__no image__";
+	public static final String DEFAULT_TEAMING_IMAGE = "__default teaming image__";
+	
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	private RequestInfo m_requestInfo = null;
 	private String m_mastheadBinderId = null;
@@ -116,7 +119,7 @@ public class MastHead extends Composite
 		implements LoadHandler
 	{
 		private FlowPanel m_panel;
-		private Image m_novellTeamingImg = null;
+		private Image m_teamingImg = null;
 
 		/**
 		 * 
@@ -128,11 +131,25 @@ public class MastHead extends Composite
 			m_panel = new FlowPanel();
 			m_panel.addStyleName( "mastHeadBrandingPanel" );
 	
-			// Create a Novell Teaming image that will be used in case there is no branding.
-			imageResource = GwtTeaming.getImageBundle().mastHeadNovellGraphic();
-			m_novellTeamingImg = new Image( imageResource );
-			m_novellTeamingImg.setWidth( "500" );
-			m_novellTeamingImg.setHeight( "75" );
+			// Are we running Novell Teaming?
+			if ( m_requestInfo.isNovellTeaming() )
+			{
+				// Yes
+				// Create a Novell Teaming image that will be used in case there is no branding.
+				imageResource = GwtTeaming.getImageBundle().mastHeadNovellGraphic();
+				m_teamingImg = new Image( imageResource );
+				m_teamingImg.setWidth( "500" );
+				m_teamingImg.setHeight( "75" );
+			}
+			else
+			{
+				// No
+				// Create a Kablink Teaming image that will be used in case there is no branding.
+				imageResource = GwtTeaming.getImageBundle().mastHeadKablinkGraphic();
+				m_teamingImg = new Image( imageResource );
+				m_teamingImg.setWidth( "500" );
+				m_teamingImg.setHeight( "75" );
+			}
 		
 			// All composites must call initWidget() in their constructors.
 			initWidget( m_panel );
@@ -170,27 +187,50 @@ public class MastHead extends Composite
 				if ( brandingType != null && brandingType.equalsIgnoreCase( GwtBrandingDataExt.BRANDING_TYPE_IMAGE ) )
 				{
 					String brandingImgUrl;
+					String brandingImgName;
+					boolean useDefaultTeamingImg = false;
 
 					// Yes
-					// Do we have an image to use as the branding?
+					brandingImgName = brandingData.getBrandingImageName();
 					brandingImgUrl = brandingData.getBrandingImageUrl();
-					if ( brandingImgUrl != null && brandingImgUrl.length() > 0 )
+					
+					// Do we have the name of a branding image to use?
+					if ( brandingImgName == null || brandingImgName.length() == 0 )
 					{
-						Image img;
-						
-						// Yes, create the image and add it to the panel.
-						img = new Image( brandingImgUrl );
-						img.addLoadHandler( this );
-						m_panel.add( img );
+						// No, use the default teaming image.
+						useDefaultTeamingImg = true;
 					}
 					else
 					{
-						// No, Does the user want to use the default Novell/Kablink Teaming image?
-						if ( false )
+						// Yes
+						// Is the branding image name "__default teaming image__"?
+						if ( brandingImgName.equalsIgnoreCase( DEFAULT_TEAMING_IMAGE ) )
 						{
-							// Yes, use the Novell Teaming image for the branding.
-							m_panel.add( m_novellTeamingImg );
+							// Yes
+							useDefaultTeamingImg = true;
 						}
+						// Is the branding image name "__no image__"?
+						else if ( brandingImgName.equalsIgnoreCase( NO_IMAGE ) )
+						{
+							// Yes, nothing to do
+						}
+						// Do we have a url to the specified branding image?
+						else if ( brandingImgUrl != null && brandingImgUrl.length() > 0 )
+						{
+							Image img;
+							
+							// Yes, create the image and add it to the panel.
+							img = new Image( brandingImgUrl );
+							img.addLoadHandler( this );
+							m_panel.add( img );
+						}
+					}
+					
+					// Should we use the default Teaming image?
+					if ( useDefaultTeamingImg )
+					{
+						// Yes
+						m_panel.add( m_teamingImg );
 					}
 				}
 				else
