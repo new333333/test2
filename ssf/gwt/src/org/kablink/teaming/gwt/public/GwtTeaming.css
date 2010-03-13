@@ -31,6 +31,25 @@
 	padding-bottom: .5em;
 }
 
+/* Style used for the Browse link in the "edit branding" dialog. */
+.editBrandingBrowseLink
+{
+	height: 20px;
+	overflow: hidden;
+	padding: 0;
+	text-align: center;
+	width: 28px;
+}
+
+/* Style used for links in the "edit branding" dialog. */
+.editBrandingLink
+{
+	color: #1C5894;
+	cursor: pointer;
+	margin-left: 4px;
+	text-decoration: none;
+}
+
 /* Styles used with the Edit-Delete control. */
 .editDeleteControl
 {

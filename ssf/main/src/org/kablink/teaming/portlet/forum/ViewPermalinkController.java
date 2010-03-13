@@ -61,6 +61,7 @@ import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
@@ -162,6 +163,9 @@ public class ViewPermalinkController  extends SAbstractController {
 						// Add the "my workspace" url to the response.
 						response.setRenderParameter( "myWorkspaceUrl", myWSUrl );
 					}
+					
+					// Add a flag that tells us if we are running Novell or Kablink Teaming.
+					response.setRenderParameter( "isNovellTeaming", Boolean.toString( ReleaseInfo.isLicenseRequiredEdition() ) );
 					
 					// Add the user's name.
 					firstName = user.getFirstName();
@@ -512,6 +516,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			   String urlStr;
 			   String userName;
 			   String myWSUrl;
+			   String isNovellTeaming;
 			   
 				// No, let the gwt page handle this permalink
 				
@@ -529,6 +534,10 @@ public class ViewPermalinkController  extends SAbstractController {
 				// Add the "my workspace" url to the response.
 				myWSUrl = PortletRequestUtils.getStringParameter( request, "myWorkspaceUrl", "" );
 				model.put( "myWorkspaceUrl", myWSUrl );
+				
+				// Add the flag that tells us if we are running Novell or Kablink Teaming to the response.
+				isNovellTeaming = PortletRequestUtils.getStringParameter( request, "isNovellTeaming", "true" );
+				model.put( "isNovellTeaming", isNovellTeaming );
 				
 				return new ModelAndView( "forum/GwtMainPage", model );
 			}
