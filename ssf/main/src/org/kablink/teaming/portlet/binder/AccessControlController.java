@@ -96,17 +96,35 @@ public class AccessControlController extends AbstractBinderController {
 		response.setRenderParameter(WebKeys.URL_WORKAREA_TYPE, workArea.getWorkAreaType());
 		//See if the form was submitted
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
-			SimpleProfiler.setProfiler(new SimpleProfiler("lucene"));
-			Map functionMemberships = new HashMap();
-			getAccessResults(request, functionMemberships);
-			if (workArea instanceof Entry) getAdminModule().setEntryHasAcl(workArea, Boolean.TRUE);
-			getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
-			if(logger.isDebugEnabled())
-				logger.debug(SimpleProfiler.toStr());
-			SimpleProfiler.clearProfiler();
-			if (EntityIdentifier.EntityType.zone.name().equals(type)) {
-				getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_ACCESS_CONTROLS, "true");
+			if (!(workArea instanceof FolderEntry) || ((FolderEntry)workArea).isTop()) {
+				SimpleProfiler.setProfiler(new SimpleProfiler("lucene"));
+				Map functionMemberships = new HashMap();
+				getAccessResults(request, functionMemberships);
+				if (workArea instanceof Entry) getAdminModule().setEntryHasAcl(workArea, Boolean.TRUE);
+				Boolean includeFolderAcl = PortletRequestUtils.getBooleanParameter(request, "includeFolderAcl", false);
+				getAdminModule().setEntryIncludeFolderAcl(workArea, includeFolderAcl);
+				getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
+				if(logger.isDebugEnabled())
+					logger.debug(SimpleProfiler.toStr());
+				SimpleProfiler.clearProfiler();
+				if (EntityIdentifier.EntityType.zone.name().equals(type)) {
+					getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_ACCESS_CONTROLS, "true");
+				}
 			}
+		} else if (formData.containsKey("delBtn") && WebHelper.isMethodPost(request)) {
+			if (!(workArea instanceof FolderEntry) || ((FolderEntry)workArea).isTop()) {
+				if (workArea instanceof Entry) {
+					getAdminModule().setEntryHasAcl(workArea, Boolean.FALSE);
+					getAdminModule().setEntryIncludeFolderAcl(workArea, Boolean.TRUE);
+					SimpleProfiler.setProfiler(new SimpleProfiler("lucene"));
+					Map functionMemberships = new HashMap();
+					getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
+					if(logger.isDebugEnabled())
+						logger.debug(SimpleProfiler.toStr());
+					SimpleProfiler.clearProfiler();
+				}
+			}
+			setupCloseWindow(response);
 		} else if (formData.containsKey("inheritanceBtn") && WebHelper.isMethodPost(request)) {
 			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", false);
 			getAdminModule().setWorkAreaFunctionMembershipInherited(workArea,inherit);			
@@ -141,6 +159,8 @@ public class AccessControlController extends AbstractBinderController {
 			FolderEntry entry = getFolderModule().getEntry(null, workAreaId);
 			wArea = entry;
 			model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(entry.getZoneId()));
+			model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, 
+					getAdminModule().testAccess(entry, AdminOperation.manageFunctionMembership));
 		} else {
 			Binder binder = getBinderModule().getBinder(workAreaId);			
 			//Build the navigation beans
@@ -171,7 +191,7 @@ public class AccessControlController extends AbstractBinderController {
 			}
 		}
 	}
-	//shared with binderconfig 
+	//shared with binder config 
 	public static void getAccessResults(ActionRequest request, Map functionMemberships) {
 		Map formData = request.getParameterMap();
 

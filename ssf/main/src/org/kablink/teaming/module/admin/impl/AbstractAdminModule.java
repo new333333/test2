@@ -814,7 +814,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
         	}});
 	}
 
-	public void setEntryCheckFolderAcl(final WorkArea workArea, final Boolean checkFolderAcl) {
+	public void setEntryIncludeFolderAcl(final WorkArea workArea, final Boolean checkFolderAcl) {
         //Set the entry acl flag
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {

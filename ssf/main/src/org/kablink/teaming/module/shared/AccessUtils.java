@@ -342,7 +342,7 @@ public class AccessUtils  {
        	}
        	
        	//Next, try if the binder allows access
-       	if (!entry.hasEntryAcl() || entry.checkFolderAcl()) {
+       	if (!entry.hasEntryAcl() || entry.isIncludeFolderAcl()) {
 	       	try {
 	       		getInstance().getAccessControlManager().checkOperation(user, binder, operation);
 	       		return;

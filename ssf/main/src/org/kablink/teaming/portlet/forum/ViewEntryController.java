@@ -768,7 +768,7 @@ public class ViewEntryController extends  SAbstractController {
 				}
 			}
 			
-			if (getFolderModule().testAccess(entry, FolderOperation.readEntry)) {
+			if (getFolderModule().testAccess(entry, FolderOperation.readEntry) && entry.isTop()) {
 				//The "Access Control" menu
 				accessControlEntryMap.put("accessControl", new Boolean(true));
 				Map qualifiers = new HashMap();

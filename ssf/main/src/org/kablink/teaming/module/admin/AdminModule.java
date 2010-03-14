@@ -168,7 +168,7 @@ public interface AdminModule {
     public void modifyPosting(String postingId, Map<String, Object> updates)throws AccessControlException;
     
     public void setEntryHasAcl(final WorkArea workArea, final Boolean hasAcl);
-    public void setEntryCheckFolderAcl(final WorkArea workArea, final Boolean checkFolderAcl);
+    public void setEntryIncludeFolderAcl(final WorkArea workArea, final Boolean checkFolderAcl);
     
 	/**
 	 * Send a mail message to a collection of users and/or explicit email address.  Include attachments  from entries if specified  

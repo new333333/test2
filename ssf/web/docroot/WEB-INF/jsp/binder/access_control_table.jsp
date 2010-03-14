@@ -32,6 +32,12 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<c:set var="isEntryACL" value="false" scope="request"/>
+<c:if test="${ssWorkArea.workAreaType == 'folderEntry'}">
+  <c:set var="ss_hideApplications" value="1" scope="request"/>
+  <c:set var="isEntryACL" value="true" scope="request"/>
+</c:if>
+
 <div id="${ss_accessControlTableDivId}" class="ss_portlet ss_style ss_form">
 <TABLE class="ss_table">
 <THEAD>
@@ -41,7 +47,7 @@
 <c:if test="${ssWorkArea.functionMembershipInherited}">
   <ssf:nlt tag="access.roles"/>
 </c:if>
-<c:if test="${!ssWorkArea.functionMembershipInherited}">
+<c:if test="${!ssWorkArea.functionMembershipInherited && !isEntryACL}">
   <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addRolesMenu${ss_namespace}',40, 40);return false;"
   ><ssf:nlt tag="access.addRole"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
   src="<html:imagesPath/>pics/menudown.gif"/></a>
@@ -70,7 +76,10 @@
 
 <TR>
   <TD class="ss_table_paragraph"></TD>
-  <TD colSpan="2" class="ss_table_paragraph"><ssf:nlt tag="access.ownerOfBinder"/></TD>
+  <TD colSpan="2" class="ss_table_paragraph">
+    <c:if test="${!isEntryACL}"><ssf:nlt tag="access.ownerOfBinder"/></c:if>
+    <c:if test="${isEntryACL}"><ssf:nlt tag="access.ownerOfEntry"/></c:if>
+  </TD>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <TD class="ss_table_paragraph" align="center" noWrap="noWrap">
 
@@ -85,16 +94,16 @@
   style="padding-right:10px;"/>
 </c:if>
 
-<c:if test="${!empty ssFunctionMap[function].ssOwner}">
+<c:if test="${!empty ssFunctionMap[function].ssOwner || isEntryACL}">
 <input type="checkbox" 
-  <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
+  <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] || isEntryACL}">
     disabled="disabled"
   </c:if>
   name="role_id${function.id}_owner"
   title="<ssf:nlt tag="access.select"/>" 
   checked="checked" />
 </c:if>
-<c:if test="${empty ssFunctionMap[function].ssOwner}">
+<c:if test="${empty ssFunctionMap[function].ssOwner && !isEntryACL}">
 <input type="checkbox" 
   <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
     disabled="disabled"
@@ -228,7 +237,8 @@
 <c:if test="${empty ssFunctionMap[function].ssGroups[group.id] && 
 		(ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
     <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
+    <c:if test="${ssWorkArea.functionMembershipInherited || 
+    	empty ssFunctionsAllowed[function.id] || !ss_accessControlConfigureAllowed}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${group.id}"
@@ -293,7 +303,8 @@
 <c:if test="${!empty ssFunctionMap[function].ssUsers[user.id] && 
 		(ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
     <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
+    <c:if test="${ssWorkArea.functionMembershipInherited || 
+    	empty ssFunctionsAllowed[function.id] || !ss_accessControlConfigureAllowed}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${user.id}"
@@ -303,7 +314,8 @@
 <c:if test="${empty ssFunctionMap[function].ssUsers[user.id] && 
 		(ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
     <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
+    <c:if test="${ssWorkArea.functionMembershipInherited || 
+    	empty ssFunctionsAllowed[function.id] || !ss_accessControlConfigureAllowed}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${user.id}"
@@ -393,7 +405,8 @@
 </c:if>
 <c:if test="${!empty ssFunctionMap[function].ssApplicationGroups[group.id] && !function.zoneWide}">
     <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
+    <c:if test="${ssWorkArea.functionMembershipInherited || 
+    	empty ssFunctionsAllowed[function.id] || !ss_accessControlConfigureAllowed}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${group.id}" 
@@ -402,7 +415,8 @@
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssApplicationGroups[group.id] && !function.zoneWide}">
     <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
+    <c:if test="${ssWorkArea.functionMembershipInherited || 
+    	empty ssFunctionsAllowed[function.id] || !ss_accessControlConfigureAllowed}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${group.id}"
@@ -474,7 +488,8 @@
 </c:if>
 <c:if test="${!empty ssFunctionMap[function].ssApplications[application.id] && !function.zoneWide}">
     <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
+    <c:if test="${ssWorkArea.functionMembershipInherited || 
+    	empty ssFunctionsAllowed[function.id] || !ss_accessControlConfigureAllowed}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${application.id}" 
@@ -482,7 +497,8 @@
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssApplications[application.id] && !function.zoneWide}">
     <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
+    <c:if test="${ssWorkArea.functionMembershipInherited || 
+    	empty ssFunctionsAllowed[function.id] || !ss_accessControlConfigureAllowed}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${application.id}" />

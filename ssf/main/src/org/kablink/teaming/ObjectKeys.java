@@ -191,10 +191,11 @@ public interface ObjectKeys {
     public static final String ROLE_TITLE_TEAM_MEMBER="__role.teamMember";
     public static final String ROLE_TITLE_BINDER_ADMIN="__role.binderAdmin";
     public static final String ROLE_TITLE_WORKSPACE_CREATOR="__role.workspaceCreator";
-    public static final String ROLE_TITLE_SITE_ADMIN="__role.siteAdmin"; //deprecated
-    //reserved pseudo roles. Only have 1 right each and cannot be editted by user.
-    //Used to similate a group of users without actually using the group facility.
-    //Allows access checking to work consistantly
+    public static final String ROLE_TITLE_SITE_ADMIN="__role.siteAdmin"; //Depreciated
+    
+    //reserved pseudo roles. Only have 1 right each and cannot be edited by user.
+    //Used to simulate a group of users without actually using the group facility.
+    //Allows access checking to work consistently
     public static final String ROLE_ZONE_ADMINISTRATION="__role.zoneAdministration";
     public static final String ROLE_ADD_GUEST_ACCESS="__role.addGuestAccess";
     public static final String ROLE_TOKEN_REQUESTER="__role.tokenRequester";

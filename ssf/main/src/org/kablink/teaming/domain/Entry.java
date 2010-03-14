@@ -74,10 +74,10 @@ public abstract class Entry extends DefinableEntity implements WorkArea {
 	public void setHasEntryAcl(boolean hasEntryAcl) {
 		this.hasEntryAcl = hasEntryAcl;
 	}
-	public boolean checkFolderAcl() {
+	public boolean isIncludeFolderAcl() {
 		if (this instanceof FolderEntry && !((FolderEntry)this).isTop()) {
 			//This is a reply to a folder entry. Check the top entry instead
-			return ((FolderEntry)this).getTopEntry().checkFolderAcl();
+			return ((FolderEntry)this).getTopEntry().isIncludeFolderAcl();
 		}
 		if (checkFolderAcl == null) return true;
 		else return checkFolderAcl;
