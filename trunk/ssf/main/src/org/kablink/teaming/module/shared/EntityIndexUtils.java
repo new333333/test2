@@ -584,7 +584,7 @@ public class EntityIndexUtils {
 	   		String ids = LongIdUtil.getIdsAsString(entryIds);
 	       	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), Constants.READ_ACL_TEAM);
 	       	ids = ids.replaceFirst(ObjectKeys.OWNER_USER_ID.toString(), Constants.READ_ACL_BINDER_OWNER);
-	        if (entry.checkFolderAcl()) ids += Constants.READ_ACL_ALL;
+	        if (entry.isIncludeFolderAcl()) ids += Constants.READ_ACL_ALL;
 	       	if (Validator.isNull(ids)) return Constants.EMPTY_ACL_FIELD;
 	        return ids;
     	} else {

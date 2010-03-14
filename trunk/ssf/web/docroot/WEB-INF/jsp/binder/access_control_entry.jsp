@@ -104,13 +104,13 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 	name="actionUrl" value="true"/><ssf:param 
 	name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
 	name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
-  <input type="submit" class="ss_submit" name="closeBtn" 
-    value="<ssf:nlt tag="button.close" text="Close"/>">
+  <input type="button" class="ss_submit" name="closeBtn" 
+    value="<ssf:nlt tag="button.close" text="Close"/>"
+	onClick="self.window.close();return false;"/>
 </form>
 </td>
 </tr>
 </table>
-
 
 <ssf:box style="rounded">
 <div style="padding:4px 8px;">
@@ -130,21 +130,6 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 
 <input type="hidden" name="btnClicked"/>
 <input type="hidden" name="roleIdToAdd"/>
-<c:if test="${!ssWorkArea.functionMembershipInherited && !empty ss_accessParent.ssWorkArea}">
-<div>
-<img src="<html:imagesPath/>pics/sym_s_checkmark.gif" <ssf:alt tag="alt.checkmark"/>/>&nbsp;
-<span class="ss_italic">
-<c:if test="${ss_accessParent.ssWorkArea.workAreaType == 'folder'}">
-  <ssf:nlt tag="access.designatesFolder"/>
-</c:if>
-<c:if test="${ss_accessParent.ssWorkArea.workAreaType != 'folder'}">
-  <ssf:nlt tag="access.designatesWorkspace"/>
-</c:if>
-</span>
-<br/>
-<br/>
-</div>
-</c:if>
 
 <c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
 
@@ -257,22 +242,27 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 
 <c:set var="ss_accessControlTableDivId" value="ss_accessControlDiv${renderResponse.namespace}" scope="request"/>
 <c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
-<c:set var="ss_hideApplications" value="1" scope="request"/>
 <%@ include file="/WEB-INF/jsp/binder/access_control_table.jsp" %>
 
 <br/>
-<c:if test="${!ssWorkArea.functionMembershipInherited}">
-<br/>
+<div style="padding:10px 0px 16px 10px;">
+<input type="checkbox" 
+  <c:if test="${ssWorkArea.includeFolderAcl}">
+    checked="checked"
+  </c:if>
+  <c:if test="${!ss_accessControlConfigureAllowed}">
+    disabled="disabled"
+  </c:if>
+  name="includeFolderAcl"
+  title="<ssf:nlt tag="access.select"/>" /><span style="padding-left:4px;"><ssf:nlt tag="access.includeFolderAcl"/></span>
+</div>
+<c:if test="${ss_accessControlConfigureAllowed}">
 <input type="submit" class="ss_submit" name="okBtn" 
  onClick="ss_startSpinner();"
  value="<ssf:nlt tag="button.saveChanges" />">
 </c:if>
-
-
 </form>
 </c:if>
-<br/>
-<br/>
 
 <c:if test="${ssWorkArea.workAreaType == 'zone'}">
 <div style="padding-bottom:10px;">
@@ -297,8 +287,13 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 	name="actionUrl" value="true"/><ssf:param 
 	name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
 	name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
-  <input type="submit" class="ss_submit" name="closeBtn" 
-    value="<ssf:nlt tag="button.close" text="Close"/>">
+  <input type="button" class="ss_submit" name="closeBtn" 
+    value="<ssf:nlt tag="button.close" text="Close"/>"
+	onClick="self.window.close();return false;"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <c:if test="${ss_accessControlConfigureAllowed}">
+    <input type="submit" class="ss_submit" name="delBtn" 
+      value="<ssf:nlt tag="button.delete" text="Delete"/>">
+  </c:if>
 </form>
 </div>
 </div>

@@ -2421,6 +2421,7 @@ table.ss_table thead th.ss_table_smheaders {
 	color: ${ss_style_text_color};
 	line-height: normal;
 	white-space: normal;
+	text-align: center;
 }
 .ss_table_paragraph_red {
 	font-size: ${ss_style_font_smallprint};

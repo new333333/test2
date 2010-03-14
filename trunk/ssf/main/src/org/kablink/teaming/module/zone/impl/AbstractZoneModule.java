@@ -1327,7 +1327,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
 		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
-		function.addOperation(WorkAreaOperation.BINDER_ADMINISTRATION);
+		function.addOperation(WorkAreaOperation.CHANGE_ACCESS_CONTROL);
 		
 		//generate functionId
 		getFunctionManager().addFunction(function);
