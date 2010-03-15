@@ -60,6 +60,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
@@ -225,6 +226,7 @@ public class EditBrandingDlg extends DlgBox
 				flowPanel.addStyleName( "roundcornerSM" );
 
 				addFileAnchor = new Anchor();
+				addFileAnchor.setTitle( GwtTeaming.getMessages().addImage() );
 				flowPanel.add( addFileAnchor );
 				
 				// Add a browse image to the link.
@@ -290,6 +292,72 @@ public class EditBrandingDlg extends DlgBox
 		// Add the controls for "Use Advanced Branding"
 		{
 			m_useAdvancedBrandingRb = new RadioButton( "brandingType", GwtTeaming.getMessages().useAdvancedBrandingLabel() );
+			
+			// Add a link the user can click on to edit the advanced branding.
+			{
+				Anchor advancedAnchor;
+				ClickHandler clickHandler;
+				MouseOverHandler mouseOverHandler;
+				MouseOutHandler mouseOutHandler;
+				
+				advancedAnchor = new Anchor( GwtTeaming.getMessages().advancedBtn() );
+				advancedAnchor.setTitle( GwtTeaming.getMessages().editAdvancedBranding() );
+				advancedAnchor.addStyleName( "editBrandingLink" );
+				advancedAnchor.addStyleName( "editBrandingAdvancedLink" );
+				advancedAnchor.addStyleName( "subhead-control-bg1" );
+				advancedAnchor.addStyleName( "roundcornerSM" );
+				
+				// Add a clickhandler to the "advanced" link.  When the user clicks on the link we
+				// will invoke the "edit advanced branding" dialog.
+				clickHandler = new ClickHandler()
+				{
+					/**
+					 * Invoke the "edit advanced branding" dialog
+					 */
+					public void onClick( ClickEvent event )
+					{
+						Window.alert( "not yet implemented" );
+					}//end onClick()
+				};
+				advancedAnchor.addClickHandler( clickHandler );
+				
+				// Add a mouse-over handler
+				mouseOverHandler = new MouseOverHandler()
+				{
+					/**
+					 * 
+					 */
+					public void onMouseOver( MouseOverEvent event )
+					{
+						Widget widget;
+						
+						widget = (Widget)event.getSource();
+						widget.removeStyleName( "subhead-control-bg1" );
+						widget.addStyleName( "subhead-control-bg2" );
+					}// end onMouseOver()
+				};
+				advancedAnchor.addMouseOverHandler( mouseOverHandler );
+
+				// Add a mouse-out handler
+				mouseOutHandler = new MouseOutHandler()
+				{
+					/**
+					 * 
+					 */
+					public void onMouseOut( MouseOutEvent event )
+					{
+						Widget widget;
+						
+						widget = (Widget)event.getSource();
+						widget.removeStyleName( "subhead-control-bg2" );
+						widget.addStyleName( "subhead-control-bg1" );
+					}// end onMouseOut()
+				};
+				advancedAnchor.addMouseOutHandler( mouseOutHandler );
+
+				table.setWidget( nextRow, 1,advancedAnchor );
+			}
+			
 			table.setWidget( nextRow, 0, m_useAdvancedBrandingRb );
 			++nextRow;
 		}
@@ -333,6 +401,7 @@ public class EditBrandingDlg extends DlgBox
 				flowPanel.addStyleName( "roundcornerSM" );
 
 				addFileAnchor = new Anchor();
+				addFileAnchor.setTitle( GwtTeaming.getMessages().addImage() );
 				flowPanel.add( addFileAnchor );
 				
 				// Add the browse image to the link.
@@ -425,6 +494,7 @@ public class EditBrandingDlg extends DlgBox
 
 			// Add a hint next to the background color textbox the user can click on to invoke a color picker.
 			colorHint = new Anchor( GwtTeaming.getMessages().colorHint() );
+			colorHint.setTitle( GwtTeaming.getMessages().displayColorPicker() );
 			colorHint.addStyleName( "editBrandingLink" );
 			hPanel.add( colorHint );
 
@@ -479,6 +549,7 @@ public class EditBrandingDlg extends DlgBox
 			
 			// Add a hint next to the text color textbox the user can click on to invoke a color picker.
 			textColorHint = new Anchor( GwtTeaming.getMessages().colorHint() );
+			textColorHint.setTitle( GwtTeaming.getMessages().displayColorPicker() );
 			textColorHint.addStyleName( "editBrandingLink" );
 			hPanel.add( textColorHint );
 			
