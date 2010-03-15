@@ -174,17 +174,17 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /***********************************
 /* USER PROFILE */
 
-#ss_profile_box_old { 
-	margin: 8px 0 8px 0;
-	border: 1px #CCCCCC solid; 
-	padding: 2px 10px 4px 10px;
-	font-size: 12px;
-	font-style: italic;
-	font-family: 'Lucida Sans', 'Lucida Grande', sans-serif;
-	text-align:left;
-	vertical-align:top;
-	background-color:#f2f2f2;
-	}
+<!--#ss_profile_box_old { -->
+<!--	margin: 8px 0 8px 0;-->
+<!--	border: 1px #CCCCCC solid; -->
+<!--	padding: 2px 10px 4px 10px;-->
+<!--	font-size: 12px;-->
+<!--	font-style: italic;-->
+<!--	font-family: 'Lucida Sans', 'Lucida Grande', sans-serif;-->
+<!--	text-align:left;-->
+<!--	vertical-align:top;-->
+<!--	background-color:#f2f2f2;-->
+<!--	}-->
 
 #ss_profile_box {
 	-moz-border-radius:5px 5px 5px 5px;
@@ -196,21 +196,21 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 
 #ss_profile_box_h1  {
-	font-size:1.3em;
+	font-size: 20px;
 	font-style:italic;
 	font-weight:bold;
 	letter-spacing:0.05em;
-	color:#5A9A98;
-}
-#ss_profile_box_h1_old{
-	margin: 2px 0 2px 0;
-	font-size: 20px;
-	font-style: italic;
-	font-weight: 200;
-	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
-	letter-spacing:-2px;
 	color:#5A9A98!important;
-	}
+}
+<!--#ss_profile_box_h1_old{-->
+<!--	margin: 2px 0 2px 0;-->
+<!--	font-size: 20px;-->
+<!--	font-style: italic;-->
+<!--	font-weight: 200;-->
+<!--	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;-->
+<!--	letter-spacing:-2px;-->
+<!--	color:#5A9A98!important;-->
+<!--	}-->
 #ss_profile_box_h1 * a, #ss_profile_box_h1 * span, #ss_profile_box_h1 table *  {
 	font-size: 20px;
 	font-style: italic;
@@ -219,20 +219,33 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	letter-spacing:-2px;
 	color:#5A9A98!important;
 	}
-#ss_profile_box_h1 * a:hover {
-	font-size: 20px;
-	font-style: italic;
-	font-weight: 200;
+<!--#ss_profile_box_h1_old * a:hover {-->
+<!--	font-size: 20px;-->
+<!--	font-style: italic;-->
+<!--	font-weight: 200;-->
+<!--	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;-->
+<!--	letter-spacing:-2px;-->
+<!--	color:#555;-->
+<!--	}-->
+<!--#ss_profile_box_h1 * a, #ss_profile_box_h1 * span, #ss_profile_box_h1 table *   {-->
+<!--	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;-->
+<!--	color:#1C5894 !important;-->
+<!--}-->
+<!---->
+
+#ss_profile_box_h1 a:hover {
 	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
-	letter-spacing:-2px;
-	color:#555!important;
-	}
+	color:#1C5894!important;
+}
+
 .ss_profile {
   font-size:10px !important;
   font-style:normal !important;
   font-weight:normal !important;
   letter-spacing: .1em !important;
   padding-left:10px;
+  color:#1C5894 !important;
+  text-decoration:none;
 }
 
 /**********************************/	
