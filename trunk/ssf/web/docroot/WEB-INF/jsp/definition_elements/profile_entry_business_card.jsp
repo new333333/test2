@@ -46,6 +46,16 @@
 
 %>
 
+
+<c:set var="ss_formViewStyle" value="<%= formViewStyle %>" scope="request" />
+<jsp:useBean id="ss_formViewStyle" type="String" scope="request" />
+
+<c:choose>
+  <c:when test="${ss_formViewStyle == 'profileGWT'}">
+		<jsp:include page="/WEB-INF/jsp/definition_elements/profile_GWT.jsp" />
+  </c:when>
+  <c:otherwise>
+
 <div id="ss_topic_box">
 	<div id="ss_topic_box_h1">
 	  <a href="<ssf:url crawlable="true"
@@ -60,17 +70,6 @@
       </a> 
 	</div>
 </div>
-
-
-<c:set var="ss_formViewStyle" value="<%= formViewStyle %>" scope="request" />
-<jsp:useBean id="ss_formViewStyle" type="String" scope="request" />
-
-<c:choose>
-  <c:when test="${ss_formViewStyle == 'profileGWT'}">
-		Loading the GWT jsp here...
-		<jsp:include page="/WEB-INF/jsp/definition_elements/profile_GWT.jsp" />
-  </c:when>
-  <c:otherwise>
 	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   		configElement="<%= item %>" 
   		configJspStyle="${ssConfigJspStyle}" 
