@@ -60,7 +60,7 @@
 			adaptedUrl : '${adaptedUrl}',
 			imagesPath : '<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
 			myWSUrl : '${myWorkspaceUrl}',
-			isNovellTeaming : ${isNovellTeaming},
+			isNovellTeaming : ${isNovellTeaming}
 		};
 	</script>
 

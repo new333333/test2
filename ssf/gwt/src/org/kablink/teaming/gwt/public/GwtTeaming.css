@@ -31,6 +31,12 @@
 	padding-bottom: .5em;
 }
 
+/* Style used for the "Advanced" link in the "edit branding" dialog. */
+.editBrandingAdvancedLink
+{
+	padding: 4px 8px;
+}
+
 /* Style used for the Browse link in the "edit branding" dialog. */
 .editBrandingBrowseLink
 {
@@ -978,4 +984,26 @@
 	color: #FFFFFF;
 	background: url(images/blue_slice.png) repeat-x;
 	background-position: bottom;
+}
+
+/* Trick used to use a custom image in the place of a "file upload" control */
+.fileUploadTrick1
+{
+	background: transparent url(images/browse_hierarchy.png) no-repeat scroll 0 0;
+	cursor: pointer;
+	display: block;
+	height: 16px;
+	overflow: hidden;
+	width: 16px;
+}
+
+.fileUploadTrick2
+{
+	height: 100%;
+	left: -164px;
+	-mos-opacity: 0;
+	opacity: 0;
+	position: relative;
+	top: 8px;
+	width: auto;
 }

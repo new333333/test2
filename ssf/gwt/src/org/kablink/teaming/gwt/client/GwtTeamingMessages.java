@@ -193,11 +193,14 @@ public interface GwtTeamingMessages extends Messages
 	String myWorkspaceHint();
 	
 	// Strings used in the edit branding dialog.
+	String addImage();
 	String advancedBtn();
 	String backgroundColorLabel();
 	String brandingDlgHeader();
 	String backgroundImgLabel();
 	String colorHint();
+	String displayColorPicker();
+	String editAdvancedBranding();
 	String imgNone();
 	String kablinkTeaming();
 	String noImagesAvailable();
