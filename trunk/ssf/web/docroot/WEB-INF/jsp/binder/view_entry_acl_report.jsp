@@ -46,14 +46,43 @@
 
 <br/>
 
-Total # of entries: ${report.totalEntries}<br/><br/>
-# of entries with Entry Acl: ${report.totalEntriesWithAcl}<br/>
-# of hidden entries: ${report.totalHiddenEntries}<br/>
+<fieldset><legend><ssf:nlt tag="general.summary"/></legend>
+
+<div style="padding:4px;">
+<ssf:nlt tag="access.report.totalEntries"><ssf:param name="value" value="${report.totalEntries}"/></ssf:nlt>
+</div>
+<div style="padding:4px;">
+<ssf:nlt tag="access.report.totalEntriesWithAcl"><ssf:param name="value" value="${report.totalEntriesWithAcl}"/></ssf:nlt>
+</div>
+<div style="padding:4px;">
+<ssf:nlt tag="access.report.totalHiddenEntries"><ssf:param name="value" value="${report.totalHiddenEntries}"/></ssf:nlt>
+</div>
+</fieldset>
 
 <br/>
 
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="button" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
+<fieldset><legend><ssf:nlt tag="access.report.hiddenEntries"/></legend>
+<table cellpadding="4" cellspacing="4">
+<th><ssf:nlt tag="folder.column.CreationDate"/></th>
+<th style="padding-left:20px;"><ssf:nlt tag="folder.column.Author"/></th>
+<c:forEach var="entry" items="${report.hiddenEntries}">
+<tr>
+  <td valign="top">
+    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+      value="${entry.creationDate}" type="both" 
+	  timeStyle="short" dateStyle="medium" />
+  </td>
+  <td valign="top" style="padding-left:20px;">
+    <ssf:showUser user="${entry.creator}"/>
+  </td>
+</tr>
+</c:forEach>
+</table>
+</fieldset>
+
+<br/>
+
+<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
   onClick="self.window.close();return false;">
 </form>
 </ssf:form>
