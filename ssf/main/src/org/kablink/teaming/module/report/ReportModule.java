@@ -86,6 +86,7 @@ public interface ReportModule {
 	public static final String DEFAULT_QUOTA = "default_quota";
 	public static final String MAX_GROUPS_QUOTA = "max_groups_quota";
 	public static final String DISK_SPACE_USED = "disk_space_used";
+	public static final String CREATOR_ID = "creator_id";
 	public static final String CREATIONDATE = "creation_date";
 	
 	public static final Integer USER_ID_INDEX = 0;

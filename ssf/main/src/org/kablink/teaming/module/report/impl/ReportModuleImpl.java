@@ -94,6 +94,7 @@ import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -745,7 +746,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					ProjectionList proj = Projections.projectionList()
 									.add(Projections.property("id"))
 									.add(Projections.property("hasEntryAcl"))
-									.add(Projections.property("checkFolderAcl"));
+									.add(Projections.property("checkFolderAcl"))
+									.add(Projections.property("topEntry"));
 					Criteria crit = session.createCriteria(FolderEntry.class)
 						.setProjection(proj)
 						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, folder.getZoneId()))
@@ -756,28 +758,36 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				return auditTrail;
 			}});
 
+		Map<String, Principal> creators = new HashMap();
+		List<Long> creatorIds = new ArrayList();
 		List entryIds = new ArrayList();
+		Long totalEntries = 0L;
 		Long totalEntriesWithAcl = 0L;
 		int i = 0;
+		if (result == null) result = new ArrayList();
 		while ( i < result.size() )
 		{
 			Object o = result.get( i );
 			Object[] col = (Object []) o;
-			Map<String,Object> row = new HashMap<String, Object>();
-			row.put(ReportModule.ENTRY_ID, col[0]);
-			row.put(ReportModule.HAS_ENTRY_ACL, col[1]);
-			row.put(ReportModule.CHECK_FOLDER_ACL, col[2]);
-			if (col[1] != null && col[1].equals(Boolean.TRUE)) {
-				totalEntriesWithAcl++;
-				if (col[2] != null && !col[2].equals(Boolean.TRUE)) {
-					//This entry has an acl and is not including the folder acl
-					entryIds.add(Long.valueOf(col[0].toString()));
+			//Filter out replies
+			if (col[3] == null) {
+				Map<String, Object> entry = new HashMap<String, Object>();
+				entry.put(ReportModule.ENTRY_ID, col[0]);
+				entry.put(ReportModule.HAS_ENTRY_ACL, col[1]);
+				entry.put(ReportModule.CHECK_FOLDER_ACL, col[2]);
+				if (col[1] != null && col[1].equals(Boolean.TRUE)) {
+					totalEntriesWithAcl++;
+					if (col[2] != null && !col[2].equals(Boolean.TRUE)) {
+						//This entry has an acl and is not including the folder acl
+						entryIds.add(Long.valueOf(col[0].toString()));
+					}
 				}
+				totalEntries++;
 			}
 			i++;
 		}
 		report.put("totalEntriesWithAcl", totalEntriesWithAcl);
-		report.put("totalEntries", Long.valueOf(result.size()));
+		report.put("totalEntries", totalEntries);
 		
 		//Now build the list of entries that cannot be seen
 		Set<Long> allEntryIds = new HashSet<Long>(entryIds);
@@ -812,10 +822,23 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
     	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 
 		for(Map item : items) {
-			Long binderId = Long.valueOf((String)item.get(Constants.DOCID_FIELD));
-			allEntryIds.remove(binderId);
+			Long entryId = Long.valueOf((String)item.get(Constants.DOCID_FIELD));
+			Long creatorId = Long.valueOf((String)item.get(Constants.CREATORID_FIELD));
+			allEntryIds.remove(entryId);
+			if (!creatorIds.contains(creatorId)) 
+				creatorIds.add(Long.valueOf(creatorId));
 		}
-		report.put("totalHiddenEntries", Long.valueOf(allEntryIds.size()));
+		List<FolderEntry> hiddenEntries = getCoreDao().loadObjects(allEntryIds, FolderEntry.class, folder.getZoneId(), new ArrayList());
+		List<Map> hiddenEntryData = new ArrayList();
+		for (FolderEntry e : hiddenEntries) {
+			Map he = new HashMap();
+			he.put("id", e.getId());
+			he.put("creator", e.getCreation().getPrincipal());
+			he.put("creationDate", e.getCreation().getDate());
+			hiddenEntryData.add(he);
+		}
+ 		report.put("totalHiddenEntries", Long.valueOf(allEntryIds.size()));
+		report.put("hiddenEntries", hiddenEntryData);
 		
 		return report;
 	}
