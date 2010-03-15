@@ -91,6 +91,18 @@ public class SearchUtils {
 		return crit;
 	}
 	
+	public static Criteria entries(List<Long> entryIds)
+	{
+		String[] s_entryIds = new String[entryIds.size()];
+		for (int i = 0; i < entryIds.size(); i++) s_entryIds[i] = entryIds.get(i).toString();
+		Criteria crit = new Criteria();
+		crit.add(in(ENTRY_TYPE_FIELD, new String[] {Constants.ENTRY_TYPE_ENTRY, Constants.ENTRY_TYPE_REPLY}))
+			.add(in(DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_ENTRY}))
+			.add(in(DOCID_FIELD, s_entryIds));
+		crit.addOrder(Order.desc(CREATION_DATE_FIELD));
+		return crit;
+	}
+	
 	public static Criteria entriesForTrackedPlaces(AllModulesInjected bs, List userWorkspaces)
 	{
 		Criteria crit = new Criteria();

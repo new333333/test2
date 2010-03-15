@@ -43,6 +43,7 @@ import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.LicenseStats;
 import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.User;
@@ -62,6 +63,8 @@ public interface ReportModule {
 	public static final String ENTITY_PATH = "entity_path";
 	public static final String FILE_ID = "file_id";
 	public static final String FOLDER = "folder";
+	public static final String HAS_ENTRY_ACL = "hasEntryAcl";
+	public static final String CHECK_FOLDER_ACL = "checkFolderAcl";
 	public static final String USER = "user";
 	public static final String USER_ID = "user_id";
 	public static final String USER_TITLE = "user_title";
@@ -139,6 +142,7 @@ public interface ReportModule {
 	public List<Map<String, Object>> generateReport(Collection ids, boolean byTeamMembers, boolean byAllUsers, Date startDate, Date endDate);
 	public List<Map<String, Object>> generateActivityReport(final Long binderId, final Long entryId);
 	public List<Map<String, Object>> generateActivityReportByUser(final Set<Long> userIds, final Date startDate, final Date endDate, final String reportType);
+	public Map<String, Object> generateEntryAclReport(final Folder folder);
 	public List<Map<String,Object>> generateLoginReport(Date startDate, Date endDate, String optionType, String sortType, String sortType2, Set memberIds);
 	public List<Map<String,Object>> generateWorkflowStateReport(Collection ids, Date startDate, Date endDate);
 	public List<Map<String,Object>> generateWorkflowStateCountReport(Collection ids);

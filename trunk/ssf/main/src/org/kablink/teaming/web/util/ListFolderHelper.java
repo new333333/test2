@@ -1582,11 +1582,11 @@ public class ListFolderHelper {
 			qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
 			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACTIVITY_REPORT);
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_BINDER_REPORTS);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
 			folderToolbar.addToolbarMenuItem("1_administration", "", 
-					NLT.get("toolbar.menu.report"), url, qualifiers);
+					NLT.get("toolbar.menu.reports"), url, qualifiers);
 		}
 		
 		if (bs.getBinderModule().testAccess(folder, BinderOperation.manageConfiguration)) {
