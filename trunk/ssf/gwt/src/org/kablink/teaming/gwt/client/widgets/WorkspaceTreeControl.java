@@ -43,6 +43,8 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.TeamingAction;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.TreeDisplayBase;
 import org.kablink.teaming.gwt.client.util.TreeDisplayHorizontal;
 import org.kablink.teaming.gwt.client.util.TreeDisplayVertical;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
@@ -60,6 +62,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
  */
 public class WorkspaceTreeControl extends Composite implements ActionRequestor {
 	private RequestInfo m_requestInfo;
+	private TreeDisplayBase m_treeDisplay;
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	
 	/**
@@ -80,10 +83,9 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor {
 	 * @param requestInfo
 	 * @param tm
 	 */
-	public WorkspaceTreeControl(RequestInfo requestInfo, TreeMode tm) {
+	public WorkspaceTreeControl(RequestInfo requestInfo, final String selectedBinderId, TreeMode tm) {
 		m_requestInfo = requestInfo;
 
-		final String selectedBinderId = m_requestInfo.getBinderId();
 		final WorkspaceTreeControl wsTree = this;
 		final FlowPanel mainPanel = new FlowPanel();
 		
@@ -96,8 +98,8 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor {
 					Window.alert(t.toString());
 				}
 				public void onSuccess(List<TreeInfo> tiList)  {
-					TreeDisplayHorizontal tdh = new TreeDisplayHorizontal(m_requestInfo, wsTree, tiList);
-					tdh.render(mainPanel);
+					m_treeDisplay = new TreeDisplayHorizontal(wsTree, tiList);
+					m_treeDisplay.render(selectedBinderId, mainPanel);
 				}
 			});
 			
@@ -110,8 +112,8 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor {
 					Window.alert(t.toString());
 				}
 				public void onSuccess(TreeInfo ti)  {
-					TreeDisplayVertical tdv = new TreeDisplayVertical(m_requestInfo, wsTree, ti);
-					tdv.render(selectedBinderId, mainPanel);
+					m_treeDisplay = new TreeDisplayVertical(wsTree, ti);
+					m_treeDisplay.render(selectedBinderId, mainPanel);
 				}
 			});
 		}
@@ -132,6 +134,26 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor {
 		m_actionHandlers.add(actionHandler);
 	}
 
+	/**
+	 * Returns the RequestInfo object associated with this
+	 * WorkspaceTreeControl.
+	 * 
+	 * @return
+	 */
+	public RequestInfo getRequestInfo() {
+		return m_requestInfo;
+	}
+
+	/**
+	 * Called to change the binder being displayed by this
+	 * WorkspaceTreeControl.
+	 * 
+	 * @param binderInfo
+	 */
+	public void setSelectedBinder(OnSelectBinderInfo binderInfo) {
+		m_treeDisplay.setSelectedBinder(binderInfo);
+	}
+	
 	/**
 	 * Fires a TeamingAction at the registered ActionHandler's.
 	 * 

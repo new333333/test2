@@ -41,6 +41,7 @@ package org.kablink.teaming.gwt.client.util;
  */
 public class OnSelectBinderInfo {
 	private boolean m_isPermalinkUrl;
+	private boolean m_isTrash;
 	private Long m_binderId;
 	private String m_binderUrl;
 
@@ -57,7 +58,7 @@ public class OnSelectBinderInfo {
 	 */
 	public OnSelectBinderInfo(TreeInfo ti) {
 		// Always use the final form of the constructor.
-		this(Long.parseLong(ti.getBinderId()), ti.getBinderPermalink());
+		this(Long.parseLong(ti.getBinderId()), ti.getBinderPermalink(), ti.isBinderTrash());
 	}
 
 	/**
@@ -65,10 +66,11 @@ public class OnSelectBinderInfo {
 	 * 
 	 * @param binderId
 	 * @param binderUrl
+	 * @param isTrash
 	 */
-	public OnSelectBinderInfo(String binderId, String binderUrl) {
+	public OnSelectBinderInfo(String binderId, String binderUrl, boolean isTrash) {
 		// Always use the final form of the constructor.
-		this(Long.parseLong(binderId), binderUrl);
+		this(Long.parseLong(binderId), binderUrl, isTrash);
 	}
 	
 	/**
@@ -76,13 +78,13 @@ public class OnSelectBinderInfo {
 	 * 
 	 * @param binderId
 	 * @param binderUrl
-	 * @param urlType
+	 * @param isTrash
 	 */
-	public OnSelectBinderInfo(Long binderId, String binderUrl) {
+	public OnSelectBinderInfo(Long binderId, String binderUrl, boolean isTrash) {
 		// Store the parameters...
 		setBinderId(binderId);
 		setBinderUrl(binderUrl);
-
+		m_isTrash = isTrash;
 	}
 
 	/*
@@ -140,6 +142,15 @@ public class OnSelectBinderInfo {
 	 */
 	public boolean isPermalinkUrl() {
 		return m_isPermalinkUrl;
+	}
+	
+	/**
+	 * Returns true if for a Binder's trash and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isTrash() {
+		return m_isTrash;
 	}
 	
 	/*

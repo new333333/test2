@@ -63,6 +63,7 @@
 	<!-- Set the desired classpath. -->
 	<fileset id="gwtjars" dir="${gwt.dir}">
 		<include name="gwt-user.jar"       />
+		<include name="gwt-fx.jar"         />
 		<include name="${gwt.dev.jar}"     />
 		<!-- <include name="smartgwt.jar"       /> -->
 		<!-- <include name="smartgwt-skins.jar" /> -->
@@ -96,7 +97,7 @@
 		<!-- Compile the GWT stuff into www. -->
 		<!-- When we start using SmartGWT add the following to the classpath: ${gwt.dir}/smartgwt.jar:${gwt.dir}/smartgwt-skins.jar: -->
 		<java
-				classpath="src:${gwt.dir}/gwt-user.jar:${gwt.dir}/${gwt.dev.jar}:"
+				classpath="src:${gwt.dir}/gwt-user.jar:${gwt.dir}/gwt-fx.jar:${gwt.dir}/${gwt.dev.jar}:"
 				failonerror="true"
 				classname="com.google.gwt.dev.Compiler"
 				fork="true">

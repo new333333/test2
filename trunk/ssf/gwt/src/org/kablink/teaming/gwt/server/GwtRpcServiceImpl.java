@@ -1020,6 +1020,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			binder = binder.getParentBinder();
 			while (binder.getId().longValue() != binderWSIdVal) {
 				expandedBindersList.add(binder.getId());
+				binder = binder.getParentBinder();
 			}
 		}
 		

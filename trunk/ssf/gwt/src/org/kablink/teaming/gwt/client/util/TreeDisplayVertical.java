@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.util;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
@@ -48,6 +47,7 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -69,6 +69,7 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class TreeDisplayVertical extends TreeDisplayBase {
+	private FlowPanel				m_rootPanel;		//
 	private HashMap<String,Integer> m_renderDepths;		// A map of the depths the Binder's are are displayed at.
 	private long 					m_selectedBinderId;	// The ID of the currently selected binder.
 
@@ -206,10 +207,13 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	
 	/**
 	 * Constructor method.
+	 * 
+	 * @param wsTree
+	 * @param rootTI
 	 */
-	public TreeDisplayVertical(RequestInfo requestInfo, WorkspaceTreeControl wsTree, TreeInfo rootTI) {
+	public TreeDisplayVertical(WorkspaceTreeControl wsTree, TreeInfo rootTI) {
 		// Construct the super class...
-		super(requestInfo, wsTree, rootTI);
+		super(wsTree, rootTI);
 		
 		// ...and initialize everything else.
 		m_selectedBinderId = (-1);
@@ -220,7 +224,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Returns an OnSelectBinderInfo object that corresponds to a
 	 * TreeInfo object.
 	 * 
-	 * Implements TreeDisplayBase.buildOnSelectBinderInfo().
+	 * Implementation of TreeDisplayBase.buildOnSelectBinderInfo().
 	 * 
 	 * @param ti
 	 * 
@@ -294,20 +298,22 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	/**
 	 * Called to render the information in this TreeInfo object into a
 	 * FlowPanel.
+	 * 
+	 * Implementation of TreeDisplayBase.render().
 	 *
 	 * @param selectedBinderId
-	 * @param ri
 	 * @param targetPanel
 	 */
 	public void render(String selectedBinderId, FlowPanel targetPanel) {
 		// Track the Binder that's to be initially selected.
+		m_rootPanel = targetPanel;
 		setSelectedBinderId(selectedBinderId);
 		
 		// Create a hidden <INPUT> that we'll use to store the ID of
 		// the currently selected Binder.
 		Hidden selectedId = new Hidden();
 		selectedId.getElement().setId(EXTENSION_ID_SELECTOR_ID);
-		targetPanel.add(selectedId);
+		m_rootPanel.add(selectedId);
 		
 		// Create the WorkspaceTree control's header...
 		Label selectorLabel = new Label(getRootTreeInfo().getBinderTitle());
@@ -317,7 +323,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		Anchor selectorA = new Anchor();
 		selectorA.getElement().appendChild(selectorLabel.getElement());
 		selectorA.addClickHandler(new BinderSelector(getRootTreeInfo()));
-		targetPanel.add(selectorA);
+		m_rootPanel.add(selectorA);
 
 		// ...its content panel...
 		Grid grid = new Grid();
@@ -325,7 +331,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		grid.setCellPadding(0);
 		grid.resizeColumns(2);
 		grid.addStyleName("workspaceTreeControlBody");
-		targetPanel.add(grid);
+		m_rootPanel.add(grid);
 		
 		// ...and if there are any rows to display...
 		for (Iterator<TreeInfo> tii = getRootTreeInfo().getChildBindersList().iterator(); tii.hasNext(); ) {
@@ -410,20 +416,21 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorA.getElement().appendChild(selectorGrid.getElement());
 		selectorA.addClickHandler(new BinderSelector(ti));
 		selectorA.setWidth("100%");
-		String selectorGridId = (EXTENSION_ID_SELECTOR_ANCHOR + getSelectorId(ti));
+		String selectorId = getSelectorId(ti);
+		String selectorGridId = (EXTENSION_ID_SELECTOR_ANCHOR + selectorId);
 		selectorGrid.getElement().setId(selectorGridId);
 		selectorGrid.addStyleName("workspaceTreeControlRow");
 
-		// If this Binder is supposed to be selected...
-		if (isBinderSelected(ti)) {
-			// ...select it.
-			selectBinder(ti);
-		}
-		
 		// Add the row to the Grid.
 		grid.setWidget(row, 0, expanderWidget);
 		grid.setWidget(row, 1, selectorA);
 
+		// If this Binder is supposed to be selected...
+		if (isBinderSelected(ti)) {
+			// ...mark it as selected.
+			selectBinderImpl(ti);
+		}
+		
 		// Install a mouse handler on the selector Anchor so that we
 		// can manage hover overs on them.
 		BinderSelectorMouseHandler bsmh = new BinderSelectorMouseHandler(selectorGridId);
@@ -479,9 +486,19 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * @param ti
 	 */
 	void selectBinder(TreeInfo ti) {
-		// If this isn't a trash Binder...
+		// For the vertical WorkspaceTreeControl, we update the binder
+		// selection during the setSelectedBinder() callback.
+	}
+	
+	/*
+	 * Does whatever is necessary UI wise to select the Binder
+	 * represented by a TreeInfo.
+	 */
+	private void selectBinderImpl(TreeInfo ti) {
+		// If this a trash Binder?
 		if (!(ti.isBinderTrash())) {
-			// ...mark it as having been selected.
+			// No!  Mark it as having been selected.
+			setSelectedBinderId(ti.getBinderId());
 			String selectedId_New = getSelectorId(ti);
 			Element selectorLabel_New = Document.get().getElementById(selectedId_New);
 			selectorLabel_New.addClassName("workspaceTreeBinderSelected");
@@ -508,6 +525,47 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		}
 	}
 
+	/**
+	 * Called to change the binder being displayed by the
+	 * WorkspaceTreeControl.
+	 * 
+	 * Implementation of TreeDisplayBase.setSelectedBinder().
+	 * 
+	 * @param binderId
+	 */
+	public void setSelectedBinder(OnSelectBinderInfo binderInfo) {
+		// If the selection is for a Binder's trash...
+		if (binderInfo.isTrash()) {
+			// ...we don't change anything.
+			return;
+		}
+		
+		// Is the requested Binder available in those we've already
+		// got loaded?
+		final String binderId = String.valueOf(binderInfo.getBinderId());
+		TreeInfo targetTI = TreeInfo.findBinderTI(getRootTreeInfo(), binderId);
+		if (null != targetTI) {
+			// Select it.
+			selectBinderImpl(targetTI);
+		}
+		else {
+			// No, the requested Binder isn't available in those we've
+			// already got loaded!  Read the TreeInfo for the selected
+			// Binder...
+			getRpcService().getVerticalTree(binderId, new AsyncCallback<TreeInfo>() {
+				public void onFailure(Throwable t) {
+					Window.alert(t.toString());
+				}
+				public void onSuccess(TreeInfo rootTI)  {
+					// ...and update the display with it.
+					setRootTreeInfo(rootTI);
+					m_rootPanel.clear();
+					render(binderId, m_rootPanel);
+				}
+			});
+		}
+	}
+	
 	/*
 	 * Store the depth at which a TreeInfo object was last rendered.
 	 */
