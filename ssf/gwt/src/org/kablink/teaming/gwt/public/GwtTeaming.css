@@ -643,16 +643,19 @@
 }
 
 /* Styles used by the bread crumb navigator. */
+.mainBreadCrumb_Tree
+{
+	padding: 5px;
+	padding-bottom: 20px;
+	background: url(images/trans50_black.png) repeat;
+	width: auto;
+}
 .mainBreadCrumb_Browser
 {
 	position: absolute;
 	z-index: 310;
 	right: 20px;
 	overflow: auto;
-	padding: 5px;
-	padding-bottom: 20px;
-	background: url(images/trans50_black.png) repeat;
-	width: auto;
 }
 .breadCrumb_Browser
 {

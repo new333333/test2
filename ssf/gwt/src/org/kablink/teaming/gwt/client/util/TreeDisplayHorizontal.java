@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.util;
 import java.util.Iterator;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
@@ -122,18 +121,19 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	/**
 	 * Constructor method.
 	 * 
+	 * @param wsTree
 	 * @param rootTIList
 	 */
-	public TreeDisplayHorizontal(RequestInfo requestInfo, WorkspaceTreeControl wsTree, List<TreeInfo> rootTIList) {
+	public TreeDisplayHorizontal(WorkspaceTreeControl wsTree, List<TreeInfo> rootTIList) {
 		// Simply construct the super class.
-		super(requestInfo, wsTree, rootTIList);
+		super(wsTree, rootTIList);
 	}
 
 	/**
 	 * Returns an OnSelectBinderInfo object that corresponds to a
 	 * TreeInfo object.
 	 * 
-	 * Implements TreeDisplayBase.buildOnSelectBinderInfo().
+	 * Implementation of TreeDisplayBase.buildOnSelectBinderInfo().
 	 * 
 	 * @param ti
 	 * 
@@ -211,10 +211,12 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	/**
 	 * Called to render the information in a TreeInfo object into a
 	 * FlowPanel.
+	 * 
+	 * Implementation of TreeDisplayBase.render().
 	 *
 	 * @param rootPanel
 	 */
-	public void render(FlowPanel rootPanel) {
+	public void render(String selectedBinderId, FlowPanel rootPanel) {
 		// Add the close button to the top of the panel...
 		rootPanel.add(createClosePanel());
 		
@@ -312,5 +314,18 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 */
 	void selectBinder(TreeInfo ti) {
 		closeTree();
+	}
+	
+	/**
+	 * Called to change the binder being displayed by the
+	 * WorkspaceTreeControl.
+	 * 
+	 * Implementation of TreeDisplayBase.setSelectedBinder().
+	 * 
+	 * @param binderInfo
+	 */
+	public void setSelectedBinder(OnSelectBinderInfo binderInfo) {
+		// The context of the horizontal tree control can only be set
+		// during it's instantiation.
 	}
 }

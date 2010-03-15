@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.util;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -147,6 +148,43 @@ public class TreeInfo implements IsSerializable {
 		return reply;
 	}
 	
+	/**
+	 * Returns the TreeInfo from another TreeInfo that references a
+	 * specific Binder ID.
+	 * 
+	 * @param ti
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static TreeInfo findBinderTI(TreeInfo ti, String binderId) {
+		// If this TreeInfo is for the binder in question...
+		if (ti.getBinderId().equals(binderId)) {
+			// ...return it.
+			return ti;
+		}
+
+		// Otherwise, if the TreeInfo has child Binder's...
+		List<TreeInfo> childBindersList = ti.getChildBindersList();
+		if ((null != childBindersList) && (0 < childBindersList.size())) {
+			// ...scan them...
+			for (Iterator<TreeInfo> tii = childBindersList.iterator(); tii.hasNext(); ) {
+				// ...and if one of them references the Binder ID in
+				// ...question...
+				TreeInfo childTI = tii.next();
+				TreeInfo reply = findBinderTI(childTI, binderId);
+				if (null != reply) {
+					// ...return it.
+					return reply;
+				}
+			}
+		}
+
+		// If we get here, the binder ID was nowhere to be found in the
+		// TreeInfo.  Return null.
+		return null;
+	}
+
 	/**
 	 * Returns the number of children in the Binder corresponding to
 	 * this TreeInfo object.

@@ -17,6 +17,9 @@
 	<!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
 	<!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
 
+	<!-- Inherit the GWT special effects library. -->	
+	<inherits name="org.adamtacy.GWTEffects"/>
+
  	<!-- Other generic module inherits go here.                     -->
 
 	<!-- Specify the app entry point class. -->

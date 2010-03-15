@@ -34,6 +34,11 @@
 package org.kablink.teaming.gwt.client;
 
 
+import org.adamtacy.client.ui.NEffectPanel;
+import org.adamtacy.client.ui.effects.events.EffectCompletedEvent;
+import org.adamtacy.client.ui.effects.events.EffectCompletedHandler;
+import org.adamtacy.client.ui.effects.impl.SlideDown;
+
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
@@ -67,12 +72,13 @@ public class GwtMainPage extends Composite
 	
 	private MastHead m_mastHead;
 	private MainMenuControl m_mainMenuCtrl;
+	private NEffectPanel m_breadCrumbBrowser;
 	private WorkspaceTreeControl m_wsTreeCtrl;
-	private WorkspaceTreeControl m_breadCrumbBrowser;
 	private ContentControl m_contentCtrl;
 	private FlowPanel m_contentPanel;
 	private FlowPanel m_teamingRootPanel;
 	private RequestInfo m_requestInfo;
+	private String m_selectedBinderId;
 	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
 	private EditCanceledHandler m_editBrandingCancelHandler = null;
 
@@ -93,6 +99,7 @@ public class GwtMainPage extends Composite
 		
 		// Get information about the request we are dealing with.
 		m_requestInfo = getRequestInfo();
+		m_selectedBinderId = m_requestInfo.getBinderId();
 		m_novellTeaming = m_requestInfo.isNovellTeaming();
 		
 		// Add the MastHead to the page.
@@ -110,7 +117,7 @@ public class GwtMainPage extends Composite
 		m_contentPanel.addStyleName( "mainContentPanel" );
 		
 		// Create the WorkspaceTree control.
-		m_wsTreeCtrl = new WorkspaceTreeControl( m_requestInfo, TreeMode.VERTICAL );
+		m_wsTreeCtrl = new WorkspaceTreeControl( m_requestInfo, m_selectedBinderId, TreeMode.VERTICAL );
 		m_wsTreeCtrl.addStyleName( "mainWorkspaceTreeControl" );
 		registerActionHandler( m_wsTreeCtrl );
 		m_contentPanel.add( m_wsTreeCtrl );
@@ -343,12 +350,14 @@ public class GwtMainPage extends Composite
 		if ( obj instanceof OnSelectBinderInfo )
 		{
 			OnSelectBinderInfo binderInfo;
-			String binderId;
 
 			// Tell the masthead to update the branding for the newly selected binder.
 			binderInfo = (OnSelectBinderInfo) obj;
-			binderId = binderInfo.getBinderId().toString();
-			m_mastHead.setBinderId( binderId );
+			m_selectedBinderId = binderInfo.getBinderId().toString();
+			m_mastHead.setBinderId( m_selectedBinderId );
+			
+			// Tell the workspace tree control to change contexts.
+			m_wsTreeCtrl.setSelectedBinder( binderInfo );
 			
 			// Tell the content panel to view the binder.
 			m_contentCtrl.setUrl( binderInfo.getBinderUrl() );
@@ -427,20 +436,55 @@ public class GwtMainPage extends Composite
 		{
 			OnBrowseHierarchyInfo bhi;
 			Style bcbStyle;
+			WorkspaceTreeControl breadCrumbTree;
 			
 			// A WorkspaceTreeControl in horizontal mode serves as the
 			// bread crumb browser.  Create one...
-			m_breadCrumbBrowser = new WorkspaceTreeControl( m_requestInfo, TreeMode.HORIZONTAL );
-			m_breadCrumbBrowser.addStyleName( "mainBreadCrumb_Browser roundcornerSM-bottom" );
-			registerActionHandler( m_breadCrumbBrowser );
-			m_teamingRootPanel.add( m_breadCrumbBrowser );
+			breadCrumbTree = new WorkspaceTreeControl( m_requestInfo, m_selectedBinderId, TreeMode.HORIZONTAL );
+			breadCrumbTree.addStyleName( "mainBreadCrumb_Tree roundcornerSM-bottom" );
+			registerActionHandler( breadCrumbTree );
+
+			// ...wrap it in a slider Effect so we can animate its
+			// ...opening and closing...
+			SlideDown bcSlider = new SlideDown();
+			bcSlider.addEffectCompletedHandler( new EffectCompletedHandler()
+			{
+				private boolean m_breadCrumbBrowserOpened = false;
+				public void onEffectCompleted( EffectCompletedEvent evt )
+				{
+					// Have we already completed opening the bread
+					// crumb browser?
+					if ( m_breadCrumbBrowserOpened )
+					{
+						// Yes!  Then we've just completed closing it.
+						// Remove it from Teaming and forget about it.
+						m_teamingRootPanel.remove( m_breadCrumbBrowser );
+						m_breadCrumbBrowser  = null;
+					}
+					else
+					{
+						// No, we haven't already completed opening the
+						// bread crumb browser!  We did just now
+						// though.
+						m_breadCrumbBrowserOpened = true;
+					}
+				}//end onEffectCompleted()
+			});
+			m_breadCrumbBrowser = new NEffectPanel();
+			m_breadCrumbBrowser.addStyleName( "mainBreadCrumb_Browser" );
+			m_breadCrumbBrowser.add( breadCrumbTree );
+			m_breadCrumbBrowser.addEffect(bcSlider);
+			m_breadCrumbBrowser.setEffectsLength(0.25);
 			
-			// ...and position it as per the browse hierarchy request.
+			// ...position it as per the browse hierarchy request...
 			bhi = ((OnBrowseHierarchyInfo) obj);
 			bcbStyle = m_breadCrumbBrowser.getElement().getStyle();
 			bcbStyle.setLeft( bhi.getLeft(), Style.Unit.PX );
 			bcbStyle.setTop( bhi.getTop(), Style.Unit.PX );
-			
+
+			// ...and play the opening effect.
+			m_teamingRootPanel.add( m_breadCrumbBrowser );
+			m_breadCrumbBrowser.playEffects();
 		}
 		else
 			Window.alert( "in runBreadCrumbBrowser() and obj is not an OnBrowseHierarchyInfo object" );
@@ -454,8 +498,7 @@ public class GwtMainPage extends Composite
 	{
 		if (null != m_breadCrumbBrowser)
 		{
-			m_teamingRootPanel.remove( m_breadCrumbBrowser );
-			m_breadCrumbBrowser = null;
+			m_breadCrumbBrowser.resumeEffectsBackwards();
 		}
 	}// end closeBreadCrumbBrowser()
 

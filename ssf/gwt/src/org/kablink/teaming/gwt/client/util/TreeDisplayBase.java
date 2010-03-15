@@ -37,13 +37,13 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
-import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.TeamingAction;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 
 /**
@@ -55,7 +55,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
  */
 public abstract class TreeDisplayBase {
 	private List<TreeInfo>			m_rootTIList;	// The root TreeInfo object being displayed.
-	private RequestInfo 			m_requestInfo;	// The RequestInfo object that we're running under.
 	private TreeInfo				m_rootTI;		// The root TreeInfo object being displayed.
 	private WorkspaceTreeControl	m_wsTree;		// The WorkspaceTreeControl being displayed.
 	
@@ -101,13 +100,11 @@ public abstract class TreeDisplayBase {
 	/**
 	 * Constructor method.  (1 of 2)
 	 *
-	 * @param requestInfo
 	 * @param wsTree
 	 * @param rootTI
 	 */
-	public TreeDisplayBase(RequestInfo requestInfo, WorkspaceTreeControl wsTree, TreeInfo rootTI) {
+	public TreeDisplayBase(WorkspaceTreeControl wsTree, TreeInfo rootTI) {
 		// Simply store the parameters.
-		m_requestInfo = requestInfo;
 		m_wsTree = wsTree;
 		m_rootTI = rootTI;
 	}
@@ -115,13 +112,11 @@ public abstract class TreeDisplayBase {
 	/**
 	 * Constructor method.  (2 of 2)
 	 *
-	 * @param requestInfo
 	 * @param wsTree
 	 * @param rootTIList
 	 */
-	public TreeDisplayBase(RequestInfo requestInfo, WorkspaceTreeControl wsTree, List<TreeInfo> rootTIList) {
+	public TreeDisplayBase(WorkspaceTreeControl wsTree, List<TreeInfo> rootTIList) {
 		// Simply store the parameters.
-		m_requestInfo = requestInfo;
 		m_wsTree = wsTree;
 		m_rootTIList = rootTIList;
 	}
@@ -130,7 +125,9 @@ public abstract class TreeDisplayBase {
 	 * Abstract methods.
 	 */
 	abstract OnSelectBinderInfo buildOnSelectBinderInfo(TreeInfo ti);
-	abstract void               selectBinder(           TreeInfo ti);
+	abstract void selectBinder(TreeInfo ti);
+	public abstract void render(String selectedBinderId, FlowPanel targetPanel);
+	public abstract void setSelectedBinder(OnSelectBinderInfo binderInfo);
 
 	/**
 	 * Returns access to the workspace tree's image bundle.
@@ -147,7 +144,7 @@ public abstract class TreeDisplayBase {
 	 * @return
 	 */
 	String getImagesPath() {
-		return m_requestInfo.getImagesPath();
+		return m_wsTree.getRequestInfo().getImagesPath();
 	}
 
 	/**
@@ -187,6 +184,24 @@ public abstract class TreeDisplayBase {
 		return GwtTeaming.getRpcService();
 	}
 	
+	/**
+	 * Stores a new root TreeInfo.
+	 *  
+	 * @param rootTI
+	 */
+	void setRootTreeInfo(TreeInfo rootTI) {
+		m_rootTI = rootTI;
+	}
+
+	/**
+	 * Stores a new root List<TreeInfo>.
+	 *  
+	 * @param rootTIList
+	 */
+	void setRootTreeInfoList(List<TreeInfo> rootTIList) {
+		m_rootTIList = rootTIList;
+	}
+
 	/**
 	 * Fires a TeamingAction at the WorkspaceTreeControl's registered
 	 * ActionHandler's.

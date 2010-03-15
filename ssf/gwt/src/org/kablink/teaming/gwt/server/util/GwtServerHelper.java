@@ -117,7 +117,7 @@ public class GwtServerHelper {
 	public static void addTrashFolder(AllModulesInjected bs, TreeInfo ti, Binder binder) {
 		// Find the TreeInfo in question and copy it so we can make a
 		// trash TreeInfo out of it.
-		TreeInfo binderTI = findBinderTI(ti, String.valueOf(binder.getId()));
+		TreeInfo binderTI = TreeInfo.findBinderTI(ti, String.valueOf(binder.getId()));
 		TreeInfo trashTI = binderTI.copyBaseTI();
 		
 		// Change the copy to a trash TreeInfo.
@@ -259,43 +259,6 @@ public class GwtServerHelper {
 	 */
 	public static User getCurrentUser() {
 		return RequestContextHolder.getRequestContext().getUser();
-	}
-
-	/**
-	 * Returns the TreeInfo from another TreeInfo that references a
-	 * specific Binder ID.
-	 * 
-	 * @param ti
-	 * @param binderId
-	 * 
-	 * @return
-	 */
-	public static TreeInfo findBinderTI(TreeInfo ti, String binderId) {
-		// If this TreeInfo is for the binder in question...
-		if (ti.getBinderId().equals(binderId)) {
-			// ...return it.
-			return ti;
-		}
-
-		// Otherwise, if the TreeInfo has child Binder's...
-		List<TreeInfo> childBindersList = ti.getChildBindersList();
-		if ((null != childBindersList) && (0 < childBindersList.size())) {
-			// ...scan them...
-			for (Iterator<TreeInfo> tii = childBindersList.iterator(); tii.hasNext(); ) {
-				// ...and if one of them references the Binder ID in
-				// ...question...
-				TreeInfo childTI = tii.next();
-				TreeInfo reply = findBinderTI(childTI, binderId);
-				if (null != reply) {
-					// ...return it.
-					return reply;
-				}
-			}
-		}
-
-		// If we get here, the binder ID was nowhere to be found in the
-		// TreeInfo.  Return null.
-		return null;
 	}
 
 	/*
