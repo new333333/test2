@@ -63,6 +63,9 @@
 	<bean id="clipboardController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ClipboardController" />
 	<bean id="manageDefinitionsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageDefinitionsController" />
     <bean id="extensionsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ExtensionsController" />
+    <bean id="customExtensionController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.CustomExtensionController" />
+    <bean id="binderReportsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ReportsController" />
+    <bean id="entryAclReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.EntryAclReportController" />
 
 	<bean id="folderAjaxController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.AjaxController" />
 	<bean id="dashboardAjaxController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.DashboardAjaxController" />
@@ -146,6 +149,9 @@
 						<entry key="view_credits"><ref bean="creditsController"/></entry>
 						<entry key="schedule_synchronization"><ref bean="mirroredFolderSynchronizationController"/></entry>
 						<entry key="play_tutorial"><ref bean="playTutorialController"/></entry>
+						<entry key="custom"><ref bean="customExtensionController"/></entry>
+						<entry key="binder_reports"><ref bean="binderReportsController"/></entry>
+						<entry key="view_entry_acl_report"><ref bean="entryAclReportController"/></entry>
 
 						<!-- Keys starting with "__" can handle the user not being logged in -->
 						<entry key="__view_presence"><ref bean="updatePresenceController"/></entry>

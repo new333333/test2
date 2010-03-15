@@ -70,6 +70,8 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HKey;
 import org.kablink.teaming.domain.LicenseStats;
 import org.kablink.teaming.domain.LoginInfo;
@@ -690,7 +692,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 
-		//Get the documents bean for the documents th the user just authored or modified
+		//Get the documents bean for the documents the the user just authored or modified
 		Map options = new HashMap();
 		String page = "0";
 		
@@ -730,6 +732,91 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			row.put(ReportModule.ENTITY_TYPE, binderType);
 			row.put(ReportModule.ENTITY_PATH, binderPath);
 		}
+		return report;
+	}
+	
+	public Map<String, Object> generateEntryAclReport(final Folder folder) {
+		Map<String, Object> report = new HashMap<String, Object>();
+		//First, get the number of entries in the binder
+		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				List auditTrail = null;
+				try {
+					ProjectionList proj = Projections.projectionList()
+									.add(Projections.property("id"))
+									.add(Projections.property("hasEntryAcl"))
+									.add(Projections.property("checkFolderAcl"));
+					Criteria crit = session.createCriteria(FolderEntry.class)
+						.setProjection(proj)
+						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, folder.getZoneId()))
+						.add(Restrictions.like("owningBinderKey", folder.getBinderKey().getSortKey() + "%"));
+					auditTrail = crit.list();
+				} catch(Exception e) {
+				}
+				return auditTrail;
+			}});
+
+		List entryIds = new ArrayList();
+		Long totalEntriesWithAcl = 0L;
+		int i = 0;
+		while ( i < result.size() )
+		{
+			Object o = result.get( i );
+			Object[] col = (Object []) o;
+			Map<String,Object> row = new HashMap<String, Object>();
+			row.put(ReportModule.ENTRY_ID, col[0]);
+			row.put(ReportModule.HAS_ENTRY_ACL, col[1]);
+			row.put(ReportModule.CHECK_FOLDER_ACL, col[2]);
+			if (col[1] != null && col[1].equals(Boolean.TRUE)) {
+				totalEntriesWithAcl++;
+				if (col[2] != null && !col[2].equals(Boolean.TRUE)) {
+					//This entry has an acl and is not including the folder acl
+					entryIds.add(Long.valueOf(col[0].toString()));
+				}
+			}
+			i++;
+		}
+		report.put("totalEntriesWithAcl", totalEntriesWithAcl);
+		report.put("totalEntries", Long.valueOf(result.size()));
+		
+		//Now build the list of entries that cannot be seen
+		Set<Long> allEntryIds = new HashSet<Long>(entryIds);
+		Map options = new HashMap();
+		String page = "0";
+		int returnCount = 1000000;
+		
+		String entriesPerPage = String.valueOf(returnCount);
+		options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, new Integer(100000));
+		
+		Integer searchUserOffset = 0;
+		Integer searchLuceneOffset = 0;
+		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
+		options.put(ObjectKeys.SEARCH_USER_OFFSET, searchUserOffset);
+		
+		Integer maxHits = new Integer(entriesPerPage);
+		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxHits);
+		
+		Integer intInternalNumberOfRecordsToBeFetched = searchLuceneOffset + maxHits;
+		if (searchUserOffset > 0) {
+			intInternalNumberOfRecordsToBeFetched+=searchUserOffset;
+		}
+		options.put(ObjectKeys.SEARCH_MAX_HITS, intInternalNumberOfRecordsToBeFetched);
+
+		options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf("0"));
+		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
+		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
+		
+		org.kablink.util.search.Criteria crit = SearchUtils.entries(entryIds);
+		Map results = getBinderModule().executeSearchQuery(crit, offset, maxResults);
+
+    	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+
+		for(Map item : items) {
+			Long binderId = Long.valueOf((String)item.get(Constants.DOCID_FIELD));
+			allEntryIds.remove(binderId);
+		}
+		report.put("totalHiddenEntries", Long.valueOf(allEntryIds.size()));
+		
 		return report;
 	}
 

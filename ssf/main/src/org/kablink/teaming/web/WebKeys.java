@@ -279,6 +279,7 @@ public class WebKeys {
     public static final String ACTION_ADD_BINDER = "add_binder";
     public static final String ACTION_ADD_TEAM_MEMBER = "add_team_member";
     public static final String ACTION_ADVANCED_SEARCH = "advanced_search";
+    public static final String ACTION_BINDER_REPORTS = "binder_reports";
     public static final String ACTION_USER_ACCESS_REPORT = "user_access_report";
     public static final String ACTION_IMPORT_FORUM_ENTRIES = "forum_import";
     public static final String ACTION_MOBILE_AJAX = "__ajax_mobile";
@@ -296,6 +297,7 @@ public class WebKeys {
 	public static final String ACTION_DEFINITION_BUILDER = "definition_builder";
 	public static final String ACTION_DEFINITION_BUILDER_DEFINITION_TYPE = "definition_type";
 	public static final String ACTION_EDIT_ELEMENT = "edit_element";
+	public static final String ACTION_ENTRY_ACL_REPORT = "view_entry_acl_report";
 	public static final String ACTION_MANAGE_DEFINITIONS = "manage_definitions";
 	public static final String ACTION_MODIFY_DASHBOARD = "modify_dashboard";
 	public static final String ACTION_MODIFY_FOLDER_ENTRY = "modify_folder_entry";
@@ -373,6 +375,7 @@ public class WebKeys {
     public static final String OPERATION_COPY = "copy";
     public static final String OPERATION_IMPORT="import";
     public static final String OPERATION_RESET="reset";
+    public static final String OPERATION_ENTRY_ACL_REPORT="entry_acl_report";
     public static final String OPERATION_EXPORT="export";
     public static final String OPERATION_CLEAR_CLIPBOARD = "clear_clipboard";
  	public static final String OPERATION_REMOVE_FROM_CLIPBOARD = "remove_from_clipboard";
@@ -1356,6 +1359,7 @@ public class WebKeys {
     public static final String VIEW_BUILD_FILTER_SELECT = "binder/build_filter_select";
     public static final String VIEW_CONFIGURE = "binder/configure";
     public static final String VIEW_CONFIRM_DELETE_USER_WORKSPACE="profile/confirm_delete_user_workspace";
+    public static final String VIEW_CUSTOM_EXTENSION_UNKNOWN="forum/custom_extension_unknown";
     public static final String VIEW_DEFINITIONS="administration/view_definitions";
     public static final String VIEW_DEFINITION="definition_builder/view_definition_builder";
     public static final String VIEW_DEFINITION_OPTION="definition_builder/view_definition_builder_option";
@@ -1365,6 +1369,7 @@ public class WebKeys {
     public static final String VIEW_FORUM_EDIT="forum/edit";
     public static final String VIEW_ENTERPRISE_ONLY="enterpriseOnly";
     public static final String VIEW_ENTRY="entry/view_entry";
+    public static final String VIEW_ENTRY_ACL_REPORT="binder/view_entry_acl_report";
     public static final String VIEW_ERROR_RETURN="forum/error_return";
     public static final String VIEW_FORUM="forum/view";
     public static final String VIEW_FORUM_IMPORT = "forum/forum_import";
@@ -1418,6 +1423,7 @@ public class WebKeys {
     public static final String VIEW_RELEVANCE_DASHBOARD = "relevance_dashboard/view";
     public static final String VIEW_RELEVANCE_DASHBOARD_EDIT = "relevance_dashboard/edit";
     public static final String VIEW_REPORT="administration/report";
+	public static final String VIEW_BINDER_REPORTS = "binder/view_reports";
     public static final String VIEW_REPORT_BY_USER="administration/report_by_user";
     public static final String VIEW_SCHEDULE_SYNCHRONIZATION="administration/schedule_synchronization";
     public static final String VIEW_SEARCH="search/view";
