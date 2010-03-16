@@ -121,6 +121,21 @@ public class TreeInfo implements IsSerializable {
 	}
 
 	/**
+	 * Clears the list of children for this TreeInfo's Binder.
+	 */
+	public void clearChildBindersList() {
+		// If we're tracking any child Binders in this TreeInfo...
+		List<TreeInfo> childBindersList = getChildBindersList();
+		int children = ((null == childBindersList) ? 0 : childBindersList.size());
+		if (0 < children) {
+			// ...forget about them.
+			children = getBinderChildren();
+			setChildBindersList(new ArrayList<TreeInfo>());
+			setBinderChildren(children);
+		}
+	}
+	
+	/**
 	 * Creates a copy TreeInfo with the base information from this
 	 * TreeInfo.
 	 * 
