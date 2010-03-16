@@ -96,7 +96,8 @@
 
 <c:if test="${!empty ssFunctionMap[function].ssOwner || isEntryACL}">
 <input type="checkbox" 
-  <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] || isEntryACL}">
+  <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] || 
+  		isEntryACL || !ss_accessControlConfigureAllowed}">
     disabled="disabled"
   </c:if>
   name="role_id${function.id}_owner"
@@ -105,7 +106,8 @@
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssOwner && !isEntryACL}">
 <input type="checkbox" 
-  <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
+  <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] ||
+  		!ss_accessControlConfigureAllowed}">
     disabled="disabled"
   </c:if>
   name="role_id${function.id}_owner"
@@ -135,7 +137,8 @@
 
 <c:if test="${!empty ssFunctionMap[function].ssTeamMember}">
 <input type="checkbox" 
-  <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
+  <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] ||
+  		!ss_accessControlConfigureAllowed}">
     disabled="disabled"
   </c:if>
   name="role_id${function.id}_teamMember" 
@@ -144,7 +147,8 @@
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssTeamMember}">
 <input type="checkbox" 
-  <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
+  <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] || 
+  		!ss_accessControlConfigureAllowed}">
     disabled="disabled"
   </c:if>
   name="role_id${function.id}_teamMember"
@@ -227,7 +231,8 @@
 <c:if test="${!empty ssFunctionMap[function].ssGroups[group.id] && 
 		(ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
     <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
+    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] ||
+    		!ss_accessControlConfigureAllowed}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${group.id}" 
@@ -249,6 +254,12 @@
   
 </TR>
 </c:forEach>
+<c:if test="${empty ss_accessSortedGroups}">
+<TR>
+<TD class="ss_table_paragraph" colspan="3" align="center"><ssf:nlt tag="access.no.groups"/></TD>
+<c:forEach var="f" items="${ss_accessSortedFunctions}"><TD class="ss_table_paragraph">&nbsp;</TD></c:forEach>
+</TR>
+</c:if>
 </TBODY>
 
 <THEAD>
@@ -326,6 +337,12 @@
   
 </TR>
 </c:forEach>
+<c:if test="${empty ss_accessSortedUsers}">
+<TR>
+<TD class="ss_table_paragraph" colspan="3" align="center"><ssf:nlt tag="access.no.users"/></TD>
+<c:forEach var="f" items="${ss_accessSortedFunctions}"><TD class="ss_table_paragraph">&nbsp;</TD></c:forEach>
+</TR>
+</c:if>
 
 </TBODY>
 
@@ -428,6 +445,13 @@
 </TR>
 </c:forEach>
 </TBODY>
+<c:if test="${empty ss_accessSortedApplicationGroups}">
+<TR>
+<TD class="ss_table_paragraph" colspan="3" align="center"><ssf:nlt tag="access.no.applicationGroups"/></TD>
+<c:forEach var="f" items="${ss_accessSortedFunctions}"><TD class="ss_table_paragraph">&nbsp;</TD></c:forEach>
+</TR>
+</c:if>
+
 </c:if>
 
 <c:if test="${empty ss_hideApplications}">
@@ -508,6 +532,12 @@
   
 </TR>
 </c:forEach>
+<c:if test="${empty ss_accessSortedApplications}">
+<TR>
+<TD class="ss_table_paragraph" colspan="3" align="center"><ssf:nlt tag="access.no.applications"/></TD>
+<c:forEach var="f" items="${ss_accessSortedFunctions}"><TD class="ss_table_paragraph">&nbsp;</TD></c:forEach>
+</TR>
+</c:if>
 
 </TBODY>
 </c:if>

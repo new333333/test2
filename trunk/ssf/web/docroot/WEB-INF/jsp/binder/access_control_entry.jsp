@@ -207,7 +207,13 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   </div>
 </div>
 
-<span class="ss_bold"><a href="javascript: ${renderResponse.namespace}accessObj.addClipboardUsers();"><ssf:nlt tag="access.addClipboardUsers"/></a></span><br/>
+<c:if test="${ss_accessControlConfigureAllowed}">
+<div style="padding:4px;">
+<span class="ss_bold">
+<a href="javascript: ${renderResponse.namespace}accessObj.addClipboardUsers();"><ssf:nlt tag="access.addClipboardUsers"/></a>
+</span>
+</div>
+</c:if>
 
 	<div id="ss_addRolesMenu${renderResponse.namespace}" class="ss_actions_bar5 ss_actions_bar_submenu" >
 		  <div align="right">
