@@ -43,13 +43,13 @@ import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.LicenseStats;
 import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.module.report.ReportModule;
-import org.kablink.teaming.module.report.ReportModule.UserQuotaOption;
 
 public class NullReportModule implements ReportModule {
 
@@ -224,6 +224,12 @@ public class NullReportModule implements ReportModule {
 	 */
 	public List<Long> getDeletedFolderEntryIds(String family, Date startDate,
 			Date endDate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> generateEntryAclReport(Folder folder) {
 		// TODO Auto-generated method stub
 		return null;
 	}
