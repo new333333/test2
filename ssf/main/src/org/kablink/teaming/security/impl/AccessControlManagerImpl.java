@@ -45,6 +45,8 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Application;
+import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.license.LicenseManager;
 import org.kablink.teaming.security.AccessControlException;
@@ -232,6 +234,12 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			WorkAreaOperation workAreaOperation) 
     	throws AccessControlException {
         if (!testOperation(user, workArea, workArea, workAreaOperation)) {
+        	if (workArea instanceof Entry && ((Entry)workArea).hasEntryAcl() && ((Entry)workArea).isIncludeFolderAcl()) {
+        		//See if the parent or the entry is allowing access
+        		if (testOperation(user, ((Entry)workArea).getParentBinder(), ((Entry)workArea).getParentBinder(), workAreaOperation)) {
+        			return;
+        		}
+        	}
         	// Are we dealing with the Guest user?
         	if ( ObjectKeys.GUEST_USER_INTERNALID.equals( user.getInternalId() ) )
         	{

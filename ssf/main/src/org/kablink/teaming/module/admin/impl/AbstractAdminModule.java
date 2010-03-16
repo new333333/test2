@@ -65,6 +65,7 @@ import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.ExtensionInfo;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
@@ -247,8 +248,29 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    		} else {
    			switch (operation) {
    			case manageFunctionMembership:
-    				getAccessControlManager().checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);
-   				break;
+   				if (workArea instanceof Entry && ((Entry)workArea).hasEntryAcl()) {
+					try {
+						getAccessControlManager().checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);
+					} catch(AccessControlException ex) {
+						if (((Entry)workArea).isIncludeFolderAcl()) {
+							try {
+								getAccessControlManager().checkOperation(((Entry)workArea).getParentBinder(), WorkAreaOperation.CREATE_ENTRY_ACLS);
+							} catch(AccessControlException ex2) {
+		   		        		User user = RequestContextHolder.getRequestContext().getUser();
+		   		        		if (user.getId().equals(((Entry)workArea).getCreation().getPrincipal().getId())) {
+									getAccessControlManager().checkOperation(((Entry)workArea).getParentBinder(), WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
+								} else {
+									throw ex;
+								}
+							}
+						} else {
+							throw ex;
+						}
+					}
+   				} else if (workArea instanceof Entry && !((Entry)workArea).hasEntryAcl()) {
+   					getAccessControlManager().checkOperation(((Entry)workArea).getParentBinder(), WorkAreaOperation.CREATE_ENTRY_ACLS);
+   				}
+				break;
    			default:
    				throw new NotSupportedException(operation.toString(), "checkAccess");
   					
@@ -805,22 +827,40 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
        	}
 	}
 	
-	public void setEntryHasAcl(final WorkArea workArea, final Boolean hasAcl) {
-        //Set the entry acl flag
-        getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
-           		if (workArea instanceof Entry) ((Entry)workArea).setHasEntryAcl(hasAcl);
-				return null;
-        	}});
-	}
-
-	public void setEntryIncludeFolderAcl(final WorkArea workArea, final Boolean checkFolderAcl) {
-        //Set the entry acl flag
-        getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
-           		if (workArea instanceof Entry) ((Entry)workArea).setCheckFolderAcl(checkFolderAcl);
-				return null;
-        	}});
+	public void setEntryHasAcl(final WorkArea workArea, final Boolean hasAcl, final Boolean checkFolderAcl) {
+        //Make sure this user is allowed to do this
+		if (workArea instanceof Entry && ((Entry)workArea).isTop()) {
+			try {
+				if (((Entry)workArea).hasEntryAcl()) {
+					getAccessControlManager().checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);
+				} else {
+					getAccessControlManager().checkOperation(((Entry)workArea).getParentBinder(), WorkAreaOperation.CREATE_ENTRY_ACLS);
+				}
+			} catch(AccessControlException ex) {
+				if (!((Entry)workArea).hasEntryAcl() || ((Entry)workArea).isIncludeFolderAcl()) {
+					try {
+						getAccessControlManager().checkOperation(((Entry)workArea).getParentBinder(), WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
+					} catch(AccessControlException ex2) {
+						return;
+					}
+				} else {
+					return;
+				}
+			}
+		
+			//Set the entry acl flag
+	        getTransactionTemplate().execute(new TransactionCallback() {
+	        	public Object doInTransaction(TransactionStatus status) {
+	           		if (workArea instanceof Entry) ((Entry)workArea).setHasEntryAcl(hasAcl);
+					return null;
+	        	}});
+	        //Set the entry checkFolderAcl flag
+	        getTransactionTemplate().execute(new TransactionCallback() {
+	        	public Object doInTransaction(TransactionStatus status) {
+	           		if (workArea instanceof Entry) ((Entry)workArea).setCheckFolderAcl(checkFolderAcl);
+					return null;
+	        	}});
+		}
 	}
 
     public Map<String, Object> sendMail(Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, Collection<Long> ccIds, 

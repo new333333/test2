@@ -100,9 +100,10 @@ public class AccessControlController extends AbstractBinderController {
 				SimpleProfiler.setProfiler(new SimpleProfiler("lucene"));
 				Map functionMemberships = new HashMap();
 				getAccessResults(request, functionMemberships);
-				if (workArea instanceof Entry) getAdminModule().setEntryHasAcl(workArea, Boolean.TRUE);
-				Boolean includeFolderAcl = PortletRequestUtils.getBooleanParameter(request, "includeFolderAcl", false);
-				getAdminModule().setEntryIncludeFolderAcl(workArea, includeFolderAcl);
+				if (workArea instanceof Entry) {
+					Boolean includeFolderAcl = PortletRequestUtils.getBooleanParameter(request, "includeFolderAcl", false);
+					getAdminModule().setEntryHasAcl(workArea, Boolean.TRUE, includeFolderAcl);
+				}
 				getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
 				if(logger.isDebugEnabled())
 					logger.debug(SimpleProfiler.toStr());
@@ -114,8 +115,7 @@ public class AccessControlController extends AbstractBinderController {
 		} else if (formData.containsKey("delBtn") && WebHelper.isMethodPost(request)) {
 			if (!(workArea instanceof FolderEntry) || ((FolderEntry)workArea).isTop()) {
 				if (workArea instanceof Entry) {
-					getAdminModule().setEntryHasAcl(workArea, Boolean.FALSE);
-					getAdminModule().setEntryIncludeFolderAcl(workArea, Boolean.TRUE);
+					getAdminModule().setEntryHasAcl(workArea, Boolean.FALSE, Boolean.TRUE);
 					SimpleProfiler.setProfiler(new SimpleProfiler("lucene"));
 					Map functionMemberships = new HashMap();
 					getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
@@ -155,12 +155,19 @@ public class AccessControlController extends AbstractBinderController {
 			ZoneConfig zone = getZoneModule().getZoneConfig(workAreaId);
 			model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(zone.getZoneId()));
 			wArea = zone;
+			model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, 
+					getAdminModule().testAccess(zone, AdminOperation.manageFunctionMembership));
 		} else if (EntityIdentifier.EntityType.folderEntry.name().equals(type)) {
 			FolderEntry entry = getFolderModule().getEntry(null, workAreaId);
 			wArea = entry;
 			model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(entry.getZoneId()));
-			model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, 
-					getAdminModule().testAccess(entry, AdminOperation.manageFunctionMembership));
+			if (entry.hasEntryAcl()) {
+				model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, getAdminModule().testAccess(entry, AdminOperation.manageFunctionMembership));
+						
+			} else {
+				model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, 
+						getAdminModule().testAccess(entry.getParentBinder(), AdminOperation.manageFunctionMembership));
+			}
 		} else {
 			Binder binder = getBinderModule().getBinder(workAreaId);			
 			//Build the navigation beans
