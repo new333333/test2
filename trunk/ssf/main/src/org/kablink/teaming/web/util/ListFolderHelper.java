@@ -1972,22 +1972,22 @@ public class ListFolderHelper {
 						viewType.equals(Definition.VIEW_STYLE_TASK)) &&
 				bs.getFolderModule().testAccess(folder, FolderOperation.addEntry)) {
 			
-			String titleFromFile = NLT.get("calendar.import.window.title.fromFile").replaceAll("'", "\\'");
-			String titleByURL = NLT.get("calendar.import.window.title.byURL").replaceAll("'", "\\'");
-			String legendFromFile = NLT.get("calendar.import.window.legend.fromFile").replaceAll("'", "\\'");
-			String legendByURL = NLT.get("calendar.import.window.legend.byURL").replaceAll("'", "\\'");
-			String btnFromFile = NLT.get("calendar.import.window.upload.fromFile").replaceAll("'", "\\'");
-			String btnByURL = NLT.get("calendar.import.window.upload.byURL").replaceAll("'", "\\'");
+			String titleFromFile = NLT.get("calendar.import.window.title.fromFile").replaceAll("'", "\\\\'");
+			String titleByURL = NLT.get("calendar.import.window.title.byURL").replaceAll("'", "\\\\'");
+			String legendFromFile = NLT.get("calendar.import.window.legend.fromFile").replaceAll("'", "\\\\'");
+			String legendByURL = NLT.get("calendar.import.window.legend.byURL").replaceAll("'", "\\\\'");
+			String btnFromFile = NLT.get("calendar.import.window.upload.fromFile").replaceAll("'", "\\\\'");
+			String btnByURL = NLT.get("calendar.import.window.upload.byURL").replaceAll("'", "\\\\'");
 			String optionTitle = NLT.get("toolbar.menu.calendarImport").replaceAll("'", "\\'");
 			String importFromFile = NLT.get("toolbar.menu.calendarImport.fromFile");
 			String importByURL = NLT.get("toolbar.menu.calendarImport.byURL");
 			if (viewType.equals(Definition.VIEW_STYLE_TASK)) {
-				titleFromFile = NLT.get("task.import.window.title.fromFile").replaceAll("'", "\\'");
-				titleByURL = NLT.get("task.import.window.title.byURL").replaceAll("'", "\\'");
-				legendFromFile = NLT.get("task.import.window.legend.fromFile").replaceAll("'", "\\'");
-				legendByURL = NLT.get("task.import.window.legend.byURL").replaceAll("'", "\\'");
-				btnFromFile = NLT.get("task.import.window.upload.fromFile").replaceAll("'", "\\'");
-				btnByURL = NLT.get("task.import.window.upload.byURL").replaceAll("'", "\\'");
+				titleFromFile = NLT.get("task.import.window.title.fromFile").replaceAll("'", "\\\\'");
+				titleByURL = NLT.get("task.import.window.title.byURL").replaceAll("'", "\\\\'");
+				legendFromFile = NLT.get("task.import.window.legend.fromFile").replaceAll("'", "\\\\'");
+				legendByURL = NLT.get("task.import.window.legend.byURL").replaceAll("'", "\\\\'");
+				btnFromFile = NLT.get("task.import.window.upload.fromFile").replaceAll("'", "\\\\'");
+				btnByURL = NLT.get("task.import.window.upload.byURL").replaceAll("'", "\\\\'");
 				optionTitle = NLT.get("toolbar.menu.taskImport").replaceAll("'", "\\'");
 				importFromFile = NLT.get("toolbar.menu.taskImport.fromFile");
 				importByURL = NLT.get("toolbar.menu.taskImport.byURL");				
