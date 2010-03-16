@@ -130,6 +130,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 						// Yes!  Update the TreeInfo, re-render the
 						// row and change the row's Anchor Image to a
 						// tree_opener.
+						m_ti.clearChildBindersList();
 						m_ti.setBinderExpanded(false);
 						reRenderRow(m_grid, m_gridRow, m_ti);
 						m_expanderImg.setResource(getImages().tree_opener());
@@ -510,9 +511,11 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			// ...mark any previous selection as not being selected...
 			Element selectorId = Document.get().getElementById(EXTENSION_ID_SELECTOR_ID);
 			String selectedId_Old = selectorId.getAttribute("value");
-			if (GwtClientHelper.hasString(selectedId_Old)) {
+			if (GwtClientHelper.hasString(selectedId_Old) && (!(selectedId_Old.equals(selectedId_New)))) {
 				Element selectorLabel_Old = Document.get().getElementById(selectedId_Old);
-				selectorLabel_Old.removeClassName("workspaceTreeBinderSelected");
+				if (null != selectorLabel_Old) {
+					selectorLabel_Old.removeClassName("workspaceTreeBinderSelected");
+				}
 				
 				Element selectorPanel_Old = Document.get().getElementById(EXTENSION_ID_SELECTOR_ANCHOR + selectedId_Old);
 				if (null != selectorPanel_Old) {
