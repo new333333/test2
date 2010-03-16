@@ -269,6 +269,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 					}
    				} else if (workArea instanceof Entry && !((Entry)workArea).hasEntryAcl()) {
    					getAccessControlManager().checkOperation(((Entry)workArea).getParentBinder(), WorkAreaOperation.CREATE_ENTRY_ACLS);
+   				} else {
+   					getAccessControlManager().checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);
    				}
 				break;
    			default:

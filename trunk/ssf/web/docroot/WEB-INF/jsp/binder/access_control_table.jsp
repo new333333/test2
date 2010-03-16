@@ -47,7 +47,7 @@
 <c:if test="${ssWorkArea.functionMembershipInherited}">
   <ssf:nlt tag="access.roles"/>
 </c:if>
-<c:if test="${!ssWorkArea.functionMembershipInherited && !isEntryACL}">
+<c:if test="${!ssWorkArea.functionMembershipInherited && !isEntryACL && ss_accessControlConfigureAllowed}">
   <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addRolesMenu${ss_namespace}',40, 40);return false;"
   ><ssf:nlt tag="access.addRole"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
   src="<html:imagesPath/>pics/menudown.gif"/></a>
@@ -163,7 +163,7 @@
 	<c:if test="${ssWorkArea.functionMembershipInherited}">
 	  <ssf:nlt tag="access.groups"/>
 	</c:if>
-	<c:if test="${!ssWorkArea.functionMembershipInherited}">
+	<c:if test="${!ssWorkArea.functionMembershipInherited && ss_accessControlConfigureAllowed}">
 	    <a href="javascript:;" onClick="ss_clearTextareas();${ss_namespace}accessObj.showMenu(this, 'ss_addGroupsMenu${ss_namespace}', 40, 40);return false;">
 	      <ssf:nlt tag="access.addGroup"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
 	        src="<html:imagesPath/>pics/menudown.gif"/>
@@ -257,7 +257,7 @@
 	<c:if test="${ssWorkArea.functionMembershipInherited}">
 	  <ssf:nlt tag="access.users"/>
 	</c:if>
-	<c:if test="${!ssWorkArea.functionMembershipInherited}">
+	<c:if test="${!ssWorkArea.functionMembershipInherited && ss_accessControlConfigureAllowed}">
 	    <a href="javascript:;" onClick="ss_clearTextareas();${ss_namespace}accessObj.showMenu(this, 'ss_addUsersMenu${ss_namespace}', 40, 40);return false;">
 	      <ssf:nlt tag="access.addUser"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
 	      src="<html:imagesPath/>pics/menudown.gif"/></a>
@@ -336,7 +336,7 @@
 	<c:if test="${ssWorkArea.functionMembershipInherited}">
 	  <ssf:nlt tag="access.application.groups"/>
 	</c:if>
-	<c:if test="${!ssWorkArea.functionMembershipInherited}">
+	<c:if test="${!ssWorkArea.functionMembershipInherited && ss_accessControlConfigureAllowed}">
 	    <a href="javascript:;" onClick="ss_clearTextareas();${ss_namespace}accessObj.showMenu(this, 'ss_addApplicationGroupsMenu${ss_namespace}', 40, 40);return false;">
 	      <ssf:nlt tag="access.addApplicationGroup"/>
 	      <c:if test="${ssWorkArea.workAreaType == 'zone'}">
@@ -437,7 +437,7 @@
 	<c:if test="${ssWorkArea.functionMembershipInherited}">
 	  <ssf:nlt tag="access.applications"/>
 	</c:if>
-	<c:if test="${!ssWorkArea.functionMembershipInherited}">
+	<c:if test="${!ssWorkArea.functionMembershipInherited && ss_accessControlConfigureAllowed}">
 	    <a href="javascript:;" onClick="ss_clearTextareas();${ss_namespace}accessObj.showMenu(this, 'ss_addApplicationsMenu${ss_namespace}', 40, 40);return false;">
 	      <ssf:nlt tag="access.addApplication"/>
 	      <c:if test="${ssWorkArea.workAreaType == 'zone'}">
