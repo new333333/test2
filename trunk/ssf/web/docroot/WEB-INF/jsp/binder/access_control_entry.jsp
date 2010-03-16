@@ -262,6 +262,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
  value="<ssf:nlt tag="button.saveChanges" />">
 </c:if>
 </form>
+<br/>
 </c:if>
 
 <c:if test="${ssWorkArea.workAreaType == 'zone'}">

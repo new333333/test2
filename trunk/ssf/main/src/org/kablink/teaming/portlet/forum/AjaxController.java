@@ -103,7 +103,9 @@ import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.ic.DocumentDownload;
@@ -114,6 +116,7 @@ import org.kablink.teaming.module.ical.AttendedEntries;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.module.ldap.LdapSyncThread;
+import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.portlet.binder.AccessControlController;
@@ -1884,19 +1887,31 @@ public class AjaxController  extends SAbstractControllerRetry {
 	
 	private ModelAndView ajaxGetAccessControlTable(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		Map model = new HashMap();
 		WorkArea workArea = null;
 		Long workAreaId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_WORKAREA_ID));				
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKAREA_TYPE);	
 		if (EntityIdentifier.EntityType.valueOf(type).isBinder()) {
 			workArea = getBinderModule().getBinder(workAreaId);
+			model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, 
+					getAdminModule().testAccess(workArea, AdminOperation.manageFunctionMembership));
 		} else if (EntityIdentifier.EntityType.folderEntry.name().equals(type)) {
 			FolderEntry entry = getFolderModule().getEntry(null, workAreaId);
 			workArea = entry;
+			model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(entry.getZoneId()));
+			if (entry.hasEntryAcl()) {
+				model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, getAdminModule().testAccess(entry, AdminOperation.manageFunctionMembership));
+						
+			} else {
+				model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, 
+						getAdminModule().testAccess(entry.getParentBinder(), AdminOperation.manageFunctionMembership));
+			}
 		} else {
 			workArea = getZoneModule().getZoneConfig(workAreaId);
+			model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, 
+					getAdminModule().testAccess(workArea, AdminOperation.manageFunctionMembership));
 
 		}
-		Map model = new HashMap();
 		AccessControlController.setupAccess(this, request, response, workArea, model);
 		
 		// User context

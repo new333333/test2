@@ -562,7 +562,23 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			Function deleteRole = addEntryDeleteRole(top);
 			Function changeAclRole = addEntryChangeAclRole(top);
 		}
-
+		if (version.intValue() <= 6) {
+			//Add the new "Create Entry ACL" related right to the standard roles
+			List<Function>fns = getFunctionManager().findFunctions(top.getId());
+			for (Function fn:fns) {
+				if (ObjectKeys.ROLE_TITLE_PARTICIPANT.equals(fn.getName())) {
+					fn.addOperation(WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
+				}
+				if (ObjectKeys.ROLE_TITLE_TEAM_MEMBER.equals(fn.getName())) {
+					fn.addOperation(WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
+					fn.addOperation(WorkAreaOperation.CREATE_ENTRY_ACLS);
+				}
+				if (ObjectKeys.ROLE_TITLE_BINDER_ADMIN.equals(fn.getName())) {
+					fn.addOperation(WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
+					fn.addOperation(WorkAreaOperation.CREATE_ENTRY_ACLS);
+				}
+			}
+		}
   	}
  	/**
  	 * Fix up duplicate definitions.  1.0 allowed definitions with the same name
@@ -1157,6 +1173,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.CREATOR_MODIFY);
 		function.addOperation(WorkAreaOperation.CREATOR_DELETE);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
+		function.addOperation(WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
 //		function.addOperation(WorkAreaOperation.USER_SEE_ALL);
 		
 		//generate functionId
@@ -1206,6 +1223,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
 		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
 		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);
+		function.addOperation(WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
+		function.addOperation(WorkAreaOperation.CREATE_ENTRY_ACLS);
 
 		//generate functionId
 		getFunctionManager().addFunction(function);
