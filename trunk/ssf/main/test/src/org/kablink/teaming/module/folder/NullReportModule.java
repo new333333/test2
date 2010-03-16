@@ -228,7 +228,6 @@ public class NullReportModule implements ReportModule {
 		return null;
 	}
 
-	@Override
 	public Map<String, Object> generateEntryAclReport(Folder folder) {
 		// TODO Auto-generated method stub
 		return null;
