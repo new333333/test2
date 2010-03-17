@@ -219,4 +219,7 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used in the workspace tree control.
 	String treeCloseBreadCrumbs();
+	
+	// Strings used in the "Add File Attachment" dialog.
+	String addFileAttachmentDlgHeader();
 }// end GwtTeamingMessages

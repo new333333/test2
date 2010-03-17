@@ -60,10 +60,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -94,6 +92,8 @@ public class EditBrandingDlg extends DlgBox
 	private AsyncCallback<ArrayList<String>> m_rpcReadCallback = null;
 	private GwtBrandingData m_origBrandingData;		// The original branding data we started with.
 	private final String m_noAvailableImages = "no available images";
+	private AddFileAttachmentDlg m_addFileAttachmentDlg = null;
+	
 
 	/**
 	 * 
@@ -245,7 +245,15 @@ public class EditBrandingDlg extends DlgBox
 					 */
 					public void onClick( ClickEvent event )
 					{
-						Window.alert( "not yet implemented" );
+						Widget anchor;
+						
+						// Get the anchor the user clicked on.
+						anchor = (Widget) event.getSource();
+						
+						removeMouseOverStyles( anchor.getParent() );
+						
+						// Invoke the "Add file attachment" dialog.
+						invokeAddFileAttachmentDlg( anchor.getAbsoluteLeft(), anchor.getAbsoluteTop() );
 					}//end onClick()
 				};
 				addFileAnchor.addClickHandler( clickHandler );
@@ -277,7 +285,7 @@ public class EditBrandingDlg extends DlgBox
 						Widget widget;
 						
 						widget = (Widget)event.getSource();
-						widget.getParent().removeStyleName( "subhead-control-bg2" );
+						removeMouseOverStyles( widget.getParent() );
 					}// end onMouseOut()
 				};
 				addFileAnchor.addMouseOutHandler( mouseOutHandler );
@@ -348,9 +356,9 @@ public class EditBrandingDlg extends DlgBox
 					{
 						Widget widget;
 						
+						// Remove the background color we added to the anchor when the user moved the mouse over the anchor.
 						widget = (Widget)event.getSource();
-						widget.removeStyleName( "subhead-control-bg2" );
-						widget.addStyleName( "subhead-control-bg1" );
+						removeMouseOverStyles( widget );
 					}// end onMouseOut()
 				};
 				advancedAnchor.addMouseOutHandler( mouseOutHandler );
@@ -420,7 +428,15 @@ public class EditBrandingDlg extends DlgBox
 					 */
 					public void onClick( ClickEvent event )
 					{
-						Window.alert( "not yet implemented" );
+						Widget anchor;
+						
+						// Get the anchor the user clicked on.
+						anchor = (Widget) event.getSource();
+						
+						removeMouseOverStyles( anchor.getParent() );
+
+						// Invoke the "Add file attachment" dialog.
+						invokeAddFileAttachmentDlg( anchor.getAbsoluteLeft(), anchor.getAbsoluteTop() );
 					}//end onClick()
 				};
 				addFileAnchor.addClickHandler( clickHandler );
@@ -452,7 +468,7 @@ public class EditBrandingDlg extends DlgBox
 						Widget widget;
 						
 						widget = (Widget)event.getSource();
-						widget.getParent().removeStyleName( "subhead-control-bg2" );
+						removeMouseOverStyles( widget.getParent() );
 					}// end onMouseOut()
 				};
 				addFileAnchor.addMouseOutHandler( mouseOutHandler );
@@ -733,6 +749,71 @@ public class EditBrandingDlg extends DlgBox
 		updateSampleTextBgColor();
 		updateSampleTextColor();
 	}// end init()
+	
+
+	/**
+	 * Invoke the "Add file attachment" dialog.
+	 */
+	public void invokeAddFileAttachmentDlg( int x, int y )
+	{
+		// Have we already created an "Add file attachment" dialog?
+		if ( m_addFileAttachmentDlg != null )
+		{
+			// Yes, clear any content from a previous invocation.
+			m_addFileAttachmentDlg.clearContent();
+			m_addFileAttachmentDlg.setPopupPosition( x, y );
+		}
+		else
+		{
+			EditSuccessfulHandler editSuccessfulHandler;
+			EditCanceledHandler editCanceledHandler;
+			
+			editSuccessfulHandler = new EditSuccessfulHandler()
+			{
+				/**
+				 * This method gets called when user user presses ok in the "Add File Attachment" dialog.
+				 */
+				public boolean editSuccessful( Object obj )
+				{
+					m_addFileAttachmentDlg.hide();
+					
+					// Issue an ajax request to get the list of file attachments for this binder.
+					// When we get the response, updateListOfFileAttachments() will be called.
+					getListOfFileAttachmentsFromServer();
+
+					return true;
+				}// end editSuccessful()
+			};
+				
+			editCanceledHandler = new EditCanceledHandler()
+			{
+				/**
+				 * This method gets called when the user presses cancel in the "Add file attachment" dialog.
+				 */
+				public boolean editCanceled()
+				{
+					m_addFileAttachmentDlg.hide();
+					
+					return true;
+				}// end editCanceled()
+			};
+
+			// No, create an "Add file attachment dialog.
+			m_addFileAttachmentDlg = new AddFileAttachmentDlg( editSuccessfulHandler, editCanceledHandler, false, true, x, y, null );
+		}
+
+		m_addFileAttachmentDlg.show();
+	}// end invokeAddFileAttachmentDlg()
+	
+
+	/**
+	 * Remove the styles that were added to the given widget when the user moved the mouse over the widget.
+	 */
+	private void removeMouseOverStyles( Widget widget )
+	{
+		widget.removeStyleName( "subhead-control-bg2" );
+		widget.addStyleName( "subhead-control-bg1" );
+	}// end removeMouseOverStyles()
 	
 	
 	/**
