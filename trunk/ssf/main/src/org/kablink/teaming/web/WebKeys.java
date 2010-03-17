@@ -768,6 +768,7 @@ public class WebKeys {
     public static final String ENTRY_ATTACHMENT_EDIT_TYPE_FOR_IE="ssEntryAttachmentEditTypeForIE";
     public static final String ENTRY_ATTACHMENT_EDIT_TYPE_FOR_NON_IE="ssEntryAttachmentEditTypeForNonIE";
     public static final String ENTRY_ATTACHMENT_EDITOR_TYPE="ssEntryAttachmentEditorType";
+    public static final String ENTRY_HAS_ENTRY_ACL="ssEntryHasEntryAcl";
     public static final String ENTRY_TITLE="ssEntryTitle";
     public static final String ENTRY_USER_LIST="assignedUsers";
     public static final String ENTRY_VIEW_STYLE="ss_entryViewStyle";

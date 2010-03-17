@@ -257,7 +257,7 @@
 <c:if test="${empty ss_accessSortedGroups}">
 <TR>
 <TD class="ss_table_paragraph" colspan="3" align="center"><ssf:nlt tag="access.no.groups"/></TD>
-<c:forEach var="f" items="${ss_accessSortedFunctions}"><TD class="ss_table_paragraph">&nbsp;</TD></c:forEach>
+<c:forEach var="f" items="${ss_accessSortedFunctions}"><TD class="ss_table_paragraph"></TD></c:forEach>
 </TR>
 </c:if>
 </TBODY>
@@ -340,7 +340,7 @@
 <c:if test="${empty ss_accessSortedUsers}">
 <TR>
 <TD class="ss_table_paragraph" colspan="3" align="center"><ssf:nlt tag="access.no.users"/></TD>
-<c:forEach var="f" items="${ss_accessSortedFunctions}"><TD class="ss_table_paragraph">&nbsp;</TD></c:forEach>
+<c:forEach var="f" items="${ss_accessSortedFunctions}"><TD class="ss_table_paragraph"></TD></c:forEach>
 </TR>
 </c:if>
 
@@ -448,7 +448,7 @@
 <c:if test="${empty ss_accessSortedApplicationGroups}">
 <TR>
 <TD class="ss_table_paragraph" colspan="3" align="center"><ssf:nlt tag="access.no.applicationGroups"/></TD>
-<c:forEach var="f" items="${ss_accessSortedFunctions}"><TD class="ss_table_paragraph">&nbsp;</TD></c:forEach>
+<c:forEach var="f" items="${ss_accessSortedFunctions}"><TD class="ss_table_paragraph"></TD></c:forEach>
 </TR>
 </c:if>
 
@@ -535,7 +535,7 @@
 <c:if test="${empty ss_accessSortedApplications}">
 <TR>
 <TD class="ss_table_paragraph" colspan="3" align="center"><ssf:nlt tag="access.no.applications"/></TD>
-<c:forEach var="f" items="${ss_accessSortedFunctions}"><TD class="ss_table_paragraph">&nbsp;</TD></c:forEach>
+<c:forEach var="f" items="${ss_accessSortedFunctions}"><TD class="ss_table_paragraph"></TD></c:forEach>
 </TR>
 </c:if>
 

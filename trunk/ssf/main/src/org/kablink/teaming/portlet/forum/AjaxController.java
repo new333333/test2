@@ -1898,6 +1898,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		} else if (EntityIdentifier.EntityType.folderEntry.name().equals(type)) {
 			FolderEntry entry = getFolderModule().getEntry(null, workAreaId);
 			workArea = entry;
+			model.put(WebKeys.ENTRY_HAS_ENTRY_ACL, entry.hasEntryAcl());
 			model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(entry.getZoneId()));
 			if (entry.hasEntryAcl()) {
 				model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, getAdminModule().testAccess(entry, AdminOperation.manageFunctionMembership));
