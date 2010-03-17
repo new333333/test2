@@ -351,7 +351,10 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 		<span class="ss_bold"><ssf:nlt tag="access.addRole"/></span><br/><br/>
 		<ul class="ss_actions_bar5 ss_actions_bar_submenu" style="white-space:nowrap;">
 	    <c:forEach var="function" items="${ssFunctions}">
-	     <c:if test="${function.scope == 'binder'}">
+	     <c:if test="${function.scope == ssWorkArea.workAreaType || 
+	     		(function.scope == 'binder' && ssWorkArea.workAreaType == 'workspace') || 
+	     		(function.scope == 'binder' && ssWorkArea.workAreaType == 'folder') || 
+	     		(function.scope == 'binder' && ssWorkArea.workAreaType == 'profiles')}">
 	      <c:set var="includeRole" value="1"/>
 	      <c:forEach var="sortedFunction" items="${ss_accessSortedFunctions}">
 	        <c:if test="${sortedFunction.id == function.id}">

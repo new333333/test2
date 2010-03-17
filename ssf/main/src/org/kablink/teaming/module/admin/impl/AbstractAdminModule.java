@@ -605,7 +605,12 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	List<Function> functions = functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
     	List<Function> functionsPruned = new ArrayList<Function>();
     	for (Function f : functions) {
-    		if (scope.equals(f.getScope())) functionsPruned.add(f);
+    		if (scope.equals(f.getScope()) || 
+    				(f.getScope() == null && scope.equals(ObjectKeys.ROLE_TYPE_ZONE) && f.isZoneWide())) {
+    			functionsPruned.add(f);
+    		} else if (f.getScope() == null && scope.equals(ObjectKeys.ROLE_TYPE_BINDER) && !f.isZoneWide()) {
+    			functionsPruned.add(f);
+    		}
     	}
     	return functionsPruned;
     }

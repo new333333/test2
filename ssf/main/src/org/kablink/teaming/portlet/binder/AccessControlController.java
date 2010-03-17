@@ -242,6 +242,7 @@ public class AccessControlController extends AbstractBinderController {
 	public static void setupAccess(AllModulesInjected bs, RenderRequest request, RenderResponse response, WorkArea wArea, Map model) {
 		String scope = ObjectKeys.ROLE_TYPE_BINDER;
 		if (wArea instanceof Entry) scope = ObjectKeys.ROLE_TYPE_ENTRY;
+		if (wArea instanceof ZoneConfig) scope = ObjectKeys.ROLE_TYPE_ZONE;
 		List functions = bs.getAdminModule().getFunctions(scope);
 		List membership;
 		boolean zoneWide = wArea.getWorkAreaType().equals(EntityIdentifier.EntityType.zone.name());
