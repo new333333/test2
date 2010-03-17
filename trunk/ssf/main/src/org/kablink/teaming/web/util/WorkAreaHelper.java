@@ -59,6 +59,7 @@ import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
@@ -75,6 +76,8 @@ public class WorkAreaHelper {
 		Map formData = request.getParameterMap();
 		boolean roleTypeEntry = false;
 		if (wArea instanceof Entry) roleTypeEntry = true;
+		boolean roleTypeZone = false;
+		if (wArea instanceof ZoneConfig) roleTypeZone = true;
 		
 		Principal binderOwner = wArea.getOwner();
         Comparator c = new PrincipalComparator(user.getLocale());
@@ -323,7 +326,7 @@ public class WorkAreaHelper {
 			Map applicationGroups = (Map)pMap.get(WebKeys.APPLICATION_GROUPS);
 			Integer operationCount = f.getOperations().size() + 1000;
 			String sortKey = String.valueOf(operationCount);
-			if (roleTypeEntry || 
+			if (roleTypeEntry || roleTypeZone ||
 					users.size() > 0 || 
 					groups.size() > 0 || 
 					applications.size() > 0 || 
@@ -332,7 +335,7 @@ public class WorkAreaHelper {
 					pMap.containsKey(WebKeys.TEAM_MEMBER) ||
 					newRoleIds.contains(f.getId())) {
 				//This function has some membership (or it is an entry ACL); add it to the sorted list
-				sortedFunctionsMap.put(sortKey, f);
+				sortedFunctionsMap.put(sortKey + f.getName(), f);
 			}
 		}
 		//list of sorted functions
