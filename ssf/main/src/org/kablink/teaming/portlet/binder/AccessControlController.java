@@ -159,6 +159,7 @@ public class AccessControlController extends AbstractBinderController {
 					getAdminModule().testAccess(zone, AdminOperation.manageFunctionMembership));
 		} else if (EntityIdentifier.EntityType.folderEntry.name().equals(type)) {
 			FolderEntry entry = getFolderModule().getEntry(null, workAreaId);
+			model.put(WebKeys.ENTRY_HAS_ENTRY_ACL, entry.hasEntryAcl());
 			wArea = entry;
 			model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(entry.getZoneId()));
 			if (entry.hasEntryAcl()) {

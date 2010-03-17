@@ -207,6 +207,13 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   </div>
 </div>
 
+<c:if test="${ssEntryHasEntryAcl}">
+Entry has acl
+</c:if>
+<c:if test="${!ssEntryHasEntryAcl}">
+Entry has acl not
+</c:if>
+
 <c:if test="${ss_accessControlConfigureAllowed}">
 <div style="padding:4px;">
 <span class="ss_bold">
