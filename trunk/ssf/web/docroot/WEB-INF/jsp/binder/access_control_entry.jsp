@@ -114,6 +114,39 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 
 <ssf:box style="rounded">
 <div style="padding:4px 8px;">
+
+<c:if test="${ssEntryHasEntryAcl && !ss_accessControlConfigureAllowed}">
+<div>
+  <span class="ss_italic">[<ssf:nlt tag="access.mode.readonly"/>]</span>
+</div>
+</c:if>
+
+<c:if test="${!ssEntryHasEntryAcl}">
+<div>
+  <span class="ss_bold"><ssf:nlt tag="access.noEntryAclSet"/></span>
+  <ul>
+    <li>
+      <a href="<ssf:url action="configure_access_control"><ssf:param
+		  name="workAreaId" value="${ssWorkArea.parentBinder.id}"/><ssf:param
+		  name="workAreaType" value="${ssWorkArea.parentBinder.workAreaType}"/><ssf:param
+		  name="operation" value="view_access"/></ssf:url>"
+        onClick="ss_openUrlInPortlet(this.href, true, '600', '700');return false;"
+      ><ssf:nlt tag="access.viewWhoHasFolderAccess"/></a>
+    </li>
+    <c:if test="${ss_accessControlConfigureAllowed}">
+    <li>
+      <a href="javascript: ;"
+        onClick="ss_toggleShowDiv('ss_accessControlTable');return false;"
+      ><ssf:nlt tag="access.setEntryAcl"/></a>
+    </li>
+    </c:if>
+  </ul>
+</div>
+</c:if>
+
+<div id="ss_accessControlTable" 
+  <c:if test="${!ssEntryHasEntryAcl}">style="display:none;"</c:if>
+>
 <c:if test="${ss_accessFunctionsCount <= 0}">
 <span class="ss_bold ss_italic"><ssf:nlt tag="access.noRoles"/></span><br/>
 </c:if>
@@ -207,13 +240,6 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   </div>
 </div>
 
-<c:if test="${ssEntryHasEntryAcl}">
-Entry has acl
-</c:if>
-<c:if test="${!ssEntryHasEntryAcl}">
-Entry has acl not
-</c:if>
-
 <c:if test="${ss_accessControlConfigureAllowed}">
 <div style="padding:4px;">
 <span class="ss_bold">
@@ -258,7 +284,10 @@ Entry has acl not
 <%@ include file="/WEB-INF/jsp/binder/access_control_table.jsp" %>
 
 <br/>
-<div style="padding:10px 0px 16px 10px;">
+<div style="padding:8px 0px 14px 10px;">
+<table>
+<tr>
+<td valign="bottom">
 <input type="checkbox" 
   <c:if test="${ssWorkArea.includeFolderAcl}">
     checked="checked"
@@ -268,11 +297,28 @@ Entry has acl not
   </c:if>
   name="includeFolderAcl"
   title="<ssf:nlt tag="access.select"/>" /><span style="padding-left:4px;"><ssf:nlt tag="access.includeFolderAcl"/></span>
+</td>
+<td valign="bottom" style="padding-left:20px;">
+<a href="<ssf:url action="configure_access_control"><ssf:param
+		  name="workAreaId" value="${ssWorkArea.parentBinder.id}"/><ssf:param
+		  name="workAreaType" value="${ssWorkArea.parentBinder.workAreaType}"/><ssf:param
+		  name="operation" value="view_access"/></ssf:url>"
+  onClick="ss_openUrlInPortlet(this.href, true, '600', '700');return false;"
+><ssf:nlt tag="access.viewWhoHasFolderAccess"/></a>
+</td>
+</tr>
+</table>
 </div>
 <c:if test="${ss_accessControlConfigureAllowed}">
 <input type="submit" class="ss_submit" name="okBtn" 
  onClick="ss_startSpinner();"
  value="<ssf:nlt tag="button.saveChanges" />">
+<c:if test="${ss_accessControlConfigureAllowed}">
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="submit" class="ss_submit" name="delBtn" 
+    value="<ssf:nlt tag="access.deleteThisAcl"/>">
+</c:if>
+ 
 </c:if>
 </form>
 <br/>
@@ -289,6 +335,7 @@ Entry has acl not
   <ssf:param name="value" value="${ss_superUser.name}"/>
   </ssf:nlt>]</span><br/>
 </div>
+</div>
 </ssf:box>
 
 
@@ -303,11 +350,7 @@ Entry has acl not
 	name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
   <input type="button" class="ss_submit" name="closeBtn" 
     value="<ssf:nlt tag="button.close" text="Close"/>"
-	onClick="self.window.close();return false;"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <c:if test="${ss_accessControlConfigureAllowed}">
-    <input type="submit" class="ss_submit" name="delBtn" 
-      value="<ssf:nlt tag="button.delete" text="Delete"/>">
-  </c:if>
+	onClick="self.window.close();return false;"/>
 </form>
 </div>
 </div>
