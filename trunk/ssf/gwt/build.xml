@@ -65,8 +65,6 @@
 		<include name="gwt-user.jar"       />
 		<include name="gwt-fx.jar"         />
 		<include name="${gwt.dev.jar}"     />
-		<!-- <include name="smartgwt.jar"       /> -->
-		<!-- <include name="smartgwt-skins.jar" /> -->
 	</fileset>
 	<fileset id="libjars" dir="${lib.dir}">
 		<include name="*jar" />
@@ -95,7 +93,6 @@
 	
 	<target name="compile-gwt" depends="init-gwt-build">
 		<!-- Compile the GWT stuff into www. -->
-		<!-- When we start using SmartGWT add the following to the classpath: ${gwt.dir}/smartgwt.jar:${gwt.dir}/smartgwt-skins.jar: -->
 		<java
 				classpath="src:${gwt.dir}/gwt-user.jar:${gwt.dir}/gwt-fx.jar:${gwt.dir}/${gwt.dev.jar}:"
 				failonerror="true"
@@ -112,23 +109,9 @@
 			<!-- GWT Compiler arguments. -->
 			<arg line="${gwt.war} ${gwt.style} ${gwt.logLevel} ${gwt.localWorkers} ${gwt.additionalArgs} ${gwt.module}" />
 		</java>
-		<antcall target="copy-skins"/>
 	</target>
 
-	<target name="copy-skins">
-		<!-- When we start using SmartGWT uncomment the following <copy> -->
-	<!--
-		<copy todir="www/gwtteaming/sc/skins">
-		        <fileset dir="skins">
-		        	<include name="**/*"/>
-			</fileset>
-		</copy>
-	-->			
-	</target>
-
-	
 	<target name="build"/>
-
 	
 	<target name="deploy" depends="jar">
 		<antcall target="deploy-jar">
@@ -139,19 +122,10 @@
 	
 	<target name="deploy-gwt" depends="compile-gwt">
 		<mkdir  dir="${app.server.ssf.dir}/js/gwt"/>
-		<antcall target="deploy-skins"/>
-	</target>
-	
-	<target name="deploy-skins">
 		<copy todir="${app.server.ssf.dir}/js/gwt">
 		        <fileset dir="www">
 		        	<include name="**/*"/>
 			</fileset>
 		</copy>			
-	</target>
-	
-	<target name="deploy-teaming-skins">
-		<antcall target="copy-skins"/>
-		<antcall target="deploy-skins"/>
 	</target>
 </project>
