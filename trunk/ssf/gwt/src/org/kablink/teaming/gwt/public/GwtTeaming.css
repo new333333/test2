@@ -170,6 +170,7 @@
 	width: 230px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
+	overflow-x: auto;
 }
 .workspaceTreeControlBody
 {

@@ -317,13 +317,22 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		m_rootPanel.add(selectedId);
 		
 		// Create the WorkspaceTree control's header...
-		Label selectorLabel = new Label(getRootTreeInfo().getBinderTitle());
-		selectorLabel.addStyleName("workspaceTreeControlHeader");
+		Grid selectorGrid = new Grid(1, 2);
+		selectorGrid.addStyleName("workspaceTreeControlHeader");
+		selectorGrid.setCellSpacing(0);
+		selectorGrid.setCellPadding(0);
+		String rootTitle = getRootTreeInfo().getBinderTitle();
+		Label selectorLabel = new Label(rootTitle);
+		selectorLabel.setWordWrap(false);
 		selectorLabel.getElement().setId(getSelectorId(getRootTreeInfo()));
 		selectorLabel.getElement().setAttribute(EXTENSION_ID_TRASH_PERMALINK, getRootTreeInfo().getBinderTrashPermalink());
+		selectorGrid.setWidget(0, 0, selectorLabel);
+		selectorGrid.setWidget(0, 1, new Label("\u00A0"));
+		selectorGrid.getCellFormatter().setWidth(0, 1, "100%");
 		Anchor selectorA = new Anchor();
-		selectorA.getElement().appendChild(selectorLabel.getElement());
+		selectorA.getElement().appendChild(selectorGrid.getElement());
 		selectorA.addClickHandler(new BinderSelector(getRootTreeInfo()));
+		selectorA.setTitle(rootTitle);
 		m_rootPanel.add(selectorA);
 
 		// ...its content panel...
@@ -400,7 +409,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		binderImg.setWidth(BINDER_WIDTH);
 		binderImg.setHeight(BINDER_HEIGHT);
 		selectorGrid.setWidget(0, 0, binderImg);
-		Label selectorLabel = new Label(ti.getBinderTitle());
+		String binderTitle = ti.getBinderTitle();
+		Label selectorLabel = new Label(binderTitle);
 		selectorLabel.setWordWrap(false);
 		selectorLabel.addStyleName("workspaceTreeBinderAnchor");
 		selectorLabel.getElement().setId(getSelectorId(ti));
@@ -417,6 +427,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorA.getElement().appendChild(selectorGrid.getElement());
 		selectorA.addClickHandler(new BinderSelector(ti));
 		selectorA.setWidth("100%");
+		selectorA.setTitle(binderTitle);
 		String selectorId = getSelectorId(ti);
 		String selectorGridId = (EXTENSION_ID_SELECTOR_ANCHOR + selectorId);
 		selectorGrid.getElement().setId(selectorGridId);
