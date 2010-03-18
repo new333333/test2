@@ -222,4 +222,6 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used in the "Add File Attachment" dialog.
 	String addFileAttachmentDlgHeader();
+	String addFileLabel();
+	String noFilesSelectedMsg();
 }// end GwtTeamingMessages
