@@ -174,5 +174,8 @@ alter table SS_Forums add brandingExt text null;
 alter table SS_Functions add scope varchar(16);
 alter table SS_FolderEntries add hasEntryAcl tinyint null;
 alter table SS_FolderEntries add checkFolderAcl tinyint null;
+alter table SS_Attachments add description_text ntext null;
+alter table SS_Attachments add description_format int null;
+
 
 INSERT INTO SS_SchemaInfo values (7);
