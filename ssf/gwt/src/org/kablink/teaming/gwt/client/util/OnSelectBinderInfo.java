@@ -52,7 +52,7 @@ public class OnSelectBinderInfo {
 	private final static String GWT_MARKER = "seen_by_gwt";
 	private final static String PERMALINK_MARKER = "view_permalink";
 
-	// Used to identifies the instigator of the Binder selection, if
+	// Used to identify the instigator of the Binder selection, if
 	// known.
 	public enum Instigator {
 		BREAD_CRUMB_TREE,
