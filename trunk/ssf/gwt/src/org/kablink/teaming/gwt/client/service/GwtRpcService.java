@@ -92,6 +92,7 @@ public interface GwtRpcService extends RemoteService
 	// forms of the WorkspaceTreeControl.
 	public List<TreeInfo> getHorizontalTree(  String binderId);
 	public TreeInfo       getHorizontalNode(  String binderId);
+	public String         getRootWorkspaceId( String binderId);
 	public TreeInfo       getVerticalTree(    String binderId);
 	public TreeInfo       getVerticalNode(    String binderId);
 	public Boolean        persistNodeCollapse(String binderId);

@@ -86,6 +86,7 @@ public interface GwtRpcServiceAsync
 	// forms of the WorkspaceTreeControl.
 	public void getHorizontalTree(  String binderId, AsyncCallback<List<TreeInfo>> callback);
 	public void getHorizontalNode(  String binderId, AsyncCallback<TreeInfo>       callback);
+	public void getRootWorkspaceId( String binderId, AsyncCallback<String>         callback);
 	public void getVerticalTree(    String binderId, AsyncCallback<TreeInfo>       callback);
 	public void getVerticalNode(    String binderId, AsyncCallback<TreeInfo>       callback);
 	public void persistNodeCollapse(String binderId, AsyncCallback<Boolean>        callback);
