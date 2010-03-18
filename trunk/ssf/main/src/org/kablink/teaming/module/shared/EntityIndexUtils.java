@@ -706,7 +706,7 @@ public class EntityIndexUtils {
        		//add binder access
     		addBinderAcls(doc, binder);
 
-    	} else if (entry instanceof Entry) {
+    	} else if (entry instanceof FolderEntry) {
        		// Add the Entry_ACL field
     		if (((Entry)entry).hasEntryAcl()) {
     			addEntryAcls(doc, binder, (Entry)entry);
