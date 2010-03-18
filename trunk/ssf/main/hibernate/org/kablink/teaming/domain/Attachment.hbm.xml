@@ -50,8 +50,13 @@
       <component name="fileItem">
         <property name="name" length="256">
           	<column name="fileName"/>
-       </property>
+        </property>
         <property name="length" column="fileLength"/>
+        <component name="description">
+          <!-- use length to force medium blog in mysql -->
+          <property name="HDescription" column="description_text" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>
+          <property name="HFormat" column="description_format"/>
+        </component>
       </component>
       <property name="lastVersion"/>
 
