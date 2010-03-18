@@ -47,6 +47,7 @@ import org.kablink.util.Validator;
 public class FileItem  {
     private String name;
     private long length=0;
+    protected Description description;
    
     /**
      * This method name might be a bit misleading because it returns not just
@@ -76,7 +77,25 @@ public class FileItem  {
     public void setLength(long length) {
         this.length = length;
     }
-    
+
+    /**
+     * @hibernate.component prefix="description_"
+     */
+    public Description getDescription() {
+        return this.description;
+    }
+    public void setDescription(Description description) {
+    	this.description = description; 
+    }
+  
+    public void setDescription(String descriptionText) {
+		Description tmp = new Description(descriptionText);
+    	if (description != null) {
+    		if (description.equals(tmp)) return;
+    	}
+        this.description = tmp; 
+    }
+
     /*
      * Convience routines
      * @return
