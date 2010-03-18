@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.TeamingAction;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -140,7 +141,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * @return
 	 */
 	OnSelectBinderInfo buildOnSelectBinderInfo(TreeInfo ti) {
-		return new OnSelectBinderInfo(ti);
+		return new OnSelectBinderInfo(ti, Instigator.BREAD_CRUMB_TREE);
 	}
 
 	/*

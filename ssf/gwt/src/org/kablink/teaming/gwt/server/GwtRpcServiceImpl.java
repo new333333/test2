@@ -1011,6 +1011,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		// ...and build the TreeInfo for it.
 		return GwtServerHelper.buildTreeInfoFromBinder(this, binder);
 	}
+
+	/**
+	 * Returns the ID of the nearest containing workspace of a given
+	 * Binder.
+	 */
+	public String getRootWorkspaceId(String binderId) {
+		Binder binder = getBinderModule().getBinder(Long.parseLong(binderId));
+		Workspace binderWS = BinderHelper.getBinderWorkspace(binder);
+		return String.valueOf(binderWS.getId());
+	}
 	
 	/**
 	 * Returns a TreeInfo object containing the display information for

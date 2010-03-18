@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
 import com.google.gwt.dom.client.Document;
@@ -233,7 +234,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	OnSelectBinderInfo buildOnSelectBinderInfo(TreeInfo ti) {
 		// Construct an OnSelectBinderInfo for this TreeInfo object.
-		OnSelectBinderInfo reply = new OnSelectBinderInfo(ti);
+		OnSelectBinderInfo reply = new OnSelectBinderInfo(ti, Instigator.SIDEBAR_TREE);
 		
 		// Is this TreeInfo object the trash Binder?
 		if (ti.isBinderTrash()) {
@@ -539,6 +540,24 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		}
 	}
 
+	/*
+	 * Re-roots the WorkspaceTreeControl to a new Binder.
+	 */
+	private void reRootTree(final String newRootBinderId) {
+		// Read the TreeInfo for the selected Binder...
+		getRpcService().getVerticalTree(newRootBinderId, new AsyncCallback<TreeInfo>() {
+			public void onFailure(Throwable t) {
+				Window.alert(t.toString());
+			}
+			public void onSuccess(TreeInfo rootTI)  {
+				// ...and update the display with it.
+				setRootTreeInfo(rootTI);
+				m_rootPanel.clear();
+				render(newRootBinderId, m_rootPanel);
+			}
+		});
+	}
+	
 	/**
 	 * Called to change the binder being displayed by the
 	 * WorkspaceTreeControl.
@@ -557,26 +576,45 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// Is the requested Binder available in those we've already
 		// got loaded?
 		final String binderId = String.valueOf(binderInfo.getBinderId());
-		TreeInfo targetTI = TreeInfo.findBinderTI(getRootTreeInfo(), binderId);
+		final TreeInfo targetTI = TreeInfo.findBinderTI(getRootTreeInfo(), binderId);
 		if (null != targetTI) {
-			// Select it.
-			selectBinderImpl(targetTI);
+			// Yes!  Is the request coming from this WorkspaceTreeControl?
+			if (binderInfo.getInstigator() == Instigator.SIDEBAR_TREE) {
+				// Yes!  Then we simply select the Binder.
+				selectBinderImpl(targetTI);
+			}
+			else {
+				// No, the request isn't coming from this
+				// WorkspaceTreeControl!  (It may be coming from the
+				// bread crumbs or some other unknown source.)  What's
+				// the ID if the selected Binder's root workspace?
+				getRpcService().getRootWorkspaceId(binderId, new AsyncCallback<String>() {
+					public void onFailure(Throwable t) {
+						Window.alert(t.toString());
+						selectBinderImpl(targetTI);
+					}
+					public void onSuccess(String rootWorkspaceId)  {
+						// If the selected Binder's workspace is
+						// different from the Binder we're currently
+						// rooted to, we need to re-root the tree.  Do
+						// we need to re-root?
+						if (rootWorkspaceId.equals(getRootTreeInfo().getBinderId())) {
+							// No!  Simply select the Binder.
+							selectBinderImpl(targetTI);
+						}
+						else {
+							// Yes, we need to re-root!
+							reRootTree(binderId);
+						}
+					}
+				});
+			}
 		}
 		else {
 			// No, the requested Binder isn't available in those we've
-			// already got loaded!  Read the TreeInfo for the selected
+			// already got loaded!  Re-root the tree at the selected
 			// Binder...
-			getRpcService().getVerticalTree(binderId, new AsyncCallback<TreeInfo>() {
-				public void onFailure(Throwable t) {
-					Window.alert(t.toString());
-				}
-				public void onSuccess(TreeInfo rootTI)  {
-					// ...and update the display with it.
-					setRootTreeInfo(rootTI);
-					m_rootPanel.clear();
-					render(binderId, m_rootPanel);
-				}
-			});
+			reRootTree(binderId);
 		}
 	}
 	

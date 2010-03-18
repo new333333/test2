@@ -42,6 +42,7 @@ package org.kablink.teaming.gwt.client.util;
 public class OnSelectBinderInfo {
 	private boolean m_isPermalinkUrl;
 	private boolean m_isTrash;
+	private Instigator m_instigator = Instigator.OTHER;
 	private Long m_binderId;
 	private String m_binderUrl;
 
@@ -51,18 +52,27 @@ public class OnSelectBinderInfo {
 	private final static String GWT_MARKER = "seen_by_gwt";
 	private final static String PERMALINK_MARKER = "view_permalink";
 
-	/**
-	 * Constructor method.  (1 of 3)
-	 * 
-	 * @param ti
-	 */
-	public OnSelectBinderInfo(TreeInfo ti) {
-		// Always use the final form of the constructor.
-		this(Long.parseLong(ti.getBinderId()), ti.getBinderPermalink(), ti.isBinderTrash());
+	// Used to identifies the instigator of the Binder selection, if
+	// known.
+	public enum Instigator {
+		BREAD_CRUMB_TREE,
+		SIDEBAR_TREE,
+		
+		OTHER,
 	}
 
 	/**
-	 * Constructor method.  (2 of 3)
+	 * Constructor method.  (1 of 4)
+	 * 
+	 * @param ti
+	 */
+	public OnSelectBinderInfo(TreeInfo ti, Instigator instigator) {
+		// Always use the final form of the constructor.
+		this(Long.parseLong(ti.getBinderId()), ti.getBinderPermalink(), ti.isBinderTrash(), instigator);
+	}
+
+	/**
+	 * Constructor method.  (2 of 4)
 	 * 
 	 * @param binderId
 	 * @param binderUrl
@@ -70,21 +80,30 @@ public class OnSelectBinderInfo {
 	 */
 	public OnSelectBinderInfo(String binderId, String binderUrl, boolean isTrash) {
 		// Always use the final form of the constructor.
-		this(Long.parseLong(binderId), binderUrl, isTrash);
+		this(Long.parseLong(binderId), binderUrl, isTrash, Instigator.OTHER);
 	}
 	
 	/**
-	 * Constructor method.  (3 of 3)
+	 * Constructor method.  (3 of 4)
 	 * 
 	 * @param binderId
 	 * @param binderUrl
 	 * @param isTrash
 	 */
 	public OnSelectBinderInfo(Long binderId, String binderUrl, boolean isTrash) {
-		// Store the parameters...
+		// Always use the final form of the constructor.
+		this(binderId, binderUrl, isTrash, Instigator.OTHER);
+	}
+
+	/*
+	 * Constructor method.  (4 of 4)
+	 */
+	private OnSelectBinderInfo(Long binderId, String binderUrl, boolean isTrash, Instigator instigator) {
+		// Simply store the parameters.
 		setBinderId(binderId);
 		setBinderUrl(binderUrl);
 		m_isTrash = isTrash;
+		m_instigator = instigator;
 	}
 
 	/*
@@ -135,6 +154,14 @@ public class OnSelectBinderInfo {
 	}
 
 	/**
+	 * Returns the instigator of the Binder selection, if known.
+	 * 
+	 * @return
+	 */
+	public Instigator getInstigator() {
+		return m_instigator;
+	}
+	/**
 	 * Returns true if the Binder URL is a permalink and false
 	 * otherwise.
 	 * 
@@ -168,5 +195,14 @@ public class OnSelectBinderInfo {
 	public void setBinderUrl(String binderUrl) {
 		m_binderUrl = binderUrl;
 		fixupUrl();
+	}
+
+	/**
+	 * Store an instigator for the binder selection.
+	 * 
+	 * @param instigator
+	 */
+	public void setInstigator(Instigator instigator) {
+		m_instigator = instigator;
 	}
 }
