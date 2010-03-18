@@ -178,4 +178,4 @@ alter table SS_Attachments add description_text ntext null;
 alter table SS_Attachments add description_format int null;
 
 
-INSERT INTO SS_SchemaInfo values (7);
+INSERT INTO SS_SchemaInfo values (8);
