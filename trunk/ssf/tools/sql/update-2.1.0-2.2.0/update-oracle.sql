@@ -40,4 +40,4 @@ ALTER TABLE SS_FolderEntries add hasEntryAcl number(1,0);
 ALTER TABLE SS_FolderEntries add checkFolderAcl number(1,0);
 ALTER TABLE SS_Attachments add description_text CLOB;
 ALTER TABLE SS_Attachments add description_format number(10,0);
-INSERT INTO SS_SchemaInfo values (7);
+INSERT INTO SS_SchemaInfo values (8);

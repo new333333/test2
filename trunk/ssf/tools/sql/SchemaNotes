@@ -20,3 +20,13 @@ Updated Quartz to version 1.7.2
 This included new Quartz create scripts and requires changes to the upgrade scripts
 Added the brandingExt field to ss_forums table
 
+Version 8:
+alter table SS_Functions add scope varchar(16);
+alter table SS_FolderEntries add hasEntryAcl tinyint null;
+alter table SS_FolderEntries add checkFolderAcl tinyint null;
+alter table SS_Attachments add description_text ntext null;
+alter table SS_Attachments add description_format int null;
+Scope is used to separate roles between zone, binder and entry
+hasEntryAcl and checkFolderAcl are part of the per-entry ACL project
+description_text and description_format are being used to add comments to each file attachment
+
