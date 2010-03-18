@@ -650,13 +650,13 @@
 	padding-bottom: 20px;
 	background: url(images/trans50_black.png) repeat;
 	width: auto;
+	overflow-x: auto;
 }
 .mainBreadCrumb_Browser
 {
 	position: absolute;
 	z-index: 310;
 	right: 20px;
-	overflow: auto;
 }
 .breadCrumb_Browser
 {
