@@ -42,8 +42,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.kablink.teaming.ObjectKeys;
@@ -377,29 +377,64 @@ public final class MiscUtil
 	/**
 	 * Returns true if the GWT UI should be active and false otherwise.
 	 * 
-	 * @param request
+	 * @param pRequest
 	 * 
 	 * @return
 	 */
-	public static boolean isGwtUIActive(PortletRequest request) {
-		boolean	reply = isGwtUIEnabled();
+	public static boolean isGwtUIActive(PortletRequest pRequest) {
+		HttpServletRequest hRequest = WebHelper.getHttpServletRequest(pRequest);
+		boolean reply = (null != pRequest); 
 		if (reply) {
-			PortletSession ps = WebHelper.getRequiredPortletSession(request);
-			Object durangoUI = ps.getAttribute("use-durango-ui");
-			reply = ((null != durangoUI) && (durangoUI instanceof Boolean) && ((Boolean) durangoUI).booleanValue());
+			reply = isGwtUIActive(hRequest);
 		}
 		return reply;
+	}
+	
+	/**
+	 * Returns true if the GWT UI should be active and false otherwise.
+	 * 
+	 * @param hRequest
+	 * 
+	 * @return
+	 */
+	public static boolean isGwtUIActive(HttpServletRequest hRequest) {
+		boolean	reply = isGwtUIEnabled();
+		if (reply) {
+			reply = (null != hRequest);
+			if (reply) {
+				HttpSession hSession = WebHelper.getRequiredSession(hRequest);
+				Object durangoUI = hSession.getAttribute("use-durango-ui");
+				reply = ((null != durangoUI) && (durangoUI instanceof Boolean) && ((Boolean) durangoUI).booleanValue());
+			}
+		}
+		return reply;
+		
 	}
 
 	/**
 	 * Updates stores the current GWT UI active flag in the session cache.
 	 * 
-	 * @param request
+	 * @param pRequest
 	 * @param gwtUIActive
 	 */
-	public static void setGwtUIActive(PortletRequest request, boolean gwtUIActive) {
-		PortletSession ps = WebHelper.getRequiredPortletSession(request);
-		ps.setAttribute("use-durango-ui", new Boolean(gwtUIActive && isGwtUIEnabled()));
+	public static void setGwtUIActive(PortletRequest pRequest, boolean gwtUIActive) {
+		HttpServletRequest hRequest = WebHelper.getHttpServletRequest(pRequest);
+		if (null != hRequest) {
+			setGwtUIActive(hRequest, gwtUIActive);
+		}
+	}
+	
+	/**
+	 * Updates stores the current GWT UI active flag in the session cache.
+	 * 
+	 * @param hRequest
+	 * @param gwtUIActive
+	 */
+	public static void setGwtUIActive(HttpServletRequest hRequest, boolean gwtUIActive) {
+		if (null != hRequest) {
+			HttpSession hSession = WebHelper.getRequiredSession(hRequest);
+			hSession.setAttribute("use-durango-ui", new Boolean(gwtUIActive && isGwtUIEnabled()));
+		}
 	}
 	
 	/**

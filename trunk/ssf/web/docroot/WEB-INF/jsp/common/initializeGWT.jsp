@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,38 +33,4 @@
  */
 %>
 
-<% /* Which skin are we using? */ %>
-<%@ page import="org.kablink.teaming.util.SPropsUtil" %>
-<%
-	String smartGwtSkin = SPropsUtil.getString("ssf.gwt.skin", "Teaming");
-%>
-
 <meta name="gwt:property" content="locale=<%= NLT.get( "Teaming.Lang" ) %>">
-
-
-<% /* Tell SmartGWT where to find its stuff. */ %>
-<script type="text/javascript">
-	<% /* When we start using SmartGWT, uncomment the following 2 lines. */ %>
-	// var isomorphicDir="<html:rootPath />js/gwt/gwtteaming/sc/";
-	// var currentSkin= "<%= smartGwtSkin %>";
-</script>
-
-<% /* When we start using SmartGWT uncomment the following 6 lines. */ %>
-<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/initsc.js"                ></script> -->
-<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_Core.js"      ></script> -->
-<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_Foundation.js"></script> -->
-<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_Containers.js"></script> -->
-<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_Forms.js"     ></script> -->
-<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_Grids.js"     ></script> -->
-
-<% /* Optional SmartGWT components, uncomment as needed. */ %>
-<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_Calendar.js"      ></script> -->
-<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_DataBinding.js"   ></script> -->
-<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_EBay.js"          ></script> -->
-<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_History.js"       ></script> -->
-<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_Kapow.js"         ></script> -->
-<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_RichTextEditor.js"></script> -->
-<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/modules/ISC_SalesForce.js"    ></script> -->
-
-<% /* When we start using SmartGWT uncomment the following line. */ %>
-<!-- <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/sc/skins/<%= smartGwtSkin %>/load_skin.js"></script> -->
