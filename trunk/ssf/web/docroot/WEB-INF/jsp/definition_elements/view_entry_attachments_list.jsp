@@ -90,9 +90,9 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
   <c:forEach var="fileVersion" items="${selection.fileVersionsUnsorted}">
     <c:set var="versionCount" value="${versionCount + 1}"/>
   </c:forEach>
-  <c:set var="thumbRowSpan" value="1"/>
+  <c:set var="thumbRowSpan" value="2"/>
   <c:if test="${versionCount >= 1}">
-    <c:set var="thumbRowSpan" value="2"/>
+    <c:set var="thumbRowSpan" value="3"/>
   </c:if>
      <tr><td colspan="9"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 	  <tr>
@@ -319,6 +319,11 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		<td class="ss_att_meta_wrap ss_att_space">${selection.modification.principal.title}</td>
 		<td class="ss_att_meta" width="15%"></td>
 	</tr>
+	<tr>
+	  <td colspan="9" class="ss_att_description">
+	    <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${selection.fileItem.description.text}</ssf:markup></div>
+	  </td>
+	</tr>	
 	<c:if test="${!empty selection.fileVersions && versionCount > 1}">
         <tr><td style="height:10px;" class="ss_att_title" colspan="8"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 		<tr>
@@ -395,7 +400,12 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				<td class="ss_att_meta" nowrap><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${fileVersion.fileItem.lengthKB}"/> <ssf:nlt tag="file.sizeKB" text="KB"/></td>
 				<td width="25%" class="ss_att_meta_wrap ss_att_space">${fileVersion.modification.principal.title}</td>
 				<td class="ss_att_meta" width="15%"></td>	
-			  </tr>				
+			  </tr>	
+			  <tr>
+			    <td colspan="9" class="ss_att_description">
+			      <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${fileVersion.fileItem.description.text}</ssf:markup></div>
+			    </td>
+			  </tr>	
 				
  	    	</c:forEach>
  	    	</table>

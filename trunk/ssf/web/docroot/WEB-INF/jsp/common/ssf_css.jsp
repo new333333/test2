@@ -1319,12 +1319,16 @@ table.ss_attachments_list td.ss_att_meta, .ss_att_meta {
 	color: ${ss_style_metadata_color};
 	}
 .ss_att_meta_wrap {
-	font-size: 10px;
+	font-size: 10px !important;
 	padding-left: 5px;
 	color: ${ss_style_metadata_color};
 	}
 table.ss_attachments_list td.ss_att_space {
     padding-left: 10px;
+	}
+table.ss_attachments_list td.ss_att_description {
+	font-size: 10px;
+    padding: 0px 20px;
 	}
 .ss_subhead2 {
 	color: ${ss_style_text_color};
