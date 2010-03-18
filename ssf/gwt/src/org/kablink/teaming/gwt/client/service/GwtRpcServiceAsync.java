@@ -71,6 +71,9 @@ public interface GwtRpcServiceAsync
 	// Return a Folder object for the given folder id.
 	public void getFolder( String zoneUUID, String folderId, AsyncCallback<GwtFolder> callback );
 	
+	// Return the "modify binder" url.
+	public void getModifyBinderUrl( String binderId, AsyncCallback<String> callback );
+	
     public void getTutorialPanelState( AsyncCallback<String> callback );
 	public void getExtensionInfo( AsyncCallback<ExtensionInfoClient[]> callback );
 	public void removeExtension(String id, AsyncCallback<ExtensionInfoClient[]> callback);

@@ -77,6 +77,7 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
@@ -817,6 +818,29 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		return folder;
 	}// end getFolder()
+	
+	
+	/**
+	 * Return the "modify binder" url
+	 */
+	public String getModifyBinderUrl( String binderId )
+	{
+		AdaptedPortletURL adapterUrl;
+		Binder binder;
+		Long binderIdL;
+
+		// Create a url that can be used to modify a binder.
+		adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+		adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER );
+		adapterUrl.setParameter( WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY );
+		adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
+		
+		binderIdL = new Long( binderId );
+		binder = getBinderModule().getBinder( binderIdL );
+		adapterUrl.setParameter( WebKeys.URL_BINDER_TYPE, binder.getEntityType().name() );
+		
+		return adapterUrl.toString();
+	}// end getModifyBinderUrl()
 	
 	
     /**

@@ -798,8 +798,15 @@ public class EditBrandingDlg extends DlgBox
 				}// end editCanceled()
 			};
 
-			// No, create an "Add file attachment dialog.
-			m_addFileAttachmentDlg = new AddFileAttachmentDlg( editSuccessfulHandler, editCanceledHandler, false, true, x, y, null );
+			// No, create an "Add file attachment" dialog.
+			m_addFileAttachmentDlg = new AddFileAttachmentDlg(
+														editSuccessfulHandler,
+														editCanceledHandler,
+														false,
+														true,
+														x,
+														y,
+														m_origBrandingData.getBinderId() );
 		}
 
 		m_addFileAttachmentDlg.show();

@@ -77,6 +77,9 @@ public interface GwtRpcService extends RemoteService
 	// Return a Folder object for the given folder id.
 	public GwtFolder getFolder( String zoneUUID, String folderId ) throws GwtTeamingException;
 	
+	// Return the "modify binder" url.
+	public String getModifyBinderUrl( String binderId );
+	
 	public String getTutorialPanelState();
 	public ExtensionInfoClient[] getExtensionInfo();
 	public ExtensionInfoClient[] removeExtension(String id) throws ExtensionDefinitionInUseException;
