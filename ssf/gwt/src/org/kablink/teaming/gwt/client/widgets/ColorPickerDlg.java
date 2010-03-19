@@ -308,15 +308,16 @@ public class ColorPickerDlg extends DlgBox
 		HTMLTable.CellFormatter cellFormatter;
 		ClickHandler clickHandler;
 		FlowPanel mainPanel = null;
-		Style style = null;
+		FlowPanel contentPanel = null;
 		int i;
 		
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
-		style = mainPanel.getElement().getStyle();
-		style.setHeight( 270, Style.Unit.PX );
-		style.setWidth( 100, Style.Unit.PCT );
-		style.setOverflow( Style.Overflow.AUTO );
+		
+		// Create a panel that will hold the table that holds the colors.
+		contentPanel = new FlowPanel();
+		contentPanel.addStyleName( "colorPickerContentPanel" );
+		mainPanel.add( contentPanel );
 		
 		// Create a table for the colors to live in.
 		m_table = new FlexTable();
@@ -324,7 +325,7 @@ public class ColorPickerDlg extends DlgBox
 		m_table.setBorderWidth( 0 );
 		m_table.setWidth( "100%" );
 		m_table.addStyleName( "dlgContent" );
-		m_table.setStyleName( "colorPickerTable" );
+		m_table.addStyleName( "colorPickerTable" );
 		
 		// Add a ClickHandler to the table so we will know when the user clicks on a color.
 		clickHandler = new ClickHandler()
@@ -375,7 +376,7 @@ public class ColorPickerDlg extends DlgBox
 			cellFormatter.addStyleName( 0, 1, "colorPickerHeaderTD" );
 		}
 		
-		mainPanel.add( m_table );
+		contentPanel.add( m_table );
 		
 		// Add the colors we know about to the dialog.
 		for (i = 0; i < m_colors.length; ++i)
