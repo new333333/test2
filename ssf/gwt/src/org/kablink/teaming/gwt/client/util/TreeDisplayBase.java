@@ -61,11 +61,6 @@ public abstract class TreeDisplayBase {
 	final static int EXPANDER_HEIGHT_INT = 16; public final static String EXPANDER_HEIGHT = (EXPANDER_HEIGHT_INT + "px");
 	final static int EXPANDER_WIDTH_INT  = 16; public final static String EXPANDER_WIDTH  = (EXPANDER_WIDTH_INT  + "px");
 	
-	// The following controls the grid size and nested offsets for the
-	// WorkspaceTreeControl.
-	final static int SELECTOR_GRID_DEPTH_OFFSET	=  16;	// Based on empirical evidence.
-	final static int SELECTOR_GRID_WIDTH        = 208;	// Based on the width of 230 in the workspaceTreeControl style
-	
 	/*
 	 * Inner class that implements clicking on the various Binder
 	 * links in the tree.
