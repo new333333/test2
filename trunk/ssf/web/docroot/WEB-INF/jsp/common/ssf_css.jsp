@@ -2068,8 +2068,9 @@ div.ss_typeToFindResults {
 }
 .ss_typeToFindResults li {
 	padding: 0px;
+	margin: 0px;
 	float:none;
-	line-height: 13px;
+	line-height: 14px;
 }
 
 .ss_typeToFindResults li a  {
@@ -2078,10 +2079,16 @@ div.ss_typeToFindResults {
 	font-weight: bold;
 	color: #666666;
 	text-decoration: none;
+	padding: 0px;
+	margin: 0px;
+	border: 0px;
 }
 
 .ss_typeToFindResults li a span {
 	white-space: nowrap;
+	padding: 4px 0px;
+	margin: 0px;
+	border: 0px;
 }
 
 .ss_typeToFindResults li a:hover {
@@ -2090,6 +2097,9 @@ div.ss_typeToFindResults {
 	font-weight: bold;
 	color: #333333;
 	text-decoration: none;
+	padding: 0px;
+	margin: 0px;
+	border: 0px;
 }
 
 table.ss_typeToFindNav {
