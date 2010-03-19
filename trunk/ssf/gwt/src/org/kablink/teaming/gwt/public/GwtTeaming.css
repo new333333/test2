@@ -4,6 +4,59 @@
 	font-weight: bold;
 }
 
+/* Styles for a td that holds a color name or hex value in the "color picker" dialog. */
+.colorPickerColorNameTD, .colorPickerHexValueTD
+{
+	background-color: #FFFFFF;
+	border-bottom: 1px solid #D2D5D1;
+	cursor: pointer;
+	font-size: 0.75em;
+	padding: 3px 8px;
+	white-space: nowrap;
+}
+
+/* Style for a span that holds a color's hex value. */
+.colorPickerHexValueSpan
+{
+	background-color: #F0F8FF;
+	border: 1px dotted #BABDB6;
+	display: inline-block;
+	height: 14px;
+	margin: 5px;
+	vertical-align: middle;
+	width: 14px;
+}
+
+/* Styles for the row that holds the header in the table that holds the colors in the "color picker" dialog. */
+.colorPickerHeaderTR
+{
+	background: transparent url(images/blue_slice.png) repeat-x scroll center bottom;
+	border-top: 1px solid #5AA7E3;
+	color: white;
+	font-size: 0.85em;
+	font-weight: bold;
+	height: 24px;
+	padding: 0.2em;
+	text-align: left;
+	text-indent: 0.5em;
+	white-space: nowrap;
+}
+
+/* Styles for cell that holds the header in the table that holds the colors in the "color picker" dialog. */
+.colorPickerHeaderTD
+{
+	font-family: Arial,Helvetica,Geneva,Swiss,SunSans-Regular;
+	font-size: 1em;
+}
+
+/* Styles used with the table that holds the colors in the "color picker" dialog */
+.colorPickerTable
+{
+	background-color: #F6F6F6;
+	border-bottom: 0 solid #F6F6F6;
+	font-family: Arial,Helvetica,Geneva,Swiss,SunSans-Regular;
+}
+
 /* */
 .cursorPointer
 {
