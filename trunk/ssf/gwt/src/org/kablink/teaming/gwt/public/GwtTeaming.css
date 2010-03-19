@@ -4,6 +4,14 @@
 	font-weight: bold;
 }
 
+/* Style used for the panel that holds the content in the "color picker" dialog. */
+.colorPickerContentPanel
+{
+	height: 270px;
+	overflow: auto;
+	width: 300px;
+}
+
 /* Styles for a td that holds a color name or hex value in the "color picker" dialog. */
 .colorPickerColorNameTD, .colorPickerHexValueTD
 {
@@ -107,6 +115,13 @@
 	cursor: pointer;
 	margin-left: 4px;
 	text-decoration: none;
+}
+
+/* Style used for the "sample text" in the "edit branding" dialog. */
+.editBrandingSampleText
+{
+	border: 1px dotted #BABDB6;
+	padding: 4px 8px;
 }
 
 /* Styles used with the Edit-Delete control. */
@@ -949,6 +964,12 @@
 .paddingTop2px
 {
 	padding-top: 2px;
+}
+
+/* Style used to add padding-top: 8px; */
+.paddingTop8px
+{
+	padding-top: 8px;
 }
 
 /* Use this style if you want to set text-decoration: none */

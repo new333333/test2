@@ -63,6 +63,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -616,13 +617,13 @@ public class EditBrandingDlg extends DlgBox
 		
 		// Add a "sample text" field that will display the selected background color and text color.
 		{
-			Element element;
-			Style style;
-			
+			HTMLTable.CellFormatter cellFormatter;
+
+			cellFormatter = table.getCellFormatter();
+			cellFormatter.addStyleName( nextRow, 1, "paddingTop8px" );
+
 			m_sampleText = new InlineLabel( GwtTeaming.getMessages().sampleText() );
-			element = m_sampleText.getElement();
-			style = element.getStyle();
-			style.setPadding( .4, Style.Unit.EM );
+			m_sampleText.addStyleName( "editBrandingSampleText" );
 			table.setWidget( nextRow, 1, m_sampleText );
 			++nextRow;
 		}
