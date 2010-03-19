@@ -93,6 +93,8 @@ public class EditBrandingDlg extends DlgBox
 	private GwtBrandingData m_origBrandingData;		// The original branding data we started with.
 	private final String m_noAvailableImages = "no available images";
 	private AddFileAttachmentDlg m_addFileAttachmentDlg = null;
+	private ColorPickerDlg m_colorPickerDlg = null;
+	private TextBox m_destColorTextbox = null;
 	
 
 	/**
@@ -538,7 +540,13 @@ public class EditBrandingDlg extends DlgBox
 				 */
 				public void onClick( ClickEvent event )
 				{
-					Window.alert( "not yet implemented" );
+					Widget anchor;
+					
+					// Get the anchor the user clicked on.
+					anchor = (Widget) event.getSource();
+					
+					// Invoke the "Color Picker" dialog.
+					invokeColorPickerDlg( anchor.getAbsoluteLeft(), anchor.getAbsoluteTop(), m_backgroundColorTextbox );
 				}//end onClick()
 			};
 			colorHint.addClickHandler( clickHandler );
@@ -593,7 +601,12 @@ public class EditBrandingDlg extends DlgBox
 				 */
 				public void onClick( ClickEvent event )
 				{
-					Window.alert( "not yet implemented" );
+					Widget anchor;
+					
+					anchor = (Widget) event.getSource();
+					
+					// Invoke the "color picker" dialog
+					invokeColorPickerDlg( anchor.getAbsoluteLeft(), anchor.getAbsoluteTop(), m_textColorTextbox );
 				}//end onClick()
 			};
 			textColorHint.addClickHandler( clickHandler );
@@ -812,6 +825,79 @@ public class EditBrandingDlg extends DlgBox
 		m_addFileAttachmentDlg.show();
 	}// end invokeAddFileAttachmentDlg()
 	
+	/**
+	 * Invoke the "Color Picker" dialog.
+	 */
+	public void invokeColorPickerDlg( int x, int y, TextBox destTextbox )
+	{
+		// Remember the textbox we should put the selected color in when the user presses ok
+		// in the "color picker" dialog.
+		m_destColorTextbox = destTextbox;
+		
+		// Have we already created a "Color Picker" dialog?
+		if ( m_colorPickerDlg != null )
+		{
+			// Yes
+			m_colorPickerDlg.setPopupPosition( x, y );
+		}
+		else
+		{
+			EditSuccessfulHandler editSuccessfulHandler;
+			EditCanceledHandler editCanceledHandler;
+			
+			editSuccessfulHandler = new EditSuccessfulHandler()
+			{
+				/**
+				 * This method gets called when user user presses ok in the "Color Picker" dialog.
+				 */
+				public boolean editSuccessful( Object obj )
+				{
+					m_colorPickerDlg.hide();
+
+					if ( obj instanceof ColorPickerDlg.Color )
+					{
+						ColorPickerDlg.Color color;
+						
+						color = (ColorPickerDlg.Color) obj;
+						
+						// Put the selected color in the appropriate textbox.
+						m_destColorTextbox.setText( color.getName() );
+
+						// Update the sample text with the selected color.
+						updateSampleTextBgColor();
+						updateSampleTextColor();
+					}
+					
+					return true;
+				}// end editSuccessful()
+			};
+				
+			editCanceledHandler = new EditCanceledHandler()
+			{
+				/**
+				 * This method gets called when the user presses cancel in the "Color Picker" dialog.
+				 */
+				public boolean editCanceled()
+				{
+					m_colorPickerDlg.hide();
+					
+					return true;
+				}// end editCanceled()
+			};
+
+			// No, create a "color picker" dialog.
+			m_colorPickerDlg = new ColorPickerDlg(
+												editSuccessfulHandler,
+												editCanceledHandler,
+												false,
+												true,
+												x,
+												y,
+												null );
+		}
+
+		m_colorPickerDlg.show();
+	}// end invokeColorPickerDlg()
 
 	/**
 	 * Remove the styles that were added to the given widget when the user moved the mouse over the widget.
