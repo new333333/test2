@@ -88,6 +88,11 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	private final static String EXTENSION_ID_TRASH_BASE      = (EXTENSION_ID_BASE + "Trash_");
 	private final static String EXTENSION_ID_TRASH_PERMALINK = (EXTENSION_ID_BASE + "TrashPermalink");
 
+	// The following controls the grid size and nested offsets for the
+	// WorkspaceTreeControl.
+	private final static int SELECTOR_GRID_DEPTH_OFFSET	=  18;	// Based on empirical evidence.
+	private final static int SELECTOR_GRID_WIDTH        = 208;	// Based on the width of 230 in the workspaceTreeControl style
+	
 	/*
 	 * Inner class that implements clicking on the various tree
 	 * expansion widgets.
