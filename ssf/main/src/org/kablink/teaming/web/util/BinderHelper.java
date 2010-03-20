@@ -2614,7 +2614,7 @@ public class BinderHelper {
 		return model;
 	}
 
-	public static Map prepareSavedQueryResultData(AllModulesInjected bs, RenderRequest request, Tabs tabs) throws PortletRequestBindingException {
+	public static Map prepareSavedQueryResultData(AllModulesInjected bs, RenderRequest request, Tabs tabs, Map options) throws PortletRequestBindingException {
 		Map model = new HashMap();
 
 		String queryName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SEARCH_QUERY_NAME, "");
@@ -2630,7 +2630,11 @@ public class BinderHelper {
 		// get page no and actualize options
 		// execute query
 		// actualize tabs info
-		Map options = prepareSearchOptions(bs, request);
+		if(options != null)
+			options.putAll(prepareSearchOptions(bs, request));
+		else
+			options = prepareSearchOptions(bs, request);
+		
 		actualizeOptions(options, request);
 		Element preDeletedOnlyTerm = (Element)searchQuery.getRootElement().selectSingleNode("//filterTerms/filterTerm[@preDeletedOnly='true']");
 		if (preDeletedOnlyTerm != null) {
@@ -2828,6 +2832,10 @@ public class BinderHelper {
 		if (tabData.containsKey(ObjectKeys.SEARCH_CASE_SENSITIVE)) options.put(ObjectKeys.SEARCH_CASE_SENSITIVE, tabData.get(ObjectKeys.SEARCH_CASE_SENSITIVE));
 		if (tabData.containsKey(ObjectKeys.SEARCH_PRE_DELETED)) options.put(ObjectKeys.SEARCH_PRE_DELETED, tabData.get(ObjectKeys.SEARCH_PRE_DELETED));
 		if (tabData.containsKey(Tabs.PAGE)) options.put(Tabs.PAGE, tabData.get(Tabs.PAGE));
+		if (tabData.containsKey(ObjectKeys.SEARCH_SORT_BY)) options.put(ObjectKeys.SEARCH_SORT_BY, tabData.get(ObjectKeys.SEARCH_SORT_BY));
+		if (tabData.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) options.put(ObjectKeys.SEARCH_SORT_DESCEND, tabData.get(ObjectKeys.SEARCH_SORT_DESCEND));
+		if (tabData.containsKey(ObjectKeys.SEARCH_SORT_BY_SECONDARY)) options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY, tabData.get(ObjectKeys.SEARCH_SORT_BY_SECONDARY));
+		if (tabData.containsKey(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY)) options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, tabData.get(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY));
 		return options;
 	}
 	
