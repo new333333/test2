@@ -2595,7 +2595,7 @@ public class BinderHelper {
 		//new search
 		Tabs.TabEntry tab = tabs.findTab(Tabs.SEARCH, tabId);
 		if (tab == null) {
-			prepareSearchResultData(bs, request, tabs, model);
+			prepareSearchResultData(bs, request, tabs, model, null);
 			return model;
 		}
 		// get query and options from tab
@@ -2655,11 +2655,17 @@ public class BinderHelper {
 		return model;
 	}
 	
-	public static void prepareSearchResultData(AllModulesInjected bs, RenderRequest request, Tabs tabs, Map model) {
+	public static void prepareSearchResultData(AllModulesInjected bs, RenderRequest request, Tabs tabs, Map model, Map options) {
 
 		SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, bs.getDefinitionModule());
 		Document searchQuery = requestParser.getSearchQuery();
-		Map options = prepareSearchOptions(bs, request);
+		if(options != null) {
+			options.putAll(prepareSearchOptions(bs, request));
+		}
+		else {
+			options = prepareSearchOptions(bs, request);			
+		}
+		
 		Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, options);
 		
 		Tabs.TabEntry tab = tabs.addTab(searchQuery, options);

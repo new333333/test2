@@ -201,26 +201,48 @@ public class SearchUtils {
 	    return false;
     }
   	public static SortField[] getSortFields(Map options) {
-   		SortField[] fields = new SortField[1];
    		String sortBy = Constants.MODIFICATION_DATE_FIELD;   		
     	boolean descend = true;
+    	String sortBySecondary = null;
+    	boolean descendSecondary = true;
+    	
     	if (options != null) {    		
     		if (options.containsKey(ObjectKeys.SEARCH_SORT_BY))
     			sortBy = (String) options.get(ObjectKeys.SEARCH_SORT_BY);
     		if (options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
     			descend = (Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND);
+    		if (options.containsKey(ObjectKeys.SEARCH_SORT_BY_SECONDARY))
+    			sortBySecondary = (String) options.get(ObjectKeys.SEARCH_SORT_BY_SECONDARY);
+    		if (options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY)) 
+    			descendSecondary = (Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY);
     	}
+
+    	SortField[] fields;
+    	if(sortBySecondary != null)
+    		fields = new SortField[2];
+    	else
+    		fields = new SortField[1];
+
+    	fields[0] = toSortField(sortBy, descend);
+    	if(sortBySecondary != null)
+    		fields[1] = toSortField(sortBySecondary, descendSecondary);
     	
-    	if (isDateField(sortBy)) {
-    		fields[0] = new SortField(sortBy, SortField.STRING, descend);
-    		return fields;
-    	}
-    	
-    	User user = RequestContextHolder.getRequestContext().getUser();
-    	Locale locale = user.getLocale();
-    	fields[0] = new SortField(sortBy, locale, descend);
     	return fields;
    	}
+  	
+  	private static SortField toSortField(String sortBy, boolean descend) {
+  		if(sortBy.equals(ObjectKeys.SEARCH_SORT_BY_RELEVANCE)) {
+  			return new SortField(null, SortField.SCORE, descend);
+  		}
+  		else if (isDateField(sortBy)) {
+    		return new SortField(sortBy, SortField.STRING, descend);
+    	}
+    	else {
+	    	User user = RequestContextHolder.getRequestContext().getUser();
+	    	Locale locale = user.getLocale();
+	    	return new SortField(sortBy, locale, descend);
+    	}
+  	}
   	
   	public static org.dom4j.Document getInitalSearchDocument(org.dom4j.Document searchFilter, Map options) {
   		if (searchFilter == null) {

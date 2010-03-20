@@ -143,7 +143,13 @@ public class AdvancedSearchController extends AbstractBinderController {
 		*/
 
        if (op.equals(WebKeys.SEARCH_RESULTS)) {
-        	BinderHelper.prepareSearchResultData(this, request, tabs, model);
+	   		Map options = new HashMap();
+			options.put(ObjectKeys.SEARCH_SORT_BY, ObjectKeys.SEARCH_SORT_BY_RELEVANCE);
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
+			options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY, Constants.MODIFICATION_DATE_FIELD);
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, Boolean.TRUE);	   
+    	   
+        	BinderHelper.prepareSearchResultData(this, request, tabs, model, options);
         	addPropertiesForFolderView(model);
         	buildToolbars(model, request);
 
