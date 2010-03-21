@@ -8,6 +8,9 @@
 	
 	<import file="../deploy-support.xml" />
 	
+	<property name="tomcat.common.lib.ext" value="${app.server.dir}/lib/ext" />
+	<property name="tomcat.shared.lib.ext" value="${app.server.dir}/lib/ext" />
+	
 	<target name="clean" depends="build-common.clean">
 		<delete dir="temp" />
 		<delete dir="temp2" />
@@ -156,6 +159,16 @@
 		<!--<delete>
 			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="activation.jar"/>
 		</delete>-->		
+		
+		<ant dir="${project.dir}/tomcat" target="deploy" inheritAll="false"/>
+		
+		<copy file="${project.dir}/lib/jtds.jar" todir="${tomcat.common.lib.ext}" />
+		<copy file="${project.dir}/lib/mysql-connector.jar" todir="${tomcat.common.lib.ext}" />
+		<copy file="${project.dir}/lib/ojdbc14.jar" todir="${tomcat.common.lib.ext}" />
+
+		<copy file="${project.dir}/lib/activation.jar" todir="${tomcat.common.lib.ext}" />
+		<copy file="${project.dir}/lib/mail.jar" todir="${tomcat.common.lib.ext}" />
+
 	</target>
 		
 	<target name="deploy-standalone-jboss-tomcat" depends="init-standalone, clean-app-server">		
