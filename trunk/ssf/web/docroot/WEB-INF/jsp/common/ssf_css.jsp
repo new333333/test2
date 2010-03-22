@@ -1739,7 +1739,7 @@ div.ss_content_outer {		/* also see ss_pseudoPortal */
     background: #FFFFFF;
 	margin-top:0px;
 	margin-right: 15px;		/* give right margin to match pseudoPortal */
-	border: 1px solid #ccc;
+	border: 0px solid #ccc;
 	width:100%;
 }
 
@@ -4346,9 +4346,9 @@ table.ssMeetingRecords .ssHeader {
 }
 
 .ss_pseudoPortal {
-	margin:15px;		/* see also ss_content_outer */
+	margin: 0px;		/* see also ss_content_outer */
 	padding:0px;
-	border:1px solid white;
+	border:0px solid white;
 	background: white;
 }
 .ss_pseudoPortalUpperRightToolbar {

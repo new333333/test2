@@ -697,6 +697,12 @@
 	top: 8px;
 }
 
+.mainContentControl iframe.gwt-Frame {
+	border-width: 0px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	}
+
 /* Style used for the content panel in Teaming's main page. */
 .mainContentPanel
 {
