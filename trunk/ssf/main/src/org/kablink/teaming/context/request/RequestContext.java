@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.context.request;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.User;
@@ -80,6 +83,12 @@ public class RequestContext {
     
     private boolean resolved = false;
     
+    /*
+     * Place for caching request-scope data. No need for synchronization since
+     * a request object is accessed from a single thread. 
+     */
+    private Map<String,Object> requestCache;
+    
     // IMPORTANT: This object is designed to contain only those properties that
     //            are needed to fetch corresponding user, application, or zone object. 
     //            Do NOT cache user, application or zone object directly in this class.
@@ -90,35 +99,41 @@ public class RequestContext {
     	this.userName = userName;
     	this.userId = userId;
     	this.sessionCtx = sessionCtx;
+    	this.requestCache = new HashMap<String,Object>();
     }
     
     public RequestContext(String zoneName, String userName, SessionContext sessionCtx) {
     	this.zoneName = zoneName;
     	this.userName = userName;
     	this.sessionCtx = sessionCtx;
+    	this.requestCache = new HashMap<String,Object>();
     }
     
     public RequestContext(Long zoneId, Long userId, SessionContext sessionCtx) {
     	this.zoneId = zoneId;
     	this.userId = userId;
     	this.sessionCtx = sessionCtx;
+    	this.requestCache = new HashMap<String,Object>();
     }
     
     public RequestContext(String zoneName, Long userId, SessionContext sessionCtx) {
     	this.zoneName = zoneName;
     	this.userId = userId;
     	this.sessionCtx = sessionCtx;
+    	this.requestCache = new HashMap<String,Object>();
     }
     
     public RequestContext(Long zoneId, String userName, SessionContext sessionCtx) {
     	this.zoneId = zoneId;
     	this.userName = userName;
     	this.sessionCtx = sessionCtx;
+    	this.requestCache = new HashMap<String,Object>();
     }
     
     public RequestContext(User user, SessionContext sessionCtx) {
     	setFromUser(user);
     	this.sessionCtx = sessionCtx;
+    	this.requestCache = new HashMap<String,Object>();
     }
 
     public String getZoneName() {
@@ -298,5 +313,12 @@ public class RequestContext {
 			return "[" + zoneName + "," + userName + "," + applicationId + "]";
 		else 
 			return "[" + zoneName + "," + userName + "]";
+	}
+	
+	public Object getCacheEntry(String key) {
+		return requestCache.get(key);
+	}
+	public void setCacheEntry(String key, Object value) {
+		requestCache.put(key, value);
 	}
 }

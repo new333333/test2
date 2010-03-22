@@ -39,8 +39,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.InternalException;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
@@ -153,7 +156,7 @@ public class Utils {
 	
 	public static boolean canUserOnlySeeCommonGroupMembers(User user) {
 		if (user == null) return false;
-		Map onlySeeMap = (Map) RequestContextHolder.getRequestContext().getSessionContext().getProperty("onlySeeMap");
+		Map onlySeeMap = (Map) RequestContextHolder.getRequestContext().getCacheEntry("onlySeeMap");
 		if (onlySeeMap == null) onlySeeMap = new HashMap();
 		if (onlySeeMap.containsKey(user.getId())) return (Boolean)onlySeeMap.get(user.getId());
 		
@@ -168,7 +171,7 @@ public class Utils {
 			} else {
 				onlySeeMap.put(user.getId(), Boolean.FALSE);
 			}
-			RequestContextHolder.getRequestContext().getSessionContext().setProperty("onlySeeMap", onlySeeMap);
+			RequestContextHolder.getRequestContext().setCacheEntry("onlySeeMap", onlySeeMap);
 		} catch(Exception e) {
 			//If any error occurs, assume limited
 			return true;
@@ -186,6 +189,11 @@ public class Utils {
 	}
 	
 	public static Long getAllUsersGroupId() {
-		return Long.valueOf("2");
+		ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
+		Group allUsersGroup = profileDao.getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, RequestContextHolder.getRequestContext().getZoneId());
+		if(allUsersGroup != null)
+			return allUsersGroup.getId();
+		else
+			return null;
 	}
 }
