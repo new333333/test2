@@ -178,11 +178,27 @@ public class XSSCheck implements StringCheck {
 			try {
 				decodedString = URLDecoder.decode(cleanString, "UTF-8");
 		    } catch(Exception e) {}
-			data.put("sequence", decodedString);
-			if (!checkIfStringValid(type, data)) {
-				cleanString = (String)data.get("sequence");
-			}
-			return cleanString;			
+		    int loopDetector = 2000;
+		    while (loopDetector > 0) {
+				data.put("sequence", decodedString);
+				String oldCleanString = decodedString;
+				if (checkIfStringValid(type, data)) {
+					break;
+				}
+				decodedString = (String)data.get("sequence");
+				if (decodedString.equals(oldCleanString)) {
+					//The XSS checking routine thought there was an error, but the string is unchanged. 
+					//  Since we don't know how to strip it, just blank out the whole string.
+					decodedString = "";
+					break;
+				}
+				loopDetector--;
+		    }
+		    if (loopDetector <= 0) {
+		    	//The stripping code could not clean this string, so just blank it
+		    	decodedString = "";
+		    }
+			return decodedString;			
 		}
 	}
 	
