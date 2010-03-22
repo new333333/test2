@@ -159,9 +159,9 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 				groupUsers.addAll(users);
 				groupUserIds.addAll(profileDao.explodeGroups(gIds, RequestContextHolder.getRequestContext().getZoneId()));
 				groupUsers.addAll(getProfileModule().getPrincipals(ids));
-				//This is not implemented for Cortez
-				//  The following routine must be changed to only index the binders that are under the Personal Workspaces branch
-				//getProfileModule().reindexUserOwnedBinders(groupUsers);
+				
+				//Re-index all "personal" binders owned by this user (i.e., binders under the profiles binder)
+				getProfileModule().reindexPersonalUserOwnedBinders(groupUsers);
 				
 				
 			}

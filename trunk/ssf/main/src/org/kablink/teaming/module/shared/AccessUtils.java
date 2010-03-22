@@ -34,6 +34,7 @@ package org.kablink.teaming.module.shared;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.dom4j.Element;
@@ -46,6 +47,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WfAcl;
 import org.kablink.teaming.domain.WorkflowState;
@@ -59,6 +61,7 @@ import org.kablink.teaming.security.function.OperationAccessControlException;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
@@ -217,10 +220,26 @@ public class AccessUtils  {
         	Set readTitles = getInstance().getAccessControlManager().getWorkAreaAccessControl(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
         	readEntries.addAll(readTitles);
         }
+   		//See if this binder is in the "personal workspaces" tree
+		if (readEntries.contains(Utils.getAllUsersGroupId()) && Utils.isWorkareaInProfilesTree(binder)) {
+			//The read access ids includes AllUsers; add in the groups of the binder owner
+			List<Group> groups = binder.getOwner().getMemberOf();
+			for (Group g : groups) {
+				if (!readEntries.contains(g.getId())) readEntries.add(g.getId());
+			}
+		}
         return readEntries;
 	}     	
 	public static Set getReadAccessIds(Entry entry) {
         Set readEntries = getInstance().getAccessControlManager().getWorkAreaAccessControl((WorkArea) entry, WorkAreaOperation.READ_ENTRIES);
+   		//See if this entry is in the "personal workspaces" tree
+		if (readEntries.contains(Utils.getAllUsersGroupId()) && Utils.isWorkareaInProfilesTree(entry)) {
+			//The read access ids includes AllUsers; add in the groups of the binder owner
+			List<Group> groups = entry.getCreation().getPrincipal().getMemberOf();
+			for (Group g : groups) {
+				if (!readEntries.contains(g.getId())) readEntries.add(g.getId());
+			}
+		}
         return readEntries;
 	}     	
 	

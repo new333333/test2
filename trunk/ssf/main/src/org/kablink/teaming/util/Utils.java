@@ -33,15 +33,22 @@
 package org.kablink.teaming.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.security.AccessControlManager;
+import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.util.Validator;
 
 
@@ -143,5 +150,42 @@ public class Utils {
 		else
 			return false;
 	}
+	
+	public static boolean canUserOnlySeeCommonGroupMembers(User user) {
+		if (user == null) return false;
+		Map onlySeeMap = (Map) RequestContextHolder.getRequestContext().getSessionContext().getProperty("onlySeeMap");
+		if (onlySeeMap == null) onlySeeMap = new HashMap();
+		if (onlySeeMap.containsKey(user.getId())) return (Boolean)onlySeeMap.get(user.getId());
+		
+		CoreDao coreDao = (CoreDao) SpringContextUtil.getBean("coreDao");
+		AccessControlManager accessControlManager = (AccessControlManager)SpringContextUtil.getBean("accessControlManager");
+		WorkArea zone = coreDao.loadZoneConfig(user.getZoneId());
+		try {
+			boolean canOnlySeeGroupMembers = accessControlManager.testOperation(user, zone, WorkAreaOperation.ONLY_SEE_GROUP_MEMBERS);
+			boolean overrideCanOnlySeeGroupMembers = accessControlManager.testOperation(user, zone, WorkAreaOperation.OVERRIDE_ONLY_SEE_GROUP_MEMBERS);
+			if (canOnlySeeGroupMembers && !overrideCanOnlySeeGroupMembers) {
+				onlySeeMap.put(user.getId(), Boolean.TRUE);
+			} else {
+				onlySeeMap.put(user.getId(), Boolean.FALSE);
+			}
+			RequestContextHolder.getRequestContext().getSessionContext().setProperty("onlySeeMap", onlySeeMap);
+		} catch(Exception e) {
+			//If any error occurs, assume limited
+			return true;
+		}
+		return (Boolean)onlySeeMap.get(user.getId());
+	}
 
+	public static boolean isWorkareaInProfilesTree(WorkArea workArea) {
+		WorkArea parent = workArea.getParentWorkArea();
+		while (parent != null) {
+			if (parent.getWorkAreaType().equals(EntityType.profiles.name())) return true;
+			parent = parent.getParentWorkArea();
+		}
+		return false;
+	}
+	
+	public static Long getAllUsersGroupId() {
+		return Long.valueOf("2");
+	}
 }

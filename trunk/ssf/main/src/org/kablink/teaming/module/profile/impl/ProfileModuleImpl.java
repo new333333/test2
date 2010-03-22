@@ -116,6 +116,7 @@ import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
@@ -422,10 +423,17 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         return  p.getWorkspaceId();
     }
     
-    public List reindexUserOwnedBinders(Set<Principal> userIds) {
+    public List reindexPersonalUserOwnedBinders(Set<Principal> userIds) {
     	List<Long> binderIds = new ArrayList<Long>();
     	if (userIds == null) return binderIds;
     	binderIds = getProfileDao().getOwnedBinders(userIds);
+    	
+    	//Limit this list to binders under the Profiles binder
+    	Long profileBinderId = getProfileBinderId();
+    	Set<Binder> binders = getBinderModule().getBinders(binderIds);
+    	for (Binder b : binders) {
+    		if (!Utils.isWorkareaInProfilesTree(b)) binderIds.remove(b.getId());  //Remove any binder not under the profiles binder
+    	}
     	
     	// Create background job to reindex the list of binders
     	User user = RequestContextHolder.getRequestContext().getUser();

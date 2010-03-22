@@ -59,6 +59,7 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.util.search.Constants;
 
 
@@ -438,12 +439,16 @@ public class QueryBuilder {
 
 	private String getAclClauseForIds(Set principalIds, Long userId)
 	{
+      	Set principalIds2 = new HashSet(principalIds);
       	User user = getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());;
-      	WorkArea zone = getCoreDao().loadZoneConfig(user.getZoneId());
 		//check user can see all users
-		boolean canOnlySeeGroupMembers = getAccessControlManager().testOperation(user, zone, WorkAreaOperation.ONLY_SEE_GROUP_MEMBERS);
-		boolean overrideCanOnlySeeGroupMembers = getAccessControlManager().testOperation(user, zone, WorkAreaOperation.OVERRIDE_ONLY_SEE_GROUP_MEMBERS);
-
+      	boolean canOnlySeeCommonGroupMembers = Utils.canUserOnlySeeCommonGroupMembers(user);
+		if (canOnlySeeCommonGroupMembers) {
+			Long allUsersGroupId = Utils.getAllUsersGroupId();
+			if (principalIds2.contains(allUsersGroupId) ) {
+				principalIds2.remove(allUsersGroupId);
+			}
+		}
 		StringBuffer qString = new StringBuffer();
 		
 		/*
@@ -463,42 +468,42 @@ public class QueryBuilder {
 			// entryAcl:all
 			qString.append("(");
 			qString.append("(" + ENTRY_ALL  + " AND "); //(entryAcl:all AND
-			qString.append("(" + idField(principalIds, FOLDER_PREFIX)+ "))"); //(folderAcl:1 OR folderAcl:2))
+			qString.append("(" + idField(principalIds2, FOLDER_PREFIX) + "))"); //(folderAcl:1 OR folderAcl:2))
 			qString.append(" OR (" + ENTRY_ALL  + " AND " +						// OR (entryAcl:all AND folderAcl:team AND (teamAcl:1 OR teamAcl:2))
 								FOLDER_PREFIX + Constants.READ_ACL_TEAM + " AND " +
-								"(" + idField(principalIds, TEAM_PREFIX) + "))");
+								"(" + idField(principalIds2, TEAM_PREFIX) + "))");
 			if(userId != null) {
 				qString.append(" OR (" + ENTRY_ALL  + " AND " +						// OR (entryAcl:all AND folderAcl:own AND bOwnerAcl:<user>)
 						FOLDER_PREFIX + Constants.READ_ACL_BINDER_OWNER + " AND " +
 						BINDER_OWNER_PREFIX + userId.toString() + ")");
 			}
-			if (!canOnlySeeGroupMembers || overrideCanOnlySeeGroupMembers) {
+			if (!canOnlySeeCommonGroupMembers) {
 				qString.append(" OR (" + ENTRY_ALL_USERS + ")"); //OR (entryAcl:allUsers)
 			}
-			qString.append(" OR (" + idField(principalIds, ENTRY_PREFIX) + ")"); //OR (entryAcl:1 OR entryAcl:2)
+			qString.append(" OR (" + idField(principalIds2, ENTRY_PREFIX) + ")"); //OR (entryAcl:1 OR entryAcl:2)
 			qString.append(" OR (" + ENTRY_PREFIX + Constants.READ_ACL_TEAM + " AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))
-								"(" + idField(principalIds, TEAM_PREFIX) + "))");
+								"(" + idField(principalIds2, TEAM_PREFIX) + "))");
 			qString.append(")");
 		} else {
 			qString.append("(");
-			qString.append("((" + idField(principalIds, FOLDER_PREFIX) + ")"); //((folderAcl:1 OR folderAcl:2)
+			qString.append("((" + idField(principalIds2, FOLDER_PREFIX) + ")"); //((folderAcl:1 OR folderAcl:2)
 			qString.append(" OR ");
 			qString.append("(" + FOLDER_PREFIX + Constants.READ_ACL_TEAM + " AND " + //OR (folderAcl:team AND (teamAcl:1 OR teamAcl:2))
-					"(" + idField(principalIds, TEAM_PREFIX) + "))");
+					"(" + idField(principalIds2, TEAM_PREFIX) + "))");
 			if(userId != null) {
 				qString.append(" OR (" + FOLDER_PREFIX + Constants.READ_ACL_BINDER_OWNER + " AND " + //OR (folderAcl:own AND bOwnerAcl:<user>)
 						BINDER_OWNER_PREFIX + userId.toString() + ")");
 			}
 			qString.append(") AND (");			//) AND (
 			qString.append("(" + ENTRY_ALL);	//(entryAcl:all OR entryAcl:allUsers OR entryAcl:1 OR entryAcl:2)
-			if (!canOnlySeeGroupMembers || overrideCanOnlySeeGroupMembers) {
+			if (!canOnlySeeCommonGroupMembers) {
 				qString.append(" OR " + ENTRY_ALL_USERS);
 			}
 			qString.append(" OR " +	
-						idField(principalIds, ENTRY_PREFIX) + ")");
+						idField(principalIds2, ENTRY_PREFIX) + ")");
 			qString.append(" OR ");
 			qString.append("("  + ENTRY_PREFIX + Constants.READ_ACL_TEAM + " AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))
-					"(" + idField(principalIds, TEAM_PREFIX) + "))");
+					"(" + idField(principalIds2, TEAM_PREFIX) + "))");
 			qString.append("))");
 		}
 		return qString.toString();
