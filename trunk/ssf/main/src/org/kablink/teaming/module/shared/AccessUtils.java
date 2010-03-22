@@ -221,7 +221,8 @@ public class AccessUtils  {
         	readEntries.addAll(readTitles);
         }
    		//See if this binder is in the "personal workspaces" tree
-		if (readEntries.contains(Utils.getAllUsersGroupId()) && Utils.isWorkareaInProfilesTree(binder)) {
+        Long allUsersId = Utils.getAllUsersGroupId();
+        if (allUsersId != null && readEntries.contains(allUsersId) && Utils.isWorkareaInProfilesTree(binder)) {
 			//The read access ids includes AllUsers; add in the groups of the binder owner
 			List<Group> groups = binder.getOwner().getMemberOf();
 			for (Group g : groups) {
@@ -233,7 +234,8 @@ public class AccessUtils  {
 	public static Set getReadAccessIds(Entry entry) {
         Set readEntries = getInstance().getAccessControlManager().getWorkAreaAccessControl((WorkArea) entry, WorkAreaOperation.READ_ENTRIES);
    		//See if this entry is in the "personal workspaces" tree
-		if (readEntries.contains(Utils.getAllUsersGroupId()) && Utils.isWorkareaInProfilesTree(entry)) {
+        Long allUsersId = Utils.getAllUsersGroupId();
+        if (allUsersId != null && readEntries.contains(allUsersId) && Utils.isWorkareaInProfilesTree(entry)) {
 			//The read access ids includes AllUsers; add in the groups of the binder owner
 			List<Group> groups = entry.getCreation().getPrincipal().getMemberOf();
 			for (Group g : groups) {

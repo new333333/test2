@@ -445,7 +445,7 @@ public class QueryBuilder {
       	boolean canOnlySeeCommonGroupMembers = Utils.canUserOnlySeeCommonGroupMembers(user);
 		if (canOnlySeeCommonGroupMembers) {
 			Long allUsersGroupId = Utils.getAllUsersGroupId();
-			if (principalIds2.contains(allUsersGroupId) ) {
+			if (allUsersGroupId != null && principalIds2.contains(allUsersGroupId) ) {
 				principalIds2.remove(allUsersGroupId);
 			}
 		}

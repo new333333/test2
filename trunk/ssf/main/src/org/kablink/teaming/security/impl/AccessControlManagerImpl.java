@@ -220,7 +220,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			}
 			membersToLookup = getProfileDao().getPrincipalIds(user);
 			Long allUsersId = Utils.getAllUsersGroupId();
-			if (!workArea.getWorkAreaType().equals(EntityIdentifier.EntityType.zone.name()) 
+			if (allUsersId != null && !workArea.getWorkAreaType().equals(EntityIdentifier.EntityType.zone.name()) 
 					&& membersToLookup.contains(allUsersId) && 
 					Utils.canUserOnlySeeCommonGroupMembers(user)) {
 				if (Utils.isWorkareaInProfilesTree(workArea)) {
