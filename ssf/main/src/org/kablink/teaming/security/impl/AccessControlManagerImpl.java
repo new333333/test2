@@ -45,10 +45,13 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Application;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.license.LicenseManager;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.FunctionManager;
@@ -59,6 +62,8 @@ import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembershipManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -214,6 +219,14 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				}
 			}
 			membersToLookup = getProfileDao().getPrincipalIds(user);
+			Long allUsersId = Utils.getAllUsersGroupId();
+			if (!workArea.getWorkAreaType().equals(EntityIdentifier.EntityType.zone.name()) 
+					&& membersToLookup.contains(allUsersId) && 
+					Utils.canUserOnlySeeCommonGroupMembers(user)) {
+				if (Utils.isWorkareaInProfilesTree(workArea)) {
+					membersToLookup.remove(allUsersId);
+				}
+			}
 			//if current user is the workArea owner, add special Id to is membership
 			if (user.getId().equals(workAreaStart.getOwnerId())) membersToLookup.add(ObjectKeys.OWNER_USER_ID);
 			if (!Collections.disjoint(workAreaStart.getTeamMemberIds(), membersToLookup)) membersToLookup.add(ObjectKeys.TEAM_MEMBER_ID);
