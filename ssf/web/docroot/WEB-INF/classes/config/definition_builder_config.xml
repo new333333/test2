@@ -635,6 +635,7 @@
 			<option name="user_list" />
 			<option name="attachFiles" />
 			<option_select path="//item[@category='folderData']" />
+			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
 		<jsps>
@@ -1634,6 +1635,7 @@
 			<option name="file" />
 			<option name="attachFiles" />
 			<option_select path="//item[@category='workspaceData']" />
+			<option_select path="//item[@category='commonEntryData']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
 		<jsps>
