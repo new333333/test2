@@ -228,7 +228,7 @@ div.ss_canvas {
 	}
 #ss_tasks_para .ss_link_1 a {
 	text-decoration:underline!important;
-	color: #00AEEF!important; 
+	color: #1c5894 !important; 
 	}
 #ss_tasks_para .ss_link_2 a {
 	text-decoration:underline!important;
@@ -638,17 +638,15 @@ div.ss_canvas {
 	/* PEOPLE LINKS */
 .ss_link_1, .ss_link_1 span { 
 	font-size:${ss_style_font_normalprint};
-	font-style: italic;
 	font-weight: 200;
-	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
-	letter-spacing:-1px;
-	color:#5A9A98!important;
+	letter-spacing: -.5px;
+	color:#1c5894 !important;
 	}
 	/* PLACES LINKS*/	
 .ss_link_2, .ss_link_2 span	{
-	text-decoration: underline!important;
-	color:#777!important;
+	color:#1c5894 !important;
 	font-size:${ss_style_font_smallprint}!important;
+	text-decoration: underline!important;
 	}
 	/* ENTRY LINKS*/	
 .ss_link_3, .ss_link_3 span	{
