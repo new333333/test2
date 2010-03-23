@@ -1737,10 +1737,10 @@ div.ss_box_top_rounded {
 /* -------------------Skins-------------------- */
 div.ss_content_outer {		/* also see ss_pseudoPortal */
     background: #FFFFFF;
-	margin-top:0px;
+	margin-top: 0px;
 	margin-right: 15px;		/* give right margin to match pseudoPortal */
 	border: 0px solid #ccc;
-	width:100%;
+	width: 100%;
 }
 
 .ss_content_inner {
