@@ -126,7 +126,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding: 2px 10px 4px 10px;
 	font-size: 12px;
 	font-style: italic;
-	font-family: 'Lucida Sans', 'Lucida Grande', sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
 	text-align:left;
 	vertical-align:top;
 	background-color:#f2f2f2;
@@ -136,24 +136,21 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-size: 20px;
 	font-style: italic;
 	font-weight: 200;
-	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
-	letter-spacing:-2px;
+	font-family: Arial, Helvetica, sans-serif;
 	color:#5A9A98!important;
 	}
 #ss_topic_box_h1 * a, #ss_topic_box_h1 * span, #ss_topic_box_h1 table *  {
 	font-size: 20px;
 	font-style: italic;
 	font-weight: 200;
-	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
-	letter-spacing:-2px;
+	font-family: Arial, Helvetica, sans-serif;
 	color:#5A9A98!important;
 	}
 #ss_topic_box_h1 * a:hover {
 	font-size: 20px;
 	font-style: italic;
 	font-weight: 200;
-	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
-	letter-spacing:-2px;
+	font-family: Arial, Helvetica, sans-serif;
 	color:#555!important;
 	}
 #ss_topic_folder{
@@ -180,7 +177,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <!--	padding: 2px 10px 4px 10px;-->
 <!--	font-size: 12px;-->
 <!--	font-style: italic;-->
-<!--	font-family: 'Lucida Sans', 'Lucida Grande', sans-serif;-->
+<!--	font-family: Arial, Helvetica, sans-serif;-->
 <!--	text-align:left;-->
 <!--	vertical-align:top;-->
 <!--	background-color:#f2f2f2;-->
@@ -215,7 +212,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-size: 20px;
 	font-style: italic;
 	font-weight: 200;
-	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
 	letter-spacing:-2px;
 	color:#5A9A98!important;
 	}
@@ -234,7 +231,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <!---->
 
 #ss_profile_box_h1 a:hover {
-	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
 	color:#1C5894!important;
 }
 
@@ -273,7 +270,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-size:1.2em;
 	font-style:italic;
 	font-weight: 200;
-	font-family: 'Lucida Sans', 'Lucida Grande', sans-serif;	
+	font-family: Arial, Helvetica, sans-serif;	
 	color:#5A9A98!important;
 	}
 .ss_title_th1{
@@ -691,7 +688,7 @@ div.ss_replies_indent_picture {
 	font-size:1.8em;
 	font-style:italic;
 	font-weight: 200;
-	font-family: 'Lucida Sans', 'Lucida Grande', sans-serif;	
+	font-family: Arial, Helvetica, sans-serif;	
 	color:#5A9A98!important;
 	}
 	  

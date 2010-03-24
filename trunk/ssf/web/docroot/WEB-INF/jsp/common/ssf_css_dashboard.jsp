@@ -248,7 +248,8 @@ div.ss_canvas {
 	color:#f63;
 	margin-right: 5px;
 	margin-bottom: 5px;
-	font-family:'Lucida Sans','Lucida Grande',sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
+
 	font-style: italic;
 	}
 #ss_nextPage{			/* to use when need to display left right arrows */
@@ -486,7 +487,7 @@ div.ss_canvas {
 	font-weight: 500;
 	letter-spacing: -1px !important;
 	color: #555;
-	font-family: 'Lucida Sans','Lucida Grande',sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
 	}
 .ss_title_im{
 	background: #FFFFFF;
@@ -503,7 +504,8 @@ div.ss_canvas {
 	font-size:14px;
 	padding: 2px 0px 2px 5px;
 	width:100%;
-	font-family:'Lucida Sans','Lucida Grande',sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
+
 	font-style: italic;
 	}
 /*  BOX TITLE COLORS   */
@@ -670,7 +672,7 @@ div.ss_canvas {
 .ss_link_7, .ss_link_7 span {
 	font-style: italic;
 	font-weight: 400;
-	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
 	letter-spacing:-1px;
 	color:#5A9A98!important;
 	font-size:18px;
