@@ -449,7 +449,7 @@ div.ss_entryContent a:hover {
   	margin-top: 10px;
   	padding-bottom: 10px;
   	background-color: #E9F1F1;  /* switch back to this: #A6C5C5 #E9F1F1 !important; */
-  	font-family: "Lucida Sans"; 
+  	font-family: Arial, Helvetica, sans-serif; 
   	font-size: 12px;
   	color: #333;
 	}
