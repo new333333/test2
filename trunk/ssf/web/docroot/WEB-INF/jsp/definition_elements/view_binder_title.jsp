@@ -55,8 +55,8 @@
 	<c:set var="actionVar2" value="configure_configuration"/>
 </c:if>
 
-  <div id="ss_topic_box">
-	<div id="ss_topic_box_h1">
+  <div id="ss_profile_box">
+	<div id="ss_profile_box_h1">
 	
 	<c:if test="${ssDefinitionEntry.entityType == 'workspace'}">
 	  <ul class="ss_horizontal ss_nobullet">
@@ -71,13 +71,12 @@
         </c:if>
         <span><c:out value="${ssDefinitionEntry.title}" escapeXml="true"/></span>
       </a> 
-	  <a class="profile-a"  href="<ssf:url crawlable="true"
-           adapter="true" portletName="ss_forum"
-           folderId="${ssDefinitionEntry.id}" 
-           action="view_ws_listing" ><ssf:param 
-		   name="profile" value="1" /></ssf:url>">
-		<ssf:nlt tag="relevance.tab.profile"/>
-  	  </a>
+	  <a href="<ssf:url crawlable="true"
+        	adapter="true" portletName="ss_forum"
+           	folderId="${ssDefinitionEntry.id}" 
+           	action="view_ws_listing" ><ssf:param 
+		   	name="profile" value="1" /></ssf:url>">
+			<span class="ss_profile"><ssf:nlt tag="relevance.tab.profile"/></span></a>
       </div>
       </li>
       </ul>
@@ -131,7 +130,7 @@
   			  titleClass="" />
   		   </td>
   		   <%  if (!parentTree2.empty()) {  %>
-  		     <td valign="top"><div class="ss_topic_box_h1 ss_treeWidget">&nbsp;&gt;&gt;&nbsp;&nbsp;</div>
+  		     <td valign="top"><div class="ss_profile_box_h1 ss_treeWidget">&nbsp;&gt;&gt;&nbsp;&nbsp;</div>
   		     </td>
   		   <%  }  %>
   		 </tr>
