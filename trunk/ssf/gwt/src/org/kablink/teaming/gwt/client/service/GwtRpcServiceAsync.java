@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
+import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -94,4 +95,8 @@ public interface GwtRpcServiceAsync
 
 	// Save the branding data to the given binder.
 	public void saveBrandingData( String binderId, GwtBrandingData brandingData, AsyncCallback<Boolean> callback );
+
+	// Return infomation about the User Profile
+	public void getProfileInfo(String binderId, AsyncCallback<ProfileInfo> callback);
+	
 }// end GwtRpcServiceAsync
