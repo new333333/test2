@@ -45,11 +45,18 @@
 		// Save away information such as the binder id and the adapted url for the request we are working with.
 		// Through an overlay we will access m_requestInfo from java.
 		var profileRequestInfo = {
-			binderId : '${binderId}',
-			userName : '${userFullName}',
-			adaptedUrl : '${adaptedUrl}',
+			binderId : '${ssBinder.id}',
+			userName : '<ssf:userTitle user="${ssProfileConfigEntry}"/>',
+			adaptedUrl : '<ssf:url crawlable="true"
+				adapter="true" portletName="ss_forum"
+					folderId="${ssBinder.id}" 
+						 action="view_ws_listing" ></ssf:url>',
 			imagesPath : '<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
-			myWSUrl : '${myWorkspaceUrl}'
+			myWSUrl : '<ssf:url crawlable="true"
+				adapter="true" portletName="ss_forum"
+					folderId="${ssUser.workspaceId}" 
+						 action="view_ws_listing" ><ssf:param 
+						name="profile" value="1" /></ssf:url>',
 		};
 </script>
 
