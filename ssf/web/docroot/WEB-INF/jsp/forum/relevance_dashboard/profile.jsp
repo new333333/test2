@@ -44,27 +44,29 @@
 	<div class="ss_clear_float"></div>
 </c:if>
 
-<ssf:ifLoggedIn>
-  <c:if test="${ssUser == ssDefinitionEntry}">
-	<c:if test="${ss_quotasEnabled}">
-	  <div>
-	    <span><ssf:nlt tag="quota.diskQuota"><ssf:param name="value" useBody="true"
-	    ><fmt:formatNumber value="${ss_diskQuotaUserMaximum/1048576}" maxFractionDigits="0"/></ssf:param></ssf:nlt></span>
-	  </div>
-	  <div>
-	    <span><ssf:nlt tag="quota.diskSpaceUsed"><ssf:param name="value" useBody="true"
-	    ><fmt:formatNumber value="${ssUser.diskSpaceUsed/1048576}" maxFractionDigits="2"/></ssf:param></ssf:nlt></span>
-	  </div>
-	  <c:if test="${ss_diskQuotaExceeded}">
-	    <div>
-	      <span class="ss_errorLabel"><ssf:nlt tag="quota.diskQuotaNowExceeded"/></span>
-	    </div>
+<c:if test="${ss_formViewStyle != 'profileGWT'}">
+	<ssf:ifLoggedIn>
+	  <c:if test="${ssUser == ssDefinitionEntry}">
+		<c:if test="${ss_quotasEnabled}">
+		  <div>
+		    <span><ssf:nlt tag="quota.diskQuota"><ssf:param name="value" useBody="true"
+		    ><fmt:formatNumber value="${ss_diskQuotaUserMaximum/1048576}" maxFractionDigits="0"/></ssf:param></ssf:nlt></span>
+		  </div>
+		  <div>
+		    <span><ssf:nlt tag="quota.diskSpaceUsed"><ssf:param name="value" useBody="true"
+		    ><fmt:formatNumber value="${ssUser.diskSpaceUsed/1048576}" maxFractionDigits="2"/></ssf:param></ssf:nlt></span>
+		  </div>
+		  <c:if test="${ss_diskQuotaExceeded}">
+		    <div>
+		      <span class="ss_errorLabel"><ssf:nlt tag="quota.diskQuotaNowExceeded"/></span>
+		    </div>
+		  </c:if>
+		  <c:if test="${ss_diskQuotaHighWaterMarkExceeded && !ss_diskQuotaExceeded}">
+		    <div>
+		      <span><ssf:nlt tag="quota.diskQuotaAlmostExceeded"/></span>
+		    </div>
+		  </c:if>
+		</c:if>
 	  </c:if>
-	  <c:if test="${ss_diskQuotaHighWaterMarkExceeded && !ss_diskQuotaExceeded}">
-	    <div>
-	      <span><ssf:nlt tag="quota.diskQuotaAlmostExceeded"/></span>
-	    </div>
-	  </c:if>
-	</c:if>
-  </c:if>
-</ssf:ifLoggedIn>
+	</ssf:ifLoggedIn>
+</c:if>
