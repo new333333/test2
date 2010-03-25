@@ -19,6 +19,7 @@
     
     <!-- Specify the application specific style sheet.              -->
 	<stylesheet src='GwtTeaming.css' />
+    <stylesheet src='GwtProfile.css' />		
 	
 	<!-- Limit support of which browsers we compile for.  Speeds up -->
 	<!-- compilation during development.                            -->
