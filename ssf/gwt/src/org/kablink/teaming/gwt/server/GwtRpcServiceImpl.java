@@ -69,9 +69,11 @@ import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
+import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
-import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
+import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
+import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -998,7 +1000,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * The information returned is typically used for driving a
 	 * horizontal WorkspaceTreeControl widget.
-	 * 
+	 * list.toArray(infoArray);
 	 * @param binderId
 	 * 
 	 * @return
@@ -1097,7 +1099,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		ArrayList<Long> expandedBindersList = new ArrayList<Long>();
 		expandedBindersList.add(binderId);
 
-		// ...and build the TreeInfo for it.
+		// ...and build the TreeInfo folist.toArray(infoArray);r it.
 		return GwtServerHelper.buildTreeInfoFromBinder(this, binder, expandedBindersList);
 	}
 	
@@ -1197,6 +1199,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		return Boolean.TRUE;
 	}// end saveBrandingData()
-	
+
+
+	/**
+	 * Get the profile information based on the binder Id passed in.
+	 */
+	public ProfileInfo getProfileInfo(String binderId) {
+		
+		//get the binder
+		ProfileInfo profile = GwtProfileHelper.buildProfileInfo(this, Long.valueOf(binderId));
+		
+		return profile;
+	}
+
 	
 }// end GwtRpcServiceImpl
