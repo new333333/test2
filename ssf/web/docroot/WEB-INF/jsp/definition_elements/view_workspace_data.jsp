@@ -53,6 +53,9 @@
 	} else if (itemType.equals("htmlEditorTextarea")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_html_textarea.jsp" %><%
 		
+	} else if (itemType.equals("url")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_url.jsp" %><%
+		
 	} else if (itemType.equals("file")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_file.jsp" %><%
 		
@@ -62,6 +65,12 @@
 	} else if (itemType.equals("attachFiles")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" %><%		
 
+	} else if (itemType.equals("checkbox")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_checkbox.jsp" %><%
+		
+	} else if (itemType.equals("radio")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_radio.jsp" %><%
+		
 	} else if (itemType.equals("selectbox")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_selectbox.jsp" %><%
 		

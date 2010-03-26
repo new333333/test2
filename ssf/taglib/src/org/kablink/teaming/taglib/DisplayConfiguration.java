@@ -302,6 +302,31 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 										}
 									}
 								}
+								//See if this item is a url data view item
+								if (formItem.equals("url")) {
+									//Get the url target from the form side of the definition
+									Element entryFormItem = (Element)configDefinition.getRootElement().selectSingleNode("item[@type='form']");
+									if (entryFormItem != null) {
+										//Get the target of the url element we are looking for in the form part of the definition
+										String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
+										if (Validator.isNotNull(nameValue)) {
+											//Find the actual url element if the form part of the definition
+											Element itemEle = (Element)entryFormItem.selectSingleNode(".//item/properties/property[@name='name' and @value='" + nameValue + "']");
+											if (itemEle != null) {
+												//Found the form element, get the "properties" element
+												itemEle = itemEle.getParent();
+												//Now get the property where the target value is stored
+												Element targetEle = (Element)itemEle.selectSingleNode("./property[@name='target']");
+												if (targetEle != null) {
+													//Ok, we have the url target property, now get the boolean
+													String targetValue = targetEle.attributeValue("value", "");
+													//Create a bean for the target
+													propertyValuesMap.put("property_target", new Boolean(targetValue));
+												}
+											}
+										}
+									}
+								}
 								
 								//See if there are any per-user values to be added to the property map
 								if (perUserVersionsAllowed) {
