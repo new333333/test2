@@ -50,7 +50,8 @@
 			adaptedUrl : '<ssf:url crawlable="true"
 				adapter="true" portletName="ss_forum"
 					folderId="${ssBinder.id}" 
-						 action="view_ws_listing" ></ssf:url>',
+						 action="view_ws_listing" ><ssf:param 
+							name="profile" value="0" /></ssf:url>',
 			imagesPath : '<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
 			myWSUrl : '<ssf:url crawlable="true"
 				adapter="true" portletName="ss_forum"
