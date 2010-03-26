@@ -96,6 +96,8 @@ public class EditBrandingDlg extends DlgBox
 	private AddFileAttachmentDlg m_addFileAttachmentDlg = null;
 	private ColorPickerDlg m_colorPickerDlg = null;
 	private TextBox m_destColorTextbox = null;
+	private TinyMCEDlg m_editAdvancedBrandingDlg = null;
+	private String m_advancedBranding = null;
 	
 
 	/**
@@ -114,6 +116,9 @@ public class EditBrandingDlg extends DlgBox
 		
 		// Remember the branding data we started with.
 		m_origBrandingData = brandingData;
+		
+		// Get the advanced branding.
+		m_advancedBranding = m_origBrandingData.getBranding();
 		
 		// Create the callback that will be used when we issue an ajax call to get
 		// the list of files attached to the given binder.
@@ -327,7 +332,12 @@ public class EditBrandingDlg extends DlgBox
 					 */
 					public void onClick( ClickEvent event )
 					{
-						Window.alert( "not yet implemented" );
+						Anchor anchor;
+						
+						anchor = (Anchor) event.getSource();
+						
+						// Invoke the "Edit Advanced Branding" dialog.
+						invokeEditAdvancedBrandingDlg( anchor.getAbsoluteLeft(), anchor.getAbsoluteTop() );
 					}//end onClick()
 				};
 				advancedAnchor.addClickHandler( clickHandler );
@@ -660,6 +670,9 @@ public class EditBrandingDlg extends DlgBox
 			brandingData.setBrandingType( type );
 		}
 		
+		// Save away the advanced branding.
+		brandingData.setBranding( m_advancedBranding );
+		
 		// Get the selected branding image.
 		{
 			// Is something selected in the "branding image" listbox?
@@ -899,6 +912,73 @@ public class EditBrandingDlg extends DlgBox
 
 		m_colorPickerDlg.show();
 	}// end invokeColorPickerDlg()
+
+
+	/**
+	 * Invoke the "Edit Advanced Branding" dialog.
+	 */
+	public void invokeEditAdvancedBrandingDlg( int x, int y )
+	{
+		// Have we already created an "Edit Advanced Branding" dialog?
+		if ( m_editAdvancedBrandingDlg != null )
+		{
+			// Yes
+			m_editAdvancedBrandingDlg.setPopupPosition( x, y );
+		}
+		else
+		{
+			EditSuccessfulHandler editSuccessfulHandler;
+			EditCanceledHandler editCanceledHandler;
+			
+			editSuccessfulHandler = new EditSuccessfulHandler()
+			{
+				/**
+				 * This method gets called when user user presses ok in the "Edit Advanced Branding" dialog.
+				 */
+				public boolean editSuccessful( Object obj )
+				{
+					if ( obj instanceof String )
+					{
+						if ( obj != null )
+							m_advancedBranding = new String( (String) obj );
+						else
+							m_advancedBranding = null;
+					}
+					
+					m_editAdvancedBrandingDlg.hide();
+
+					return true;
+				}// end editSuccessful()
+			};
+				
+			editCanceledHandler = new EditCanceledHandler()
+			{
+				/**
+				 * This method gets called when the user presses cancel in the "Edit Advanced Branding" dialog.
+				 */
+				public boolean editCanceled()
+				{
+					m_editAdvancedBrandingDlg.hide();
+					
+					return true;
+				}// end editCanceled()
+			};
+
+			// No, create a "Edit Advanced Branding" dialog.
+			m_editAdvancedBrandingDlg = new TinyMCEDlg(
+												editSuccessfulHandler,
+												editCanceledHandler,
+												false,
+												true,
+												x,
+												y,
+												null );
+		}
+
+		m_editAdvancedBrandingDlg.show();
+		m_editAdvancedBrandingDlg.setText( m_advancedBranding );
+	}// end invokeEditAdvancedBrandingDlg()
+
 
 	/**
 	 * Remove the styles that were added to the given widget when the user moved the mouse over the widget.
