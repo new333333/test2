@@ -1,7 +1,19 @@
 /* */
 body, table td, select
 {
-	font-family: Arial, sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.n-Label /* Novell - for text input field, radio buttons, and checkbox labels */
+{
+	font-size: 0.85em;
+	color: #666;  /* gray */
+	text-transform: capitalize;
+}
+
+n-Transparent-Black-Div
+{
+	position: absolute; top: 0px; left: 0px; background: url(images/trans50_black.png) repeat; width: 100%; height: 100%; overflow: hidden;
 }
 
 .bold
@@ -218,7 +230,7 @@ body, table td, select
 /* Styles used by the WorkspaceTreeControl. */
 .workspaceTreeBinderAnchor
 {
-	color: #1C5894;
+	color: #414648; /* dark grey */
 	text-decoration: none;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: .9em;
