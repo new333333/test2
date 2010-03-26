@@ -51,6 +51,8 @@
 
     <title>GwtTeaming</title>
     
+	<script type="text/javascript" src="<html:tinyMcePath/>tiny_mce.js"></script>
+	
 	<script type="text/javascript" language="javascript">
 		// Save away information such as the binder id and the adapted url for the request we are working with.
 		// Through an overlay we will access m_requestInfo from java.
