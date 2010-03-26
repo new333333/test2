@@ -187,8 +187,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	-moz-border-radius:5px 5px 5px 5px;
 	background:none repeat scroll 0 0 #E9F1F1;
 	border:1px solid #D2D5D1;
-	margin:8px;
-	min-height:80px;
+	margin: 8px 0px;
 	padding:10px;
 	}
 
