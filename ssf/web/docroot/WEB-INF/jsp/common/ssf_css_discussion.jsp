@@ -195,7 +195,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-size: 20px;
 	font-style:italic;
 	font-weight:bold;
-	letter-spacing:0.05em;
 	color:#5A9A98!important;
 }
 <!--#ss_profile_box_h1_old{-->
@@ -212,7 +211,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-style: italic;
 	font-weight: 200;
 	font-family: Arial, Helvetica, sans-serif;
-	letter-spacing:-2px;
 	color:#5A9A98!important;
 	}
 <!--#ss_profile_box_h1_old * a:hover {-->
