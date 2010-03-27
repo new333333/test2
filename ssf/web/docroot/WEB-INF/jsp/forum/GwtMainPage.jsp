@@ -64,7 +64,24 @@
 			myWSUrl : '${myWorkspaceUrl}',
 			isNovellTeaming : ${isNovellTeaming}
 		};
-	</script>
+
+		var ss_workareaIframeOffset = 50;
+		function ss_setWorkareaIframeSize() {
+			//If possible, try to directly set the size of the iframe
+			//This may fail if the iframe is showing something in another domain
+			//If so, the alternate method (via ss_communicationFrame) is used to set the window height
+			try {
+				var iframeDiv = document.getElementById('contentControl')
+				if (window.frames['gwtContentIframe'] != null) {
+					eval("var iframeHeight = parseInt(window.gwtContentIframe" + ".document.body.scrollHeight);")
+					if (iframeHeight > 100) {
+						iframeDiv.style.height = iframeHeight + ss_workareaIframeOffset + "px"
+					}
+				}
+			} catch(e) {
+			}
+		}
+		</script>
 	<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js"></script>
 	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
 	<script type="text/javascript" language="javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>

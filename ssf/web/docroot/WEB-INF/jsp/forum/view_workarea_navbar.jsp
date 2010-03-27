@@ -165,6 +165,13 @@ function ss_workarea_showPseudoPortal${renderResponse.namespace}(obj) {
 		ss_createOnResizeObj('ss_setParentWorkareaIframeSize${renderResponse.namespace}', ss_setParentWorkareaIframeSize${renderResponse.namespace});
 		ss_createOnLayoutChangeObj('ss_setParentWorkareaIframeSize${renderResponse.namespace}', ss_setParentWorkareaIframeSize${renderResponse.namespace});
 		
+	} else if (windowName.indexOf("gwtContentIframe") == 0) {
+		//We are running inside a portlet iframe; set up for layout changes
+		ss_parentWorkareaNamespace${renderResponse.namespace} = "gwtContentIframe"
+		ss_createOnLoadObj("ss_setParentWorkareaIframeSize${renderResponse.namespace}", ss_setParentWorkareaIframeSize${renderResponse.namespace});
+		ss_createOnResizeObj('ss_setParentWorkareaIframeSize${renderResponse.namespace}', ss_setParentWorkareaIframeSize${renderResponse.namespace});
+		ss_createOnLayoutChangeObj('ss_setParentWorkareaIframeSize${renderResponse.namespace}', ss_setParentWorkareaIframeSize${renderResponse.namespace});
+		
 	} else {
 		//Show the pseudo portal
 		var divObj = self.document.getElementById('ss_pseudoPortalDiv${renderResponse.namespace}');
