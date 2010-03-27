@@ -539,6 +539,8 @@ public class ViewPermalinkController  extends SAbstractController {
 				isNovellTeaming = PortletRequestUtils.getStringParameter( request, "isNovellTeaming", "true" );
 				model.put( "isNovellTeaming", isNovellTeaming );
 				
+				//Set up the standard beans
+				BinderHelper.setupStandardBeans(this, request, response, model);
 				return new ModelAndView( "forum/GwtMainPage", model );
 			}
 		}

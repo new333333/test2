@@ -62,7 +62,7 @@ if (typeof ss_common_loaded == "undefined" ) {
 	var ssMenuZ = 500;
 	var ssPopupZ = 600;
 	var ssDragOnTopZ = 100000;
-	var ssEntryZ = 50;
+	var ssEntryZ = 350;
 	var ssDragEntryZ = 400;
 	var ssSlidingTableInfoZ = 40;
 	var ssDashboardTargetZ = 1000;
@@ -3983,6 +3983,9 @@ function ss_initShowFolderDiv(namespace) {
 function ss_showEntryDivInitialization(namespace) {
 	var divObj = self.document.getElementById("ss_showentrydiv");
 	if (divObj != null) return;
+	//See if there is a window iframe with this name already
+	if (typeof window.ss_showentryframe != "undefined") return;
+	
 	//It hasn't been set up yet, use this prototype div
 	divObj = self.document.getElementById("ss_showentrydiv"+namespace);
 	var iframeObj = self.document.getElementById("ss_showentryframe"+namespace);

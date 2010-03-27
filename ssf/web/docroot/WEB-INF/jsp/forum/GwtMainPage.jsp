@@ -65,11 +65,14 @@
 			isNovellTeaming : ${isNovellTeaming}
 		};
 	</script>
-
+	<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js"></script>
+	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
 	<script type="text/javascript" language="javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
   </head>
 
   <body>
+    <c:set var="gwtUI" value="true" scope="request"/>
+    <%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
 
     <!-- OPTIONAL: include this if you want history support -->
     <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>

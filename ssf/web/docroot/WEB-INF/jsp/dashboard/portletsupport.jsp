@@ -68,5 +68,10 @@ var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
 </script>
 
 <!-- portlet iframe div -->
+<c:if test="${gwtUI}">
+<%@ include file="/WEB-INF/jsp/entry/view_gwt_iframe_div.jsp" %>
+</c:if>
+<c:if test="${!gwtUI}">
 <%@ include file="/WEB-INF/jsp/entry/view_iframe_div.jsp" %>
+</c:if>
 <!-- portlet iframe div -->	
