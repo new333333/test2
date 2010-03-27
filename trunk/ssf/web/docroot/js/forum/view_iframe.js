@@ -157,7 +157,7 @@ function ss_positionEntryDiv(moveTop) {
 
     ss_setObjectLeft(wObj1, ss_entryWindowLeft);
     ss_setObjectWidth(wObj1, ss_entryWindowWidth);
-    ss_setObjectWidth(wObj2, ss_entryWindowWidth);
+    if (wObj2 != null) ss_setObjectWidth(wObj2, ss_entryWindowWidth);
     
     //Trying to set the property to "inherit" or something that is not a actual color values
     //causes JS to fail on IE so we are setting the background to a empty value, for the 
@@ -223,7 +223,6 @@ function ss_hideEntryDiv() {
     if (wObj1 != null) {
     	wObj1.style.visibility = "hidden";
     	wObj1.style.display = "none";
-    	var wObj2 = self.document.getElementById(ss_iframe_box_div_name)
     	var wObj3 = self.document.getElementById('ss_iframe_holder_div')
     	if (0 == 1 && wObj3 != null) {
     		//Turned off because it doesn't work yet
