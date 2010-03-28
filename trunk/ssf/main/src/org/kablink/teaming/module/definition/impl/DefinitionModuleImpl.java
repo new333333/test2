@@ -109,6 +109,7 @@ import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -2012,6 +2013,17 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						brandingExt = mapInputData( inputData.getSingleValue( "brandingExt" ) );
 						entryData.put( "brandingExt", brandingExt );
 					}
+				}
+			}
+		} else if (itemName.equals("url")) {
+			if (inputData.exists(nameValue)) {
+				String value = inputData.getSingleValue(nameValue);
+				String urlTag = "<a href=\"" + value + "\">xss</a>";
+				if (urlTag.equalsIgnoreCase(StringCheckUtil.check(urlTag))) {
+					//There was no indication of XSS code, so store the result
+					entryData.put(nameValue, value);
+				} else {
+					entryData.put(nameValue, "");
 				}
 			}
 		} else if (itemName.equals("folderAttributeList")) {
