@@ -150,16 +150,15 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 				}
 				// Re-index the list of users and all binders "owned" by them
 				// reindex the profile entry for each user
-				for (Principal user : users) {
-					getProfileModule().indexEntry(user);
-				}
-				// set up a background job that will reindex all of the binders owned by all of these users.
 				Set<Principal> groupUsers = new HashSet<Principal>();
 				Set<Long> groupUserIds = new HashSet<Long>();
-				groupUsers.addAll(users);
 				groupUserIds.addAll(profileDao.explodeGroups(gIds, RequestContextHolder.getRequestContext().getZoneId()));
-				groupUsers.addAll(getProfileModule().getPrincipals(ids));
-				
+				groupUsers.addAll(getProfileModule().getPrincipals(groupUserIds));
+				groupUsers.addAll(users);
+				for (Principal user : groupUsers) {
+					getProfileModule().indexEntry(user);
+				}
+				// set up a background job that will reindex all of the binders owned by all of these users.				
 				//Re-index all "personal" binders owned by this user (i.e., binders under the profiles binder)
 				getProfileModule().reindexPersonalUserOwnedBinders(groupUsers);
 				

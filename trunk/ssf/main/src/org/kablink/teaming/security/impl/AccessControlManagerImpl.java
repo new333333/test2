@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.security.impl;
 
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,6 +50,7 @@ import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.license.LicenseManager;
@@ -180,6 +183,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		if(isAccessCheckTemporarilyDisabled())
 			return true;
 		
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		Application application = null;
 		if(RequestContextHolder.getRequestContext() != null)
 			application = RequestContextHolder.getRequestContext().getApplication();
@@ -224,7 +228,31 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 					&& membersToLookup.contains(allUsersId) && 
 					Utils.canUserOnlySeeCommonGroupMembers(user)) {
 				if (Utils.isWorkareaInProfilesTree(workArea)) {
-					membersToLookup.remove(allUsersId);
+					//If this user does not share a group with the binder owner, remove the "All Users" group.
+					boolean remove = true;
+					if (workArea.getWorkAreaType().equals(EntityType.workspace.name()) ||
+							workArea.getWorkAreaType().equals(EntityType.folder.name())) {
+						List<Group> groups = workArea.getOwner().getMemberOf();
+						List gIds = new ArrayList();
+						for (Group g : groups) {
+							gIds.add(g.getId());
+							if (membersToLookup.contains(g.getId())) {
+								remove = false;
+								break;
+							}
+						}
+						if (remove) {
+							//There wasn't a direct match of groups, go look in the exploded list
+							Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(workArea.getOwner().getId(), zoneId);
+							for (Long gId : userGroupIds) {
+								if (membersToLookup.contains(gId)) {
+									remove = false;
+									break;
+								}
+							}
+						}
+					}
+					if (remove) membersToLookup.remove(allUsersId);
 				}
 			}
 			//if current user is the workArea owner, add special Id to is membership
