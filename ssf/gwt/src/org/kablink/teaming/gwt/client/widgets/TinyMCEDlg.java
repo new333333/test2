@@ -53,12 +53,14 @@ import com.google.gwt.user.client.ui.Panel;
 public class TinyMCEDlg extends DlgBox
 {
 	TinyMCE m_tinyMCE = null;
+	AbstractTinyMCEConfiguration m_tinyMCEConfig = null;
 	
 	
 	/**
 	 * 
 	 */
 	public TinyMCEDlg(
+		AbstractTinyMCEConfiguration tinyMCEConfig,
 		EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
 		EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
 		boolean autoHide,
@@ -69,6 +71,8 @@ public class TinyMCEDlg extends DlgBox
 	{
 		super( autoHide, modal, xPos, yPos );
 	
+		m_tinyMCEConfig = tinyMCEConfig;
+		
 		// Create the header, content and footer of this dialog box.
 		createAllDlgContent( GwtTeaming.getMessages().addFileAttachmentDlgHeader(), editSuccessfulHandler, editCanceledHandler, properties ); 
 	}// end TinyMCEDlg()
@@ -92,7 +96,7 @@ public class TinyMCEDlg extends DlgBox
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 	
-		m_tinyMCE = new TinyMCE( 300, 15 );
+		m_tinyMCE = new TinyMCE( m_tinyMCEConfig, 300, 15 );
 		mainPanel.add( m_tinyMCE );
 		
 		init( props );
@@ -117,6 +121,17 @@ public class TinyMCEDlg extends DlgBox
 	{
 		return null;
 	}// end getFocusWidget()
+	
+	
+	/**
+	 * Unload the tinyMCE control.
+	 */
+	public void hide()
+	{
+		super.hide();
+		
+		m_tinyMCE.unload();
+	}// end hide()
 	
 	
 	/**

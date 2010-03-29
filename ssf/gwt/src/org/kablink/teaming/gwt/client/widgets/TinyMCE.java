@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.TextArea;
@@ -49,20 +50,23 @@ public class TinyMCE extends Composite
 {
     private TextArea m_ta;
     private String m_id;
-    private boolean m_initialized = false;
+    private boolean m_loaded = false;
     private String m_setText = null;
-
+    private AbstractTinyMCEConfiguration m_config = null;
+	
     /**
      * 
      * @param width
      * @param height
      */
-    public TinyMCE( int width, int height )
+    public TinyMCE( AbstractTinyMCEConfiguration config, int width, int height )
     {
         super();
 
         VerticalPanel panel;
 
+        m_config = config;
+        
         panel = initTinyMCE( width, height );
 
         initWidget( panel );
@@ -94,8 +98,11 @@ public class TinyMCE extends Composite
      * @param elementId
      * @return
      */
-    protected static native String getEditorContents( String elementId ) /*-{
-		return $wnd.tinyMCE.get(elementId).getContent();
+    protected static native String getEditorContents( String id ) /*-{
+    	var editor;
+    	
+    	editor = $wnd.tinyMCE.get( id );
+		return editor.getContent();
     }-*/;
     
     
@@ -113,9 +120,15 @@ public class TinyMCE extends Composite
      */
     public String getText()
     {
-        getTextData();
-//!!!        return m_ta.getText();
-    	return getEditorContents( m_id );
+    	String text;
+    	
+//!!!        getTextData( m_id );
+//!!!        text = m_ta.getText();
+//!!!        Window.alert( "text1: " + text );
+        
+        text = getEditorContents( m_id );
+        
+        return text;
     }// end getText()
 
     
@@ -141,58 +154,42 @@ public class TinyMCE extends Composite
 	 * Initialize Tiny MCE editor
 	 * http://wiki.moxiecode.com/index.php/TinyMCE:Configuration for details
 	 */
-	protected native void init() /*-{
-		$wnd.tinyMCE.init( {
+	protected native void init( AbstractTinyMCEConfiguration conf ) /*-{
+		$wnd.tinyMCE.init({
 				// General options
-				mode : "textareas",
-				theme : "advanced",
-				language: 'en',
-				content_css: "http://jwootton2.provo.novell.com:8080/ssf/s/viewCss?sheet=editor",
-				relative_urls: false, 
-				remove_script_host : false,
-				document_base_url : "http://jwootton2.provo.novell.com:8080/ssf/s/readFile/workspace/40/-/1269355009029/last/",
-				width: "100%",
-				accessibility_warnings: true,
-				accessibility_focus: true,
-				entities:  "39,#39,34,quot,38,amp,60,lt,62,gt",
-				gecko_spellcheck : true,
-				plugins: "compat2x,table,ss_addimage,preview,paste,ss_wikilink,ss_youtube",
-				theme_advanced_buttons3_add : "pastetext,pasteword,selectall",
-				theme_advanced_toolbar_location: "top", theme_advanced_toolbar_align: "top", 
-				theme_advanced_toolbar_align: "left", theme_advanced_statusbar_location: "bottom", 
-				theme_advanced_resizing: true, 
-				convert_fonts_to_spans: true,
-				theme_advanced_styles: "8px=ss_size_8px;9px=ss_size_9px;10px=ss_size_10px;11px=ss_size_11px;12px=ss_size_12px;13px=ss_size_13px;14px=ss_size_14px;15px=ss_size_15px;16px=ss_size_16px;18px=ss_size_18px;20px=ss_size_20px;24px=ss_size_24px;28px=ss_size_28px;32px=ss_size_32px",
-				theme_advanced_buttons1_add: "forecolor,backcolor",
-				theme_advanced_buttons2_add: "pastetext,pasteword,ss_addimage,ss_wikilink,ss_youtube",
-				theme_advanced_path: false,
-				theme_advanced_buttons3_add: "tablecontrols", 
-				theme_advanced_disable : "image,advimage",
-				theme_advanced_resizing_use_cookie : true });
-
-		$wnd.tinyMCE.addI18n( 'en.ss_addimage_dlg',{
-													overQuota : " ",
-													srcFile : "Upload an Image",
-													addFile : "Upload an Image File",
-													addUrl : "Select an Attached Image File",
-													imageName : "Image Name",
-													imageSelectBox : "ss_imageSelectionsss_htmleditor_description",
-													missing_img : "No image file was selected"
-													});
-
-		$wnd.tinyMCE.addI18n( 'en.ss_addimage',{
-												desc_no : "Images cannot be inserted because your quota has been exceeded."
-												});
-		
-		$wnd.tinyMCE.addI18n('en.ss_wikilink',{
-												desc : "Insert a Link to Another Teaming Page"
-												});
-
-		$wnd.tinyMCE.addI18n('en.ss_youtube',{
-												desc : "Embed a Video",
-												youTubeUrl : "URL of a Video on YouTube",
-												dimensions : "Dimensions"
-												});
+				mode : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getMode()(),
+				theme : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getTheme()(),
+				skin : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getSkin()(),
+				entity_encoding : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getEntityEncoding()(),
+				plugins : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getPlugins()(),
+	
+				// Theme options
+				// excluded buttons: ,fontselect,fontsizeselect,preview,image,help,|,forecolor,backcolor tablecontrols,|,,emotions,media,|,print
+				theme_advanced_buttons1 : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons1()(),
+				theme_advanced_buttons2 : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons2()(),
+				theme_advanced_buttons3 : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons3()(),
+				//theme_advanced_buttons4 : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons4()(),
+				theme_advanced_toolbar_location : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedToolbarLocation()(),
+				theme_advanced_toolbar_align : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedToolbarAlign()(),
+				theme_advanced_statusbar_location : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedStatusbarLocation()(),
+				theme_advanced_resizing : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedResizing()(),
+	
+				// Example content CSS (should be your site CSS)
+				content_css : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getContentCss()(),
+	
+				// Drop lists for link/image/media/template dialogs
+				template_external_list_url : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getTemplateExternalListUrl()(),
+				external_link_list_url : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getExternalLinkListUrl()(),
+				external_image_list_url : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getExternalImageListUrl()(),
+				media_external_list_url : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getMediaExternalListUrl()(),
+	
+				// Replace values for the template plugin
+				template_replace_values : {
+					username : "Some User",
+					staffid : "991234"
+				}
+				
+			});
 	}-*/;
 
 
@@ -227,7 +224,7 @@ public class TinyMCE extends Composite
         super.onLoad();
         
         // Are we initialized?
-        if ( m_initialized == false )
+        if ( m_loaded == false )
         {
             Command cmd;
 
@@ -240,10 +237,10 @@ public class TinyMCE extends Composite
                 public void execute()
                 {
                     setWidth( "100%" );
-                    init();
+                    init( m_config );
                     setTextAreaToTinyMCE( m_id );
                     
-                    m_initialized = true;
+                    m_loaded = true;
                 }
             };
             DeferredCommand.addCommand( cmd );
@@ -301,7 +298,7 @@ public class TinyMCE extends Composite
     public void setText( String text )
     {
     	// Are we initialized?
-    	if ( m_initialized )
+    	if ( m_loaded )
     	{
     		// Yes
             m_ta.setText(text);
@@ -345,6 +342,7 @@ public class TinyMCE extends Composite
     public void unload()
     {
         unloadMCE( m_id );
+        m_loaded = false;
     }// end unload()
 
     

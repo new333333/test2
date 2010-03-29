@@ -929,6 +929,7 @@ public class EditBrandingDlg extends DlgBox
 		{
 			EditSuccessfulHandler editSuccessfulHandler;
 			EditCanceledHandler editCanceledHandler;
+			AbstractTinyMCEConfiguration tinyMCEConfig;
 			
 			editSuccessfulHandler = new EditSuccessfulHandler()
 			{
@@ -965,7 +966,9 @@ public class EditBrandingDlg extends DlgBox
 			};
 
 			// No, create a "Edit Advanced Branding" dialog.
+			tinyMCEConfig = new DefaultTinyMCEConfiguration();
 			m_editAdvancedBrandingDlg = new TinyMCEDlg(
+												tinyMCEConfig,
 												editSuccessfulHandler,
 												editCanceledHandler,
 												false,

@@ -89,7 +89,6 @@
 
   <body>
     <c:set var="gwtUI" value="true" scope="request"/>
-    <%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
 
     <!-- OPTIONAL: include this if you want history support -->
     <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
@@ -97,5 +96,7 @@
 	<!-- This div will hold the content of the main Teaming page. -->
 	<div id="gwtMainPageDiv">
 	</div>
+
+    <%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
   </body>
 </html>
