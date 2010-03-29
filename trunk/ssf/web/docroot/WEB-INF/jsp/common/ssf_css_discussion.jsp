@@ -223,13 +223,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <!--	}-->
 <!--#ss_profile_box_h1 * a, #ss_profile_box_h1 * span, #ss_profile_box_h1 table *   {-->
 <!--	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;-->
-<!--	color:#1C5894 !important;-->
+<!--	color:#3e6978 !important;-->
 <!--}-->
 <!---->
 
 #ss_profile_box_h1 a:hover {
 	font-family: Arial, Helvetica, sans-serif;
-	color:#1C5894!important;
+	color:#3e6978!important;
 }
 
 .ss_profile {
@@ -238,7 +238,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
   font-weight:normal !important;
   letter-spacing: .1em !important;
   padding-left:10px;
-  color:#1C5894 !important;
+  color:#3e6978 !important;
   text-decoration:none;
 }
 

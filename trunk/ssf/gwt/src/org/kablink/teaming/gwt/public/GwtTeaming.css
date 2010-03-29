@@ -128,7 +128,7 @@ n-Transparent-Black-Div
 /* Style used for links in the "edit branding" dialog. */
 .editBrandingLink
 {
-	color: #1C5894;
+	color: #3e6978;
 	cursor: pointer;
 	margin-left: 4px;
 	text-decoration: none;
@@ -250,7 +250,7 @@ n-Transparent-Black-Div
 }
 .workspaceTreeControl
 {
-	background-color: #E6E6E4;
+	background-color: #EAEBE8;
 	padding: 0 0 8px;
 	width: 230px;
 	-moz-border-radius: 5px;
@@ -263,7 +263,7 @@ n-Transparent-Black-Div
 }
 .workspaceTreeControlHeader
 {
-	background: #85BCC3 url(images/header_blend_teal_bg.png) repeat-x scroll center bottom;
+	background: #85BCC3 url(images/header_blend_grey_bg.png) repeat-x scroll center bottom;
 	background-position:bottom;
 	color: #FFFFFF;
 	font-size: 0.85em;
@@ -967,7 +967,7 @@ n-Transparent-Black-Div
 /* Style used for links in the masthead. */
 .mastHeadLink
 {
-	color: #1C5894;
+	color: #3e6978;
 	cursor: pointer;
 	margin-left: 4px;
 	text-decoration: none;
@@ -1115,6 +1115,6 @@ n-Transparent-Black-Div
 /* general CSS styes */
 
 a.ss_new_thread {
-	color: #1C5894;
+	color: #3e6978;
 	text-decoration: none;
 	}

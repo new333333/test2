@@ -68,7 +68,7 @@
 }
 
 .ss_related_anchor {
-	color: #1C5894 !important;
+	color: #3e6978 !important;
 	text-decoration: none !important;
 	outline: none !important;
 }
