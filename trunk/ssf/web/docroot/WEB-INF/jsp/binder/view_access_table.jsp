@@ -77,6 +77,10 @@
 		     onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">
 		  <span>${group.title}</span> 
 		  <span class="ss_smallprint ss_italic">(${group.name})</span>
+		  <c:if test="${ss_accessWorkareaIsPersonal && group.id == ss_accessAllUsersGroup}">
+      		<span class="ss_fineprint" style="vertical-align: super;">1</span>
+      		<c:set var="allUsersGroupSeen" value="true"/>
+    	  </c:if>
 		</a>
 		</li>
       </c:if>
@@ -114,6 +118,10 @@
 		     onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">
 		  <span>${group.title}</span> 
 		  <span class="ss_smallprint ss_italic">(${group.name})</span>
+		  <c:if test="${ss_accessWorkareaIsPersonal && group.id == ss_accessAllUsersGroup}">
+      		<span class="ss_fineprint" style="vertical-align: super;">1</span>
+      		<c:set var="allUsersGroupSeen" value="true"/>
+    	  </c:if>
 		</a></li>
       </c:if>
     </c:forEach>
@@ -154,6 +162,10 @@
 		     onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">
 		  <span>${group.title}</span> 
 		  <span class="ss_smallprint ss_italic">(${group.name})</span>
+		  <c:if test="${ss_accessWorkareaIsPersonal && group.id == ss_accessAllUsersGroup}">
+      		<span class="ss_fineprint" style="vertical-align: super;">1</span>
+      		<c:set var="allUsersGroupSeen" value="true"/>
+    	  </c:if>
 		</a></li>
       </c:if>
     </c:forEach>
@@ -164,4 +176,11 @@
 
 </TBODY>
 </TABLE>
+<c:if test="${allUsersGroupSeen}">
+<br>
+<div>
+<span class="ss_smallprint" style="vertical-align: super;">1</span> 
+<span><ssf:nlt tag="access.allUsersNote"/></span>
+</div>
+</c:if>
 </div>

@@ -59,6 +59,7 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -182,7 +183,8 @@ public class AccessControlController extends AbstractBinderController {
 		}
 		
 		setupAccess(this, request, response, wArea, model);
-		
+		model.put(WebKeys.ACCESS_ALL_USERS_GROUP, Utils.getAllUsersGroupId());
+		model.put(WebKeys.ACCESS_WORKAREA_IS_PERSONAL, Utils.isWorkareaInProfilesTree(wArea));		
 
 		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			//Cannot do these things as guest
