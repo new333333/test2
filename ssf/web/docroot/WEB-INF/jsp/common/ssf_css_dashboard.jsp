@@ -228,7 +228,7 @@ div.ss_canvas {
 	}
 #ss_tasks_para .ss_link_1 a {
 	text-decoration:underline!important;
-	color: #1c5894 !important; 
+	color: #3e6978 !important; 
 	}
 #ss_tasks_para .ss_link_2 a {
 	text-decoration:underline!important;
@@ -642,11 +642,11 @@ div.ss_canvas {
 	font-size:${ss_style_font_normalprint};
 	font-weight: 200;
 	letter-spacing: -.5px;
-	color:#1c5894 !important;
+	color:#3e6978 !important;
 	}
 	/* PLACES LINKS*/	
 .ss_link_2, .ss_link_2 span	{
-	color:#1c5894 !important;
+	color:#3e6978 !important;
 	font-size:${ss_style_font_smallprint}!important;
 	text-decoration: underline!important;
 	}
