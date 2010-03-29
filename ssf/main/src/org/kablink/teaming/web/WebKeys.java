@@ -592,6 +592,7 @@ public class WebKeys {
 	public static final String ACCESS_USERS_COUNT = "ss_accessUsersCount";
 	public static final String ACCESS_ALL_USERS_GROUP = "ss_accessAllUsersGroup";
 	public static final String ACCESS_APPLICATIONS_COUNT = "ss_accessApplicationsCount";
+	public static final String ACCESS_APPLICATION_GROUPS_COUNT = "ss_accessApplicationGroupsCount";
 	public static final String ACCESS_PARENT = "ss_accessParent";
 	public static final String ACCESS_SORTED_FUNCTIONS = "ss_accessSortedFunctions";
 	public static final String ACCESS_SORTED_FUNCTIONS_MAP = "ss_accessSortedFunctionsMap";
