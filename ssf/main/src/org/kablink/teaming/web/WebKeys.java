@@ -590,7 +590,7 @@ public class WebKeys {
 	public static final String ACCESS_FUNCTIONS_COUNT = "ss_accessFunctionsCount";
 	public static final String ACCESS_GROUPS_COUNT = "ss_accessGroupsCount";
 	public static final String ACCESS_USERS_COUNT = "ss_accessUsersCount";
-	public static final String ACCESS_APPLICATION_GROUPS_COUNT = "ss_accessApplicationGroupsCount";
+	public static final String ACCESS_ALL_USERS_GROUP = "ss_accessAllUsersGroup";
 	public static final String ACCESS_APPLICATIONS_COUNT = "ss_accessApplicationsCount";
 	public static final String ACCESS_PARENT = "ss_accessParent";
 	public static final String ACCESS_SORTED_FUNCTIONS = "ss_accessSortedFunctions";
@@ -608,6 +608,7 @@ public class WebKeys {
 	public static final String ACCESS_SORTED_APPLICATIONS = "ss_accessSortedApplications";
 	public static final String ACCESS_SORTED_APPLICATIONS_MAP = "ss_accessSortedApplicationsMap";
 	public static final String ACCESS_SUPER_USER = "ss_superUser";
+	public static final String ACCESS_WORKAREA_IS_PERSONAL = "ss_accessWorkareaIsPersonal";
 	public static final String ACCESSIBLE_URL = "ss_accessibleUrl";
 	public static final String ACTION = "action";
 	public static final String ACTIVITIES = "ss_activities";

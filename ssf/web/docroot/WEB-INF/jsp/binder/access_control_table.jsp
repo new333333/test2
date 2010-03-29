@@ -206,7 +206,11 @@
 		actionUrl="false"><ssf:param 
 		name="operation" value="get_group_list"/><ssf:param 
 		name="groupId" value="${group.id}"/></ssf:url>"
-    onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">${group.title}</a></TD>
+    onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">${group.title}
+    <c:if test="${ss_accessWorkareaIsPersonal && group.id == ss_accessAllUsersGroup}">
+      <span class="ss_fineprint" style="vertical-align: super;">1</span>
+      <c:set var="allUsersGroupSeen" value="true"/>
+    </c:if></a></TD>
   <TD class="ss_table_paragraph"><a href="<ssf:url
 		adapter="true" 
 		crawlable="true"
@@ -215,7 +219,11 @@
 		actionUrl="false"><ssf:param 
 		name="operation" value="get_group_list"/><ssf:param 
 		name="groupId" value="${group.id}"/></ssf:url>"
-	onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">${group.name}</a></TD>
+	onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">${group.name}
+	<c:if test="${ss_accessWorkareaIsPersonal && group.id == ss_accessAllUsersGroup}">
+	  <span class="ss_fineprint" style="vertical-align: super;">1</span>
+	  <c:set var="allUsersGroupSeen" value="true"/>
+	</c:if></a></TD>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <TD class="ss_table_paragraph" align="center" noWrap="noWrap">
 <c:if test="${!ssWorkArea.functionMembershipInherited}">
@@ -543,4 +551,11 @@
 </c:if>
 
 </TABLE>
+<c:if test="${allUsersGroupSeen}">
+<br>
+<div>
+<span class="ss_smallprint" style="vertical-align: super;">1</span> 
+<span><ssf:nlt tag="access.allUsersNote"/></span>
+</div>
+</c:if>
 </div>
