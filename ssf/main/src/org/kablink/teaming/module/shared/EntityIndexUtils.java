@@ -52,6 +52,7 @@ import org.apache.lucene.document.Field;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
@@ -678,10 +679,10 @@ public class EntityIndexUtils {
      	if (!entry.getId().equals(entry.getCreation().getPrincipal().getId())) 
      			ids.add(entry.getCreation().getPrincipal().getId());
      	//Add groups this user is in
-		List memberOf = entry.getMemberOf();
-		for (Iterator i = memberOf.iterator(); i.hasNext();) {
-			ids.add(((Group)i.next()).getId());
-        }
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+     	ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
+     	Set<Long> userGroupIds = profileDao.getAllGroupMembership(entry.getId(), zoneId);
+     	ids.addAll(userGroupIds);
      	StringBuffer pIds = new StringBuffer(LongIdUtil.getIdsAsString(ids));
     	//add allUsers
    		pIds.append(Constants.READ_ACL_ALL_USERS);      			

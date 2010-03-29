@@ -215,6 +215,7 @@ public class AccessUtils  {
 		return getReadAccessIds(binder, false);
 	}
 	public static Set getReadAccessIds(Binder binder, boolean includeTitleAcl) {
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
         Set readEntries = getInstance().getAccessControlManager().getWorkAreaAccessControl(binder, WorkAreaOperation.READ_ENTRIES);
         if (includeTitleAcl) {
         	Set readTitles = getInstance().getAccessControlManager().getWorkAreaAccessControl(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
@@ -224,23 +225,21 @@ public class AccessUtils  {
         Long allUsersId = Utils.getAllUsersGroupId();
         if (allUsersId != null && readEntries.contains(allUsersId) && Utils.isWorkareaInProfilesTree(binder)) {
 			//The read access ids includes AllUsers; add in the groups of the binder owner
-			List<Group> groups = binder.getOwner().getMemberOf();
-			for (Group g : groups) {
-				if (!readEntries.contains(g.getId())) readEntries.add(g.getId());
-			}
+        	Set<Long> userGroupIds = getInstance().getProfileDao().getAllGroupMembership(binder.getOwner().getId(), zoneId);
+			for (Long gId : userGroupIds) readEntries.add(gId);
 		}
         return readEntries;
 	}     	
 	public static Set getReadAccessIds(Entry entry) {
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
         Set readEntries = getInstance().getAccessControlManager().getWorkAreaAccessControl((WorkArea) entry, WorkAreaOperation.READ_ENTRIES);
    		//See if this entry is in the "personal workspaces" tree
         Long allUsersId = Utils.getAllUsersGroupId();
         if (allUsersId != null && readEntries.contains(allUsersId) && Utils.isWorkareaInProfilesTree(entry)) {
 			//The read access ids includes AllUsers; add in the groups of the binder owner
-			List<Group> groups = entry.getCreation().getPrincipal().getMemberOf();
-			for (Group g : groups) {
-				if (!readEntries.contains(g.getId())) readEntries.add(g.getId());
-			}
+        	Set<Long> userGroupIds = getInstance().getProfileDao()
+        		.getAllGroupMembership(entry.getCreation().getPrincipal().getId(), zoneId);
+			for (Long gId : userGroupIds) readEntries.add(gId);
 		}
         return readEntries;
 	}     	
