@@ -428,7 +428,11 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorGrid.setWidget(0, 1, selectorLabel);
 		selectorGrid.setWidget(0, 2, new Label("\u00A0"));
 		selectorGrid.getCellFormatter().setWidth(0, 2, "100%");
-		selectorGrid.setWidth(String.valueOf(SELECTOR_GRID_WIDTH - (SELECTOR_GRID_DEPTH_OFFSET * renderDepth)) + "px");
+		int width = (SELECTOR_GRID_WIDTH - (SELECTOR_GRID_DEPTH_OFFSET * renderDepth));
+		if (BINDER_WIDTH_INT > width) {
+			width = SELECTOR_GRID_WIDTH;
+		}
+		selectorGrid.setWidth(String.valueOf(width) + "px");
 		Anchor selectorA = new Anchor();
 		selectorA.getElement().appendChild(selectorGrid.getElement());
 		selectorA.addClickHandler(new BinderSelector(ti));
