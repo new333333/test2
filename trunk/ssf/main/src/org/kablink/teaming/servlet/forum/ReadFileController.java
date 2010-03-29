@@ -102,8 +102,8 @@ public class ReadFileController extends AbstractReadFileController {
 				Integer fileCounter = 1;
 				for (Attachment attachment : attachments) {
 					if (attachment instanceof FileAttachment) {
-						String attExt = EntityIndexUtils.getFileExtension(attachment.getName());
-						String attName = getBinderModule().filename8BitSingleByteOnly(attachment.getName(), 
+						String attExt = EntityIndexUtils.getFileExtension(((FileAttachment) attachment).getFileItem().getName());
+						String attName = getBinderModule().filename8BitSingleByteOnly(((FileAttachment) attachment).getFileItem().getName(), 
 								"__file"+fileCounter.toString(), singleByte); //Note: do not translate this name
 						fileCounter++;
 						try {
