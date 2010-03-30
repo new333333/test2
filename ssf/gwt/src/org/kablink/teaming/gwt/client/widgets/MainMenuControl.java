@@ -52,7 +52,6 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -255,6 +254,16 @@ public class MainMenuControl extends Composite implements ActionRequestor {
 		m_actionHandlers.add( actionHandler );
 	}
 	
+
+	/**
+	 * Called when a new context has been loaded into the content panel
+	 * to refresh the menu contents.
+	 * 
+	 * @param binderId
+	 */
+	public void contextLoaded(String binderId) {
+//!		...this needs to be implemented...
+	}
 	
 	/*
 	 * Creates an image based button on the menu bar.

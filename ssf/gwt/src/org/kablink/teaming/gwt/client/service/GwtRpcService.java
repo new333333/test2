@@ -78,7 +78,8 @@ public interface GwtRpcService extends RemoteService
 	// Return a Folder object for the given folder id.
 	public GwtFolder getFolder( String zoneUUID, String folderId ) throws GwtTeamingException;
 	
-	// Return the "modify binder" url.
+	// Returns various binder URLs.
+	public String getBinderPermalink( String binderId );
 	public String getModifyBinderUrl( String binderId );
 	
 	public String getTutorialPanelState();

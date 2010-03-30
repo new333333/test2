@@ -587,16 +587,19 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		final String binderId = String.valueOf(binderInfo.getBinderId());
 		final TreeInfo targetTI = TreeInfo.findBinderTI(getRootTreeInfo(), binderId);
 		if (null != targetTI) {
-			// Yes!  Is the request coming from this WorkspaceTreeControl?
-			if (binderInfo.getInstigator() == Instigator.SIDEBAR_TREE) {
-				// Yes!  Then we simply select the Binder.
+			// Yes!  Should the request cause the tree to be re-rooted?
+			switch (binderInfo.getInstigator()) {
+			case CONTENT_CONTEXT_CHANGE:
+			case SIDEBAR_TREE:
+				// No!  Simply select the Binder.
 				selectBinderImpl(targetTI);
-			}
-			else {
-				// No, the request isn't coming from this
-				// WorkspaceTreeControl!  (It may be coming from the
-				// bread crumbs or some other unknown source.)  What's
-				// the ID if the selected Binder's root workspace?
+				break;
+
+			default:
+				// Yes, the request should cause the tree to be
+				// re-rooted!  (It may be coming from the bread crumbs
+				// or some other unknown source.)  What's the ID if the
+				// selected Binder's root workspace?
 				getRpcService().getRootWorkspaceId(binderId, new AsyncCallback<String>() {
 					public void onFailure(Throwable t) {
 						Window.alert(t.toString());
@@ -617,6 +620,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 						}
 					}
 				});
+				break;
 			}
 		}
 		else {

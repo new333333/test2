@@ -41,16 +41,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.AuthenticationConfig;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -361,104 +357,6 @@ public final class MiscUtil
 	 */
 	public static boolean hasString(String s) {
 		return ((null != s) && (0 < s.length()));
-	}
-
-	/**
-	 * Returns true if the GWT UI should be available and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean isGwtUIEnabled() {
-		String durangoUI = SPropsUtil.getString("use-durango-ui", "");
-		return (hasString(durangoUI) && "1".equals(durangoUI));
-	}
-
-	/**
-	 * Returns true if the GWT UI should be active and false otherwise.
-	 * 
-	 * @param pRequest
-	 * 
-	 * @return
-	 */
-	public static boolean isGwtUIActive(PortletRequest pRequest) {
-		HttpServletRequest hRequest = WebHelper.getHttpServletRequest(pRequest);
-		boolean reply = (null != pRequest); 
-		if (reply) {
-			reply = isGwtUIActive(hRequest);
-		}
-		return reply;
-	}
-	
-	/**
-	 * Returns true if the GWT UI should be active and false otherwise.
-	 * 
-	 * @param hRequest
-	 * 
-	 * @return
-	 */
-	public static boolean isGwtUIActive(HttpServletRequest hRequest) {
-		boolean	reply = isGwtUIEnabled();
-		if (reply) {
-			reply = (null != hRequest);
-			if (reply) {
-				HttpSession hSession = WebHelper.getRequiredSession(hRequest);
-				Object durangoUI = hSession.getAttribute("use-durango-ui");
-				reply = ((null != durangoUI) && (durangoUI instanceof Boolean) && ((Boolean) durangoUI).booleanValue());
-			}
-		}
-		return reply;
-		
-	}
-
-	/**
-	 * Updates stores the current GWT UI active flag in the session cache.
-	 * 
-	 * @param pRequest
-	 * @param gwtUIActive
-	 */
-	public static void setGwtUIActive(PortletRequest pRequest, boolean gwtUIActive) {
-		HttpServletRequest hRequest = WebHelper.getHttpServletRequest(pRequest);
-		if (null != hRequest) {
-			setGwtUIActive(hRequest, gwtUIActive);
-		}
-	}
-	
-	/**
-	 * Updates stores the current GWT UI active flag in the session cache.
-	 * 
-	 * @param hRequest
-	 * @param gwtUIActive
-	 */
-	public static void setGwtUIActive(HttpServletRequest hRequest, boolean gwtUIActive) {
-		if (null != hRequest) {
-			HttpSession hSession = WebHelper.getRequiredSession(hRequest);
-			hSession.setAttribute("use-durango-ui", new Boolean(gwtUIActive && isGwtUIEnabled()));
-		}
-	}
-	
-	/**
-	 * Builds the GWT UI toolbar for a binder.
-	 * 
-	 * @param request
-	 * @param user
-	 * @param binder
-	 * @param model
-	 * @param qualifiers
-	 * @param gwtUIToolbar
-	 */
-	@SuppressWarnings("unchecked")
-	public static void buildGwtUIToolbar(RenderRequest request, User user, Binder binder, Map model, Map qualifiers, Toolbar gwtUIToolbar) {
-		// If the GWT UI is enabled and we're not in captive mode...
-		if (isGwtUIEnabled() && (!(isCaptive(request)))) {
-			// ...add the GWT UI button to the menu bar.
-			qualifiers = new HashMap();
-			qualifiers.put("title", "Enable GWT UI");
-			qualifiers.put("icon", "gwt.png");
-			qualifiers.put("iconGwtUI", "true");
-			qualifiers.put("onClick", "ss_toggleGwtUI(true);return false;");
-			gwtUIToolbar.addToolbarMenu("1_gwtUI", "GWT UI", "javascript: //;", qualifiers);
-		}
 	}
 
 	/**

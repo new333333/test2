@@ -72,7 +72,8 @@ public interface GwtRpcServiceAsync
 	// Return a Folder object for the given folder id.
 	public void getFolder( String zoneUUID, String folderId, AsyncCallback<GwtFolder> callback );
 	
-	// Return the "modify binder" url.
+	// Returns various binder URLs.
+	public void getBinderPermalink( String binderId, AsyncCallback<String> callback );
 	public void getModifyBinderUrl( String binderId, AsyncCallback<String> callback );
 	
     public void getTutorialPanelState( AsyncCallback<String> callback );

@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
@@ -82,7 +83,6 @@ public class GwtMainPage extends Composite
 	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
 	private EditCanceledHandler m_editBrandingCancelHandler = null;
 
-
 	/**
 	 * 
 	 */
@@ -90,13 +90,17 @@ public class GwtMainPage extends Composite
 	{
 		Element bodyElement;
 
+		// Initialize the context load handler used by the traditional
+		// UI to tell the GWT UI that a context has been loaded.
+		initContextLoadHandlerJS(this);
+		
 		// Set the class name on the <body> element to "mainGwtTeamingPage"
 		bodyElement = RootPanel.getBodyElement();
 		bodyElement.setClassName( "mainTeamingPage" );
 		
 		m_teamingRootPanel = new FlowPanel();
 		m_teamingRootPanel.addStyleName( "mainTeamingPagePanel" );
-		
+
 		// Get information about the request we are dealing with.
 		m_requestInfo = getRequestInfo();
 		m_selectedBinderId = m_requestInfo.getBinderId();
@@ -138,6 +142,39 @@ public class GwtMainPage extends Composite
 
 	}// end GwtMainPage()
 
+	/*
+	 * Called to create a JavaScript method that will be invoked from
+	 * view_workarea_navbar.jsp when new contexts are loaded.
+	 */
+	private native void initContextLoadHandlerJS(GwtMainPage gwtMainPage) /*-{
+		$wnd.ss_contextLoaded = function( binderId )
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::contextLoaded(Ljava/lang/String;)( binderId );
+		}//end ss_contextLoaded()
+	}-*/;
+
+	/*
+	 * Puts a context change from the traditional UI into effect.
+	 */
+	@SuppressWarnings("unused")
+	private void contextLoaded( final String binderId )
+	{
+		GwtTeaming.getRpcService().getBinderPermalink( binderId, new AsyncCallback<String>()
+		{
+			public void onFailure( Throwable t )
+			{
+				Window.alert( t.toString() );
+			}//end onFailure()
+			
+			public void onSuccess( String binderPermalink )
+			{
+				OnSelectBinderInfo osbInfo;
+				
+				osbInfo = new OnSelectBinderInfo( binderId, binderPermalink, false, Instigator.CONTENT_CONTEXT_CHANGE );
+				selectionChanged(osbInfo);
+			}// end onSuccess()
+		});
+	}// end contextLoaded()
 
 	/**
 	 * Invoke the "Edit Branding" dialog.
@@ -349,6 +386,7 @@ public class GwtMainPage extends Composite
 	{
 		if ( obj instanceof OnSelectBinderInfo )
 		{
+			Instigator instigator;
 			OnSelectBinderInfo binderInfo;
 
 			// Tell the masthead to update the branding for the newly selected binder.
@@ -356,11 +394,28 @@ public class GwtMainPage extends Composite
 			m_selectedBinderId = binderInfo.getBinderId().toString();
 			m_mastHead.setBinderId( m_selectedBinderId );
 			
-			// Tell the workspace tree control to change contexts.
-			m_wsTreeCtrl.setSelectedBinder( binderInfo );
-			
-			// Tell the content panel to view the binder.
-			m_contentCtrl.setUrl( binderInfo.getBinderUrl() );
+			// If we're not coming from a WorkspaceTreeControl context
+			// change...
+			instigator = binderInfo.getInstigator();
+			if ( Instigator.SIDEBAR_TREE != instigator )
+			{
+				// Tell the WorkspaceTreeControl to change contexts.
+				m_wsTreeCtrl.setSelectedBinder( binderInfo );
+			}
+
+			// Are we handling a context change in the content panel?
+			if ( Instigator.CONTENT_CONTEXT_CHANGE == instigator )
+			{
+				// Yes!  Update the menu bar accordingly.
+				m_mainMenuCtrl.contextLoaded( m_selectedBinderId );
+			}
+			else
+			{
+				// No, we aren't handling a context change in the
+				// content panel! Tell the content panel to view the
+				// selected binder.
+				m_contentCtrl.setUrl( binderInfo.getBinderUrl() );
+			}
 		}
 		else
 			Window.alert( "in onSelect() and obj is not an OnSelectBinderInfo object" );
