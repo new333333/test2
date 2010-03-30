@@ -1811,6 +1811,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
 	}
 	public List filterInaccessiblePrincipals(List principals) {
+		if (RequestContextHolder.getRequestContext() == null) return principals;
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		long begin = System.currentTimeMillis();
 		try {
 			User user = null;
@@ -1841,19 +1843,14 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 						//Always allow a user to see his/her own profile
 						if (!result.contains(principal)) result.add(principal);
 					} else {
-						List memberOf = principal.getMemberOf();
-						if (memberOf != null) {
-							for (int k = 0; k < memberOf.size(); k++) {
-								if (groupIds.contains(((Group)memberOf.get(k)).getId())) {
-									result.add(principal);
-									break;
-								}
+						Set<Long> userGroupIds = getAllGroupMembership(principal.getId(), zoneId);
+						for (Long id : userGroupIds) {
+							if (groupIds.contains(id)) {
+								result.add(principal);
+								break;
 							}
-							if (!result.contains(principal)) {
-								//The current user cannot see this principal, so add a dummy principal object
-								result.add(makeItFake(principal));
-							}
-						} else {
+						}
+						if (!result.contains(principal)) {
 							//The current user cannot see this principal, so add a dummy principal object
 							result.add(makeItFake(principal));
 						}

@@ -224,9 +224,10 @@ public class AccessUtils  {
    		//See if this binder is in the "personal workspaces" tree
         Long allUsersId = Utils.getAllUsersGroupId();
         if (allUsersId != null && readEntries.contains(allUsersId) && Utils.isWorkareaInProfilesTree(binder)) {
-			//The read access ids includes AllUsers; add in the groups of the binder owner
+			//The read access ids includes AllUsers; add in the groups of the binder owner and the team
         	Set<Long> userGroupIds = getInstance().getProfileDao().getAllGroupMembership(binder.getOwner().getId(), zoneId);
-			for (Long gId : userGroupIds) readEntries.add(gId);
+			readEntries.addAll(userGroupIds);
+			readEntries.addAll(binder.getTeamMemberIds());
 		}
         return readEntries;
 	}     	
@@ -236,10 +237,14 @@ public class AccessUtils  {
    		//See if this entry is in the "personal workspaces" tree
         Long allUsersId = Utils.getAllUsersGroupId();
         if (allUsersId != null && readEntries.contains(allUsersId) && Utils.isWorkareaInProfilesTree(entry)) {
-			//The read access ids includes AllUsers; add in the groups of the binder owner
+			//The read access ids includes AllUsers; add in the groups of the binder owner and the team
         	Set<Long> userGroupIds = getInstance().getProfileDao()
         		.getAllGroupMembership(entry.getCreation().getPrincipal().getId(), zoneId);
-			for (Long gId : userGroupIds) readEntries.add(gId);
+			readEntries.addAll(userGroupIds);
+			userGroupIds = getInstance().getProfileDao()
+    			.getAllGroupMembership(entry.getParentBinder().getOwner().getId(), zoneId);
+			readEntries.addAll(userGroupIds);
+			readEntries.addAll(entry.getParentBinder().getTeamMemberIds());
 		}
         return readEntries;
 	}     	

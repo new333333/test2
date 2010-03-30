@@ -73,6 +73,9 @@ public class QueryBuilder {
 	private static final String FOLDER_PREFIX=Constants.FOLDER_ACL_FIELD + ":";
 	private static final String ENTRY_PREFIX=Constants.ENTRY_ACL_FIELD + ":";
 	private static final String ENTRY_ALL=ENTRY_PREFIX+Constants.READ_ACL_ALL;
+	private static final String ENTRY_ALL_GLOBAL=ENTRY_PREFIX+Constants.READ_ACL_GLOBAL;
+	private static final String FOLDER_ALL_GLOBAL=FOLDER_PREFIX+Constants.READ_ACL_GLOBAL;
+	private static final String TEAM_ALL_GLOBAL=TEAM_PREFIX+Constants.READ_ACL_GLOBAL;
 	private static final String ENTRY_ALL_USERS=ENTRY_PREFIX+Constants.READ_ACL_ALL_USERS;
 	private static final String BINDER_OWNER_PREFIX=Constants.BINDER_OWNER_ACL_FIELD + ":";
 
@@ -439,12 +442,12 @@ public class QueryBuilder {
 
 	private String getAclClauseForIds(Set principalIds, Long userId)
 	{
+		Long allUsersGroupId = Utils.getAllUsersGroupId();
       	Set principalIds2 = new HashSet(principalIds);
       	User user = getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());;
 		//check user can see all users
       	boolean canOnlySeeCommonGroupMembers = Utils.canUserOnlySeeCommonGroupMembers(user);
 		if (canOnlySeeCommonGroupMembers) {
-			Long allUsersGroupId = Utils.getAllUsersGroupId();
 			if (allUsersGroupId != null && principalIds2.contains(allUsersGroupId) ) {
 				principalIds2.remove(allUsersGroupId);
 			}
@@ -463,17 +466,34 @@ public class QueryBuilder {
 		 *  
 		 */
 		boolean widen = SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false);
+		String folderPrincipals = idField(principalIds2, FOLDER_PREFIX);
+		String teamPrincipals = idField(principalIds2, TEAM_PREFIX);
+		if (principalIds.contains(allUsersGroupId)) {
+			if (folderPrincipals.equals("")) {
+				folderPrincipals = FOLDER_ALL_GLOBAL;
+			} else {
+				folderPrincipals = folderPrincipals.trim() + " OR " + FOLDER_ALL_GLOBAL;
+			}
+			if (teamPrincipals.equals("")) {
+				teamPrincipals = TEAM_ALL_GLOBAL;
+			} else {
+				teamPrincipals = teamPrincipals.trim() + " OR " + TEAM_ALL_GLOBAL;
+			}
+		}
+		String entryAll = ENTRY_ALL;
+		if (canOnlySeeCommonGroupMembers) entryAll = ENTRY_ALL_GLOBAL;
+		
 		// folderAcl:1,2,3...
 		if (widen) {
 			// entryAcl:all
 			qString.append("(");
-			qString.append("(" + ENTRY_ALL  + " AND "); //(entryAcl:all AND
-			qString.append("(" + idField(principalIds2, FOLDER_PREFIX) + "))"); //(folderAcl:1 OR folderAcl:2))
-			qString.append(" OR (" + ENTRY_ALL  + " AND " +						// OR (entryAcl:all AND folderAcl:team AND (teamAcl:1 OR teamAcl:2))
+			qString.append("(" + entryAll  + " AND "); //(entryAcl:all AND
+			qString.append("(" + folderPrincipals + "))"); //(folderAcl:1 OR folderAcl:2))
+			qString.append(" OR (" + entryAll  + " AND " +						// OR (entryAcl:all AND folderAcl:team AND (teamAcl:1 OR teamAcl:2))
 								FOLDER_PREFIX + Constants.READ_ACL_TEAM + " AND " +
-								"(" + idField(principalIds2, TEAM_PREFIX) + "))");
+								"(" + teamPrincipals + "))");
 			if(userId != null) {
-				qString.append(" OR (" + ENTRY_ALL  + " AND " +						// OR (entryAcl:all AND folderAcl:own AND bOwnerAcl:<user>)
+				qString.append(" OR (" + entryAll  + " AND " +						// OR (entryAcl:all AND folderAcl:own AND bOwnerAcl:<user>)
 						FOLDER_PREFIX + Constants.READ_ACL_BINDER_OWNER + " AND " +
 						BINDER_OWNER_PREFIX + userId.toString() + ")");
 			}
@@ -482,20 +502,20 @@ public class QueryBuilder {
 			}
 			qString.append(" OR (" + idField(principalIds2, ENTRY_PREFIX) + ")"); //OR (entryAcl:1 OR entryAcl:2)
 			qString.append(" OR (" + ENTRY_PREFIX + Constants.READ_ACL_TEAM + " AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))
-								"(" + idField(principalIds2, TEAM_PREFIX) + "))");
+								"(" + teamPrincipals + "))");
 			qString.append(")");
 		} else {
 			qString.append("(");
-			qString.append("((" + idField(principalIds2, FOLDER_PREFIX) + ")"); //((folderAcl:1 OR folderAcl:2)
+			qString.append("((" + folderPrincipals + ")"); //((folderAcl:1 OR folderAcl:2)
 			qString.append(" OR ");
 			qString.append("(" + FOLDER_PREFIX + Constants.READ_ACL_TEAM + " AND " + //OR (folderAcl:team AND (teamAcl:1 OR teamAcl:2))
-					"(" + idField(principalIds2, TEAM_PREFIX) + "))");
+					"(" + teamPrincipals + "))");
 			if(userId != null) {
 				qString.append(" OR (" + FOLDER_PREFIX + Constants.READ_ACL_BINDER_OWNER + " AND " + //OR (folderAcl:own AND bOwnerAcl:<user>)
 						BINDER_OWNER_PREFIX + userId.toString() + ")");
 			}
 			qString.append(") AND (");			//) AND (
-			qString.append("(" + ENTRY_ALL);	//(entryAcl:all OR entryAcl:allUsers OR entryAcl:1 OR entryAcl:2)
+			qString.append("(" + entryAll);	//(entryAcl:all OR entryAcl:allUsers OR entryAcl:1 OR entryAcl:2)
 			if (!canOnlySeeCommonGroupMembers) {
 				qString.append(" OR " + ENTRY_ALL_USERS);
 			}
@@ -503,7 +523,7 @@ public class QueryBuilder {
 						idField(principalIds2, ENTRY_PREFIX) + ")");
 			qString.append(" OR ");
 			qString.append("("  + ENTRY_PREFIX + Constants.READ_ACL_TEAM + " AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))
-					"(" + idField(principalIds2, TEAM_PREFIX) + "))");
+					"(" + teamPrincipals + "))");
 			qString.append("))");
 		}
 		return qString.toString();
