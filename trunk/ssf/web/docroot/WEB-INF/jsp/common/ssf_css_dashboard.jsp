@@ -727,9 +727,10 @@ div.ss_canvas {
     float:left;
     width:100%;
     background:transparent;
-    font-size:93%;
+    font-size:95%;
   /*  line-height:normal; */
-    border-bottom: 1px solid #666;
+    border-bottom: 1px solid #e6e6e6;
+	padding-bottom: 2px;
     margin-top:0px;
  	<c:if test="<%= isIE %>">
  	    margin-top:20px !important;
@@ -751,16 +752,18 @@ div.ss_canvas {
  #ss_tabsC a {
     top:1px;
     float:left;
-    background:url("<html:rootPath/>images/pics/tableftF.gif") no-repeat left top;
-    margin:0;
-    padding:3px 0 0 4px;
-    border-bottom: 1px #666 solid !important;
+    margin-right: 5px;
+	background-color: #eaebe8;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
       }
  #ss_tabsC a span {
     display:block;
-    background:url("<html:rootPath/>images/pics/tabsrightf2.gif") no-repeat right top;
-    padding:5px 15px 4px 6px;
+    background-color: #eaebe8;
+    padding: 5px 8px;
     white-space:nowrap !important;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
       }
  /* Commented Backslash Hack hides rule from IE5-Mac \ */
  
@@ -770,17 +773,29 @@ div.ss_canvas {
     color:#FFFFFF;
       }
 #ss_tabsC a:hover {   
-      background-position:0% -42px;
+	background-image: url("<html:rootPath/>images/pics/teal_slice1.png");
+	background-position:bottom;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
       }
 #ss_tabsC a:hover span {
-      background-position:100% -42px;
+	background-image: url("<html:rootPath/>images/pics/teal_slice1.png");
+	background-position:bottom;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
       }
 #ss_tabsC .ss_tabsCCurrent a {
-      background-position:0% -42px;
-      border-bottom: 1px #DCDCDC solid !important;
+	color: #FFFFFF;
+	font-weight: bold;
+    font-size:100%;
+	background-color: #81b2bd;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
         }
 #ss_tabsC .ss_tabsCCurrent a span {
-     background-position:100% -42px;
+	background-color: #81b2bd;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
         }	
 /* PROFILE STYLES*/
 
