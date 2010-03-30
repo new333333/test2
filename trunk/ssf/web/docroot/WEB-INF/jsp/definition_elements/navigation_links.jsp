@@ -34,8 +34,8 @@
 %>
 <% // Navigation links %>
 
-<%@ page import="org.kablink.teaming.web.util.MiscUtil" %>
-<% if (!(MiscUtil.isGwtUIActive(request))) { %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
+<% if (!(GwtUIHelper.isGwtUIActive(request))) { %>
 
 <%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -63,6 +63,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.ProfilesBinderHelper;
@@ -252,7 +253,7 @@ public class ListFolderController extends  SAbstractController {
 
 		if (request.getWindowState().equals(WindowState.NORMAL) &&
 				!BinderHelper.WORKAREA_PORTLET.equals(displayType)) 
-			return BinderHelper.CommonPortletDispatch(this, request, response);
+			return prepBeans(request, BinderHelper.CommonPortletDispatch(this, request, response));
 		
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		String zoneUUID = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
@@ -276,15 +277,15 @@ public class ListFolderController extends  SAbstractController {
 				} catch(Exception e2) {
 					Map<String,Object> model = new HashMap<String,Object>();
 					model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {binderId.toString()}));
-					return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
+					return prepBeans(request, new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model));
 				}
 				if (parentBinder == null) {
 					Map<String,Object> model = new HashMap<String,Object>();
 					model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {binderId.toString()}));
-					return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
+					return prepBeans(request, new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model));
 				}
 				if (parentBinder.getEntityType().name().equals(EntityIdentifier.EntityType.workspace.name())) {
-					return WorkspaceTreeHelper.setupWorkspaceBeans(this, parentBinderId, request, response, showTrash);
+					return prepBeans(request, WorkspaceTreeHelper.setupWorkspaceBeans(this, parentBinderId, request, response, showTrash));
 				}
 				binderId = parentBinderId;
 			}
@@ -301,19 +302,19 @@ public class ListFolderController extends  SAbstractController {
 			if (zoneBinderId == null) {
 				Map<String,Object> model = new HashMap<String,Object>();
 				model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.folder.not.imported"));
-				return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
+				return prepBeans(request, new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model));
 			}
 			try {
 				Binder binder = getBinderModule().getBinder(zoneBinderId);
 				if (binder.getEntityType().name().equals(EntityIdentifier.EntityType.workspace.name())) {
-					return WorkspaceTreeHelper.setupWorkspaceBeans(this, zoneBinderId, request, response, showTrash);
+					return prepBeans(request, WorkspaceTreeHelper.setupWorkspaceBeans(this, zoneBinderId, request, response, showTrash));
 				} else if (binder.getEntityType().name().equals(EntityIdentifier.EntityType.profiles.name())) {
-					return ProfilesBinderHelper.setupProfilesBinderBeans(this, zoneBinderId, request, response, showTrash);
+					return prepBeans(request, ProfilesBinderHelper.setupProfilesBinderBeans(this, zoneBinderId, request, response, showTrash));
 				}
 			} catch(NoBinderByTheIdException e) {
 				Map<String,Object> model = new HashMap<String,Object>();
 				model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {zoneBinderId.toString()}));
-				return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
+				return prepBeans(request, new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model));
 			} catch(AccessControlException e) {
 		 		Map<String,Object> model = new HashMap<String,Object>();
 				BinderHelper.setupStandardBeans(this, request, response, model, zoneBinderId);
@@ -322,12 +323,12 @@ public class ListFolderController extends  SAbstractController {
 					//Access is not allowed
 					String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
 					model.put(WebKeys.REFERER_URL, refererUrl);
-					return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
+					return prepBeans(request, new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model));
 				} else {
 					//Please log in
 					String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
 					model.put(WebKeys.URL, refererUrl);
-					return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
+					return prepBeans(request, new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model));
 				}
 			}
 			
@@ -335,7 +336,13 @@ public class ListFolderController extends  SAbstractController {
 			binderId = (Long) portletSession.getAttribute(WebKeys.LAST_BINDER_VIEWED + namespace, PortletSession.APPLICATION_SCOPE);
 		}
 		
-		return ListFolderHelper.BuildFolderBeans(this, request, response, binderId, zoneUUID, showTrash);
+		return prepBeans(request, ListFolderHelper.BuildFolderBeans(this, request, response, binderId, zoneUUID, showTrash));
+	}
+	
+	/*
+	 * Ensures the beans in the ModelAndView are ready to go.
+	 */
+	private static ModelAndView prepBeans(RenderRequest request, ModelAndView mv) {
+		return GwtUIHelper.cacheToolbarBeans(request, mv);
 	}
 }
-

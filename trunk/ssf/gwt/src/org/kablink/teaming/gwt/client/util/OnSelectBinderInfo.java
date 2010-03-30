@@ -56,13 +56,14 @@ public class OnSelectBinderInfo {
 	// known.
 	public enum Instigator {
 		BREAD_CRUMB_TREE,
+		CONTENT_CONTEXT_CHANGE,
 		SIDEBAR_TREE,
 		
 		OTHER,
 	}
 
 	/**
-	 * Constructor method.  (1 of 4)
+	 * Constructor method.  (1 of 3)
 	 * 
 	 * @param ti
 	 */
@@ -72,31 +73,19 @@ public class OnSelectBinderInfo {
 	}
 
 	/**
-	 * Constructor method.  (2 of 4)
+	 * Constructor method.  (2 of 3)
 	 * 
 	 * @param binderId
 	 * @param binderUrl
 	 * @param isTrash
 	 */
-	public OnSelectBinderInfo(String binderId, String binderUrl, boolean isTrash) {
+	public OnSelectBinderInfo(String binderId, String binderUrl, boolean isTrash, Instigator instigator) {
 		// Always use the final form of the constructor.
-		this(Long.parseLong(binderId), binderUrl, isTrash, Instigator.OTHER);
+		this(Long.parseLong(binderId), binderUrl, isTrash, instigator);
 	}
 	
-	/**
-	 * Constructor method.  (3 of 4)
-	 * 
-	 * @param binderId
-	 * @param binderUrl
-	 * @param isTrash
-	 */
-	public OnSelectBinderInfo(Long binderId, String binderUrl, boolean isTrash) {
-		// Always use the final form of the constructor.
-		this(binderId, binderUrl, isTrash, Instigator.OTHER);
-	}
-
 	/*
-	 * Constructor method.  (4 of 4)
+	 * Constructor method.  (3 of 3)
 	 */
 	private OnSelectBinderInfo(Long binderId, String binderUrl, boolean isTrash, Instigator instigator) {
 		// Simply store the parameters.

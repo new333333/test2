@@ -208,7 +208,7 @@ public class GwtServerHelper {
 		if (expandBinder) {
 			// Yes!  Scan the Binder's children...
 			List<TreeInfo> childTIList = reply.getChildBindersList(); 
-			List<Binder> childBinderList = GwtServerHelper.getVisibleBinderDecendents(bs, binder);
+			List<Binder> childBinderList = getVisibleBinderDecendents(bs, binder);
 			for (Iterator<Binder> bi = childBinderList.iterator(); bi.hasNext(); ) {
 				// ...creating a TreeInfo for each...
 				Binder subBinder = bi.next();

@@ -823,6 +823,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	
 	/**
+	 * Return the "binder permalink" url
+	 */
+	public String getBinderPermalink( String binderId )
+	{
+		Long binderIdL = new Long( binderId );
+		Binder binder = getBinderModule().getBinder( binderIdL );
+		return PermaLinkUtil.getPermalink(binder);
+	}
+	
+	/**
 	 * Return the "modify binder" url
 	 */
 	public String getModifyBinderUrl( String binderId )

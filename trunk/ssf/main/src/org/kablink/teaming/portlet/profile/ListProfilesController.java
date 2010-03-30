@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -52,6 +52,7 @@ import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.ProfilesBinderHelper;
 import org.kablink.teaming.web.util.Tabs;
@@ -59,6 +60,7 @@ import org.springframework.web.portlet.ModelAndView;
 
 
 public class ListProfilesController extends   SAbstractController {
+	@SuppressWarnings("unchecked")
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
@@ -107,10 +109,12 @@ public class ListProfilesController extends   SAbstractController {
 		}
 		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
 	}
+	
+	@SuppressWarnings("unchecked")
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		if (request.getWindowState().equals(WindowState.NORMAL)) 
-			return BinderHelper.CommonPortletDispatch(this, request, response);
+			return prepBeans(request, BinderHelper.CommonPortletDispatch(this, request, response));
 		
  		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
@@ -122,7 +126,7 @@ public class ListProfilesController extends   SAbstractController {
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());
-			return new ModelAndView(BinderHelper.getViewListingJsp(this, BinderHelper.getViewType(this, binderId)), model);
+			return prepBeans(request, new ModelAndView(BinderHelper.getViewListingJsp(this, BinderHelper.getViewType(this, binderId)), model));
 		} 
 		Binder binderObj = getBinderModule().getBinder(binderId);
 		if (op.equals(WebKeys.OPERATION_VIEW_ENTRY)) {
@@ -139,6 +143,13 @@ public class ListProfilesController extends   SAbstractController {
 			getReportModule().addAuditTrail(AuditType.view, binderObj);
 		}
 		boolean showTrash = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_SHOW_TRASH, false);
-		return ProfilesBinderHelper.setupProfilesBinderBeans(this, binderId, request, response, showTrash);
+		return prepBeans(request, ProfilesBinderHelper.setupProfilesBinderBeans(this, binderId, request, response, showTrash));
+	}
+	
+	/*
+	 * Ensures the beans in the ModelAndView are ready to go.
+	 */
+	private static ModelAndView prepBeans(RenderRequest request, ModelAndView mv) {
+		return GwtUIHelper.cacheToolbarBeans(request, mv);
 	}
 }

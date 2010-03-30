@@ -151,6 +151,7 @@ import org.kablink.teaming.web.upload.ProgressListenerSessionResolver;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.FixupFolderDefsThread;
+import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
@@ -820,7 +821,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		Binder userWS = getBinderModule().getBinder(RequestContextHolder.getRequestContext().getUser().getWorkspaceId());
 		model.put("userWorkspaceURL", PermaLinkUtil.getPermalink(userWS));
-		MiscUtil.setGwtUIActive(request, (!(MiscUtil.isGwtUIActive(request))));
+		GwtUIHelper.setGwtUIActive(request, (!(GwtUIHelper.isGwtUIActive(request))));
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/toggle_gwtUI", model);
 	}
