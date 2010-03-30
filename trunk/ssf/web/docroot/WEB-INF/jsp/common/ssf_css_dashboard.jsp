@@ -771,14 +771,14 @@ div.ss_canvas {
     /* End IE5-Mac hack */
 
 #ss_tabsC a:hover {
-	color: #fff;
+	color: #5691a6;
 	background-image: url("<html:rootPath/>images/pics/teal_slice.png");
 	background-position:bottom;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
       }
 #ss_tabsC a:hover span {
-	color: #fff;
+	color: #5691a6;
 	background-image: url("<html:rootPath/>images/pics/teal_slice.png");
 	background-position: middle;
 	-moz-border-radius: 5px;
