@@ -569,14 +569,37 @@ public class EntityIndexUtils {
     	return getFolderAclString(binder, false);
     }
     public static String getFolderAclString(Binder binder, boolean includeTitleAcl) {
+    	Long allUsersId = Utils.getAllUsersGroupId();
 		Set binderIds = AccessUtils.getReadAccessIds(binder, includeTitleAcl);
    		String ids = LongIdUtil.getIdsAsString(binderIds);
        	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), Constants.READ_ACL_TEAM);
        	ids = ids.replaceFirst(ObjectKeys.OWNER_USER_ID.toString(), Constants.READ_ACL_BINDER_OWNER);
+       	if (binderIds.contains(allUsersId)) {
+	    	boolean personal = Utils.isWorkareaInProfilesTree(binder);
+       		if (!personal) ids = ids.trim() + " " + Constants.READ_ACL_GLOBAL;
+       	}
        	if (Validator.isNull(ids)) return Constants.EMPTY_ACL_FIELD;
         return ids;
     }
+    public static String getFolderTeamAclString(Binder binder) {
+    	Long allUsersId = Utils.getAllUsersGroupId();
+    	Set teamList = binder.getTeamMemberIds();
+    	if (teamList.contains(allUsersId)) {
+    		//Add in the groups of the owner of the binder
+    		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+         	ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
+         	Set<Long> userGroupIds = profileDao.getAllGroupMembership(binder.getOwner().getId(), zoneId);
+    		teamList.addAll(userGroupIds);
+    	}
+    	String ids = LongIdUtil.getIdsAsString(teamList);
+    	if (teamList.contains(allUsersId)) {
+    		boolean personal = Utils.isWorkareaInProfilesTree(binder);
+	    	if (!personal) ids = ids.trim() + " " + Constants.READ_ACL_GLOBAL;
+    	}
+    	return ids;
+    }
     public static String getEntryAclString(Binder binder, Entry entry) {
+    	Long allUsersId = Utils.getAllUsersGroupId();
     	if (entry instanceof FolderEntry && !((FolderEntry)entry).isTop()) {
     		//This is a reply to a folder entry. Get the acl of the top entry
     		entry = ((FolderEntry)entry).getTopEntry();
@@ -586,11 +609,20 @@ public class EntityIndexUtils {
 	   		String ids = LongIdUtil.getIdsAsString(entryIds);
 	       	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), Constants.READ_ACL_TEAM);
 	       	ids = ids.replaceFirst(ObjectKeys.OWNER_USER_ID.toString(), Constants.READ_ACL_BINDER_OWNER);
-	        if (entry.isIncludeFolderAcl()) ids = ids.trim() + " " + Constants.READ_ACL_ALL;
+	        if (entry.isIncludeFolderAcl()) ids = ids.trim() + " " + Constants.READ_ACL_ALL + " " + Constants.READ_ACL_GLOBAL;
 	       	if (Validator.isNull(ids)) return Constants.EMPTY_ACL_FIELD;
+	       	if (entryIds.contains(allUsersId)) {
+	       		boolean personal = Utils.isWorkareaInProfilesTree(binder);
+	       		if (!personal) ids = ids.trim() + " " + Constants.READ_ACL_GLOBAL;
+	       	}
 	        return ids;
     	} else {
-    		return Constants.READ_ACL_ALL;
+       		boolean personal = Utils.isWorkareaInProfilesTree(binder);
+       		if (personal) {
+       			return Constants.READ_ACL_ALL;
+       		} else {
+       			return Constants.READ_ACL_ALL + " " + Constants.READ_ACL_GLOBAL;
+       		}
     	}
     }
     
@@ -600,8 +632,11 @@ public class EntityIndexUtils {
     }
 
     private static void addDefaultEntryAcls(Document doc, Binder binder, Entry entry) {
+    	boolean personal = Utils.isWorkareaInProfilesTree(binder);
 		//get default entry access
 		doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL, Field.Store.NO, Field.Index.TOKENIZED));
+		if (!personal) 
+			doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_GLOBAL, Field.Store.NO, Field.Index.TOKENIZED));
     }
 
     //Add acl fields for binder for storage in search engine
@@ -612,7 +647,7 @@ public class EntityIndexUtils {
 		//get real binder access
 		doc.add(new Field(Constants.FOLDER_ACL_FIELD, getFolderAclString(binder, includeTitleAcl), Field.Store.NO, Field.Index.TOKENIZED));
 		//get team members
-		doc.add(new Field(Constants.TEAM_ACL_FIELD, binder.getTeamMemberString(), Field.Store.NO, Field.Index.TOKENIZED));
+		doc.add(new Field(Constants.TEAM_ACL_FIELD, getFolderTeamAclString(binder), Field.Store.NO, Field.Index.TOKENIZED));
 		//add binder owner
 		Long owner = binder.getOwnerId();
 		String ownerStr = Constants.EMPTY_ACL_FIELD;
@@ -626,23 +661,35 @@ public class EntityIndexUtils {
     	addBinderAcls(parent, binder, false);
     }
     private static void addBinderAcls(org.dom4j.Element parent, Binder binder, boolean includeTitleAcl) {
+    	Long allUsersId = Utils.getAllUsersGroupId();
 		Set binderIds = AccessUtils.getReadAccessIds(binder, includeTitleAcl);
       	if (binderIds.remove(ObjectKeys.OWNER_USER_ID)) binderIds.add(binder.getOwnerId());
       	String ids = LongIdUtil.getIdsAsString(binderIds);
        	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), Constants.READ_ACL_TEAM);
+       	if (binderIds.contains(allUsersId)) {
+       		boolean personal = Utils.isWorkareaInProfilesTree(binder);
+       		if (!personal) ids = ids.trim() + " " + Constants.READ_ACL_GLOBAL;
+       	}
     	Element acl = parent.addElement(Constants.FOLDER_ACL_FIELD);
    		acl.setText(ids);
    		//add Team
    		acl = parent.addElement(Constants.TEAM_ACL_FIELD);
-   		acl.setText(binder.getTeamMemberString());
+   		String tms = binder.getTeamMemberString();
+   		if (binder.getTeamMemberIds().contains(allUsersId)) {
+   			tms = tms + " " + Constants.READ_ACL_GLOBAL;
+   		}
+   		acl.setText(tms);
    }
     
     public static void addReadAccess(Document doc, Binder binder, boolean fieldsOnly) {
     	addReadAccess(doc, binder, fieldsOnly, false);
     }
     public static void addReadAccess(Document doc, Binder binder, boolean fieldsOnly, boolean includeTitleAcl) {
+    	boolean personal = Utils.isWorkareaInProfilesTree(binder);
     	//set entryAcl to "all" and 
 		doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL, Field.Store.NO, Field.Index.TOKENIZED));
+		if (!personal) 
+			doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_GLOBAL, Field.Store.NO, Field.Index.TOKENIZED));
 		//add binder acls
 		addBinderAcls(doc, binder, includeTitleAcl);
     }
@@ -650,25 +697,38 @@ public class EntityIndexUtils {
     	addReadAccess(parent, binder, fieldsOnly, false);
     }
     public static void addReadAccess(org.dom4j.Element parent, Binder binder, boolean fieldsOnly, boolean includeTitleAcl) {
+    	boolean personal = Utils.isWorkareaInProfilesTree(binder);
     	//set entryAcl to all
    		Element  acl = parent.addElement(Constants.ENTRY_ACL_FIELD);
- 		acl.setText(Constants.READ_ACL_ALL);
+ 		if (personal) {
+ 			acl.setText(Constants.READ_ACL_ALL);
+ 		} else {
+ 			acl.setText(Constants.READ_ACL_ALL + " " + Constants.READ_ACL_GLOBAL);
+ 		}
 		//add binder access
    		addBinderAcls(parent, binder, includeTitleAcl);
     }
     private static String getWfEntryAccess(WorkflowSupport wEntry) {
-		//get principals given read access 
+    	Long allUsersId = Utils.getAllUsersGroupId();
+    	boolean personal = false;
+    	if (wEntry instanceof FolderEntry) 
+    		personal = Utils.isWorkareaInProfilesTree(((FolderEntry)wEntry).getParentBinder());
+    	//get principals given read access 
      	Set ids = wEntry.getStateMembers(WfAcl.AccessType.read);
      	//replace owner indicator, but leave team member alone for now
         //for entries, the owner is stored in the entry acl and not its own field like binders
-     	//The extra field is not necessary cause updateing does not have to optimized
+     	//The extra field is not necessary cause updating does not have to optimized
      	if (ids.remove(ObjectKeys.OWNER_USER_ID)) ids.add(wEntry.getOwnerId());
      	// I'm not sure if putting together a long string value is more
      	// 	efficient than processing multiple short strings... We will see.
      	StringBuffer pIds = new StringBuffer(LongIdUtil.getIdsAsString(ids));
    		if (ids.isEmpty() || wEntry.isWorkAreaAccess(WfAcl.AccessType.read)) {
    			//add all => folder check
-   			pIds.append(Constants.READ_ACL_ALL);      			
+   			if (personal) {
+   	   			pIds.append(Constants.READ_ACL_ALL);
+   			} else {
+   	   			pIds.append(Constants.READ_ACL_ALL + " " + Constants.READ_ACL_GLOBAL);
+   			}
    		}
    		return pIds.toString().replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), Constants.READ_ACL_TEAM);
     }

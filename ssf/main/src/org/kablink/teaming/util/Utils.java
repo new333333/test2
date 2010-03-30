@@ -154,7 +154,11 @@ public class Utils {
 			return false;
 	}
 	
-	public static boolean canUserOnlySeeCommonGroupMembers(User user) {
+  	public static boolean canUserOnlySeeCommonGroupMembers() {
+	  	User user = RequestContextHolder.getRequestContext().getUser();
+	  	return canUserOnlySeeCommonGroupMembers(user);
+  	}
+  	public static boolean canUserOnlySeeCommonGroupMembers(User user) {
 		if (user == null) return false;
 		Map onlySeeMap = (Map) RequestContextHolder.getRequestContext().getCacheEntry("onlySeeMap");
 		if (onlySeeMap == null) onlySeeMap = new HashMap();
