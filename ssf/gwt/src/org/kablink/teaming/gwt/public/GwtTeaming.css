@@ -247,6 +247,7 @@ n-Transparent-Black-Div
 }
 .workspaceTreeBinderSelected
 {
+	color: #5691a6;
 }
 .workspaceTreeControl
 {
@@ -284,7 +285,7 @@ n-Transparent-Black-Div
 }
 .workspaceTreeControlRowHover
 {
-	background: #c8e4e9;
+	background: #cce9ee;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
@@ -292,7 +293,7 @@ n-Transparent-Black-Div
 {
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
-	background: #FFFFFF;
+	background: #fff;
 	font-weight: bold;
 }
 
