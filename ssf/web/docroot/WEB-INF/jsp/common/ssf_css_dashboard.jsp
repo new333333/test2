@@ -753,34 +753,34 @@ div.ss_canvas {
     top:1px;
     float:left;
     margin-right: 5px;
-	background-color: #eaebe8;
+	background-color: #cdced0;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
       }
  #ss_tabsC a span {
     display:block;
-    background-color: #eaebe8;
+    background-color: #cdced0;
     padding: 5px 8px;
     white-space:nowrap !important;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
       }
- /* Commented Backslash Hack hides rule from IE5-Mac \ */
- 
+
+	 /* Commented Backslash Hack hides rule from IE5-Mac \ */ 
  #ss_tabsC a span {float:none;}
     /* End IE5-Mac hack */
-#ss_tabsC a:hover span {
-    color:#FFFFFF;
-      }
-#ss_tabsC a:hover {   
-	background-image: url("<html:rootPath/>images/pics/teal_slice1.png");
+
+#ss_tabsC a:hover {
+	color: #fff;
+	background-image: url("<html:rootPath/>images/pics/teal_slice.png");
 	background-position:bottom;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
       }
 #ss_tabsC a:hover span {
-	background-image: url("<html:rootPath/>images/pics/teal_slice1.png");
-	background-position:bottom;
+	color: #fff;
+	background-image: url("<html:rootPath/>images/pics/teal_slice.png");
+	background-position: middle;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
       }

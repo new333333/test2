@@ -55,7 +55,7 @@ n-Transparent-Black-Div
 /* Styles for the row that holds the header in the table that holds the colors in the "color picker" dialog. */
 .colorPickerHeaderTR
 {
-	background: transparent url(images/teal_slice.png) repeat-x scroll center bottom;
+	background: transparent url(images/teal_slice.png) repeat-x scroll center;
 	border-top: 1px solid #5AA7E3;
 	color: white;
 	font-size: 0.85em;
@@ -284,9 +284,9 @@ n-Transparent-Black-Div
 }
 .workspaceTreeControlRowHover
 {
+	background: #c8e4e9;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
-	background: #E6F2F7;
 }
 .workspaceTreeControlRowSelected
 {
@@ -1086,8 +1086,7 @@ n-Transparent-Black-Div
 .subhead-control-bg2, .btn-bg2
 {
 	color: #FFFFFF;
-	background: url(images/teal_slice1.png) repeat-x;
-	background-position: bottom;
+	background: url(images/teal_slice.png) repeat-x center;
 }
 
 /* Trick used to use a custom image in the place of a "file upload" control */
