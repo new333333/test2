@@ -53,7 +53,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
  * @author drfoster@novell.com
  *
  */
-public abstract class TreeDisplayBase {
+public abstract class TreeDisplayBase implements ActionTrigger {
 	private List<TreeInfo>			m_rootTIList;	// The root TreeInfo object being displayed.
 	private TreeInfo				m_rootTI;		// The root TreeInfo object being displayed.
 	private WorkspaceTreeControl	m_wsTree;		// The WorkspaceTreeControl being displayed.
@@ -204,12 +204,12 @@ public abstract class TreeDisplayBase {
 	 * @param action
 	 * @param obj
 	 */
-	void triggerAction(TeamingAction action, Object obj) {
+	public void triggerAction(TeamingAction action, Object obj) {
 		// Simply pass the action to the WorkspaceTreeControl.
 		m_wsTree.triggerAction(action, obj);
 	}
 	
-	void triggerAction(TeamingAction action) {
+	public void triggerAction(TeamingAction action) {
 		// Always use the other form of the method.
 		triggerAction(action, null);
 	}

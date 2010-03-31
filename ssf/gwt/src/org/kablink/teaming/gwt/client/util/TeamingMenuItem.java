@@ -32,36 +32,43 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
-import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
+
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * Class used to communicate information about a browse hierarchy
- * request between the MainMenuControl and its registered
- * ActionHandler's.
+ * Class used to communicate menu item information between the client
+ * (i.e., the MainMenuControl) and the server (i.e.,
+ * GwtRpcServiceImpl.getMenuItems().)
  * 
  * @author drfoster@novell.com
+ *
  */
-public class OnBrowseHierarchyInfo {
-	private Widget m_browseWidget;
+public class TeamingMenuItem implements IsSerializable {
+	private List<TeamingMenuItem> m_popupItemsAL = new ArrayList<TeamingMenuItem>();
+	
+	/**
+	 * The type of an item this TeamingMenuItem object refers to.  
+	 */
+	public enum MenuType implements IsSerializable {
+		POPUP,
+		SIMPLE,
+		
+		OTHER,
+	}
 	
 	/**
 	 * Constructor method.
 	 * 
-	 * @param top
-	 * @param left
+	 * No parameters as per GWT serialization requirements.
 	 */
-	public OnBrowseHierarchyInfo(Widget browseWidget) {
-		// Simply store the parameter.
-		m_browseWidget = browseWidget;
+	public TeamingMenuItem() {
+		// Nothing to do.
 	}
-	
-	/**
-	 * Returns the absolute position the hierarchy browser is to be
-	 * displayed at.
-	 * 
-	 * @return
-	 */
-	public int getLeft() {return m_browseWidget.getAbsoluteLeft();}
-	public int getTop()  {return m_browseWidget.getParent().getElement().getAbsoluteBottom();}
 }

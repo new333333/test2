@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.TeamingAction;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TreeDisplayBase;
 import org.kablink.teaming.gwt.client.util.TreeDisplayHorizontal;
@@ -60,7 +61,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
  * 
  * @author drfoster@novell.com
  */
-public class WorkspaceTreeControl extends Composite implements ActionRequestor {
+public class WorkspaceTreeControl extends Composite implements ActionRequestor, ActionTrigger {
 	private RequestInfo m_requestInfo;
 	private TreeDisplayBase m_treeDisplay;
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();

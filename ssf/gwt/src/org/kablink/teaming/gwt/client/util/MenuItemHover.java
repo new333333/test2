@@ -32,36 +32,49 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.ui.Widget;
 
 
 /**
- * Class used to communicate information about a browse hierarchy
- * request between the MainMenuControl and its registered
- * ActionHandler's.
+ * Class used to handle mouse hover events for menu items.  
  * 
  * @author drfoster@novell.com
+ *
  */
-public class OnBrowseHierarchyInfo {
-	private Widget m_browseWidget;
+public class MenuItemHover implements MouseOverHandler, MouseOutHandler {
+	private Widget m_hoverWidget;	// The Widget the MenuItemHover is for.
 	
 	/**
-	 * Constructor method.
+	 * Class constructor.
 	 * 
-	 * @param top
-	 * @param left
+	 * @param hoverWidget
 	 */
-	public OnBrowseHierarchyInfo(Widget browseWidget) {
+	public MenuItemHover(Widget hoverWidget) {
 		// Simply store the parameter.
-		m_browseWidget = browseWidget;
+		m_hoverWidget = hoverWidget;
 	}
 	
 	/**
-	 * Returns the absolute position the hierarchy browser is to be
-	 * displayed at.
+	 * Called when the mouse leaves a menu item.
 	 * 
-	 * @return
+	 * @param me
 	 */
-	public int getLeft() {return m_browseWidget.getAbsoluteLeft();}
-	public int getTop()  {return m_browseWidget.getParent().getElement().getAbsoluteBottom();}
+	public void onMouseOut(MouseOutEvent me) {
+		// Simply remove the hover style.
+		m_hoverWidget.removeStyleName("subhead-control-bg2");
+	}
+	
+	/**
+	 * Called when the mouse enters a menu item.
+	 * 
+	 * @param me
+	 */
+	public void onMouseOver(MouseOverEvent me) {
+		// Simply add the hover style.
+		m_hoverWidget.addStyleName("subhead-control-bg2");
+	}
 }
