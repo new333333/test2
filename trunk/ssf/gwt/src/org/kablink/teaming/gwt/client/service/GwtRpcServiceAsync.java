@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
+import org.kablink.teaming.gwt.client.util.TeamingMenuItem;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -86,18 +87,22 @@ public interface GwtRpcServiceAsync
 	
 	// The following are used in the implementation of the various
 	// forms of the WorkspaceTreeControl.
-	public void getHorizontalTree(  String binderId, AsyncCallback<List<TreeInfo>> callback);
-	public void getHorizontalNode(  String binderId, AsyncCallback<TreeInfo>       callback);
-	public void getRootWorkspaceId( String binderId, AsyncCallback<String>         callback);
-	public void getVerticalTree(    String binderId, AsyncCallback<TreeInfo>       callback);
-	public void getVerticalNode(    String binderId, AsyncCallback<TreeInfo>       callback);
-	public void persistNodeCollapse(String binderId, AsyncCallback<Boolean>        callback);
-	public void persistNodeExpand(  String binderId, AsyncCallback<Boolean>        callback);
+	public void getHorizontalTree(   String binderId, AsyncCallback<List<TreeInfo>> callback );
+	public void getHorizontalNode(   String binderId, AsyncCallback<TreeInfo>       callback );
+	public void getRootWorkspaceId(  String binderId, AsyncCallback<String>         callback );
+	public void getVerticalTree(     String binderId, AsyncCallback<TreeInfo>       callback );
+	public void getVerticalNode(     String binderId, AsyncCallback<TreeInfo>       callback );
+	public void persistNodeCollapse( String binderId, AsyncCallback<Boolean>        callback );
+	public void persistNodeExpand(   String binderId, AsyncCallback<Boolean>        callback );
 
+	// The following are used in the implementation of the
+	// MainMenuControl.
+	public void getMenuItems( String binderId, AsyncCallback<List<TeamingMenuItem>> callback );
+	
 	// Save the branding data to the given binder.
 	public void saveBrandingData( String binderId, GwtBrandingData brandingData, AsyncCallback<Boolean> callback );
 
-	// Return infomation about the User Profile
+	// Return information about the User Profile
 	public void getProfileInfo(String binderId, AsyncCallback<ProfileInfo> callback);
 	
 }// end GwtRpcServiceAsync

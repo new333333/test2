@@ -30,38 +30,18 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.util;
 
-import com.google.gwt.user.client.ui.Widget;
+import org.kablink.teaming.gwt.client.TeamingAction;
 
 
 /**
- * Class used to communicate information about a browse hierarchy
- * request between the MainMenuControl and its registered
- * ActionHandler's.
- * 
+ * Interface for triggering TeamingAction's.
+ *
  * @author drfoster@novell.com
  */
-public class OnBrowseHierarchyInfo {
-	private Widget m_browseWidget;
-	
-	/**
-	 * Constructor method.
-	 * 
-	 * @param top
-	 * @param left
-	 */
-	public OnBrowseHierarchyInfo(Widget browseWidget) {
-		// Simply store the parameter.
-		m_browseWidget = browseWidget;
-	}
-	
-	/**
-	 * Returns the absolute position the hierarchy browser is to be
-	 * displayed at.
-	 * 
-	 * @return
-	 */
-	public int getLeft() {return m_browseWidget.getAbsoluteLeft();}
-	public int getTop()  {return m_browseWidget.getParent().getElement().getAbsoluteBottom();}
+public interface ActionTrigger {
+	public void triggerAction(TeamingAction action);
+	public void triggerAction(TeamingAction action, Object obj);
 }

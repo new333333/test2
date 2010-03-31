@@ -71,6 +71,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
+import org.kablink.teaming.gwt.client.util.TeamingMenuItem;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
@@ -1140,6 +1141,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}
 
 
+	/**
+	 * Returns a List<TeamingMenuItem> of the TeamingMenuItem's
+	 * applicable for the given context.
+	 * 
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public List<TeamingMenuItem> getMenuItems( String binderId )
+	{
+//!		...this needs to be implemented...
+		return new ArrayList<TeamingMenuItem>();
+	}
+	
 	/**
 	 * Save the given branding data to the given binder.
 	 */

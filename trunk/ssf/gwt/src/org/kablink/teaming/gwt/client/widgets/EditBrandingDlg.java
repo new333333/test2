@@ -238,7 +238,7 @@ public class EditBrandingDlg extends DlgBox
 				flowPanel.add( addFileAnchor );
 				
 				// Add a browse image to the link.
-				browseImg = new Image( GwtTeaming.getImageBundle().browseHierarchy() );
+				browseImg = new Image( GwtTeaming.getImageBundle().browseFiles() );
 				linkElement = addFileAnchor.getElement();
 				imgElement = browseImg.getElement();
 				imgElement.getStyle().setMarginTop( 2, Style.Unit.PX );
@@ -426,7 +426,7 @@ public class EditBrandingDlg extends DlgBox
 				flowPanel.add( addFileAnchor );
 				
 				// Add the browse image to the link.
-				browseImg = new Image( GwtTeaming.getImageBundle().browseHierarchy() );
+				browseImg = new Image( GwtTeaming.getImageBundle().browseFiles() );
 				linkElement = addFileAnchor.getElement();
 				imgElement = browseImg.getElement();
 				imgElement.getStyle().setMarginTop( 2, Style.Unit.PX );

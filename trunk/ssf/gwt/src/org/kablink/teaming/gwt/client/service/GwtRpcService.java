@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
+import org.kablink.teaming.gwt.client.util.TeamingMenuItem;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -92,13 +93,17 @@ public interface GwtRpcService extends RemoteService
 	
 	// The following are used in the implementation of the various
 	// forms of the WorkspaceTreeControl.
-	public List<TreeInfo> getHorizontalTree(  String binderId);
-	public TreeInfo       getHorizontalNode(  String binderId);
-	public String         getRootWorkspaceId( String binderId);
-	public TreeInfo       getVerticalTree(    String binderId);
-	public TreeInfo       getVerticalNode(    String binderId);
-	public Boolean        persistNodeCollapse(String binderId);
-	public Boolean        persistNodeExpand(  String binderId);
+	public List<TreeInfo> getHorizontalTree(   String binderId );
+	public TreeInfo       getHorizontalNode(   String binderId );
+	public String         getRootWorkspaceId(  String binderId );
+	public TreeInfo       getVerticalTree(     String binderId );
+	public TreeInfo       getVerticalNode(     String binderId );
+	public Boolean        persistNodeCollapse( String binderId );
+	public Boolean        persistNodeExpand(   String binderId );
+	
+	// The following are used in the implementation of the
+	// MainMenuControl.
+	public List<TeamingMenuItem> getMenuItems( String binderId );
 	
 	// Save the branding data to the given binder.
 	public Boolean saveBrandingData( String binderId, GwtBrandingData brandingData ) throws GwtTeamingException;

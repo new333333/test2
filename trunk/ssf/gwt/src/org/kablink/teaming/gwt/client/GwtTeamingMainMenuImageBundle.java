@@ -30,38 +30,43 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.util;
 
-import com.google.gwt.user.client.ui.Widget;
+package org.kablink.teaming.gwt.client;
+
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
 
 
 /**
- * Class used to communicate information about a browse hierarchy
- * request between the MainMenuControl and its registered
- * ActionHandler's.
+ * Images used by the GWT Teaming 'Main Menu' widget.
  * 
- * @author drfoster@novell.com
+ * @author drfoster
  */
-public class OnBrowseHierarchyInfo {
-	private Widget m_browseWidget;
+public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/browse_hierarchy.png")
+	public ImageResource browseHierarchy();
+
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/close_circle16.png")
+	public ImageResource close_circle16();
+
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/gwt.png")
+	public ImageResource gwtUI();
+
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/home16.png")
+	public ImageResource home16();
 	
-	/**
-	 * Constructor method.
-	 * 
-	 * @param top
-	 * @param left
-	 */
-	public OnBrowseHierarchyInfo(Widget browseWidget) {
-		// Simply store the parameter.
-		m_browseWidget = browseWidget;
-	}
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/menu_9.gif")
+	public ImageResource menu_9();
 	
-	/**
-	 * Returns the absolute position the hierarchy browser is to be
-	 * displayed at.
-	 * 
-	 * @return
-	 */
-	public int getLeft() {return m_browseWidget.getAbsoluteLeft();}
-	public int getTop()  {return m_browseWidget.getParent().getElement().getAbsoluteBottom();}
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/slide_down.png")
+	public ImageResource slideDown();
+
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/slide_left.png")
+	public ImageResource slideLeft();
+
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/slide_right.png")
+	public ImageResource slideRight();
+
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/slide_up.png")
+	public ImageResource slideUp();
 }

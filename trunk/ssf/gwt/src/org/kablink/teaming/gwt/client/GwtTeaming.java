@@ -59,6 +59,7 @@ public class GwtTeaming implements EntryPoint
 	private static final GwtTeamingMessages					m_stringMessages = GWT.create( GwtTeamingMessages.class );
 	private static final GwtTeamingImageBundle				m_imageBundle = GWT.create( GwtTeamingImageBundle.class );
 	private static final GwtTeamingWorkspaceTreeImageBundle	m_wsTreeImageBundle = GWT.create( GwtTeamingWorkspaceTreeImageBundle.class );
+	private static final GwtTeamingMainMenuImageBundle		m_mainMenuImageBundle = GWT.create( GwtTeamingMainMenuImageBundle.class );
 	private static final GwtRpcServiceAsync					m_gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
 	
 	private static TextBox m_txtBox;
@@ -79,6 +80,14 @@ public class GwtTeaming implements EntryPoint
 	 */
 	public static GwtTeamingWorkspaceTreeImageBundle getWorkspaceTreeImageBundle() {
 		return m_wsTreeImageBundle;
+	}
+	
+	
+	/**
+	 * Return the object that is used to retrieve Main Menu images.
+	 */
+	public static GwtTeamingMainMenuImageBundle getMainMenuImageBundle() {
+		return m_mainMenuImageBundle;
 	}
 	
 	
