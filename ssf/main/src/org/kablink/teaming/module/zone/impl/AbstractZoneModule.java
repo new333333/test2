@@ -1316,6 +1316,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
+		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
+		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);
 		
 		//generate functionId
 		getFunctionManager().addFunction(function);
@@ -1331,6 +1333,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
 		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
+		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
+		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);
 		
 		//generate functionId
 		getFunctionManager().addFunction(function);
@@ -1347,6 +1351,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
 		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
 		function.addOperation(WorkAreaOperation.CHANGE_ACCESS_CONTROL);
+		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
+		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);
 		
 		//generate functionId
 		getFunctionManager().addFunction(function);
