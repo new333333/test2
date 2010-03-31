@@ -160,7 +160,6 @@ public abstract class DlgBox extends PopupPanel
 		flowPanel.setStyleName( "teamingDlgBoxHeader" );
 
 		label = new Label( caption );
-		label.addStyleName( "head4" );
 		flowPanel.add( label );
 		
 		return flowPanel;

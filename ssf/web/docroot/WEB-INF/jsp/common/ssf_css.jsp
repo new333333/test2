@@ -170,7 +170,6 @@ body.ss_style_body {
 .ss_style a:hover {
   	color: ${ss_style_link_hover_color};
   	text-decoration: none;
-  	outline: dotted 1px gray;
 	}
 .ss_title_link {
   	text-decoration:underline;
