@@ -50,6 +50,8 @@ import com.google.gwt.user.client.ui.Label;
  *
  */
 public class MenuItemBox extends FlowPanel {
+	private Anchor m_boxA;
+	
 	/**
 	 * Class constructor.
 	 *
@@ -59,15 +61,14 @@ public class MenuItemBox extends FlowPanel {
 	 * @param dropdown
 	 * @param ch
 	 */
-	public MenuItemBox(String boxId, ImageResource itemImgRes, String itemText, boolean dropdown, ClickHandler ch) {
+	public MenuItemBox(String boxId, ImageResource itemImgRes, String itemText, boolean dropdown) {
 		// Initialize the FlowPanel super class...
 		super();
 		addStyleName("mainMenuContent");
 
 		// ...create an Anchor to contain the box...
-		Anchor boxA = new Anchor();
-		boxA.addStyleName("mainMenuItem_BoxA");
-		boxA.addClickHandler(ch);
+		m_boxA = new Anchor();
+		m_boxA.addStyleName("mainMenuItem_BoxA");
 
 		// ...create a FlowPanel to contain the items in the box...
 		FlowPanel boxPanel = new FlowPanel();
@@ -76,8 +77,8 @@ public class MenuItemBox extends FlowPanel {
 
 		// ...add mouse over handling on the panel...
 		MenuItemIDHover hover = new MenuItemIDHover(boxId, "mainMenuItem_BoxHover");
-		boxA.addMouseOverHandler(hover);
-		boxA.addMouseOutHandler( hover);
+		m_boxA.addMouseOverHandler(hover);
+		m_boxA.addMouseOutHandler( hover);
 
 		// ...if we need an image for the box...
 		if (null != itemImgRes) {
@@ -102,22 +103,31 @@ public class MenuItemBox extends FlowPanel {
 
 		// ...and finally, add the panel to the Anchor and the Anchor
 		// ...to the box.
-		boxA.getElement().appendChild(boxPanel.getElement());
-		add(boxA);
+		m_boxA.getElement().appendChild(boxPanel.getElement());
+		add(m_boxA);
 	}
 	
-	public MenuItemBox(String boxId, String itemText, boolean dropdown, ClickHandler ch) {
+	public MenuItemBox(String boxId, String itemText, boolean dropdown) {
 		// Always use the initial form of the constructor.
-		this(boxId, null, itemText, dropdown, ch);
+		this(boxId, null, itemText, dropdown);
 	}
 	
-	public MenuItemBox(String boxId, String itemText, ClickHandler ch) {
+	public MenuItemBox(String boxId, String itemText) {
 		// Always use the initial form of the constructor.
-		this(boxId, null, itemText, false, ch);
+		this(boxId, null, itemText, false);
 	}
 	
-	public MenuItemBox(String boxId, ImageResource itemImgRes, String itemText, ClickHandler ch) {
+	public MenuItemBox(String boxId, ImageResource itemImgRes, String itemText) {
 		// Always use the initial form of the constructor.
-		this(boxId, itemImgRes, itemText, false, ch);
+		this(boxId, itemImgRes, itemText, false);
+	}
+
+	/**
+	 * Adds a ClickHandler to the MenuItemBox's Anchor.
+	 * 
+	 * @param ch
+	 */
+	public void addClickHandler(ClickHandler ch) {
+		m_boxA.addClickHandler(ch);
 	}
 }

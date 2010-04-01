@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.TeamingAction;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.MenuItemBox;
 import org.kablink.teaming.gwt.client.util.MenuItemButton;
+import org.kablink.teaming.gwt.client.util.MenuItemPopup;
 import org.kablink.teaming.gwt.client.util.MenuItemToggle;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.TeamingMenuItem;
@@ -56,6 +57,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 
 
 /**
@@ -154,11 +156,20 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * Adds the Favorites item to the menu bar.
 	 */
 	private void addFavorites(FlowPanel menuPanel) {
-		MenuItemBox favoritesBox = new MenuItemBox("ss_mainMenuFavorites", m_messages.mainMenuItemFavorites(), true,
+		final String favoritesTitle = m_messages.mainMenuItemFavorites();
+		final MenuItemBox favoritesBox = new MenuItemBox("ss_mainMenuFavorites", favoritesTitle, true);
+		favoritesBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
+					int left =  favoritesBox.getAbsoluteLeft();
+					int top  = (favoritesBox.getAbsoluteTop() - 20);
+					MenuItemPopup mip = new MenuItemPopup(favoritesTitle, left, top);
+					
 //!					...this needs to be implemented...
-					Window.alert("MainMenuContol( 'Favorites' has not been implemented yet!' )");
+					Label content = new Label("...this needs to be implemented...");
+					content.addStyleName("mainMenuPopup_Item");
+					mip.addContentWidget(content);
+					mip.show();
 				}
 			});
 		menuPanel.add(favoritesBox);
@@ -168,11 +179,20 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * Adds the My Teams item to the menu bar.
 	 */
 	private void addMyTeams(FlowPanel menuPanel) {
-		MenuItemBox myTeamsBox = new MenuItemBox("ss_mainMenuMyTeams", m_messages.mainMenuItemMyTeams(), true,
+		final String myTeamsTitle = m_messages.mainMenuItemMyTeams();
+		final MenuItemBox myTeamsBox = new MenuItemBox("ss_mainMenuMyTeams", myTeamsTitle, true);
+		myTeamsBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
+					int left =  myTeamsBox.getAbsoluteLeft();
+					int top  = (myTeamsBox.getAbsoluteTop() - 20);
+					MenuItemPopup mip = new MenuItemPopup(myTeamsTitle, left, top);
+					
 //!					...this needs to be implemented...
-					Window.alert("MainMenuContol( 'My Teams' has not been implemented yet!' )");
+					Label content = new Label("...this needs to be implemented...");
+					content.addStyleName("mainMenuPopup_Item");
+					mip.addContentWidget(content);
+					mip.show();
 				}
 			});
 		menuPanel.add(myTeamsBox);
@@ -182,7 +202,8 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * Adds the My Workspace item to the menu bar.
 	 */
 	private void addMyWorkspace(FlowPanel menuPanel) {
-		MenuItemBox myWorkspaceBox = new MenuItemBox("ss_mainMenuMyWorkspace", m_images.home16(), m_messages.mainMenuItemMyWorkspace(),
+		MenuItemBox myWorkspaceBox = new MenuItemBox("ss_mainMenuMyWorkspace", m_images.home16(), m_messages.mainMenuItemMyWorkspace());
+		myWorkspaceBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					triggerAction(TeamingAction.MY_WORKSPACE);
