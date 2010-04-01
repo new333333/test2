@@ -94,14 +94,11 @@ public class MastHead extends Composite
 	private Image m_bgImg = null;
 	private Image m_adminImg1 = null;
 	private Image m_adminImg2 = null;
-	private Image m_myWorkspaceImg1 = null;
-	private Image m_myWorkspaceImg2 = null;
 	private Image m_logoutImg1 = null;
 	private Image m_logoutImg2 = null;
 	private Image m_helpImg1 = null;
 	private Image m_helpImg2 = null;
 	private Anchor m_adminLink = null;
-	private Anchor m_myWorkspaceLink = null;
 	private Anchor m_logoutLink = null;
 	private Anchor m_helpLink = null;
 	private InlineLabel m_mouseOverHint = null;
@@ -368,29 +365,6 @@ public class MastHead extends Composite
 			m_mouseOverHint.addStyleName( "mastHeadMouseOverHint" );
 			m_globalActionsPanel.add( m_mouseOverHint );
 			
-			// Add the "My workspace" link.
-			{
-				m_myWorkspaceLink = new Anchor();
-				m_myWorkspaceLink.addStyleName( "mastHeadLink" );
-				m_myWorkspaceLink.addClickHandler( this );
-				m_myWorkspaceLink.addMouseOutHandler( this );
-				m_myWorkspaceLink.addMouseOverHandler( this );
-				linkElement = m_myWorkspaceLink.getElement();
-				
-				// Add the mouse-out image to the link.
-				imgResource = GwtTeaming.getImageBundle().myWorkspace1();
-				m_myWorkspaceImg1 = new Image( imgResource );
-				linkElement.appendChild( m_myWorkspaceImg1.getElement() );
-
-				// Add the mouse-over image to the link.
-				imgResource = GwtTeaming.getImageBundle().myWorkspace2();
-				m_myWorkspaceImg2 = new Image( imgResource );
-				m_myWorkspaceImg2.setVisible( false );
-				linkElement.appendChild( m_myWorkspaceImg2.getElement() );
-				
-				m_globalActionsPanel.add( m_myWorkspaceLink );
-			}
-			
 			// Add the "Administration" link.
 			{
 				m_adminLink = new Anchor();
@@ -573,11 +547,6 @@ public class MastHead extends Composite
 			m_adminImg1.setVisible( true );
 			m_adminImg2.setVisible( false );
 		}
-		else if ( eventSource == m_myWorkspaceLink )
-		{
-			m_myWorkspaceImg1.setVisible( true );
-			m_myWorkspaceImg2.setVisible( false );
-		}
 		else if ( eventSource == m_logoutLink )
 		{
 			m_logoutImg1.setVisible( true );
@@ -657,10 +626,6 @@ public class MastHead extends Composite
 			{
 				actionHandlerIT.next().handleAction( TeamingAction.ADMINISTRATION, null );
 			}
-			else if ( eventSource == m_myWorkspaceLink )
-			{
-				actionHandlerIT.next().handleAction( TeamingAction.MY_WORKSPACE, null );
-			}
 			else if ( eventSource == m_logoutLink )
 			{
 				actionHandlerIT.next().handleAction( TeamingAction.LOGOUT, null );
@@ -718,13 +683,6 @@ public class MastHead extends Composite
 			m_adminImg2.setVisible( true );
 			
 			hint = GwtTeaming.getMessages().administrationHint();
-		}
-		else if ( eventSource == m_myWorkspaceLink )
-		{
-			m_myWorkspaceImg1.setVisible( false );
-			m_myWorkspaceImg2.setVisible( true );
-			
-			hint = GwtTeaming.getMessages().myWorkspaceHint();
 		}
 		else if ( eventSource == m_logoutLink )
 		{
