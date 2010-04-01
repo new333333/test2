@@ -40,12 +40,12 @@
 			n = sc = DOM.add(n, 'table', {cellPadding : 0, cellSpacing : 0, 'class' : 'mceLayout'});
 			n = tb = DOM.add(n, 'tbody');
 
-			// Create iframe container
-			n = DOM.add(tb, 'tr');
-			n = ic = DOM.add(DOM.add(n, 'td'), 'div', {'class' : 'mceIframeContainer'});
-
 			// Create toolbar container
-			n = DOM.add(DOM.add(tb, 'tr', {'class' : 'last'}), 'td', {'class' : 'mceToolbar mceLast', align : 'center'});
+			n = DOM.add(tb, 'tr');
+			n = DOM.add('td', {'class' : 'mceToolbar mceLast', align : 'left'});
+
+			// Create iframe container
+			n = ic = DOM.add(DOM.add(DOM.add(tb, 'tr', {'class' : 'last'}), 'td'), 'div', {'class' : 'mceIframeContainer'});
 
 			// Create toolbar
 			tb = t.toolbar = cf.createToolbar("tools1");
@@ -56,8 +56,6 @@
 			tb.add(cf.createSeparator());
 			tb.add(cf.createButton('undo', {title : 'simple.undo_desc', cmd : 'Undo'}));
 			tb.add(cf.createButton('redo', {title : 'simple.redo_desc', cmd : 'Redo'}));
-			tb.add(cf.createSeparator());
-			tb.add(cf.createButton('cleanup', {title : 'simple.cleanup_desc', cmd : 'mceCleanup'}));
 			tb.add(cf.createSeparator());
 			tb.add(cf.createButton('insertunorderedlist', {title : 'simple.bullist_desc', cmd : 'InsertUnorderedList'}));
 			tb.add(cf.createButton('insertorderedlist', {title : 'simple.numlist_desc', cmd : 'InsertOrderedList'}));
