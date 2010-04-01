@@ -788,12 +788,12 @@ div.ss_canvas {
 	color: #FFFFFF;
 	font-weight: bold;
     font-size:100%;
-	background-color: #81b2bd;
+	background-color: #5691a6;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
         }
 #ss_tabsC .ss_tabsCCurrent a span {
-	background-color: #81b2bd;
+	background-color: #5691a6;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
         }	
