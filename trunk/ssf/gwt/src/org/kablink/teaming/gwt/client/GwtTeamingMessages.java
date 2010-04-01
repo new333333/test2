@@ -376,4 +376,16 @@ public interface GwtTeamingMessages extends Messages
 	String colorPickerDlgHeader();
 	String hexValue();
 	
+	// The following strings are used with a tinyMCE editor
+	String addFile();
+	String addUrl();
+	String imageName();
+	String insertLinkToTeamingPage();
+	String missingImage();
+	String overQuota();
+	String srcFile();
+	String youTubeDimensions();
+	String youTubeTitle();
+	String youTubeUrl();
+	
 }// end GwtTeamingMessages

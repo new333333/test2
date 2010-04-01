@@ -586,6 +586,60 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	
 	/**
+	 * Return the "document base url" that is used in tinyMCE configuration
+	 */
+	public String getDocumentBaseUrl( String binderId ) throws GwtTeamingException
+	{
+		String baseUrl = null;
+		BinderModule binderModule;
+		Binder binder;
+		Long binderIdL;
+		
+		try
+		{
+			binderModule = getBinderModule();
+	
+			binderIdL = new Long( binderId );
+			
+			if ( binderIdL != null )
+			{
+				String webPath;
+				
+				binder = binderModule.getBinder( binderIdL );
+				webPath = WebUrlUtil.getServletRootURL();
+				baseUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, binder, "" );
+			}
+		}
+		catch (NoBinderByTheIdException nbEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
+		catch (Exception e)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
+		}
+		
+		return baseUrl;
+	}// end getDocumentBaseUrl()
+	
+	
+	/**
 	 * Return an Entry object for the given zone and entry id
 	 */
 	public GwtFolderEntry getEntry( String zoneUUID, String entryId ) throws GwtTeamingException

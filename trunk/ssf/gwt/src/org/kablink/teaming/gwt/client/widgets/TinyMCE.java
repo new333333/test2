@@ -51,7 +51,6 @@ public class TinyMCE extends Composite
     private TextArea m_ta;
     private String m_id;
     private boolean m_loaded = false;
-    private String m_setText = null;
     private AbstractTinyMCEConfiguration m_config = null;
 	
     /**
@@ -73,7 +72,7 @@ public class TinyMCE extends Composite
     }// end TinyMCE()
 
     
-    /**
+	/**
      * Wrapper for the native URL encoding methods
      * @param text - the text to encode
      * @return the encoded text
@@ -159,36 +158,46 @@ public class TinyMCE extends Composite
 				// General options
 				mode : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getMode()(),
 				theme : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getTheme()(),
-				skin : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getSkin()(),
-				entity_encoding : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getEntityEncoding()(),
-				plugins : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getPlugins()(),
-	
+				language : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getLanguage()(),
+				content_css : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getContentCss()(),
+				relative_urls: conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getRelativeUrls()(),
+				remove_script_host : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getRemoveScriptHost()(),
+				width : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getWidth()(),
+				accessibility_warnings : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getAccessibilityWarnings()(),
+				accessibility_focus : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getAccessibilityFocus()(),
+				entities : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getEntities()(),
+				gecko_spellcheck : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getGeckoSpellCheck()(),
+
 				// Theme options
 				// excluded buttons: ,fontselect,fontsizeselect,preview,image,help,|,forecolor,backcolor tablecontrols,|,,emotions,media,|,print
-				theme_advanced_buttons1 : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons1()(),
-				theme_advanced_buttons2 : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons2()(),
-				theme_advanced_buttons3 : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons3()(),
+				//theme_advanced_buttons1 : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons1()(),
+				//theme_advanced_buttons2 : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons2()(),
+				//theme_advanced_buttons3 : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons3()(),
 				//theme_advanced_buttons4 : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons4()(),
+				theme_advanced_buttons1_add : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons1Add()(),
+				theme_advanced_buttons2_add : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons2Add()(),
+				theme_advanced_buttons3_add : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons3Add()(),
 				theme_advanced_toolbar_location : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedToolbarLocation()(),
 				theme_advanced_toolbar_align : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedToolbarAlign()(),
 				theme_advanced_statusbar_location : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedStatusbarLocation()(),
 				theme_advanced_resizing : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedResizing()(),
-	
-				// Example content CSS (should be your site CSS)
-				content_css : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getContentCss()(),
+				theme_advanced_resizing_use_cookie : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedResizingUseCookie()(),
+				theme_advanced_styles : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedStyles()(),
+				theme_advanced_path : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedPath()(),
+				theme_advanced_disable : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedDisable()(),
+				convert_fonts_to_spans : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getConvertFontsToSpans()(),
+				plugins : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getPlugins()(),
+
+				document_base_url : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getDocumentBaseUrl()()
+				
+				//skin : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getSkin()(),
+				//entity_encoding : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getEntityEncoding()(),
 	
 				// Drop lists for link/image/media/template dialogs
-				template_external_list_url : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getTemplateExternalListUrl()(),
-				external_link_list_url : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getExternalLinkListUrl()(),
-				external_image_list_url : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getExternalImageListUrl()(),
-				media_external_list_url : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getMediaExternalListUrl()(),
-	
-				// Replace values for the template plugin
-				template_replace_values : {
-					username : "Some User",
-					staffid : "991234"
-				}
-				
+				//template_external_list_url : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getTemplateExternalListUrl()(),
+				//external_link_list_url : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getExternalLinkListUrl()(),
+				//external_image_list_url : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getExternalImageListUrl()(),
+				//media_external_list_url : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getMediaExternalListUrl()(),
 			});
 	}-*/;
 
@@ -205,7 +214,6 @@ public class TinyMCE extends Composite
 
         m_id = HTMLPanel.createUniqueId();
         m_ta = new TextArea();
-//!!!        m_ta.addStyleName( "mceEditable" );
         m_ta.setCharacterWidth( width );
         m_ta.setVisibleLines( height );
         DOM.setElementAttribute( m_ta.getElement(), "id", m_id );
@@ -215,7 +223,7 @@ public class TinyMCE extends Composite
         return panel;
     }// end initTinyMCE()
     
-    
+
     /**
      * @see com.google.gwt.user.client.ui.Widget#onLoad()
      */
@@ -237,7 +245,13 @@ public class TinyMCE extends Composite
                 public void execute()
                 {
                     setWidth( "100%" );
+                    // Initialize the tinyMCE editor
                     init( m_config );
+                    
+                    // Add any language packs to the tinyMCE editor.
+                    m_config.addLanguagePacks();
+                    
+                    // Associate the textarea with a tinyMCE editor.
                     setTextAreaToTinyMCE( m_id );
                     
                     m_loaded = true;
@@ -270,7 +284,14 @@ public class TinyMCE extends Composite
      * @param html
      */
     protected static native void setEditorContents( String elementId, String html ) /*-{
-		$wnd.tinyMCE.execInstanceCommand( elementId, 'mceSetContent', false, html, false );
+//!!!		$wnd.tinyMCE.execInstanceCommand( elementId, 'mceSetContent', false, html, false );
+ 		var editor;
+ 		
+ 		editor = $wnd.tinyMCE.get( elementId );
+ 		if ( editor != null )
+ 			editor.setContent( html, null );
+ 		else
+ 			alert( 'In setEditorContents(), editor is null' );
     }-*/;
 
     
@@ -288,7 +309,8 @@ public class TinyMCE extends Composite
      */
     public void setFocus()
     {
-        focusMCE( m_id );
+    	//!!! The following calling is throwing a JavaScript exception.  Not sure why
+        //!!! focusMCE( m_id );
     }// end setFocus()
     
     
@@ -297,31 +319,8 @@ public class TinyMCE extends Composite
      */
     public void setText( String text )
     {
-    	// Are we initialized?
-    	if ( m_loaded )
-    	{
-    		// Yes
-            m_ta.setText(text);
-//!!!           	setEditorContents( m_id, text );
-    	}
-    	else
-    	{
-            Command cmd;
-
-        	// No
-            m_setText = text;
-            cmd = new Command()
-            {
-            	/**
-            	 * 
-            	 */
-                public void execute()
-                {
-                	setText( m_setText );
-                }
-            };
-            DeferredCommand.addCommand( cmd );
-    	}
+    	m_ta.setText( text );
+        //!!!setEditorContents( m_id, text );
     }// end setText()
 
     

@@ -70,6 +70,9 @@ public interface GwtRpcService extends RemoteService
 	// Return a GwtBrandingData object for the corporate branding.
 	public GwtBrandingData getCorporateBrandingData();
 	
+	// Return the "document base url" that is used in tinyMCE configuration
+	public String getDocumentBaseUrl( String binderId ) throws GwtTeamingException;
+	
 	// Return an Entry object for the given entry id.
 	public GwtFolderEntry getEntry( String zoneUUID, String entryId ) throws GwtTeamingException;
 	

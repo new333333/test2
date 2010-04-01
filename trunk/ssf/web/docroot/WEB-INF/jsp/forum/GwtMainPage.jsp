@@ -62,7 +62,9 @@
 			adaptedUrl : '${adaptedUrl}',
 			imagesPath : '<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
 			myWSUrl : '${myWorkspaceUrl}',
-			isNovellTeaming : ${isNovellTeaming}
+			isNovellTeaming : ${isNovellTeaming},
+			language : '${ssUser.locale.language}',
+			contentCss : '<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>'
 		};
 
 		var ss_workareaIframeOffset = 50;
