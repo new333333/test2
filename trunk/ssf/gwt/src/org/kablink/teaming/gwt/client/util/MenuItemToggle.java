@@ -135,7 +135,7 @@ public class MenuItemToggle extends Anchor {
 		addClickHandler(new MenuToggleSelector());
 		
 		// ...and add mouse hover handling.
-		MenuItemHover hover = new MenuItemHover(hoverWidget);
+		MenuItemWidgetHover hover = new MenuItemWidgetHover(hoverWidget, "subhead-control-bg2");
 		addMouseOverHandler(hover);
 		addMouseOutHandler( hover);
 	}

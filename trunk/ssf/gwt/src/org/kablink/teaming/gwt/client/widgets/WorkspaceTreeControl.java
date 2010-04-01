@@ -158,19 +158,21 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 	/**
 	 * Fires a TeamingAction at the registered ActionHandler's.
 	 * 
+	 * Implements the ActionTrigger.triggerAction() method. 
+	 * 
 	 * @param action
 	 * @param obj
 	 */
-	public void triggerAction(TeamingAction action) {
-		// Always use the final form of the method.
-		triggerAction(action, null);
-	}
-	
 	public void triggerAction(TeamingAction action, Object obj) {
 		// Scan the ActionHandler's that have been registered...
 		for (Iterator<ActionHandler> ahIT = m_actionHandlers.iterator(); ahIT.hasNext(); ) {
 			// ...firing the action at each.
 			ahIT.next().handleAction(action, obj);
 		}
+	}
+	
+	public void triggerAction(TeamingAction action) {
+		// Always use the initial form of the method.
+		triggerAction(action, null);
 	}
 }

@@ -201,6 +201,8 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 	 * Fires a TeamingAction at the WorkspaceTreeControl's registered
 	 * ActionHandler's.
 	 * 
+	 * Implements the ActionTrigger.triggerAction() method. 
+	 *
 	 * @param action
 	 * @param obj
 	 */
@@ -210,7 +212,7 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 	}
 	
 	public void triggerAction(TeamingAction action) {
-		// Always use the other form of the method.
+		// Always use the initial form of the method.
 		triggerAction(action, null);
 	}
 }

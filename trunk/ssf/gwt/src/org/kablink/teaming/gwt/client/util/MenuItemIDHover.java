@@ -32,11 +32,12 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -45,17 +46,20 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  *
  */
-public class MenuItemHover implements MouseOverHandler, MouseOutHandler {
-	private Widget m_hoverWidget;	// The Widget the MenuItemHover is for.
+public class MenuItemIDHover implements MouseOverHandler, MouseOutHandler {
+	private String m_hoverStyle;	// The style to use with the hover.
+	private String m_hoverId;		// The ID of the widget to apply the hover style to.
 	
 	/**
 	 * Class constructor.
 	 * 
-	 * @param hoverWidget
+	 * @param hoverId
+	 * @param hoverString;
 	 */
-	public MenuItemHover(Widget hoverWidget) {
-		// Simply store the parameter.
-		m_hoverWidget = hoverWidget;
+	MenuItemIDHover(String hoverId, String hoverStyle) {
+		// Simply store the parameters.
+		m_hoverId = hoverId;
+		m_hoverStyle = hoverStyle;
 	}
 	
 	/**
@@ -65,7 +69,8 @@ public class MenuItemHover implements MouseOverHandler, MouseOutHandler {
 	 */
 	public void onMouseOut(MouseOutEvent me) {
 		// Simply remove the hover style.
-		m_hoverWidget.removeStyleName("subhead-control-bg2");
+		Element selectorPanel_New = Document.get().getElementById(m_hoverId);
+		selectorPanel_New.removeClassName(m_hoverStyle);
 	}
 	
 	/**
@@ -75,6 +80,7 @@ public class MenuItemHover implements MouseOverHandler, MouseOutHandler {
 	 */
 	public void onMouseOver(MouseOverEvent me) {
 		// Simply add the hover style.
-		m_hoverWidget.addStyleName("subhead-control-bg2");
+		Element selectorPanel_New = Document.get().getElementById(m_hoverId);
+		selectorPanel_New.addClassName(m_hoverStyle);
 	}
 }
