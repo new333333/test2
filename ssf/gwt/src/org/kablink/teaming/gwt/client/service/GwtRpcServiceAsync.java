@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.util.TeamingMenuItem;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
@@ -63,6 +64,9 @@ public interface GwtRpcServiceAsync
 	
 	// Return a GwtBrandingData object for the corporate branding.
 	public void getCorporateBrandingData( AsyncCallback<GwtBrandingData> callback );
+	
+	// Return the "document base url" that is used in tinyMCE configuration
+	public void getDocumentBaseUrl( String binderId, AsyncCallback<String> callback );
 	
 	// Return an Entry object for the given entry id.
 	public void getEntry( String zoneUUID, String entryId, AsyncCallback<GwtFolderEntry> callback );

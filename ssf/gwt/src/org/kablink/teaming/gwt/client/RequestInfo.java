@@ -63,10 +63,11 @@ public class RequestInfo extends JavaScriptObject
 	
 	
 	/**
-	 * Return the user's name.  This class is an overlay on the JavaScript object called m_requestInfo.
+	 * Return the url for the css used with the tinyMCE editor.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
-	public final native String getUserName() /*-{ return this.userName; }-*/;
-
+	public final native String getContentCss() /*-{ return this.contentCss; }-*/;
+	
+	
 	/**
 	 * Return the path to Teaming's images.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
@@ -74,11 +75,22 @@ public class RequestInfo extends JavaScriptObject
 
 	
 	/**
+	 * Return the user's language.  This class is an overlay on the JavaScript object called m_requestInfo.
+	 */
+	public final native String getLanguage() /*-{ return this.language; }-*/;
+
+	/**
 	 * Return the "my workspace" url.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
 	public final native String getMyWorkspaceUrl() /*-{ return this.myWSUrl; }-*/;
 
 	
+	/**
+	 * Return the user's name.  This class is an overlay on the JavaScript object called m_requestInfo.
+	 */
+	public final native String getUserName() /*-{ return this.userName; }-*/;
+
+
 	/**
 	 * Return the flag that tells us if we are running Novell Teaming.
 	 */

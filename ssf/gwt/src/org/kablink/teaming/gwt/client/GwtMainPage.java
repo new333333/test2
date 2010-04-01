@@ -70,6 +70,7 @@ public class GwtMainPage extends Composite
 	implements ActionHandler, ResizeHandler
 {
 	public static boolean m_novellTeaming = true;
+	public static RequestInfo m_requestInfo;
 	
 	private MastHead m_mastHead;
 	private MainMenuControl m_mainMenuCtrl;
@@ -78,11 +79,12 @@ public class GwtMainPage extends Composite
 	private ContentControl m_contentCtrl;
 	private FlowPanel m_contentPanel;
 	private FlowPanel m_teamingRootPanel;
-	private RequestInfo m_requestInfo;
 	private String m_selectedBinderId;
 	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
 	private EditCanceledHandler m_editBrandingCancelHandler = null;
+	private EditBrandingDlg m_editBrandingDlg = null;
 
+	
 	/**
 	 * 
 	 */
@@ -181,7 +183,6 @@ public class GwtMainPage extends Composite
 	 */
 	private void editBranding()
 	{
-		EditBrandingDlg dlgBox;
 		GwtBrandingData brandingData;
 		int x;
 		int y;
@@ -298,8 +299,16 @@ public class GwtMainPage extends Composite
 			};
 		}
 		
-		dlgBox = new EditBrandingDlg( m_editBrandingSuccessHandler, m_editBrandingCancelHandler, false, true, x, y, brandingData );
-		dlgBox.show();
+		// Have we already created an "Edit branding" dialog?
+		if ( m_editBrandingDlg == null )
+		{
+			// No, create one.
+			m_editBrandingDlg = new EditBrandingDlg( m_editBrandingSuccessHandler, m_editBrandingCancelHandler, false, true, x, y );
+		}
+		
+		m_editBrandingDlg.init( brandingData );
+		m_editBrandingDlg.setPopupPosition( x, y );
+		m_editBrandingDlg.show();
 		
 	}// end editBranding()
 

@@ -98,6 +98,7 @@ public class EditBrandingDlg extends DlgBox
 	private TextBox m_destColorTextbox = null;
 	private TinyMCEDlg m_editAdvancedBrandingDlg = null;
 	private String m_advancedBranding = null;
+	private BrandingTinyMCEConfiguration m_tinyMCEConfig = null;
 	
 
 	/**
@@ -109,16 +110,9 @@ public class EditBrandingDlg extends DlgBox
 		boolean autoHide,
 		boolean modal,
 		int xPos,
-		int yPos,
-		GwtBrandingData brandingData ) // Where properties used in the dialog are read from.
+		int yPos )
 	{
 		super( autoHide, modal, xPos, yPos );
-		
-		// Remember the branding data we started with.
-		m_origBrandingData = brandingData;
-		
-		// Get the advanced branding.
-		m_advancedBranding = m_origBrandingData.getBranding();
 		
 		// Create the callback that will be used when we issue an ajax call to get
 		// the list of files attached to the given binder.
@@ -174,7 +168,7 @@ public class EditBrandingDlg extends DlgBox
 		};
 		
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().brandingDlgHeader(), editSuccessfulHandler, editCanceledHandler, brandingData ); 
+		createAllDlgContent( GwtTeaming.getMessages().brandingDlgHeader(), editSuccessfulHandler, editCanceledHandler, null ); 
 	}// end EditBrandingDlg()
 	
 
@@ -640,8 +634,6 @@ public class EditBrandingDlg extends DlgBox
 		
 		mainPanel.add( table );
 		
-		init( brandingData );
-
 		return mainPanel;
 	}// end createContent()
 	
@@ -752,11 +744,31 @@ public class EditBrandingDlg extends DlgBox
 	{
 		String type;
 		
+		// Remember the branding data we started with.
+		m_origBrandingData = brandingData;
+		
+		// Get the advanced branding.
+		m_advancedBranding = m_origBrandingData.getBranding();
+		
 		// Issue an ajax request to get the list of file attachments for this binder.
 		// When we get the response, updateListOfFileAttachments() will be called.
 		getListOfFileAttachmentsFromServer();
+		
+		// Have we created a BrandingTinyMCEConfiguration object yet?
+		if ( m_tinyMCEConfig == null )
+		{
+			// No, create one
+			m_tinyMCEConfig = new BrandingTinyMCEConfiguration( brandingData.getBinderId() );
+		}
+		else
+		{
+			// Yes, update the configuration based on the binder id we are working with.
+			m_tinyMCEConfig.setBinderId( brandingData.getBinderId() );
+		}
 
 		// Select the appropriate checkbox depending on whether "use branding image" or "use advanced branding" is selected.
+		m_useBrandingImgRb.setValue( false );
+		m_useAdvancedBrandingRb.setValue( false );
 		type = brandingData.getBrandingType();
 		if ( type != null && type.equalsIgnoreCase( GwtBrandingDataExt.BRANDING_TYPE_IMAGE ) )
 			m_useBrandingImgRb.setValue( true );
@@ -929,7 +941,6 @@ public class EditBrandingDlg extends DlgBox
 		{
 			EditSuccessfulHandler editSuccessfulHandler;
 			EditCanceledHandler editCanceledHandler;
-			AbstractTinyMCEConfiguration tinyMCEConfig;
 			
 			editSuccessfulHandler = new EditSuccessfulHandler()
 			{
@@ -966,9 +977,8 @@ public class EditBrandingDlg extends DlgBox
 			};
 
 			// No, create a "Edit Advanced Branding" dialog.
-			tinyMCEConfig = new DefaultTinyMCEConfiguration();
 			m_editAdvancedBrandingDlg = new TinyMCEDlg(
-												tinyMCEConfig,
+												m_tinyMCEConfig,
 												editSuccessfulHandler,
 												editCanceledHandler,
 												false,

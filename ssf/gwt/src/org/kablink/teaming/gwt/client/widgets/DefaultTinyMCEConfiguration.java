@@ -39,5 +39,10 @@ package org.kablink.teaming.gwt.client.widgets;
  */
 public class DefaultTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 {
-
+	/**
+	 * Stub out the addLanguagePack() method.
+	 */
+	public void addLanguagePacks()
+	{
+	}// end addLanguagePacks()
 }// end DefaultTinyMCEConfiguration
