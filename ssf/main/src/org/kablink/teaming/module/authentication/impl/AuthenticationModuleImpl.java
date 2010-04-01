@@ -51,6 +51,9 @@ import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.spring.security.SsfContextMapper;
 import org.kablink.teaming.spring.security.SynchNotifiableAuthentication;
 import org.kablink.teaming.spring.security.ZoneAwareLocalAuthenticationProvider;
+import org.kablink.teaming.spring.security.ldap.PreAuthenticatedAuthenticator;
+import org.kablink.teaming.spring.security.ldap.PreAuthenticatedFilterBasedLdapUserSearch;
+import org.kablink.teaming.spring.security.ldap.PreAuthenticatedLdapAuthenticationProvider;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
@@ -189,8 +192,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 					
 					contextSource = new DefaultSpringSecurityContextSource( url );
 				} catch(Exception e) {
-					if(logger.isDebugEnabled())
-						logger.debug("Unable to create LDAP context for url " + config.getUrl() + ": " + e.toString());
+					logger.warn("Unable to create LDAP context for url " + config.getUrl() + ": " + e.toString());
 					continue;
 				}
 				if (Validator.isNotNull(config.getPrincipal())) {
@@ -216,23 +218,8 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 
 				for (LdapConnectionConfig.SearchInfo us : config
 						.getUserSearches()) {
-					BindAuthenticator authenticator = new BindAuthenticator(
-							contextSource);
-					String filter = search;
-					if (us.getFilter() != "") {
-						filter = "(&" + search + us.getFilter() + ")";
-					}
-					FilterBasedLdapUserSearch userSearch = new FilterBasedLdapUserSearch(
-							us.getBaseDn(), filter, contextSource);
-					if (!us.isSearchSubtree()) {
-						userSearch.setSearchSubtree(false);
-					}
-					authenticator.setUserSearch(userSearch);
-					LdapAuthenticationProvider ldap = new LdapAuthenticationProvider(
-							authenticator);
-					ldap.setUseAuthenticationRequestCredentials(true);
-					ldap.setUserDetailsContextMapper(contextMapper);
-					providers.add(ldap);
+					providers.add(createLdapAuthenticationProvider(contextSource, contextMapper, us, search));
+					providers.add(createPreAuthenticatedLdapAuthenticationProvider(contextSource, contextMapper, us, search));
 				}
 			}
 		}
@@ -252,6 +239,54 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		return providers;
 	}
 
+	protected AuthenticationProvider createLdapAuthenticationProvider
+		(DefaultSpringSecurityContextSource contextSource, 
+			SsfContextMapper contextMapper, 
+			LdapConnectionConfig.SearchInfo us, 
+			String search) {
+		BindAuthenticator authenticator = new BindAuthenticator(
+				contextSource);
+		String filter = search;
+		if(!us.getFilter().equals("")) {
+			filter = "(&" + search + us.getFilter() + ")";
+		}
+		FilterBasedLdapUserSearch userSearch = new FilterBasedLdapUserSearch(
+				us.getBaseDn(), filter, contextSource);
+		if (!us.isSearchSubtree()) {
+			userSearch.setSearchSubtree(false);
+		}
+		authenticator.setUserSearch(userSearch);
+		LdapAuthenticationProvider ldap = new LdapAuthenticationProvider(
+				authenticator);
+		ldap.setUseAuthenticationRequestCredentials(true);
+		ldap.setUserDetailsContextMapper(contextMapper);
+		return ldap;
+	}
+	
+	protected AuthenticationProvider createPreAuthenticatedLdapAuthenticationProvider
+	(DefaultSpringSecurityContextSource contextSource,
+		SsfContextMapper contextMapper, 
+		LdapConnectionConfig.SearchInfo us, 
+		String search) {
+		PreAuthenticatedAuthenticator authenticator = new PreAuthenticatedAuthenticator(
+				contextSource);
+		String filter = search;
+		if(!us.getFilter().equals("")) {
+			filter = "(&" + search + us.getFilter() + ")";
+		}
+		PreAuthenticatedFilterBasedLdapUserSearch userSearch = new PreAuthenticatedFilterBasedLdapUserSearch(
+				us.getBaseDn(), filter, contextSource);
+		if (!us.isSearchSubtree()) {
+			userSearch.setSearchSubtree(false);
+		}
+		authenticator.setUserSearch(userSearch);
+		PreAuthenticatedLdapAuthenticationProvider ldap = new PreAuthenticatedLdapAuthenticationProvider(
+				authenticator);
+		ldap.setUseAuthenticationRequestCredentials(true);
+		ldap.setUserDetailsContextMapper(contextMapper);
+		return ldap;
+	}
+	
 	/**
 	 * Performs authentication with the same contract as {@link
 	 * org.springframework.security.AuthenticationManager#authenticate(Authentication)}.
