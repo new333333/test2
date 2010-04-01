@@ -69,4 +69,7 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/slide_up.png")
 	public ImageResource slideUp();
+	
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/spacer_1px.png")
+	public ImageResource spacer_1px();
 }

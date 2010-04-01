@@ -876,6 +876,54 @@ n-Transparent-Black-Div
 	display: inline-block;
 	vertical-align: middle;
 }
+.mainMenuPopup
+{
+	background-color: #ffffff; 
+	text-align: left; 
+	/* width: 200px; */
+}
+.mainMenuPopup_Bottom
+{
+	margin-bottom: 0px;
+	padding-bottom: 0px;
+	padding-top: 5px;
+	border-bottom: 3px solid #5aa7e3;
+}
+.mainMenuPopup_Core
+{
+	border: 0px;
+	padding: 0px;
+	z-index: 301;
+}
+.mainMenuPopup_Item
+{ 
+	color: #414648; /* dark grey */
+	line-height: 1.1em; 
+	padding: 0.2em 0.5em 0.3em; 
+	white-space: nowrap;
+}
+.mainMenuPopup_TitleBar
+{
+	color: #F6F6F6;
+	font-size: .9em;
+	font-weight: bold;
+	background: url(images/blue_slice.png) repeat-x;
+	background-position: bottom;
+	margin-bottom: 0.5em;
+	padding: 5px; 
+	padding-top: 6px; 
+}
+.mainMenuPopup_TitleBarCloseA
+{
+}
+.mainMenuPopup_TitleBarCloseImg
+{
+	float: right;
+}
+.mainMenuPopup_TitleBarText
+{
+	display: inline;
+}
 
 /* Style for the main Teaming page. */
 .mainTeamingPage
