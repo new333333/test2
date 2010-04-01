@@ -795,30 +795,24 @@ n-Transparent-Black-Div
 /* Styles used by the MainMenuControl. */
 .mainMenuButton
 {
+	display: inline-block;
 	height: 20px;
+	margin-left: 3px;
 	overflow: hidden;
-	padding: 0;
-	position: absolute;
+	padding: 0px;
 	text-align: center;
 	top: 2px;
 	width: 28px;
 	z-index: 310;
 }
-.mainMenuButton_BrowseHierarchy
+.mainMenuButton_Group
 {
-	left: 70px;
-}
-.mainMenuButton_GwtUI
-{
-	left: 101px;
-}
-.mainMenuButton_LeftRight
-{
-	left: 8px;
-}
-.mainMenuButton_UpDown
-{
-	left: 39px;
+	display: inline-block;
+	font-size: 0.85em;
+	font-weight: bold;
+	letter-spacing: 0.05em;
+	padding-left: 6px;
+	padding-right: 2em;
 }
 .mainMenuButton_WidgetAnchor
 {
@@ -827,6 +821,12 @@ n-Transparent-Black-Div
 .mainMenuButton_WidgetImage
 {
 	margin-top: 2px;
+}
+.mainMenuContent
+{
+	display: inline;
+	margin: 0px;
+	padding: 0px;
 }
 .mainMenuControl
 {
@@ -840,7 +840,42 @@ n-Transparent-Black-Div
 	width: 100%;
 	z-index: 300;
 }
-
+.mainMenuItem_BoxA
+{
+	cursor: pointer;
+	text-decoration: none;
+}
+.mainMenuItem_BoxDropDownImg
+{
+	margin-left: 5px;
+	vertical-align: middle;
+}
+.mainMenuItem_BoxHover
+{
+	background: url(images/teal_slice.png) repeat-x center;
+	color: #3e6978;
+}
+.mainMenuItem_BoxImg
+{
+	margin-right: 2px;
+	vertical-align: middle;
+}
+.mainMenuItem_BoxPanel
+{
+	border-left: 1px solid white;
+	color: #414648; /* dark grey */
+	display: inline-block;
+	font-size: 0.73em;
+	font-weight: normal;
+	padding: 3px 8px;
+	vertical-align: top;
+	white-space: nowrap;
+}
+.mainMenuItem_BoxText
+{
+	display: inline-block;
+	vertical-align: middle;
+}
 
 /* Style for the main Teaming page. */
 .mainTeamingPage

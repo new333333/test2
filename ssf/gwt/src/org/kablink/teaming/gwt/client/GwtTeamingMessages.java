@@ -216,6 +216,12 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuAltGwtUI();
 	String mainMenuAltLeftNavHideShow();
 	String mainMenuAltMastHeadHideShow();
+	String mainMenuItemActions();
+	String mainMenuItemFavorites();
+	String mainMenuItemMyTeams();
+	String mainMenuItemMyWorkspace();
+	String mainMenuItemWhatsNew();
+	String mainMenuItemWorkspace();
 
 	// Strings used in the workspace tree control.
 	String treeCloseBreadCrumbs();
