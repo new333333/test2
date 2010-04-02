@@ -55,10 +55,23 @@
 <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
 <span class="ss_bold"><ssf:nlt tag="form.attachments.currentFiles" /></span>
 <br/>
+<table cellspacing="2" cellpadding="2">
 <c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}">
-&nbsp;&nbsp;&nbsp;<input type="checkbox" name="_delete_${selection.id}"
->&nbsp;${selection.fileItem.name}<br>
+<tr>
+<td valign="top" style="padding-left:16px;"><input type="checkbox" name="_delete_${selection.id}"></td>
+<td valign="top" style="padding-left:10px;">${selection.fileItem.name}</td>
+<td valign="top" style="padding-left:16px;">
+  <a href="javascript: ;" onClick="ss_showHide('editCommentDiv_${selection.id}');return false;">
+    <span class="ss_fineprint"><ssf:nlt tag="file.editComment"/></span>
+  </a>
+  <div id="editCommentDiv_${selection.id}" style="padding:4px; display:none;">
+    <ssf:htmleditor name="ss_attachFile${selection.id}.description" height="100" 
+      toolbar="minimal">${selection.fileItem.description.text}</ssf:htmleditor>
+  </div>
+</td>
+</tr>
 </c:forEach>
+</table>
 <span class="ss_small">(<ssf:nlt tag="form.atachments.selectForDelete" />)</span>
 <br/>
 </c:if>

@@ -498,7 +498,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    		}});
 	    	SimpleProfiler.stopProfiler("modifyEntry_transactionExecute");
 		    	
-	    	//handle outside main transaction so main changeLog doesn't reflect attactment changes
+	    	//handle outside main transaction so main changeLog doesn't reflect attachment changes
 	        SimpleProfiler.startProfiler("modifyBinder_removeAttachments");
 	    	List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
 	    	List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
@@ -674,6 +674,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	//create history - using timestamp and version from fillIn
   		if (entry.isTop() && binder.isUniqueTitles()) getCoreDao().updateTitle(binder, entry, (String)ctx.get(ObjectKeys.FIELD_ENTITY_NORMALIZED_TITLE), entry.getNormalTitle());		
     	reorderFiles(entry, inputData, entryData);
+    	editFileComments(entry, inputData);
     	processChangeLog(entry, ChangeLog.MODIFYENTRY);
     	getReportModule().addAuditTrail(AuditType.modify, entry);
 

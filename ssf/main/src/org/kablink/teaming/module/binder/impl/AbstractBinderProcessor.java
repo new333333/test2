@@ -2095,6 +2095,18 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		}
 		return null;
 	}
+	protected void editFileComments(DefinableEntity entity, InputDataAccessor inputData) {
+		//See if there are comment fields to be edited
+		Set<FileAttachment> files = entity.getFileAttachments();
+		for (FileAttachment f : files) {
+			if (inputData.exists("ss_attachFile" + f.getId() + ".description")) {
+				String newText = inputData.getSingleValue("ss_attachFile" + f.getId() + ".description");
+				if (!f.getFileItem().getDescription().getText().equals(newText)) {
+					f.getFileItem().getDescription().setText(newText);
+				}
+			}
+		}
+	}
 	protected void reorderFiles(DefinableEntity entity, InputDataAccessor inputData, Map entryData) {
         //see if request to reorder attachments is present
         Map<String, CustomAttribute> attrs = entity.getCustomAttributes();
