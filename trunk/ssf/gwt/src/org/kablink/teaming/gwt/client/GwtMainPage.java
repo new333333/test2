@@ -501,13 +501,13 @@ public class GwtMainPage extends Composite
 			// A WorkspaceTreeControl in horizontal mode serves as the
 			// bread crumb browser.  Create one...
 			breadCrumbTree = new WorkspaceTreeControl( m_requestInfo, m_selectedBinderId, TreeMode.HORIZONTAL );
-			breadCrumbTree.addStyleName( "mainBreadCrumb_Tree roundcornerSM-bottom" );
+			breadCrumbTree.addStyleName( "mainBreadCrumb_Tree" );
 			registerActionHandler( breadCrumbTree );
 
 			m_breadCrumbBrowser = new PopupPanel(true);
 			m_breadCrumbBrowser.setAnimationEnabled(true);
 //!			m_breadCrumbBrowser.setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
-			m_breadCrumbBrowser.addStyleName( "mainBreadCrumb_Browser" );
+			m_breadCrumbBrowser.addStyleName( "mainBreadCrumb_Browser roundcornerSM-bottom" );
 			m_breadCrumbBrowser.setWidget( breadCrumbTree );
 			
 			// ...position it as per the browse hierarchy request...
