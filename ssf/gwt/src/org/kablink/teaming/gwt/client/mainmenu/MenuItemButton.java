@@ -30,14 +30,16 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.util;
+package org.kablink.teaming.gwt.client.mainmenu;
 
-import org.kablink.teaming.gwt.client.TeamingAction;
+import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -49,94 +51,64 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  *
  */
-public class MenuItemToggle extends Anchor {
+public class MenuItemButton extends Anchor {
 	private ActionTrigger	m_actionTrigger;	// The interface to trigger TeamingAction's through.
-	private Image			m_altImg;			// The alternate Image.
-	private Image			m_baseImg;			// The base      Image.
-	private TeamingAction	m_altAction;		// The alternate TeamingAction.
-	private TeamingAction	m_baseAction;		// The base      TeamingAction.
+	private Object			m_actionObject;		// The Object to send with the TeamingAction.
+	private TeamingAction	m_action;			// The TeamingAction to trigger when the button is clicked.
 	
 	/*
-	 * Inner class that implements clicking on a MenuItemToggle.
+	 * Inner class that implements clicking on buttons on the menu.
 	 */
-	private class MenuToggleSelector implements ClickHandler {
-		private boolean m_isBase;		// true -> Toggle is set to the base action.  false -> It's set to the alternate action.
-
+	private class MenuButtonSelector implements ClickHandler {
 		/**
-		 * Class constructor.
-		 */
-		MenuToggleSelector() {
-			m_isBase = true;
-			getElement().appendChild(m_baseImg.getElement());
-		}
-		
-		/**
-		 * Called when the toggle is clicked.
+		 * Called when the button is clicked.
 		 * 
 		 * @param event
 		 */
 		public void onClick(ClickEvent event) {
-			// Fire the action...
-			TeamingAction action = (m_isBase ? m_baseAction : m_altAction);
-			m_actionTrigger.triggerAction(action);
-			
-			// ...and toggle the state of the MenuItemToggle.
-			Image addImg;
-			Image removeImg;
-			if (m_isBase) {
-				addImg    = m_altImg;
-				removeImg = m_baseImg;
-			}
-			else {
-				addImg    = m_baseImg;
-				removeImg = m_altImg;
-			}
-			m_isBase = (!m_isBase);
-			getElement().replaceChild(addImg.getElement(), removeImg.getElement());
+			// Fire the action.
+			m_actionTrigger.triggerAction(m_action, m_actionObject);
 		}
 	}
 
-	
 	/**
 	 * Class constructor.
 	 * 
 	 * @param actionTrigger
 	 * @param hoverWidget
-	 * @param baseImgRes
-	 * @param baseTitle
-	 * @param baseAction
-	 * @param altImgRes
-	 * @param altTitle
-	 * @param altAction
+	 * @param imgRes
+	 * @param imgTitle
+	 * @param action
 	 */
-	public MenuItemToggle(ActionTrigger actionTrigger, Widget hoverWidget, ImageResource baseImgRes, String baseTitle, TeamingAction baseAction, ImageResource altImgRes, String altTitle, TeamingAction altAction) {
+	public MenuItemButton(ActionTrigger actionTrigger, Widget hoverWidget, ImageResource imgRes, String imgTitle, TeamingAction action, Object actionObject) {
 		// Initialize the super class...
 		super();
 		
 		// ...store the parameters...
 		m_actionTrigger	= actionTrigger;
-		m_baseAction	= baseAction;
-		m_altAction		= altAction;
+		m_action		= action;
+		m_actionObject	= actionObject;
 		
-		// ...create the alternate Image...
-		m_altImg = new Image(altImgRes);
-		m_altImg.setTitle(altTitle);
-		m_altImg.addStyleName("mainMenuButton_WidgetImage");
-		
-		// ...create the base Image...
-		m_baseImg = new Image(baseImgRes);
-		m_baseImg.setTitle(baseTitle);
-		m_baseImg.addStyleName("mainMenuButton_WidgetImage");
+		// Create the Image...
+		Image img = new Image(imgRes);
+		img.setTitle(imgTitle);
+		img.addStyleName("mainMenuButton_WidgetImage");
 		
 		// ...create the Anchor...
 		addStyleName("mainMenuButton_WidgetAnchor");
 		
 		// ...tie things together...
-		addClickHandler(new MenuToggleSelector());
+		getElement().appendChild(img.getElement());
+		addClickHandler(new MenuButtonSelector());
 		
-		// ...and add mouse hover handling.
+		// ...add mouse over handling...
 		MenuItemWidgetHover hover = new MenuItemWidgetHover(hoverWidget, "subhead-control-bg2");
 		addMouseOverHandler(hover);
 		addMouseOutHandler( hover);
+	}
+	
+	public MenuItemButton(ActionTrigger actionTrigger, FlowPanel hostPanel, ImageResource imgRes, String imgTitle, TeamingAction action) {
+		// Always use the other form of the constructor.
+		this(actionTrigger, hostPanel, imgRes, imgTitle, action, null);
 	}
 }

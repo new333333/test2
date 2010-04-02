@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
+
 
 /**
  * Class used to communicate information about a selected binder

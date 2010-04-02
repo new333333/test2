@@ -37,12 +37,12 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 
-import org.kablink.teaming.gwt.client.ActionHandler;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
-import org.kablink.teaming.gwt.client.TeamingAction;
+import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
 import com.google.gwt.dom.client.NativeEvent;

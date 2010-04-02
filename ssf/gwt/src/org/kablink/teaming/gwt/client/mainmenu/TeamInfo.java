@@ -30,50 +30,84 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.mainmenu;
 
-package org.kablink.teaming.gwt.client;
-
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * This class defines all the possible types of actions that a user can request from the GWT main page.
- * @author jwootton
+ * Class used to communicate team information between the client
+ * (i.e., the MainMenuControl) and the server (i.e.,
+ * GwtRpcServiceImpl.getMyTeams().)
+ * 
+ * @author drfoster@novell.com
  *
  */
-public enum TeamingAction
-{
-	ADMINISTRATION( "Invoke Administration Page" ),
-	EDIT_BRANDING( "Edit Branding" ),
-	BROWSE_HIERARCHY( "Browse Teaming's Hierarchy" ),
-	HELP( "Help" ),
-	HIDE_LEFT_NAVIGATION( "Hide the Left Navigation Panel" ),
-	HIDE_MASTHEAD( "Hide the Header" ),
-	HIERARCHY_BROWSER_CLOSED( "Teaming's Hierarchy Browser Has Been Closed" ),
-	LOGOUT( "Logout" ),
-	MY_WORKSPACE( "My Workspace" ),
-	SELECTION_CHANGED( "The User Changed a Selection Somewhere" ),
-	SHOW_LEFT_NAVIGATION( "Show the Left Navigation Panel" ),
-	SHOW_MASTHEAD( "Show the Header" ),
-	SIZE_CHANGED( "The Size of Something Changed" ),
-	TOGGLE_GWT_UI( "Toggles the State of the GWT UI" );
+public class TeamInfo implements IsSerializable {
+	private String m_entityPath;	// The team's entity path.
+	private String m_permalinkUrl;	// The team's permalink URL.
+	private String m_title;			// The team's title.
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * No parameters as per GWT serialization requirements.
+	 */
+	public TeamInfo() {
+		// Nothing to do.
+	}
 
-	private final String m_unlocalizedDesc;
+	/**
+	 * Returns the team's entity path.
+	 * 
+	 * @return
+	 */
+	public String getEntityPath() {
+		return m_entityPath;
+	}
 	
 	/**
+	 * Returns the team's permalink URL.
 	 * 
+	 * @return
 	 */
-	private TeamingAction( String unlocalizedDesc )
-	{
-		m_unlocalizedDesc = unlocalizedDesc;
-	}// end TeamingAction()
-	
+	public String getPermalinkUrl() {
+		return m_permalinkUrl;
+	}
 	
 	/**
+	 * Returns the team's title.
 	 * 
+	 * @return
 	 */
-	public String getUnlocalizedDesc()
-	{
-		return m_unlocalizedDesc;
-	}// end getUnlocalizedDesc()
+	public String getTitle() {
+		return m_title;
+	}
 	
-}// end TeamingAction
+	/**
+	 * Stores the entity path to the team.
+	 * 
+	 * @param entityPath
+	 */
+	public void setEntityPath(String entityPath) {
+		m_entityPath = entityPath;
+	}
+	
+	/**
+	 * Stores the permalink URL to the team.
+	 *  
+	 * @param permalinkUrl
+	 */
+	public void setPermalink(String permalinkUrl) {
+		m_permalinkUrl = permalinkUrl;
+	}
+	
+	/**
+	 * Stores the title to the team.
+	 *  
+	 * @param title
+	 */
+	public void setTitle(String title) {
+		m_title = title;
+	}
+}
