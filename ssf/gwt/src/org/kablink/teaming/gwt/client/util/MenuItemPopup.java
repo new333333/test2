@@ -68,6 +68,7 @@ public class MenuItemPopup extends PopupPanel {
 		super(true);
 		addStyleName("mainMenuPopup_Core");
 		setAnimationEnabled(true);
+//!		setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
 		setPopupPosition(left, top);
 
 		// ...create the popup's innards...
