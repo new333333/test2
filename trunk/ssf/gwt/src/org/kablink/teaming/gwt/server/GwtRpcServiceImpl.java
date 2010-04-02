@@ -47,7 +47,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Node;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.ExtensionInfo;
@@ -74,13 +73,14 @@ import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
+import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
+import org.kablink.teaming.gwt.client.mainmenu.TeamingMenuItem;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
-import org.kablink.teaming.gwt.client.util.TeamingMenuItem;
-import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
+import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -99,7 +99,6 @@ import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
-import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.search.Constants;
@@ -1026,10 +1025,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public String getUserWorkspacePermalink() {
-		Binder userWS = getBinderModule().getBinder(GwtServerHelper.getCurrentUser().getWorkspaceId());
-		return PermaLinkUtil.getPermalink(userWS);
-	}
+	public String getUserWorkspacePermalink()
+	{
+		Binder userWS = getBinderModule().getBinder( GwtServerHelper.getCurrentUser().getWorkspaceId() );
+		return PermaLinkUtil.getPermalink( userWS );
+	}// end getUserWorkspacePermalink()
 	
 
 	/**
@@ -1044,16 +1044,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public List<TreeInfo> getHorizontalTree(String binderIdS) {
+	public List<TreeInfo> getHorizontalTree( String binderIdS ) {
 		// Access the Binder's nearest containing Workspace...
-		long binderId = Long.parseLong(binderIdS);
-		Binder binder = getBinderModule().getBinder(binderId);
+		long binderId = Long.parseLong( binderIdS );
+		Binder binder = getBinderModule().getBinder( binderId );
 		
 		ArrayList<Long> bindersList = new ArrayList<Long>();
-		while (true) {
-			bindersList.add(0, binder.getId());
+		while (true)
+		{
+			bindersList.add( 0, binder.getId() );
 			binder = binder.getParentBinder();
-			if (null == binder) {
+			if ( null == binder )
+			{
 				break;
 			}
 		}
@@ -1061,13 +1063,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		// ...and build the TreeInfo for the request Binder.
 		List<TreeInfo> reply = GwtServerHelper.buildTreeInfoFromBinderList(
 			this,
-			bindersList);
+			bindersList );
 
 
 		// If we get here, reply refers to the TreeInfo for the Binder
 		// requested.  Return it.
 		return reply;
-	}
+	}// end getHorizontalTree()
 	
 	/**
 	 * Builds a TreeInfo for a Binder being expanded.
@@ -1079,24 +1081,27 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public TreeInfo getHorizontalNode(String binderIdS) {
+	public TreeInfo getHorizontalNode( String binderIdS )
+	{
 		// Access the Binder...
-		long binderId = Long.parseLong(binderIdS);
-		Binder binder = getBinderModule().getBinder(binderId);
+		long binderId = Long.parseLong( binderIdS );
+		Binder binder = getBinderModule().getBinder( binderId );
 
 		// ...and build the TreeInfo for it.
-		return GwtServerHelper.buildTreeInfoFromBinder(this, binder);
-	}
+		return GwtServerHelper.buildTreeInfoFromBinder( this, binder );
+	}// end getHorizontalNode()
 
 	/**
 	 * Returns the ID of the nearest containing workspace of a given
 	 * Binder.
+	 * 
+	 * @return
 	 */
-	public String getRootWorkspaceId(String binderId) {
-		Binder binder = getBinderModule().getBinder(Long.parseLong(binderId));
-		Workspace binderWS = BinderHelper.getBinderWorkspace(binder);
-		return String.valueOf(binderWS.getId());
-	}
+	public String getRootWorkspaceId( String binderId ) {
+		Binder binder = getBinderModule().getBinder( Long.parseLong( binderId ) );
+		Workspace binderWS = BinderHelper.getBinderWorkspace( binder );
+		return String.valueOf( binderWS.getId() );
+	}// end getRootWorkspaceId() 
 	
 	/**
 	 * Returns a TreeInfo object containing the display information for
@@ -1112,24 +1117,26 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public TreeInfo getVerticalTree(String binderIdS) {
+	public TreeInfo getVerticalTree( String binderIdS )
+	{
 		// Access the Binder's nearest containing Workspace...
-		long binderId = Long.parseLong(binderIdS);
-		Binder binder = getBinderModule().getBinder(binderId);
-		Workspace binderWS = BinderHelper.getBinderWorkspace(binder);
+		long binderId = Long.parseLong( binderIdS );
+		Binder binder = getBinderModule().getBinder( binderId );
+		Workspace binderWS = BinderHelper.getBinderWorkspace( binder );
 
 		// ...note that the Workspace should always be expanded...
 		Long binderWSId = binderWS.getId();
 		ArrayList<Long> expandedBindersList = new ArrayList<Long>();
-		expandedBindersList.add(binderWSId);
+		expandedBindersList.add( binderWSId );
 
 		// ...calculate which additional Binder's that must be expanded
 		// ...to show the requested Binder...
 		long binderWSIdVal = binderWSId.longValue();
 		if (binderId != binderWSIdVal) {
 			binder = binder.getParentBinder();
-			while (binder.getId().longValue() != binderWSIdVal) {
-				expandedBindersList.add(binder.getId());
+			while ( binder.getId().longValue() != binderWSIdVal )
+			{
+				expandedBindersList.add( binder.getId() );
 				binder = binder.getParentBinder();
 			}
 		}
@@ -1138,20 +1145,21 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		TreeInfo reply = GwtServerHelper.buildTreeInfoFromBinder(
 			this,
 			binderWS,
-			expandedBindersList);
+			expandedBindersList );
 
 
 		// ...and if the Binder supports Trash access...
-		boolean allowTrash = TrashHelper.allowUserTrashAccess(GwtServerHelper.getCurrentUser());
-		if (allowTrash && (!(binder.isMirrored()))) {
+		boolean allowTrash = TrashHelper.allowUserTrashAccess( GwtServerHelper.getCurrentUser() );
+		if ( allowTrash && (!(binder.isMirrored())) )
+		{
 			// ...add a TreeInfo to the reply's children for it.
-			GwtServerHelper.addTrashFolder(this, reply, binder);
+			GwtServerHelper.addTrashFolder( this, reply, binder );
 		}
 		
 		// If we get here, reply refers to the TreeInfo for the Binder
 		// requested.  Return it.
 		return reply;
-	}
+	}// end getVerticalTree()
 	
 	/**
 	 * Builds a TreeInfo for the Binder being expanded and stores the
@@ -1164,18 +1172,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public TreeInfo getVerticalNode(String binderIdS) {
+	public TreeInfo getVerticalNode( String binderIdS )
+	{
 		// Access the Binder...
-		long binderId = Long.parseLong(binderIdS);
-		Binder binder = getBinderModule().getBinder(binderId);
+		long binderId = Long.parseLong( binderIdS );
+		Binder binder = getBinderModule().getBinder( binderId );
 
 		// ...note that the Binder will now be expanded...
 		ArrayList<Long> expandedBindersList = new ArrayList<Long>();
-		expandedBindersList.add(binderId);
+		expandedBindersList.add( binderId );
 
 		// ...and build the TreeInfo folist.toArray(infoArray);r it.
-		return GwtServerHelper.buildTreeInfoFromBinder(this, binder, expandedBindersList);
-	}
+		return GwtServerHelper.buildTreeInfoFromBinder( this, binder, expandedBindersList );
+	}// end getVerticalNode()
 	
 	/**
 	 * Saves the fact that the Binder for the given ID should be
@@ -1185,10 +1194,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public Boolean persistNodeCollapse(String binderId) {
-		GwtServerHelper.persistNodeCollapse(this, Long.parseLong(binderId));
+	public Boolean persistNodeCollapse( String binderId )
+	{
+		GwtServerHelper.persistNodeCollapse( this, Long.parseLong( binderId ) );
 		return Boolean.TRUE;
-	}
+	}// end persistNodeCollapse()
 
 	/**
 	 * Saves the fact that the Binder for the given ID should be
@@ -1198,12 +1208,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public Boolean persistNodeExpand(String binderId) {
-		GwtServerHelper.persistNodeExpand(this, Long.parseLong(binderId));
+	public Boolean persistNodeExpand( String binderId )
+	{
+		GwtServerHelper.persistNodeExpand( this, Long.parseLong( binderId ) );
 		return Boolean.TRUE;
-	}
+	}// end persistNodeExpand()
 
-
+	/**
+	 * Returns information about the teams the current user is a member of.
+	 * 
+	 * @return
+	 */
+	public List<TeamInfo> getMyTeams()
+	{
+		return GwtServerHelper.getMyTeams( this );
+	}// end getMyTeams()
+	
 	/**
 	 * Returns a List<TeamingMenuItem> of the TeamingMenuItem's
 	 * applicable for the given context.
@@ -1347,7 +1367,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			throws GwtTeamingException {
 	
 		UserStatus userStatus = new UserStatus();
-		User user = RequestContextHolder.getRequestContext().getUser();
 		
 		Long binderId = Long.valueOf(sbinderId);
 		Binder binder = getBinderModule().getBinder(binderId);
@@ -1391,5 +1410,4 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		return userStatus;
 	}
-	
 }// end GwtRpcServiceImpl

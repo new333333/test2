@@ -44,10 +44,11 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
+import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
+import org.kablink.teaming.gwt.client.mainmenu.TeamingMenuItem;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
+import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
-import org.kablink.teaming.gwt.client.util.TeamingMenuItem;
-import org.kablink.teaming.gwt.client.util.TreeInfo;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -107,6 +108,7 @@ public interface GwtRpcService extends RemoteService
 	
 	// The following are used in the implementation of the
 	// MainMenuControl.
+	public List<TeamInfo>        getMyTeams();
 	public List<TeamingMenuItem> getMenuItems( String binderId );
 	
 	// Save the branding data to the given binder.

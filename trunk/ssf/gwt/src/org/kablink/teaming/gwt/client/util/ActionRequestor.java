@@ -30,54 +30,17 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.util;
 
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.ui.Widget;
-
-
 /**
- * Class used to handle mouse hover events for menu items.  
+ * Interface to be implemented by those classes that need to request
+ * some TeamingAction be performed.
  * 
  * @author drfoster@novell.com
- *
  */
-public class MenuItemWidgetHover implements MouseOverHandler, MouseOutHandler {
-	private String m_hoverStyle;	// The style to use with the hover.
-	private Widget m_hoverWidget;	// The Widget the MenuItemWidgetHover is for.
-	
-	/**
-	 * Class constructor.
-	 * 
-	 * @param hoverWidget
-	 * @param hoverStyle
-	 */
-	public MenuItemWidgetHover(Widget hoverWidget, String hoverStyle) {
-		// Simply store the parameter.
-		m_hoverWidget = hoverWidget;
-		m_hoverStyle = hoverStyle;
-	}
-	
-	/**
-	 * Called when the mouse leaves a menu item.
-	 * 
-	 * @param me
-	 */
-	public void onMouseOut(MouseOutEvent me) {
-		// Simply remove the hover style.
-		m_hoverWidget.removeStyleName(m_hoverStyle);
-	}
-	
-	/**
-	 * Called when the mouse enters a menu item.
-	 * 
-	 * @param me
-	 */
-	public void onMouseOver(MouseOverEvent me) {
-		// Simply add the hover style.
-		m_hoverWidget.addStyleName(m_hoverStyle);
-	}
+public interface ActionRequestor {
+	// This method gets called by classes that want to request
+	// notification of TeamingAction's.
+	public void addActionHandler(ActionHandler actionHandler);
 }

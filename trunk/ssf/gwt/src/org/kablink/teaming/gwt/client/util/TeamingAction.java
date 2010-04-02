@@ -31,16 +31,49 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client;
+package org.kablink.teaming.gwt.client.util;
+
+
 
 /**
- * Interface to be implemented by those classes that need to request
- * some TeamingAction be performed.
- * 
- * @author drfoster@novell.com
+ * This class defines all the possible types of actions that a user can request from the GWT main page.
+ * @author jwootton
+ *
  */
-public interface ActionRequestor {
-	// This method gets called by classes that want to request
-	// notification of TeamingAction's.
-	public void addActionHandler(ActionHandler actionHandler);
-}
+public enum TeamingAction
+{
+	ADMINISTRATION( "Invoke Administration Page" ),
+	EDIT_BRANDING( "Edit Branding" ),
+	BROWSE_HIERARCHY( "Browse Teaming's Hierarchy" ),
+	HELP( "Help" ),
+	HIDE_LEFT_NAVIGATION( "Hide the Left Navigation Panel" ),
+	HIDE_MASTHEAD( "Hide the Header" ),
+	HIERARCHY_BROWSER_CLOSED( "Teaming's Hierarchy Browser Has Been Closed" ),
+	LOGOUT( "Logout" ),
+	MY_WORKSPACE( "My Workspace" ),
+	SELECTION_CHANGED( "The User Changed a Selection Somewhere" ),
+	SHOW_LEFT_NAVIGATION( "Show the Left Navigation Panel" ),
+	SHOW_MASTHEAD( "Show the Header" ),
+	SIZE_CHANGED( "The Size of Something Changed" ),
+	TOGGLE_GWT_UI( "Toggles the State of the GWT UI" );
+
+	private final String m_unlocalizedDesc;
+	
+	/**
+	 * 
+	 */
+	private TeamingAction( String unlocalizedDesc )
+	{
+		m_unlocalizedDesc = unlocalizedDesc;
+	}// end TeamingAction()
+	
+	
+	/**
+	 * 
+	 */
+	public String getUnlocalizedDesc()
+	{
+		return m_unlocalizedDesc;
+	}// end getUnlocalizedDesc()
+	
+}// end TeamingAction

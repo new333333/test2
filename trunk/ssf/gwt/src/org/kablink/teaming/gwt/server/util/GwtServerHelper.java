@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -46,10 +47,11 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.gwt.client.util.TreeInfo;
-import org.kablink.teaming.gwt.client.util.TreeInfo.BinderType;
-import org.kablink.teaming.gwt.client.util.TreeInfo.FolderType;
-import org.kablink.teaming.gwt.client.util.TreeInfo.WorkspaceType;
+import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
+import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
+import org.kablink.teaming.gwt.client.workspacetree.TreeInfo.BinderType;
+import org.kablink.teaming.gwt.client.workspacetree.TreeInfo.FolderType;
+import org.kablink.teaming.gwt.client.workspacetree.TreeInfo.WorkspaceType;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -65,6 +67,37 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
  * @author drfoster@novell.com
  */
 public class GwtServerHelper {
+	/**
+	 * Inner class used compare two TeamInfo objects.
+	 */
+	private static class TeamInfoComparator implements Comparator<TeamInfo> {
+		/**
+		 * Class constructor.
+		 */
+		public TeamInfoComparator() {
+			// Nothing to do.
+		}
+
+	      
+		/**
+		 * Implements the Comparator.compare() method on two
+		 * TeamInfo's.
+		 *
+		 * Returns:
+		 *    -1 if ti1 <  ti2;
+		 *     0 if ti1 == ti2; and
+		 *     1 if ti1 >  ti2.
+		 *     
+		 * @param ti1
+		 * @param ti2
+		 * 
+		 * @return
+		 */
+		public int compare(TeamInfo ti1, TeamInfo ti2) {
+			return MiscUtil.safeSColatedCompare(ti1.getTitle(), ti2.getTitle());
+		}
+	}	   
+	   
 	/**
 	 * Inner class used compare two TreeInfo objects.
 	 */
@@ -269,6 +302,40 @@ public class GwtServerHelper {
 	private static List<Long> getExpandedBindersList(AllModulesInjected bs) {
 		UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
 		List<Long> reply= ((List<Long>) userProperties.getProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST));
+		return reply;
+	}
+	
+	/**
+	 * Returns information about the teams the current user is a member of.
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<TeamInfo> getMyTeams(AllModulesInjected bs) {
+		// Allocate an ArrayList<TeamInfo> to hold the teams.
+		ArrayList<TeamInfo> reply = new ArrayList<TeamInfo>();
+		
+		// Scan the teams the current user is a member of...
+		User user = getCurrentUser();
+		List<Map> myTeams = bs.getBinderModule().getTeamMemberships( user.getId() );
+		for (Iterator<Map> myTeamsIT = myTeams.iterator(); myTeamsIT.hasNext(); ) {
+			// ...adding a TeamInfo for each to the reply list.
+			Map myTeam = myTeamsIT.next();
+			TeamInfo ti = new TeamInfo();
+			ti.setEntityPath( ((String) myTeam.get(      "_entityPath")));
+			ti.setPermalink(  PermaLinkUtil.getPermalink( myTeam       ));
+			ti.setTitle(      ((String) myTeam.get(      "title"      )));
+			reply.add(ti);
+		}
+		
+		// If there's more than one team being returned...
+		if (1 < reply.size()) {
+			// ...sort them.
+			Collections.sort(reply, new TeamInfoComparator());
+		}
+		
+		// If we get here, reply refers to the ArrayList<TeamInfo> of
+		// the teams the current user is a member of.  Return it.
 		return reply;
 	}
 	

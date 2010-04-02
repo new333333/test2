@@ -37,18 +37,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.ActionHandler;
-import org.kablink.teaming.gwt.client.ActionRequestor;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
-import org.kablink.teaming.gwt.client.TeamingAction;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.TreeDisplayBase;
-import org.kablink.teaming.gwt.client.util.TreeDisplayHorizontal;
-import org.kablink.teaming.gwt.client.util.TreeDisplayVertical;
-import org.kablink.teaming.gwt.client.util.TreeInfo;
+import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayBase;
+import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayHorizontal;
+import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayVertical;
+import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;

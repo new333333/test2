@@ -37,19 +37,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.ActionHandler;
-import org.kablink.teaming.gwt.client.ActionRequestor;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.TeamingAction;
+import org.kablink.teaming.gwt.client.mainmenu.MenuItemBox;
+import org.kablink.teaming.gwt.client.mainmenu.MenuItemButton;
+import org.kablink.teaming.gwt.client.mainmenu.MenuItemPopup;
+import org.kablink.teaming.gwt.client.mainmenu.MenuItemToggle;
+import org.kablink.teaming.gwt.client.mainmenu.TeamingMenuItem;
+import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
-import org.kablink.teaming.gwt.client.util.MenuItemBox;
-import org.kablink.teaming.gwt.client.util.MenuItemButton;
-import org.kablink.teaming.gwt.client.util.MenuItemPopup;
-import org.kablink.teaming.gwt.client.util.MenuItemToggle;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
-import org.kablink.teaming.gwt.client.util.TeamingMenuItem;
+import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
