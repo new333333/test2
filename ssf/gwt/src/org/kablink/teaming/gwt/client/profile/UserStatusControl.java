@@ -60,8 +60,8 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 
 			public void onClick(ClickEvent event) {
 
-				//Set the visibility of the status text, time and clear link
-				showStatus(false);
+				//update the status to the given user
+				setUserStatus("");
 			}});
 		
 		FlowPanel updatePanel = new FlowPanel();
@@ -83,66 +83,9 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 				if(!input.getText().equals("") && !input.getText().equals("What are you working on?")){
 						
 						final String status = input.getText();
+
 						//update the status to the given user
-						
-						AsyncCallback<Boolean> rpcCallback = new AsyncCallback<Boolean>(){
-
-							public void onFailure(Throwable t) {
-								String errMsg;
-								String cause = "";
-								GwtTeamingMessages messages;
-								
-								messages = GwtTeaming.getMessages();
-								
-								if ( t instanceof GwtTeamingException )
-								{
-									ExceptionType type;
-								
-									// Determine what kind of exception happened.
-									type = ((GwtTeamingException)t).getExceptionType();
-									if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
-										cause = messages.errorAccessToFolderDenied( getBinderId() );
-									else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
-										cause = messages.errorFolderDoesNotExist( getBinderId() );
-									else
-										cause = messages.errorUnknownException();
-								}
-								else
-								{
-									cause = t.getLocalizedMessage();
-									if ( cause == null )
-										cause = t.toString();
-								}
-								
-								errMsg = messages.getBrandingRPCFailed( cause );
-								Window.alert( errMsg );
-							}
-
-							public void onSuccess(Boolean result) {
-
-								//Get the text from the input widget and set the status text field
-								statusText.setText(status);
-								
-								//clear the input field once the statusText has been populated...
-								input.setText("");
-								
-								//Set the visibility of the status text, time and clear link
-								showStatus(true);
-							}
-							
-						};
-						
-						// Issue an ajax request to save the branding data.
-						{
-							GwtRpcServiceAsync rpcService;
-							
-							rpcService = GwtTeaming.getRpcService();
-							
-							// Issue an ajax request to save the user status to the db.  rpcCallback will
-							// be called when we get the response back.
-							rpcService.saveUserStatus(status, rpcCallback );
-						}
-
+						setUserStatus(status);
 				}
 			}});
 		
@@ -153,7 +96,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		Event.addNativePreviewHandler( this );
 		
 		// check if the user is owns the current workspace
-		checkUser();
+		showInputsControls();
 		
 		//get the status of the current user
 		getUserStatus();
@@ -161,6 +104,74 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		initWidget(mainPanel);
 	}
 
+	private void setUserStatus(final String status) {
+		
+		AsyncCallback<Boolean> rpcCallback = new AsyncCallback<Boolean>(){
+
+			public void onFailure(Throwable t) {
+				String errMsg;
+				String cause = "";
+				GwtTeamingMessages messages;
+				
+				messages = GwtTeaming.getMessages();
+				
+				if ( t instanceof GwtTeamingException )
+				{
+					ExceptionType type;
+				
+					// Determine what kind of exception happened.
+					type = ((GwtTeamingException)t).getExceptionType();
+					if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
+						cause = messages.errorAccessToFolderDenied( getBinderId() );
+					else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
+						cause = messages.errorFolderDoesNotExist( getBinderId() );
+					else
+						cause = messages.errorUnknownException();
+				}
+				else
+				{
+					cause = t.getLocalizedMessage();
+					if ( cause == null )
+						cause = t.toString();
+				}
+				
+				errMsg = messages.getBrandingRPCFailed( cause );
+				Window.alert( errMsg );
+			}
+
+			public void onSuccess(Boolean result) {
+
+				//Get the text from the input widget and set the status text field
+				statusText.setText(status);
+				
+				//clear the input field once the statusText has been populated...
+				input.setText("");
+
+				if(!status.equals("")) {
+					//Set the visibility of the status text, time and clear link
+					showStatus(true);
+				} else {
+					showStatus(false);
+				}
+
+			}
+			
+		};
+		
+		// Issue an ajax request to save the branding data.
+		{
+			GwtRpcServiceAsync rpcService;
+			
+			rpcService = GwtTeaming.getRpcService();
+			
+			// Issue an ajax request to save the user status to the db.  rpcCallback will
+			// be called when we get the response back.
+			rpcService.saveUserStatus(status, rpcCallback );
+		}
+
+	}
+	
+	
 	private void getUserStatus() {
 		
 		AsyncCallback<UserStatus> rpcCallback = new AsyncCallback<UserStatus>(){
@@ -299,25 +310,38 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 
 		statusText.setVisible(visible);
 		timeLabel.setVisible(visible);
-		clear.setVisible(visible);
-
+		
+		//Only show if they are the owner of this status message
+		if(isOwner()) {
+			clear.setVisible(visible);
+		}
 	}
 	
 	/**
 	 * Set the visibility of the input and clear buttons if the currentUser owns the workspace they are looking at.
 	 * @param visible
 	 */
-	private void checkUser() {
+	private void showInputsControls() {
 		
-		boolean visible = false;
-		
-		if(getCurrentUserWorkspaceId() == getBinderId()) {
-			visible = true;
-		} 
+		boolean visible = isOwner();
 
 		clear.setVisible(visible);
 		input.setVisible(visible);
 		shareButton.setVisible(visible);
+	}
+	
+	/**
+	 * Is the workspace owned by the current user
+	 * @return
+	 */
+	private boolean isOwner() {
+		boolean isOwner = false;
+		
+		if(getCurrentUserWorkspaceId() == getBinderId()) {
+			isOwner = true;
+		} 
+
+		return isOwner;
 	}
 	
 	 /**
