@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.mainmenu.MenuItemBox;
 import org.kablink.teaming.gwt.client.mainmenu.MenuItemButton;
 import org.kablink.teaming.gwt.client.mainmenu.MenuItemPopup;
 import org.kablink.teaming.gwt.client.mainmenu.MenuItemToggle;
+import org.kablink.teaming.gwt.client.mainmenu.MyTeamsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.TeamingMenuItem;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
@@ -158,12 +159,13 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	private void addFavorites(FlowPanel menuPanel) {
 		final String favoritesTitle = m_messages.mainMenuItemFavorites();
 		final MenuItemBox favoritesBox = new MenuItemBox("ss_mainMenuFavorites", favoritesTitle, true);
+		final ActionTrigger actionTrigger = this;
 		favoritesBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					int left =  favoritesBox.getAbsoluteLeft();
 					int top  = (favoritesBox.getAbsoluteTop() - 20);
-					MenuItemPopup mip = new MenuItemPopup(favoritesTitle, left, top);
+					MenuItemPopup mip = new MenuItemPopup(actionTrigger, favoritesTitle, left, top);
 					
 //!					...this needs to be implemented...
 					Label content = new Label("...this needs to be implemented...");
@@ -179,19 +181,14 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * Adds the My Teams item to the menu bar.
 	 */
 	private void addMyTeams(FlowPanel menuPanel) {
-		final String myTeamsTitle = m_messages.mainMenuItemMyTeams();
-		final MenuItemBox myTeamsBox = new MenuItemBox("ss_mainMenuMyTeams", myTeamsTitle, true);
+		final MenuItemBox myTeamsBox = new MenuItemBox("ss_mainMenuMyTeams", m_messages.mainMenuItemMyTeams(), true);
+		final ActionTrigger actionTrigger = this;
 		myTeamsBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					int left =  myTeamsBox.getAbsoluteLeft();
 					int top  = (myTeamsBox.getAbsoluteTop() - 20);
-					MenuItemPopup mip = new MenuItemPopup(myTeamsTitle, left, top);
-					
-//!					...this needs to be implemented...
-					Label content = new Label("...this needs to be implemented...");
-					content.addStyleName("mainMenuPopup_Item");
-					mip.addContentWidget(content);
+					MyTeamsMenuPopup mip = new MyTeamsMenuPopup(actionTrigger, left, top);
 					mip.show();
 				}
 			});

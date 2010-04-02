@@ -44,6 +44,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *
  */
 public class TeamInfo implements IsSerializable {
+	private String m_binderId;		// The team's binder ID.
 	private String m_entityPath;	// The team's entity path.
 	private String m_permalinkUrl;	// The team's permalink URL.
 	private String m_title;			// The team's title.
@@ -57,6 +58,15 @@ public class TeamInfo implements IsSerializable {
 		// Nothing to do.
 	}
 
+	/**
+	 * Returns the team's binder ID.
+	 * 
+	 * @return
+	 */
+	public String getBinderId() {
+		return m_binderId;
+	}
+	
 	/**
 	 * Returns the team's entity path.
 	 * 
@@ -74,7 +84,7 @@ public class TeamInfo implements IsSerializable {
 	public String getPermalinkUrl() {
 		return m_permalinkUrl;
 	}
-	
+
 	/**
 	 * Returns the team's title.
 	 * 
@@ -82,6 +92,15 @@ public class TeamInfo implements IsSerializable {
 	 */
 	public String getTitle() {
 		return m_title;
+	}
+
+	/**
+	 * Stores the binder ID of the team.
+	 * 
+	 * @param binderId
+	 */
+	public void setBinderId(String binderId) {
+		m_binderId = binderId;
 	}
 	
 	/**

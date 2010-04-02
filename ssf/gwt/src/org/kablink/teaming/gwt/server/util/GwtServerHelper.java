@@ -322,6 +322,7 @@ public class GwtServerHelper {
 			// ...adding a TeamInfo for each to the reply list.
 			Map myTeam = myTeamsIT.next();
 			TeamInfo ti = new TeamInfo();
+			ti.setBinderId(   ((String) myTeam.get(      "_docId"     )));
 			ti.setEntityPath( ((String) myTeam.get(      "_entityPath")));
 			ti.setPermalink(  PermaLinkUtil.getPermalink( myTeam       ));
 			ti.setTitle(      ((String) myTeam.get(      "title"      )));
