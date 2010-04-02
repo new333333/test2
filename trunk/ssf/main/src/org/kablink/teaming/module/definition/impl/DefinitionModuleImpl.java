@@ -2324,7 +2324,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		    			(itemName.equals("file") || itemName.equals("graphic")))
 		    		fui = new FileUploadItem(FileUploadItem.TYPE_TITLE, nameValue, myFile, repositoryName);
 		    	else fui = new FileUploadItem(FileUploadItem.TYPE_FILE, nameValue, myFile, repositoryName);
-			    	//See if there is a scaling request for this graphic file. If yes, pass along the hieght and width
+			    	//See if there is a scaling request for this graphic file. If yes, pass along the height and width
+		    	Description fileDescription = new Description();
+		    	if (inputData.exists(repositoryName + ".description")) {
+		    		fileDescription.setText(inputData.getSingleValue(repositoryName + ".description"));
+		    	}
+		    	fui.setDescription(fileDescription);
 		    	if (nextItem != null) fui.setMaxWidth(GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "maxWidth"), 0));
 		    	if (nextItem != null) fui.setMaxHeight(GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "maxHeight"), 0));
 		    	// TODO The following piece of code may need a better conditional
@@ -2366,6 +2371,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
 					    	}
 					    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
+					    	Description fileDescription = new Description();
+					    	if (inputData.exists(nameValue + Integer.toString(intFileCount) + ".description")) {
+					    		fileDescription.setText(inputData.getSingleValue(nameValue + Integer.toString(intFileCount) + ".description"));
+					    	}
+					    	fui.setDescription(fileDescription);
 					    	if(inputData.exists(ObjectKeys.PI_SYNCH_TO_SOURCE)) {
 					    		fui.setSynchToRepository(Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.PI_SYNCH_TO_SOURCE)));
 					    	}
