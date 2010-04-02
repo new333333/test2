@@ -43,8 +43,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<div id="ss_sideNav_wrap"> 
 
 		<% // Status %>
+		<!-- 
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
-		
+		 -->
 		<% // Track %>
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_track.jsp" />
 		

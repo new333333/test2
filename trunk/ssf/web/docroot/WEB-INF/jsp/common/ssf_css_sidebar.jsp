@@ -110,11 +110,10 @@ boolean isIE6 = BrowserSniffer.is_ie_6(request);
 .ss_myStatusOuter{
 	background: transparent;
 	height: auto;
-	margin: 8px;
+	margin: 8px 0px 0px;
 	<c:if test="<%= isIE %>">
 		margin-right: 2px !important;
  	</c:if>	 	
-	background-color: #9EC8CD;
 	}
 .ss_myStatusInner{
 	padding:0px;

@@ -55,12 +55,39 @@
 	<c:set var="actionVar2" value="configure_configuration"/>
 </c:if>
 
-  <div id="ss_profile_box">
-	<div id="ss_profile_box_h1">
+<div id="ss_profile_box">
+		
+   	
+<c:if test="${ssDefinitionEntry.entityType == 'workspace'}">
 	
-	<c:if test="${ssDefinitionEntry.entityType == 'workspace'}">
-	  <ul class="ss_horizontal ss_nobullet">
+<div class="ss_user_photo">
+	<c:if test="${empty ssDefinitionEntry.customAttributes['picture']}">
+	  <div class="ss_profile_picture_frame ss_profile_photo_box_empty"></div>
+	</c:if>
+	
+	<c:if test="${!empty ssDefinitionEntry.customAttributes['picture']}">
+	<div class="ss_profile_picture_frame">
+	<c:set var="selections" value="${ssDefinitionEntry.customAttributes['picture'].value}" />
+	<c:set var="pictureCount" value="0"/>
+	<c:forEach var="selection" items="${selections}">
+	  <c:if test="${pictureCount == 0}">
+		<a href="javascript:;" onClick="ss_showThisImage(this);return false;"><img 
+		  align="middle" id="ss_profilePicture${renderResponse.namespace}"
+		  border="0" 
+		  src="<ssf:fileUrl webPath="readScaledFile" file="${selection}"/>"
+			alt="${property_caption}" /></a>
+	  </c:if>
+	  <c:set var="pictureCount" value="${pictureCount + 1}"/>
+	</c:forEach>
+	</div>
+	</c:if>
+ </div>    
+
+	
+<div style="margin-left: 80px;">
+<ul class="ss_horizontal ss_nobullet">
 	  <li>
+	  <div id="ss_profile_box_h1">
 	  <div class="ss_treeWidget">
 	  <a href="<ssf:url crawlable="true"
            adapter="true" portletName="ss_forum"
@@ -78,12 +105,19 @@
 		   	name="profile" value="1" /></ssf:url>">
 			<span class="ss_profile"><ssf:nlt tag="relevance.tab.profile"/></span></a>
       </div>
-      </li>
-      </ul>
-    </c:if>
+      </div>  
+	  </li>
+</ul>
+<div class="ss_clear"></div>
+
+	<% // Status %>
+	<jsp:include page="/WEB-INF/jsp/profile/user_status.jsp" />
+</div>
+</c:if>
     
 	<c:if test="${ssDefinitionEntry.entityType == 'profiles'}">
-	  <ul class="ss_horizontal ss_nobullet">
+	<div id="ss_profile_box_h1">	
+  	<ul class="ss_horizontal ss_nobullet">
 	  <li>
 	  <div class="ss_treeWidget">
 	  <a href="<ssf:url crawlable="true"
@@ -98,9 +132,11 @@
       </div>
       </li>
       </ul>
+    </div>
     </c:if>
     
 	<c:if test="${ssDefinitionEntry.entityType == 'folder'}">
+	<div id="ss_profile_box_h1">
 	  <ul class="ss_horizontal ss_nobullet">
 	  <c:set var="parentBinder2" value="${ssDefinitionEntry}"/>
 	  <c:set var="action" value="view_ws_listing"/>
@@ -155,11 +191,13 @@
 	   }
   	 %>
 	  </ul>
-    </c:if>
-
-	<div class="ss_clear"></div>
     </div>
-    
+    </c:if>
+	
+	<div class="ss_clear"></div>
+
+
+
 	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 	  configElement="${item}" 
 	  configJspStyle="${ssConfigJspStyle}"

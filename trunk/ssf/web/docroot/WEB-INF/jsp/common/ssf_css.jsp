@@ -3023,6 +3023,10 @@ div.ss_smallRBoxBody {
   overflow: hidden;
 }
 
+div.ss_user_photo  {
+clip:rect(0pt, 75px, 90px, 0pt);
+position:absolute;
+}
 
 div.ss_profileBox1 {
     font-family:${ss_style_folder_view_font_family};
@@ -3041,10 +3045,11 @@ div.ss_profile_matte {
   padding: 5px;
 }
 div.ss_profile_picture_frame {
-  height: 200px;
-  width: 200px;
+  height: 90px;
+  width: 75px;
   text-align: center;
   vertical-align: middle;
+  posistion:absolute;
 }
 
 div.ss_profile_info_frame {
@@ -3055,7 +3060,7 @@ div.ss_profile_info_frame {
 
 div.ss_profile_photo_box_empty {
     background-color: transparent !important;
-	background-image: url(<html:brandedImagesPath/>pics/watermark_person.gif);
+	background-image: url(<html:brandedImagesPath/>pics/thumbnail_no_photo.jpg);
     background-position:  center;
 	background-repeat: no-repeat;
 }
