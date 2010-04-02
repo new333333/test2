@@ -132,7 +132,13 @@ var ${eName}_ok = 1;
 	<c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 	  onClick='alert("${ss_quotaMessage}");return false;'
 	</c:if>
-  />
+  /> 
+  <a href="javascript: ;" onClick="ss_showHide('addComentDiv_${eName}');return false;">
+    <span class="ss_fineprint"><ssf:nlt tag="file.addComment"/></span>
+  </a>
+  <div id="addComentDiv_${eName}" style="display:none;">
+    <ssf:htmleditor name="${eName}.description" height="100" toolbar="minimal"/>
+  </div>
   <div align="left"><span class="ss_smallprint" style="color:red;">${ss_quotaMessage}</span></div>
   <br/>
   <input type="hidden" name="ss_upload_request_uid" />
@@ -145,6 +151,11 @@ var ${eName}_ok = 1;
 	  onClick='alert("${ss_quotaMessage}");return false;'
 	</c:if>
     ${width}/>
+  <a href="javascript: ;" onClick="ss_showHide('addComentDiv_${eName}');return false;">
+    <span class="ss_fineprint"><ssf:nlt tag="file.addComment"/></span>
+  </a>
+  <div id="addComentDiv_${eName}" style="display:none;">
+    <ssf:htmleditor name="${eName}.description" height="100" toolbar="minimal"/>
   <div align="left"><span class="ss_smallprint" style="color:red;">${ss_quotaMessage}</span></div>
   <br/>
  </c:if>

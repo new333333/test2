@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTagSupport;
+import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -60,8 +61,11 @@ import org.kablink.util.servlet.StringServletResponse;
 
 
 public class Htmleditor extends BodyTagSupport {
+	private static String TYPE_STANDARD = "standard";
+	private static String TYPE_MIMIMAL = "minimal";
 	private String id;
 	private String name;
+	private String toolbar;
 	private String initText;
 	private String height = "";
 	private String color = "";
@@ -95,6 +99,9 @@ public class Htmleditor extends BodyTagSupport {
 		    if (initText == null) {
 		    	initText = "";
 		    }
+		    if (toolbar == null || toolbar.equals("")) toolbar = TYPE_STANDARD;
+		    if (!toolbar.equals(TYPE_MIMIMAL) && !toolbar.equals(TYPE_STANDARD)) 
+		    	throw new JspException("Unknown ssf:htmleditor toolbar. Legal values are 'standard' and 'minimal'.");
 	
 			//Output the html editor
 			RequestDispatcher rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/htmlarea/htmlarea.jsp");
@@ -103,6 +110,7 @@ public class Htmleditor extends BodyTagSupport {
 			req = new DynamicServletRequest(httpReq);
 			req.setAttribute("element_id", this.id);
 			req.setAttribute("element_name", this.name);
+			req.setAttribute("editor_toolbar", this.toolbar);
 			req.setAttribute("init_text", this.initText);
 			req.setAttribute("element_height", this.height);
 			req.setAttribute("element_color", this.color);
@@ -129,6 +137,7 @@ public class Htmleditor extends BodyTagSupport {
 			this.initText = "";
 			this.id = "";
 			this.name = "";
+			this.toolbar = "";
 		}
 	}
 
@@ -138,6 +147,10 @@ public class Htmleditor extends BodyTagSupport {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public void setToolbar(String toolbar) {
+		this.toolbar = toolbar;
 	}
 
 	public void setInitText(String initText) {

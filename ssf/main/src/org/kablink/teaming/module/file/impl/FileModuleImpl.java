@@ -1145,6 +1145,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
 		getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
+        		//Copy the "description" into the file attachment
+        		fAtt.getFileItem().setDescription(fui.getDescription());
         		if(isNew) {
             		// Important: Since file attachment is stored into custom 
         			// attribute using its id value rather than association, 

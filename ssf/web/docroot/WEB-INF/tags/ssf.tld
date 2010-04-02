@@ -738,6 +738,11 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
+			<name>toolbar</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<name>initText</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

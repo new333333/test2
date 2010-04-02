@@ -41,6 +41,7 @@ import java.util.Date;
 
 import javax.mail.MessagingException;
 
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.module.mail.impl.DefaultEmailPoster.FileHandler;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -62,7 +63,8 @@ public class FileUploadItem {
 	private boolean registered=false;
 	private boolean markup=false; //indicates whether this file is referenced from a text area
 	private String markupFieldName = null; //data field name that references this attachment = not the same as name.
-	private String name; // This is NOT file name; it is the naem of data field the file is attached to 
+	private String name; // This is NOT file name; it is the name of data field the file is attached to 
+	private Description description; //This is the comment field associated with this file upload
 	
 	// Used for generating scaled file - Zero value indicates no need for 
 	// generating scaled file. 
@@ -92,6 +94,7 @@ public class FileUploadItem {
 		this.name = name;
 		this.mf = mf;
 		this.repositoryName = repositoryName;
+		this.description = new Description();
 	}
 	
 	public boolean getGenerateThumbnail() {
@@ -153,6 +156,15 @@ public class FileUploadItem {
 	public String getName() {
 		return name;
 	}
+	
+	public Description getDescription() {
+		return description;
+	}
+	
+	public void setDescription(Description description) {
+		this.description = description;
+	}
+	
 	public boolean isUniqueName() {
 		return uniqueName;
 	}
