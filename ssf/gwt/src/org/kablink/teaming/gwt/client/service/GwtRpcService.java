@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
+import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.util.TeamingMenuItem;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 
@@ -113,5 +114,10 @@ public interface GwtRpcService extends RemoteService
 	
 	// Return Information about the User Profile
 	public ProfileInfo getProfileInfo(String binderId);
+	
+	// Save the User Status
+	public Boolean saveUserStatus(String status) throws GwtTeamingException;
+	// Get the User Status
+	public UserStatus getUserStatus(String binderId) throws GwtTeamingException; 
 	
 }// end GwtRpcService

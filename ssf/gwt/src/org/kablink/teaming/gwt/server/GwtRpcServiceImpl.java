@@ -33,6 +33,8 @@
 package org.kablink.teaming.gwt.server;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -45,6 +47,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Node;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.ExtensionInfo;
@@ -53,6 +56,8 @@ import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
+import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
@@ -70,6 +75,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
+import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.util.TeamingMenuItem;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
@@ -79,6 +85,7 @@ import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.filter.SearchFilter;
@@ -86,11 +93,13 @@ import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.search.Constants;
@@ -1290,6 +1299,97 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		return profile;
 	}
+	
+	public String getUserStatus() 
+	{
+		String status = "";
+		
+		return status;
+	}
+	
 
+	public Boolean saveUserStatus( String status ) throws GwtTeamingException
+	{
+		try
+		{
+			BinderHelper.addMiniBlogEntry(this, status);
+		}
+		catch (NoBinderByTheIdException nbEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
+		catch (Exception e)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
+		}
+		
+		return Boolean.TRUE;
+	}
+
+
+	public UserStatus getUserStatus(String sbinderId)
+			throws GwtTeamingException {
+	
+		UserStatus userStatus = new UserStatus();
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		Long binderId = Long.valueOf(sbinderId);
+		Binder binder = getBinderModule().getBinder(binderId);
+
+		Principal p = binder.getOwner();
+		Long workspaceId = p.getWorkspaceId();
+
+		//We need to match the binder to the correct user, so we can read the miniblog from the correct user
+		if(!binderId.equals(workspaceId)) {
+			//then we need to find the correct owner
+			String owner = binder.getName();
+			if(owner!=null && !owner.equals("")){
+				List<String> names = new ArrayList<String>();
+				names.add(owner);
+
+				Collection<Principal> principals;
+				principals = getProfileModule().getPrincipalsByName(names);
+				if (!principals.isEmpty()) p = (Principal)principals.iterator().next();
+			}
+		} 
+		
+		//Get the list of miniblog entries by this user (uses the "miniblog" family attribute to find them)
+		Long[] userIds = new Long[]{p.getId()};
+
+		String page = "0";
+		int pageStart = Integer.valueOf(page) * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
+		
+		List<Map<String,Object>> statuses = getReportModule().getUsersStatuses(userIds, null, null, 
+				pageStart + Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
+		if (statuses != null && statuses.size() > pageStart) {
+			Map<String,Object> statusMap = statuses.get(0);
+			
+			User statusUser = (User) statusMap.get(ReportModule.USER);
+			String description = (String)statusMap.get(ReportModule.DESCRIPTION);
+			Date modifyDate = (Date)statusMap.get(ReportModule.DATE);
+			
+			userStatus.setMiniBlogId(statusUser.getMiniBlogId());
+			userStatus.setStatus(description);
+			userStatus.setModifyDate(modifyDate);
+		}
+		
+		return userStatus;
+	}
 	
 }// end GwtRpcServiceImpl
