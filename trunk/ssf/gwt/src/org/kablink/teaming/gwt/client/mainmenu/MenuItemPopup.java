@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.mainmenu;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
+import org.kablink.teaming.gwt.client.util.ActionTrigger;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -48,13 +49,14 @@ import com.google.gwt.user.client.ui.Widget;
 
 
 /**
- * Class used a menu item popup.  
+ * Class used for a menu item popup.  
  * 
  * @author drfoster@novell.com
  *
  */
 public class MenuItemPopup extends PopupPanel {
-	private VerticalPanel m_contentPanel;	// A VerticalPanel that will hold the popup's contents.
+	protected ActionTrigger m_actionTrigger;	// Used to trigger actions from the popup.
+	private   VerticalPanel m_contentPanel;		// A VerticalPanel that will hold the popup's contents.
 	
 	/**
 	 * Class constructor.
@@ -63,9 +65,12 @@ public class MenuItemPopup extends PopupPanel {
 	 * @param left
 	 * @param top
 	 */
-	public MenuItemPopup(String title, int left, int top) {
-		// Initialize the super class...
+	public MenuItemPopup(ActionTrigger actionTrigger, String title, int left, int top) {
+		// Construct the super class...
 		super(true);
+		
+		// ...and initialize everything else.
+		m_actionTrigger = actionTrigger;
 		addStyleName("mainMenuPopup_Core");
 		setAnimationEnabled(true);
 //!		setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);

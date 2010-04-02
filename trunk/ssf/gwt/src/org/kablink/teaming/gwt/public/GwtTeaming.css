@@ -903,6 +903,33 @@ n-Transparent-Black-Div
 	padding: 0.2em 0.5em 0.3em; 
 	white-space: nowrap;
 }
+.mainMenuPopup_ItemA
+{
+}
+.mainMenuPopup_ItemHover
+{
+	background: url(images/blue_slice.png) repeat-x center;
+	color: #FFFFFF !important;
+}
+.mainMenuPopup_ItemSpacer 
+{
+	background: url(images/dotline_bg.gif) repeat-x;
+	font-size: 0.85em;
+	margin-left: 0.5em;
+	padding: 0.3em;
+}
+.mainMenuPopup_ItemPanel
+{
+}
+.mainMenuPopup_ItemText
+{
+	color: #414648; /* dark grey */
+	cursor: pointer;
+	display: inline;
+	font-size: .9em;
+	margin: 0px;
+	padding: 2px 5px;
+}
 .mainMenuPopup_TitleBar
 {
 	color: #F6F6F6;
