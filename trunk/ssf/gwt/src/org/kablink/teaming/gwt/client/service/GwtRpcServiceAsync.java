@@ -43,8 +43,8 @@ import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
-import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
+import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.util.TeamingMenuItem;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 
@@ -108,5 +108,10 @@ public interface GwtRpcServiceAsync
 
 	// Return information about the User Profile
 	public void getProfileInfo(String binderId, AsyncCallback<ProfileInfo> callback);
+	
+	// Save the User Status
+	public void saveUserStatus(String status, AsyncCallback<Boolean> callback);
+	// Get the User Status
+	public void getUserStatus(String binderId,	AsyncCallback<UserStatus> callback); 
 	
 }// end GwtRpcServiceAsync
