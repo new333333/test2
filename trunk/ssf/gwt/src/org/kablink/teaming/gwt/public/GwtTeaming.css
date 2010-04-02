@@ -754,9 +754,10 @@ n-Transparent-Black-Div
 }
 .mainBreadCrumb_Browser
 {
-	position: absolute;
-	z-index: 310;
+	border: 0px;
+	padding: 0px;
 	right: 20px;
+	z-index: 310;
 }
 .breadCrumb_Browser
 {

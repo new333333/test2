@@ -33,12 +33,6 @@
 
 package org.kablink.teaming.gwt.client;
 
-
-import org.adamtacy.client.ui.NEffectPanel;
-import org.adamtacy.client.ui.effects.events.EffectCompletedEvent;
-import org.adamtacy.client.ui.effects.events.EffectCompletedHandler;
-import org.adamtacy.client.ui.effects.impl.SlideDown;
-
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
@@ -59,8 +53,8 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.dom.client.Style;
 
 
 /**
@@ -72,21 +66,21 @@ public class GwtMainPage extends Composite
 	public static boolean m_novellTeaming = true;
 	public static RequestInfo m_requestInfo;
 	
-	private MastHead m_mastHead;
-	private MainMenuControl m_mainMenuCtrl;
-	private NEffectPanel m_breadCrumbBrowser;
-	private WorkspaceTreeControl m_wsTreeCtrl;
 	private ContentControl m_contentCtrl;
+	private EditBrandingDlg m_editBrandingDlg;
+	private EditCanceledHandler m_editBrandingCancelHandler;
+	private EditSuccessfulHandler m_editBrandingSuccessHandler;
 	private FlowPanel m_contentPanel;
 	private FlowPanel m_teamingRootPanel;
+	private MainMenuControl m_mainMenuCtrl;
+	private MastHead m_mastHead;
+	private PopupPanel m_breadCrumbBrowser;
 	private String m_selectedBinderId;
-	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
-	private EditCanceledHandler m_editBrandingCancelHandler = null;
-	private EditBrandingDlg m_editBrandingDlg = null;
+	private WorkspaceTreeControl m_wsTreeCtrl;
 
 	
 	/**
-	 * 
+	 * Class constructor. 
 	 */
 	public GwtMainPage()
 	{
@@ -489,7 +483,7 @@ public class GwtMainPage extends Composite
 	private void runBreadCrumbBrowser( Object obj )
 	{
 		// If we're already running a bread crumb browser...
-		if ( m_breadCrumbBrowser != null )
+		if (( m_breadCrumbBrowser != null ) && m_breadCrumbBrowser.isShowing() )
 		{
 			// ...we simply ignore requests to open one.
 			return;
@@ -499,7 +493,6 @@ public class GwtMainPage extends Composite
 		if ( obj instanceof OnBrowseHierarchyInfo )
 		{
 			OnBrowseHierarchyInfo bhi;
-			Style bcbStyle;
 			WorkspaceTreeControl breadCrumbTree;
 			
 			// A WorkspaceTreeControl in horizontal mode serves as the
@@ -508,47 +501,18 @@ public class GwtMainPage extends Composite
 			breadCrumbTree.addStyleName( "mainBreadCrumb_Tree roundcornerSM-bottom" );
 			registerActionHandler( breadCrumbTree );
 
-			// ...wrap it in a slider Effect so we can animate its
-			// ...opening and closing...
-			SlideDown bcSlider = new SlideDown();
-			bcSlider.addEffectCompletedHandler( new EffectCompletedHandler()
-			{
-				private boolean m_breadCrumbBrowserOpened = false;
-				public void onEffectCompleted( EffectCompletedEvent evt )
-				{
-					// Have we already completed opening the bread
-					// crumb browser?
-					if ( m_breadCrumbBrowserOpened )
-					{
-						// Yes!  Then we've just completed closing it.
-						// Remove it from Teaming and forget about it.
-						m_teamingRootPanel.remove( m_breadCrumbBrowser );
-						m_breadCrumbBrowser  = null;
-					}
-					else
-					{
-						// No, we haven't already completed opening the
-						// bread crumb browser!  We did just now
-						// though.
-						m_breadCrumbBrowserOpened = true;
-					}
-				}//end onEffectCompleted()
-			});
-			m_breadCrumbBrowser = new NEffectPanel();
+			m_breadCrumbBrowser = new PopupPanel(true);
+			m_breadCrumbBrowser.setAnimationEnabled(true);
+//!			m_breadCrumbBrowser.setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
 			m_breadCrumbBrowser.addStyleName( "mainBreadCrumb_Browser" );
-			m_breadCrumbBrowser.add( breadCrumbTree );
-			m_breadCrumbBrowser.addEffect(bcSlider);
-			m_breadCrumbBrowser.setEffectsLength(0.25);
+			m_breadCrumbBrowser.setWidget( breadCrumbTree );
 			
 			// ...position it as per the browse hierarchy request...
 			bhi = ((OnBrowseHierarchyInfo) obj);
-			bcbStyle = m_breadCrumbBrowser.getElement().getStyle();
-			bcbStyle.setLeft( bhi.getLeft(), Style.Unit.PX );
-			bcbStyle.setTop( bhi.getTop(), Style.Unit.PX );
+			m_breadCrumbBrowser.setPopupPosition(bhi.getLeft(), bhi.getTop());
 
 			// ...and play the opening effect.
-			m_teamingRootPanel.add( m_breadCrumbBrowser );
-			m_breadCrumbBrowser.playEffects();
+			m_breadCrumbBrowser.show();
 		}
 		else
 			Window.alert( "in runBreadCrumbBrowser() and obj is not an OnBrowseHierarchyInfo object" );
@@ -562,7 +526,7 @@ public class GwtMainPage extends Composite
 	{
 		if (null != m_breadCrumbBrowser)
 		{
-			m_breadCrumbBrowser.resumeEffectsBackwards();
+			m_breadCrumbBrowser.hide();
 		}
 	}// end closeBreadCrumbBrowser()
 
