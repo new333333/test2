@@ -748,12 +748,12 @@ n-Transparent-Black-Div
 {
 	padding: 5px;
 	padding-bottom: 20px;
-	background: url(images/trans70_black.png) repeat;
 	width: auto;
 	overflow-x: auto;
 }
 .mainBreadCrumb_Browser
 {
+	background: url(images/trans70_black.png) repeat;
 	border: 0px;
 	padding: 0px;
 	right: 20px;
