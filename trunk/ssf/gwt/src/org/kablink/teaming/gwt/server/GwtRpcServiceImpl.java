@@ -1319,36 +1319,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		return profile;
 	}
-	
-	public String getUserStatus() 
-	{
-		String status = "";
-		
-		return status;
-	}
-	
 
+	/**
+	 * Save the User Status
+	 * @param status The text to store in the Micro-Blog
+	 */
 	public Boolean saveUserStatus( String status ) throws GwtTeamingException
 	{
 		try
 		{
 			BinderHelper.addMiniBlogEntry(this, status);
-		}
-		catch (NoBinderByTheIdException nbEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
-			throw ex;
-		}
-		catch (AccessControlException acEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			throw ex;
 		}
 		catch (Exception e)
 		{
@@ -1362,15 +1342,23 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return Boolean.TRUE;
 	}
 
-
+	/**
+	 * Get the User Status from their Micro Blog
+	 * @param binderId This is the binderId of the workspace we are loading
+	 * 
+	 * @return UserStatus This object contains information about the user status.
+	 * 
+	 */
 	public UserStatus getUserStatus(String sbinderId)
 			throws GwtTeamingException {
 	
+		//This is the object that is streamed back to the client
 		UserStatus userStatus = new UserStatus();
-		
+		//Convert binderID to Long
 		Long binderId = Long.valueOf(sbinderId);
 		Binder binder = getBinderModule().getBinder(binderId);
 
+		//Get the Owner of the binder
 		Principal p = binder.getOwner();
 		Long workspaceId = p.getWorkspaceId();
 
@@ -1389,17 +1377,36 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		} 
 		
 		//Get the list of miniblog entries by this user (uses the "miniblog" family attribute to find them)
-		Long[] userIds = new Long[]{p.getId()};
+		List <Long> userIds = new ArrayList<Long>();
+		userIds.add(p.getId());
 
+		//Get the User object for this principle
+		SortedSet<User> users = getProfileModule().getUsers(userIds);
+		User u = null;
+		if (!users.isEmpty()) u = users.iterator().next();
+		
+		//Check this user object to see if they cleared their status, don't display a status if cleared.
+		if(u != null) {
+			String sStatus = u.getStatus();
+			if(sStatus == null || sStatus.equals("")) {
+				return userStatus;
+			}
+		}
+		
+		Long[] userIdsArray = new Long[]{p.getId()};
+		
 		String page = "0";
 		int pageStart = Integer.valueOf(page) * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
 		
-		List<Map<String,Object>> statuses = getReportModule().getUsersStatuses(userIds, null, null, 
+		//Calling into api to read the user status because it checks access controls
+		List<Map<String,Object>> statuses = getReportModule().getUsersStatuses(userIdsArray, null, null, 
 				pageStart + Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
 		if (statuses != null && statuses.size() > pageStart) {
 			Map<String,Object> statusMap = statuses.get(0);
 			
 			User statusUser = (User) statusMap.get(ReportModule.USER);
+			statusUser.getStatus();
+			
 			String description = (String)statusMap.get(ReportModule.DESCRIPTION);
 			Date modifyDate = (Date)statusMap.get(ReportModule.DATE);
 			
