@@ -60,7 +60,7 @@
 <span class="ss_bold"><ssf:nlt tag="relevance.selectGroups"/></span>
 <br/>
   <ssf:find formName="${renderResponse.namespace}fm" formElement="groups" 
-    type="group" userList="${ssGroups}"/>
+    type="group" userList="${ssGroups}" sendingEmail="true"/>
     
 <br/>
 <br/>
