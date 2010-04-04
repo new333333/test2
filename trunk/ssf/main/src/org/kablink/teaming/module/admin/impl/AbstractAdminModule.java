@@ -106,6 +106,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
@@ -950,6 +951,9 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     private Set<InternetAddress> getEmail(Collection<Long>ids, List errors) {
     	Set<InternetAddress> addrs=null;
     	if (ids != null && !ids.isEmpty()) {
+    		boolean sendingToAllUsersIsAllowed = SPropsUtil.getBoolean("mail.allowSendToAllUsers", true);
+    		Long allUsersGroupId = Utils.getAllUsersGroupId();
+    		if (!sendingToAllUsersIsAllowed && ids.contains(allUsersGroupId)) ids.remove(allUsersGroupId);
 			addrs = new HashSet();
  			Set<Long> cc = getProfileDao().explodeGroups(ids, RequestContextHolder.getRequestContext().getZoneId());
  			List<User> users = getCoreDao().loadObjects(cc, User.class, RequestContextHolder.getRequestContext().getZoneId());
