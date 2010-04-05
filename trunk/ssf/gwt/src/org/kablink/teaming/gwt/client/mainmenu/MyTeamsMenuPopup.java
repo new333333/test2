@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -58,9 +59,65 @@ public class MyTeamsMenuPopup extends MenuBarPopup {
 	private final String IDBASE = "myTeams_";
 	
 	/*
+	 * Inner class that handles clicks on team management commands.
+	 */
+	private class ManageClickHandler implements ClickHandler {
+		private String m_manageUrl;		// The URL to launch for the management command, if done by URL.
+		private TeamingAction m_action;	// The TeamingAction to perform for the management command, if done by triggering an action.
+		
+		/**
+		 * Class constructor.
+		 * 
+		 * @param manageUrl
+		 */
+		ManageClickHandler(String manageUrl) {
+			// Simply store the parameter.
+			m_manageUrl = manageUrl;
+		}
+		
+		/**
+		 * Class constructor.
+		 * 
+		 * @param teamingAction
+		 */
+		ManageClickHandler(TeamingAction action) {
+			// Simply store the parameter.
+			m_action = action;
+		}
+		
+		/**
+		 * Called when the user clicks on a team management command.
+		 * 
+		 * @param event
+		 */
+		public void onClick(ClickEvent event) {
+			// Hide the menu.
+			hide();
+			
+			// If the team management command is implemented as a URL...
+			if (GwtClientHelper.hasString(m_manageUrl)) {
+				// ...launch it in a window...
+				jsLaunchUrlInWindow(m_manageUrl);
+			}
+			else {
+				// ...otherwise, trigger the action.
+				m_actionTrigger.triggerAction(m_action);
+			}
+		}
+		
+		/*
+		 * Uses Teaming's existing ss_common JavaScript to launch a URL in
+		 * a new window.
+		 */
+		private native void jsLaunchUrlInWindow(String url) /*-{
+			window.top.ss_openUrlInWindow({href: url}, '_blank', 500, 600);
+		}-*/;
+	}
+	
+	/*
 	 * Inner class that handles clicks on individual teams.
 	 */
-	private class MyTeamClickHandler implements ClickHandler {
+	private class TeamClickHandler implements ClickHandler {
 		private TeamInfo m_myTeam;	// The team clicked on.
 
 		/**
@@ -68,7 +125,7 @@ public class MyTeamsMenuPopup extends MenuBarPopup {
 		 * 
 		 * @param myTeam
 		 */
-		MyTeamClickHandler(TeamInfo myTeam) {
+		TeamClickHandler(TeamInfo myTeam) {
 			// Simply store the parameter.
 			m_myTeam = myTeam;
 		}
@@ -105,12 +162,9 @@ public class MyTeamsMenuPopup extends MenuBarPopup {
 	}
 	
 	/**
-	 * Completes construction of the menu and show's it.
-	 * 
-	 * Overrides MenuBarPopup.show().
+	 * Completes construction of the menu and shows it.
 	 */
-	@Override
-	public void show() {
+	public void showMyTeams(final String binderId) {
 		m_rpcService.getMyTeams(new AsyncCallback<List<TeamInfo>>() {
 			public void onFailure(Throwable t) {
 				Window.alert(t.toString());
@@ -124,7 +178,7 @@ public class MyTeamsMenuPopup extends MenuBarPopup {
 					TeamInfo mt = mtIT.next();
 					String mtId = (IDBASE + mt.getBinderId());
 					
-					mtA = new MenuPopupAnchor(mtId, mt.getTitle(), mt.getEntityPath(), new MyTeamClickHandler(mt));
+					mtA = new MenuPopupAnchor(mtId, mt.getTitle(), mt.getEntityPath(), new TeamClickHandler(mt));
 					addContentWidget(mtA);
 					mtCount += 1;
 				}
@@ -137,51 +191,46 @@ public class MyTeamsMenuPopup extends MenuBarPopup {
 					addContentWidget(content);
 				}
 
-				// Add a spacer between the teams and team commands.
-				FlowPanel spacerPanel = new FlowPanel();
-				spacerPanel.addStyleName("mainMenuPopup_ItemSpacer");
-				addContentWidget(spacerPanel);
-				
-				// Add the team command items.
-				mtA = new MenuPopupAnchor((IDBASE + "View"), m_messages.mainMenuMyTeamsViewTeam(), null, new ClickHandler() {
-					public void onClick(ClickEvent event) {
-						hide();
-						m_actionTrigger.triggerAction(TeamingAction.VIEW_TEAM_MEMBERS);
+				m_rpcService.getTeamManagementInfo(binderId, new AsyncCallback<TeamManagementInfo>() {
+					public void onFailure(Throwable t) {
+						Window.alert(t.toString());
+					}
+					public void onSuccess(final TeamManagementInfo tmi)  {
+						// Are any of the team management options
+						// enabled?
+						if (tmi.isTeamManagementEnabled()) {
+							// Yes!  Add a spacer between the teams and
+							// team commands.
+							FlowPanel spacerPanel = new FlowPanel();
+							spacerPanel.addStyleName("mainMenuPopup_ItemSpacer");
+							addContentWidget(spacerPanel);
+							
+							// Add the team command items.
+							MenuPopupAnchor mtA;
+							if (tmi.isViewAllowed()) {
+								mtA = new MenuPopupAnchor((IDBASE + "View"), m_messages.mainMenuMyTeamsViewTeam(), null, new ManageClickHandler(TeamingAction.VIEW_TEAM_MEMBERS));
+								addContentWidget(mtA);
+							}
+							if (tmi.isManageAllowed()) {
+								mtA = new MenuPopupAnchor((IDBASE + "Manage"), m_messages.mainMenuMyTeamsManageTeam(), null, new ManageClickHandler(tmi.getManageUrl()));
+								addContentWidget(mtA);
+							}
+							if (tmi.isSendMailAllowed()) {
+								mtA = new MenuPopupAnchor((IDBASE + "Send"), m_messages.mainMenuMyTeamsSendEmailToTeam(), null, new ManageClickHandler(tmi.getSendMailUrl()));
+								addContentWidget(mtA);
+							}
+							if (tmi.isTeamMeetingAllowed()) {
+								mtA = new MenuPopupAnchor((IDBASE + "Start"), m_messages.mainMenuMyTeamsStartTeamMeeting(), null, new ManageClickHandler(tmi.getTeamMeetingUrl()));
+								addContentWidget(mtA);
+							}
+						}
+						
+						// Finally, show the menu popup.
+						show();
 					}
 				});
-				addContentWidget(mtA);
-				mtA = new MenuPopupAnchor((IDBASE + "Manage"), m_messages.mainMenuMyTeamsManageTeam(), null, new ClickHandler() {
-					public void onClick(ClickEvent event) {
-						hide();
-						Window.alert("MyTeamsMenuPopup.ManageTeamMembers( ...this needs to be implemented... )");
-					}
-				});
-				addContentWidget(mtA);
-				mtA = new MenuPopupAnchor((IDBASE + "Send"), m_messages.mainMenuMyTeamsSendEmailToTeam(), null, new ClickHandler() {
-					public void onClick(ClickEvent event) {
-						hide();
-						Window.alert("MyTeamsMenuPopup.SendTeamEmail( ...this needs to be implemented... )");
-					}
-				});
-				addContentWidget(mtA);
-				mtA = new MenuPopupAnchor((IDBASE + "Start"), m_messages.mainMenuMyTeamsStartTeamMeeting(), null, new ClickHandler() {
-					public void onClick(ClickEvent event) {
-						hide();
-						Window.alert("MyTeamsMenuPopup.StartTeamMeeting( ...this needs to be implemented... )");
-					}
-				});
-				addContentWidget(mtA);
 
-				// Finally, show the menu.
-				showImpl();
 			}
 		});
-	}
-
-	/*
-	 * Simply calls the superclass's show() method.
-	 */
-	private void showImpl() {
-		super.show();
 	}
 }
