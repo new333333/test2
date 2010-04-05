@@ -2686,34 +2686,26 @@ public class AjaxController  extends SAbstractControllerRetry {
 		if (properties.containsKey(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES)) {
 			pinnedEntries = (String)properties.get(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES);
 		}
-		int len = String.valueOf(entryId).length() + 1;
-		int i = pinnedEntries.indexOf(String.valueOf(entryId) + ",");
-		if (i >= 0) {
-			pinnedEntries = pinnedEntries.substring(0, i) + pinnedEntries.substring(i+len);
+		List peList = new ArrayList();
+		String[] peArray = pinnedEntries.split(",");
+		for (int i = 0; i < peArray.length; i++) {
+			if (!peList.contains(peArray[i]) && !peArray[i].equals("")) peList.add(Long.valueOf(peArray[i]));
+		}
+		//If the entry already is pinned, then this is a request to unpin it
+		if (peList.contains(entryId)) {
+			peList.remove(entryId);
 		} else {
-			pinnedEntries = String.valueOf(entryId) + "," + pinnedEntries;
+			peList.add(entryId);
 		}
 		
 		//See if there are any pinned entries that shouldn't be in the list anymore
 		String finalPinnedEntries = "";
-		if (!pinnedEntries.equals("")) {
-			if (pinnedEntries.lastIndexOf(",") == pinnedEntries.length()-1) 
-				pinnedEntries = pinnedEntries.substring(0,pinnedEntries.length()-1);
-			String[] peArray = pinnedEntries.split(",");
-			List peSet = new ArrayList();
-			for (int j = 0; j < peArray.length; j++) {
-				String pe = peArray[j];
-				if (!pe.equals("")) {
-					peSet.add(Long.valueOf(pe));
-				}
-			}
-			SortedSet<FolderEntry> pinnedFolderEntriesSet = bs.getFolderModule().getEntries(peSet);
-			for (FolderEntry entry : pinnedFolderEntriesSet) {
-				//Make sure the entry is still in this folder
-				if (entry.getParentBinder().getId().equals(binderId)) {
-					if (!finalPinnedEntries.equals("")) finalPinnedEntries += ",";
-					finalPinnedEntries += entry.getId().toString();
-				}
+		SortedSet<FolderEntry> pinnedFolderEntriesSet = bs.getFolderModule().getEntries(peList);
+		for (FolderEntry entry : pinnedFolderEntriesSet) {
+			//Make sure the entry is still in this folder
+			if (entry.getParentBinder().getId().equals(binderId)) {
+				if (!finalPinnedEntries.equals("")) finalPinnedEntries += ",";
+				finalPinnedEntries += entry.getId().toString();
 			}
 		}
 		getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_PINNED_ENTRIES, finalPinnedEntries);
