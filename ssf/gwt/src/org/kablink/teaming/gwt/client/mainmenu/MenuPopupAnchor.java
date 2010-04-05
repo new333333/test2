@@ -32,52 +32,56 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.ui.Widget;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 
 
 /**
- * Class used to handle mouse hover events for menu items.  
+ * Class used for a popup menu Anchor item.  
  * 
  * @author drfoster@novell.com
  *
  */
-public class MenuItemWidgetHover implements MouseOverHandler, MouseOutHandler {
-	private String m_hoverStyle;	// The style to use with the hover.
-	private Widget m_hoverWidget;	// The Widget the MenuItemWidgetHover is for.
-	
+public class MenuPopupAnchor extends FlowPanel {
 	/**
 	 * Class constructor.
 	 * 
-	 * @param hoverWidget
-	 * @param hoverStyle
+	 * @param id
+	 * @param displayText
+	 * @param altText
+	 * @param ch
 	 */
-	public MenuItemWidgetHover(Widget hoverWidget, String hoverStyle) {
-		// Simply store the parameter.
-		m_hoverWidget = hoverWidget;
-		m_hoverStyle = hoverStyle;
-	}
-	
-	/**
-	 * Called when the mouse leaves a menu item.
-	 * 
-	 * @param me
-	 */
-	public void onMouseOut(MouseOutEvent me) {
-		// Simply remove the hover style.
-		m_hoverWidget.removeStyleName(m_hoverStyle);
-	}
-	
-	/**
-	 * Called when the mouse enters a menu item.
-	 * 
-	 * @param me
-	 */
-	public void onMouseOver(MouseOverEvent me) {
-		// Simply add the hover style.
-		m_hoverWidget.addStyleName(m_hoverStyle);
+	public MenuPopupAnchor(String id, String displayText, String altText, ClickHandler ch) {
+		// Initialize the super class...
+		super();
+		addStyleName("mainMenuPopup_ItemPanel");
+
+		// ...create a FlowPanel to hold the Label...
+		FlowPanel mpaLabelPanel = new FlowPanel();
+		mpaLabelPanel.addStyleName("mainMenuPopup_Item");
+		Label mpaLabel = new Label(displayText);
+		mpaLabel.getElement().setId(id);
+		mpaLabel.addStyleName("mainMenuPopup_ItemText");
+		mpaLabelPanel.add(mpaLabel);
+
+		// ...create the Anchor...
+		Anchor mpA = new Anchor();
+		mpA.addStyleName("mainMenuPopup_ItemA");
+		if (GwtClientHelper.hasString(altText)) {
+			mpA.setTitle(altText);
+		}
+		mpA.addClickHandler(ch);
+		MenuHoverByID mpaHover = new MenuHoverByID(id, "mainMenuPopup_ItemHover");
+		mpA.addMouseOverHandler(mpaHover);
+		mpA.addMouseOutHandler( mpaHover);
+
+		// ...and connect everything together.
+		mpA.getElement().appendChild(mpaLabel.getElement());
+		mpaLabelPanel.add(mpA);
+		add(mpaLabelPanel);
 	}
 }

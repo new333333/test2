@@ -34,6 +34,8 @@ package org.kablink.teaming.gwt.client.mainmenu;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -54,9 +56,12 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  *
  */
-public class MenuItemPopup extends PopupPanel {
-	protected ActionTrigger m_actionTrigger;	// Used to trigger actions from the popup.
-	private   VerticalPanel m_contentPanel;		// A VerticalPanel that will hold the popup's contents.
+public class MenuBarPopup extends PopupPanel {
+	protected ActionTrigger					m_actionTrigger;	// Used to trigger actions from the popup.
+	protected GwtTeamingMainMenuImageBundle	m_images;			// The menu's images.
+	protected GwtTeamingMessages			m_messages;			// The menu's messages.
+	protected GwtRpcServiceAsync			m_rpcService;		//
+	private   VerticalPanel					m_contentPanel;		// A VerticalPanel that will hold the popup's contents.
 	
 	/**
 	 * Class constructor.
@@ -65,24 +70,28 @@ public class MenuItemPopup extends PopupPanel {
 	 * @param left
 	 * @param top
 	 */
-	public MenuItemPopup(ActionTrigger actionTrigger, String title, int left, int top) {
+	public MenuBarPopup(ActionTrigger actionTrigger, String title, int left, int top) {
 		// Construct the super class...
 		super(true);
+
+		// ...store the parameters...
+		m_actionTrigger	= actionTrigger;
+		m_images		= GwtTeaming.getMainMenuImageBundle();
+		m_messages		= GwtTeaming.getMessages();
+		m_rpcService	= GwtTeaming.getRpcService();
 		
 		// ...and initialize everything else.
-		m_actionTrigger = actionTrigger;
 		addStyleName("mainMenuPopup_Core");
 		setAnimationEnabled(true);
 //!		setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
 		setPopupPosition(left, top);
 
 		// ...create the popup's innards...
-		GwtTeamingMainMenuImageBundle images = GwtTeaming.getMainMenuImageBundle();
 		DockPanel dp = new DockPanel();
 		dp.addStyleName("mainMenuPopup");
-		dp.add(createPopupTitleBar(title, images), DockPanel.NORTH);
-		dp.add(createPopupContentPanel(),          DockPanel.CENTER);
-		dp.add(createPopupBottom(images),          DockPanel.SOUTH);
+		dp.add(createPopupTitleBar(title, m_images), DockPanel.NORTH);
+		dp.add(createPopupContentPanel(),            DockPanel.CENTER);
+		dp.add(createPopupBottom(m_images),          DockPanel.SOUTH);
 
 		// ...and add it to the popup.
 		setWidget(dp);

@@ -46,7 +46,7 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
  * @author drfoster@novell.com
  *
  */
-public class MenuItemIDHover implements MouseOverHandler, MouseOutHandler {
+public class MenuHoverByID implements MouseOverHandler, MouseOutHandler {
 	private String m_hoverStyle;	// The style to use with the hover.
 	private String m_hoverId;		// The ID of the widget to apply the hover style to.
 	
@@ -56,7 +56,7 @@ public class MenuItemIDHover implements MouseOverHandler, MouseOutHandler {
 	 * @param hoverId
 	 * @param hoverString;
 	 */
-	MenuItemIDHover(String hoverId, String hoverStyle) {
+	MenuHoverByID(String hoverId, String hoverStyle) {
 		// Simply store the parameters.
 		m_hoverId = hoverId;
 		m_hoverStyle = hoverStyle;

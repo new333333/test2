@@ -34,11 +34,11 @@
 package org.kablink.teaming.gwt.client.util;
 
 
-
 /**
- * This class defines all the possible types of actions that a user can request from the GWT main page.
+ * This class defines all the possible types of actions that a user can
+ * request from the GWT main page.
+ * 
  * @author jwootton
- *
  */
 public enum TeamingAction
 {
@@ -55,12 +55,12 @@ public enum TeamingAction
 	SHOW_LEFT_NAVIGATION( "Show the Left Navigation Panel" ),
 	SHOW_MASTHEAD( "Show the Header" ),
 	SIZE_CHANGED( "The Size of Something Changed" ),
-	TOGGLE_GWT_UI( "Toggles the State of the GWT UI" );
+	TOGGLE_GWT_UI( "Toggles the State of the GWT UI" ),
+	VIEW_TEAM_MEMBERS( "View Team Membership of Current Binder" );
 
 	private final String m_unlocalizedDesc;
 	
 	/**
-	 * 
 	 */
 	private TeamingAction( String unlocalizedDesc )
 	{
@@ -69,11 +69,9 @@ public enum TeamingAction
 	
 	
 	/**
-	 * 
 	 */
 	public String getUnlocalizedDesc()
 	{
 		return m_unlocalizedDesc;
 	}// end getUnlocalizedDesc()
-	
 }// end TeamingAction

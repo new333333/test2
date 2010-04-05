@@ -49,7 +49,6 @@ public class OnSelectBinderInfo {
 	private String m_binderUrl;
 
 	// Various marker strings used to recognize the format of a URL.
-	private final static String AMPERSAND_FORMAT_MARKER = "a/do?";
 	private final static String CAPTIVE_MARKER = "captive";
 	private final static String GWT_MARKER = "seen_by_gwt";
 	private final static String PERMALINK_MARKER = "view_permalink";
@@ -103,26 +102,13 @@ public class OnSelectBinderInfo {
 	 */
 	private void fixupUrl() {
 		// Add a captive marker...
-		String marker;
-		boolean useAmpersand = (0 < m_binderUrl.indexOf(AMPERSAND_FORMAT_MARKER));
-		if (useAmpersand)
-			 marker = ("&" + CAPTIVE_MARKER + "=true");
-		else marker = ("/" + CAPTIVE_MARKER + "/true");
-		if (0 > m_binderUrl.indexOf(marker)) {
-			m_binderUrl += marker;
-		}
+		m_binderUrl = GwtClientHelper.appendUrlParam(m_binderUrl, CAPTIVE_MARKER, "true");
 		
 		// ...and if the URL is a permalink...
 		m_isPermalinkUrl = (0 < m_binderUrl.indexOf(PERMALINK_MARKER));
 		if (m_isPermalinkUrl) {
-			// ...and it doesn't have a GWT marker...
-			if (useAmpersand)
-				 marker = ("&" + GWT_MARKER + "=1");
-			else marker = ("/" + GWT_MARKER + "/1");
-			if (0 > m_binderUrl.indexOf(marker)) {
-				// ...add one.
-				m_binderUrl += marker;
-			}
+			// ...add a GWT marker.
+			m_binderUrl = GwtClientHelper.appendUrlParam(m_binderUrl, GWT_MARKER, "1");
 		}
 	}
 	

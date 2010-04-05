@@ -30,55 +30,54 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.mainmenu;
 
-package org.kablink.teaming.gwt.client.util;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
- * Helper methods for the GWT UI client code.
- *
+ * Class used to handle mouse hover events for menu items.  
+ * 
  * @author drfoster@novell.com
+ *
  */
-public class GwtClientHelper {
-	// String used to recognized an '&' formatted URL vs. a '/'
-	// formatted permalink URL.
-	private final static String AMPERSAND_FORMAT_MARKER = "a/do?";
+public class MenuHoverByWidget implements MouseOverHandler, MouseOutHandler {
+	private String m_hoverStyle;	// The style to use with the hover.
+	private Widget m_hoverWidget;	// The Widget the MenuHoverByWidget is for.
 	
-	/*
-	 * Inhibits this class from being instantiated. 
+	/**
+	 * Class constructor.
+	 * 
+	 * @param hoverWidget
+	 * @param hoverStyle
 	 */
-	private GwtClientHelper() {
+	public MenuHoverByWidget(Widget hoverWidget, String hoverStyle) {
+		// Simply store the parameter.
+		m_hoverWidget = hoverWidget;
+		m_hoverStyle = hoverStyle;
 	}
 	
 	/**
-	 * Appends a parameter to to a URL.
+	 * Called when the mouse leaves a menu item.
 	 * 
-	 * @param urlString
-	 * @param pName
-	 * @param pValue
-	 * 
-	 * @return
+	 * @param me
 	 */
-	public static String appendUrlParam(String urlString, String pName, String pValue) {
-		String param;
-		boolean useAmpersand = (0 < urlString.indexOf(AMPERSAND_FORMAT_MARKER));
-		if (useAmpersand)
-			 param = ("&" + pName + "=" + pValue);
-		else param = ("/" + pName + "/" + pValue);
-		if (0 > urlString.indexOf(param)) {
-			urlString += param;
-		}
-		return urlString;
+	public void onMouseOut(MouseOutEvent me) {
+		// Simply remove the hover style.
+		m_hoverWidget.removeStyleName(m_hoverStyle);
 	}
 	
 	/**
-	 * Returns true is s refers to a non null, non 0 length String and
-	 * false otherwise.
+	 * Called when the mouse enters a menu item.
 	 * 
-	 * @param s
-	 * @return
+	 * @param me
 	 */
-	public static boolean hasString(String s) {
-		return ((null != s) && (0 < s.length()));
+	public void onMouseOver(MouseOverEvent me) {
+		// Simply add the hover style.
+		m_hoverWidget.addStyleName(m_hoverStyle);
 	}
 }

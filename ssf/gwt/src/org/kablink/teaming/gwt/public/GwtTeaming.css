@@ -841,27 +841,27 @@ n-Transparent-Black-Div
 	width: 100%;
 	z-index: 300;
 }
-.mainMenuItem_BoxA
+.mainMenuBar_BoxA
 {
 	cursor: pointer;
 	text-decoration: none;
 }
-.mainMenuItem_BoxDropDownImg
+.mainMenuBar_BoxDropDownImg
 {
 	margin-left: 5px;
 	vertical-align: middle;
 }
-.mainMenuItem_BoxHover
+.mainMenuBar_BoxHover
 {
 	background: url(images/teal_slice.png) repeat-x center;
 	color: #3e6978;
 }
-.mainMenuItem_BoxImg
+.mainMenuBar_BoxImg
 {
 	margin-right: 2px;
 	vertical-align: middle;
 }
-.mainMenuItem_BoxPanel
+.mainMenuBar_BoxPanel
 {
 	border-left: 1px solid white;
 	color: #414648; /* dark grey */
@@ -872,7 +872,7 @@ n-Transparent-Black-Div
 	vertical-align: top;
 	white-space: nowrap;
 }
-.mainMenuItem_BoxText
+.mainMenuBar_BoxText
 {
 	display: inline-block;
 	vertical-align: middle;

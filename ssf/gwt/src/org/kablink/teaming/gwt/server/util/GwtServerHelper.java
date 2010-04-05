@@ -67,6 +67,10 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
  * @author drfoster@novell.com
  */
 public class GwtServerHelper {
+	// String used to recognized an '&' formatted URL vs. a '/'
+	// formatted permalink URL.
+	private final static String AMPERSAND_FORMAT_MARKER = "a/do?";
+	
 	/**
 	 * Inner class used compare two TeamInfo objects.
 	 */
@@ -174,6 +178,27 @@ public class GwtServerHelper {
 		ti.setChildBindersList(childBindersList);
 	}
 
+	/**
+	 * Appends a parameter to to a URL.
+	 * 
+	 * @param urlString
+	 * @param pName
+	 * @param pValue
+	 * 
+	 * @return
+	 */
+	public static String appendUrlParam(String urlString, String pName, String pValue) {
+		String param;
+		boolean useAmpersand = (0 < urlString.indexOf(AMPERSAND_FORMAT_MARKER));
+		if (useAmpersand)
+			 param = ("&" + pName + "=" + pValue);
+		else param = ("/" + pName + "/" + pValue);
+		if (0 > urlString.indexOf(param)) {
+			urlString += param;
+		}
+		return urlString;
+	}
+	
 	/**
 	 * Builds a TreeInfo object for a given Binder.
 	 *
@@ -345,14 +370,7 @@ public class GwtServerHelper {
 	 * the trash on that Binder.
 	 */
 	private static String getTrashPermalink(String binderPermalink) {
-		String reply = binderPermalink;
-		String marker;
-		boolean useAmpersand = (0 < reply.indexOf("a/do?"));
-		if (useAmpersand)
-			 marker = ("&" + WebKeys.URL_SHOW_TRASH + "=true");
-		else marker = ("/" + WebKeys.URL_SHOW_TRASH + "/true");
-		reply += marker;
-		return reply;
+		return appendUrlParam(binderPermalink, WebKeys.URL_SHOW_TRASH, "true");
 	}
 	
 	/**
