@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
+import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamingMenuItem;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
@@ -102,8 +103,9 @@ public interface GwtRpcServiceAsync
 
 	// The following are used in the implementation of the
 	// MainMenuControl.
-	public void getMyTeams(                    AsyncCallback<List<TeamInfo>>        callback );
-	public void getMenuItems( String binderId, AsyncCallback<List<TeamingMenuItem>> callback );
+	public void getMyTeams(                             AsyncCallback<List<TeamInfo>>        callback );
+	public void getMenuItems(          String binderId, AsyncCallback<List<TeamingMenuItem>> callback );
+	public void getTeamManagementInfo( String binderId, AsyncCallback<TeamManagementInfo>    callback );
 	
 	// Save the branding data to the given binder.
 	public void saveBrandingData( String binderId, GwtBrandingData brandingData, AsyncCallback<Boolean> callback );

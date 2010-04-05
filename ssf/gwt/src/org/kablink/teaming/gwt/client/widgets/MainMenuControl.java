@@ -71,6 +71,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	private GwtTeamingMainMenuImageBundle m_images = GwtTeaming.getMainMenuImageBundle();
 	private GwtTeamingMessages m_messages = GwtTeaming.getMessages();
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
+	private String m_contextBinderId;
 	
 	/**
 	 * Constructor method.
@@ -189,7 +190,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 					int left =  myTeamsBox.getAbsoluteLeft();
 					int top  = (myTeamsBox.getAbsoluteTop() - 20);
 					MyTeamsMenuPopup mip = new MyTeamsMenuPopup(actionTrigger, left, top);
-					mip.show();
+					mip.showMyTeams(m_contextBinderId);
 				}
 			});
 		menuPanel.add(myTeamsBox);
@@ -217,6 +218,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * @param binderId
 	 */
 	public void contextLoaded(String binderId) {
+		m_contextBinderId = binderId;
 		GwtTeaming.getRpcService().getMenuItems(binderId, new AsyncCallback<List<TeamingMenuItem>>() {
 			public void onFailure(Throwable t) {
 				Window.alert(t.toString());

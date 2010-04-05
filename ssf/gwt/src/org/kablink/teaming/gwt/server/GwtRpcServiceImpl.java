@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
+import javax.portlet.PortletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -74,6 +76,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
+import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamingMenuItem;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
@@ -83,6 +86,7 @@ import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
@@ -98,6 +102,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
@@ -1236,6 +1241,63 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 //!		...this needs to be implemented...
 		return new ArrayList<TeamingMenuItem>();
+	}
+
+	/**
+	 * Returns a TeamManagementInfo object regarding the current user's
+	 * team management capabilities.
+	 * 
+	 * @binderId
+	 * 
+	 * @return
+	 */
+	public TeamManagementInfo getTeamManagementInfo( String binderId ) {
+		// Construct a base TeamManagementInfo object.
+		TeamManagementInfo tmi = new TeamManagementInfo();
+		
+		// Is the current user the guest user?
+		User user = GwtServerHelper.getCurrentUser();
+		if (!(ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()))) {
+			// No!  Then the user is allowed to view team membership.
+			tmi.setViewAllowed(true);
+
+			// If the user can manage the team...
+			AdaptedPortletURL adapterUrl;
+			Binder binder = getBinderModule().getBinder(Long.parseLong(binderId));
+			if (getBinderModule().testAccess(binder, BinderOperation.manageTeamMembers)) {
+				// ...store the team management URL...
+				adapterUrl = new AdaptedPortletURL(((PortletRequest) null), "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_TEAM_MEMBER);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
+				tmi.setManageUrl(adapterUrl.toString());
+			}
+
+			// ...if the user can send mail to the team...
+			if (MiscUtil.hasString(user.getEmailAddress())) {
+				// ...store the send mail URL...
+				adapterUrl = new AdaptedPortletURL(((PortletRequest) null), "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
+				adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
+				tmi.setSendMailUrl(adapterUrl.toString());
+			}
+
+			// ...if the user can start a team meeting...
+			if (getIcBrokerModule().isEnabled()) {
+				// ...store the team meeting URL.
+				adapterUrl = new AdaptedPortletURL(((PortletRequest) null), "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
+				adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
+				tmi.setTeamMeetingUrl(adapterUrl.toString());
+			}
+		}
+
+		// If we get here, tmi refers to a TeamManagementInfo object
+		// containing the user's team management capabilities.  Return
+		// it.
+		return tmi;
 	}
 	
 	/**
