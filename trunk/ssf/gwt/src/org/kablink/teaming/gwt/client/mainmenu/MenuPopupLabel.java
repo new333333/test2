@@ -30,55 +30,25 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.mainmenu;
 
-package org.kablink.teaming.gwt.client.util;
+import com.google.gwt.user.client.ui.Label;
 
 
 /**
- * Helper methods for the GWT UI client code.
- *
+ * Class used for popup menu Label item.  
+ * 
  * @author drfoster@novell.com
+ *
  */
-public class GwtClientHelper {
-	// String used to recognized an '&' formatted URL vs. a '/'
-	// formatted permalink URL.
-	private final static String AMPERSAND_FORMAT_MARKER = "a/do?";
-	
-	/*
-	 * Inhibits this class from being instantiated. 
-	 */
-	private GwtClientHelper() {
-	}
-	
+public class MenuPopupLabel extends Label {
 	/**
-	 * Appends a parameter to to a URL.
+	 * Class constructor.
 	 * 
-	 * @param urlString
-	 * @param pName
-	 * @param pValue
-	 * 
-	 * @return
+	 * @param displayText
 	 */
-	public static String appendUrlParam(String urlString, String pName, String pValue) {
-		String param;
-		boolean useAmpersand = (0 < urlString.indexOf(AMPERSAND_FORMAT_MARKER));
-		if (useAmpersand)
-			 param = ("&" + pName + "=" + pValue);
-		else param = ("/" + pName + "/" + pValue);
-		if (0 > urlString.indexOf(param)) {
-			urlString += param;
-		}
-		return urlString;
-	}
-	
-	/**
-	 * Returns true is s refers to a non null, non 0 length String and
-	 * false otherwise.
-	 * 
-	 * @param s
-	 * @return
-	 */
-	public static boolean hasString(String s) {
-		return ((null != s) && (0 < s.length()));
+	public MenuPopupLabel(String displayText) {
+		super(displayText);
+		addStyleName("mainMenuPopup_Item mainMenuPopup_ItemText");
 	}
 }

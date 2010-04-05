@@ -37,6 +37,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
@@ -369,6 +370,10 @@ public class GwtMainPage extends Composite
 			closeBreadCrumbBrowser();
 			break;
 			
+		case VIEW_TEAM_MEMBERS:
+			viewTeamMembers();
+			break;
+			
 		case HIDE_LEFT_NAVIGATION:
 		case HIDE_MASTHEAD:
 		case SHOW_LEFT_NAVIGATION:
@@ -476,7 +481,7 @@ public class GwtMainPage extends Composite
 				// workspace.
 				window.setTimeout( function(){window.top.location.href = userWorkspaceURL;}, 500 );
 			}-*/; // end jsLoadUserWorkspace()
-		}); // end AsyncCallback()
+		});// end AsyncCallback()
 	}// end toggleGwtUI()
 	
 	
@@ -532,6 +537,29 @@ public class GwtMainPage extends Composite
 			m_breadCrumbBrowser.hide();
 		}
 	}// end closeBreadCrumbBrowser()
+	
+	/*
+	 * Called to view the membership of the currently selected binder.
+	 */
+	private void viewTeamMembers()
+	{
+		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
+		rpcService.getBinderPermalink( m_selectedBinderId, new AsyncCallback<String>()
+		{
+			public void onFailure( Throwable t ) {
+				Window.alert( t.toString() );
+			}//end onFailure()
+			
+			public void onSuccess( String binderUrl )
+			{
+				OnSelectBinderInfo osbInfo;
+				
+				binderUrl = GwtClientHelper.appendUrlParam( binderUrl, "operation", "show_team_members" );
+				osbInfo = new OnSelectBinderInfo( m_selectedBinderId, binderUrl, false, Instigator.OTHER );
+				selectionChanged( osbInfo );
+			}// end onSuccess()
+		});// end AsyncCallback()
+	}// end viewTeamMembers()
 
 	
 	/**

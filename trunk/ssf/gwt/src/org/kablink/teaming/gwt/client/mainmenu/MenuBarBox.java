@@ -49,7 +49,7 @@ import com.google.gwt.user.client.ui.Label;
  * @author drfoster@novell.com
  *
  */
-public class MenuItemBox extends FlowPanel {
+public class MenuBarBox extends FlowPanel {
 	private Anchor m_boxA;
 	
 	/**
@@ -61,22 +61,22 @@ public class MenuItemBox extends FlowPanel {
 	 * @param dropdown
 	 * @param ch
 	 */
-	public MenuItemBox(String boxId, ImageResource itemImgRes, String itemText, boolean dropdown) {
+	public MenuBarBox(String boxId, ImageResource itemImgRes, String itemText, boolean dropdown) {
 		// Initialize the FlowPanel super class...
 		super();
 		addStyleName("mainMenuContent");
 
 		// ...create an Anchor to contain the box...
 		m_boxA = new Anchor();
-		m_boxA.addStyleName("mainMenuItem_BoxA");
+		m_boxA.addStyleName("mainMenuBar_BoxA");
 
 		// ...create a FlowPanel to contain the items in the box...
 		FlowPanel boxPanel = new FlowPanel();
 		boxPanel.getElement().setId(boxId);
-		boxPanel.addStyleName("mainMenuItem_BoxPanel");
+		boxPanel.addStyleName("mainMenuBar_BoxPanel");
 
 		// ...add mouse over handling on the panel...
-		MenuItemIDHover hover = new MenuItemIDHover(boxId, "mainMenuItem_BoxHover");
+		MenuHoverByID hover = new MenuHoverByID(boxId, "mainMenuBar_BoxHover");
 		m_boxA.addMouseOverHandler(hover);
 		m_boxA.addMouseOutHandler( hover);
 
@@ -84,20 +84,20 @@ public class MenuItemBox extends FlowPanel {
 		if (null != itemImgRes) {
 			// ...add it...
 			Image itemImg = new Image(itemImgRes);
-			itemImg.addStyleName("mainMenuItem_BoxImg");
+			itemImg.addStyleName("mainMenuBar_BoxImg");
 			boxPanel.add(itemImg);
 		}
 
 		// ...add the label for the box...
 		Label itemLabel = new Label(itemText);
-		itemLabel.addStyleName("mainMenuItem_BoxText");
+		itemLabel.addStyleName("mainMenuBar_BoxText");
 		boxPanel.add(itemLabel);
 
 		// ...if we need a drop down image for the box...
 		if (dropdown) {
 			// ...add it...
 			Image dropDownImg = new Image(GwtTeaming.getMainMenuImageBundle().menu_9());
-			dropDownImg.addStyleName("mainMenuItem_BoxDropDownImg");
+			dropDownImg.addStyleName("mainMenuBar_BoxDropDownImg");
 			boxPanel.add(dropDownImg);
 		}
 
@@ -107,23 +107,23 @@ public class MenuItemBox extends FlowPanel {
 		add(m_boxA);
 	}
 	
-	public MenuItemBox(String boxId, String itemText, boolean dropdown) {
+	public MenuBarBox(String boxId, String itemText, boolean dropdown) {
 		// Always use the initial form of the constructor.
 		this(boxId, null, itemText, dropdown);
 	}
 	
-	public MenuItemBox(String boxId, String itemText) {
+	public MenuBarBox(String boxId, String itemText) {
 		// Always use the initial form of the constructor.
 		this(boxId, null, itemText, false);
 	}
 	
-	public MenuItemBox(String boxId, ImageResource itemImgRes, String itemText) {
+	public MenuBarBox(String boxId, ImageResource itemImgRes, String itemText) {
 		// Always use the initial form of the constructor.
 		this(boxId, itemImgRes, itemText, false);
 	}
 
 	/**
-	 * Adds a ClickHandler to the MenuItemBox's Anchor.
+	 * Adds a ClickHandler to the MenuBarBox's Anchor.
 	 * 
 	 * @param ch
 	 */

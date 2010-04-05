@@ -50,7 +50,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  *
  */
-public class MenuItemToggle extends Anchor {
+public class MenuBarToggle extends Anchor {
 	private ActionTrigger	m_actionTrigger;	// The interface to trigger TeamingAction's through.
 	private Image			m_altImg;			// The alternate Image.
 	private Image			m_baseImg;			// The base      Image.
@@ -58,7 +58,7 @@ public class MenuItemToggle extends Anchor {
 	private TeamingAction	m_baseAction;		// The base      TeamingAction.
 	
 	/*
-	 * Inner class that implements clicking on a MenuItemToggle.
+	 * Inner class that implements clicking on a MenuBarToggle.
 	 */
 	private class MenuToggleSelector implements ClickHandler {
 		private boolean m_isBase;		// true -> Toggle is set to the base action.  false -> It's set to the alternate action.
@@ -81,7 +81,7 @@ public class MenuItemToggle extends Anchor {
 			TeamingAction action = (m_isBase ? m_baseAction : m_altAction);
 			m_actionTrigger.triggerAction(action);
 			
-			// ...and toggle the state of the MenuItemToggle.
+			// ...and toggle the state of the MenuBarToggle.
 			Image addImg;
 			Image removeImg;
 			if (m_isBase) {
@@ -110,7 +110,7 @@ public class MenuItemToggle extends Anchor {
 	 * @param altTitle
 	 * @param altAction
 	 */
-	public MenuItemToggle(ActionTrigger actionTrigger, Widget hoverWidget, ImageResource baseImgRes, String baseTitle, TeamingAction baseAction, ImageResource altImgRes, String altTitle, TeamingAction altAction) {
+	public MenuBarToggle(ActionTrigger actionTrigger, Widget hoverWidget, ImageResource baseImgRes, String baseTitle, TeamingAction baseAction, ImageResource altImgRes, String altTitle, TeamingAction altAction) {
 		// Initialize the super class...
 		super();
 		
@@ -136,7 +136,7 @@ public class MenuItemToggle extends Anchor {
 		addClickHandler(new MenuToggleSelector());
 		
 		// ...and add mouse hover handling.
-		MenuItemWidgetHover hover = new MenuItemWidgetHover(hoverWidget, "subhead-control-bg2");
+		MenuHoverByWidget hover = new MenuHoverByWidget(hoverWidget, "subhead-control-bg2");
 		addMouseOverHandler(hover);
 		addMouseOutHandler( hover);
 	}

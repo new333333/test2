@@ -45,9 +45,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
 
 
 /**
@@ -56,7 +54,9 @@ import com.google.gwt.user.client.ui.Label;
  * @author drfoster@novell.com
  *
  */
-public class MyTeamsMenuPopup extends MenuItemPopup {
+public class MyTeamsMenuPopup extends MenuBarPopup {
+	private final String IDBASE = "myTeams_";
+	
 	/*
 	 * Inner class that handles clicks on individual teams.
 	 */
@@ -101,60 +101,76 @@ public class MyTeamsMenuPopup extends MenuItemPopup {
 	 */
 	public MyTeamsMenuPopup(ActionTrigger actionTrigger, int left, int top) {
 		// Initialize the super class.
-		super(actionTrigger, GwtTeaming.getMessages().mainMenuItemMyTeams(), left, top);
+		super(actionTrigger, GwtTeaming.getMessages().mainMenuBarMyTeams(), left, top);
 	}
 	
 	/**
 	 * Completes construction of the menu and show's it.
 	 * 
-	 * Overrides MenuItemPopup.show().
+	 * Overrides MenuBarPopup.show().
 	 */
 	@Override
 	public void show() {
-		GwtTeaming.getRpcService().getMyTeams(new AsyncCallback<List<TeamInfo>>() {
+		m_rpcService.getMyTeams(new AsyncCallback<List<TeamInfo>>() {
 			public void onFailure(Throwable t) {
 				Window.alert(t.toString());
 			}
 			public void onSuccess(List<TeamInfo> mtList)  {
 				// Scan the teams...
+				int mtCount = 0;
+				MenuPopupAnchor mtA;
 				for (Iterator<TeamInfo> mtIT = mtList.iterator(); mtIT.hasNext(); ) {
 					// ...creating an item structure for each.
 					TeamInfo mt = mtIT.next();
-					String mtId = ("myTeam_" + mt.getBinderId());
-
-					FlowPanel mtItemPanel = new FlowPanel();
-					mtItemPanel.addStyleName("mainMenuPopup_ItemPanel");
-					FlowPanel mtTitlePanel = new FlowPanel();
-					mtTitlePanel.addStyleName("mainMenuPopup_Item");
-					Label mtTitle = new Label(mt.getTitle());
-					mtTitle.getElement().setId(mtId);
-					mtTitle.addStyleName("mainMenuPopup_ItemText");
-					mtTitlePanel.add(mtTitle);
+					String mtId = (IDBASE + mt.getBinderId());
 					
-					Anchor mtA = new Anchor();
-					mtA.addStyleName("mainMenuPopup_ItemA");
-					mtA.setTitle(mt.getEntityPath());
-					mtA.addClickHandler(new MyTeamClickHandler(mt));
-					MenuItemIDHover hover = new MenuItemIDHover(mtId, "mainMenuPopup_ItemHover");
-					mtA.addMouseOverHandler(hover);
-					mtA.addMouseOutHandler( hover);
-					
-					mtA.getElement().appendChild(mtTitle.getElement());
-					mtTitlePanel.add(mtA);
-					mtItemPanel.add(mtTitlePanel);
-					addContentWidget(mtItemPanel);
+					mtA = new MenuPopupAnchor(mtId, mt.getTitle(), mt.getEntityPath(), new MyTeamClickHandler(mt));
+					addContentWidget(mtA);
+					mtCount += 1;
+				}
+				
+				// If there weren't any teams...
+				if (0 == mtCount) {
+					// ...put something in the menu that tells the user
+					// ...that.
+					MenuPopupLabel content = new MenuPopupLabel(m_messages.mainMenuMyTeamsNoTeams());
+					addContentWidget(content);
 				}
 
 				// Add a spacer between the teams and team commands.
 				FlowPanel spacerPanel = new FlowPanel();
 				spacerPanel.addStyleName("mainMenuPopup_ItemSpacer");
 				addContentWidget(spacerPanel);
-
+				
 				// Add the team command items.
-//!				...this needs to be implemented...
-				Label content = new Label("...this needs to be implemented...");
-				content.addStyleName("mainMenuPopup_Item mainMenuPopup_ItemText");
-				addContentWidget(content);
+				mtA = new MenuPopupAnchor((IDBASE + "View"), m_messages.mainMenuMyTeamsViewTeam(), null, new ClickHandler() {
+					public void onClick(ClickEvent event) {
+						hide();
+						m_actionTrigger.triggerAction(TeamingAction.VIEW_TEAM_MEMBERS);
+					}
+				});
+				addContentWidget(mtA);
+				mtA = new MenuPopupAnchor((IDBASE + "Manage"), m_messages.mainMenuMyTeamsManageTeam(), null, new ClickHandler() {
+					public void onClick(ClickEvent event) {
+						hide();
+						Window.alert("MyTeamsMenuPopup.ManageTeamMembers( ...this needs to be implemented... )");
+					}
+				});
+				addContentWidget(mtA);
+				mtA = new MenuPopupAnchor((IDBASE + "Send"), m_messages.mainMenuMyTeamsSendEmailToTeam(), null, new ClickHandler() {
+					public void onClick(ClickEvent event) {
+						hide();
+						Window.alert("MyTeamsMenuPopup.SendTeamEmail( ...this needs to be implemented... )");
+					}
+				});
+				addContentWidget(mtA);
+				mtA = new MenuPopupAnchor((IDBASE + "Start"), m_messages.mainMenuMyTeamsStartTeamMeeting(), null, new ClickHandler() {
+					public void onClick(ClickEvent event) {
+						hide();
+						Window.alert("MyTeamsMenuPopup.StartTeamMeeting( ...this needs to be implemented... )");
+					}
+				});
+				addContentWidget(mtA);
 
 				// Finally, show the menu.
 				showImpl();

@@ -40,10 +40,10 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.mainmenu.MenuItemBox;
-import org.kablink.teaming.gwt.client.mainmenu.MenuItemButton;
-import org.kablink.teaming.gwt.client.mainmenu.MenuItemPopup;
-import org.kablink.teaming.gwt.client.mainmenu.MenuItemToggle;
+import org.kablink.teaming.gwt.client.mainmenu.MenuBarBox;
+import org.kablink.teaming.gwt.client.mainmenu.MenuBarButton;
+import org.kablink.teaming.gwt.client.mainmenu.MenuBarPopup;
+import org.kablink.teaming.gwt.client.mainmenu.MenuBarToggle;
 import org.kablink.teaming.gwt.client.mainmenu.MyTeamsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.TeamingMenuItem;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
@@ -119,28 +119,28 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		// ...add the slide-left/right toggle...
 		FlowPanel panel = new FlowPanel();
 		panel.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
-		MenuItemToggle wsTreeSlider = new MenuItemToggle(this, panel, m_images.slideLeft(), m_messages.mainMenuAltLeftNavHideShow(), TeamingAction.HIDE_LEFT_NAVIGATION, m_images.slideRight(), m_messages.mainMenuAltLeftNavHideShow(), TeamingAction.SHOW_LEFT_NAVIGATION);
+		MenuBarToggle wsTreeSlider = new MenuBarToggle(this, panel, m_images.slideLeft(), m_messages.mainMenuAltLeftNavHideShow(), TeamingAction.HIDE_LEFT_NAVIGATION, m_images.slideRight(), m_messages.mainMenuAltLeftNavHideShow(), TeamingAction.SHOW_LEFT_NAVIGATION);
 		panel.add(wsTreeSlider);
 		buttonsPanel.add(panel);
 
 		// ...add the slide-up/down toggle...
 		panel = new FlowPanel();
 		panel.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
-		MenuItemToggle mastHeadSlider = new MenuItemToggle(this, panel, m_images.slideUp(), m_messages.mainMenuAltMastHeadHideShow(), TeamingAction.HIDE_MASTHEAD, m_images.slideDown(), m_messages.mainMenuAltMastHeadHideShow(), TeamingAction.SHOW_MASTHEAD);
+		MenuBarToggle mastHeadSlider = new MenuBarToggle(this, panel, m_images.slideUp(), m_messages.mainMenuAltMastHeadHideShow(), TeamingAction.HIDE_MASTHEAD, m_images.slideDown(), m_messages.mainMenuAltMastHeadHideShow(), TeamingAction.SHOW_MASTHEAD);
 		panel.add(mastHeadSlider);
 		buttonsPanel.add(panel);
 
 		// ...add the browse hierarchy button...
 		panel = new FlowPanel();
 		panel.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
-		MenuItemButton bhButton = new MenuItemButton(this, panel, m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), TeamingAction.BROWSE_HIERARCHY, new OnBrowseHierarchyInfo(panel));
+		MenuBarButton bhButton = new MenuBarButton(this, panel, m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), TeamingAction.BROWSE_HIERARCHY, new OnBrowseHierarchyInfo(panel));
 		panel.add(bhButton);
 		buttonsPanel.add(panel);
 		
 		// ...add the GWT UI button...
 		panel = new FlowPanel();
 		panel.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
-		MenuItemButton gwtUIButton = new MenuItemButton(this, panel, m_images.gwtUI(), m_messages.mainMenuAltGwtUI(), TeamingAction.TOGGLE_GWT_UI);
+		MenuBarButton gwtUIButton = new MenuBarButton(this, panel, m_images.gwtUI(), m_messages.mainMenuAltGwtUI(), TeamingAction.TOGGLE_GWT_UI);
 		panel.add(gwtUIButton);
 		buttonsPanel.add(panel);
 
@@ -157,15 +157,15 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * Adds the Favorites item to the menu bar.
 	 */
 	private void addFavorites(FlowPanel menuPanel) {
-		final String favoritesTitle = m_messages.mainMenuItemFavorites();
-		final MenuItemBox favoritesBox = new MenuItemBox("ss_mainMenuFavorites", favoritesTitle, true);
+		final String favoritesTitle = m_messages.mainMenuBarFavorites();
+		final MenuBarBox favoritesBox = new MenuBarBox("ss_mainMenuFavorites", favoritesTitle, true);
 		final ActionTrigger actionTrigger = this;
 		favoritesBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					int left =  favoritesBox.getAbsoluteLeft();
 					int top  = (favoritesBox.getAbsoluteTop() - 20);
-					MenuItemPopup mip = new MenuItemPopup(actionTrigger, favoritesTitle, left, top);
+					MenuBarPopup mip = new MenuBarPopup(actionTrigger, favoritesTitle, left, top);
 					
 //!					...this needs to be implemented...
 					Label content = new Label("...this needs to be implemented...");
@@ -181,7 +181,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * Adds the My Teams item to the menu bar.
 	 */
 	private void addMyTeams(FlowPanel menuPanel) {
-		final MenuItemBox myTeamsBox = new MenuItemBox("ss_mainMenuMyTeams", m_messages.mainMenuItemMyTeams(), true);
+		final MenuBarBox myTeamsBox = new MenuBarBox("ss_mainMenuMyTeams", m_messages.mainMenuBarMyTeams(), true);
 		final ActionTrigger actionTrigger = this;
 		myTeamsBox.addClickHandler(
 			new ClickHandler() {
@@ -199,7 +199,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * Adds the My Workspace item to the menu bar.
 	 */
 	private void addMyWorkspace(FlowPanel menuPanel) {
-		MenuItemBox myWorkspaceBox = new MenuItemBox("ss_mainMenuMyWorkspace", m_images.home16(), m_messages.mainMenuItemMyWorkspace());
+		MenuBarBox myWorkspaceBox = new MenuBarBox("ss_mainMenuMyWorkspace", m_images.home16(), m_messages.mainMenuBarMyWorkspace());
 		myWorkspaceBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {

@@ -187,6 +187,11 @@ public class ViewPermalinkController  extends SAbstractController {
 					response.setRenderParameter( "userFullName", fullName );
 					return;
 				}
+				
+				String operation = PortletRequestUtils.getStringParameter( request, "operation", "");
+				if (MiscUtil.hasString(operation)) {
+					sUrl += ("&operation=" + operation);
+				}
 			}
 			
 			if (sUrl != null) {
