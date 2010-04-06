@@ -224,6 +224,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuBarWorkspace();
 	String mainMenuFavoritesAdd();
 	String mainMenuFavoritesEdit();
+	String mainMenuFavoritesEditDlgHeader();
 	String mainMenuFavoritesNoFavorites();
 	String mainMenuFavoritesRemove();
 	String mainMenuMyTeamsManageTeam();
