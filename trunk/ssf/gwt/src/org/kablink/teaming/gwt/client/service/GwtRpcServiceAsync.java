@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
+import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamingMenuItem;
@@ -103,9 +104,13 @@ public interface GwtRpcServiceAsync
 
 	// The following are used in the implementation of the
 	// MainMenuControl.
-	public void getMyTeams(                             AsyncCallback<List<TeamInfo>>        callback );
-	public void getMenuItems(          String binderId, AsyncCallback<List<TeamingMenuItem>> callback );
-	public void getTeamManagementInfo( String binderId, AsyncCallback<TeamManagementInfo>    callback );
+	public void addFavorite(           String             binderId,      AsyncCallback<Boolean>               callback );
+	public void removeFavorite(        String             favoriteId,    AsyncCallback<Boolean>               callback );
+	public void updateFavorites(       List<FavoriteInfo> favoritesList, AsyncCallback<Boolean>               callback );
+	public void getFavorites(                                            AsyncCallback<List<FavoriteInfo>>    callback );
+	public void getMyTeams(                                              AsyncCallback<List<TeamInfo>>        callback );
+	public void getMenuItems(          String             binderId,      AsyncCallback<List<TeamingMenuItem>> callback );
+	public void getTeamManagementInfo( String             binderId,      AsyncCallback<TeamManagementInfo>    callback );
 	
 	// Save the branding data to the given binder.
 	public void saveBrandingData( String binderId, GwtBrandingData brandingData, AsyncCallback<Boolean> callback );

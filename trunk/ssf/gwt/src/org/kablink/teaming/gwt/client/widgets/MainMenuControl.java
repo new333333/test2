@@ -40,9 +40,9 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.mainmenu.FavoritesMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarBox;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarButton;
-import org.kablink.teaming.gwt.client.mainmenu.MenuBarPopup;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarToggle;
 import org.kablink.teaming.gwt.client.mainmenu.MyTeamsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.TeamingMenuItem;
@@ -58,7 +58,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
 
 
 /**
@@ -158,21 +157,15 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * Adds the Favorites item to the menu bar.
 	 */
 	private void addFavorites(FlowPanel menuPanel) {
-		final String favoritesTitle = m_messages.mainMenuBarFavorites();
-		final MenuBarBox favoritesBox = new MenuBarBox("ss_mainMenuFavorites", favoritesTitle, true);
+		final MenuBarBox favoritesBox = new MenuBarBox("ss_mainMenuFavorites", m_messages.mainMenuBarFavorites(), true);
 		final ActionTrigger actionTrigger = this;
 		favoritesBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					int left =  favoritesBox.getAbsoluteLeft();
 					int top  = (favoritesBox.getAbsoluteTop() - 20);
-					MenuBarPopup mip = new MenuBarPopup(actionTrigger, favoritesTitle, left, top);
-					
-//!					...this needs to be implemented...
-					Label content = new Label("...this needs to be implemented...");
-					content.addStyleName("mainMenuPopup_Item");
-					mip.addContentWidget(content);
-					mip.show();
+					FavoritesMenuPopup mip = new FavoritesMenuPopup(actionTrigger, left, top);
+					mip.showFavorites(m_contextBinderId);
 				}
 			});
 		menuPanel.add(favoritesBox);

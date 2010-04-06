@@ -40,6 +40,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.json.JSONObject;
+
+import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
@@ -47,6 +50,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo.BinderType;
@@ -57,6 +61,7 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 
@@ -327,6 +332,74 @@ public class GwtServerHelper {
 	private static List<Long> getExpandedBindersList(AllModulesInjected bs) {
 		UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
 		List<Long> reply= ((List<Long>) userProperties.getProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST));
+		return reply;
+	}
+	
+	/**
+	 * Returns information about the current user's favorites.
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<FavoriteInfo> getFavorites(AllModulesInjected bs) {
+		// Allocate an ArrayList<FavoriteInfo> to hold the favorites.
+		ArrayList<FavoriteInfo> reply = new ArrayList<FavoriteInfo>();
+
+		// Read the user's favorites.
+		UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
+		Object userFavorites = userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
+		Favorites favorites;
+		if (userFavorites instanceof Document) {
+			favorites = new Favorites((Document)userFavorites);
+			bs.getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, favorites.toString());
+		} else {		
+			favorites = new Favorites((String)userFavorites);
+		}
+		
+		// Scan the user's favorites...
+		List favoritesList = favorites.getFavoritesList();
+		for (Iterator flIT = favoritesList.iterator(); flIT.hasNext(); ) {
+			// ...constructing a FavoriteInfor object for each.
+			reply.add(fiFromJSON((JSONObject) flIT.next()));
+		}
+
+		// If we get here, reply refers to an ArrayList<FavoriteInfo>
+		// of the user's defined favorites.  Return it.
+		return reply;
+	}
+
+	/*
+	 * Constructs a FavoriteInfo object from a JSONObject.
+	 */
+	private static FavoriteInfo fiFromJSON(JSONObject jso) {
+		FavoriteInfo reply = new FavoriteInfo();
+		
+		reply.setAction(  getSFromJSO(jso, "action"  ));
+		reply.setCategory(getSFromJSO(jso, "category"));
+		reply.setEletype( getSFromJSO(jso, "eletype" ));
+		reply.setHover(   getSFromJSO(jso, "hover"   ));
+		reply.setId(      getSFromJSO(jso, "id"      ));
+		reply.setName(    getSFromJSO(jso, "name"    ));
+		reply.setType(    getSFromJSO(jso, "type"    ));
+		reply.setValue(   getSFromJSO(jso, "value"   ));
+		
+		return reply;
+	}
+	
+	/*
+	 * Extracts a non-null string from a JSONObject.
+	 */
+	private static String getSFromJSO(JSONObject jso, String key) {
+		String reply;
+		if (jso.has(key)) {
+			reply = jso.getString(key);
+			if (null == reply) {
+				reply = "";
+			}
+		}
+		else {
+			reply = "";
+		}
 		return reply;
 	}
 	
