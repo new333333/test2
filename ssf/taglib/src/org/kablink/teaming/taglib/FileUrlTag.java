@@ -84,16 +84,19 @@ public class FileUrlTag extends BodyTagSupport {
 			String webUrl = null;
 			if (attachment != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, attachment);
 			else if (searchResult != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, searchResult);
-			else if (fileId != null) {
+			else if (fileId != null && !this.zipUrl) {
 				attachment = (FileAttachment)entity.getAttachment(fileId); 
 				if (attachment != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, attachment);
 			} else {
 				if (this.baseUrl) {
 					//We are building a base url that has no file name
 					webUrl = WebUrlUtil.getFileUrl(req, WebKeys.ACTION_READ_FILE, entity, "");
-				} else if (this.zipUrl) {
+				} else if (this.zipUrl && fileId == null) {
 					//We are building a zip url that has no file name
 					webUrl = WebUrlUtil.getFileZipUrl(req, WebKeys.ACTION_READ_FILE, entity);
+				} else if (this.zipUrl && fileId != null) {
+					//We are building a zip url that has no file name
+					webUrl = WebUrlUtil.getFileZipUrl(req, WebKeys.ACTION_READ_FILE, entity, fileId);
 				} else {
 					//try the first entity
 					Set<FileAttachment> atts = entity.getFileAttachments(); 

@@ -58,7 +58,7 @@ boolean isAppletSupportedCheck = SsfsUtil.supportApplets(request);
 String operatingSystem = BrowserSniffer.getOSInfo(request);
 %>
 
-<table class="ss_attachments_list" cellpadding="0" cellspacing="0">
+<table class="ss_attachments_list" cellpadding="0" cellspacing="0" width="100%">
 <tbody>
 <c:set var="selectionCount" value="0"/>
 <c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" >
@@ -92,17 +92,26 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
   </c:forEach>
   <c:set var="thumbRowSpan" value="2"/>
   <c:if test="${versionCount >= 1}">
-    <c:set var="thumbRowSpan" value="3"/>
+    <c:set var="thumbRowSpan" value="2"/>
   </c:if>
-     <tr><td colspan="9"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
+     <tr><td valign="top" colspan="6"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 	  <tr>
-
-<%
-	if (isIECheck && ext.equals(".ppt") && editInPlaceSupported) {
-	    //This is IE and a ppt file; use the edit app to launch powerpoint because of bug in IE and/or powerpoint
-%>
 		<td valign="top" width="80" rowspan="${thumbRowSpan}">
-		  <div class="ss_thumbnail_gallery ss_thumbnail_tiny"> 
+		<div class="ss_thumbnail_gallery ss_thumbnail_tiny"> 
+		<%
+			if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
+		%>
+			<a style="text-decoration: none;" href="<ssf:fileUrl file="${selection}"/>" 
+					    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
+					
+				    <ssf:title tag="title.open.file">
+					    <ssf:param name="value" value="${selection.fileItem.name}" />
+				    </ssf:title>
+					     ><img border="0" <ssf:alt text="${selection.fileItem.name}"/> src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>"/></a>
+
+		<%  }
+			if (isIECheck && ext.equals(".ppt") && editInPlaceSupported) {
+		%>
 			<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="applet">
 				<ssf:isFileEditorConfiguredForOS relativeFilePath="${selection.fileItem.name}" operatingSystem="<%= operatingSystem %>">
 					<a style="text-decoration: none;" href="<ssf:ssfsInternalAttachmentUrl 
@@ -131,10 +140,27 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				><img border="0" <ssf:alt text="${selection.fileItem.name}"/> 
 					  src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>"/></a>
 			</ssf:editorTypeToUseForEditInPlace>
+		<%  }  %>
 
-		  </div>
+	    </div>
 		</td>
-		<td class="ss_att_title" width="25%">
+		
+		<td valign="top" style="height:20px;" class="ss_att_title" width="30%">
+		<%
+			if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
+		%>
+		    <a style="text-decoration: none;" 
+						href="<ssf:fileUrl file="${selection}"/>" 
+					    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
+
+				    <ssf:title tag="title.open.file">
+					    <ssf:param name="value" value="${selection.fileItem.name}" />
+				    </ssf:title>
+					><%= fnBr %></a>
+
+		<%  }
+			if (isIECheck && ext.equals(".ppt") && editInPlaceSupported) {
+		%>
 			<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="applet">
 				<ssf:isFileEditorConfiguredForOS relativeFilePath="${selection.fileItem.name}" operatingSystem="<%= operatingSystem %>">
 					<a style="text-decoration: none;" href="<ssf:ssfsInternalAttachmentUrl 
@@ -161,56 +187,8 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						fileAttachment="${selection}"/>"
 				><%= fnBr %></a>
 			</ssf:editorTypeToUseForEditInPlace>
+		<%  }  %>
 
-			<c:if test="${selection.currentlyLocked}">
-			  <br/>
-			  <img <ssf:alt tag="alt.locked"/> src="<html:imagesPath/>pics/sym_s_caution.gif"/>
-			  <span class="ss_fineprint"><ssf:nlt tag="entry.lockedBy">
-	    		<ssf:param name="value" value="${selection.fileLock.owner.title}"/>
-			  </ssf:nlt></span>
-			  <c:if test="${ss_canForceFileUnlock}">
-			    <div>
-			      <a href="<ssf:url     
-				    adapter="true" 
-				    portletName="ss_forum" 
-				    binderId="${ssDefinitionEntry.parentBinder.id}" 
-				    action="view_folder_entry" 
-				    entryId="${ssDefinitionEntry.id}" actionUrl="true">
-				    <ssf:param name="operation" value="force_unlock_file"/>
-				    <ssf:param name="fileId" value="${selection.id}"/></ssf:url>"
-				    onclick='if(confirm("<ssf:escapeJavaScript><ssf:nlt tag="entry.forceUnlockFileConfirm"/></ssf:escapeJavaScript>")){ss_postToThisUrl(this.href);return false;}else{return false};'
-				    style="padding-left:10px;"
-				    >
-			        <span class="ss_fineprint"><ssf:nlt tag="entry.forceUnlockFile"/></span>
-			      </a>
-			    </div>
-			  </c:if>
-			</c:if>
-		</td>
-<%
-	}
-
-	if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
-%>
-		<td valign="top" width="80" rowspan="${thumbRowSpan}">
-		<div class="ss_thumbnail_gallery ss_thumbnail_tiny"> 
-			<a style="text-decoration: none;" href="<ssf:fileUrl file="${selection}"/>" 
-					    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
-					
-				    <ssf:title tag="title.open.file">
-					    <ssf:param name="value" value="${selection.fileItem.name}" />
-				    </ssf:title>
-					     ><img border="0" <ssf:alt text="${selection.fileItem.name}"/> src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>"/></a>
-	    </div>
-		</td>
-		<td style="height:20px;" class="ss_att_title" width="25%"><a style="text-decoration: none;" 
-						href="<ssf:fileUrl file="${selection}"/>" 
-					    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
-
-				    <ssf:title tag="title.open.file">
-					    <ssf:param name="value" value="${selection.fileItem.name}" />
-				    </ssf:title>
-					><%= fnBr %></a>
 			<c:if test="${selection.currentlyLocked}">
 			  <br/>
 			  <img <ssf:alt tag="alt.locked"/> src="<html:imagesPath/>pics/sym_s_caution.gif"/>
@@ -236,143 +214,242 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 			  </c:if>
 			</c:if>
 		</td>
-<%
-	}
-%>
 
-		<td class="ss_att_meta" width="10%"></td>
-		<td class="ss_att_meta">
-		<ssf:ifSupportsViewAsHtml relativeFilePath="${selection.fileItem.name}" browserType="<%=strBrowserType%>">
-			<a target="_blank" style="text-decoration: none;" href="<ssf:url 
-			    webPath="viewFile"
-			    folderId="${ssDefinitionEntry.parentBinder.id}"
-		   	 	entryId="${ssDefinitionEntry.id}"
-			    entityType="${ssDefinitionEntry.entityType}" >
-		    	<ssf:param name="fileId" value="${selection.id}"/>
-		    	<ssf:param name="fileTime" value="${selection.modification.date.time}"/>
-		    	<ssf:param name="viewType" value="html"/>
-		    	</ssf:url>" title="<ssf:nlt tag="title.open.file.in.html.format" />" 
-		     ><span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="entry.HTML" />]</span></a>
-		</ssf:ifSupportsViewAsHtml>
-		</td>
-		<td class="ss_att_meta">
-		
-		<ssf:ifnotaccessible>
-		
-			<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-				<ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}" browserType="<%=strBrowserType%>">
-					
-					<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="applet">
-					
-						<ssf:isFileEditorConfiguredForOS relativeFilePath="${selection.fileItem.name}" operatingSystem="<%= operatingSystem %>">
-					
-							<c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
-							  <a href="javascript: ;" 
-								onClick='javascript:<c:if test="${!empty ss_quotaMessage}">alert("${ss_quotaMessage}");</c:if>
-								    ss_openWebDAVFile("${ssDefinitionEntry.parentBinder.id}", "${ssDefinitionEntry.id}", "${ss_attachments_namespace}", "<%= operatingSystem %>", 
-									"${selection.id}");
-									return false;'>
-								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
-							</c:if>
-							<c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
-							  <a href="javascript: ;" 
-								onClick='alert("${ss_quotaMessage}");return false;'>
-								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
-							</c:if>
-
-						</ssf:isFileEditorConfiguredForOS>
-							
-					</ssf:editorTypeToUseForEditInPlace>
-					
-					<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="webdav">
-						  <c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
-						    <a href="<ssf:ssfsInternalAttachmentUrl 
-								binder="${ssDefinitionEntry.parentBinder}"
-								entity="${ssDefinitionEntry}"
-								fileAttachment="${selection}"/>"
-							<c:if test="${!empty ss_quotaMessage}">onClick='alert("${ss_quotaMessage}");'</c:if>
-							>
-								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
-						  </c:if>
-						  <c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
-							  <a href="javascript: ;" 
-								onClick='alert("${ss_quotaMessage}");return false;'>
-								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
-						  </c:if>
-					</ssf:editorTypeToUseForEditInPlace>
-				
-				</ssf:ifSupportsEditInPlace>
-			</c:if>	
-		  	<ssHelpSpot helpId="workspaces_folders/entries/attachments_edit"
-			title="<ssf:nlt tag="helpSpot.attachments.edit"/>" offsetX="30" offsetY="0">
-			</ssHelpSpot>
-			
-		</ssf:ifnotaccessible>
-			
-		</td>
-		<td><span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+		<td valign="top" width="20%"><span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${selection.modification.date}" type="date" 
 					 dateStyle="medium" /></span> <span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${selection.modification.date}" type="time" 
 					 timeStyle="short"/></span></td>
-		<td class="ss_att_meta" nowrap><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${selection.fileItem.lengthKB}"/> <ssf:nlt tag="file.sizeKB" text="KB"/></td>
-		<td class="ss_att_meta_wrap ss_att_space">${selection.modification.principal.title}</td>
-		<td class="ss_att_meta" width="15%"></td>
+		<td valign="top" class="ss_att_meta" nowrap width="5%"><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${selection.fileItem.lengthKB}"/> <ssf:nlt tag="file.sizeKB" text="KB"/></td>
+		<td valign="top" class="ss_att_meta_wrap ss_att_space" width="25%">${selection.modification.principal.title}</td>
+		<td valign="top" class="ss_att_meta" width="20%">
+		  <a href="javascript: ;" onClick="ss_showHide('ss_fileActionsMenu_${selection.id}');return false;">
+		    <span class="ss_fineprint"><ssf:nlt tag="file.actions"/></span>
+		  </a>
+		  <div id="ss_fileActionsMenu_${selection.id}" 
+		    style="display:none; background:#fff; border:1px #ccc solid;">
+		    <ul style="margin:0px;padding:0px 10px 0px 10px;">
+			  <li>
+				<%
+					if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
+				%>
+					<a style="text-decoration: none;" href="<ssf:fileUrl file="${selection}"/>" 
+					  onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
+					><span><ssf:nlt tag="file.view"/></span></a>
+		
+				<%  }
+					if (isIECheck && ext.equals(".ppt") && editInPlaceSupported) {
+				%>
+					<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="applet">
+						<ssf:isFileEditorConfiguredForOS relativeFilePath="${selection.fileItem.name}" 
+						  operatingSystem="<%= operatingSystem %>">
+							<a style="text-decoration: none;" href="<ssf:ssfsInternalAttachmentUrl 
+								binder="${ssDefinitionEntry.parentBinder}"
+								entity="${ssDefinitionEntry}"
+								fileAttachment="${selection}"/>" 
+								onClick="javascript:ss_openWebDAVFile('${ssDefinitionEntry.parentBinder.id}', 
+								    '${ssDefinitionEntry.id}', 
+								    '${ss_attachments_namespace}', 
+								    '<%= operatingSystem %>', 
+									'${selection.id}');
+									return false;"
+							><span><ssf:nlt tag="file.view"/></span></a>
+						</ssf:isFileEditorConfiguredForOS>
+					</ssf:editorTypeToUseForEditInPlace>
+					
+					<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="webdav">
+						<a href="<ssf:ssfsInternalAttachmentUrl 
+								binder="${ssDefinitionEntry.parentBinder}"
+								entity="${ssDefinitionEntry}"
+								fileAttachment="${selection}"/>"
+						><span><ssf:nlt tag="file.view"/></span></a>
+					</ssf:editorTypeToUseForEditInPlace>
+				<%  }  %>
+			  </li>
+
+			  <ssf:ifSupportsViewAsHtml relativeFilePath="${selection.fileItem.name}" browserType="<%=strBrowserType%>">
+				<li>
+				  <a target="_blank" style="text-decoration: none;" href="<ssf:url 
+				    webPath="viewFile"
+				    folderId="${ssDefinitionEntry.parentBinder.id}"
+			   	 	entryId="${ssDefinitionEntry.id}"
+				    entityType="${ssDefinitionEntry.entityType}" >
+			    	<ssf:param name="fileId" value="${selection.id}"/>
+			    	<ssf:param name="fileTime" value="${selection.modification.date.time}"/>
+			    	<ssf:param name="viewType" value="html"/>
+			    	</ssf:url>" title="<ssf:nlt tag="title.open.file.in.html.format" />" 
+			       ><span><ssf:nlt tag="file.viewAsHtml" /></span></a>
+			    </li>
+			  </ssf:ifSupportsViewAsHtml>
+
+			  <ssf:ifnotaccessible>
+				<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
+					<ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}" browserType="<%=strBrowserType%>">
+						<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="applet">
+							<ssf:isFileEditorConfiguredForOS relativeFilePath="${selection.fileItem.name}" operatingSystem="<%= operatingSystem %>">
+								<c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
+								  <li>
+								    <a href="javascript: ;" 
+									  onClick='javascript:<c:if test="${!empty ss_quotaMessage}">alert("${ss_quotaMessage}");</c:if>
+									    ss_openWebDAVFile("${ssDefinitionEntry.parentBinder.id}", "${ssDefinitionEntry.id}", "${ss_attachments_namespace}", "<%= operatingSystem %>", 
+										"${selection.id}");
+										return false;'
+								    ><span><ssf:nlt tag="file.editFile"/></span></a>
+								  </li>
+								</c:if>
+								<c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
+								  <li>
+								  <a href="javascript: ;" 
+									onClick='alert("${ss_quotaMessage}");return false;'
+								  ><span><ssf:nlt tag="file.editFile"/></span></a>
+								  </li>
+								</c:if>
+							</ssf:isFileEditorConfiguredForOS>
+						</ssf:editorTypeToUseForEditInPlace>
+							
+						<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="webdav">
+							  <c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
+							    <li>
+							      <a href="<ssf:ssfsInternalAttachmentUrl 
+									binder="${ssDefinitionEntry.parentBinder}"
+									entity="${ssDefinitionEntry}"
+									fileAttachment="${selection}"/>"
+								  <c:if test="${!empty ss_quotaMessage}">onClick='alert("${ss_quotaMessage}");'</c:if>
+								  ><span><ssf:nlt tag="file.editFile"/></span></a>
+								</li>
+							  </c:if>
+							  <c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
+							    <li>
+								  <a href="javascript: ;" 
+									onClick='alert("${ss_quotaMessage}");return false;'
+								  ><span><ssf:nlt tag="file.editFile"/></span></a>
+								</li>
+							  </c:if>
+						</ssf:editorTypeToUseForEditInPlace>
+					
+					</ssf:ifSupportsEditInPlace>
+				  </c:if>	
+				</ssf:ifnotaccessible>
+				
+				<li>
+				  <a target="_blank" style="text-decoration: none;" 
+				    href="<ssf:fileUrl zipUrl="true" entity="${ssDefinitionEntry}" fileId="${selection.id}" />" 
+			       ><span><ssf:nlt tag="file.downloadAsZip" /></span></a>
+				</li>
+
+			</ul>
+		  </div>
+		</td>
 	</tr>
 	<tr>
-	  <td colspan="9" class="ss_att_description">
+	  <td valign="top" colspan="5" class="ss_att_description">
 	    <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${selection.fileItem.description.text}</ssf:markup></div>
 	  </td>
 	</tr>	
 	<c:if test="${!empty selection.fileVersions && versionCount > 1}">
-        <tr><td style="height:10px;" class="ss_att_title" colspan="8"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
+        <tr><td valign="top" style="height:10px;" class="ss_att_title" colspan="6">
+          <hr class="ss_att_divider" noshade="noshade" /></td></tr>
 		<tr>
-		  <td class="ss_att_title ss_subhead2" colspan="8">
+		  <td valign="top" class="ss_att_title ss_subhead2" colspan="6">
 		    <c:set var="previousVersionsText" value='<%= NLT.get("entry.PreviousVersions", new String[] {String.valueOf(selection.getFileVersions().size()-1)}) %>'/>
 		    <c:if test="<%= owningBinder.isMirrored() %>">
 		      <c:set var="previousVersionsText" value='<%= NLT.get("entry.PreviousVersionsMirrored", new String[] {String.valueOf(selection.getFileVersions().size()-1)}) %>'/>
 		    </c:if>
 		    <ssf:expandableArea title="${previousVersionsText}">
-			  <table>
+			  <table class="ss_attachments_list" cellpadding="0" cellspacing="0" width="100%">
 			  <c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1" varStatus="status">
 	          	<c:choose>
 		          	<c:when test="${status.count == 4}">
-						 <tr id="${ss_attachments_namespace}att_row${status.count}n">
-							<td colspan="8" style="padding-left: 5px; font-weight: normal;"><a href="javascript: // " onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 4, 9)" class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
+						 <tr id="${ss_attachments_namespace}att_row${status.count}n"
+						   style="display: block; visibility: visible; ">
+						    <td width="80">
+						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
+						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
+						          src="<html:imagesPath/>pics/1pix.gif"/>
+						      </div>
+						    </td>
+							<td valign="top" colspan="5" style="padding-left: 5px; font-weight: normal;">
+							  <a href="javascript: // " 
+							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 4, 9)" 
+							    class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
 						 </tr>
 			 	    </c:when>
 		          	<c:when test="${status.count == 10}">
-						 <tr id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
-							<td colspan="8" style="padding-left: 5px; font-weight: normal;"><a href="javascript: // " onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 10, 20)" class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
+						 <tr id="${ss_attachments_namespace}att_row${status.count}n" 
+						   style="display: none; visibility: hidden; ">
+						    <td width="80">
+						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
+						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
+						          src="<html:imagesPath/>pics/1pix.gif"/>
+						      </div>
+						    </td>
+							<td valign="top" colspan="5" style="padding-left: 5px; font-weight: normal;">
+							<a href="javascript: // " 
+							  onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 10, 20)" 
+							  class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
 						 </tr>
 			 	    </c:when>	
 		          	<c:when test="${status.count == 21}">
 						 <tr id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
-							<td colspan="8" style="padding-left: 5px; font-weight: normal;"><a href="javascript: // " onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 21, 40)" class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
+						    <td width="80">
+						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
+						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
+						          src="<html:imagesPath/>pics/1pix.gif"/>
+						      </div>
+						    </td>
+							<td valign="top" colspan="5" style="padding-left: 5px; font-weight: normal;">
+							  <a href="javascript: // " 
+							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 21, 40)" 
+							    class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
 						 </tr>
 			 	    </c:when>	
 		          	<c:when test="${status.count == 41}">
 						 <tr id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
-							<td colspan="8" style="padding-left: 5px; font-weight: normal;"><a href="javascript: // " onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 41, 80)" class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
+						    <td width="80">
+						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
+						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
+						          src="<html:imagesPath/>pics/1pix.gif"/>
+						      </div>
+						    </td>
+							<td valign="top" colspan="5" 
+							  style="padding-left: 5px; font-weight: normal;">
+							  <a href="javascript: // " 
+							  onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 41, 80)" 
+							  class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
 						 </tr>
 			 	    </c:when>
 		          	<c:when test="${status.count == 81}">
 						 <tr id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
-							<td colspan="8" style="padding-left: 5px; font-weight: normal;"><a href="javascript: // " onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 81)" class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
+						    <td width="80">
+						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
+						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
+						          src="<html:imagesPath/>pics/1pix.gif"/>
+						      </div>
+						    </td>
+							<td valign="top" colspan="5" style="padding-left: 5px; font-weight: normal;">
+							  <a href="javascript: // " 
+							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 81)" 
+							    class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
 						 </tr>
 			 	    </c:when>				 	    
 		 	    </c:choose>	 	    
 		 	    
 				<c:choose>
 					<c:when test="${status.count <= 3}">
-						<tr>
+						<tr style="display: block; visibility: visible;">
 					</c:when>	
 					<c:otherwise>						
 						<tr id="${ss_attachments_namespace}att_row${status.count}" style="display: none; visibility: hidden; ">
 					</c:otherwise>
 				</c:choose>						
 						
-				<td class="ss_att_title" width="25%" style="padding-left: 5px; font-weight: normal;">
+				<td width="80">
+				  <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
+				    <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
+				      src="<html:imagesPath/>pics/1pix.gif"/>
+				  </div>
+				</td>
+				<td valign="top" class="ss_att_title" width="30%" style="font-weight: normal;">
 				<c:if test="<%= !owningBinder.isMirrored() %>">
 					<a style="text-decoration: none;"
 					  href="<ssf:fileUrl file="${fileVersion}"/>" 
@@ -389,20 +466,48 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					<span><ssf:nlt tag="entry.Version"/> ${fileVersion.versionNumber}</span>
 				</c:if>
 				</td>
-				<td class="ss_att_meta" width="10%"></td>
-				<td class="ss_att_meta"></td>
-				<td class="ss_att_meta"></td>    
-				<td class="ss_att_space"><span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+				<td valign="top" width="20%">
+				  <span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${fileVersion.modification.date}" type="date" 
 					 dateStyle="medium" /></span> <span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${fileVersion.modification.date}" type="time" 
 					 timeStyle="short" /></span></td>
-				<td class="ss_att_meta" nowrap><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${fileVersion.fileItem.lengthKB}"/> <ssf:nlt tag="file.sizeKB" text="KB"/></td>
-				<td width="25%" class="ss_att_meta_wrap ss_att_space">${fileVersion.modification.principal.title}</td>
-				<td class="ss_att_meta" width="15%"></td>	
+				<td valign="top" class="ss_att_meta" nowrap width="5%"><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${fileVersion.fileItem.lengthKB}"/> <ssf:nlt tag="file.sizeKB" text="KB"/></td>
+				<td valign="top" class="ss_att_meta_wrap ss_att_space" width="25%">${fileVersion.modification.principal.title}</td>
+				<td valign="top" class="ss_att_meta" width="20%">
+				  <a href="javascript: ;" onClick="ss_showHide('ss_fileActionsMenu_${fileVersion.versionNumber}');return false;">
+				    <span class="ss_fineprint"><ssf:nlt tag="file.actions"/></span>
+				  </a>
+				  <div id="ss_fileActionsMenu_${fileVersion.versionNumber}" 
+				     style="display:none; background:#fff; border:1px #ccc solid;">
+		    		<ul style="margin:0px;padding:0px 10px 0px 10px;">
+						<c:if test="<%= !owningBinder.isMirrored() %>">
+		    		      <li>
+							<a style="text-decoration: none;"
+							  href="<ssf:fileUrl file="${fileVersion}"/>" 
+								    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
+							><span><ssf:nlt tag="file.view"/></span></a>
+		    		      </li>
+						</c:if>
+
+						<li>
+						  <a target="_blank" style="text-decoration: none;" 
+						    href="<ssf:fileUrl zipUrl="true" entity="${ssDefinitionEntry}" fileId="${fileVersion.id}" />" 
+					       ><span><ssf:nlt tag="file.downloadAsZip" /></span></a>
+						</li>
+
+				    </ul>
+				  </div>
+				</td>	
 			  </tr>	
-			  <tr>
-			    <td colspan="9" class="ss_att_description">
+			  <tr style="display: block; visibility: visible;">
+				<td width="80">
+				  <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
+					<img border="0" style="border:0px none #fff; width:35px;height:1px;" 
+					  src="<html:imagesPath/>pics/1pix.gif"/>
+				  </div>
+				</td>
+			    <td valign="top" colspan="5" class="ss_att_description">
 			      <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${fileVersion.fileItem.description.text}</ssf:markup></div>
 			    </td>
 			  </tr>	
@@ -415,7 +520,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	</c:if>
 </c:forEach>
 <c:if test="${selectionCount > 0}">
-     <tr><td colspan="9"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
+     <tr><td valign="top" colspan="6"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 </c:if>
 </tbody>
 </table>

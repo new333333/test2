@@ -136,6 +136,71 @@ public class ReadFileController extends AbstractReadFileController {
 			}
 			return null;
 		
+		} else if (args.length == WebUrlUtil.FILE_URL_ZIP_SINGLE_ARG_LENGTH && 
+				String.valueOf(args[WebUrlUtil.FILE_URL_FILE_ID]).equals("zip")) {
+			//The user wants a zip file of a single attachment
+			String faId = args[WebUrlUtil.FILE_URL_ZIP_SINGLE_FILE_ID];
+			try {
+				Boolean singleByte = SPropsUtil.getBoolean("export.filename.8bitsinglebyte.only", true);
+				DefinableEntity entity = getEntity(args[WebUrlUtil.FILE_URL_ENTITY_TYPE], Long.valueOf(args[WebUrlUtil.FILE_URL_ENTITY_ID]));
+				Set<Attachment> attachments = entity.getAttachments();
+				FileAttachment fileAtt = null;
+				for (Attachment attachment : attachments) {
+					if (attachment instanceof FileAttachment) {
+						if (attachment.getId().equals(faId)) {
+							fileAtt = (FileAttachment)attachment;
+							break;
+						}
+						fileAtt = ((FileAttachment)attachment).findFileVersionById(faId);
+						if (fileAtt != null) break;
+					}
+				}
+				if (fileAtt != null) {
+					String fileName = EntityIndexUtils.getFileNameWithoutExtension(fileAtt.getFileItem().getName());
+					fileName = getBinderModule().filename8BitSingleByteOnly(fileName + ".zip", "download.zip", singleByte);
+					response.setContentType(mimeTypes.getContentType(fileName));
+					response.setHeader("Cache-Control", "private");
+					response.setHeader(
+								"Content-Disposition",
+								"attachment; filename=\"" + fileName + "\"");
+					
+					InputStream fileStream = null;
+					ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream());		
+				
+					//Standard zip encoding is cp437. (needed when chars are outside the ASCII range)
+					zipOut.setEncoding("cp437");
+					String attExt = EntityIndexUtils.getFileExtension(fileAtt.getFileItem().getName());
+					String attName = getBinderModule().filename8BitSingleByteOnly(fileAtt.getFileItem().getName(), 
+							"file", singleByte); //Note: do not translate this name
+					try {
+						if (entity.getEntityType().equals(EntityType.folderEntry)) {
+							fileStream = getFileModule().readFile(entity.getParentBinder(), entity, fileAtt);
+						} else if (entity.getEntityType().equals(EntityType.folder) || 
+								entity.getEntityType().equals(EntityType.workspace)) {
+							fileStream = getFileModule().readFile((Binder)entity, entity, fileAtt);
+						} else {
+							zipOut.finish();
+							return null;
+						}
+
+						zipOut.putNextEntry(new ZipEntry(attName));
+						FileUtil.copy(fileStream, zipOut);
+						zipOut.closeEntry();
+
+						fileStream.close();
+					} catch (Exception e) {
+						logger.error(e);
+					}
+					zipOut.finish();
+				}
+			
+				return null;
+			} catch(Exception e) {
+				//Bad format of url; just return null
+				response.getOutputStream().print(NLT.get("file.error.unknownFile"));
+			}
+			return null;
+		
 		} else if (args.length < WebUrlUtil.FILE_URL_ARG_LENGTH) {
 			return null;
 		
