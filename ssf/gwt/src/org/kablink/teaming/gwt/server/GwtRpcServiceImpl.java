@@ -54,6 +54,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.ExtensionInfo;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
@@ -75,6 +76,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
+import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamingMenuItem;
@@ -101,6 +103,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ExportHelper;
+import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -1155,7 +1158,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 		// ...and if the Binder supports Trash access...
 		boolean allowTrash = TrashHelper.allowUserTrashAccess( GwtServerHelper.getCurrentUser() );
-		if ( allowTrash && (!(binder.isMirrored())) )
+		if ( allowTrash && ( !(binder.isMirrored()) ) )
 		{
 			// ...add a TreeInfo to the reply's children for it.
 			GwtServerHelper.addTrashFolder( this, reply, binder );
@@ -1219,6 +1222,84 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return Boolean.TRUE;
 	}// end persistNodeExpand()
 
+	
+	/**
+	 * Adds binderId to the user's list of favorites.
+	 * 
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public Boolean addFavorite( String binderId )
+	{
+		Binder binder;
+		Favorites f;
+		String viewAction;
+		String title;
+		UserProperties userProperties;
+		
+		binder = getBinderModule().getBinder( Long.parseLong( binderId ) );
+		userProperties = getProfileModule().getUserProperties( null );
+		f = new Favorites( (String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_FAVORITES ) );
+		title = binder.getTitle();
+		if ( binder instanceof Folder )
+		{
+			title += " (" + ((Folder)binder).getParentBinder().getTitle() + ")";
+		}
+		switch ( binder.getEntityType() )
+		{
+		case folder:     viewAction = "view_folder_listing";  break;
+		case profiles:   viewAction = "view_profile_listing"; break;
+		default:         viewAction = ""; break;
+		}
+		f.addFavorite( title, binder.getPathName(), Favorites.FAVORITE_BINDER, binderId.toString(), viewAction, "" );
+		getProfileModule().setUserProperty( null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString() );
+		
+		return Boolean.TRUE;
+	}// end addFavorite()
+	
+	/**
+	 * Removes favoriteId from the user's list of favorites.
+	 * 
+	 * @param favoriteId
+	 * 
+	 * @return
+	 */
+	public Boolean removeFavorite( String favoriteId )
+	{
+		Favorites f;
+		UserProperties userProperties;
+		
+		userProperties = getProfileModule().getUserProperties( null );
+		f = new Favorites( (String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_FAVORITES ) );
+		f.deleteFavorite( favoriteId );
+		getProfileModule().setUserProperty( null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString() );
+		return Boolean.TRUE;
+	}//end removeFavorite()
+	
+	/**
+	 * Sets the user's list of favorites to favoritesList.
+	 * 
+	 * @param favoritesList
+	 * 
+	 * @return
+	 */
+	public Boolean updateFavorites( List<FavoriteInfo> favoritesList )
+	{
+//!		...this needs to be implemented...
+		return Boolean.TRUE;
+	}//end updateFavorites
+	
+	/**
+	 * Returns information about the current user's favorites.
+	 * 
+	 * @return
+	 */
+	public List<FavoriteInfo> getFavorites()
+	{
+		return GwtServerHelper.getFavorites( this );
+	}// end getFavorites()
+	
 	/**
 	 * Returns information about the teams the current user is a member of.
 	 * 
@@ -1251,46 +1332,56 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public TeamManagementInfo getTeamManagementInfo( String binderId ) {
+	public TeamManagementInfo getTeamManagementInfo( String binderId )
+	{
+		TeamManagementInfo tmi;
+		User user;
+		
 		// Construct a base TeamManagementInfo object.
-		TeamManagementInfo tmi = new TeamManagementInfo();
+		tmi = new TeamManagementInfo();
 		
 		// Is the current user the guest user?
-		User user = GwtServerHelper.getCurrentUser();
-		if (!(ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()))) {
+		user = GwtServerHelper.getCurrentUser();
+		if ( !(ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) )
+		{
+			AdaptedPortletURL adapterUrl;
+			Binder binder;
+			
 			// No!  Then the user is allowed to view team membership.
-			tmi.setViewAllowed(true);
+			tmi.setViewAllowed( true );
 
 			// If the user can manage the team...
-			AdaptedPortletURL adapterUrl;
-			Binder binder = getBinderModule().getBinder(Long.parseLong(binderId));
-			if (getBinderModule().testAccess(binder, BinderOperation.manageTeamMembers)) {
+			binder = getBinderModule().getBinder( Long.parseLong( binderId ) );
+			if ( getBinderModule().testAccess( binder, BinderOperation.manageTeamMembers ) )
+			{
 				// ...store the team management URL...
-				adapterUrl = new AdaptedPortletURL(((PortletRequest) null), "ss_forum", true);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_TEAM_MEMBER);
-				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
-				adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
-				tmi.setManageUrl(adapterUrl.toString());
+				adapterUrl = new AdaptedPortletURL( ((PortletRequest) null), "ss_forum", true );
+				adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_TEAM_MEMBER );
+				adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
+				adapterUrl.setParameter( WebKeys.URL_BINDER_TYPE, binder.getEntityType().name() );
+				tmi.setManageUrl( adapterUrl.toString() );
 			}
 
 			// ...if the user can send mail to the team...
-			if (MiscUtil.hasString(user.getEmailAddress())) {
+			if ( MiscUtil.hasString( user.getEmailAddress() ) )
+			{
 				// ...store the send mail URL...
-				adapterUrl = new AdaptedPortletURL(((PortletRequest) null), "ss_forum", true);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
-				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
-				adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
-				tmi.setSendMailUrl(adapterUrl.toString());
+				adapterUrl = new AdaptedPortletURL( ((PortletRequest) null), "ss_forum", true );
+				adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL );
+				adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
+				adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString() );
+				tmi.setSendMailUrl( adapterUrl.toString() );
 			}
 
 			// ...if the user can start a team meeting...
-			if (getIcBrokerModule().isEnabled()) {
+			if ( getIcBrokerModule().isEnabled() )
+			{
 				// ...store the team meeting URL.
-				adapterUrl = new AdaptedPortletURL(((PortletRequest) null), "ss_forum", true);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
-				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
-				adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
-				tmi.setTeamMeetingUrl(adapterUrl.toString());
+				adapterUrl = new AdaptedPortletURL( ((PortletRequest) null), "ss_forum", true );
+				adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING );
+				adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
+				adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString() );
+				tmi.setTeamMeetingUrl( adapterUrl.toString() );
 			}
 		}
 
@@ -1298,7 +1389,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		// containing the user's team management capabilities.  Return
 		// it.
 		return tmi;
-	}
+	}//end getTeamManagementInfo()
 	
 	/**
 	 * Save the given branding data to the given binder.
