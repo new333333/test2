@@ -71,6 +71,8 @@ public class WebUrlUtil {
 	public static final int FILE_URL_NAME = 7;
 	public static final int FILE_URL_ARG_LENGTH = 8;
 	public static final int FILE_URL_ZIP_ARG_LENGTH = 5;
+	public static final int FILE_URL_ZIP_SINGLE_ARG_LENGTH = 6;
+	public static final int FILE_URL_ZIP_SINGLE_FILE_ID = 5;
 	
 	private static final Log logger = LogFactory.getLog(WebUrlUtil.class);
 
@@ -346,6 +348,9 @@ public class WebUrlUtil {
 	public static String getFileZipUrl(HttpServletRequest req, String action, DefinableEntity entity) {
 		return getFileZipUrl(WebUrlUtil.getServletRootURL(req), action, entity);
 	}
+	public static String getFileZipUrl(HttpServletRequest req, String action, DefinableEntity entity, String fileId) {
+		return getFileZipUrl(WebUrlUtil.getServletRootURL(req), action, entity, fileId);
+	}
 	public static String getFileUrl(String webPath, String action, DefinableEntity entity, String fileName) {
 		if (entity == null) return "";
 		FileAttachment fAtt = null;
@@ -362,10 +367,15 @@ public class WebUrlUtil {
 			
 		}
 	}
+	public static String getFileZipUrl(String webPath, String action, DefinableEntity entity, String fileId) {
+		if (entity == null) return "";
+		return WebUrlUtil.getFileZipUrl(webPath, WebKeys.ACTION_READ_FILE, entity.getId().toString(), 
+					entity.getEntityType().name(), fileId);			
+	}
 	public static String getFileZipUrl(String webPath, String action, DefinableEntity entity) {
 		if (entity == null) return "";
 		return WebUrlUtil.getFileZipUrl(webPath, WebKeys.ACTION_READ_FILE, entity.getId().toString(), 
-					entity.getEntityType().name());			
+					entity.getEntityType().name(), "");			
 	}
 	public static String getFileUrl(PortletRequest req, String path, Map searchResults) {
 		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, 	searchResults);
@@ -493,12 +503,13 @@ public class WebUrlUtil {
 		return webUrl.toString();
 	}
 
-	public static String getFileZipUrl(String webPath, String action, String entityId, String entityType) {
+	public static String getFileZipUrl(String webPath, String action, String entityId, String entityType, String fileId) {
 		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
 		StringBuffer webUrl = new StringBuffer(webPath + action);
 		webUrl.append(Constants.SLASH + entityType);
 		webUrl.append(Constants.SLASH + entityId);
 		webUrl.append(Constants.SLASH + "zip"); 
+		if (!fileId.equals("")) webUrl.append(Constants.SLASH + fileId); 
 		return webUrl.toString();
 	}
 

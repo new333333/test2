@@ -889,6 +889,14 @@ public class EntityIndexUtils {
 		return;    
     }
     
+    public static String getFileNameWithoutExtension(String fileName) {
+        int extensionStart = fileName.lastIndexOf('.');
+        String name = "";
+        if (extensionStart >= 0) {
+            name = fileName.substring(0, extensionStart);
+        }
+        return name;
+    }
     public static String getFileExtension(String fileName) {
         int extensionStart = fileName.lastIndexOf('.');
         String extension = "";
