@@ -56,6 +56,9 @@ import com.google.gwt.user.client.ui.FlowPanel;
  */
 public class FavoritesMenuPopup extends MenuBarPopup {
 	private final String IDBASE = "favorites_";
+	
+	private int m_menuLeft;	// Left coordinate of where the menu is to be placed.
+	private int m_menuTop;	// Top  coordinate of where the menu is to be placed.
 
 	/*
 	 * Defines the management operations supported on the favorites.
@@ -167,9 +170,10 @@ public class FavoritesMenuPopup extends MenuBarPopup {
 				break;
 				
 			case EDIT:
-				// Editing the current favorites list!
-//!				...this needs to be implemented...
-				Window.alert("FavoritesMenuPopup.edit( '...this needs to be implemented...' )");
+				// Edit the current favorites list!
+				EditFavoritesDlg editDlg = new EditFavoritesDlg(true, true, m_menuLeft, m_menuTop, m_favoritesList);
+				editDlg.addStyleName("mainMenuDlg_Core");
+				editDlg.show();
 				break;
 			}
 		}
@@ -182,8 +186,12 @@ public class FavoritesMenuPopup extends MenuBarPopup {
 	 * @param top
 	 */
 	public FavoritesMenuPopup(ActionTrigger actionTrigger, int left, int top) {
-		// Initialize the super class.
+		// Initialize the super class...
 		super(actionTrigger, GwtTeaming.getMessages().mainMenuBarFavorites(), left, top);
+		
+		// ...and initialize everything else.
+		m_menuLeft = left;
+		m_menuTop  = top;
 	}
 	
 	/**

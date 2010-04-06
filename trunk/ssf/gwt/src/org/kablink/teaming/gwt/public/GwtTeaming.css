@@ -877,6 +877,10 @@ n-Transparent-Black-Div
 	display: inline-block;
 	vertical-align: middle;
 }
+.mainMenuDlg_Core
+{
+	z-index: 301;
+}
 .mainMenuPopup
 {
 	background-color: #ffffff; 
