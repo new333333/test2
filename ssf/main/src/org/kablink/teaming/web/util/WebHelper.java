@@ -80,6 +80,7 @@ import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TempFileUtil;
+import org.kablink.teaming.util.WindowsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.ParamsWrappedActionRequest;
 import org.kablink.util.Html;
@@ -518,8 +519,11 @@ public class WebHelper {
 		return Boolean.TRUE.equals(unathenticatedRequest);
 	}
 	
-	private static String getRemoteUserName(HttpServletRequest request) {
-		return request.getRemoteUser();
+	public static String getRemoteUserName(HttpServletRequest request) {
+		String name = request.getRemoteUser();
+		if(name != null && name.length() > 0)
+			name = WindowsUtil.getSamaccountname(name);
+		return name;
 	}
 	
 	private static String getRemoteUserName(PortletRequest request) {
@@ -533,7 +537,10 @@ public class WebHelper {
 			return null;			
 		}
 		else {
-			return request.getRemoteUser();			
+			String name = request.getRemoteUser();
+			if(name != null && name.length() > 0)
+				name = WindowsUtil.getSamaccountname(name);
+			return name;	
 		}
 	}
 	

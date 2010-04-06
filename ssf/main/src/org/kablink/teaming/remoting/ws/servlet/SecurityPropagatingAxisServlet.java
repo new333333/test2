@@ -48,6 +48,7 @@ import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
 
 
@@ -101,7 +102,7 @@ public class SecurityPropagatingAxisServlet extends org.apache.axis.transport.ht
 			// Non-secured request (ie, request requiring no authentication)
 			// or secured request that has already passed authentication.
 			// For these two scenarios, no additional authentication is needed.
-			String remoteUser = req.getRemoteUser();
+			String remoteUser = WebHelper.getRemoteUserName(req);
 	
 			String zoneName = getZoneModule().getZoneNameByVirtualHost(
 					req.getServerName().toLowerCase());

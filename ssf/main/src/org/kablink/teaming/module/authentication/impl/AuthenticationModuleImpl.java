@@ -43,6 +43,8 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
+import org.kablink.teaming.context.request.RequestContext;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LoginInfo;
@@ -59,6 +61,7 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
+import org.kablink.teaming.util.WindowsUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
 import org.kablink.teaming.module.authentication.UserIdNotUniqueException;
@@ -73,6 +76,7 @@ import org.springframework.security.providers.AuthenticationProvider;
 import org.springframework.security.providers.ProviderManager;
 import org.springframework.security.providers.ldap.LdapAuthenticationProvider;
 import org.springframework.security.providers.ldap.authenticator.BindAuthenticator;
+import org.springframework.security.providers.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.userdetails.UsernameNotFoundException;
 
 public class AuthenticationModuleImpl extends BaseAuthenticationModule
@@ -308,6 +312,17 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	 */
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException
     {
+		// The following hack(?) is necessary to handle the pre-authentication situation where
+		// initial authentication request is made in the context of no user, yet at least one
+		// of the interceptors associated with this method invocation relies on such context
+		// being there. To work around that, we simply set up guest context and leave it until
+		// after returning from this method.
+		if(RequestContextHolder.getRequestContext() == null) {
+			String zoneName = getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName());
+			String guestUserName = SZoneConfig.getGuestUserName(zoneName);
+			RequestContextHolder.setRequestContext(new RequestContext(zoneName, guestUserName, null).resolve());
+		}
+ 				
 		String enableKey = AuthenticationContextHolder.getEnableKey();
 		boolean enable = true;
 		if(Validator.isNotNull(enableKey)) {
@@ -366,9 +381,19 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	    			// Perform authentication
 	     			result = authenticators.get(zone).authenticate(authentication);
 	     			
+	     			String loginName;
+	     			
+	     			if(result instanceof PreAuthenticatedAuthenticationToken) {
+	     				PreAuthenticatedAuthenticationToken preAuth = (PreAuthenticatedAuthenticationToken) result;
+	     				loginName = WindowsUtil.getSamaccountname((String) result.getName());
+	     			}
+	     			else {
+	     				loginName = (String) result.getName();
+	     			}
+	     			
 	     			// This is not used for authentication but for synchronization.
 	    			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
-	    					(String) result.getName(), (String) result.getCredentials(),
+	    					loginName, (String) result.getCredentials(),
 	    					(Map) result.getPrincipal(), getAuthenticator());
 	    			if(result instanceof SynchNotifiableAuthentication)
 	    				((SynchNotifiableAuthentication)result).synchDone();
