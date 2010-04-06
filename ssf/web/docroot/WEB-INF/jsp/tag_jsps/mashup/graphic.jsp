@@ -66,7 +66,9 @@
 		    entityType="${ssBinder.entityType}" >
 	    	<ssf:param name="fileId" value="${mashup_attributes['graphic']}"/>
 	    	<ssf:param name="fileTitle" value="${graphicFileTitle}"/>
-	    	</ssf:url>" alt="${mashup_attributes['title']}">
+	    	</ssf:url>" alt="${mashup_attributes['title']}"
+        <c:if test="${!empty mashup_attributes['showBorder']}"> style="border: 2px solid #ccc !important;" </c:if>
+	>
   </c:if>
  </div>
  <div class="ss_mashup_round_bottom"><div></div></div>
