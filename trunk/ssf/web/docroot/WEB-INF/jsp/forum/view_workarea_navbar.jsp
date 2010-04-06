@@ -51,7 +51,7 @@
 <% } %>
 <script type="text/javascript">
 function ss_logoff() {
-	var x = '<%= org.kablink.teaming.util.SPropsUtil.getString("sso.proxy.logoff.url","") %>';
+	var x = '<%= org.kablink.teaming.web.util.WebUrlUtil.getSsoProxyLogoffUrl(request) %>';
 	if(x == null || x == "") {
 		var y = '<%= org.kablink.teaming.web.util.WebUrlUtil.getServletRootURL(request) + org.kablink.teaming.web.WebKeys.SERVLET_LOGOUT %>';
 		//alert(y);
@@ -88,7 +88,7 @@ function ss_logoff_from_teaming_then_sso(logoutURL) {
 	delete x;
 }      
 function ss_logoff_from_sso(s) {
-	self.location.href='<%= org.kablink.teaming.util.SPropsUtil.getString("sso.proxy.logoff.url","") %>';
+	self.location.href='<%= org.kablink.teaming.web.util.WebUrlUtil.getSsoProxyLogoffUrl(request) %>';
 }
 </script>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>

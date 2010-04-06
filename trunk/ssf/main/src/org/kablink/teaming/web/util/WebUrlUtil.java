@@ -890,4 +890,16 @@ public class WebUrlUtil {
 		}
 		return multiHomingSubPath;
 	}
+	
+	public static String getSsoProxyLogoffUrl(HttpServletRequest req) {
+		String url = SPropsUtil.getString("sso.proxy.logoff.url", "");
+		if(url.length() > 0) {
+			url = url.toLowerCase();
+			if(!url.startsWith("http") && !url.startsWith("https")) {
+				String scheme = (req.isSecure())? "https" : "http";
+				url = scheme + "://" + url;
+			}
+		}
+		return url;
+	}
 }
