@@ -562,7 +562,7 @@ public class WebKeys {
 	public static final String OPERATION_VOTE_SURVEY = "vote_survey";
 	public static final String OPERATION_VOTE_SURVEY_REMOVE = "vote_survey_remove";
 	public static final String OPERATION_MODIFY_ENTRY="modifyEntry";
-	public static final String OPERATION_MODIFY_FILE_COMMENT="modify_file_comment";
+	public static final String OPERATION_MODIFY_FILE_DESCRIPTION="modify_file_description";
 	public static final String OPERATION_GET_MEETING_RECORDS = "get_meeting_records";
 	public static final String OPERATION_ATTACHE_MEETING_RECORDS = "attache_meeting_records";
 	public static final String OPERATION_GET_USER_APPCONFIG = "get_user_appconfig";
