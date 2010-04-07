@@ -814,7 +814,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		// Update the metadata
 		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEVERSIONDELETE);
 		ChangeLogUtils.buildLog(changes, va);
-		getCoreDao().save(changes);
+		//getCoreDao().save(changes);
 
 		fa.removeFileVersion(va);
 		
@@ -829,6 +829,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
 		//List<String> afterVersionNames = RepositoryUtil.getVersionNames(va.getRepositoryName(), binder, entity, 
 		//		va.getFileItem().getName());
+		
+		triggerUpdateTransaction();
 	}
 
 	public Map<String,Long> getChildrenFileNames(Binder binder) {
