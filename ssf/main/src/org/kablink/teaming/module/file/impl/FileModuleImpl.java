@@ -68,6 +68,7 @@ import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.FolderEntry;
@@ -635,6 +636,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		closeExpiredLocksTransactional(binder, entity, true);
 	}
 
+	public void modifyFileComment(DefinableEntity entity, FileAttachment fileAtt, Description description) {
+		fileAtt.getFileItem().setDescription(description);
+		triggerUpdateTransaction();
+		//ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
+		//ChangeLogUtils.buildLog(changes, fileAtt);
+		//getCoreDao().save(changes);
+	}
 	
 	public void renameFile(Binder binder, DefinableEntity entity, 
 			FileAttachment fa, String newName) 

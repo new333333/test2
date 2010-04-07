@@ -370,6 +370,7 @@ public class FileAttachment extends Attachment {
 		if (modification != null) modification.addChangeLog(element, ObjectKeys.XTAG_ENTITY_MODIFICATION);
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_NAME, getFileItem().getName());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_LENGTH, Long.toString(getFileItem().getLength()));
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_DESCRIPTION, getFileItem().getDescription().getText());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_REPOSITORY, getRepositoryName());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_LAST_VERSION, getLastVersion().toString());
 		if (includeVersions) {

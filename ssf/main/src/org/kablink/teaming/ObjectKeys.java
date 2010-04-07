@@ -600,6 +600,7 @@ public interface ObjectKeys {
     //value of name= attributes on properties of XTAG_ELEMENT_TYPE_FILEATTACHMENT 
     public static final String XTAG_FILE_NAME="fileName";
     public static final String XTAG_FILE_LENGTH="fileLength";
+    public static final String XTAG_FILE_DESCRIPTION="fileDescription";
     public static final String XTAG_FILE_REPOSITORY="repository";
     public static final String XTAG_FILE_LAST_VERSION="lastVersion";
     //value of name= attributes on properties of XTAG_ELEMENT_TYPE_VERSIONATTACHMENT 

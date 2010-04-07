@@ -134,6 +134,7 @@ public class WebKeys {
 	public static final String URL_DATE_END="endDate";
 	public static final String URL_DEBUG="enableDebug";
 	public static final String URL_DELETE_SOURCE="deleteSource";
+	public static final String URL_DESCRIPTION="description";
 	public static final String URL_PURGE_IMMEDIATELY="purgeImmediately";
 	public static final String URL_DIRECTION="direction";
 	public static final String URL_DISPLAY_TYPE="displayType";
@@ -561,6 +562,7 @@ public class WebKeys {
 	public static final String OPERATION_VOTE_SURVEY = "vote_survey";
 	public static final String OPERATION_VOTE_SURVEY_REMOVE = "vote_survey_remove";
 	public static final String OPERATION_MODIFY_ENTRY="modifyEntry";
+	public static final String OPERATION_MODIFY_FILE_COMMENT="modify_file_comment";
 	public static final String OPERATION_GET_MEETING_RECORDS = "get_meeting_records";
 	public static final String OPERATION_ATTACHE_MEETING_RECORDS = "attache_meeting_records";
 	public static final String OPERATION_GET_USER_APPCONFIG = "get_user_appconfig";
@@ -756,6 +758,7 @@ public class WebKeys {
     public static final String EMAIL_FAILED_ADDRESSES="ssFailedEmailAddresses";
     public static final String EMAIL_FAILED_ACCESS="ssFailedEmailAccess";
     public static final String EMAIL_ALIASES="ssEmailAliases";
+	public static final String ENTITY = "ss_entity";
 	public static final String ENTITY_ID = "ss_entityId";
 	public static final String ENTITY_TYPE="_entityType";
 	public static final String ENTITY_TYPE_BEAN="ss_entityType";
@@ -809,6 +812,7 @@ public class WebKeys {
     public static final String FAVORITES_TREE = "ss_favoritesTree";
     public static final String FAVORITES_TREE_DELETE = "ss_favoritesTreeDelete";
 	public static final String FIELD_MODIFICATIONS_ALLOWED = "ss_fieldModificationsAllowed";
+    public static final String FILE_ATTACHMENT = "ss_fileAttachment";
     public static final String FILE_HANDLE = "ss_fileHandle";
     public static final String FILE_NAME = "ss_fileName";
     public static final String FILE_VIEW_TYPE_ATTACHMENT_FILE = "ss_viewAttachmentFile";
