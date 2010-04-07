@@ -106,9 +106,6 @@
 	} else if (itemType.equals("entryAttributes")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/entry_attributes_view.jsp" %><%
 
-	} else if (itemType.equals("entryAttributes")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/entry_attributes_view.jsp" %><%
-
 	} else if (itemType.equals("youtube")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_you_tube.jsp" %><%
 
