@@ -1286,7 +1286,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public Boolean updateFavorites( List<FavoriteInfo> favoritesList )
 	{
-//!		...this needs to be implemented...
+		Favorites f;
+		Iterator<FavoriteInfo> fiIT;
+		
+		f = new Favorites();
+		for ( fiIT = favoritesList.iterator(); fiIT.hasNext(); )
+		{
+			FavoriteInfo fi;
+			
+			fi = fiIT.next();
+			f.addFavorite(fi.getName(), fi.getHover(), fi.getType(), fi.getValue(), fi.getAction(), fi.getCategory());
+		}
+		
+		getProfileModule().setUserProperty( null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString() );
 		return Boolean.TRUE;
 	}//end updateFavorites
 	

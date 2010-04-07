@@ -113,7 +113,7 @@ public class MenuBarPopup extends PopupPanel {
 	private FlowPanel createPopupBottom(GwtTeamingMainMenuImageBundle images) {
 		FlowPanel bottomPanel = new FlowPanel();
 		bottomPanel.addStyleName("mainMenuPopup_Bottom");
-		Image bottomImg = new Image(images.spacer_1px());
+		Image bottomImg = new Image(images.spacer1px());
 		bottomImg.setHeight("4px");
 		bottomImg.setWidth("4px");
 		bottomPanel.add(bottomImg);
@@ -144,7 +144,7 @@ public class MenuBarPopup extends PopupPanel {
 		// ...add a close Anchor...
 		Anchor closeA = new Anchor();
 		closeA.addStyleName("mainMenuPopup_TitleBarCloseA");
-		Image closeImg = new Image(images.close_circle16());
+		Image closeImg = new Image(images.closeCircle16());
 		closeImg.addStyleName("mainMenuPopup_TitleBarCloseImg");
 		closeA.getElement().appendChild(closeImg.getElement());
 		closeA.addClickHandler(new ClickHandler() {

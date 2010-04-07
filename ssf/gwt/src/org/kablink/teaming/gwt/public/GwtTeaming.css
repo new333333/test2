@@ -877,10 +877,6 @@ n-Transparent-Black-Div
 	display: inline-block;
 	vertical-align: middle;
 }
-.mainMenuDlg_Core
-{
-	z-index: 301;
-}
 .mainMenuPopup
 {
 	background-color: #ffffff; 
@@ -955,6 +951,34 @@ n-Transparent-Black-Div
 .mainMenuPopup_TitleBarText
 {
 	display: inline;
+}
+
+/* Styles for the favorites dialog. */
+.favoritesDlg
+{
+	z-index: 301;
+}
+.favoritesDlg_Checkbox
+{
+	margin-left: 5px;
+}
+.favoritesDlg_Grid
+{
+	margin-top: 8px;
+}
+.favoritesDlg_Label
+{
+	color: #414648; /* dark grey */
+	line-height: 1.1em; 
+	margin-right: 5px;
+	padding: 0.2em 0.5em 0.3em; 
+	white-space: nowrap;
+}
+.favoritesDlg_MenuBar
+{
+}
+.favoritesDlg_MenuItem
+{
 }
 
 /* Style for the main Teaming page. */
