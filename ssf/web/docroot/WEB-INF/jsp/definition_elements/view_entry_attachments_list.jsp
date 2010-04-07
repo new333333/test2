@@ -347,7 +347,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					    ><ssf:param name="entityId" value="${ssDefinitionEntry.id}"/><ssf:param 
 					    name="entityType" value="${ssDefinitionEntry.entityType}"/><ssf:param 
 					    name="fileId" value="${selection.id}"/><ssf:param 
-					    name="operation" value="modify_file_comment"/></ssf:url>"
+					    name="operation" value="modify_file_description"/></ssf:url>"
 				      onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
 					><span><ssf:nlt tag="file.editFileComment"/></span></a>
 				  </li>
@@ -358,7 +358,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		</td>
 	</tr>
 	<tr>
-	  <td valign="top" colspan="5" class="ss_att_description">
+	  <td valign="top" colspan="5" class="ss_att_description" width="100%">
 	    <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${selection.fileItem.description.text}</ssf:markup></div>
 	  </td>
 	</tr>	
@@ -512,6 +512,38 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					       ><span><ssf:nlt tag="file.downloadAsZip" /></span></a>
 						</li>
 
+						<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
+						  <li>
+						    <a href="<ssf:url
+							    adapter="true" 
+							    portletName="ss_forum" 
+							    action="modify_file" 
+							    actionUrl="false" 
+							    ><ssf:param name="entityId" value="${ssDefinitionEntry.id}"/><ssf:param 
+							    name="entityType" value="${ssDefinitionEntry.entityType}"/><ssf:param 
+							    name="fileId" value="${fileVersion.id}"/><ssf:param 
+							    name="operation" value="modify_file_description"/></ssf:url>"
+						      onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
+							><span><ssf:nlt tag="file.editFileComment"/></span></a>
+						  </li>
+						</c:if>
+
+						<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['deleteEntry']}">
+						  <li>
+						    <a href="<ssf:url
+							    adapter="true" 
+							    portletName="ss_forum" 
+							    action="modify_file" 
+							    actionUrl="false" 
+							    ><ssf:param name="entityId" value="${ssDefinitionEntry.id}"/><ssf:param 
+							    name="entityType" value="${ssDefinitionEntry.entityType}"/><ssf:param 
+							    name="fileId" value="${fileVersion.id}"/><ssf:param 
+							    name="operation" value="delete"/></ssf:url>"
+						      onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
+							><span><ssf:nlt tag="file.deleteVersion"/></span></a>
+						  </li>
+						</c:if>
+
 				    </ul>
 				  </div>
 				</td>	
@@ -523,7 +555,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					  src="<html:imagesPath/>pics/1pix.gif"/>
 				  </div>
 				</td>
-			    <td valign="top" colspan="5" class="ss_att_description">
+			    <td valign="top" width="100%" colspan="5" class="ss_att_description">
 			      <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${fileVersion.fileItem.description.text}</ssf:markup></div>
 			    </td>
 			  </tr>	

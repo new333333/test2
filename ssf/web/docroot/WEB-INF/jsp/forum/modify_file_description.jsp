@@ -39,7 +39,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="tundra">
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<ssf:form titleTag="administration.export_import">
+<ssf:form titleTag="file.editFileComment">
 <div class="ss_style ss_portlet">
 <form name="form1" id="form1" class="ss_style ss_form" method="post" 
   action="<ssf:url
@@ -50,13 +50,14 @@
 		    ><ssf:param name="entityId" value="${ss_entity.id}"/><ssf:param 
 		    name="entityType" value="${ss_entity.entityType}"/><ssf:param 
 		    name="fileId" value="${ss_fileAttachment.id}"/><ssf:param 
-		    name="operation" value="modify_file_comment"/></ssf:url>"
+		    name="operation" value="modify_file_description"/></ssf:url>"
 >
+<br/>
 <div>
   <ssf:htmleditor name="description" height="100" toolbar="minimal"
   >${ss_fileAttachment.fileItem.description.text}</ssf:htmleditor>
 </div>
-
+<br/>
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"
 />
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"

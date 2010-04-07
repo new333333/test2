@@ -62,6 +62,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
@@ -101,11 +102,14 @@ public class ModifyFileController extends SAbstractController {
 		String fileId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");				
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		DefinableEntity entity = null;
+		Binder binder = null;
 		if (entityType.equals(EntityType.folderEntry.name())) {
 			entity = getFolderModule().getEntry(null, entityId);
+			binder = entity.getParentBinder();
 			setupViewEntry(response, entity.getParentBinder().getId(), entity.getId());
 		} else if (entityType.equals(EntityType.folder.name()) || entityType.equals(EntityType.workspace.name())) {
 			entity = getBinderModule().getBinder(entityId);
+			binder = (Binder)entity;
 			setupViewFolder(response, entity.getId());
 		}
 		if (entity != null) {
@@ -125,9 +129,11 @@ public class ModifyFileController extends SAbstractController {
 
 			if (op.equals(WebKeys.OPERATION_DELETE) && WebHelper.isMethodPost(request)) {
 				FilesErrors errors = new FilesErrors();
-				if (fileAtt != null) getFileModule().deleteFile(null, entity, fileAtt, errors);
+				//Delete this version
+				if (fileAtt != null && fileAtt instanceof VersionAttachment) 
+					getFileModule().deleteVersion(binder, entity, (VersionAttachment)fileAtt);
 			
-			} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_COMMENT) && WebHelper.isMethodPost(request)) {
+			} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_DESCRIPTION) && WebHelper.isMethodPost(request)) {
 				//The form was submitted. Go process it
 				if (fileAtt != null) {
 					String text = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DESCRIPTION, "");
@@ -197,7 +203,11 @@ public class ModifyFileController extends SAbstractController {
 		model.put(WebKeys.ENTITY, entity);
 		model.put(WebKeys.FILE_ATTACHMENT, fileAtt);
 		
-		return new ModelAndView("forum/modify_file_comment", model);
+		if (op.equals(WebKeys.OPERATION_DELETE)) {
+			return new ModelAndView("forum/delete_file_version", model);
+		} else {
+			return new ModelAndView("forum/modify_file_description", model);
+		}
 	}
 }
 
