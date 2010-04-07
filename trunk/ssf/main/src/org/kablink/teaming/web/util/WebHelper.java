@@ -521,7 +521,14 @@ public class WebHelper {
 	
 	public static String getRemoteUserName(HttpServletRequest request) {
 		String name = request.getRemoteUser();
-		if(name != null && name.length() > 0)
+		if(name != null && name.length() == 0) {
+			// When fronting Teaming with IIS with anonymous authentication enabled on the IIS side,
+			// it passes empty string as the user's identity. Since empty username is not a valid
+			// Teaming user identity, we need to treat it as null value. Otherwise, the application
+			// (i.e., callers of this method) may errorneously confuse it for authenticated user.
+			name = null;
+		}
+		if(name != null)
 			name = WindowsUtil.getSamaccountname(name);
 		return name;
 	}
