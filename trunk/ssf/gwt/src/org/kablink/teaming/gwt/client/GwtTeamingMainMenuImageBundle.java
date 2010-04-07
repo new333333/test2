@@ -40,14 +40,14 @@ import com.google.gwt.resources.client.ImageResource;
 /**
  * Images used by the GWT Teaming 'Main Menu' widget.
  * 
- * @author drfoster
+ * @author drfoster@novell.com
  */
 public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/browse_hierarchy.png")
 	public ImageResource browseHierarchy();
 
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/close_circle16.png")
-	public ImageResource close_circle16();
+	public ImageResource closeCircle16();
 
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/gwt.png")
 	public ImageResource gwtUI();
@@ -56,7 +56,7 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	public ImageResource home16();
 	
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/menu_9.gif")
-	public ImageResource menu_9();
+	public ImageResource menu9();
 	
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/slide_down.png")
 	public ImageResource slideDown();
@@ -71,5 +71,5 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	public ImageResource slideUp();
 	
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/spacer_1px.png")
-	public ImageResource spacer_1px();
+	public ImageResource spacer1px();
 }

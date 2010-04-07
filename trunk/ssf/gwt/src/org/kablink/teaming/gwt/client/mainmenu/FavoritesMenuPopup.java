@@ -114,7 +114,6 @@ public class FavoritesMenuPopup extends MenuBarPopup {
 	/*
 	 * Inner class that handles clicks on favorites commands.
 	 */
-	@SuppressWarnings("unused")
 	private class ManageClickHandler implements ClickHandler {
 		private FavoriteOperation m_operation;		// The which favorite management operation to perform.
 		private List<FavoriteInfo> m_favoritesList;	// ADD/REMOVE:  Not used.  EDIT:  The user's current favorites list.
@@ -172,7 +171,7 @@ public class FavoritesMenuPopup extends MenuBarPopup {
 			case EDIT:
 				// Edit the current favorites list!
 				EditFavoritesDlg editDlg = new EditFavoritesDlg(true, true, m_menuLeft, m_menuTop, m_favoritesList);
-				editDlg.addStyleName("mainMenuDlg_Core");
+				editDlg.addStyleName("favoritesDlg");
 				editDlg.show();
 				break;
 			}
@@ -243,9 +242,10 @@ public class FavoritesMenuPopup extends MenuBarPopup {
 					 mtA = new MenuPopupAnchor((IDBASE + "Remove"), m_messages.mainMenuFavoritesRemove(), null, new ManageClickHandler(FavoriteOperation.REMOVE, currentFavoriteId));
 				else mtA = new MenuPopupAnchor((IDBASE + "Add"),    m_messages.mainMenuFavoritesAdd(),    null, new ManageClickHandler(FavoriteOperation.ADD,    binderId));
 				addContentWidget(mtA);
-				
-				mtA = new MenuPopupAnchor((IDBASE + "Edit"), m_messages.mainMenuFavoritesEdit(), null, new ManageClickHandler(FavoriteOperation.EDIT, fList));
-				addContentWidget(mtA);
+				if (0 < fCount) {
+					mtA = new MenuPopupAnchor((IDBASE + "Edit"), m_messages.mainMenuFavoritesEdit(), null, new ManageClickHandler(FavoriteOperation.EDIT, fList));
+					addContentWidget(mtA);
+				}
 						
 				// Finally, show the menu popup.
 				show();
