@@ -74,13 +74,13 @@
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_graphic.jsp" %><%
 		
 	} else if (itemType.equals("attachFiles")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" %><%		
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" /><%		
 	
 	} else if (itemType.equals("folderRemoteApp")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/remote_application_view.jsp" %><%
 
 	} else if (itemType.equals("folderAttributeList")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/binder_attributes_view.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/binder_attributes_view.jsp" /><%
 
 	} else if (itemType.equals("mashupCanvas")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/mashup_canvas_view.jsp" %><%
