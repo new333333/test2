@@ -41,6 +41,7 @@ import java.util.Map;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.VersionAttachment;
@@ -366,6 +367,15 @@ public interface FileModule {
 	public void copyFiles(Binder binder, DefinableEntity entity, 
 			Binder destBinder, DefinableEntity destEntity)
 	throws UncheckedIOException, RepositoryServiceException;
+	
+	/**
+	 * Modify the description of a file attachment. 
+	 * 
+	 * @param entity
+	 * @param fileAtt
+	 * @param description
+	 */
+	public void modifyFileComment(DefinableEntity entity, FileAttachment fileAtt, Description description);
 	
 	/**
 	 * Delete the specified version. 

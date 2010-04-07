@@ -31,6 +31,7 @@
 	<bean id="profileModifyEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.profile.ModifyEntryController" />
 	<bean id="folderModifyEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ModifyEntryController" />
 	<bean id="addAttachmentEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.AddAttachmentController" />
+	<bean id="modifyFileController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ModifyFileController" />
 
 	<bean id="profileViewEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.profile.ViewEntryController" />
 	<bean id="folderViewEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ViewEntryController" />
@@ -133,6 +134,7 @@
 						<entry key="start_workflow"><ref bean="folderModifyEntryController"/></entry>
 						<entry key="stop_workflow"><ref bean="folderModifyEntryController"/></entry>
 						<entry key="modify_profile_entry"><ref bean="profileModifyEntryController"/></entry>
+						<entry key="modify_file"><ref bean="modifyFileController"/></entry>
 						<entry key="view_folder_entry"><ref bean="folderViewEntryController"/></entry>
 						<entry key="view_permalink"><ref bean="binderViewPermalinkController"/></entry>
 						<entry key="view_profile_entry"><ref bean="profileViewEntryController"/></entry>

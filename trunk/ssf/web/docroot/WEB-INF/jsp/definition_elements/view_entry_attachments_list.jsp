@@ -336,6 +336,22 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				    href="<ssf:fileUrl zipUrl="true" entity="${ssDefinitionEntry}" fileId="${selection.id}" />" 
 			       ><span><ssf:nlt tag="file.downloadAsZip" /></span></a>
 				</li>
+				
+				<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
+				  <li>
+				    <a href="<ssf:url
+					    adapter="true" 
+					    portletName="ss_forum" 
+					    action="modify_file" 
+					    actionUrl="false" 
+					    ><ssf:param name="entityId" value="${ssDefinitionEntry.id}"/><ssf:param 
+					    name="entityType" value="${ssDefinitionEntry.entityType}"/><ssf:param 
+					    name="fileId" value="${selection.id}"/><ssf:param 
+					    name="operation" value="modify_file_comment"/></ssf:url>"
+				      onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
+					><span><ssf:nlt tag="file.editFileComment"/></span></a>
+				  </li>
+				</c:if>
 
 			</ul>
 		  </div>
