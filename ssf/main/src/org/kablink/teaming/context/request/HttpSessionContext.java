@@ -47,6 +47,10 @@ public class HttpSessionContext extends BaseSessionContext {
 	public HttpSessionContext(HttpSession session) {
 		this.session = session;
 	}
+	
+	public HttpSession getHttpSession() {
+		return this.session;
+	}
 
     protected Map getProperties() {
     	Map props = (Map)session.getAttribute(ObjectKeys.SESSION_USERPROPERTIES);
