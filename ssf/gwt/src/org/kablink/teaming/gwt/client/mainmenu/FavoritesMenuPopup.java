@@ -52,13 +52,13 @@ import com.google.gwt.user.client.ui.FlowPanel;
  * Class used for the Favorites menu item popup.  
  * 
  * @author drfoster@novell.com
- *
  */
 public class FavoritesMenuPopup extends MenuBarPopup {
 	private final String IDBASE = "favorites_";
 	
-	private int m_menuLeft;	// Left coordinate of where the menu is to be placed.
-	private int m_menuTop;	// Top  coordinate of where the menu is to be placed.
+	private int m_menuLeft;				// Left coordinate of where the menu is to be placed.
+	private int m_menuTop;				// Top  coordinate of where the menu is to be placed.
+	private String m_currentBinderId;	// ID of the currently selected binder.
 
 	/*
 	 * Defines the management operations supported on the favorites.
@@ -124,7 +124,6 @@ public class FavoritesMenuPopup extends MenuBarPopup {
 		 * 
 		 * @param operation
 		 * @param id
-		 * @param fList
 		 */
 		ManageClickHandler(FavoriteOperation operation, String id) {
 			m_operation = operation;
@@ -181,22 +180,72 @@ public class FavoritesMenuPopup extends MenuBarPopup {
 	/**
 	 * Class constructor.
 	 * 
-	 * @param left
-	 * @param top
+	 * @param actionTrigger
 	 */
-	public FavoritesMenuPopup(ActionTrigger actionTrigger, int left, int top) {
-		// Initialize the super class...
-		super(actionTrigger, GwtTeaming.getMessages().mainMenuBarFavorites(), left, top);
-		
-		// ...and initialize everything else.
-		m_menuLeft = left;
-		m_menuTop  = top;
+	public FavoritesMenuPopup(ActionTrigger actionTrigger) {
+		// Initialize the super class.
+		super(actionTrigger, GwtTeaming.getMessages().mainMenuBarFavorites());
+	}
+	
+	/**
+	 * Stores the ID of the currently selected binder.
+	 * 
+	 * Implements the MenuBarPopup.setCurrentBinder() abstract method.
+	 * 
+	 * @param binderId
+	 */
+	@Override
+	public void setCurrentBinder(String binderId) {
+		// Simply store the parameter.
+		m_currentBinderId = binderId;
+	}
+	
+	/**
+	 * Not used for the Favorites menu.
+	 * 
+	 * Implements the MenuBarPopup.setMenuItemList() abstract method.
+	 * 
+	 * @param menuItemList
+	 */
+	@Override
+	public void setMenuItemList(List<TeamingMenuItem> menuItemList) {
+		// Unused.
+	}
+	
+	/**
+	 * Not used for the Favorites menu.  Always returns true.
+	 * 
+	 * Implements the MenuBarPopup.shouldShowMenu() abstract method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean shouldShowMenu() {
+		return true;
 	}
 	
 	/**
 	 * Completes construction of the menu and shows it.
+	 * 
+	 * Implements the MenuBarPopup.showPopup() abstract method.
+	 * 
+	 * @param left
+	 * @param top
 	 */
-	public void showFavorites(final String binderId) {
+	@Override
+	public void showPopup(int left, int top) {
+		// Position the popup and if we've already constructed its
+		// content...
+		m_menuLeft = left;
+		m_menuTop  = top;
+		setPopupPosition(m_menuLeft, m_menuTop);
+		if (hasContent()) {
+			// ...simply show it and bail.
+			show();
+			return;
+		}
+
+		// Otherwise, read the users favorites.
 		m_rpcService.getFavorites(new AsyncCallback<List<FavoriteInfo>>() {
 			public void onFailure(Throwable t) {
 				Window.alert(t.toString());
@@ -216,7 +265,7 @@ public class FavoritesMenuPopup extends MenuBarPopup {
 					addContentWidget(fA);
 					fCount += 1;
 					
-					if (binderId.equals(favorite.getValue())) {
+					if (m_currentBinderId.equals(favorite.getValue())) {
 						currentIsFavorite = true;
 						currentFavoriteId = favorite.getId();
 					}
@@ -240,7 +289,7 @@ public class FavoritesMenuPopup extends MenuBarPopup {
 				MenuPopupAnchor mtA;
 				if (currentIsFavorite)
 					 mtA = new MenuPopupAnchor((IDBASE + "Remove"), m_messages.mainMenuFavoritesRemove(), null, new ManageClickHandler(FavoriteOperation.REMOVE, currentFavoriteId));
-				else mtA = new MenuPopupAnchor((IDBASE + "Add"),    m_messages.mainMenuFavoritesAdd(),    null, new ManageClickHandler(FavoriteOperation.ADD,    binderId));
+				else mtA = new MenuPopupAnchor((IDBASE + "Add"),    m_messages.mainMenuFavoritesAdd(),    null, new ManageClickHandler(FavoriteOperation.ADD,    m_currentBinderId));
 				addContentWidget(mtA);
 				if (0 < fCount) {
 					mtA = new MenuPopupAnchor((IDBASE + "Edit"), m_messages.mainMenuFavoritesEdit(), null, new ManageClickHandler(FavoriteOperation.EDIT, fList));

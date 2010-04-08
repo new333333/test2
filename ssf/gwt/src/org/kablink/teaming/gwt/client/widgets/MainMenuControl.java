@@ -40,11 +40,14 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.mainmenu.ActionsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.FavoritesMenuPopup;
+import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarBox;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarButton;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarToggle;
 import org.kablink.teaming.gwt.client.mainmenu.MyTeamsMenuPopup;
+import org.kablink.teaming.gwt.client.mainmenu.ShowMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.TeamingMenuItem;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
@@ -98,7 +101,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	/**
 	 * Called to add an ActionHandler to this MainMenuControl.
 	 * 
-	 * Implements the ActionRequestor.addActionHandler() method.
+	 * Implements the ActionRequestor.addActionHandler() interface method.
 	 * 
 	 * @param actionHandler
 	 */
@@ -107,10 +110,32 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	}
 
 	/*
+	 * Adds the Actions item to the context based portion of the menu
+	 * bar.
+	 */
+	private void addActionsToContext(List<TeamingMenuItem> menuItemList) {
+		final ActionsMenuPopup smp = new ActionsMenuPopup(this);
+		smp.setCurrentBinder(m_contextBinderId);
+		smp.setMenuItemList(menuItemList);
+		if (smp.shouldShowMenu()) {
+			final MenuBarBox actionsBox = new MenuBarBox("ss_mainMenuActions", m_messages.mainMenuBarActions(), true);
+			actionsBox.addClickHandler(
+				new ClickHandler() {
+					public void onClick(ClickEvent event) {
+						int left =  actionsBox.getAbsoluteLeft();
+						int top  = (actionsBox.getAbsoluteTop() - 20);
+						smp.showPopup(left, top);
+					}
+				});
+			m_contextPanel.add(actionsBox);
+		}
+	}
+	
+	/*
 	 * Adds the items to the menu bar that are always there, regardless
 	 * of context.
 	 */
-	private void addCommonItems(FlowPanel menuPanel) {
+	private void addCommonItems(FlowPanel commonPanel) {
 		// Create a panel to hold the buttons at the left edge of the
 		// menu bar...
 		FlowPanel buttonsPanel = new FlowPanel();
@@ -145,18 +170,18 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		buttonsPanel.add(panel);
 
 		// ...add the buttons to the menu...
-		menuPanel.add(buttonsPanel);
+		commonPanel.add(buttonsPanel);
 
 		// ...and finally, add the common drop down items to the menu bar.
-		addMyWorkspace(menuPanel);
-		addMyTeams(menuPanel);
-		addFavorites(menuPanel);
+		addMyWorkspaceToCommon(commonPanel);
+		addMyTeamsToCommon(    commonPanel);
+		addFavoritesToCommon(  commonPanel);
 	}
 	
 	/*
-	 * Adds the Favorites item to the menu bar.
+	 * Adds the Favorites item to the common portion of the menu bar.
 	 */
-	private void addFavorites(FlowPanel menuPanel) {
+	private void addFavoritesToCommon(FlowPanel menuPanel) {
 		final MenuBarBox favoritesBox = new MenuBarBox("ss_mainMenuFavorites", m_messages.mainMenuBarFavorites(), true);
 		final ActionTrigger actionTrigger = this;
 		favoritesBox.addClickHandler(
@@ -164,17 +189,40 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 				public void onClick(ClickEvent event) {
 					int left =  favoritesBox.getAbsoluteLeft();
 					int top  = (favoritesBox.getAbsoluteTop() - 20);
-					FavoritesMenuPopup mip = new FavoritesMenuPopup(actionTrigger, left, top);
-					mip.showFavorites(m_contextBinderId);
+					FavoritesMenuPopup fmp = new FavoritesMenuPopup(actionTrigger);
+					fmp.setCurrentBinder(m_contextBinderId);
+					fmp.showPopup(left, top);
 				}
 			});
 		menuPanel.add(favoritesBox);
 	}
 	
 	/*
-	 * Adds the My Teams item to the menu bar.
+	 * Adds the Manage item to the context based portion of the menu
+	 * bar.
 	 */
-	private void addMyTeams(FlowPanel menuPanel) {
+	private void addManageToContext(List<TeamingMenuItem> menuItemList) {
+		final ManageMenuPopup smp = new ManageMenuPopup(this);
+		smp.setCurrentBinder(m_contextBinderId);
+		smp.setMenuItemList(menuItemList);
+		if (smp.shouldShowMenu()) {
+			final MenuBarBox manageBox = new MenuBarBox("ss_mainMenuManage", m_messages.mainMenuBarManage(), true);
+			manageBox.addClickHandler(
+				new ClickHandler() {
+					public void onClick(ClickEvent event) {
+						int left =  manageBox.getAbsoluteLeft();
+						int top  = (manageBox.getAbsoluteTop() - 20);
+						smp.showPopup(left, top);
+					}
+				});
+			m_contextPanel.add(manageBox);
+		}
+	}
+	
+	/*
+	 * Adds the My Teams item to the common portion of the menu bar.
+	 */
+	private void addMyTeamsToCommon(FlowPanel menuPanel) {
 		final MenuBarBox myTeamsBox = new MenuBarBox("ss_mainMenuMyTeams", m_messages.mainMenuBarMyTeams(), true);
 		final ActionTrigger actionTrigger = this;
 		myTeamsBox.addClickHandler(
@@ -182,17 +230,19 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 				public void onClick(ClickEvent event) {
 					int left =  myTeamsBox.getAbsoluteLeft();
 					int top  = (myTeamsBox.getAbsoluteTop() - 20);
-					MyTeamsMenuPopup mip = new MyTeamsMenuPopup(actionTrigger, left, top);
-					mip.showMyTeams(m_contextBinderId);
+					MyTeamsMenuPopup mtmp = new MyTeamsMenuPopup(actionTrigger);
+					mtmp.setCurrentBinder(m_contextBinderId);
+					mtmp.showPopup(left, top);
 				}
 			});
 		menuPanel.add(myTeamsBox);
 	}
 	
 	/*
-	 * Adds the My Workspace item to the menu bar.
+	 * Adds the My Workspace item to the common portion of the menu
+	 * bar.
 	 */
-	private void addMyWorkspace(FlowPanel menuPanel) {
+	private void addMyWorkspaceToCommon(FlowPanel menuPanel) {
 		MenuBarBox myWorkspaceBox = new MenuBarBox("ss_mainMenuMyWorkspace", m_images.home16(), m_messages.mainMenuBarMyWorkspace());
 		myWorkspaceBox.addClickHandler(
 			new ClickHandler() {
@@ -204,6 +254,27 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	}
 	
 
+	/*
+	 * Adds the Show item to the context based portion of the menu bar.
+	 */
+	private void addShowToContext(List<TeamingMenuItem> menuItemList) {
+		final ShowMenuPopup smp = new ShowMenuPopup(this);
+		smp.setCurrentBinder(m_contextBinderId);
+		smp.setMenuItemList(menuItemList);
+		if (smp.shouldShowMenu()) {
+			final MenuBarBox showBox = new MenuBarBox("ss_mainMenuShow", m_messages.mainMenuBarShow(), true);
+			showBox.addClickHandler(
+				new ClickHandler() {
+					public void onClick(ClickEvent event) {
+						int left =  showBox.getAbsoluteLeft();
+						int top  = (showBox.getAbsoluteTop() - 20);
+						smp.showPopup(left, top);
+					}
+				});
+			m_contextPanel.add(showBox);
+		}
+	}
+	
 	/**
 	 * Called when a new context has been loaded into the content panel
 	 * to refresh the menu contents.
@@ -211,13 +282,17 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * @param binderId
 	 */
 	public void contextLoaded(String binderId) {
+		// Rebuild the context based panel based on the new context.  
 		m_contextBinderId = binderId;
+		m_contextPanel.clear();
 		GwtTeaming.getRpcService().getMenuItems(binderId, new AsyncCallback<List<TeamingMenuItem>>() {
 			public void onFailure(Throwable t) {
 				Window.alert(t.toString());
 			}
-			public void onSuccess(List<TeamingMenuItem> miList)  {
-//!				...this needs to be implemented...
+			public void onSuccess(List<TeamingMenuItem> menuItemList)  {
+				addShowToContext(   menuItemList);
+				addManageToContext( menuItemList);
+				addActionsToContext(menuItemList);
 			}
 		});
 	}

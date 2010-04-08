@@ -53,10 +53,11 @@ import com.google.gwt.user.client.ui.FlowPanel;
  * Class used for the My Teams menu item popup.  
  * 
  * @author drfoster@novell.com
- *
  */
 public class MyTeamsMenuPopup extends MenuBarPopup {
 	private final String IDBASE = "myTeams_";
+	
+	private String m_currentBinderId;	// ID of the currently selected binder.
 	
 	/*
 	 * Inner class that handles clicks on team management commands.
@@ -153,18 +154,70 @@ public class MyTeamsMenuPopup extends MenuBarPopup {
 	/**
 	 * Class constructor.
 	 * 
-	 * @param left
-	 * @param top
+	 * @param actionTrigger
 	 */
-	public MyTeamsMenuPopup(ActionTrigger actionTrigger, int left, int top) {
+	public MyTeamsMenuPopup(ActionTrigger actionTrigger) {
 		// Initialize the super class.
-		super(actionTrigger, GwtTeaming.getMessages().mainMenuBarMyTeams(), left, top);
+		super(actionTrigger, GwtTeaming.getMessages().mainMenuBarMyTeams());
+	}
+	
+	/**
+	 * Stores the ID of the currently selected binder.
+	 * 
+	 * Implements the MenuBarPopup.setCurrentBinder() abstract method.
+	 * 
+	 * @param binderId
+	 */
+	@Override
+	public void setCurrentBinder(String binderId) {
+		// Simply store the parameter.
+		m_currentBinderId = binderId;
+	}
+	
+	/**
+	 * Not used for the My Teams menu.
+	 * 
+	 * Implements the MenuBarPopup.setMenuItemList() abstract method.
+	 * 
+	 * @param menuItemList
+	 */
+	@Override
+	public void setMenuItemList(List<TeamingMenuItem> menuItemList) {
+		// Unused.
+	}
+	
+	/**
+	 * Not used for the My Teams menu.  Always returns true.
+	 * 
+	 * Implements the MenuBarPopup.shouldShowMenu() abstract method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean shouldShowMenu() {
+		return true;
 	}
 	
 	/**
 	 * Completes construction of the menu and shows it.
+	 * 
+	 * Implements the MenuBarPopup.showPopup() abstract method.
+	 * 
+	 * @param left
+	 * @param top
 	 */
-	public void showMyTeams(final String binderId) {
+	@Override
+	public void showPopup(int left, int top) {
+		// Position the popup and if we've already constructed its
+		// content...
+		setPopupPosition(left, top);
+		if (hasContent()) {
+			// ...simply show it and bail.
+			show();
+			return;
+		}
+		
+		// Otherwise, read the users teams.
 		m_rpcService.getMyTeams(new AsyncCallback<List<TeamInfo>>() {
 			public void onFailure(Throwable t) {
 				Window.alert(t.toString());
@@ -191,7 +244,7 @@ public class MyTeamsMenuPopup extends MenuBarPopup {
 					addContentWidget(content);
 				}
 
-				m_rpcService.getTeamManagementInfo(binderId, new AsyncCallback<TeamManagementInfo>() {
+				m_rpcService.getTeamManagementInfo(m_currentBinderId, new AsyncCallback<TeamManagementInfo>() {
 					public void onFailure(Throwable t) {
 						Window.alert(t.toString());
 					}

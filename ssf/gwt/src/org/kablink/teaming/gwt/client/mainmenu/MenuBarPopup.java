@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -51,12 +53,11 @@ import com.google.gwt.user.client.ui.Widget;
 
 
 /**
- * Class used for a menu item popup.  
+ * Base class used for a menu item popups.  
  * 
  * @author drfoster@novell.com
- *
  */
-public class MenuBarPopup extends PopupPanel {
+public abstract class MenuBarPopup extends PopupPanel {
 	protected ActionTrigger					m_actionTrigger;	// Used to trigger actions from the popup.
 	protected GwtTeamingMainMenuImageBundle	m_images;			// The menu's images.
 	protected GwtTeamingMessages			m_messages;			// The menu's messages.
@@ -66,11 +67,10 @@ public class MenuBarPopup extends PopupPanel {
 	/**
 	 * Class constructor.
 	 * 
+	 * @param actionTrigger
 	 * @param title
-	 * @param left
-	 * @param top
 	 */
-	public MenuBarPopup(ActionTrigger actionTrigger, String title, int left, int top) {
+	public MenuBarPopup(ActionTrigger actionTrigger, String title) {
 		// Construct the super class...
 		super(true);
 
@@ -84,7 +84,6 @@ public class MenuBarPopup extends PopupPanel {
 		addStyleName("mainMenuPopup_Core");
 		setAnimationEnabled(true);
 //!		setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
-		setPopupPosition(left, top);
 
 		// ...create the popup's innards...
 		DockPanel dp = new DockPanel();
@@ -102,7 +101,7 @@ public class MenuBarPopup extends PopupPanel {
 	 * 
 	 * @param contentWidget
 	 */
-	public void addContentWidget(Widget contentWidget) {
+	final public void addContentWidget(Widget contentWidget) {
 		// Simply add the widget to the content panel.
 		m_contentPanel.add(contentWidget);
 	}
@@ -157,4 +156,49 @@ public class MenuBarPopup extends PopupPanel {
 		// ...and return the panel.
 		return panel;
 	}
+
+	/**
+	 * Returns true if the menu bar has content and false otherwise.
+	 * 
+	 * @return
+	 */
+	final public boolean hasContent() {
+		return (0 < m_contentPanel.getWidgetCount());
+	}
+	
+	/**
+	 * Passes the ID of the currently selected binder to classes that
+	 * extend MenuBarPopup.
+	 * 
+	 * @param binderId
+	 */
+	public abstract void setCurrentBinder(String binderId);
+
+	/**
+	 * Passes information about the context based menu requirements via
+	 * a List<TeamingMenuItem> to classes that extend MenuBarPopup.
+	 * 
+	 * Not used for non-context based menus (My Teams, Favorites, ...)
+	 * 
+	 * @param menuItemList
+	 */
+	public abstract void setMenuItemList(List<TeamingMenuItem> menuItemList);
+	
+	/**
+	 * Called to determine if the menu should be shown.
+	 * 
+	 * Not used for non-context based menus (My Teams, Favorites, ...)
+	 * 
+	 * @return
+	 */
+	public abstract boolean shouldShowMenu();
+	
+	/**
+	 * Classes that extend do what needs to be done to show their
+	 * MenuBarPopup.
+	 * 
+	 * @param left
+	 * @param top
+	 */
+	public abstract void showPopup(int left, int top);
 }
