@@ -35,10 +35,6 @@ package org.kablink.teaming.gwt.client.mainmenu;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
-
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -51,17 +47,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *
  */
 public class TeamingMenuItem implements IsSerializable {
-	private List<TeamingMenuItem> m_popupItemsAL = new ArrayList<TeamingMenuItem>();
-	
-	/**
-	 * The type of an item this TeamingMenuItem object refers to.  
-	 */
-	public enum MenuType implements IsSerializable {
-		POPUP,
-		SIMPLE,
-		
-		OTHER,
-	}
+	private List<TeamingMenuItem> m_nestedItemsAL;	// Any menu items nested within this one.
 	
 	/**
 	 * Constructor method.
@@ -70,5 +56,33 @@ public class TeamingMenuItem implements IsSerializable {
 	 */
 	public TeamingMenuItem() {
 		// Nothing to do.
+	}
+
+	/**
+	 * Adds a nested TeamingMenuItem to this one.
+	 *  
+	 * @param tmi
+	 */
+	public void addNestedItem(TeamingMenuItem tmi) {
+		// Validate that we have a nested items list and add this one
+		// to it.
+		getNestedItems();
+		m_nestedItemsAL.add(tmi);
+	}
+
+	/**
+	 * Returns this TeamingMenuItem's nest items list.
+	 * 
+	 * @return
+	 */
+	public List<TeamingMenuItem> getNestedItems() {
+		// If we haven't allocated a nested items list yet...
+		if (null == m_nestedItemsAL) {
+			// ...allocate one now...
+			m_nestedItemsAL = new ArrayList<TeamingMenuItem>();
+		}
+		
+		// ...and return it.
+		return m_nestedItemsAL;
 	}
 }

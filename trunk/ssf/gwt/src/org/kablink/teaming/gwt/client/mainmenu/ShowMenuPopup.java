@@ -109,7 +109,13 @@ public class ShowMenuPopup extends MenuBarPopup {
 	 */
 	@Override
 	public boolean shouldShowMenu() {
-//!		...this needs to be implemented...
+		// Scan the menu items.
+		for (Iterator<TeamingMenuItem> miIT = m_menuItemList.iterator(); miIT.hasNext(); ) {
+			// Is this a show item?
+			TeamingMenuItem mi = miIT.next();
+			
+//!			...this needs to be implemented...
+		}
 		return true;
 	}
 	

@@ -39,9 +39,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
 
 import javax.portlet.PortletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -104,6 +107,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.Favorites;
+import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -119,6 +123,8 @@ import org.kablink.util.search.Constants;
 public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	implements GwtRpcService
 {
+	protected static Log m_logger = LogFactory.getLog(GwtRpcServiceImpl.class);
+	
 	/**
 	 * This method is meant to search for applications or entries or groups or places or tags or teams or users.
 	 */
@@ -1330,10 +1336,60 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public List<TeamingMenuItem> getMenuItems( String binderId )
 	{
-//!		...this needs to be implemented...
-		return new ArrayList<TeamingMenuItem>();
+		// Construct an ArrayList<TeamingMenuItem> to hold the menu
+		// items.
+		ArrayList<TeamingMenuItem> tmiList = new ArrayList<TeamingMenuItem>();
+
+		// If we can't access the HttpSession...
+		HttpSession hSession = GwtServerHelper.getCurrentHttpSession();
+		if (null == hSession) {
+			// ...we can't access the cached toolbar beans to build the
+			// ...menu items from.  Bail.
+			m_logger.debug("GwtRpcServiceImpl.getMenuItems( 'Could not access the current HttpSession' )");
+			return tmiList;
+		}
+
+		// If we can't access the cached toolbar beans... 
+		Map<String, SortedMap> tbMaps = ((Map<String, SortedMap>) hSession.getAttribute(GwtUIHelper.CACHED_TOOLBARS_KEY));
+		if (null == tbMaps) {
+			// ...we can't build any menu items.  Bail.
+			m_logger.debug("GwtRpcServiceImpl.getMenuItems( 'Could not access any cached toolbars' )");
+			return tmiList;
+		}
+		
+		// Scan the toolbars...
+		Set<String> tbKeySet = tbMaps.keySet();
+		for (Iterator<String> tbKeyIT = tbKeySet.iterator(); tbKeyIT.hasNext(); ) {
+			// ...constructing a TeamingMenuItem for each.
+			String tbKey = tbKeyIT.next();
+			tmiList.add(buildMenuItemFromToolbar(tbKey, tbMaps.get(tbKey)));
+		}
+
+		// If we get here, tmiList refers to the
+		// List<TeamingMenuItem>'s to construct the GWT UI based menu
+		// from.  Return it.
+		return tmiList;
+	}
+
+	/*
+	 * Constructs a TeamingMenuItem based on a toolbar.
+	 */
+	@SuppressWarnings("unchecked")
+	private TeamingMenuItem buildMenuItemFromToolbar(String tbKey, SortedMap tbMap) {
+		m_logger.debug("GwtRpcServiceImpl.buildMenuItemFromToolbar():  " + tbKey);
+		TeamingMenuItem tmi = new TeamingMenuItem();
+		
+		Set kSet = tbMap.keySet();
+		for (Iterator kIT = kSet.iterator(); kIT.hasNext(); ) {
+			String k = ((String) kIT.next());
+			m_logger.debug("....." + k);
+//!			...this needs to be implemented...
+		}
+		
+		return tmi;
 	}
 
 	/**

@@ -40,11 +40,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import net.sf.json.JSONObject;
 
 import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.HttpSessionContext;
+import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.User;
@@ -322,6 +327,21 @@ public class GwtServerHelper {
 	 */
 	public static User getCurrentUser() {
 		return RequestContextHolder.getRequestContext().getUser();
+	}
+
+	/**
+	 * Returns the current HttpSession, if accessible.
+	 * 
+	 * @return
+	 */
+	public static HttpSession getCurrentHttpSession() {
+		HttpSession reply = null;
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		SessionContext sc = rc.getSessionContext();
+		if (sc instanceof HttpSessionContext) {
+			reply = ((HttpSessionContext) sc).getHttpSession();
+		}
+		return reply;
 	}
 
 	/*
