@@ -9,6 +9,7 @@
     <bean id="iisFilter" class="org.kablink.teaming.spring.security.IISPreAuthenticatedProcessingFilter">
 		<s:custom-filter position="PRE_AUTH_FILTER"/>
 		<property name="authenticationManager" ref="_authenticationManager"/>
+		<property name="continueFilterChainOnUnsuccessfulAuthentication"><value>false</value></property>
     </bean>
 
     <!-- ============================== Form-based authentication ============================ -->
