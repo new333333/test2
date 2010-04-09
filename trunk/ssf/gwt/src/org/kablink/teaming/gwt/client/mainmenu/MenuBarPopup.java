@@ -106,6 +106,22 @@ public abstract class MenuBarPopup extends PopupPanel {
 		m_contentPanel.add(contentWidget);
 	}
 
+	/**
+	 * Adds a context based menu item to the menu.
+	 * 
+	 * @param idBase
+	 * @param mi
+	 */
+	final public void addContextMenuItem(String idBase, TeamingMenuItem mi) {
+		// If we have a widget for the menu item... 
+		ContextMenuItem cmi = new ContextMenuItem(this, idBase, mi);
+		Widget cmiWidget = cmi.getWidget();
+		if (null != cmiWidget) {
+			// ...add it to the popup.
+			addContentWidget(cmiWidget);
+		}
+	}
+	
 	/*
 	 * Creates the bottom of the popup.
 	 */

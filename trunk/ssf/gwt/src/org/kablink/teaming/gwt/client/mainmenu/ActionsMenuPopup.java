@@ -56,7 +56,7 @@ import com.google.gwt.user.client.ui.Label;
  */
 @SuppressWarnings("unused")
 public class ActionsMenuPopup extends MenuBarPopup {
-	private final String IDBASE = "action_";
+	private final String IDBASE = "action_";	// Base ID for the items created in this menu.
 	
 	private List<TeamingMenuItem> m_menuItemList;	// The context based menu requirements.
 	private String m_currentBinderId;				// ID of the currently selected binder.
@@ -109,6 +109,18 @@ public class ActionsMenuPopup extends MenuBarPopup {
 	 */
 	@Override
 	public boolean shouldShowMenu() {
+		// Scan the menu items...
+		for (Iterator<TeamingMenuItem> miIT = m_menuItemList.iterator(); miIT.hasNext(); ) {
+			// ...and keep track of the ones that appear on the actions
+			// ...menu.
+			TeamingMenuItem mi = miIT.next();
+			String miName = mi.getName();
+			
+//!			...this needs to be implemented...
+		}
+		
+		// Return true if we found any of the actions menu items and
+		// false otherwise.
 //!		...this needs to be implemented...
 		return true;
 	}
@@ -123,15 +135,17 @@ public class ActionsMenuPopup extends MenuBarPopup {
 	 */
 	@Override
 	public void showPopup(int left, int top) {
+		// Position the menu...
 		setPopupPosition(left, top);
 		
-		// Have we already constructed the menu's content?
+		// ...and if we haven't already constructed its contents...
 		if (!(hasContent())) {
-			// No!  Construct it now.
+			// ...construct it now...
 //!			...this needs to be implemented...
 			addContentWidget(new Label("...this needs to be implemented..."));
 		}
-		
+					
+		// ...and show it.
 		show();
 	}
 }

@@ -51,6 +51,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -60,7 +61,7 @@ import com.google.gwt.user.client.ui.Label;
  */
 @SuppressWarnings("unused")
 public class ShowMenuPopup extends MenuBarPopup {
-	private final String IDBASE = "show_";
+	private final String IDBASE = "show_";	// Base ID for the items created in this menu.
 	
 	private List<TeamingMenuItem> m_menuItemList;	// The context based menu requirements.
 	private String m_currentBinderId;				// ID of the currently selected binder.
@@ -68,82 +69,6 @@ public class ShowMenuPopup extends MenuBarPopup {
 	private TeamingMenuItem m_whatsNewMI;			// The What's new     menu item, if found.
 	private TeamingMenuItem m_whoHasAccessMI;		// THe Who has access menu item, if found.
 
-	/*
-	 * Inner class that handles clicks on the menu items.
-	 */
-	private class ShowClickHandler implements ClickHandler {
-		private boolean m_isPopup;
-		private int m_popupHeight;
-		private int m_popupWidth;
-		private String m_id;
-		private String m_onClickJS;
-		private String m_url;
-		
-		/**
-		 * Class constructor.
-		 *
-		 * @param id
-		 * @param url
-		 * @param isPopup
-		 * @param popupHeight
-		 * @param popupWidth
-		 * @param onClickJS
-		 */
-		ShowClickHandler(String id, String url, boolean isPopup, int popupHeight, int popupWidth, String onClickJS) {
-			// Simply store the parameters.
-			m_id = id;
-			m_url = url;
-			m_isPopup = isPopup;
-			m_popupHeight = popupHeight;
-			m_popupWidth = popupWidth;
-			m_onClickJS = onClickJS;
-		}
-		
-		/**
-		 * Called when the user clicks on a team management command.
-		 * 
-		 * @param event
-		 */
-		public void onClick(ClickEvent event) {
-			// Remove the selection from the menu item...
-			Element menuItemElement = Document.get().getElementById(m_id);
-			menuItemElement.removeClassName("mainMenuPopup_ItemHover");
-			
-			// ...hide the menu...
-			hide();
-
-			// ...and perform the request.
-			if (m_isPopup)
-				 jsLaunchUrlInWindow(m_url, m_popupHeight, m_popupWidth);
-			else jsEvalString(       m_url, m_onClickJS                );
-		}
-		
-		/*
-		 * Evaluates a JavaScript string containing embedded
-		 * JavaScript. 
-		 */
-		private native void jsEvalString(String url, String jsString) /*-{
-			// Setup an object to pass through the URL...
-			var hrefObj = {href: url};
-			
-			// ...patch the JavaScript string...
-			jsString = jsString.replace("this", "hrefObj");
-			jsString = jsString.replace("return false;", "");
-			jsString = ("window.top.gwtContentIframe." + jsString);
-			
-			// ...and evaluate it.
-			eval(jsString);
-		}-*/;
-		
-		/*
-		 * Uses Teaming's existing ss_common JavaScript to launch a URL in
-		 * a new window.
-		 */
-		private native void jsLaunchUrlInWindow(String url, int height, int width) /*-{
-			window.top.ss_openUrlInWindow({href: url}, '_blank', width, height);
-		}-*/;
-	}
-	
 	/**
 	 * Class constructor.
 	 * 
@@ -154,37 +79,6 @@ public class ShowMenuPopup extends MenuBarPopup {
 		super(actionTrigger, GwtTeaming.getMessages().mainMenuBarShow());
 	}
 
-	/*
-	 * Add a menu item to the show menu.
-	 */
-	private void addMenuItem(TeamingMenuItem mi) {
-		// If we don't have an menu item...
-		if (null == mi) {
-			// Bail.
-			return;
-		}
-
-		// Extract the commonly used values...
-		String title = mi.getTitle();
-		String url   = mi.getUrl();
-		
-		// ...and qualifiers from the menu item.
-		String hover        = mi.getQualifierValue("title");
-		String onClickJS    = mi.getQualifierValue("onclick");
-		String popupS       = mi.getQualifierValue("popup");
-		String popupHeightS = mi.getQualifierValue("popupHeight");
-		String popupWidthS  = mi.getQualifierValue("popupWidth");
-
-		// Parse the non-string values.
-		boolean isPopup = (GwtClientHelper.hasString(popupS)       ? Boolean.parseBoolean(popupS)   : false);
-		int popupHeight = (GwtClientHelper.hasString(popupHeightS) ? Integer.parseInt(popupHeightS) : (-1));
-		int popupWidth  = (GwtClientHelper.hasString(popupWidthS)  ? Integer.parseInt(popupWidthS)  : (-1));
-		
-		String id = (IDBASE + mi.getName());
-		MenuPopupAnchor mtA = new MenuPopupAnchor(id, title, hover, new ShowClickHandler(id, url, isPopup, popupHeight, popupWidth, onClickJS));
-		addContentWidget(mtA);
-	}
-	
 	/**
 	 * Stores the ID of the currently selected binder.
 	 * 
@@ -263,9 +157,9 @@ public class ShowMenuPopup extends MenuBarPopup {
 		// ...and if we haven't already constructed its contents...
 		if (!(hasContent())) {
 			// ...construct it now...
-			addMenuItem(m_unseenMI);
-			addMenuItem(m_whatsNewMI);
-			addMenuItem(m_whoHasAccessMI);
+			addContextMenuItem(IDBASE, m_unseenMI);
+			addContextMenuItem(IDBASE, m_whatsNewMI);
+			addContextMenuItem(IDBASE, m_whoHasAccessMI);
 		}
 
 		// ...and show it.
