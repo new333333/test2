@@ -40,7 +40,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
 
 import javax.portlet.PortletRequest;
@@ -1353,7 +1352,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 
 		// If we can't access the cached toolbar beans... 
-		Map<String, SortedMap> tbMaps = ((Map<String, SortedMap>) hSession.getAttribute(GwtUIHelper.CACHED_TOOLBARS_KEY));
+		Map<String, Map> tbMaps = ((Map<String, Map>) hSession.getAttribute(GwtUIHelper.CACHED_TOOLBARS_KEY));
 		if (null == tbMaps) {
 			// ...we can't build any menu items.  Bail.
 			m_logger.debug("GwtRpcServiceImpl.getMenuItems( 'Could not access any cached toolbars' )");
@@ -1361,11 +1360,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		
 		// Scan the toolbars...
+		m_logger.debug("GwtRpcServiceImpl.getMenuItems():");
 		Set<String> tbKeySet = tbMaps.keySet();
 		for (Iterator<String> tbKeyIT = tbKeySet.iterator(); tbKeyIT.hasNext(); ) {
 			// ...constructing a TeamingMenuItem for each.
 			String tbKey = tbKeyIT.next();
-			tmiList.add(buildMenuItemFromToolbar(tbKey, tbMaps.get(tbKey)));
+			tmiList.add(buildMenuItemFromToolbar("...", tbKey, tbMaps.get(tbKey)));
 		}
 
 		// If we get here, tmiList refers to the
@@ -1378,18 +1378,75 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Constructs a TeamingMenuItem based on a toolbar.
 	 */
 	@SuppressWarnings("unchecked")
-	private TeamingMenuItem buildMenuItemFromToolbar(String tbKey, SortedMap tbMap) {
-		m_logger.debug("GwtRpcServiceImpl.buildMenuItemFromToolbar():  " + tbKey);
-		TeamingMenuItem tmi = new TeamingMenuItem();
-		
+	private TeamingMenuItem buildMenuItemFromToolbar(String traceStart, String tbKey, Map tbMap) {
+		// Log the name of the toolbar that we're building a menu item
+		// for...
+		m_logger.debug(traceStart + ":toolbar=" + tbKey);
+
+		// ...and create its menu item.
+		TeamingMenuItem menuItem = new TeamingMenuItem();
+		menuItem.setName(tbKey);
+
+		// Scan the items in this toolbar's map.
 		Set kSet = tbMap.keySet();
 		for (Iterator kIT = kSet.iterator(); kIT.hasNext(); ) {
+			// Is this item a nested map?
 			String k = ((String) kIT.next());
-			m_logger.debug("....." + k);
-//!			...this needs to be implemented...
+			Object o = tbMap.get(k);
+			if (o instanceof Map) {
+				// Yes!  Is it a map of qualifiers?
+				if (k.equalsIgnoreCase("qualifiers")) {
+					// Yes!  Add them to the current toolbar.
+					Map m = ((Map) o);
+					Set qSet = m.keySet();
+					for (Iterator qIT = qSet.iterator(); qIT.hasNext(); ) {
+						String name  = ((String) qIT.next());
+						Object value = m.get(name);
+						String sValue;
+						if      (value instanceof Boolean) sValue = String.valueOf((Boolean) value);
+						else if (value instanceof String)  sValue = ((String) value);
+						else                               sValue = null;
+						if (null == sValue) {
+							m_logger.debug(traceStart + "...:name:<unknown>:IGNORED QUALIFIER=" + name + ":" + ((null == value) ? "null" : value.getClass()));
+						}
+						else {
+							m_logger.debug(traceStart + "...:name:value:QUALIFIER=" + name + ":" + sValue);
+							menuItem.addQualifier(name, sValue);
+						}
+					}
+				}
+				else {
+					// No, it's not a map of qualifiers!  Construct a
+					// nested menu item for it.
+					menuItem.addNestedItem(buildMenuItemFromToolbar((traceStart + "..."), k, ((Map) o)));
+				}
+			}
+			
+			// No, the item isn't a nested map!  Is it a string?
+			else if (o instanceof String) {
+				// Yes!  Handle the values we know about...
+				String s = ((String) o);
+				if (k.equalsIgnoreCase("title")) {
+					m_logger.debug(traceStart + "...:key:string:TITLE=" + k + ":" + s);
+					menuItem.setTitle(s);
+				}
+				else if (k.equalsIgnoreCase("url")) {
+					m_logger.debug(traceStart + "...:key:string:URL=" + k + ":" + s);
+					menuItem.setUrl(  s);
+				}
+				else {
+					// ...and ignore the rest.
+					m_logger.debug(traceStart + "...:key:string:IGNORED=" + k + ":" + s);
+				}
+			}
+			else {
+				m_logger.debug(traceStart + "...:key:<unknown>:IGNORED=" + k + ":" + ((null == o) ? "null" : o.getClass()));
+			}
 		}
-		
-		return tmi;
+
+		// If we get here, menuItem refers to the TeamingMenuItem for
+		// this toolbar.  Return it.
+		return menuItem;
 	}
 
 	/**
