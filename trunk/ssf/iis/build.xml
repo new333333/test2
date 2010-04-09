@@ -19,8 +19,8 @@
 		<copy todir="${target.dir}/library">
 			<fileset dir="download" includes="**/*${jk.version}*" />
 		</copy>
-		<copy file="${target.dir}/library/win32/isapi_redirect-${jk.version}.dll" tofile="${target.dir}/resource set 1/bin/isapi_redirect.dll" />
-		<copy file="${target.dir}/library/win32/isapi_redirect-${jk.version}.dll" tofile="${target.dir}/resource set 2/bin/isapi_redirect.dll" />
+		<copy file="${target.dir}/library/win32/isapi_redirect-${jk.version}.dll" tofile="${target.dir}/resources1/bin/isapi_redirect.dll" />
+		<copy file="${target.dir}/library/win32/isapi_redirect-${jk.version}.dll" tofile="${target.dir}/resources2/bin/isapi_redirect.dll" />
 		<zip destfile="${zip.file.name}"
 			basedir="temp"
 			includes="**/*"
