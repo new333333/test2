@@ -222,9 +222,6 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuBarMyTeams();
 	String mainMenuBarMyWorkspace();
 	String mainMenuBarShow();
-	String mainMenuBarShowWhatsNew();
-	String mainMenuBarShowWhatsUnread();
-	String mainMenuBarShowWhoHasAccess();
 	String mainMenuBarWorkspace();
 	String mainMenuFavoritesAdd();
 	String mainMenuFavoritesDlgDelete();

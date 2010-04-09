@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.mainmenu;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -47,7 +48,44 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *
  */
 public class TeamingMenuItem implements IsSerializable {
-	private List<TeamingMenuItem> m_nestedItemsAL;	// Any menu items nested within this one.
+	private List<NameValuePair> m_qualifiersAL = new ArrayList<NameValuePair>();		// Qualifier name/value pairs for this menu item.
+	private List<TeamingMenuItem> m_nestedItemsAL = new ArrayList<TeamingMenuItem>();	// Menu items nested within this one.
+	private String m_name;																// The name of this menu item.
+	private String m_title;																// The display name for this menu item.
+	private String m_url;																// The URL to launch for this menu item.
+
+	/**
+	 * Inner class used to track name/value pairs.
+	 */
+	public static class NameValuePair implements IsSerializable {
+		private String m_name;	// The name  for this name/value pair.
+		private String m_value;	// The value for this name/value pair.
+
+		/**
+		 * Constructor method.
+		 * 
+		 * No parameters as per GWT serialization requirements.
+		 */
+		public NameValuePair() {
+			// Nothing to do.
+		}
+
+		/**
+		 * Public get'er methods.
+		 * 
+		 * @return
+		 */
+		public String getName()  {return m_name; }
+		public String getValue() {return m_value;}
+
+		/**
+		 * Public set'er methods.
+		 * 
+		 * @param s
+		 */
+		public void setName( String s) {m_name  = s;}
+		public void setValue(String s) {m_value = s;}
+	}
 	
 	/**
 	 * Constructor method.
@@ -59,30 +97,151 @@ public class TeamingMenuItem implements IsSerializable {
 	}
 
 	/**
-	 * Adds a nested TeamingMenuItem to this one.
+	 * Adds a nested menu item to this one.
 	 *  
 	 * @param tmi
 	 */
 	public void addNestedItem(TeamingMenuItem tmi) {
-		// Validate that we have a nested items list and add this one
-		// to it.
-		getNestedItems();
 		m_nestedItemsAL.add(tmi);
 	}
 
 	/**
-	 * Returns this TeamingMenuItem's nest items list.
+	 * Adds a name/value pair to the qualifier list.
+	 *  
+	 * @param nvp
+	 */
+	public void addQualifier(NameValuePair nvp) {
+		m_qualifiersAL.add(nvp);
+	}
+
+	/**
+	 * Adds a name/value pair to the qualifier list.
+	 *  
+	 * @param name
+	 * @param value
+	 */
+	public void addQualifier(String name, String value) {
+		NameValuePair nvp = new NameValuePair();
+		nvp.setName(name);
+		nvp.setValue(value);
+		addQualifier(nvp);
+	}
+
+	/**
+	 * Returns the name of the menu item.
 	 * 
 	 * @return
 	 */
-	public List<TeamingMenuItem> getNestedItems() {
-		// If we haven't allocated a nested items list yet...
-		if (null == m_nestedItemsAL) {
-			// ...allocate one now...
-			m_nestedItemsAL = new ArrayList<TeamingMenuItem>();
-		}
-		
-		// ...and return it.
+	public String getName() {
+		return m_name;
+	}
+	
+	/**
+	 * Returns this menu item's nested items list.
+	 * 
+	 * @return
+	 */
+	public List<TeamingMenuItem> getNestedItemsList() {
 		return m_nestedItemsAL;
+	}
+
+	/**
+	 * Returns nested menu item based on its name.
+	 * 
+	 * @param name
+	 * 
+	 * @return
+	 */
+	public TeamingMenuItem getNestedMenuItem(String name) {
+		name = name.toLowerCase();
+		for (Iterator<TeamingMenuItem> tmiIT = m_nestedItemsAL.iterator(); tmiIT.hasNext(); ) {
+			TeamingMenuItem tmi = tmiIT.next();
+			String tmiName = tmi.getName().toLowerCase();
+			if (tmiName.endsWith(name)) {
+				return tmi;
+			}
+		}
+		return null;
+	}
+	
+	/*
+	 * Returns the name/value pair for a qualifier based on its name.
+	 */
+	private NameValuePair getQualifier(String name) {
+		name = name.toLowerCase();
+		for (Iterator<NameValuePair> qIT = m_qualifiersAL.iterator(); qIT.hasNext(); ) {
+			NameValuePair nvp = qIT.next();
+			String nvpName = nvp.getName().toLowerCase();
+			if (nvpName.endsWith(name)) {
+				return nvp;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns this menu item's qualifiers list.
+	 * 
+	 * @return
+	 */
+	public List<NameValuePair> getQualifiersList() {
+		return m_qualifiersAL;
+	}
+
+	/**
+	 * Returns the value for a qualifier based on its name.
+	 * 
+	 * @param name
+	 * 
+	 * @return
+	 */
+	public String getQualifierValue(String name) {
+		NameValuePair nvp = getQualifier(name);
+		return ((null == nvp) ? null : nvp.getValue());
+	}
+	
+	/**
+	 * Returns the title of the menu item.
+	 * 
+	 * @return
+	 */
+	public String getTitle() {
+		return m_title;
+	}
+	
+	/**
+	 * Returns the URL of the menu item.
+	 * 
+	 * @return
+	 */
+	public String getUrl() {
+		return m_url;
+	}
+	
+	/**
+	 * Stores the name of the menu item.
+	 * 
+	 * @param name
+	 */
+	public void setName(String name) {
+		m_name = name;
+	}
+	
+	/**
+	 * Stores the title of the menu item.
+	 * 
+	 * @param title
+	 */
+	public void setTitle(String title) {
+		m_title = title;
+	}
+	
+	/**
+	 * Stores the URL of the menu item.
+	 * 
+	 * @param url
+	 */
+	public void setUrl(String url) {
+		m_url = url;
 	}
 }
