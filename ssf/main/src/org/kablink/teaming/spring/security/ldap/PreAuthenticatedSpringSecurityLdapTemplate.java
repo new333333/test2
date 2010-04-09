@@ -110,7 +110,7 @@ public class PreAuthenticatedSpringSecurityLdapTemplate extends SpringSecurityLd
                             }
                         }
                     } catch (PartialResultException e) {
-                        logger.info("Ignoring PartialResultException");
+                        logger.info("Ignoring PartialResultException: " + e.toString());
                     }
 
                     if (results.size() == 0) {
