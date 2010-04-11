@@ -638,10 +638,18 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
 	public void modifyFileComment(DefinableEntity entity, FileAttachment fileAtt, Description description) {
 		fileAtt.getFileItem().setDescription(description);
-		triggerUpdateTransaction();
-		//ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
-		//ChangeLogUtils.buildLog(changes, fileAtt);
-		//getCoreDao().save(changes);
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
+		ChangeLogUtils.buildLog(changes, fileAtt);
+		saveChangeLogTransactional(changes);
+	}
+	
+	private void saveChangeLogTransactional(final ChangeLog changeLog) {
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {  
+                getCoreDao().save(changeLog);
+            	return null;
+        	}
+        });	
 	}
 	
 	public void renameFile(Binder binder, DefinableEntity entity, 
@@ -814,7 +822,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		// Update the metadata
 		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEVERSIONDELETE);
 		ChangeLogUtils.buildLog(changes, va);
-		//getCoreDao().save(changes);
 
 		fa.removeFileVersion(va);
 		
@@ -830,7 +837,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		//List<String> afterVersionNames = RepositoryUtil.getVersionNames(va.getRepositoryName(), binder, entity, 
 		//		va.getFileItem().getName());
 		
-		triggerUpdateTransaction();
+		saveChangeLogTransactional(changes);
 	}
 
 	public Map<String,Long> getChildrenFileNames(Binder binder) {
