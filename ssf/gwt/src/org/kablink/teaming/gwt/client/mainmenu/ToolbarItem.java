@@ -40,19 +40,19 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * Class used to communicate menu item information between the client
- * (i.e., the MainMenuControl) and the server (i.e.,
- * GwtRpcServiceImpl.getMenuItems().)
+ * Class used to communicate toolbar item information between the
+ * client (i.e., the MainMenuControl) and the server (i.e.,
+ * GwtRpcServiceImpl.getToolbarItems().)
  * 
  * @author drfoster@novell.com
  *
  */
-public class TeamingMenuItem implements IsSerializable {
-	private List<NameValuePair> m_qualifiersAL = new ArrayList<NameValuePair>();		// Qualifier name/value pairs for this menu item.
-	private List<TeamingMenuItem> m_nestedItemsAL = new ArrayList<TeamingMenuItem>();	// Menu items nested within this one.
-	private String m_name;																// The name of this menu item.
-	private String m_title;																// The display name for this menu item.
-	private String m_url;																// The URL to launch for this menu item.
+public class ToolbarItem implements IsSerializable {
+	private List<NameValuePair> m_qualifiersAL = new ArrayList<NameValuePair>();	// Qualifier name/value pairs for this toolbar item.
+	private List<ToolbarItem> m_nestedItemsAL = new ArrayList<ToolbarItem>();		// Toolbar items nested within this one.
+	private String m_name;															// The name of this toolbar item.
+	private String m_title;															// The display name for this toolbar item.
+	private String m_url;															// The URL to launch for this toolbar item.
 
 	/**
 	 * Inner class used to track name/value pairs.
@@ -92,16 +92,16 @@ public class TeamingMenuItem implements IsSerializable {
 	 * 
 	 * No parameters as per GWT serialization requirements.
 	 */
-	public TeamingMenuItem() {
+	public ToolbarItem() {
 		// Nothing to do.
 	}
 
 	/**
-	 * Adds a nested menu item to this one.
+	 * Adds a nested toolbar item to this one.
 	 *  
 	 * @param tmi
 	 */
-	public void addNestedItem(TeamingMenuItem tmi) {
+	public void addNestedItem(ToolbarItem tmi) {
 		m_nestedItemsAL.add(tmi);
 	}
 
@@ -128,7 +128,7 @@ public class TeamingMenuItem implements IsSerializable {
 	}
 
 	/**
-	 * Returns the name of the menu item.
+	 * Returns the name of the toolbar item.
 	 * 
 	 * @return
 	 */
@@ -137,28 +137,28 @@ public class TeamingMenuItem implements IsSerializable {
 	}
 	
 	/**
-	 * Returns this menu item's nested items list.
+	 * Returns this toolbar item's nested items list.
 	 * 
 	 * @return
 	 */
-	public List<TeamingMenuItem> getNestedItemsList() {
+	public List<ToolbarItem> getNestedItemsList() {
 		return m_nestedItemsAL;
 	}
 
 	/**
-	 * Returns nested menu item based on its name.
+	 * Returns nested toolbar item based on its name.
 	 * 
 	 * @param name
 	 * 
 	 * @return
 	 */
-	public TeamingMenuItem getNestedMenuItem(String name) {
+	public ToolbarItem getNestedToolbarItem(String name) {
 		name = name.toLowerCase();
-		for (Iterator<TeamingMenuItem> tmiIT = m_nestedItemsAL.iterator(); tmiIT.hasNext(); ) {
-			TeamingMenuItem tmi = tmiIT.next();
-			String tmiName = tmi.getName().toLowerCase();
-			if (tmiName.endsWith(name)) {
-				return tmi;
+		for (Iterator<ToolbarItem> tbiIT = m_nestedItemsAL.iterator(); tbiIT.hasNext(); ) {
+			ToolbarItem tbi = tbiIT.next();
+			String tbName = tbi.getName().toLowerCase();
+			if (tbName.endsWith(name)) {
+				return tbi;
 			}
 		}
 		return null;
@@ -180,7 +180,7 @@ public class TeamingMenuItem implements IsSerializable {
 	}
 	
 	/**
-	 * Returns this menu item's qualifiers list.
+	 * Returns this toolbar item's qualifiers list.
 	 * 
 	 * @return
 	 */
@@ -201,7 +201,7 @@ public class TeamingMenuItem implements IsSerializable {
 	}
 	
 	/**
-	 * Returns the title of the menu item.
+	 * Returns the title of the toolbar item.
 	 * 
 	 * @return
 	 */
@@ -210,7 +210,7 @@ public class TeamingMenuItem implements IsSerializable {
 	}
 	
 	/**
-	 * Returns the URL of the menu item.
+	 * Returns the URL of the toolbar item.
 	 * 
 	 * @return
 	 */
@@ -219,7 +219,7 @@ public class TeamingMenuItem implements IsSerializable {
 	}
 	
 	/**
-	 * Stores the name of the menu item.
+	 * Stores the name of the toolbar item.
 	 * 
 	 * @param name
 	 */
@@ -228,7 +228,7 @@ public class TeamingMenuItem implements IsSerializable {
 	}
 	
 	/**
-	 * Stores the title of the menu item.
+	 * Stores the title of the toolbar item.
 	 * 
 	 * @param title
 	 */
@@ -237,7 +237,7 @@ public class TeamingMenuItem implements IsSerializable {
 	}
 	
 	/**
-	 * Stores the URL of the menu item.
+	 * Stores the URL of the toolbar item.
 	 * 
 	 * @param url
 	 */

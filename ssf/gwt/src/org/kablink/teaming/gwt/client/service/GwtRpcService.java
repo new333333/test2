@@ -47,7 +47,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
-import org.kablink.teaming.gwt.client.mainmenu.TeamingMenuItem;
+import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
@@ -110,13 +110,13 @@ public interface GwtRpcService extends RemoteService
 	
 	// The following are used in the implementation of the
 	// MainMenuControl.
-	public Boolean               addFavorite(           String             binderId      );
-	public Boolean               removeFavorite(        String             favoriteId    );
-	public Boolean               updateFavorites(       List<FavoriteInfo> favoritesList );
-	public List<FavoriteInfo>    getFavorites();
-	public List<TeamInfo>        getMyTeams();
-	public List<TeamingMenuItem> getMenuItems(          String             binderId      );
-	public TeamManagementInfo    getTeamManagementInfo( String             binderId      );
+	public Boolean            addFavorite(           String             binderId      );
+	public Boolean            removeFavorite(        String             favoriteId    );
+	public Boolean            updateFavorites(       List<FavoriteInfo> favoritesList );
+	public List<FavoriteInfo> getFavorites();
+	public List<TeamInfo>     getMyTeams();
+	public TeamManagementInfo getTeamManagementInfo( String             binderId      );
+	public List<ToolbarItem>  getToolbarItems(       String             binderId      );
 	
 	// Save the branding data to the given binder.
 	public Boolean saveBrandingData( String binderId, GwtBrandingData brandingData ) throws GwtTeamingException;
