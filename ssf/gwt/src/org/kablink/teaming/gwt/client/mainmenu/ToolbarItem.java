@@ -153,11 +153,14 @@ public class ToolbarItem implements IsSerializable {
 	 * @return
 	 */
 	public ToolbarItem getNestedToolbarItem(String name) {
-		name = name.toLowerCase();
+		name = ((null == name) ? "" : name.toLowerCase());
+		boolean noName = (0 == name.length());
 		for (Iterator<ToolbarItem> tbiIT = m_nestedItemsAL.iterator(); tbiIT.hasNext(); ) {
 			ToolbarItem tbi = tbiIT.next();
-			String tbName = tbi.getName().toLowerCase();
-			if (tbName.endsWith(name)) {
+			String tbName = tbi.getName();
+			tbName = ((null == tbName) ? "" : tbName.toLowerCase());
+			boolean noTBName = (0 == tbName.length());
+			if ((noName && noTBName) || ((!noName) && tbName.endsWith(name))) {
 				return tbi;
 			}
 		}
@@ -216,6 +219,16 @@ public class ToolbarItem implements IsSerializable {
 	 */
 	public String getUrl() {
 		return m_url;
+	}
+
+	/**
+	 * Returns true if this toolbar item has nested toolbar items and
+	 * false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean hasNestedToolbarItems() {
+		return ((null != m_nestedItemsAL) && (!(m_nestedItemsAL.isEmpty())));
 	}
 	
 	/**

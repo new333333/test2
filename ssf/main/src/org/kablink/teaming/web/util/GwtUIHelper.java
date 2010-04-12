@@ -34,7 +34,9 @@
 package org.kablink.teaming.web.util;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 
 import javax.portlet.PortletRequest;
@@ -44,6 +46,7 @@ import javax.servlet.http.HttpSession;
 
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -51,10 +54,9 @@ import org.kablink.teaming.web.util.Toolbar;
 import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.portlet.ModelAndView;
 
-
 /**
  * Helper methods for the GWT UI code.
- *
+ * 
  * @author drfoster@novell.com
  */
 public class GwtUIHelper {
@@ -62,19 +64,22 @@ public class GwtUIHelper {
 	// beans.
 	public final static String CACHED_TOOLBARS_KEY = "gwt-ui-toolbars";
 	
+	// When caching a toolbar containing an AdaptedPortletURL, we
+	// must also store the URL in string form for the GWT UI to use.
+	// If we don't, an NPE is generated when we try to convert it. 
+	public final static String URLFIXUP_PATCH = ".urlAsString";
+
 	// The names of the toolbar beans stored in the session cache for
 	// the GWT UI toolbar.
 	public final static String[] CACHED_TOOLBARS = new String[] {
 		WebKeys.CALENDAR_IMPORT_TOOLBAR,
 		WebKeys.EMAIL_SUBSCRIPTION_TOOLBAR,
-		WebKeys.ENTRY_TOOLBAR,
 		WebKeys.FOLDER_ACTIONS_TOOLBAR,
 		WebKeys.FOLDER_TOOLBAR,
 		WebKeys.FOLDER_VIEWS_TOOLBAR,
 		WebKeys.WHATS_NEW_TOOLBAR,
 	};
 
-	
 	/**
 	 * Builds the GWT UI toolbar for a binder.
 	 * 
@@ -109,7 +114,7 @@ public class GwtUIHelper {
 	public static ModelAndView cacheToolbarBeans(PortletRequest pRequest, ModelAndView mv) {
 		return cacheToolbarBeans(WebHelper.getHttpServletRequest(pRequest), mv);
 	}
-	
+
 	/**
 	 * When in GWT UI mode, extracts the toolbar beans from the model
 	 * and stores them in the session cache.
@@ -133,23 +138,23 @@ public class GwtUIHelper {
 			// ...bail.
 			return;
 		}
-		
+
 		// Clear any previous toolbars we may have cached.
 		HttpSession hSession = WebHelper.getRequiredSession(hRequest);
 		hSession.removeAttribute(CACHED_TOOLBARS_KEY);
-		
+
 		// If we're not in GWT UI mode...
 		if (!(isGwtUIActive(hRequest))) {
 			// ...bail.
 			return;
 		}
-		
-		// If we don't have a model or the model data is empty... 
+
+		// If we don't have a model or the model data is empty...
 		if ((null == model) || (0 == model.size())) {
 			// ...bail.
 			return;
 		}
-		
+
 		// Scan the names of toolbars we need to cache.
 		HashMap<String, SortedMap> tbHM = new HashMap<String, SortedMap>();
 		for (int i = 0; i < CACHED_TOOLBARS.length; i += 1) {
@@ -157,7 +162,8 @@ public class GwtUIHelper {
 			String tbName = CACHED_TOOLBARS[i];
 			SortedMap tb = ((SortedMap) model.get(tbName));
 			if ((null != tb) && (!(tb.isEmpty()))) {
-				// Yes!  Add it to the HashMap.
+				// Yes! Add it to the HashMap.
+				fixupAdaptedPortletURLs(tb);
 				tbHM.put(tbName, tb);
 			}
 		}
@@ -166,7 +172,34 @@ public class GwtUIHelper {
 		// cache.
 		hSession.setAttribute(CACHED_TOOLBARS_KEY, tbHM);
 	}
-	
+
+	/*
+	 * Walks the toolbar map and stores the URL from any
+	 * AdaptedPortletURL in its string form.
+	 * 
+	 * We do this because when the GWT UI code accesses the toolbars,
+	 * it cannot process the AdaptedPortletURL as a string as an NPE 
+	 * is generated when we try to convert it. 
+	 */
+	@SuppressWarnings("unchecked")
+	private static void fixupAdaptedPortletURLs(Map tbMap) {
+		Set tbKeySet = tbMap.keySet();
+		for (Iterator tbKeyIT = tbKeySet.iterator(); tbKeyIT.hasNext(); ) {
+			Object tbKeyO = tbKeyIT.next();
+			if (tbKeyO instanceof String) {
+				String tbKey = ((String) tbKeyO);
+				Object tbO = tbMap.get(tbKey);
+				if (tbO instanceof AdaptedPortletURL) {
+					String url = ((AdaptedPortletURL) tbO).toString();
+					tbMap.put(tbKey + URLFIXUP_PATCH, url);
+				}
+				else if (tbO instanceof Map) {
+					fixupAdaptedPortletURLs((Map) tbO);
+				}
+			}
+		}
+	}
+
 	/**
 	 * Returns true if the GWT UI should be available and false
 	 * otherwise.
@@ -187,13 +220,13 @@ public class GwtUIHelper {
 	 */
 	public static boolean isGwtUIActive(PortletRequest pRequest) {
 		HttpServletRequest hRequest = WebHelper.getHttpServletRequest(pRequest);
-		boolean reply = (null != pRequest); 
+		boolean reply = (null != pRequest);
 		if (reply) {
 			reply = isGwtUIActive(hRequest);
 		}
 		return reply;
 	}
-	
+
 	/**
 	 * Returns true if the GWT UI should be active and false otherwise.
 	 * 
@@ -202,7 +235,7 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static boolean isGwtUIActive(HttpServletRequest hRequest) {
-		boolean	reply = isGwtUIEnabled();
+		boolean reply = isGwtUIEnabled();
 		if (reply) {
 			reply = (null != hRequest);
 			if (reply) {
@@ -212,11 +245,12 @@ public class GwtUIHelper {
 			}
 		}
 		return reply;
-		
+
 	}
 
 	/**
-	 * Updates stores the current GWT UI active flag in the session cache.
+	 * Updates stores the current GWT UI active flag in the session
+	 * cache.
 	 * 
 	 * @param pRequest
 	 * @param gwtUIActive
@@ -227,9 +261,10 @@ public class GwtUIHelper {
 			setGwtUIActive(hRequest, gwtUIActive);
 		}
 	}
-	
+
 	/**
-	 * Updates stores the current GWT UI active flag in the session cache.
+	 * Updates stores the current GWT UI active flag in the session
+	 * cache.
 	 * 
 	 * @param hRequest
 	 * @param gwtUIActive
