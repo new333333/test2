@@ -61,6 +61,8 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -166,7 +168,7 @@ public class MastHead extends Composite
 		
 		
 		/**
-		 * Update this panel with the data found in m_brandingData. 
+		 * Update this panel with the data found in brandingData. 
 		 */
 		public void updatePanel( GwtBrandingData brandingData )
 		{
@@ -261,7 +263,9 @@ public class MastHead extends Composite
 	 */
 	public MastHead( RequestInfo requestInfo )
 	{
-		m_requestInfo = requestInfo;
+        Command cmd;
+
+        m_requestInfo = requestInfo;
 		
 		m_mainMastheadPanel = new FlowPanel();
 		m_mainMastheadPanel.addStyleName( "mastHead" );
@@ -312,7 +316,7 @@ public class MastHead extends Composite
 			{
 				// Remember the branding data we are working with.
 				m_brandingData = brandingData;
-				
+
 				// Update the masthead with the branding data we just retrieved.
 				updateMasthead( brandingData );
 			}// end onSuccess()
@@ -441,24 +445,19 @@ public class MastHead extends Composite
 		initWidget( m_mainMastheadPanel );
 
 		// Tell the branding panel the binder it is working with.  We can't do this right now
-		// because the browser hasn't rendered anything yes.  So set a timer to do the work later.
-		{
-			Timer timer;
-			
-			timer = new Timer()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void run()
-				{
-					setBinderId( m_requestInfo.getBinderId() );
-				}// end run()
-			};
-			
-			timer.schedule( 250 );
-		}
+		// because the browser hasn't rendered anything yes.  So use a DeferredCommand.
+        cmd = new Command()
+        {
+        	/**
+        	 * 
+        	 */
+            public void execute()
+            {
+				setBinderId( m_requestInfo.getBinderId() );
+            }
+        };
+        DeferredCommand.addCommand( cmd );
+
 	}// end MastHead()
 
 
@@ -734,7 +733,7 @@ public class MastHead extends Composite
 
 	
 	/**
-	 * Update the masthead with the branding information found in m_brandingData.
+	 * Update the masthead with the branding information found in brandingData.
 	 */
 	public void updateMasthead( GwtBrandingData brandingData )
 	{

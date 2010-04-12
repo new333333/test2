@@ -405,7 +405,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		GwtBrandingData brandingData;
 		
 		brandingData = new GwtBrandingData();
-		brandingData.setBinderId( binderId );
 		
 		try
 		{
@@ -419,12 +418,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				String branding;
 				GwtBrandingDataExt brandingExt;
 				Binder brandingSourceBinder;
+				String brandingSourceBinderId;
 				
 				binder = binderModule.getBinder( binderIdL );
 				
 				// Get the binder where branding comes from.
 				brandingSourceBinder = binder.getBrandingSource();
 				
+				brandingSourceBinderId = brandingSourceBinder.getId().toString();
+				brandingData.setBinderId( brandingSourceBinderId );
+
 				// Get the branding that should be applied for this binder.
 				branding = brandingSourceBinder.getBranding();
 				
@@ -456,7 +459,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					// 	<brandingData fontColor="" brandingImgName="some name" brandingType="image/advanced">
 					// 		<background color="" imgName="" />
 					// 	</brandingData>
-					xmlStr = binder.getBrandingExt();
+					xmlStr = brandingSourceBinder.getBrandingExt();
 					
 					if ( xmlStr != null )
 					{
@@ -502,7 +505,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			    					if ( !imgName.equalsIgnoreCase( "__no image__" ) && !imgName.equalsIgnoreCase( "__default teaming image__" ) )
 			    					{
 			    						// No, Get a url to the file.
-				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, binder, imgName );
+				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, brandingSourceBinder, imgName );
 				    					brandingExt.setBrandingImgUrl( fileUrl );
 			    					}
 			    				}
@@ -544,7 +547,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				    				if ( imgName != null && imgName.length() > 0 )
 				    				{
 				    					// Get a url to the file.
-				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, binder, imgName );
+				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, brandingSourceBinder, imgName );
 				    					brandingExt.setBackgroundImgUrl( fileUrl );
 				    					
 				    					brandingExt.setBackgroundImgName( imgName );
