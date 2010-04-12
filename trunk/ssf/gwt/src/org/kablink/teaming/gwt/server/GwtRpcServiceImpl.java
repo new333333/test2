@@ -81,7 +81,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
-import org.kablink.teaming.gwt.client.mainmenu.TeamingMenuItem;
+import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
@@ -1328,7 +1328,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getMyTeams()
 	
 	/**
-	 * Returns a List<TeamingMenuItem> of the TeamingMenuItem's
+	 * Returns a List<ToolbarItem> of the ToolbarItem's
 	 * applicable for the given context.
 	 * 
 	 * @param binderId
@@ -1336,56 +1336,56 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public List<TeamingMenuItem> getMenuItems( String binderId )
+	public List<ToolbarItem> getToolbarItems( String binderId )
 	{
-		// Construct an ArrayList<TeamingMenuItem> to hold the menu
+		// Construct an ArrayList<ToolbarItem> to hold the toolbar
 		// items.
-		ArrayList<TeamingMenuItem> tmiList = new ArrayList<TeamingMenuItem>();
+		ArrayList<ToolbarItem> tmiList = new ArrayList<ToolbarItem>();
 
 		// If we can't access the HttpSession...
 		HttpSession hSession = GwtServerHelper.getCurrentHttpSession();
 		if (null == hSession) {
 			// ...we can't access the cached toolbar beans to build the
-			// ...menu items from.  Bail.
-			m_logger.debug("GwtRpcServiceImpl.getMenuItems( 'Could not access the current HttpSession' )");
+			// ...toolbar items from.  Bail.
+			m_logger.debug("GwtRpcServiceImpl.getToolbarItems( 'Could not access the current HttpSession' )");
 			return tmiList;
 		}
 
 		// If we can't access the cached toolbar beans... 
 		Map<String, Map> tbMaps = ((Map<String, Map>) hSession.getAttribute(GwtUIHelper.CACHED_TOOLBARS_KEY));
 		if (null == tbMaps) {
-			// ...we can't build any menu items.  Bail.
-			m_logger.debug("GwtRpcServiceImpl.getMenuItems( 'Could not access any cached toolbars' )");
+			// ...we can't build any toolbar items.  Bail.
+			m_logger.debug("GwtRpcServiceImpl.getToolbarItems( 'Could not access any cached toolbars' )");
 			return tmiList;
 		}
 		
 		// Scan the toolbars...
-		m_logger.debug("GwtRpcServiceImpl.getMenuItems():");
+		m_logger.debug("GwtRpcServiceImpl.getToolbarItems():");
 		Set<String> tbKeySet = tbMaps.keySet();
 		for (Iterator<String> tbKeyIT = tbKeySet.iterator(); tbKeyIT.hasNext(); ) {
-			// ...constructing a TeamingMenuItem for each.
+			// ...constructing a ToolbarItem for each.
 			String tbKey = tbKeyIT.next();
-			tmiList.add(buildMenuItemFromToolbar("...", tbKey, tbMaps.get(tbKey)));
+			tmiList.add(buildToolbarItemFromToolbar("...", tbKey, tbMaps.get(tbKey)));
 		}
 
 		// If we get here, tmiList refers to the
-		// List<TeamingMenuItem>'s to construct the GWT UI based menu
+		// List<ToolbarItem>'s to construct the GWT UI based toolbar
 		// from.  Return it.
 		return tmiList;
 	}
 
 	/*
-	 * Constructs a TeamingMenuItem based on a toolbar.
+	 * Constructs a ToolbarItem based on a toolbar.
 	 */
 	@SuppressWarnings("unchecked")
-	private TeamingMenuItem buildMenuItemFromToolbar(String traceStart, String tbKey, Map tbMap) {
-		// Log the name of the toolbar that we're building a menu item
-		// for...
+	private ToolbarItem buildToolbarItemFromToolbar(String traceStart, String tbKey, Map tbMap) {
+		// Log the name of the toolbar that we're building a toolbar
+		// item for...
 		m_logger.debug(traceStart + ":toolbar=" + tbKey);
 
-		// ...and create its menu item.
-		TeamingMenuItem menuItem = new TeamingMenuItem();
-		menuItem.setName(tbKey);
+		// ...and create its toolbar item.
+		ToolbarItem toolbarItem = new ToolbarItem();
+		toolbarItem.setName(tbKey);
 
 		// Scan the items in this toolbar's map.
 		Set kSet = tbMap.keySet();
@@ -1411,14 +1411,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 						}
 						else {
 							m_logger.debug(traceStart + "...:name:value:QUALIFIER=" + name + ":" + sValue);
-							menuItem.addQualifier(name, sValue);
+							toolbarItem.addQualifier(name, sValue);
 						}
 					}
 				}
 				else {
 					// No, it's not a map of qualifiers!  Construct a
-					// nested menu item for it.
-					menuItem.addNestedItem(buildMenuItemFromToolbar((traceStart + "..."), k, ((Map) o)));
+					// nested toolbar item for it.
+					toolbarItem.addNestedItem(buildToolbarItemFromToolbar((traceStart + "..."), k, ((Map) o)));
 				}
 			}
 			
@@ -1428,11 +1428,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				String s = ((String) o);
 				if (k.equalsIgnoreCase("title")) {
 					m_logger.debug(traceStart + "...:key:string:TITLE=" + k + ":" + s);
-					menuItem.setTitle(s);
+					toolbarItem.setTitle(s);
 				}
 				else if (k.equalsIgnoreCase("url")) {
 					m_logger.debug(traceStart + "...:key:string:URL=" + k + ":" + s);
-					menuItem.setUrl(  s);
+					toolbarItem.setUrl(  s);
 				}
 				else {
 					// ...and ignore the rest.
@@ -1444,9 +1444,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 		}
 
-		// If we get here, menuItem refers to the TeamingMenuItem for
+		// If we get here, toolbarItem refers to the ToolbarItem for
 		// this toolbar.  Return it.
-		return menuItem;
+		return toolbarItem;
 	}
 
 	/**

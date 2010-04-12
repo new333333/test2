@@ -107,14 +107,14 @@ public abstract class MenuBarPopup extends PopupPanel {
 	}
 
 	/**
-	 * Adds a context based menu item to the menu.
+	 * Adds a context based toolbar item to the menu.
 	 * 
 	 * @param idBase
-	 * @param mi
+	 * @param tbi
 	 */
-	final public void addContextMenuItem(String idBase, TeamingMenuItem mi) {
+	final public void addContextMenuItem(String idBase, ToolbarItem tbi) {
 		// If we have a widget for the menu item... 
-		ContextMenuItem cmi = new ContextMenuItem(this, idBase, mi);
+		ContextMenuItem cmi = new ContextMenuItem(this, idBase, tbi);
 		Widget cmiWidget = cmi.getWidget();
 		if (null != cmiWidget) {
 			// ...add it to the popup.
@@ -191,14 +191,14 @@ public abstract class MenuBarPopup extends PopupPanel {
 	public abstract void setCurrentBinder(String binderId);
 
 	/**
-	 * Passes information about the context based menu requirements via
-	 * a List<TeamingMenuItem> to classes that extend MenuBarPopup.
+	 * Passes information about the context based toolbar requirements
+	 * via a List<ToolbarItem> to classes that extend MenuBarPopup.
 	 * 
 	 * Not used for non-context based menus (My Teams, Favorites, ...)
 	 * 
-	 * @param menuItemList
+	 * @param toolbarItemList
 	 */
-	public abstract void setMenuItemList(List<TeamingMenuItem> menuItemList);
+	public abstract void setToolbarItemList(List<ToolbarItem> toolbarItemList);
 	
 	/**
 	 * Called to determine if the menu should be shown.

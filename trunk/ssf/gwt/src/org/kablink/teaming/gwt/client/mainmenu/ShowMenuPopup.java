@@ -63,11 +63,11 @@ import com.google.gwt.user.client.ui.Widget;
 public class ShowMenuPopup extends MenuBarPopup {
 	private final String IDBASE = "show_";	// Base ID for the items created in this menu.
 	
-	private List<TeamingMenuItem> m_menuItemList;	// The context based menu requirements.
+	private List<ToolbarItem> m_toolbarItemList;	// The context based toolbar requirements.
 	private String m_currentBinderId;				// ID of the currently selected binder.
-	private TeamingMenuItem m_unseenMI;				// The Unseen         menu item, if found.
-	private TeamingMenuItem m_whatsNewMI;			// The What's new     menu item, if found.
-	private TeamingMenuItem m_whoHasAccessMI;		// THe Who has access menu item, if found.
+	private ToolbarItem m_unseenMI;					// The Unseen         toolbar item, if found.
+	private ToolbarItem m_whatsNewMI;				// The What's new     toolbar item, if found.
+	private ToolbarItem m_whoHasAccessMI;			// THe Who has access toolbar item, if found.
 
 	/**
 	 * Class constructor.
@@ -93,21 +93,21 @@ public class ShowMenuPopup extends MenuBarPopup {
 	}
 	
 	/**
-	 * Store information about the context based menu requirements via
-	 * a List<TeamingMenuItem>.
+	 * Store information about the context based toolbar requirements
+	 * via a List<ToolbarItem>.
 	 * 
-	 * Implements the MenuBarPopup.setMenuItemList() abstract method.
+	 * Implements the MenuBarPopup.setToolbarItemList() abstract method.
 	 * 
-	 * @param menuItemList
+	 * @param toolbarItemList
 	 */
 	@Override
-	public void setMenuItemList(List<TeamingMenuItem> menuItemList) {
+	public void setToolbarItemList(List<ToolbarItem> toolbarItemList) {
 		// Simply store the parameter.
-		m_menuItemList = menuItemList;
+		m_toolbarItemList = toolbarItemList;
 	}
 	
 	/**
-	 * Called to determine if given the List<TeamingMenuItem>, should
+	 * Called to determine if given the List<ToolbarItem>, should
 	 * the menu be shown.  Returns true if it should be shown and false
 	 * otherwise.
 	 * 
@@ -117,19 +117,19 @@ public class ShowMenuPopup extends MenuBarPopup {
 	 */
 	@Override
 	public boolean shouldShowMenu() {
-		// Scan the menu items...
-		for (Iterator<TeamingMenuItem> miIT = m_menuItemList.iterator(); miIT.hasNext(); ) {
+		// Scan the toolbar items...
+		for (Iterator<ToolbarItem> tbiIT = m_toolbarItemList.iterator(); tbiIT.hasNext(); ) {
 			// ...and keep track of the ones that appear on the show
 			// ...menu.
-			TeamingMenuItem mi = miIT.next();
-			String miName = mi.getName();
-			if (miName.equalsIgnoreCase("ss_whatsNewToolbar")) {
-				m_unseenMI = mi.getNestedMenuItem("unseen");
-				m_whatsNewMI = mi.getNestedMenuItem("whatsnew");
+			ToolbarItem tbi = tbiIT.next();
+			String tbName = tbi.getName();
+			if (tbName.equalsIgnoreCase("ss_whatsNewToolbar")) {
+				m_unseenMI = tbi.getNestedToolbarItem("unseen");
+				m_whatsNewMI = tbi.getNestedToolbarItem("whatsnew");
 			}
 			
-			else if (miName.equalsIgnoreCase("ssFolderToolbar")) {
-				m_whoHasAccessMI = mi.getNestedMenuItem("whohasaccess");
+			else if (tbName.equalsIgnoreCase("ssFolderToolbar")) {
+				m_whoHasAccessMI = tbi.getNestedToolbarItem("whohasaccess");
 			}
 		}
 

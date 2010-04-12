@@ -48,7 +48,7 @@ import org.kablink.teaming.gwt.client.mainmenu.MenuBarButton;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarToggle;
 import org.kablink.teaming.gwt.client.mainmenu.MyTeamsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.ShowMenuPopup;
-import org.kablink.teaming.gwt.client.mainmenu.TeamingMenuItem;
+import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
@@ -113,10 +113,10 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * Adds the Actions item to the context based portion of the menu
 	 * bar.
 	 */
-	private void addActionsToContext(List<TeamingMenuItem> menuItemList) {
+	private void addActionsToContext(List<ToolbarItem> toolbarItemList) {
 		final ActionsMenuPopup smp = new ActionsMenuPopup(this);
 		smp.setCurrentBinder(m_contextBinderId);
-		smp.setMenuItemList(menuItemList);
+		smp.setToolbarItemList(toolbarItemList);
 		if (smp.shouldShowMenu()) {
 			final MenuBarBox actionsBox = new MenuBarBox("ss_mainMenuActions", m_messages.mainMenuBarActions(), true);
 			actionsBox.addClickHandler(
@@ -201,10 +201,10 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * Adds the Manage item to the context based portion of the menu
 	 * bar.
 	 */
-	private void addManageToContext(List<TeamingMenuItem> menuItemList) {
+	private void addManageToContext(List<ToolbarItem> toolbarItemList) {
 		final ManageMenuPopup smp = new ManageMenuPopup(this);
 		smp.setCurrentBinder(m_contextBinderId);
-		smp.setMenuItemList(menuItemList);
+		smp.setToolbarItemList(toolbarItemList);
 		if (smp.shouldShowMenu()) {
 			final MenuBarBox manageBox = new MenuBarBox("ss_mainMenuManage", m_messages.mainMenuBarManage(), true);
 			manageBox.addClickHandler(
@@ -257,10 +257,10 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	/*
 	 * Adds the Show item to the context based portion of the menu bar.
 	 */
-	private void addShowToContext(List<TeamingMenuItem> menuItemList) {
+	private void addShowToContext(List<ToolbarItem> toolbarItemList) {
 		final ShowMenuPopup smp = new ShowMenuPopup(this);
 		smp.setCurrentBinder(m_contextBinderId);
-		smp.setMenuItemList(menuItemList);
+		smp.setToolbarItemList(toolbarItemList);
 		if (smp.shouldShowMenu()) {
 			final MenuBarBox showBox = new MenuBarBox("ss_mainMenuShow", m_messages.mainMenuBarShow(), true);
 			showBox.addClickHandler(
@@ -285,14 +285,14 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		// Rebuild the context based panel based on the new context.  
 		m_contextBinderId = binderId;
 		m_contextPanel.clear();
-		GwtTeaming.getRpcService().getMenuItems(binderId, new AsyncCallback<List<TeamingMenuItem>>() {
+		GwtTeaming.getRpcService().getToolbarItems(binderId, new AsyncCallback<List<ToolbarItem>>() {
 			public void onFailure(Throwable t) {
 				Window.alert(t.toString());
 			}
-			public void onSuccess(List<TeamingMenuItem> menuItemList)  {
-				addShowToContext(   menuItemList);
-				addManageToContext( menuItemList);
-				addActionsToContext(menuItemList);
+			public void onSuccess(List<ToolbarItem> toolbarItemList)  {
+				addShowToContext(   toolbarItemList);
+				addManageToContext( toolbarItemList);
+				addActionsToContext(toolbarItemList);
 			}
 		});
 	}

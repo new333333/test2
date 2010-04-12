@@ -131,35 +131,35 @@ public class ContextMenuItem {
 	 * 
 	 * @param contextMenu
 	 * @param idBase
-	 * @param mi
+	 * @param tbi
 	 */
-	public ContextMenuItem(MenuBarPopup contextMenu, String idBase, TeamingMenuItem mi) {
+	public ContextMenuItem(MenuBarPopup contextMenu, String idBase, ToolbarItem tbi) {
 		// Store the context menu we're creating this for.
 		m_contextMenu = contextMenu;
 		
 		// If we don't have an menu item...
-		if (null == mi) {
+		if (null == tbi) {
 			// Bail.
 			return;
 		}
 
 		// Extract the commonly used values...
-		String title = mi.getTitle();
-		String url   = mi.getUrl();
+		String title = tbi.getTitle();
+		String url   = tbi.getUrl();
 		
 		// ...and qualifiers from the menu item.
-		String hover        = mi.getQualifierValue("title");
-		String onClickJS    = mi.getQualifierValue("onclick");
-		String popupS       = mi.getQualifierValue("popup");
-		String popupHeightS = mi.getQualifierValue("popupHeight");
-		String popupWidthS  = mi.getQualifierValue("popupWidth");
+		String hover        = tbi.getQualifierValue("title");
+		String onClickJS    = tbi.getQualifierValue("onclick");
+		String popupS       = tbi.getQualifierValue("popup");
+		String popupHeightS = tbi.getQualifierValue("popupHeight");
+		String popupWidthS  = tbi.getQualifierValue("popupWidth");
 
 		// Parse the non-string values.
 		boolean isPopup = (GwtClientHelper.hasString(popupS)       ? Boolean.parseBoolean(popupS)   : false);
 		int popupHeight = (GwtClientHelper.hasString(popupHeightS) ? Integer.parseInt(popupHeightS) : (-1));
 		int popupWidth  = (GwtClientHelper.hasString(popupWidthS)  ? Integer.parseInt(popupWidthS)  : (-1));
 		
-		String id = (idBase + mi.getName());
+		String id = (idBase + tbi.getName());
 		m_contextMenuAnchor = new MenuPopupAnchor(
 			id,
 			title,

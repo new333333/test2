@@ -203,12 +203,12 @@ public class FavoritesMenuPopup extends MenuBarPopup {
 	/**
 	 * Not used for the Favorites menu.
 	 * 
-	 * Implements the MenuBarPopup.setMenuItemList() abstract method.
+	 * Implements the MenuBarPopup.setToolbarItemList() abstract method.
 	 * 
-	 * @param menuItemList
+	 * @param toolbarItemList
 	 */
 	@Override
-	public void setMenuItemList(List<TeamingMenuItem> menuItemList) {
+	public void setToolbarItemList(List<ToolbarItem> toolbarItemList) {
 		// Unused.
 	}
 	
