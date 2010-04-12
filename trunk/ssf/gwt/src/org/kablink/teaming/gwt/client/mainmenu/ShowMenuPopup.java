@@ -65,9 +65,9 @@ public class ShowMenuPopup extends MenuBarPopup {
 	
 	private List<ToolbarItem> m_toolbarItemList;	// The context based toolbar requirements.
 	private String m_currentBinderId;				// ID of the currently selected binder.
-	private ToolbarItem m_unseenMI;					// The Unseen         toolbar item, if found.
-	private ToolbarItem m_whatsNewMI;				// The What's new     toolbar item, if found.
-	private ToolbarItem m_whoHasAccessMI;			// THe Who has access toolbar item, if found.
+	private ToolbarItem m_unseenTBI;				// The Unseen         toolbar item, if found.
+	private ToolbarItem m_whatsNewTBI;				// The What's new     toolbar item, if found.
+	private ToolbarItem m_whoHasAccessTBI;			// The Who has access toolbar item, if found.
 
 	/**
 	 * Class constructor.
@@ -124,21 +124,21 @@ public class ShowMenuPopup extends MenuBarPopup {
 			ToolbarItem tbi = tbiIT.next();
 			String tbName = tbi.getName();
 			if (tbName.equalsIgnoreCase("ss_whatsNewToolbar")) {
-				m_unseenMI = tbi.getNestedToolbarItem("unseen");
-				m_whatsNewMI = tbi.getNestedToolbarItem("whatsnew");
+				m_unseenTBI = tbi.getNestedToolbarItem("unseen");
+				m_whatsNewTBI = tbi.getNestedToolbarItem("whatsnew");
 			}
 			
 			else if (tbName.equalsIgnoreCase("ssFolderToolbar")) {
-				m_whoHasAccessMI = tbi.getNestedToolbarItem("whohasaccess");
+				m_whoHasAccessTBI = tbi.getNestedToolbarItem("whohasaccess");
 			}
 		}
 
 		// Return true if we found any of the show menu items and false
 		// otherwise.
 		return
-			((null != m_unseenMI) ||
-			 (null != m_whatsNewMI) ||
-			 (null != m_whoHasAccessMI));
+			((null != m_unseenTBI)   ||
+			 (null != m_whatsNewTBI) ||
+			 (null != m_whoHasAccessTBI));
 	}
 	
 	/**
@@ -157,9 +157,9 @@ public class ShowMenuPopup extends MenuBarPopup {
 		// ...and if we haven't already constructed its contents...
 		if (!(hasContent())) {
 			// ...construct it now...
-			addContextMenuItem(IDBASE, m_unseenMI);
-			addContextMenuItem(IDBASE, m_whatsNewMI);
-			addContextMenuItem(IDBASE, m_whoHasAccessMI);
+			addContextMenuItem(IDBASE, m_unseenTBI);
+			addContextMenuItem(IDBASE, m_whatsNewTBI);
+			addContextMenuItem(IDBASE, m_whoHasAccessTBI);
 		}
 
 		// ...and show it.

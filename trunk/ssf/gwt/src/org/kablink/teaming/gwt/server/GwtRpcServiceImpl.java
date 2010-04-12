@@ -1430,7 +1430,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					m_logger.debug(traceStart + "...:key:string:TITLE=" + k + ":" + s);
 					toolbarItem.setTitle(s);
 				}
-				else if (k.equalsIgnoreCase("url")) {
+				else if (k.equalsIgnoreCase("url") || k.endsWith(GwtUIHelper.URLFIXUP_PATCH)) {
 					m_logger.debug(traceStart + "...:key:string:URL=" + k + ":" + s);
 					toolbarItem.setUrl(  s);
 				}
@@ -1439,7 +1439,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					m_logger.debug(traceStart + "...:key:string:IGNORED=" + k + ":" + s);
 				}
 			}
+
+			// No, the item isn't a string either!  Is it an adapted
+			// portlet URL?
+			else if (o instanceof AdaptedPortletURL) {
+				// Yes!  Then we ignore it as it will have been handled
+				// as a string above.  (See the URLFIXUP_PATCH
+				// reference above.)
+			}
+			
 			else {
+				// No, the item isn't an adapted portlet URL either!
+				// We don't know how to handle it!
 				m_logger.debug(traceStart + "...:key:<unknown>:IGNORED=" + k + ":" + ((null == o) ? "null" : o.getClass()));
 			}
 		}

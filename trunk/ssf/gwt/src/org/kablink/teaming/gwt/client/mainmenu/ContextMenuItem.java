@@ -38,6 +38,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -73,12 +74,12 @@ public class ContextMenuItem {
 		 */
 		ContextItemClickHandler(String id, String url, boolean isPopup, int popupHeight, int popupWidth, String onClickJS) {
 			// Simply store the parameters.
-			m_id = id;
-			m_url = url;
-			m_isPopup = isPopup;
-			m_popupHeight = popupHeight;
-			m_popupWidth = popupWidth;
-			m_onClickJS = onClickJS;
+			m_id          = id;
+			m_url         = url;
+			m_isPopup     = isPopup;
+			m_popupHeight = (((-1) == popupHeight) ? Window.getClientHeight() : popupHeight);
+			m_popupWidth  = (((-1) == popupWidth)  ? Window.getClientWidth()  : popupWidth);
+			m_onClickJS   = onClickJS;
 		}
 		
 		/**
@@ -95,9 +96,9 @@ public class ContextMenuItem {
 			m_contextMenu.hide();
 
 			// ...and perform the request.
-			if (m_isPopup)
-				 jsLaunchUrlInWindow(m_url, m_popupHeight, m_popupWidth);
-			else jsEvalString(       m_url, m_onClickJS                );
+			if      (m_isPopup)                              jsLaunchUrlInWindow(    m_url, m_popupHeight, m_popupWidth);
+			else if (GwtClientHelper.hasString(m_onClickJS)) jsEvalString(           m_url, m_onClickJS);
+			else                                             jsLoadUrlInContentFrame(m_url);
 		}
 		
 		/*
@@ -124,6 +125,13 @@ public class ContextMenuItem {
 		private native void jsLaunchUrlInWindow(String url, int height, int width) /*-{
 			window.top.ss_openUrlInWindow({href: url}, '_blank', width, height);
 		}-*/;
+		
+		/*
+		 * Loads a URL into the GWT UI's content frame.
+		 */
+		private native void jsLoadUrlInContentFrame(String url) /*-{
+			window.top.gwtContentIframe.location.href = url;
+		}-*/;
 	}
 
 	/**
@@ -145,6 +153,9 @@ public class ContextMenuItem {
 
 		// Extract the commonly used values...
 		String title = tbi.getTitle();
+		if (!(GwtClientHelper.hasString(title))) {
+			title = tbi.getName();
+		}
 		String url   = tbi.getUrl();
 		
 		// ...and qualifiers from the menu item.

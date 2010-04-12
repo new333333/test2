@@ -60,6 +60,13 @@ public class ManageMenuPopup extends MenuBarPopup {
 	
 	private List<ToolbarItem> m_toolbarItemList;	// The context based toolbar requirements.
 	private String m_currentBinderId;				// ID of the currently selected binder.
+	private ToolbarItem m_emailTBI;					// The email subscription toolbar item, if found.
+	private ToolbarItem m_folderActionsTBI;			// The folder actions     toolbar item, if found.
+	private ToolbarItem m_folderStylesTBI;			// The folder styles      toolbar item, if found.
+	private ToolbarItem m_folderViewsTBI;			// The folder views       toolbar item, if found.
+	private ToolbarItem m_manageProfileTBI;			// The manage profile     toolbar item, if found.
+	private ToolbarItem m_otherActionsTBI;			// The other actions      toolbar item, if found.
+	private ToolbarItem m_workspaceActionsTBI;		// The workspace actions  toolbar item, if found.
 
 	/**
 	 * Class constructor.
@@ -115,14 +122,71 @@ public class ManageMenuPopup extends MenuBarPopup {
 			// ...menu.
 			ToolbarItem tbi = tbiIT.next();
 			String tbName = tbi.getName();
+			if (tbName.equalsIgnoreCase("ssEmailSubscriptionToolbar")) {
+				m_emailTBI = tbi.getNestedToolbarItem("email");
+			}
+			
+			else if (tbName.equalsIgnoreCase("ssFolderToolbar")) {
+				ToolbarItem adminTBI = tbi.getNestedToolbarItem("administration");
+				ToolbarItem categoriesTBI = ((null == adminTBI) ? null : adminTBI.getNestedToolbarItem("categories"));
+				if (null != categoriesTBI) {
+					m_folderActionsTBI    = categoriesTBI.getNestedToolbarItem("folders");
+					m_otherActionsTBI     = categoriesTBI.getNestedToolbarItem(null);
+					m_workspaceActionsTBI = categoriesTBI.getNestedToolbarItem("workspace");
+				}
+				
+				m_manageProfileTBI = tbi.getNestedToolbarItem("manageProfile");
+			}
+			
+			else if (tbName.equalsIgnoreCase("ssFolderActionsToolbar")) {
+				ToolbarItem displayStylesTBI = tbi.getNestedToolbarItem("display_styles");
+				ToolbarItem categoriesTBI = ((null == displayStylesTBI) ? null : displayStylesTBI.getNestedToolbarItem("categories"));
+				if (null != categoriesTBI) {
+					m_folderStylesTBI = categoriesTBI.getNestedToolbarItem("styles");
+				}
+			}
+			
+			else if (tbName.equalsIgnoreCase("ssFolderViewsToolbar")) {
+				ToolbarItem displayStylesTBI = tbi.getNestedToolbarItem("display_styles");
+				ToolbarItem categoriesTBI = ((null == displayStylesTBI) ? null : displayStylesTBI.getNestedToolbarItem("categories"));
+				if (null != categoriesTBI) {
+					m_folderViewsTBI = categoriesTBI.getNestedToolbarItem("folderviews");
+				}
+			}
 			
 //!			...this needs to be implemented...
 		}
 		
 		// Return true if we found any of the manage menu items and
 		// false otherwise.
+		return
+			((null != m_emailTBI)                                                           ||
+			 (null != m_manageProfileTBI)                                                   ||
+			((null != m_folderActionsTBI)    && m_folderActionsTBI.hasNestedToolbarItems()) ||
+			((null != m_folderStylesTBI)     && m_folderStylesTBI.hasNestedToolbarItems())  ||
+			((null != m_folderViewsTBI)      && m_folderViewsTBI.hasNestedToolbarItems())   ||
+			((null != m_otherActionsTBI)     && m_otherActionsTBI.hasNestedToolbarItems())  ||
+			((null != m_workspaceActionsTBI) && m_workspaceActionsTBI.hasNestedToolbarItems()));
+	}
+
+	/*
+	 * Shows nested toolbar items as a pop out menu from the main menu
+	 * popup
+	 */
+	private void showPopoutMenuItems(ToolbarItem tbi) {
+		// If there aren't any items for the pop out...
+		List<ToolbarItem> niList = ((null == tbi) ? null : tbi.getNestedItemsList());
+		if ((null == niList) || niList.isEmpty()) {
+			// bail.
+			return;
+		}
+		
 //!		...this needs to be implemented...
-		return true;
+		
+		for (Iterator<ToolbarItem> niIT = niList.iterator(); niIT.hasNext(); ) {
+			ToolbarItem nestedTBI = niIT.next();
+			addContextMenuItem(IDBASE, nestedTBI);
+		}
 	}
 	
 	/**
@@ -140,9 +204,16 @@ public class ManageMenuPopup extends MenuBarPopup {
 		
 		// ...and if we haven't already constructed its contents...
 		if (!(hasContent())) {
-			// ...construct it now...
-//!			...this needs to be implemented...
-			addContentWidget(new Label("...this needs to be implemented..."));
+			// ...construct it now.  Add the simple menu items...
+			addContextMenuItem(IDBASE, m_emailTBI);
+			addContextMenuItem(IDBASE, m_manageProfileTBI);
+			
+			// ...and add the pop out menu items.
+			showPopoutMenuItems(m_folderActionsTBI);
+			showPopoutMenuItems(m_folderStylesTBI);
+			showPopoutMenuItems(m_folderViewsTBI);
+			showPopoutMenuItems(m_otherActionsTBI);
+			showPopoutMenuItems(m_workspaceActionsTBI);
 		}
 					
 		// ...and show it.
