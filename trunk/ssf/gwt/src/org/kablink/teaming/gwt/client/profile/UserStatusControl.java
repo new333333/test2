@@ -1,5 +1,7 @@
 package org.kablink.teaming.gwt.client.profile;
 
+import java.util.Date;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -10,6 +12,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
@@ -20,7 +23,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -48,12 +50,12 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		statusText.setStyleName("user_status_text");
 		mainPanel.add(statusText);
 		
-		timeLabel = new InlineLabel("1 hour ago");
+		timeLabel = new InlineLabel();
 		timeLabel.setStyleName("user_status_time");
 		timeLabel.addStyleName("marginleft1");
 		mainPanel.add(timeLabel);
 		
-		clear = new Anchor("clear");
+		clear = new Anchor(GwtTeaming.getMessages().clearStatus());
 		clear.setStyleName("clear_status");
 		mainPanel.add(clear);
 
@@ -72,12 +74,12 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		//Create the input area for the status
 		input = new TextArea();
 		input.setVisibleLines(ONE_LINE);
-		input.setText("What are you working on?");
+		input.setText(GwtTeaming.getMessages().statusMessage());
 		input.setStyleName("user_status_input");
 		updatePanel.add(input);
 		
 		//Share your status button
-		shareButton = new Button("Share");
+		shareButton = new Button(GwtTeaming.getMessages().shareStatus());
 		shareButton.addStyleName("alignBottom");
 		
 		updatePanel.add(shareButton);
@@ -85,7 +87,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		shareButton.addClickHandler(new ClickHandler(){
 
 			public void onClick(ClickEvent event) {
-				if(!input.getText().equals("") && !input.getText().equals("What are you working on?")){
+				if(!input.getText().equals("") && !input.getText().equals(GwtTeaming.getMessages().statusMessage())){
 						
 						final String status = input.getText();
 
@@ -152,6 +154,8 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 
 				//Get the text from the input widget and set the status text field
 				statusText.setText(status);
+				Date date = new Date();
+				setTime(date);
 				
 				//clear the input field once the statusText has been populated...
 				input.setText("");
@@ -222,6 +226,8 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 					String description = result.getStatus();
 					if(description != null && !description.equals("")){
 						statusText.setText(description);
+						//show time
+						setTime(result.getModifyDate());
 						showStatus(true);
 					} else {
 						//Set the visibility of the status text, time and clear link
@@ -230,6 +236,8 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 					
 				}
 			}
+
+			
 		};
 		
 		// Issue an ajax request to save the branding data.
@@ -270,14 +278,14 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 				input.setVisibleLines(ONE_LINE);
 				
 				if(!GwtClientHelper.hasString(input.getText())) {
-					input.setText("What are you working on?");
+					input.setText(GwtTeaming.getMessages().statusMessage());
 				}
 				return;
 			}
 		} else  { 
 			if(input.getVisibleLines() != LINES) {
 				input.setVisibleLines(LINES);
-				if(input.getText().equals("What are you working on?")) {
+				if(input.getText().equals(GwtTeaming.getMessages().statusMessage())) {
 					input.setText("");
 				}
 			} 
@@ -368,4 +376,58 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		return $wnd.currentUserWorkspaceId;
 	}-*/;
     
+    
+    /**
+     * Set the time
+     * @param modifyDate
+     */
+    private void setTime(Date modifyDate) {
+    	
+    	long sec = 1000;
+    	long min = 60 * sec;
+    	long hour = 60 * min;
+    	long day = 24 * hour;
+    	
+		Date currentDate = new Date();
+		long currentTime = currentDate.getTime();
+		long modifyTime = modifyDate.getTime();
+		long diffTime = currentTime - modifyTime;
+		
+		if( diffTime < min ) {
+			long seconds = diffTime / sec;
+			if(seconds == 1) {
+				this.timeLabel.setText(GwtTeaming.getMessages().oneSecondAgo());
+			} else {
+				this.timeLabel.setText(GwtTeaming.getMessages().secondsAgo(seconds));
+			}
+		} else if ( diffTime < hour ) {
+			long minutes = diffTime / min;
+			if(minutes == 1) {
+				this.timeLabel.setText(GwtTeaming.getMessages().oneMinuteAgo());
+			} else {
+				this.timeLabel.setText(GwtTeaming.getMessages().minutesAgo(minutes));
+			}
+		} else if ( diffTime < day ) {
+			long hours = diffTime / hour;
+			if(hours == 1) {
+				this.timeLabel.setText(GwtTeaming.getMessages().oneHourAgo());
+			} else {
+				this.timeLabel.setText(GwtTeaming.getMessages().hoursAgo(hours));
+			}
+		} else if ( diffTime >= day ) {
+			long days = diffTime / day;
+			
+			if(days < 30) {
+				if(days == 1) {
+					this.timeLabel.setText(GwtTeaming.getMessages().oneDayAgo());
+					
+				} else {
+					this.timeLabel.setText(GwtTeaming.getMessages().daysAgo(days));
+				}
+			} else {
+				String dateString = DateTimeFormat.getMediumDateTimeFormat().format(modifyDate);
+				this.timeLabel.setText(dateString);
+			}
+		}
+	} 
 }
