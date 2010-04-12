@@ -182,11 +182,22 @@ public class GwtMainPage extends Composite
 	private void editBranding()
 	{
 		GwtBrandingData brandingData;
+		String brandingBinderId;
 		int x;
 		int y;
 		
 		// Get the branding data the masthead is currently working with.
 		brandingData = m_mastHead.getBrandingData();
+		
+		// Is the branding data inherited?  Branding is inherited if it came from a binder other than
+		// the binder we are working with.
+		brandingBinderId = brandingData.getBinderId();
+		if ( brandingBinderId.equalsIgnoreCase( m_mastHead.getBinderId() ) == false )
+		{
+			// Yes, start with empty branding data.
+			brandingData = new GwtBrandingData();
+			brandingData.setBinderId( m_selectedBinderId );
+		}
 		
 		// Get the position of the content control.
 		x = m_contentCtrl.getAbsoluteLeft();

@@ -629,9 +629,14 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		return isMirrored() && getResourceDriver() != null && getResourceDriver().isReadonly();
 	}
 	public Binder getBrandingSource() {
-    	if (Validator.isNotNull(branding)) return this;
-        if (parentBinder == null) return this;
-        return parentBinder.getBrandingSource();
+		// If there is any advanced branding or extended branding on this binder, return this binder.
+    	if ( Validator.isNotNull( branding ) || Validator.isNotNull( brandingExt ) )
+    		return this;
+        
+    	if (parentBinder == null)
+    		return this;
+        
+    	return parentBinder.getBrandingSource();
 		
 	}
     public String getBranding() {
