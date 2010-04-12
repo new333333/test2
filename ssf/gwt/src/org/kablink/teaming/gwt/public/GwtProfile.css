@@ -223,3 +223,9 @@ text-decoration:none;
 margin-top: 0.5em;
 width: 500px;
 }
+.user_status_update {
+}
+.alignTop{vertical-align: top;}
+.alignBottom{vertical-align: bottom;}
+.alignTopLeft{text-align: left; vertical-align: top;}
+.alignBottomLeft{text-align: left; vertical-align: bottom;}
