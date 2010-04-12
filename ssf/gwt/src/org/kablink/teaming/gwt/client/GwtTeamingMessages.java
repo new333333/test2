@@ -402,4 +402,17 @@ public interface GwtTeamingMessages extends Messages
 	String youTubeTitle();
 	String youTubeUrl();
 	
+	// The following strings are for the User Status or Micro blog Control
+	String statusMessage();
+	String clearStatus();
+	String shareStatus();
+	String oneSecondAgo();
+	String secondsAgo(long value);
+	String oneMinuteAgo();
+	String minutesAgo(long value);
+	String oneHourAgo();
+	String hoursAgo(long value);
+	String oneDayAgo();
+	String daysAgo(long value);
+	
 }// end GwtTeamingMessages
