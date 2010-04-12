@@ -5,6 +5,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -19,6 +20,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -35,7 +37,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 
 	public UserStatusControl () {
 		
-		String userStatus = "";//getCurrentStatus();
+		String userStatus = "";
 
 		FlowPanel mainPanel = new FlowPanel();
 		mainPanel.setStyleName("user_status");
@@ -65,6 +67,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 			}});
 		
 		FlowPanel updatePanel = new FlowPanel();
+		updatePanel.setStyleName("user_status_update");
 
 		//Create the input area for the status
 		input = new TextArea();
@@ -75,6 +78,8 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		
 		//Share your status button
 		shareButton = new Button("Share");
+		shareButton.addStyleName("alignBottom");
+		
 		updatePanel.add(shareButton);
 		
 		shareButton.addClickHandler(new ClickHandler(){
@@ -90,6 +95,10 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 			}});
 		
 		mainPanel.add(updatePanel);
+		
+		//text info
+		//Label textAmount = new Label("255");
+		//mainPanel.add(textAmount);
 				
 		// Register a preview-event handler.  We do this so we can see the mouse-down event
 		// in and out side of the widget.
@@ -260,7 +269,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 			if(input.getVisibleLines() == LINES) {
 				input.setVisibleLines(ONE_LINE);
 				
-				if(input.getText().equals("")) {
+				if(!GwtClientHelper.hasString(input.getText())) {
 					input.setText("What are you working on?");
 				}
 				return;
@@ -331,7 +340,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 	}
 	
 	/**
-	 * Is the workspace owned by the current user
+	 * Is the workspace being referenced owned by the current user
 	 * @return
 	 */
 	private boolean isOwner() {
@@ -344,38 +353,17 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		return isOwner;
 	}
 	
-	 /**
-     * @return
-     */
-    protected static native String getBinderOwnerId() /*-{
-		return $wnd.binderOwnerId;
-    }-*/;
-    
     /**
+     * This is the binderId of binder being referenced, may not be the loggedIn user
      * @return
      */
     protected static native String getBinderId() /*-{
 		return $wnd.binderId;
     }-*/;
     
-	 /**
-     * @return
-     */
-    protected static native String getCurrentUserId() /*-{
-		return $wnd.currentUserId;
-    }-*/;
-    
     /**
-     * @return
+     * This is the workspace id of the current user
      */
-    protected static native String getCurrentStatus() /*-{
-		return $wnd.ss_statusCurrent;
-    }-*/;
-    
-    protected static native String getBinderName() /*-{
-    		return $wnd.binderName;
-    }-*/;
-    
     protected static native String getCurrentUserWorkspaceId() /*-{
 		return $wnd.currentUserWorkspaceId;
 	}-*/;
