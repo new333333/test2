@@ -406,13 +406,15 @@ public interface GwtTeamingMessages extends Messages
 	String statusMessage();
 	String clearStatus();
 	String shareStatus();
-	String oneSecondAgo();
-	String secondsAgo(long value);
 	String oneMinuteAgo();
 	String minutesAgo(long value);
 	String oneHourAgo();
 	String hoursAgo(long value);
 	String oneDayAgo();
 	String daysAgo(long value);
+	String now();
+	String charactersTyped(int value);
+	String exceededMax(int value);
+	String exceededError();
 	
 }// end GwtTeamingMessages
