@@ -712,7 +712,7 @@ public class WebUrlUtil {
 		// Special processing for WebDAV (ssfs) URL to workaround an issue in iChain.
 		// If rewrite hostname is specified for webdav AND the context zone is the default zone,
 		// apply this hack. Otherwise, leave it alone.
-		if(webApp == WebApp.SSFS) {
+		if(webApp != null && webApp == WebApp.SSFS) {
 			// Rewrite WebDAV URL only if SSO proxy is performing authentication.
 			if(SPropsUtil.getBoolean(SSFS_IGNORE_PASSWORD_ENABLED, false)) {
 				String ssfsHostRewrite = SPropsUtil.getString(SSFS_HOST_REWRITE, "");
@@ -896,8 +896,20 @@ public class WebUrlUtil {
 		if(url.length() > 0) {
 			url = url.toLowerCase();
 			if(!url.startsWith("http") && !url.startsWith("https")) {
-				String scheme = (req.isSecure())? "https" : "http";
-				url = scheme + "://" + url;
+				if(url.startsWith("://")) { // scheme is dynamic
+					String scheme = (req.isSecure())? "https" : "http";
+					url = scheme + url;	
+				}
+				else {
+					String host = req.getServerName().toLowerCase();
+					int port = req.getServerPort();
+					boolean secure = req.isSecure();
+					StringBuffer sb = getHostAndPort(null, host, port, secure, false);
+					if(!url.startsWith("/"))
+						sb.append("/");
+					sb.append(url);
+					url = sb.toString();
+				}
 			}
 		}
 		return url;
