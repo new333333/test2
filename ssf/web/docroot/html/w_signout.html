@@ -4,17 +4,14 @@
 <title>Clear and Close</title>
 <script type="text/javascript">
 function clearCacheAndClose() {
-	alert("BEFORE");
 	try {
 	    // Clears all authentication credentials from the cache in the current IE browser process.
 	    // This will clear the credentials cache for the entire IE process not just ones used for Teaming.
 		document.execCommand("ClearAuthenticationCache");
 	} catch(e) {
-	    alert("ERROR!");
 	    // The above works only with IE. Therefore you will be inside this block if using FireFox.
 	    // In that case, the only way to clear the credentials is to exit the browser.
 	};
-	alert("AFTER");
 	self.window.close();
 }
 </script>
