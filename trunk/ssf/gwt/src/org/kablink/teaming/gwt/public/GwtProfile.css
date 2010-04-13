@@ -201,6 +201,7 @@ font-size:0.8em;
 white-space:nowrap;
 }
 .user_status {
+width: 520px;
 }
 .user_status_text {
 margin: 0;
@@ -215,15 +216,34 @@ white-space:nowrap;
 .marginleft1  {
 margin-left:1em;
 }
-.clear_status {
+.clearStatus {
 color:#1C5894 !important;
 text-decoration:none;
+}
+.shareButton {
+float: right;
+margin-right:13px;
 }
 .user_status_input {
 margin-top: 0.5em;
 width: 500px;
 }
 .user_status_update {
+}
+.user_status_info {
+margin-top: 2px;
+}
+.user_status_textAmount {
+margin-right: 0.25em;
+color: #CCCCCC;
+font-size: 14px;
+font-weight: bold;
+}
+.user_status_limitExceeded {
+margin-left: 0.25em;
+color: #D40D12;
+font-size: 14px;
+font-weight: bold;
 }
 .alignTop{vertical-align: top;}
 .alignBottom{vertical-align: bottom;}

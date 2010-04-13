@@ -418,5 +418,6 @@ public interface GwtTeamingMessages extends Messages
 	String charactersTyped(int value);
 	String exceededMax(int value);
 	String exceededError();
+	String clearCurrentStatus();
 	
 }// end GwtTeamingMessages
