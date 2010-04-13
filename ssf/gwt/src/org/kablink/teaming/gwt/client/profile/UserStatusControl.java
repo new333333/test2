@@ -62,7 +62,8 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		mainPanel.add(timeLabel);
 		
 		clear = new Anchor(GwtTeaming.getMessages().clearStatus());
-		clear.setStyleName("clear_status");
+		clear.setTitle(GwtTeaming.getMessages().clearCurrentStatus());
+		clear.setStyleName("clearStatus");
 		mainPanel.add(clear);
 
 		//listen for mouse clicks to determine if need to clear the statusText
@@ -84,24 +85,28 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		input.setStyleName("user_status_input");
 		updatePanel.add(input);
 		
-		//Share your status button
-		shareButton = new Button(GwtTeaming.getMessages().shareStatus());
-		shareButton.addStyleName("alignBottom");
-		shareButton.addStyleName("marginLeftPoint25em");
-		
-		updatePanel.add(shareButton);
-		
 		mainPanel.add(updatePanel);
 		
+		FlowPanel infoPanel = new FlowPanel();
+		infoPanel.addStyleName("user_status_info");
+		
 		textAmount = new InlineLabel();
-		textAmount.addStyleName("marginRightPoint25em");
-		mainPanel.add(textAmount);
+		textAmount.setStyleName("user_status_textAmount");
+		infoPanel.add(textAmount);
 		
 		limitExceeded = new InlineLabel();
-		limitExceeded.addStyleName("bold");
-		limitExceeded.addStyleName("marginLeftPoint25em");
+		limitExceeded.setStyleName("user_status_limitExceeded");
+		infoPanel.add(limitExceeded);
 		
-		mainPanel.add(limitExceeded);
+		//Share your status button
+		shareButton = new Button(GwtTeaming.getMessages().shareStatus());
+		shareButton.setTitle(GwtTeaming.getMessages().shareStatus());
+		shareButton.addStyleName("shareButton");
+		shareButton.setVisible(false);
+		
+		infoPanel.add(shareButton);
+		
+		mainPanel.add(infoPanel);
 		
 		//Add Mouse click listener to share button
 		shareButton.addClickHandler(new ClickHandler(){
@@ -122,12 +127,23 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 				
 				textAmount.setVisible(true);
 				totalChar = input.getValue().length();
-	        	
-				textAmount.setText(GwtTeaming.getMessages().charactersTyped(totalChar));
-				
-	        	if(totalChar > MAX_CHARS) {
-	        		limitExceeded.setText(GwtTeaming.getMessages().exceededMax(MAX_CHARS));
+				if(totalChar == MAX_CHARS){
+	        		textAmount.setVisible(true);
+					textAmount.setText("0");
+
+					limitExceeded.setVisible(false);
+	        		limitExceeded.setText("");;
+				} else if(totalChar > MAX_CHARS) {
+	        		limitExceeded.setVisible(true);
+	        		limitExceeded.setText(""+(MAX_CHARS - totalChar));
+
+	        		textAmount.setVisible(false);
+					textAmount.setText("");
 	        	} else {
+	        		textAmount.setVisible(true);
+					textAmount.setText(""+(MAX_CHARS - totalChar));
+	        		
+	        		limitExceeded.setVisible(false);
 	        		limitExceeded.setText("");;
 	        	}
 			}});
@@ -312,13 +328,15 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		
 		if ( !isMouseOver(input, nativeEvent.getClientX(), nativeEvent.getClientY() ) ) {
 			if(input.getVisibleLines() == LINES) {
-				input.setVisibleLines(ONE_LINE);
-				
+
 				if(!GwtClientHelper.hasString(input.getText())) {
+					input.setVisibleLines(ONE_LINE);
 					input.setText(GwtTeaming.getMessages().statusMessage());
 					//set visibility to false
 					textAmount.setVisible(false);
+					shareButton.setVisible(false);
 				}
+				
 				return;
 			}
 		} else  { 
@@ -328,6 +346,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 					input.setText("");
 					totalChar = 0;
 				}
+				shareButton.setVisible(true);
 			} 
 		}
 	}
@@ -384,7 +403,6 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 
 		clear.setVisible(visible);
 		input.setVisible(visible);
-		shareButton.setVisible(visible);
 		textAmount.setVisible(visible);
 	}
 	
