@@ -83,7 +83,8 @@ public abstract class MenuBarPopup extends PopupPanel {
 		
 		// ...and initialize everything else.
 		addStyleName("mainMenuPopup_Core");
-		setAnimationEnabled(true);
+		setAnimationEnabled(false);
+//!		setAnimationEnabled(true);
 //!		setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
 
 		// ...create the popup's innards...

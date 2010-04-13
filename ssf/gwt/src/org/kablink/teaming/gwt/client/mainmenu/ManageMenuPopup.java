@@ -42,6 +42,8 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
@@ -59,15 +61,17 @@ import com.google.gwt.user.client.ui.Label;
 public class ManageMenuPopup extends MenuBarPopup {
 	private final String IDBASE = "manage_";	// Base ID for the items created in this menu.
 	
+	private int m_menuLeft;							// Left coordinate of where the menu is to be placed.
+	private int m_menuTop;							// Top  coordinate of where the menu is to be placed.
 	private List<ToolbarItem> m_toolbarItemList;	// The context based toolbar requirements.
 	private String m_currentBinderId;				// ID of the currently selected binder.
 	private TeamManagementInfo m_tmi;				// The team management information for which team management menu items should appear on the menu.
-	private ToolbarItem m_emailTBI;					// The email subscription toolbar item, if found.
+	private ToolbarItem m_commonActionsTBI;			// The common actions     toolbar item, if found.
+	private ToolbarItem m_emailNotificationTBI;		// The email notification toolbar item, if found.
 	private ToolbarItem m_folderActionsTBI;			// The folder actions     toolbar item, if found.
 	private ToolbarItem m_folderViewsTBI;			// The folder views       toolbar item, if found.
-	private ToolbarItem m_otherActionsTBI;			// The other actions      toolbar item, if found.
-	private ToolbarItem m_unseenTBI;				// The unseen             toolbar item, if found.
 	private ToolbarItem m_whatsNewTBI;				// The what's new         toolbar item, if found.
+	private ToolbarItem m_whatsUnreadTBI;			// The what's unread      toolbar item, if found.
 	private ToolbarItem m_whoHasAccessTBI;			// The who has access     toolbar item, if found.
 	private ToolbarItem m_workspaceActionsTBI;		// The workspace actions  toolbar item, if found.
 
@@ -75,8 +79,8 @@ public class ManageMenuPopup extends MenuBarPopup {
 	 * Inner class that handles clicks on team management commands.
 	 */
 	private class TeamManagementClickHandler implements ClickHandler {
-		private String m_manageUrl;		// The URL to launch for the management command, if done by URL.
-		private TeamingAction m_action;	// The TeamingAction to perform for the management command, if done by triggering an action.
+		private String m_manageUrl;		// The URL to launch for the team management command, if done by URL.
+		private TeamingAction m_action;	// The TeamingAction to perform for the team management command, if done by triggering an action.
 		
 		/**
 		 * Class constructor.
@@ -134,24 +138,17 @@ public class ManageMenuPopup extends MenuBarPopup {
 	 * @param manageName
 	 */
 	public ManageMenuPopup(ActionTrigger actionTrigger, String manageName) {
-		// Initialize the super class.
+		// Simply initialize the super class.
 		super(actionTrigger, manageName);
 	}
 
 	/*
-	 * Returns true if a toolbar item will require a popout and false
-	 * otherwise.
+	 * Returns true if a toolbar item has nested toolbar items and
+	 * false otherwise.
 	 */
 	private boolean hasNestedItems(ToolbarItem tbi) {
-		// If there aren't any items for the pop out...
 		List<ToolbarItem> niList = ((null == tbi) ? null : tbi.getNestedItemsList());
-		if ((null == niList) || niList.isEmpty()) {
-			// ...then one isn't required...
-			return false;
-		}
-		
-		// ...otherwise, one is.
-		return true;
+		return ((null != niList) && (!(niList.isEmpty())));
 	}
 	
 	/**
@@ -163,7 +160,6 @@ public class ManageMenuPopup extends MenuBarPopup {
 	 */
 	@Override
 	public void setCurrentBinder(String binderId) {
-		// Simply store the parameter.
 		m_currentBinderId = binderId;
 	}
 
@@ -187,7 +183,6 @@ public class ManageMenuPopup extends MenuBarPopup {
 	 */
 	@Override
 	public void setToolbarItemList(List<ToolbarItem> toolbarItemList) {
-		// Simply store the parameter.
 		m_toolbarItemList = toolbarItemList;
 	}
 	
@@ -213,10 +208,9 @@ public class ManageMenuPopup extends MenuBarPopup {
 				ToolbarItem categoriesTBI = ((null == adminTBI) ? null : adminTBI.getNestedToolbarItem("categories"));
 				if (null != categoriesTBI) {
 					m_folderActionsTBI    = categoriesTBI.getNestedToolbarItem("folders");
-					m_otherActionsTBI     = categoriesTBI.getNestedToolbarItem(null);
+					m_commonActionsTBI    = categoriesTBI.getNestedToolbarItem(null);
 					m_workspaceActionsTBI = categoriesTBI.getNestedToolbarItem("workspace");
 				}
-				
 				m_whoHasAccessTBI = tbi.getNestedToolbarItem("whohasaccess");
 			}
 			
@@ -229,50 +223,54 @@ public class ManageMenuPopup extends MenuBarPopup {
 			}
 			
 			else if (tbName.equalsIgnoreCase("ss_whatsNewToolbar")) {
-				m_unseenTBI = tbi.getNestedToolbarItem("unseen");
-				m_whatsNewTBI = tbi.getNestedToolbarItem("whatsnew");
+				m_whatsNewTBI    = tbi.getNestedToolbarItem("whatsnew");
+				m_whatsUnreadTBI = tbi.getNestedToolbarItem("unseen");
 			}
 			
 			else if (tbName.equalsIgnoreCase("ssEmailSubscriptionToolbar")) {
-				m_emailTBI = tbi.getNestedToolbarItem("email");
+				m_emailNotificationTBI = tbi.getNestedToolbarItem("email");
 			}
 		}
 		
 		// Return true if we found any of the manage menu items and
 		// false otherwise.
 		return
-			((null != m_emailTBI)                                                           ||
+			((null != m_emailNotificationTBI)                                               ||
 			 (null != m_whatsNewTBI)                                                        ||
-			 (null != m_unseenTBI)                                                          ||
+			 (null != m_whatsUnreadTBI)                                                     ||
 			 (null != m_whoHasAccessTBI)                                                    ||
+			((null != m_commonActionsTBI)    && m_commonActionsTBI.hasNestedToolbarItems()) ||
 			((null != m_folderActionsTBI)    && m_folderActionsTBI.hasNestedToolbarItems()) ||
 			((null != m_folderViewsTBI)      && m_folderViewsTBI.hasNestedToolbarItems())   ||
-			((null != m_otherActionsTBI)     && m_otherActionsTBI.hasNestedToolbarItems())  ||
 			((null != m_workspaceActionsTBI) && m_workspaceActionsTBI.hasNestedToolbarItems()));
 	}
 
 	/*
-	 * If there are any folder options, adds a folder options items to
-	 * run the folder options dialog.
+	 * If there are any folder options, adds a folder options menu item
+	 * that will run the folder options dialog.
 	 */
-	private void showFolderOptions(ToolbarItem tbi) {
-		// If there aren't any items for the pop out...
-		final List<ToolbarItem> niList = ((null == tbi) ? null : tbi.getNestedItemsList());
-		if ((null == niList) || niList.isEmpty()) {
+	private void showFolderOptions(final ToolbarItem tbi) {
+		// If there aren't any folder options...
+		if (!(hasNestedItems(tbi))) {
 			// ...bail.
 			return;
 		}
 
-		// ...Add an anchor to run the folder options dialog.
-		MenuPopupAnchor mtA = new MenuPopupAnchor((IDBASE + "FolderOptions"), m_messages.mainMenuManageFolderOptions(), null, new ClickHandler() {
+		// Add an anchor to run the folder options dialog.
+		final String foId = (IDBASE + "FolderOptions");
+		MenuPopupAnchor mtA = new MenuPopupAnchor(foId, m_messages.mainMenuManageFolderOptions(), null, new ClickHandler() {
 			public void onClick(ClickEvent event) {
-//!				...this needs to be implemented...
-				addContentWidget(new Label("START:  ...this needs to be implemented..."));
-				for (Iterator<ToolbarItem> niIT = niList.iterator(); niIT.hasNext(); ) {
-					ToolbarItem nestedTBI = niIT.next();
-					addContextMenuItem(IDBASE, nestedTBI);
-				}
-				addContentWidget(new Label("END:  ...this needs to be implemented..."));
+				// Remove the selection from the menu item...
+				Element menuItemElement = Document.get().getElementById(foId);
+				menuItemElement.removeClassName("mainMenuPopup_ItemHover");
+				
+				// ...hide the menu...
+				hide();
+				
+				// ...and run the folder options dialog.
+				FolderOptionsDlg folderOptionsDlg = new FolderOptionsDlg(true, true, m_menuLeft, m_menuTop, tbi.getNestedItemsList());
+				folderOptionsDlg.addStyleName("favoritesDlg");
+				folderOptionsDlg.show();
 			}
 		});
 		addContentWidget(mtA);
@@ -289,16 +287,18 @@ public class ManageMenuPopup extends MenuBarPopup {
 	@Override
 	public void showPopup(int left, int top) {
 		// Position the menu...
-		setPopupPosition(left, top);
+		m_menuLeft = left;
+		m_menuTop  = top;
+		setPopupPosition(m_menuLeft, m_menuTop);
 		
 		// Have we constructed the menu's contents yet?
 		if (!(hasContent())) {
 			// No!  We need to construct it now.  First the what's new,
 			// unread and who has access items...
 			addContextMenuItem(IDBASE, m_whatsNewTBI);
-			addContextMenuItem(IDBASE, m_unseenTBI);
+			addContextMenuItem(IDBASE, m_whatsUnreadTBI);
 			addContextMenuItem(IDBASE, m_whoHasAccessTBI);
-			if ((null != m_whatsNewTBI) || (null != m_unseenTBI) || (null != m_whoHasAccessTBI)) {
+			if ((null != m_whatsNewTBI) || (null != m_whatsUnreadTBI) || (null != m_whoHasAccessTBI)) {
 				// ...and spacer if we showed any of them.
 				addSpacerMenuItem();
 			}
@@ -306,17 +306,17 @@ public class ManageMenuPopup extends MenuBarPopup {
 			// Then the binder actions including the folder options
 			// when required...
 			addNestedContextMenuItems(IDBASE, m_folderActionsTBI);
-			addNestedContextMenuItems(IDBASE, m_otherActionsTBI);
+			addNestedContextMenuItems(IDBASE, m_commonActionsTBI);
 			addNestedContextMenuItems(IDBASE, m_workspaceActionsTBI);
 			showFolderOptions(m_folderViewsTBI);
 			boolean hasBinderActions =
 				(hasNestedItems(m_folderActionsTBI) ||
 				 hasNestedItems(m_folderViewsTBI)   ||
-				 hasNestedItems(m_otherActionsTBI)  ||
+				 hasNestedItems(m_commonActionsTBI)  ||
 				 hasNestedItems(m_workspaceActionsTBI));
 			
 			// If we're going to display more stuff below...
-			if (hasBinderActions && (((null != m_tmi) && m_tmi.isTeamManagementEnabled()) || (null != m_emailTBI))) {
+			if (hasBinderActions && (((null != m_tmi) && m_tmi.isTeamManagementEnabled()) || (null != m_emailNotificationTBI))) {
 				// ...add another spacer before them.
 				addSpacerMenuItem();
 			}
@@ -344,7 +344,7 @@ public class ManageMenuPopup extends MenuBarPopup {
 			}
 			
 			// ...and any email notification item.
-			addContextMenuItem(IDBASE, m_emailTBI);
+			addContextMenuItem(IDBASE, m_emailNotificationTBI);
 		}
 					
 		// Finally, show the popup.
