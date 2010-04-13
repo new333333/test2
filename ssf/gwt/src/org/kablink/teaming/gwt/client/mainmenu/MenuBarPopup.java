@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -120,6 +121,38 @@ public abstract class MenuBarPopup extends PopupPanel {
 			// ...add it to the popup.
 			addContentWidget(cmiWidget);
 		}
+	}
+
+	/**
+	 * Adds a collection of nested context based toolbar items to the
+	 * menu.
+	 * 
+	 * @param idBase
+	 * @param tbi
+	 */
+	final public void addNestedContextMenuItems(String idBase, ToolbarItem tbi) {
+		// If there aren't any nested items...
+		List<ToolbarItem> niList = ((null == tbi) ? null : tbi.getNestedItemsList());
+		if ((null == niList) || niList.isEmpty()) {
+			// ...bail.
+			return;
+		}
+
+		// Scan the nested items...
+		for (Iterator<ToolbarItem> niIT = niList.iterator(); niIT.hasNext(); ) {
+			// ...adding each to the menu.
+			ToolbarItem nestedTBI = niIT.next();
+			addContextMenuItem(idBase, nestedTBI);
+		}
+	}
+	
+	/**
+	 * Adds a spacer line to the menu.
+	 */
+	final public void addSpacerMenuItem() {
+		FlowPanel spacerPanel = new FlowPanel();
+		spacerPanel.addStyleName("mainMenuPopup_ItemSpacer");
+		addContentWidget(spacerPanel);
 	}
 	
 	/*

@@ -38,6 +38,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
+import org.kablink.teaming.gwt.client.util.BinderType;
 
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -63,16 +64,6 @@ public class TreeInfo implements IsSerializable {
 	private String m_binderPermalink = "";
 	private String m_binderTrashPermalink = "";
 	private WorkspaceType m_wsType = WorkspaceType.NOT_A_WORKSPACE;
-	
-	/**
-	 * The type of Binder referenced by this TreeInfo object.  
-	 */
-	public enum BinderType implements IsSerializable {
-		FOLDER,
-		WORKSPACE,
-		
-		OTHER,
-	}
 	
 	/**
 	 * If the referenced Binder is a Folder, the type of Folder

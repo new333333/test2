@@ -37,7 +37,6 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -46,7 +45,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FlowPanel;
 
 
 /**
@@ -57,63 +55,8 @@ import com.google.gwt.user.client.ui.FlowPanel;
 public class MyTeamsMenuPopup extends MenuBarPopup {
 	private final String IDBASE = "myTeams_";
 	
+	@SuppressWarnings("unused")
 	private String m_currentBinderId;	// ID of the currently selected binder.
-	
-	/*
-	 * Inner class that handles clicks on team management commands.
-	 */
-	private class ManageClickHandler implements ClickHandler {
-		private String m_manageUrl;		// The URL to launch for the management command, if done by URL.
-		private TeamingAction m_action;	// The TeamingAction to perform for the management command, if done by triggering an action.
-		
-		/**
-		 * Class constructor.
-		 * 
-		 * @param manageUrl
-		 */
-		ManageClickHandler(String manageUrl) {
-			// Simply store the parameter.
-			m_manageUrl = manageUrl;
-		}
-		
-		/**
-		 * Class constructor.
-		 * 
-		 * @param teamingAction
-		 */
-		ManageClickHandler(TeamingAction action) {
-			// Simply store the parameter.
-			m_action = action;
-		}
-		
-		/**
-		 * Called when the user clicks on a team management command.
-		 * 
-		 * @param event
-		 */
-		public void onClick(ClickEvent event) {
-			// Hide the menu.
-			hide();
-			
-			// If the team management command is implemented as a URL...
-			if (GwtClientHelper.hasString(m_manageUrl)) {
-				// ...launch it in a window...
-				jsLaunchUrlInWindow(m_manageUrl);
-			}
-			else {
-				// ...otherwise, trigger the action.
-				m_actionTrigger.triggerAction(m_action);
-			}
-		}
-		
-		/*
-		 * Uses Teaming's existing ss_common JavaScript to launch a URL in
-		 * a new window.
-		 */
-		private native void jsLaunchUrlInWindow(String url) /*-{
-			window.top.ss_openUrlInWindow({href: url}, '_blank', 500, 600);
-		}-*/;
-	}
 	
 	/*
 	 * Inner class that handles clicks on individual teams.
@@ -243,46 +186,9 @@ public class MyTeamsMenuPopup extends MenuBarPopup {
 					MenuPopupLabel content = new MenuPopupLabel(m_messages.mainMenuMyTeamsNoTeams());
 					addContentWidget(content);
 				}
-
-				m_rpcService.getTeamManagementInfo(m_currentBinderId, new AsyncCallback<TeamManagementInfo>() {
-					public void onFailure(Throwable t) {
-						Window.alert(t.toString());
-					}
-					public void onSuccess(final TeamManagementInfo tmi)  {
-						// Are any of the team management options
-						// enabled?
-						if (tmi.isTeamManagementEnabled()) {
-							// Yes!  Add a spacer between the teams and
-							// team commands.
-							FlowPanel spacerPanel = new FlowPanel();
-							spacerPanel.addStyleName("mainMenuPopup_ItemSpacer");
-							addContentWidget(spacerPanel);
-							
-							// Add the team command items.
-							MenuPopupAnchor mtA;
-							if (tmi.isViewAllowed()) {
-								mtA = new MenuPopupAnchor((IDBASE + "View"), m_messages.mainMenuMyTeamsViewTeam(), null, new ManageClickHandler(TeamingAction.VIEW_TEAM_MEMBERS));
-								addContentWidget(mtA);
-							}
-							if (tmi.isManageAllowed()) {
-								mtA = new MenuPopupAnchor((IDBASE + "Manage"), m_messages.mainMenuMyTeamsManageTeam(), null, new ManageClickHandler(tmi.getManageUrl()));
-								addContentWidget(mtA);
-							}
-							if (tmi.isSendMailAllowed()) {
-								mtA = new MenuPopupAnchor((IDBASE + "Send"), m_messages.mainMenuMyTeamsSendEmailToTeam(), null, new ManageClickHandler(tmi.getSendMailUrl()));
-								addContentWidget(mtA);
-							}
-							if (tmi.isTeamMeetingAllowed()) {
-								mtA = new MenuPopupAnchor((IDBASE + "Start"), m_messages.mainMenuMyTeamsStartTeamMeeting(), null, new ManageClickHandler(tmi.getTeamMeetingUrl()));
-								addContentWidget(mtA);
-							}
-						}
-						
-						// Finally, show the menu popup.
-						show();
-					}
-				});
-
+				
+				// Finally, show the menu popup.
+				show();
 			}
 		});
 	}

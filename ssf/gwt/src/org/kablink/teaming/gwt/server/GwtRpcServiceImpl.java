@@ -85,6 +85,7 @@ import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
+import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
@@ -1309,6 +1310,24 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		getProfileModule().setUserProperty( null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString() );
 		return Boolean.TRUE;
 	}//end updateFavorites
+
+	/**
+	 * Returns the BinderType of a binder.
+	 * 
+	 * @return
+	 */
+	public BinderType getBinderType( String binderId )
+	{
+		Binder binder;
+		BinderType reply;
+		
+		binder = getBinderModule().getBinder( Long.parseLong( binderId ) );
+		if      (binder instanceof Workspace) reply = BinderType.WORKSPACE;
+		else if (binder instanceof Folder)    reply = BinderType.FOLDER;
+		else                                  reply = BinderType.OTHER;
+		
+		return reply;
+	}//end getBinderType()
 	
 	/**
 	 * Returns information about the current user's favorites.

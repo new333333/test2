@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
+import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 
@@ -113,6 +114,7 @@ public interface GwtRpcService extends RemoteService
 	public Boolean            addFavorite(           String             binderId      );
 	public Boolean            removeFavorite(        String             favoriteId    );
 	public Boolean            updateFavorites(       List<FavoriteInfo> favoritesList );
+	public BinderType         getBinderType(         String             binderId      );
 	public List<FavoriteInfo> getFavorites();
 	public List<TeamInfo>     getMyTeams();
 	public TeamManagementInfo getTeamManagementInfo( String             binderId      );

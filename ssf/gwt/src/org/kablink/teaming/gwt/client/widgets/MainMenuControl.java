@@ -41,17 +41,18 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.mainmenu.ActionsMenuPopup;
-import org.kablink.teaming.gwt.client.mainmenu.FavoritesMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarBox;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarButton;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarToggle;
+import org.kablink.teaming.gwt.client.mainmenu.MyFavoritesMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.MyTeamsMenuPopup;
-import org.kablink.teaming.gwt.client.mainmenu.ShowMenuPopup;
+import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
@@ -74,6 +75,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	private GwtTeamingMessages m_messages = GwtTeaming.getMessages();
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	private String m_contextBinderId;
+	private BinderType m_contextBinderType = BinderType.OTHER;
 	
 	/**
 	 * Constructor method.
@@ -175,38 +177,27 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		// ...and finally, add the common drop down items to the menu bar.
 		addMyWorkspaceToCommon(commonPanel);
 		addMyTeamsToCommon(    commonPanel);
-		addFavoritesToCommon(  commonPanel);
-	}
-	
-	/*
-	 * Adds the Favorites item to the common portion of the menu bar.
-	 */
-	private void addFavoritesToCommon(FlowPanel menuPanel) {
-		final MenuBarBox favoritesBox = new MenuBarBox("ss_mainMenuFavorites", m_messages.mainMenuBarFavorites(), true);
-		final ActionTrigger actionTrigger = this;
-		favoritesBox.addClickHandler(
-			new ClickHandler() {
-				public void onClick(ClickEvent event) {
-					int left =  favoritesBox.getAbsoluteLeft();
-					int top  = (favoritesBox.getAbsoluteTop() - 20);
-					FavoritesMenuPopup fmp = new FavoritesMenuPopup(actionTrigger);
-					fmp.setCurrentBinder(m_contextBinderId);
-					fmp.showPopup(left, top);
-				}
-			});
-		menuPanel.add(favoritesBox);
+		addMyFavoritesToCommon(commonPanel);
 	}
 	
 	/*
 	 * Adds the Manage item to the context based portion of the menu
 	 * bar.
 	 */
-	private void addManageToContext(List<ToolbarItem> toolbarItemList) {
-		final ManageMenuPopup smp = new ManageMenuPopup(this);
+	private void addManageToContext(final List<ToolbarItem> toolbarItemList) {
+		String manageName;
+		switch (m_contextBinderType) {
+		default:
+		case OTHER:                                                      return;
+		case FOLDER:     manageName = m_messages.mainMenuBarFolder();    break;
+		case WORKSPACE:  manageName = m_messages.mainMenuBarWorkspace(); break;
+		}
+		
+		final ManageMenuPopup smp = new ManageMenuPopup(this, manageName);
 		smp.setCurrentBinder(m_contextBinderId);
 		smp.setToolbarItemList(toolbarItemList);
 		if (smp.shouldShowMenu()) {
-			final MenuBarBox manageBox = new MenuBarBox("ss_mainMenuManage", m_messages.mainMenuBarManage(), true);
+			final MenuBarBox manageBox = new MenuBarBox("ss_mainMenuManage", manageName, true);
 			manageBox.addClickHandler(
 				new ClickHandler() {
 					public void onClick(ClickEvent event) {
@@ -216,7 +207,36 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 					}
 				});
 			m_contextPanel.add(manageBox);
+			
+			GwtTeaming.getRpcService().getTeamManagementInfo(m_contextBinderId, new AsyncCallback<TeamManagementInfo>() {
+				public void onFailure(Throwable t) {
+					Window.alert(t.toString());
+				}
+				public void onSuccess(final TeamManagementInfo tmi)  {
+					smp.setTeamManagementInfo(tmi);
+				}
+			});
 		}
+	}
+	
+	/*
+	 * Adds the My Favorites item to the common portion of the menu
+	 * bar.
+	 */
+	private void addMyFavoritesToCommon(FlowPanel menuPanel) {
+		final MenuBarBox myFavoritesBox = new MenuBarBox("ss_mainMenuMyFavorites", m_messages.mainMenuBarMyFavorites(), true);
+		final ActionTrigger actionTrigger = this;
+		myFavoritesBox.addClickHandler(
+			new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					int left =  myFavoritesBox.getAbsoluteLeft();
+					int top  = (myFavoritesBox.getAbsoluteTop() - 20);
+					MyFavoritesMenuPopup mfmp = new MyFavoritesMenuPopup(actionTrigger);
+					mfmp.setCurrentBinder(m_contextBinderId);
+					mfmp.showPopup(left, top);
+				}
+			});
+		menuPanel.add(myFavoritesBox);
 	}
 	
 	/*
@@ -254,27 +274,6 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	}
 	
 
-	/*
-	 * Adds the Show item to the context based portion of the menu bar.
-	 */
-	private void addShowToContext(List<ToolbarItem> toolbarItemList) {
-		final ShowMenuPopup smp = new ShowMenuPopup(this);
-		smp.setCurrentBinder(m_contextBinderId);
-		smp.setToolbarItemList(toolbarItemList);
-		if (smp.shouldShowMenu()) {
-			final MenuBarBox showBox = new MenuBarBox("ss_mainMenuShow", m_messages.mainMenuBarShow(), true);
-			showBox.addClickHandler(
-				new ClickHandler() {
-					public void onClick(ClickEvent event) {
-						int left =  showBox.getAbsoluteLeft();
-						int top  = (showBox.getAbsoluteTop() - 20);
-						smp.showPopup(left, top);
-					}
-				});
-			m_contextPanel.add(showBox);
-		}
-	}
-	
 	/**
 	 * Called when a new context has been loaded into the content panel
 	 * to refresh the menu contents.
@@ -285,14 +284,22 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		// Rebuild the context based panel based on the new context.  
 		m_contextBinderId = binderId;
 		m_contextPanel.clear();
-		GwtTeaming.getRpcService().getToolbarItems(binderId, new AsyncCallback<List<ToolbarItem>>() {
+		GwtTeaming.getRpcService().getBinderType(m_contextBinderId, new AsyncCallback<BinderType>() {
 			public void onFailure(Throwable t) {
+				m_contextBinderType = BinderType.OTHER;
 				Window.alert(t.toString());
 			}
-			public void onSuccess(List<ToolbarItem> toolbarItemList)  {
-				addShowToContext(   toolbarItemList);
-				addManageToContext( toolbarItemList);
-				addActionsToContext(toolbarItemList);
+			public void onSuccess(BinderType binderType) {
+				m_contextBinderType = binderType;
+				GwtTeaming.getRpcService().getToolbarItems(m_contextBinderId, new AsyncCallback<List<ToolbarItem>>() {
+					public void onFailure(Throwable t) {
+						Window.alert(t.toString());
+					}
+					public void onSuccess(List<ToolbarItem> toolbarItemList)  {
+						addManageToContext( toolbarItemList);
+						addActionsToContext(toolbarItemList);
+					}
+				});
 			}
 		});
 	}

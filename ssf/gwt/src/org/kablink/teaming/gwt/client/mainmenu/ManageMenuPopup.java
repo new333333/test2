@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -60,22 +61,97 @@ public class ManageMenuPopup extends MenuBarPopup {
 	
 	private List<ToolbarItem> m_toolbarItemList;	// The context based toolbar requirements.
 	private String m_currentBinderId;				// ID of the currently selected binder.
+	private TeamManagementInfo m_tmi;				// The team management information for which team management menu items should appear on the menu.
 	private ToolbarItem m_emailTBI;					// The email subscription toolbar item, if found.
 	private ToolbarItem m_folderActionsTBI;			// The folder actions     toolbar item, if found.
-	private ToolbarItem m_folderStylesTBI;			// The folder styles      toolbar item, if found.
 	private ToolbarItem m_folderViewsTBI;			// The folder views       toolbar item, if found.
-	private ToolbarItem m_manageProfileTBI;			// The manage profile     toolbar item, if found.
 	private ToolbarItem m_otherActionsTBI;			// The other actions      toolbar item, if found.
+	private ToolbarItem m_unseenTBI;				// The unseen             toolbar item, if found.
+	private ToolbarItem m_whatsNewTBI;				// The what's new         toolbar item, if found.
+	private ToolbarItem m_whoHasAccessTBI;			// The who has access     toolbar item, if found.
 	private ToolbarItem m_workspaceActionsTBI;		// The workspace actions  toolbar item, if found.
 
+	/*
+	 * Inner class that handles clicks on team management commands.
+	 */
+	private class TeamManagementClickHandler implements ClickHandler {
+		private String m_manageUrl;		// The URL to launch for the management command, if done by URL.
+		private TeamingAction m_action;	// The TeamingAction to perform for the management command, if done by triggering an action.
+		
+		/**
+		 * Class constructor.
+		 * 
+		 * @param manageUrl
+		 */
+		TeamManagementClickHandler(String manageUrl) {
+			// Simply store the parameter.
+			m_manageUrl = manageUrl;
+		}
+		
+		/**
+		 * Class constructor.
+		 * 
+		 * @param teamingAction
+		 */
+		TeamManagementClickHandler(TeamingAction action) {
+			// Simply store the parameter.
+			m_action = action;
+		}
+		
+		/**
+		 * Called when the user clicks on a team management command.
+		 * 
+		 * @param event
+		 */
+		public void onClick(ClickEvent event) {
+			// Hide the menu.
+			hide();
+			
+			// If the team management command is implemented as a URL...
+			if (GwtClientHelper.hasString(m_manageUrl)) {
+				// ...launch it in a window...
+				jsLaunchUrlInWindow(m_manageUrl);
+			}
+			else {
+				// ...otherwise, trigger the action.
+				m_actionTrigger.triggerAction(m_action);
+			}
+		}
+		
+		/*
+		 * Uses Teaming's existing ss_common JavaScript to launch a URL in
+		 * a new window.
+		 */
+		private native void jsLaunchUrlInWindow(String url) /*-{
+			window.top.ss_openUrlInWindow({href: url}, '_blank', 500, 600);
+		}-*/;
+	}
+	
 	/**
 	 * Class constructor.
 	 * 
 	 * @param actionTrigger
+	 * @param manageName
 	 */
-	public ManageMenuPopup(ActionTrigger actionTrigger) {
+	public ManageMenuPopup(ActionTrigger actionTrigger, String manageName) {
 		// Initialize the super class.
-		super(actionTrigger, GwtTeaming.getMessages().mainMenuBarManage());
+		super(actionTrigger, manageName);
+	}
+
+	/*
+	 * Returns true if a toolbar item will require a popout and false
+	 * otherwise.
+	 */
+	private boolean hasNestedItems(ToolbarItem tbi) {
+		// If there aren't any items for the pop out...
+		List<ToolbarItem> niList = ((null == tbi) ? null : tbi.getNestedItemsList());
+		if ((null == niList) || niList.isEmpty()) {
+			// ...then one isn't required...
+			return false;
+		}
+		
+		// ...otherwise, one is.
+		return true;
 	}
 	
 	/**
@@ -90,6 +166,16 @@ public class ManageMenuPopup extends MenuBarPopup {
 		// Simply store the parameter.
 		m_currentBinderId = binderId;
 	}
+
+	/**
+	 * Stores team management information for use by the menu.
+	 * 
+	 * @param tmi
+	 */
+	public void setTeamManagementInfo(TeamManagementInfo tmi) {
+		m_tmi = tmi;
+	}
+	
 	
 	/**
 	 * Store information about the context based toolbar requirements
@@ -122,11 +208,7 @@ public class ManageMenuPopup extends MenuBarPopup {
 			// ...menu.
 			ToolbarItem tbi = tbiIT.next();
 			String tbName = tbi.getName();
-			if (tbName.equalsIgnoreCase("ssEmailSubscriptionToolbar")) {
-				m_emailTBI = tbi.getNestedToolbarItem("email");
-			}
-			
-			else if (tbName.equalsIgnoreCase("ssFolderToolbar")) {
+			if (tbName.equalsIgnoreCase("ssFolderToolbar")) {
 				ToolbarItem adminTBI = tbi.getNestedToolbarItem("administration");
 				ToolbarItem categoriesTBI = ((null == adminTBI) ? null : adminTBI.getNestedToolbarItem("categories"));
 				if (null != categoriesTBI) {
@@ -135,15 +217,7 @@ public class ManageMenuPopup extends MenuBarPopup {
 					m_workspaceActionsTBI = categoriesTBI.getNestedToolbarItem("workspace");
 				}
 				
-				m_manageProfileTBI = tbi.getNestedToolbarItem("manageProfile");
-			}
-			
-			else if (tbName.equalsIgnoreCase("ssFolderActionsToolbar")) {
-				ToolbarItem displayStylesTBI = tbi.getNestedToolbarItem("display_styles");
-				ToolbarItem categoriesTBI = ((null == displayStylesTBI) ? null : displayStylesTBI.getNestedToolbarItem("categories"));
-				if (null != categoriesTBI) {
-					m_folderStylesTBI = categoriesTBI.getNestedToolbarItem("styles");
-				}
+				m_whoHasAccessTBI = tbi.getNestedToolbarItem("whohasaccess");
 			}
 			
 			else if (tbName.equalsIgnoreCase("ssFolderViewsToolbar")) {
@@ -154,39 +228,54 @@ public class ManageMenuPopup extends MenuBarPopup {
 				}
 			}
 			
-//!			...this needs to be implemented...
+			else if (tbName.equalsIgnoreCase("ss_whatsNewToolbar")) {
+				m_unseenTBI = tbi.getNestedToolbarItem("unseen");
+				m_whatsNewTBI = tbi.getNestedToolbarItem("whatsnew");
+			}
+			
+			else if (tbName.equalsIgnoreCase("ssEmailSubscriptionToolbar")) {
+				m_emailTBI = tbi.getNestedToolbarItem("email");
+			}
 		}
 		
 		// Return true if we found any of the manage menu items and
 		// false otherwise.
 		return
 			((null != m_emailTBI)                                                           ||
-			 (null != m_manageProfileTBI)                                                   ||
+			 (null != m_whatsNewTBI)                                                        ||
+			 (null != m_unseenTBI)                                                          ||
+			 (null != m_whoHasAccessTBI)                                                    ||
 			((null != m_folderActionsTBI)    && m_folderActionsTBI.hasNestedToolbarItems()) ||
-			((null != m_folderStylesTBI)     && m_folderStylesTBI.hasNestedToolbarItems())  ||
 			((null != m_folderViewsTBI)      && m_folderViewsTBI.hasNestedToolbarItems())   ||
 			((null != m_otherActionsTBI)     && m_otherActionsTBI.hasNestedToolbarItems())  ||
 			((null != m_workspaceActionsTBI) && m_workspaceActionsTBI.hasNestedToolbarItems()));
 	}
 
 	/*
-	 * Shows nested toolbar items as a pop out menu from the main menu
-	 * popup
+	 * If there are any folder options, adds a folder options items to
+	 * run the folder options dialog.
 	 */
-	private void showPopoutMenuItems(ToolbarItem tbi) {
+	private void showFolderOptions(ToolbarItem tbi) {
 		// If there aren't any items for the pop out...
-		List<ToolbarItem> niList = ((null == tbi) ? null : tbi.getNestedItemsList());
+		final List<ToolbarItem> niList = ((null == tbi) ? null : tbi.getNestedItemsList());
 		if ((null == niList) || niList.isEmpty()) {
-			// bail.
+			// ...bail.
 			return;
 		}
-		
-//!		...this needs to be implemented...
-		
-		for (Iterator<ToolbarItem> niIT = niList.iterator(); niIT.hasNext(); ) {
-			ToolbarItem nestedTBI = niIT.next();
-			addContextMenuItem(IDBASE, nestedTBI);
-		}
+
+		// ...Add an anchor to run the folder options dialog.
+		MenuPopupAnchor mtA = new MenuPopupAnchor((IDBASE + "FolderOptions"), m_messages.mainMenuManageFolderOptions(), null, new ClickHandler() {
+			public void onClick(ClickEvent event) {
+//!				...this needs to be implemented...
+				addContentWidget(new Label("START:  ...this needs to be implemented..."));
+				for (Iterator<ToolbarItem> niIT = niList.iterator(); niIT.hasNext(); ) {
+					ToolbarItem nestedTBI = niIT.next();
+					addContextMenuItem(IDBASE, nestedTBI);
+				}
+				addContentWidget(new Label("END:  ...this needs to be implemented..."));
+			}
+		});
+		addContentWidget(mtA);
 	}
 	
 	/**
@@ -202,21 +291,63 @@ public class ManageMenuPopup extends MenuBarPopup {
 		// Position the menu...
 		setPopupPosition(left, top);
 		
-		// ...and if we haven't already constructed its contents...
+		// Have we constructed the menu's contents yet?
 		if (!(hasContent())) {
-			// ...construct it now.  Add the simple menu items...
-			addContextMenuItem(IDBASE, m_emailTBI);
-			addContextMenuItem(IDBASE, m_manageProfileTBI);
+			// No!  We need to construct it now.  First the what's new,
+			// unread and who has access items...
+			addContextMenuItem(IDBASE, m_whatsNewTBI);
+			addContextMenuItem(IDBASE, m_unseenTBI);
+			addContextMenuItem(IDBASE, m_whoHasAccessTBI);
+			if ((null != m_whatsNewTBI) || (null != m_unseenTBI) || (null != m_whoHasAccessTBI)) {
+				// ...and spacer if we showed any of them.
+				addSpacerMenuItem();
+			}
+
+			// Then the binder actions including the folder options
+			// when required...
+			addNestedContextMenuItems(IDBASE, m_folderActionsTBI);
+			addNestedContextMenuItems(IDBASE, m_otherActionsTBI);
+			addNestedContextMenuItems(IDBASE, m_workspaceActionsTBI);
+			showFolderOptions(m_folderViewsTBI);
+			boolean hasBinderActions =
+				(hasNestedItems(m_folderActionsTBI) ||
+				 hasNestedItems(m_folderViewsTBI)   ||
+				 hasNestedItems(m_otherActionsTBI)  ||
+				 hasNestedItems(m_workspaceActionsTBI));
 			
-			// ...and add the pop out menu items.
-			showPopoutMenuItems(m_folderActionsTBI);
-			showPopoutMenuItems(m_folderStylesTBI);
-			showPopoutMenuItems(m_folderViewsTBI);
-			showPopoutMenuItems(m_otherActionsTBI);
-			showPopoutMenuItems(m_workspaceActionsTBI);
+			// If we're going to display more stuff below...
+			if (hasBinderActions && (((null != m_tmi) && m_tmi.isTeamManagementEnabled()) || (null != m_emailTBI))) {
+				// ...add another spacer before them.
+				addSpacerMenuItem();
+			}
+
+			// If we have any team management items...
+			if (null != m_tmi) {
+				// ...add them to the menu...
+				MenuPopupAnchor mtA;
+				if (m_tmi.isViewAllowed()) {
+					mtA = new MenuPopupAnchor((IDBASE + "View"), m_messages.mainMenuManageViewTeam(), null, new TeamManagementClickHandler(TeamingAction.VIEW_TEAM_MEMBERS));
+					addContentWidget(mtA);
+				}
+				if (m_tmi.isManageAllowed()) {
+					mtA = new MenuPopupAnchor((IDBASE + "Edit"), m_messages.mainMenuManageEditTeam(), null, new TeamManagementClickHandler(m_tmi.getManageUrl()));
+					addContentWidget(mtA);
+				}
+				if (m_tmi.isSendMailAllowed()) {
+					mtA = new MenuPopupAnchor((IDBASE + "Send"), m_messages.mainMenuManageSendTeamEmail(), null, new TeamManagementClickHandler(m_tmi.getSendMailUrl()));
+					addContentWidget(mtA);
+				}
+				if (m_tmi.isTeamMeetingAllowed()) {
+					mtA = new MenuPopupAnchor((IDBASE + "Conference"), m_messages.mainMenuManageStartTeamConference(), null, new TeamManagementClickHandler(m_tmi.getTeamMeetingUrl()));
+					addContentWidget(mtA);
+				}
+			}
+			
+			// ...and any email notification item.
+			addContextMenuItem(IDBASE, m_emailTBI);
 		}
 					
-		// ...and show it.
+		// Finally, show the popup.
 		show();
 	}
 }
