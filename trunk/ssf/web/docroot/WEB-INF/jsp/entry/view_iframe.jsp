@@ -32,6 +32,8 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
+
 <% //view a folder forum with folder on the left and the entry on the right in an iframe %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
@@ -62,6 +64,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 <jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 <jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
+<% if (!(GwtUIHelper.isGwtUIActive(request))) { %>
 <div class="ss_actions_bar1_pane ss_sidebarImage">
 <table cellspacing="0" cellpadding="0">
 <tr>
@@ -86,6 +89,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 </td></tr>
 </table>
 </div>
+<% } %>
 <div width="100%">
   <ssf:ifnotaccessible>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">

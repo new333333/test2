@@ -32,6 +32,8 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
+
 <% // The main workspace view  %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value="${ssBinder.title}" scope="request"/>
@@ -142,6 +144,7 @@ if (typeof ss_workarea_showId == "undefined")
   <c:set var="ss_sidebarVisibilityHide" value="block"/>
   <c:set var="ss_sidebarTdStyle" value="ss_view_sidebar"/>
 </c:if>
+<% if (!(GwtUIHelper.isGwtUIActive(request))) { %>
 <div class="ss_actions_bar1_pane ss_sidebarImage">
 <table cellspacing="0" cellpadding="0">
 <tbody>
@@ -170,6 +173,7 @@ if (typeof ss_workarea_showId == "undefined")
 </tr></tbody>
 </table>
 </div>
+<% } %>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>

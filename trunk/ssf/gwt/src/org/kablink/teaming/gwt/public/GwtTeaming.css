@@ -981,6 +981,31 @@ n-Transparent-Black-Div
 {
 }
 
+/* Styles for the folder options dialog. */
+.folderOptionsDlg
+{
+	z-index: 301;
+}
+.folderOptionsDlg_Radio
+{
+	margin-left: 5px;
+}
+.folderOptionsDlg_Grid
+{
+	margin-top: 8px;
+}
+.folderOptionsDlg_Label
+{
+	color: #414648; /* dark grey */
+	line-height: 1.1em; 
+	margin-right: 5px;
+	padding: 0.2em 0.5em 0.3em; 
+	white-space: nowrap;
+}
+.folderOptionsDlg_MenuItem
+{
+}
+
 /* Style for the main Teaming page. */
 .mainTeamingPage
 {

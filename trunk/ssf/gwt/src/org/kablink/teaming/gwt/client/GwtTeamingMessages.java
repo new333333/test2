@@ -230,6 +230,8 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuFavoritesEditDlgHeader();
 	String mainMenuFavoritesNoFavorites();
 	String mainMenuFavoritesRemove();
+	String mainMenuFolderOptionsDlgHeader();
+	String mainMenuFolderOptionsNoOptions();
 	String mainMenuManageEditTeam();
 	String mainMenuManageFolderOptions();
 	String mainMenuManageSendTeamEmail();
