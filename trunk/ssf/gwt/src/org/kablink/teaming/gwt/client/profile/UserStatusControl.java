@@ -12,6 +12,8 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
@@ -30,12 +32,16 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 	
 	private final static int LINES = 3;
 	private final static int ONE_LINE = 1;
+	private final static int MAX_CHARS = 255;
 	
 	private TextArea input;
 	private HTML statusText;
 	private Button shareButton;
 	private InlineLabel timeLabel;
-	private Anchor clear; 
+	private Anchor clear;
+	private InlineLabel textAmount; 
+	private int totalChar = 0;
+	private InlineLabel limitExceeded;
 
 	public UserStatusControl () {
 		
@@ -81,27 +87,51 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		//Share your status button
 		shareButton = new Button(GwtTeaming.getMessages().shareStatus());
 		shareButton.addStyleName("alignBottom");
+		shareButton.addStyleName("marginLeftPoint25em");
 		
 		updatePanel.add(shareButton);
 		
+		mainPanel.add(updatePanel);
+		
+		textAmount = new InlineLabel();
+		textAmount.addStyleName("marginRightPoint25em");
+		mainPanel.add(textAmount);
+		
+		limitExceeded = new InlineLabel();
+		limitExceeded.addStyleName("bold");
+		limitExceeded.addStyleName("marginLeftPoint25em");
+		
+		mainPanel.add(limitExceeded);
+		
+		//Add Mouse click listener to share button
 		shareButton.addClickHandler(new ClickHandler(){
 
 			public void onClick(ClickEvent event) {
 				if(!input.getText().equals("") && !input.getText().equals(GwtTeaming.getMessages().statusMessage())){
 						
-						final String status = input.getText();
+					final String status = input.getText();
 
-						//update the status to the given user
-						setUserStatus(status);
+					//update the status to the given user
+					setUserStatus(status);
 				}
 			}});
 		
-		mainPanel.add(updatePanel);
-		
-		//text info
-		//Label textAmount = new Label("255");
-		//mainPanel.add(textAmount);
+		//add a key listener
+		input.addKeyUpHandler( new KeyUpHandler() {
+			public void onKeyUp(KeyUpEvent event) {
 				
+				textAmount.setVisible(true);
+				totalChar = input.getValue().length();
+	        	
+				textAmount.setText(GwtTeaming.getMessages().charactersTyped(totalChar));
+				
+	        	if(totalChar > MAX_CHARS) {
+	        		limitExceeded.setText(GwtTeaming.getMessages().exceededMax(MAX_CHARS));
+	        	} else {
+	        		limitExceeded.setText("");;
+	        	}
+			}});
+		
 		// Register a preview-event handler.  We do this so we can see the mouse-down event
 		// in and out side of the widget.
 		Event.addNativePreviewHandler( this );
@@ -159,29 +189,36 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 				
 				//clear the input field once the statusText has been populated...
 				input.setText("");
-
+				//reset the char count
+				totalChar = 0;
+				//set visibility to false
+				textAmount.setVisible(false);
+				
 				if(!status.equals("")) {
 					//Set the visibility of the status text, time and clear link
 					showStatus(true);
 				} else {
 					showStatus(false);
 				}
-
 			}
 			
 		};
 		
+		
+		if(status.length() > MAX_CHARS) {
+			Window.alert(GwtTeaming.getMessages().exceededError());
+			return;
+		}
+		
 		// Issue an ajax request to save the branding data.
 		{
 			GwtRpcServiceAsync rpcService;
-			
 			rpcService = GwtTeaming.getRpcService();
 			
 			// Issue an ajax request to save the user status to the db.  rpcCallback will
 			// be called when we get the response back.
 			rpcService.saveUserStatus(status, rpcCallback );
 		}
-
 	}
 	
 	
@@ -279,6 +316,8 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 				
 				if(!GwtClientHelper.hasString(input.getText())) {
 					input.setText(GwtTeaming.getMessages().statusMessage());
+					//set visibility to false
+					textAmount.setVisible(false);
 				}
 				return;
 			}
@@ -287,6 +326,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 				input.setVisibleLines(LINES);
 				if(input.getText().equals(GwtTeaming.getMessages().statusMessage())) {
 					input.setText("");
+					totalChar = 0;
 				}
 			} 
 		}
@@ -345,6 +385,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		clear.setVisible(visible);
 		input.setVisible(visible);
 		shareButton.setVisible(visible);
+		textAmount.setVisible(visible);
 	}
 	
 	/**
@@ -393,30 +434,30 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		long modifyTime = modifyDate.getTime();
 		long diffTime = currentTime - modifyTime;
 		
+		//if less then a min, then is now
 		if( diffTime < min ) {
-			long seconds = diffTime / sec;
-			if(seconds == 1) {
-				this.timeLabel.setText(GwtTeaming.getMessages().oneSecondAgo());
-			} else {
-				this.timeLabel.setText(GwtTeaming.getMessages().secondsAgo(seconds));
-			}
-		} else if ( diffTime < hour ) {
+			this.timeLabel.setText(GwtTeaming.getMessages().now());
+		} //if less than an hour, then how many minutes ago
+		else if ( diffTime < hour ) {
 			long minutes = diffTime / min;
 			if(minutes == 1) {
 				this.timeLabel.setText(GwtTeaming.getMessages().oneMinuteAgo());
 			} else {
 				this.timeLabel.setText(GwtTeaming.getMessages().minutesAgo(minutes));
 			}
-		} else if ( diffTime < day ) {
+		} // if less than a day, then how many hours ago 
+		else if ( diffTime < day ) {
 			long hours = diffTime / hour;
 			if(hours == 1) {
 				this.timeLabel.setText(GwtTeaming.getMessages().oneHourAgo());
 			} else {
 				this.timeLabel.setText(GwtTeaming.getMessages().hoursAgo(hours));
 			}
-		} else if ( diffTime >= day ) {
+		} // if greater than a day, how many days ago 
+		else if ( diffTime >= day ) {
 			long days = diffTime / day;
 			
+			//if less than 30 days show the days otherwise show the actual date
 			if(days < 30) {
 				if(days == 1) {
 					this.timeLabel.setText(GwtTeaming.getMessages().oneDayAgo());
