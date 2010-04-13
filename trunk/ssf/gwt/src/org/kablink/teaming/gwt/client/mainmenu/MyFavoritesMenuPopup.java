@@ -49,12 +49,12 @@ import com.google.gwt.user.client.ui.FlowPanel;
 
 
 /**
- * Class used for the Favorites menu item popup.  
+ * Class used for the My Favorites menu item popup.  
  * 
  * @author drfoster@novell.com
  */
-public class FavoritesMenuPopup extends MenuBarPopup {
-	private final String IDBASE = "favorites_";
+public class MyFavoritesMenuPopup extends MenuBarPopup {
+	private final String IDBASE = "myFavorites_";
 	
 	private int m_menuLeft;				// Left coordinate of where the menu is to be placed.
 	private int m_menuTop;				// Top  coordinate of where the menu is to be placed.
@@ -182,9 +182,9 @@ public class FavoritesMenuPopup extends MenuBarPopup {
 	 * 
 	 * @param actionTrigger
 	 */
-	public FavoritesMenuPopup(ActionTrigger actionTrigger) {
+	public MyFavoritesMenuPopup(ActionTrigger actionTrigger) {
 		// Initialize the super class.
-		super(actionTrigger, GwtTeaming.getMessages().mainMenuBarFavorites());
+		super(actionTrigger, GwtTeaming.getMessages().mainMenuBarMyFavorites());
 	}
 	
 	/**

@@ -217,11 +217,10 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuAltLeftNavHideShow();
 	String mainMenuAltMastHeadHideShow();
 	String mainMenuBarActions();
-	String mainMenuBarFavorites();
-	String mainMenuBarManage();
+	String mainMenuBarFolder();
+	String mainMenuBarMyFavorites();
 	String mainMenuBarMyTeams();
 	String mainMenuBarMyWorkspace();
-	String mainMenuBarShow();
 	String mainMenuBarWorkspace();
 	String mainMenuFavoritesAdd();
 	String mainMenuFavoritesDlgDelete();
@@ -231,11 +230,12 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuFavoritesEditDlgHeader();
 	String mainMenuFavoritesNoFavorites();
 	String mainMenuFavoritesRemove();
-	String mainMenuMyTeamsManageTeam();
+	String mainMenuManageEditTeam();
+	String mainMenuManageFolderOptions();
+	String mainMenuManageSendTeamEmail();
+	String mainMenuManageStartTeamConference();
+	String mainMenuManageViewTeam();
 	String mainMenuMyTeamsNoTeams();
-	String mainMenuMyTeamsSendEmailToTeam();
-	String mainMenuMyTeamsStartTeamMeeting();
-	String mainMenuMyTeamsViewTeam();
 
 	// Strings used in the workspace tree control.
 	String treeCloseBreadCrumbs();
