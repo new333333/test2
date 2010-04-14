@@ -44,9 +44,16 @@ import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.dom4j.Element;
+import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -60,6 +67,10 @@ import org.springframework.web.portlet.ModelAndView;
  * @author drfoster@novell.com
  */
 public class GwtUIHelper {
+	// Used as a qualifier in a toolbar to indicate the value maps to a
+	// GWT UI TeamingAction value.
+	public final static String GWTUI_TEAMING_ACTION = "GwtUI.TeamingAction";
+	
 	// The key into the session cache to store the GWT UI toolbar
 	// beans.
 	public final static String CACHED_TOOLBARS_KEY = "gwt-ui-toolbars";
@@ -77,12 +88,82 @@ public class GwtUIHelper {
 		WebKeys.FOLDER_ACTIONS_TOOLBAR,
 		WebKeys.FOLDER_TOOLBAR,
 		WebKeys.FOLDER_VIEWS_TOOLBAR,
+		WebKeys.GWT_MISC_TOOLBAR,
 		WebKeys.WHATS_NEW_TOOLBAR,
 	};
 
 	/**
+	 * Builds the GWT miscellaneous toolbar for a binder.
+	 *
+	 * @param bs
+	 * @param request
+	 * @param user
+	 * @param binder
+	 * @param model
+	 * @param qualifiers
+	 * @param gwtMiscToolbar
+	 */
+	@SuppressWarnings("unchecked")
+	public static void buildGwtMiscToolbar(AllModulesInjected bs, RenderRequest request, User user, Binder binder, Map model, Toolbar gwtMiscToolbar) {
+		// We only add the GWT miscellaneous toolbar items if the GWT
+		// UI is active.  Is it?
+		HashMap<String, String> qualifiers;
+		if (isGwtUIActive(request)) {
+			// Yes!  Are we running as other than guest and is the
+			// binder we're on other than the profiles container?
+			boolean isGuest = isCurrentUserGuest();
+			if ((!isGuest) && (EntityIdentifier.EntityType.profiles != binder.getEntityType())) {
+				// Yes!  Add a toolbar item that to track the binder.
+				String action = "TRACK_BINDER";
+				String actionTitleKey = getTrackThisKey(binder);
+				boolean isTracked = BinderHelper.isBinderTracked(bs, binder.getId());
+				if (isTracked) {
+					action   = "UN" + action;
+					actionTitleKey += "Not";
+				}
+				qualifiers = new HashMap<String, String>();
+				qualifiers.put(GWTUI_TEAMING_ACTION, action);
+				gwtMiscToolbar.addToolbarMenu("track", NLT.get(actionTitleKey), "", qualifiers);
+			}
+			
+//!			...this needs to be implemented...
+		}
+	}
+
+	/*
+	 * Generates the appropriate resource key for tracking the given
+	 * binder.
+	 * 
+	 * Note:  The logic for which key is used was copied from
+	 *        sidebar_track2.jsp.
+	 */
+	private static String getTrackThisKey(Binder binder) {
+		String trackThisKey = "relevance.trackThis";
+		switch (binder.getEntityType()) {
+		case workspace:
+			if (Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType()) trackThisKey += "Person";
+			else                                                              trackThisKey += "Workspace";
+			break;
+			
+		case folder:
+			String dFamily = "";
+			Element familyProperty = ((Element) binder.getDefaultViewDef().getDefinition().getRootElement().selectSingleNode("//properties/property[@name='family']"));
+			if (familyProperty != null) {
+				dFamily = familyProperty.attributeValue("value", "");
+				if (null == dFamily) {
+					dFamily = "";
+				}
+			}
+			if (dFamily.equalsIgnoreCase("calendar")) trackThisKey += "Calendar";
+			else                                      trackThisKey += "Folder";
+		}
+		return trackThisKey;
+	}
+	
+	/**
 	 * Builds the GWT UI toolbar for a binder.
 	 * 
+	 * @param bs
 	 * @param request
 	 * @param user
 	 * @param binder
@@ -91,16 +172,17 @@ public class GwtUIHelper {
 	 * @param gwtUIToolbar
 	 */
 	@SuppressWarnings("unchecked")
-	public static void buildGwtUIToolbar(RenderRequest request, User user, Binder binder, Map model, Map qualifiers, Toolbar gwtUIToolbar) {
+	public static void buildGwtUIToolbar(AllModulesInjected bs, RenderRequest request, User user, Binder binder, Map model, Toolbar gwtUIToolbar) {
 		// If the GWT UI is enabled and we're not in captive mode...
 		if (isGwtUIEnabled() && (!(MiscUtil.isCaptive(request)))) {
 			// ...add the GWT UI button to the menu bar.
-			qualifiers = new HashMap();
-			qualifiers.put("title", "Enable GWT UI");
+			String title = "Activate the Durango UI";
+			Map qualifiers = new HashMap();
+			qualifiers.put("title", title);
 			qualifiers.put("icon", "gwt.png");
 			qualifiers.put("iconGwtUI", "true");
 			qualifiers.put("onClick", "ss_toggleGwtUI(true);return false;");
-			gwtUIToolbar.addToolbarMenu("1_gwtUI", "GWT UI", "javascript: //;", qualifiers);
+			gwtUIToolbar.addToolbarMenu("1_gwtUI", title, "javascript: //;", qualifiers);
 		}
 	}
 
@@ -200,6 +282,17 @@ public class GwtUIHelper {
 		}
 	}
 
+	/**
+	 * Returns true if the current user is the built-in guest user and
+	 * false otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isCurrentUserGuest() {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		return ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
+	}
+	
 	/**
 	 * Returns true if the GWT UI should be available and false
 	 * otherwise.

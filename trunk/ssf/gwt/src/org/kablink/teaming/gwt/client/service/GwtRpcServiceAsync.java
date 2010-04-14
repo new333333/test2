@@ -105,6 +105,7 @@ public interface GwtRpcServiceAsync
 	public void addFavorite(           String             binderId,      AsyncCallback<Boolean>            callback );
 	public void removeFavorite(        String             favoriteId,    AsyncCallback<Boolean>            callback );
 	public void updateFavorites(       List<FavoriteInfo> favoritesList, AsyncCallback<Boolean>            callback );
+	public void getBinderEntityType(   String             binderId,      AsyncCallback<String>             callback );
 	public void getBinderType(         String             binderId,      AsyncCallback<BinderType>         callback );
 	public void getFavorites(                                            AsyncCallback<List<FavoriteInfo>> callback );
 	public void getMyTeams(                                              AsyncCallback<List<TeamInfo>>     callback );

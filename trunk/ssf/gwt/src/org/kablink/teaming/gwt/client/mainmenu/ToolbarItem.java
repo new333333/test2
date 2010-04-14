@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.util.TeamingAction;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -53,6 +55,7 @@ public class ToolbarItem implements IsSerializable {
 	private String m_name;															// The name of this toolbar item.
 	private String m_title;															// The display name for this toolbar item.
 	private String m_url;															// The URL to launch for this toolbar item.
+	private TeamingAction m_teamingAction = TeamingAction.UNDEFINED;				// If the toolbar item is to fire a teaming action.
 
 	/**
 	 * Inner class used to track name/value pairs.
@@ -204,6 +207,15 @@ public class ToolbarItem implements IsSerializable {
 	}
 	
 	/**
+	 * Returns the teaming action from a toolbar item.
+	 * 
+	 * @return
+	 */
+	public TeamingAction getTeamingAction() {
+		return m_teamingAction;
+	}
+	
+	/**
 	 * Returns the title of the toolbar item.
 	 * 
 	 * @return
@@ -245,6 +257,15 @@ public class ToolbarItem implements IsSerializable {
 	 */
 	public void setName(String name) {
 		m_name = name;
+	}
+	
+	/**
+	 * Stores a teaming action in the toolbar item.
+	 * 
+	 * @param teamingAction
+	 */
+	public void setTeamingAction(TeamingAction teamingAction) {
+		m_teamingAction = teamingAction;
 	}
 	
 	/**

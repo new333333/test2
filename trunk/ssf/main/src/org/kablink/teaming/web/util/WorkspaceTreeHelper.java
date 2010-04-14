@@ -660,6 +660,7 @@ public class WorkspaceTreeHelper {
 		Toolbar folderActionsToolbar = new Toolbar();
 		Toolbar whatsNewToolbar = new Toolbar();
 		Toolbar trashToolbar = new Toolbar();
+		Toolbar gwtMiscToolbar = new Toolbar();
 		Toolbar gwtUIToolbar = new Toolbar();
 		Map qualifiers;
 		AdaptedPortletURL adapterUrl;
@@ -1022,9 +1023,6 @@ public class WorkspaceTreeHelper {
 		// trash
 		TrashHelper.buildTrashToolbar(user, workspace, model, qualifiers, trashToolbar);
 
-		// GWT UI
-		GwtUIHelper.buildGwtUIToolbar(request, user, workspace, model, qualifiers, gwtUIToolbar);
-
 		// start meeting
 		if (bs.getIcBrokerModule().isEnabled() && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
@@ -1082,12 +1080,19 @@ public class WorkspaceTreeHelper {
 		//Build the folder actions toolbar
 		BinderHelper.buildFolderActionsToolbar(bs, request, response, folderActionsToolbar, forumId);
 
+		// GWT UI.  Note that these need to be last in the toolbar
+		// building sequence because they access things in the
+		// model to construct toolbars specific to the GWT UI.
+		GwtUIHelper.buildGwtMiscToolbar(bs, request, user, workspace, model, gwtMiscToolbar);
+		GwtUIHelper.buildGwtUIToolbar(  bs, request, user, workspace, model, gwtUIToolbar);
+
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_TOOLBAR, toolbar.getToolbar());
 		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
 		model.put(WebKeys.WHATS_NEW_TOOLBAR,  whatsNewToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_ACTIONS_TOOLBAR,  folderActionsToolbar.getToolbar());
 		model.put(WebKeys.TRASH_TOOLBAR,  trashToolbar.getToolbar());
+		model.put(WebKeys.GWT_MISC_TOOLBAR,  gwtMiscToolbar.getToolbar());
 		model.put(WebKeys.GWT_UI_TOOLBAR,  gwtUIToolbar.getToolbar());
 	}
 	

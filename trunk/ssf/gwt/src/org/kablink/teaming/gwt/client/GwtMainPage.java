@@ -384,7 +384,9 @@ public class GwtMainPage extends Composite
 		case VIEW_TEAM_MEMBERS:
 			viewTeamMembers();
 			break;
-			
+
+		case TRACK_BINDER:
+		case UNTRACK_BINDER:
 		case HIDE_LEFT_NAVIGATION:
 		case HIDE_MASTHEAD:
 		case SHOW_LEFT_NAVIGATION:
@@ -392,7 +394,8 @@ public class GwtMainPage extends Composite
 //!			...these need to be implemented...
 			Window.alert( "Action not implemented:  " + action.getUnlocalizedDesc() );
 			break;
-			
+
+		case UNDEFINED:
 		default:
 			Window.alert( "Unknown action selected: " + action.getUnlocalizedDesc() );
 			break;

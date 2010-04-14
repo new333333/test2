@@ -86,6 +86,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
@@ -1302,6 +1303,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}//end updateFavorites
 
 	/**
+	 * Returns the entity type of a binder.
+	 * 
+	 * @return
+	 */
+	public String getBinderEntityType( String binderId )
+	{
+		Binder binder;
+		
+		binder = getBinderModule().getBinder( Long.parseLong( binderId ) );
+		return binder.getEntityType().toString();
+	}//end getBinderEntityType()
+	
+	/**
 	 * Returns the BinderType of a binder.
 	 * 
 	 * @return
@@ -1422,8 +1436,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 							m_logger.debug(traceStart + "...:name:<unknown>:IGNORED QUALIFIER=" + name + ":" + ((null == value) ? "null" : value.getClass()));
 						}
 						else {
-							m_logger.debug(traceStart + "...:name:value:QUALIFIER=" + name + ":" + sValue);
-							toolbarItem.addQualifier(name, sValue);
+							if (name.equalsIgnoreCase(GwtUIHelper.GWTUI_TEAMING_ACTION)) {
+								m_logger.debug(traceStart + "...:name:value:TEAMING_ACTION=" + name + ":" + sValue);
+								TeamingAction ta = TeamingAction.valueOf(sValue);
+								toolbarItem.setTeamingAction(ta);
+							}
+							else {
+								m_logger.debug(traceStart + "...:name:value:QUALIFIER=" + name + ":" + sValue);
+								toolbarItem.addQualifier(name, sValue);
+							}
 						}
 					}
 				}

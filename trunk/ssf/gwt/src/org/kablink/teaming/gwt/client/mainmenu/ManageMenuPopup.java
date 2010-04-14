@@ -71,6 +71,7 @@ public class ManageMenuPopup extends MenuBarPopup {
 	private ToolbarItem m_emailNotificationTBI;		// The email notification toolbar item, if found.
 	private ToolbarItem m_folderActionsTBI;			// The folder actions     toolbar item, if found.
 	private ToolbarItem m_folderViewsTBI;			// The folder views       toolbar item, if found.
+	private ToolbarItem m_trackThisTBI;				// The track this xxx     toolbar item, if found.
 	private ToolbarItem m_whatsNewTBI;				// The what's new         toolbar item, if found.
 	private ToolbarItem m_whatsUnreadTBI;			// The what's unread      toolbar item, if found.
 	private ToolbarItem m_whoHasAccessTBI;			// The who has access     toolbar item, if found.
@@ -237,12 +238,17 @@ public class ManageMenuPopup extends MenuBarPopup {
 					}
 				}
 			}
+			
+			else if (tbName.equalsIgnoreCase("ssGwtMiscToolbar")) {
+				m_trackThisTBI = tbi.getNestedToolbarItem("track");
+			}
 		}
 		
 		// Return true if we found any of the manage menu items and
 		// false otherwise.
 		return
 			((null != m_emailNotificationTBI)                                                ||
+			 (null != m_trackThisTBI)                                                        ||
 			 (null != m_whatsNewTBI)                                                         ||
 			 (null != m_whatsUnreadTBI)                                                      ||
 			 (null != m_whoHasAccessTBI)                                                     ||
@@ -308,13 +314,23 @@ public class ManageMenuPopup extends MenuBarPopup {
 		
 		// Have we constructed the menu's contents yet?
 		if (!(hasContent())) {
+			boolean hasBinderActions = 
+				(hasNestedItems(m_calendarImportTBI) ||
+				 hasNestedItems(m_commonActionsTBI)  ||
+				 hasNestedItems(m_folderActionsTBI)  ||
+				 hasNestedItems(m_folderViewsTBI, 2) ||
+				 hasNestedItems(m_workspaceActionsTBI));
+			boolean hasShowActions = ((null != m_whatsNewTBI) || (null != m_whatsUnreadTBI) || (null != m_whoHasAccessTBI));
+			boolean hasManageActions = (((null != m_tmi) && m_tmi.isTeamManagementEnabled()) || (null != m_emailNotificationTBI));
+			boolean hasMiscActions = (null != m_trackThisTBI);
+			
 			// No!  We need to construct it now.  First the what's new,
 			// unread and who has access items...
 			addContextMenuItem(IDBASE, m_whatsNewTBI);
 			addContextMenuItem(IDBASE, m_whatsUnreadTBI);
 			addContextMenuItem(IDBASE, m_whoHasAccessTBI);
-			if ((null != m_whatsNewTBI) || (null != m_whatsUnreadTBI) || (null != m_whoHasAccessTBI)) {
-				// ...and spacer if we showed any of them.
+			if (hasShowActions && hasBinderActions) {
+				// ...and add a spacer when required.
 				addSpacerMenuItem();
 			}
 
@@ -324,16 +340,8 @@ public class ManageMenuPopup extends MenuBarPopup {
 			addNestedContextMenuItems(IDBASE, m_commonActionsTBI);
 			addNestedContextMenuItems(IDBASE, m_workspaceActionsTBI);
 			showFolderOptions(m_folderViewsTBI, m_calendarImportTBI);
-			boolean hasBinderActions =
-				(hasNestedItems(m_calendarImportTBI) ||
-				 hasNestedItems(m_commonActionsTBI)  ||
-				 hasNestedItems(m_folderActionsTBI)  ||
-				 hasNestedItems(m_folderViewsTBI, 2) ||
-				 hasNestedItems(m_workspaceActionsTBI));
-			
-			// If we're going to display more stuff below...
-			if (hasBinderActions && (((null != m_tmi) && m_tmi.isTeamManagementEnabled()) || (null != m_emailNotificationTBI))) {
-				// ...add another spacer before them.
+			if (hasBinderActions && hasManageActions) {
+				// ...and add a spacer when required.
 				addSpacerMenuItem();
 			}
 
@@ -361,6 +369,13 @@ public class ManageMenuPopup extends MenuBarPopup {
 			
 			// ...and any email notification item.
 			addContextMenuItem(IDBASE, m_emailNotificationTBI);
+			if (hasManageActions && hasMiscActions) {
+				// ...and add a spacer when required.
+				addSpacerMenuItem();
+			}
+
+			// Add any miscellaneous items.
+			addContextMenuItem(IDBASE, m_trackThisTBI);
 		}
 					
 		// Finally, show the popup.

@@ -1126,6 +1126,7 @@ public class WebKeys {
     public static final String TOOLBAR_URL_WEBDAV="ss_toolbar_url_webdav";
     public static final String TOP_WORKSPACE="ss_topWorkspace";
     public static final String TRASH_TOOLBAR = "ssTrashToolbar";
+    public static final String GWT_MISC_TOOLBAR = "ssGwtMiscToolbar";
     public static final String GWT_UI_TOOLBAR = "ssGwtUIToolbar";
     public static final String TUTORIAL_NAME = "ss_tutorial_name";
     public static final String TUTORIAL_PANEL_STATE = "ss_tutorial_panel_state";
