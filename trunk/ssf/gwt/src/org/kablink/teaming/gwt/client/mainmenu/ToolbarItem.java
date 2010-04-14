@@ -220,15 +220,22 @@ public class ToolbarItem implements IsSerializable {
 	public String getUrl() {
 		return m_url;
 	}
-
+	
 	/**
-	 * Returns true if this toolbar item has nested toolbar items and
-	 * false otherwise.
+	 * Returns true if this toolbar item has at least a specified
+	 * number of nested toolbar items and false otherwise.
+	 * 
+	 * @param atLeast
 	 * 
 	 * @return
 	 */
+	public boolean hasNestedToolbarItems(int atLeast) {
+		int count = ((null == m_nestedItemsAL) ? 0 : m_nestedItemsAL.size());
+		return (count >= atLeast);
+	}
+	
 	public boolean hasNestedToolbarItems() {
-		return ((null != m_nestedItemsAL) && (!(m_nestedItemsAL.isEmpty())));
+		return hasNestedToolbarItems(1);
 	}
 	
 	/**

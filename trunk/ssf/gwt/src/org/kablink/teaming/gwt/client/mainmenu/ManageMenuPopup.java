@@ -66,6 +66,7 @@ public class ManageMenuPopup extends MenuBarPopup {
 	private List<ToolbarItem> m_toolbarItemList;	// The context based toolbar requirements.
 	private String m_currentBinderId;				// ID of the currently selected binder.
 	private TeamManagementInfo m_tmi;				// The team management information for which team management menu items should appear on the menu.
+	private ToolbarItem m_calendarImportTBI;		// The calendar import    toolbar item, if found.
 	private ToolbarItem m_commonActionsTBI;			// The common actions     toolbar item, if found.
 	private ToolbarItem m_emailNotificationTBI;		// The email notification toolbar item, if found.
 	private ToolbarItem m_folderActionsTBI;			// The folder actions     toolbar item, if found.
@@ -114,21 +115,13 @@ public class ManageMenuPopup extends MenuBarPopup {
 			// If the team management command is implemented as a URL...
 			if (GwtClientHelper.hasString(m_manageUrl)) {
 				// ...launch it in a window...
-				jsLaunchUrlInWindow(m_manageUrl);
+				GwtClientHelper.jsLaunchUrlInWindow(m_manageUrl, 500, 600);
 			}
 			else {
 				// ...otherwise, trigger the action.
 				m_actionTrigger.triggerAction(m_action);
 			}
 		}
-		
-		/*
-		 * Uses Teaming's existing ss_common JavaScript to launch a URL in
-		 * a new window.
-		 */
-		private native void jsLaunchUrlInWindow(String url) /*-{
-			window.top.ss_openUrlInWindow({href: url}, '_blank', 500, 600);
-		}-*/;
 	}
 	
 	/**
@@ -146,9 +139,12 @@ public class ManageMenuPopup extends MenuBarPopup {
 	 * Returns true if a toolbar item has nested toolbar items and
 	 * false otherwise.
 	 */
+	private boolean hasNestedItems(ToolbarItem tbi, int atLeast) {
+		return ((null == tbi) ? false : tbi.hasNestedToolbarItems(atLeast));
+	}
+	
 	private boolean hasNestedItems(ToolbarItem tbi) {
-		List<ToolbarItem> niList = ((null == tbi) ? null : tbi.getNestedItemsList());
-		return ((null != niList) && (!(niList.isEmpty())));
+		return hasNestedItems(tbi, 1);
 	}
 	
 	/**
@@ -198,6 +194,7 @@ public class ManageMenuPopup extends MenuBarPopup {
 	@Override
 	public boolean shouldShowMenu() {
 		// Scan the toolbar items...
+		ToolbarItem categoriesTBI;
 		for (Iterator<ToolbarItem> tbiIT = m_toolbarItemList.iterator(); tbiIT.hasNext(); ) {
 			// ...and keep track of the ones that appear on the manage
 			// ...menu.
@@ -205,7 +202,7 @@ public class ManageMenuPopup extends MenuBarPopup {
 			String tbName = tbi.getName();
 			if (tbName.equalsIgnoreCase("ssFolderToolbar")) {
 				ToolbarItem adminTBI = tbi.getNestedToolbarItem("administration");
-				ToolbarItem categoriesTBI = ((null == adminTBI) ? null : adminTBI.getNestedToolbarItem("categories"));
+				categoriesTBI = ((null == adminTBI) ? null : adminTBI.getNestedToolbarItem("categories"));
 				if (null != categoriesTBI) {
 					m_folderActionsTBI    = categoriesTBI.getNestedToolbarItem("folders");
 					m_commonActionsTBI    = categoriesTBI.getNestedToolbarItem(null);
@@ -216,7 +213,7 @@ public class ManageMenuPopup extends MenuBarPopup {
 			
 			else if (tbName.equalsIgnoreCase("ssFolderViewsToolbar")) {
 				ToolbarItem displayStylesTBI = tbi.getNestedToolbarItem("display_styles");
-				ToolbarItem categoriesTBI = ((null == displayStylesTBI) ? null : displayStylesTBI.getNestedToolbarItem("categories"));
+				categoriesTBI = ((null == displayStylesTBI) ? null : displayStylesTBI.getNestedToolbarItem("categories"));
 				if (null != categoriesTBI) {
 					m_folderViewsTBI = categoriesTBI.getNestedToolbarItem("folderviews");
 				}
@@ -230,18 +227,29 @@ public class ManageMenuPopup extends MenuBarPopup {
 			else if (tbName.equalsIgnoreCase("ssEmailSubscriptionToolbar")) {
 				m_emailNotificationTBI = tbi.getNestedToolbarItem("email");
 			}
+			
+			else if (tbName.equalsIgnoreCase("ssCalendarImportToolbar")) {
+				ToolbarItem calendarTBI = tbi.getNestedToolbarItem("calendar");
+				if (null != calendarTBI) {
+					categoriesTBI = calendarTBI.getNestedToolbarItem("categories");
+					if (null != categoriesTBI) {
+						m_calendarImportTBI = categoriesTBI.getNestedToolbarItem("calendar");
+					}
+				}
+			}
 		}
 		
 		// Return true if we found any of the manage menu items and
 		// false otherwise.
 		return
-			((null != m_emailNotificationTBI)                                               ||
-			 (null != m_whatsNewTBI)                                                        ||
-			 (null != m_whatsUnreadTBI)                                                     ||
-			 (null != m_whoHasAccessTBI)                                                    ||
-			((null != m_commonActionsTBI)    && m_commonActionsTBI.hasNestedToolbarItems()) ||
-			((null != m_folderActionsTBI)    && m_folderActionsTBI.hasNestedToolbarItems()) ||
-			((null != m_folderViewsTBI)      && m_folderViewsTBI.hasNestedToolbarItems())   ||
+			((null != m_emailNotificationTBI)                                                ||
+			 (null != m_whatsNewTBI)                                                         ||
+			 (null != m_whatsUnreadTBI)                                                      ||
+			 (null != m_whoHasAccessTBI)                                                     ||
+			((null != m_calendarImportTBI)   && m_calendarImportTBI.hasNestedToolbarItems()) ||
+			((null != m_commonActionsTBI)    && m_commonActionsTBI.hasNestedToolbarItems())  ||
+			((null != m_folderActionsTBI)    && m_folderActionsTBI.hasNestedToolbarItems())  ||
+			((null != m_folderViewsTBI)      && m_folderViewsTBI.hasNestedToolbarItems(2))   ||
 			((null != m_workspaceActionsTBI) && m_workspaceActionsTBI.hasNestedToolbarItems()));
 	}
 
@@ -249,9 +257,10 @@ public class ManageMenuPopup extends MenuBarPopup {
 	 * If there are any folder options, adds a folder options menu item
 	 * that will run the folder options dialog.
 	 */
-	private void showFolderOptions(final ToolbarItem tbi) {
+	private void showFolderOptions(final ToolbarItem folderViewsTBI, final ToolbarItem calendarImportTBI) {
 		// If there aren't any folder options...
-		if (!(hasNestedItems(tbi))) {
+		if ((!(hasNestedItems(folderViewsTBI, 2))) &&
+			(!(hasNestedItems(calendarImportTBI)))) {
 			// ...bail.
 			return;
 		}
@@ -268,8 +277,14 @@ public class ManageMenuPopup extends MenuBarPopup {
 				hide();
 				
 				// ...and run the folder options dialog.
-				FolderOptionsDlg folderOptionsDlg = new FolderOptionsDlg(true, true, m_menuLeft, m_menuTop, tbi.getNestedItemsList());
-				folderOptionsDlg.addStyleName("favoritesDlg");
+				FolderOptionsDlg folderOptionsDlg = new FolderOptionsDlg(
+					true,	// true -> Auto hide.
+					true,	// true -> Modal.
+					m_menuLeft,
+					m_menuTop,
+					((null == calendarImportTBI) ? null : calendarImportTBI.getNestedItemsList()),
+					((null == folderViewsTBI)    ? null : folderViewsTBI.getNestedItemsList()));
+				folderOptionsDlg.addStyleName("folderOptionsDlg");
 				folderOptionsDlg.show();
 			}
 		});
@@ -308,11 +323,12 @@ public class ManageMenuPopup extends MenuBarPopup {
 			addNestedContextMenuItems(IDBASE, m_folderActionsTBI);
 			addNestedContextMenuItems(IDBASE, m_commonActionsTBI);
 			addNestedContextMenuItems(IDBASE, m_workspaceActionsTBI);
-			showFolderOptions(m_folderViewsTBI);
+			showFolderOptions(m_folderViewsTBI, m_calendarImportTBI);
 			boolean hasBinderActions =
-				(hasNestedItems(m_folderActionsTBI) ||
-				 hasNestedItems(m_folderViewsTBI)   ||
+				(hasNestedItems(m_calendarImportTBI) ||
 				 hasNestedItems(m_commonActionsTBI)  ||
+				 hasNestedItems(m_folderActionsTBI)  ||
+				 hasNestedItems(m_folderViewsTBI, 2) ||
 				 hasNestedItems(m_workspaceActionsTBI));
 			
 			// If we're going to display more stuff below...

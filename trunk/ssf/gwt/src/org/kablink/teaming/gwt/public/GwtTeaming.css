@@ -1005,6 +1005,13 @@ n-Transparent-Black-Div
 .folderOptionsDlg_MenuItem
 {
 }
+.folderOptionsDlg_SectionHeader
+{
+	font-size: 1em;
+	font-weight: bold;
+	padding-top: 8px;
+	padding-bottom: 5px;
+}
 
 /* Style for the main Teaming page. */
 .mainTeamingPage
