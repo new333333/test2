@@ -410,6 +410,8 @@ public interface GwtTeamingMessages extends Messages
 	String statusMessage();
 	String clearStatus();
 	String shareStatus();
+	String oneSecondAgo();
+	String secondsAgo(long seconds);
 	String oneMinuteAgo();
 	String minutesAgo(long value);
 	String oneHourAgo();
