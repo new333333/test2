@@ -386,16 +386,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 
 	/**
-	 * Return a GwtBrandingData object from the corporate branding.
-	 */
-	public GwtBrandingData getCorporateBrandingData()
-	{
-		//!!! Finish
-		return new GwtBrandingData();
-	}// end getCorporateBrandingData()
-	
-	
-	/**
 	 * Return a GwtBrandingData object for the given binder.
 	 */
 	public GwtBrandingData getBinderBrandingData( String binderId ) throws GwtTeamingException

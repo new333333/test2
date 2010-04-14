@@ -66,9 +66,6 @@ public interface GwtRpcServiceAsync
 	// Return a GwtBrandingData object for the given binder.
 	public void getBinderBrandingData( String binderId, AsyncCallback<GwtBrandingData> callback );
 	
-	// Return a GwtBrandingData object for the corporate branding.
-	public void getCorporateBrandingData( AsyncCallback<GwtBrandingData> callback );
-	
 	// Return the "document base url" that is used in tinyMCE configuration
 	public void getDocumentBaseUrl( String binderId, AsyncCallback<String> callback );
 	

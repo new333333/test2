@@ -44,7 +44,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GwtBrandingData
 	implements IsSerializable
 {
-	// The binder this branding data is from.  If m_binderId is null then the branding data is global
+	// The binder this branding data is from.
 	private String m_binderId = null;
 	
 	// Branding data read from the db.  The data is html.

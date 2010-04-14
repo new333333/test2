@@ -1073,8 +1073,16 @@ n-Transparent-Black-Div
 	z-index: 0;
 }
 
-/* Style used for the background panel in the masthead. */
-.mastHeadBgPanel
+/* Style used for the branding panel. */
+.brandingPanel
+{
+	position: relative;
+	width: 100%;
+	z-index: 0;
+}
+
+/* Style used for the background panel in the branding area. */
+.brandingBgPanel
 {
 	left: 0px;
 	position: absolute;
@@ -1083,8 +1091,8 @@ n-Transparent-Black-Div
 	z-index: 1;
 }
 
-/* Style used for the panel that holds all the content in the masthead. */
-.mastHeadContentPanel
+/* Style used for the panel that wraps all the content in the branding area. */
+.brandingWrapperPanel
 {
 	background: transparent;
 	left: 0px;
@@ -1095,14 +1103,14 @@ n-Transparent-Black-Div
 }
 
 /* Style used with the panel that holds the graphic that is displayed on the left side of the mast head. */
-.mastHeadBrandingPanel
+.brandingContentPanel
 {
 	font-size: 12px;
 	z-index: 3;
 }
 
-/* Style used with the panel that holds the global actions in the mast head. */
-.mastHeadGlobalActionsPanel
+/* Style used with the panel that holds the global actions in the branding area. */
+.brandingGlobalActionsPanel
 {
 	color: #FFFFFF;
 	right: 20px;
@@ -1112,17 +1120,8 @@ n-Transparent-Black-Div
 	z-index: 20;
 }
 
-/* Style used with the panel that holds the graphic that is displayed on the right side of the mast head. */
-.mastHeadLogoPanel
-{
-	position: absolute;
-	right: 15px;
-	top: 10px;
-	z-index: 1;
-}
-
-/* Style used with the panel that holds the logged-in user's name in the mast head. */
-.mastHeadUserName
+/* Style used with the panel that holds the logged-in user's name in the branding area. */
+.brandingUserName
 {
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 0.95em;
@@ -1134,8 +1133,8 @@ n-Transparent-Black-Div
 	top: -10px;
 }
 
-/* Style used for links in the masthead. */
-.mastHeadLink
+/* Style used for links in the branding area. */
+.brandingLink
 {
 	color: #3e6978;
 	cursor: pointer;
@@ -1143,8 +1142,8 @@ n-Transparent-Black-Div
 	text-decoration: none;
 }
 
-/* Style used for the mouse-over hint for the links in the masthead. */
-.mastHeadMouseOverHint
+/* Style used for the mouse-over hint for the links in the branding area. */
+.brandingMouseOverHint
 {
 	font-size: 0.7em;
 	overflow: hidden;
