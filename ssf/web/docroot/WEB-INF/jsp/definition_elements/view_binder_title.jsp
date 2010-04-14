@@ -106,7 +106,7 @@
 <ul class="ss_horizontal ss_nobullet">
 	  <li>
 	  <div id="ss_profile_box_h1">
-	  <div class="ss_treeWidget">
+	  <div class="ss_profile_title">
 	  <a href="<ssf:url crawlable="true"
            adapter="true" portletName="ss_forum"
            folderId="${ssDefinitionEntry.id}" 
