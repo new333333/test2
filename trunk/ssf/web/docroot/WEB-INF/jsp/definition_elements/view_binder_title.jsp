@@ -56,10 +56,29 @@
 </c:if>
 
 <div id="ss_profile_box">
-		
-   	
+
 <c:if test="${ssDefinitionEntry.entityType == 'workspace'}">
-	
+<c:if test="${ssDefinitionEntry.definitionType != '12'}">
+	<ul class="ss_horizontal ss_nobullet">
+	  <li>
+	  <div id="ss_profile_box_h1">
+	  <div class="ss_treeWidget">
+	  <a href="<ssf:url crawlable="true"
+           adapter="true" portletName="ss_forum"
+           folderId="${ssDefinitionEntry.id}" 
+           action="view_ws_listing"/>">
+	    <c:if test="${empty ssDefinitionEntry.title}">
+          <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
+        </c:if>
+        <span><c:out value="${ssDefinitionEntry.title}" escapeXml="true"/></span>
+      </a> 
+      </div>
+      </div>  
+	  </li>
+	</ul>
+</c:if>
+
+<c:if test="${ssDefinitionEntry.definitionType == '12'}">	
 <div class="ss_user_photo">
 	<c:if test="${empty ssDefinitionEntry.customAttributes['picture']}">
 	  <div class="ss_profile_picture_frame ss_profile_photo_box_empty"></div>
@@ -83,7 +102,6 @@
 	</c:if>
  </div>    
 
-	
 <div style="margin-left: 80px;">
 <ul class="ss_horizontal ss_nobullet">
 	  <li>
@@ -113,6 +131,7 @@
 	<% // Status %>
 	<jsp:include page="/WEB-INF/jsp/profile/user_status.jsp" />
 </div>
+</c:if>
 </c:if>
     
 	<c:if test="${ssDefinitionEntry.entityType == 'profiles'}">
