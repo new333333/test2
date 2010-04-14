@@ -452,9 +452,16 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		long modifyTime = modifyDate.getTime();
 		long diffTime = currentTime - modifyTime;
 		
-		//if less then a min, then is now
-		if( diffTime < min ) {
+		if( diffTime == 0 ) {
 			this.timeLabel.setText(GwtTeaming.getMessages().now());
+		} 		//if less then a min, then is now
+		else if( diffTime < min ) {
+			long seconds = diffTime / sec;
+			if(seconds == 1) {
+				this.timeLabel.setText(GwtTeaming.getMessages().oneSecondAgo());
+			} else {
+				this.timeLabel.setText(GwtTeaming.getMessages().secondsAgo(seconds));
+			}
 		} //if less than an hour, then how many minutes ago
 		else if ( diffTime < hour ) {
 			long minutes = diffTime / min;
