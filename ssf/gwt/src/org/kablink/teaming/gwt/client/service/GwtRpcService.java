@@ -72,9 +72,6 @@ public interface GwtRpcService extends RemoteService
 	// Return a GwtBrandingData object for the given binder.
 	public GwtBrandingData getBinderBrandingData( String binderId ) throws GwtTeamingException;
 	
-	// Return a GwtBrandingData object for the corporate branding.
-	public GwtBrandingData getCorporateBrandingData();
-	
 	// Return the "document base url" that is used in tinyMCE configuration
 	public String getDocumentBaseUrl( String binderId ) throws GwtTeamingException;
 	

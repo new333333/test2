@@ -690,7 +690,7 @@ public class EditBrandingDlg extends DlgBox
 				imgName = m_backgroundImgListbox.getValue( index );
 				
 				// Is "none" or "no available images" selected.
-				if ( imgName.equalsIgnoreCase( MastHead.NO_IMAGE ) || imgName.equalsIgnoreCase( m_noAvailableImages ) )
+				if ( imgName.equalsIgnoreCase( BrandingPanel.NO_IMAGE ) || imgName.equalsIgnoreCase( m_noAvailableImages ) )
 				{
 					// Yes, revert to nothing
 					imgName = "";
@@ -1022,7 +1022,7 @@ public class EditBrandingDlg extends DlgBox
 		else
 		{
 			// No, try to select the default Teaming image option.
-			index = selectListboxItemByValue( listbox, MastHead.DEFAULT_TEAMING_IMAGE );
+			index = selectListboxItemByValue( listbox, BrandingPanel.DEFAULT_TEAMING_IMAGE );
 			if ( index != -1 )
 				foundImgName = true;
 		}
@@ -1044,13 +1044,13 @@ public class EditBrandingDlg extends DlgBox
 			{
 				// Yes
 				// Try to select the default Teaming image option in the listbox.
-				index = selectListboxItemByValue( listbox, MastHead.DEFAULT_TEAMING_IMAGE );
+				index = selectListboxItemByValue( listbox, BrandingPanel.DEFAULT_TEAMING_IMAGE );
 				
 				// Did we select the default teaming image?
 				if ( index == -1 )
 				{
 					// No, select "no image"
-					selectListboxItemByValue( listbox, MastHead.NO_IMAGE );
+					selectListboxItemByValue( listbox, BrandingPanel.NO_IMAGE );
 				}
 			}
 		}
@@ -1095,15 +1095,15 @@ public class EditBrandingDlg extends DlgBox
 		
 		// Add an entry called "None" to the branding listbox.  The user can select "None" if
 		// they don't want to use a branding image.
-		m_brandingImgListbox.addItem( GwtTeaming.getMessages().imgNone(), MastHead.NO_IMAGE );
+		m_brandingImgListbox.addItem( GwtTeaming.getMessages().imgNone(), BrandingPanel.NO_IMAGE );
 		
 		// Add a Novell Teaming or a Kablink Teaming entry to the branding listbox depending on
 		// whether we are running Novell or Kablink Teaming.  The user can select this entry if
 		// they want to use the Novell/Kablink Teaming branding image.
 		if ( GwtMainPage.m_novellTeaming )
-			m_brandingImgListbox.addItem( GwtTeaming.getMessages().novellTeaming(), MastHead.DEFAULT_TEAMING_IMAGE );
+			m_brandingImgListbox.addItem( GwtTeaming.getMessages().novellTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
 		else
-			m_brandingImgListbox.addItem( GwtTeaming.getMessages().kablinkTeaming(), MastHead.DEFAULT_TEAMING_IMAGE );
+			m_brandingImgListbox.addItem( GwtTeaming.getMessages().kablinkTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
 
 		// Do we have any file attachments?
 		if ( listOfFileAttachments.size() > 0 )
@@ -1111,7 +1111,7 @@ public class EditBrandingDlg extends DlgBox
 			// Yes
 			// Add an entry called "None" to the background listbox.  The user can select "None" if
 			// they don't want to use a background image.
-			m_backgroundImgListbox.addItem( GwtTeaming.getMessages().imgNone(), MastHead.NO_IMAGE );
+			m_backgroundImgListbox.addItem( GwtTeaming.getMessages().imgNone(), BrandingPanel.NO_IMAGE );
 
 			// Add each file name to the "branding image" listbox and to the "background image" listbox.
 			for (i = 0; listOfFileAttachments != null && i < listOfFileAttachments.size(); ++i)
