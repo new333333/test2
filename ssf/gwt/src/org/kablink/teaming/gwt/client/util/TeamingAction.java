@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client.util;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 
 /**
  * This class defines all the possible types of actions that a user can
@@ -40,7 +42,7 @@ package org.kablink.teaming.gwt.client.util;
  * 
  * @author jwootton
  */
-public enum TeamingAction
+public enum TeamingAction implements IsSerializable
 {
 	ADMINISTRATION( "Invoke Administration Page" ),
 	EDIT_BRANDING( "Edit Branding" ),
@@ -56,7 +58,13 @@ public enum TeamingAction
 	SHOW_MASTHEAD( "Show the Header" ),
 	SIZE_CHANGED( "The Size of Something Changed" ),
 	TOGGLE_GWT_UI( "Toggles the State of the GWT UI" ),
-	VIEW_TEAM_MEMBERS( "View Team Membership of Current Binder" );
+	TRACK_BINDER( "Tracks the Current Binder" ),
+	UNTRACK_BINDER( "Untracks the Current Binder" ),
+	VIEW_TEAM_MEMBERS( "View Team Membership of Current Binder" ),
+
+	// This is used as a default case to store a TeamingAction when
+	// there isn't a real value to store.
+	UNDEFINED( "Undefined Action - Should Never Be Triggered" );
 
 	private final String m_unlocalizedDesc;
 	

@@ -1490,6 +1490,7 @@ public class ListFolderHelper {
 		Toolbar whatsNewToolbar = new Toolbar();
 		Toolbar emailSubscriptionToolbar = new Toolbar();
 		Toolbar trashToolbar = new Toolbar();
+		Toolbar gwtMiscToolbar = new Toolbar();
 		Toolbar gwtUIToolbar = new Toolbar();
 		
 		boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
@@ -2068,9 +2069,6 @@ public class ListFolderHelper {
 		// trash
 		TrashHelper.buildTrashToolbar(user, folder, model, qualifiers, trashToolbar);
 
-		// GWT UI
-		GwtUIHelper.buildGwtUIToolbar(request, user, folder, model, qualifiers, gwtUIToolbar);
-
 		// start meeting
 		if (bs.getIcBrokerModule().isEnabled() && 
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
@@ -2169,6 +2167,12 @@ public class ListFolderHelper {
 			model.put(WebKeys.TOOLBAR_THEME_NAMES, NLT.get("ui.availableThemeNames"));
 		}
 		
+		// GWT UI.  Note that these need to be last in the toolbar
+		// building sequence because they access things in the
+		// model to construct toolbars specific to the GWT UI.
+		GwtUIHelper.buildGwtMiscToolbar(bs, request, user, folder, model, gwtMiscToolbar);
+		GwtUIHelper.buildGwtUIToolbar(  bs, request, user, folder, model, gwtUIToolbar);
+
 		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_TOOLBAR,  folderToolbar.getToolbar());
 		model.put(WebKeys.ENTRY_TOOLBAR,  entryToolbar.getToolbar());
@@ -2179,6 +2183,7 @@ public class ListFolderHelper {
 		model.put(WebKeys.WHATS_NEW_TOOLBAR,  whatsNewToolbar.getToolbar());
 		model.put(WebKeys.EMAIL_SUBSCRIPTION_TOOLBAR,  emailSubscriptionToolbar.getToolbar());
 		model.put(WebKeys.TRASH_TOOLBAR,  trashToolbar.getToolbar());
+		model.put(WebKeys.GWT_MISC_TOOLBAR,  gwtMiscToolbar.getToolbar());
 		model.put(WebKeys.GWT_UI_TOOLBAR,  gwtUIToolbar.getToolbar());
 	}
 	
