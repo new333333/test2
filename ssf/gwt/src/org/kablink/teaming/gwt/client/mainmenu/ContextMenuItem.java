@@ -96,42 +96,10 @@ public class ContextMenuItem {
 			m_contextMenu.hide();
 
 			// ...and perform the request.
-			if      (m_isPopup)                              jsLaunchUrlInWindow(    m_url, m_popupHeight, m_popupWidth);
-			else if (GwtClientHelper.hasString(m_onClickJS)) jsEvalString(           m_url, m_onClickJS);
-			else                                             jsLoadUrlInContentFrame(m_url);
+			if      (m_isPopup)                              GwtClientHelper.jsLaunchUrlInWindow(    m_url, m_popupHeight, m_popupWidth);
+			else if (GwtClientHelper.hasString(m_onClickJS)) GwtClientHelper.jsEvalString(           m_url, m_onClickJS);
+			else                                             GwtClientHelper.jsLoadUrlInContentFrame(m_url);
 		}
-		
-		/*
-		 * Evaluates a JavaScript string containing embedded
-		 * JavaScript. 
-		 */
-		private native void jsEvalString(String url, String jsString) /*-{
-			// Setup an object to pass through the URL...
-			var hrefObj = {href: url};
-			
-			// ...patch the JavaScript string...
-			jsString = jsString.replace("this", "hrefObj");
-			jsString = jsString.replace("return false;", "");
-			jsString = ("window.top.gwtContentIframe." + jsString);
-			
-			// ...and evaluate it.
-			eval(jsString);
-		}-*/;
-		
-		/*
-		 * Uses Teaming's existing ss_common JavaScript to launch a URL in
-		 * a new window.
-		 */
-		private native void jsLaunchUrlInWindow(String url, int height, int width) /*-{
-			window.top.ss_openUrlInWindow({href: url}, '_blank', width, height);
-		}-*/;
-		
-		/*
-		 * Loads a URL into the GWT UI's content frame.
-		 */
-		private native void jsLoadUrlInContentFrame(String url) /*-{
-			window.top.gwtContentIframe.location.href = url;
-		}-*/;
 	}
 
 	/**

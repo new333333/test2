@@ -81,4 +81,36 @@ public class GwtClientHelper {
 	public static boolean hasString(String s) {
 		return ((null != s) && (0 < s.length()));
 	}
+	
+	/*
+	 * Evaluates a JavaScript string containing embedded
+	 * JavaScript. 
+	 */
+	public static native void jsEvalString(String url, String jsString) /*-{
+		// Setup an object to pass through the URL...
+		var hrefObj = {href: url};
+		
+		// ...patch the JavaScript string...
+		jsString = jsString.replace("this", "hrefObj");
+		jsString = jsString.replace("return false;", "");
+		jsString = ("window.top.gwtContentIframe." + jsString);
+		
+		// ...and evaluate it.
+		eval(jsString);
+	}-*/;
+	
+	/*
+	 * Uses Teaming's existing ss_common JavaScript to launch a URL in
+	 * a new window.
+	 */
+	public static native void jsLaunchUrlInWindow(String url, int height, int width) /*-{
+		window.top.ss_openUrlInWindow({href: url}, '_blank', width, height);
+	}-*/;
+	
+	/*
+	 * Loads a URL into the GWT UI's content frame.
+	 */
+	public static native void jsLoadUrlInContentFrame(String url) /*-{
+		window.top.gwtContentIframe.location.href = url;
+	}-*/;
 }

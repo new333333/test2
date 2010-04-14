@@ -57,17 +57,19 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author drfoster@novell.com
  */
 public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
-	private final static String IDBASE			= "folderOption_";	// Base ID for rows in the folder options Grid.
-	private final static String IDTAIL_RADIO	= "_rb";			// Used for constructing the ID of a row's radio button.
+	private final static String IDBASE				= "folderOption_";	// Base ID for rows in the folder options Grid.
+	private final static String IDTAIL_RADIO		= "_rb";			// Used for constructing the ID of a row's radio button.
+	private final static String OPTION_HEADER_ID	= "optionHeader";
 
-	private Grid m_folderOptionsGrid;				// Once displayed, the table of folder options being displayed.
+	private Grid m_folderOptionsGrid;				// Once displayed, the table of folder options.
 	private GwtTeamingMessages m_messages;			// Access to the GWT UI messages.
-	private int m_folderOptionsGridCount;			// Count of rows  in m_folderOptionsGrid. 
-	private int m_folderOptionsListCount;			// Count of items in m_folderOptionsList.
-	private List<ToolbarItem> m_folderOptionsList;	// List of ToolbarItem's to be edited.
+	private int m_calendarImportListCount;			// Count of items in m_calendarImportList.
+	private int m_folderViewsListCount;				// Count of items in m_folderViewsList.
+	private List<ToolbarItem> m_calendarImportList;	// List of calendar import toolbar items.
+	private List<ToolbarItem> m_folderViewsList;	// List of folder view     toolbar items.
 
 	/*
-	 * Inner class that wraps items displayed in the dialog's content.
+	 * Inner class that wraps labels displayed in the dialog's content.
 	 */
 	private class DlgLabel extends Label {
 		public DlgLabel(String label) {
@@ -83,60 +85,93 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 	 * @param modal
 	 * @param left
 	 * @param top
-	 * @param folderOptionsList
+	 * @param calendarImportsList
+	 * @param folderViewsList
 	 */
-	public FolderOptionsDlg(boolean autoHide, boolean modal, int left, int top, List<ToolbarItem> folderOptionsList) {
+	public FolderOptionsDlg(boolean autoHide, boolean modal, int left, int top, List<ToolbarItem> calendarImportsList, List<ToolbarItem> folderViewsList) {
 		// Initialize the superclass...
 		super(autoHide, modal, left, top);
 
 		// ...initialize everything else...
-		m_messages = GwtTeaming.getMessages();
+		m_messages           = GwtTeaming.getMessages();
+		m_calendarImportList = calendarImportsList; m_calendarImportListCount = ((null == m_calendarImportList) ? 0 : m_calendarImportList.size());
+		m_folderViewsList    = folderViewsList;     m_folderViewsListCount    = ((null == m_folderViewsList)    ? 0 : m_folderViewsList.size());
+		if (1 == m_folderViewsListCount) {
+			// We ignore the folder view options if there is only one
+			// to select from.
+			m_folderViewsList       = null;
+			m_folderViewsListCount = 0;
+		}
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
 			m_messages.mainMenuFolderOptionsDlgHeader(),
 			this,	// The dialog's EditSuccessfulHandler.
 			this,	// The dialog's EditCanceledHandler.
-			folderOptionsList); 
+			null);	// Data passed via global data members. 
 	}
 	
+	/*
+	 * Adds a section header row to the folder options grid.
+	 */
+	private void addHeaderRow(Grid grid, int row, String headerText) {
+		DlgLabel header = new DlgLabel(headerText);
+		header.addStyleName("folderOptionsDlg_SectionHeader");
+
+		grid.insertRow(row);
+		grid.getRowFormatter().getElement(row).setId(OPTION_HEADER_ID);
+		grid.setWidget(row, 1, header);
+	}
 
 	/**
 	 * Creates all the controls that make up the dialog.
 	 * 
 	 * Implements the DlgBox.createContent() abstract method.
 	 * 
-	 * @param callbackData
+	 * @param ignored
 	 * 
 	 * @return
 	 */
 	@Override
-	@SuppressWarnings({ "unchecked" })
-	public Panel createContent(Object callbackData) {
-		// Store the List<ToolbarItem> in class global data member
-		// for use through the class.
-		m_folderOptionsList = ((List<ToolbarItem>) callbackData);
-		m_folderOptionsListCount = m_folderOptionsList.size(); 
-
-		// Render the rows in the dialog.
+	public Panel createContent(Object ignored) {
+		// Create a panel to hold the dialog's content...
 		VerticalPanel vp = new VerticalPanel();
-		m_folderOptionsGrid = new Grid(0, 2);
-		m_folderOptionsGrid.addStyleName("folderOptionsDlg_Grid");
-		m_folderOptionsGrid.setCellPadding(0);
-		m_folderOptionsGrid.setCellSpacing(0);
-		m_folderOptionsGridCount = m_folderOptionsListCount;
-		if (0 == m_folderOptionsGridCount) {
-			m_folderOptionsGrid.insertRow(0);
-			m_folderOptionsGrid.setWidget(0, 1, new DlgLabel(m_messages.mainMenuFolderOptionsNoOptions()));
-		}
-		else {
-			for (int i = 0; i < m_folderOptionsListCount; i += 1) {
-				renderRow(m_folderOptionsGrid, m_folderOptionsList.get(i), i, false);
+
+		// Are there any folder options to display in the dialog?
+		if (0 < (m_folderViewsListCount + m_calendarImportListCount)) {
+			// Yes!  Create a grid to contain them... 
+			m_folderOptionsGrid = new Grid(0, 2);
+			m_folderOptionsGrid.addStyleName("folderOptionsDlg_Grid");
+			m_folderOptionsGrid.setCellPadding(0);
+			m_folderOptionsGrid.setCellSpacing(0);
+			
+			// ...render the folder view options into the panel...
+			if (0 < m_folderViewsListCount) {
+				addHeaderRow(m_folderOptionsGrid, m_folderOptionsGrid.getRowCount(), m_messages.mainMenuFolderOptionsDlgFolderViews());
+				for (int i = 0; i < m_folderViewsListCount; i += 1) {
+					renderRow(m_folderOptionsGrid, m_folderOptionsGrid.getRowCount(), m_folderViewsList.get(i), false);
+				}
 			}
+
+			// ...render the calendar import options into the panel...
+			if (0 < m_calendarImportListCount) {
+				addHeaderRow(m_folderOptionsGrid, m_folderOptionsGrid.getRowCount(), m_messages.mainMenuFolderOptionsDlgImportCalendar());
+				for (int i = 0; i < m_calendarImportListCount; i += 1) {
+					renderRow(m_folderOptionsGrid, m_folderOptionsGrid.getRowCount(), m_calendarImportList.get(i), false);
+				}
+			}
+
+			// ...and connect everything together.
+			vp.add(m_folderOptionsGrid);
 		}
-		vp.add(m_folderOptionsGrid);
 		
-		// And return the Panel the with the dialog's contents.
+		else {
+			// No, there weren't any folder options to display in the
+			// dialog!  Put a simple no available options message.
+			vp.add(new DlgLabel(m_messages.mainMenuFolderOptionsNoOptions()));
+		}
+		
+		// Finally, return the panel the with the dialog's contents.
 		return vp;
 	}
 	
@@ -173,7 +208,10 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 		String url = tbi.getUrl();
 		if (GwtClientHelper.hasString(url)) {
 			// ...put it into effect.
-			jsLoadUrlInContentFrame(url);
+			String jsString = tbi.getQualifierValue("onClick");
+			if (GwtClientHelper.hasString(jsString))
+				 GwtClientHelper.jsEvalString(           url, jsString);
+			else GwtClientHelper.jsLoadUrlInContentFrame(url);
 		}
 		
 		// Return true to close the dialog.
@@ -191,9 +229,9 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 	@Override
 	public Object getDataFromDlg() {
 		// Are there any rows in the grid?
-		if (0 < m_folderOptionsGridCount) {
+		int rows = m_folderOptionsGrid.getRowCount();
+		if (0 < rows) {
 			// Yes!  Scan them.
-			int rows = m_folderOptionsGrid.getRowCount();
 			for (int i = 0; i < rows; i += 1) {
 				// Is this row checked?
 				if (isRowChecked(i)) {
@@ -222,12 +260,23 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 	/*
 	 * Returns a ToolbarItem base on its ID.
 	 */
-	private ToolbarItem getFolderOptionById(String fiId) {
-		// Scan the List<ToolbarItem>'s.
-		for (int i = 0; i < m_folderOptionsListCount; i += 1) {
+	private ToolbarItem getFolderOptionById(String foId) {
+		// Scan the available folder views.
+		for (int i = 0; i < m_folderViewsListCount; i += 1) {
 			// Is this the ToolbarItem in question?
-			ToolbarItem tbi = m_folderOptionsList.get(i);
-			if (tbi.getName().equals(fiId)) {
+			ToolbarItem tbi = m_folderViewsList.get(i);
+			if (tbi.getName().equals(foId)) {
+				// Yes!  Return it.
+				return tbi;
+			}
+		}
+		
+		// If we get here, we didn't find the folder option as a folder
+		// view!  Scan the available import calendar options.
+		for (int i = 0; i < m_calendarImportListCount; i += 1) {
+			// Is this the ToolbarItem in question?
+			ToolbarItem tbi = m_calendarImportList.get(i);
+			if (tbi.getName().equals(foId)) {
 				// Yes!  Return it.
 				return tbi;
 			}
@@ -261,22 +310,22 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 	 * Returns true if a row's checkbox is checked. 
 	 */
 	private boolean isRowChecked(int row) {
+		boolean reply;
 		String rowId = getRowId(row);
-		InputElement rb = Document.get().getElementById(rowId + IDTAIL_RADIO).getFirstChildElement().cast();
-		return rb.isChecked();
+		if (rowId.equals(OPTION_HEADER_ID)) {
+			reply = false;
+		}
+		else {
+			InputElement rb = Document.get().getElementById(rowId + IDTAIL_RADIO).getFirstChildElement().cast();
+			reply = rb.isChecked();
+		}
+		return reply;
 	}
 	
 	/*
-	 * Loads a URL into the GWT UI's content frame.
+	 * Renders a folder view ToolbarItem as a row in a Grid.
 	 */
-	private native void jsLoadUrlInContentFrame(String url) /*-{
-		window.top.gwtContentIframe.location.href = url;
-	}-*/;
-	
-	/*
-	 * Renders a ToolbarItem as a row in a Grid.
-	 */
-	private void renderRow(Grid grid, ToolbarItem tbi, int row, boolean checked) {
+	private void renderRow(Grid grid, int row, ToolbarItem tbi, boolean checked) {
 		grid.insertRow(row);
 		
 		String rowId = (IDBASE + tbi.getName());
