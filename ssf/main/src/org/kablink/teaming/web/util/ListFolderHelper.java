@@ -1666,7 +1666,7 @@ public class ListFolderHelper {
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_SHOW_MENU, "true");
 			folderToolbar.addToolbarMenuItem("1_administration", "", 
-					NLT.get("toolbar.menu.export_import"), url, qualifiers);
+					NLT.get("toolbar.menu.export_import_folder"), url, qualifiers);
 			//adminMenuCreated=true;	
 		}
 

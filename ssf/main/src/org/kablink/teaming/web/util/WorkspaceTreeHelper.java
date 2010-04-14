@@ -809,7 +809,7 @@ public class WorkspaceTreeHelper {
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_SHOW_MENU, "true");
 			toolbar.addToolbarMenuItem("1_administration", "", 
-					NLT.get("toolbar.menu.export_import"), url, qualifiers);
+					NLT.get("toolbar.menu.export_import_workspace"), url, qualifiers);
 			//adminMenuCreated=true;	
 		}
 		
