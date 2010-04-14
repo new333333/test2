@@ -3061,7 +3061,6 @@ div.ss_profile_info_frame {
 div.ss_profile_photo_box_empty {
     background-color: transparent !important;
 	background-image: url(<html:brandedImagesPath/>pics/thumbnail_no_photo.jpg);
-    background-position:  center;
 	background-repeat: no-repeat;
 }
 
