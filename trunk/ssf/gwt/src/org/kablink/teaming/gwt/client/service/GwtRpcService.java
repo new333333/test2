@@ -88,6 +88,9 @@ public interface GwtRpcService extends RemoteService
 	public String getBinderPermalink( String binderId );
 	public String getModifyBinderUrl( String binderId );
 	
+	// Return a GwtBrandingData object for the global workspace.
+	public GwtBrandingData getSiteBrandingData() throws GwtTeamingException;
+	
 	public String getTutorialPanelState();
 	public ExtensionInfoClient[] getExtensionInfo();
 	public ExtensionInfoClient[] removeExtension(String id) throws ExtensionDefinitionInUseException;

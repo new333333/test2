@@ -83,6 +83,10 @@ public interface GwtRpcServiceAsync
 	public void getModifyBinderUrl( String binderId, AsyncCallback<String> callback );
 	
     public void getTutorialPanelState( AsyncCallback<String> callback );
+
+    // Return a GwtBrandingData object for the global workspace.
+	public void getSiteBrandingData( AsyncCallback<GwtBrandingData> callback );
+	
 	public void getExtensionInfo( AsyncCallback<ExtensionInfoClient[]> callback );
 	public void removeExtension(String id, AsyncCallback<ExtensionInfoClient[]> callback);
 	public void getExtensionFiles(String id, String zoneName, AsyncCallback<ExtensionFiles> callback);

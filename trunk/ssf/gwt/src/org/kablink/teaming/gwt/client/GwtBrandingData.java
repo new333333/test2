@@ -44,6 +44,17 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GwtBrandingData
 	implements IsSerializable
 {
+	/**
+	 * This class defines all the possible values of a branding rule.
+	 */
+	public enum BrandingRule implements IsSerializable
+	{
+		DISPLAY_SITE_BRANDING_ONLY,
+		DISPLAY_BOTH_SITE_AND_BINDER_BRANDING,
+		BINDER_BRANDING_OVERRIDES_SITE_BRANDING,
+		BRANDING_RULE_UNDEFINED;
+	}// end BrandingRule
+
 	// The binder this branding data is from.
 	private String m_binderId = null;
 	
@@ -52,6 +63,13 @@ public class GwtBrandingData
 	
 	// Additional branding information such as font color, branding image url, background color and background image url.
 	private GwtBrandingDataExt m_brandingExt = null;
+	
+	// Flag that indicates whether this branding is the site branding (came from the "home workspace")
+	private boolean m_isSiteBranding = false;
+	
+	// m_brandingRule indicates how site and binder branding are to be displayed
+	private BrandingRule m_brandingRule = BrandingRule.BRANDING_RULE_UNDEFINED;
+	
 	
 	/**
 	 * 
@@ -142,6 +160,15 @@ public class GwtBrandingData
 	}// end getBrandingImgUrl()
 	
 	/**
+	 * Return the rule for displaying site and binder branding
+	 */
+	public BrandingRule getBrandingRule()
+	{
+		return m_brandingRule;
+	}// end getBrandingRule()
+	
+	
+	/**
 	 * Return the type of branding, "advanced" or "image" 
 	 */
 	public String getBrandingType()
@@ -156,6 +183,34 @@ public class GwtBrandingData
 	{
 		return m_brandingExt.getFontColor();
 	}// end getFontColor()
+	
+	
+	/**
+	 * Return whether or not we have any branding data.
+	 */
+	public boolean haveBranding()
+	{
+		if ( m_html != null && m_html.length() > 0 )
+			return true;
+		
+		if ( m_brandingExt != null && m_brandingExt.haveBranding() )
+			return true;
+		
+		if ( m_brandingRule != BrandingRule.BRANDING_RULE_UNDEFINED )
+			return true;
+		
+		// If we get here we don't have any branding data.
+		return false;
+	}// haveBranding()
+	
+	
+	/**
+	 * Return the flag that indicates whether this branding is the "site" branding.
+	 */
+	public boolean isSiteBranding()
+	{
+		return m_isSiteBranding;
+	}// end isSiteBranding()
 	
 	
 	/**
@@ -239,6 +294,14 @@ public class GwtBrandingData
 	
 
 	/**
+	 * Set the rule for displaying site and binder branding
+	 */
+	public void setBrandingRule( BrandingRule brandingRule )
+	{
+		m_brandingRule = brandingRule;
+	}// end setBrandingRule()
+	
+	/**
 	 * Set the type of branding, "advanced" or "image" 
 	 */
 	public void setBrandingType( String type )
@@ -254,4 +317,11 @@ public class GwtBrandingData
 		m_brandingExt.setFontColor( fontColor );
 	}// end setFontColor()
 	
+	/**
+	 * Set the flag that indicates whether this branding is used for the "site" branding.
+	 */
+	public void setIsSiteBranding( boolean isSiteBranding )
+	{
+		m_isSiteBranding = isSiteBranding;
+	}// end setIsSiteBranding()
 }// end GwtBrandingData

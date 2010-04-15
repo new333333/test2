@@ -1080,6 +1080,43 @@ n-Transparent-Black-Div
 	z-index: 0;
 }
 
+/* Style used with the panel that holds the global actions in the masthead. */
+.mastheadGlobalActionsPanel
+{
+	color: #FFFFFF;
+	right: 20px;
+	position: absolute;
+	top: 15px;
+	white-space: nowrap;
+	z-index: 20;
+}
+
+/* Style used for the mouse-over hint for the links in the masthead. */
+.mastheadGlobalActionsMouseOverHint
+{
+	font-size: 0.7em;
+	overflow: hidden;
+	position: absolute;
+	right: 0px;
+	text-align: center;
+	top: -15px;
+	width: 150px;
+	z-index: 20;
+}
+
+/* Style used with the panel that holds the logged-in user's name in the masthead. */
+.mastheadUserName
+{
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 0.95em;
+	font-style: italic;
+	left: -4px;
+	letter-spacing: 0.05em;
+	position: relative;
+	text-align: right;
+	top: -10px;
+}
+
 /* Style used for the branding panel. */
 .brandingPanel
 {
@@ -1116,30 +1153,6 @@ n-Transparent-Black-Div
 	z-index: 3;
 }
 
-/* Style used with the panel that holds the global actions in the branding area. */
-.brandingGlobalActionsPanel
-{
-	color: #FFFFFF;
-	right: 20px;
-	position: absolute;
-	top: 15px;
-	white-space: nowrap;
-	z-index: 20;
-}
-
-/* Style used with the panel that holds the logged-in user's name in the branding area. */
-.brandingUserName
-{
-	font-family: Arial,Helvetica,sans-serif;
-	font-size: 0.95em;
-	font-style: italic;
-	left: -4px;
-	letter-spacing: 0.05em;
-	position: relative;
-	text-align: right;
-	top: -10px;
-}
-
 /* Style used for links in the branding area. */
 .brandingLink
 {
@@ -1147,19 +1160,6 @@ n-Transparent-Black-Div
 	cursor: pointer;
 	margin-left: 4px;
 	text-decoration: none;
-}
-
-/* Style used for the mouse-over hint for the links in the branding area. */
-.brandingMouseOverHint
-{
-	font-size: 0.7em;
-	overflow: hidden;
-	position: absolute;
-	right: 0px;
-	text-align: center;
-	top: -15px;
-	width: 150px;
-	z-index: 20;
 }
 
 /* Style used to add padding-top: 2px; */

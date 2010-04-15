@@ -33,6 +33,8 @@
 package org.kablink.teaming.gwt.client;
 
 
+import org.kablink.teaming.gwt.client.widgets.BrandingPanel;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -213,6 +215,28 @@ public class GwtBrandingDataExt
 	{
 		return m_brandingType;
 	}// end getBrandingType();
+	
+	
+	/**
+	 * Return whether or not we have any branding data.
+	 */
+	public boolean haveBranding()
+	{
+		if ( m_fontColor != null && m_fontColor.length() > 0 )
+			return true;
+		
+		if ( m_brandingImgName != null && m_brandingImgName.length() > 0 )
+			return true;
+		
+		if ( m_backgroundColor != null && m_backgroundColor.length() > 0 )
+			return true;
+		
+		if ( m_backgroundImgName != null && m_backgroundImgName.length() > 0 )
+			return true;
+		
+		// If we get here we don't have any branding data.
+		return false;
+	}// end haveBranding()
 	
 
 	/**

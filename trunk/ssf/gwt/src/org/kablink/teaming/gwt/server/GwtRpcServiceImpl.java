@@ -926,6 +926,25 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getModifyBinderUrl()
 	
 	
+	/**
+	 * Return a GwtBrandingData object for the home workspace.
+	 */
+	public GwtBrandingData getSiteBrandingData() throws GwtTeamingException
+	{
+		Binder topWorkspace;
+		GwtBrandingData brandingData;
+		
+		// Get the top workspace.
+		topWorkspace = getWorkspaceModule().getTopWorkspace();				
+		
+		// Get the branding data from the top workspace.
+		brandingData = getBinderBrandingData( topWorkspace.getId().toString() );
+		brandingData.setIsSiteBranding( true );
+		
+		return brandingData;
+	}// end getSiteBrandingData()
+	
+	
     /**
      * 
      */
