@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.GwtBrandingDataExt.BrandingRule;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -99,6 +100,10 @@ public class EditBrandingDlg extends DlgBox
 	private TinyMCEDlg m_editAdvancedBrandingDlg = null;
 	private String m_advancedBranding = null;
 	private BrandingTinyMCEConfiguration m_tinyMCEConfig = null;
+	private FlowPanel m_rulesPanel = null;
+	private RadioButton m_ruleSiteBrandingOnlyRb = null;
+	private RadioButton m_ruleBothSiteAndBinderBrandingRb = null;
+	private RadioButton m_ruleBinderOverridesRb = null;
 	
 
 	/**
@@ -632,6 +637,38 @@ public class EditBrandingDlg extends DlgBox
 			++nextRow;
 		}
 		
+		// Create the controls that will be used to define the branding rules.
+		{
+			FlowPanel wrapperPanel;
+			FlexTable.FlexCellFormatter cellFormatter;
+			Label label;
+			
+			m_rulesPanel = new FlowPanel();
+			
+			label = new Label( GwtTeaming.getMessages().brandingRulesLabel() );
+			m_rulesPanel.add( label );
+
+			m_ruleSiteBrandingOnlyRb = new RadioButton( "brandingRule", GwtTeaming.getMessages().siteBrandingOnlyLabel() );
+			wrapperPanel = new FlowPanel();
+			wrapperPanel.add( m_ruleSiteBrandingOnlyRb );
+			m_rulesPanel.add( wrapperPanel );
+			
+			m_ruleBothSiteAndBinderBrandingRb = new RadioButton( "brandingRule", GwtTeaming.getMessages().siteAndBinderBrandingLabel() );
+			wrapperPanel = new FlowPanel();
+			wrapperPanel.add( m_ruleBothSiteAndBinderBrandingRb );
+			m_rulesPanel.add( wrapperPanel );
+			
+			m_ruleBinderOverridesRb = new RadioButton( "brandingRule", GwtTeaming.getMessages().binderOverridesBrandingLabel() );
+			wrapperPanel = new FlowPanel();
+			wrapperPanel.add( m_ruleBinderOverridesRb );
+			m_rulesPanel.add( wrapperPanel );
+			
+			cellFormatter = table.getFlexCellFormatter();
+			cellFormatter.setColSpan( nextRow, 0, 2 );
+			table.setWidget( nextRow, 0, m_rulesPanel );
+			++nextRow;
+		}
+		
 		mainPanel.add( table );
 		
 		return mainPanel;
@@ -708,6 +745,24 @@ public class EditBrandingDlg extends DlgBox
 		
 		// Get the font color from the dialog.
 		brandingData.setFontColor( m_textColorTextbox.getText() );
+		
+		// Are we dealing with site branding?
+		if ( m_origBrandingData.isSiteBranding() )
+		{
+			GwtBrandingDataExt.BrandingRule rule = GwtBrandingDataExt.BrandingRule.BRANDING_RULE_UNDEFINED;
+			
+			// Yes.  Get the branding rule.
+			if ( m_ruleBinderOverridesRb.getValue() == true )
+				rule = GwtBrandingDataExt.BrandingRule.BINDER_BRANDING_OVERRIDES_SITE_BRANDING;
+			else if ( m_ruleBothSiteAndBinderBrandingRb.getValue() == true )
+				rule = GwtBrandingDataExt.BrandingRule.DISPLAY_BOTH_SITE_AND_BINDER_BRANDING;
+			else if ( m_ruleSiteBrandingOnlyRb.getValue() == true )
+				rule = GwtBrandingDataExt.BrandingRule.DISPLAY_SITE_BRANDING_ONLY;
+			
+			brandingData.setBrandingRule( rule );
+			
+			brandingData.setIsSiteBranding( true );
+		}
 		
 		return brandingData;
 	}// end getDataFromDlg()
@@ -787,6 +842,43 @@ public class EditBrandingDlg extends DlgBox
 		// Update the sample text with the given background color and font color.
 		updateSampleTextBgColor();
 		updateSampleTextColor();
+		
+		// Are we dealing with site branding?
+		if ( brandingData.isSiteBranding() )
+		{
+			BrandingRule brandingRule;
+
+			// Yes, show the panel that holds the branding rules.
+			m_rulesPanel.setVisible( true );
+
+			// Select the appropriate radio button.
+			brandingRule = brandingData.getBrandingRule(); 
+			switch( brandingRule )
+			{
+			case DISPLAY_SITE_BRANDING_ONLY:
+				m_ruleSiteBrandingOnlyRb.setValue( true );
+				break;
+				
+			case DISPLAY_BOTH_SITE_AND_BINDER_BRANDING:
+				m_ruleBothSiteAndBinderBrandingRb.setValue( true );
+				break;
+				
+			case BINDER_BRANDING_OVERRIDES_SITE_BRANDING:
+				m_ruleBinderOverridesRb.setValue( true );
+				break;
+
+			default:
+				m_ruleSiteBrandingOnlyRb.setValue( false );
+				m_ruleBothSiteAndBinderBrandingRb.setValue( false );
+				m_ruleBinderOverridesRb.setValue( false );
+				break;
+			}// end switch()
+		}
+		else
+		{
+			// No, hide the panel that holds the branding rules.
+			m_rulesPanel.setVisible( false );
+		}
 	}// end init()
 	
 

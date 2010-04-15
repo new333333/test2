@@ -38,12 +38,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
-import org.kablink.teaming.gwt.client.GwtBrandingData.BrandingRule;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
@@ -549,13 +549,22 @@ public class MastHead extends Composite
 	
 
 	/**
-	 * Refresh the masthead by issuing an ajax request to get the binder branding data . 
+	 * Refresh the binder branding by issuing an ajax request to get the binder branding data . 
 	 */
-	public void refreshMasthead()
+	public void refreshBinderBranding()
 	{
 		getBinderBrandingDataFromServer();
-	}// end refreshMasthead()
+	}// end refreshBinderBranding()
+
 	
+	/**
+	 * Refresh the site branding by issuing an ajax request to get the site branding data . 
+	 */
+	public void refreshSiteBranding()
+	{
+		getSiteBrandingDataFromServer();
+	}// end refreshSiteBranding()
+
 	
 	/**
 	 * Set the id of the binder the masthead is dealing with.
@@ -633,7 +642,7 @@ public class MastHead extends Composite
 			}
 			else
 			{
-				BrandingRule brandingRule;
+				GwtBrandingDataExt.BrandingRule brandingRule;
 				
 				// Display site and binder branding based on the branding rule found
 				// in the site branding.

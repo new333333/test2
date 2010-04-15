@@ -196,7 +196,9 @@ public interface GwtTeamingMessages extends Messages
 	String addImage();
 	String advancedBtn();
 	String backgroundColorLabel();
+	String binderOverridesBrandingLabel();
 	String brandingDlgHeader();
+	String brandingRulesLabel();
 	String backgroundImgLabel();
 	String colorHint();
 	String displayColorPicker();
@@ -206,6 +208,8 @@ public interface GwtTeamingMessages extends Messages
 	String noImagesAvailable();
 	String novellTeaming();
 	String sampleText();
+	String siteAndBinderBrandingLabel();
+	String siteBrandingOnlyLabel();
 	String stretchImg();
 	String textColorLabel();
 	String useBrandingImgLabel();
