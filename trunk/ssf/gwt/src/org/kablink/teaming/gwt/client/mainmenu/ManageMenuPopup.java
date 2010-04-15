@@ -62,7 +62,7 @@ import com.google.gwt.user.client.ui.Label;
 public class ManageMenuPopup extends MenuBarPopup {
 	private final String IDBASE = "manage_";	// Base ID for the items created in this menu.
 	
-	private BinderType m_currentBinderType;			// Type of the currently selected binder.
+	private boolean m_currentBinderIsWorkspace;		// Set true if the current binder is a workspace and false otherwise.
 	private int m_menuLeft;							// Left coordinate of where the menu is to be placed.
 	private int m_menuTop;							// Top  coordinate of where the menu is to be placed.
 	private List<ToolbarItem> m_toolbarItemList;	// The context based toolbar requirements.
@@ -119,7 +119,7 @@ public class ManageMenuPopup extends MenuBarPopup {
 			// If the team management command is implemented as a URL...
 			if (GwtClientHelper.hasString(m_manageUrl)) {
 				// ...launch it in a window...
-				GwtClientHelper.jsLaunchUrlInWindow(m_manageUrl, 500, 600);
+				GwtClientHelper.jsLaunchUrlInWindow(m_manageUrl, "_blank", 500, 600);
 			}
 			else {
 				// ...otherwise, trigger the action.
@@ -163,7 +163,7 @@ public class ManageMenuPopup extends MenuBarPopup {
 	public void setCurrentBinder(String binderId, BinderType binderType) {
 		// Simply store the parameters.
 		m_currentBinderId = binderId;
-		m_currentBinderType = binderType;
+		m_currentBinderIsWorkspace = (BinderType.WORKSPACE == binderType);
 	}
 
 	/**
@@ -332,7 +332,8 @@ public class ManageMenuPopup extends MenuBarPopup {
 				 hasNestedItems(m_workspaceActionsTBI));
 			boolean hasShowActions = ((null != m_whatsNewTBI) || (null != m_whatsUnreadTBI) || (null != m_whoHasAccessTBI));
 			boolean hasManageActions = (((null != m_tmi) && m_tmi.isTeamManagementEnabled()) || (null != m_emailNotificationTBI));
-			boolean hasMiscActions = ((BinderType.WORKSPACE == m_currentBinderType) || (null != m_shareThisTBI) || (null != m_trackThisTBI));
+			boolean hasMiscActions = (m_currentBinderIsWorkspace || (null != m_shareThisTBI) || (null != m_trackThisTBI));
+			boolean hasConfigActions = m_currentBinderIsWorkspace;
 			
 			// First the what's new, unread and who has access items...
 			addContextMenuItem(IDBASE, m_whatsNewTBI);
@@ -376,17 +377,24 @@ public class ManageMenuPopup extends MenuBarPopup {
 				}
 			}
 			
-			// ...and any email notification item.
+			// ...add any email notification item...
 			addContextMenuItem(IDBASE, m_emailNotificationTBI);
 			if (hasManageActions && hasMiscActions) {
-				// ...and add a spacer when required.
+				// ...and add a spacer when required...
 				addSpacerMenuItem();
 			}
 
-			// Add any miscellaneous items.
+			// ...add any miscellaneous items...
 			showTagThisWorkspace();
 			addContextMenuItem(IDBASE, m_trackThisTBI);
 			addContextMenuItem(IDBASE, m_shareThisTBI);
+			if (hasMiscActions && hasConfigActions) {
+				// ...and add a spacer when required...
+				addSpacerMenuItem();
+			}
+			
+			// ...and add any config items.
+			showBrandWorkspace();
 		}
 					
 		// Finally, show the popup.
@@ -394,11 +402,31 @@ public class ManageMenuPopup extends MenuBarPopup {
 	}
 	
 	/*
+	 * Add a brand workspace menu item.
+	 */
+	private void showBrandWorkspace() {
+		// If the current binder isn't a workspace...
+		if (!m_currentBinderIsWorkspace) {
+			// ...bail.
+			return;
+		}
+
+		// Construct a brand workspace toolbar item...
+		ToolbarItem brandWS = new ToolbarItem();
+		brandWS.setName("brand");
+		brandWS.setTitle(m_messages.mainMenuManageBrandWorkspace());
+		brandWS.setTeamingAction(TeamingAction.EDIT_BRANDING);
+		
+		// ...and add it to the context menu.
+		addContextMenuItem(IDBASE, brandWS);
+	}
+	
+	/*
 	 * Add a tag this workspace menu item.
 	 */
 	private void showTagThisWorkspace() {
 		// If the current binder isn't a workspace...
-		if (BinderType.WORKSPACE != m_currentBinderType) {
+		if (!m_currentBinderIsWorkspace) {
 			// ...bail.
 			return;
 		}

@@ -40,6 +40,9 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -52,28 +55,40 @@ public class ContextMenuItem {
 	private MenuBarPopup m_contextMenu;				// The menu containing    this context based menu item.
 	private MenuPopupAnchor m_contextMenuAnchor;	// The anchor created for this context based menu item.
 	
+	private enum ClickHandlerType {
+		TEAMING_ACTION,
+		JAVASCRIPT_STRING,
+		URL_IN_POPUP_NO_FORM,
+		URL_IN_POPUP_WITH_FORM,
+		URL_IN_CONTENT_FRAME,
+		
+		UNDEFINED,
+	}
+	
 	/*
 	 * Inner class that handles clicks on the menu items.
 	 */
 	private class ContextItemClickHandler implements ClickHandler {
-		private boolean m_isPopup;
-		private int m_popupHeight = (-1);
-		private int m_popupWidth  = (-1);
+		private ClickHandlerType m_type = ClickHandlerType.UNDEFINED;
+		private FormPanel m_fp;
+		private int m_popupHeight;
+		private int m_popupWidth;
 		private String m_id;
 		private String m_onClickJS;
 		private String m_url;
-		private TeamingAction m_teamingAction = TeamingAction.UNDEFINED;
+		private TeamingAction m_teamingAction;
 		
 		/**
 		 * Class constructor.
 		 *
 		 * @param id
 		 * @param url
-		 * @param popupHeight
-		 * @param popupWidth
 		 */
 		ContextItemClickHandler(String id, String url) {
-			// Simply store the parameters.
+			// Store the type of click handler...
+			m_type = ClickHandlerType.URL_IN_CONTENT_FRAME;
+			
+			// ...and the parameters.
 			m_id  = id;
 			m_url = url;
 		}
@@ -87,12 +102,33 @@ public class ContextMenuItem {
 		 * @param popupWidth
 		 */
 		ContextItemClickHandler(String id, String url, int popupHeight, int popupWidth) {
-			// Simply store the parameters.
+			// Store the type of click handler...
+			m_type = ClickHandlerType.URL_IN_POPUP_NO_FORM;
+			
+			// ...and the parameters.
 			m_id          = id;
 			m_url         = url;
-			m_isPopup     = true;
-			m_popupHeight = (((-1) == popupHeight) ? Window.getClientHeight() : popupHeight);
-			m_popupWidth  = (((-1) == popupWidth)  ? Window.getClientWidth()  : popupWidth);
+			m_popupHeight = popupHeight;
+			m_popupWidth  = popupWidth;
+		}
+		
+		/**
+		 * Class constructor.
+		 *
+		 * @param id
+		 * @param fp
+		 * @param popupHeight
+		 * @param popupWidth
+		 */
+		ContextItemClickHandler(String id, FormPanel fp, int popupHeight, int popupWidth) {
+			// Store the type of click handler...
+			m_type = ClickHandlerType.URL_IN_POPUP_WITH_FORM;
+			
+			// ...and the parameters.
+			m_id          = id;
+			m_fp          = fp;
+			m_popupHeight = popupHeight;
+			m_popupWidth  = popupWidth;
 		}
 		
 		/**
@@ -103,13 +139,13 @@ public class ContextMenuItem {
 		 * @param onClickJS
 		 */
 		ContextItemClickHandler(String id, String url, String onClickJS) {
-			// Simply store the parameters.
-			m_id          = id;
-			m_url         = url;
-			m_isPopup     = false;
-			m_popupHeight = (-1);
-			m_popupWidth  = (-1);
-			m_onClickJS   = onClickJS;
+			// Store the type of click handler...
+			m_type = ClickHandlerType.JAVASCRIPT_STRING;
+			
+			// ...and the parameters.
+			m_id        = id;
+			m_url       = url;
+			m_onClickJS = onClickJS;
 		}
 		
 		/**
@@ -120,10 +156,12 @@ public class ContextMenuItem {
 		 * @param teamingAction
 		 */
 		ContextItemClickHandler(String id, String url, TeamingAction teamingAction) {
-			// Simply store the parameters.
+			// Store the type of click handler...
+			m_type = ClickHandlerType.TEAMING_ACTION;
+			
+			// ...and the parameters.
 			m_id            = id;
 			m_url           = url;
-			m_isPopup       = false;
 			m_teamingAction = teamingAction;
 		}
 		
@@ -140,11 +178,56 @@ public class ContextMenuItem {
 			// ...hide the menu...
 			m_contextMenu.hide();
 
-			// ...and perform the request.
-			if (TeamingAction.UNDEFINED != m_teamingAction)  m_contextMenu.m_actionTrigger.triggerAction(m_teamingAction, m_url);
-			else if (m_isPopup)                              GwtClientHelper.jsLaunchUrlInWindow(    m_url, m_popupHeight, m_popupWidth);
-			else if (GwtClientHelper.hasString(m_onClickJS)) GwtClientHelper.jsEvalString(           m_url, m_onClickJS);
-			else                                             GwtClientHelper.jsLoadUrlInContentFrame(m_url);
+			// ...and perform the request based on the type of click
+			// ...handler was constructed from.
+			switch (m_type) {
+			case JAVASCRIPT_STRING:
+				GwtClientHelper.jsEvalString(m_url, m_onClickJS);
+				break;
+				
+			case TEAMING_ACTION:
+				m_contextMenu.m_actionTrigger.triggerAction(m_teamingAction, m_url);
+				break;
+
+			case URL_IN_CONTENT_FRAME:
+				GwtClientHelper.jsLoadUrlInContentFrame(m_url);
+				break;
+				
+			case URL_IN_POPUP_NO_FORM:
+				GwtClientHelper.jsLaunchUrlInWindow(m_url, "_blank", m_popupHeight, m_popupWidth);
+				break;
+				
+			case URL_IN_POPUP_WITH_FORM:
+				GwtClientHelper.jsLaunchUrlInWindow("", m_fp.getTarget(), m_popupHeight, m_popupWidth);
+//				Window.alert("submitting " + m_fp.getTarget());
+				m_fp.submit();
+//				jsSubmit(m_fp.getTarget());
+				break;
+			}
+		}
+		
+		/*
+		 * Loads a URL into the GWT UI's content frame.
+		 */
+		@SuppressWarnings("unused")
+		private native void jsSubmit(String formName) /*-{
+			var form = window.top.document.getElementById(formName);
+			alert("found '" + formName + "' form:  " + (null != form));
+			form.submit();
+		}-*/;
+		
+		/**
+		 * Allows the click handler to attach any form panel it has to
+		 * the anchor.
+		 * 
+		 * @param mpa
+		 */
+		void setAnchor(MenuPopupAnchor mpa) {
+			// If we have a form panel for this click handler...
+			if (null != m_fp) {
+				// ...attach it to the anchor.
+				mpa.add(m_fp);
+			}
 		}
 	}
 
@@ -165,61 +248,116 @@ public class ContextMenuItem {
 			return;
 		}
 		
-		// Generate an ID for this menu item.
-		String id = (idBase + tbi.getName());
-
-		// Extract the commonly used values.
-		String title = tbi.getTitle();
-		if (!(GwtClientHelper.hasString(title))) {
-			title = tbi.getName();
+		// What should we use for the label for the anchor?
+		String label = tbi.getTitle();
+		if (!(GwtClientHelper.hasString(label))) {
+			label = tbi.getName();
 		}
-		String url   = tbi.getUrl();
-		String hover = tbi.getQualifierValue("title");
 		
-		// Is this menu item based on a teaming action?
+		// Finally, create the anchor for the menu item.
+		String id = (idBase + tbi.getName());
+		ContextItemClickHandler clicker = createClickHandler(id, tbi);
+		m_contextMenuAnchor = new MenuPopupAnchor(
+			id,
+			label,
+			tbi.getQualifierValue("title"),
+			clicker);
+		clicker.setAnchor(m_contextMenuAnchor);
+	}
+
+	/*
+	 * Creates a click handler based on a toolbar item.
+	 */
+	private ContextItemClickHandler createClickHandler(String id, ToolbarItem tbi) {
+		ContextItemClickHandler reply;
+		String url = tbi.getUrl();
 		TeamingAction ta = tbi.getTeamingAction();
-		ContextItemClickHandler cich;
-		if (TeamingAction.UNDEFINED == ta) {
-			// No!  Is it based on an onClick JavaScript string?
-			String onClickJS    = tbi.getQualifierValue("onclick");
-			if (GwtClientHelper.hasString(onClickJS)) {
+		switch (ta) {
+		case UNDEFINED:
+			// It's not based on a teaming action!  Is it based on an
+			// onClick JavaScript string?
+			String jsString = tbi.getQualifierValue("onclick");
+			if (GwtClientHelper.hasString(jsString)) {
 				// Yes!  Generate the appropriate click handler for it.
-				cich = new ContextItemClickHandler(id, url, onClickJS);
+				reply = new ContextItemClickHandler(id, url, jsString);
+				break;
 			}
-			else {
-				// No, it isn't based on an onClick JavaScript string
-				// either!  Is is to open a URL in a popup window?
-				String popupS   = tbi.getQualifierValue("popup");
-				boolean isPopup = (GwtClientHelper.hasString(popupS) ? Boolean.parseBoolean(popupS) : false);
-				if (isPopup) {
-					// Yes!  Generate the appropriate click handler for it.
-					String popupHeightS = tbi.getQualifierValue("popupHeight");
-					String popupWidthS  = tbi.getQualifierValue("popupWidth");
-					
-					int popupHeight = (GwtClientHelper.hasString(popupHeightS) ? Integer.parseInt(popupHeightS) : (-1));
-					int popupWidth  = (GwtClientHelper.hasString(popupWidthS)  ? Integer.parseInt(popupWidthS)  : (-1));
-	
-					cich = new ContextItemClickHandler(id, url, popupHeight, popupWidth);
-				}
-				
-				else {
-					// No, it isn't to open a URL in a popup window
-					// either!  The only option left is to launch the
-					// URL in the content pane.  Generate the
-					// appropriate click handler for it.
-					cich = new ContextItemClickHandler(id, url);
-				}
+			
+			// No, it isn't based on a JavaScript string!  Is is to
+			// open a URL in a popup window?
+			if (GwtClientHelper.bFromS(tbi.getQualifierValue("popup"))) {
+				// Yes!  Generate the appropriate click handler for it.
+				reply = createPopupClickHandler(id, url, tbi);
+				break;
 			}
-		}
-		else {
-			// Yes, this menu item is based on a teaming action! 
-			// Generate the appropriate click handler for it.
-			cich = new ContextItemClickHandler(id, url, ta);
+			
+			// No, it isn't to open a URL in a popup window either!
+			// The only option left is to launch the URL in the content
+			// pane.  Generate the appropriate click handler for it.
+			reply = new ContextItemClickHandler(id, url);
+			break;
+			
+		default:
+			// It's based on a teaming action!  Generate the
+			// appropriate click handler for it.
+			reply = new ContextItemClickHandler(id, url, ta);
 		}
 
-		// Finally, create the anchor for the menu item.
-		m_contextMenuAnchor = new MenuPopupAnchor(id, title, hover, cich);
+		// If we get here, reply refers to the appropriate click
+		// handler for the toolbar item.  Return it.
+		return reply;
 	}
+
+	/*
+	 * Creates a click handler that requires opening a popup window
+	 * based on a toolbar item.
+	 */
+	private ContextItemClickHandler createPopupClickHandler(String id, String url, ToolbarItem tbi) {
+		ContextItemClickHandler reply;
+		
+		// What's the dimensions for the popup window?
+		int popupHeight = GwtClientHelper.iFromS(tbi.getQualifierValue("popupHeight"), Window.getClientHeight());
+		int popupWidth  = GwtClientHelper.iFromS(tbi.getQualifierValue("popupWidth"),  Window.getClientWidth());
+
+		// Are we supposed to open the popup window using a submitted form?
+		boolean popupFromForm = GwtClientHelper.bFromS(tbi.getQualifierValue("popup.fromForm"));
+		if (popupFromForm) {
+			// Yes!  Create the form...
+			String fpId = (id + "Form");
+			FormPanel fp = new FormPanel(fpId);
+			fp.setAction(url);
+			fp.getElement().setClassName("inline");
+			fp.getElement().setId(fpId);
+			fp.setMethod(FormPanel.METHOD_POST);
+			
+			// ...add the required hidden inputs to it...
+			FlowPanel hiPanel = new FlowPanel();
+			int hiCount = GwtClientHelper.iFromS(tbi.getQualifierValue("popup.hiddenInput.count"));
+			for (int i = 0; i < hiCount; i += 1) {
+				String hiBase  = ("popup.hiddenInput." + i + ".");
+				Hidden hInput = new Hidden();
+				hInput.setName( tbi.getQualifierValue(hiBase + "name"));
+				hInput.setValue(tbi.getQualifierValue(hiBase + "value"));
+				hiPanel.add(hInput);
+			}
+			fp.add(hiPanel);
+			
+			// ...and create the click handler.
+			reply = new ContextItemClickHandler(id, fp, popupHeight, popupWidth);
+		}
+		
+		else {
+			// No, we don't need to use submitted form!  Generate the
+			// appropriate click handler.
+			reply = new ContextItemClickHandler(id, url, popupHeight, popupWidth);
+		}
+		
+		// If we get here, reply refers to the appropriate click
+		// handler for the toolbar item.  Return it.
+		return reply;
+	}
+	
+	
 
 	/**
 	 * Returns the widget constructed for this menu item.
