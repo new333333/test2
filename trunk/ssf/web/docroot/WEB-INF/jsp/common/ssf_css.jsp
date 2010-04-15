@@ -3024,10 +3024,17 @@ div.ss_smallRBoxBody {
 }
 
 div.ss_user_photo  {
-clip:rect(0pt, 75px, 90px, 0pt);
-position:absolute;
+	height: 75px;
 }
 
+div.ss_user_info {
+	padding-left: 5px;
+}
+div.ss_myStatusFrame{
+	background: transparent;
+	height: auto;
+	margin: 2px 0px 0px;
+}
 div.ss_profileBox1 {
     font-family:${ss_style_folder_view_font_family};
 }
