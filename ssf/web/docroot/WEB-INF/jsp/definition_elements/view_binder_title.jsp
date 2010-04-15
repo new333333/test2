@@ -79,32 +79,28 @@
 </c:if>
 
 <c:if test="${ssDefinitionEntry.definitionType == '12'}">	
-<div class="ss_user_photo">
-	<c:if test="${empty ssDefinitionEntry.customAttributes['picture']}">
-	  <div class="ss_profile_picture_frame ss_profile_photo_box_empty"></div>
-	</c:if>
-	
-	<c:if test="${!empty ssDefinitionEntry.customAttributes['picture']}">
-	<div class="ss_profile_picture_frame">
-	<c:set var="selections" value="${ssDefinitionEntry.customAttributes['picture'].value}" />
-	<c:set var="pictureCount" value="0"/>
-	<c:forEach var="selection" items="${selections}">
-	  <c:if test="${pictureCount == 0}">
-		<a href="javascript:;" onClick="ss_showThisImage(this);return false;"><img 
-		  align="middle" id="ss_profilePicture${renderResponse.namespace}"
-		  border="0" 
-		  src="<ssf:fileUrl webPath="readScaledFile" file="${selection}"/>"
-			alt="${property_caption}" /></a>
-	  </c:if>
-	  <c:set var="pictureCount" value="${pictureCount + 1}"/>
-	</c:forEach>
-	</div>
-	</c:if>
- </div>    
 
-<div style="margin-left: 80px;">
-<ul class="ss_horizontal ss_nobullet">
-	  <li>
+<table>
+<tbody>
+<tr>
+<td align="left" valign="top">
+<c:set var="binderId" value="${ssDefinitionEntry.id}" />
+<c:set var="userWorkspaceId" value="${ssDefinitionEntry.owner.workspaceId}" />
+<c:if test="${binderId == userWorkspaceId}">
+<div class="ss_user_photo">
+	<a href="<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
+		value="${ssDefinitionEntry.owner.creation.principal.parentBinder.id}"/><ssf:param name="entryId" 
+		value="${ssDefinitionEntry.owner.creation.principal.id}"/><ssf:param name="newTab" 
+		value="1" /></ssf:url>" <ssf:title tag="title.goto.profile.page" />>
+		<ssf:buddyPhoto style="ss_thumbnail_standalone ss_thumbnail_small" 
+			photos="${ssDefinitionEntry.owner.customAttributes['picture'].value}" 
+			folderId="${ssDefinitionEntry.owner.parentBinder.id}" entryId="${ssDefinitionEntry.owner.id}" />
+	</a>
+ </div>
+</c:if>    
+</td>
+<td align="left" valign="top">
+	<div class="ss_user_info">
 	  <div id="ss_profile_box_h1">
 	  <div class="ss_profile_title">
 	  <a href="<ssf:url crawlable="true"
@@ -124,13 +120,18 @@
 			<span class="ss_profile"><ssf:nlt tag="relevance.tab.profile"/></span></a>
       </div>
       </div>  
-	  </li>
-</ul>
-<div class="ss_clear"></div>
 
 	<% // Status %>
 	<jsp:include page="/WEB-INF/jsp/profile/user_status.jsp" />
-</div>
+	</div>
+</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
 </c:if>
 </c:if>
     
@@ -152,7 +153,7 @@
       </li>
       </ul>
     </div>
-    </c:if>
+	    </c:if>
     
 	<c:if test="${ssDefinitionEntry.entityType == 'folder'}">
 	<div id="ss_profile_box_h1">

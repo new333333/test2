@@ -45,7 +45,7 @@
     <c:set var="ss_statusId" value="ss_myStatus${renderResponse.namespace}" scope="request"/>
   </c:if>
 
-  <div class="ss_myStatusOuter" id="${ss_statusId}">
+  <div class="ss_myStatusFrame" id="${ss_statusId}">
     <%@ include file="/WEB-INF/jsp/profile/user_status2.jsp" %>
   </div>
 </c:if>
