@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.BinderType;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -217,12 +218,13 @@ public abstract class MenuBarPopup extends PopupPanel {
 	}
 	
 	/**
-	 * Passes the ID of the currently selected binder to classes that
-	 * extend MenuBarPopup.
+	 * Passes the ID and type of the currently selected binder to
+	 * classes that extend MenuBarPopup.
 	 * 
 	 * @param binderId
+	 * @param binderType
 	 */
-	public abstract void setCurrentBinder(String binderId);
+	public abstract void setCurrentBinder(String binderId, BinderType binderType);
 
 	/**
 	 * Passes information about the context based toolbar requirements

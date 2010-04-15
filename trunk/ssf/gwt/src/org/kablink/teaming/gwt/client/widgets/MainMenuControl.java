@@ -116,17 +116,17 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * bar.
 	 */
 	private void addActionsToContext(List<ToolbarItem> toolbarItemList) {
-		final ActionsMenuPopup smp = new ActionsMenuPopup(this);
-		smp.setCurrentBinder(m_contextBinderId);
-		smp.setToolbarItemList(toolbarItemList);
-		if (smp.shouldShowMenu()) {
+		final ActionsMenuPopup amp = new ActionsMenuPopup(this);
+		amp.setCurrentBinder(m_contextBinderId, m_contextBinderType);
+		amp.setToolbarItemList(toolbarItemList);
+		if (amp.shouldShowMenu()) {
 			final MenuBarBox actionsBox = new MenuBarBox("ss_mainMenuActions", m_messages.mainMenuBarActions(), true);
 			actionsBox.addClickHandler(
 				new ClickHandler() {
 					public void onClick(ClickEvent event) {
 						int left =  actionsBox.getAbsoluteLeft();
 						int top  = (actionsBox.getAbsoluteTop() - 20);
-						smp.showPopup(left, top);
+						amp.showPopup(left, top);
 					}
 				});
 			m_contextPanel.add(actionsBox);
@@ -193,17 +193,17 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		case WORKSPACE:  manageName = m_messages.mainMenuBarWorkspace(); break;
 		}
 		
-		final ManageMenuPopup smp = new ManageMenuPopup(this, manageName);
-		smp.setCurrentBinder(m_contextBinderId);
-		smp.setToolbarItemList(toolbarItemList);
-		if (smp.shouldShowMenu()) {
+		final ManageMenuPopup mmp = new ManageMenuPopup(this, manageName);
+		mmp.setCurrentBinder(m_contextBinderId, m_contextBinderType);
+		mmp.setToolbarItemList(toolbarItemList);
+		if (mmp.shouldShowMenu()) {
 			final MenuBarBox manageBox = new MenuBarBox("ss_mainMenuManage", manageName, true);
 			manageBox.addClickHandler(
 				new ClickHandler() {
 					public void onClick(ClickEvent event) {
 						int left =  manageBox.getAbsoluteLeft();
 						int top  = (manageBox.getAbsoluteTop() - 20);
-						smp.showPopup(left, top);
+						mmp.showPopup(left, top);
 					}
 				});
 			m_contextPanel.add(manageBox);
@@ -213,7 +213,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 					Window.alert(t.toString());
 				}
 				public void onSuccess(final TeamManagementInfo tmi)  {
-					smp.setTeamManagementInfo(tmi);
+					mmp.setTeamManagementInfo(tmi);
 				}
 			});
 		}
@@ -232,7 +232,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 					int left =  myFavoritesBox.getAbsoluteLeft();
 					int top  = (myFavoritesBox.getAbsoluteTop() - 20);
 					MyFavoritesMenuPopup mfmp = new MyFavoritesMenuPopup(actionTrigger);
-					mfmp.setCurrentBinder(m_contextBinderId);
+					mfmp.setCurrentBinder(m_contextBinderId, m_contextBinderType);
 					mfmp.showPopup(left, top);
 				}
 			});
@@ -251,7 +251,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 					int left =  myTeamsBox.getAbsoluteLeft();
 					int top  = (myTeamsBox.getAbsoluteTop() - 20);
 					MyTeamsMenuPopup mtmp = new MyTeamsMenuPopup(actionTrigger);
-					mtmp.setCurrentBinder(m_contextBinderId);
+					mtmp.setCurrentBinder(m_contextBinderId, m_contextBinderType);
 					mtmp.showPopup(left, top);
 				}
 			});

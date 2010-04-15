@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -56,9 +57,11 @@ import com.google.gwt.user.client.ui.FlowPanel;
 public class MyFavoritesMenuPopup extends MenuBarPopup {
 	private final String IDBASE = "myFavorites_";
 	
-	private int m_menuLeft;				// Left coordinate of where the menu is to be placed.
-	private int m_menuTop;				// Top  coordinate of where the menu is to be placed.
-	private String m_currentBinderId;	// ID of the currently selected binder.
+	@SuppressWarnings("unused")
+	private BinderType m_currentBinderType;	// Type of the currently selected binder.
+	private int m_menuLeft;					// Left coordinate of where the menu is to be placed.
+	private int m_menuTop;					// Top  coordinate of where the menu is to be placed.
+	private String m_currentBinderId;		// ID of the currently selected binder.
 
 	/*
 	 * Defines the management operations supported on the favorites.
@@ -188,16 +191,18 @@ public class MyFavoritesMenuPopup extends MenuBarPopup {
 	}
 	
 	/**
-	 * Stores the ID of the currently selected binder.
+	 * Stores the ID and type of the currently selected binder.
 	 * 
 	 * Implements the MenuBarPopup.setCurrentBinder() abstract method.
 	 * 
 	 * @param binderId
+	 * @param binderType
 	 */
 	@Override
-	public void setCurrentBinder(String binderId) {
-		// Simply store the parameter.
+	public void setCurrentBinder(String binderId, BinderType binderType) {
+		// Simply store the parameters.
 		m_currentBinderId = binderId;
+		m_currentBinderType = binderType;
 	}
 	
 	/**

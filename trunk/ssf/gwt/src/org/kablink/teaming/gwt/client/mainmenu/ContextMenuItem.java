@@ -141,7 +141,7 @@ public class ContextMenuItem {
 			m_contextMenu.hide();
 
 			// ...and perform the request.
-			if (TeamingAction.UNDEFINED != m_teamingAction)  m_contextMenu.m_actionTrigger.triggerAction(m_teamingAction);
+			if (TeamingAction.UNDEFINED != m_teamingAction)  m_contextMenu.m_actionTrigger.triggerAction(m_teamingAction, m_url);
 			else if (m_isPopup)                              GwtClientHelper.jsLaunchUrlInWindow(    m_url, m_popupHeight, m_popupWidth);
 			else if (GwtClientHelper.hasString(m_onClickJS)) GwtClientHelper.jsEvalString(           m_url, m_onClickJS);
 			else                                             GwtClientHelper.jsLoadUrlInContentFrame(m_url);

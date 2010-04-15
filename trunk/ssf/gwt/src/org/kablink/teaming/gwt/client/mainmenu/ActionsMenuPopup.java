@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -57,9 +58,11 @@ import com.google.gwt.user.client.ui.Label;
 @SuppressWarnings("unused")
 public class ActionsMenuPopup extends MenuBarPopup {
 	private final String IDBASE = "action_";	// Base ID for the items created in this menu.
-	
+
+	private BinderType m_currentBinderType;			// Type of the currently selected binder.
 	private List<ToolbarItem> m_toolbarItemList;	// The context based toolbar requirements.
 	private String m_currentBinderId;				// ID of the currently selected binder.
+	private ToolbarItem m_sendEmailTBI;				// The send email toolbar item, if found.
 
 	/**
 	 * Class constructor.
@@ -72,16 +75,18 @@ public class ActionsMenuPopup extends MenuBarPopup {
 	}
 	
 	/**
-	 * Stores the ID of the currently selected binder.
+	 * Stores the ID and type of the currently selected binder.
 	 * 
 	 * Implements the MenuBarPopup.setCurrentBinder() abstract method.
 	 * 
 	 * @param binderId
+	 * @param binderType
 	 */
 	@Override
-	public void setCurrentBinder(String binderId) {
-		// Simply store the parameter.
+	public void setCurrentBinder(String binderId, BinderType binderType) {
+		// Simply store the parameters.
 		m_currentBinderId = binderId;
+		m_currentBinderType = binderType;
 	}
 	
 	/**
@@ -115,14 +120,17 @@ public class ActionsMenuPopup extends MenuBarPopup {
 			// ...menu.
 			ToolbarItem tbi = tbiIT.next();
 			String tbName = tbi.getName();
+			if (tbName.equalsIgnoreCase("ssGwtMiscToolbar")) {
+				m_sendEmailTBI = tbi.getNestedToolbarItem("sendEmail");
+			}
 			
 //!			...this needs to be implemented...
 		}
 		
 		// Return true if we found any of the actions menu items and
 		// false otherwise.
-//!		...this needs to be implemented...
-		return true;
+		return
+			(null != m_sendEmailTBI);
 	}
 	
 	/**
@@ -141,8 +149,9 @@ public class ActionsMenuPopup extends MenuBarPopup {
 		// ...and if we haven't already constructed its contents...
 		if (!(hasContent())) {
 			// ...construct it now...
+			addContextMenuItem(IDBASE, m_sendEmailTBI);
+			
 //!			...this needs to be implemented...
-			addContentWidget(new Label("...this needs to be implemented..."));
 		}
 					
 		// ...and show it.
