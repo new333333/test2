@@ -234,6 +234,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuFolderOptionsDlgHeader();
 	String mainMenuFolderOptionsDlgImportCalendar();
 	String mainMenuFolderOptionsNoOptions();
+	String mainMenuManageBrandWorkspace();
 	String mainMenuManageEditTeam();
 	String mainMenuManageFolderOptions();
 	String mainMenuManageSendTeamEmail();

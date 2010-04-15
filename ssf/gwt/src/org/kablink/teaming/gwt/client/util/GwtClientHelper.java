@@ -70,6 +70,22 @@ public class GwtClientHelper {
 		}
 		return urlString;
 	}
+
+	/**
+	 * Returns the boolean value stored in a string.
+	 * 
+	 * @param s
+	 * @param def
+	 * 
+	 * @return
+	 */
+	public static boolean bFromS(String s, boolean def) {
+		return (hasString(s) ? Boolean.parseBoolean(s) : def);
+	}
+	
+	public static boolean bFromS(String s) {
+		return bFromS(s, false);
+	}
 	
 	/**
 	 * Returns true is s refers to a non null, non 0 length String and
@@ -80,6 +96,22 @@ public class GwtClientHelper {
 	 */
 	public static boolean hasString(String s) {
 		return ((null != s) && (0 < s.length()));
+	}
+
+	/**
+	 * Returns the integer value stored in a string.
+	 * 
+	 * @param s
+	 * @param def
+	 * 
+	 * @return
+	 */
+	public static int iFromS(String s, int def) {
+		return (hasString(s) ? Integer.parseInt(s) : def);
+	}
+	
+	public static int iFromS(String s) {
+		return iFromS(s, (-1));
 	}
 	
 	/*
@@ -103,8 +135,8 @@ public class GwtClientHelper {
 	 * Uses Teaming's existing ss_common JavaScript to launch a URL in
 	 * a new window.
 	 */
-	public static native void jsLaunchUrlInWindow(String url, int height, int width) /*-{
-		window.top.ss_openUrlInWindow({href: url}, '_blank', width, height);
+	public static native void jsLaunchUrlInWindow(String url, String windowName, int windowHeight, int windowWidth) /*-{
+		window.top.ss_openUrlInWindow({href: url}, windowName, windowWidth, windowHeight);
 	}-*/;
 	
 	/*
