@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
@@ -61,6 +62,7 @@ import com.google.gwt.user.client.ui.Label;
 public class ManageMenuPopup extends MenuBarPopup {
 	private final String IDBASE = "manage_";	// Base ID for the items created in this menu.
 	
+	private BinderType m_currentBinderType;			// Type of the currently selected binder.
 	private int m_menuLeft;							// Left coordinate of where the menu is to be placed.
 	private int m_menuTop;							// Top  coordinate of where the menu is to be placed.
 	private List<ToolbarItem> m_toolbarItemList;	// The context based toolbar requirements.
@@ -71,6 +73,7 @@ public class ManageMenuPopup extends MenuBarPopup {
 	private ToolbarItem m_emailNotificationTBI;		// The email notification toolbar item, if found.
 	private ToolbarItem m_folderActionsTBI;			// The folder actions     toolbar item, if found.
 	private ToolbarItem m_folderViewsTBI;			// The folder views       toolbar item, if found.
+	private ToolbarItem m_shareThisTBI;				// The share this xxx     toolbar item, if found.
 	private ToolbarItem m_trackThisTBI;				// The track this xxx     toolbar item, if found.
 	private ToolbarItem m_whatsNewTBI;				// The what's new         toolbar item, if found.
 	private ToolbarItem m_whatsUnreadTBI;			// The what's unread      toolbar item, if found.
@@ -149,15 +152,18 @@ public class ManageMenuPopup extends MenuBarPopup {
 	}
 	
 	/**
-	 * Stores the ID of the currently selected binder.
+	 * Stores the ID and type of the currently selected binder.
 	 * 
 	 * Implements the MenuBarPopup.setCurrentBinder() abstract method.
 	 * 
 	 * @param binderId
+	 * @param binderType
 	 */
 	@Override
-	public void setCurrentBinder(String binderId) {
+	public void setCurrentBinder(String binderId, BinderType binderType) {
+		// Simply store the parameters.
 		m_currentBinderId = binderId;
+		m_currentBinderType = binderType;
 	}
 
 	/**
@@ -240,6 +246,7 @@ public class ManageMenuPopup extends MenuBarPopup {
 			}
 			
 			else if (tbName.equalsIgnoreCase("ssGwtMiscToolbar")) {
+				m_shareThisTBI = tbi.getNestedToolbarItem("share");
 				m_trackThisTBI = tbi.getNestedToolbarItem("track");
 			}
 		}
@@ -248,6 +255,7 @@ public class ManageMenuPopup extends MenuBarPopup {
 		// false otherwise.
 		return
 			((null != m_emailNotificationTBI)                                                ||
+			 (null != m_shareThisTBI)                                                        ||
 			 (null != m_trackThisTBI)                                                        ||
 			 (null != m_whatsNewTBI)                                                         ||
 			 (null != m_whatsUnreadTBI)                                                      ||
@@ -314,6 +322,8 @@ public class ManageMenuPopup extends MenuBarPopup {
 		
 		// Have we constructed the menu's contents yet?
 		if (!(hasContent())) {
+			// No!  We need to construct it now.  What all are we going
+			// to show?
 			boolean hasBinderActions = 
 				(hasNestedItems(m_calendarImportTBI) ||
 				 hasNestedItems(m_commonActionsTBI)  ||
@@ -322,10 +332,9 @@ public class ManageMenuPopup extends MenuBarPopup {
 				 hasNestedItems(m_workspaceActionsTBI));
 			boolean hasShowActions = ((null != m_whatsNewTBI) || (null != m_whatsUnreadTBI) || (null != m_whoHasAccessTBI));
 			boolean hasManageActions = (((null != m_tmi) && m_tmi.isTeamManagementEnabled()) || (null != m_emailNotificationTBI));
-			boolean hasMiscActions = (null != m_trackThisTBI);
+			boolean hasMiscActions = ((BinderType.WORKSPACE == m_currentBinderType) || (null != m_shareThisTBI) || (null != m_trackThisTBI));
 			
-			// No!  We need to construct it now.  First the what's new,
-			// unread and who has access items...
+			// First the what's new, unread and who has access items...
 			addContextMenuItem(IDBASE, m_whatsNewTBI);
 			addContextMenuItem(IDBASE, m_whatsUnreadTBI);
 			addContextMenuItem(IDBASE, m_whoHasAccessTBI);
@@ -375,10 +384,47 @@ public class ManageMenuPopup extends MenuBarPopup {
 			}
 
 			// Add any miscellaneous items.
+			showTagThisWorkspace();
 			addContextMenuItem(IDBASE, m_trackThisTBI);
+			addContextMenuItem(IDBASE, m_shareThisTBI);
 		}
 					
 		// Finally, show the popup.
 		show();
+	}
+	
+	/*
+	 * Add a tag this workspace menu item.
+	 */
+	private void showTagThisWorkspace() {
+		// If the current binder isn't a workspace...
+		if (BinderType.WORKSPACE != m_currentBinderType) {
+			// ...bail.
+			return;
+		}
+
+		// Add an anchor to run the folder options dialog.
+		final String foId = (IDBASE + "TagThisWorkspace");
+		MenuPopupAnchor mtA = new MenuPopupAnchor(foId, m_messages.mainMenuManageTagThisWorkspace(), null, new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				// Remove the selection from the menu item...
+				Element menuItemElement = Document.get().getElementById(foId);
+				menuItemElement.removeClassName("mainMenuPopup_ItemHover");
+				
+				// ...hide the menu...
+				hide();
+				
+				// ...and run the folder options dialog.
+				TagThisWorkspaceDlg ttwDlg = new TagThisWorkspaceDlg(
+					true,	// true -> Auto hide.
+					true,	// true -> Modal.
+					m_menuLeft,
+					m_menuTop,
+					m_currentBinderId);
+				ttwDlg.addStyleName("tagThisWorkspaceDlg");
+				ttwDlg.show();
+			}
+		});
+		addContentWidget(mtA);
 	}
 }

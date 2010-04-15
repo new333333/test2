@@ -1013,6 +1013,24 @@ n-Transparent-Black-Div
 	padding-bottom: 5px;
 }
 
+/* Styles for the tag this workspace dialog. */
+.tagThisWorkspaceDlg
+{
+	z-index: 301;
+}
+.tagThisWorkspaceDlg_Grid
+{
+	margin-top: 8px;
+}
+.tagThisWorkspaceDlg_Label
+{
+	color: #414648; /* dark grey */
+	line-height: 1.1em; 
+	margin-right: 5px;
+	padding: 0.2em 0.5em 0.3em; 
+	white-space: nowrap;
+}
+
 /* Style for the main Teaming page. */
 .mainTeamingPage
 {
