@@ -6,7 +6,7 @@
 	    
     <!-- ============================== Pre-authentication using IIS ============================ -->
 
-    <bean id="iisFilter" class="org.kablink.teaming.spring.security.IISPreAuthenticatedProcessingFilter">
+    <bean id="iisFilter" class="org.kablink.teaming.asmodule.spring.security.preauth.IISPreAuthenticatedProcessingFilter">
 		<s:custom-filter position="PRE_AUTH_FILTER"/>
 		<property name="authenticationManager" ref="_authenticationManager"/>
 		<property name="continueFilterChainOnUnsuccessfulAuthentication"><value>false</value></property>
