@@ -63,6 +63,7 @@ import org.kablink.teaming.ssfs.server.KablinkFileSystem;
 import org.kablink.teaming.ssfs.server.KablinkFileSystemException;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.WindowsUtil;
 
 
 public class DispatchServer extends GenericServlet {
@@ -76,6 +77,9 @@ public class DispatchServer extends GenericServlet {
 		Integer operation = (Integer) req.getAttribute(CrossContextConstants.OPERATION);
 		
 		if(operation.equals(CrossContextConstants.OPERATION_AUTHENTICATE)) { 
+			if(true)
+				throw new UnsupportedOperationException("This operation is no longer supported");
+			
 			// Authentication request: This is treated differently than regular SSFS requests.
 			String serverName = (String) req.getAttribute(CrossContextConstants.SERVER_NAME);
 			String userName = (String) req.getAttribute(CrossContextConstants.USER_NAME);
@@ -127,7 +131,7 @@ public class DispatchServer extends GenericServlet {
 			Long zoneId = getZoneModule().getZoneIdByVirtualHost(serverName);
 			
 			// Setup request context. Do not resolve it yet.
-			RequestContextUtil.setThreadContext(zoneId, userName);
+			RequestContextUtil.setThreadContext(zoneId, WindowsUtil.getSamaccountname(userName));
 			
 			try {
 				doSsfsRequest(operation, req, res);

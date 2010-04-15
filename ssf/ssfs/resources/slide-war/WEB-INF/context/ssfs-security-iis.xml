@@ -6,6 +6,16 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
 
+    <!-- ============================== Pre-authentication using IIS ============================ -->
+
+    <beans:bean id="iisFilter" class="org.kablink.teaming.spring.security.IISPreAuthenticatedProcessingFilter">
+		<custom-filter position="PRE_AUTH_FILTER"/>
+		<beans:property name="authenticationManager" ref="_authenticationManager"/>
+		<beans:property name="continueFilterChainOnUnsuccessfulAuthentication"><beans:value>false</beans:value></beans:property>
+    </beans:bean>
+
+    <!-- ============================== Basic authentication ============================ -->
+
 	<beans:bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
 		<beans:property name="providerBeanNames">
 			<beans:list>
