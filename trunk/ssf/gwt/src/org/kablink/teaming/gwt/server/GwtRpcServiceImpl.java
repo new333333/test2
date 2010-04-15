@@ -516,6 +516,24 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			    					brandingExt.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_ADVANCED );
 			    			}
 			    			
+			    			// Get the branding rule.
+			    			attrNode = node.selectSingleNode( "@brandingRule" );
+			    			if ( attrNode != null )
+			    			{
+			    				String ruleName;
+			    				
+			    				ruleName = attrNode.getText();
+			    				if ( ruleName != null )
+			    				{
+			    					if ( ruleName.equalsIgnoreCase( GwtBrandingDataExt.BrandingRule.BINDER_BRANDING_OVERRIDES_SITE_BRANDING.toString() ) )
+			    						brandingExt.setBrandingRule( GwtBrandingDataExt.BrandingRule.BINDER_BRANDING_OVERRIDES_SITE_BRANDING );
+			    					else if ( ruleName.equalsIgnoreCase( GwtBrandingDataExt.BrandingRule.DISPLAY_BOTH_SITE_AND_BINDER_BRANDING.toString() ) )
+			    						brandingExt.setBrandingRule( GwtBrandingDataExt.BrandingRule.DISPLAY_BOTH_SITE_AND_BINDER_BRANDING );
+			    					else if ( ruleName.equalsIgnoreCase( GwtBrandingDataExt.BrandingRule.DISPLAY_SITE_BRANDING_ONLY.toString() ) )
+			    						brandingExt.setBrandingRule( GwtBrandingDataExt.BrandingRule.DISPLAY_SITE_BRANDING_ONLY );
+			    				}
+			    			}
+			    			
 			    			// Get the <background color="" imgName="" stretchImg="" /> node
 			    			node = node.selectSingleNode( "background" );
 			    			if ( node != null )
@@ -569,6 +587,21 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					}
 					
 					brandingData.setBrandingExt( brandingExt );
+				}
+				
+				// Are we dealing with site branding?
+				{
+					Binder topWorkspace;
+					
+					// Get the top workspace.
+					topWorkspace = getWorkspaceModule().getTopWorkspace();				
+					
+					// Are we dealing with the site branding.
+					if ( binderIdL.compareTo( topWorkspace.getId() ) == 0 )
+					{
+						// Yes
+						brandingData.setIsSiteBranding( true );
+					}
 				}
 			}
 		}

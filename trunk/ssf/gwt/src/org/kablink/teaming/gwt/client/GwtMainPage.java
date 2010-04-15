@@ -213,6 +213,7 @@ public class GwtMainPage extends Composite
 			{
 				private AsyncCallback<Boolean> rpcSaveCallback = null;
 				private String binderId = m_mastHead.getBinderId();
+				private GwtBrandingData savedBrandingData = null;
 				
 				/**
 				 * This method gets called when user user presses ok in the "Edit Branding" dialog.
@@ -265,8 +266,19 @@ public class GwtMainPage extends Composite
 							 */
 							public void onSuccess( Boolean result )
 							{
-								// Update the masthead with the new branding data.
-								m_mastHead.refreshMasthead();
+								// Did we just save site branding?
+								if ( savedBrandingData.isSiteBranding() )
+								{
+									// Yes
+									// Tell the masthead to go get the new site branding.
+									m_mastHead.refreshSiteBranding();
+								}
+								else
+								{
+									// No
+									// Tell the masthead to go get the new binder branding.
+									m_mastHead.refreshBinderBranding();
+								}
 							}// end onSuccess()
 						};
 					}
@@ -279,6 +291,7 @@ public class GwtMainPage extends Composite
 						
 						// Issue an ajax request to save the branding data to the db.  rpcSaveCallback will
 						// be called when we get the response back.
+						savedBrandingData = (GwtBrandingData) obj;
 						rpcService.saveBrandingData( m_mastHead.getBinderId(), (GwtBrandingData)obj, rpcSaveCallback );
 					}
 
@@ -349,7 +362,6 @@ public class GwtMainPage extends Composite
 			
 		case HELP:
 			Window.alert( "Help is not implemented yet." );
-			editBranding();
 			break;
 
 		case LOGOUT:

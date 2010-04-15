@@ -44,17 +44,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GwtBrandingData
 	implements IsSerializable
 {
-	/**
-	 * This class defines all the possible values of a branding rule.
-	 */
-	public enum BrandingRule implements IsSerializable
-	{
-		DISPLAY_SITE_BRANDING_ONLY,
-		DISPLAY_BOTH_SITE_AND_BINDER_BRANDING,
-		BINDER_BRANDING_OVERRIDES_SITE_BRANDING,
-		BRANDING_RULE_UNDEFINED;
-	}// end BrandingRule
-
 	// The binder this branding data is from.
 	private String m_binderId = null;
 	
@@ -66,9 +55,6 @@ public class GwtBrandingData
 	
 	// Flag that indicates whether this branding is the site branding (came from the "home workspace")
 	private boolean m_isSiteBranding = false;
-	
-	// m_brandingRule indicates how site and binder branding are to be displayed
-	private BrandingRule m_brandingRule = BrandingRule.BRANDING_RULE_UNDEFINED;
 	
 	
 	/**
@@ -162,9 +148,9 @@ public class GwtBrandingData
 	/**
 	 * Return the rule for displaying site and binder branding
 	 */
-	public BrandingRule getBrandingRule()
+	public GwtBrandingDataExt.BrandingRule getBrandingRule()
 	{
-		return m_brandingRule;
+		return m_brandingExt.getBrandingRule();
 	}// end getBrandingRule()
 	
 	
@@ -194,9 +180,6 @@ public class GwtBrandingData
 			return true;
 		
 		if ( m_brandingExt != null && m_brandingExt.haveBranding() )
-			return true;
-		
-		if ( m_brandingRule != BrandingRule.BRANDING_RULE_UNDEFINED )
 			return true;
 		
 		// If we get here we don't have any branding data.
@@ -296,9 +279,9 @@ public class GwtBrandingData
 	/**
 	 * Set the rule for displaying site and binder branding
 	 */
-	public void setBrandingRule( BrandingRule brandingRule )
+	public void setBrandingRule( GwtBrandingDataExt.BrandingRule brandingRule )
 	{
-		m_brandingRule = brandingRule;
+		m_brandingExt.setBrandingRule( brandingRule );
 	}// end setBrandingRule()
 	
 	/**

@@ -46,6 +46,17 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GwtBrandingDataExt
 	implements IsSerializable
 {
+	/**
+	 * This class defines all the possible values of a branding rule.
+	 */
+	public enum BrandingRule implements IsSerializable
+	{
+		DISPLAY_SITE_BRANDING_ONLY,
+		DISPLAY_BOTH_SITE_AND_BINDER_BRANDING,
+		BINDER_BRANDING_OVERRIDES_SITE_BRANDING,
+		BRANDING_RULE_UNDEFINED;
+	}// end BrandingRule
+
 	public static final String BRANDING_TYPE_ADVANCED = "advanced";
 	public static final String BRANDING_TYPE_IMAGE = "image";
 	
@@ -59,6 +70,9 @@ public class GwtBrandingDataExt
 	private boolean m_stretchBgImg = false;
 	private String m_brandingType = BRANDING_TYPE_ADVANCED;
 
+	// m_brandingRule indicates how site and binder branding are to be displayed
+	private BrandingRule m_brandingRule = BrandingRule.BRANDING_RULE_UNDEFINED;
+	
 
 	/**
 	 * 
@@ -145,6 +159,11 @@ public class GwtBrandingDataExt
     		xml.append( type );
     	xml.append( "\"" );
     	
+    	// Add the brandingRule attribute.
+    	xml.append( " brandingRule=\"" );
+    	xml.append( m_brandingRule.toString() );
+    	xml.append( "\"" );
+    	
     	// Close the <brandingData tag.
     	xml.append( ">" );
     	
@@ -209,6 +228,15 @@ public class GwtBrandingDataExt
 	
 	
 	/**
+	 * Return the rule for displaying site and binder branding
+	 */
+	public BrandingRule getBrandingRule()
+	{
+		return m_brandingRule;
+	}// end getBrandingRule()
+	
+	
+	/**
 	 * 
 	 */
 	public String getBrandingType()
@@ -232,6 +260,9 @@ public class GwtBrandingDataExt
 			return true;
 		
 		if ( m_backgroundImgName != null && m_backgroundImgName.length() > 0 )
+			return true;
+		
+		if ( m_brandingRule != BrandingRule.BRANDING_RULE_UNDEFINED )
 			return true;
 		
 		// If we get here we don't have any branding data.
@@ -293,6 +324,15 @@ public class GwtBrandingDataExt
 	}// end setBrandingImgUrl()
 	
 	
+	/**
+	 * Set the rule for displaying site and binder branding
+	 */
+	public void setBrandingRule( BrandingRule brandingRule )
+	{
+		m_brandingRule = brandingRule;
+	}// end setBrandingRule()
+	
+
 	/**
 	 * 
 	 */
