@@ -184,7 +184,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * Adds the Manage item to the context based portion of the menu
 	 * bar.
 	 */
-	private void addManageToContext(final List<ToolbarItem> toolbarItemList) {
+	private void addManageToContext(final List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi) {
 		String manageName;
 		switch (m_contextBinderType) {
 		default:
@@ -196,6 +196,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		final ManageMenuPopup mmp = new ManageMenuPopup(this, manageName);
 		mmp.setCurrentBinder(m_contextBinderId, m_contextBinderType);
 		mmp.setToolbarItemList(toolbarItemList);
+		mmp.setTeamManagementInfo(tmi);
 		if (mmp.shouldShowMenu()) {
 			final MenuBarBox manageBox = new MenuBarBox("ss_mainMenuManage", manageName, true);
 			manageBox.addClickHandler(
@@ -207,15 +208,6 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 					}
 				});
 			m_contextPanel.add(manageBox);
-			
-			GwtTeaming.getRpcService().getTeamManagementInfo(m_contextBinderId, new AsyncCallback<TeamManagementInfo>() {
-				public void onFailure(Throwable t) {
-					Window.alert(t.toString());
-				}
-				public void onSuccess(final TeamManagementInfo tmi)  {
-					mmp.setTeamManagementInfo(tmi);
-				}
-			});
 		}
 	}
 	
@@ -295,9 +287,16 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 					public void onFailure(Throwable t) {
 						Window.alert(t.toString());
 					}
-					public void onSuccess(List<ToolbarItem> toolbarItemList)  {
-						addManageToContext( toolbarItemList);
-						addActionsToContext(toolbarItemList);
+					public void onSuccess(final List<ToolbarItem> toolbarItemList)  {
+						GwtTeaming.getRpcService().getTeamManagementInfo(m_contextBinderId, new AsyncCallback<TeamManagementInfo>() {
+							public void onFailure(Throwable t) {
+								Window.alert(t.toString());
+							}
+							public void onSuccess(final TeamManagementInfo tmi)  {
+								addManageToContext( toolbarItemList, tmi);
+								addActionsToContext(toolbarItemList);
+							}
+						});
 					}
 				});
 			}
