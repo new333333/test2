@@ -61,6 +61,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public abstract class MenuBarPopup extends PopupPanel {
 	protected ActionTrigger					m_actionTrigger;	// Used to trigger actions from the popup.
+	private   boolean						m_spacerNeeded;		// false -> The last widget added was a spacer.  true -> It was something else.
 	protected GwtTeamingMainMenuImageBundle	m_images;			// The menu's images.
 	protected GwtTeamingMessages			m_messages;			// The menu's messages.
 	protected GwtRpcServiceAsync			m_rpcService;		//
@@ -107,6 +108,7 @@ public abstract class MenuBarPopup extends PopupPanel {
 	final public void addContentWidget(Widget contentWidget) {
 		// Simply add the widget to the content panel.
 		m_contentPanel.add(contentWidget);
+		m_spacerNeeded = true;
 	}
 
 	/**
@@ -155,6 +157,7 @@ public abstract class MenuBarPopup extends PopupPanel {
 		FlowPanel spacerPanel = new FlowPanel();
 		spacerPanel.addStyleName("mainMenuPopup_ItemSpacer");
 		addContentWidget(spacerPanel);
+		m_spacerNeeded = false;
 	}
 	
 	/*
@@ -215,6 +218,16 @@ public abstract class MenuBarPopup extends PopupPanel {
 	 */
 	final public boolean hasContent() {
 		return (0 < m_contentPanel.getWidgetCount());
+	}
+
+	/**
+	 * Returns false if the last widget added was a spacer and true
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	final public boolean isSpacerNeeded() {
+		return m_spacerNeeded;
 	}
 	
 	/**

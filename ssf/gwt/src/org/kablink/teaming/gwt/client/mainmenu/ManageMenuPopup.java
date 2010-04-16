@@ -333,31 +333,31 @@ public class ManageMenuPopup extends MenuBarPopup {
 			boolean hasShowActions = ((null != m_whatsNewTBI) || (null != m_whatsUnreadTBI) || (null != m_whoHasAccessTBI));
 			boolean hasManageActions = (((null != m_tmi) && m_tmi.isTeamManagementEnabled()) || (null != m_emailNotificationTBI));
 			boolean hasMiscActions = (m_currentBinderIsWorkspace || (null != m_shareThisTBI) || (null != m_trackThisTBI));
-			boolean hasConfigActions = m_currentBinderIsWorkspace;
+			boolean hasConfigActions = true;
 			
 			// First the what's new, unread and who has access items...
 			addContextMenuItem(IDBASE, m_whatsNewTBI);
 			addContextMenuItem(IDBASE, m_whatsUnreadTBI);
 			addContextMenuItem(IDBASE, m_whoHasAccessTBI);
-			if (hasShowActions && hasBinderActions) {
-				// ...and add a spacer when required.
-				addSpacerMenuItem();
-			}
 
 			// Then the binder actions including the folder options
 			// when required...
+			if (hasBinderActions && isSpacerNeeded()) {
+				// ...and add a spacer when required.
+				addSpacerMenuItem();
+			}
 			addNestedContextMenuItems(IDBASE, m_folderActionsTBI);
 			addNestedContextMenuItems(IDBASE, m_commonActionsTBI);
 			addNestedContextMenuItems(IDBASE, m_workspaceActionsTBI);
 			showFolderOptions(m_folderViewsTBI, m_calendarImportTBI);
-			if (hasBinderActions && hasManageActions) {
+
+			// Then the management items...
+			if (hasManageActions && isSpacerNeeded()) {
 				// ...and add a spacer when required.
 				addSpacerMenuItem();
 			}
-
-			// If we have any team management items...
-			if (null != m_tmi) {
-				// ...add them to the menu...
+			if ((null != m_tmi) && m_tmi.isTeamManagementEnabled()) {
+				// Add the team management items.
 				MenuPopupAnchor mtA;
 				if (m_tmi.isViewAllowed()) {
 					mtA = new MenuPopupAnchor((IDBASE + "View"), m_messages.mainMenuManageViewTeam(), null, new TeamManagementClickHandler(TeamingAction.VIEW_TEAM_MEMBERS));
@@ -377,24 +377,24 @@ public class ManageMenuPopup extends MenuBarPopup {
 				}
 			}
 			
-			// ...add any email notification item...
+			// Add any email notification item.
 			addContextMenuItem(IDBASE, m_emailNotificationTBI);
-			if (hasManageActions && hasMiscActions) {
+
+			// Then the miscellaneous items...
+			if (hasMiscActions && isSpacerNeeded()) {
 				// ...and add a spacer when required...
 				addSpacerMenuItem();
 			}
-
-			// ...add any miscellaneous items...
 			showTagThisWorkspace();
 			addContextMenuItem(IDBASE, m_trackThisTBI);
 			addContextMenuItem(IDBASE, m_shareThisTBI);
-			if (hasMiscActions && hasConfigActions) {
+			
+			// Then the config items...
+			if (hasConfigActions && isSpacerNeeded()) {
 				// ...and add a spacer when required...
 				addSpacerMenuItem();
 			}
-			
-			// ...and add any config items.
-			showBrandWorkspace();
+			showBrandBinder();
 		}
 					
 		// Finally, show the popup.
@@ -402,23 +402,17 @@ public class ManageMenuPopup extends MenuBarPopup {
 	}
 	
 	/*
-	 * Add a brand workspace menu item.
+	 * Add a brand binder menu item.
 	 */
-	private void showBrandWorkspace() {
-		// If the current binder isn't a workspace...
-		if (!m_currentBinderIsWorkspace) {
-			// ...bail.
-			return;
-		}
-
-		// Construct a brand workspace toolbar item...
-		ToolbarItem brandWS = new ToolbarItem();
-		brandWS.setName("brand");
-		brandWS.setTitle(m_messages.mainMenuManageBrandWorkspace());
-		brandWS.setTeamingAction(TeamingAction.EDIT_BRANDING);
+	private void showBrandBinder() {
+		// Construct a brand binder toolbar item...
+		ToolbarItem brandTBI = new ToolbarItem();
+		brandTBI.setName("brand");
+		brandTBI.setTitle(m_currentBinderIsWorkspace ? m_messages.mainMenuManageBrandWorkspace() : m_messages.mainMenuManageBrandFolder());
+		brandTBI.setTeamingAction(TeamingAction.EDIT_BRANDING);
 		
 		// ...and add it to the context menu.
-		addContextMenuItem(IDBASE, brandWS);
+		addContextMenuItem(IDBASE, brandTBI);
 	}
 	
 	/*
