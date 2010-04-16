@@ -43,6 +43,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -200,8 +201,8 @@ public class ContextMenuItem {
 			case URL_IN_POPUP_WITH_FORM:
 				GwtClientHelper.jsLaunchUrlInWindow("", m_fp.getTarget(), m_popupHeight, m_popupWidth);
 //				Window.alert("submitting " + m_fp.getTarget());
-				m_fp.submit();
-//				jsSubmit(m_fp.getTarget());
+//				m_fp.submit();
+				jsSubmit(m_fp.getTarget());
 				break;
 			}
 		}
@@ -209,11 +210,18 @@ public class ContextMenuItem {
 		/*
 		 * Loads a URL into the GWT UI's content frame.
 		 */
-		@SuppressWarnings("unused")
+//		@SuppressWarnings("unused")
 		private native void jsSubmit(String formName) /*-{
-			var form = window.top.document.getElementById(formName);
-			alert("found '" + formName + "' form:  " + (null != form));
-			form.submit();
+			var form = document.getElementById(formName);
+			if (null == form) {
+				form = window.top.document.getElementById(formName);
+			}
+			if (null != form) {
+				form.submit();
+			}
+			else {
+				alert("Form '" + formName + "' could not be found, skipping submit.");
+			}
 		}-*/;
 		
 		/**
@@ -320,19 +328,38 @@ public class ContextMenuItem {
 		int popupWidth  = GwtClientHelper.iFromS(tbi.getQualifierValue("popupWidth"),  Window.getClientWidth());
 
 		// Are we supposed to open the popup window using a submitted form?
+		int hiCount = 0;
 		boolean popupFromForm = GwtClientHelper.bFromS(tbi.getQualifierValue("popup.fromForm"));
 		if (popupFromForm) {
+			// Possibly!  We'll only do so if we're going to have more
+			// than one hidden input of data to pass through it.
+			hiCount = GwtClientHelper.iFromS(tbi.getQualifierValue("popup.hiddenInput.count"));
+			popupFromForm = (0 < hiCount);
+		}
+popupFromForm = false;
+		if (popupFromForm) {
 			// Yes!  Create the form...
-			String fpId = (id + "Form");
+			String fpId = (id + "Wnd");
 			FormPanel fp = new FormPanel(fpId);
 			fp.setAction(url);
 			fp.getElement().setClassName("inline");
 			fp.getElement().setId(fpId);
 			fp.setMethod(FormPanel.METHOD_POST);
+
+			// ...since a FormPanel is a SimplePanel, it can only hold
+			// ...a single widget.  If we have more than 1 hidden
+			// ...input, we'll use a nested FlowPanel to contain them.
+			Panel hiPanel;
+			if (1 < hiCount) {
+				FlowPanel fpPanel = new FlowPanel();
+				fp.add(fpPanel);
+				hiPanel = fpPanel;
+			}
+			else {
+				hiPanel = fp;
+			}
 			
 			// ...add the required hidden inputs to it...
-			FlowPanel hiPanel = new FlowPanel();
-			int hiCount = GwtClientHelper.iFromS(tbi.getQualifierValue("popup.hiddenInput.count"));
 			for (int i = 0; i < hiCount; i += 1) {
 				String hiBase  = ("popup.hiddenInput." + i + ".");
 				Hidden hInput = new Hidden();
@@ -340,7 +367,6 @@ public class ContextMenuItem {
 				hInput.setValue(tbi.getQualifierValue(hiBase + "value"));
 				hiPanel.add(hInput);
 			}
-			fp.add(hiPanel);
 			
 			// ...and create the click handler.
 			reply = new ContextItemClickHandler(id, fp, popupHeight, popupWidth);
