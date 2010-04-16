@@ -182,12 +182,27 @@ public class GwtMainPage extends Composite
 	private void editBranding()
 	{
 		GwtBrandingData brandingData;
+		GwtBrandingData siteBrandingData;
 		String brandingBinderId;
 		int x;
 		int y;
 		
 		// Get the branding data the masthead is currently working with.
 		brandingData = m_mastHead.getBrandingData();
+		
+		// Will the user be editing the site branding?
+		if ( brandingData.isSiteBranding() == false )
+		{
+			// No
+			// If the administrator has set the branding rule to be "site branding only", tell the
+			// user they can't edit the branding.
+			siteBrandingData = m_mastHead.getSiteBrandingData();
+			if ( siteBrandingData.getBrandingRule() == GwtBrandingDataExt.BrandingRule.DISPLAY_SITE_BRANDING_ONLY )
+			{
+				Window.alert( GwtTeaming.getMessages().cantEditBranding() );
+				return;
+			}
+		}
 		
 		// Is the branding data inherited?  Branding is inherited if it came from a binder other than
 		// the binder we are working with.

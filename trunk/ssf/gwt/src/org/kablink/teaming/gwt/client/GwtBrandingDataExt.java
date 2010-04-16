@@ -120,7 +120,7 @@ public class GwtBrandingDataExt
 
 	/**
 	 * Return the branding information as an xml string.  The following is an example of what the xml looks like:
-	 * 	<brandingData fontColor="" brandingImgName="some name" brandingType="image/advanced">
+	 * 	<brandingData fontColor="" brandingImgName="some name" brandingType="image/advanced" brandingRule="">
 	 * 		<background color="" imgName="" stretchImg="true/false" />
 	 * 	</brandingData>
 	 */
@@ -134,6 +134,13 @@ public class GwtBrandingDataExt
 		String type;
 		boolean stretch;
 
+		// Has any branding been defined?
+		if ( haveBranding() == false )
+		{
+			// No, return an empty string.
+			return "";
+		}
+		
 		xml = new StringBuffer();
     	
     	xml.append( "<brandingData" );

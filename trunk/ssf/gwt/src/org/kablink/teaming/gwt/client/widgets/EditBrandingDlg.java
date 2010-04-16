@@ -178,6 +178,19 @@ public class EditBrandingDlg extends DlgBox
 	
 
 	/**
+	 * Clear out all branding information so no branding exists.
+	 */
+	private void clearBranding()
+	{
+		m_advancedBranding = null;
+		m_brandingImgListbox.setSelectedIndex( -1 );
+		m_backgroundImgListbox.setSelectedIndex( -1 );
+		m_backgroundColorTextbox.setText( "" );
+		m_textColorTextbox.setText( "" );
+	}// end clearBranding()
+	
+	
+	/**
 	 * Create all the controls that make up the dialog box.
 	 */
 	public Panel createContent( Object props )
@@ -669,6 +682,73 @@ public class EditBrandingDlg extends DlgBox
 			++nextRow;
 		}
 		
+		// Add a link the user can click on to clear all branding information
+		{
+			Anchor clearBrandingAnchor;
+			ClickHandler clickHandler;
+			MouseOverHandler mouseOverHandler;
+			MouseOutHandler mouseOutHandler;
+			
+			clearBrandingAnchor = new Anchor( GwtTeaming.getMessages().clearBrandingLabel() );
+			clearBrandingAnchor.setTitle( GwtTeaming.getMessages().clearBrandingLabel() );
+			clearBrandingAnchor.addStyleName( "editBrandingLink" );
+			clearBrandingAnchor.addStyleName( "editBrandingAdvancedLink" );
+			clearBrandingAnchor.addStyleName( "subhead-control-bg1" );
+			clearBrandingAnchor.addStyleName( "roundcornerSM" );
+			
+			// Add a clickhandler to the "Clear branding" link.  When the user clicks on the link we
+			// will clear all branding information.
+			clickHandler = new ClickHandler()
+			{
+				/**
+				 * Clear all branding information.
+				 */
+				public void onClick( ClickEvent event )
+				{
+					clearBranding();
+				}//end onClick()
+			};
+			clearBrandingAnchor.addClickHandler( clickHandler );
+			
+			// Add a mouse-over handler
+			mouseOverHandler = new MouseOverHandler()
+			{
+				/**
+				 * 
+				 */
+				public void onMouseOver( MouseOverEvent event )
+				{
+					Widget widget;
+					
+					widget = (Widget)event.getSource();
+					widget.removeStyleName( "subhead-control-bg1" );
+					widget.addStyleName( "subhead-control-bg2" );
+				}// end onMouseOver()
+			};
+			clearBrandingAnchor.addMouseOverHandler( mouseOverHandler );
+
+			// Add a mouse-out handler
+			mouseOutHandler = new MouseOutHandler()
+			{
+				/**
+				 * 
+				 */
+				public void onMouseOut( MouseOutEvent event )
+				{
+					Widget widget;
+					
+					// Remove the background color we added to the anchor when the user moved the mouse over the anchor.
+					widget = (Widget)event.getSource();
+					widget.removeStyleName( "subhead-control-bg2" );
+					widget.addStyleName( "subhead-control-bg1" );
+				}// end onMouseOut()
+			};
+			clearBrandingAnchor.addMouseOutHandler( mouseOutHandler );
+
+			table.setWidget( nextRow, 0, clearBrandingAnchor );
+			++nextRow;
+		}
+
 		mainPanel.add( table );
 		
 		return mainPanel;

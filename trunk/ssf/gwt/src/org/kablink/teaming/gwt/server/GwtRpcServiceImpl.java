@@ -423,6 +423,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				// Get the branding that should be applied for this binder.
 				branding = brandingSourceBinder.getBranding();
 				
+				// For some unknown reason, if there is no branding in the db the string we get back
+				// will contain only a \n.  We don't want that.
+				if ( branding != null && branding.length() == 1 && branding.charAt( 0 ) == '\n' )
+					branding = "";
+				
 				// Parse the branding and replace any markup with the appropriate url.  For example,
 				// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
 				branding = MarkupUtil.markupStringReplacement( null, null, null, null, brandingSourceBinder, branding, "view" );

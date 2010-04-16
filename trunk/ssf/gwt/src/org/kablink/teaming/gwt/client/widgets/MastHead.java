@@ -445,6 +445,15 @@ public class MastHead extends Composite
 		}
 	}// end getBinderBrandingDataFromServer()
 
+
+	/**
+	 * Return the site branding data.
+	 */
+	public GwtBrandingData getSiteBrandingData()
+	{
+		return m_siteBrandingData;
+	}// end getSiteBrandingData()
+	
 	
 	/**
 	 * Issue an ajax request to get the site branding data from the server.  Our AsyncCallback
