@@ -452,7 +452,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// If this Binder is supposed to be selected...
 		if (isBinderSelected(ti)) {
 			// ...mark it as selected.
-			selectBinderImpl(ti);
+			selectBinder(ti);
 		}
 		
 		// Install a mouse handler on the selector Anchor so that we
@@ -510,15 +510,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * @param ti
 	 */
 	void selectBinder(TreeInfo ti) {
-		// For the vertical WorkspaceTreeControl, we update the binder
-		// selection during the setSelectedBinder() callback.
-	}
-	
-	/*
-	 * Does whatever is necessary UI wise to select the Binder
-	 * represented by a TreeInfo.
-	 */
-	private void selectBinderImpl(TreeInfo ti) {
 		// If this a trash Binder?
 		if (!(ti.isBinderTrash())) {
 			// No!  Mark it as having been selected.
@@ -594,7 +585,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			case CONTENT_CONTEXT_CHANGE:
 			case SIDEBAR_TREE:
 				// No!  Simply select the Binder.
-				selectBinderImpl(targetTI);
+				selectBinder(targetTI);
 				break;
 
 			default:
@@ -605,7 +596,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				getRpcService().getRootWorkspaceId(binderId, new AsyncCallback<String>() {
 					public void onFailure(Throwable t) {
 						Window.alert(t.toString());
-						selectBinderImpl(targetTI);
+						selectBinder(targetTI);
 					}
 					public void onSuccess(String rootWorkspaceId)  {
 						// If the selected Binder's workspace is
@@ -614,7 +605,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 						// we need to re-root?
 						if (rootWorkspaceId.equals(getRootTreeInfo().getBinderId())) {
 							// No!  Simply select the Binder.
-							selectBinderImpl(targetTI);
+							selectBinder(targetTI);
 						}
 						else {
 							// Yes, we need to re-root!

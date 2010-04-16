@@ -36,18 +36,18 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * Class used to communicate team information between the client
- * (i.e., the MainMenuControl) and the server (i.e.,
- * GwtRpcServiceImpl.getMyTeams().)
+ * Class used to communicate team management information between the
+ * client (i.e., the MainMenuControl) and the server (i.e.,
+ * GwtRpcServiceImpl.getTeamManagementInfo().)
  * 
  * @author drfoster@novell.com
  *
  */
 public class TeamManagementInfo implements IsSerializable {
 	private boolean m_viewAllowed;		// Is viewing teaming membership allowed?
-	private String m_manageUrl;			// The URL for team management.
-	private String m_sendMailUrl;		// The URL to send mail to the team.
-	private String m_teamMeetingUrl;	// The URL to start a team meeting.
+	private String  m_manageUrl;		// The URL for team management.
+	private String  m_sendMailUrl;		// The URL to sending mail to the team.
+	private String  m_teamMeetingUrl;	// The URL to start a team meeting.
 	
 	/**
 	 * Constructor method.
@@ -86,8 +86,7 @@ public class TeamManagementInfo implements IsSerializable {
 	}
 	
 	/*
-	 * Returns true if s refers to a non-null, non-0 length string and
-	 * false otherwise.
+	 * Returns true if s refers to a non-null, non-0 length string.
 	 */
 	private static boolean hasString(String s) {
 		return ((null != s) && (0 < s.length()));
@@ -103,7 +102,7 @@ public class TeamManagementInfo implements IsSerializable {
 	}
 
 	/**
-	 * Returns true sending mail to the team is allowed.
+	 * Returns true if sending mail to the team is allowed.
 	 * 
 	 * @return
 	 */
@@ -113,7 +112,7 @@ public class TeamManagementInfo implements IsSerializable {
 	
 	/**
 	 * Returns true if any of the team management capabilities are
-	 * enabled and false otherwise.
+	 * enabled.
 	 * 
 	 * @return
 	 */
@@ -126,7 +125,7 @@ public class TeamManagementInfo implements IsSerializable {
 	}
 	
 	/**
-	 * Returns true starting a team meeting is allowed
+	 * Returns true if starting a team meeting is allowed.
 	 * 
 	 * @return
 	 */
@@ -135,7 +134,7 @@ public class TeamManagementInfo implements IsSerializable {
 	}
 	
 	/**
-	 * Returns true viewing the team membership is allowed.
+	 * Returns true if viewing the team membership is allowed.
 	 * 
 	 * @return
 	 */
