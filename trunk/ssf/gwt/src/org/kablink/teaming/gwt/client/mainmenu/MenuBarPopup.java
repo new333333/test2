@@ -128,6 +128,27 @@ public abstract class MenuBarPopup extends PopupPanel {
 	}
 
 	/**
+	 * Adds a collection of context based toolbar items to the menu.
+	 * 
+	 * @param idBase
+	 * @param tbi
+	 */
+	final public void addContextMenuItemsFromList(String idBase, List<ToolbarItem> tbiList) {
+		// If there aren't any items...
+		if ((null == tbiList) || tbiList.isEmpty()) {
+			// ...bail.
+			return;
+		}
+
+		// Scan the items...
+		for (Iterator<ToolbarItem> niIT = tbiList.iterator(); niIT.hasNext(); ) {
+			// ...adding each to the menu.
+			ToolbarItem tbi = niIT.next();
+			addContextMenuItem(idBase, tbi);
+		}
+	}
+	
+	/**
 	 * Adds a collection of nested context based toolbar items to the
 	 * menu.
 	 * 
@@ -135,19 +156,8 @@ public abstract class MenuBarPopup extends PopupPanel {
 	 * @param tbi
 	 */
 	final public void addNestedContextMenuItems(String idBase, ToolbarItem tbi) {
-		// If there aren't any nested items...
 		List<ToolbarItem> niList = ((null == tbi) ? null : tbi.getNestedItemsList());
-		if ((null == niList) || niList.isEmpty()) {
-			// ...bail.
-			return;
-		}
-
-		// Scan the nested items...
-		for (Iterator<ToolbarItem> niIT = niList.iterator(); niIT.hasNext(); ) {
-			// ...adding each to the menu.
-			ToolbarItem nestedTBI = niIT.next();
-			addContextMenuItem(idBase, nestedTBI);
-		}
+		addContextMenuItemsFromList(idBase, niList);
 	}
 	
 	/**
