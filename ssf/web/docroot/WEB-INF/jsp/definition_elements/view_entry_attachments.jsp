@@ -37,6 +37,7 @@
 <%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil" %>
 <%
 	boolean presence_service_enabled = org.kablink.teaming.util.SPropsUtil.getBoolean("presence.service.enable", false);
+	String webdavSuffix = org.kablink.teaming.util.SPropsUtil.getString("webdav.folder.url.suffix", "");
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="ss_quotaMessage" value="" />
@@ -126,7 +127,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 		<a class="ss_tinyButton ss_fineprint ss_nowrap"  
 		  title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
 		  style="behavior: url(#default#AnchorClick);" 
-		  folder="${ssWebDavURL}#" 
+		  folder="${ssWebDavURL}<%= webdavSuffix %>"
 		  <c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
 		    href="${ssWebDavURL}" 
 		    target="_blank"
