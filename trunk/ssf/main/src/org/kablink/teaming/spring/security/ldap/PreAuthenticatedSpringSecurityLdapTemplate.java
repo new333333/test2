@@ -44,6 +44,8 @@ import javax.naming.directory.SearchResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.WindowsUtil;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.ldap.core.ContextExecutor;
@@ -56,6 +58,8 @@ import org.springframework.security.ldap.SpringSecurityLdapTemplate;
 public class PreAuthenticatedSpringSecurityLdapTemplate extends SpringSecurityLdapTemplate {
 
     private static final Log logger = LogFactory.getLog(PreAuthenticatedSpringSecurityLdapTemplate.class);
+    
+    private static DomainMatcher domainMatcher;
 
     private SearchControls searchControls = new SearchControls();
 
@@ -91,7 +95,7 @@ public class PreAuthenticatedSpringSecurityLdapTemplate extends SpringSecurityLd
                             
                             if(domainname != null && domainname.length() > 0) {
                             	// Filter the match by the domain name.
-	                            if(dnStr.toLowerCase().contains("=" + domainname.toLowerCase())) {
+	                            if(getDomainMatcher().matches(domainname, dnStr, searchResult)) {
 	                            	if(logger.isDebugEnabled())
 	                            		logger.debug("Found a domain match [" + dnStr + "]");
 	                                results.add(new DirContextAdapter(searchResult.getAttributes(),
@@ -129,5 +133,13 @@ public class PreAuthenticatedSpringSecurityLdapTemplate extends SpringSecurityLd
     public void setSearchControls(SearchControls searchControls) {
         super.setSearchControls(searchControls);
         this.searchControls = searchControls;
+    }
+    
+    private DomainMatcher getDomainMatcher() {
+    	if(domainMatcher == null) {
+    		String className = SPropsUtil.getString("ldap.domain.matcher.class", "org.kablink.teaming.spring.security.ldap.DefaultDomainMatcher");
+    		domainMatcher = (DomainMatcher) ReflectHelper.getInstance(className);
+    	}
+    	return domainMatcher;
     }
 }
