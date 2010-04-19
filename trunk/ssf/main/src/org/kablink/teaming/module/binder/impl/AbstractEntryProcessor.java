@@ -135,6 +135,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	
         	SimpleProfiler.startProfiler("addEntry_create");
         	final Entry entry = addEntry_create(def, clazz, ctx);
+        	newEntry = entry;
         	SimpleProfiler.stopProfiler("addEntry_create");
         
         	SimpleProfiler.startProfiler("addEntry_transactionExecute");
@@ -159,7 +160,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		}
         	});
         	SimpleProfiler.stopProfiler("addEntry_transactionExecute");
-        	newEntry = entry;
         	
            	// We must save the entry before processing files because it makes use
         	// of the persistent id of the entry. 
@@ -211,6 +211,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	throw ex;
         } catch(Exception ex) {
         	entryDataErrors.addProblem(new Problem(Problem.GENERAL_PROBLEM, ex));
+        	if (newEntry != null) {
+        		deleteEntry(binder, newEntry, false, new HashMap());
+        	}
         	throw new WriteEntryDataException(entryDataErrors);
         } finally {
            	cleanupFiles(fileUploadItems);       	

@@ -1484,6 +1484,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		mod = now;
     	
 		fAtt.setModification(mod);
+		fAtt.setMinorVersion(fAtt.getMinorVersion() + 1);
 		
 		FileItem fItem = fAtt.getFileItem();
 
@@ -1713,6 +1714,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		} else // set mod date equal to creation date
 			mod = fAtt.getCreation();
 		fAtt.setModification(mod);
+		fAtt.setMajorVersion(1);
+		fAtt.setMinorVersion(0);
     	fAtt.setRepositoryName(fui.getRepositoryName());
     	//set attribute name - null if not not named
     	fAtt.setName(fui.getName());

@@ -49,6 +49,7 @@ import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.repository.RepositoryUtil;
+import org.kablink.teaming.util.NLT;
 import org.kablink.util.Validator;
 
 
@@ -62,9 +63,11 @@ public class FileAttachment extends Attachment {
     private String repositoryName;//initialized by hibernate access=field
 
     private FileItem fileItem;
-    
     private FileLock fileLock;
-
+    private Integer majorVersion;
+    private Integer minorVersion;
+    private Integer fileStatus = FileStatus.valueOf(FileStatus.draft);
+   
     public FileAttachment() {
         
     }
@@ -72,6 +75,38 @@ public class FileAttachment extends Attachment {
     	super(name);
     }
  
+	public enum FileStatus {
+		not_set (0),
+		official (1),
+		draft (2),
+		obsolete (3);
+		
+		int dbValue;
+		FileStatus(int dbValue) {
+			this.dbValue = dbValue;
+		}
+
+		public static FileStatus valueOf(int type) {
+			switch (type) {
+			case 0: return FileStatus.not_set;
+			case 1: return FileStatus.official;
+			case 2: return FileStatus.draft;
+			case 3: return FileStatus.obsolete;
+			default: return FileStatus.not_set;
+			}
+		}
+		
+		public static int valueOf(FileStatus fs) {
+			switch (fs) {
+			case not_set: return 0;
+			case official: return 1;
+			case draft: return 2;
+			case obsolete: return 3;
+			default: return 0;
+			}
+		}
+	};
+
     /**
      * @hibernate.component
      * @return
@@ -120,6 +155,56 @@ public class FileAttachment extends Attachment {
     	return hva;   	
     }
     
+    /**
+     * @hibernate.property
+     * @return
+     */
+    public Integer getMajorVersion() {
+    	if (this.majorVersion == null) return 1;
+        return this.majorVersion;
+    }
+    public void setMajorVersion(Integer majorVersion) {
+    	if (majorVersion == null) return;
+    	if (majorVersion <= 0) throw new IllegalArgumentException("Invalid majorVersion");
+        if (!majorVersion.equals(this.majorVersion)) this.majorVersion = majorVersion;
+    }
+    /**
+     * @hibernate.property
+     * @return
+     */
+    public Integer getMinorVersion() {
+    	if (this.minorVersion == null) {
+    		if (getHighestVersionNumber() >= 0) {
+    			return getHighestVersionNumber();
+    		} else {
+    			return 0;
+    		}
+    	}
+        return this.minorVersion;
+    }
+    public void setMinorVersion(Integer minorVersion) {
+    	if (minorVersion == null) return;
+    	if (minorVersion < 0) throw new IllegalArgumentException("Invalid minorVersion");
+        if (!minorVersion.equals(this.minorVersion)) this.minorVersion = minorVersion;
+    }
+    public String getFileVersion() {
+    	return String.valueOf(this.getMajorVersion()) + "." + String.valueOf(this.getMinorVersion());
+    }
+    /**
+     * @hibernate.property
+     * @return
+     */
+    public Integer getFileStatus() {
+    	if (this.fileStatus == null) return FileStatus.valueOf(FileStatus.not_set);
+        return this.fileStatus;
+    }
+    public void setFileStatus(Integer fileStatus) {
+        this.fileStatus = fileStatus;
+    }
+    public String getFileStatusText() {
+    	return NLT.get("file.status" + String.valueOf(this.getFileStatus()));
+    }
+
     /**
      * Return list of versions, sorted with highest first.
      * Important: Note that the version with the highest version number is NOT 
