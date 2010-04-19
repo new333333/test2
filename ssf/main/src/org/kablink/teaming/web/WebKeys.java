@@ -161,6 +161,7 @@ public class WebKeys {
 	public static final String URL_FILE = "file";
 	public static final String URL_FILE_ID = "fileId"; 
 	public static final String URL_FILE_NAME = "fileName";
+	public static final String URL_FILE_STATUS = "fileStatus";
 	public static final String URL_FILE_TIME = "fileTime";
 	public static final String URL_FILE_TITLE = "fileTitle";
 	public static final String URL_FILE_VERSION = "fileVersion";
@@ -520,6 +521,7 @@ public class WebKeys {
 	public static final String OPERATION_SHOW_TEAM_MEMBERS = "show_team_members";
 	public static final String OPERATION_SHOW_NO_ENTRIES = "show_no_entries";
 	public static final String OPERATION_SHOW_NO_MORE_ENTRIES = "show_no_more_entries";
+	public static final String OPERATION_SET_FILE_STATUS = "set_file_status";
 	public static final String OPERATION_START_LDAP_SYNC = "startLdapSync";
 	public static final String OPERATION_START_FIXUP_FOLDER_DEFS = "startFixupFolderDefs";
 	public static final String OPERATION_STOP_COLLECTING_LDAP_SYNC_RESULTS = "stopCollectingLdapSyncResults";
