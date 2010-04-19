@@ -191,7 +191,7 @@ public class ContextMenuItem {
 				break;
 
 			case URL_IN_CONTENT_FRAME:
-				GwtClientHelper.jsLoadUrlInContentFrame(m_url);
+				m_contextMenu.m_actionTrigger.triggerAction(TeamingAction.GOTO_CONTENT_URL, m_url);
 				break;
 				
 			case URL_IN_POPUP_NO_FORM:

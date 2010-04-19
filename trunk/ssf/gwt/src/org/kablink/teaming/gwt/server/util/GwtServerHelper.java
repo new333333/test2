@@ -68,7 +68,6 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.GwtUIHelper;
@@ -86,10 +85,6 @@ import org.kablink.util.PropertyNotFoundException;
  */
 public class GwtServerHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtServerHelper.class);
-	
-	// String used to recognized an '&' formatted URL vs. a '/'
-	// formatted permalink URL.
-	private final static String AMPERSAND_FORMAT_MARKER = "a/do?";
 	
 	/**
 	 * Inner class used compare two TeamInfo objects.
@@ -184,7 +179,7 @@ public class GwtServerHelper {
 		trashTI.setBinderExpanded(false);
 		trashTI.setBinderIconName(null);
 		trashTI.setBinderTitle(NLT.get("profile.abv.element.trash"));
-		String trashUrl = getTrashPermalink(trashTI.getBinderPermalink());
+		String trashUrl = GwtUIHelper.getTrashPermalink(trashTI.getBinderPermalink());
 		trashTI.setBinderPermalink(     trashUrl);
 		trashTI.setBinderTrashPermalink(trashUrl);
 
@@ -198,27 +193,6 @@ public class GwtServerHelper {
 		ti.setChildBindersList(childBindersList);
 	}
 
-	/**
-	 * Appends a parameter to to a URL.
-	 * 
-	 * @param urlString
-	 * @param pName
-	 * @param pValue
-	 * 
-	 * @return
-	 */
-	public static String appendUrlParam(String urlString, String pName, String pValue) {
-		String param;
-		boolean useAmpersand = (0 < urlString.indexOf(AMPERSAND_FORMAT_MARKER));
-		if (useAmpersand)
-			 param = ("&" + pName + "=" + pValue);
-		else param = ("/" + pName + "/" + pValue);
-		if (0 > urlString.indexOf(param)) {
-			urlString += param;
-		}
-		return urlString;
-	}
-	
 	/**
 	 * Builds a TreeInfo object for a given Binder.
 	 *
@@ -249,7 +223,7 @@ public class GwtServerHelper {
 		reply.setBinderChildren(binder.getBinderCount());
 		String binderPermalink = PermaLinkUtil.getPermalink(binder);
 		reply.setBinderPermalink(binderPermalink);
-		reply.setBinderTrashPermalink(getTrashPermalink(binderPermalink));
+		reply.setBinderTrashPermalink(GwtUIHelper.getTrashPermalink(binderPermalink));
 		if (binder instanceof Workspace) {
 			reply.setBinderType(BinderType.WORKSPACE);
 			WorkspaceType wsType = WorkspaceType.OTHER;
@@ -534,14 +508,6 @@ public class GwtServerHelper {
 		// If we get here, rpiList refers to a List<RecentPlaceInfo> of
 		// the user's recent places.  Return it.
 		return rpiList;
-	}
-	
-	/*
-	 * Takes a Binder permalink and does what's necessary to bring up
-	 * the trash on that Binder.
-	 */
-	private static String getTrashPermalink(String binderPermalink) {
-		return appendUrlParam(binderPermalink, WebKeys.URL_SHOW_TRASH, "true");
 	}
 	
 	/**

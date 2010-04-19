@@ -51,7 +51,6 @@ public class OnSelectBinderInfo {
 	// Various marker strings used to recognize the format of a URL.
 	private final static String CAPTIVE_MARKER = "captive";
 	private final static String GWT_MARKER = "seen_by_gwt";
-	private final static String PERMALINK_MARKER = "view_permalink";
 
 	// Used to identify the instigator of the Binder selection, if
 	// known.
@@ -105,7 +104,7 @@ public class OnSelectBinderInfo {
 		m_binderUrl = GwtClientHelper.appendUrlParam(m_binderUrl, CAPTIVE_MARKER, "true");
 		
 		// ...and if the URL is a permalink...
-		m_isPermalinkUrl = (0 < m_binderUrl.indexOf(PERMALINK_MARKER));
+		m_isPermalinkUrl = GwtClientHelper.isPermalinkUrl(m_binderUrl);
 		if (m_isPermalinkUrl) {
 			// ...add a GWT marker.
 			m_binderUrl = GwtClientHelper.appendUrlParam(m_binderUrl, GWT_MARKER, "1");

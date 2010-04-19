@@ -44,6 +44,9 @@ public class GwtClientHelper {
 	// formatted permalink URL.
 	private final static String AMPERSAND_FORMAT_MARKER = "a/do?";
 	
+	// Marker string used to recognize the format of a URL.
+	private final static String PERMALINK_MARKER = "view_permalink";
+	
 	/*
 	 * Inhibits this class from being instantiated. 
 	 */
@@ -113,10 +116,27 @@ public class GwtClientHelper {
 	public static int iFromS(String s) {
 		return iFromS(s, (-1));
 	}
-	
-	/*
+
+	/**
+	 * Returns true if a URL is a permalink URL and false otherwise.
+	 * 
+	 * @param url
+	 * @return
+	 */
+	public static boolean isPermalinkUrl(String url) {
+		boolean reply = hasString(url);
+		if (reply) {
+			reply = (0 < url.indexOf(PERMALINK_MARKER));
+		}
+		return reply;
+	}
+
+	/**
 	 * Evaluates a JavaScript string containing embedded
 	 * JavaScript. 
+	 * 
+	 * @param url
+	 * @param jsString
 	 */
 	public static native void jsEvalString(String url, String jsString) /*-{
 		// Setup an object to pass through the URL...
@@ -130,17 +150,24 @@ public class GwtClientHelper {
 		// ...and evaluate it.
 		eval(jsString);
 	}-*/;
-	
-	/*
+
+	/**
 	 * Uses Teaming's existing ss_common JavaScript to launch a URL in
 	 * a new window.
+	 * 
+	 * @param url
+	 * @param windowName
+	 * @param windowHeight
+	 * @param windowWidth
 	 */
 	public static native void jsLaunchUrlInWindow(String url, String windowName, int windowHeight, int windowWidth) /*-{
 		window.top.ss_openUrlInWindow({href: url}, windowName, windowWidth, windowHeight);
 	}-*/;
-	
-	/*
+
+	/**
 	 * Loads a URL into the GWT UI's content frame.
+	 * 
+	 * @param url
 	 */
 	public static native void jsLoadUrlInContentFrame(String url) /*-{
 		window.top.gwtContentIframe.location.href = url;
