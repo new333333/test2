@@ -113,16 +113,18 @@ public class ModifyFileController extends SAbstractController {
 			setupViewFolder(response, entity.getId());
 		}
 		if (entity != null) {
-			//Delete the file version
+			//Get the file version
 			Set<Attachment> attachments = entity.getAttachments();
 			FileAttachment fileAtt = null;
+			VersionAttachment fileVer = null;
 			for (Attachment attachment : attachments) {
 				if (attachment instanceof FileAttachment) {
 					if (attachment.getId().equals(fileId)) {
 						fileAtt = (FileAttachment)attachment;
 						break;
 					}
-					fileAtt = ((FileAttachment)attachment).findFileVersionById(fileId);
+					fileVer = ((FileAttachment)attachment).findFileVersionById(fileId);
+					fileAtt = fileVer;
 					if (fileAtt != null) break;
 				}
 			}
@@ -139,6 +141,14 @@ public class ModifyFileController extends SAbstractController {
 					String text = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DESCRIPTION, "");
 					Description description = new Description(text);
 					getFileModule().modifyFileComment(entity, fileAtt, description);
+				}
+				
+			} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_REVERT) && WebHelper.isMethodPost(request)) {
+				//The form was submitted. Go process it
+				if (fileVer != null) {
+					String text = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DESCRIPTION, "");
+					Description description = new Description(text);
+					getFileModule().revertFileVersion(entity, fileVer);
 				}
 			}
 
@@ -205,6 +215,8 @@ public class ModifyFileController extends SAbstractController {
 		
 		if (op.equals(WebKeys.OPERATION_DELETE)) {
 			return new ModelAndView("forum/delete_file_version", model);
+		} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_REVERT)) {
+			return new ModelAndView("forum/revert_file_version", model); 
 		} else {
 			return new ModelAndView("forum/modify_file_description", model);
 		}

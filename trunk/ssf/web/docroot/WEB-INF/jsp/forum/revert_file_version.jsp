@@ -32,14 +32,14 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% // Delete file version %>
+<% // Revert file version %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ss_windowTitle" value='<%= NLT.get("file.deleteVersion") %>' scope="request"/>
+<c:set var="ss_windowTitle" value='<%= NLT.get("file.revertVersion") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="tundra">
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<ssf:form titleTag="file.deleteVersion">
+<ssf:form titleTag="file.revertVersion">
 <div class="ss_style ss_portlet">
 <form name="form1" id="form1" class="ss_style ss_form" method="post" 
   action="<ssf:url
@@ -50,7 +50,7 @@
 		    ><ssf:param name="entityId" value="${ss_entity.id}"/><ssf:param 
 		    name="entityType" value="${ss_entity.entityType}"/><ssf:param 
 		    name="fileId" value="${ss_fileAttachment.id}"/><ssf:param 
-		    name="operation" value="delete"/></ssf:url>"
+		    name="operation" value="modify_file_revert"/></ssf:url>"
 >
 <br/>
 <div>
@@ -86,9 +86,9 @@
 </table>
 <br/>
 <br/>
-<span class="ss_bold"><ssf:nlt tag="file.deleteConfirm"/></span>
+<span class="ss_bold"><ssf:nlt tag="file.revertConfirm"/></span>
 <br/>
-<span class="ss_smallprint"style="padding-left:10px;"><ssf:nlt tag="file.deleteConfirm2"/></span>
+<span class="ss_smallprint"style="padding-left:10px;"><ssf:nlt tag="file.revertConfirm2"/></span>
 </div>
 <br/>
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"

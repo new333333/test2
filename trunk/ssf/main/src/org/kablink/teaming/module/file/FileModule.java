@@ -388,6 +388,17 @@ public interface FileModule {
 	public void modifyFileStatus(DefinableEntity entity, FileAttachment fileAtt, FileStatus fileStatus);
 	
 	/**
+	 * Revert to the specified version. 
+	 * 
+	 * @param binder
+	 * @param entity
+	 * @param va
+	 * @throws UncheckedIOException, RepositoryServiceException
+	 */
+	public void revertFileVersion(DefinableEntity entity, VersionAttachment va) 
+			throws UncheckedIOException, RepositoryServiceException;
+	
+	/**
 	 * Delete the specified version. 
 	 * If it is the only remaining version for the file, the request fails and 
 	 * the method throws <code>DeleteVersionException</code>.
