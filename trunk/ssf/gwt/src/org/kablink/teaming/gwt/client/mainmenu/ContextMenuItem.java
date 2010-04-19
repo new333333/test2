@@ -200,41 +200,8 @@ public class ContextMenuItem {
 				
 			case URL_IN_POPUP_WITH_FORM:
 				GwtClientHelper.jsLaunchUrlInWindow("", m_fp.getTarget(), m_popupHeight, m_popupWidth);
-//				Window.alert("submitting " + m_fp.getTarget());
-//				m_fp.submit();
-				jsSubmit(m_fp.getTarget());
+				m_fp.submit();
 				break;
-			}
-		}
-		
-		/*
-		 * Loads a URL into the GWT UI's content frame.
-		 */
-//		@SuppressWarnings("unused")
-		private native void jsSubmit(String formName) /*-{
-			var form = document.getElementById(formName);
-			if (null == form) {
-				form = window.top.document.getElementById(formName);
-			}
-			if (null != form) {
-				form.submit();
-			}
-			else {
-				alert("Form '" + formName + "' could not be found, skipping submit.");
-			}
-		}-*/;
-		
-		/**
-		 * Allows the click handler to attach any form panel it has to
-		 * the anchor.
-		 * 
-		 * @param mpa
-		 */
-		void setAnchor(MenuPopupAnchor mpa) {
-			// If we have a form panel for this click handler...
-			if (null != m_fp) {
-				// ...attach it to the anchor.
-				mpa.add(m_fp);
 			}
 		}
 	}
@@ -270,7 +237,6 @@ public class ContextMenuItem {
 			label,
 			tbi.getQualifierValue("title"),
 			clicker);
-		clicker.setAnchor(m_contextMenuAnchor);
 	}
 
 	/*
@@ -336,15 +302,14 @@ public class ContextMenuItem {
 			hiCount = GwtClientHelper.iFromS(tbi.getQualifierValue("popup.hiddenInput.count"));
 			popupFromForm = (0 < hiCount);
 		}
-popupFromForm = false;
 		if (popupFromForm) {
 			// Yes!  Create the form...
-			String fpId = (id + "Wnd");
-			FormPanel fp = new FormPanel(fpId);
+			FormPanel fp = new FormPanel(id + "Wnd");
 			fp.setAction(url);
-			fp.getElement().setClassName("inline");
-			fp.getElement().setId(fpId);
 			fp.setMethod(FormPanel.METHOD_POST);
+			Element fpE = fp.getElement();
+			fpE.setClassName("inline");
+			jsAppendElement(fpE);
 
 			// ...since a FormPanel is a SimplePanel, it can only hold
 			// ...a single widget.  If we have more than 1 hidden
@@ -383,8 +348,6 @@ popupFromForm = false;
 		return reply;
 	}
 	
-	
-
 	/**
 	 * Returns the widget constructed for this menu item.
 	 * 
@@ -393,4 +356,11 @@ popupFromForm = false;
 	public Widget getWidget() {
 		return m_contextMenuAnchor;
 	}
+	
+	/*
+	 * Appends an HTML element to the top document. 
+	 */
+	private native void jsAppendElement(Element htmlElement) /*-{
+		window.top.document.documentElement.appendChild(htmlElement);
+	}-*/;
 }
