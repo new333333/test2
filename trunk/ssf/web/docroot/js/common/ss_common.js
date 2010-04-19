@@ -986,6 +986,19 @@ function ss_showRelevanceTab(s, namespace) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
+function ss_setFileStatus(entityId, entityType, fileId, statusObjId, fileStatus) {
+	ss_setupStatusMessageDiv();
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"set_file_status", entityId:entityId, entityType:entityType, fileId:fileId, fileStatus:fileStatus});
+	ss_post_to_url(url, "", ss_postRequestSetFileStatus, fileId);
+}
+function ss_postRequestSetFileStatus(s, fileId) {
+	var statusObj = self.document.getElementById("fileStatus_" + fileId);
+	if (statusObj != null) {
+		statusObj.innerHTML = s;
+	}
+	ss_showHide('ss_fileStatusMenu_' + fileId);
+}
+
 function ss_executeJavascript(xmlNode) {
     var scripts = xmlNode.getElementsByTagName("script");
     for (var i = 0; i < scripts.length; i++) {

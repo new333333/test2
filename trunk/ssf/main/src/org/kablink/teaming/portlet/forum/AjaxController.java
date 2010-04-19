@@ -86,6 +86,7 @@ import org.kablink.teaming.domain.ApplicationPrincipal;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
@@ -105,6 +106,7 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.domain.FileAttachment.FileStatus;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -245,6 +247,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 				ajaxSetSunburstVisibility(request, response);
 			} else if (op.equals(WebKeys.OPERATION_PIN_ENTRY)) {
 				if (WebHelper.isMethodPost(request)) ajaxPinEntry(this, request, response);
+			} else if (op.equals( WebKeys.OPERATION_SET_FILE_STATUS )) {
+				if (WebHelper.isMethodPost(request)) ajaxSetFileStatus(this, request, response);
 			}
 		}
 	}
@@ -495,6 +499,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxGetWorkflowApplet(request, response);
 		} else if (op.equals( WebKeys.OPERATION_START_FIXUP_FOLDER_DEFS )) {
 			return ajaxStartFixupFolderDefs(request, response);
+		} else if (op.equals( WebKeys.OPERATION_SET_FILE_STATUS )) {
+			return ajaxSetFileStatusReturn(request, response);
 		}
 		else if ( op.equals( WebKeys.OPERATION_SAVE_USER_TUTORIAL_PANEL_STATE ) )
 		{
@@ -1280,6 +1286,21 @@ public class AjaxController  extends SAbstractControllerRetry {
 		}
 		response.setContentType("text/xml");
 		return new ModelAndView("forum/save_entry_height_return", model);
+	}
+
+	private ModelAndView ajaxSetFileStatusReturn(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String fileAttId = PortletRequestUtils.getStringParameter(request, "fileAttId");
+		String fileStatusId = PortletRequestUtils.getStringParameter(request, "fileStatus");
+		if (Validator.isNotNull(fileStatusId)) {
+			if (fileStatusId.equals("0")) {
+				model.put("fileStatus", NLT.get("file.statusNone"));
+			} else {
+				model.put("fileStatus", NLT.get("file.status" + fileStatusId));
+			}
+		}
+		return new ModelAndView("forum/set_file_status_return", model);
 	}
 
 	private ModelAndView ajaxShowTags(RenderRequest request, 
@@ -2670,6 +2691,41 @@ public class AjaxController  extends SAbstractControllerRetry {
 		try {
 			getProfileModule().setSeen(user.getId(),getFolderModule().getEntry(binderId, entryId));
 		} catch(Exception e) {}
+	}
+	
+	private void ajaxSetFileStatus(AllModulesInjected bs, ActionRequest request, 
+			ActionResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Long entityId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTITY_ID);				
+		String entityType = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_ENTITY_TYPE);				
+		String fileId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");				
+		Integer fileStatusId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_FILE_STATUS);
+		FileStatus fileStatus = FileStatus.valueOf(fileStatusId);
+		DefinableEntity entity = null;
+		Binder binder = null;
+		if (entityType.equals(EntityType.folderEntry.name())) {
+			entity = getFolderModule().getEntry(null, entityId);
+		} else if (entityType.equals(EntityType.folder.name()) || entityType.equals(EntityType.workspace.name())) {
+			entity = getBinderModule().getBinder(entityId);
+		}
+		if (entity != null) {
+			//Set the file status
+			Set<Attachment> attachments = entity.getAttachments();
+			FileAttachment fileAtt = null;
+			for (Attachment attachment : attachments) {
+				if (attachment instanceof FileAttachment) {
+					if (attachment.getId().equals(fileId)) {
+						fileAtt = (FileAttachment)attachment;
+						break;
+					}
+					fileAtt = ((FileAttachment)attachment).findFileVersionById(fileId);
+					if (fileAtt != null) break;
+				}
+			}
+			if (fileAtt != null) {
+				bs.getFileModule().modifyFileStatus(entity, fileAtt, fileStatus);
+			}
+		}
 	}
 	
 	private void ajaxPinEntry(AllModulesInjected bs, ActionRequest request, 

@@ -222,32 +222,36 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		 <c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 		  <div>
 		    <a href="javascript: ;" onClick="ss_showHide('ss_fileStatusMenu_${selection.id}');return false;"
-		    >
+		    ><span id="fileStatus_${selection.id}">
 		      <c:if test="${selection.fileStatus != 0}">${selection.fileStatusText}</c:if>
 		      <c:if test="${selection.fileStatus == 0}"><ssf:nlt tag="file.statusNoStatus"/></c:if>
-		      <img style="padding:0px 4px;" src="<html:imagesPath/>pics/menudown.gif" /></a>
+		      </span><img style="padding:0px 4px;" src="<html:imagesPath/>pics/menudown.gif" /></a>
 		  </div>
 		  <div id="ss_fileStatusMenu_${selection.id}" 
 		    style="display:none; background:#fff; border:1px #ccc solid;">
 		    <div><span class="ss_bold"><ssf:nlt tag="file.setStatus"/></span></div>
 		    <ul style="margin:0px;padding:0px 10px 0px 10px;">
 			  <li>
-			    <a href="javascript: ;" onClick="return false;">
+			    <a href="javascript: ;" 
+			      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${selection.id}', 'fileStatus_${selection.id}', '0');return false;">
 			      <ssf:nlt tag="file.statusNone"/>
 			    </a>
 			  </li>
 			  <li>
-			    <a href="javascript: ;" onClick="return false;">
+			    <a href="javascript: ;" 
+			      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${selection.id}', 'fileStatus_${selection.id}', '1');return false;">
 			      <ssf:nlt tag="file.status1"/>
 			    </a>
 			  </li>
 			  <li>
-			    <a href="javascript: ;" onClick="return false;">
+			    <a href="javascript: ;" 
+			      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${selection.id}', 'fileStatus_${selection.id}', '2');return false;">
 			      <ssf:nlt tag="file.status2"/>
 			    </a>
 			  </li>
 			  <li>
-			    <a href="javascript: ;" onClick="return false;">
+			    <a href="javascript: ;" 
+			      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${selection.id}', 'fileStatus_${selection.id}', '3');return false;">
 			      <ssf:nlt tag="file.status3"/>
 			    </a>
 			  </li>
@@ -554,9 +558,10 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				 <c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 				  <div>
 				    <a href="javascript: ;" onClick="ss_showHide('ss_fileStatusMenu_${fileVersion.id}');return false;"
-				    >
+				    ><span id="fileStatus_${fileVersion.id}">
 				      <c:if test="${fileVersion.fileStatus != 0}">${fileVersion.fileStatusText}</c:if>
 				      <c:if test="${fileVersion.fileStatus == 0}"><ssf:nlt tag="file.statusNoStatus"/></c:if>
+				      </span>
 				      <img style="padding:0px 4px;" src="<html:imagesPath/>pics/menudown.gif" /></a>
 				  </div>
 				  <div id="ss_fileStatusMenu_${fileVersion.id}" 
@@ -564,22 +569,26 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		    		<div><span class="ss_bold"><ssf:nlt tag="file.setStatus"/></span></div>
 				    <ul style="margin:0px;padding:0px 10px 0px 10px;">
 					  <li>
-					    <a href="javascript: ;" onClick="return false;">
+					    <a href="javascript: ;" 
+					      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${fileVersion.id}', 'fileStatus_${fileVersion.id}', '0');return false;">
 					      <ssf:nlt tag="file.statusNone"/>
 					    </a>
 					  </li>
 					  <li>
-					    <a href="javascript: ;" onClick="return false;">
+					    <a href="javascript: ;" 
+					    onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${fileVersion.id}', 'fileStatus_${fileVersion.id}', '1');return false;">
 					      <ssf:nlt tag="file.status1"/>
 					    </a>
 					  </li>
 					  <li>
-					    <a href="javascript: ;" onClick="return false;">
+					    <a href="javascript: ;" 
+					    onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${fileVersion.id}', 'fileStatus_${fileVersion.id}', '2');return false;">
 					      <ssf:nlt tag="file.status2"/>
 					    </a>
 					  </li>
 					  <li>
-					    <a href="javascript: ;" onClick="return false;">
+					    <a href="javascript: ;" 
+					    onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${fileVersion.id}', 'fileStatus_${fileVersion.id}', '3');return false;">
 					      <ssf:nlt tag="file.status3"/>
 					    </a>
 					  </li>

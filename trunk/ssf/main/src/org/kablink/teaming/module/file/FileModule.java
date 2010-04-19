@@ -45,6 +45,7 @@ import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.domain.FileAttachment.FileStatus;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.FileUploadItem;
@@ -376,6 +377,15 @@ public interface FileModule {
 	 * @param description
 	 */
 	public void modifyFileComment(DefinableEntity entity, FileAttachment fileAtt, Description description);
+	
+	/**
+	 * Modify the description of a file attachment. 
+	 * 
+	 * @param entity
+	 * @param fileAtt
+	 * @param description
+	 */
+	public void modifyFileStatus(DefinableEntity entity, FileAttachment fileAtt, FileStatus fileStatus);
 	
 	/**
 	 * Delete the specified version. 

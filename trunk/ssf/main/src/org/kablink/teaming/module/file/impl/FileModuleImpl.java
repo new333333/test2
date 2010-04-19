@@ -81,6 +81,7 @@ import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.FileAttachment.FileLock;
+import org.kablink.teaming.domain.FileAttachment.FileStatus;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
@@ -638,6 +639,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
 	public void modifyFileComment(DefinableEntity entity, FileAttachment fileAtt, Description description) {
 		fileAtt.getFileItem().setDescription(description);
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
+		ChangeLogUtils.buildLog(changes, fileAtt);
+		saveChangeLogTransactional(changes);
+	}
+	
+	public void modifyFileStatus(DefinableEntity entity, FileAttachment fileAtt, FileStatus fileStatus) {
+		fileAtt.setFileStatus(FileStatus.valueOf(fileStatus));
 		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
 		ChangeLogUtils.buildLog(changes, fileAtt);
 		saveChangeLogTransactional(changes);
