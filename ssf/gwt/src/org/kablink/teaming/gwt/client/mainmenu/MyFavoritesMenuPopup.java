@@ -54,7 +54,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
  * 
  * @author drfoster@novell.com
  */
-public class MyFavoritesMenuPopup extends MenuBarPopup {
+public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 	private final String IDBASE = "myFavorites_";
 	
 	@SuppressWarnings("unused")
@@ -193,7 +193,8 @@ public class MyFavoritesMenuPopup extends MenuBarPopup {
 	/**
 	 * Stores the ID and type of the currently selected binder.
 	 * 
-	 * Implements the MenuBarPopup.setCurrentBinder() abstract method.
+	 * Implements the MenuBarPopupBase.setCurrentBinder() abstract
+	 * method.
 	 * 
 	 * @param binderId
 	 * @param binderType
@@ -208,7 +209,8 @@ public class MyFavoritesMenuPopup extends MenuBarPopup {
 	/**
 	 * Not used for the Favorites menu.
 	 * 
-	 * Implements the MenuBarPopup.setToolbarItemList() abstract method.
+	 * Implements the MenuBarPopupBase.setToolbarItemList() abstract
+	 * method.
 	 * 
 	 * @param toolbarItemList
 	 */
@@ -220,7 +222,8 @@ public class MyFavoritesMenuPopup extends MenuBarPopup {
 	/**
 	 * Not used for the Favorites menu.  Always returns true.
 	 * 
-	 * Implements the MenuBarPopup.shouldShowMenu() abstract method.
+	 * Implements the MenuBarPopupBase.shouldShowMenu() abstract
+	 * method.
 	 * 
 	 * @return
 	 */
@@ -232,7 +235,7 @@ public class MyFavoritesMenuPopup extends MenuBarPopup {
 	/**
 	 * Completes construction of the menu and shows it.
 	 * 
-	 * Implements the MenuBarPopup.showPopup() abstract method.
+	 * Implements the MenuBarPopupBase.showPopup() abstract method.
 	 * 
 	 * @param left
 	 * @param top

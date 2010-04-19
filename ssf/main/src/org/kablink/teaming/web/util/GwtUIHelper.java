@@ -71,9 +71,10 @@ public class GwtUIHelper {
 	// GWT UI TeamingAction.
 	public final static String GWTUI_TEAMING_ACTION = "GwtUI.TeamingAction";
 	
-	// The key into the session cache to store the GWT UI toolbar
-	// beans.
-	public final static String CACHED_TOOLBARS_KEY = "gwt-ui-toolbars";
+	// The key into the session cache to store the GWT UI tab and
+	// toolbar beans.
+	public final static String CACHED_TABS_KEY		= "gwt-ui-tabs";
+	public final static String CACHED_TOOLBARS_KEY	= "gwt-ui-toolbars";
 	
 	// When caching a toolbar containing an AdaptedPortletURL, we
 	// must also store the URL in string form for the GWT UI to use.
@@ -361,8 +362,9 @@ public class GwtUIHelper {
 			return;
 		}
 
-		// Clear any previous toolbars we may have cached.
+		// Clear any previous tabs and toolbars we may have cached.
 		HttpSession hSession = WebHelper.getRequiredSession(hRequest);
+		hSession.removeAttribute(CACHED_TABS_KEY);
 		hSession.removeAttribute(CACHED_TOOLBARS_KEY);
 
 		// If we're not in GWT UI mode...
@@ -390,8 +392,9 @@ public class GwtUIHelper {
 			}
 		}
 
-		// Finally, store the HashMap of toolbars in the session
-		// cache.
+		// Finally, store the tabs and the HashMap of toolbars in the
+		// session cache.
+		hSession.setAttribute(CACHED_TABS_KEY, model.get(WebKeys.TABS));
 		hSession.setAttribute(CACHED_TOOLBARS_KEY, tbHM);
 	}
 

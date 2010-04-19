@@ -56,7 +56,7 @@ import com.google.gwt.user.client.ui.Label;
  * @author drfoster@novell.com
  */
 @SuppressWarnings("unused")
-public class ActionsMenuPopup extends MenuBarPopup {
+public class ActionsMenuPopup extends MenuBarPopupBase {
 	private final String IDBASE = "action_";	// Base ID for the items created in this menu.
 
 	private BinderType m_currentBinderType;			// Type of the currently selected binder.
@@ -77,7 +77,8 @@ public class ActionsMenuPopup extends MenuBarPopup {
 	/**
 	 * Stores the ID and type of the currently selected binder.
 	 * 
-	 * Implements the MenuBarPopup.setCurrentBinder() abstract method.
+	 * Implements the MenuBarPopupBase.setCurrentBinder() abstract
+	 * method.
 	 * 
 	 * @param binderId
 	 * @param binderType
@@ -93,7 +94,8 @@ public class ActionsMenuPopup extends MenuBarPopup {
 	 * Store information about the context based toolbar requirements
 	 * via a List<ToolbarItem>.
 	 * 
-	 * Implements the MenuBarPopup.setToolbarItemList() abstract method.
+	 * Implements the MenuBarPopupBase.setToolbarItemList() abstract
+	 * method.
 	 * 
 	 * @param toolbarItemList
 	 */
@@ -108,7 +110,8 @@ public class ActionsMenuPopup extends MenuBarPopup {
 	 * the menu be shown.  Returns true if it should be shown and false
 	 * otherwise.
 	 * 
-	 * Implements the MenuBarPopup.shouldShowMenu() abstract method.
+	 * Implements the MenuBarPopupBase.shouldShowMenu() abstract
+	 * method.
 	 * 
 	 * @return
 	 */
@@ -136,7 +139,7 @@ public class ActionsMenuPopup extends MenuBarPopup {
 	/**
 	 * Completes construction of the menu and shows it.
 	 * 
-	 * Implements the MenuBarPopup.showPopup() abstract method.
+	 * Implements the MenuBarPopupBase.showPopup() abstract method.
 	 * 
 	 * @param left
 	 * @param top

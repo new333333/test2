@@ -52,7 +52,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
  * 
  * @author drfoster@novell.com
  */
-public class ManageMenuPopup extends MenuBarPopup {
+public class ManageMenuPopup extends MenuBarPopupBase {
 	private final String IDBASE = "manage_";	// Base ID for the items created in this menu.
 	
 	private boolean m_currentBinderIsWorkspace;		// Set true if the current binder is a workspace and false otherwise.
@@ -257,7 +257,8 @@ public class ManageMenuPopup extends MenuBarPopup {
 	/**
 	 * Stores the ID and type of the currently selected binder.
 	 * 
-	 * Implements the MenuBarPopup.setCurrentBinder() abstract method.
+	 * Implements the MenuBarPopupBase.setCurrentBinder() abstract
+	 * method.
 	 * 
 	 * @param binderId
 	 * @param binderType
@@ -283,7 +284,8 @@ public class ManageMenuPopup extends MenuBarPopup {
 	 * Store information about the context based toolbar requirements
 	 * via a List<ToolbarItem>.
 	 * 
-	 * Implements the MenuBarPopup.setToolbarItemList() abstract method.
+	 * Implements the MenuBarPopupBase.setToolbarItemList() abstract
+	 * method.
 	 * 
 	 * @param toolbarItemList
 	 */
@@ -297,7 +299,8 @@ public class ManageMenuPopup extends MenuBarPopup {
 	 * the menu be shown.  Returns true if it should be shown and false
 	 * otherwise.
 	 * 
-	 * Implements the MenuBarPopup.shouldShowMenu() abstract method.
+	 * Implements the MenuBarPopupBase.shouldShowMenu() abstract
+	 * method.
 	 * 
 	 * @return
 	 */
@@ -415,7 +418,7 @@ public class ManageMenuPopup extends MenuBarPopup {
 	/**
 	 * Completes construction of the menu and shows it.
 	 * 
-	 * Implements the MenuBarPopup.showPopup() abstract method.
+	 * Implements the MenuBarPopupBase.showPopup() abstract method.
 	 * 
 	 * @param left
 	 * @param top

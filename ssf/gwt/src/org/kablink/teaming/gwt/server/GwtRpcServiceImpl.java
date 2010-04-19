@@ -79,6 +79,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
+import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
@@ -1401,7 +1402,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getFavorites()
 	
 	/**
-	 * Returns information about the teams the current user is a member of.
+	 * Returns information about the teams the current user is a member
+	 * of.
 	 * 
 	 * @return
 	 */
@@ -1409,6 +1411,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 		return GwtServerHelper.getMyTeams( this );
 	}// end getMyTeams()
+	
+	/**
+	 * Returns information about the recent place the current user has
+	 * visited.
+	 * 
+	 * @return
+	 */
+	public List<RecentPlaceInfo> getRecentPlaces()
+	{
+		return GwtServerHelper.getRecentPlaces( this );
+	}// end getRecentPlaces()
 	
 	/**
 	 * Returns a List<ToolbarItem> of the ToolbarItem's

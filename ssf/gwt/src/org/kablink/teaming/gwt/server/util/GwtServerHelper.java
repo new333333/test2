@@ -44,6 +44,8 @@ import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.HttpSessionContext;
@@ -57,6 +59,7 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
+import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo.FolderType;
@@ -64,11 +67,16 @@ import org.kablink.teaming.gwt.client.workspacetree.TreeInfo.WorkspaceType;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.Favorites;
+import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.teaming.web.util.Tabs;
+import org.kablink.teaming.web.util.Tabs.TabEntry;
+import org.kablink.util.PropertyNotFoundException;
 
 
 /**
@@ -77,6 +85,8 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
  * @author drfoster@novell.com
  */
 public class GwtServerHelper {
+	protected static Log m_logger = LogFactory.getLog(GwtServerHelper.class);
+	
 	// String used to recognized an '&' formatted URL vs. a '/'
 	// formatted permalink URL.
 	private final static String AMPERSAND_FORMAT_MARKER = "a/do?";
@@ -456,6 +466,74 @@ public class GwtServerHelper {
 		// If we get here, reply refers to the ArrayList<TeamInfo> of
 		// the teams the current user is a member of.  Return it.
 		return reply;
+	}
+	
+	/**
+	 * Returns information about the recent places the current user has
+	 * visited.
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<RecentPlaceInfo> getRecentPlaces(AllModulesInjected bs) {
+		ArrayList<RecentPlaceInfo> rpiList = new ArrayList<RecentPlaceInfo>();
+		
+		// If we can't access the HttpSession...
+		HttpSession hSession = GwtServerHelper.getCurrentHttpSession();
+		if (null == hSession) {
+			// ...we can't access the cached tabs to build the recent
+			// ...places list from.  Bail.
+			m_logger.debug("GwtServerHelper.getRecentPlaces( 'Could not access the current HttpSession' )");
+			return rpiList;
+		}
+
+		// If we can't access the cached tabs... 
+		Tabs tabs = ((Tabs) hSession.getAttribute(GwtUIHelper.CACHED_TABS_KEY));
+		if (null == tabs) {
+			// ...we can't build any recent place items.  Bail.
+			m_logger.debug("GwtServerHelper.getRecentPlaces( 'Could not access any cached tabs' )");
+			return rpiList;
+		}
+		
+		// What's the maximum size for a place's title?
+		int maxTitle = 30;
+		try {
+			maxTitle = SPropsUtil.getInt("history.max.title");
+		} catch (PropertyNotFoundException e) {}
+
+		// Scan the cached tabs...
+		int count = 0;
+		List tabList = tabs.getTabList();
+		for (Iterator tabIT = tabList.iterator(); tabIT.hasNext(); ) {
+			// ...creating a RecentPlaceInfo object for each...
+			TabEntry tab = ((TabEntry) tabIT.next());
+			RecentPlaceInfo rpi = new RecentPlaceInfo();
+			Long binderId = tab.getBinderId();
+			rpi.setBinderId(String.valueOf(binderId));
+			rpi.setEntityPath(((String) tab.getData().get("path")));
+			rpi.setEntryId(String.valueOf(tab.getEntryId()));
+			rpi.setId(String.valueOf(tab.getTabId()));
+			rpi.setPermalink(PermaLinkUtil.getPermalink(bs.getBinderModule().getBinder(binderId)));
+			rpi.setType(tab.getType());
+			String title = ((String) tab.getData().get("title"));
+			if (title.length() > maxTitle) {
+				title = (title.substring(0, maxTitle) + "...");
+			}
+			rpi.setTitle(title);
+			
+			// ...and adding it to the list of them.
+			rpiList.add(rpi);
+			
+			// Like the traditional UI, we'll only return the first 5.
+			count += 1;
+			if (5 == count) {
+				break;
+			}
+		}
+
+		// If we get here, rpiList refers to a List<RecentPlaceInfo> of
+		// the user's recent places.  Return it.
+		return rpiList;
 	}
 	
 	/*

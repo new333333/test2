@@ -53,7 +53,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class ContextMenuItem {
-	private MenuBarPopup m_contextMenu;				// The menu containing    this context based menu item.
+	private MenuBarPopupBase m_contextMenu;			// The menu containing    this context based menu item.
 	private MenuPopupAnchor m_contextMenuAnchor;	// The anchor created for this context based menu item.
 	
 	private enum ClickHandlerType {
@@ -213,7 +213,7 @@ public class ContextMenuItem {
 	 * @param idBase
 	 * @param tbi
 	 */
-	public ContextMenuItem(MenuBarPopup contextMenu, String idBase, ToolbarItem tbi) {
+	public ContextMenuItem(MenuBarPopupBase contextMenu, String idBase, ToolbarItem tbi) {
 		// Store the context menu we're creating this for.
 		m_contextMenu = contextMenu;
 		
