@@ -61,6 +61,8 @@ public enum TeamingAction implements IsSerializable
 	TRACK_BINDER( "Tracks the Current Binder" ),
 	UNTRACK_BINDER( "Untracks the Current Binder" ),
 	VIEW_TEAM_MEMBERS( "View Team Membership of Current Binder" ),
+	GOTO_CONTENT_URL( "Changes the Current Context to a non-Permalink URL" ),
+	GOTO_PERMALINK_URL( "Changes the Current Context to a Permalink URL" ),
 
 	// This is used as a default case to store a TeamingAction when
 	// there isn't a real value to store.

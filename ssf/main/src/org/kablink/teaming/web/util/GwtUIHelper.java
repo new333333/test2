@@ -67,20 +67,15 @@ import org.springframework.web.portlet.ModelAndView;
  * @author drfoster@novell.com
  */
 public class GwtUIHelper {
-	// Used as a qualifier in a toolbar to indicate the value maps to a
-	// GWT UI TeamingAction.
-	public final static String GWTUI_TEAMING_ACTION = "GwtUI.TeamingAction";
+	// String used to recognized an '&' formatted URL vs. a '/'
+	// formatted permalink URL.
+	private final static String AMPERSAND_FORMAT_MARKER = "a/do?";
 	
 	// The key into the session cache to store the GWT UI tab and
 	// toolbar beans.
 	public final static String CACHED_TABS_KEY		= "gwt-ui-tabs";
 	public final static String CACHED_TOOLBARS_KEY	= "gwt-ui-toolbars";
 	
-	// When caching a toolbar containing an AdaptedPortletURL, we
-	// must also store the URL in string form for the GWT UI to use.
-	// If we don't, an NPE is generated when we try to convert it. 
-	public final static String URLFIXUP_PATCH = ".urlAsString";
-
 	// The names of the toolbar beans stored in the session cache for
 	// the GWT UI.
 	public final static String[] CACHED_TOOLBARS = new String[] {
@@ -93,6 +88,45 @@ public class GwtUIHelper {
 		WebKeys.WHATS_NEW_TOOLBAR,
 	};
 
+	// Used as a qualifier in a toolbar to indicate the value maps to a
+	// GWT UI TeamingAction.
+	public final static String GWTUI_TEAMING_ACTION = "GwtUI.TeamingAction";
+	
+	// When caching a toolbar containing an AdaptedPortletURL, we
+	// must also store the URL in string form for the GWT UI to use.
+	// If we don't, an NPE is generated when we try to convert it. 
+	public final static String URLFIXUP_PATCH = ".urlAsString";
+
+	/*
+	 * Adds a clipboard item to the toolbar.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void addClipboardToToolbar(AllModulesInjected bs, RenderRequest request, Map model, Binder binder, Toolbar tb) {
+		// If we're not showing the clipboard...
+		Boolean showClipboard = ((Boolean) model.get(WebKeys.TOOLBAR_CLIPBOARD_SHOW));
+		if ((null == showClipboard) || (!showClipboard)) {
+			// ...bail.
+			return;
+		}
+		
+		// If we don't have any contributor IDs...
+		String contributorIds = ((String) model.get(WebKeys.TOOLBAR_CLIPBOARD_IDS_AS_JS_STRING));
+		if (null == contributorIds) {
+			// ...default to an empty list.
+			contributorIds = "";
+		}
+
+		// Finally, generate the clipboard toolbar menu item.
+		Map qualifiers = new HashMap();
+		String onClickJS = "ss_muster.showForm('ss_muster_users', [" + contributorIds + "], '" + String.valueOf(binder.getId()) + "');";
+		qualifiers.put("onclick", onClickJS);
+		tb.addToolbarMenu(
+			"clipboard",
+			NLT.get("toolbar.menu.clipboard"),
+			"#",
+			qualifiers);
+	}
+	
 	/*
 	 * Adds a send email item to the toolbar.
 	 */
@@ -232,6 +266,46 @@ public class GwtUIHelper {
 			null);
 	}
 
+	/*
+	 * Adds a trash item to the toolbar.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void addTrashToToolbar(AllModulesInjected bs, RenderRequest request, Map model, Binder binder, Toolbar tb) {
+		// Construct a permalink URL to the trash for the current binder...
+		String binderPermalink = PermaLinkUtil.getPermalink(binder);
+		String trashPermalink = getTrashPermalink(binderPermalink);
+		
+		// ...and add t to the toolbar.
+		addTeamingActionToToolbar(
+			tb,
+			"trash",
+			"GOTO_PERMALINK_URL",
+			NLT.get("toolbar.menu.trash"),
+			trashPermalink,
+			null);
+	}
+	
+	/**
+	 * Appends a parameter to to a URL.
+	 * 
+	 * @param urlString
+	 * @param pName
+	 * @param pValue
+	 * 
+	 * @return
+	 */
+	public static String appendUrlParam(String urlString, String pName, String pValue) {
+		String param;
+		boolean useAmpersand = (0 < urlString.indexOf(AMPERSAND_FORMAT_MARKER));
+		if (useAmpersand)
+			 param = ("&" + pName + "=" + pValue);
+		else param = ("/" + pName + "/" + pValue);
+		if (0 > urlString.indexOf(param)) {
+			urlString += param;
+		}
+		return urlString;
+	}
+	
 	/**
 	 * Builds the GWT miscellaneous toolbar for a binder.
 	 *
@@ -255,13 +329,13 @@ public class GwtUIHelper {
 				if (EntityIdentifier.EntityType.profiles != binder.getEntityType()) {
 					// Yes!  Add toolbar items to track and share the
 					// binder.
+					addClipboardToToolbar(  bs, request, model, binder, gwtMiscToolbar);
 					addSendEmailToToolbar(  bs, request, model, binder, gwtMiscToolbar);
 					addShareBinderToToolbar(bs, request, model, binder, gwtMiscToolbar);
 					addTrackBinderToToolbar(bs, request, model, binder, gwtMiscToolbar);
+					addTrashToToolbar(      bs, request, model, binder, gwtMiscToolbar);
 				}
 			}
-			
-//!			...this needs to be implemented...
 		}
 	}
 
@@ -484,6 +558,14 @@ public class GwtUIHelper {
 
 	}
 
+	/*
+	 * Takes a Binder permalink and does what's necessary to bring up
+	 * the trash on that Binder.
+	 */
+	public static String getTrashPermalink(String binderPermalink) {
+		return GwtUIHelper.appendUrlParam(binderPermalink, WebKeys.URL_SHOW_TRASH, "true");
+	}
+	
 	/**
 	 * Updates stores the current GWT UI active flag in the session
 	 * cache.

@@ -62,7 +62,9 @@ public class ActionsMenuPopup extends MenuBarPopupBase {
 	private BinderType m_currentBinderType;			// Type of the currently selected binder.
 	private List<ToolbarItem> m_toolbarItemList;	// The context based toolbar requirements.
 	private String m_currentBinderId;				// ID of the currently selected binder.
+	private ToolbarItem m_clipboardTBI;				// The clipboard  toolbar item, if found.
 	private ToolbarItem m_sendEmailTBI;				// The send email toolbar item, if found.
+	private ToolbarItem m_trashTBI;					// The trash      toolbar item, if found.
 
 	/**
 	 * Class constructor.
@@ -124,16 +126,18 @@ public class ActionsMenuPopup extends MenuBarPopupBase {
 			ToolbarItem tbi = tbiIT.next();
 			String tbName = tbi.getName();
 			if (tbName.equalsIgnoreCase("ssGwtMiscToolbar")) {
+				m_clipboardTBI = tbi.getNestedToolbarItem("clipboard");
 				m_sendEmailTBI = tbi.getNestedToolbarItem("sendEmail");
+				m_trashTBI     = tbi.getNestedToolbarItem("trash");
 			}
-			
-//!			...this needs to be implemented...
 		}
 		
 		// Return true if we found any of the actions menu items and
 		// false otherwise.
 		return
-			(null != m_sendEmailTBI);
+			((null != m_clipboardTBI) ||
+			 (null != m_sendEmailTBI) ||
+			 (null != m_trashTBI));
 	}
 	
 	/**
@@ -153,8 +157,8 @@ public class ActionsMenuPopup extends MenuBarPopupBase {
 		if (!(hasContent())) {
 			// ...construct it now...
 			addContextMenuItem(IDBASE, m_sendEmailTBI);
-			
-//!			...this needs to be implemented...
+			addContextMenuItem(IDBASE, m_clipboardTBI);
+			addContextMenuItem(IDBASE, m_trashTBI);
 		}
 					
 		// ...and show it.

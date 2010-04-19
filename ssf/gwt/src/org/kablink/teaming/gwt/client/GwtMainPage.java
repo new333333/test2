@@ -384,8 +384,8 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case MY_WORKSPACE:
-			// Change the browser's url.
-			Window.Location.replace( m_requestInfo.getMyWorkspaceUrl() );
+			// Change the browser's URL.
+			gotoUrl( m_requestInfo.getMyWorkspaceUrl(), true );
 			break;
 			
 		case SELECTION_CHANGED:
@@ -411,6 +411,14 @@ public class GwtMainPage extends Composite
 		case VIEW_TEAM_MEMBERS:
 			viewTeamMembers();
 			break;
+			
+		case GOTO_CONTENT_URL:
+			gotoUrl( obj, false );
+			break;
+
+		case GOTO_PERMALINK_URL:
+			gotoUrl( obj, true );
+			break;
 
 		case TRACK_BINDER:
 		case UNTRACK_BINDER:
@@ -433,6 +441,8 @@ public class GwtMainPage extends Composite
 	/*
 	 * This method will be called when the user selects a binder from
 	 * the workspace tree control.
+	 * 
+	 * Implements the SELECTION_CHANGED teaming action.
 	 */
 	private void selectionChanged( Object obj )
 	{
@@ -470,7 +480,7 @@ public class GwtMainPage extends Composite
 			}
 		}
 		else
-			Window.alert( "in onSelect() and obj is not an OnSelectBinderInfo object" );
+			Window.alert( "in selectionChanged() and obj is not an OnSelectBinderInfo object" );
 	}// end selectionChanged()
 
 	
@@ -495,7 +505,9 @@ public class GwtMainPage extends Composite
 
 	
 	/*
-	 * Toggles the state of the GWT UI. 
+	 * Toggles the state of the GWT UI.
+	 * 
+	 * Implements the TOGGLE_GWT_UI teaming action.
 	 */
 	private void toggleGwtUI()
 	{
@@ -528,6 +540,8 @@ public class GwtMainPage extends Composite
 	
 	/*
 	 * Called to run the Teaming hierarchy (i.e., bread crumb) browser.
+	 * 
+	 * Implements the BROWSE_HIERARCHY teaming action.
 	 */
 	private void runBreadCrumbBrowser( Object obj )
 	{
@@ -570,6 +584,8 @@ public class GwtMainPage extends Composite
 	/*
 	 * Called when the current Teaming hierarchy (i.e., bread crumb)
 	 * browser has been closed.
+	 * 
+	 * Implements the HIERARCHY_BROWSER_CLOSED teaming action.
 	 */
 	private void closeBreadCrumbBrowser()
 	{
@@ -581,6 +597,8 @@ public class GwtMainPage extends Composite
 	
 	/*
 	 * Called to view the membership of the currently selected binder.
+	 * 
+	 * Implements the VIEW_TEAM_MEMBERS teaming action.
 	 */
 	private void viewTeamMembers()
 	{
@@ -602,6 +620,26 @@ public class GwtMainPage extends Composite
 		});// end AsyncCallback()
 	}// end viewTeamMembers()
 
+	
+	/*
+	 * This method will be called to goto a permalink URL received as a
+	 * parameter.
+	 * 
+	 * Implements the GOTO_CONTENT_URL, GOTO_PERMALINK_URL and
+	 * MY_WORKSPACE teaming actions.
+	 */
+	private void gotoUrl( Object obj, boolean isPermalink )
+	{
+		if ( obj instanceof String )
+		{
+			if (isPermalink)
+			     Window.Location.replace( (String) obj );
+			else GwtClientHelper.jsLoadUrlInContentFrame( (String) obj );
+		}
+		else
+			Window.alert( "in gotoUrl() and obj is not a String object" );
+	}//end gotoUrl()
+	
 	
 	/**
 	 * Adjust the height and width of the controls on this page.  Currently the only
