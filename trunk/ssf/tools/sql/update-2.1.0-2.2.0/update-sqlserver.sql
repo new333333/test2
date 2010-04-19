@@ -170,7 +170,7 @@ ALTER TABLE SSQRTZ_TRIGGERS ADD
  ALTER TABLE SSQRTZ_BLOB_TRIGGERS ADD CONSTRAINT FK_SSQRTZ_BLOB_TRIGGERS_SSQRTZ_TRIGGERS FOREIGN KEY
   (TRIGGER_NAME,TRIGGER_GROUP) REFERENCES SSQRTZ_TRIGGERS (TRIGGER_NAME,TRIGGER_GROUP);
 
-alter table SS_Forums add brandingExt text null;
+alter table SS_Forums add brandingExt ntext null;
 alter table SS_Functions add scope varchar(16);
 alter table SS_FolderEntries add hasEntryAcl tinyint null;
 alter table SS_FolderEntries add checkFolderAcl tinyint null;

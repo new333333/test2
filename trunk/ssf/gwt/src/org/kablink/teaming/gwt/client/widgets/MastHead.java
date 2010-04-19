@@ -93,6 +93,7 @@ public class MastHead extends Composite
 	private Anchor m_adminLink = null;
 	private Anchor m_logoutLink = null;
 	private Anchor m_helpLink = null;
+	private InlineLabel m_userName = null;
 
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	private GwtBrandingData m_siteBrandingData = null;
@@ -131,15 +132,19 @@ public class MastHead extends Composite
 		
 		// Create the panel that will hold the global actions such as Administration", "Logout" etc
 		{
-			InlineLabel name;
-			
 			m_globalActionsPanel = new FlowPanel();
 			m_globalActionsPanel.addStyleName( "mastheadGlobalActionsPanel" );
 			
 			// Create a label that holds the logged-in user's name.
-			name = new InlineLabel( requestInfo.getUserName() );
-			name.addStyleName( "mastheadUserName" );
-			m_globalActionsPanel.add( name );
+			{
+				m_userName = new InlineLabel( requestInfo.getUserName() );
+				m_userName.setStylePrimaryName( "mastheadUserName" );
+				m_userName.addClickHandler( this );
+				m_userName.addMouseOverHandler( this );
+				m_userName.addMouseOutHandler( this );
+				m_globalActionsPanel.add( m_userName );
+			}
+			
 			
 			// Create a place to hold the mouse-over hint.
 			m_mouseOverHint = new InlineLabel();
@@ -403,6 +408,11 @@ public class MastHead extends Composite
 			m_helpImg1.setVisible( true );
 			m_helpImg2.setVisible( false );
 		}
+		else if ( eventSource == m_userName )
+		{
+			m_userName.removeStyleDependentName( "mouseOver" );
+			m_userName.addStyleDependentName( "mouseOut" );
+		}
 
 		// Remove the mouse-over hint.
 		m_mouseOverHint.setText( "" );
@@ -499,6 +509,10 @@ public class MastHead extends Composite
 			{
 				actionHandlerIT.next().handleAction( TeamingAction.HELP, null );
 			}
+			else if ( eventSource == m_userName )
+			{
+				actionHandlerIT.next().handleAction( TeamingAction.MY_WORKSPACE, null );
+			}
 		}
 	}// end onClick()
 	
@@ -551,6 +565,12 @@ public class MastHead extends Composite
 			
 			hint = GwtTeaming.getMessages().helpHint();
 		}
+		else if ( eventSource == m_userName )
+		{
+			m_userName.removeStyleDependentName( "mouseOut" );
+			m_userName.addStyleDependentName( "mouseOver" );
+			hint = "";
+		}
 		
 		// Update the mouse-over hint.
 		m_mouseOverHint.setText( hint );
@@ -595,18 +615,29 @@ public class MastHead extends Composite
 	/**
 	 * Set the font color used in the "global actions" panel.
 	 */
-	private void setGlobalActionsFontColor( GwtBrandingData brandingData )
+	private void setGlobalActionsFontColor()
 	{
 		Element element;
 		Style style;
 		String fontColor;
+		GwtBrandingData brandingData;
+		
+		// If the site branding is visible get the font color from it.  Otherwise, get the font color
+		// from the binder branding.
+		{
+			if ( m_siteBrandingPanel.isVisible() )
+				brandingData = m_siteBrandingData;
+			else
+				brandingData = m_binderBrandingData;
+
+			fontColor = brandingData.getFontColor();
+		}
 		
 		// For the given branding data, set the color of the font used in the "global actions" part of the branding panel
 		element = m_globalActionsPanel.getElement();
 		style = element.getStyle();
 			
 		// Do we have a font color?
-		fontColor = brandingData.getFontColor();
 		if ( fontColor != null && fontColor.length() > 0 )
 		{
 			// Yes
@@ -705,5 +736,8 @@ public class MastHead extends Composite
 				}// end switch()
 			}
 		}
+		
+		// Set the font color used in the global actions panel.
+		setGlobalActionsFontColor();
 	}// end showBranding()
 }// end MastHead

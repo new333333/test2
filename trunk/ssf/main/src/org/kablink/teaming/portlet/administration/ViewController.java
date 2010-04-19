@@ -666,6 +666,26 @@ public class ViewController extends  SAbstractController {
 			element.addAttribute("url", url.toString());
 			elements.put(element.attributeValue("title"), element);
 		}
+		
+		// Site Branding
+		if ( top != null )
+		{
+			// Does the user have the rights to modify the top binder
+			if ( getBinderModule().testAccess( top, BinderOperation.modifyBinder ) )
+			{
+				// Yes, add a "Site Branding" option.
+				element = DocumentHelper.createElement( DomTreeBuilder.NODE_CHILD );
+				element.addAttribute( "title", NLT.get( "administration.modifySiteBranding" ) );
+				element.addAttribute( "image", "bullet" );
+				element.addAttribute( "id", String.valueOf( nextId++ ) );
+				url = response.createRenderURL();
+				url.setParameter( WebKeys.ACTION, WebKeys.ACTION_LDAP_CONFIGURE );
+				url.setWindowState(WindowState.MAXIMIZED);
+				url.setPortletMode( PortletMode.VIEW );
+				element.addAttribute( "url", url.toString() );
+				elements.put( element.attributeValue( "title" ), element );
+			}
+		}
 	
 		for (Iterator iter=elements.entrySet().iterator(); iter.hasNext(); ) {
 			Map.Entry me = (Map.Entry)iter.next();

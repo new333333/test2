@@ -1135,6 +1135,18 @@ n-Transparent-Black-Div
 	top: -10px;
 }
 
+/* Style used with the panel that holds the logged-in user's name in the masthead. */
+.mastheadUserName-mouseOut
+{
+	cursor: default;
+}
+
+/* Style used with the panel that holds the logged-in user's name in the masthead. */
+.mastheadUserName-mouseOver
+{
+	cursor: pointer;
+}
+
 /* Style used for the branding panel. */
 .brandingPanel
 {
