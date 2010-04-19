@@ -40,4 +40,7 @@ ALTER TABLE SS_FolderEntries add column hasEntryAcl bit;
 ALTER TABLE SS_FolderEntries add column checkFolderAcl bit;
 ALTER TABLE SS_Attachments add column description_text MEDIUMTEXT;
 ALTER TABLE SS_Attachments add column description_format integer;
+ALTER TABLE SS_Attachments add column majorVersion integer;
+ALTER TABLE SS_Attachments add column minorVersion integer;
+ALTER TABLE SS_Attachments add column fileStatus integer;
 INSERT INTO SS_SchemaInfo values (8);
