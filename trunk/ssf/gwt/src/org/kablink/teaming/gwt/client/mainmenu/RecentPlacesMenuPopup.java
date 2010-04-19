@@ -49,12 +49,12 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
- * Class used for the My Teams menu item popup.  
+ * Class used for the recent places menu item popup.  
  * 
  * @author drfoster@novell.com
  */
-public class MyTeamsMenuPopup extends MenuBarPopupBase {
-	private final String IDBASE = "myTeams_";
+public class RecentPlacesMenuPopup extends MenuBarPopupBase {
+	private final String IDBASE = "recentPlaces_";
 	
 	@SuppressWarnings("unused")
 	private BinderType m_currentBinderType;	// Type of the currently selected binder.
@@ -62,23 +62,23 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 	private String m_currentBinderId;		// ID of the currently selected binder.
 	
 	/*
-	 * Inner class that handles clicks on individual teams.
+	 * Inner class that handles clicks on individual places.
 	 */
-	private class TeamClickHandler implements ClickHandler {
-		private TeamInfo m_myTeam;	// The team clicked on.
+	private class PlaceClickHandler implements ClickHandler {
+		private RecentPlaceInfo m_place;	// The place clicked on.
 
 		/**
 		 * Class constructor.
 		 * 
-		 * @param myTeam
+		 * @param place
 		 */
-		TeamClickHandler(TeamInfo myTeam) {
+		PlaceClickHandler(RecentPlaceInfo place) {
 			// Simply store the parameter.
-			m_myTeam = myTeam;
+			m_place = place;
 		}
 
 		/**
-		 * Called when the user clicks on a team.
+		 * Called when the user clicks on a place.
 		 * 
 		 * @param event
 		 */
@@ -90,8 +90,8 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 			m_actionTrigger.triggerAction(
 				TeamingAction.SELECTION_CHANGED,
 				new OnSelectBinderInfo(
-					m_myTeam.getBinderId(),
-					m_myTeam.getPermalinkUrl(),
+					m_place.getBinderId(),
+					m_place.getPermalinkUrl(),
 					false,
 					Instigator.OTHER));
 		}
@@ -102,9 +102,9 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 	 * 
 	 * @param actionTrigger
 	 */
-	public MyTeamsMenuPopup(ActionTrigger actionTrigger) {
+	public RecentPlacesMenuPopup(ActionTrigger actionTrigger) {
 		// Initialize the super class.
-		super(actionTrigger, GwtTeaming.getMessages().mainMenuBarMyTeams());
+		super(actionTrigger, GwtTeaming.getMessages().mainMenuBarRecentPlaces());
 	}
 	
 	/**
@@ -124,7 +124,7 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 	}
 	
 	/**
-	 * Not used for the My Teams menu.
+	 * Not used for the Recent Places menu.
 	 * 
 	 * Implements the MenuBarPopupBase.setToolbarItemList() abstract
 	 * method.
@@ -137,7 +137,7 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 	}
 	
 	/**
-	 * Not used for the My Teams menu.  Always returns true.
+	 * Not used for the Recent Places menu.  Always returns true.
 	 * 
 	 * Implements the MenuBarPopupBase.shouldShowMenu() abstract
 	 * method.
@@ -168,30 +168,30 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 			return;
 		}
 		
-		// Otherwise, read the users teams.
-		m_rpcService.getMyTeams(new AsyncCallback<List<TeamInfo>>() {
+		// Otherwise, read the users recent places.
+		m_rpcService.getRecentPlaces(new AsyncCallback<List<RecentPlaceInfo>>() {
 			public void onFailure(Throwable t) {
 				Window.alert(t.toString());
 			}
-			public void onSuccess(List<TeamInfo> mtList)  {
-				// Scan the teams...
+			public void onSuccess(List<RecentPlaceInfo> mtList)  {
+				// Scan the places...
 				int mtCount = 0;
-				MenuPopupAnchor mtA;
-				for (Iterator<TeamInfo> mtIT = mtList.iterator(); mtIT.hasNext(); ) {
+				MenuPopupAnchor rpA;
+				for (Iterator<RecentPlaceInfo> rpIT = mtList.iterator(); rpIT.hasNext(); ) {
 					// ...creating an item structure for each.
-					TeamInfo mt = mtIT.next();
-					String mtId = (IDBASE + mt.getBinderId());
+					RecentPlaceInfo place = rpIT.next();
+					String rpId = (IDBASE + place.getBinderId());
 					
-					mtA = new MenuPopupAnchor(mtId, mt.getTitle(), mt.getEntityPath(), new TeamClickHandler(mt));
-					addContentWidget(mtA);
+					rpA = new MenuPopupAnchor(rpId, place.getTitle(), place.getEntityPath(), new PlaceClickHandler(place));
+					addContentWidget(rpA);
 					mtCount += 1;
 				}
 				
-				// If there weren't any teams...
+				// If there weren't any places...
 				if (0 == mtCount) {
 					// ...put something in the menu that tells the user
 					// ...that.
-					MenuPopupLabel content = new MenuPopupLabel(m_messages.mainMenuMyTeamsNoTeams());
+					MenuPopupLabel content = new MenuPopupLabel(m_messages.mainMenuRecentPlacesNoPlaces());
 					addContentWidget(content);
 				}
 				

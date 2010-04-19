@@ -47,6 +47,7 @@ import org.kablink.teaming.gwt.client.mainmenu.MenuBarButton;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarToggle;
 import org.kablink.teaming.gwt.client.mainmenu.MyFavoritesMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.MyTeamsMenuPopup;
+import org.kablink.teaming.gwt.client.mainmenu.RecentPlacesMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
@@ -266,6 +267,28 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	}
 	
 
+	/*
+	 * Adds the Recent Places item to the context based portion of the
+	 * menu bar.
+	 */
+	private void addRecentPlacesToContext(List<ToolbarItem> toolbarItemList) {
+		final RecentPlacesMenuPopup rpmp = new RecentPlacesMenuPopup(this);
+		rpmp.setCurrentBinder(m_contextBinderId, m_contextBinderType);
+		rpmp.setToolbarItemList(toolbarItemList);
+		if (rpmp.shouldShowMenu()) {
+			final MenuBarBox rpBox = new MenuBarBox("ss_mainMenuRecentPlaces", m_messages.mainMenuBarRecentPlaces(), true);
+			rpBox.addClickHandler(
+				new ClickHandler() {
+					public void onClick(ClickEvent event) {
+						int left =  rpBox.getAbsoluteLeft();
+						int top  = (rpBox.getAbsoluteTop() - 20);
+						rpmp.showPopup(left, top);
+					}
+				});
+			m_contextPanel.add(rpBox);
+		}
+	}
+	
 	/**
 	 * Called when a new context has been loaded into the content panel
 	 * to refresh the menu contents.
@@ -293,8 +316,9 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 								Window.alert(t.toString());
 							}
 							public void onSuccess(final TeamManagementInfo tmi)  {
-								addManageToContext( toolbarItemList, tmi);
-								addActionsToContext(toolbarItemList);
+								addManageToContext(      toolbarItemList, tmi);
+								addRecentPlacesToContext(toolbarItemList);
+								addActionsToContext(     toolbarItemList);
 							}
 						});
 					}

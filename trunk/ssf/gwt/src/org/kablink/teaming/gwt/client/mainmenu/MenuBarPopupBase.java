@@ -55,11 +55,11 @@ import com.google.gwt.user.client.ui.Widget;
 
 
 /**
- * Base class used for a menu item popups.  
+ * Abstract base class used for a menu item popups.  
  * 
  * @author drfoster@novell.com
  */
-public abstract class MenuBarPopup extends PopupPanel {
+public abstract class MenuBarPopupBase extends PopupPanel {
 	protected ActionTrigger					m_actionTrigger;	// Used to trigger actions from the popup.
 	private   boolean						m_spacerNeeded;		// false -> The last widget added was a spacer.  true -> It was something else.
 	protected GwtTeamingMainMenuImageBundle	m_images;			// The menu's images.
@@ -73,7 +73,7 @@ public abstract class MenuBarPopup extends PopupPanel {
 	 * @param actionTrigger
 	 * @param title
 	 */
-	public MenuBarPopup(ActionTrigger actionTrigger, String title) {
+	public MenuBarPopupBase(ActionTrigger actionTrigger, String title) {
 		// Construct the super class...
 		super(true);
 
@@ -242,7 +242,7 @@ public abstract class MenuBarPopup extends PopupPanel {
 	
 	/**
 	 * Passes the ID and type of the currently selected binder to
-	 * classes that extend MenuBarPopup.
+	 * classes that extend MenuBarPopupBase.
 	 * 
 	 * @param binderId
 	 * @param binderType
@@ -251,7 +251,7 @@ public abstract class MenuBarPopup extends PopupPanel {
 
 	/**
 	 * Passes information about the context based toolbar requirements
-	 * via a List<ToolbarItem> to classes that extend MenuBarPopup.
+	 * via a List<ToolbarItem> to classes that extend MenuBarPopupBase.
 	 * 
 	 * Not used for non-context based menus (My Teams, Favorites, ...)
 	 * 
@@ -270,7 +270,7 @@ public abstract class MenuBarPopup extends PopupPanel {
 	
 	/**
 	 * Classes that extend do what needs to be done to show their
-	 * MenuBarPopup.
+	 * MenuBarPopupBase.
 	 * 
 	 * @param left
 	 * @param top
