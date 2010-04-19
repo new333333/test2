@@ -34,6 +34,7 @@ package org.kablink.teaming.domain;
 
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.util.Validator;
 
 
@@ -48,8 +49,8 @@ public class FileItem  {
     private String name;
     private long length=0;
     protected Description description;
-   
-    /**
+
+	/**
      * This method name might be a bit misleading because it returns not just
      * name portion of the file but its pathname as well if it exists. 
      * (eg. /abc/xyz/foo.txt).  

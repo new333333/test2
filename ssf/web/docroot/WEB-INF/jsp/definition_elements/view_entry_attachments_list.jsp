@@ -94,7 +94,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
   <c:if test="${versionCount >= 1}">
     <c:set var="thumbRowSpan" value="2"/>
   </c:if>
-     <tr><td valign="top" colspan="6"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
+     <tr><td valign="top" colspan="7"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 	  <tr>
 		<td valign="top" width="80" rowspan="${thumbRowSpan}">
 		<div class="ss_thumbnail_gallery ss_thumbnail_tiny"> 
@@ -156,7 +156,8 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				    <ssf:title tag="title.open.file">
 					    <ssf:param name="value" value="${selection.fileItem.name}" />
 				    </ssf:title>
-					><%= fnBr %></a>
+					><%= fnBr %><span style="padding-left:8px;"><ssf:nlt tag="file.versionNumber"><ssf:param
+					name="value" value="${selection.fileVersion}"/></ssf:nlt></span></a>
 
 		<%  }
 			if (isIECheck && ext.equals(".ppt") && editInPlaceSupported) {
@@ -176,7 +177,8 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				    	<ssf:title tag="title.open.file">
 					      <ssf:param name="value" value="${selection.fileItem.name}" />
 				    	</ssf:title>
-					><%= fnBr %></a>
+					><%= fnBr %><span style="padding-left:8px;"><ssf:nlt tag="file.versionNumber"><ssf:param
+					name="value" value="${selection.fileVersion}"/></ssf:nlt></span></a>
 				</ssf:isFileEditorConfiguredForOS>
 			</ssf:editorTypeToUseForEditInPlace>
 			
@@ -185,7 +187,8 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						binder="${ssDefinitionEntry.parentBinder}"
 						entity="${ssDefinitionEntry}"
 						fileAttachment="${selection}"/>"
-				><%= fnBr %></a>
+				><%= fnBr %><span style="padding-left:8px;"><ssf:nlt tag="file.versionNumber"><ssf:param
+					name="value" value="${selection.fileVersion}"/></ssf:nlt></span></a>
 			</ssf:editorTypeToUseForEditInPlace>
 		<%  }  %>
 
@@ -215,17 +218,65 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 			</c:if>
 		</td>
 
-		<td valign="top" width="20%"><span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+		<td valign="top" class="ss_att_meta" nowrap width="5%">
+		 <c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
+		  <div>
+		    <a href="javascript: ;" onClick="ss_showHide('ss_fileStatusMenu_${selection.id}');return false;"
+		    >
+		      <c:if test="${selection.fileStatus != 0}">${selection.fileStatusText}</c:if>
+		      <c:if test="${selection.fileStatus == 0}"><ssf:nlt tag="file.statusNoStatus"/></c:if>
+		      <img style="padding:0px 4px;" src="<html:imagesPath/>pics/menudown.gif" /></a>
+		  </div>
+		  <div id="ss_fileStatusMenu_${selection.id}" 
+		    style="display:none; background:#fff; border:1px #ccc solid;">
+		    <div><span class="ss_bold"><ssf:nlt tag="file.setStatus"/></span></div>
+		    <ul style="margin:0px;padding:0px 10px 0px 10px;">
+			  <li>
+			    <a href="javascript: ;" onClick="return false;">
+			      <ssf:nlt tag="file.statusNone"/>
+			    </a>
+			  </li>
+			  <li>
+			    <a href="javascript: ;" onClick="return false;">
+			      <ssf:nlt tag="file.status1"/>
+			    </a>
+			  </li>
+			  <li>
+			    <a href="javascript: ;" onClick="return false;">
+			      <ssf:nlt tag="file.status2"/>
+			    </a>
+			  </li>
+			  <li>
+			    <a href="javascript: ;" onClick="return false;">
+			      <ssf:nlt tag="file.status3"/>
+			    </a>
+			  </li>
+			</ul>
+		  </div>
+		 </c:if>
+		 <c:if test="${!ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
+		  <div>
+		    <span>${selection.fileStatusText}</span>
+		  </div>
+		 </c:if>
+		</td>
+		
+		<td valign="top" width="15%"><span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${selection.modification.date}" type="date" 
 					 dateStyle="medium" /></span> <span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${selection.modification.date}" type="time" 
 					 timeStyle="short"/></span></td>
-		<td valign="top" class="ss_att_meta" nowrap width="5%"><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${selection.fileItem.lengthKB}"/> <ssf:nlt tag="file.sizeKB" text="KB"/></td>
+		<td valign="top" class="ss_att_meta" nowrap width="5%">
+		  <fmt:setLocale value="${ssUser.locale}"/>
+		  <fmt:formatNumber value="${selection.fileItem.lengthKB}"/> 
+		  <ssf:nlt tag="file.sizeKB" text="KB"/>
+		</td>
+		
 		<td valign="top" class="ss_att_meta_wrap ss_att_space" width="25%">${selection.modification.principal.title}</td>
 		<td valign="top" class="ss_att_meta" width="20%">
-		  <a href="javascript: ;" onClick="ss_showHide('ss_fileActionsMenu_${selection.id}');return false;">
-		    <span class="ss_fineprint"><ssf:nlt tag="file.actions"/></span>
-		  </a>
+		  <a class="ss_tinyButton ss_fineprint" href="javascript: ;" 
+		    onClick="ss_showHide('ss_fileActionsMenu_${selection.id}');return false;"
+		  ><ssf:nlt tag="file.actions"/></a>
 		  <div id="ss_fileActionsMenu_${selection.id}" 
 		    style="display:none; background:#fff; border:1px #ccc solid;">
 		    <ul style="margin:0px;padding:0px 10px 0px 10px;">
@@ -358,15 +409,15 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		</td>
 	</tr>
 	<tr>
-	  <td valign="top" colspan="5" class="ss_att_description" width="100%">
+	  <td valign="top" colspan="6" class="ss_att_description" width="100%">
 	    <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${selection.fileItem.description.text}</ssf:markup></div>
 	  </td>
 	</tr>	
 	<c:if test="${!empty selection.fileVersions && versionCount > 1}">
-        <tr><td valign="top" style="height:10px;" class="ss_att_title" colspan="6">
+        <tr><td valign="top" style="height:10px;" class="ss_att_title" colspan="7">
           <hr class="ss_att_divider" noshade="noshade" /></td></tr>
 		<tr>
-		  <td valign="top" class="ss_att_title ss_subhead2" colspan="6">
+		  <td valign="top" class="ss_att_title ss_subhead2" colspan="7">
 		    <c:set var="previousVersionsText" value='<%= NLT.get("entry.PreviousVersions", new String[] {String.valueOf(selection.getFileVersions().size()-1)}) %>'/>
 		    <c:if test="<%= owningBinder.isMirrored() %>">
 		      <c:set var="previousVersionsText" value='<%= NLT.get("entry.PreviousVersionsMirrored", new String[] {String.valueOf(selection.getFileVersions().size()-1)}) %>'/>
@@ -374,6 +425,23 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		    <ssf:expandableArea title="${previousVersionsText}">
 			  <table class="ss_attachments_list" cellpadding="0" cellspacing="0" width="100%">
 			  <c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1" varStatus="status">
+<%
+	String vfn = selection.getFileItem().getName();
+	String vext = "";
+	if (vfn.lastIndexOf(".") >= 0) vext = vfn.substring(vfn.lastIndexOf("."));
+	String vfnBr = "";
+	int vcCount = 0;
+	for (int i = 0; i < vfn.length(); i++) {
+		String c = String.valueOf(vfn.charAt(i));
+		vcCount++;
+		if (c.matches("[\\W_]?") || vcCount > 15) {
+			vfnBr += c + "<wbr/>";
+			vcCount = 0;
+		} else {
+			vfnBr += c;
+		}
+	}
+%>
 	          	<c:choose>
 		          	<c:when test="${status.count == 4}">
 						 <tr id="${ss_attachments_namespace}att_row${status.count}n"
@@ -384,7 +452,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						          src="<html:imagesPath/>pics/1pix.gif"/>
 						      </div>
 						    </td>
-							<td valign="top" colspan="5" style="padding-left: 5px; font-weight: normal;">
+							<td valign="top" colspan="6" style="padding-left: 5px; font-weight: normal;">
 							  <a href="javascript: // " 
 							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 4, 9)" 
 							    class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
@@ -399,7 +467,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						          src="<html:imagesPath/>pics/1pix.gif"/>
 						      </div>
 						    </td>
-							<td valign="top" colspan="5" style="padding-left: 5px; font-weight: normal;">
+							<td valign="top" colspan="6" style="padding-left: 5px; font-weight: normal;">
 							<a href="javascript: // " 
 							  onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 10, 20)" 
 							  class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
@@ -413,7 +481,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						          src="<html:imagesPath/>pics/1pix.gif"/>
 						      </div>
 						    </td>
-							<td valign="top" colspan="5" style="padding-left: 5px; font-weight: normal;">
+							<td valign="top" colspan="6" style="padding-left: 5px; font-weight: normal;">
 							  <a href="javascript: // " 
 							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 21, 40)" 
 							    class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
@@ -427,7 +495,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						          src="<html:imagesPath/>pics/1pix.gif"/>
 						      </div>
 						    </td>
-							<td valign="top" colspan="5" 
+							<td valign="top" colspan="6" 
 							  style="padding-left: 5px; font-weight: normal;">
 							  <a href="javascript: // " 
 							  onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 41, 80)" 
@@ -442,7 +510,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						          src="<html:imagesPath/>pics/1pix.gif"/>
 						      </div>
 						    </td>
-							<td valign="top" colspan="5" style="padding-left: 5px; font-weight: normal;">
+							<td valign="top" colspan="6" style="padding-left: 5px; font-weight: normal;">
 							  <a href="javascript: // " 
 							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 81)" 
 							    class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
@@ -469,20 +537,63 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				<c:if test="<%= !owningBinder.isMirrored() %>">
 					<a style="text-decoration: none;"
 					  href="<ssf:fileUrl file="${fileVersion}"/>" 
-						    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
+						    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${fileVersion.fileItem.name}"/>');"
 						
-					    <ssf:title tag="title.open.file.version">
-						    <ssf:param name="value" value="${selection.fileItem.name}" />
-						    <ssf:param name="value" value="${fileVersion.versionNumber}" />
+					    <ssf:title tag="title.open.file">
+						    <ssf:param name="value" value="${fileVersion.fileItem.name}" />
 					    </ssf:title>
-						
-					    ><ssf:nlt tag="entry.Version"/> ${fileVersion.versionNumber}</a>
+						><%= vfnBr %><span style="padding-left:8px;"><ssf:nlt tag="file.versionNumber"><ssf:param
+						name="value" value="${fileVersion.fileVersion}"/></ssf:nlt></span></a>
 				</c:if>
 				<c:if test="<%= owningBinder.isMirrored() %>">
-					<span><ssf:nlt tag="entry.Version"/> ${fileVersion.versionNumber}</span>
+					<span><ssf:nlt tag="entry.Version"/> ${fileVersion.fileVersion}</span>
 				</c:if>
 				</td>
-				<td valign="top" width="20%">
+
+				<td valign="top" class="ss_att_meta" nowrap width="5%">
+				 <c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
+				  <div>
+				    <a href="javascript: ;" onClick="ss_showHide('ss_fileStatusMenu_${fileVersion.id}');return false;"
+				    >
+				      <c:if test="${fileVersion.fileStatus != 0}">${fileVersion.fileStatusText}</c:if>
+				      <c:if test="${fileVersion.fileStatus == 0}"><ssf:nlt tag="file.statusNoStatus"/></c:if>
+				      <img style="padding:0px 4px;" src="<html:imagesPath/>pics/menudown.gif" /></a>
+				  </div>
+				  <div id="ss_fileStatusMenu_${fileVersion.id}" 
+				    style="display:none; background:#fff; border:1px #ccc solid;">
+		    		<div><span class="ss_bold"><ssf:nlt tag="file.setStatus"/></span></div>
+				    <ul style="margin:0px;padding:0px 10px 0px 10px;">
+					  <li>
+					    <a href="javascript: ;" onClick="return false;">
+					      <ssf:nlt tag="file.statusNone"/>
+					    </a>
+					  </li>
+					  <li>
+					    <a href="javascript: ;" onClick="return false;">
+					      <ssf:nlt tag="file.status1"/>
+					    </a>
+					  </li>
+					  <li>
+					    <a href="javascript: ;" onClick="return false;">
+					      <ssf:nlt tag="file.status2"/>
+					    </a>
+					  </li>
+					  <li>
+					    <a href="javascript: ;" onClick="return false;">
+					      <ssf:nlt tag="file.status3"/>
+					    </a>
+					  </li>
+					</ul>
+				  </div>
+				 </c:if>
+				 <c:if test="${!ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
+				  <div>
+				    <span>${fileVersion.fileStatusText}</span>
+				  </div>
+				 </c:if>
+				</td>
+		
+				<td valign="top" width="15%">
 				  <span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${fileVersion.modification.date}" type="date" 
 					 dateStyle="medium" /></span> <span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
@@ -491,9 +602,9 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				<td valign="top" class="ss_att_meta" nowrap width="5%"><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${fileVersion.fileItem.lengthKB}"/> <ssf:nlt tag="file.sizeKB" text="KB"/></td>
 				<td valign="top" class="ss_att_meta_wrap ss_att_space" width="25%">${fileVersion.modification.principal.title}</td>
 				<td valign="top" class="ss_att_meta" width="20%">
-				  <a href="javascript: ;" onClick="ss_showHide('ss_fileActionsMenu_${fileVersion.versionNumber}');return false;">
-				    <span class="ss_fineprint"><ssf:nlt tag="file.actions"/></span>
-				  </a>
+				  <a class="ss_tinyButton ss_fineprint" href="javascript: ;" 
+				    onClick="ss_showHide('ss_fileActionsMenu_${fileVersion.versionNumber}');return false;"
+				  ><ssf:nlt tag="file.actions"/></a>
 				  <div id="ss_fileActionsMenu_${fileVersion.versionNumber}" 
 				     style="display:none; background:#fff; border:1px #ccc solid;">
 		    		<ul style="margin:0px;padding:0px 10px 0px 10px;">
@@ -501,7 +612,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		    		      <li>
 							<a style="text-decoration: none;"
 							  href="<ssf:fileUrl file="${fileVersion}"/>" 
-								    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
+								    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${fileVersion.fileItem.name}"/>');"
 							><span><ssf:nlt tag="file.view"/></span></a>
 		    		      </li>
 						</c:if>
@@ -555,7 +666,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					  src="<html:imagesPath/>pics/1pix.gif"/>
 				  </div>
 				</td>
-			    <td valign="top" width="100%" colspan="5" class="ss_att_description">
+			    <td valign="top" width="100%" colspan="6" class="ss_att_description">
 			      <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${fileVersion.fileItem.description.text}</ssf:markup></div>
 			    </td>
 			  </tr>	
@@ -568,7 +679,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	</c:if>
 </c:forEach>
 <c:if test="${selectionCount > 0}">
-     <tr><td valign="top" colspan="6"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
+     <tr><td valign="top" colspan="7"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 </c:if>
 </tbody>
 </table>
