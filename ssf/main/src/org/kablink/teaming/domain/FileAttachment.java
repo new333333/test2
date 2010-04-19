@@ -160,7 +160,7 @@ public class FileAttachment extends Attachment {
      * @return
      */
     public Integer getMajorVersion() {
-    	if (this.majorVersion == null) return 1;
+    	if (this.majorVersion == null) return 1; //If no major version, this is an old entry. Return 1.
         return this.majorVersion;
     }
     public void setMajorVersion(Integer majorVersion) {
@@ -174,10 +174,19 @@ public class FileAttachment extends Attachment {
      */
     public Integer getMinorVersion() {
     	if (this.minorVersion == null) {
-    		if (getHighestVersionNumber() >= 0) {
-    			return getHighestVersionNumber();
+    		if (this instanceof VersionAttachment) {
+    			int v = ((VersionAttachment)this).getVersionNumber();
+    			if (v > 0) {
+    				return  v - 1;
+    			} else {
+    				return 0;
+    			}
     		} else {
-    			return 0;
+	    		if (getHighestVersionNumber() > 0) {
+	    			return getHighestVersionNumber() - 1;
+	    		} else {
+	    			return 0;
+	    		}
     		}
     	}
         return this.minorVersion;

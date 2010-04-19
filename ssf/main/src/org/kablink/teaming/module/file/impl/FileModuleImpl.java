@@ -80,6 +80,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment.FileLock;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
 import org.kablink.teaming.lucene.Hits;
@@ -635,6 +636,40 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	public void RefreshLocks(Binder binder, DefinableEntity entity) 
 		throws RepositoryServiceException, UncheckedIOException {
 		closeExpiredLocksTransactional(binder, entity, true);
+	}
+	
+	public void revertFileVersion(DefinableEntity entity, VersionAttachment va) 
+		throws UncheckedIOException, RepositoryServiceException {
+		Binder binder = entity.getParentBinder();
+		if (EntityType.folder.equals(entity.getEntityType()) || 
+				EntityType.workspace.equals(entity.getEntityType())) {
+			binder = (Binder)entity;
+		}
+
+		List<FileUploadItem> fuis = new ArrayList<FileUploadItem>();
+    	Collection<FileAttachment> atts = entity.getFileAttachments();
+    	FileUploadItem fui;
+     	String name;
+    	SimpleMultipartFile file;
+    	FileAttachment fa = va.getParentAttachment();
+    	name = fa.getName(); 
+    	int type = FileUploadItem.TYPE_FILE;
+    	if (Validator.isNull(name)) type = FileUploadItem.TYPE_ATTACHMENT;
+    			
+		// Preserve modification time of the source for the target
+		file = new DatedMultipartFile(va.getFileItem().getName(),
+			readFile(binder, entity, va), va.getModification().getDate());
+		fui = new FileUploadItem(type, name, file, va.getRepositoryName());
+   		fuis.add(fui);
+
+    	try {	
+    		writeFiles(binder, entity, fuis, null);
+    	}
+    	finally {}
+
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
+		ChangeLogUtils.buildLog(changes, va.getParentAttachment());
+		saveChangeLogTransactional(changes);
 	}
 
 	public void modifyFileComment(DefinableEntity entity, FileAttachment fileAtt, Description description) {
@@ -1512,6 +1547,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			vAtt.setModification(fAtt.getModification());
 			vAtt.setFileItem(fItem);
 			vAtt.setVersionNumber(versionNumber);
+			vAtt.setMajorVersion(fAtt.getMajorVersion());
+			vAtt.setMinorVersion(fAtt.getMinorVersion());
 			vAtt.setVersionName(versionName);
 			vAtt.setRepositoryName(fAtt.getRepositoryName());
 			fAtt.addFileVersion(vAtt);
@@ -1761,6 +1798,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		vAtt.setModification(fAtt.getModification());
 		vAtt.setFileItem(fAtt.getFileItem());
 		vAtt.setVersionNumber(1);
+		vAtt.setMajorVersion(1);
+		vAtt.setMinorVersion(0);
 		vAtt.setVersionName(versionName);
 		vAtt.setRepositoryName(fAtt.getRepositoryName());
 		fAtt.addFileVersion(vAtt);

@@ -381,6 +381,7 @@ public class WebKeys {
     public static final String OPERATION_EXPORT="export";
     public static final String OPERATION_CLEAR_CLIPBOARD = "clear_clipboard";
  	public static final String OPERATION_REMOVE_FROM_CLIPBOARD = "remove_from_clipboard";
+ 	public static final String OPERATION_REVERT = "revert";
     public static final String OPERATION_DELETE="delete";
     public static final String OPERATION_MODIFY="modify";
     public static final String OPERATION_MODIFY_GROUP="modify_group";
@@ -565,6 +566,7 @@ public class WebKeys {
 	public static final String OPERATION_VOTE_SURVEY_REMOVE = "vote_survey_remove";
 	public static final String OPERATION_MODIFY_ENTRY="modifyEntry";
 	public static final String OPERATION_MODIFY_FILE_DESCRIPTION="modify_file_description";
+	public static final String OPERATION_MODIFY_FILE_REVERT="modify_file_revert";
 	public static final String OPERATION_GET_MEETING_RECORDS = "get_meeting_records";
 	public static final String OPERATION_ATTACHE_MEETING_RECORDS = "attache_meeting_records";
 	public static final String OPERATION_GET_USER_APPCONFIG = "get_user_appconfig";
