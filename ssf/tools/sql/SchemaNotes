@@ -30,3 +30,11 @@ Scope is used to separate roles between zone, binder and entry
 hasEntryAcl and checkFolderAcl are part of the per-entry ACL project
 description_text and description_format are being used to add comments to each file attachment
 
+Version 9:
+In ss_Attachments:
+  ALTER TABLE SS_Attachments add column majorVersion integer;
+  ALTER TABLE SS_Attachments add column minorVersion integer;
+  ALTER TABLE SS_Attachments add column fileStatus integer;
+  majorVersion and minorVersion are used to add levels to file versions
+  fileStatus is used to tag a version with Official, Draft, Obsolete, etc.
+
