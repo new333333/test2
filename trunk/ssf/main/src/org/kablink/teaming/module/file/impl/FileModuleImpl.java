@@ -686,6 +686,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		saveChangeLogTransactional(changes);
 	}
 	
+	public void incrementMajorFileVersion(DefinableEntity entity, FileAttachment fileAtt) {
+		fileAtt.setMajorVersion(fileAtt.getMajorVersion() + 1);
+		fileAtt.setMinorVersion(0);
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
+		ChangeLogUtils.buildLog(changes, fileAtt);
+		saveChangeLogTransactional(changes);
+	}
+	
 	private void saveChangeLogTransactional(final ChangeLog changeLog) {
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {  

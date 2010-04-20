@@ -165,6 +165,13 @@ public class ModifyFileController extends SAbstractController {
 					getFileModule().revertFileVersion(entity, fileVer);
 					BinderHelper.indexEntity(this, entity);
 				}
+				
+			} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_MAJOR_VERSION) && WebHelper.isMethodPost(request)) {
+				//The form was submitted. Go process it
+				if (fileAtt != null) {
+					getFileModule().incrementMajorFileVersion(entity, fileAtt);
+					BinderHelper.indexEntity(this, entity);
+				}
 			}
 
 			if (formData.containsKey("okBtn")) {
@@ -232,6 +239,8 @@ public class ModifyFileController extends SAbstractController {
 			return new ModelAndView("forum/delete_file_version", model);
 		} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_REVERT)) {
 			return new ModelAndView("forum/revert_file_version", model); 
+		} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_MAJOR_VERSION)) {
+			return new ModelAndView("forum/increment_major_file_version", model); 
 		} else {
 			return new ModelAndView("forum/modify_file_description", model);
 		}
