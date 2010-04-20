@@ -77,5 +77,27 @@ public class ProfileRequestInfo extends JavaScriptObject
 	 * Return the "my workspace" url.  This class is an overlay on the JavaScript object called profileRequestInfo.
 	 */
 	public final native String getMyWorkspaceUrl() /*-{ return this.myWSUrl; }-*/;
+	
+	/**
+	 * Return the get the current user's workspaceId
+	 */
+	public final native String getCurrentUserWorkspaceId() /*-{ return this.currentUserWorkspaceId; }-*/;
+	
+	/**
+	 * Is the workspace being referenced owned by the current user
+	 * @return
+	 */
+	public final boolean isOwner() {
+		boolean isOwner = false;
+		
+		if(getCurrentUserWorkspaceId() == getBinderId()) {
+			isOwner = true;
+		} 
+
+		return isOwner;
+	}
+
+
+	
 
 }// end RequestInfo

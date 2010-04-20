@@ -14,11 +14,11 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
 
-public class ProfileInfoPanel extends Composite {
+public class ProfileMainPanel extends Composite {
 
 	ProfileRequestInfo profileRequestInfo;
 	
-	public ProfileInfoPanel(final ProfileRequestInfo profileRequestInfo) {
+	public ProfileMainPanel(final ProfileRequestInfo profileRequestInfo) {
 		
 		this.profileRequestInfo = profileRequestInfo;
 		

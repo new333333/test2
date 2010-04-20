@@ -4,11 +4,11 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 
-public class ProfileTrackPanel extends Composite {
+public class ProfileSidePanel extends Composite {
 
 	ProfileRequestInfo profileRequestInfo;
 	
-	public ProfileTrackPanel(final ProfileRequestInfo profileRequestInfo) {
+	public ProfileSidePanel(final ProfileRequestInfo profileRequestInfo) {
 		
 		this.profileRequestInfo = profileRequestInfo;
 		
@@ -42,7 +42,7 @@ public class ProfileTrackPanel extends Composite {
 				}// end run()
 			};
 			
-			timer.schedule( 250 );
+			timer.schedule( 25 );
 		}
 		
 		
@@ -52,19 +52,23 @@ public class ProfileTrackPanel extends Composite {
 	
 	private void createSections(ProfileRequestInfo profileRequestInfo, final FlowPanel mainPanel) {
 			
-		ProfileTrackSectionPanel aboutMeSection = new ProfileTrackSectionPanel(profileRequestInfo, "");
+		ProfileSectionPanel aboutMeSection = new ProfileTrackSectionPanel(profileRequestInfo, "");
 		mainPanel.add(aboutMeSection);
 
-		ProfileTrackSectionPanel teamsSection = new ProfileTrackSectionPanel(profileRequestInfo, "Teams:");
+		ProfileSectionPanel teamsSection = new ProfileTeamsPanel(profileRequestInfo, "Teams:");
 		mainPanel.add(teamsSection);
-
-		ProfileTrackSectionPanel trackingSection = new ProfileTrackSectionPanel(profileRequestInfo, "Tracking:");
+		
+		ProfileSectionPanel trackingSection = new ProfileTrackSectionPanel(profileRequestInfo, "Following:");
 		mainPanel.add(trackingSection);
 
-		ProfileTrackSectionPanel trackedBy = new ProfileTrackSectionPanel(profileRequestInfo, "Tracked By:");
+		ProfileSectionPanel trackedBy = new ProfileTrackSectionPanel(profileRequestInfo, "Followers:");
 		mainPanel.add(trackedBy);
 
-		ProfileTrackSectionPanel searchesSection = new ProfileTrackSectionPanel(profileRequestInfo, "Saved Searches:");
-		mainPanel.add(searchesSection);
+		if(profileRequestInfo.isOwner()) {
+			ProfileSectionPanel searchesSection = new ProfileTrackSectionPanel(profileRequestInfo, "Saved Searches:");
+			mainPanel.add(searchesSection);
+		}
 	}
+
+
 }
