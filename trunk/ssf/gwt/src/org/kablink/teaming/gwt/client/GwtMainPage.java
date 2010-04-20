@@ -157,7 +157,11 @@ public class GwtMainPage extends Composite
 	 * Puts a context change from the traditional UI into effect.
 	 */
 	@SuppressWarnings("unused")
-	private void contextLoaded( final String binderId )
+	private void contextLoaded( String binderId ) {
+		contextLoaded( binderId, Instigator.CONTENT_CONTEXT_CHANGE );
+	}
+	
+	private void contextLoaded( final String binderId, final Instigator instigator )
 	{
 		GwtTeaming.getRpcService().getBinderPermalink( binderId, new AsyncCallback<String>()
 		{
@@ -170,7 +174,7 @@ public class GwtMainPage extends Composite
 			{
 				OnSelectBinderInfo osbInfo;
 				
-				osbInfo = new OnSelectBinderInfo( binderId, binderPermalink, false, Instigator.CONTENT_CONTEXT_CHANGE );
+				osbInfo = new OnSelectBinderInfo( binderId, binderPermalink, false, instigator );
 				selectionChanged(osbInfo);
 			}// end onSuccess()
 		});
@@ -421,7 +425,17 @@ public class GwtMainPage extends Composite
 			break;
 
 		case TRACK_BINDER:
+			trackCurrentBinder();
+			break;
+			
 		case UNTRACK_BINDER:
+			untrackCurrentBinder();
+			break;
+			
+		case UNTRACK_PERSON:
+			untrackCurrentPerson();
+			break;
+			
 		case HIDE_LEFT_NAVIGATION:
 		case HIDE_MASTHEAD:
 		case SHOW_LEFT_NAVIGATION:
@@ -639,7 +653,80 @@ public class GwtMainPage extends Composite
 		else
 			Window.alert( "in gotoUrl() and obj is not a String object" );
 	}//end gotoUrl()
+
+	/*
+	 * This method will be called to track the current binder.
+	 * 
+	 * Implements the TRACK_BINDER teaming action.
+	 */
+	private void trackCurrentBinder() {
+		GwtTeaming.getRpcService().trackBinder( m_selectedBinderId, new AsyncCallback<Boolean>()
+		{
+			public void onFailure( Throwable t )
+			{
+				Window.alert( t.toString() );
+			}//end onFailure()
+			
+			public void onSuccess( Boolean success )
+			{
+				// It's overkill to force a full context reload, which
+				// this does, but it's the only way right now to ensure
+				// the What's New tab and other information gets fully
+				// refreshed.
+				contextLoaded( m_selectedBinderId, Instigator.OTHER );
+			}// end onSuccess()
+		});
+	}
 	
+	/*
+	 * This method will be called to remove the tracking on the current
+	 * binder.
+	 * 
+	 * Implements the UNTRACK_BINDER teaming action.
+	 */
+	private void untrackCurrentBinder() {
+		GwtTeaming.getRpcService().untrackBinder( m_selectedBinderId, new AsyncCallback<Boolean>()
+		{
+			public void onFailure( Throwable t )
+			{
+				Window.alert( t.toString() );
+			}//end onFailure()
+			
+			public void onSuccess( Boolean success )
+			{
+				// It's overkill to force a full context reload, which
+				// this does, but it's the only way right now to ensure
+				// the What's New tab and other information gets fully
+				// refreshed.
+				contextLoaded( m_selectedBinderId, Instigator.OTHER );
+			}// end onSuccess()
+		});
+	}
+	
+	/*
+	 * This method will be called to remove the tracking on the person
+	 * whose workspace is the current binder.
+	 * 
+	 * Implements the UNTRACK_PERSON teaming action.
+	 */
+	private void untrackCurrentPerson() {
+		GwtTeaming.getRpcService().untrackPerson( m_selectedBinderId, new AsyncCallback<Boolean>()
+		{
+			public void onFailure( Throwable t )
+			{
+				Window.alert( t.toString() );
+			}//end onFailure()
+			
+			public void onSuccess( Boolean success )
+			{
+				// It's overkill to force a full context reload, which
+				// this does, but it's the only way right now to ensure
+				// the What's New tab and other information gets fully
+				// refreshed.
+				contextLoaded( m_selectedBinderId, Instigator.OTHER );
+			}// end onSuccess()
+		});
+	}
 	
 	/**
 	 * Adjust the height and width of the controls on this page.  Currently the only

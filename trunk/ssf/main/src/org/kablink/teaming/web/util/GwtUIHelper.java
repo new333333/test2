@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.web.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -49,8 +50,8 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -96,6 +97,20 @@ public class GwtUIHelper {
 	// If we don't, an NPE is generated when we try to convert it. 
 	public final static String URLFIXUP_PATCH = ".urlAsString";
 
+	// Inner class used exclusively by addTrackBinderToToolbar() to
+	// assist in building the toolbar items to support tracking.
+	private static class TrackInfo {
+		String m_action;
+		String m_resourceKey;
+		String m_tbName;
+		
+		TrackInfo(String tbName, String action, String resourceKey) {
+			m_tbName = tbName;
+			m_action = action;
+			m_resourceKey = resourceKey;
+		}
+	}
+	
 	/*
 	 * Adds a clipboard item to the toolbar.
 	 */
@@ -210,8 +225,7 @@ public class GwtUIHelper {
 			NLT.get(
 				buildRelevanceKey(
 					binder,
-					"relevance.shareThis",
-					false)),	// false -> Don't special case the key for person.
+					"relevance.shareThis")),
 			url.toString(),
 			qualifiers);
 	}
@@ -242,27 +256,98 @@ public class GwtUIHelper {
 			qualifiers);
 	}
 	
+	public static void addTeamingActionToToolbar(Toolbar tb, String menuName, String teamingAction, String title) {
+		addTeamingActionToToolbar(tb, menuName, teamingAction, title, null, null);
+	}
+	
 	/*
 	 * Adds a track this binder item to the toolbar.
+	 *
+	 * Cases handled:
+	 *    User workspace:  Tracked     / Person:  Tracked.
+	 *    User workspace:  Tracked     / Person:  Not Tracked.
+	 *    Workspace:       Tracked.
+	 *    Calendar:        Tracked.
+	 *    Folder:          Tracked.
+	 *    
+	 *    User workspace:  Not Tracked / Person:  Tracked.
+	 *    User workspace:  Not Tracked / Person:  Not Tracked.
+	 *    Workspace:       Not Tracked.
+	 *    Calendar:        Not Tracked.
+	 *    Folder:          Not Tracked.
 	 */
 	@SuppressWarnings("unchecked")
 	private static void addTrackBinderToToolbar(AllModulesInjected bs, RenderRequest request, Map model, Binder binder, Toolbar tb) {
-		// Generate the appropriate teaming action and title string...
-		String action   = "TRACK_BINDER";
-		String titleKey = buildRelevanceKey(binder, "relevance.trackThis", true);
-		if (BinderHelper.isBinderTracked(bs, binder.getId())) {
-			action   = "UN" + action;
-			titleKey += "Not";
+		// Construct an ArrayList to hold TrackInfo objects that
+		// describe what track operations we'll need in the menu.
+		ArrayList<TrackInfo> tiList = new ArrayList<TrackInfo>();
+
+		// What do we know about this binder?
+		Long binderId = binder.getId();
+		boolean binderIsWorkspace     = (binder instanceof Workspace);
+		boolean binderIsCalendar      = BinderHelper.isBinderCalendar(binder);
+		boolean binderIsUserWorkspace = BinderHelper.isBinderUserWorkspace(binder);
+		boolean binderTracked         = BinderHelper.isBinderTracked(bs, binderId);
+		boolean personTracked         = BinderHelper.isPersonTracked(bs, binderId);
+
+		// Build TrackInfo objects for the toolbar items we need to add
+		// for tracking (or untracking) whatever we're looking at.
+		if (binderTracked) {
+			if (personTracked) {
+				// User workspace:  Tracked / Person:  Tracked.
+				tiList.add(    new TrackInfo("track",       "UNTRACK_BINDER", "relevance.trackThisWorkspaceNot"));				
+				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_PERSON", "relevance.trackThisPersonNot"));				
+			}
+			else {
+				if (binderIsUserWorkspace) {
+					// User workspace:  Tracked / Person:  Not Tracked.
+					tiList.add(new TrackInfo("track",       "UNTRACK_BINDER", "relevance.trackThisWorkspaceNot"));				
+					tiList.add(new TrackInfo("trackPerson", "TRACK_BINDER",   "relevance.trackThisPerson"));				
+				}
+				else if (binderIsWorkspace) {
+					// Workspace:  Tracked.
+					tiList.add(new TrackInfo("track",       "UNTRACK_BINDER", "relevance.trackThisWorkspaceNot"));				
+				}
+				else if (binderIsCalendar) {
+					// Calendar:  Tracked.
+					tiList.add(new TrackInfo("track",       "UNTRACK_BINDER", "relevance.trackThisCalendarNot"));				
+				}
+				else {
+					// Folder:  Tracked.
+					tiList.add(new TrackInfo("track",       "UNTRACK_BINDER", "relevance.trackThisFolderNot"));				
+				}
+			}
 		}
-		
-		// ...and add t to the toolbar.
-		addTeamingActionToToolbar(
-			tb,
-			"track",
-			action,
-			NLT.get(titleKey),
-			null,
-			null);
+		else {
+			if (personTracked) {
+				// User workspace:  Not Tracked / Person:  Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   "relevance.trackThisWorkspace"));				
+				tiList.add(    new TrackInfo("trackPerson", "UNTRACK_PERSON", "relevance.trackThisPersonNot"));				
+			}
+			else if (binderIsUserWorkspace) {
+				// User workspace:  Not Tracked / Person:  Not Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   "relevance.trackThisPerson"));				
+			}
+			else if (binderIsWorkspace) {
+				// Workspace:  Not Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   "relevance.trackThisWorkspace"));				
+			}
+			else if (binderIsCalendar) {
+				// Calendar:  Not Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   "relevance.trackThisCalendar"));				
+			}
+			else {
+				// Folder:  Not Tracked.
+				tiList.add(    new TrackInfo("track",       "TRACK_BINDER",   "relevance.trackThisFolder"));				
+			}
+		}
+
+		// Scan the TrackInfo objects we generated...
+		for (Iterator<TrackInfo> tiIT = tiList.iterator(); tiIT.hasNext(); ) {
+			// ...adding a toolbar item for each.
+			TrackInfo ti = tiIT.next();
+			addTeamingActionToToolbar(tb, ti.m_tbName, ti.m_action, NLT.get(ti.m_resourceKey));
+		}
 	}
 
 	/*
@@ -370,18 +455,11 @@ public class GwtUIHelper {
 	 * Note:  The logic for which key is based on the logic from
 	 *        sidebar_track2.jsp.
 	 */
-	private static String buildRelevanceKey(Binder binder, String keyBase, boolean specialCasePerson) {
+	private static String buildRelevanceKey(Binder binder, String keyBase) {
 		String relevanceKey = keyBase;
 		switch (binder.getEntityType()) {
 		case workspace:
-			String addOn = "Workspace";
-			if (specialCasePerson) {
-				Integer dType = binder.getDefinitionType();
-				if ((null != dType) && (Definition.USER_WORKSPACE_VIEW == dType)) {
-					addOn = "Person";
-				}
-			}
-			relevanceKey += addOn;
+			relevanceKey += "Workspace";
 			break;
 			
 		case folder:

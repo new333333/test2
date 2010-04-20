@@ -67,17 +67,18 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private List<ToolbarItem> m_toolbarItemList;	// The context based toolbar requirements.
 	private String m_currentBinderId;				// ID of the currently selected binder.
 	private TeamManagementInfo m_tmi;				// The team management information for which team management menu items should appear on the menu.
-	private ToolbarItem m_calendarImportTBI;		// The calendar import    toolbar item, if found.
-	private ToolbarItem m_commonActionsTBI;			// The common actions     toolbar item, if found.
-	private ToolbarItem m_emailNotificationTBI;		// The email notification toolbar item, if found.
-	private ToolbarItem m_folderActionsTBI;			// The folder actions     toolbar item, if found.
-	private ToolbarItem m_folderViewsTBI;			// The folder views       toolbar item, if found.
-	private ToolbarItem m_shareThisTBI;				// The share this         toolbar item, if found.
-	private ToolbarItem m_trackThisTBI;				// The track this         toolbar item, if found.
-	private ToolbarItem m_whatsNewTBI;				// The what's new         toolbar item, if found.
-	private ToolbarItem m_whatsUnreadTBI;			// The what's unread      toolbar item, if found.
-	private ToolbarItem m_whoHasAccessTBI;			// The who has access     toolbar item, if found.
-	private ToolbarItem m_workspaceActionsTBI;		// The workspace actions  toolbar item, if found.
+	private ToolbarItem m_calendarImportTBI;		// The calendar import           toolbar item, if found.
+	private ToolbarItem m_commonActionsTBI;			// The common actions            toolbar item, if found.
+	private ToolbarItem m_emailNotificationTBI;		// The email notification        toolbar item, if found.
+	private ToolbarItem m_folderActionsTBI;			// The folder actions            toolbar item, if found.
+	private ToolbarItem m_folderViewsTBI;			// The folder views              toolbar item, if found.
+	private ToolbarItem m_shareThisTBI;				// The share this                toolbar item, if found.
+	private ToolbarItem m_trackBinderTBI;			// The binder tracking           toolbar item, if found.
+	private ToolbarItem m_trackPersonTBI;			// The person tracking           toolbar item, if found.
+	private ToolbarItem m_whatsNewTBI;				// The what's new                toolbar item, if found.
+	private ToolbarItem m_whatsUnreadTBI;			// The what's unread             toolbar item, if found.
+	private ToolbarItem m_whoHasAccessTBI;			// The who has access            toolbar item, if found.
+	private ToolbarItem m_workspaceActionsTBI;		// The workspace actions         toolbar item, if found.
 
 	/**
 	 * Class constructor.
@@ -221,8 +222,9 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		}
 		
 		// ...then the miscellaneous section...
-		if (null != m_trackThisTBI) m_miscBucket.add(m_trackThisTBI);
-		if (null != m_shareThisTBI) m_miscBucket.add(m_shareThisTBI);
+		if (null != m_trackPersonTBI) m_miscBucket.add(m_trackPersonTBI);
+		if (null != m_trackBinderTBI) m_miscBucket.add(m_trackBinderTBI);
+		if (null != m_shareThisTBI)   m_miscBucket.add(m_shareThisTBI);
 		
 		// ...and finally, the configuration section.
 		localTBI = new ToolbarItem();
@@ -352,8 +354,9 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			}
 			
 			else if (tbName.equalsIgnoreCase("ssGwtMiscToolbar")) {
-				m_shareThisTBI = tbi.getNestedToolbarItem("share");
-				m_trackThisTBI = tbi.getNestedToolbarItem("track");
+				m_shareThisTBI   = tbi.getNestedToolbarItem("share");
+				m_trackBinderTBI = tbi.getNestedToolbarItem("track");
+				m_trackPersonTBI = tbi.getNestedToolbarItem("trackPerson");
 			}
 		}
 		
@@ -362,7 +365,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		boolean reply =
 			((null != m_emailNotificationTBI)                                                ||
 			 (null != m_shareThisTBI)                                                        ||
-			 (null != m_trackThisTBI)                                                        ||
+			 (null != m_trackBinderTBI)                                                      ||
+			 (null != m_trackPersonTBI)                                                      ||
 			 (null != m_whatsNewTBI)                                                         ||
 			 (null != m_whatsUnreadTBI)                                                      ||
 			 (null != m_whoHasAccessTBI)                                                     ||
