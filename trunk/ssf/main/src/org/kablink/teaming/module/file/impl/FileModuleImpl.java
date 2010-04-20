@@ -873,8 +873,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
 		// Copy the last-modified date
 		fa.setModification(highestVa.getModification());
-		// Copy the file length
+		// Copy the file length and other values
 		fa.setFileItem(highestVa.getFileItem());
+		fa.setMajorVersion(highestVa.getMajorVersion());
+		fa.setMinorVersion(highestVa.getMinorVersion());
+		fa.setFileStatus(highestVa.getFileStatus());
+		
 		// Since creation date is not really useful, we will leave it alone. 
 		
 		//List<String> afterVersionNames = RepositoryUtil.getVersionNames(va.getRepositoryName(), binder, entity, 

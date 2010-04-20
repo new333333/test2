@@ -133,8 +133,20 @@ public class ModifyFileController extends SAbstractController {
 			if (op.equals(WebKeys.OPERATION_DELETE) && WebHelper.isMethodPost(request)) {
 				FilesErrors errors = new FilesErrors();
 				//Delete this version
-				if (fileAtt != null && fileAtt instanceof VersionAttachment) 
+				if (fileAtt != null && fileAtt instanceof VersionAttachment) {
 					getFileModule().deleteVersion(binder, entity, (VersionAttachment)fileAtt);
+				} else if (fileAtt != null && fileAtt instanceof FileAttachment) {
+					//This is the top file in the version list
+					if (fileAtt.getFileVersionsUnsorted().size() <= 1) {
+						//This is the only version
+						getFileModule().deleteFile(binder, entity, fileAtt, errors);
+						BinderHelper.indexEntity(this, entity);  //Must re-index since there is a new top file version
+					} else {
+						//There are some versions, so one of them will become the new top file
+						getFileModule().deleteVersion(binder, entity, fileAtt.getHighestVersion());
+						BinderHelper.indexEntity(this, entity);  //Must re-index since there is a new top file version
+					}
+				}
 			
 			} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_DESCRIPTION) && WebHelper.isMethodPost(request)) {
 				//The form was submitted. Go process it
