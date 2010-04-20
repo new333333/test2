@@ -122,6 +122,11 @@ public interface GwtRpcServiceAsync
 	public void getRecentPlaces(                                         AsyncCallback<List<RecentPlaceInfo>> callback );
 	public void getTeamManagementInfo( String             binderId,      AsyncCallback<TeamManagementInfo>    callback );
 	public void getToolbarItems(       String             binderId,      AsyncCallback<List<ToolbarItem>>     callback );
+
+	// The following are used to manage the tracking of binders.
+	public void trackBinder(   String binderId, AsyncCallback<Boolean> callback );
+	public void untrackBinder( String binderId, AsyncCallback<Boolean> callback );
+	public void untrackPerson( String binderId, AsyncCallback<Boolean> callback );
 	
 	// Save the branding data to the given binder.
 	public void saveBrandingData( String binderId, GwtBrandingData brandingData, AsyncCallback<Boolean> callback );

@@ -1501,6 +1501,40 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return tmiList;
 	}
 
+	/**
+	 * Called to mark that the current user is tracking the specified
+	 * binder.
+	 * 
+	 * @param binderId
+	 */
+	public Boolean trackBinder( String binderId ) {
+		BinderHelper.trackThisBinder(this, Long.parseLong(binderId), "add");
+		return Boolean.TRUE;
+	}
+	
+	/**
+	 * Called to mark that the current user is no longer tracking the
+	 * specified binder.
+	 * 
+	 * @param binderId
+	 */
+	public Boolean untrackBinder( String binderId ) {
+		BinderHelper.trackThisBinder(this, Long.parseLong(binderId), "delete");
+		return Boolean.TRUE;
+	}
+	
+	/**
+	 * Called to mark that the current user is no longer tracking the
+	 * person whose workspace is the specified binder.
+	 * 
+	 * @param binderId
+	 */
+	public Boolean untrackPerson( String binderId ) {
+		Binder binder = getBinderModule().getBinder(Long.parseLong(binderId));
+		BinderHelper.trackThisBinder(this, binder.getOwnerId(), "deletePerson");
+		return Boolean.TRUE;
+	}
+	
 	/*
 	 * Constructs a ToolbarItem based on a toolbar.
 	 */

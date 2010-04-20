@@ -1327,7 +1327,7 @@ public class BinderHelper {
 	/**
 	 * Determines whether a binder is a User workspace.
 	 * 
-	 * @param binder The Binder being queried for being a User
+	 * @param binder The Binder being queried for being a User 
 	 *                 workspace.
 	 *                 
 	 * @return true -> binder is a User workspace.  false -> It isn't.
@@ -1342,6 +1342,32 @@ public class BinderHelper {
   		   	isUserWs = ((type != null) && (type.intValue() == Definition.USER_WORKSPACE_VIEW));
 		}
 		return isUserWs;
+	}
+	
+	static public boolean isBinderUserWorkspace(AllModulesInjected bs, Long binderId) {
+		return isBinderUserWorkspace(bs.getBinderModule().getBinder(binderId));
+	}
+
+	/**
+	 * Determines whether a binder is a calendar.
+	 * 
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	static public boolean isBinderCalendar(Binder binder) {
+		boolean isCalendar = (EntityIdentifier.EntityType.folder == binder.getEntityType());
+		if (isCalendar) {
+			String dFamily = "";
+			Element familyProperty = ((Element) binder.getDefaultViewDef().getDefinition().getRootElement().selectSingleNode("//properties/property[@name='family']"));
+			if (familyProperty != null) {
+				dFamily = familyProperty.attributeValue("value", "");
+				if (null != dFamily) {
+					isCalendar = dFamily.equalsIgnoreCase("calendar");
+				}
+			}
+		}
+		return isCalendar;
 	}
 	
 	static public void buildWorkspaceTreeBean(AllModulesInjected bs, Binder binder, Map model, DomTreeHelper helper) {
@@ -3321,6 +3347,37 @@ public class BinderHelper {
 			trackedBinders = new ArrayList();
 		}
 		return trackedBinders.contains(binderId);
+	}
+
+	/**
+	 * Returns true if the current user is tracking the binder as a
+	 * person and false otherwise.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static boolean isPersonTracked(AllModulesInjected bs, Long binderId) {
+		// Is the binder a user workspace?
+		boolean reply = isBinderUserWorkspace(bs, binderId);
+		if (reply) {
+			// Yes!  Are we tracking it as a person?
+			User user = RequestContextHolder.getRequestContext().getUser();
+			Long userWorkspaceId = user.getWorkspaceId();
+			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(user.getId(), userWorkspaceId);
+			Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+			if (relevanceMap == null) relevanceMap = new HashMap();
+			List trackedPeople = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
+			if (trackedPeople != null) {
+				Binder binder = bs.getBinderModule().getBinder(binderId);
+				reply = trackedPeople.contains(binder.getOwnerId());
+			}
+		}
+		
+		// If we get here, reply is true if the user is tracking the
+		// binder as a person and false otherwise.  Return it.
+		return reply;
 	}
 
 	public static Map getSearchAndPagingModels(Map entries, Map options, boolean showTrash) {

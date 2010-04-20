@@ -128,6 +128,11 @@ public interface GwtRpcService extends RemoteService
 	public TeamManagementInfo    getTeamManagementInfo( String             binderId      );
 	public List<ToolbarItem>     getToolbarItems(       String             binderId      );
 	
+	// The following are used to manage the tracking of binders.
+	public Boolean trackBinder(   String binderId );
+	public Boolean untrackBinder( String binderId );
+	public Boolean untrackPerson( String binderId );
+	
 	// Save the branding data to the given binder.
 	public Boolean saveBrandingData( String binderId, GwtBrandingData brandingData ) throws GwtTeamingException;
 	
