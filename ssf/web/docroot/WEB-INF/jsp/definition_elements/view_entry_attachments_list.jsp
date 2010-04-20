@@ -408,6 +408,22 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				  </li>
 				</c:if>
 
+				<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['deleteEntry']}">
+				  <li>
+				    <a href="<ssf:url
+					    adapter="true" 
+					    portletName="ss_forum" 
+					    action="modify_file" 
+					    actionUrl="false" 
+					    ><ssf:param name="entityId" value="${ssDefinitionEntry.id}"/><ssf:param 
+					    name="entityType" value="${ssDefinitionEntry.entityType}"/><ssf:param 
+					    name="fileId" value="${selection.id}"/><ssf:param 
+					    name="operation" value="delete"/></ssf:url>"
+				      onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
+					><span><ssf:nlt tag="file.deleteVersion"/></span></a>
+				  </li>
+				</c:if>
+
 			</ul>
 		  </div>
 		</td>
