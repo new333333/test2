@@ -1539,7 +1539,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		mod = now;
     	
 		fAtt.setModification(mod);
-		fAtt.setMinorVersion(fAtt.getMinorVersion() + 1);
 		
 		FileItem fItem = fAtt.getFileItem();
 
@@ -1550,6 +1549,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			// The repository system supports versioning.        			
 			int versionNumber = fAtt.getLastVersion().intValue() + 1;
 			fAtt.setLastVersion(new Integer(versionNumber));
+			fAtt.setMinorVersion(fAtt.getMinorVersion() + 1);
 			
 			VersionAttachment vAtt = new VersionAttachment();
 			// Creation time is always current real time, whereas modification
