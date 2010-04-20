@@ -95,6 +95,11 @@ public interface GwtRpcServiceAsync
 	// Returns a permalink to the currently logged in user's workspace.
 	public void getUserWorkspacePermalink(AsyncCallback<String> callback);
 	
+	// The following are used to interact with the GWT UI defaults.
+	public void getGwtUIDefault(   AsyncCallback<Boolean> callback );
+	public void getGwtUIEnabled(   AsyncCallback<Boolean> callback );
+	public void getGwtUIExclusive( AsyncCallback<Boolean> callback );
+	
 	// The following are used in the implementation of the various
 	// forms of the WorkspaceTreeControl.
 	public void getHorizontalTree(   String binderId, AsyncCallback<List<TreeInfo>> callback );
