@@ -60,6 +60,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
@@ -141,6 +142,7 @@ public class ModifyFileController extends SAbstractController {
 					String text = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DESCRIPTION, "");
 					Description description = new Description(text);
 					getFileModule().modifyFileComment(entity, fileAtt, description);
+					BinderHelper.indexEntity(this, entity);
 				}
 				
 			} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_REVERT) && WebHelper.isMethodPost(request)) {
@@ -149,6 +151,7 @@ public class ModifyFileController extends SAbstractController {
 					String text = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DESCRIPTION, "");
 					Description description = new Description(text);
 					getFileModule().revertFileVersion(entity, fileVer);
+					BinderHelper.indexEntity(this, entity);
 				}
 			}
 

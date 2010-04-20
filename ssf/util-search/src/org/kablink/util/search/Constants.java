@@ -160,6 +160,8 @@ public class Constants {
 	public static final String ENTRY_TOP_ENTRY_ID_FIELD = "_entryTopEntryId";
 	public static final String ENTRY_TOP_ENTRY_TITLE_FIELD = "_entryTopEntryTitle";
 	public static final String FILENAME_FIELD = "_fileName";
+	public static final String FILE_DESCRIPTION_FIELD = "_fileDesc";
+	public static final String FILE_STATUS_FIELD = "_fileStatus";
 	public static final String FILE_EXT_FIELD = "_fileExt";
 	public static final String FILE_TYPE_FIELD = "_fileType";
 	public static final String FILE_ID_FIELD = "_fileID";

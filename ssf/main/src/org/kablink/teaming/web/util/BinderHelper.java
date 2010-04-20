@@ -3700,4 +3700,16 @@ public class BinderHelper {
 		FixupFolderDefsThread fixFolderDefsThread = FixupFolderDefsThread.getFixupFolderDefsThread(request);
 		return ((fixFolderDefsThread != null) && fixFolderDefsThread.isFolderFixupReady());
 	}
+	
+	public static void indexEntity(AllModulesInjected bs, DefinableEntity entity) {
+		if (EntityType.folderEntry.equals(entity.getEntityType())) {
+			bs.getFolderModule().indexEntry((FolderEntry)entity, false);
+		} else if (EntityType.folder.equals(entity.getEntityType()) || 
+				EntityType.workspace.equals(entity.getEntityType()) || 
+				EntityType.profiles.equals(entity.getEntityType())) {
+			bs.getBinderModule().indexBinder(entity.getId(), false);
+		} else if (EntityType.user.equals(entity.getEntityType())) {
+			bs.getProfileModule().indexEntry((Principal)entity);
+		}
+	}
 }
