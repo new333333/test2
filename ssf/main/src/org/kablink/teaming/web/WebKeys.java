@@ -566,6 +566,7 @@ public class WebKeys {
 	public static final String OPERATION_VOTE_SURVEY_REMOVE = "vote_survey_remove";
 	public static final String OPERATION_MODIFY_ENTRY="modifyEntry";
 	public static final String OPERATION_MODIFY_FILE_DESCRIPTION="modify_file_description";
+	public static final String OPERATION_MODIFY_FILE_MAJOR_VERSION="modify_file_major_version";
 	public static final String OPERATION_MODIFY_FILE_REVERT="modify_file_revert";
 	public static final String OPERATION_GET_MEETING_RECORDS = "get_meeting_records";
 	public static final String OPERATION_ATTACHE_MEETING_RECORDS = "attache_meeting_records";

@@ -388,6 +388,14 @@ public interface FileModule {
 	public void modifyFileStatus(DefinableEntity entity, FileAttachment fileAtt, FileStatus fileStatus);
 	
 	/**
+	 * Increment the major version. 
+	 * 
+	 * @param entity
+	 * @param fileAtt
+	 */
+	public void incrementMajorFileVersion(DefinableEntity entity, FileAttachment fileAtt);
+	
+	/**
 	 * Revert to the specified version. 
 	 * 
 	 * @param binder
