@@ -939,6 +939,10 @@ public class EntityIndexUtils {
     	doc.add(fileTimeField); 
       	Field fileNameField = new Field(FILENAME_FIELD, fa.getFileItem().getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
        	doc.add(fileNameField);
+      	Field fileDescField = new Field(FILE_DESCRIPTION_FIELD, fa.getFileItem().getDescription().getText(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+       	doc.add(fileDescField);
+      	Field fileStatusField = new Field(FILE_STATUS_FIELD, String.valueOf(fa.getFileStatus()), Field.Store.YES, Field.Index.UN_TOKENIZED);
+       	doc.add(fileStatusField);
        	Field fileExtField = new Field(FILE_EXT_FIELD, getFileExtension(fa.getFileItem().getName()), Field.Store.YES, Field.Index.UN_TOKENIZED);
        	doc.add(fileExtField);   	
        	Field uniqueField = new Field(FILE_UNIQUE_FIELD, Boolean.toString(fa.isCurrentlyLocked()), Field.Store.YES, Field.Index.UN_TOKENIZED);
@@ -957,6 +961,7 @@ public class EntityIndexUtils {
        	} catch (Exception e) {}
        	doc.removeFields(Constants.TEMP_FILE_CONTENTS_FIELD);
        	text += " " + doc.getField(Constants.FILENAME_FIELD).stringValue();
+       	text += " " + doc.getField(Constants.FILE_DESCRIPTION_FIELD).stringValue();
        	text += " " + doc.getField(Constants.MODIFICATION_NAME_FIELD).stringValue();
        	text += " " + doc.getField(Constants.CREATOR_NAME_FIELD).stringValue();
        	Field allText = new Field(Constants.ALL_TEXT_FIELD, text, Field.Store.NO, Field.Index.TOKENIZED);

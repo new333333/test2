@@ -2724,6 +2724,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			}
 			if (fileAtt != null) {
 				bs.getFileModule().modifyFileStatus(entity, fileAtt, fileStatus);
+				BinderHelper.indexEntity(bs, entity);
 			}
 		}
 	}
