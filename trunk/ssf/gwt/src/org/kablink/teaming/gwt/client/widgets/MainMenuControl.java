@@ -141,7 +141,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	private void addCommonItems(FlowPanel commonPanel) {
 		// Create a panel to hold the buttons at the left edge of the
 		// menu bar...
-		FlowPanel buttonsPanel = new FlowPanel();
+		final FlowPanel buttonsPanel = new FlowPanel();
 		buttonsPanel.addStyleName("mainMenuButton_Group");
 		
 		// ...add the slide-left/right toggle...
@@ -164,13 +164,24 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		MenuBarButton bhButton = new MenuBarButton(this, panel, m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), TeamingAction.BROWSE_HIERARCHY, new OnBrowseHierarchyInfo(panel));
 		panel.add(bhButton);
 		buttonsPanel.add(panel);
-		
-		// ...add the GWT UI button...
-		panel = new FlowPanel();
-		panel.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
-		MenuBarButton gwtUIButton = new MenuBarButton(this, panel, m_images.gwtUI(), m_messages.mainMenuAltGwtUI(), TeamingAction.TOGGLE_GWT_UI);
-		panel.add(gwtUIButton);
-		buttonsPanel.add(panel);
+
+		// ...if the user is allowed to exit GWT UI mode...
+		final ActionTrigger actionTrigger = this;
+		GwtTeaming.getRpcService().getGwtUIExclusive(new AsyncCallback<Boolean>() {
+			public void onFailure(Throwable t) {
+				Window.alert(t.toString());
+			}
+			public void onSuccess(Boolean isGwtUIExclusive) {
+				if (!isGwtUIExclusive) {
+					// ...add the GWT UI button...
+					FlowPanel panel = new FlowPanel();
+					panel.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
+					MenuBarButton gwtUIButton = new MenuBarButton(actionTrigger, panel, m_images.gwtUI(), m_messages.mainMenuAltGwtUI(), TeamingAction.TOGGLE_GWT_UI);
+					panel.add(gwtUIButton);
+					buttonsPanel.add(panel);
+				}
+			}
+		});
 
 		// ...add the buttons to the menu...
 		commonPanel.add(buttonsPanel);

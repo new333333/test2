@@ -54,7 +54,6 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.Toolbar;
@@ -511,14 +510,33 @@ public class GwtUIHelper {
 	}
 	
 	/**
+	 * Returns true if the GWT UI should be default UI and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isGwtUIDefault() {
+		return new GwtUIDefaults().isGwtUIDefault();
+	}
+
+	/**
 	 * Returns true if the GWT UI should be available and false
 	 * otherwise.
 	 * 
 	 * @return
 	 */
 	public static boolean isGwtUIEnabled() {
-		String durangoUI = SPropsUtil.getString("use-durango-ui", "");
-		return (MiscUtil.hasString(durangoUI) && "1".equals(durangoUI));
+		return new GwtUIDefaults().isGwtUIEnabled();
+	}
+
+	/**
+	 * Returns true if once in GWT UI mode, we should disallow
+	 * returning to the traditional UI and false otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isGwtUIExclusive() {
+		return new GwtUIDefaults().isGwtUIExclusive();
 	}
 
 	/**
@@ -550,8 +568,13 @@ public class GwtUIHelper {
 			reply = (null != hRequest);
 			if (reply) {
 				HttpSession hSession = WebHelper.getRequiredSession(hRequest);
-				Object durangoUI = hSession.getAttribute("use-durango-ui");
-				reply = ((null != durangoUI) && (durangoUI instanceof Boolean) && ((Boolean) durangoUI).booleanValue());
+				Object durangoUI = hSession.getAttribute(GwtUIDefaults.GWT_UI_ENABLED_FLAG);
+				if (null == durangoUI) {
+					reply = new Boolean(isGwtUIDefault());
+				}
+				else {
+					reply = ((durangoUI instanceof Boolean) && ((Boolean) durangoUI).booleanValue());
+				}
 			}
 		}
 		return reply;
@@ -563,7 +586,7 @@ public class GwtUIHelper {
 	 * the trash on that Binder.
 	 */
 	public static String getTrashPermalink(String binderPermalink) {
-		return GwtUIHelper.appendUrlParam(binderPermalink, WebKeys.URL_SHOW_TRASH, "true");
+		return appendUrlParam(binderPermalink, WebKeys.URL_SHOW_TRASH, "true");
 	}
 	
 	/**
@@ -590,7 +613,7 @@ public class GwtUIHelper {
 	public static void setGwtUIActive(HttpServletRequest hRequest, boolean gwtUIActive) {
 		if (null != hRequest) {
 			HttpSession hSession = WebHelper.getRequiredSession(hRequest);
-			hSession.setAttribute("use-durango-ui", new Boolean(gwtUIActive && isGwtUIEnabled()));
+			hSession.setAttribute(GwtUIDefaults.GWT_UI_ENABLED_FLAG, new Boolean(gwtUIActive && isGwtUIEnabled()));
 		}
 	}
 }
