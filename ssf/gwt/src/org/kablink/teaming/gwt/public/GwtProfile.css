@@ -163,7 +163,7 @@ white-space:nowrap;
 .tracking-subhead {
 border-bottom:1px solid #D2D5D1;
 color:#666666;
-font-size:0.65em;
+font-size:0.9em;
 margin-top:1.4em;
 padding:3px 0;
 text-transform:uppercase;
@@ -245,7 +245,26 @@ color: #D40D12;
 font-size: 14px;
 font-weight: bold;
 }
-.alignTop{vertical-align: top;}
-.alignBottom{vertical-align: bottom;}
-.alignTopLeft{text-align: left; vertical-align: top;}
-.alignBottomLeft{text-align: left; vertical-align: bottom;}
+.profileSideBar_ItemPanel {
+}
+.profileSideBar_Item { 
+	line-height: 1.1em;
+	font-size: 0.9em; 
+	margin-top: 0.5em;
+	text-transform:none;
+}
+.profileSideBar_ItemText {
+	color: #1C5894;
+	cursor: pointer;
+	display: block;
+	margin: 0px;
+	padding: 3px;
+}
+.profileSideBar_ItemA {
+
+}
+.profileSideBar_ItemHover {
+	background-color: #E6F2F7 !important;
+	margin-right: 5px;
+}
+
