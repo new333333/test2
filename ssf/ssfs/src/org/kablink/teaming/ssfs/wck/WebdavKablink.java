@@ -517,8 +517,18 @@ public class WebdavKablink implements BasicWebdavStore,
 		if(!exclusive)
 			throw new AccessDeniedException(uri, "Shared lock is not supported", "lock");
 		
-		if(inheritable)
-			throw new AccessDeniedException(uri, "Recursive locking is not supported", "lock");
+		// When a Teaming's Microsoft Word file is opened through WebDAV by Microsoft Office
+		// 2007 running on Windows XP and authenticated through NTLM, the Word skips sending
+		// Depth HTTP header for lock command, which causes the Slide engine to default the
+		// depth value to infinite (= Integer.MAX_VALUE), which then causes this 'inheritable'
+		// variable to be set to true (taking breath here...). For a leaf resource such as 
+		// file, we can safely ignore the value of this setting. For container types such 
+		// as folder, we do not allow lock command anyway (see below). So, in both cases,
+		// ignoring this variable is safe, and it allows us to work around the issue.
+		// Besides, it is arguable whether Slide's default behavior of setting it to infinite
+		// value in case of missing Depth header is actually desirable.
+		//if(inheritable)
+		//	throw new AccessDeniedException(uri, "Recursive locking is not supported", "lock");
 				
 		try {
 			Map m = parseUri(uri);
