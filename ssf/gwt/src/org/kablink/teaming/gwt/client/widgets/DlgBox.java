@@ -38,6 +38,9 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -59,6 +62,7 @@ public abstract class DlgBox extends PopupPanel
 	private Button		m_okBtn;
 	private Button		m_cancelBtn;
 	private FocusWidget m_focusWidget;	// Widget that should receive the focus when this dialog is shown.
+	private static int m_numDlgsVisible = 0;	// Number of dialogs that are currently visible.
 	
 	/**
 	 * 
@@ -69,7 +73,21 @@ public abstract class DlgBox extends PopupPanel
 		int xPos,
 		int yPos )
 	{
-		super( autoHide, modal );
+		// Since we are providing the modal behavior, always pass false into super()
+		super( autoHide, false );
+		
+		// Should this dialog be modal?
+		if ( modal )
+		{
+			// Yes
+			// If there is already a dialog visible it then the glass panel is already visible.
+			// We don't want 2 glass panels.
+			if ( m_numDlgsVisible == 0 )
+			{
+				setGlassEnabled( true );
+				setGlassStyleName( "n-Transparent-Black-Div" );
+			}
+		}
 	
 		m_focusWidget = null;
 		
@@ -184,6 +202,17 @@ public abstract class DlgBox extends PopupPanel
 //!!!	public abstract void init( PropertiesObj properties );
 	
 	/**
+	 * Hide this dialog.
+	 */
+	public void hide()
+	{
+		--m_numDlgsVisible;
+		
+		super.hide();
+	}// end hide()
+	
+	
+	/**
 	 * Initialize the edit/cancel handlers.
 	 */
 	public void initHandlers(
@@ -252,6 +281,8 @@ public abstract class DlgBox extends PopupPanel
 	 */
 	public void show()
 	{
+		++m_numDlgsVisible;
+		
 		// Show this dialog.
 		super.show();
 		
@@ -261,22 +292,20 @@ public abstract class DlgBox extends PopupPanel
 		// We need to set the focus after the dialog has been shown.  That is why we use a timer. 
 		if ( m_focusWidget != null )
 		{
-			Timer timer;
+			Command cmd;
 			
-			timer = new Timer()
+			cmd = new Command()
 			{
-				/**
-				 * 
-				 */
-				@Override
-				public void run()
-				{
-					if ( m_focusWidget != null )
-						m_focusWidget.setFocus( true );
-				}// end run()
+			     	/**
+			     	 * 
+			     	 */
+			      public void execute()
+			      {
+						if ( m_focusWidget != null )
+							m_focusWidget.setFocus( true );
+			      }
 			};
-			
-			timer.schedule( 250 );
+			DeferredCommand.addCommand( cmd );
 		}
 	}// end show()
 }// end DlgBox
