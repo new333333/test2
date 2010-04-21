@@ -17,6 +17,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class ProfileTeamsPanel extends ProfileSectionPanel  {
 
 	private final String IDBASE = "myTeams_";
+	protected List<TeamInfo> teamList;
 
 	public ProfileTeamsPanel(ProfileRequestInfo profileRequestInfo, String title) {
 		
@@ -37,22 +38,34 @@ public class ProfileTeamsPanel extends ProfileSectionPanel  {
 			public void onFailure(Throwable t) {
 				Window.alert(t.toString());
 			}
-			public void onSuccess(List<TeamInfo> mtList)  {
+			public void onSuccess(List<TeamInfo> tList)  {
+				
+				teamList = tList;
+				
 				// Scan the teams...
-				int mtCount = 0;
+				int teamCount = 0;
 				SideBarAnchor sbA;
-				for (Iterator<TeamInfo> mtIT = mtList.iterator(); mtIT.hasNext(); ) {
-					// ...creating an item structure for each.
-					TeamInfo mt = mtIT.next();
-					String mtId = (IDBASE + mt.getBinderId());
+				for (Iterator<TeamInfo> tIT = tList.iterator(); tIT.hasNext(); ) {
 					
-					sbA = new SideBarAnchor(mtId, mt.getTitle(), mt.getEntityPath(), new TeamClickHandler(mt));
+					//if 
+					if(teamCount == 4) {
+						String teamId = (IDBASE + "More");
+						sbA = new SideBarAnchor(teamId, "more...", "more...", new TeamClickHandler(new TeamInfo()));
+						addContentWidget(sbA);
+						return;
+					}
+					
+					// ...creating an item structure for each.
+					TeamInfo team = tIT.next();
+					String teamId = (IDBASE + team.getBinderId());
+					
+					sbA = new SideBarAnchor(teamId, team.getTitle(), team.getEntityPath(), new TeamClickHandler(team));
 					addContentWidget(sbA);
-					mtCount += 1;
+					teamCount += 1;
 				}
 				
 				// If there weren't any teams...
-				if (0 == mtCount) {
+				if (0 == teamCount) {
 					// ...put something in the menu that tells the user
 					// ...that.
 					Label content = new Label(messages.mainMenuMyTeamsNoTeams());
@@ -70,16 +83,16 @@ public class ProfileTeamsPanel extends ProfileSectionPanel  {
 	 * Inner class that handles clicks on individual teams.
 	 */
 	private class TeamClickHandler implements ClickHandler {
-		private TeamInfo m_myTeam;	// The team clicked on.
+		private TeamInfo team;	// The team clicked on.
 
 		/**
 		 * Class constructor.
 		 * 
 		 * @param myTeam
 		 */
-		TeamClickHandler(TeamInfo myTeam) {
+		TeamClickHandler(TeamInfo t) {
 			// Simply store the parameter.
-			m_myTeam = myTeam;
+			team = t;
 		}
 
 		/**
@@ -89,10 +102,41 @@ public class ProfileTeamsPanel extends ProfileSectionPanel  {
 		 */
 		public void onClick(ClickEvent event) {
 
-			gotoUrl(m_myTeam.getPermalinkUrl(), false);
+			if(team.getPermalinkUrl() != "") {
+				gotoUrl(team.getPermalinkUrl(), true);
+			} else {
+				//is this more than lets expand the 
+			   
+			}
 		}
 	}
 
+	private void expand() {
+		
+		Window.alert("Expand button pressed");
+		
+//		// Scan the teams...
+//		int teamCount = 0;
+//		SideBarAnchor sbA;
+//		for (Iterator<TeamInfo> tIT = teamList.iterator(); tIT.hasNext(); ) {
+//			
+//			//if 
+//			if(teamCount == 1) {
+//				String teamId = (IDBASE + "More");
+//				sbA = new SideBarAnchor(teamId, "More", "", new TeamClickHandler(new TeamInfo()));
+//				return;
+//			}
+//			
+//			// ...creating an item structure for each.
+//			TeamInfo team = tIT.next();
+//			String teamId = (IDBASE + team.getBinderId());
+//			
+//			sbA = new SideBarAnchor(teamId, team.getTitle(), team.getEntityPath(), new TeamClickHandler(team));
+//			addContentWidget(sbA);
+//			teamCount += 1;
+//		}
+	}
+	
 	/*
 	 * This method will be called to goto a permalink URL received as a
 	 * parameter.
