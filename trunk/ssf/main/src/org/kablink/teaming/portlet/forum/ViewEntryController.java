@@ -706,7 +706,7 @@ public class ViewEntryController extends  SAbstractController {
 							url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
 							url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_START_WORKFLOW);
 							url.setParameter(WebKeys.URL_WORKFLOW_TYPE, workflowDef.getId());
-							toolbar.addToolbarMenuItem("6_workflow", "", 
+							toolbar.addToolbarMenuItem("7_workflow", "", 
 									NLT.get("toolbar.menu.startWorkflow", new String[] {wfTitle}), url, qualifiers);
 						}
 					}
