@@ -132,11 +132,11 @@ public interface GwtRpcServiceAsync
 	public void saveBrandingData( String binderId, GwtBrandingData brandingData, AsyncCallback<Boolean> callback );
 
 	// Return information about the User Profile
-	public void getProfileInfo(String binderId, AsyncCallback<ProfileInfo> callback);
+	public void getProfileInfo(	String binderId, AsyncCallback<ProfileInfo> 	callback);
+	public void getTeams(		String binderId, AsyncCallback<List<TeamInfo>>  callback );
 	
-	// Save the User Status
-	public void saveUserStatus(String status, AsyncCallback<Boolean> callback);
-	// Get the User Status
-	public void getUserStatus(String binderId,	AsyncCallback<UserStatus> callback); 
+	// The following are used for the UserStatus control
+	public void saveUserStatus(String status, 	AsyncCallback<Boolean> 		callback);
+	public void getUserStatus( String binderId,	AsyncCallback<UserStatus> 	callback); 
 	
 }// end GwtRpcServiceAsync

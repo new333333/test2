@@ -136,12 +136,14 @@ public interface GwtRpcService extends RemoteService
 	// Save the branding data to the given binder.
 	public Boolean saveBrandingData( String binderId, GwtBrandingData brandingData ) throws GwtTeamingException;
 	
-	// Return Information about the User Profile
-	public ProfileInfo getProfileInfo(String binderId);
+	// The following are used in the implementation of the
+	// User Profiles
+	public ProfileInfo 		getProfileInfo(String binderId);
+	public List<TeamInfo> 	getTeams(String binderId);
 	
-	// Save the User Status
+	// The following are used in the implementation of the
+	// UserStatusControl.
 	public Boolean saveUserStatus(String status) throws GwtTeamingException;
-	// Get the User Status
 	public UserStatus getUserStatus(String binderId) throws GwtTeamingException; 
 	
 }// end GwtRpcService

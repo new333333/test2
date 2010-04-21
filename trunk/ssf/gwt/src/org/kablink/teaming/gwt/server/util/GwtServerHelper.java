@@ -414,12 +414,24 @@ public class GwtServerHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<TeamInfo> getMyTeams(AllModulesInjected bs) {
+		User user = getCurrentUser();
+		return getTeams(bs, user.getId());
+	}
+
+	/**
+	 * Returns information about the teams of a specific user
+	 * @param bs
+	 * @param userId 
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<TeamInfo> getTeams(AllModulesInjected bs, Long userId) {
 		// Allocate an ArrayList<TeamInfo> to hold the teams.
 		ArrayList<TeamInfo> reply = new ArrayList<TeamInfo>();
-		
+
 		// Scan the teams the current user is a member of...
-		User user = getCurrentUser();
-		List<Map> myTeams = bs.getBinderModule().getTeamMemberships( user.getId() );
+		List<Map> myTeams = bs.getBinderModule().getTeamMemberships( userId );
 		for (Iterator<Map> myTeamsIT = myTeams.iterator(); myTeamsIT.hasNext(); ) {
 			// ...adding a TeamInfo for each to the reply list.
 			Map myTeam = myTeamsIT.next();

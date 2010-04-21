@@ -1,6 +1,11 @@
 package org.kablink.teaming.gwt.server.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -11,8 +16,11 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
+import org.kablink.teaming.gwt.client.profile.UserStatus;
+import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.Validator;
 
 public class GwtProfileHelper {
@@ -137,5 +145,78 @@ public class GwtProfileHelper {
 			pAttr.setValue(value, true);
 
 		}
+	}
+	
+	public static Principal getPrincipalByBinderId(AllModulesInjected bs, String sbinderId){
+		//Convert binderID to Long
+		Long binderId = Long.valueOf(sbinderId);
+		Binder binder = bs.getBinderModule().getBinder(binderId);
+
+		//Get the Owner of the binder
+		Principal p = binder.getOwner();
+		Long workspaceId = p.getWorkspaceId();
+
+		//We need to match the binder to the correct user, so we can read the miniblog from the correct user
+		if(!binderId.equals(workspaceId)) {
+			//then we need to find the correct owner by name
+			String owner = binder.getName();
+			if(owner!=null && !owner.equals("")){
+				List<String> names = new ArrayList<String>();
+				names.add(owner);
+
+				Collection<Principal> principals;
+				principals = bs.getProfileModule().getPrincipalsByName(names);
+				if (!principals.isEmpty()) p = (Principal)principals.iterator().next();
+			}
+		} 
+		
+		return p;
+	}
+	
+	public static UserStatus getUserStatus(AllModulesInjected bs, String sbinderId) {
+		//This is the object that is streamed back to the client
+		UserStatus userStatus = new UserStatus();
+		
+		Principal p = getPrincipalByBinderId(bs, sbinderId);
+		
+		List <Long> userIds = new ArrayList<Long>();
+		userIds.add(p.getId());
+
+		//Get the User object for this principle
+		SortedSet<User> users = bs.getProfileModule().getUsers(userIds);
+		User u = null;
+		if (!users.isEmpty()) u = users.iterator().next();
+		
+		//Check this user object to see if they cleared their status, don't display a status if cleared.
+		if(u != null) {
+			String sStatus = u.getStatus();
+			if(sStatus == null || sStatus.equals("")) {
+				return userStatus;
+			}
+		}
+		
+		Long[] userIdsArray = new Long[]{p.getId()};
+		
+		String page = "0";
+		int pageStart = Integer.valueOf(page) * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
+		
+		//Calling into api to read the user status because it checks access controls
+		List<Map<String,Object>> statuses = bs.getReportModule().getUsersStatuses(userIdsArray, null, null, 
+				pageStart + Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
+		if (statuses != null && statuses.size() > pageStart) {
+			Map<String,Object> statusMap = statuses.get(0);
+			
+			User statusUser = (User) statusMap.get(ReportModule.USER);
+			statusUser.getStatus();
+			
+			String description = (String)statusMap.get(ReportModule.DESCRIPTION);
+			Date modifyDate = (Date)statusMap.get(ReportModule.DATE);
+			
+			userStatus.setMiniBlogId(statusUser.getMiniBlogId());
+			userStatus.setStatus(description);
+			userStatus.setModifyDate(modifyDate);
+		}
+		
+		return userStatus;
 	}
 }
