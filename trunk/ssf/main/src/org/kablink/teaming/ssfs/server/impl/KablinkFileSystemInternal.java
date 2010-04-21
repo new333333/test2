@@ -351,12 +351,23 @@ public class KablinkFileSystemInternal implements KablinkFileSystem {
 		Entry entry = (Entry) objMap.get(ENTRY);
 
 		// Check if the user has right to modify the entry
+		
+		// Note: It is possible that the owner of the lock has lost the modify right on the entry
+		// since she locked the file successfully. It can happen by someone else changing the
+		// access control on the entry or by a workflow, etc. In such case, we want the lock
+		// owner to be able to graciously release the lock as long as the lock matches, even if 
+		// she may no longer have the modify right on the entry itself (see bug 584878).
+		// As a side effect of unlocking the file, if she had managed to get any updated content
+		// of the file into the system before she lost the modify right on the entry, the updated
+		// content will be committed to the system creating a new version of the file. 
+		/*
 		try {
 			AccessUtils.modifyCheck(entry);
 		}
 		catch(AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());
 		}
+		*/
 		
 		bs.getFileModule().unlock(((Binder) objMap.get(BINDER)), entry, 
 				((FileAttachment) objMap.get(FILE_ATTACHMENT)), 
@@ -629,6 +640,18 @@ public class KablinkFileSystemInternal implements KablinkFileSystem {
 			inputData = new EmptyInputData(); // no non-file input data
 		}
 
+		// For some reason, the modifyEntry() doesn't seem to check access right correctly when a 
+		// workflow is involved (bug 584878). To work around that, explicitly check if the user
+		// has the right to modify the entry before invoking the method.
+		
+		Entry entry = (Entry) objMap.get(ENTRY);
+		try {
+			AccessUtils.modifyCheck(entry);
+		}
+		catch(AccessControlException e) {
+			throw new NoAccessException(e.getLocalizedMessage());
+		}
+		
 		try {
 			bs.getFolderModule().modifyEntry(getBinderId(uri), getEntryId(uri), inputData, fileItems, null, null, null);
 		} catch (AccessControlException e) {
