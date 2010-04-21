@@ -33,7 +33,7 @@ public class ProfileTeamsPanel extends ProfileSectionPanel  {
 	
 	private void getTeams() {
 		
-		rpcService.getMyTeams(new AsyncCallback<List<TeamInfo>>() {
+		rpcService.getTeams(profileRequestInfo.getBinderId(), new AsyncCallback<List<TeamInfo>>() {
 			public void onFailure(Throwable t) {
 				Window.alert(t.toString());
 			}

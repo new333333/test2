@@ -1776,6 +1776,29 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		return profile;
 	}
+	
+	/**
+	 * Returns Look up the workspace owner and return the list of teams they belong to.
+	 * 
+	 * @param binderId  The binderId of the workspace being viewed
+	 * 
+	 * @return
+	 */
+	public List<TeamInfo> getTeams(String binderId)
+	{
+		Long userId = null;
+		Principal p = null;
+
+		if(binderId != null) {
+			p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
+		}
+		
+		if(p != null){
+			userId = p.getId();
+		}
+		
+		return GwtServerHelper.getTeams( this, userId );
+	}// end getMyTeams()
 
 	/**
 	 * Save the User Status
@@ -1809,69 +1832,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	public UserStatus getUserStatus(String sbinderId)
 			throws GwtTeamingException {
 	
-		//This is the object that is streamed back to the client
-		UserStatus userStatus = new UserStatus();
-		//Convert binderID to Long
-		Long binderId = Long.valueOf(sbinderId);
-		Binder binder = getBinderModule().getBinder(binderId);
-
-		//Get the Owner of the binder
-		Principal p = binder.getOwner();
-		Long workspaceId = p.getWorkspaceId();
-
-		//We need to match the binder to the correct user, so we can read the miniblog from the correct user
-		if(!binderId.equals(workspaceId)) {
-			//then we need to find the correct owner
-			String owner = binder.getName();
-			if(owner!=null && !owner.equals("")){
-				List<String> names = new ArrayList<String>();
-				names.add(owner);
-
-				Collection<Principal> principals;
-				principals = getProfileModule().getPrincipalsByName(names);
-				if (!principals.isEmpty()) p = (Principal)principals.iterator().next();
-			}
-		} 
-		
-		//Get the list of miniblog entries by this user (uses the "miniblog" family attribute to find them)
-		List <Long> userIds = new ArrayList<Long>();
-		userIds.add(p.getId());
-
-		//Get the User object for this principle
-		SortedSet<User> users = getProfileModule().getUsers(userIds);
-		User u = null;
-		if (!users.isEmpty()) u = users.iterator().next();
-		
-		//Check this user object to see if they cleared their status, don't display a status if cleared.
-		if(u != null) {
-			String sStatus = u.getStatus();
-			if(sStatus == null || sStatus.equals("")) {
-				return userStatus;
-			}
-		}
-		
-		Long[] userIdsArray = new Long[]{p.getId()};
-		
-		String page = "0";
-		int pageStart = Integer.valueOf(page) * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
-		
-		//Calling into api to read the user status because it checks access controls
-		List<Map<String,Object>> statuses = getReportModule().getUsersStatuses(userIdsArray, null, null, 
-				pageStart + Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
-		if (statuses != null && statuses.size() > pageStart) {
-			Map<String,Object> statusMap = statuses.get(0);
-			
-			User statusUser = (User) statusMap.get(ReportModule.USER);
-			statusUser.getStatus();
-			
-			String description = (String)statusMap.get(ReportModule.DESCRIPTION);
-			Date modifyDate = (Date)statusMap.get(ReportModule.DATE);
-			
-			userStatus.setMiniBlogId(statusUser.getMiniBlogId());
-			userStatus.setStatus(description);
-			userStatus.setModifyDate(modifyDate);
-		}
-		
-		return userStatus;
+		return GwtProfileHelper.getUserStatus(this, sbinderId);
 	}
+
 }// end GwtRpcServiceImpl
