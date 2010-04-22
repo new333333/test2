@@ -92,6 +92,7 @@ import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -963,6 +964,33 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		return adapterUrl.toString();
 	}// end getModifyBinderUrl()
+	
+	
+	/**
+	 * Return the url needed to invoke the "site administration" page.  If the user does not
+	 * have rights to run the "site administration" page we will throw an exception.
+	 */
+	public String getSiteAdministrationUrl( String binderId ) throws GwtTeamingException
+	{
+		// Does the user have rights to run the "site administration" page?
+		if ( getAdminModule().testAccess( AdminOperation.manageFunction ) )
+		{
+			AdaptedPortletURL adapterUrl;
+			
+			// Yes
+			adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+			adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_SITE_ADMINISTRATION );
+			adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
+			
+			return adapterUrl.toString();
+		}
+		
+		GwtTeamingException ex;
+		
+		ex = new GwtTeamingException();
+		ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+		throw ex;
+	}// end getSiteAdministrationUrl()
 	
 	
 	/**

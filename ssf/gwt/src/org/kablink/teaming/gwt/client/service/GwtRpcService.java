@@ -146,4 +146,7 @@ public interface GwtRpcService extends RemoteService
 	public Boolean saveUserStatus(String status) throws GwtTeamingException;
 	public UserStatus getUserStatus(String binderId) throws GwtTeamingException; 
 	
+	// Return the url needed to invoke the "site administration" page.
+	public String getSiteAdministrationUrl( String binderId ) throws GwtTeamingException;
+	
 }// end GwtRpcService

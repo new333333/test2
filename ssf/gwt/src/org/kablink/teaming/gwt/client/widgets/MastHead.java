@@ -305,6 +305,9 @@ public class MastHead extends Composite
 		ImageResource imgResource;
 		Element linkElement;
 
+		// Currently don't need the url to invoke the "site administration" page because that page is
+		// going to be reworked in GWT.  If that work does not get done we can use the url to invoke
+		// the jsp-based "site administration" page.
 		m_adminLink = new Anchor();
 		m_adminLink.addStyleName( "brandingLink" );
 		m_adminLink.addClickHandler( this );
@@ -322,6 +325,45 @@ public class MastHead extends Composite
 		m_adminImg2 = new Image( imgResource );
 		m_adminImg2.setVisible( false );
 		linkElement.appendChild( m_adminImg2.getElement() );
+		
+		// Set the "administration" link to not be visible.
+		m_adminLink.setVisible( false );
+		
+		// Issue an ajax request to see if the user has the rights to run the "site administration" page.
+		{
+			AsyncCallback<String> rpcCallback;
+
+			// No
+			rpcCallback = new AsyncCallback<String>()
+			{
+				/**
+				 * 
+				 */
+				public void onFailure( Throwable t )
+				{
+					// The user does not have the rights to run the "site administration" page.
+					m_adminLink.setVisible( false );
+				}// end onFailure()
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				public void onSuccess( String url )
+				{
+					// Did we get a url for the "site administration" action?
+					if ( url != null && url.length() > 0 )
+					{
+						// Yes
+						m_adminLink.setVisible( true );
+					}
+				}// end onSuccess()
+			};
+			
+			// Issue an ajax request to get the url for the "site administration" action.
+			GwtTeaming.getRpcService().getSiteAdministrationUrl( m_mastheadBinderId, rpcCallback );
+			
+		}
 		
 		m_globalActionsPanel.add( m_adminLink );
 	}// end addAdministrationAction()
