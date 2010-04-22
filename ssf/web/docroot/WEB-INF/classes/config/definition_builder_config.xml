@@ -1050,11 +1050,20 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__name" type="text" />
-		</properties>
-		
+			<property name="type" caption="__type" type="selectbox" 
+				  default="profileGWT" value="profileGWT">
+				<option name="profileStd" caption="__profile_entry_type_BC" />
+				<option name="profileGWT" caption="__profile_entry_type_GWT" />
+			</property>
+		</properties>		
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
 		<options>
 			<option name="profileEntryForm" initial="true" />
 			<option name="profileEntryView" />
+			<option name="profileEntryStandardView" initial="true"/>
+			<option name="profileEntrySimpleView" initial="true" />
 			<option name="profileEntryBusinessCard" initial="true" />
 			<option name="profileEntryMiniBusinessCard" initial="true" />			
 		</options>
@@ -1442,17 +1451,42 @@
 		</jsps>
 	</item>
 		
+<!-- Profile entry profile view -->
+	<item name="profileEntryStandardView" caption="__profile_entry_standard_view" 
+		  canBeDeleted="false" multipleAllowed="false" display="view">
+		<options>
+			<option name="profileHeadingOrgView" caption="__profile_heading_Org_div" 
+				definitionType="7" initial="true" />
+			<option name="profileHeadingContactView" caption="__profile_heading_Contact_div" 
+				definitionType="7" initial="true" />	
+			<option name="profileHeadingOtherView" caption="__profile_heading_Other_div" 
+				definitionType="7" initial="true" />	
+			<option name="profileHeadingPhotosAndImagesView" caption="__profile_heading_PhotosAndImages_div" 
+				definitionType="7" initial="true" />	
+			<option_select path="//item[@category='userViewLayout']" optionCaption="__layout_options" />
+		</options>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_GWT.jsp" />
+		</jsps>
+	</item>
+	
+<!-- Profile entry simple profile view -->
+	<item name="profileEntrySimpleView" caption="__profile_entry_simple_view" 
+		  canBeDeleted="false" multipleAllowed="false" display="view">
+		<options>
+			<option name="profileEntryMiniBusinessCardElements" caption="__profile_entry_mini_business_card_elements" 
+				definitionType="7" initial="true" />
+			<option name="profileEntryDataItem" definitionType="7" />
+		</options>
+		
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_entry_mini_business_card.jsp" />
+		</jsps>
+	</item>	
 	
 <!-- Profile entry business card view -->
 	<item name="profileEntryBusinessCard" caption="__profile_entry_business_card_definition" 
 		  canBeDeleted="true" multipleAllowed="false" display="view">
-		<properties>
-			<property name="type" caption="__type" type="selectbox" 
-				  default="profileStd" value="profileStd">
-				<option name="profileStd" caption="__profile_form_standard" />
-				<option name="profileGWT" caption="__profile_form_GWT" />
-			</property>
-		</properties>
 		<options>
 			<option name="profileEntryBusinessCardElements" caption="__profile_entry_business_card_elements" 
 				definitionType="7" initial="true" />

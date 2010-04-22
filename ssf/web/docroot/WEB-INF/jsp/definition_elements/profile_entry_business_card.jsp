@@ -38,23 +38,7 @@
 <%
 		//Get the form item being displayed
 		Element item = (Element) request.getAttribute("item");
-		
-		//Get the entry type of this definition (folder, file, or event)
-		String formViewStyle = "profileStd";
-		Element formViewTypeEle = (Element)item.selectSingleNode("properties/property[@name='type']");
-		if (formViewTypeEle != null) formViewStyle = formViewTypeEle.attributeValue("value", "profileStd");
-
 %>
-
-
-<c:set var="ss_formViewStyle" value="<%= formViewStyle %>" scope="request" />
-<jsp:useBean id="ss_formViewStyle" type="String" scope="request" />
-
-<c:choose>
-  <c:when test="${ss_formViewStyle == 'profileGWT'}">
-		<jsp:include page="/WEB-INF/jsp/definition_elements/profile_GWT.jsp" />
-  </c:when>
-  <c:otherwise>
 
 <div id="ss_topic_box">
 	<div id="ss_topic_box_h1">
@@ -70,9 +54,9 @@
       </a> 
 	</div>
 </div>
-	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   		configElement="<%= item %>" 
   		configJspStyle="${ssConfigJspStyle}" 
   		entry="${ssDefinitionEntry}" />
-  </c:otherwise>  
-</c:choose>
+ 
