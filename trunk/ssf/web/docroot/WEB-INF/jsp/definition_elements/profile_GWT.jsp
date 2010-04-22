@@ -46,6 +46,7 @@
 		// Through an overlay we will access m_requestInfo from java.
 		var profileRequestInfo = {
 			binderId : '${ssBinder.id}',
+			currentUserWorkspaceId : '${ssUser.workspaceId}',
 			userName : '<ssf:userTitle user="${ssProfileConfigEntry}"/>',
 			adaptedUrl : '<ssf:url crawlable="true"
 				adapter="true" portletName="ss_forum"
