@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 
 public class ProfileMainPanel extends Composite {
 
@@ -110,7 +111,12 @@ public class ProfileMainPanel extends Composite {
 			
 			Label title = new Label(attr.getTitle()+":");
 			title.setStyleName("attrLabel");
-			Label value = new Label(attr.getValue().toString());
+			Widget value = new Label(attr.getValue().toString());
+			
+			if(attr.getDisplayType().equals("email") ) {
+				String url = "mailto:"+ attr.getValue().toString();
+				value = new Anchor(attr.getValue().toString(), url);
+			}
 			
 			grid.insertRow(row);
 			grid.setWidget(row, 0, title);
