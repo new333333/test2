@@ -62,6 +62,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.Node;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
@@ -282,8 +284,23 @@ public class WorkspaceTreeHelper {
 						model.put(WebKeys.PROFILE_CONFIG_ENTRY, u);							
 						Document profileDef = u.getEntryDef().getDefinition();
 						model.put(WebKeys.PROFILE_CONFIG_DEFINITION, profileDef);
-						model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
-								profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));
+						
+						//Get the profileEntry view type and determine which display type to choose business card or profile view
+						Node typeNode = profileDef.getRootElement().selectSingleNode("//definition/properties/property[@name='type']");
+						if(typeNode != null) {
+							String value = ((Element)typeNode).attributeValue("value");
+							if(value != null && value.equals("profileGWT")){
+								model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
+										profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryStandardView']"));
+							} else {
+								model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
+										profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));
+							}
+						} else {
+							model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
+									profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));
+						}
+						
 						model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
 						model.put(WebKeys.USER_WORKSPACE, true);
 
