@@ -27,6 +27,7 @@ public class ProfileAttribute implements IsSerializable {
 	public static final int PACKEDSTRING = 14;
 
 	protected String id;
+	private String displayType;
 	
 	public ProfileAttribute() {
 
@@ -97,5 +98,13 @@ public class ProfileAttribute implements IsSerializable {
     		    return dateValue;
  	    }
 	    return null;
+	}
+
+	public void setDisplayType(String type) {
+		this.displayType = type;
+	}
+	
+	public String getDisplayType(){
+		return this.displayType;
 	}
 }

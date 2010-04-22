@@ -41,9 +41,9 @@ public class GwtProfileHelper {
 				Document doc = u.getEntryDef().getDefinition();
 				Element configElement = doc.getRootElement();
 				
-				Element item = (Element)configElement.selectSingleNode("//definition/item[@name='profileEntryBusinessCard']");
+				Element item = (Element)configElement.selectSingleNode("//definition/item[@name='profileEntryStandardView']");
 				if(item != null) {
-					List<Element> itemList = item.selectNodes("//item[@category='userViewLayout']");
+					List<Element> itemList = item.selectNodes("item[@name]");
 					
 					//for each section header create a profile Info object to hold the information 
 					for(Element catItem: itemList){
@@ -68,17 +68,20 @@ public class GwtProfileHelper {
 							}
 							
 							List<Element> customElements = catItem.selectNodes("item/properties/property[@name='name']");
-							for(Element attrElement: customElements) {
+							for(Element cAttrElement: customElements) {
 								ProfileAttribute attr = new ProfileAttribute();
 								
+								String elementName = cAttrElement.getName();
+								
 								//Get the Elements name - which is the attribute name
-								String name = attrElement.attributeValue("value");
+								String name = cAttrElement.attributeValue("value");
 								attr.setName(name);
 								
 								//Now get the title for this attribute
 								attr.setTitle(NLT.get("profile.element."+name, name));
 								cat.add(attr);
 							}
+							
 							
 							//Get the value for this attribute
 							buildAttributeInfo(u, cat);
@@ -95,7 +98,9 @@ public class GwtProfileHelper {
 		
 		for(ProfileAttribute pAttr: attrs) {
 			
+			String type = "";
 			String name = pAttr.getName();
+		
 			if(Validator.isNull(name)){
 				continue;
 			}
@@ -104,15 +109,18 @@ public class GwtProfileHelper {
 			if(name.equals("name")) {
 				value = u.getName();
 			} else if(name.equals("title")) {
-					value = u.getTitle();
+				value = u.getTitle();
 			} else if(name.equals("phone")) {
 				value = u.getPhone();
 			} else if(name.equals("emailAddress")){
 			    value = u.getEmailAddress();
+			    type = "email";
 			} else if(name.equals("mobileAddress")){
 			    value = u.getMobileEmailAddress();
+			    type = "email";
 			} else if(name.equals("txtEmailAddress")){
-				    value = u.getTxtEmailAddress();
+				value = u.getTxtEmailAddress();
+				type = "email";
 			} else if(name.equals("twitterId")){
 				value = u.getSkypeId();
 			} else if(name.equals("skypeId")){
@@ -143,6 +151,7 @@ public class GwtProfileHelper {
 			}
 				
 			pAttr.setValue(value, true);
+			pAttr.setDisplayType(type);
 
 		}
 	}
