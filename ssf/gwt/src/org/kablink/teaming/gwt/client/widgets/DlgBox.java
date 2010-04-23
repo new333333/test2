@@ -39,9 +39,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -62,6 +60,9 @@ public abstract class DlgBox extends PopupPanel
 	private Button		m_okBtn;
 	private Button		m_cancelBtn;
 	private FocusWidget m_focusWidget;	// Widget that should receive the focus when this dialog is shown.
+	private boolean m_modal;
+	private boolean m_visible = false;
+	
 	private static int m_numDlgsVisible = 0;	// Number of dialogs that are currently visible.
 	
 	/**
@@ -77,17 +78,7 @@ public abstract class DlgBox extends PopupPanel
 		super( autoHide, false );
 		
 		// Should this dialog be modal?
-		if ( modal )
-		{
-			// Yes
-			// If there is already a dialog visible it then the glass panel is already visible.
-			// We don't want 2 glass panels.
-			if ( m_numDlgsVisible == 0 )
-			{
-				setGlassEnabled( true );
-				setGlassStyleName( "n-Transparent-Black-Div" );
-			}
-		}
+		m_modal = modal;
 	
 		m_focusWidget = null;
 		
@@ -206,7 +197,10 @@ public abstract class DlgBox extends PopupPanel
 	 */
 	public void hide()
 	{
-		--m_numDlgsVisible;
+		if ( m_visible )
+			--m_numDlgsVisible;
+		
+		m_visible = false;
 		
 		super.hide();
 	}// end hide()
@@ -281,7 +275,23 @@ public abstract class DlgBox extends PopupPanel
 	 */
 	public void show()
 	{
-		++m_numDlgsVisible;
+		// Is this dialog suppose to be modal
+		if ( m_modal )
+		{
+			// Yes
+			// If there is already a dialog visible then the glass panel is already visible.
+			// We don't want 2 glass panels.
+			if ( m_numDlgsVisible == 0 )
+			{
+				setGlassEnabled( true );
+				setGlassStyleName( "n-Transparent-Black-Div" );
+			}
+		}
+		
+		if ( m_visible == false )
+			++m_numDlgsVisible;
+		
+		m_visible = true;
 		
 		// Show this dialog.
 		super.show();
