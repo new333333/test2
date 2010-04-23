@@ -938,9 +938,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public String getBinderPermalink( String binderId )
 	{
-		Long binderIdL = new Long( binderId );
-		Binder binder = getBinderModule().getBinder( binderIdL );
-		return PermaLinkUtil.getPermalink(binder);
+		if ( binderId != null && binderId.length() > 0 )
+		{
+			Long binderIdL = new Long( binderId );
+			Binder binder = getBinderModule().getBinder( binderIdL );
+			return PermaLinkUtil.getPermalink( binder );
+		}
+		
+		return "";
 	}
 	
 	/**
