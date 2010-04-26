@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -678,13 +679,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	newTopVa.getParentAttachment().setMajorVersion(oldTopVa.getMajorVersion());
     	newTopVa.getParentAttachment().setMinorVersion(oldTopVa.getMinorVersion() + 1);
 
-		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
+    	setEntityModification(entity);
+    	ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
 		ChangeLogUtils.buildLog(changes, va.getParentAttachment());
 		saveChangeLogTransactional(changes);
 	}
 
 	public void modifyFileComment(DefinableEntity entity, FileAttachment fileAtt, Description description) {
 		fileAtt.getFileItem().setDescription(description);
+		setEntityModification(entity);
 		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
 		ChangeLogUtils.buildLog(changes, fileAtt);
 		saveChangeLogTransactional(changes);
@@ -692,6 +695,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	public void modifyFileStatus(DefinableEntity entity, FileAttachment fileAtt, FileStatus fileStatus) {
 		fileAtt.setFileStatus(FileStatus.valueOf(fileStatus));
+		setEntityModification(entity);
 		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
 		ChangeLogUtils.buildLog(changes, fileAtt);
 		saveChangeLogTransactional(changes);
@@ -700,6 +704,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	public void incrementMajorFileVersion(DefinableEntity entity, FileAttachment fileAtt) {
 		fileAtt.setMajorVersion(fileAtt.getMajorVersion() + 1);
 		fileAtt.setMinorVersion(0);
+		setEntityModification(entity);
 		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
 		ChangeLogUtils.buildLog(changes, fileAtt);
 		saveChangeLogTransactional(changes);
@@ -2121,5 +2126,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         		user.incrementDiskSpaceUsed(fAtt.getFileItem().getLength());
     		}
     	} 	
+    }
+    
+    protected void setEntityModification(DefinableEntity entity) {
+    	User user = RequestContextHolder.getRequestContext().getUser();
+    	Calendar now = Calendar.getInstance();
+    	now.setTime(new Date());
+		entity.setModification(new HistoryStamp(user, now.getTime()));
+
     }
 }
