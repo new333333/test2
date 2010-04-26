@@ -176,6 +176,7 @@
 									<div><ssf:showTeam team="${assigned}"/></div>
 								</c:forEach>
 						</c:if>									
+					</td>
 					
 				  </tr>
 			    </table>

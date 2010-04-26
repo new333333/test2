@@ -33,6 +33,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:if test="${!ss_pseudoEntity}">
 <c:if test="${empty ss_ratingSupportLoaded}">
 <script type="text/javascript">
 var ss_ratingImages = new Array();
@@ -53,4 +54,5 @@ ss_ratings_info[4] = "<ssf:nlt tag="popularity.rating.4stars" />"
 ss_ratings_info[5] = "<ssf:nlt tag="popularity.rating.5stars" />"
 </script>
 <script type="text/javascript" src="<html:rootPath/>js/forum/ss_entry.js"></script>
+</c:if>
 </c:if>
