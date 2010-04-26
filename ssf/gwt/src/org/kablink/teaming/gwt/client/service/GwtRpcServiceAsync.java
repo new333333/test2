@@ -43,7 +43,6 @@ import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
-import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
@@ -51,7 +50,7 @@ import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
-import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -117,7 +116,7 @@ public interface GwtRpcServiceAsync
 	public void removeFavorite(        String             favoriteId,    AsyncCallback<Boolean>               callback );
 	public void updateFavorites(       List<FavoriteInfo> favoritesList, AsyncCallback<Boolean>               callback );
 	public void getBinderEntityType(   String             binderId,      AsyncCallback<String>                callback );
-	public void getBinderType(         String             binderId,      AsyncCallback<BinderType>            callback );
+	public void getBinderInfo(         String             binderId,      AsyncCallback<BinderInfo>            callback );
 	public void getFavorites(                                            AsyncCallback<List<FavoriteInfo>>    callback );
 	public void getMyTeams(                                              AsyncCallback<List<TeamInfo>>        callback );
 	public void getRecentPlaces(                                         AsyncCallback<List<RecentPlaceInfo>> callback );

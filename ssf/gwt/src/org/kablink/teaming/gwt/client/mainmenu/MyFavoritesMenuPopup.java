@@ -37,7 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
-import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -57,11 +57,9 @@ import com.google.gwt.user.client.ui.FlowPanel;
 public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 	private final String IDBASE = "myFavorites_";
 	
-	@SuppressWarnings("unused")
-	private BinderType m_currentBinderType;	// Type of the currently selected binder.
-	private int m_menuLeft;					// Left coordinate of where the menu is to be placed.
-	private int m_menuTop;					// Top  coordinate of where the menu is to be placed.
-	private String m_currentBinderId;		// ID of the currently selected binder.
+	private BinderInfo m_currentBinder;	// The currently selected binder.
+	private int m_menuLeft;				// Left coordinate of where the menu is to be placed.
+	private int m_menuTop;				// Top  coordinate of where the menu is to be placed.
 
 	/*
 	 * Defines the management operations supported on the favorites.
@@ -191,19 +189,17 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 	}
 	
 	/**
-	 * Stores the ID and type of the currently selected binder.
+	 * Stores information about the currently selected binder.
 	 * 
 	 * Implements the MenuBarPopupBase.setCurrentBinder() abstract
 	 * method.
 	 * 
-	 * @param binderId
-	 * @param binderType
+	 * @param binderInfo
 	 */
 	@Override
-	public void setCurrentBinder(String binderId, BinderType binderType) {
-		// Simply store the parameters.
-		m_currentBinderId = binderId;
-		m_currentBinderType = binderType;
+	public void setCurrentBinder(BinderInfo binderInfo) {
+		// Simply store the parameter.
+		m_currentBinder = binderInfo;
 	}
 	
 	/**
@@ -273,7 +269,7 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 					addContentWidget(fA);
 					fCount += 1;
 					
-					if (m_currentBinderId.equals(favorite.getValue())) {
+					if (m_currentBinder.getBinderId().equals(favorite.getValue())) {
 						currentIsFavorite = true;
 						currentFavoriteId = favorite.getId();
 					}
@@ -297,7 +293,7 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 				MenuPopupAnchor mtA;
 				if (currentIsFavorite)
 					 mtA = new MenuPopupAnchor((IDBASE + "Remove"), m_messages.mainMenuFavoritesRemove(), null, new ManageClickHandler(FavoriteOperation.REMOVE, currentFavoriteId));
-				else mtA = new MenuPopupAnchor((IDBASE + "Add"),    m_messages.mainMenuFavoritesAdd(),    null, new ManageClickHandler(FavoriteOperation.ADD,    m_currentBinderId));
+				else mtA = new MenuPopupAnchor((IDBASE + "Add"),    m_messages.mainMenuFavoritesAdd(),    null, new ManageClickHandler(FavoriteOperation.ADD,    m_currentBinder.getBinderId()));
 				addContentWidget(mtA);
 				if (0 < fCount) {
 					mtA = new MenuPopupAnchor((IDBASE + "Edit"), m_messages.mainMenuFavoritesEdit(), null, new ManageClickHandler(FavoriteOperation.EDIT, fList));

@@ -33,8 +33,6 @@
 package org.kablink.teaming.gwt.server;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -86,7 +84,7 @@ import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
-import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
@@ -97,7 +95,6 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
-import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.filter.SearchFilter;
@@ -105,7 +102,6 @@ import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ExportHelper;
@@ -1438,22 +1434,25 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}//end getBinderEntityType()
 	
 	/**
-	 * Returns the BinderType of a binder.
+	 * Returns a BinderInfo describing a binder.
 	 * 
 	 * @return
 	 */
-	public BinderType getBinderType( String binderId )
+	public BinderInfo getBinderInfo( String binderId )
 	{
 		Binder binder;
-		BinderType reply;
+		BinderInfo reply;
+
+		reply = new BinderInfo();
+		reply.setBinderId(binderId);
+		binder = getBinderModule().getBinder( Long.parseLong( binderId ));
 		
-		binder = getBinderModule().getBinder( Long.parseLong( binderId ) );
-		if      (binder instanceof Workspace) reply = BinderType.WORKSPACE;
-		else if (binder instanceof Folder)    reply = BinderType.FOLDER;
-		else                                  reply = BinderType.OTHER;
+		                                    reply.setBinderType(   GwtServerHelper.getBinderType(    binder ) );
+		if      (reply.isBinderFolder())    reply.setFolderType(   GwtServerHelper.getFolderType(    binder ) );
+		else if (reply.isBinderWorkspace()) reply.setWorkspaceType(GwtServerHelper.getWorkspaceType( binder ) );
 		
 		return reply;
-	}//end getBinderType()
+	}//end getBinderInfo()
 	
 	/**
 	 * Returns information about the current user's favorites.
@@ -1681,44 +1680,49 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		user = GwtServerHelper.getCurrentUser();
 		if ( !(ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) )
 		{
-			AdaptedPortletURL adapterUrl;
 			Binder binder;
 			
-			// No!  Then the user is allowed to view team membership.
-			tmi.setViewAllowed( true );
-
-			// If the user can manage the team...
+			// No!  Is the binder other than the profiles container?
 			binder = getBinderModule().getBinder( Long.parseLong( binderId ) );
-			if ( getBinderModule().testAccess( binder, BinderOperation.manageTeamMembers ) )
+			if ( EntityIdentifier.EntityType.profiles != binder.getEntityType() )
 			{
-				// ...store the team management URL...
-				adapterUrl = new AdaptedPortletURL( ((PortletRequest) null), "ss_forum", true );
-				adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_TEAM_MEMBER );
-				adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
-				adapterUrl.setParameter( WebKeys.URL_BINDER_TYPE, binder.getEntityType().name() );
-				tmi.setManageUrl( adapterUrl.toString() );
-			}
-
-			// ...if the user can send mail to the team...
-			if ( MiscUtil.hasString( user.getEmailAddress() ) )
-			{
-				// ...store the send mail URL...
-				adapterUrl = new AdaptedPortletURL( ((PortletRequest) null), "ss_forum", true );
-				adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL );
-				adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
-				adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString() );
-				tmi.setSendMailUrl( adapterUrl.toString() );
-			}
-
-			// ...if the user can start a team meeting...
-			if ( getIcBrokerModule().isEnabled() )
-			{
-				// ...store the team meeting URL.
-				adapterUrl = new AdaptedPortletURL( ((PortletRequest) null), "ss_forum", true );
-				adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING );
-				adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
-				adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString() );
-				tmi.setTeamMeetingUrl( adapterUrl.toString() );
+				AdaptedPortletURL adapterUrl;
+			
+				// Yes!  Then the user is allowed to view team membership.
+				tmi.setViewAllowed( true );
+	
+				// If the user can manage the team...
+				if ( getBinderModule().testAccess( binder, BinderOperation.manageTeamMembers ) )
+				{
+					// ...store the team management URL...
+					adapterUrl = new AdaptedPortletURL( ((PortletRequest) null), "ss_forum", true );
+					adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_TEAM_MEMBER );
+					adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
+					adapterUrl.setParameter( WebKeys.URL_BINDER_TYPE, binder.getEntityType().name() );
+					tmi.setManageUrl( adapterUrl.toString() );
+				}
+	
+				// ...if the user can send mail to the team...
+				if ( MiscUtil.hasString( user.getEmailAddress() ) )
+				{
+					// ...store the send mail URL...
+					adapterUrl = new AdaptedPortletURL( ((PortletRequest) null), "ss_forum", true );
+					adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL );
+					adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
+					adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString() );
+					tmi.setSendMailUrl( adapterUrl.toString() );
+				}
+	
+				// ...if the user can start a team meeting...
+				if ( getIcBrokerModule().isEnabled() )
+				{
+					// ...store the team meeting URL.
+					adapterUrl = new AdaptedPortletURL( ((PortletRequest) null), "ss_forum", true );
+					adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING );
+					adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
+					adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString() );
+					tmi.setTeamMeetingUrl( adapterUrl.toString() );
+				}
 			}
 		}
 
