@@ -66,7 +66,7 @@ public class FileAttachment extends Attachment {
     private FileLock fileLock;
     private Integer majorVersion;
     private Integer minorVersion;
-    private Integer fileStatus = FileStatus.valueOf(FileStatus.draft);
+    private Integer fileStatus = FileStatus.valueOf(FileStatus.not_set);
    
     public FileAttachment() {
         

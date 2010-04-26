@@ -645,6 +645,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				EntityType.workspace.equals(entity.getEntityType())) {
 			binder = (Binder)entity;
 		}
+		VersionAttachment oldTopVa = va.getParentAttachment().getHighestVersion();
 
 		List<FileUploadItem> fuis = new ArrayList<FileUploadItem>();
     	Collection<FileAttachment> atts = entity.getFileAttachments();
@@ -666,6 +667,16 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		writeFiles(binder, entity, fuis, null);
     	}
     	finally {}
+    	
+    	//Copy up the status, comment and major version
+    	VersionAttachment newTopVa = va.getParentAttachment().getHighestVersion();
+    	newTopVa.setFileStatus(va.getFileStatus());
+    	newTopVa.getParentAttachment().setFileStatus(va.getFileStatus());
+    	newTopVa.getFileItem().setDescription(va.getFileItem().getDescription());
+    	newTopVa.setMajorVersion(oldTopVa.getMajorVersion());
+    	newTopVa.setMinorVersion(oldTopVa.getMinorVersion() + 1);
+    	newTopVa.getParentAttachment().setMajorVersion(oldTopVa.getMajorVersion());
+    	newTopVa.getParentAttachment().setMinorVersion(oldTopVa.getMinorVersion() + 1);
 
 		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
 		ChangeLogUtils.buildLog(changes, va.getParentAttachment());
