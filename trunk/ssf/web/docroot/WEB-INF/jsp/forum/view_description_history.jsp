@@ -246,7 +246,6 @@ function dodiff()
 		vnA.innerHTML = ss_diffOne;
 		var vnB = document.getElementById("versionNumberB");
 		vnB.innerHTML = ss_diffTwo;
-		document.getElementById("diff-title").innerHTML = diffString(document.getElementById("title"+ss_diffOne).innerHTML, document.getElementById("title"+ss_diffTwo).innerHTML);
 		document.getElementById("diff-desc").innerHTML = diffString(document.getElementById("desc"+ss_diffOne).innerHTML, document.getElementById("desc"+ss_diffTwo).innerHTML);
 		document.getElementById("diff").style.display='block';
 		document.getElementById("diff").focus();
@@ -294,13 +293,30 @@ function dodiff()
 </td>
 <td valign="top" width="90%">
   <c:set var="modifyDate"><fmt:formatDate timeZone="${ssUser.timeZone.ID}" type="both" value="${change.changeLog.operationDate}"/></c:set>
+  <c:if test="${!empty change.changeLogEntry}">
   <ssf:expandableArea title="${modifyDate}">
-  <div><span class="ss_largeprint" id="title${change.folderEntry.attributes.logVersion}">${change.folderEntry.attribute.title.value}</span></div>
-  <div><span class="ss_smallprint">${change.folderEntry.attributes.modifiedBy}</span></div>
-  <div class="ss_entryContent ss_entryDescription" id="desc${change.folderEntry.attributes.logVersion}">
-    ${change.folderEntry.attribute.description.value}
-  </div>
+    <c:set var="changeLogEntry" value="${change.changeLogEntry}"/>
+	<jsp:useBean id="changeLogEntry" type="org.kablink.teaming.domain.DefinableEntity" />
+	<% 
+		Element configEle = (Element)changeLogEntry.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryView']");
+	%>
+	<c:set var="configEle" value="<%= configEle %>" />
+    <div id="desc${change.folderEntry.attributes.logVersion}" style="padding:10px; border: 1px black solid;">
+		<c:if test="${!empty configEle}">
+		  <c:set var="ssBinderOriginalFromDescriptionHistory" value="${ssBinder}" />
+		  <c:set var="ssBinder" value="${changeLogEntry.parentBinder}" scope="request"/>
+		  <c:set var="ss_pseudoEntity" value="true" scope="request"/>
+		  <ssf:displayConfiguration 
+		    configDefinition="${changeLogEntry.entryDef.definition}" 
+		    configElement="<%= configEle %>"
+		    configJspStyle="view" 
+		    entry="${changeLogEntry}" 
+		    processThisItem="true" />
+		  <c:set var="ssBinder" value="${ssBinderOriginalFromDescriptionHistory}" scope="request"/>
+		</c:if>
+    </div>
   </ssf:expandableArea>
+  </c:if>
 </td>
 </tr>
 </c:forEach>
@@ -324,7 +340,6 @@ function dodiff()
   </ssf:nlt>
 </h3>
 <h4 id="diff-key"><ssf:nlt tag="entry.comparison.key"/></h4>
-<div id="diff-title" class="ss_largeprint"></div>
 <div id="diff-desc" class="ss_entryContent ss_entryDescription"></div>
 </div>
 

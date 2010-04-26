@@ -37,6 +37,8 @@ import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -84,6 +86,8 @@ import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
+import org.kablink.teaming.domain.CommaSeparatedValue;
+import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DashboardPortlet;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
@@ -96,10 +100,12 @@ import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
+import org.kablink.teaming.domain.SSBlobSerializable;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
@@ -128,6 +134,7 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.util.search.Restrictions;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -1945,7 +1952,7 @@ public class BinderHelper {
 	
 	//Routine to build the beans for displaying entry versions
 	//  Each ChangeLog document is exploaded into a map of values
-	public static List BuildChangeLogBeans(List changeLogs) {
+	public static List BuildChangeLogBeans(AllModulesInjected bs, DefinableEntity entity, List changeLogs) {
 		List changeList = new ArrayList();
 		if (changeLogs == null) return changeList;
 
@@ -1953,9 +1960,14 @@ public class BinderHelper {
 			ChangeLog log = (ChangeLog) changeLogs.get(i);
 			Document doc = log.getDocument();
 			Element root = doc.getRootElement();
-			Map changeMap = new HashMap();
+			Map changeMap = new HashMap(); // doc.asXML()
 			changeMap.put("changeLog", log);
 			changeList.add(changeMap);
+			
+			//Build a pseudo entry object
+			FolderEntry fe = getEntryVersion(bs, entity, doc);
+			if (fe == null) continue;
+			changeMap.put("changeLogEntry", fe);
 			
 			//Get name of rootElement (e.g., folderEntry) and build a map of its elements
 			Map rootMap = new HashMap();
@@ -1998,6 +2010,166 @@ public class BinderHelper {
 		return changeList;
 	}
 	
+	//Routing to make a fake entry based on a change log
+	public static FolderEntry getEntryVersion(AllModulesInjected bs, DefinableEntity entity, Document doc) {
+		if (entity == null) return null;
+		FolderEntry entry = new FolderEntry();
+		entry.setId(entity.getId());
+		entry.setParentBinder(entity.getParentBinder());
+		entry.setDefinitionType(entity.getDefinitionType());
+		entry.setEntryDef(entity.getEntryDef());
+		if (entity instanceof FolderEntry) {
+			entry.setParentEntry(((FolderEntry)entity).getParentEntry());
+			entry.setParentFolder(((FolderEntry)entity).getParentFolder());
+			entry.setTopEntry(((FolderEntry)entity).getTopEntry());
+			entry.setHKey(((FolderEntry)entity).getHKey());
+			entry.setAverageRating(((FolderEntry)entity).getAverageRating());
+		}
+		
+		Element root = doc.getRootElement();  // doc.asXML()
+		
+		//Set the owner of the entry
+		Element hs = (Element)root.selectSingleNode("//historyStamp[@name='created']");
+		if (hs == null) return null;
+		String authorId = hs.attributeValue("author", "");
+		if (authorId.equals("")) return null;
+		Set ids = new HashSet();
+		ids.add(Long.valueOf(authorId));
+		SortedSet pList = bs.getProfileModule().getPrincipals(ids);
+		if (pList.isEmpty()) return null;
+		entry.setOwner((Principal)pList.first());
+		HistoryStamp creation = new HistoryStamp();
+		creation.setPrincipal((UserPrincipal)pList.first());
+		String when = hs.attributeValue("when", "");
+		SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z");
+		Date date;
+		try {
+			date = sdf.parse(when);
+		} catch (ParseException e) {
+			return null;
+		}
+		creation.setDate(date);
+		entry.setCreation(creation);
+		
+		//Set the modifier of the entry
+		hs = (Element)root.selectSingleNode("//historyStamp[@name='modified']");
+		if (hs != null) {
+			authorId = hs.attributeValue("author", "");
+			if (!authorId.equals("")) {
+				ids = new HashSet();
+				ids.add(Long.valueOf(authorId));
+				pList = bs.getProfileModule().getPrincipals(ids);
+				if (pList.isEmpty()) {
+					entry.setOwner((Principal)pList.first());
+					HistoryStamp modification = new HistoryStamp();
+					modification.setPrincipal((UserPrincipal)pList.first());
+					when = hs.attributeValue("when", "");
+					sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z");
+					try {
+						date = sdf.parse(when);
+						modification.setDate(date);
+						entry.setModification(modification);
+					} catch (ParseException e) {}
+				}
+			}
+		}
+		
+		//Set the workflow modifier of the entry
+		hs = (Element)root.selectSingleNode("//historyStamp[@name='workflowChange']");
+		if (hs != null) {
+			authorId = hs.attributeValue("author", "");
+			if (!authorId.equals("")) {
+				ids = new HashSet();
+				ids.add(Long.valueOf(authorId));
+				pList = bs.getProfileModule().getPrincipals(ids);
+				if (!pList.isEmpty()) {
+					entry.setOwner((Principal)pList.first());
+					HistoryStamp workflowChange = new HistoryStamp();
+					workflowChange.setPrincipal((UserPrincipal)pList.first());
+					when = hs.attributeValue("when", "");
+					sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z");
+					try {
+						date = sdf.parse(when);
+						workflowChange.setDate(date);
+						entry.setWorkflowChange(workflowChange);
+					} catch (ParseException e) {}
+				}
+			}
+		}
+		
+		//Build the title, description and all of the Custom Attributes 
+		Map attributeMap = new HashMap();
+		Iterator itAttr = root.attributeIterator();
+		while (itAttr.hasNext()) {
+			Attribute attr = (Attribute) itAttr.next();
+			attributeMap.put(attr.getName(),attr.getValue());
+		}
+
+		Iterator itAttributes = root.selectNodes("//attribute").iterator();
+		while (itAttributes.hasNext()) {
+			Element ele = (Element) itAttributes.next();
+			//Add the attributes
+			String name = (String)ele.attributeValue("name");
+			String type = (String)ele.attributeValue("type");
+			attributeMap = new HashMap();
+			itAttr = ele.attributeIterator();
+			while (itAttr.hasNext()) {
+				Attribute attr = (Attribute) itAttr.next();
+				attributeMap.put(attr.getName(), attr.getValue());
+			}
+			//Add the data
+			if (!Validator.isNull(name)) {
+				if (name.equals("title")) {
+					entry.setTitle((String)ele.getData());
+				} else if (name.equals("description")) {
+					Description desc = new Description((String)ele.getData());
+					entry.setDescription(desc);
+				} else {
+					//This must be a custom attribute
+					Object attrValue = getAttributeValueFromChangeLog(type, (String)ele.getData());
+					entry.addCustomAttribute(name, attrValue);
+				}
+			}
+		}
+		
+		return entry;
+	}
+
+    public static Object getAttributeValueFromChangeLog(String type, String value) {
+    	if (type.equals(ObjectKeys.XTAG_TYPE_STRING)) {
+    		return value;
+    	} else if (type.equals(ObjectKeys.XTAG_TYPE_DESCRIPTION)) {
+    		return new Description(value);
+    	} else if (type.equals(ObjectKeys.XTAG_TYPE_COMMASEPARATED)) {
+    		CommaSeparatedValue csv = new CommaSeparatedValue();
+    		csv.setValue(value);
+    		return csv;
+    	} else if (type.equals(ObjectKeys.XTAG_TYPE_BOOLEAN)) {
+    		return Boolean.valueOf(value);
+    	} else if (type.equals(ObjectKeys.XTAG_TYPE_LONG)) {
+    		return Long.valueOf(value);
+    	} else if (type.equals(ObjectKeys.XTAG_TYPE_DATE)) {
+    		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddTHHmmss");
+    		Date date;
+    		try {
+    			date = sdf.parse(value);
+    			return date;
+    		} catch (ParseException e) {
+    			return null;
+    		}
+    	} else if (type.equals(ObjectKeys.XTAG_TYPE_SERIALIZED)) {
+    		return new SSBlobSerializable(value);
+    	} else if (type.equals(ObjectKeys.XTAG_TYPE_SERIALIZED)) {
+    		try {
+				return XmlFileUtil.generateXMLFromString(value);
+			} catch (Exception e) {
+				return null;
+			}
+    	} else {
+    		return value;
+    	}
+    }
+
 	public static Tabs.TabEntry initTabs(PortletRequest request, Binder binder) throws Exception {
 		//Set up the tabs
 		Tabs tabs = Tabs.getTabs(request);

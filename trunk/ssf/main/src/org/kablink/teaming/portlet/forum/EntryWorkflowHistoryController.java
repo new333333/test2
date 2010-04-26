@@ -48,6 +48,7 @@ import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -74,8 +75,14 @@ public class EntryWorkflowHistoryController extends  SAbstractController {
 		EntityIdentifier entityIdentifier = new EntityIdentifier(entityId, EntityIdentifier.EntityType.valueOf(entityType));
 
 		if (entityId != null) {
-			changes = getAdminModule().getWorkflowChanges(entityIdentifier, null);			
-			changeList.addAll(BinderHelper.BuildChangeLogBeans(changes));
+			DefinableEntity entity = null;
+			if (entityType.equals(EntityType.folderEntry.name())) {
+				entity = getFolderModule().getEntry(null, entityId);
+			}
+			if (entity != null) {
+				changes = getAdminModule().getWorkflowChanges(entityIdentifier, null);			
+				changeList.addAll(BinderHelper.BuildChangeLogBeans(this, entity, changes));
+			}
 		}
 
 		model.put(WebKeys.CHANGE_LOG_LIST, changeList);

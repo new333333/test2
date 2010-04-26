@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<c:if test="${!ss_pseudoEntity}">
 <%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_tagViewNamespace" value="${renderResponse.namespace}" scope="request"/>
@@ -166,5 +167,6 @@ var ss_tagConfirmNoPunct = "<ssf:nlt tag="tags.noPunctAllowed"/>";
 
 </div>
 
+</c:if>
 </c:if>
 </c:if>

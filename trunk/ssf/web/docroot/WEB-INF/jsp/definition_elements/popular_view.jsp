@@ -33,6 +33,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:if test="${!ss_pseudoEntity}">
 <c:if test="${empty ss_ratingSupportLoaded}">
 <div id="ss_rating_info_div${renderResponse.namespace}" 
   style="position:absolute; display:none; visibility:hidden;
@@ -110,3 +111,4 @@
 </tr>
 </table>
 </div><!--end of alignment-->
+</c:if>

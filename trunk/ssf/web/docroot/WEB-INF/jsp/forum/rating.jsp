@@ -34,6 +34,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
+<c:if test="${!ss_pseudoEntity}">
 <c:set var="i_rating" value="0"/>
 <c:if test="${!empty ssDefinitionEntry.averageRating.average}">
 	<c:set var="i_rating" value="${ssDefinitionEntry.averageRating.average}"/>
@@ -91,3 +92,5 @@
 </c:if>
 </tr></tbody></table>
 </div>
+</c:if>
+
