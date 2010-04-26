@@ -1421,37 +1421,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}//end updateFavorites
 
 	/**
-	 * Returns the entity type of a binder.
-	 * 
-	 * @return
-	 */
-	public String getBinderEntityType( String binderId )
-	{
-		Binder binder;
-		
-		binder = getBinderModule().getBinder( Long.parseLong( binderId ) );
-		return binder.getEntityType().toString();
-	}//end getBinderEntityType()
-	
-	/**
 	 * Returns a BinderInfo describing a binder.
+	 *
+	 * @param binderId
 	 * 
 	 * @return
 	 */
 	public BinderInfo getBinderInfo( String binderId )
 	{
-		Binder binder;
-		BinderInfo reply;
-
-		reply = new BinderInfo();
-		reply.setBinderId(binderId);
-		binder = getBinderModule().getBinder( Long.parseLong( binderId ));
-		
-		                                    reply.setBinderType(   GwtServerHelper.getBinderType(    binder ) );
-		if      (reply.isBinderFolder())    reply.setFolderType(   GwtServerHelper.getFolderType(    binder ) );
-		else if (reply.isBinderWorkspace()) reply.setWorkspaceType(GwtServerHelper.getWorkspaceType( binder ) );
-		
-		return reply;
+		return GwtServerHelper.getBinderInfo( this, binderId );
 	}//end getBinderInfo()
 	
 	/**

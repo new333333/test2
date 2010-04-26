@@ -46,7 +46,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class BinderInfo implements IsSerializable {
 	private BinderType    m_binderType = BinderType.OTHER;				//
 	private FolderType    m_folderType = FolderType.NOT_A_FOLDER;		//
-	private String        m_binderId   = null;							//
+	private String        m_binderId   = "";							//
+	private String        m_entityType = "";							//
 	private WorkspaceType m_wsType     = WorkspaceType.NOT_A_WORKSPACE;	//
 	
 	/**
@@ -57,6 +58,21 @@ public class BinderInfo implements IsSerializable {
 	public BinderInfo() {
 		// Nothing to do.
 	}
+
+	/**
+	 * Returns a copy of this BinderInfo object.
+	 * 
+	 * @return
+	 */
+	public BinderInfo copyBinderInfo() {
+		BinderInfo reply = new BinderInfo();
+		reply.setBinderId(m_binderId);
+		reply.setEntityType(m_entityType);
+		reply.setBinderType(m_binderType);
+		reply.setFolderType(m_folderType);
+		reply.setWorkspaceType(m_wsType);
+		return reply;
+	}
 	
 	/**
 	 * Get'er methods.
@@ -66,6 +82,7 @@ public class BinderInfo implements IsSerializable {
 	public BinderType    getBinderType()    {return m_binderType;}
 	public FolderType    getFolderType()    {return m_folderType;}
 	public String        getBinderId()      {return m_binderId;  }
+	public String        getEntityType()    {return m_entityType;}
 	public WorkspaceType getWorkspaceType() {return m_wsType;    }
 	
 	/**
@@ -76,6 +93,22 @@ public class BinderInfo implements IsSerializable {
 	 */
 	public boolean isBinderFolder() {
 		return (BinderType.FOLDER == m_binderType);
+	}
+
+	/**
+	 * Returns true if this BinderInfo refers to a trash Binder and
+	 * false otherwise.
+	 *
+	 * @return
+	 */
+	public boolean isBinderTrash() {
+		boolean reply;
+		switch (m_binderType) {
+		default:         reply = false;                                 break;
+		case FOLDER:     reply = (FolderType.TRASH    == m_folderType); break;
+		case WORKSPACE:  reply = (WorkspaceType.TRASH == m_wsType);     break;
+		}
+		return reply;
 	}
 	
 	/**
@@ -95,6 +128,19 @@ public class BinderInfo implements IsSerializable {
 	 */
 	public void setBinderId(String binderId) {
 		m_binderId = binderId;
+	}
+	
+	public void setBinderId(Long binderId) {
+		setBinderId(String.valueOf(binderId));
+	}
+	
+	/**
+	 * Stores the entity type of a Binder.
+	 * 
+	 * @param entityTYpe
+	 */
+	public void setEntityType(String entityType) {
+		m_entityType = entityType;
 	}
 	
 	/**

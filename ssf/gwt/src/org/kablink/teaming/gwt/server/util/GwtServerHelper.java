@@ -47,6 +47,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
+import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.HttpSessionContext;
 import org.kablink.teaming.context.request.RequestContext;
@@ -172,11 +173,12 @@ public class GwtServerHelper {
 		// trash TreeInfo out of it.
 		TreeInfo binderTI = TreeInfo.findBinderTI(ti, String.valueOf(binder.getId()));
 		TreeInfo trashTI = binderTI.copyBaseTI();
+		BinderInfo trashBI = trashTI.getBinderInfo();
 		
 		// Change the copy to a trash TreeInfo.
-		if (BinderType.FOLDER == trashTI.getBinderType())
-			 trashTI.setFolderType(   FolderType.TRASH   );
-		else trashTI.setWorkspaceType(WorkspaceType.TRASH);
+		if (BinderType.FOLDER == trashBI.getBinderType())
+			 trashBI.setFolderType(   FolderType.TRASH   );
+		else trashBI.setWorkspaceType(WorkspaceType.TRASH);
 		trashTI.setBinderExpanded(false);
 		trashTI.setBinderIconName(null);
 		trashTI.setBinderTitle(NLT.get("profile.abv.element.trash"));
@@ -219,33 +221,22 @@ public class GwtServerHelper {
 	private static TreeInfo buildTreeInfoFromBinderImpl(AllModulesInjected bs, Binder binder, List<Long> expandedBindersList, boolean mergeUsersExpansions, int depth) {
 		// Construct the base TreeInfo for the Binder.
 		TreeInfo reply = new TreeInfo();
-		reply.setBinderId(binder.getId());
+		BinderInfo bi = new BinderInfo();
+		reply.setBinderInfo(bi);
+		bi.setBinderId(binder.getId());
 		reply.setBinderTitle(binder.getTitle());
 		reply.setBinderChildren(binder.getBinderCount());
 		String binderPermalink = PermaLinkUtil.getPermalink(binder);
 		reply.setBinderPermalink(binderPermalink);
 		reply.setBinderTrashPermalink(GwtUIHelper.getTrashPermalink(binderPermalink));
 		if (binder instanceof Workspace) {
-			reply.setBinderType(BinderType.WORKSPACE);
-			WorkspaceType wsType = WorkspaceType.OTHER;
-			Workspace ws = ((Workspace) binder);
-			if (ws.isReserved()) {
-				if (ws.getInternalId().equals(ObjectKeys.TOP_WORKSPACE_INTERNALID)) wsType = WorkspaceType.TOP;
-				if (ws.getInternalId().equals(ObjectKeys.TEAM_ROOT_INTERNALID))     wsType = WorkspaceType.TEAM_ROOT;
-				if (ws.getInternalId().equals(ObjectKeys.GLOBAL_ROOT_INTERNALID))   wsType = WorkspaceType.GLOBAL_ROOT;
-				if (ws.getInternalId().equals(ObjectKeys.PROFILE_ROOT_INTERNALID))  wsType = WorkspaceType.PROFILE_ROOT;
-			}
-			else {
-				if      (BinderHelper.isBinderUserWorkspace(binder)) wsType = WorkspaceType.USER;
-				else if (BinderHelper.isBinderTeamWorkspace(binder)) wsType = WorkspaceType.TEAM;
-			}
-			reply.setWorkspaceType(wsType);
+			bi.setBinderType(BinderType.WORKSPACE);
+			bi.setWorkspaceType(getWorkspaceType(binder));
 		}
 		else if (binder instanceof Folder) {
-			reply.setBinderType(BinderType.FOLDER);
+			bi.setBinderType(BinderType.FOLDER);
+			bi.setFolderType(getFolderType(binder));
 			reply.setBinderIconName(binder.getIconName());
-			
-//!			...this needs to be implemented...
 		}
 
 		// When requested to do so...
@@ -262,9 +253,9 @@ public class GwtServerHelper {
 			// Yes!  Scan the Binder's children...
 			List<TreeInfo> childTIList = reply.getChildBindersList(); 
 			List<Binder> childBinderList = getVisibleBinderDecendents(bs, binder);
-			for (Iterator<Binder> bi = childBinderList.iterator(); bi.hasNext(); ) {
+			for (Iterator<Binder> biIT = childBinderList.iterator(); biIT.hasNext(); ) {
 				// ...creating a TreeInfo for each...
-				Binder subBinder = bi.next();
+				Binder subBinder = biIT.next();
 				TreeInfo subWsTI = buildTreeInfoFromBinderImpl(bs, subBinder, expandedBindersList, false, (depth + 1));
 				childTIList.add(subWsTI);
 			}
@@ -392,6 +383,45 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Returns the entity type of a binder.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static String getBinderEntityType(AllModulesInjected bs, String binderId) {
+		return getBinderEntityType(bs.getBinderModule().getBinder(Long.parseLong(binderId)));
+	}
+	
+	public static String getBinderEntityType(Binder binder) {
+		return binder.getEntityType().toString();
+	}
+	
+	/**
+	 * Returns a BinderInfo describing a binder.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static BinderInfo getBinderInfo(AllModulesInjected bs, String binderId) {
+		return getBinderInfo(bs.getBinderModule().getBinder( Long.parseLong( binderId )));
+	}
+	
+	public static BinderInfo getBinderInfo(Binder binder) {
+		BinderInfo reply = new BinderInfo();
+		reply.setBinderId(binder.getId());
+		                                    reply.setEntityType(   getBinderEntityType(binder));
+		                                    reply.setBinderType(   getBinderType(      binder));
+		if      (reply.isBinderFolder())    reply.setFolderType(   getFolderType(      binder));
+		else if (reply.isBinderWorkspace()) reply.setWorkspaceType(getWorkspaceType(   binder));
+		
+		return reply;
+	}
+	
+	/**
 	 * Returns a BinderType describing a binder.
 	 * 
 	 * @param bs
@@ -408,7 +438,10 @@ public class GwtServerHelper {
 		if      (binder instanceof Workspace) reply = BinderType.WORKSPACE;
 		else if (binder instanceof Folder)    reply = BinderType.FOLDER;
 		else                                  reply = BinderType.OTHER;
-		
+
+		if (BinderType.OTHER == reply) {
+			m_logger.debug("GwtServerHelper.getBinderType( 'Could not determine binder type' ):  " + binder.getPathName());
+		}
 		return reply;
 	}
 	
@@ -427,13 +460,33 @@ public class GwtServerHelper {
 	public static FolderType getFolderType(Binder binder) {
 		FolderType reply;
 		if (binder instanceof Folder) {
-//!			...this needs to be implemented...
 			reply = FolderType.OTHER;
+			Element familyProperty = ((Element) binder.getDefaultViewDef().getDefinition().getRootElement().selectSingleNode("//properties/property[@name='family']"));
+			if (familyProperty != null) {
+				String dFamily = familyProperty.attributeValue("value", "");
+				if (null != dFamily) {
+					dFamily = dFamily.toLowerCase();
+					if      (dFamily.equals("blog"))       reply = FolderType.BLOG;
+					else if (dFamily.equals("calendar"))   reply = FolderType.CALENDAR;
+					else if (dFamily.equals("discussion")) reply = FolderType.DISCUSSION;
+					else if (dFamily.equals("file"))       reply = FolderType.FILE;
+					else if (dFamily.equals("guestbook"))  reply = FolderType.GUESTBOOK;
+					else if (dFamily.equals("milestone"))  reply = FolderType.MILESTONE;
+					else if (dFamily.equals("miniblog"))   reply = FolderType.MINIBLOG;
+					else if (dFamily.equals("photo"))      reply = FolderType.PHOTOALBUM;
+					else if (dFamily.equals("task"))       reply = FolderType.TASK;
+					else if (dFamily.equals("survey"))     reply = FolderType.SURVEY;
+					else if (dFamily.equals("wiki"))       reply = FolderType.WIKI;
+				}
+			}
 		}
 		else {
 			reply = FolderType.NOT_A_FOLDER;
 		}
 		
+		if (FolderType.OTHER == reply) {
+			m_logger.debug("GwtServerHelper.getFolderType( 'Could not determine folder type' ):  " + binder.getPathName());
+		}
 		return reply;
 	}
 	
@@ -511,7 +564,7 @@ public class GwtServerHelper {
 		ArrayList<RecentPlaceInfo> rpiList = new ArrayList<RecentPlaceInfo>();
 		
 		// If we can't access the HttpSession...
-		HttpSession hSession = GwtServerHelper.getCurrentHttpSession();
+		HttpSession hSession = getCurrentHttpSession();
 		if (null == hSession) {
 			// ...we can't access the cached tabs to build the recent
 			// ...places list from.  Bail.
@@ -627,6 +680,9 @@ public class GwtServerHelper {
 			reply = WorkspaceType.NOT_A_WORKSPACE;
 		}
 		
+		if (WorkspaceType.OTHER == reply) {
+			m_logger.debug("GwtServerHelper.getWorkspaceType( 'Could not determine workspace type' ):  " + binder.getPathName());
+		}
 		return reply;
 	}
 	

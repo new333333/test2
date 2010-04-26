@@ -38,9 +38,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
-import org.kablink.teaming.gwt.client.util.BinderType;
-import org.kablink.teaming.gwt.client.util.FolderType;
-import org.kablink.teaming.gwt.client.util.WorkspaceType;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -56,16 +54,13 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class TreeInfo implements IsSerializable {
 	private List<TreeInfo> m_childBindersAL = new ArrayList<TreeInfo>();
-	private BinderType m_binderType = BinderType.OTHER;
+	private BinderInfo m_binderInfo = new BinderInfo();
 	private boolean m_binderExpanded;
-	private FolderType m_folderType = FolderType.NOT_A_FOLDER;
 	private int m_binderChildren = 0;
 	private String m_binderIconName;
-	private String m_binderId;
 	private String m_binderTitle = "";
 	private String m_binderPermalink = "";
 	private String m_binderTrashPermalink = "";
-	private WorkspaceType m_wsType = WorkspaceType.NOT_A_WORKSPACE;
 	
 	/**
 	 * Constructor method.
@@ -102,15 +97,12 @@ public class TreeInfo implements IsSerializable {
 		TreeInfo reply = new TreeInfo();
 
 		// ...copy the information from this TreeInfo... 
-		reply.setBinderType(          getBinderType()          );
-		reply.setFolderType(          getFolderType()          );
-		reply.setBinderExpanded(      isBinderExpanded()       );
-		reply.setBinderIconName(      getBinderIconName()      );
-		reply.setBinderId(            getBinderId()            );
-		reply.setBinderTitle(         getBinderTitle()         );
-		reply.setBinderPermalink(     getBinderPermalink()     );
-		reply.setBinderTrashPermalink(getBinderTrashPermalink());
-		reply.setWorkspaceType(       getWorkspaceType()       );
+		reply.setBinderInfo(          getBinderInfo().copyBinderInfo());
+		reply.setBinderExpanded(      isBinderExpanded()              );
+		reply.setBinderIconName(      getBinderIconName()             );
+		reply.setBinderTitle(         getBinderTitle()                );
+		reply.setBinderPermalink(     getBinderPermalink()            );
+		reply.setBinderTrashPermalink(getBinderTrashPermalink()       );
 		
 		// ...store an empty child Binder's List<TreeInfo>...
 		reply.setChildBindersList(new ArrayList<TreeInfo>());
@@ -130,7 +122,7 @@ public class TreeInfo implements IsSerializable {
 	 */
 	public static TreeInfo findBinderTI(TreeInfo ti, String binderId) {
 		// If this TreeInfo is for the binder in question...
-		if (ti.getBinderId().equals(binderId)) {
+		if (ti.getBinderInfo().getBinderId().equals(binderId)) {
 			// ...return it.
 			return ti;
 		}
@@ -177,16 +169,6 @@ public class TreeInfo implements IsSerializable {
 	}
 
 	/**
-	 * Returns the Binder ID for the Binder corresponding to this
-	 * TreeInfo object.
-	 * 
-	 * @return
-	 */
-	public String getBinderId() {
-		return m_binderId;
-	}
-
-	/**
 	 * Returns the permalink to the Binder corresponding to this
 	 * TreeInfo object.
 	 * 
@@ -217,13 +199,12 @@ public class TreeInfo implements IsSerializable {
 	}
 
 	/**
-	 * Returns the type of Binder this TreeInfo object refers
-	 * to.
+	 * Returns the BinderInfo this TreeInfo object refers to.
 	 * 
 	 * @return
 	 */
-	public BinderType getBinderType() {
-		return m_binderType;
+	public BinderInfo getBinderInfo() {
+		return m_binderInfo;
 	}
 	
 	/**
@@ -237,9 +218,9 @@ public class TreeInfo implements IsSerializable {
 		
 		ImageResource reply = null;
 		GwtTeamingWorkspaceTreeImageBundle images = GwtTeaming.getWorkspaceTreeImageBundle();
-		switch (getBinderType()) {
+		switch (m_binderInfo.getBinderType()) {
 		case FOLDER:
-			switch (getFolderType()) {
+			switch (m_binderInfo.getFolderType()) {
 			case BLOG:        reply = images.folder_comment();  break;
 			case CALENDAR:    reply = images.folder_calendar(); break;
 			case DISCUSSION:  reply = images.folder_comment();  break;
@@ -260,7 +241,7 @@ public class TreeInfo implements IsSerializable {
 			break;
 			
 		case WORKSPACE:
-			switch (getWorkspaceType()) {
+			switch (m_binderInfo.getWorkspaceType()) {
 			case GLOBAL_ROOT:                                        break;
 			case PROFILE_ROOT:                                       break;
 			case TEAM:          reply = images.workspace_team();     break;
@@ -312,24 +293,6 @@ public class TreeInfo implements IsSerializable {
 	}
 	
 	/**
-	 * If this TreeInfo object refers to a Folder, returns its type.
-	 * 
-	 * @return
-	 */
-	public FolderType getFolderType() {
-		return ((BinderType.FOLDER == m_binderType) ? m_folderType : FolderType.NOT_A_FOLDER);
-	}
-
-	/**
-	 * If this TreeInfo object refers to a Workspace, returns its type.
-	 * 
-	 * @return
-	 */
-	public WorkspaceType getWorkspaceType() {
-		return ((BinderType.WORKSPACE == m_binderType) ? m_wsType : WorkspaceType.NOT_A_WORKSPACE);
-	}
-
-	/**
 	 * Returns true if the Binder corresponding to this TreeInfo object
 	 * should be expanded and false otherwise.
 	 * 
@@ -339,36 +302,6 @@ public class TreeInfo implements IsSerializable {
 		return m_binderExpanded;
 	}
 
-	/**
-	 * Returns true of this TreeInfo object refers to a Binder that's a
-	 * Folder and false otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isBinderFolder() {
-		return (BinderType.FOLDER == m_binderType);
-	}
-	
-	/**
-	 * Returns true if this TreeInfo object refers a trash Binder and
-	 * false otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isBinderTrash() {
-		return ((FolderType.TRASH == getFolderType()) || (WorkspaceType.TRASH == getWorkspaceType()));
-	}
-	
-	/**
-	 * Returns true of this TreeInfo object refers to a Binder that's a
-	 * Workspace and false otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isBinderWorkspace() {
-		return (BinderType.WORKSPACE == m_binderType);
-	}
-	
 	/**
 	 * Store a count of the children of a Binder.
 	 * 
@@ -388,19 +321,6 @@ public class TreeInfo implements IsSerializable {
 		
 	}
 	
-	/**
-	 * Stores the ID of a Binder.
-	 * 
-	 * @param binderId
-	 */
-	public void setBinderId(String binderId) {
-		m_binderId = binderId;
-		
-	}
-	public void setBinderId(Long binderId) {
-		setBinderId(String.valueOf(binderId));
-	}
-
 	/**
 	 * Stores whether the Binder should be expanded.
 	 * 
@@ -438,18 +358,14 @@ public class TreeInfo implements IsSerializable {
 	}
 
 	/**
-	 * Stores the type of Binder referenced by this TreeInfo object.
+	 * Stores the BinderInfo about the Binder referenced by this
+	 * TreeInfo object.
 	 * 
-	 * @param binderType
+	 * @param binderInfo
 	 */
-	public void setBinderType(BinderType binderType) {
-		// Store the BinderType...
-		m_binderType = binderType;
-		
-		// ...and reset the FolderType and WorkspaceType.
-		if      (m_binderType == BinderType.FOLDER)    {m_folderType = FolderType.OTHER;        m_wsType = WorkspaceType.NOT_A_WORKSPACE;}
-		else if (m_binderType == BinderType.WORKSPACE) {m_folderType = FolderType.NOT_A_FOLDER; m_wsType = WorkspaceType.OTHER;}
-		else                                           {m_folderType = FolderType.NOT_A_FOLDER; m_wsType = WorkspaceType.NOT_A_WORKSPACE;}
+	public void setBinderInfo(BinderInfo binderInfo) {
+		// Simply store the parameter.
+		m_binderInfo = binderInfo;
 	}
 	
 	/**
@@ -461,47 +377,5 @@ public class TreeInfo implements IsSerializable {
 	public void setChildBindersList(List<TreeInfo> childBindersList) {
 		m_childBindersAL = childBindersList;
 		m_binderChildren = ((null == m_childBindersAL) ? 0 : m_childBindersAL.size());
-	}
-	
-	/**
-	 * Stores the type of Folder referenced by this TreeInfo object, if
-	 * it references a Folder.
-	 * 
-	 * @param folderType
-	 */
-	public void setFolderType(FolderType folderType) {
-		// Validate the FolderType for the BinderType...
-		if (isBinderFolder()) {
-			if (FolderType.NOT_A_FOLDER == folderType) {
-				folderType = FolderType.OTHER;
-			}
-		}
-		else {
-			folderType = FolderType.NOT_A_FOLDER;
-		}
-		
-		// ...and store it.
-		m_folderType = folderType;
-	}
-
-	/**
-	 * Stores the type of Workspace referenced by this TreeInfo object,
-	 * if it references a Workspace.
-	 * 
-	 * @param wsType
-	 */
-	public void setWorkspaceType(WorkspaceType wsType) {
-		// Validate the WorkspaceType for the BinderType...
-		if (isBinderWorkspace()) {
-			if (WorkspaceType.NOT_A_WORKSPACE == wsType) {
-				wsType = WorkspaceType.OTHER;
-			}
-		}
-		else {
-			wsType = WorkspaceType.NOT_A_WORKSPACE;
-		}
-		
-		// ...and store it.
-		m_wsType = wsType;
 	}
 }
