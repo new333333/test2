@@ -57,13 +57,14 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.FolderType;
+import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
-import org.kablink.teaming.gwt.client.workspacetree.TreeInfo.FolderType;
-import org.kablink.teaming.gwt.client.workspacetree.TreeInfo.WorkspaceType;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -390,6 +391,52 @@ public class GwtServerHelper {
 		return reply;
 	}
 	
+	/**
+	 * Returns a BinderType describing a binder.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static BinderType getBinderType(AllModulesInjected bs, String binderId) {
+		return getBinderType(bs.getBinderModule().getBinder(Long.parseLong(binderId)));
+	}
+	
+	public static BinderType getBinderType(Binder binder) {
+		BinderType reply;
+		if      (binder instanceof Workspace) reply = BinderType.WORKSPACE;
+		else if (binder instanceof Folder)    reply = BinderType.FOLDER;
+		else                                  reply = BinderType.OTHER;
+		
+		return reply;
+	}
+	
+	/**
+	 * Returns the FolderType of a folder.
+	 *
+	 * @param bs
+	 * @param folderId
+	 * 
+	 * @return
+	 */
+	public static FolderType getFolderType(AllModulesInjected bs, String folderId) {
+		return getFolderType(bs.getBinderModule().getBinder(Long.parseLong(folderId)));
+	}
+	
+	public static FolderType getFolderType(Binder binder) {
+		FolderType reply;
+		if (binder instanceof Folder) {
+//!			...this needs to be implemented...
+			reply = FolderType.OTHER;
+		}
+		else {
+			reply = FolderType.NOT_A_FOLDER;
+		}
+		
+		return reply;
+	}
+	
 	/*
 	 * Extracts a non-null string from a JSONObject.
 	 */
@@ -412,7 +459,6 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static List<TeamInfo> getMyTeams(AllModulesInjected bs) {
 		User user = getCurrentUser();
 		return getTeams(bs, user.getId());
@@ -549,6 +595,41 @@ public class GwtServerHelper {
 		return reply;
 	}
 
+	/**
+	 * Returns the WorkspaceType of a binder.
+	 * 
+	 * @param bs
+	 * @param wsId
+	 * 
+	 * @return
+	 */
+	public static WorkspaceType getWorkspaceType(AllModulesInjected bs, String wsId) {
+		return getWorkspaceType(bs. getBinderModule().getBinder(Long.parseLong(wsId)));
+	}
+	
+	public static WorkspaceType getWorkspaceType(Binder binder) {
+		WorkspaceType reply;
+		if (binder instanceof Workspace) {
+			reply = WorkspaceType.OTHER;
+			Workspace ws = ((Workspace) binder);
+			if (ws.isReserved()) {
+				if (ws.getInternalId().equals(ObjectKeys.TOP_WORKSPACE_INTERNALID)) reply = WorkspaceType.TOP;
+				if (ws.getInternalId().equals(ObjectKeys.TEAM_ROOT_INTERNALID))     reply = WorkspaceType.TEAM_ROOT;
+				if (ws.getInternalId().equals(ObjectKeys.GLOBAL_ROOT_INTERNALID))   reply = WorkspaceType.GLOBAL_ROOT;
+				if (ws.getInternalId().equals(ObjectKeys.PROFILE_ROOT_INTERNALID))  reply = WorkspaceType.PROFILE_ROOT;
+			}
+			else {
+				if      (BinderHelper.isBinderUserWorkspace(binder) ) reply = WorkspaceType.USER;
+				else if (BinderHelper.isBinderTeamWorkspace(binder) ) reply = WorkspaceType.TEAM;
+			}
+		}
+		else {
+			reply = WorkspaceType.NOT_A_WORKSPACE;
+		}
+		
+		return reply;
+	}
+	
 	/*
 	 * Returns true if a Long is in a List<Long> and false otherwise.
 	 */

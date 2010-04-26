@@ -36,6 +36,7 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -46,15 +47,15 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 
 /**
- * Implements a dialog for managing workspace tags.
+ * Implements a dialog for managing folder and workspace tags.
  *  
  * @author drfoster@novell.com
  */
 @SuppressWarnings("unused")
-public class TagThisWorkspaceDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
-	private final static String IDBASE = "tagThisWorkspace_";	// Base ID for rows in the tag this workspace Grid.
+public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
+	private final static String IDBASE = "tagThis_";	// Base ID for rows in the tag this Grid.
 
-	private Grid m_tagThisWorkspaceGrid;	// Once displayed, the table with the dialog's contents.
+	private Grid m_tagThisGrid;				// Once displayed, the table with the dialog's contents.
 	private GwtTeamingMessages m_messages;	// Access to the GWT UI messages.
 
 	/*
@@ -63,7 +64,7 @@ public class TagThisWorkspaceDlg extends DlgBox implements EditSuccessfulHandler
 	private class DlgLabel extends Label {
 		public DlgLabel(String label) {
 			super(label);
-			addStyleName("tagThisWorkspaceDlg_Label");
+			addStyleName("tagThisDlg_Label");
 		}
 	}
 
@@ -74,9 +75,10 @@ public class TagThisWorkspaceDlg extends DlgBox implements EditSuccessfulHandler
 	 * @param modal
 	 * @param left
 	 * @param top
-	 * @param binderId
+	 * @param binderInfo
+	 * @param dlgCaption
 	 */
-	public TagThisWorkspaceDlg(boolean autoHide, boolean modal, int left, int top, String binderId) {
+	public TagThisDlg(boolean autoHide, boolean modal, int left, int top, BinderInfo binderInfo, String dlgCaption) {
 		// Initialize the superclass...
 		super(autoHide, modal, left, top);
 
@@ -85,10 +87,10 @@ public class TagThisWorkspaceDlg extends DlgBox implements EditSuccessfulHandler
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
-			m_messages.mainMenuTagThisWorkspaceDlgHeader(),
+			dlgCaption,
 			this,		// The dialog's EditSuccessfulHandler.
 			this,		// The dialog's EditCanceledHandler.
-			binderId);	// Data passed via global data members. 
+			binderInfo);	// Data passed via global data members. 
 	}
 	
 	/**
@@ -102,7 +104,7 @@ public class TagThisWorkspaceDlg extends DlgBox implements EditSuccessfulHandler
 	 */
 	@Override
 	public Panel createContent(Object callbackData) {
-		String binderId = ((String) callbackData);
+		BinderInfo binderInfo = ((BinderInfo) callbackData);
 		
 		// Create a panel to hold the dialog's content...
 		VerticalPanel vp = new VerticalPanel();

@@ -37,7 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
-import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
@@ -55,7 +55,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 public class ManageMenuPopup extends MenuBarPopupBase {
 	private final String IDBASE = "manage_";	// Base ID for the items created in this menu.
 	
-	private boolean m_currentBinderIsWorkspace;		// Set true if the current binder is a workspace and false otherwise.
+	private BinderInfo m_currentBinder;				// The currently selected binder.
 	private int m_menuLeft;							// Left coordinate of where the menu is to be placed.
 	private int m_menuTop;							// Top  coordinate of where the menu is to be placed.
 	private List<ToolbarItem> m_actionsBucket;		// List of action        items for the context based menu.
@@ -65,7 +65,6 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private List<ToolbarItem> m_showBucket;			// List of show          items for the context based menu.
 	private List<ToolbarItem> m_teamBucket;			// List of team          items for the context based menu.
 	private List<ToolbarItem> m_toolbarItemList;	// The context based toolbar requirements.
-	private String m_currentBinderId;				// ID of the currently selected binder.
 	private TeamManagementInfo m_tmi;				// The team management information for which team management menu items should appear on the menu.
 	private ToolbarItem m_calendarImportTBI;		// The calendar import           toolbar item, if found.
 	private ToolbarItem m_commonActionsTBI;			// The common actions            toolbar item, if found.
@@ -229,7 +228,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		// ...and finally, the configuration section.
 		localTBI = new ToolbarItem();
 		localTBI.setName("brand");
-		localTBI.setTitle(m_currentBinderIsWorkspace ? m_messages.mainMenuManageBrandWorkspace() : m_messages.mainMenuManageBrandFolder());
+		localTBI.setTitle(m_currentBinder.isBinderWorkspace() ? m_messages.mainMenuManageBrandWorkspace() : m_messages.mainMenuManageBrandFolder());
 		localTBI.setTeamingAction(TeamingAction.EDIT_BRANDING);
 		m_configBucket.add(localTBI);
 		addNestedItemFromUrl(m_configBucket, m_commonActionsTBI, "configure_definitions");
@@ -257,19 +256,17 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	}
 	
 	/**
-	 * Stores the ID and type of the currently selected binder.
+	 * Stores information about the currently selected binder.
 	 * 
 	 * Implements the MenuBarPopupBase.setCurrentBinder() abstract
 	 * method.
 	 * 
-	 * @param binderId
-	 * @param binderType
+	 * @param binderInfo
 	 */
 	@Override
-	public void setCurrentBinder(String binderId, BinderType binderType) {
-		// Simply store the parameters.
-		m_currentBinderId = binderId;
-		m_currentBinderIsWorkspace = (BinderType.WORKSPACE == binderType);
+	public void setCurrentBinder(BinderInfo binderInfo) {
+		// Simply store the parameter.
+		m_currentBinder = binderInfo;
 	}
 
 	/**
@@ -464,13 +461,13 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			// Then the miscellaneous section...
 			boolean hasMiscSection = (!(m_miscBucket.isEmpty()));
 			if (!hasMiscSection) {
-				hasMiscSection = m_currentBinderIsWorkspace;
+				hasMiscSection = m_currentBinder.isBinderWorkspace();
 			}
 			if (hasMiscSection && isSpacerNeeded()) {
 				// ...and add a spacer when required.
 				addSpacerMenuItem();
 			}
-			showTagThisWorkspace();
+			showTagThis();
 			addContextMenuItemsFromList(IDBASE, m_miscBucket);
 			
 			// Then the config section...
@@ -502,35 +499,63 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	}
 	
 	/*
-	 * Add a tag this workspace menu item.
+	 * Adds a tag this menu item when appropriate.
 	 */
-	private void showTagThisWorkspace() {
-		// If the current binder isn't a workspace...
-		if (!m_currentBinderIsWorkspace) {
-			// ...bail.
+	private void showTagThis() {
+		// Is the current binder a folder?
+		String menuText;
+		final String dlgCaption;
+		if (m_currentBinder.isBinderFolder()) {
+			// Yes!  Define the menu and dialog labels to use.
+			menuText = m_messages.mainMenuManageTagThisFolder();
+			dlgCaption   = m_messages.mainMenuTagThisDlgHeaderFolder();
+		}
+		
+		// No, the current binder isn't a folder!  Is it a workspace?
+		else if (m_currentBinder.isBinderWorkspace()) {
+			// Yes!  For certain types of workspaces, we don't show the
+			// tag this menu item.  Is this one of the ones we don't?
+			switch (m_currentBinder.getWorkspaceType()) {
+			case PROFILE_ROOT:
+			case TRASH:
+			case OTHER:
+			case NOT_A_WORKSPACE:
+				// Yes!  Bail.
+				return;
+			}
+			
+			// Define the menu and dialog labels to use.
+			menuText = m_messages.mainMenuManageTagThisWorkspace();
+			dlgCaption   = m_messages.mainMenuTagThisDlgHeaderWorkspace();
+		}
+		
+		else {
+			// No, it isn't a workspace either!  We don't show a
+			// tag this menu item on it.
 			return;
 		}
 
-		// Add an anchor to run the folder options dialog.
-		final String foId = (IDBASE + "TagThisWorkspace");
-		MenuPopupAnchor mtA = new MenuPopupAnchor(foId, m_messages.mainMenuManageTagThisWorkspace(), null, new ClickHandler() {
+		// Add an anchor to run the tag this dialog.
+		final String menuId = (IDBASE + "TagThis");
+		MenuPopupAnchor mtA = new MenuPopupAnchor(menuId, menuText, null, new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				// Remove the selection from the menu item...
-				Element menuItemElement = Document.get().getElementById(foId);
+				Element menuItemElement = Document.get().getElementById(menuId);
 				menuItemElement.removeClassName("mainMenuPopup_ItemHover");
 				
 				// ...hide the menu...
 				hide();
 				
-				// ...and run the folder options dialog.
-				TagThisWorkspaceDlg ttwDlg = new TagThisWorkspaceDlg(
+				// ...and run the tag this dialog.
+				TagThisDlg ttDlg = new TagThisDlg(
 					true,	// true -> Auto hide.
 					true,	// true -> Modal.
 					m_menuLeft,
 					m_menuTop,
-					m_currentBinderId);
-				ttwDlg.addStyleName("tagThisWorkspaceDlg");
-				ttwDlg.show();
+					m_currentBinder,
+					dlgCaption);
+				ttDlg.addStyleName("tagThisDlg");
+				ttDlg.show();
 			}
 		});
 		addContentWidget(mtA);

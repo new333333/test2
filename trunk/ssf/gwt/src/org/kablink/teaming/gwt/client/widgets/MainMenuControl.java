@@ -53,7 +53,7 @@ import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
-import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
@@ -71,12 +71,11 @@ import com.google.gwt.user.client.ui.FlowPanel;
  * @author drfoster@novell.com
  */
 public class MainMenuControl extends Composite implements ActionRequestor, ActionTrigger {
+	private BinderInfo m_contextBinder;
 	private FlowPanel m_contextPanel;
 	private GwtTeamingMainMenuImageBundle m_images = GwtTeaming.getMainMenuImageBundle();
 	private GwtTeamingMessages m_messages = GwtTeaming.getMessages();
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
-	private String m_contextBinderId;
-	private BinderType m_contextBinderType = BinderType.OTHER;
 	
 	/**
 	 * Constructor method.
@@ -118,7 +117,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 */
 	private void addActionsToContext(List<ToolbarItem> toolbarItemList) {
 		final ActionsMenuPopup amp = new ActionsMenuPopup(this);
-		amp.setCurrentBinder(m_contextBinderId, m_contextBinderType);
+		amp.setCurrentBinder(m_contextBinder);
 		amp.setToolbarItemList(toolbarItemList);
 		if (amp.shouldShowMenu()) {
 			final MenuBarBox actionsBox = new MenuBarBox("ss_mainMenuActions", m_messages.mainMenuBarActions(), true);
@@ -198,7 +197,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 */
 	private void addManageToContext(final List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi) {
 		String manageName;
-		switch (m_contextBinderType) {
+		switch (m_contextBinder.getBinderType()) {
 		default:
 		case OTHER:                                                      return;
 		case FOLDER:     manageName = m_messages.mainMenuBarFolder();    break;
@@ -206,7 +205,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		}
 		
 		final ManageMenuPopup mmp = new ManageMenuPopup(this, manageName);
-		mmp.setCurrentBinder(m_contextBinderId, m_contextBinderType);
+		mmp.setCurrentBinder(m_contextBinder);
 		mmp.setToolbarItemList(toolbarItemList);
 		mmp.setTeamManagementInfo(tmi);
 		if (mmp.shouldShowMenu()) {
@@ -236,7 +235,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 					int left =  myFavoritesBox.getAbsoluteLeft();
 					int top  = (myFavoritesBox.getAbsoluteTop() - 20);
 					MyFavoritesMenuPopup mfmp = new MyFavoritesMenuPopup(actionTrigger);
-					mfmp.setCurrentBinder(m_contextBinderId, m_contextBinderType);
+					mfmp.setCurrentBinder(m_contextBinder);
 					mfmp.showPopup(left, top);
 				}
 			});
@@ -255,7 +254,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 					int left =  myTeamsBox.getAbsoluteLeft();
 					int top  = (myTeamsBox.getAbsoluteTop() - 20);
 					MyTeamsMenuPopup mtmp = new MyTeamsMenuPopup(actionTrigger);
-					mtmp.setCurrentBinder(m_contextBinderId, m_contextBinderType);
+					mtmp.setCurrentBinder(m_contextBinder);
 					mtmp.showPopup(left, top);
 				}
 			});
@@ -284,7 +283,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 */
 	private void addRecentPlacesToContext(List<ToolbarItem> toolbarItemList) {
 		final RecentPlacesMenuPopup rpmp = new RecentPlacesMenuPopup(this);
-		rpmp.setCurrentBinder(m_contextBinderId, m_contextBinderType);
+		rpmp.setCurrentBinder(m_contextBinder);
 		rpmp.setToolbarItemList(toolbarItemList);
 		if (rpmp.shouldShowMenu()) {
 			final MenuBarBox rpBox = new MenuBarBox("ss_mainMenuRecentPlaces", m_messages.mainMenuBarRecentPlaces(), true);
@@ -306,23 +305,22 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * 
 	 * @param binderId
 	 */
-	public void contextLoaded(String binderId) {
+	public void contextLoaded(final String binderId) {
 		// Rebuild the context based panel based on the new context.  
-		m_contextBinderId = binderId;
 		m_contextPanel.clear();
-		GwtTeaming.getRpcService().getBinderType(m_contextBinderId, new AsyncCallback<BinderType>() {
+		GwtTeaming.getRpcService().getBinderInfo(binderId, new AsyncCallback<BinderInfo>() {
 			public void onFailure(Throwable t) {
-				m_contextBinderType = BinderType.OTHER;
+				m_contextBinder = null;
 				Window.alert(t.toString());
 			}
-			public void onSuccess(BinderType binderType) {
-				m_contextBinderType = binderType;
-				GwtTeaming.getRpcService().getToolbarItems(m_contextBinderId, new AsyncCallback<List<ToolbarItem>>() {
+			public void onSuccess(BinderInfo binderInfo) {
+				m_contextBinder = binderInfo;
+				GwtTeaming.getRpcService().getToolbarItems(binderId, new AsyncCallback<List<ToolbarItem>>() {
 					public void onFailure(Throwable t) {
 						Window.alert(t.toString());
 					}
 					public void onSuccess(final List<ToolbarItem> toolbarItemList)  {
-						GwtTeaming.getRpcService().getTeamManagementInfo(m_contextBinderId, new AsyncCallback<TeamManagementInfo>() {
+						GwtTeaming.getRpcService().getTeamManagementInfo(binderId, new AsyncCallback<TeamManagementInfo>() {
 							public void onFailure(Throwable t) {
 								Window.alert(t.toString());
 							}

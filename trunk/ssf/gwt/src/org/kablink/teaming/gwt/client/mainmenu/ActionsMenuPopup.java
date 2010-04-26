@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
@@ -59,9 +60,8 @@ import com.google.gwt.user.client.ui.Label;
 public class ActionsMenuPopup extends MenuBarPopupBase {
 	private final String IDBASE = "action_";	// Base ID for the items created in this menu.
 
-	private BinderType m_currentBinderType;			// Type of the currently selected binder.
+	private BinderInfo m_currentBinder;				// The currently selected binder.
 	private List<ToolbarItem> m_toolbarItemList;	// The context based toolbar requirements.
-	private String m_currentBinderId;				// ID of the currently selected binder.
 	private ToolbarItem m_clipboardTBI;				// The clipboard  toolbar item, if found.
 	private ToolbarItem m_sendEmailTBI;				// The send email toolbar item, if found.
 	private ToolbarItem m_trashTBI;					// The trash      toolbar item, if found.
@@ -77,19 +77,17 @@ public class ActionsMenuPopup extends MenuBarPopupBase {
 	}
 	
 	/**
-	 * Stores the ID and type of the currently selected binder.
+	 * Stores information about the currently selected binder.
 	 * 
 	 * Implements the MenuBarPopupBase.setCurrentBinder() abstract
 	 * method.
 	 * 
-	 * @param binderId
-	 * @param binderType
+	 * @param binderInfo
 	 */
 	@Override
-	public void setCurrentBinder(String binderId, BinderType binderType) {
-		// Simply store the parameters.
-		m_currentBinderId = binderId;
-		m_currentBinderType = binderType;
+	public void setCurrentBinder(BinderInfo binderInfo) {
+		// Simply store the parameter.
+		m_currentBinder = binderInfo;
 	}
 	
 	/**

@@ -1013,16 +1013,16 @@ body, table td, select
 	padding-bottom: 5px;
 }
 
-/* Styles for the tag this workspace dialog. */
-.tagThisWorkspaceDlg
+/* Styles for the tag this dialog. */
+.tagThisDlg
 {
 	z-index: 301;
 }
-.tagThisWorkspaceDlg_Grid
+.tagThisDlg_Grid
 {
 	margin-top: 8px;
 }
-.tagThisWorkspaceDlg_Label
+.tagThisDlg_Label
 {
 	color: #414648; /* dark grey */
 	line-height: 1.1em; 

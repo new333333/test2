@@ -40,7 +40,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
-import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -241,13 +241,12 @@ public abstract class MenuBarPopupBase extends PopupPanel {
 	}
 	
 	/**
-	 * Passes the ID and type of the currently selected binder to
+	 * Passes a BinderInfo describing the currently selected binder to
 	 * classes that extend MenuBarPopupBase.
 	 * 
-	 * @param binderId
-	 * @param binderType
+	 * @param binderInfo
 	 */
-	public abstract void setCurrentBinder(String binderId, BinderType binderType);
+	public abstract void setCurrentBinder(BinderInfo binderInfo);
 
 	/**
 	 * Passes information about the context based toolbar requirements
