@@ -161,7 +161,6 @@ public class ModifyFileController extends SAbstractController {
 				//The form was submitted. Go process it
 				if (fileVer != null) {
 					String text = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DESCRIPTION, "");
-					Description description = new Description(text);
 					getFileModule().revertFileVersion(entity, fileVer);
 					BinderHelper.indexEntity(this, entity);
 				}
