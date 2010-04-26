@@ -69,7 +69,7 @@ public class OnSelectBinderInfo {
 	 */
 	public OnSelectBinderInfo(TreeInfo ti, Instigator instigator) {
 		// Always use the final form of the constructor.
-		this(Long.parseLong(ti.getBinderId()), ti.getBinderPermalink(), ti.isBinderTrash(), instigator);
+		this(Long.parseLong(ti.getBinderInfo().getBinderId()), ti.getBinderPermalink(), ti.getBinderInfo().isBinderTrash(), instigator);
 	}
 
 	/**

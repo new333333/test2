@@ -48,6 +48,8 @@ public enum FolderType implements IsSerializable {
 	CALENDAR,
 	DISCUSSION,
 	FILE,
+	GUESTBOOK,
+	MILESTONE,
 	MINIBLOG,
 	PHOTOALBUM,
 	TASK,

@@ -105,7 +105,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				// No, we aren't collapsing the node!  We must be
 				// expanding it.  Can we get a TreeInfo for the
 				// expansion?
-				getRpcService().getHorizontalNode(m_ti.getBinderId(), new AsyncCallback<TreeInfo>() {
+				getRpcService().getHorizontalNode(m_ti.getBinderInfo().getBinderId(), new AsyncCallback<TreeInfo>() {
 					public void onFailure(Throwable t) {}
 					public void onSuccess(TreeInfo expandedTI) {
 						// Yes!  Mark the node as being opened, save its

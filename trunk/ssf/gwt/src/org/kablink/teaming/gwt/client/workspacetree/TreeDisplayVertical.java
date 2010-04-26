@@ -132,7 +132,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			// Are we collapsing the row?
 			if (m_ti.isBinderExpanded()) {
 				// Yes!  Can we mark the row as being closed?
-				rpcService.persistNodeCollapse(m_ti.getBinderId(), new AsyncCallback<Boolean>() {
+				rpcService.persistNodeCollapse(m_ti.getBinderInfo().getBinderId(), new AsyncCallback<Boolean>() {
 					public void onFailure(Throwable t)       {}
 					public void onSuccess(Boolean success) {
 						// Yes!  Update the TreeInfo, re-render the
@@ -149,12 +149,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			else {
 				// No, we aren't collapsing it!  We must be expanding
 				// it.  Can we mark the row as being opened?
-				rpcService.persistNodeExpand(m_ti.getBinderId(), new AsyncCallback<Boolean>() {
+				rpcService.persistNodeExpand(m_ti.getBinderInfo().getBinderId(), new AsyncCallback<Boolean>() {
 					public void onFailure(Throwable t) {}
 					public void onSuccess(Boolean success) {
 						// Yes!  Can we get a TreeInfo for the
 						// expansion?
-						rpcService.getVerticalNode(m_ti.getBinderId(), new AsyncCallback<TreeInfo>() {
+						rpcService.getVerticalNode(m_ti.getBinderInfo().getBinderId(), new AsyncCallback<TreeInfo>() {
 							public void onFailure(Throwable t) {}
 							public void onSuccess(TreeInfo expandedTI) {
 								// Yes!  Update the TreeInfo, and if
@@ -244,7 +244,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		OnSelectBinderInfo reply = new OnSelectBinderInfo(ti, Instigator.SIDEBAR_TREE);
 		
 		// Is this TreeInfo object the trash Binder?
-		if (ti.isBinderTrash()) {
+		if (ti.getBinderInfo().isBinderTrash()) {
 			// Yes!  Is there another Binder selected?
 			String selectedId = Document.get().getElementById(EXTENSION_ID_SELECTOR_ID).getAttribute("value");
 			if (GwtClientHelper.hasString(selectedId)) {
@@ -276,7 +276,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	private int getRenderDepth(TreeInfo ti) {
 		int reply;
-		Integer depth = m_renderDepths.get(ti.getBinderId());
+		Integer depth = m_renderDepths.get(ti.getBinderInfo().getBinderId());
 		if (null == depth)
 			 reply = 0;
 		else reply = depth.intValue();
@@ -288,9 +288,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	private static String getSelectorId(TreeInfo ti) {
 		String reply;
-		if (ti.isBinderTrash())
-			 reply = (EXTENSION_ID_TRASH_BASE    + ti.getBinderId());
-		else reply = (EXTENSION_ID_SELECTOR_BASE + ti.getBinderId());
+		if (ti.getBinderInfo().isBinderTrash())
+			 reply = (EXTENSION_ID_TRASH_BASE    + ti.getBinderInfo().getBinderId());
+		else reply = (EXTENSION_ID_SELECTOR_BASE + ti.getBinderInfo().getBinderId());
 		return reply;
 	}
 	
@@ -301,7 +301,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * @return
 	 */
 	private boolean isBinderSelected(TreeInfo ti) {
-		return (Long.parseLong(ti.getBinderId()) == m_selectedBinderId);
+		return (Long.parseLong(ti.getBinderInfo().getBinderId()) == m_selectedBinderId);
 	}
 
 	/**
@@ -422,7 +422,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorLabel.setWordWrap(false);
 		selectorLabel.addStyleName("workspaceTreeBinderAnchor");
 		selectorLabel.getElement().setId(getSelectorId(ti));
-		if (!(ti.isBinderTrash())) {
+		if (!(ti.getBinderInfo().isBinderTrash())) {
 			selectorLabel.getElement().setAttribute(
 				EXTENSION_ID_TRASH_PERMALINK,
 				ti.getBinderTrashPermalink());
@@ -511,9 +511,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	void selectBinder(TreeInfo ti) {
 		// If this a trash Binder?
-		if (!(ti.isBinderTrash())) {
+		if (!(ti.getBinderInfo().isBinderTrash())) {
 			// No!  Mark it as having been selected.
-			setSelectedBinderId(ti.getBinderId());
+			setSelectedBinderId(ti.getBinderInfo().getBinderId());
 			String selectedId_New = getSelectorId(ti);
 			Element selectorLabel_New = Document.get().getElementById(selectedId_New);
 			selectorLabel_New.addClassName("workspaceTreeBinderSelected");
@@ -603,7 +603,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 						// different from the Binder we're currently
 						// rooted to, we need to re-root the tree.  Do
 						// we need to re-root?
-						if (rootWorkspaceId.equals(getRootTreeInfo().getBinderId())) {
+						if (rootWorkspaceId.equals(getRootTreeInfo().getBinderInfo().getBinderId())) {
 							// No!  Simply select the Binder.
 							selectBinder(targetTI);
 						}
@@ -628,7 +628,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Store the depth at which a TreeInfo object was last rendered.
 	 */
 	private void setRenderDepth(TreeInfo ti, int depth) {
-		m_renderDepths.put(ti.getBinderId(), new Integer(depth));
+		m_renderDepths.put(ti.getBinderInfo().getBinderId(), new Integer(depth));
 	}
 	
 	/*
