@@ -1399,6 +1399,7 @@ public class WebKeys {
     public static final String VIEW_MOBILE_EDIT="mobile/edit";
     public static final String VIEW_NO_ENTRIES="forum/view_no_entries";
     public static final String VIEW_NO_MORE_ENTRIES="forum/view_no_more_entries";
+    public static final String VIEW_STAND_ALONE_ENTRY="forum/view_stand_alone_entry";
     public static final String VIEW_TASK_SUMMARY="task_summary/view";
     public static final String VIEW_TASK_EDIT="task_summary/edit";
     public static final String VIEW_LICENSE_REPORT="administration/license_report";

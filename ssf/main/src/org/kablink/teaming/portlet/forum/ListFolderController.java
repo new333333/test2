@@ -50,6 +50,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -256,6 +257,7 @@ public class ListFolderController extends  SAbstractController {
 			return prepBeans(request, BinderHelper.CommonPortletDispatch(this, request, response));
 		
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
 		String zoneUUID = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
 		//If no binder, Default to the user's workspace
 		if (binderId == null) binderId = user.getWorkspaceId();
@@ -316,6 +318,17 @@ public class ListFolderController extends  SAbstractController {
 				model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {zoneBinderId.toString()}));
 				return prepBeans(request, new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model));
 			} catch(AccessControlException e) {
+				if (entryId != null) {
+					//This is really a request to view an entry; see if the entry can be viewed
+					try {
+						FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
+						Map<String,Object> model = new HashMap<String,Object>();
+						String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+						model.put(WebKeys.REFERER_URL, refererUrl);
+						model.put(WebKeys.ENTRY, entry);
+						return prepBeans(request, new ModelAndView(WebKeys.VIEW_STAND_ALONE_ENTRY, model));
+					} catch(AccessControlException e2) {}
+				}
 		 		Map<String,Object> model = new HashMap<String,Object>();
 				BinderHelper.setupStandardBeans(this, request, response, model, zoneBinderId);
 				if (WebHelper.isUserLoggedIn(request) && 
