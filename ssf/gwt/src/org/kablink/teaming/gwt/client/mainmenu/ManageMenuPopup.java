@@ -49,7 +49,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FlowPanel;
 
 
 /**
@@ -558,15 +557,15 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 					}
 					public void onSuccess(List<TagInfo> binderTags) {
 						TagThisDlg ttDlg = new TagThisDlg(
-								true,	// true -> Auto hide.
-								true,	// true -> Modal.
-								m_menuLeft,
-								m_menuTop,
-								m_currentBinder,
-								binderTags,
-								dlgCaption);
-							ttDlg.addStyleName("tagThisDlg");
-							ttDlg.show();
+							true,	// true -> Auto hide.
+							true,	// true -> Modal.
+							m_menuLeft,
+							m_menuTop,
+							m_currentBinder,
+							binderTags,
+							dlgCaption);
+						ttDlg.addStyleName("tagThisDlg");
+						ttDlg.show();
 					}
 				});
 			}

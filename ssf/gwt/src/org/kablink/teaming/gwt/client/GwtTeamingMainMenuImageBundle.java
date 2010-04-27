@@ -49,6 +49,9 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/close_circle16.png")
 	public ImageResource closeCircle16();
 
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/tag_delete.gif")
+	public ImageResource tagDelete();
+	
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/gwt.png")
 	public ImageResource gwtUI();
 

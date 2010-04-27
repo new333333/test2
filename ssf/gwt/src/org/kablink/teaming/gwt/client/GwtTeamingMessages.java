@@ -252,8 +252,13 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuManageViewTeam();
 	String mainMenuMyTeamsNoTeams();
 	String mainMenuRecentPlacesNoPlaces();
+	String mainMenuTagThisDlgCommunityTags();
+	String mainMenuTagThisDlgAdd();
+	String mainMenuTagThisDlgDelete();
 	String mainMenuTagThisDlgHeaderFolder();
 	String mainMenuTagThisDlgHeaderWorkspace();
+	String mainMenuTagThisDlgPersonalTags();
+	String mainMenuTagThisDlgTags();
 
 	// Strings used in the workspace tree control.
 	String treeCloseBreadCrumbs();

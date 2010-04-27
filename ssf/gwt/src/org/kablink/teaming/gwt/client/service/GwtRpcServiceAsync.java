@@ -117,6 +117,8 @@ public interface GwtRpcServiceAsync
 	public void removeFavorite(        String             favoriteId,                                 AsyncCallback<Boolean>               callback );
 	public void updateFavorites(                                    List<FavoriteInfo> favoritesList, AsyncCallback<Boolean>               callback );
 	public void getBinderTags(         String             binderId,                                   AsyncCallback<List<TagInfo>>         callback );
+	public void addBinderTag(          String             binderId,      TagInfo       binderTag,     AsyncCallback<TagInfo>               callback );
+	public void removeBinderTag(       String             binderId,      TagInfo       binderTag,     AsyncCallback<Boolean>               callback );
 	public void updateBinderTags(      String             binderId, List<TagInfo>      binderTags,    AsyncCallback<Boolean>               callback );
 	public void getBinderInfo(         String             binderId,                                   AsyncCallback<BinderInfo>            callback );
 	public void getFavorites(                                                                         AsyncCallback<List<FavoriteInfo>>    callback );

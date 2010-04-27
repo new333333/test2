@@ -1018,6 +1018,15 @@ body, table td, select
 {
 	z-index: 301;
 }
+.tagThisDlg_DeleteAnchor
+{
+	cursor: pointer;
+}
+.tagThisDlg_DeleteImg
+{
+	margin-top: 2px;
+	margin-left: 5px;
+}
 .tagThisDlg_Grid
 {
 	margin-top: 8px;
@@ -1029,6 +1038,13 @@ body, table td, select
 	margin-right: 5px;
 	padding: 0.2em 0.5em 0.3em; 
 	white-space: nowrap;
+}
+.tagThisDlg_SectionHeader
+{
+	font-size: 1em;
+	font-weight: bold;
+	padding-top: 8px;
+	padding-bottom: 5px;
 }
 
 /* Style for the main Teaming page. */

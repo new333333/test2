@@ -487,6 +487,52 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Adds a tag to those defined on a binder.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param binderTag
+	 * 
+	 * @return
+	 */
+	public static TagInfo addBinderTag(AllModulesInjected bs, String binderIdS, TagInfo binderTag) {
+		// Define the new tag.
+		boolean community = binderTag.isCommunityTag();
+		BinderModule bm = bs.getBinderModule();
+		Long binderId = Long.parseLong(binderIdS);
+		String binderTagName = binderTag.getTagName();
+		bm.setTag(binderId, binderTagName, community);
+
+		// Find the new tag in those attached to the binder...
+		Map<String, SortedSet<Tag>> tagsMap = TagUtil.uniqueTags(bm.getTags(bm.getBinder(binderId)));
+		Set<Tag> tags = tagsMap.get(community ? ObjectKeys.COMMUNITY_ENTITY_TAGS : ObjectKeys.PERSONAL_ENTITY_TAGS);
+		for (Iterator<Tag> tagsIT = tags.iterator(); tagsIT.hasNext(); ) {
+			Tag tag = tagsIT.next();
+			if (tag.getName().equals(binderTagName)) {
+				// ...and return a new TagInfo for it. 
+				return buildTIFromTag(binderTag.getTagType(), tag);
+			}
+		}
+
+		// If we get here, something about creating the tag failed.
+		return null;
+	}
+	
+	/**
+	 * Removes a tag from those defined on a binder.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param binderTag
+	 * 
+	 * @return
+	 */
+	public static Boolean removeBinderTag(AllModulesInjected bs, String binderId, TagInfo binderTag) {
+		bs.getBinderModule().deleteTag(Long.parseLong(binderId), binderTag.getTagId());
+		return Boolean.TRUE;
+	}
+	
+	/**
 	 * Updates the tags defined on a binder.
 	 * 
 	 * @param bs
@@ -541,7 +587,7 @@ public class GwtServerHelper {
 			boolean found = false;
 			for (Iterator<Tag> oldTagsIT = oldTags.iterator(); oldTagsIT.hasNext(); ) {
 				Tag tag = oldTagsIT.next();
-				if (tag.getName().equalsIgnoreCase(ti.getTagName())) {
+				if (tag.getName().equals(ti.getTagName())) {
 					// ...and break out of the old tag scan loop if we
 					// ...find the new tag.
 					found = true;
@@ -569,7 +615,7 @@ public class GwtServerHelper {
 			boolean found = false;
 			for (Iterator<TagInfo> newTagsIT = newTags.iterator(); newTagsIT.hasNext(); ) {
 				TagInfo ti = newTagsIT.next();
-				if (tag.getName().equalsIgnoreCase(ti.getTagName())) {
+				if (tag.getName().equals(ti.getTagName())) {
 					// ...and break out of the new tag scan loop if we
 					// ...find the old tag.
 					found = true;
@@ -580,7 +626,7 @@ public class GwtServerHelper {
 			// If we didn't find the old tag in the new tag list...
 			if (!found) {
 				// ...delete it.
-				bm.deleteTag(binderId, tag.getName());
+				bm.deleteTag(binderId, tag.getId());
 			}
 		}
 	}
