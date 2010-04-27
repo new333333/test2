@@ -47,12 +47,14 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractControllerRetry;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.BrowserSniffer;
@@ -137,7 +139,59 @@ public class LoginController  extends SAbstractControllerRetry {
 		}
 		
 		boolean durangoUI = GwtUIHelper.isGwtUIActive(request);
-		if (false && durangoUI) {
+		if ( durangoUI )
+		{
+		   String isNovellTeaming;
+		   
+			// Add the binder id to the response.
+			model.put( WebKeys.URL_BINDER_ID, binderId );
+
+			model.put( "adaptedUrl", "" );
+
+			// Add the flag that tells us a user is not logged in.
+			model.put( "isUserLoggedIn", false );
+			
+			// Add a flag that tells us if we should prompt for login.
+			model.put( "promptForLogin", "true" );
+			
+			// Add the user's name to the response.
+			{
+				String firstName;
+				String lastName;
+				String fullName;
+				
+				// Add the user's name.
+				firstName = user.getFirstName();
+				lastName = user.getLastName();
+				if ( firstName != null )
+				{
+					fullName = firstName;
+					if ( lastName != null )
+						fullName += " " + lastName;
+				}
+				else if ( lastName != null )
+				{
+					fullName = lastName;
+				}
+				else
+					fullName = user.getName();
+					
+				fullName += " (" + user.getName() + ")";
+				model.put( "userFullName", fullName );
+			}
+			
+			// Add the "my workspace" url to the response.
+			{
+				String myWSUrl = "";
+
+				myWSUrl = PermaLinkUtil.getPermalink( user );
+				model.put( "myWorkspaceUrl", myWSUrl );
+			}
+			
+			// Add a flag that tells us if we are running Novell or Kablink Teaming.
+			isNovellTeaming = Boolean.toString( ReleaseInfo.isLicenseRequiredEdition() );
+			model.put( "isNovellTeaming", isNovellTeaming );
+				
 			return new ModelAndView( "forum/GwtMainPage", model );
 		}
 		

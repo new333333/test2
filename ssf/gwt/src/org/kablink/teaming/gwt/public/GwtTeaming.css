@@ -226,6 +226,11 @@ body, table td, select
 	white-space: nowrap;
 }
 
+/* Style used to display the "login failed" message in the login dialog. */
+.loginFailedMsg
+{
+	color: red;
+}
 
 /* Styles used by the WorkspaceTreeControl. */
 .workspaceTreeBinderAnchor

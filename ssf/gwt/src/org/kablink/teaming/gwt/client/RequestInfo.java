@@ -79,6 +79,25 @@ public class RequestInfo extends JavaScriptObject
 	 */
 	public final native String getLanguage() /*-{ return this.language; }-*/;
 
+	
+	/**
+	 * Return the error message from the last login.  This class is an overlay on the JavaScript object called m_requestInfo.
+	 */
+	public final native String getLoginError() /*-{ return this.loginError; }-*/;
+	
+	
+	/**
+	 * Return the referer url that was passed as part of the login info.  This class is an overlay on the JavaScript object called m_requestInfo.
+	 */
+	public final native String getLoginRefererUrl() /*-{ return this.loginRefererUrl; }-*/;
+	
+	
+	/**
+	 * Return the url we should use when we are trying to log in.
+	 */
+	public final native String getLoginUrl() /*-{ return this.loginPostUrl; }-*/;
+
+
 	/**
 	 * Return the "my workspace" url.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
@@ -95,5 +114,17 @@ public class RequestInfo extends JavaScriptObject
 	 * Return the flag that tells us if we are running Novell Teaming.
 	 */
 	public final native boolean isNovellTeaming() /*-{ return this.isNovellTeaming; }-*/;
+
+
+	/**
+	 * Return the flag that tells us if the user is logged in.
+	 */
+	public final native boolean isUserLoggedIn() /*-{ return this.isUserLoggedIn; }-*/;
+
+
+	/**
+	 * Return the flag that tells us if we should prompt for login
+	 */
+	public final native boolean promptForLogin() /*-{ return this.promptForLogin; }-*/;
 
 }// end RequestInfo

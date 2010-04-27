@@ -189,6 +189,7 @@ public interface GwtTeamingMessages extends Messages
 	String administrationHint();
 	String getBrandingRPCFailed( String cause );
 	String helpHint();
+	String loginHint();
 	String logoutHint();
 	String myWorkspaceHint();
 	
@@ -216,6 +217,14 @@ public interface GwtTeamingMessages extends Messages
 	String textColorLabel();
 	String useBrandingImgLabel();
 	String useAdvancedBrandingLabel();
+	
+	// Strings used in the login dialog.
+	String loginDlgKablinkHeader();
+	String loginDlgLoginFailed();
+	String loginDlgNovellHeader();
+	String loginDlgPassword();
+	String loginDlgReset();
+	String loginDlgUserId();
 	
 	// Strings used in the main menu.
 	String mainMenuAltBrowseHierarchy();

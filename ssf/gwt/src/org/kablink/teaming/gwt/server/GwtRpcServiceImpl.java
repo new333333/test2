@@ -611,27 +611,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch (NoBinderByTheIdException nbEx)
 		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
-			throw ex;
+			// Nothing to do
 		}
 		catch (AccessControlException acEx)
 		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			throw ex;
+			// Nothing to do
 		}
 		catch (Exception e)
 		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.UNKNOWN );
-			throw ex;
+			// Nothing to do
 		}
 		
 		return brandingData;
@@ -1003,13 +991,21 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		Binder topWorkspace;
 		GwtBrandingData brandingData;
 		
-		// Get the top workspace.
-		topWorkspace = getWorkspaceModule().getTopWorkspace();				
+		try
+		{
+			// Get the top workspace.
+			topWorkspace = getWorkspaceModule().getTopWorkspace();				
 		
-		// Get the branding data from the top workspace.
-		brandingData = getBinderBrandingData( topWorkspace.getId().toString() );
+			// Get the branding data from the top workspace.
+			brandingData = getBinderBrandingData( topWorkspace.getId().toString() );
+		}
+		catch (Exception e)
+		{
+			brandingData = new GwtBrandingData();
+		}
+
 		brandingData.setIsSiteBranding( true );
-		
+
 		return brandingData;
 	}// end getSiteBrandingData()
 	

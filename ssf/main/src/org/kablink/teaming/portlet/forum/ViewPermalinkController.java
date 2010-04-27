@@ -544,6 +544,12 @@ public class ViewPermalinkController  extends SAbstractController {
 				isNovellTeaming = PortletRequestUtils.getStringParameter( request, "isNovellTeaming", "true" );
 				model.put( "isNovellTeaming", isNovellTeaming );
 				
+				// Add a flag that tells us if the user is logged in.
+				model.put( "isUserLoggedIn", !WebHelper.isGuestLoggedIn( request ) );
+				
+				// Add a flag that tells us if we should prompt for login.
+				model.put( "promptForLogin", "false" );
+				
 				//Set up the standard beans
 				BinderHelper.setupStandardBeans(this, request, response, model);
 				return new ModelAndView( "forum/GwtMainPage", model );
