@@ -166,7 +166,7 @@ public class GwtMainPage extends Composite
 		        	 */
 		            public void execute()
 		            {
-						invokeLoginDlg();
+						invokeLoginDlg( false );
 		            }
 		        };
 		        DeferredCommand.addCommand( cmd );
@@ -420,7 +420,7 @@ public class GwtMainPage extends Composite
 			break;
 
 		case LOGIN:
-			invokeLoginDlg();
+			invokeLoginDlg( true );
 			break;
 			
 		case LOGOUT:
@@ -494,7 +494,7 @@ public class GwtMainPage extends Composite
 	/**
 	 * Invoke the "login" dialog.
 	 */
-	private void invokeLoginDlg()
+	private void invokeLoginDlg( boolean allowCancel )
 	{
 		PopupPanel.PositionCallback posCallback;
 		String loginErr;
@@ -510,6 +510,9 @@ public class GwtMainPage extends Composite
 			m_loginDlg = new LoginDlg( false, true, 0, 0, null, m_requestInfo.getLoginUrl(), refererUrl );
 		}
 		
+		// Tell the login dialog if we allow cancel.
+		m_loginDlg.setAllowCancel( allowCancel );
+		
 		// Was there an error from a previous login attempt?
 		// Is there an error from a previous login attempt?
 		loginErr = m_requestInfo.getLoginError();
@@ -524,6 +527,7 @@ public class GwtMainPage extends Composite
 			m_loginDlg.hideLoginFailedMsg();
 		}
 		
+		m_loginDlg.hideAuthenticatingMsg();
 		
 		// Show the login dialog.
 		posCallback = new PopupPanel.PositionCallback()

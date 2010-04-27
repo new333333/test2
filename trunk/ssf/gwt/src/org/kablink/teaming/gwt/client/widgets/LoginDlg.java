@@ -62,7 +62,9 @@ public class LoginDlg extends DlgBox
 	private FormPanel m_formPanel = null;
 	private TextBox m_userIdTxtBox = null;
 	private Button m_okBtn = null;
+	private Button m_cancelBtn = null;
 	private Label m_loginFailedMsg = null;
+	private Label m_authenticatingMsg = null;
 	private String m_loginUrl = null;
 	private String m_springSecurityRedirect = null;	// This values tells Teaming what url to go to after the user authenticates.
 	
@@ -163,6 +165,20 @@ public class LoginDlg extends DlgBox
 			++row;
 		}
 		
+		// Add a "Authenticating..." label to the dialog.
+		{
+			FlexTable.FlexCellFormatter cellFormatter;
+
+			m_authenticatingMsg = new Label( GwtTeaming.getMessages().loginDlgAuthenticating() );
+			m_authenticatingMsg.addStyleName( "loginAuthenticatingMsg" );
+			m_authenticatingMsg.setVisible( false );
+			
+			cellFormatter = table.getFlexCellFormatter();
+			cellFormatter.setHorizontalAlignment( row, 0, HasHorizontalAlignment.ALIGN_RIGHT );
+			table.setWidget( row, 1, m_authenticatingMsg );
+			++row;
+		}
+		
 		// Add a hidden input for the "spring security redirect" which tells Teaming what page to go
 		// to after the user authenticates.
 		if ( m_springSecurityRedirect != null && m_springSecurityRedirect.length() > 0 )
@@ -202,6 +218,12 @@ public class LoginDlg extends DlgBox
 		m_okBtn.addClickHandler( this );
 		m_okBtn.addStyleName( "teamingButton" );
 		panel.add( m_okBtn );
+		
+		m_cancelBtn = new Button( GwtTeaming.getMessages().cancel() );
+		m_cancelBtn.addClickHandler( this );
+		m_cancelBtn.addStyleName( "teamingButton" );
+		m_cancelBtn.setVisible( false );
+		panel.add( m_cancelBtn );
 		
 		return panel;
 	}// end createFooter()
@@ -263,6 +285,15 @@ public class LoginDlg extends DlgBox
 	/**
 	 * 
 	 */
+	public void hideAuthenticatingMsg()
+	{
+		m_authenticatingMsg.setVisible( false );
+	}// end hideAuthenticatingMsg()
+
+	
+	/**
+	 * 
+	 */
 	public void hideLoginFailedMsg()
 	{
 		m_loginFailedMsg.setVisible( false );
@@ -291,14 +322,43 @@ public class LoginDlg extends DlgBox
 		// Did the user click on ok?
 		if ( source == m_okBtn )
 		{
-			// Yes, submit the form requesting authentication.
+			// Yes
+			// Hide the "login failed" message.
+			hideLoginFailedMsg();
+			
+			// Show the the "authenticating..." message.
+			showAuthenticatingMsg();
+			
+			// Submit the form requesting authentication.
 			m_formPanel.submit();
 			
-			// Put up a message indicating that Teaming is authenticating the user.
-			//!!!
+			return;
+		}
+		
+		if ( source == m_cancelBtn )
+		{
+			hide();
 			return;
 		}
 	}// end onClick()
+
+	
+	/**
+	 * Should we allow the user to cancel the login dialog.
+	 */
+	public void setAllowCancel( boolean allowCancel )
+	{
+		m_cancelBtn.setVisible( allowCancel );
+	}// end setAllowCancel()
+	
+	
+	/**
+	 * 
+	 */
+	public void showAuthenticatingMsg()
+	{
+		m_authenticatingMsg.setVisible( true );
+	}// end showAuthenticatingMsg()
 
 	
 	/**
