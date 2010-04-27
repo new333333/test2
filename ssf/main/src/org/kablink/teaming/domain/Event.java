@@ -3161,6 +3161,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	public Element addChangeLog(Element parent) {
 		Element element = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_EVENT);
 		element.addAttribute("id", getId());
+		element.addAttribute("name", getName());
 
 		XmlUtils.addProperty(element, "start", getDtStartString());
 		XmlUtils.addProperty(element, "duration", getDuration()
@@ -3201,6 +3202,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		XmlUtils.addProperty(element, "byWeekNo", getByWeekNoString());
 
 		XmlUtils.addProperty(element, "byMonth", getByMonthString());
+		
+		if (getTimeZone() != null) {
+			XmlUtils.addProperty(element, "timeZone", String.valueOf(getTimeZone().getRawOffset()));
+		}
 
 		if (creation != null)
 			creation.addChangeLog(element, ObjectKeys.XTAG_ENTITY_CREATION);

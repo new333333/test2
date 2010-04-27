@@ -256,7 +256,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 <c:set var="ss_namespace_attach" value="${ss_namespace}" scope="request"/>
 </c:if>
 
-<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_attachments_list.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_attachments_list_dispatch.jsp" %>
 
 </div>
 
