@@ -122,6 +122,8 @@ public interface GwtRpcService extends RemoteService
 	public Boolean               removeFavorite(        String             favoriteId                                 );
 	public Boolean               updateFavorites(                                    List<FavoriteInfo> favoritesList );
 	public List<TagInfo>         getBinderTags(         String             binderId                                   );
+	public TagInfo               addBinderTag(          String             binderId,      TagInfo       binderTag     );
+	public Boolean               removeBinderTag(       String             binderId,      TagInfo       binderTag     );
 	public Boolean               updateBinderTags(      String             binderId, List<TagInfo>      binderTags    );
 	public BinderInfo            getBinderInfo(         String             binderId                                   );
 	public List<FavoriteInfo>    getFavorites();

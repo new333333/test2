@@ -1434,6 +1434,32 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}//end getBinderTags()
 	
 	/**
+	 * Adds a tag to those defined on a binder.
+	 *
+	 * @param binderId
+	 * @param binderTag
+	 * 
+	 * @return
+	 */
+	public TagInfo addBinderTag( String binderId, TagInfo binderTag )
+	{
+		return GwtServerHelper.addBinderTag( this, binderId, binderTag );
+	}//end addBinderTag()
+	
+	/**
+	 * Removes a tag from those defined on a binder.
+	 *
+	 * @param binderId
+	 * @param binderTag
+	 * 
+	 * @return
+	 */
+	public Boolean removeBinderTag( String binderId, TagInfo binderTag )
+	{
+		return GwtServerHelper.removeBinderTag( this, binderId, binderTag );
+	}//end removeBinderTag()
+	
+	/**
 	 * Updates the list of tags defined on a binder.
 	 *
 	 * @param binderId

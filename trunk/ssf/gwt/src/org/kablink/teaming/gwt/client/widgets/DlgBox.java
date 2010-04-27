@@ -57,6 +57,7 @@ public abstract class DlgBox extends PopupPanel
 {
 	private EditSuccessfulHandler	m_editSuccessfulHandler;	// Handler to call when the user presses Ok.
 	private EditCanceledHandler	m_editCanceledHandler;		// Handler to call when the user presses Cancel.
+	private DlgButtonMode m_dlgBtnMode;
 	private Button		m_okBtn;
 	private Button		m_cancelBtn;
 	private FocusWidget m_focusWidget;	// Widget that should receive the focus when this dialog is shown.
@@ -64,6 +65,11 @@ public abstract class DlgBox extends PopupPanel
 	private boolean m_visible = false;
 	
 	private static int m_numDlgsVisible = 0;	// Number of dialogs that are currently visible.
+	
+	public enum DlgButtonMode {
+		Close,
+		OkCancel,
+	}
 	
 	/**
 	 * 
@@ -74,6 +80,19 @@ public abstract class DlgBox extends PopupPanel
 		int xPos,
 		int yPos )
 	{
+		this( autoHide, modal, xPos, yPos, DlgButtonMode.OkCancel );
+	}
+	
+	/**
+	 * 
+	 */
+	public DlgBox(
+		boolean autoHide,
+		boolean modal,
+		int xPos,
+		int yPos,
+		DlgButtonMode dlgBtnMode )
+	{
 		// Since we are providing the modal behavior, always pass false into super()
 		super( autoHide, false );
 		
@@ -81,6 +100,7 @@ public abstract class DlgBox extends PopupPanel
 		m_modal = modal;
 	
 		m_focusWidget = null;
+		m_dlgBtnMode = dlgBtnMode;
 		
 		// Override the style used for PopupPanel
 		setStyleName( "teamingDlgBox" );
@@ -142,16 +162,29 @@ public abstract class DlgBox extends PopupPanel
 		
 		// Associate this panel with its stylesheet.
 		panel.setStyleName( "teamingDlgBoxFooter" );
-		
-		m_okBtn = new Button( GwtTeaming.getMessages().ok() );
-		m_okBtn.addClickHandler( this );
-		m_okBtn.addStyleName( "teamingButton" );
-		panel.add( m_okBtn );
-		
-		m_cancelBtn = new Button( GwtTeaming.getMessages().cancel() );
-		m_cancelBtn.addClickHandler( this );
-		m_cancelBtn.addStyleName( "teamingButton" );
-		panel.add( m_cancelBtn );
+
+		switch (m_dlgBtnMode) {
+		case Close:
+			m_cancelBtn = new Button( GwtTeaming.getMessages().close() );
+			m_cancelBtn.addClickHandler( this );
+			m_cancelBtn.addStyleName( "teamingButton" );
+			panel.add( m_cancelBtn );
+			
+			break;
+			
+		case OkCancel:
+			m_okBtn = new Button( GwtTeaming.getMessages().ok() );
+			m_okBtn.addClickHandler( this );
+			m_okBtn.addStyleName( "teamingButton" );
+			panel.add( m_okBtn );
+			
+			m_cancelBtn = new Button( GwtTeaming.getMessages().cancel() );
+			m_cancelBtn.addClickHandler( this );
+			m_cancelBtn.addStyleName( "teamingButton" );
+			panel.add( m_cancelBtn );
+			
+			break;
+		}
 		
 		return panel;
 	}// end createFooter()
