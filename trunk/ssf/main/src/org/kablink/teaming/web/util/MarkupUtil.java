@@ -1086,7 +1086,8 @@ public class MarkupUtil {
 				if (type.equals("description")) {
 					description = entity.getDescription();
 				} else if (type.equals("htmlEditorTextarea")) {
-					description = (Description)entity.getCustomAttribute(attrName).getValue();
+					CustomAttribute ca = entity.getCustomAttribute(attrName);
+					if (ca != null) description = (Description)ca.getValue();
 				}
 				
 				boolean dataChanged = false;
