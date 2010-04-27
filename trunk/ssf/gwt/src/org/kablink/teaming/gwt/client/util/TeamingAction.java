@@ -51,6 +51,7 @@ public enum TeamingAction implements IsSerializable
 	HIDE_LEFT_NAVIGATION( "Hide the Left Navigation Panel" ),
 	HIDE_MASTHEAD( "Hide the Header" ),
 	HIERARCHY_BROWSER_CLOSED( "Teaming's Hierarchy Browser Has Been Closed" ),
+	LOGIN( "Login" ),
 	LOGOUT( "Logout" ),
 	MY_WORKSPACE( "My Workspace" ),
 	SELECTION_CHANGED( "The User Changed a Selection Somewhere" ),

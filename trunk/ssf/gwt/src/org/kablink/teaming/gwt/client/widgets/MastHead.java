@@ -88,10 +88,13 @@ public class MastHead extends Composite
 	private Image m_adminImg2 = null;
 	private Image m_logoutImg1 = null;
 	private Image m_logoutImg2 = null;
+	private Image m_loginImg1 = null;
+	private Image m_loginImg2 = null;
 	private Image m_helpImg1 = null;
 	private Image m_helpImg2 = null;
 	private Anchor m_adminLink = null;
 	private Anchor m_logoutLink = null;
+	private Anchor m_loginLink = null;
 	private Anchor m_helpLink = null;
 	private InlineLabel m_userName = null;
 
@@ -153,7 +156,7 @@ public class MastHead extends Composite
 
 			// Add the global actions to the masthead.
 			addAdministrationAction();
-			addLogoutAction();
+			addLoginLogoutAction();
 			addHelpAction();
 			
 			m_mainMastheadPanel.add( m_globalActionsPanel );
@@ -400,32 +403,60 @@ public class MastHead extends Composite
 	
 	
 	/**
-	 * Add the "logout" action to the global actions part of the masthead.
+	 * Add the "login" or "logout" action to the global actions part of the masthead.
 	 */
-	private void addLogoutAction()
+	private void addLoginLogoutAction()
 	{
 		ImageResource imgResource;
 		Element linkElement;
 
-		m_logoutLink = new Anchor();
-		m_logoutLink.addStyleName( "brandingLink" );
-		m_logoutLink.addClickHandler( this );
-		m_logoutLink.addMouseOutHandler( this );
-		m_logoutLink.addMouseOverHandler( this );
-		linkElement = m_logoutLink.getElement();
-		
-		// Add the mouse-out image to the link.
-		imgResource = GwtTeaming.getImageBundle().logout1();
-		m_logoutImg1 = new Image( imgResource );
-		linkElement.appendChild( m_logoutImg1.getElement() );
-		
-		// Add the mouse-over image to the link.
-		imgResource = GwtTeaming.getImageBundle().logout2();
-		m_logoutImg2 = new Image( imgResource );
-		m_logoutImg2.setVisible( false );
-		linkElement.appendChild( m_logoutImg2.getElement() );
-		
-		m_globalActionsPanel.add( m_logoutLink );
+		// Is the user logged in?
+		if ( m_requestInfo.isUserLoggedIn() )
+		{
+			// Yes, add the "logout" action.
+			m_logoutLink = new Anchor();
+			m_logoutLink.addStyleName( "brandingLink" );
+			m_logoutLink.addClickHandler( this );
+			m_logoutLink.addMouseOutHandler( this );
+			m_logoutLink.addMouseOverHandler( this );
+			linkElement = m_logoutLink.getElement();
+			
+			// Add the mouse-out image to the link.
+			imgResource = GwtTeaming.getImageBundle().logout1();
+			m_logoutImg1 = new Image( imgResource );
+			linkElement.appendChild( m_logoutImg1.getElement() );
+			
+			// Add the mouse-over image to the link.
+			imgResource = GwtTeaming.getImageBundle().logout2();
+			m_logoutImg2 = new Image( imgResource );
+			m_logoutImg2.setVisible( false );
+			linkElement.appendChild( m_logoutImg2.getElement() );
+			
+			m_globalActionsPanel.add( m_logoutLink );
+		}
+		else
+		{
+			// No, add the "login" action.
+			m_loginLink = new Anchor();
+			m_loginLink.addStyleName( "brandingLink" );
+			m_loginLink.addClickHandler( this );
+			m_loginLink.addMouseOutHandler( this );
+			m_loginLink.addMouseOverHandler( this );
+			linkElement = m_loginLink.getElement();
+			
+			// Add the mouse-out image to the link.
+			imgResource = GwtTeaming.getImageBundle().login1();
+			m_loginImg1 = new Image( imgResource );
+			linkElement.appendChild( m_loginImg1.getElement() );
+			
+			// Add the mouse-over image to the link.
+			imgResource = GwtTeaming.getImageBundle().login2();
+			m_loginImg2 = new Image( imgResource );
+			m_loginImg2.setVisible( false );
+			linkElement.appendChild( m_loginImg2.getElement() );
+			
+			m_globalActionsPanel.add( m_loginLink );
+		}
 	}// end addLogoutAction()
 	
 	
@@ -444,6 +475,11 @@ public class MastHead extends Composite
 		{
 			m_logoutImg1.setVisible( true );
 			m_logoutImg2.setVisible( false );
+		}
+		else if ( eventSource == m_loginLink )
+		{
+			m_loginImg1.setVisible( true );
+			m_loginImg2.setVisible( false );
 		}
 		else if ( eventSource == m_helpLink )
 		{
@@ -547,6 +583,10 @@ public class MastHead extends Composite
 			{
 				actionHandlerIT.next().handleAction( TeamingAction.LOGOUT, null );
 			}
+			else if ( eventSource == m_loginLink )
+			{
+				actionHandlerIT.next().handleAction( TeamingAction.LOGIN, null );
+			}
 			else if ( eventSource == m_helpLink )
 			{
 				actionHandlerIT.next().handleAction( TeamingAction.HELP, null );
@@ -599,6 +639,13 @@ public class MastHead extends Composite
 			m_logoutImg2.setVisible( true );
 			
 			hint = GwtTeaming.getMessages().logoutHint();
+		}
+		else if ( eventSource == m_loginLink )
+		{
+			m_loginImg1.setVisible( false );
+			m_loginImg2.setVisible( true );
+			
+			hint = GwtTeaming.getMessages().loginHint();
 		}
 		else if ( eventSource == m_helpLink )
 		{

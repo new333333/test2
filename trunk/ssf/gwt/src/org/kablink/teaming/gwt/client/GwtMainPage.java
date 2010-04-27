@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg;
+import org.kablink.teaming.gwt.client.widgets.LoginDlg;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
 import org.kablink.teaming.gwt.client.widgets.MastHead;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
@@ -51,6 +52,8 @@ import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
 
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Element;
@@ -72,6 +75,7 @@ public class GwtMainPage extends Composite
 	
 	private ContentControl m_contentCtrl;
 	private EditBrandingDlg m_editBrandingDlg;
+	private LoginDlg m_loginDlg = null;
 	private EditCanceledHandler m_editBrandingCancelHandler;
 	private EditSuccessfulHandler m_editBrandingSuccessHandler;
 	private FlowPanel m_contentPanel;
@@ -89,6 +93,7 @@ public class GwtMainPage extends Composite
 	public GwtMainPage()
 	{
 		Element bodyElement;
+		String url;
 
 		// Initialize the context load handler used by the traditional
 		// UI to tell the GWT UI that a context has been loaded.
@@ -129,13 +134,44 @@ public class GwtMainPage extends Composite
 		// Create the content control.
 		m_contentCtrl = new ContentControl();
 		m_contentCtrl.addStyleName( "mainContentControl" );
-		m_contentCtrl.setUrl( m_requestInfo.getAdaptedUrl() + "&captive=true" );
 		m_contentPanel.add( m_contentCtrl );
+		
+		// Do we have a url we should set the ContentControl to?
+		url = m_requestInfo.getAdaptedUrl();
+		if ( url != null && url.length() > 0 )
+		{
+			// Yes
+			m_contentCtrl.setUrl( m_requestInfo.getAdaptedUrl() + "&captive=true" );
+		}
 		
 		m_teamingRootPanel.add( m_contentPanel );
 		
 		// Add a ResizeHandler to the browser so we'll know when the user resizes the browser.
 		Window.addResizeHandler( this );
+		
+		// Is the user logged in?
+		if ( m_requestInfo.isUserLoggedIn() == false )
+		{
+			// No
+			// Should we invoke the login dialog?
+			if ( m_requestInfo.promptForLogin() == true )
+			{
+				Command cmd;
+				
+				// Yes, invoke the login dialog.
+		        cmd = new Command()
+		        {
+		        	/**
+		        	 * 
+		        	 */
+		            public void execute()
+		            {
+						invokeLoginDlg();
+		            }
+		        };
+		        DeferredCommand.addCommand( cmd );
+			}
+		}
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( m_teamingRootPanel );
@@ -383,6 +419,10 @@ public class GwtMainPage extends Composite
 			Window.alert( "Help is not implemented yet." );
 			break;
 
+		case LOGIN:
+			invokeLoginDlg();
+			break;
+			
 		case LOGOUT:
 			Window.alert( "Logout is not implemented yet." );
 			break;
@@ -450,6 +490,60 @@ public class GwtMainPage extends Composite
 			break;
 		}
 	}// end handleAction()
+	
+	/**
+	 * Invoke the "login" dialog.
+	 */
+	private void invokeLoginDlg()
+	{
+		PopupPanel.PositionCallback posCallback;
+		String loginErr;
+		
+		if ( m_loginDlg == null )
+		{
+			String refererUrl;
+			
+			// Get the url to go to after the user logs in.
+			refererUrl = m_requestInfo.getLoginRefererUrl();
+			
+			// Create the login dialog.
+			m_loginDlg = new LoginDlg( false, true, 0, 0, null, m_requestInfo.getLoginUrl(), refererUrl );
+		}
+		
+		// Was there an error from a previous login attempt?
+		// Is there an error from a previous login attempt?
+		loginErr = m_requestInfo.getLoginError();
+		if ( loginErr != null && loginErr.length() > 0 )
+		{
+			// Yes, tell the user the login failed.
+			m_loginDlg.showLoginFailedMsg();
+		}
+		else
+		{
+			// No, clear the login failed message.
+			m_loginDlg.hideLoginFailedMsg();
+		}
+		
+		
+		// Show the login dialog.
+		posCallback = new PopupPanel.PositionCallback()
+		{
+			/**
+			 * 
+			 */
+			public void setPosition(int offsetWidth, int offsetHeight)
+			{
+				int x;
+				int y;
+				
+				x = (Window.getClientWidth() - offsetWidth) / 2;
+				y = (Window.getClientHeight() - offsetHeight) / 3;
+				
+				m_loginDlg.setPopupPosition( x, y );
+			}// end setPosition()
+		};
+		m_loginDlg.setPopupPositionAndShow( posCallback );
+	}// end invokeLoginDlg()
 	
 	
 	/*

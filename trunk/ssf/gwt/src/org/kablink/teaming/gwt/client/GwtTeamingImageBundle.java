@@ -104,6 +104,12 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/lpe_utility_element.gif")
 	public ImageResource landingPageEditorUtilityElement();
 	
+	@Source("org/kablink/teaming/gwt/public/images/login1.png")
+	public ImageResource login1();
+
+	@Source("org/kablink/teaming/gwt/public/images/login2.png")
+	public ImageResource login2();
+
 	@Source("org/kablink/teaming/gwt/public/images/logout1.png")
 	public ImageResource logout1();
 

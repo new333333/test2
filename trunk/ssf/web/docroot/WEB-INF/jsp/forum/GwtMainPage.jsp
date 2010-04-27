@@ -64,6 +64,11 @@
 			myWSUrl : '${myWorkspaceUrl}',
 			isNovellTeaming : ${isNovellTeaming},
 			language : '${ssUser.locale.language}',
+			loginRefererUrl : '${ssUrl}',
+			loginPostUrl : '<ssf:escapeJavaScript>${ss_loginPostUrl}</ssf:escapeJavaScript>',
+			isUserLoggedIn : ${isUserLoggedIn},
+			promptForLogin : ${promptForLogin},
+			loginError : '<ssf:escapeJavaScript>${ss_loginError}</ssf:escapeJavaScript>',
 			contentCss : '<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>'
 		};
 
