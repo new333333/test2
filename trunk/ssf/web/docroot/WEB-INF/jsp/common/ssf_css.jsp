@@ -3032,8 +3032,10 @@ div.ss_user_info {
 }
 div.ss_myStatusFrame{
 	background: transparent;
-	height: 65px;
 	margin: 2px 0px 0px;
+}
+div.ss_myStatusHeight{
+	height:65px;
 }
 div.ss_profileBox1 {
     font-family:${ss_style_folder_view_font_family};
