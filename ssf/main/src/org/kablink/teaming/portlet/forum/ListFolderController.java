@@ -257,7 +257,10 @@ public class ListFolderController extends  SAbstractController {
 			return prepBeans(request, BinderHelper.CommonPortletDispatch(this, request, response));
 		
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		Long entryId = null;
+		try {
+			entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		} catch(Exception e) {}
 		String zoneUUID = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
 		//If no binder, Default to the user's workspace
 		if (binderId == null) binderId = user.getWorkspaceId();
