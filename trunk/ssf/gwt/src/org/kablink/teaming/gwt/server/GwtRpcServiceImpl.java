@@ -85,6 +85,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
@@ -1418,8 +1419,33 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		getProfileModule().setUserProperty( null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString() );
 		return Boolean.TRUE;
-	}//end updateFavorites
+	}//end updateFavorites()
 
+	/**
+	 * Returns a List<TagInfo> of the tags defined on a binder.
+	 *
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public List<TagInfo> getBinderTags( String binderId )
+	{
+		return GwtServerHelper.getBinderTags( this, binderId );
+	}//end getBinderTags()
+	
+	/**
+	 * Updates the list of tags defined on a binder.
+	 *
+	 * @param binderId
+	 * @param binderTags
+	 * 
+	 * @return
+	 */
+	public Boolean updateBinderTags( String binderId, List<TagInfo> binderTags )
+	{
+		return GwtServerHelper.updateBinderTags( this, binderId, binderTags );
+	}//end updateBinderTags()
+	
 	/**
 	 * Returns a BinderInfo describing a binder.
 	 *

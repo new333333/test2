@@ -37,8 +37,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * Enumeration used to communicate the type of a binder between the
- * client (i.e., the MainMenuControl) and the server (i.e.,
- * GwtRpcServiceImpl.getBinderType().)
+ * client and the server as part of a GWT RPC request.
  * 
  * @author drfoster@novell.com
  *

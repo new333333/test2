@@ -51,6 +51,7 @@ import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -112,15 +113,17 @@ public interface GwtRpcServiceAsync
 
 	// The following are used in the implementation of the
 	// MainMenuControl.
-	public void addFavorite(           String             binderId,      AsyncCallback<Boolean>               callback );
-	public void removeFavorite(        String             favoriteId,    AsyncCallback<Boolean>               callback );
-	public void updateFavorites(       List<FavoriteInfo> favoritesList, AsyncCallback<Boolean>               callback );
-	public void getBinderInfo(         String             binderId,      AsyncCallback<BinderInfo>            callback );
-	public void getFavorites(                                            AsyncCallback<List<FavoriteInfo>>    callback );
-	public void getMyTeams(                                              AsyncCallback<List<TeamInfo>>        callback );
-	public void getRecentPlaces(                                         AsyncCallback<List<RecentPlaceInfo>> callback );
-	public void getTeamManagementInfo( String             binderId,      AsyncCallback<TeamManagementInfo>    callback );
-	public void getToolbarItems(       String             binderId,      AsyncCallback<List<ToolbarItem>>     callback );
+	public void addFavorite(           String             binderId,                                   AsyncCallback<Boolean>               callback );
+	public void removeFavorite(        String             favoriteId,                                 AsyncCallback<Boolean>               callback );
+	public void updateFavorites(                                    List<FavoriteInfo> favoritesList, AsyncCallback<Boolean>               callback );
+	public void getBinderTags(         String             binderId,                                   AsyncCallback<List<TagInfo>>         callback );
+	public void updateBinderTags(      String             binderId, List<TagInfo>      binderTags,    AsyncCallback<Boolean>               callback );
+	public void getBinderInfo(         String             binderId,                                   AsyncCallback<BinderInfo>            callback );
+	public void getFavorites(                                                                         AsyncCallback<List<FavoriteInfo>>    callback );
+	public void getMyTeams(                                                                           AsyncCallback<List<TeamInfo>>        callback );
+	public void getRecentPlaces(                                                                      AsyncCallback<List<RecentPlaceInfo>> callback );
+	public void getTeamManagementInfo( String             binderId,                                   AsyncCallback<TeamManagementInfo>    callback );
+	public void getToolbarItems(       String             binderId,                                   AsyncCallback<List<ToolbarItem>>     callback );
 
 	// The following are used to manage the tracking of binders.
 	public void trackBinder(   String binderId, AsyncCallback<Boolean> callback );
