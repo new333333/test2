@@ -126,6 +126,13 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		    		n.body = value;
 		    	} else if ("appendBody".equals(name)) {
 		    		n.appendBody = GetterUtil.getBoolean(value, false);
+		    	} else if ("emailAddrs".equals(name)) {
+		    		n.emailAddrs = new ArrayList();
+		    		String[] addrs = prop.getText().split("\\n");
+		    		for (int i = 0; i < addrs.length; i++) {
+		    			String addr = addrs[i].trim();
+		    			if (!n.emailAddrs.contains(addr)) n.emailAddrs.add(addr);
+		    		}
 		    	} 
 	    	}
 	 	}
@@ -941,6 +948,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	protected static class WfNotify {
 		private String subject="";
 		private String body="";
+		private List<String> emailAddrs;
 		private boolean appendTitle=false;
 		private boolean appendBody=false;
 		private Collection<User> toUsers;
@@ -967,6 +975,9 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		}
 		public Collection<User> getBCCUsers() {
 			return bccUsers;
+		}
+		public List<String> getEmailAddrs() {
+			return emailAddrs;
 		}
 
 	}
