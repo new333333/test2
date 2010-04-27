@@ -3302,6 +3302,7 @@
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
 			<property name="team" caption="__team" type="checkbox" />
 			<property name="userGroupNotification" caption="__notification_tolist" type="userGroupSelect" />
+			<property name="emailAddrs" caption="__notification_email_addresses" type="textarea" />
 			<property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList" />
 			<property name="subjText" caption="__notification_subject_text" type="text" />
 			<property name="appendTitle" caption="__notification_append_title" type="checkbox" />
