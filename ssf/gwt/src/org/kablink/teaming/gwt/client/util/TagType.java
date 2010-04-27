@@ -36,26 +36,15 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * Enumeration used to communicate the type of a folder between the
+ * Enumeration used to communicate the type of a tag between the
  * client and the server as part of a GWT RPC request.
  * 
  * @author drfoster@novell.com
  *
  */
-public enum FolderType implements IsSerializable {
-	BLOG,
-	CALENDAR,
-	DISCUSSION,
-	FILE,
-	GUESTBOOK,
-	MILESTONE,
-	MINIBLOG,
-	PHOTOALBUM,
-	TASK,
-	TRASH,
-	SURVEY,
-	WIKI,
+public enum TagType implements IsSerializable {
+	COMMUNITY,
+	PERSONAL,
 	
-	OTHER,
-	NOT_A_FOLDER,
+	UNKNOWN,
 }

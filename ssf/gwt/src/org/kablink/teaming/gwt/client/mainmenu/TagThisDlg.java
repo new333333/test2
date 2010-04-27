@@ -32,11 +32,15 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -55,6 +59,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
 	private final static String IDBASE = "tagThis_";	// Base ID for rows in the tag this Grid.
 
+	private BinderInfo m_currentBinder;		// The currently selected binder.
 	private Grid m_tagThisGrid;				// Once displayed, the table with the dialog's contents.
 	private GwtTeamingMessages m_messages;	// Access to the GWT UI messages.
 
@@ -75,22 +80,23 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	 * @param modal
 	 * @param left
 	 * @param top
-	 * @param binderInfo
+	 * @param currentBinder
 	 * @param dlgCaption
 	 */
-	public TagThisDlg(boolean autoHide, boolean modal, int left, int top, BinderInfo binderInfo, String dlgCaption) {
+	public TagThisDlg(boolean autoHide, boolean modal, int left, int top, BinderInfo currentBinder, List<TagInfo> binderTags, String dlgCaption) {
 		// Initialize the superclass...
 		super(autoHide, modal, left, top);
 
 		// ...initialize everything else...
-		m_messages           = GwtTeaming.getMessages();
+		m_messages = GwtTeaming.getMessages();
+		m_currentBinder = currentBinder;
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
 			dlgCaption,
-			this,		// The dialog's EditSuccessfulHandler.
-			this,		// The dialog's EditCanceledHandler.
-			binderInfo);	// Data passed via global data members. 
+			this,			// The dialog's EditSuccessfulHandler.
+			this,			// The dialog's EditCanceledHandler.
+			binderTags);	// Data passed via global data members. 
 	}
 	
 	/**
@@ -102,9 +108,10 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public Panel createContent(Object callbackData) {
-		BinderInfo binderInfo = ((BinderInfo) callbackData);
+		List<TagInfo> binderTags = ((List<TagInfo>) callbackData);
 		
 		// Create a panel to hold the dialog's content...
 		VerticalPanel vp = new VerticalPanel();
@@ -143,7 +150,10 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public boolean editSuccessful(Object callbackData) {
+		List<TagInfo> binderTags = ((List<TagInfo>) callbackData);
+		
 //!		...this needs to be implemented...
 		
 		// Return true to close the dialog.
@@ -161,7 +171,7 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	@Override
 	public Object getDataFromDlg() {
 //!		...this needs to be implemented...
-		return "";
+		return new ArrayList<TagInfo>();
 	}
 
 	/**

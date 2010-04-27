@@ -36,15 +36,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 
 /**
@@ -545,17 +550,25 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				
 				// ...hide the menu...
 				hide();
-				
+
 				// ...and run the tag this dialog.
-				TagThisDlg ttDlg = new TagThisDlg(
-					true,	// true -> Auto hide.
-					true,	// true -> Modal.
-					m_menuLeft,
-					m_menuTop,
-					m_currentBinder,
-					dlgCaption);
-				ttDlg.addStyleName("tagThisDlg");
-				ttDlg.show();
+				GwtTeaming.getRpcService().getBinderTags(m_currentBinder.getBinderId(), new AsyncCallback<List<TagInfo>>() {
+					public void onFailure(Throwable t) {
+						Window.alert(t.toString());
+					}
+					public void onSuccess(List<TagInfo> binderTags) {
+						TagThisDlg ttDlg = new TagThisDlg(
+								true,	// true -> Auto hide.
+								true,	// true -> Modal.
+								m_menuLeft,
+								m_menuTop,
+								m_currentBinder,
+								binderTags,
+								dlgCaption);
+							ttDlg.addStyleName("tagThisDlg");
+							ttDlg.show();
+					}
+				});
 			}
 		});
 		addContentWidget(mtA);

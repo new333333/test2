@@ -39,6 +39,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
 
 import javax.servlet.http.HttpSession;
 
@@ -54,22 +56,28 @@ import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.FolderType;
+import org.kablink.teaming.gwt.client.util.TagInfo;
+import org.kablink.teaming.gwt.client.util.TagType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.GwtUIHelper;
@@ -221,21 +229,13 @@ public class GwtServerHelper {
 	private static TreeInfo buildTreeInfoFromBinderImpl(AllModulesInjected bs, Binder binder, List<Long> expandedBindersList, boolean mergeUsersExpansions, int depth) {
 		// Construct the base TreeInfo for the Binder.
 		TreeInfo reply = new TreeInfo();
-		BinderInfo bi = new BinderInfo();
-		reply.setBinderInfo(bi);
-		bi.setBinderId(binder.getId());
+		reply.setBinderInfo(getBinderInfo(binder));
 		reply.setBinderTitle(binder.getTitle());
 		reply.setBinderChildren(binder.getBinderCount());
 		String binderPermalink = PermaLinkUtil.getPermalink(binder);
 		reply.setBinderPermalink(binderPermalink);
 		reply.setBinderTrashPermalink(GwtUIHelper.getTrashPermalink(binderPermalink));
-		if (binder instanceof Workspace) {
-			bi.setBinderType(BinderType.WORKSPACE);
-			bi.setWorkspaceType(getWorkspaceType(binder));
-		}
-		else if (binder instanceof Folder) {
-			bi.setBinderType(BinderType.FOLDER);
-			bi.setFolderType(getFolderType(binder));
+		if (binder instanceof Folder) {
 			reply.setBinderIconName(binder.getIconName());
 		}
 
@@ -407,7 +407,7 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static BinderInfo getBinderInfo(AllModulesInjected bs, String binderId) {
-		return getBinderInfo(bs.getBinderModule().getBinder( Long.parseLong( binderId )));
+		return getBinderInfo(bs.getBinderModule().getBinder(Long.parseLong(binderId)));
 	}
 	
 	public static BinderInfo getBinderInfo(Binder binder) {
@@ -417,10 +417,174 @@ public class GwtServerHelper {
 		                                    reply.setBinderType(   getBinderType(      binder));
 		if      (reply.isBinderFolder())    reply.setFolderType(   getFolderType(      binder));
 		else if (reply.isBinderWorkspace()) reply.setWorkspaceType(getWorkspaceType(   binder));
+		return reply;
+	}
+	
+	/**
+	 * Returns a List<TagInfo> describing the tags defined on a binder.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static List<TagInfo> getBinderTags(AllModulesInjected bs, String binderId) {
+		BinderModule bm = bs.getBinderModule();
+		return getBinderTags(bm, bm.getBinder(Long.parseLong(binderId)));
+	}
+	
+	public static List<TagInfo> getBinderTags(BinderModule bm, Binder binder) {
+		// Allocate an ArrayList to return the TagInfo's in...
+		List<TagInfo> reply = new ArrayList<TagInfo>();
+
+		// ...read the Tag's from the Binder...
+		Map<String, SortedSet<Tag>> tagsMap = TagUtil.uniqueTags(bm.getTags(binder));
+		Set<Tag> communityTagsSet = ((null == tagsMap) ? null : tagsMap.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
+		Set<Tag> personalTagsSet  = ((null == tagsMap) ? null : tagsMap.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
+
+		// ...iterate through the community tags...
+		Iterator<Tag> tagsIT;
+		if (null != communityTagsSet) {
+			for (tagsIT = communityTagsSet.iterator(); tagsIT.hasNext(); ) {
+				// ...adding each to the reply list...
+				reply.add(buildTIFromTag(TagType.COMMUNITY, tagsIT.next()));
+			}
+		}
+		
+		// ...iterate through the personal tags...
+		if (null != personalTagsSet) {
+			for (tagsIT = personalTagsSet.iterator(); tagsIT.hasNext(); ) {
+				// ...adding each to the reply list...
+				reply.add(buildTIFromTag(TagType.PERSONAL, tagsIT.next()));
+			}
+		}
+
+		// ...and finally, return the List<TagInfo> of the tags defined
+		// ...on the Binder.
+		return reply;
+	}
+
+	/*
+	 * Constructs a TagInfo from a Tag.
+	 */
+	private static TagInfo buildTIFromTag(TagType tagType, Tag tag) {
+		TagInfo reply = new TagInfo();
+		
+		reply.setTagType(tagType);
+		reply.setTagId(tag.getId());
+		reply.setTagName(tag.getName());
+		
+		EntityIdentifier ei = tag.getEntityIdentifier();
+		if (null != ei) {
+			reply.setTagEntity(ei.toString());
+		}
+		ei = tag.getOwnerIdentifier();
+		if (null != ei) {
+			reply.setTagOwnerEntity(ei.toString());
+		}
 		
 		return reply;
 	}
 	
+	/**
+	 * Updates the tags defined on a binder.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param binderTags
+	 * 
+	 * @return
+	 */
+	public static Boolean updateBinderTags(AllModulesInjected bs, String binderId, List<TagInfo> binderTags) {
+		BinderModule bm = bs.getBinderModule();
+		return updateBinderTags(bm, bm.getBinder(Long.parseLong(binderId)), binderTags);
+	}
+	
+	public static Boolean updateBinderTags(BinderModule bm, Binder binder, List<TagInfo> binderTags) {
+		// Split the tags between community tags and personal tags.
+		List<TagInfo> newCommunityTags = new ArrayList<TagInfo>();
+		List<TagInfo> newPersonalTags  = new ArrayList<TagInfo>();
+		for (Iterator<TagInfo> tagsIT = binderTags.iterator(); tagsIT.hasNext(); ) {
+			TagInfo ti = tagsIT.next();
+			if (ti.isCommunityTag()) newCommunityTags.add(ti);
+			else                     newPersonalTags.add(ti);
+		}
+
+		// Read the currently defined tags from the binder.
+		Map<String, SortedSet<Tag>> oldTags = TagUtil.uniqueTags(bm.getTags(binder));
+		Set<Tag> oldCommunityTags = oldTags.get(ObjectKeys.COMMUNITY_ENTITY_TAGS);
+		Set<Tag> oldPersonalTags  = oldTags.get(ObjectKeys.PERSONAL_ENTITY_TAGS);
+
+		// Delete any existing tags that aren't part of the new list...
+		Long binderId = binder.getId();
+		deleteMissingTags(bm, binderId, newCommunityTags, oldCommunityTags);
+		deleteMissingTags(bm, binderId, newPersonalTags,  oldPersonalTags);
+
+		// ...and define and new tags that aren't part of the existing
+		// ...list.
+		defineNewTags(bm, binderId, newCommunityTags, oldCommunityTags, true);
+		defineNewTags(bm, binderId, newPersonalTags,  oldPersonalTags,  false);
+
+		// If we get here, the update was successful.  Return true.
+		return Boolean.TRUE;
+	}
+
+	/*
+	 * Scans the tags in newTags and any that aren't defined in oldTags
+	 * are defined on the binder.
+	 */
+	private static void defineNewTags(BinderModule bm, Long binderId, List<TagInfo> newTags, Set<Tag> oldTags, boolean community) {
+		// Scan the new tags...
+		for (Iterator<TagInfo> newTagsIT = newTags.iterator(); newTagsIT.hasNext(); ) {
+			// ...scan the old tags looking for this new tag... 
+			TagInfo ti = newTagsIT.next();
+			boolean found = false;
+			for (Iterator<Tag> oldTagsIT = oldTags.iterator(); oldTagsIT.hasNext(); ) {
+				Tag tag = oldTagsIT.next();
+				if (tag.getName().equalsIgnoreCase(ti.getTagName())) {
+					// ...and break out of the old tag scan loop if we
+					// ...find the new tag.
+					found = true;
+					break;
+				}
+			}
+
+			// If we didn't find the new tag in the old tag list...
+			if (!found) {
+				// ...define it.
+				bm.setTag(binderId, ti.getTagName(), community);				
+			}
+		}
+	}
+	
+	/*
+	 * Scans the tags in oldTags and any that aren't defined in newTags
+	 * are deleted from the binder.
+	 */
+	private static void deleteMissingTags(BinderModule bm, Long binderId, List<TagInfo> newTags, Set<Tag> oldTags) {
+		// Scan the old tags...
+		for (Iterator<Tag> oldTagsIT = oldTags.iterator(); oldTagsIT.hasNext(); ) {
+			// ...scan the new tags looking for this old tag...
+			Tag tag = oldTagsIT.next();
+			boolean found = false;
+			for (Iterator<TagInfo> newTagsIT = newTags.iterator(); newTagsIT.hasNext(); ) {
+				TagInfo ti = newTagsIT.next();
+				if (tag.getName().equalsIgnoreCase(ti.getTagName())) {
+					// ...and break out of the new tag scan loop if we
+					// ...find the old tag.
+					found = true;
+					break;
+				}
+			}
+
+			// If we didn't find the old tag in the new tag list...
+			if (!found) {
+				// ...delete it.
+				bm.deleteTag(binderId, tag.getName());
+			}
+		}
+	}
+
 	/**
 	 * Returns a BinderType describing a binder.
 	 * 
