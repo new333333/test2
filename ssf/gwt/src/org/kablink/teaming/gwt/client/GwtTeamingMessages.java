@@ -219,6 +219,7 @@ public interface GwtTeamingMessages extends Messages
 	String useAdvancedBrandingLabel();
 	
 	// Strings used in the login dialog.
+	String loginDlgAuthenticating();
 	String loginDlgKablinkHeader();
 	String loginDlgLoginFailed();
 	String loginDlgNovellHeader();
