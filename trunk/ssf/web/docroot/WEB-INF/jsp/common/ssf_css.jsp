@@ -3032,7 +3032,7 @@ div.ss_user_info {
 }
 div.ss_myStatusFrame{
 	background: transparent;
-	height: auto;
+	height: 65px;
 	margin: 2px 0px 0px;
 }
 div.ss_profileBox1 {
