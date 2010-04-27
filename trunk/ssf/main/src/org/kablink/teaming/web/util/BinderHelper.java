@@ -93,7 +93,9 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
@@ -111,6 +113,7 @@ import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.domain.Event.FreeBusyType;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
@@ -119,6 +122,7 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.portlet.forum.ViewController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -2128,6 +2132,164 @@ public class BinderHelper {
 					//This must be a custom attribute
 					Object attrValue = getAttributeValueFromChangeLog(type, (String)ele.getData());
 					entry.addCustomAttribute(name, attrValue);
+				}
+			}
+		}
+		
+		Iterator itAttributeSets = root.selectNodes("//attribute-set").iterator();
+		while (itAttributeSets.hasNext()) {
+			Element setEle = (Element) itAttributeSets.next();
+			//Add the attributes
+			String setName = (String)setEle.attributeValue("name");
+			if (setName.equals(ObjectKeys.XTAG_ENTITY_ATTACHMENTS)) {
+				//Add the file attachments
+				Iterator itFileAttachments = setEle.selectNodes("./fileAttachment").iterator();
+				while (itFileAttachments.hasNext()) {
+					Element fileAttachment = (Element)itFileAttachments.next();
+					String fileAttName = fileAttachment.attributeValue("name", "");
+					String fileAttId = fileAttachment.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_DATABASEID, "");
+					FileAttachment fa = new FileAttachment();
+					FileItem fi = new FileItem();
+					fa.setFileItem(fi);
+					fa.setId(fileAttId);
+					
+					//Set the owner and modifier of the attachment
+					Element hs2 = (Element)fileAttachment.selectSingleNode("./historyStamp[@name='created']");
+					if (hs2 == null) return null;
+					String authorId2 = hs2.attributeValue("author", "");
+					if (authorId2.equals("")) return null;
+					Set ids2 = new HashSet();
+					ids2.add(Long.valueOf(authorId2));
+					SortedSet pList2 = bs.getProfileModule().getPrincipals(ids2);
+					if (pList2.isEmpty()) return null;
+					HistoryStamp creation2 = new HistoryStamp();
+					creation2.setPrincipal((UserPrincipal)pList2.first());
+					String when2 = hs2.attributeValue("when", "");
+					SimpleDateFormat sdf2 = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z");
+					Date date2;
+					try {
+						date2 = sdf2.parse(when2);
+					} catch (ParseException e) {
+						continue;
+					}
+					creation2.setDate(date2);
+					fa.setCreation(creation2);
+					//Set the owner of the attachment
+					hs2 = (Element)fileAttachment.selectSingleNode("./historyStamp[@name='modified']");
+					if (hs2 == null) return null;
+					authorId2 = hs2.attributeValue("author", "");
+					if (authorId2.equals("")) return null;
+					ids2 = new HashSet();
+					ids2.add(Long.valueOf(authorId2));
+					pList2 = bs.getProfileModule().getPrincipals(ids2);
+					if (pList2.isEmpty()) return null;
+					HistoryStamp modification2 = new HistoryStamp();
+					modification2.setPrincipal((UserPrincipal)pList2.first());
+					when2 = hs2.attributeValue("when", "");
+					sdf2 = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z");
+					try {
+						date2 = sdf2.parse(when2);
+					} catch (ParseException e) {
+						continue;
+					}
+					modification2.setDate(date2);
+					fa.setModification(modification2);
+					
+					//Initialize fa in case it doesn't have a major and minor version
+					Element lastVersionEle = (Element) fileAttachment.selectSingleNode("./property[@name='lastVersion']");
+					if (lastVersionEle != null) {
+						String lv = lastVersionEle.getText();
+						fa.setMajorVersion(1);
+						if (!lv.equals("")) fa.setMinorVersion(Integer.valueOf(lv) - 1);
+					}
+
+					Iterator itProperties = fileAttachment.selectNodes("./property").iterator();
+					while (itProperties.hasNext()) {
+						Element prop = (Element) itProperties.next();
+						String name = prop.attributeValue("name");
+						String value = prop.getText();
+						if (name.equals("fileName")) {
+							fi.setName(value);
+						} else if (name.equals("fileLength")) {
+							fi.setLength(Long.valueOf(value));
+						} else if (name.equals("fileDescription")) {
+							fi.setDescription(value);
+						} else if (name.equals("repository")) {
+							fa.setRepositoryName(value);
+						} else if (name.equals("lastVersion")) {
+							fa.setLastVersion(Integer.valueOf(value));
+						} else if (name.equals("majorVersion")) {
+							fa.setMajorVersion(Integer.valueOf(value));
+						} else if (name.equals("minorVersion")) {
+							fa.setMinorVersion(Integer.valueOf(value));
+						} else if (name.equals("fileStatus")) {
+							fa.setFileStatus(Integer.valueOf(value));
+						}
+					}
+					if (!fileAttName.equals("")) {
+						entry.addAttachment(fa);
+					}
+				}
+			}
+		}
+		
+		Iterator itEvents = root.selectNodes("//event").iterator();
+		while (itEvents.hasNext()) {
+			Element ele = (Element) itEvents.next();
+			//Add the events
+			Event event = new Event();
+			Iterator itProperties = ele.selectNodes("./property").iterator();
+			while (itProperties.hasNext()) {
+				Element prop = (Element) itProperties.next();
+				String name = prop.attributeValue("name");
+				String value = prop.getText();
+				if (name.equals("start")) {
+					event.setDtStart(value);
+				} else if (name.equals("duration")) {
+					event.setDuration(value);
+				} else if (name.equals("count")) {
+					event.setCount(value);
+				} else if (name.equals("until")) {
+					event.setUntil(value);
+				} else if (name.equals("frequency")) {
+					event.setFrequency(value);
+				} else if (name.equals("interval")) {
+					event.setInterval(value);
+				} else if (name.equals("timeZoneSensitive")) {
+					event.setTimeZoneSensitive(Boolean.valueOf(value));
+				} else if (name.equals("uid")) {
+					event.setUid(value);
+				} else if (name.equals("freeBusy")) {
+					event.setFreeBusy(Event.FreeBusyType.valueOf(value));
+				} else if (name.equals("bySecond")) {
+					event.setBySecond(value);
+				} else if (name.equals("byMinute")) {
+					event.setByMinute(value);
+				} else if (name.equals("byHour")) {
+					event.setByHour(value);
+				} else if (name.equals("byDay")) {
+					event.setByDay(value);
+				} else if (name.equals("byMonthDay")) {
+					event.setByMonthDay(value);
+				} else if (name.equals("byYearDay")) {
+					event.setByYearDay(value);
+				} else if (name.equals("byWeekNo")) {
+					event.setByWeekNo(value);
+				} else if (name.equals("byMonth")) {
+					event.setByMonth(value);
+				}
+			}
+			String eventId = ele.attributeValue("id", "");
+			event.setId(eventId);
+			//Try to find the event from its id
+			Iterator itEntityEvents = entity.getEvents().iterator();
+			while (itEntityEvents.hasNext()) {
+				Event e = (Event)itEntityEvents.next();
+				if (e.getId().equals(eventId)) {
+					//Add the event
+					event.setTimeZone(e.getTimeZone());
+					entry.addCustomAttribute(e.getName(), event);
+					break;
 				}
 			}
 		}

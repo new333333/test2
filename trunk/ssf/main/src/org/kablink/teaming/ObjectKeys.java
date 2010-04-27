@@ -603,6 +603,9 @@ public interface ObjectKeys {
     public static final String XTAG_FILE_DESCRIPTION="fileDescription";
     public static final String XTAG_FILE_REPOSITORY="repository";
     public static final String XTAG_FILE_LAST_VERSION="lastVersion";
+    public static final String XTAG_FILE_MAJOR_VERSION="majorVersion";
+    public static final String XTAG_FILE_MINOR_VERSION="minorVersion";
+    public static final String XTAG_FILE_STATUS="fileStatus";
     //value of name= attributes on properties of XTAG_ELEMENT_TYPE_VERSIONATTACHMENT 
     public static final String XTAG_FILE_PARENT="parentAttachment";
     public static final String XTAG_FILE_VERSION_NUMBER="versionNumber";

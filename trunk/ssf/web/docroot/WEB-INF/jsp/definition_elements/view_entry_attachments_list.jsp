@@ -35,6 +35,7 @@
 <%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="ss_quotaMessage" value="" />
 <c:if test="${ss_diskQuotaHighWaterMarkExceeded && !ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 <c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.nearLimit"><ssf:param name="value" useBody="true"

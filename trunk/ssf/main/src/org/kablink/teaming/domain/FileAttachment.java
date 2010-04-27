@@ -193,7 +193,7 @@ public class FileAttachment extends Attachment {
     }
     public void setMinorVersion(Integer minorVersion) {
     	if (minorVersion == null) return;
-    	if (minorVersion < 0) throw new IllegalArgumentException("Invalid minorVersion");
+    	if (minorVersion < 0) return;
         if (!minorVersion.equals(this.minorVersion)) this.minorVersion = minorVersion;
     }
     public String getFileVersion() {
@@ -467,6 +467,9 @@ public class FileAttachment extends Attachment {
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_DESCRIPTION, getFileItem().getDescription().getText());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_REPOSITORY, getRepositoryName());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_LAST_VERSION, getLastVersion().toString());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_MAJOR_VERSION, getMajorVersion().toString());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_MINOR_VERSION, getMinorVersion().toString());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_STATUS, getFileStatus().toString());
 		if (includeVersions) {
 			for (Iterator iter=getFileVersions().iterator(); iter.hasNext();) {
 				VersionAttachment v = (VersionAttachment)iter.next();
