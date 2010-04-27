@@ -201,7 +201,6 @@ font-size:0.8em;
 white-space:nowrap;
 }
 .user_status {
-width: 520px;
 }
 .user_status_text {
 margin: 0;
@@ -232,6 +231,7 @@ width: 500px;
 }
 .user_status_info {
 margin-top: 2px;
+width: 520px;
 }
 .user_status_textAmount {
 margin-right: 0.25em;
