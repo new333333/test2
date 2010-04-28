@@ -1475,6 +1475,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}//end getBinderTags()
 	
 	/**
+	 * Returns true if the user can manage public tags on the binder
+	 * and false otherwise.
+	 *
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public Boolean canManagePublicBinderTags( String binderId )
+	{
+		Binder binder = getBinderModule().getBinder(Long.parseLong(binderId));
+		return new Boolean(getBinderModule().testAccess(binder, BinderOperation.manageTag));
+	}//end canManagePublicBinderTags()
+	
+	/**
 	 * Adds a tag to those defined on a binder.
 	 *
 	 * @param binderId

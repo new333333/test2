@@ -42,21 +42,28 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TagInfo;
+import org.kablink.teaming.gwt.client.util.TagType;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
+import com.google.gwt.dom.client.Text;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 
@@ -67,10 +74,13 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 @SuppressWarnings("unused")
 public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
-	private final static String IDBASE				= "tagThis_";	// Base ID for rows in the tag this Grid.
-	private final static String OPTION_HEADER_ID	= "optionHeader";
+	private final static String IDBASE				= "tagThis_";		// Base ID for rows in the tag this Grid.
+	private final static String OPTION_HEADER_ID	= "optionHeader";	//
+	private final static int	MAX_TAG_LENGTH		= 60;				// As per ObjectKeys.MAX_TAG_LENGTH.
+	private final static int	VISIBLE_TAG_LENGTH	= 20;				// Any better guesses?
 
 	private BinderInfo m_currentBinder;				// The currently selected binder.
+	private boolean m_isPublicTagManager;			// true -> The user can manage public tags on the binder.  false -> They can't.
 	private Grid m_tagThisGrid;						// Once displayed, the table with the dialog's contents.
 	private GwtTeamingMainMenuImageBundle m_images;	// Access to the GWT main menu images.
 	private GwtTeamingMessages m_messages;			// Access to the GWT UI messages.
@@ -97,15 +107,18 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	 * @param left
 	 * @param top
 	 * @param currentBinder
+	 * @param binderTags
+	 * @param isPublicTagManager
 	 * @param dlgCaption
 	 */
-	public TagThisDlg(boolean autoHide, boolean modal, int left, int top, BinderInfo currentBinder, List<TagInfo> binderTags, String dlgCaption) {
+	public TagThisDlg(boolean autoHide, boolean modal, int left, int top, BinderInfo currentBinder, List<TagInfo> binderTags, boolean isPublicTagManager, String dlgCaption) {
 		// Initialize the superclass...
 		super(autoHide, modal, left, top, DlgButtonMode.Close);
 
 		// ...initialize everything else...
 		m_messages = GwtTeaming.getMessages();
 		m_images = GwtTeaming.getMainMenuImageBundle();
+		m_isPublicTagManager = isPublicTagManager;
 		m_currentBinder = currentBinder;
 		m_communityTags = new ArrayList<TagInfo>();
 		m_personalTags = new ArrayList<TagInfo>();
@@ -133,8 +146,13 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 		header.addStyleName("tagThisDlg_SectionHeader");
 
 		grid.insertRow(row);
-		grid.getRowFormatter().getElement(row).setId(OPTION_HEADER_ID);
-		grid.setWidget(row, 1, header);
+		Element e = grid.getRowFormatter().getElement(row); 
+		e.setId(OPTION_HEADER_ID);
+		e.addClassName("tagThisDlg_SectionHeaderRow");
+		e = grid.getCellFormatter().getElement(row, 0);
+		e.setAttribute("colspan", "2");
+		e.addClassName("tagThisDlg_SectionHeaderCell");
+		grid.setWidget(row, 0, header);
 	}
 
 	/**
@@ -155,12 +173,9 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 		m_tagThisGrid.setCellPadding(0);
 		m_tagThisGrid.setCellSpacing(0);
 		populateTagThisGrid();
-//!		vp.add(m_tagThisGrid);
+		vp.add(m_tagThisGrid);
 		
-//!		...this needs to be implemented...
-		vp.add(new DlgLabel("...this needs to be implemented..."));
-		
-		// ...and return the panel the with the dialog's contents.
+		// ...and return the panel.
 		return vp;
 	}
 	
@@ -192,9 +207,7 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	 * @return
 	 */
 	public boolean editSuccessful(Object callbackData) {
-//!		...this needs to be implemented...
-		
-		// Return true to close the dialog.
+		// Nothing to do.  Return true to close the dialog.
 		return true;
 	}
 
@@ -232,10 +245,7 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	private void populateTagThisGrid() {
 		// Render the tag links into the panel...
 		addHeaderRow(m_tagThisGrid, m_tagThisGrid.getRowCount(), m_messages.mainMenuTagThisDlgTags());
-		if (0 == (m_communityTagsCount + m_personalTagsCount)) {
-		}
-		else {
-		}
+		renderTagLinkRows(m_tagThisGrid, m_tagThisGrid.getRowCount());
 		
 		// ...render the personal tags into the panel...
 		addHeaderRow(m_tagThisGrid, m_tagThisGrid.getRowCount(), m_messages.mainMenuTagThisDlgPersonalTags());
@@ -244,6 +254,10 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 				renderDefinedTagRow(m_tagThisGrid, m_tagThisGrid.getRowCount(), m_personalTags.get(i));
 			}
 		}
+		else {
+			renderNoTagsRow(m_tagThisGrid, m_tagThisGrid.getRowCount(), ("NoTags_" + TagType.PERSONAL));
+		}
+		renderAddTagRow(m_tagThisGrid, m_tagThisGrid.getRowCount(), TagType.PERSONAL);
 
 		// ...and render the community tags into the panel.
 		addHeaderRow(m_tagThisGrid, m_tagThisGrid.getRowCount(), m_messages.mainMenuTagThisDlgCommunityTags());
@@ -251,6 +265,79 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 			for (int i = 0; i < m_communityTagsCount; i += 1) {
 				renderDefinedTagRow(m_tagThisGrid, m_tagThisGrid.getRowCount(), m_communityTags.get(i));
 			}
+		}
+		else {
+			renderNoTagsRow(m_tagThisGrid, m_tagThisGrid.getRowCount(), ("NoTags_" + TagType.COMMUNITY));
+		}
+		renderAddTagRow(m_tagThisGrid, m_tagThisGrid.getRowCount(), TagType.COMMUNITY);
+	}
+	
+	/*
+	 * Renders an add tag row in a Grid.
+	 */
+	private void renderAddTagRow(Grid grid, int row, final TagType tagType) {
+		// Is the user allowed to add this type of tag to the binder?
+		boolean allowAdd = ((TagType.PERSONAL == tagType) || m_isPublicTagManager);
+		if (allowAdd) {
+			// Yes!  Create a row for the add...
+			grid.insertRow(row);
+			String rowId = (IDBASE + "Add_" + tagType);
+			grid.getRowFormatter().getElement(row).setId(rowId);
+			Element e = grid.getCellFormatter().getElement(row, 0);
+			e.setAttribute("colspan", "2");
+
+			// Create a panel for the add widgets...
+			FlowPanel addPanel = new FlowPanel();
+			addPanel.addStyleName("tagThisDlg_Add");
+			
+			// ...create the tag name <INPUT> widget...
+			final TextBox addName = new TextBox();
+			addName.addStyleName("tagThisDlg_AddInput");
+			addPanel.add(addName);
+			addName.setMaxLength(MAX_TAG_LENGTH);
+			addName.setVisibleLength(VISIBLE_TAG_LENGTH);
+			
+			// ...and create the add push button.
+			Button addButton = new Button(m_messages.mainMenuTagThisDlgAdd(), new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					// Is the name of the tag to add valid?
+					String tagName = addName.getValue();
+					tagName = validateTagName(tagName, tagType);
+					if (!(GwtClientHelper.hasString(tagName))) {
+						// No!  validateTagName() will have told the user
+						// about any problems.  Simply bail.
+						return;
+					}
+					
+					// Generate a TagInfo for the new tag.
+					TagInfo addTag = new TagInfo();
+					addTag.setTagName(tagName);
+					addTag.setTagType(tagType);
+					
+					// Can we and add it to the binder?
+					GwtTeaming.getRpcService().addBinderTag(m_currentBinder.getBinderId(), addTag, new AsyncCallback<TagInfo>() {
+						public void onFailure(Throwable t) {
+							Window.alert(t.toString());
+						}
+						public void onSuccess(TagInfo addedTag) {
+							// Perhaps.  Did it really get added?
+							if (null != addedTag) {
+								// Yes!  Add it to the appropriate list...
+								if (addedTag.isCommunityTag()) {m_communityTags.add(addedTag); m_communityTagsCount += 1;}
+								else                           {m_personalTags.add(addedTag);  m_personalTagsCount  += 1;}
+								
+								// ...and regenerate the dialog's contents.
+								reRenderDlg();
+							}
+						}
+					});
+				}
+			});
+			addButton.addStyleName("tagThisDlg_AddButton teamingButton");
+			addPanel.add(addButton);
+			
+			// Finally, add the add widget's panel to the Grid.
+			grid.setWidget(row, 0, addPanel);
 		}
 	}
 	
@@ -262,37 +349,143 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 		grid.insertRow(row);
 		String rowId = (IDBASE + ti.getTagName());
 		grid.getRowFormatter().getElement(row).setId(rowId);
-		
-		// ...create a delete button anchor...
-		Image img = new Image(m_images.tagDelete());
-		img.setTitle(m_messages.mainMenuTagThisDlgDelete());
-		img.addStyleName("tagThisDlg_DeleteImg");
-		Anchor a = new Anchor();
-		a.addStyleName("tagThisDlg_DeleteAnchor");
-		a.getElement().appendChild(img.getElement());
-		a.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				GwtTeaming.getRpcService().removeBinderTag(m_currentBinder.getBinderId(), ti, new AsyncCallback<Boolean>() {
-					public void onFailure(Throwable t) {
-						Window.alert(t.toString());
-					}
-					public void onSuccess(Boolean success) {
-						// Remove the deleted TagInfo from its list...
-						if (ti.isCommunityTag()) {m_communityTags.remove(ti); m_communityTagsCount -= 1;}
-						else                     {m_personalTags.remove(ti);  m_personalTagsCount  -= 1;}
 
-						// ...and regenerate the dialog's contents.
-						for (int i = (m_tagThisGrid.getRowCount() - 1); i >= 0; i -= 1) {
-							m_tagThisGrid.removeRow(i);
+		// ...and if the user can delete this tag...
+		boolean allowDelete = (ti.isPersonalTag() || m_isPublicTagManager);
+		if (allowDelete) {
+			// ...create a delete button anchor...
+			Image deleteImg = new Image(m_images.tagDelete());
+			deleteImg.setTitle(m_messages.mainMenuTagThisDlgDelete());
+			deleteImg.addStyleName("tagThisDlg_DeleteImg");
+			Anchor deleteAnchor = new Anchor();
+			deleteAnchor.addStyleName("tagThisDlg_DeleteAnchor");
+			deleteAnchor.getElement().appendChild(deleteImg.getElement());
+			deleteAnchor.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					GwtTeaming.getRpcService().removeBinderTag(m_currentBinder.getBinderId(), ti, new AsyncCallback<Boolean>() {
+						public void onFailure(Throwable t) {
+							Window.alert(t.toString());
 						}
-						populateTagThisGrid();
-					}
-				});
-			}
-		});
+						public void onSuccess(Boolean success) {
+							// Remove the deleted TagInfo from its list...
+							if (ti.isCommunityTag()) {m_communityTags.remove(ti); m_communityTagsCount -= 1;}
+							else                     {m_personalTags.remove(ti);  m_personalTagsCount  -= 1;}
+	
+							// ...and regenerate the dialog's contents.
+							reRenderDlg();
+						}
+					});
+				}
+			});
+			grid.setWidget(row, 0, deleteAnchor);
+		}
 
 		// ...and create the row's label.
-		grid.setWidget(row, 0, a);
 		grid.setWidget(row, 1, new DlgLabel(ti.getTagName()));
+		grid.getCellFormatter().setWidth(row, 1, "100%");
+	}
+
+	/*
+	 * Renders a no tags row in a Grid.
+	 */
+	private void renderNoTagsRow(Grid grid, int row, String idExtension) {
+		grid.insertRow(row);
+		String rowId = (IDBASE + idExtension);
+		grid.getRowFormatter().getElement(row).setId(rowId);
+		grid.setWidget(row, 1, new DlgLabel(m_messages.mainMenuTagThisDlgNoTags()));
+	}
+	
+	/*
+	 * Renders rows for the links to personal and community tags in a
+	 * Grid.
+	 */
+	private void renderTagLinkRows(Grid grid, int row) {
+		boolean tagLinksDisplayed = false;
+		FlowPanel tagLinksPanel;
+		Iterator<TagInfo> tagsIT;
+		
+		// If we have any personal tags...
+		if (0 < m_personalTagsCount) {
+			// ...render their links in a row.
+			tagLinksDisplayed = true;
+			grid.insertRow(row);
+			String rowId = (IDBASE + "TagLinks_" + TagType.PERSONAL);
+			grid.getRowFormatter().getElement(row).setId(rowId);
+			tagLinksPanel = new FlowPanel();
+			for (tagsIT = m_personalTags.iterator(); tagsIT.hasNext(); ) {
+				renderTagLink(tagLinksPanel, tagsIT.next());
+			}
+			grid.setWidget(row, 1, tagLinksPanel);
+		}
+		
+		// If we have any community tags...
+		if (0 < m_communityTagsCount) {
+			// ...render their links in a row...
+			tagLinksDisplayed = true;
+			grid.insertRow(row);
+			String rowId = (IDBASE + "TagLinks_" + TagType.COMMUNITY);
+			grid.getRowFormatter().getElement(row).setId(rowId);
+			tagLinksPanel = new FlowPanel();
+			for (tagsIT = m_communityTags.iterator(); tagsIT.hasNext(); ) {
+				renderTagLink(tagLinksPanel, tagsIT.next());
+			}
+			grid.setWidget(row, 1, tagLinksPanel);
+		}
+
+		// If we didn't render any tag links...
+		if (!tagLinksDisplayed) {
+			// ...render a row saying that.
+			renderNoTagsRow(m_tagThisGrid, m_tagThisGrid.getRowCount(), "TagLinks_Empty");
+		}
+	}
+	
+	/*
+	 * Renders the link for a tag into a FlowPanel.
+	 */
+	private void renderTagLink(FlowPanel tagLinksPanel, final TagInfo tag) {
+//!		...this needs to be implemented...
+		Element e = tagLinksPanel.getElement();
+		String innerHTML = e.getInnerHTML();
+		if (GwtClientHelper.hasString(innerHTML)) {
+			innerHTML += "";
+		}
+		else {
+			innerHTML = "";
+		}
+		innerHTML += ((tag.isCommunityTag() ? "C:" : "P:") + tag.getTagName());
+		e.setInnerHTML(innerHTML);
+	}
+	
+	/*
+	 * Re-renders the content of the dialog.
+	 */
+	private void reRenderDlg() {
+		// Remove any existing content from the dialog...
+		for (int i = (m_tagThisGrid.getRowCount() - 1); i >= 0; i -= 1) {
+			m_tagThisGrid.removeRow(i);
+		}
+		
+		// ...and regenerate it.
+		populateTagThisGrid();
+	}
+	
+	/*
+	 * Does what's needed to validate tagName.  The user is informed
+	 * if any errors are detected.
+	 * 
+	 * If the string needs to be modified to be validated, the modified
+	 * string is returned.
+	 */
+	private String validateTagName(String tagName, TagType tagType) {
+		// Do we have a tag name to validate?
+		String reply = tagName;
+		if (GwtClientHelper.hasString(reply)) {
+			// Yes!
+			
+			List<TagInfo> tagList = ((TagType.COMMUNITY == tagType) ? m_communityTags : m_personalTags);
+			
+//!			...this needs to be implemented...
+		}
+		return reply;
 	}
 }
