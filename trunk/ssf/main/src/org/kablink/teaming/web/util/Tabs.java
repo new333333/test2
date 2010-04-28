@@ -45,6 +45,7 @@ import org.dom4j.DocumentHelper;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.util.SPropsUtil;
 
 /**
  * @author hurley
@@ -190,8 +191,9 @@ public class Tabs {
 		// History list now puts new items at the top of the
 		// list and prunes off old stuff.
 		tabList.add(0, tab);
-		if (tabList.size() > 5) {
-			tabList.remove(5);
+		int maxItems = SPropsUtil.getInt("recent-places-depth", 10);
+		if (tabList.size() > maxItems) {
+			tabList.remove(maxItems);
 		}
 		
 	}

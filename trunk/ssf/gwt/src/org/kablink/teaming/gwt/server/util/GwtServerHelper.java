@@ -799,6 +799,7 @@ public class GwtServerHelper {
 		// Scan the cached tabs...
 		int count = 0;
 		List tabList = tabs.getTabList();
+		int maxItems = SPropsUtil.getInt("recent-places-depth", 10);
 		for (Iterator tabIT = tabList.iterator(); tabIT.hasNext(); ) {
 			// ...creating a RecentPlaceInfo object for each...
 			TabEntry tab = ((TabEntry) tabIT.next());
@@ -816,12 +817,12 @@ public class GwtServerHelper {
 			}
 			rpi.setTitle(title);
 			
-			// ...and adding it to the list of them.
+			// ...adding it to the list of them...
 			rpiList.add(rpi);
 			
-			// Like the traditional UI, we'll only return the first 5.
+			// ...and stopping when we hit our maximum.
 			count += 1;
-			if (5 == count) {
+			if (maxItems == count) {
 				break;
 			}
 		}
