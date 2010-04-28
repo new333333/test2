@@ -32,6 +32,16 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
+
+<% if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+	<script type="text/javascript">
+		// Tell the Teaming GWT ui to handle login.
+		window.top.ss_handlePageWithGWT( 'login-page' );
+	</script>
+<% }
+   else { %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%  
@@ -167,3 +177,5 @@ boolean isMobile = org.kablink.util.BrowserSniffer.is_mobile(request, userAgents
 	var formObj = self.document.getElementById('loginForm');
 	formObj.j_username.focus();
 </script>
+
+<% } %>

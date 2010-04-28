@@ -99,6 +99,11 @@ public class GwtMainPage extends Composite
 		// UI to tell the GWT UI that a context has been loaded.
 		initContextLoadHandlerJS(this);
 		
+		// Initialize the JavaScript function that gets called when we want to handle a page using
+		// GWT instead of in jsp.
+		// For example, we never want the jsp login page to be loaded in the content control.
+		initHandlePageWithGWTJS( this );
+		
 		// Set the class name on the <body> element to "mainGwtTeamingPage"
 		bodyElement = RootPanel.getBodyElement();
 		bodyElement.setClassName( "mainTeamingPage" );
@@ -158,7 +163,12 @@ public class GwtMainPage extends Composite
 			{
 				Command cmd;
 				
-				// Yes, invoke the login dialog.
+				// Yes
+				// Hide the workspace tree control and the menu bar.
+				m_wsTreeCtrl.setVisible( false );
+				m_mainMenuCtrl.setVisible( false );
+				
+				// invoke the login dialog.
 		        cmd = new Command()
 		        {
 		        	/**
@@ -187,6 +197,19 @@ public class GwtMainPage extends Composite
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::contextLoaded(Ljava/lang/String;)( binderId );
 		}//end ss_contextLoaded()
+	}-*/;
+
+	/*
+	 * Called to create a JavaScript method that will be invoked from
+	 * any jsp that we don't want loaded the old way, we want to handle the ui
+	 * using gwt.  The login page is an example of this.  If login_please.jsp ever gets
+	 * loaded we want to invoke the login dialog.
+	 */
+	private native void initHandlePageWithGWTJS( GwtMainPage gwtMainPage ) /*-{
+		$wnd.ss_handlePageWithGWT = function( pageName )
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::handlePageWithGWT(Ljava/lang/String;)( pageName );
+		}//end ss_handlePageWithGWT()
 	}-*/;
 
 	/*
@@ -490,6 +513,24 @@ public class GwtMainPage extends Composite
 			break;
 		}
 	}// end handleAction()
+	
+	
+	/**
+	 * This method will handle the given page ui in gwt instead of having the jsp page do the work.
+	 */
+	@SuppressWarnings("unused")
+	private void handlePageWithGWT( String pageName )
+	{
+		if ( pageName != null && pageName.length() > 0 )
+		{
+			if ( pageName.equalsIgnoreCase( "login-page" ) )
+				handleAction( TeamingAction.LOGIN, null );
+			else
+			{
+				Window.alert( "In handlePageWithGWT(), unknown page: " + pageName );
+			}
+		}
+	}// end handlePageWithGWT()
 	
 	/**
 	 * Invoke the "login" dialog.
