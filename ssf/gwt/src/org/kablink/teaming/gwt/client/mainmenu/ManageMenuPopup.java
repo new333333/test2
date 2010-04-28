@@ -555,17 +555,25 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 					public void onFailure(Throwable t) {
 						Window.alert(t.toString());
 					}
-					public void onSuccess(List<TagInfo> binderTags) {
-						TagThisDlg ttDlg = new TagThisDlg(
-							true,	// true -> Auto hide.
-							true,	// true -> Modal.
-							m_menuLeft,
-							m_menuTop,
-							m_currentBinder,
-							binderTags,
-							dlgCaption);
-						ttDlg.addStyleName("tagThisDlg");
-						ttDlg.show();
+					public void onSuccess(final List<TagInfo> binderTags) {
+						GwtTeaming.getRpcService().canManagePublicBinderTags(m_currentBinder.getBinderId(), new AsyncCallback<Boolean>() {
+							public void onFailure(Throwable t) {
+								Window.alert(t.toString());
+							}
+							public void onSuccess(Boolean canManagePublicTags) {
+								TagThisDlg ttDlg = new TagThisDlg(
+									true,	// true -> Auto hide.
+									true,	// true -> Modal.
+									m_menuLeft,
+									m_menuTop,
+									m_currentBinder,
+									binderTags,
+									((null != canManagePublicTags) && canManagePublicTags.booleanValue()),
+									dlgCaption);
+								ttDlg.addStyleName("tagThisDlg");
+								ttDlg.show();
+							}
+						});
 					}
 				});
 			}

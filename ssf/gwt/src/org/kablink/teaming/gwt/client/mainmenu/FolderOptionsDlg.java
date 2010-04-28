@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
@@ -119,8 +120,13 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 		header.addStyleName("folderOptionsDlg_SectionHeader");
 
 		grid.insertRow(row);
-		grid.getRowFormatter().getElement(row).setId(OPTION_HEADER_ID);
-		grid.setWidget(row, 1, header);
+		Element e = grid.getRowFormatter().getElement(row); 
+		e.setId(OPTION_HEADER_ID);
+		e.addClassName("folderOptionsDlg_SectionHeaderRow");
+		e = grid.getCellFormatter().getElement(row, 0);
+		e.setAttribute("colspan", "2");
+		e.addClassName("folderOptionsDlg_SectionHeaderCell");
+		grid.setWidget(row, 0, header);
 	}
 
 	/**
@@ -337,5 +343,6 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 		cb.setValue(checked);
 		grid.setWidget(row, 0, cb);
 		grid.setWidget(row, 1, new DlgLabel(tbi.getName()));
+		grid.getCellFormatter().setWidth(row, 1, "100%");
 	}
 }

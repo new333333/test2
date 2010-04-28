@@ -1022,11 +1022,31 @@ body, table td, select
 	padding-top: 8px;
 	padding-bottom: 5px;
 }
+.folderOptionsDlg_SectionHeaderCell
+{
+}
+.folderOptionsDlg_SectionHeaderRow
+{
+}
 
 /* Styles for the tag this dialog. */
 .tagThisDlg
 {
 	z-index: 301;
+}
+.tagThisDlg_Add
+{
+	margin-top: 2px;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+.tagThisDlg_AddButton
+{
+	cursor: pointer;
+	margin-left: 2px;
+}
+.tagThisDlg_AddInput
+{
 }
 .tagThisDlg_DeleteAnchor
 {
@@ -1055,6 +1075,12 @@ body, table td, select
 	font-weight: bold;
 	padding-top: 8px;
 	padding-bottom: 5px;
+}
+.tagThisDlg_SectionHeaderCell
+{
+}
+.tagThisDlg_SectionHeaderRow
+{
 }
 
 /* Style for the main Teaming page. */

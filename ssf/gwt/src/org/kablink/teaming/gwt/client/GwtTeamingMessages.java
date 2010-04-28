@@ -267,6 +267,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuTagThisDlgDelete();
 	String mainMenuTagThisDlgHeaderFolder();
 	String mainMenuTagThisDlgHeaderWorkspace();
+	String mainMenuTagThisDlgNoTags();
 	String mainMenuTagThisDlgPersonalTags();
 	String mainMenuTagThisDlgTags();
 

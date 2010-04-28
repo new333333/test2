@@ -118,19 +118,20 @@ public interface GwtRpcService extends RemoteService
 	
 	// The following are used in the implementation of the
 	// MainMenuControl.
-	public Boolean               addFavorite(           String             binderId                                   );
-	public Boolean               removeFavorite(        String             favoriteId                                 );
-	public Boolean               updateFavorites(                                    List<FavoriteInfo> favoritesList );
-	public List<TagInfo>         getBinderTags(         String             binderId                                   );
-	public TagInfo               addBinderTag(          String             binderId,      TagInfo       binderTag     );
-	public Boolean               removeBinderTag(       String             binderId,      TagInfo       binderTag     );
-	public Boolean               updateBinderTags(      String             binderId, List<TagInfo>      binderTags    );
-	public BinderInfo            getBinderInfo(         String             binderId                                   );
+	public Boolean               addFavorite(               String             binderId                                   );
+	public Boolean               removeFavorite(            String             favoriteId                                 );
+	public Boolean               updateFavorites(                                        List<FavoriteInfo> favoritesList );
+	public List<TagInfo>         getBinderTags(             String             binderId                                   );
+	public Boolean               canManagePublicBinderTags( String             binderId                                   );
+	public TagInfo               addBinderTag(              String             binderId,      TagInfo       binderTag     );
+	public Boolean               removeBinderTag(           String             binderId,      TagInfo       binderTag     );
+	public Boolean               updateBinderTags(          String             binderId, List<TagInfo>      binderTags    );
+	public BinderInfo            getBinderInfo(             String             binderId                                   );
 	public List<FavoriteInfo>    getFavorites();
 	public List<TeamInfo>        getMyTeams();
 	public List<RecentPlaceInfo> getRecentPlaces();
-	public TeamManagementInfo    getTeamManagementInfo( String             binderId                                   );
-	public List<ToolbarItem>     getToolbarItems(       String             binderId                                   );
+	public TeamManagementInfo    getTeamManagementInfo(     String             binderId                                   );
+	public List<ToolbarItem>     getToolbarItems(           String             binderId                                   );
 	
 	// The following are used to manage the tracking of binders.
 	public Boolean trackBinder(   String binderId );
