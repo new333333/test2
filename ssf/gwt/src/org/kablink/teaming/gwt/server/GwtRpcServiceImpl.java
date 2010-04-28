@@ -1168,25 +1168,45 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @return
 	 */
 	public List<TreeInfo> getHorizontalTree( String binderIdS ) {
-		// Access the Binder's nearest containing Workspace...
-		long binderId = Long.parseLong( binderIdS );
-		Binder binder = getBinderModule().getBinder( binderId );
+		List<TreeInfo> reply;
 		
-		ArrayList<Long> bindersList = new ArrayList<Long>();
-		while (true)
-		{
-			bindersList.add( 0, binder.getId() );
-			binder = binder.getParentBinder();
-			if ( null == binder )
-			{
-				break;
-			}
+		// Can we access the Binder?
+		Binder binder;
+		try {
+			long binderId = Long.parseLong( binderIdS );
+			binder = getBinderModule().getBinder( binderId );
 		}
-
-		// ...and build the TreeInfo for the request Binder.
-		List<TreeInfo> reply = GwtServerHelper.buildTreeInfoFromBinderList(
-			this,
-			bindersList );
+		catch (AccessControlException ace) {
+			m_logger.debug( "GwtRpcServiceImpl.getHorizontalTree( Can't Access Binder (AccessControlException) ):  '" + binderIdS + "'");
+			binder = null;
+		}
+		catch (NumberFormatException nfe) {
+			m_logger.debug( "GwtRpcServiceImpl.getHorizontalTree( Can't Access Binder (NumberFormatException) ):  '" + ((null == binderIdS) ? "<nul>" : binderIdS) + "'");
+			binder = null;
+		}
+		if (null == binder) {
+			// No!  Then we can't build any TreeInfo objects for it.
+			reply = new ArrayList<TreeInfo>();
+		}
+		else {
+			// Yes, we can access the Binder!  Access the Binder's
+			// nearest containing Workspace...
+			ArrayList<Long> bindersList = new ArrayList<Long>();
+			while (true)
+			{
+				bindersList.add( 0, binder.getId() );
+				binder = binder.getParentBinder();
+				if ( null == binder )
+				{
+					break;
+				}
+			}
+	
+			// ...and build the TreeInfo for the request Binder.
+			reply = GwtServerHelper.buildTreeInfoFromBinderList(
+				this,
+				bindersList );
+		}
 
 
 		// If we get here, reply refers to the TreeInfo for the Binder
@@ -1242,41 +1262,66 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public TreeInfo getVerticalTree( String binderIdS )
 	{
-		// Access the Binder's nearest containing Workspace...
-		long binderId = Long.parseLong( binderIdS );
-		Binder binder = getBinderModule().getBinder( binderId );
-		Workspace binderWS = BinderHelper.getBinderWorkspace( binder );
-
-		// ...note that the Workspace should always be expanded...
-		Long binderWSId = binderWS.getId();
-		ArrayList<Long> expandedBindersList = new ArrayList<Long>();
-		expandedBindersList.add( binderWSId );
-
-		// ...calculate which additional Binder's that must be expanded
-		// ...to show the requested Binder...
-		long binderWSIdVal = binderWSId.longValue();
-		if (binderId != binderWSIdVal) {
-			binder = binder.getParentBinder();
-			while ( binder.getId().longValue() != binderWSIdVal )
-			{
-				expandedBindersList.add( binder.getId() );
-				binder = binder.getParentBinder();
-			}
+		TreeInfo reply;
+		
+		// Can we access the Binder?
+		long binderId;
+		Binder binder;
+		try {
+			binderId = Long.parseLong( binderIdS );
+			binder = getBinderModule().getBinder( binderId );
+		}
+		catch (AccessControlException ace) {
+			m_logger.debug( "GwtRpcServiceImpl.getVerticalTree( Can't Access Binder (AccessControlException) ):  '" + binderIdS + "'");
+			binderId = (-1L);
+			binder = null;
+		}
+		catch (NumberFormatException nfe) {
+			m_logger.debug( "GwtRpcServiceImpl.getVerticalTree( Can't Access Binder (NumberFormatException) ):  '" + ((null == binderIdS) ? "<nul>" : binderIdS) + "'");
+			binderId = (-1L);
+			binder = null;
+		}
+		if (null == binder) {
+			// No!  We can't build a TreeInfo for it.
+			reply = new TreeInfo();
 		}
 		
-		// ...build the TreeInfo for the request Binder...
-		TreeInfo reply = GwtServerHelper.buildTreeInfoFromBinder(
-			this,
-			binderWS,
-			expandedBindersList );
-
-
-		// ...and if the Binder supports Trash access...
-		boolean allowTrash = TrashHelper.allowUserTrashAccess( GwtServerHelper.getCurrentUser() );
-		if ( allowTrash && ( !(binder.isMirrored()) ) )
-		{
-			// ...add a TreeInfo to the reply's children for it.
-			GwtServerHelper.addTrashFolder( this, reply, binder );
+		else {
+			// Yes, we can access the Binder!  Access the Binder's
+			// nearest containing Workspace...
+			Workspace binderWS = BinderHelper.getBinderWorkspace( binder );
+	
+			// ...note that the Workspace should always be expanded...
+			Long binderWSId = binderWS.getId();
+			ArrayList<Long> expandedBindersList = new ArrayList<Long>();
+			expandedBindersList.add( binderWSId );
+	
+			// ...calculate which additional Binder's that must be expanded
+			// ...to show the requested Binder...
+			long binderWSIdVal = binderWSId.longValue();
+			if (binderId != binderWSIdVal) {
+				binder = binder.getParentBinder();
+				while ( binder.getId().longValue() != binderWSIdVal )
+				{
+					expandedBindersList.add( binder.getId() );
+					binder = binder.getParentBinder();
+				}
+			}
+			
+			// ...build the TreeInfo for the request Binder...
+			reply = GwtServerHelper.buildTreeInfoFromBinder(
+				this,
+				binderWS,
+				expandedBindersList );
+	
+	
+			// ...and if the Binder supports Trash access...
+			boolean allowTrash = TrashHelper.allowUserTrashAccess( GwtServerHelper.getCurrentUser() );
+			if ( allowTrash && ( !(binder.isMirrored()) ) )
+			{
+				// ...add a TreeInfo to the reply's children for it.
+				GwtServerHelper.addTrashFolder( this, reply, binder );
+			}
 		}
 		
 		// If we get here, reply refers to the TreeInfo for the Binder
