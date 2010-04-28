@@ -98,6 +98,7 @@ public class GwtProfileHelper {
 		
 		for(ProfileAttribute pAttr: attrs) {
 			
+			String value = null;
 			String type = "";
 			String name = pAttr.getName();
 		
@@ -105,7 +106,6 @@ public class GwtProfileHelper {
 				continue;
 			}
 
-			String value = null;
 			if(name.equals("name")) {
 				value = u.getName();
 			} else if(name.equals("title")) {
@@ -115,7 +115,7 @@ public class GwtProfileHelper {
 			} else if(name.equals("emailAddress")){
 			    value = u.getEmailAddress();
 			    type = "email";
-			} else if(name.equals("mobileAddress")){
+			} else if(name.equals("mobileEmailAddress")){
 			    value = u.getMobileEmailAddress();
 			    type = "email";
 			} else if(name.equals("txtEmailAddress")){
@@ -127,6 +127,8 @@ public class GwtProfileHelper {
 				value = u.getSkypeId();
 			} else if(name.equals("organization")){
 				value = u.getOrganization();
+			} else if(name.equals("zonName")){
+				value = u.getZonName();
 			} else {
 				CustomAttribute cAttr = u.getCustomAttribute(name);
 				if(cAttr != null) {
@@ -143,6 +145,9 @@ public class GwtProfileHelper {
 				    }
 				    
 				    pAttr.setTitle(NLT.get("profile.element."+name, name));
+				    
+				    //continue to the next value
+				    continue;
 		 	    }
 			}
 
