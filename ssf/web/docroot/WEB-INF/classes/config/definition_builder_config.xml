@@ -1064,7 +1064,7 @@
 			<option name="profileEntryView" />
 			<option name="profileEntryStandardView" initial="true"/>
 			<option name="profileEntrySimpleView" initial="true" />
-			<option name="profileEntryBusinessCard" initial="true" />
+			<option name="profileEntryBusinessCard" initial="false" />
 			<option name="profileEntryMiniBusinessCard" initial="true" />			
 		</options>
 	</item>
@@ -1381,6 +1381,21 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
+	<item name="profileInstantMessage" caption="__instantMessage" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__instantMessage"/>
+			<property name="name" caption="__data_name" type="text" value="IMID" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>	
 	<item name="profileEntryPicture" caption="__profile_entry_picture" type="data" multipleAllowed="false"
 		category="profileEntryData" display="form">
 		<properties>
@@ -1405,7 +1420,349 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderGraphic" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderGraphic" />
 	</item>
+	
+	<item name="profileJobTitle" caption="__jobTitle" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__jobTitle"/>
+			<property name="name" caption="__data_name" type="text" value="jobTitle" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>
 
+	<item name="profileDepartment" caption="__department" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__department"/>
+			<property name="name" caption="__data_name" type="text" value="department" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>
+	
+	<item name="profileOffice" caption="__office" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__office"/>
+			<property name="name" caption="__data_name" type="text" value="office" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>
+	
+	<item name="profileLocation" caption="__location" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__location"/>
+			<property name="name" caption="__data_name" type="text" value="location" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>
+	
+	<item name="profileManager" caption="__manager" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__manager"/>
+			<property name="name" caption="__data_name" type="text" value="manager" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>
+	
+	<item name="profileWebsite" caption="__website" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__website"/>
+			<property name="name" caption="__data_name" type="text" value="website" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/url_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>
+	
+	<item name="profileResponsibilities" caption="__responsibilities" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__responsibilities"/>
+			<property name="name" caption="__data_name" type="text" value="responsibilities" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>
+	
+	<item name="profileInterests" caption="__interests" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__interests"/>
+			<property name="name" caption="__data_name" type="text" value="interests" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>
+
+	<item name="profileEducation" caption="__education" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__education"/>
+			<property name="name" caption="__data_name" type="text" value="education" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>
+
+	<item name="profileWorkPhone" caption="__workPhone" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__workPhone"/>
+			<property name="name" caption="__data_name" type="text" value="workPhone" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>
+
+	<item name="profileHomePhone" caption="__homePhone" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__homePhone"/>
+			<property name="name" caption="__data_name" type="text" value="homePhone" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>
+
+	<item name="profileMobilePhone" caption="__mobilePhone" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__mobilePhone"/>
+			<property name="name" caption="__data_name" type="text" value="mobilePhone" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>	
+	
+	<item name="profileFax" caption="__fax" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__fax"/>
+			<property name="name" caption="__data_name" type="text" value="fax" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>	
+
+	<item name="profileMailStop" caption="__mailStop" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__mailStop"/>
+			<property name="name" caption="__data_name" type="text" value="mailStop" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>
+	
+	<item name="profileStreet" caption="__street" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__street"/>
+			<property name="name" caption="__data_name" type="text" value="street" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>
+
+	<item name="profileCity" caption="__city" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__city"/>
+			<property name="name" caption="__data_name" type="text" value="city" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>
+	
+	<item name="profileState" caption="__state" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__state"/>
+			<property name="name" caption="__data_name" type="text" value="state" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>
+	
+	<item name="profilePostalCode" caption="__postalCode" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__postalCode"/>
+			<property name="name" caption="__data_name" type="text" value="postalCode" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>
+	
 <!-- Profile entry view-->
 	<item name="profileEntryView" caption="__profile_entry_view_definition" multipleAllowed="false" display="view">
 		<operations>
@@ -1455,6 +1812,8 @@
 	<item name="profileEntryStandardView" caption="__profile_entry_standard_view" 
 		  canBeDeleted="false" multipleAllowed="false" display="view">
 		<options>
+			<option name="profileHeadingPersonalView" caption="__profile_heading_Personal_div" 
+				definitionType="7" initial="true" />
 			<option name="profileHeadingOrgView" caption="__profile_heading_Org_div" 
 				definitionType="7" initial="true" />
 			<option name="profileHeadingContactView" caption="__profile_heading_Contact_div" 
@@ -1503,7 +1862,7 @@
 	
 <!-- Profile entry business card view -->
 	<item name="profileEntryMiniBusinessCard" caption="__profile_entry_mini_business_card_definition" 
-		  canBeDeleted="false" multipleAllowed="false" display="view">
+		  canBeDeleted="true" multipleAllowed="false" display="view">
 		<options>
 			<option name="profileEntryMiniBusinessCardElements" caption="__profile_entry_mini_business_card_elements" 
 				definitionType="7" initial="true" />
@@ -1579,12 +1938,35 @@
 		</jsps>
 	</item>	
 	
+	<item name="profileHeadingPersonalView" caption="__profile_heading_Personal_div" category="userViewLayout" display="view" canBeDeleted="false" multipleAllowed="false">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="_elements" caption="__profile_elements_to_show" 
+				  type="selectbox" multipleAllowed="true">
+				<option name="jobTitle" caption="__jobTitle" initial="true" />
+				<option name="street" caption="__street" initial="true" />
+				<option name="city" caption="__city" initial="true" />
+				<option name="state" caption="__state" initial="true" />
+				<option name="postalCode" caption="__postalCode" initial="true" />  
+		    </property>
+		</properties>
+		<options optionCaption="__standard_entry_options">
+			<option_select definitionType="6" path="//item[@category='profileViewData']" />
+			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
+		</options>
+	</item>	
+	
+	
 	<item name="profileHeadingOrgView" caption="__profile_heading_Org_div" category="userViewLayout" display="view" canBeDeleted="false" multipleAllowed="false">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="_elements" caption="__profile_elements_to_show" 
 				  type="selectbox" multipleAllowed="true">
-				<option name="organization" caption="__organization" initial="true"/>
+				<option name="department" caption="__department" initial="true"/>
+				<option name="office" caption="__office" initial="true"/>
+				<option name="location" caption="__location" initial="true"/>
+				<option name="mailStop" caption="__mailStop" initial="true"/>
+				<option name="manager" caption="__manager" initial="true"/>
 		    </property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
@@ -1598,13 +1980,17 @@
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="_elements" caption="__profile_elements_to_show" 
 				  type="selectbox" multipleAllowed="true">
-				<option name="phone" caption="__phone"/>
+				<option name="workPhone" caption="__workPhone"/>
+				<option name="mobilePhone" caption="__mobilePhone"/>
+				<option name="homePhone" caption="__homePhone"/>
+				<option name="fax" caption="__fax"/>
 				<option name="emailAddress" caption="__emailAddress" initial="true"/>
 				<option name="mobileEmailAddress" caption="__mobileEmailAddress" initial="true"/>
 				<option name="txtEmailAddress" caption="__txtEmailAddress" initial="true"/>
 				<option name="zonName" caption="__zonName" initial="true"/>
 				<option name="skypeId" caption="__skypeId" initial="true"/>
 				<option name="twitterId" caption="__twitterId"/>
+				<option name="IMID" caption="__instantMessage" />
 		    </property>
 		</properties>
 		<options>
@@ -1613,6 +1999,16 @@
 	</item>	
 
 	<item name="profileHeadingOtherView" caption="__profile_heading_Other_div" category="userViewLayout" display="view" canBeDeleted="false" multipleAllowed="false">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="_elements" caption="__profile_elements_to_show" 
+				  type="selectbox" multipleAllowed="true">
+				<option name="website" caption="__website" initial="true"/>
+				<option name="responsibilities" caption="__responsibilities" initial="true"/>
+				<option name="interests" caption="__interests" initial="true"/>
+				<option name="education" caption="__education" initial="true"/>
+		    </property>
+		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option_select definitionType="6" path="//item[@category='profileViewData']" />
 			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
