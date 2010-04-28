@@ -177,11 +177,11 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	}
 	
 	public void binder_uploadFile(String accessToken, long binderId, String fileUploadDataItemName, String fileName) {
-		getBinderService().binder_uploadFile(accessToken, binderId, fileUploadDataItemName, fileName);
+		getBinderService().binder_uploadFile(accessToken, binderId, normalizeFileUploadDataItemName(fileUploadDataItemName), fileName);
 	}
 	
 	public void binder_uploadFileAsByteArray(String accessToken, long binderId, String fileUploadDataItemName, String fileName, byte[] fileContent) {
-		getBinderService().binder_uploadFileAsByteArray(accessToken, binderId, fileUploadDataItemName, fileName, fileContent);
+		getBinderService().binder_uploadFileAsByteArray(accessToken, binderId, normalizeFileUploadDataItemName(fileUploadDataItemName), fileName, fileContent);
 	}
 	
 	/*
@@ -321,13 +321,13 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getFolderService().folder_getFileVersions(accessToken, entryId, fileName);
 	}
 	public void folder_uploadFile(String accessToken, long entryId, String fileUploadDataItemName, String fileName) {
-		getFolderService().folder_uploadFile(accessToken, entryId, fileUploadDataItemName, fileName);
+		getFolderService().folder_uploadFile(accessToken, entryId, normalizeFileUploadDataItemName(fileUploadDataItemName), fileName);
 	}
 	public void folder_uploadFileAsByteArray(String accessToken,long entryId, String fileUploadDataItemName, String fileName, byte[] fileContent) {
-		getFolderService().folder_uploadFileAsByteArray(accessToken, entryId, fileUploadDataItemName, fileName, fileContent);
+		getFolderService().folder_uploadFileAsByteArray(accessToken, entryId, normalizeFileUploadDataItemName(fileUploadDataItemName), fileName, fileContent);
 	}
 	public void folder_uploadFileStaged(String accessToken, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath) {
-		getFolderService().folder_uploadFileStaged(accessToken, entryId, fileUploadDataItemName, fileName, stagedFileRelativePath);
+		getFolderService().folder_uploadFileStaged(accessToken, entryId, normalizeFileUploadDataItemName(fileUploadDataItemName), fileName, stagedFileRelativePath);
 	}
 	public void folder_deleteEntry(String accessToken, long entryId) {
 		getFolderService().folder_deleteEntry(accessToken, entryId);
@@ -442,10 +442,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getMigrationService().migration_addReplyWithXML(accessToken, binderId, parentId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
 	}
 	public void migration_uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, String modifier, Calendar modificationDate) {
-		getMigrationService().migration_uploadFolderFile(accessToken, binderId, entryId, fileUploadDataItemName, fileName, modifier, modificationDate);
+		getMigrationService().migration_uploadFolderFile(accessToken, binderId, entryId, normalizeFileUploadDataItemName(fileUploadDataItemName), fileName, modifier, modificationDate);
 	}
 	public void migration_uploadFolderFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath, String modifier, Calendar modificationDate) {
-		getMigrationService().migration_uploadFolderFileStaged(accessToken, binderId, entryId, fileUploadDataItemName, fileName, stagedFileRelativePath, modifier, modificationDate);
+		getMigrationService().migration_uploadFolderFileStaged(accessToken, binderId, entryId, normalizeFileUploadDataItemName(fileUploadDataItemName), fileName, stagedFileRelativePath, modifier, modificationDate);
 	}
 	public long migration_addBinder(String accessToken, Binder binder) {
 		return getMigrationService().migration_addBinder(accessToken, binder);
@@ -484,10 +484,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getProfileService().profile_getFileVersions(accessToken, principalId, fileName);
 	}
 	public void profile_uploadFile(String accessToken, long principalId, String fileUploadDataItemName, String fileName) {
-		getProfileService().profile_uploadFile(accessToken, principalId, fileUploadDataItemName, fileName);
+		getProfileService().profile_uploadFile(accessToken, principalId, normalizeFileUploadDataItemName(fileUploadDataItemName), fileName);
 	}
 	public void profile_uploadFileAsByteArray(String accessToken, long principalId, String fileUploadDataItemName, String fileName, byte[] fileContent) {
-		getProfileService().profile_uploadFileAsByteArray(accessToken, principalId, fileUploadDataItemName, fileName, fileContent);
+		getProfileService().profile_uploadFileAsByteArray(accessToken, principalId, normalizeFileUploadDataItemName(fileUploadDataItemName), fileName, fileContent);
 	}
 	public void profile_changePassword(String accessToken, Long userId, String oldPassword, String newPassword) {
 		getProfileService().profile_changePassword(accessToken, userId, oldPassword, newPassword);
@@ -627,4 +627,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getAdminService().admin_getApplicationScopedToken(accessToken, applicationId, userId);
 	}
 
+	private String normalizeFileUploadDataItemName(String fileUploadDataItemName) {
+		if(fileUploadDataItemName.equals("ss_attachFile"))
+			return "ss_attachFile1";
+		else
+			return fileUploadDataItemName;
+	}
 }
