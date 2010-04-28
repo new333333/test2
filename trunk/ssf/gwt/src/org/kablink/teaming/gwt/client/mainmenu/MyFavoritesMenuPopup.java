@@ -283,21 +283,26 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 					addContentWidget(content);
 				}
 
-				// Add a spacer between the favorites and favorite
-				// commands.
-				FlowPanel spacerPanel = new FlowPanel();
-				spacerPanel.addStyleName("mainMenuPopup_ItemSpacer");
-				addContentWidget(spacerPanel);
+				// Do we need to add any favorite commands?
+				if ((null != m_currentBinder) || (0 < fCount)) {
+					// Yes!  Add a spacer between the favorites and
+					// the commands... 
+					FlowPanel spacerPanel = new FlowPanel();
+					spacerPanel.addStyleName("mainMenuPopup_ItemSpacer");
+					addContentWidget(spacerPanel);
 				
-				// Add the favorite command items.
-				MenuPopupAnchor mtA;
-				if (currentIsFavorite)
-					 mtA = new MenuPopupAnchor((IDBASE + "Remove"), m_messages.mainMenuFavoritesRemove(), null, new ManageClickHandler(FavoriteOperation.REMOVE, currentFavoriteId));
-				else mtA = new MenuPopupAnchor((IDBASE + "Add"),    m_messages.mainMenuFavoritesAdd(),    null, new ManageClickHandler(FavoriteOperation.ADD,    m_currentBinder.getBinderId()));
-				addContentWidget(mtA);
-				if (0 < fCount) {
-					mtA = new MenuPopupAnchor((IDBASE + "Edit"), m_messages.mainMenuFavoritesEdit(), null, new ManageClickHandler(FavoriteOperation.EDIT, fList));
-					addContentWidget(mtA);
+					// ...and add the favorite command items.
+					MenuPopupAnchor mtA;
+					if (null != m_currentBinder) {
+						if (currentIsFavorite)
+							 mtA = new MenuPopupAnchor((IDBASE + "Remove"), m_messages.mainMenuFavoritesRemove(), null, new ManageClickHandler(FavoriteOperation.REMOVE, currentFavoriteId));
+						else mtA = new MenuPopupAnchor((IDBASE + "Add"),    m_messages.mainMenuFavoritesAdd(),    null, new ManageClickHandler(FavoriteOperation.ADD,    m_currentBinder.getBinderId()));
+						addContentWidget(mtA);
+					}
+					if (0 < fCount) {
+						mtA = new MenuPopupAnchor((IDBASE + "Edit"), m_messages.mainMenuFavoritesEdit(), null, new ManageClickHandler(FavoriteOperation.EDIT, fList));
+						addContentWidget(mtA);
+					}
 				}
 						
 				// Finally, show the menu popup.

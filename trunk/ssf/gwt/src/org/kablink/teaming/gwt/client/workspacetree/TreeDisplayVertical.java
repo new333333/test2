@@ -330,18 +330,20 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorGrid.setCellSpacing(0);
 		selectorGrid.setCellPadding(0);
 		String rootTitle = getRootTreeInfo().getBinderTitle();
-		Label selectorLabel = new Label(rootTitle);
-		selectorLabel.setWordWrap(false);
-		selectorLabel.getElement().setId(getSelectorId(getRootTreeInfo()));
-		selectorLabel.getElement().setAttribute(EXTENSION_ID_TRASH_PERMALINK, getRootTreeInfo().getBinderTrashPermalink());
-		selectorGrid.setWidget(0, 0, selectorLabel);
-		selectorGrid.setWidget(0, 1, new Label("\u00A0"));
-		selectorGrid.getCellFormatter().setWidth(0, 1, "100%");
-		Anchor selectorA = new Anchor();
-		selectorA.getElement().appendChild(selectorGrid.getElement());
-		selectorA.addClickHandler(new BinderSelector(getRootTreeInfo()));
-		selectorA.setTitle(rootTitle);
-		m_rootPanel.add(selectorA);
+		if (GwtClientHelper.hasString(rootTitle)) {
+			Label selectorLabel = new Label(rootTitle);
+			selectorLabel.setWordWrap(false);
+			selectorLabel.getElement().setId(getSelectorId(getRootTreeInfo()));
+			selectorLabel.getElement().setAttribute(EXTENSION_ID_TRASH_PERMALINK, getRootTreeInfo().getBinderTrashPermalink());
+			selectorGrid.setWidget(0, 0, selectorLabel);
+			selectorGrid.setWidget(0, 1, new Label("\u00A0"));
+			selectorGrid.getCellFormatter().setWidth(0, 1, "100%");
+			Anchor selectorA = new Anchor();
+			selectorA.getElement().appendChild(selectorGrid.getElement());
+			selectorA.addClickHandler(new BinderSelector(getRootTreeInfo()));
+			selectorA.setTitle(rootTitle);
+			m_rootPanel.add(selectorA);
+		}
 
 		// ...its content panel...
 		Grid grid = new Grid();
