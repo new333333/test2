@@ -96,7 +96,7 @@ public class MenuBarBox extends FlowPanel {
 		// ...if we need a drop down image for the box...
 		if (dropdown) {
 			// ...add it...
-			Image dropDownImg = new Image(GwtTeaming.getMainMenuImageBundle().menu9());
+			Image dropDownImg = new Image(GwtTeaming.getMainMenuImageBundle().menuArrow());
 			dropDownImg.addStyleName("mainMenuBar_BoxDropDownImg");
 			boxPanel.add(dropDownImg);
 		}

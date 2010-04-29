@@ -962,6 +962,14 @@ body, table td, select
 {
 	display: inline;
 }
+.mainMenuSearch_Panel
+{
+	border-left: none !important;
+	display: block;
+	position: absolute;
+	right: 10px;
+	top: 3px;
+}
 
 /* Styles for the favorites dialog. */
 .favoritesDlg

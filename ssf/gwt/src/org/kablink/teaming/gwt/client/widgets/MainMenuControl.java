@@ -63,6 +63,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 
 
 /**
@@ -94,6 +95,9 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		m_contextPanel = new FlowPanel();
 		m_contextPanel.addStyleName("mainMenuContent");
 		menuPanel.add(m_contextPanel);
+		
+		// ...add the search widgets to the right end of the menu...
+		addSearchItems(menuPanel);
 		
 		// ...and finally, all composites must call initWidget() in
 		// ...their constructors.
@@ -137,7 +141,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * Adds the items to the menu bar that are always there, regardless
 	 * of context.
 	 */
-	private void addCommonItems(FlowPanel commonPanel) {
+	private void addCommonItems(FlowPanel menuPanel) {
 		// Create a panel to hold the buttons at the left edge of the
 		// menu bar...
 		final FlowPanel buttonsPanel = new FlowPanel();
@@ -183,12 +187,12 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		});
 
 		// ...add the buttons to the menu...
-		commonPanel.add(buttonsPanel);
+		menuPanel.add(buttonsPanel);
 
 		// ...and finally, add the common drop down items to the menu bar.
-		addMyWorkspaceToCommon(commonPanel);
-		addMyTeamsToCommon(    commonPanel);
-		addMyFavoritesToCommon(commonPanel);
+		addMyWorkspaceToCommon(menuPanel);
+		addMyTeamsToCommon(    menuPanel);
+		addMyFavoritesToCommon(menuPanel);
 	}
 	
 	/*
@@ -297,6 +301,18 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 				});
 			m_contextPanel.add(rpBox);
 		}
+	}
+	
+	/*
+	 * Adds the search items to the right end of the menu bar.
+	 */
+	private void addSearchItems(FlowPanel menuPanel) {
+		FlowPanel searchPanel = new FlowPanel();
+		searchPanel.addStyleName("mainMenuBar_BoxPanel mainMenuSearch_Panel");
+		menuPanel.add(searchPanel);
+		
+//!		...this needs to be implemented...
+		searchPanel.getElement().setInnerHTML("...search goes here...");
 	}
 	
 	/**
