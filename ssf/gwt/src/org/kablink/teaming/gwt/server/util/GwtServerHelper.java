@@ -508,7 +508,7 @@ public class GwtServerHelper {
 		Set<Tag> tags = tagsMap.get(community ? ObjectKeys.COMMUNITY_ENTITY_TAGS : ObjectKeys.PERSONAL_ENTITY_TAGS);
 		for (Iterator<Tag> tagsIT = tags.iterator(); tagsIT.hasNext(); ) {
 			Tag tag = tagsIT.next();
-			if (tag.getName().equals(binderTagName)) {
+			if (tag.getName().equalsIgnoreCase(binderTagName)) {
 				// ...and return a new TagInfo for it. 
 				return buildTIFromTag(binderTag.getTagType(), tag);
 			}
@@ -587,7 +587,7 @@ public class GwtServerHelper {
 			boolean found = false;
 			for (Iterator<Tag> oldTagsIT = oldTags.iterator(); oldTagsIT.hasNext(); ) {
 				Tag tag = oldTagsIT.next();
-				if (tag.getName().equals(ti.getTagName())) {
+				if (tag.getName().equalsIgnoreCase(ti.getTagName())) {
 					// ...and break out of the old tag scan loop if we
 					// ...find the new tag.
 					found = true;
@@ -615,7 +615,7 @@ public class GwtServerHelper {
 			boolean found = false;
 			for (Iterator<TagInfo> newTagsIT = newTags.iterator(); newTagsIT.hasNext(); ) {
 				TagInfo ti = newTagsIT.next();
-				if (tag.getName().equals(ti.getTagName())) {
+				if (tag.getName().equalsIgnoreCase(ti.getTagName())) {
 					// ...and break out of the new tag scan loop if we
 					// ...find the old tag.
 					found = true;

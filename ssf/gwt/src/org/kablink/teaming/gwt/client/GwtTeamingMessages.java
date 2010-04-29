@@ -262,14 +262,20 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuManageViewTeam();
 	String mainMenuMyTeamsNoTeams();
 	String mainMenuRecentPlacesNoPlaces();
-	String mainMenuTagThisDlgCommunityTags();
 	String mainMenuTagThisDlgAdd();
+	String mainMenuTagThisDlgAddCommunityAlt();
+	String mainMenuTagThisDlgAddPersonalAlt();
+	String mainMenuTagThisDlgCommunityTags();
 	String mainMenuTagThisDlgDelete();
+	String mainMenuTagThisDlgErrorDuplicateTag();
+	String mainMenuTagThisDlgErrorTagHasPunctuation();
+	String mainMenuTagThisDlgErrorTagHasSpaces();
 	String mainMenuTagThisDlgHeaderFolder();
 	String mainMenuTagThisDlgHeaderWorkspace();
 	String mainMenuTagThisDlgNoTags();
 	String mainMenuTagThisDlgPersonalTags();
 	String mainMenuTagThisDlgTags();
+	String mainMenuTagThisDlgWarningTagTruncated();
 
 	// Strings used in the workspace tree control.
 	String treeCloseBreadCrumbs();

@@ -47,7 +47,6 @@ import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagType;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
-import com.google.gwt.dom.client.Text;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Element;
@@ -55,14 +54,12 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -72,22 +69,21 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *  
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
 public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
-	private final static String IDBASE				= "tagThis_";		// Base ID for rows in the tag this Grid.
+	private final static String IDBASE				= "tagThis_";		// Base ID for rows in the Grid.
 	private final static String OPTION_HEADER_ID	= "optionHeader";	//
 	private final static int	MAX_TAG_LENGTH		= 60;				// As per ObjectKeys.MAX_TAG_LENGTH.
 	private final static int	VISIBLE_TAG_LENGTH	= 20;				// Any better guesses?
 
 	private BinderInfo m_currentBinder;				// The currently selected binder.
 	private boolean m_isPublicTagManager;			// true -> The user can manage public tags on the binder.  false -> They can't.
-	private Grid m_tagThisGrid;						// Once displayed, the table with the dialog's contents.
+	private Grid m_tagThisGrid;						// Once displayed, the Grid with the dialog's contents.
 	private GwtTeamingMainMenuImageBundle m_images;	// Access to the GWT main menu images.
 	private GwtTeamingMessages m_messages;			// Access to the GWT UI messages.
 	private int m_communityTagsCount;				// Count of TagInfo's in m_communityTags.
 	private int m_personalTagsCount;				// Count of TagInfo's in m_personalTags.
-	private List<TagInfo> m_communityTags;			// The community tags defined on the binder.
-	private List<TagInfo> m_personalTags;			// The personal  tags defined on the binder.
+	private List<TagInfo> m_communityTags;			// The community tags defined on the current binder.
+	private List<TagInfo> m_personalTags;			// The personal  tags defined on the current binder.
 
 	/*
 	 * Inner class that wraps labels displayed in the dialog's content.
@@ -135,11 +131,11 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 			dlgCaption,
 			this,	// The dialog's EditSuccessfulHandler.
 			this,	// The dialog's EditCanceledHandler.
-			null);	// Data passed via global data members. 
+			null);	// Data accessed via global data members. 
 	}
 	
 	/*
-	 * Adds a section header row to the tag this grid.
+	 * Adds a section header row to the Grid.
 	 */
 	private void addHeaderRow(Grid grid, int row, String headerText) {
 		DlgLabel header = new DlgLabel(headerText);
@@ -155,6 +151,21 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 		grid.setWidget(row, 0, header);
 	}
 
+	/*
+	 * Returns true if a string contains punctuation characters and
+	 * false otherwise.
+	 * 
+	 * Implementation logic is based on that in the ss_tagModify()
+	 * method in ss_tags.js.
+	 */
+	private native boolean containsPunctuation(String s) /*-{
+		var pattern = new RegExp("[!\"#$%&'()*+,./:;<=>?@[\\\\\\]^`{|}~-]");
+		if (pattern.test(s)) {
+			return true;
+		}
+		return false;
+	}-*/;
+	
 	/**
 	 * Creates all the controls that make up the dialog.
 	 * 
@@ -240,7 +251,7 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	}
 
 	/*
-	 * Populate the tag this Grid with the defined tags.
+	 * Populate the Grid with the defined tags.
 	 */
 	private void populateTagThisGrid() {
 		// Render the tag links into the panel...
@@ -334,6 +345,7 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 				}
 			});
 			addButton.addStyleName("tagThisDlg_AddButton teamingButton");
+			addButton.setTitle((TagType.COMMUNITY == tagType) ? m_messages.mainMenuTagThisDlgAddCommunityAlt() : m_messages.mainMenuTagThisDlgAddPersonalAlt());
 			addPanel.add(addButton);
 			
 			// Finally, add the add widget's panel to the Grid.
@@ -412,6 +424,7 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 			String rowId = (IDBASE + "TagLinks_" + TagType.PERSONAL);
 			grid.getRowFormatter().getElement(row).setId(rowId);
 			tagLinksPanel = new FlowPanel();
+			tagLinksPanel.addStyleName("tagThisDlg_TagAnchorPanel");
 			for (tagsIT = m_personalTags.iterator(); tagsIT.hasNext(); ) {
 				renderTagLink(tagLinksPanel, tagsIT.next());
 			}
@@ -426,6 +439,7 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 			String rowId = (IDBASE + "TagLinks_" + TagType.COMMUNITY);
 			grid.getRowFormatter().getElement(row).setId(rowId);
 			tagLinksPanel = new FlowPanel();
+			tagLinksPanel.addStyleName("tagThisDlg_TagAnchorPanel");
 			for (tagsIT = m_communityTags.iterator(); tagsIT.hasNext(); ) {
 				renderTagLink(tagLinksPanel, tagsIT.next());
 			}
@@ -443,17 +457,39 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	 * Renders the link for a tag into a FlowPanel.
 	 */
 	private void renderTagLink(FlowPanel tagLinksPanel, final TagInfo tag) {
-//!		...this needs to be implemented...
-		Element e = tagLinksPanel.getElement();
-		String innerHTML = e.getInnerHTML();
-		if (GwtClientHelper.hasString(innerHTML)) {
-			innerHTML += "";
-		}
-		else {
-			innerHTML = "";
-		}
-		innerHTML += ((tag.isCommunityTag() ? "C:" : "P:") + tag.getTagName());
-		e.setInnerHTML(innerHTML);
+		Anchor tagAnchor = new Anchor(tag.getTagName());
+		tagAnchor.addStyleName("tagThisDlg_TagAnchor");
+		tagAnchor.addClickHandler(new ClickHandler() {
+			/*
+			 * Called when the user clicks on the tag's Anchor.
+			 */
+			public void onClick(ClickEvent event) {
+				// Hide the dialog...
+				hide();
+				
+				// ...and generate and launch a search for the given tag.
+				String searchUrl = jsBuildSearchUrl(tag.getTagName());
+				GwtClientHelper.jsLoadUrlInContentFrame(searchUrl);
+			}
+			
+			/*
+			 * Returns the URL to launch a search for the given tag.
+			 */
+			private native String jsBuildSearchUrl(String tag) /*-{
+				// Find the base tag search result URL...
+				var searchUrl;
+			   	                      try {searchUrl =                             ss_tagSearchResultUrl;} catch(e) {searchUrl="";}
+				if (searchUrl == "") {try {searchUrl =                 self.parent.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
+				if (searchUrl == "") {try {searchUrl =                 self.opener.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
+				if (searchUrl == "") {try {searchUrl = window.top.gwtContentIframe.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
+
+				// ...and return it with the tag patched in.
+				searchUrl = window.top.gwtContentIframe.ss_replaceSubStrAll(searchUrl, "ss_tagPlaceHolder", tag);
+				return searchUrl;
+			}-*/;
+
+		});
+		tagLinksPanel.add(tagAnchor);
 	}
 	
 	/*
@@ -475,17 +511,49 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	 * 
 	 * If the string needs to be modified to be validated, the modified
 	 * string is returned.
+	 * 
+	 * Implementation logic is based on that in the ss_tagModify()
+	 * method in ss_tags.js.
 	 */
 	private String validateTagName(String tagName, TagType tagType) {
 		// Do we have a tag name to validate?
-		String reply = tagName;
+		String reply = ((null == tagName) ? tagName : tagName.trim());
 		if (GwtClientHelper.hasString(reply)) {
-			// Yes!
-			
-			List<TagInfo> tagList = ((TagType.COMMUNITY == tagType) ? m_communityTags : m_personalTags);
-			
-//!			...this needs to be implemented...
+			// Yes!  If the tag contains spaces...
+			if (0 <= reply.indexOf(" ")) {
+				// ...tell the user that's not valid and bail.
+				Window.alert(m_messages.mainMenuTagThisDlgErrorTagHasSpaces());
+				return "";
+			}
+
+			// If the tag is too long...
+			if (MAX_TAG_LENGTH < reply.length()) {
+				// ...tell the user and truncate it.
+				Window.alert(m_messages.mainMenuTagThisDlgWarningTagTruncated());
+				reply = reply.substring(0, (MAX_TAG_LENGTH - 1));
+			}
+
+			// If the tag contains punctuation characters...
+			if (containsPunctuation(reply)) {
+				// ...tell the user that's not valid and bail.
+				Window.alert(m_messages.mainMenuTagThisDlgErrorTagHasPunctuation());
+				return "";
+			}
+
+			// If this tag is a duplicate...
+			List<TagInfo> tagsList = ((TagType.COMMUNITY == tagType) ? m_communityTags : m_personalTags);
+			for (Iterator<TagInfo> tagsIT = tagsList.iterator(); tagsIT.hasNext(); ) {
+				TagInfo tag = tagsIT.next();
+				if (tag.getTagName().equalsIgnoreCase(reply)) {
+					// ...tell the user that's not valid and bail.
+					Window.alert(m_messages.mainMenuTagThisDlgErrorDuplicateTag());
+					return "";
+				}
+			}
 		}
+		
+		// If we get here, reply refers to the validated string or an
+		// empty string if the tag was not valid.  Return it.
 		return reply;
 	}
 }
