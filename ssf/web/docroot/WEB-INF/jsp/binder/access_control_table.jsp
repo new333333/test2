@@ -97,12 +97,17 @@
 <c:if test="${!empty ssFunctionMap[function].ssOwner || isEntryACL}">
 <input type="checkbox" 
   <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] || 
-  		isEntryACL || !ss_accessControlConfigureAllowed}">
+  		!ss_accessControlConfigureAllowed}">
     disabled="disabled"
   </c:if>
   name="role_id${function.id}_owner"
   title="<ssf:nlt tag="access.select"/>" 
-  checked="checked" />
+  checked="checked" 
+  <c:if test="${isEntryACL}">
+    onClick="alert(ss_escapeSQ('<ssf:nlt tag="access.cannotChangeEntryOwnerAccess"/>'));return false;"
+    onChange="if(!this.checked)this.click();"
+  </c:if>
+/>
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssOwner && !isEntryACL}">
 <input type="checkbox" 

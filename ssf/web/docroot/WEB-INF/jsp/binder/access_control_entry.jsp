@@ -145,7 +145,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 </c:if>
 
 <div id="ss_accessControlTable" 
-  <c:if test="${!ssEntryHasEntryAcl}">style="display:none;"</c:if>
+  <c:if test="${!ssEntryHasEntryAcl && empty ss_accessSortedGroups && empty ss_accessSortedUsers}">style="display:none;"</c:if>
 >
 <c:if test="${ss_accessFunctionsCount <= 0}">
 <span class="ss_bold ss_italic"><ssf:nlt tag="access.noRoles"/></span><br/>
