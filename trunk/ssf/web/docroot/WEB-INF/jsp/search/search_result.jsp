@@ -32,6 +32,8 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
+
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
@@ -74,6 +76,7 @@ var ss_entryCount = 0;
   <c:set var="ss_sidebarVisibilityHide" value="block"/>
   <c:set var="ss_sidebarTdStyle" value="ss_view_sidebar"/>
 </c:if>
+<% if (!(GwtUIHelper.isGwtUIActive(request))) { %>
 <div class="ss_actions_bar1_pane ss_sidebarImage" width="100%">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr><td valign="middle">
@@ -90,13 +93,18 @@ var ss_entryCount = 0;
 </td></tr>
 </table>
 </div>
+<% } %>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
+<% if (GwtUIHelper.isGwtUIActive(request)) { %>
+	<td>&nbsp;</td>
+<% } else { %>
     <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
 		<c:set var="ss_searchResultsPage" value="true" scope="request" />
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	</td>
+<% } %>
 	<td class="ss_view_info" valign="top">
 
 	<div id="ss_whatsNewDiv${ss_namespace}">
