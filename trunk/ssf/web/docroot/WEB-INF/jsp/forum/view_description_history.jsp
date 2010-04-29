@@ -40,9 +40,13 @@
 </ssf:ifadapter>
 
 <style type="text/css">
-del { color: red; }
-ins { color: green; }
+del { font-weight: normal; text-decoration: none; color: #fff; background-color: #990033; }
+ins { font-weight: normal; text-decoration: none; color: #fff; background-color: #009933; }
 </style>
+<script type="text/javascript">
+  var wDiffStyleDelete = 'font-weight: normal; text-decoration: none; color: #fff; background-color: #990033;';
+  var wDiffStyleInsert = 'font-weight: normal; text-decoration: none; color: #fff; background-color: #009933;';
+</script>
 <script type="text/javascript">
 /*
  * Javascript Diff Algorithm
@@ -54,15 +58,22 @@ ins { color: green; }
  *  http://ejohn.org/projects/javascript-diff-algorithm/
  */
 
+function stripHtmlTags(s) {
+    var n = s;
+    n = n.replace(/(<div\s*[^>]*\s*)id=\"[^\"]*\"/gmi, "$1");
+    //n = n.replace(/(<div\s*[^>]*\s*)class=\"[^\"]*\"/gmi, "$1");
+    n = n.replace(/<ssHelpSpot.*<\/ssHelpSpot>/gmi, "");
+    return n;
+}
 function escape(s) {
     var n = s;
     n = n.replace(/&nbsp;/g, " ");
     n = n.replace(/<p>/gi, "");
     n = n.replace(/<span>/gi, "");
     n = n.replace(/<\/span>/gi, "");
-    n = n.replace(/<\/P>/gi, "\n");
     n = n.replace(/<br>/gi, "\n");
     n = n.replace(/<br\/>/gi, "\n");
+    n = n.replace(/<\/P>/gi, "");
     n = n.replace(/&/g, "&amp;");
     n = n.replace(/</g, "&lt;");
     n = n.replace(/>/g, "&gt;");
@@ -246,6 +257,7 @@ function dodiff()
 		vnA.innerHTML = ss_diffOne;
 		var vnB = document.getElementById("versionNumberB");
 		vnB.innerHTML = ss_diffTwo;
+		document.getElementById("diff-title").innerHTML = diffString(document.getElementById("title"+ss_diffOne).innerHTML, document.getElementById("title"+ss_diffTwo).innerHTML);
 		document.getElementById("diff-desc").innerHTML = diffString(document.getElementById("desc"+ss_diffOne).innerHTML, document.getElementById("desc"+ss_diffTwo).innerHTML);
 		document.getElementById("diff").style.display='block';
 		document.getElementById("diff").focus();
@@ -301,7 +313,7 @@ function dodiff()
 		Element configEle = (Element)changeLogEntry.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryView']");
 	%>
 	<c:set var="configEle" value="<%= configEle %>" />
-    <div id="desc${change.folderEntry.attributes.logVersion}" style="padding:10px; border: 1px black solid;">
+    <div style="padding:10px; border: 1px black solid;">
 		<c:if test="${!empty configEle}">
 		  <c:set var="ssBinderOriginalFromDescriptionHistory" value="${ssBinder}" />
 		  <c:set var="ssBinder" value="${changeLogEntry.parentBinder}" scope="request"/>
@@ -316,6 +328,10 @@ function dodiff()
 		</c:if>
     </div>
   </ssf:expandableArea>
+  <div style="display:none;"><span class="ss_entryTitle" id="title${change.folderEntry.attributes.logVersion}">${change.folderEntry.attribute.title.value}</span></div>
+  <div style="display:none;" class="ss_entryContent ss_entryDescription" id="desc${change.folderEntry.attributes.logVersion}">
+    ${change.folderEntry.attribute.description.value}
+  </div>
   </c:if>
 </td>
 </tr>
@@ -340,6 +356,9 @@ function dodiff()
   </ssf:nlt>
 </h3>
 <h4 id="diff-key"><ssf:nlt tag="entry.comparison.key"/></h4>
+<div class="ss_labelAbove"><ssf:nlt tag="general.title"/></div>
+<div id="diff-title" class="ss_entryTitle"></div>
+<div class="ss_labelAbove" style="padding-top:12px;"><ssf:nlt tag="__description"/></div>
 <div id="diff-desc" class="ss_entryContent ss_entryDescription"></div>
 </div>
 
