@@ -2226,9 +2226,7 @@ public class BinderHelper {
 							fa.setFileStatus(Integer.valueOf(value));
 						}
 					}
-					if (!fileAttName.equals("")) {
-						entry.addAttachment(fa);
-					}
+					entry.addAttachment(fa);
 				}
 			}
 		}

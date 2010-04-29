@@ -328,9 +328,13 @@ function dodiff()
 		</c:if>
     </div>
   </ssf:expandableArea>
-  <div style="display:none;"><span class="ss_entryTitle" id="title${change.folderEntry.attributes.logVersion}">${change.folderEntry.attribute.title.value}</span></div>
+  <div style="display:none;">
+    <span class="ss_entryTitle" id="title${change.folderEntry.attributes.logVersion}">
+      ${change.folderEntry.attribute.title.value}
+    </span>
+  </div>
   <div style="display:none;" class="ss_entryContent ss_entryDescription" id="desc${change.folderEntry.attributes.logVersion}">
-    ${change.folderEntry.attribute.description.value}
+    <ssf:markup entity="${changeLogEntry}">${change.folderEntry.attribute.description.value}</ssf:markup>
   </div>
   </c:if>
 </td>
