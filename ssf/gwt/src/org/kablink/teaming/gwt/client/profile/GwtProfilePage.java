@@ -2,13 +2,20 @@ package org.kablink.teaming.gwt.client.profile;
 
 import java.util.Iterator;
 
+import org.kablink.teaming.gwt.client.service.GwtRpcService;
+import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -16,6 +23,8 @@ import com.google.gwt.user.client.ui.Label;
 public class GwtProfilePage extends Composite implements ActionHandler
 {
 	private ProfileRequestInfo profileRequestInfo = null;
+	private ProfileMainPanel profileMainPanel;
+	private ProfileSidePanel profileSidePanel;
 	
 	public GwtProfilePage() {
 		
@@ -39,22 +48,72 @@ public class GwtProfilePage extends Composite implements ActionHandler
 		hPanel.setWidth("100%");
 		profilePanel.add(hPanel);
 
-		ProfileMainPanel profileInfoPanel = new ProfileMainPanel(profileRequestInfo);
-		ProfileSidePanel profileTrackPanel = new ProfileSidePanel(profileRequestInfo);
+		profileMainPanel = new ProfileMainPanel(profileRequestInfo);
+		profileSidePanel = new ProfileSidePanel(profileRequestInfo);
 		
 		//Add the profile info to the left pane
-		hPanel.add(profileInfoPanel);
-		hPanel.setCellWidth(profileInfoPanel, "100%");
+		hPanel.add(profileMainPanel);
+		hPanel.setCellWidth(profileMainPanel, "100%");
 		
 		//Add the tracking info and team info to right pane
-		hPanel.add(profileTrackPanel);
-		hPanel.setCellHorizontalAlignment(profileTrackPanel, HasHorizontalAlignment.ALIGN_RIGHT);
+		hPanel.add(profileSidePanel);
+		hPanel.setCellHorizontalAlignment(profileSidePanel, HasHorizontalAlignment.ALIGN_RIGHT);
+		
+		{
+			Timer timer;
+			timer = new Timer()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void run()
+				{
+					createProfileInfoSections(profileRequestInfo);
+				}// end run()
+			};
 			
+			timer.schedule( 20 );
+		}
+		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainProfilePage );
 	}
 
+	private void createProfileInfoSections(ProfileRequestInfo profileRequestInfo) {
+		
+		GwtRpcServiceAsync	gwtRpcService;
+		
+		// create an async callback to handle the result of the request to get the state:
+		AsyncCallback<ProfileInfo> callback = new AsyncCallback<ProfileInfo>()
+		{
+			public void onFailure(Throwable t)
+			{
+				// display error
+				Window.alert( "Error: "+ t.getMessage() );
+			}
+		
+			public void onSuccess(ProfileInfo profile) {
+				int count = profile.getCategories().size();
+				int row = 0;
+				for(int i=0; i < count; i++ ) {
+					
+					ProfileCategory cat = profile.get(i);
+					if(cat.getName().equals("profileSidePanelView")) {
+						profileSidePanel.setCategory(cat);
+						continue;
+					}
+					
+					profileMainPanel.setCategory(cat);
+				}
+			}
+		};
 	
+		gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
+		gwtRpcService.getProfileInfo(profileRequestInfo.getBinderId(), callback);
+		
+}
+
 
 	/**
 	 * Use JSNI to grab the JavaScript object that holds the information about the request dealing with.
