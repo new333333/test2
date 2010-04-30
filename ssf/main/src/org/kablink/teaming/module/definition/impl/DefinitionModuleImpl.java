@@ -1713,7 +1713,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				Element defItem = (Element) itDefItems.next();
 				nextId = updateDefinitionTreeElement("item", defItem, defItem, this.configRoot, nextId);
 			}
-			if (nextId != startingId) defChanged = true;
+			if (nextId != startingId) {
+				defChanged = true;
+				defRoot.addAttribute("nextId", String.valueOf(nextId));
+			}
 		}
 		return defChanged;
 	}
