@@ -1051,7 +1051,7 @@
 			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__name" type="text" />
 			<property name="type" caption="__type" type="selectbox" 
-				  default="profileGWT" value="profileGWT">
+				  default="profileStd" value="profileStd">
 				<option name="profileStd" caption="__profile_entry_type_BC" />
 				<option name="profileGWT" caption="__profile_entry_type_GWT" />
 			</property>
@@ -1061,10 +1061,10 @@
 		</operations>
 		<options>
 			<option name="profileEntryForm" initial="true" />
-			<option name="profileEntryView" />
-			<option name="profileEntryStandardView" initial="true"/>
+			<option name="profileEntryView" initial="true" />
+			<option name="profileEntryStandardView" initial="true" />
 			<option name="profileEntrySimpleView" initial="true" />
-			<option name="profileEntryBusinessCard" initial="false" />
+			<option name="profileEntryBusinessCard" initial="false"/>
 			<option name="profileEntryMiniBusinessCard" initial="true" />			
 		</options>
 	</item>
@@ -1099,24 +1099,10 @@
 			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
-			<option name="profileName" initial="true" />
-			<option name="profilePassword" initial="true" />
-			<option name="profileEntryPicture" initial="true" />
-			<option name="profileFirstName" initial="true" />
-			<option name="profileMiddleName" initial="true" />
-			<option name="profileLastName" initial="true" />
-			<option name="profileEmailAddress" initial="true" />
-			<option name="profileMobileEmailAddress" initial="true" />
-			<option name="profileTxtEmailAddress" initial="true" />
-			<option name="profileZonName" initial="true" />
-			<option name="profileTimeZone" initial="true" />
-			<option name="profileLocale" initial="true" />
-			<option name="profileSkypeId" initial="false" />
-			<option name="profileTwitterId" initial="false" />
 			<option name="entryFormButtons" initial="true" />
 			<option_select path="//item[@category='profileEntryData']" />
 			<option_select path="//item[@category='commonEntryData']" />
-			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+			<option_select path="//item[@category='userFormLayout']" optionCaption="__layout_options" />
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
@@ -1763,6 +1749,26 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	
+	<item name="profileAboutMe" caption="__aboutMe" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__aboutMe"/>
+			<property name="name" caption="__data_name" type="text" value="aboutMe" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" />
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/textarea_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>
+	
 <!-- Profile entry view-->
 	<item name="profileEntryView" caption="__profile_entry_view_definition" multipleAllowed="false" display="view">
 		<operations>
@@ -1811,18 +1817,9 @@
 <!-- Profile entry profile view -->
 	<item name="profileEntryStandardView" caption="__profile_entry_standard_view" 
 		  canBeDeleted="false" multipleAllowed="false" display="view">
-		<options>
-			<option name="profileHeadingPersonalView" caption="__profile_heading_Personal_div" 
-				definitionType="7" initial="true" />
-			<option name="profileHeadingOrgView" caption="__profile_heading_Org_div" 
-				definitionType="7" initial="true" />
-			<option name="profileHeadingContactView" caption="__profile_heading_Contact_div" 
-				definitionType="7" initial="true" />	
-			<option name="profileHeadingOtherView" caption="__profile_heading_Other_div" 
-				definitionType="7" initial="true" />	
-			<option name="profileHeadingPhotosAndImagesView" caption="__profile_heading_PhotosAndImages_div" 
-				definitionType="7" initial="true" />	
-			<option_select path="//item[@category='userViewLayout']" optionCaption="__layout_options" />
+		<options optionCaption="__layout_options">
+			<option_select path="//item[@category='userViewLayout']" />
+			<option_select path="//item[@name='entryAttachments']" />
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_GWT.jsp" />
@@ -1852,7 +1849,6 @@
 			<option name="profileEntryDataItem" definitionType="7" />
 			<option name="entryAttachments" caption="__entry_attachments" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select path="//item[@category='userViewLayout']" optionCaption="__layout_options" />
 		</options>
 		
 		<jsps>
@@ -1938,92 +1934,175 @@
 		</jsps>
 	</item>	
 	
-	<item name="profileHeadingPersonalView" caption="__profile_heading_Personal_div" category="userViewLayout" display="view" canBeDeleted="false" multipleAllowed="false">
+	<item name="profileHeadingPersonalForm" caption="__profile_heading_Personal_div" category="userFormLayout" display="form" canBeDeleted="false" multipleAllowed="false">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
-			<property name="_elements" caption="__profile_elements_to_show" 
-				  type="selectbox" multipleAllowed="true">
-				<option name="jobTitle" caption="__jobTitle" initial="true" />
-				<option name="street" caption="__street" initial="true" />
-				<option name="city" caption="__city" initial="true" />
-				<option name="state" caption="__state" initial="true" />
-				<option name="postalCode" caption="__postalCode" initial="true" />  
-		    </property>
 		</properties>
-		<options optionCaption="__standard_entry_options">
-			<option_select definitionType="6" path="//item[@category='profileViewData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
+			<options optionCaption="__profile_options">
+			<option name="profileJobTitle" caption="__jobTitle" initial="true"/>
+			<option name="profileStreet" caption="__street" initial="false"/>
+			<option name="profileCity" caption="__city" initial="false"/>
+			<option name="profileState" caption="__state" initial="true"/>
+			<option name="profilePostalCode" caption="__postalCode" initial="true"/>
+			<option_select path="//item[@category='profileEntryData']" />
+		</options>		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_heading.jsp" />
+		</jsps>
+	</item>	
+
+	<item name="profileHeadingOrgForm" caption="__profile_heading_Org_div" category="userFormLayout" display="form" canBeDeleted="false" multipleAllowed="false">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
+		</properties>
+		<options optionCaption="__profile_options">
+			<option name="profileDepartment" initial="true" />
+			<option name="profileManager" initial="true" />
+			<option name="profileLocation" initial="true" />
+			<option name="profileOffice" initial="true" />
+			<option_select path="//item[@category='profileEntryData']" />
+		</options>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_heading.jsp" />
+		</jsps>
+	</item>	
+	<item name="profileHeadingContactForm" caption="__profile_heading_Contact_div" category="userFormLayout" display="form" canBeDeleted="false" multipleAllowed="false">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
+		</properties>
+		<options optionCaption="__profile_options">
+			<option name="profileWorkPhone" initial="true" />
+			<option name="profileMobilePhone" initial="true" />
+			<option name="profileHomePhone" initial="false" />
+			<option name="profileEmailAddress" initial="true" />
+			<option name="profileMobileEmailAddress" initial="true" />
+			<option name="profileTxtEmailAddress" initial="true" />
+			<option name="profileZonName" initial="true" />
+			<option name="profileSkypeId" initial="false" />
+			<option name="profileTwitterId" initial="false" />
+			<option name="profileInstantMessage" initial="false" />
+			<option_select path="//item[@category='profileEntryData']" />
+		</options>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_heading.jsp" />
+		</jsps>
+	</item>	
+	<item name="profileHeadingOtherForm" caption="__profile_heading_Other_div" category="userFormLayout" display="form" canBeDeleted="false" multipleAllowed="false">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
+		</properties>
+		<options optionCaption="__profile_options">
+			<option name="profileWebsite" initial="true" />
+			<option name="profileResponsibilities" initial="true" />
+			<option name="profileInterests" initial="true" />
+			<option name="profileEducation" initial="true" />
+			<option_select path="//item[@category='profileEntryData']" />
+		</options>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_heading.jsp" />
+		</jsps>
+	</item>	
+	<item name="profileHeadingPersonalView" caption="__profile_heading_Personal_div" category="userViewLayout" display="view" canBeDeleted="true" multipleAllowed="false">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
+		</properties>
+		<options optionCaption="__profile_options">
+			<option name="profileJobTitle" caption="__jobTitle" initial="true"/>
+			<option name="profileStreet" caption="__street" initial="false"/>
+			<option name="profileCity" caption="__city" initial="false"/>
+			<option name="profileState" caption="__state" initial="true"/>
+			<option name="profilePostalCode" caption="__postalCode" initial="true"/>
+			<option_select definitionType="7" path="//item[@category='profileEntryViewData']" optionCaption="__profile_additional_options" />
 		</options>
 	</item>	
-	
-	
-	<item name="profileHeadingOrgView" caption="__profile_heading_Org_div" category="userViewLayout" display="view" canBeDeleted="false" multipleAllowed="false">
+	<item name="profileHeadingContactView" caption="__profile_heading_Contact_div" category="userViewLayout" display="view" canBeDeleted="true" multipleAllowed="false">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
-			<property name="_elements" caption="__profile_elements_to_show" 
-				  type="selectbox" multipleAllowed="true">
-				<option name="department" caption="__department" initial="true"/>
-				<option name="office" caption="__office" initial="true"/>
-				<option name="location" caption="__location" initial="true"/>
-				<option name="mailStop" caption="__mailStop" initial="true"/>
-				<option name="manager" caption="__manager" initial="true"/>
-		    </property>
 		</properties>
-		<options optionCaption="__standard_entry_options">
-			<option_select definitionType="6" path="//item[@category='profileViewData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
+		<options optionCaption="__profile_options">
+			<option name="profileWorkPhone" initial="true" />
+			<option name="profileMobilePhone" initial="true" />
+			<option name="profileHomePhone" initial="false" />
+			<option name="profileEmailAddress" initial="true" />
+			<option name="profileMobileEmailAddress" initial="true" />
+			<option name="profileTxtEmailAddress" initial="true" />
+			<option name="profileZonName" initial="true" />
+			<option name="profileSkypeId" initial="false" />
+			<option name="profileTwitterId" initial="false" />
+			<option name="profileInstantMessage" initial="false" />
+			<option_select definitionType="7" path="//item[@category='profileEntryViewData']" optionCaption="__profile_additional_options" />
+		</options>
+	</item>	
+	<item name="profileHeadingOrgView" caption="__profile_heading_Org_div" category="userViewLayout" display="view" canBeDeleted="true" multipleAllowed="false">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
+		</properties>
+		<options optionCaption="__profile_options">
+			<option name="profileDepartment" initial="true" />
+			<option name="profileManager" initial="true" />
+			<option name="profileLocation" initial="true" />
+			<option name="profileOffice" initial="true" />
+			<option_select definitionType="7" path="//item[@category='profileEntryViewData']" optionCaption="__profile_additional_options" />
 		</options>
 	</item>	
 
-	<item name="profileHeadingContactView" caption="__profile_heading_Contact_div" category="userViewLayout" display="view" canBeDeleted="false" multipleAllowed="false">
+	<item name="profileHeadingOtherView" caption="__profile_heading_Other_div" category="userViewLayout" display="view" canBeDeleted="true" multipleAllowed="false">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
-			<property name="_elements" caption="__profile_elements_to_show" 
-				  type="selectbox" multipleAllowed="true">
-				<option name="workPhone" caption="__workPhone"/>
-				<option name="mobilePhone" caption="__mobilePhone"/>
-				<option name="homePhone" caption="__homePhone"/>
-				<option name="fax" caption="__fax"/>
-				<option name="emailAddress" caption="__emailAddress" initial="true"/>
-				<option name="mobileEmailAddress" caption="__mobileEmailAddress" initial="true"/>
-				<option name="txtEmailAddress" caption="__txtEmailAddress" initial="true"/>
-				<option name="zonName" caption="__zonName" initial="true"/>
-				<option name="skypeId" caption="__skypeId" initial="true"/>
-				<option name="twitterId" caption="__twitterId"/>
-				<option name="IMID" caption="__instantMessage" />
-		    </property>
+		</properties>
+		<options optionCaption="__profile_options">
+			<option name="profileWebsite" initial="true" />
+			<option name="profileResponsibilities" initial="true" />
+			<option name="profileInterests" initial="true" />
+			<option name="profileEducation" initial="true" />
+			<option_select definitionType="7" path="//item[@category='profileEntryViewData']" optionCaption="__profile_additional_options" />
+		</options>
+	</item>	
+	
+	<item name="profileHeadingPhotosAndImagesView" caption="__profile_heading_PhotosAndImages_div" category="userViewLayout" display="view" canBeDeleted="true" multipleAllowed="false">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
+		</properties>
+	</item>
+
+	<item name="profileSidePanelView" caption="__profile_sidePanel_div" category="userViewLayout" display="view" canBeDeleted="true" multipleAllowed="false">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
 		</properties>
 		<options>
-			<option name="profileEntryDataItem" definitionType="7" />
+			<option name="profileAboutMe" />
+			<option_select definitionType="7" path="//item[@category='userSideViewLayout']" optionCaption="__layout_options" />
 		</options>
-	</item>	
-
-	<item name="profileHeadingOtherView" caption="__profile_heading_Other_div" category="userViewLayout" display="view" canBeDeleted="false" multipleAllowed="false">
-		<properties>
-			<property name="caption" caption="__caption" type="text"/>
-			<property name="_elements" caption="__profile_elements_to_show" 
-				  type="selectbox" multipleAllowed="true">
-				<option name="website" caption="__website" initial="true"/>
-				<option name="responsibilities" caption="__responsibilities" initial="true"/>
-				<option name="interests" caption="__interests" initial="true"/>
-				<option name="education" caption="__education" initial="true"/>
-		    </property>
-		</properties>
-		<options optionCaption="__standard_entry_options">
-			<option_select definitionType="6" path="//item[@category='profileViewData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
-		</options>
-	</item>	
+	</item>
 	
-	<item name="profileHeadingPhotosAndImagesView" caption="__profile_heading_PhotosAndImages_div" category="userViewLayout" display="view" canBeDeleted="false" multipleAllowed="false">
+	<item name="profileStats" caption="__stats" canBeDeleted="true" multipleAllowed="false" category="userSideViewLayout" display="view">
 		<properties>
-			<property name="caption" caption="__caption" type="text"/>
+			<property name="caption" caption="__caption" type="text" value="__stats"/>
 		</properties>
-		<options optionCaption="__standard_entry_options">
-			<option_select definitionType="6" path="//item[@category='profileViewData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
-		</options>
-	</item>	
+	</item>
+
+	<item name="profileTeams" caption="__teams" canBeDeleted="true" multipleAllowed="false" category="userSideViewLayout" display="view">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__teams"/>
+		</properties>
+	</item>
+
+	<item name="profileFollowers" caption="__followers" canBeDeleted="true" multipleAllowed="false" category="userSideViewLayout" display="view">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__followers"/>
+		</properties>
+	</item>
+
+	<item name="profileFollowing" caption="__following" canBeDeleted="true" multipleAllowed="false" category="userSideViewLayout" display="view">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__following"/>
+		</properties>
+	</item>
+
+	<item name="profileSavedSearches" caption="__savedSearches" canBeDeleted="true" multipleAllowed="false" category="userSideViewLayout" display="view">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__savedSearches"/>
+		</properties>
+	</item>
 	
 <!-- Workspace items -->
 	<item name="workspaceViewType" definitionType="8" caption="__workspace_view">
