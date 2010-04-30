@@ -45,15 +45,30 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GwtPersonalPreferences
 	implements IsSerializable
 {
-	// The binder this branding data is from.
-	private String m_binderId = null;
-	
+	private String m_displayStyle = null;
 	
 	/**
 	 * 
 	 */
 	public GwtPersonalPreferences()
 	{
-		m_binderId = null;
 	}// end PersonalPreferences()
-}// end PersonalPreferences
+	
+	
+	/**
+	 * 
+	 */
+	public String getDisplayStyle()
+	{
+		return m_displayStyle;
+	}// end getDisplayStyle()
+	
+	
+	/**
+	 * 
+	 */
+	public void setDisplayStyle( String displayStyle )
+	{
+		m_displayStyle = displayStyle;
+	}// end setDisplayStyle()
+}// end GwtPersonalPreferences

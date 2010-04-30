@@ -300,6 +300,8 @@ public abstract class DlgBox extends PopupPanel
 				if ( m_editCanceledHandler.editCanceled() )
 					hide();
 			}
+			else
+				hide();
 		}
 	}// end onClick()
 	

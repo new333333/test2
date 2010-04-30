@@ -32,46 +32,18 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-import java.util.ArrayList;
-
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
-import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
-import com.google.gwt.user.client.ui.HTMLTable;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RadioButton;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -81,11 +53,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class PersonalPreferencesDlg extends DlgBox
 {
-	private RadioButton m_useBrandingImgRb;
-	private RadioButton m_useAdvancedBrandingRb;
-	private ListBox m_brandingImgListbox;
-	private ListBox m_backgroundImgListbox;
-	private AsyncCallback<ArrayList<String>> m_rpcReadCallback = null;
+	private ListBox m_entryDisplayStyleListbox;
 	
 
 	/**
@@ -112,11 +80,34 @@ public class PersonalPreferencesDlg extends DlgBox
 	public Panel createContent( Object props )
 	{
 		FlowPanel mainPanel = null;
+		FlexTable table;
+		int nextRow;
 
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
+		
+		table = new FlexTable();
+		table.setCellSpacing( 4 );
+		table.addStyleName( "dlgContent" );
+		
+		nextRow = 0;
+		
+		// Create the controls for "Entry display style"
+		{
+			table.setText( nextRow, 0, GwtTeaming.getMessages().entryDisplayStyleLabel() );
+			
+			// Create a listbox that will hold all the possible values for the "Entry Display Style".
+			m_entryDisplayStyleListbox = new ListBox( false );
+			m_entryDisplayStyleListbox.setVisibleItemCount( 1 );
+			m_entryDisplayStyleListbox.addItem( GwtTeaming.getMessages().showEntriesAsAnOverlay(), "iframe" );
+			m_entryDisplayStyleListbox.addItem( GwtTeaming.getMessages().showEntriesInNewPage(), "newpage" );
+			m_entryDisplayStyleListbox.addItem( GwtTeaming.getMessages().showEntriesInPopupWnd(), "popup" );
 
-		mainPanel.add( new Label( "This is the Personal Preferences dialog" ) );
+			table.setWidget( nextRow, 1, m_entryDisplayStyleListbox );
+			++nextRow;
+		}
+		
+		mainPanel.add( table );
 		
 		return mainPanel;
 	}// end createContent()
@@ -127,8 +118,34 @@ public class PersonalPreferencesDlg extends DlgBox
 	 */
 	public Object getDataFromDlg()
 	{
-		return new GwtPersonalPreferences();
+		GwtPersonalPreferences personalPrefs;
+		String displayStyle;
+		
+		personalPrefs = new GwtPersonalPreferences();
+		
+		// Get the entry display style from the dialog.
+		displayStyle = getEntryDisplayStyleFromDlg();
+		personalPrefs.setDisplayStyle( displayStyle );
+		
+		return personalPrefs;
 	}// end getDataFromDlg()
+	
+	
+	/**
+	 * Get the selected value for "entry display style"
+	 */
+	private String getEntryDisplayStyleFromDlg()
+	{
+		int index;
+		String displayStyle;
+		
+		index = m_entryDisplayStyleListbox.getSelectedIndex();
+		if ( index == -1 )
+			index = 0;
+		
+		displayStyle = m_entryDisplayStyleListbox.getValue( index );
+		return displayStyle;
+	}// end getEntryDisplayStyleFromDlg()
 	
 	
 	/**
@@ -145,83 +162,28 @@ public class PersonalPreferencesDlg extends DlgBox
 	 */
 	public void init( GwtPersonalPreferences personalPrefs )
 	{
+		initEntryDisplayStyleControls( personalPrefs );
 	}// end init()
-
-
+	
+	
 	/**
-	 * For the given image name, select the appropriate file name in the given listbox.
+	 * Initialize the controls used with "Entry display style"
 	 */
-	private void selectImageInListbox( ListBox listbox, String imgName )
+	private void initEntryDisplayStyleControls( GwtPersonalPreferences personalPrefs )
 	{
-		boolean foundImgName = false;
 		int index;
 		
-		// Do we have an image name.
-		if ( imgName != null && imgName.length() > 0 )
-		{
-			// Yes, try to select the image name in the given listbox.
-			index = selectListboxItemByValue( listbox, imgName );
-			if ( index != -1 )
-				foundImgName = true;
-		}
-		else
-		{
-			// No, try to select the default Teaming image option.
-			index = selectListboxItemByValue( listbox, BrandingPanel.DEFAULT_TEAMING_IMAGE );
-			if ( index != -1 )
-				foundImgName = true;
-		}
+		m_entryDisplayStyleListbox.setSelectedIndex( -1 );
 		
-		// Did we find the image name in the listbox?
-		if ( foundImgName == false )
+		// Select the appropriate item in the "display style" listbox.
+		index = GwtClientHelper.selectListboxItemByValue( m_entryDisplayStyleListbox, personalPrefs.getDisplayStyle() );
+		
+		// Did we select an item in the listbox?
+		if ( index == -1 )
 		{
-			String value;
-			
 			// No
-			// Are there files to select from in the listbox?
-			value = listbox.getValue( 0 );
-			if ( value != null && value.equalsIgnoreCase( "no images" ) )
-			{
-				// No, select the "no images available" option.
-				listbox.setSelectedIndex( 0 );
-			}
-			else
-			{
-				// Yes
-				// Try to select the default Teaming image option in the listbox.
-				index = selectListboxItemByValue( listbox, BrandingPanel.DEFAULT_TEAMING_IMAGE );
-				
-				// Did we select the default teaming image?
-				if ( index == -1 )
-				{
-					// No, select "no image"
-					selectListboxItemByValue( listbox, BrandingPanel.NO_IMAGE );
-				}
-			}
+			m_entryDisplayStyleListbox.setSelectedIndex( 0 );
 		}
-	}// end selectImageInListbox()
-	
-	
-	/**
-	 * For the given listbox, select the item in the listbox that has the given value.
-	 */
-	private int selectListboxItemByValue( ListBox listbox, String value )
-	{
-		int i;
-		
-		for (i = 0; i < listbox.getItemCount(); ++i)
-		{
-			String tmp;
-			
-			tmp = listbox.getValue( i );
-			if ( tmp != null && tmp.equalsIgnoreCase( value ) )
-			{
-				listbox.setSelectedIndex( i );
-				return i;
-			}
-		}
-		
-		// If we get here it means we did not find an item in the listbox with the given value.
-		return -1;
-	}// end selectListboxItemByValue()
+	}// end initEntryDisplayStyleControls()
+
 }// end PersonalPreferencesDlg

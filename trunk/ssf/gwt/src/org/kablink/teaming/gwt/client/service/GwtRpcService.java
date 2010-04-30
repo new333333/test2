@@ -38,6 +38,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
+import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
@@ -89,6 +90,10 @@ public interface GwtRpcService extends RemoteService
 	// Returns various binder URLs.
 	public String getBinderPermalink( String binderId );
 	public String getModifyBinderUrl( String binderId );
+	
+	// The following deal with personal preferences.
+	public GwtPersonalPreferences getPersonalPreferences();
+	public Boolean savePersonalPreferences( GwtPersonalPreferences personalPrefs ) throws GwtTeamingException;
 	
 	// Return a GwtBrandingData object for the global workspace.
 	public GwtBrandingData getSiteBrandingData() throws GwtTeamingException;

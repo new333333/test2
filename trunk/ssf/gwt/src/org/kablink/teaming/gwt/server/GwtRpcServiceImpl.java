@@ -68,6 +68,7 @@ import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
+import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
@@ -111,6 +112,7 @@ import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.search.Constants;
@@ -583,10 +585,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			    		}
 			    		catch(Exception e)
 			    		{
-			    			Log logger;
-
-			    			logger = LogFactory.getLog( getClass() );
-			    			logger.warn( "Unable to parse branding ext " + xmlStr );
+			    			m_logger.warn( "Unable to parse branding ext " + xmlStr );
 			    		}
 					}
 					
@@ -954,6 +953,52 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		return adapterUrl.toString();
 	}// end getModifyBinderUrl()
+	
+	
+	/**
+	 * Return a GwtPersonalPreferences object that holds the personal preferences for the logged in user.
+	 */
+	public GwtPersonalPreferences getPersonalPreferences()
+	{
+		GwtPersonalPreferences personalPrefs;
+		
+		personalPrefs = new GwtPersonalPreferences();
+		
+		try
+		{
+			User user;
+			
+			// Is the current user the guest user?
+			user = GwtServerHelper.getCurrentUser();
+			
+			// Are we dealing with the guest user?
+			if ( !(ObjectKeys.GUEST_USER_INTERNALID.equals( user.getInternalId() ) ) )
+			{
+				String displayStyle;
+				
+				// No
+				// Get the user's display style preference
+				displayStyle = user.getDisplayStyle();
+				personalPrefs.setDisplayStyle( displayStyle );
+			}
+			else
+			{
+				m_logger.warn( "GwtRpcServiceImpl.getPersonalPreferences(), user is guest." );
+			}
+		}
+		catch (AccessControlException acEx)
+		{
+			// Nothing to do
+			m_logger.warn( "GwtRpcServiceImpl.getPersonalPreferences() AccessControlException" );
+		}
+		catch (Exception e)
+		{
+			// Nothing to do
+			m_logger.warn( "GwtRpcServiceImpl.getPersonalPreferences() unknown exception" );
+		}
+		
+		return personalPrefs;
+	}// end getPersonalPreferences()
 	
 	
 	/**
@@ -1886,6 +1931,70 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		return Boolean.TRUE;
 	}// end saveBrandingData()
+
+
+	/**
+	 * Save the given personal preferences for the logged in user.
+	 */
+	public Boolean savePersonalPreferences( GwtPersonalPreferences personalPrefs ) throws GwtTeamingException
+	{
+		try
+		{
+			User user;
+			
+			// Is the current user the guest user?
+			user = GwtServerHelper.getCurrentUser();
+			
+			// Are we dealing with the guest user?
+			if ( !(ObjectKeys.GUEST_USER_INTERNALID.equals( user.getInternalId() ) ) )
+			{
+				// No
+				// Save the "display style" preference
+				{
+					Map<String,Object> updates;
+					String newDisplayStyle;
+					
+					updates = new HashMap<String,Object>();
+					
+					newDisplayStyle = personalPrefs.getDisplayStyle();
+					
+					// Only allow "word" characters (such as a-z_0-9 )
+					if ( newDisplayStyle.equals("") || !newDisplayStyle.matches( "^.*[\\W]+.*$" ) )
+					{
+						updates.put( ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, newDisplayStyle );
+						getProfileModule().modifyEntry( user.getId(), new MapInputData( updates ) );
+					}
+				}
+			}
+			else
+			{
+				m_logger.warn( "GwtRpcServiceImpl.getPersonalPreferences(), user is guest." );
+			}
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			
+			// Nothing to do
+			m_logger.warn( "GwtRpcServiceImpl.savePersonalPreferences() AccessControlException" );
+			throw ex;
+		}
+		catch (Exception e)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+
+			m_logger.warn( "GwtRpcServiceImpl.savePersonalPreferences() unknown exception" );
+			throw ex;
+		}
+		
+		return Boolean.TRUE;
+	}// end savePersonalPreferences()
 
 
 	/**

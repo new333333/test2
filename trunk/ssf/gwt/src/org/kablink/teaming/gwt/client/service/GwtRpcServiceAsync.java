@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
+import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
@@ -86,6 +87,10 @@ public interface GwtRpcServiceAsync
 	
     public void getTutorialPanelState( AsyncCallback<String> callback );
 
+	// The following deal with personal preferences.
+	public void getPersonalPreferences( AsyncCallback<GwtPersonalPreferences> callback );
+	public void savePersonalPreferences( GwtPersonalPreferences personalPrefs, AsyncCallback<Boolean> callback );
+	
     // Return a GwtBrandingData object for the global workspace.
 	public void getSiteBrandingData( AsyncCallback<GwtBrandingData> callback );
 	

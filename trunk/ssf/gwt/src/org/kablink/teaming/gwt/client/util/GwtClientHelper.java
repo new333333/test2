@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client.util;
 
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.dom.client.Element;
 
 
@@ -194,4 +195,28 @@ public class GwtClientHelper {
 	public static native void jsLoadUrlInContentFrame(String url) /*-{
 		window.top.gwtContentIframe.location.href = url;
 	}-*/;
+
+
+	/**
+	 * For the given listbox, select the item in the listbox that has the given value.
+	 */
+	public static int selectListboxItemByValue( ListBox listbox, String value )
+	{
+		int i;
+		
+		for (i = 0; i < listbox.getItemCount(); ++i)
+		{
+			String tmp;
+			
+			tmp = listbox.getValue( i );
+			if ( tmp != null && tmp.equalsIgnoreCase( value ) )
+			{
+				listbox.setSelectedIndex( i );
+				return i;
+			}
+		}
+		
+		// If we get here it means we did not find an item in the listbox with the given value.
+		return -1;
+	}// end selectListboxItemByValue()
 }

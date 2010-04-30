@@ -37,6 +37,9 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Button;
@@ -59,6 +62,7 @@ import com.google.gwt.user.client.ui.TextBox;
  *
  */
 public class LoginDlg extends DlgBox
+	implements KeyUpHandler
 {
 	private FormPanel m_formPanel = null;
 	private TextBox m_userIdTxtBox = null;
@@ -133,6 +137,7 @@ public class LoginDlg extends DlgBox
 			
 			m_userIdTxtBox = new TextBox();
 			m_userIdTxtBox.setName( "j_username" );
+			m_userIdTxtBox.addKeyUpHandler( this );
 			m_userIdTxtBox.setVisibleLength( 20 );
 			table.setWidget( row, 1, m_userIdTxtBox );
 			
@@ -147,6 +152,7 @@ public class LoginDlg extends DlgBox
 			
 			pwdTxtBox = new PasswordTextBox();
 			pwdTxtBox.setName( "j_password" );
+			pwdTxtBox.addKeyUpHandler( this );
 			pwdTxtBox.setVisibleLength( 20 );
 			table.setWidget( row, 1, pwdTxtBox );
 			
@@ -325,15 +331,7 @@ public class LoginDlg extends DlgBox
 		if ( source == m_okBtn )
 		{
 			// Yes
-			// Hide the "login failed" message.
-			hideLoginFailedMsg();
-			
-			// Show the the "authenticating..." message.
-			showAuthenticatingMsg();
-			
-			// Submit the form requesting authentication.
-			m_formPanel.submit();
-			
+			submitLoginRequest();
 			return;
 		}
 		
@@ -343,6 +341,21 @@ public class LoginDlg extends DlgBox
 			return;
 		}
 	}// end onClick()
+	
+	
+	/**
+	 * This method gets called when the user presses a key in the "user id" field or in the "password" field.
+	 * If the user pressed the "enter" key we will submit the form.
+	 */
+	public void onKeyUp( KeyUpEvent event )
+	{
+		// Did the user press enter?
+		if ( event.getNativeKeyCode() == KeyCodes.KEY_ENTER )
+		{
+			// Yes
+			submitLoginRequest();
+		}
+	}// end onKeyPress()
 
 	
 	/**
@@ -370,5 +383,21 @@ public class LoginDlg extends DlgBox
 	{
 		m_loginFailedMsg.setVisible( true );
 	}// end hideLoginFailedMsg()
+
 	
+	/**
+	 * Submit the form to do the login request.
+	 */
+	private void submitLoginRequest()
+	{
+		// Hide the "login failed" message.
+		hideLoginFailedMsg();
+		
+		// Show the the "authenticating..." message.
+		showAuthenticatingMsg();
+		
+		// Submit the form requesting authentication.
+		m_formPanel.submit();
+		
+	}// end submitLoginRequest()
 }// end LoginDlg

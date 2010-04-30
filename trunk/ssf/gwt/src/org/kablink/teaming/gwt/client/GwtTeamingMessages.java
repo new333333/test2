@@ -229,7 +229,11 @@ public interface GwtTeamingMessages extends Messages
 	String loginDlgUserId();
 	
 	// Strings used in the personal preferences dialog.
+	String entryDisplayStyleLabel();
 	String personalPreferencesDlgHeader();
+	String showEntriesAsAnOverlay();
+	String showEntriesInNewPage();
+	String showEntriesInPopupWnd();
 	
 	// Strings used in the main menu.
 	String mainMenuAltBrowseHierarchy();
