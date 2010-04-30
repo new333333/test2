@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -120,6 +121,7 @@ public class LoginDlg extends DlgBox
 		m_formPanel = new FormPanel( "" );
 		m_formPanel.setAction( m_loginUrl );
 		m_formPanel.setMethod( FormPanel.METHOD_POST );
+		DOM.setElementAttribute( m_formPanel.getElement(), "autocomplete", "off" );
 		
 		table = new FlexTable();
 		table.setCellSpacing( 4 );

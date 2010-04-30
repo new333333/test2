@@ -192,6 +192,7 @@ public interface GwtTeamingMessages extends Messages
 	String loginHint();
 	String logoutHint();
 	String myWorkspaceHint();
+	String personalPreferencesHint();
 	
 	// Strings used in the edit branding dialog.
 	String addImage();
@@ -226,6 +227,9 @@ public interface GwtTeamingMessages extends Messages
 	String loginDlgPassword();
 	String loginDlgReset();
 	String loginDlgUserId();
+	
+	// Strings used in the personal preferences dialog.
+	String personalPreferencesDlgHeader();
 	
 	// Strings used in the main menu.
 	String mainMenuAltBrowseHierarchy();

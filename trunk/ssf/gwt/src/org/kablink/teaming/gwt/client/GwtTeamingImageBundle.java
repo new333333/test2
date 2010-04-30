@@ -136,6 +136,12 @@ public interface GwtTeamingImageBundle extends ClientBundle
 
 	@Source("org/kablink/teaming/gwt/public/images/next_disabled_16.gif")
 	public ImageResource nextDisabled16();
+	
+	@Source("org/kablink/teaming/gwt/public/images/personal_prefs1.png")
+	public ImageResource personalPrefs1();
+	
+	@Source("org/kablink/teaming/gwt/public/images/personal_prefs2.png")
+	public ImageResource personalPrefs2();
 
 	@Source("org/kablink/teaming/gwt/public/images/previous_16.gif")
 	public ImageResource previous16();

@@ -86,6 +86,8 @@ public class MastHead extends Composite
 	private InlineLabel m_mouseOverHint = null;
 	private Image m_adminImg1 = null;
 	private Image m_adminImg2 = null;
+	private Image m_personalPrefsImg1 = null;
+	private Image m_personalPrefsImg2 = null;
 	private Image m_logoutImg1 = null;
 	private Image m_logoutImg2 = null;
 	private Image m_loginImg1 = null;
@@ -93,6 +95,7 @@ public class MastHead extends Composite
 	private Image m_helpImg1 = null;
 	private Image m_helpImg2 = null;
 	private Anchor m_adminLink = null;
+	private Anchor m_personalPrefsLink = null;
 	private Anchor m_logoutLink = null;
 	private Anchor m_loginLink = null;
 	private Anchor m_helpLink = null;
@@ -156,6 +159,7 @@ public class MastHead extends Composite
 
 			// Add the global actions to the masthead.
 			addAdministrationAction();
+			addPersonalPreferencesAction();
 			addLoginLogoutAction();
 			addHelpAction();
 			
@@ -461,6 +465,41 @@ public class MastHead extends Composite
 	
 	
 	/**
+	 * If the user is logged in, add the "personal preferences" link to the global actions panel.
+	 */
+	private void addPersonalPreferencesAction()
+	{
+		// Is the user logged in?
+		if ( m_requestInfo.isUserLoggedIn() )
+		{
+			ImageResource imgResource;
+			Element linkElement;
+
+			// Yes, add the "personal preferences" action.
+			m_personalPrefsLink = new Anchor();
+			m_personalPrefsLink.addStyleName( "brandingLink" );
+			m_personalPrefsLink.addClickHandler( this );
+			m_personalPrefsLink.addMouseOutHandler( this );
+			m_personalPrefsLink.addMouseOverHandler( this );
+			linkElement = m_personalPrefsLink.getElement();
+			
+			// Add the mouse-out image to the link.
+			imgResource = GwtTeaming.getImageBundle().personalPrefs1();
+			m_personalPrefsImg1 = new Image( imgResource );
+			linkElement.appendChild( m_personalPrefsImg1.getElement() );
+			
+			// Add the mouse-over image to the link.
+			imgResource = GwtTeaming.getImageBundle().personalPrefs2();
+			m_personalPrefsImg2 = new Image( imgResource );
+			m_personalPrefsImg2.setVisible( false );
+			linkElement.appendChild( m_personalPrefsImg2.getElement() );
+			
+			m_globalActionsPanel.add( m_personalPrefsLink );
+		}
+	}// end addPersonalPreferencesAction()
+	
+	
+	/**
 	 * Display the mouse-out image for the give widget and remove the mouse-over hint.
 	 */
 	private void doMouseOutActions( Widget eventSource )
@@ -470,6 +509,11 @@ public class MastHead extends Composite
 		{
 			m_adminImg1.setVisible( true );
 			m_adminImg2.setVisible( false );
+		}
+		else if ( eventSource == m_personalPrefsLink )
+		{
+			m_personalPrefsImg1.setVisible( true );
+			m_personalPrefsImg2.setVisible( false );
 		}
 		else if ( eventSource == m_logoutLink )
 		{
@@ -579,6 +623,10 @@ public class MastHead extends Composite
 			{
 				actionHandlerIT.next().handleAction( TeamingAction.ADMINISTRATION, null );
 			}
+			else if ( eventSource == m_personalPrefsLink )
+			{
+				actionHandlerIT.next().handleAction( TeamingAction.EDIT_PERSONAL_PREFERENCES, null );
+			}
 			else if ( eventSource == m_logoutLink )
 			{
 				actionHandlerIT.next().handleAction( TeamingAction.LOGOUT, null );
@@ -632,6 +680,13 @@ public class MastHead extends Composite
 			m_adminImg2.setVisible( true );
 			
 			hint = GwtTeaming.getMessages().administrationHint();
+		}
+		else if ( eventSource == m_personalPrefsLink )
+		{
+			m_personalPrefsImg1.setVisible( false );
+			m_personalPrefsImg2.setVisible( true );
+			
+			hint = GwtTeaming.getMessages().personalPreferencesHint();
 		}
 		else if ( eventSource == m_logoutLink )
 		{
