@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.web.util;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -1165,9 +1166,9 @@ public class ExportHelper {
 
 					String xmlStr = null;
 
-					FileInputStream input = new FileInputStream(child);
+					BufferedInputStream input = new BufferedInputStream(new FileInputStream(child));
 
-					ByteArrayOutputStream output = new ByteArrayOutputStream();
+					ByteArrayOutputStream output = new ByteArrayOutputStream(12288);
 
 					int data = 0;
 					while ((data = input.read()) != -1) {
@@ -1238,8 +1239,8 @@ public class ExportHelper {
 					if (result) {
 						String xmlStr = null;
 
-						FileInputStream input = new FileInputStream(child);
-						ByteArrayOutputStream output = new ByteArrayOutputStream();
+						BufferedInputStream input = new BufferedInputStream(new FileInputStream(child));
+						ByteArrayOutputStream output = new ByteArrayOutputStream(12288);
 
 						int data = 0;
 						while ((data = input.read()) != -1) {
@@ -1303,8 +1304,8 @@ public class ExportHelper {
 
 					if (result) {
 						String xmlStr = null;
-						FileInputStream input = new FileInputStream(child);
-						ByteArrayOutputStream output = new ByteArrayOutputStream();
+						BufferedInputStream input = new BufferedInputStream(new FileInputStream(child));
+						ByteArrayOutputStream output = new ByteArrayOutputStream(12288);
 						int data = 0;
 
 						while ((data = input.read()) != -1) {
@@ -1349,8 +1350,8 @@ public class ExportHelper {
 
 					if (result) {
 						String xmlStr = null;
-						FileInputStream input = new FileInputStream(child);
-						ByteArrayOutputStream output = new ByteArrayOutputStream();
+						BufferedInputStream input = new BufferedInputStream(new FileInputStream(child));
+						ByteArrayOutputStream output = new ByteArrayOutputStream(12288);
 						int data = 0;
 
 						while ((data = input.read()) != -1) {
@@ -1591,7 +1592,8 @@ public class ExportHelper {
 				final Map fDefinitionIdMap = definitionIdMap;
 				final Map rMap = reportMap;
 				final Map fNameCache = nameCache;
-				statusTicket.setStatus(NLT.get("administration.export_import.importingEntry", new String[] {entry.getTitle()}));
+				statusTicket.setStatus(NLT.get("administration.export_import.importingEntry", 
+						new String[] {"[" + String.valueOf(reportMap.get("entries")) + "] " + entry.getTitle()}));
 				transactionTemplate.execute(new TransactionCallback() {
 					public Object doInTransaction(TransactionStatus status) {
 						importWorkflows(doc, entry, fDefinitionIdMap, rMap, fNameCache, topBinder);
