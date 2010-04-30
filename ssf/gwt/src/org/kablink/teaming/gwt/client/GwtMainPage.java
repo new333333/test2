@@ -80,7 +80,6 @@ public class GwtMainPage extends Composite
 	private LoginDlg m_loginDlg = null;
 	private EditCanceledHandler m_editBrandingCancelHandler = null;
 	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
-	private EditCanceledHandler m_editPersonalPrefsCancelHandler = null;
 	private EditSuccessfulHandler m_editPersonalPrefsSuccessHandler = null;
 	private FlowPanel m_contentPanel;
 	private FlowPanel m_teamingRootPanel;
@@ -285,9 +284,6 @@ public class GwtMainPage extends Composite
 		x = m_contentCtrl.getAbsoluteLeft();
 		y = m_contentCtrl.getAbsoluteTop();
 		
-		// Hide the content control.
-		m_contentCtrl.setVisible( false );
-		
 		// Create a handler that will be called when the user presses the ok button in the dialog.
 		if ( m_editBrandingSuccessHandler == null )
 		{
@@ -377,9 +373,6 @@ public class GwtMainPage extends Composite
 						rpcService.saveBrandingData( m_mastHead.getBinderId(), (GwtBrandingData)obj, rpcSaveCallback );
 					}
 
-					// Show the content control again.
-					m_contentCtrl.setVisible( true );
-					
 					return true;
 				}// end editSuccessful()
 			};
@@ -395,9 +388,6 @@ public class GwtMainPage extends Composite
 				 */
 				public boolean editCanceled()
 				{
-					// Show the content control again.
-					m_contentCtrl.setVisible( true );
-					
 					return true;
 				}// end editCanceled()
 			};
@@ -422,133 +412,119 @@ public class GwtMainPage extends Composite
 	 */
 	private void editPersonalPreferences()
 	{
-		GwtPersonalPreferences personalPrefs;
-		int x;
-		int y;
+		AsyncCallback<GwtPersonalPreferences> rpcReadCallback;
 		
-		// Get the user's personal preferences.
-		personalPrefs = new GwtPersonalPreferences();
-		
-		// Get the position of the content control.
-		x = m_contentCtrl.getAbsoluteLeft();
-		y = m_contentCtrl.getAbsoluteTop();
-		
-		// Hide the content control.
-		m_contentCtrl.setVisible( false );
-		
-		// Create a handler that will be called when the user presses the ok button in the dialog.
-		if ( m_editPersonalPrefsSuccessHandler == null )
+		// Create a callback that will be called when we get the personal preferences.
+		rpcReadCallback = new AsyncCallback<GwtPersonalPreferences>()
 		{
-			m_editPersonalPrefsSuccessHandler = new EditSuccessfulHandler()
+			/**
+			 * 
+			 */
+			public void onFailure( Throwable t )
 			{
-				private AsyncCallback<Boolean> rpcSaveCallback = null;
-				private String binderId = "???";	//!!!
+				String cause;
 				
-				/**
-				 * This method gets called when user user presses ok in the "Personal Preferences" dialog.
-				 */
-				public boolean editSuccessful( Object obj )
-				{
-					// Create the callback that will be used when we issue an ajax request to save the personal preferences.
-					if ( rpcSaveCallback == null )
-					{
-						rpcSaveCallback = new AsyncCallback<Boolean>()
-						{
-							/**
-							 * 
-							 */
-							public void onFailure( Throwable t )
-							{
-								String errMsg = "";
-								String cause;
-								GwtTeamingMessages messages;
-								
-								messages = GwtTeaming.getMessages();
-								
-								if ( t instanceof GwtTeamingException )
-								{
-									ExceptionType type;
-								
-									// Determine what kind of exception happened.
-									type = ((GwtTeamingException)t).getExceptionType();
-									if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
-										cause = messages.errorAccessToFolderDenied( binderId );
-									else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
-										cause = messages.errorFolderDoesNotExist( binderId );
-									else
-										cause = messages.errorUnknownException();
-								}
-								else
-								{
-									cause = t.getLocalizedMessage();
-									if ( cause == null )
-										cause = t.toString();
-								}
-								
-								//!!! errMsg = messages.getBrandingRPCFailed( cause );
-								Window.alert( errMsg );
-							}// end onFailure()
-					
-							/**
-							 * 
-							 * @param result
-							 */
-							public void onSuccess( Boolean result )
-							{
-								// Nothing to do.
-							}// end onSuccess()
-						};
-					}
-			
-					// Issue an ajax request to save the personal preferences.
-					{
-						@SuppressWarnings("unused")
-						GwtRpcServiceAsync rpcService;
-						
-						rpcService = GwtTeaming.getRpcService();
-						
-						// Issue an ajax request to save the personal preferences to the db.  rpcSaveCallback will
-						// be called when we get the response back.
-						//!!!rpcService.saveBrandingData( m_mastHead.getBinderId(), (GwtBrandingData)obj, rpcSaveCallback );
-					}
-
-					// Show the content control again.
-					m_contentCtrl.setVisible( true );
-					
-					return true;
-				}// end editSuccessful()
-			};
-		}
-		
-		// Create a handler that will be called when the user presses the cancel button in the dialog.
-		if ( m_editPersonalPrefsCancelHandler == null )
-		{
-			m_editPersonalPrefsCancelHandler = new EditCanceledHandler()
+				cause = t.getLocalizedMessage();
+				if ( cause == null )
+					cause = t.toString();
+				
+				Window.alert( cause );
+			}// end onFailure()
+	
+			/**
+			 * We successfully retrieved the user's personal preferences.  Now invoke the "edit personal preferences" dialog.
+			 */
+			public void onSuccess( GwtPersonalPreferences personalPrefs )
 			{
-				/**
-				 * This method gets called when the user presses cancel in the "Personal Preferences" dialog.
-				 */
-				public boolean editCanceled()
+				int x;
+				int y;
+
+				// Get the position of the content control.
+				x = m_contentCtrl.getAbsoluteLeft();
+				y = m_contentCtrl.getAbsoluteTop();
+				
+				// Create a handler that will be called when the user presses the ok button in the dialog.
+				if ( m_editPersonalPrefsSuccessHandler == null )
 				{
-					// Show the content control again.
-					m_contentCtrl.setVisible( true );
+					m_editPersonalPrefsSuccessHandler = new EditSuccessfulHandler()
+					{
+						private AsyncCallback<Boolean> rpcSaveCallback = null;
+						
+						/**
+						 * This method gets called when user user presses ok in the "Personal Preferences" dialog.
+						 */
+						public boolean editSuccessful( Object obj )
+						{
+							// Create the callback that will be used when we issue an ajax request to save the personal preferences.
+							if ( rpcSaveCallback == null )
+							{
+								rpcSaveCallback = new AsyncCallback<Boolean>()
+								{
+									/**
+									 * 
+									 */
+									public void onFailure( Throwable t )
+									{
+										String cause;
+										
+										cause = t.getLocalizedMessage();
+										if ( cause == null )
+											cause = t.toString();
+										
+										Window.alert( cause );
+									}// end onFailure()
+							
+									/**
+									 * 
+									 * @param result
+									 */
+									public void onSuccess( Boolean result )
+									{
+										// Nothing to do.
+									}// end onSuccess()
+								};
+							}
 					
-					return true;
-				}// end editCanceled()
-			};
-		}
-		
-		// Have we already created a "Personal Preferences" dialog?
-		if ( m_personalPrefsDlg == null )
+							// Issue an ajax request to save the personal preferences.
+							{
+								GwtRpcServiceAsync rpcService;
+								
+								rpcService = GwtTeaming.getRpcService();
+								
+								// Issue an ajax request to save the personal preferences to the db.  rpcSaveCallback will
+								// be called when we get the response back.
+								rpcService.savePersonalPreferences( (GwtPersonalPreferences)obj, rpcSaveCallback );
+							}
+							
+							return true;
+						}// end editSuccessful()
+					};
+				}
+				
+				// Have we already created a "Personal Preferences" dialog?
+				if ( m_personalPrefsDlg == null )
+				{
+					// No, create one.
+					m_personalPrefsDlg = new PersonalPreferencesDlg( m_editPersonalPrefsSuccessHandler, null, false, true, x, y );
+				}
+				
+				m_personalPrefsDlg.init( personalPrefs );
+				m_personalPrefsDlg.setPopupPosition( x, y );
+				m_personalPrefsDlg.show();
+				
+			}// end onSuccess()
+		};
+
+		// Issue an ajax request to get the personal preferences.  When we get the personal preferences
+		// we will invoke the "personal preferences" dialog.
 		{
-			// No, create one.
-			m_personalPrefsDlg = new PersonalPreferencesDlg( m_editPersonalPrefsSuccessHandler, m_editPersonalPrefsCancelHandler, false, true, x, y );
+			GwtRpcServiceAsync rpcService;
+			
+			rpcService = GwtTeaming.getRpcService();
+			
+			// Issue an ajax request to get the personal preferences from the db.
+			rpcService.getPersonalPreferences( rpcReadCallback );
 		}
-		
-		m_personalPrefsDlg.init( personalPrefs );
-		m_personalPrefsDlg.setPopupPosition( x, y );
-		m_personalPrefsDlg.show();
-		
 	}// end editPersonalPreferences()
 
 	

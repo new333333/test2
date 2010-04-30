@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt.BrandingRule;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.dom.client.Element;
@@ -1187,14 +1188,14 @@ public class EditBrandingDlg extends DlgBox
 		if ( imgName != null && imgName.length() > 0 )
 		{
 			// Yes, try to select the image name in the given listbox.
-			index = selectListboxItemByValue( listbox, imgName );
+			index = GwtClientHelper.selectListboxItemByValue( listbox, imgName );
 			if ( index != -1 )
 				foundImgName = true;
 		}
 		else
 		{
 			// No, try to select the default Teaming image option.
-			index = selectListboxItemByValue( listbox, BrandingPanel.DEFAULT_TEAMING_IMAGE );
+			index = GwtClientHelper.selectListboxItemByValue( listbox, BrandingPanel.DEFAULT_TEAMING_IMAGE );
 			if ( index != -1 )
 				foundImgName = true;
 		}
@@ -1216,41 +1217,17 @@ public class EditBrandingDlg extends DlgBox
 			{
 				// Yes
 				// Try to select the default Teaming image option in the listbox.
-				index = selectListboxItemByValue( listbox, BrandingPanel.DEFAULT_TEAMING_IMAGE );
+				index = GwtClientHelper.selectListboxItemByValue( listbox, BrandingPanel.DEFAULT_TEAMING_IMAGE );
 				
 				// Did we select the default teaming image?
 				if ( index == -1 )
 				{
 					// No, select "no image"
-					selectListboxItemByValue( listbox, BrandingPanel.NO_IMAGE );
+					GwtClientHelper.selectListboxItemByValue( listbox, BrandingPanel.NO_IMAGE );
 				}
 			}
 		}
 	}// end selectImageInListbox()
-	
-	
-	/**
-	 * For the given listbox, select the item in the listbox that has the given value.
-	 */
-	private int selectListboxItemByValue( ListBox listbox, String value )
-	{
-		int i;
-		
-		for (i = 0; i < listbox.getItemCount(); ++i)
-		{
-			String tmp;
-			
-			tmp = listbox.getValue( i );
-			if ( tmp != null && tmp.equalsIgnoreCase( value ) )
-			{
-				listbox.setSelectedIndex( i );
-				return i;
-			}
-		}
-		
-		// If we get here it means we did not find an item in the listbox with the given value.
-		return -1;
-	}// end selectListboxItemByValue()
 	
 	
 	/**
