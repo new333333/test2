@@ -65,3 +65,9 @@
 <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
 <div id="gwtProfileDiv">
 </div>
+
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  		configElement="<%= item %>" 
+  		configJspStyle="${ssConfigJspStyle}" 
+  		entry="${ssDefinitionEntry}" />
+ 
