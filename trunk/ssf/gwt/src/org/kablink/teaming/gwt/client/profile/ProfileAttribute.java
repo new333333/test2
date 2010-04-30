@@ -9,7 +9,8 @@ public class ProfileAttribute implements IsSerializable {
 	public String title;
 	public String value;
 	public String name;
-
+	public String dataName;
+	
 	private String stringValue;
 	private Long longValue;
 	private Date dateValue;
@@ -19,6 +20,8 @@ public class ProfileAttribute implements IsSerializable {
 	private static final int NONE = 0;
 
 	public static final int STRING = 1;
+	
+
 	public static final int LONG = 2;
 	public static final int DATE = 3;
 	public static final int BOOLEAN = 6;
@@ -59,6 +62,14 @@ public class ProfileAttribute implements IsSerializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public String getDataName() {
+		return dataName;
+	}
+
+	public void setDataName(String dataName) {
+		this.dataName = dataName;
 	}
 	
 	public void setValue(Object value, boolean allowed)  {

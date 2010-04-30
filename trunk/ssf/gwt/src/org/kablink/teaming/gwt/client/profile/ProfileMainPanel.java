@@ -18,6 +18,8 @@ import com.google.gwt.user.client.ui.Widget;
 public class ProfileMainPanel extends Composite {
 
 	ProfileRequestInfo profileRequestInfo;
+	private Grid grid;
+	private int row = 0;
 	
 	public ProfileMainPanel(final ProfileRequestInfo profileRequestInfo) {
 		
@@ -33,7 +35,7 @@ public class ProfileMainPanel extends Composite {
 		infoPanel.add(anchor);
 
 		// ...its content panel...
-		final Grid grid = new Grid();
+		grid = new Grid();
 		grid.setWidth("100%");
 		grid.setCellSpacing(0);
 		grid.setCellPadding(0);
@@ -42,62 +44,13 @@ public class ProfileMainPanel extends Composite {
 		infoPanel.add(grid);
 		
 		
-		{
-			Timer timer;
-			timer = new Timer()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void run()
-				{
-					createProfileInfoSections(profileRequestInfo, grid);
-				}// end run()
-			};
-			
-			timer.schedule( 20 );
-		}
+		
 
 		// All composites must call initWidget() in their constructors.
 		initWidget( infoPanel );
 	}
-	
-	private void createProfileInfoSections(ProfileRequestInfo profileRequestInfo, final Grid grid) {
-			
-			GwtRpcServiceAsync	gwtRpcService;
-			
-			// create an async callback to handle the result of the request to get the state:
-			AsyncCallback<ProfileInfo> callback = new AsyncCallback<ProfileInfo>()
-			{
-				public void onFailure(Throwable t)
-				{
-					// display error
-					Window.alert( "Error: "+ t.getMessage() );
-				}
-			
-				public void onSuccess(ProfileInfo profile) {
-					int count = profile.getCategories().size();
-					int row = 0;
-					for(int i=0; i < count; i++ ) {
-						ProfileCategory cat = profile.get(i);
-						row = createProfileInfoSection(cat, grid, row);
-						
-						//ProfileSection section = new ProfileSection(cat);
-						//grid.insertRow(row);
-						//grid.setWidget(row, 0, section);
-						//row = row + 1;
-					}
-				}
-			};
-		
-			gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
-			gwtRpcService.getProfileInfo(profileRequestInfo.getBinderId(), callback);
-			
-	}
 
-
-	private int createProfileInfoSection(final ProfileCategory cat, Grid grid, int rowCount) {
+	public int createProfileInfoSection(final ProfileCategory cat, Grid grid, int rowCount) {
 		int row = rowCount;
 
 		Label sectionHeader = new Label(cat.getTitle());
@@ -128,5 +81,9 @@ public class ProfileMainPanel extends Composite {
 		}
 
 		return row;
+	}
+	
+	public void setCategory(ProfileCategory cat) {
+		row  = createProfileInfoSection(cat, grid, row);
 	}
 }

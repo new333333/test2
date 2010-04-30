@@ -1,74 +1,93 @@
 package org.kablink.teaming.gwt.client.profile;
 
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 public class ProfileSidePanel extends Composite {
 
-	ProfileRequestInfo profileRequestInfo;
-	
+	private ProfileRequestInfo profileRequestInfo;
+	private ProfileSectionPanel aboutMeSection;
+	private ProfileSectionPanel teamsSection;
+	private ProfileSectionPanel trackingSection;
+	private ProfileSectionPanel trackedBy;
+	private ProfileSectionPanel savedSearches;
+	private FlowPanel rightColumn;
+	private ProfileStats statsPanel;
+
 	public ProfileSidePanel(final ProfileRequestInfo profileRequestInfo) {
-		
+
 		this.profileRequestInfo = profileRequestInfo;
-		
+
 		final FlowPanel rightContent = new FlowPanel();
 		rightContent.setStyleName("column-r");
-		
-		//Add the User's Photo and link
+
+		// Add the User's Photo and link
 		ProfilePhoto photo = new ProfilePhoto(profileRequestInfo);
 		rightContent.add(photo);
-		
-		//Add the Content 
-		final FlowPanel rightColumn = new FlowPanel();
+
+		// Add the Content
+		rightColumn = new FlowPanel();
 		rightColumn.addStyleName("content");
 		rightContent.add(rightColumn);
-		
-		//Add the stats div to the upper left of the right column
-		ProfileStats statsPanel = new ProfileStats(profileRequestInfo);
-		rightColumn.add(statsPanel);
-		
-		{
-			Timer timer;
-			timer = new Timer()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void run()
-				{
-					createSections(profileRequestInfo, rightColumn);
-				}// end run()
-			};
-			
-			timer.schedule( 25 );
-		}
-		
-		
+
 		// All composites must call initWidget() in their constructors.
-		initWidget( rightContent );
+		initWidget(rightContent);
 	}
-	
-	private void createSections(ProfileRequestInfo profileRequestInfo, final FlowPanel mainPanel) {
-			
-		ProfileSectionPanel aboutMeSection = new ProfileTrackSectionPanel(profileRequestInfo, "");
-		mainPanel.add(aboutMeSection);
 
-		ProfileSectionPanel teamsSection = new ProfileTeamsPanel(profileRequestInfo, "Teams:");
-		mainPanel.add(teamsSection);
-		
-		ProfileSectionPanel trackingSection = new ProfileTrackSectionPanel(profileRequestInfo, "Following:");
-		mainPanel.add(trackingSection);
+	public void setCategory(ProfileCategory cat) {
 
-		ProfileSectionPanel trackedBy = new ProfileTrackSectionPanel(profileRequestInfo, "Followers:");
-		mainPanel.add(trackedBy);
+		if (findAttrByName(cat, "profileStats")) {
+			// Add the stats div to the upper left of the right column
+			statsPanel = new ProfileStats(profileRequestInfo);
+			rightColumn.add(statsPanel);
+		} else {
+			//create empty space 
+			statsPanel = new ProfileStats(profileRequestInfo);
+			rightColumn.add(statsPanel);
+		}
 
-		if(profileRequestInfo.isOwner()) {
-			ProfileSectionPanel searchesSection = new ProfileTrackSectionPanel(profileRequestInfo, "Saved Searches:");
-			mainPanel.add(searchesSection);
+		if (findAttrByName(cat, "profileAboutMe")) {
+			aboutMeSection = new ProfileTrackSectionPanel(profileRequestInfo,
+					"About Me:");
+			rightColumn.add(aboutMeSection);
+		}
+
+		if (findAttrByName(cat, "profileTeams")) {
+			teamsSection = new ProfileTeamsPanel(profileRequestInfo, "Teams:");
+			rightColumn.add(teamsSection);
+		}
+
+		if (findAttrByName(cat, "profileFollowers")) {
+			trackingSection = new ProfileTrackSectionPanel(profileRequestInfo,
+					"Following:");
+			rightColumn.add(trackingSection);
+		}
+
+		if (findAttrByName(cat, "profileFollowing")) {
+			trackedBy = new ProfileTrackSectionPanel(profileRequestInfo,
+					"Followers:");
+			rightColumn.add(trackedBy);
+		}
+
+		if (findAttrByName(cat, "profileSavedSearches")) {
+			if (profileRequestInfo.isOwner()) {
+				savedSearches = new ProfileSearchesSectionPanel(
+						profileRequestInfo, "Saved Searches:");
+				rightColumn.add(savedSearches);
+			}
 		}
 	}
 
+	private boolean findAttrByName(ProfileCategory cat, String name) {
+		boolean found = false;
 
+		for (ProfileAttribute attr : cat.getAttributes()) {
+			if (attr.getName().equals(name)) {
+				found = true;
+				break;
+			}
+		}
+
+		return found;
+	}
 }

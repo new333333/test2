@@ -49,39 +49,42 @@ public class GwtProfileHelper {
 					for(Element catItem: itemList){
 							ProfileCategory cat = new ProfileCategory();
 							String caption = catItem.attributeValue("caption", "");
+							String name = catItem.attributeValue("name", "");
 							String title = NLT.get(caption);
 							
 							cat.setTitle(title);
+							cat.setName(name);
 							profile.add(cat);
 							
-							List<Element> attrElements = catItem.selectNodes("properties/property[@name='_elements']");
+							List<Element> attrElements = catItem.selectNodes("item[@name]");
 							for(Element attrElement: attrElements) {
 								ProfileAttribute attr = new ProfileAttribute();
 								
 								//Get the Elements name - which is the attribute name
-								String name = attrElement.attributeValue("value");
-								attr.setName(name);
+								String attrName = attrElement.attributeValue("name");
+								attr.setName(attrName);
 								
-								//Now get the title for this attribute
-								attr.setTitle(NLT.get("profile.element."+name, name));
+								Element captionElement = (Element) attrElement.selectSingleNode("properties/property[@name='caption']");
+								if(captionElement != null) {
+
+									String attrTitle = captionElement.attributeValue("value");
+
+									//Now get the title for this attribute
+									attr.setTitle(NLT.get(attrTitle));
+								}
+
+								Element nameElement = (Element) attrElement.selectSingleNode("properties/property[@name='name']");
+								if(nameElement != null) {
+									String dataName = nameElement.attributeValue("value");
+									attr.setDataName(dataName);
+									
+									if(attr.getTitle() == null){
+										attr.setTitle(NLT.get("profile.element."+dataName, dataName));
+									}
+								}
+								
 								cat.add(attr);
 							}
-							
-							List<Element> customElements = catItem.selectNodes("item/properties/property[@name='name']");
-							for(Element cAttrElement: customElements) {
-								ProfileAttribute attr = new ProfileAttribute();
-								
-								String elementName = cAttrElement.getName();
-								
-								//Get the Elements name - which is the attribute name
-								String name = cAttrElement.attributeValue("value");
-								attr.setName(name);
-								
-								//Now get the title for this attribute
-								attr.setTitle(NLT.get("profile.element."+name, name));
-								cat.add(attr);
-							}
-							
 							
 							//Get the value for this attribute
 							buildAttributeInfo(u, cat);
@@ -100,7 +103,7 @@ public class GwtProfileHelper {
 			
 			String value = null;
 			String type = "";
-			String name = pAttr.getName();
+			String name = pAttr.getDataName();
 		
 			if(Validator.isNull(name)){
 				continue;
