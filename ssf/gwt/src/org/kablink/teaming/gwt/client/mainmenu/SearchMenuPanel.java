@@ -42,10 +42,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 
 
@@ -58,6 +58,7 @@ public class SearchMenuPanel extends FlowPanel {
 	private ActionTrigger m_actionTrigger;
 	private GwtTeamingMainMenuImageBundle m_images;
 	private GwtTeamingMessages m_messages;
+	private TextBox m_searchInput;
 
 	/**
 	 * Class constructor.
@@ -83,6 +84,8 @@ public class SearchMenuPanel extends FlowPanel {
 	 * Adds the search button to the search panel.
 	 */
 	private void addSearchButton() {
+		final SearchMenuPanel searchMenu = this;
+		
 		// Create the Image for the button...
 		Image img = new Image(m_images.searchGlass());
 		img.setTitle(m_messages.mainMenuSearchButtonAlt());
@@ -94,8 +97,23 @@ public class SearchMenuPanel extends FlowPanel {
 		searchAnchor.addStyleName("mainMenuSearch_ButtonAnchor");
 		searchAnchor.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-//!				...this needs to be implemented...
-				Window.alert("...run search options dialog...");
+				final PopupPanel soPopup = new PopupPanel(false, true);
+				soPopup.setAnimationEnabled(true);
+//!				searchOptions.setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
+				soPopup.addStyleName("mainMenuSearchOptions_Browser roundcornerSM-bottom");
+				SearchOptionsComposite searchOptionsComposite = new SearchOptionsComposite(soPopup, m_actionTrigger);
+				searchOptionsComposite.addStyleName("mainMenuSearchOptions");
+				soPopup.setWidget(searchOptionsComposite);
+				
+				// ...position and show it as per the position of the
+				// ...search panel on the menu.
+				soPopup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+					public void setPosition(int offsetWidth, int offsetHeight) {
+						int soPopupLeft = ((m_searchInput.getAbsoluteLeft() + m_searchInput.getOffsetWidth()) - offsetWidth);
+						int soPopupTop  = searchMenu.getParent().getElement().getAbsoluteBottom();
+						soPopup.setPopupPosition(soPopupLeft, soPopupTop);
+					}
+				});
 			}
 		});
 		
@@ -113,24 +131,24 @@ public class SearchMenuPanel extends FlowPanel {
 	 */
 	private void addSearchWidget() {
 		// Create the TextBox for the search...
-		final TextBox searchInput = new TextBox();
-		searchInput.addStyleName("mainMenuSearch_Input");
+		m_searchInput = new TextBox();
+		m_searchInput.addStyleName("mainMenuSearch_Input");
 		
 		// ...add a handler to intercept key presses...
-		searchInput.addKeyPressHandler(new KeyPressHandler() {
+		m_searchInput.addKeyPressHandler(new KeyPressHandler() {
 			public void onKeyPress(KeyPressEvent event) {
 				// Is this the enter key being pressed?
 				char key = event.getCharCode();
 				if ('\r' == key) {
 					// Yes!  Perform the search.
-					String searchFor = searchInput.getValue();
-					searchInput.setValue("");
+					String searchFor = m_searchInput.getValue();
+					m_searchInput.setValue("");
 					m_actionTrigger.triggerAction(TeamingAction.SIMPLE_SEARCH, searchFor);
 				}
 			}
 		});
 		
 		// ...and add the Anchor to the panel.
-		add(searchInput);
+		add(m_searchInput);
 	}
 }

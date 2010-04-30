@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client;
 
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.ClientBundle.Source;
 
 
 /**
@@ -48,6 +49,9 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/close_circle16.png")
 	public ImageResource closeCircle16();
+
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/close_x.png")
+	public ImageResource closeX();
 
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/tag_delete.gif")
 	public ImageResource tagDelete();

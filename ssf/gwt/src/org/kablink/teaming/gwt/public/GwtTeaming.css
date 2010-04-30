@@ -990,6 +990,43 @@ body, table td, select
 	top: 1px;
 	white-space: nowrap;
 }
+.mainMenuSearchOptions
+{
+	padding: 5px 10px 15px;
+	width: 300px;
+	overflow: auto;
+}
+.mainMenuSearchOptions_Browser
+{
+	background: url(images/trans70_black.png) repeat;
+	border: 0px;
+	padding: 0px;
+	z-index: 310;
+}
+
+/* Styles for the search options dialog. */
+.searchOptionsDlg_CloseA
+{
+	cursor: pointer;
+}
+.searchOptionsDlg_CloseImg
+{
+	position: absolute;
+	right: 4px;
+	top: 4px;
+}
+.searchOptionsDlg_Content
+{
+	color: #FFFFFF;
+	font-size: .85em;
+}
+.searchOptionsDlg_Header
+{
+	font-size: 1.2em;
+	font-weight: bold;
+	margin-bottom: 1em;
+	margin-top: 0.3em;
+}
 
 /* Styles for the favorites dialog. */
 .favoritesDlg
