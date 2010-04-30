@@ -69,6 +69,12 @@ public class RequestInfo extends JavaScriptObject
 	
 	
 	/**
+	 * Return the url used for simple searches.  This class is an overlay on the JavaScript object called m_requestInfo.
+	 */
+	public final native String getSimpleSearchUrl() /*-{ return this.simpleSearchUrl; }-*/;
+	
+	
+	/**
 	 * Return the path to Teaming's images.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
 	public final native String getImagesPath() /*-{ return this.imagesPath; }-*/;

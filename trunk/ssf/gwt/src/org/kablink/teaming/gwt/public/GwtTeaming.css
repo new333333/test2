@@ -962,13 +962,33 @@ body, table td, select
 {
 	display: inline;
 }
+.mainMenuSearch_ButtonAnchor
+{
+	cursor: pointer;
+	margin: 2px;
+	vertical-align: top;
+}
+.mainMenuSearch_ButtonImage
+{
+	margin: 2px;
+	vertical-align: top;
+}
+.mainMenuSearch_Input
+{
+	font-size: 10px;
+	padding: 1px 0;
+	vertical-align: top;
+	width: 150px;
+}
 .mainMenuSearch_Panel
 {
-	border-left: none !important;
+	padding: 1px;
+	border-left: none;
 	display: block;
 	position: absolute;
 	right: 10px;
-	top: 3px;
+	top: 1px;
+	white-space: nowrap;
 }
 
 /* Styles for the favorites dialog. */

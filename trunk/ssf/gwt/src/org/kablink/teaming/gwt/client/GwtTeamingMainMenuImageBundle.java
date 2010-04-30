@@ -64,6 +64,9 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/menu_arrow.png")
 	public ImageResource menuArrow();
 	
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/search_glass.png")
+	public ImageResource searchGlass();
+
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/slide_down.png")
 	public ImageResource slideDown();
 

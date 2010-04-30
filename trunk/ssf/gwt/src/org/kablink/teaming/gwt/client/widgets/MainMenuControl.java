@@ -48,6 +48,7 @@ import org.kablink.teaming.gwt.client.mainmenu.MenuBarToggle;
 import org.kablink.teaming.gwt.client.mainmenu.MyFavoritesMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.MyTeamsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlacesMenuPopup;
+import org.kablink.teaming.gwt.client.mainmenu.SearchMenuPanel;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
@@ -77,6 +78,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	private GwtTeamingMainMenuImageBundle m_images = GwtTeaming.getMainMenuImageBundle();
 	private GwtTeamingMessages m_messages = GwtTeaming.getMessages();
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
+	private SearchMenuPanel m_searchPanel;
 	
 	/**
 	 * Constructor method.
@@ -97,7 +99,8 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		menuPanel.add(m_contextPanel);
 		
 		// ...add the search widgets to the right end of the menu...
-		addSearchItems(menuPanel);
+		m_searchPanel = new SearchMenuPanel(this);
+		menuPanel.add(m_searchPanel);
 		
 		// ...and finally, all composites must call initWidget() in
 		// ...their constructors.
@@ -301,18 +304,6 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 				});
 			m_contextPanel.add(rpBox);
 		}
-	}
-	
-	/*
-	 * Adds the search items to the right end of the menu bar.
-	 */
-	private void addSearchItems(FlowPanel menuPanel) {
-		FlowPanel searchPanel = new FlowPanel();
-		searchPanel.addStyleName("mainMenuBar_BoxPanel mainMenuSearch_Panel");
-		menuPanel.add(searchPanel);
-		
-//!		...this needs to be implemented...
-		searchPanel.getElement().setInnerHTML("...search goes here...");
 	}
 	
 	/**
