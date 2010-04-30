@@ -170,7 +170,12 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 				
 			case EDIT:
 				// Edit the current favorites list!
-				EditFavoritesDlg editDlg = new EditFavoritesDlg(true, true, m_menuLeft, m_menuTop, m_favoritesList);
+				EditFavoritesDlg editDlg = new EditFavoritesDlg(
+					false,	// false -> Don't auto hide.
+					true,	// true  -> Modal .
+					m_menuLeft,
+					m_menuTop,
+					m_favoritesList);
 				editDlg.addStyleName("favoritesDlg");
 				editDlg.show();
 				break;

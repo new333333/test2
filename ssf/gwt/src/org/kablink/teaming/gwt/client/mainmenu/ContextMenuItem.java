@@ -309,7 +309,7 @@ public class ContextMenuItem {
 			fp.setMethod(FormPanel.METHOD_POST);
 			Element fpE = fp.getElement();
 			fpE.setClassName("inline");
-			jsAppendElement(fpE);
+			GwtClientHelper.jsAppendDocumentElement(fpE);
 
 			// ...since a FormPanel is a SimplePanel, it can only hold
 			// ...a single widget.  If we have more than 1 hidden
@@ -356,11 +356,4 @@ public class ContextMenuItem {
 	public Widget getWidget() {
 		return m_contextMenuAnchor;
 	}
-	
-	/*
-	 * Appends an HTML element to the top document. 
-	 */
-	private native void jsAppendElement(Element htmlElement) /*-{
-		window.top.document.documentElement.appendChild(htmlElement);
-	}-*/;
 }

@@ -502,6 +502,7 @@ public class GwtMainPage extends Composite
 			
 					// Issue an ajax request to save the personal preferences.
 					{
+						@SuppressWarnings("unused")
 						GwtRpcServiceAsync rpcService;
 						
 						rpcService = GwtTeaming.getRpcService();
@@ -639,6 +640,10 @@ public class GwtMainPage extends Composite
 			
 		case UNTRACK_PERSON:
 			untrackCurrentPerson();
+			break;
+			
+		case SIMPLE_SEARCH:
+			simpleSearch( obj );
 			break;
 			
 		case HIDE_LEFT_NAVIGATION:
@@ -1009,6 +1014,27 @@ public class GwtMainPage extends Composite
 		});
 	}
 	
+	/*
+	 * This method will be called to perform a simple search on a
+	 * string received as a parameter.
+	 * 
+	 * Implements the SIMPLE_SEARCH teaming action.
+	 */
+	private void simpleSearch( Object obj )
+	{
+		if ( ( null == obj ) || ( obj instanceof String ))
+		{
+			String searchFor;
+
+			// What are we searching for?
+			searchFor = ((null == obj ) ? "" : GwtClientHelper.jsEncodeURIComponent((String) obj));
+			String searchUrl = (m_requestInfo.getSimpleSearchUrl() + "&searchText=" + searchFor);
+			GwtClientHelper.jsLoadUrlInContentFrame(searchUrl);
+		}
+		else
+			Window.alert( "in simpleSearch() and obj is not a String object" );
+	}//end simpleSearch()
+
 	/**
 	 * Adjust the height and width of the controls on this page.  Currently the only
 	 * control we adjust is the ContentControl.

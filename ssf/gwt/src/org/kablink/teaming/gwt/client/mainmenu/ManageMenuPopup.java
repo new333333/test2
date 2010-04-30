@@ -407,8 +407,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				
 				// ...and run the folder options dialog.
 				FolderOptionsDlg folderOptionsDlg = new FolderOptionsDlg(
-					true,	// true -> Auto hide.
-					true,	// true -> Modal.
+					false,	// false -> Don't auto hide.
+					true,	// true  -> Modal.
 					m_menuLeft,
 					m_menuTop,
 					((null == calendarImportTBI) ? null : calendarImportTBI.getNestedItemsList()),
@@ -562,8 +562,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 							}
 							public void onSuccess(Boolean isPublicTagManager) {
 								TagThisDlg ttDlg = new TagThisDlg(
-									true,	// true -> Auto hide.
-									true,	// true -> Modal.
+									false,	// false -> Don't auto hide.
+									true,	// true  -> Modal.
 									m_menuLeft,
 									m_menuTop,
 									m_currentBinder,

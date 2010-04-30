@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client.util;
 
+import com.google.gwt.dom.client.Element;
+
 
 /**
  * Helper methods for the GWT UI client code.
@@ -131,6 +133,26 @@ public class GwtClientHelper {
 		return reply;
 	}
 
+	/**
+	 * Appends an HTML element to the top document.
+	 * 
+	 * @param htmlElement
+	 */
+	public static native void jsAppendDocumentElement(Element htmlElement) /*-{
+		window.top.document.documentElement.appendChild(htmlElement);
+	}-*/;
+
+	/**
+	 * Uses JavaScript native method to URI encode a string.
+	 * 
+	 * @param s
+	 * 
+	 * @return
+	 */
+	public static native String jsEncodeURIComponent(String s) /*-{
+		return encodeURIComponent(s);
+	}-*/;
+	
 	/**
 	 * Evaluates a JavaScript string containing embedded
 	 * JavaScript. 

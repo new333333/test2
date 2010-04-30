@@ -266,6 +266,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuManageViewTeam();
 	String mainMenuMyTeamsNoTeams();
 	String mainMenuRecentPlacesNoPlaces();
+	String mainMenuSearchButtonAlt();
 	String mainMenuTagThisDlgAdd();
 	String mainMenuTagThisDlgAddCommunityAlt();
 	String mainMenuTagThisDlgAddPersonalAlt();

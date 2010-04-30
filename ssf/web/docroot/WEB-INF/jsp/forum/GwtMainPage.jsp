@@ -69,7 +69,8 @@
 			isUserLoggedIn : ${isUserLoggedIn},
 			promptForLogin : ${promptForLogin},
 			loginError : '<ssf:escapeJavaScript>${ss_loginError}</ssf:escapeJavaScript>',
-			contentCss : '<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>'
+			contentCss : '<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>',
+			simpleSearchUrl: '<ssf:escapeJavaScript><ssf:url action="advanced_search" actionUrl="true"><ssf:param name="newTab" value="1"/><ssf:param name="quickSearch" value="true"/><ssf:param name="operation" value="ss_searchResults"/></ssf:url></ssf:escapeJavaScript>'
 		};
 
 		var ss_workareaIframeOffset = 50;
