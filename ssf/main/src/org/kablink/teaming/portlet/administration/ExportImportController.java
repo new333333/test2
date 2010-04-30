@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.portlet.administration;
 
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,6 +50,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.tools.zip.ZipOutputStream;
 import org.dom4j.Document;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
@@ -99,6 +101,7 @@ public class ExportImportController  extends  SAbstractController {
 					fileMap = ((MultipartFileSupport) request).getFileMap();
 			    	MultipartFile myFile = (MultipartFile)fileMap.get("imports");
 			    	InputStream fIn = myFile.getInputStream();
+			    	BufferedInputStream b_fIn = new BufferedInputStream(fIn);
 			    	
 					Map reportMap = new HashMap();
 					reportMap.put(ExportHelper.workspaces, new Integer(0));
@@ -221,6 +224,7 @@ public class ExportImportController  extends  SAbstractController {
 			} else {
 				UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
 				options = ListFolderHelper.getSearchFilter(this, request, getBinderModule().getBinder(binderId), userFolderProperties);
+				options.put(ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_FOLDER_ENTRIES_EXPORT);
 				Map formData = request.getParameterMap();
 				binderIds = TreeHelper.getSelectedIds(formData);
 			}
