@@ -21,6 +21,21 @@ body, table td, select
 	font-weight: bold;
 }
 
+.smalltext  { color: black; font-size: 0.75em;  line-height: 1em;   }
+.mediumtext { color: black; font-size: 0.85em;  line-height: 1.1em; }
+.largetext  { color: black; font-style: normal; line-height: 1.1em; font-weight: normal; font-size: 1em; }
+
+.margintop1 { margin-top: 0.3em }
+.margintop2 { margin-top: 0.5em }
+.margintop3 { margin-top: 1em }
+.marginleft1 { margin-left: 1em }
+.marginleft2 { margin-left: 2em }
+.marginleft3 { margin-left: 3em }
+.marginleft4 { margin-left: 4em }
+.marginbottom1 { margin-bottom: 0.3em }
+.marginbottom2 { margin-bottom: 0.5em }
+.marginbottom3 { margin-bottom: 1em }
+
 /* Style used for the panel that holds the content in the "color picker" dialog. */
 .colorPickerContentPanel
 {
@@ -993,7 +1008,6 @@ body, table td, select
 .mainMenuSearchOptions
 {
 	padding: 5px 10px 15px;
-	width: 300px;
 	overflow: auto;
 }
 .mainMenuSearchOptions_Browser
@@ -1005,6 +1019,27 @@ body, table td, select
 }
 
 /* Styles for the search options dialog. */
+.searchOptionsDlg_AdvancedSearchA
+{
+	color: #ffffff;
+	cursor: pointer;
+	text-decoration: none;
+}
+.searchOptionsDlg_AdvancedSearchLabel
+{
+}
+.searchOptionsDlg_AdvancedSearchLabelPanel
+{
+
+	font-size: 11px;
+	display: inline-block;
+	padding: 4px 8px;
+	vertical-align: middle;
+	margin: 0px !important;
+}
+.searchOptionsDlg_AdvancedSearchPanel
+{
+}
 .searchOptionsDlg_CloseA
 {
 	cursor: pointer;
@@ -1020,12 +1055,38 @@ body, table td, select
 	color: #FFFFFF;
 	font-size: .85em;
 }
+.searchOptionsDlg_FindersRadio
+{
+	color: #ffffff;
+	font-size: 1em;
+	padding-right: 4px;
+}
+.searchOptionsDlg_FindersRadioPanel
+{
+}
+.searchOptionsDlg_FinderWidget
+{
+}
 .searchOptionsDlg_Header
 {
 	font-size: 1.2em;
 	font-weight: bold;
 	margin-bottom: 1em;
 	margin-top: 0.3em;
+}
+.searchOptionsDlg_SavedSearchesLabel
+{
+}
+.searchOptionsDlg_SavedSearchesLabelPanel
+{
+	color: #ffffff;
+	font-size: 1em;
+}
+.searchOptionsDlg_SavedSearchesSelect
+{
+}
+.searchOptionsDlg_SavedSearchesSelectPanel
+{
 }
 
 /* Styles for the favorites dialog. */
@@ -1442,6 +1503,19 @@ body, table td, select
 {
 	color: #FFFFFF;
 	background: url(images/teal_slice.png) repeat-x center;
+}
+.btn-bg3
+{
+	color: #FFFFFF;
+	background: url(images/blue_slice.png) repeat-x center;
+}
+.inside-btn2
+{
+	font-size: 11px;
+	display: inline-block;
+	padding: 4px 8px;
+	vertical-align: middle;
+	margin: 0 5px;
 }
 
 /* Trick used to use a custom image in the place of a "file upload" control */
