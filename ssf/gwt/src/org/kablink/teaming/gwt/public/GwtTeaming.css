@@ -13,7 +13,7 @@ body, table td, select
 
 .n-Transparent-Black-Div
 {
-	background: url(images/trans50_black.png) repeat; overflow: hidden; z-index: 5000;
+	background: url(images/trans50_black.png) repeat; overflow: hidden; z-index: 1000;
 }
 
 .bold
@@ -125,7 +125,7 @@ body, table td, select
 }
 
 /* Style used for the "Advanced" link in the "edit branding" dialog. */
-.editBrandingAdvancedLink
+.editBrandingAdvancedLink, .editorOverridesLink1
 {
 	padding: 4px 8px;
 }
@@ -141,7 +141,7 @@ body, table td, select
 }
 
 /* Style used for links in the "edit branding" dialog. */
-.editBrandingLink
+.editBrandingLink, .editorOverridesLink2
 {
 	color: #3e6978;
 	cursor: pointer;
@@ -1415,7 +1415,7 @@ body, table td, select
 	padding: 5px;
 	-moz-border-radius: 6px;
 	-webkit-border-radius: 6px;
-	z-index: 5001;
+	z-index: 1001;
 }
 
 .teamingDlgBox .popupContent

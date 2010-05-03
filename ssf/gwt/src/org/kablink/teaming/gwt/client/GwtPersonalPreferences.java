@@ -46,6 +46,13 @@ public class GwtPersonalPreferences
 	implements IsSerializable
 {
 	private String m_displayStyle = null;
+	private boolean m_showToolTips = false;
+	private boolean m_showTutorialPanel = false;
+	private int m_numEntriesPerPage = 0;
+	
+	// m_editorOverridesSupported is not actually a personal preference.  It is a system-wide
+	// setting that lets us know if we should allow the user to define editor overrides.
+	private boolean m_editorOverridesSupported = false;
 	
 	/**
 	 * 
@@ -67,8 +74,80 @@ public class GwtPersonalPreferences
 	/**
 	 * 
 	 */
+	public int getNumEntriesPerPage()
+	{
+		return m_numEntriesPerPage;
+	}// end getNumEntriesPerPage()
+	
+	
+	/**
+	 * 
+	 */
+	public boolean getShowToolTips()
+	{
+		return m_showToolTips;
+	}// end geShowtToolTips()
+	
+	
+	/**
+	 * 
+	 */
+	public boolean getShowTutorialPanel()
+	{
+		return m_showTutorialPanel;
+	}// end geShowtTutorialPanel()
+	
+	
+	/**
+	 * 
+	 */
+	public boolean isEditorOverrideSupported()
+	{
+		return m_editorOverridesSupported;
+	}// end isEditorOverrideSupported()
+	
+	
+	/**
+	 * 
+	 */
 	public void setDisplayStyle( String displayStyle )
 	{
 		m_displayStyle = displayStyle;
 	}// end setDisplayStyle()
+	
+	/**
+	 * 
+	 */
+	public void setEditorOverrideSupported( boolean supported )
+	{
+		m_editorOverridesSupported = supported;
+	}// end setEditorOverrideSupported()
+	
+	
+	
+	/**
+	 * 
+	 */
+	public void setNumEntriesPerPage( int numEntriesPerPage )
+	{
+		m_numEntriesPerPage = numEntriesPerPage;
+	}// end setNumEntriesPerPage()
+	
+	
+	/**
+	 * 
+	 */
+	public void setShowToolTips( boolean showToolTips )
+	{
+		m_showToolTips = showToolTips;
+	}// end setShowToolTips()
+
+
+	/**
+	 * 
+	 */
+	public void setShowTutorialPanel( boolean showTutorialPanel )
+	{
+		m_showTutorialPanel = showTutorialPanel;
+	}// end setShowTutorialPanel()
 }// end GwtPersonalPreferences
