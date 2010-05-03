@@ -103,6 +103,7 @@ import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
@@ -975,11 +976,60 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			if ( !(ObjectKeys.GUEST_USER_INTERNALID.equals( user.getInternalId() ) ) )
 			{
 				String displayStyle;
+				boolean showToolTips;
 				
 				// No
 				// Get the user's display style preference
 				displayStyle = user.getDisplayStyle();
 				personalPrefs.setDisplayStyle( displayStyle );
+				
+				// If the display style equals "accessible" then tool tips are on.
+				showToolTips = false;
+				if ( displayStyle.equalsIgnoreCase( "accessible" ) )
+					showToolTips = true;
+				personalPrefs.setShowToolTips( showToolTips );
+				
+				// Get the tutorial panel state.
+				{
+					String tutorialPanelState;
+
+					tutorialPanelState = getTutorialPanelState();
+
+					// Is the tutorial panel open?
+					if ( tutorialPanelState != null && tutorialPanelState.equalsIgnoreCase( "1" ) )
+					{
+						// No
+						personalPrefs.setShowTutorialPanel( false );
+					}
+					else
+						personalPrefs.setShowTutorialPanel( true );
+				}
+				
+				// Get the number of entries per page that should be displayed when a folder is selected.
+				{
+					UserProperties userProperties;
+					String value;
+					int numEntriesPerPage = 10;
+					
+					userProperties = getProfileModule().getUserProperties( user.getId() );
+					value = (String) userProperties.getProperty( ObjectKeys.PAGE_ENTRIES_PER_PAGE );
+					if ( value != null && value.length() > 0 )
+					{
+						try
+						{
+							numEntriesPerPage = Integer.parseInt( value );
+						}
+						catch (NumberFormatException nfe)
+						{
+							m_logger.warn( "In GwtRpcServiceImpl.getPersonalPreferences(), num entries per page is not an integer." );
+						}
+					}
+					
+					personalPrefs.setNumEntriesPerPage( numEntriesPerPage );
+				}
+				
+				// Set the flag that indicates whether "editor overrides" are supported.
+				personalPrefs.setEditorOverrideSupported( SsfsUtil.supportAttachmentEdit() );
 			}
 			else
 			{
@@ -1066,14 +1116,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
     	
     	profileModule = getProfileModule();
 
-    	if ( profileModule == null )
-    		return "!!! profileModule is null!!!";
-    	
     	userProperties = profileModule.getUserProperties( null );
 		tutorialPanelState = (String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_TUTORIAL_PANEL_STATE );
 
-		if ( tutorialPanelState == null )
-			tutorialPanelState = "Not defined";
+		// Do we have a tutorial panel state?
+		if ( tutorialPanelState == null || tutorialPanelState.length() == 0 )
+		{
+			// No, default to expanded.
+			tutorialPanelState = "2";
+		}
 		
     	return tutorialPanelState;
     }// end getTutorialPanelState()
@@ -1959,6 +2010,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			// Are we dealing with the guest user?
 			if ( !(ObjectKeys.GUEST_USER_INTERNALID.equals( user.getInternalId() ) ) )
 			{
+				ProfileModule profileModule;
+				
+				profileModule = getProfileModule();
+				
 				// No
 				// Save the "display style" preference
 				{
@@ -1969,12 +2024,39 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					
 					newDisplayStyle = personalPrefs.getDisplayStyle();
 					
+					// For some reason I don't understand the "tooltips preference" and the
+					// "entry display style" setting are both stored in the "displayStyle" field.
+					// If "tooltips" are turned on we need to put the word "accessible" in the
+					// "displayStyle" field.
+					if ( personalPrefs.getShowToolTips() == true )
+						newDisplayStyle = "accessible";
+					
 					// Only allow "word" characters (such as a-z_0-9 )
 					if ( newDisplayStyle.equals("") || !newDisplayStyle.matches( "^.*[\\W]+.*$" ) )
 					{
 						updates.put( ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, newDisplayStyle );
-						getProfileModule().modifyEntry( user.getId(), new MapInputData( updates ) );
+						profileModule.modifyEntry( user.getId(), new MapInputData( updates ) );
 					}
+				}
+				
+				// Save the "show tutorial panel" preference
+				{
+					String tutorialPanelState;
+					
+					if ( personalPrefs.getShowTutorialPanel() )
+						tutorialPanelState = "2";
+					else
+						tutorialPanelState = "1";
+					
+					profileModule.setUserProperty( null, ObjectKeys.USER_PROPERTY_TUTORIAL_PANEL_STATE, tutorialPanelState );
+				}
+				
+				// Save the "number of entries per page" preference
+				{
+					profileModule.setUserProperty(
+												user.getId(),
+												ObjectKeys.PAGE_ENTRIES_PER_PAGE,
+												String.valueOf( personalPrefs.getNumEntriesPerPage() ) );
 				}
 			}
 			else

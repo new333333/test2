@@ -175,6 +175,13 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
+	 * Invoke the "define editor overrides" dialog.
+	 */
+	public static native void jsInvokeDefineEditorOverridesDlg() /*-{
+		window.top.ss_editAppConfig();
+	}-*/;
+
+	/**
 	 * Uses Teaming's existing ss_common JavaScript to launch a URL in
 	 * a new window.
 	 * 

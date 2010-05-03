@@ -33,6 +33,7 @@
  */
 %>
 <%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil, org.kablink.util.BrowserSniffer" %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <script type="text/javascript">
@@ -76,6 +77,8 @@
 	%>
 </script>
 
+<% if ( GwtUIHelper.isGwtUIActive( request ) == false ) { %>
 <a class="ss_sideLink" href="javascript: ;" onclick="ss_editAppConfig(); return false;">
 	<ssf:nlt tag="sidebar.appConfig.Caption"/>
 </a>
+<% } %>

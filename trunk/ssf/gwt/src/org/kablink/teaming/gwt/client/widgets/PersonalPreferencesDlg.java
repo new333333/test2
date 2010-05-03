@@ -36,14 +36,30 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -52,8 +68,13 @@ import com.google.gwt.user.client.ui.Panel;
  *
  */
 public class PersonalPreferencesDlg extends DlgBox
+	implements KeyPressHandler
 {
 	private ListBox m_entryDisplayStyleListbox;
+	private TextBox m_numEntriesPerPageTxtBox;
+	private CheckBox m_showToolTips;
+	private CheckBox m_showTutorialPanel;
+	private Anchor m_editorOverridesAnchor;
 	
 
 	/**
@@ -79,10 +100,13 @@ public class PersonalPreferencesDlg extends DlgBox
 	 */
 	public Panel createContent( Object props )
 	{
+		GwtTeamingMessages messages;
 		FlowPanel mainPanel = null;
 		FlexTable table;
 		int nextRow;
 
+		messages = GwtTeaming.getMessages();
+		
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 		
@@ -94,16 +118,115 @@ public class PersonalPreferencesDlg extends DlgBox
 		
 		// Create the controls for "Entry display style"
 		{
-			table.setText( nextRow, 0, GwtTeaming.getMessages().entryDisplayStyleLabel() );
+			table.setText( nextRow, 0, messages.entryDisplayStyleLabel() );
 			
 			// Create a listbox that will hold all the possible values for the "Entry Display Style".
 			m_entryDisplayStyleListbox = new ListBox( false );
 			m_entryDisplayStyleListbox.setVisibleItemCount( 1 );
-			m_entryDisplayStyleListbox.addItem( GwtTeaming.getMessages().showEntriesAsAnOverlay(), "iframe" );
-			m_entryDisplayStyleListbox.addItem( GwtTeaming.getMessages().showEntriesInNewPage(), "newpage" );
-			m_entryDisplayStyleListbox.addItem( GwtTeaming.getMessages().showEntriesInPopupWnd(), "popup" );
+			m_entryDisplayStyleListbox.addItem( messages.showEntriesAsAnOverlay(), "iframe" );
+			m_entryDisplayStyleListbox.addItem( messages.showEntriesInNewPage(), "newpage" );
+			m_entryDisplayStyleListbox.addItem( messages.showEntriesInPopupWnd(), "popup" );
 
 			table.setWidget( nextRow, 1, m_entryDisplayStyleListbox );
+			++nextRow;
+		}
+		
+		// Create the controls for "Number of entries per page to display"
+		{
+			table.setText( nextRow, 0, messages.numEntriesPerPageLabel() );
+			
+			// Create a textbox for the user to enter the number of entries.
+			m_numEntriesPerPageTxtBox = new TextBox();
+			m_numEntriesPerPageTxtBox.addKeyPressHandler( this );
+			m_numEntriesPerPageTxtBox.setVisibleLength( 3 );
+			table.setWidget( nextRow, 1, m_numEntriesPerPageTxtBox );
+			++nextRow;
+		}
+		
+		// Create the controls for "show tooltips".
+		{
+			m_showToolTips = new CheckBox( messages.showToolTips() );
+			table.setWidget( nextRow, 0, m_showToolTips );
+			++nextRow;
+		}
+		
+		// Create the controls for "show tutorial panel"
+		{
+			m_showTutorialPanel = new CheckBox( messages.showTutorialPanel() );
+			table.setWidget( nextRow, 0, m_showTutorialPanel );
+			++nextRow;
+		}
+		
+		// Create a link the user can click on to invoke the "Define editor overrides" dialog.
+		{
+			ClickHandler clickHandler;
+			MouseOverHandler mouseOverHandler;
+			MouseOutHandler mouseOutHandler;
+			Label spacer;
+			
+			// Add an empty row to add some space between the "use advanced branding" radio button and the "background image" listbox.
+			spacer = new Label( " " );
+			spacer.addStyleName( "marginTop5px" );
+			table.setWidget( nextRow, 0, spacer );
+			++nextRow;
+			
+			m_editorOverridesAnchor = new Anchor( messages.editorOverridesLabel() );
+			m_editorOverridesAnchor.setTitle( messages.editorOverridesLabel() );
+			m_editorOverridesAnchor.addStyleName( "editorOverridesLink1" );
+			m_editorOverridesAnchor.addStyleName( "editorOverridesLink2" );
+			m_editorOverridesAnchor.addStyleName( "subhead-control-bg1" );
+			m_editorOverridesAnchor.addStyleName( "roundcornerSM" );
+			
+			// Add a clickhandler to the "Clear branding" link.  When the user clicks on the link we
+			// will clear all branding information.
+			clickHandler = new ClickHandler()
+			{
+				/**
+				 * Clear all branding information.
+				 */
+				public void onClick( ClickEvent event )
+				{
+					invokeEditorOverridesDlg();
+				}//end onClick()
+			};
+			m_editorOverridesAnchor.addClickHandler( clickHandler );
+			
+			// Add a mouse-over handler
+			mouseOverHandler = new MouseOverHandler()
+			{
+				/**
+				 * 
+				 */
+				public void onMouseOver( MouseOverEvent event )
+				{
+					Widget widget;
+					
+					widget = (Widget)event.getSource();
+					widget.removeStyleName( "subhead-control-bg1" );
+					widget.addStyleName( "subhead-control-bg2" );
+				}// end onMouseOver()
+			};
+			m_editorOverridesAnchor.addMouseOverHandler( mouseOverHandler );
+
+			// Add a mouse-out handler
+			mouseOutHandler = new MouseOutHandler()
+			{
+				/**
+				 * 
+				 */
+				public void onMouseOut( MouseOutEvent event )
+				{
+					Widget widget;
+					
+					// Remove the background color we added to the anchor when the user moved the mouse over the anchor.
+					widget = (Widget)event.getSource();
+					widget.removeStyleName( "subhead-control-bg2" );
+					widget.addStyleName( "subhead-control-bg1" );
+				}// end onMouseOut()
+			};
+			m_editorOverridesAnchor.addMouseOutHandler( mouseOutHandler );
+
+			table.setWidget( nextRow, 0, m_editorOverridesAnchor );
 			++nextRow;
 		}
 		
@@ -120,12 +243,61 @@ public class PersonalPreferencesDlg extends DlgBox
 	{
 		GwtPersonalPreferences personalPrefs;
 		String displayStyle;
+		Boolean value;
 		
 		personalPrefs = new GwtPersonalPreferences();
 		
 		// Get the entry display style from the dialog.
 		displayStyle = getEntryDisplayStyleFromDlg();
 		personalPrefs.setDisplayStyle( displayStyle );
+		
+		// Get the value of "number of entries per page"
+		{
+			String tmpValue;
+			int num;
+			
+			tmpValue = m_numEntriesPerPageTxtBox.getValue();
+			if ( tmpValue == null || tmpValue.length() == 0 )
+			{
+				// Tell the user to enter the number of entries per page.
+				Window.alert( GwtTeaming.getMessages().numEntriesPerPageCannotBeBlank() );
+				m_numEntriesPerPageTxtBox.setFocus( true );
+				
+				return null;
+			}
+			
+			try
+			{
+				num = Integer.parseInt( tmpValue );
+				
+				// Make sure the number is greater than 0.
+				if ( num > 0 )
+					personalPrefs.setNumEntriesPerPage( num );
+				else
+				{
+					Window.alert( GwtTeaming.getMessages().numEntriesPerPageInvalidNum() );
+					m_numEntriesPerPageTxtBox.setFocus( true );
+
+					return null;
+				}
+				
+			}
+			catch (NumberFormatException nfe)
+			{
+				Window.alert( GwtTeaming.getMessages().numEntriesPerPageInvalidNum() );
+				m_numEntriesPerPageTxtBox.setFocus( true );
+
+				return null;
+			}
+		}
+		
+		// Get the value of "Show tooltips".
+		value = m_showToolTips.getValue();
+		personalPrefs.setShowToolTips( value.booleanValue() );
+		
+		// Get the value of "Show tutorial panel".
+		value = m_showTutorialPanel.getValue();
+		personalPrefs.setShowTutorialPanel( value );
 		
 		return personalPrefs;
 	}// end getDataFromDlg()
@@ -163,6 +335,16 @@ public class PersonalPreferencesDlg extends DlgBox
 	public void init( GwtPersonalPreferences personalPrefs )
 	{
 		initEntryDisplayStyleControls( personalPrefs );
+		
+		m_numEntriesPerPageTxtBox.setValue( String.valueOf( personalPrefs.getNumEntriesPerPage() ) );
+		
+		m_showToolTips.setValue( personalPrefs.getShowToolTips() );
+		
+		m_showTutorialPanel.setValue( personalPrefs.getShowTutorialPanel() );
+		
+		// Show/hide the "Define editor overrides..." button depending on whether or not
+		// "editor overrides" are supported.
+		m_editorOverridesAnchor.setVisible( personalPrefs.isEditorOverrideSupported() );
 	}// end init()
 	
 	
@@ -185,5 +367,45 @@ public class PersonalPreferencesDlg extends DlgBox
 			m_entryDisplayStyleListbox.setSelectedIndex( 0 );
 		}
 	}// end initEntryDisplayStyleControls()
+
+
+	/**
+	 * Invoke the "Editor Overrides" dialog
+	 */
+	private void invokeEditorOverridesDlg()
+	{
+		GwtClientHelper.jsInvokeDefineEditorOverridesDlg();
+	}// end invokeEditorOverridesDlg()
+	
+	
+	/**
+	 * This method gets called when the user types in the "number of entries to show" text box.
+	 * We only allow the user to enter numbers.
+	 */
+	public void onKeyPress( KeyPressEvent event )
+	{
+        int keyCode;
+
+        // Get the key the user pressed
+        keyCode = event.getCharCode();
+        
+        if ( (!Character.isDigit(event.getCharCode())) && (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
+            && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
+            && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
+            && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN))
+        {
+        	TextBox txtBox;
+        	Object source;
+        	
+        	// Make sure we are dealing with a text box.
+        	source = event.getSource();
+        	if ( source instanceof TextBox )
+        	{
+        		// Suppress the current keyboard event.
+        		txtBox = (TextBox) source;
+        		txtBox.cancelKey();
+        	}
+        }
+	}// end onKeyPress()
 
 }// end PersonalPreferencesDlg

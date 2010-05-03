@@ -44,6 +44,7 @@
 
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp"     %>
+<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_appConfig.jsp" /> 
 
 <html>
   <head>
