@@ -38,6 +38,8 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
@@ -97,6 +99,10 @@ public class SearchMenuPanel extends FlowPanel {
 		searchAnchor.addStyleName("mainMenuSearch_ButtonAnchor");
 		searchAnchor.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
+				// Turn off any over indicator on the menu bar item...
+				searchMenu.getElement().removeClassName("subhead-control-bg2");
+				
+				// ...construct the search options composite...
 				final PopupPanel soPopup = new PopupPanel(false, true);
 				soPopup.setAnimationEnabled(true);
 //!				searchOptions.setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
@@ -105,8 +111,8 @@ public class SearchMenuPanel extends FlowPanel {
 				searchOptionsComposite.addStyleName("mainMenuSearchOptions");
 				soPopup.setWidget(searchOptionsComposite);
 				
-				// ...position and show it as per the position of the
-				// ...search panel on the menu.
+				// ...and position and show it as per the position of
+				// ...the search panel on the menu.
 				soPopup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
 					public void setPosition(int offsetWidth, int offsetHeight) {
 						int soPopupLeft = ((m_searchInput.getAbsoluteLeft() + m_searchInput.getOffsetWidth()) - offsetWidth);
@@ -118,7 +124,7 @@ public class SearchMenuPanel extends FlowPanel {
 		});
 		
 		// ...add mouse over handling...
-		MenuHoverByWidget hover = new MenuHoverByWidget(this, "subhead-control-bg2");
+		MenuHoverByWidget hover = new MenuHoverByWidget(searchMenu, "subhead-control-bg2");
 		searchAnchor.addMouseOverHandler(hover);
 		searchAnchor.addMouseOutHandler( hover);
 		

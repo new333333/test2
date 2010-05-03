@@ -32,19 +32,30 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import org.kablink.teaming.gwt.client.GwtFolder;
+import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.RadioButton;
 
 
 /**
@@ -52,14 +63,45 @@ import com.google.gwt.user.client.ui.PopupPanel;
  * 
  * @author drfoster@novell.com
  */
-public class SearchOptionsComposite extends Composite {
-	@SuppressWarnings("unused")
+public class SearchOptionsComposite extends Composite implements ActionHandler {
 	private ActionTrigger m_actionTrigger;
-	private FlowPanel m_mainPanel = new FlowPanel();
+	private FindCtrl m_finderControl;
+	private FlowPanel m_mainPanel;
 	private GwtTeamingMainMenuImageBundle m_images;
 	private GwtTeamingMessages m_messages;
 	private PopupPanel m_searchOptionsPopup;
+
+	/*
+	 * Inner class used to wrap the finder radio buttons.
+	 */
+	private class FinderRB extends RadioButton {
+		/*
+		 * Class constructor.
+		 */
+		FinderRB(String label, final GwtSearchCriteria.SearchType searchType, boolean checked) {
+			super("finders", label);
+			addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					m_finderControl.hideSearchResults();
+					m_finderControl.setInitialSearchString("");
+					m_finderControl.setSearchType(searchType);
+				}
+			});
+			addStyleName("searchOptionsDlg_FindersRadio mediumtext");
+			setValue(checked);
+		}
+		
+		FinderRB(String label, final GwtSearchCriteria.SearchType searchType) {
+			this(label, searchType, false);
+		}
+	}
 	
+	/**
+	 * Class constructor.
+	 * 
+	 * @param searchOptionsPopup
+	 * @param actionTrigger
+	 */
 	public SearchOptionsComposite(PopupPanel searchOptionsPopup, ActionTrigger actionTrigger) {
 		// Store the parameter...
 		m_searchOptionsPopup = searchOptionsPopup;
@@ -80,21 +122,98 @@ public class SearchOptionsComposite extends Composite {
 	}
 
 	/*
+	 * Adds the advanced search push button to the main content.
+	 */
+	private void addAdvancedSearch() {
+		// Create the button label...
+		InlineLabel asLabel = new InlineLabel(m_messages.mainMenuSearchOptionsAdvancedSearch());
+		asLabel.addStyleName("searchOptionsDlg_AdvancedSearchLabel");
+		FlowPanel asLabelPanel = new FlowPanel();
+		asLabelPanel.addStyleName("searchOptionsDlg_AdvancedSearchLabelPanel mediumtext inside-btn2 btn-bg3 roundcornerSM");
+		asLabelPanel.add(asLabel);
+
+		// ...create the button Anchor...
+		Anchor asAnchor = new Anchor();
+		asAnchor.addStyleName("searchOptionsDlg_AdvancedSearchA");
+		asAnchor.getElement().appendChild(asLabelPanel.getElement());
+		asAnchor.setTitle(m_messages.mainMenuSearchOptionsAdvancedSearch());
+		asAnchor.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				// Hide the search options popup and run the advanced
+				// search dialog.
+				m_searchOptionsPopup.hide();
+				m_actionTrigger.triggerAction(TeamingAction.ADVANCED_SEARCH);
+			}
+		});
+
+		// ..and tie everything together.
+		FlowPanel asPanel = new FlowPanel();
+		asPanel.addStyleName("searchOptionsDlg_AdvancedSearchPanel margintop3");
+		asPanel.add(asAnchor);
+		m_mainPanel.add(asPanel);
+	}
+	
+	
+	/*
 	 * Adds the content to the main panel.
 	 */
 	private void addContent() {
-//!		...this needs to be implemented...
-		m_mainPanel.add(new InlineLabel("...this needs to be implemented..."));
+		addFinders();
+		addSavedSearches();
+		addAdvancedSearch();
 	}
 
+	/*
+	 * Adds the finder widgets to the main content.
+	 */
+	private void addFinders() {
+		// Create a panel to hold the finder radio buttons...
+		FlowPanel rbPanel = new FlowPanel();
+		rbPanel.addStyleName("searchOptionsDlg_FindersRadioPanel");
+
+		// create the radio buttons themselves...
+		FinderRB rb;
+		rb = new FinderRB(m_messages.mainMenuSearchOptionsPeople(), GwtSearchCriteria.SearchType.USER, true); rbPanel.add(rb);
+		rb = new FinderRB(m_messages.mainMenuSearchOptionsPlaces(), GwtSearchCriteria.SearchType.PLACES);     rbPanel.add(rb);
+		rb = new FinderRB(m_messages.mainMenuSearchOptionsTags(),   GwtSearchCriteria.SearchType.TAG);        rbPanel.add(rb);
+
+		// ...add the radio button panel to the main content...
+		m_mainPanel.add(rbPanel);
+
+		// ...and add a finder widget for it.
+		m_finderControl = new FindCtrl(this, GwtSearchCriteria.SearchType.USER, 30);
+		m_finderControl.addStyleName("searchOptionsDlg_FinderWidget margintop2");
+		m_mainPanel.add(m_finderControl);
+	}
+	
+	
 	/*
 	 * Adds the header to the main panel.
 	 */
 	private void addHeader() {
-		// Add the close push button...
-		m_mainPanel.add(createCloser());
+		// Create a panel for the close push button...
+		FlowPanel closePBPanel = new FlowPanel();
 		
-		// ...and the header text. 
+		// ...create the Image for it...
+		Image closePBImg = new Image(m_images.closeX());
+		closePBImg.addStyleName("searchOptionsDlg_CloseImg");
+		closePBImg.setTitle(m_messages.mainMenuSearchOptionsCloseAlt());
+		
+		// ...create the Anchor for it...
+		Anchor closePBAnchor = new Anchor();
+		closePBAnchor.addStyleName("searchOptionsDlg_CloseA");
+		closePBAnchor.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				m_searchOptionsPopup.hide();
+			}
+		});
+		
+		// ...tie close push button together...
+		closePBAnchor.getElement().appendChild(closePBImg.getElement());
+		closePBPanel.add(closePBAnchor);
+		m_mainPanel.add(closePBPanel);
+		
+		// ...and add the header text. 
 		FlowPanel headerPanel = new FlowPanel();
 		headerPanel.addStyleName("searchOptionsDlg_Header");
 		headerPanel.add(new InlineLabel(m_messages.mainMenuSearchOptionsHeader()));
@@ -102,31 +221,81 @@ public class SearchOptionsComposite extends Composite {
 	}
 	
 	/*
-	 * Creates the close push button.
+	 * Adds the saved search widgets to the main content.
 	 */
-	private FlowPanel createCloser() {
-		// Create the panel...
-		FlowPanel panel = new FlowPanel();
-		
-		// ...create the Image...
-		Image img = new Image(m_images.closeX());
-		img.addStyleName("searchOptionsDlg_CloseImg");
-		img.setTitle(m_messages.mainMenuSearchOptionsCloseAlt());
-		
-		// ...create the Anchor...
-		Anchor a = new Anchor();
-		a.addStyleName("searchOptionsDlg_CloseA");
-		a.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
+	private void addSavedSearches() {
+		// Create a label for the save search widgets...
+		FlowPanel ssLabelPanel = new FlowPanel();
+		ssLabelPanel.addStyleName("searchOptionsDlg_SavedSearchesLabelPanel mediumtext margintop3");
+		InlineLabel ssLabel = new InlineLabel(m_messages.mainMenuSearchOptionsSavedSearches());
+		ssLabel.addStyleName("searchOptionsDlg_SavedSearchesLabel");
+		ssLabelPanel.add(ssLabel);
+		m_mainPanel.add(ssLabelPanel);
+
+		// ...create the saved searches list box...
+		FlowPanel ssListPanel = new FlowPanel();
+		ssListPanel.addStyleName("searchOptionsDlg_SavedSearchesSelectPanel mediumtext margintop2");
+		ListBox ssList = new ListBox();
+		ssListPanel.add(ssList);
+		m_mainPanel.add(ssListPanel);
+
+		// ...and populate it.
+		populateSavedSearchWidget(ssList);
+	}
+
+	/**
+	 * Called when something is selected in the FindCtrl widget. 
+	 *  
+	 * Implementation of ActionHandler.handleAction() interface method.
+	 */
+	public void handleAction(TeamingAction action, Object obj) {
+		// We should only ever receive a selection changed action.  Is
+		// that what this is?
+		if (action == TeamingAction.SELECTION_CHANGED)
+		{
+			// Yes!  Hide the search results list.
+			m_finderControl.hideSearchResults();
+
+			// Is the action object a GwtFolder?
+			if (obj instanceof GwtFolder) {
+				// Yes!  Hide the search options popup and switch to
+				// that folder.
 				m_searchOptionsPopup.hide();
+				loadBinder(((GwtFolder) obj).getFolderId());
+				return;
 			}
+			
+//!			...this needs to be implemented...
+			Window.alert("FindCtrl action:  " + action.toString());
+		}
+	}
+
+	/*
+	 * Loads a binder into the context pane.
+	 */
+	private void loadBinder(final String binderId) {
+		GwtTeaming.getRpcService().getBinderPermalink(binderId, new AsyncCallback<String>() {
+			public void onFailure(Throwable t) {
+				Window.alert( t.toString() );
+			}
+			public void onSuccess(final String binderPermalink) {
+				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(binderId, binderPermalink, false, Instigator.OTHER);
+				m_actionTrigger.triggerAction(TeamingAction.SELECTION_CHANGED, osbInfo);
+			}// end onSuccess()
 		});
+	}
+
+	/*
+	 * Called to use GWT RPC to populate the saved searches select
+	 * widget.
+	 */
+	private void populateSavedSearchWidget(ListBox ssList) {
+		// Add a no saved searches item and disable the widget.  If we
+		// find some from the RPC call, we'll remove this and re-enable
+		// it.
+		ssList.addItem(m_messages.mainMenuSearchOptionsNoSavedSearches(),"noSavedSearches");
+		ssList.setEnabled(false);
 		
-		// ...tie things together...
-		a.getElement().appendChild(img.getElement());
-		
-		// ...and add the Anchor to the panel and return it.
-		panel.add(a);
-		return panel;
+//!		...this needs to be implemented...
 	}
 }

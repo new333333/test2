@@ -622,6 +622,10 @@ public class GwtMainPage extends Composite
 			simpleSearch( obj );
 			break;
 			
+		case ADVANCED_SEARCH:
+			advancedSearch();
+			break;
+			
 		case HIDE_LEFT_NAVIGATION:
 		case HIDE_MASTHEAD:
 		case SHOW_LEFT_NAVIGATION:
@@ -1011,6 +1015,18 @@ public class GwtMainPage extends Composite
 			Window.alert( "in simpleSearch() and obj is not a String object" );
 	}//end simpleSearch()
 
+	/*
+	 * This method will be called to run advanced search in the content
+	 * panel.
+	 * 
+	 * Implements the ADVANCED_SEARCH teaming action.
+	 */
+	private void advancedSearch()
+	{
+		String searchUrl = (m_requestInfo.getAdvancedSearchUrl() + "&binderId=" + m_selectedBinderId);
+		GwtClientHelper.jsLoadUrlInContentFrame(searchUrl);
+	}//end advancedSearch()
+	
 	/**
 	 * Adjust the height and width of the controls on this page.  Currently the only
 	 * control we adjust is the ContentControl.

@@ -451,6 +451,17 @@ public class FindCtrl extends Composite
 		ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
 		GwtSearchCriteria.SearchType searchType )
 	{
+		this( actionHandler, searchType, 40 );
+	}// end FindCtrl()
+	
+	/**
+	 * 
+	 */
+	public FindCtrl(
+		ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
+		GwtSearchCriteria.SearchType searchType,
+		int visibleLength )
+	{
 		FlowPanel mainPanel;
 
 		mainPanel = new FlowPanel();
@@ -458,7 +469,7 @@ public class FindCtrl extends Composite
 
 		// Create a text box for the user to type in.
 		m_txtBox = new TextBox();
-		m_txtBox.setVisibleLength( 40 );
+		m_txtBox.setVisibleLength( visibleLength );
 		m_txtBox.addKeyUpHandler( this );
 		mainPanel.add( m_txtBox );
 		
@@ -788,6 +799,17 @@ public class FindCtrl extends Composite
 	{
 		m_searchCriteria.setFoldersOnly( value );
 	}// end setSearchForFoldersOnly()
+
+	
+	/**
+	 * Sets the search type of the search being done.
+	 * 
+	 * @param searchType
+	 */
+	public void setSearchType( GwtSearchCriteria.SearchType searchType )
+	{
+		m_searchCriteria.setSearchType( searchType );
+	}// end setSearchType()
 	
 	
 	/**

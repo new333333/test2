@@ -271,8 +271,15 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuMyTeamsNoTeams();
 	String mainMenuRecentPlacesNoPlaces();
 	String mainMenuSearchButtonAlt();
+	String mainMenuSearchOptionsAdvancedSearch();
 	String mainMenuSearchOptionsCloseAlt();
 	String mainMenuSearchOptionsHeader();
+	String mainMenuSearchOptionsNoSavedSearches();
+	String mainMenuSearchOptionsPeople();
+	String mainMenuSearchOptionsPlaces();
+	String mainMenuSearchOptionsSavedSearches();
+	String mainMenuSearchOptionsSelectASearch();
+	String mainMenuSearchOptionsTags();
 	String mainMenuTagThisDlgAdd();
 	String mainMenuTagThisDlgAddCommunityAlt();
 	String mainMenuTagThisDlgAddPersonalAlt();

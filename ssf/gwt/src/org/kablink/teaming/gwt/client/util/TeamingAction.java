@@ -67,6 +67,7 @@ public enum TeamingAction implements IsSerializable
 	GOTO_CONTENT_URL( "Changes the Current Context to a non-Permalink URL" ),
 	GOTO_PERMALINK_URL( "Changes the Current Context to a Permalink URL" ),
 	SIMPLE_SEARCH( "Performs a Simple Search on a String" ),
+	ADVANCED_SEARCH( "Runs Advanced Search in the Content Panel" ),
 
 	// This is used as a default case to store a TeamingAction when
 	// there isn't a real value to store.
