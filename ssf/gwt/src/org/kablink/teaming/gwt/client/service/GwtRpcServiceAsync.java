@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
+import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
@@ -130,6 +131,7 @@ public interface GwtRpcServiceAsync
 	public void getFavorites(                                                                             AsyncCallback<List<FavoriteInfo>>    callback );
 	public void getMyTeams(                                                                               AsyncCallback<List<TeamInfo>>        callback );
 	public void getRecentPlaces(                                                                          AsyncCallback<List<RecentPlaceInfo>> callback );
+	public void getSavedSearches(                                                                         AsyncCallback<List<SavedSearchInfo>> callback );
 	public void getTeamManagementInfo(     String             binderId,                                   AsyncCallback<TeamManagementInfo>    callback );
 	public void getToolbarItems(           String             binderId,                                   AsyncCallback<List<ToolbarItem>>     callback );
 

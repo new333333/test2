@@ -47,6 +47,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
+import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
@@ -135,6 +136,7 @@ public interface GwtRpcService extends RemoteService
 	public List<FavoriteInfo>    getFavorites();
 	public List<TeamInfo>        getMyTeams();
 	public List<RecentPlaceInfo> getRecentPlaces();
+	public List<SavedSearchInfo> getSavedSearches();
 	public TeamManagementInfo    getTeamManagementInfo(     String             binderId                                   );
 	public List<ToolbarItem>     getToolbarItems(           String             binderId                                   );
 	

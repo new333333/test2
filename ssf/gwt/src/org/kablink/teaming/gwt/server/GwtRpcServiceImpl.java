@@ -79,6 +79,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
+import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
@@ -112,7 +113,6 @@ import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
-import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.search.Constants;
@@ -1615,6 +1615,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 		return GwtServerHelper.getRecentPlaces( this );
 	}// end getRecentPlaces()
+	
+	/**
+	 * Returns information about the saved search the current user has
+	 * defined.
+	 * 
+	 * @return
+	 */
+	public List<SavedSearchInfo> getSavedSearches()
+	{
+		return GwtServerHelper.getSavedSearches( this );
+	}// end getSavedSearches()
 	
 	/**
 	 * Returns a List<ToolbarItem> of the ToolbarItem's

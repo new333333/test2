@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -44,6 +47,8 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
@@ -93,6 +98,26 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 		
 		FinderRB(String label, final GwtSearchCriteria.SearchType searchType) {
 			this(label, searchType, false);
+		}
+	}
+
+	/*
+	 * Inner class used to process selections in the saved searches
+	 * list box.
+	 */
+	private class SavedSearchSelected implements ChangeHandler {
+		public void onChange(ChangeEvent event) {
+			// Is other than the select a search item selected?
+			ListBox ssiList = ((ListBox) event.getSource());
+			int ssi = ssiList.getSelectedIndex();
+			if (0 < ssi) {
+				// Yes!  Hide the search options popup...
+				m_searchOptionsPopup.hide();
+				
+				// ...and perform the search.
+				String searchName = ssiList.getItemText(ssi);
+				m_actionTrigger.triggerAction(TeamingAction.SAVED_SEARCH, searchName);
+			}
 		}
 	}
 	
@@ -240,7 +265,7 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 		m_mainPanel.add(ssListPanel);
 
 		// ...and populate it.
-		populateSavedSearchWidget(ssList);
+		populateSavedSearchList(ssList);
 	}
 
 	/**
@@ -286,16 +311,42 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 	}
 
 	/*
-	 * Called to use GWT RPC to populate the saved searches select
-	 * widget.
+	 * Called to use GWT RPC to populate the saved searches list box.
 	 */
-	private void populateSavedSearchWidget(ListBox ssList) {
+	private void populateSavedSearchList(final ListBox ssList) {
 		// Add a no saved searches item and disable the widget.  If we
 		// find some from the RPC call, we'll remove this and re-enable
 		// it.
 		ssList.addItem(m_messages.mainMenuSearchOptionsNoSavedSearches(),"noSavedSearches");
 		ssList.setEnabled(false);
 		
-//!		...this needs to be implemented...
+		// Does the user have any saved searches defined?
+		GwtTeaming.getRpcService().getSavedSearches(new AsyncCallback<List<SavedSearchInfo>>() {
+			public void onFailure(Throwable t) {
+				Window.alert(t.toString());
+			}
+			public void onSuccess(List<SavedSearchInfo> ssiList)  {
+				int count = ((null == ssiList) ? 0 : ssiList.size());
+				if (0 < count) {
+					// Yes!  Remove the no saved searches item and
+					// re-enable the list box...
+					ssList.removeItem(0);
+					ssList.setEnabled(true);
+					ssList.addItem(m_messages.mainMenuSearchOptionsSelectASearch(), "selectASearch");
+					
+					// ...scan the saved searches...
+					for (Iterator<SavedSearchInfo> ssiIT = ssiList.iterator(); ssiIT.hasNext(); ) {
+						// ...adding an item for each to the list
+						// ...box...
+						String searchName = ssiIT.next().getName();
+						ssList.addItem(searchName, searchName);
+					}
+					
+					// ...and add a change handler to handle the user
+					// ...selecting one.
+					ssList.addChangeHandler(new SavedSearchSelected());
+				}
+			}
+		});
 	}
 }
