@@ -70,6 +70,7 @@ import org.kablink.teaming.gwt.client.util.TagType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
+import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -771,6 +772,7 @@ public class GwtServerHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<RecentPlaceInfo> getRecentPlaces(AllModulesInjected bs) {
+		// Allocate an ArrayList to return the recent places in.
 		ArrayList<RecentPlaceInfo> rpiList = new ArrayList<RecentPlaceInfo>();
 		
 		// If we can't access the HttpSession...
@@ -830,6 +832,38 @@ public class GwtServerHelper {
 		// If we get here, rpiList refers to a List<RecentPlaceInfo> of
 		// the user's recent places.  Return it.
 		return rpiList;
+	}
+	
+	/**
+	 * Returns information about the saved searches the current user
+	 * as defined.
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<SavedSearchInfo> getSavedSearches(AllModulesInjected bs) {
+		// Allocate an ArrayList to return the saved searches in.
+		List<SavedSearchInfo> ssList = new ArrayList<SavedSearchInfo>();
+
+		// Does the user have any saved searches defined?
+		UserProperties userProperties = bs.getProfileModule().getUserProperties(getCurrentUser().getId());
+		Map properties = userProperties.getProperties();
+		if (properties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
+			// Yes!  Scan them...
+			Map userQueries = ((Map) properties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES));
+			Set queryKeys = userQueries.keySet();
+			for (Iterator qkIT = queryKeys.iterator(); qkIT.hasNext(); ) {
+				// ...added a SavedSearchInfo for each to the list.
+				String key = ((String) qkIT.next());
+				SavedSearchInfo ssi = new SavedSearchInfo();
+				ssi.setName(key);
+				ssList.add(ssi);
+			}
+		}
+
+		// If we get here, ssList refers to a List<SavedSearchInfo> of
+		// the user's saved searches.  Return it.
+		return ssList;
 	}
 	
 	/**

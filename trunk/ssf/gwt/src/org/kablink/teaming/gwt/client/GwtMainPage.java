@@ -626,6 +626,10 @@ public class GwtMainPage extends Composite
 			advancedSearch();
 			break;
 			
+		case SAVED_SEARCH:
+			savedSearch( obj );
+			break;
+			
 		case HIDE_LEFT_NAVIGATION:
 		case HIDE_MASTHEAD:
 		case SHOW_LEFT_NAVIGATION:
@@ -1027,6 +1031,27 @@ public class GwtMainPage extends Composite
 		GwtClientHelper.jsLoadUrlInContentFrame(searchUrl);
 	}//end advancedSearch()
 	
+	/*
+	 * This method will be called to perform a saved search on a
+	 * string received as a parameter.
+	 * 
+	 * Implements the SAVED_SEARCH teaming action.
+	 */
+	private void savedSearch( Object obj )
+	{
+		if ( ( null == obj ) || ( obj instanceof String ))
+		{
+			String searchFor;
+
+			// What's the name of the saved ?
+			searchFor = ((null == obj ) ? "" : GwtClientHelper.jsEncodeURIComponent((String) obj));
+			String searchUrl = (m_requestInfo.getSavedSearchUrl() + "&ss_queryName=" + searchFor);
+			GwtClientHelper.jsLoadUrlInContentFrame(searchUrl);
+		}
+		else
+			Window.alert( "in savedSearch() and obj is not a String object" );
+	}//end savedSearch()
+
 	/**
 	 * Adjust the height and width of the controls on this page.  Currently the only
 	 * control we adjust is the ContentControl.
