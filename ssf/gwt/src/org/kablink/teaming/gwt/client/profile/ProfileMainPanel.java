@@ -1,18 +1,13 @@
 package org.kablink.teaming.gwt.client.profile;
 
-import org.kablink.teaming.gwt.client.service.GwtRpcService;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ProfileMainPanel extends Composite {
@@ -20,34 +15,70 @@ public class ProfileMainPanel extends Composite {
 	ProfileRequestInfo profileRequestInfo;
 	private Grid grid;
 	private int row = 0;
+	private FlowPanel mainPanel;
+	private FlowPanel titlePanel;
 	
 	public ProfileMainPanel(final ProfileRequestInfo profileRequestInfo) {
 		
 		this.profileRequestInfo = profileRequestInfo;
 		
-		FlowPanel infoPanel = new FlowPanel();
-		infoPanel.setStyleName("profile-Content-c");
-
-		String userName = profileRequestInfo.getUserName();
-		String url = profileRequestInfo.getAdaptedUrl();
-		Anchor anchor = new Anchor(userName,url);
-		anchor.setStyleName("profile-title");
-		infoPanel.add(anchor);
+		//create the main panel
+		mainPanel = new FlowPanel();
+		mainPanel.setStyleName("profile-Content-c");
+		
+		//add user's title to the profile div
+		createTitleArea();
+		
+		//add the actions area to the title div
+		createActionsArea();
 
 		// ...its content panel...
+		createContentPanel();
+
+		// All composites must call initWidget() in their constructors.
+		initWidget( mainPanel );
+	}
+
+	private void createContentPanel() {
 		grid = new Grid();
 		grid.setWidth("100%");
 		grid.setCellSpacing(0);
 		grid.setCellPadding(0);
 		grid.resizeColumns(3);
 		grid.setStyleName("sectionTable");
-		infoPanel.add(grid);
-		
-		
-		
+		mainPanel.add(grid);
+	}
 
-		// All composites must call initWidget() in their constructors.
-		initWidget( infoPanel );
+	private void createTitleArea() {
+		
+		//create a title div for the user title and actionable items
+		titlePanel = new FlowPanel();
+		titlePanel.addStyleName("profile-title-area");
+		mainPanel.add(titlePanel);
+		
+		String userName = profileRequestInfo.getUserName();
+		String url = profileRequestInfo.getAdaptedUrl();
+		Anchor anchor = new Anchor(userName,url);
+		anchor.addStyleName("profile-title");
+		titlePanel.add(anchor);
+		
+		Anchor workspace = new Anchor("Workspace", url);
+		workspace.addStyleName("profile-workspace-link");
+		titlePanel.add(workspace);
+	}
+
+	private void createActionsArea() {
+		FlowPanel actions = new FlowPanel();
+		actions.addStyleName("profile-follow");
+		
+		titlePanel.add(actions);
+		
+		Anchor updateAnchor = new Anchor();
+		actions.add(updateAnchor);
+		updateAnchor.addStyleName("ss_tabsCCurrent");
+		
+		InlineLabel label = new InlineLabel("Follow");
+		updateAnchor.getElement().appendChild(label.getElement());
 	}
 
 	public int createProfileInfoSection(final ProfileCategory cat, Grid grid, int rowCount) {
@@ -58,18 +89,18 @@ public class ProfileMainPanel extends Composite {
 		
 		grid.insertRow(row);
 		grid.setWidget(row, 0, sectionHeader);
+		
+		//remove the bottom border from the section heading titles
+		grid.getCellFormatter().setStyleName(row, 0, "sectionHeadingRBB");
+		grid.getCellFormatter().setStyleName(row, 1, "sectionHeadingRBB");
+		grid.getCellFormatter().setStyleName(row, 2, "sectionHeadingRBB");
 		row = row + 1;
 		
 		for(ProfileAttribute attr: cat.getAttributes()) {
 			
 			Label title = new Label(attr.getTitle()+":");
 			title.setStyleName("attrLabel");
-			Widget value = new Label(attr.getValue().toString());
-			
-			if(attr.getDisplayType().equals("email") ) {
-				String url = "mailto:"+ attr.getValue().toString();
-				value = new Anchor(attr.getValue().toString(), url);
-			}
+			Widget value = new ProfileAttributeWidget(attr).getWidget();
 			
 			grid.insertRow(row);
 			grid.setWidget(row, 0, title);
