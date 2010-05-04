@@ -280,6 +280,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuSearchOptionsAdvancedSearch();
 	String mainMenuSearchOptionsCloseAlt();
 	String mainMenuSearchOptionsHeader();
+	String mainMenuSearchOptionsInvalidResult();
 	String mainMenuSearchOptionsNoSavedSearches();
 	String mainMenuSearchOptionsPeople();
 	String mainMenuSearchOptionsPlaces();

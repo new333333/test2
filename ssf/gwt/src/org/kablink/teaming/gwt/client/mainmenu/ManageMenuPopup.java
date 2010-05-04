@@ -564,6 +564,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 								TagThisDlg ttDlg = new TagThisDlg(
 									false,	// false -> Don't auto hide.
 									true,	// true  -> Modal.
+									m_actionTrigger,
 									m_menuLeft,
 									m_menuTop,
 									m_currentBinder,

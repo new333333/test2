@@ -69,6 +69,7 @@ public enum TeamingAction implements IsSerializable
 	SIMPLE_SEARCH( "Performs a Simple Search on a String" ),
 	ADVANCED_SEARCH( "Runs Advanced Search in the Content Panel" ),
 	SAVED_SEARCH( "Executes a Saved Search Using a String as the Name" ),
+	TAG_SEARCH( "Executes a Search Using a String as a tag Name" ),
 
 	// This is used as a default case to store a TeamingAction when
 	// there isn't a real value to store.

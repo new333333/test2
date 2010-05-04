@@ -633,6 +633,10 @@ public class GwtMainPage extends Composite
 			savedSearch( obj );
 			break;
 			
+		case TAG_SEARCH:
+			tagSearch( obj );
+			break;
+			
 		case HIDE_MASTHEAD:
 			m_mastHead.setVisible( false );
 			break;
@@ -1068,7 +1072,7 @@ public class GwtMainPage extends Composite
 		{
 			String searchFor;
 
-			// What's the name of the saved ?
+			// What's the name of the saved search?
 			searchFor = ((null == obj ) ? "" : GwtClientHelper.jsEncodeURIComponent((String) obj));
 			String searchUrl = (m_requestInfo.getSavedSearchUrl() + "&ss_queryName=" + searchFor);
 			GwtClientHelper.jsLoadUrlInContentFrame(searchUrl);
@@ -1076,6 +1080,27 @@ public class GwtMainPage extends Composite
 		else
 			Window.alert( "in savedSearch() and obj is not a String object" );
 	}//end savedSearch()
+
+	/*
+	 * This method will be called to perform a search on a tag name
+	 * received as a parameter.
+	 * 
+	 * Implements the TAG_SEARCH teaming action.
+	 */
+	private void tagSearch( Object obj )
+	{
+		if ( ( null == obj ) || ( obj instanceof String ))
+		{
+			String tagName;
+
+			// What's the tag to be searched?
+			tagName = ((null == obj ) ? "" : GwtClientHelper.jsEncodeURIComponent((String) obj));
+			String searchUrl = GwtClientHelper.jsBuildTagSearchUrl(tagName);
+			GwtClientHelper.jsLoadUrlInContentFrame(searchUrl);
+		}
+		else
+			Window.alert( "in tagSearch() and obj is not a String object" );
+	}//end tagSearch()
 
 	/**
 	 * Adjust the height and width of the controls on this page.  Currently the only

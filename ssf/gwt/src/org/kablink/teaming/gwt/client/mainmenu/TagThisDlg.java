@@ -41,10 +41,12 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagType;
+import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -75,6 +77,7 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	private final static int	MAX_TAG_LENGTH		= 60;				// As per ObjectKeys.MAX_TAG_LENGTH.
 	private final static int	VISIBLE_TAG_LENGTH	= 20;				// Any better guesses?
 
+	private ActionTrigger m_actionTrigger;			// Interface to use to trigger teaming actions.
 	private BinderInfo m_currentBinder;				// The currently selected binder.
 	private boolean m_isPublicTagManager;			// true -> The user can manage public tags on the binder.  false -> They can't.
 	private Grid m_tagThisGrid;						// Once displayed, the Grid with the dialog's contents.
@@ -107,11 +110,12 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	 * @param isPublicTagManager
 	 * @param dlgCaption
 	 */
-	public TagThisDlg(boolean autoHide, boolean modal, int left, int top, BinderInfo currentBinder, List<TagInfo> binderTags, boolean isPublicTagManager, String dlgCaption) {
+	public TagThisDlg(boolean autoHide, boolean modal, ActionTrigger actionTrigger, int left, int top, BinderInfo currentBinder, List<TagInfo> binderTags, boolean isPublicTagManager, String dlgCaption) {
 		// Initialize the superclass...
 		super(autoHide, modal, left, top, DlgButtonMode.Close);
 
 		// ...initialize everything else...
+		m_actionTrigger = actionTrigger;
 		m_messages = GwtTeaming.getMessages();
 		m_images = GwtTeaming.getMainMenuImageBundle();
 		m_isPublicTagManager = isPublicTagManager;
@@ -464,30 +468,10 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 			 * Called when the user clicks on the tag's Anchor.
 			 */
 			public void onClick(ClickEvent event) {
-				// Hide the dialog...
+				// Hide the dialog and perform the tag search.
 				hide();
-				
-				// ...and generate and launch a search for the given tag.
-				String searchUrl = jsBuildSearchUrl(tag.getTagName());
-				GwtClientHelper.jsLoadUrlInContentFrame(searchUrl);
+				m_actionTrigger.triggerAction(TeamingAction.TAG_SEARCH, tag.getTagName());
 			}
-			
-			/*
-			 * Returns the URL to launch a search for the given tag.
-			 */
-			private native String jsBuildSearchUrl(String tag) /*-{
-				// Find the base tag search result URL...
-				var searchUrl;
-			   	                      try {searchUrl =                             ss_tagSearchResultUrl;} catch(e) {searchUrl="";}
-				if (searchUrl == "") {try {searchUrl =                 self.parent.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
-				if (searchUrl == "") {try {searchUrl =                 self.opener.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
-				if (searchUrl == "") {try {searchUrl = window.top.gwtContentIframe.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
-
-				// ...and return it with the tag patched in.
-				searchUrl = window.top.gwtContentIframe.ss_replaceSubStrAll(searchUrl, "ss_tagPlaceHolder", tag);
-				return searchUrl;
-			}-*/;
-
 		});
 		tagLinksPanel.add(tagAnchor);
 	}
