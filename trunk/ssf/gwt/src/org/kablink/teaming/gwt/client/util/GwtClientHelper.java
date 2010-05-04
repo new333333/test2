@@ -143,6 +143,22 @@ public class GwtClientHelper {
 		window.top.document.documentElement.appendChild(htmlElement);
 	}-*/;
 
+	/*
+	 * Returns the URL to launch a search for the given tag.
+	 */
+	public static native String jsBuildTagSearchUrl(String tag) /*-{
+		// Find the base tag search result URL...
+		var searchUrl;
+	   	                      try {searchUrl =                             ss_tagSearchResultUrl;} catch(e) {searchUrl="";}
+		if (searchUrl == "") {try {searchUrl =                 self.parent.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
+		if (searchUrl == "") {try {searchUrl =                 self.opener.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
+		if (searchUrl == "") {try {searchUrl = window.top.gwtContentIframe.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
+
+		// ...and return it with the tag patched in.
+		searchUrl = window.top.gwtContentIframe.ss_replaceSubStrAll(searchUrl, "ss_tagPlaceHolder", tag);
+		return searchUrl;
+	}-*/;
+	
 	/**
 	 * Uses JavaScript native method to URI encode a string.
 	 * 

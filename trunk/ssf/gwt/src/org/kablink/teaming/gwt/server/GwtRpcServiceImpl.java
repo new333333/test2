@@ -71,8 +71,10 @@ import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
+import org.kablink.teaming.gwt.client.GwtTag;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
+import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
@@ -209,12 +211,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			searchTermFilter.addPlacesFilter( searchText, searchCriteria.getFoldersOnly() );
 			break;
 			
+		case COMMUNITY_TAGS:
+		case PERSONAL_TAGS:
 		case TAG:
-			//!!! Get code from ajaxFind() in TypeToFindAjaxController.java
+			// this has been replaced by a getTags method in the search engine.
+			// searchTermFilter.addTagsFilter( null, searchText );
 			break;
 		
 		case TEAMS:
 			//!!! Get code from ajaxFind() in TypeToFindAjaxController.java
+			break;
+			
+		case USER:
+			searchTermFilter.addTitleFilter( searchText );
+			searchTermFilter.addLoginNameFilter( searchText );
 			break;
 			
 		default:
@@ -331,16 +341,87 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			case COMMUNITY_TAGS:
 			case PERSONAL_TAGS:
 			case TAG:
-				//!!! Finish, grab code from ajaxFild() in TypeToFindAjaxController.java
+			{
+				ArrayList<GwtTeamingItem> results;
+				int count;
+				int i;
+				Iterator it;
+				List tags;
+				String tagType;
+				String searchRoot;
+				
+				searchRoot = searchText;
+				i = searchRoot.indexOf( "*" );
+				if ( i > 0 )
+				{
+					searchRoot = searchRoot.substring( 0, i );
+				}
+				
+				switch ( searchCriteria.getSearchType() )
+				{
+				default:
+				case TAG:             tagType = WebKeys.FIND_TYPE_TAGS;           break;
+				case COMMUNITY_TAGS:  tagType = WebKeys.FIND_TYPE_COMMUNITY_TAGS; break;
+				case PERSONAL_TAGS:   tagType = WebKeys.FIND_TYPE_PERSONAL_TAGS;  break;
+				}
+				
+				tags = getBinderModule().getSearchTags( searchRoot, tagType );
+				count = ((null == tags) ? 0 : tags.size());
+				searchResults.setCountTotal( count );
+				results = new ArrayList( count );
+				for ( it = tags.iterator(); it.hasNext(); )
+				{
+					GwtTag tag;
+					Map<String,String> tagInfo;
+					
+					tagInfo = (Map) it.next();
+					tag = new GwtTag();
+					tag.setTagName( tagInfo.get( "ssTag" ));
+					results.add( tag );
+				}
+				searchResults.setResults( results );
 				break;
+			}
 			
 			case TEAMS:
 				//!!! Get code from ajaxFind() in TypeToFindAjaxController.java
 				break;
 				
 			case USER:
-				//!!! Get code from ajaxFind() in TypeToFindAjaxController.java
+			{
+				List userEntries;
+				ArrayList<GwtTeamingItem> results;
+				Iterator it;
+				Integer count;
+				
+				retMap = getProfileModule().getUsers(options);
+
+				// Add the search results to the GwtSearchResults object.
+				count = (Integer) retMap.get( ObjectKeys.SEARCH_COUNT_TOTAL );
+				searchResults.setCountTotal( count.intValue() );
+				
+				// Create a GwtUser item for each search result.
+				userEntries = (List)retMap.get( ObjectKeys.SEARCH_ENTRIES );
+				results = new ArrayList( userEntries.size() );
+				it = userEntries.iterator();
+				while ( it.hasNext() )
+				{
+					Map<String,String> entry;
+					GwtUser gwtUser;
+					String userId;
+
+					// Get the next user in the search results.
+					entry = (Map) it.next();
+
+					// Pull information about this user from the search results.
+					userId = entry.get( "_docId" );
+					gwtUser = getGwtUser( null, userId );
+					if ( gwtUser != null )
+						results.add( gwtUser );
+				}
+				searchResults.setResults( results);
 				break;
+			}
 				
 			default:
 				searchResults = null;
@@ -916,6 +997,98 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		return folder;
 	}// end getFolder()
+	
+	
+	/**
+	 * Return a GwtUser object for the given user id
+	 */
+	public GwtUser getGwtUser( String zoneUUID, String userId ) throws GwtTeamingException
+	{
+		Binder binder = null;
+		BinderModule bm = getBinderModule();
+		GwtUser reply = null;
+		ProfileModule pm = getProfileModule();
+		User user = null;
+		
+		try
+		{
+			Long userIdL;
+			String zoneInfoId;
+
+			// Get the id of the zone we are running in.
+			zoneInfoId = ExportHelper.getZoneInfo().getId();
+			if ( zoneInfoId == null )
+			{
+				zoneInfoId = "";
+			}
+			
+			// Are we looking for an id that was imported from another zone?
+			userIdL = new Long( userId );
+			if ( zoneUUID != null && zoneUUID.length() > 0 && !zoneInfoId.equals( zoneUUID ) )
+			{
+				// Yes, get the id for it in this zone.
+				userIdL = bm.getZoneBinderId( userIdL, zoneUUID, EntityType.folder.name() );
+			}
+
+			// Do we have an id and can we access it as a User with a
+			// workspace?
+			if ( userIdL != null )
+			{
+				ArrayList<Long> userAL;
+				Set<User> userSet;
+				User[] users;
+				
+				userAL = new ArrayList<Long>();
+				userAL.add( userIdL );
+				userSet = pm.getUsers( userAL );
+				users = userSet.toArray( new User[0] );
+				if ( 1 <= users.length )
+				{
+					Long wsId;
+					
+					user = users[0];
+					wsId = user.getWorkspaceId();
+					if ( null != wsId )
+					{
+						binder = bm.getBinder( user.getWorkspaceId() );
+					}
+					
+					// Note:  Cases where a user won't have a workspace
+					//    ID include special user IDs such as the email
+					//    posting agent and others.
+				}
+			}
+			if (( null != binder ) && ( null != user ))
+			{
+				// Yes!  Construct a GwtUser object for it.
+				reply = new GwtUser();
+				reply.setUserId( user.getId() );
+				reply.setWorkspaceId( binder.getId() );
+				reply.setName( user.getName() );
+				reply.setTitle( user.getTitle() );
+				reply.setWorkspaceTitle( user.getWSTitle() );
+				reply.setViewWorkspaceUrl( PermaLinkUtil.getPermalink( binder ) );
+			}
+		}
+		catch ( AccessControlException acEx )
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
+		catch ( Exception e )
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
+		}
+		
+		return reply;
+	}// end getGwtUser()
 	
 	
 	/**

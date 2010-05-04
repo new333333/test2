@@ -37,9 +37,11 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
+import org.kablink.teaming.gwt.client.GwtTag;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -290,8 +292,29 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 				return;
 			}
 			
-//!			...this needs to be implemented...
-			Window.alert("FindCtrl action:  " + action.toString());
+			// No, it's not a GwtFolder!  Is it a GwtUser?
+			else if (obj instanceof GwtUser) {
+				// Yes!  Hide the search options popup and switch to
+				// that workspace.
+				m_searchOptionsPopup.hide();
+				loadBinder(((GwtUser) obj).getWorkspaceId());
+				return;
+			}
+			
+			// No, it's not a GwtUser either!  Is it a GwtTag?
+			else if (obj instanceof GwtTag) {
+				// Yes!  Hide the search options popup and perform a
+				// search for the tag.
+				m_searchOptionsPopup.hide();
+				m_actionTrigger.triggerAction(TeamingAction.TAG_SEARCH, ((GwtTag) obj).getTagName());
+			}
+			
+			else
+			{
+				// No, it's not a GwtTag either!  Whatever it is, we're
+				// not built to handle it.
+				Window.alert(m_messages.mainMenuSearchOptionsInvalidResult());
+			}
 		}
 	}
 
