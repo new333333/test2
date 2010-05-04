@@ -203,6 +203,14 @@ public class GwtClientHelper {
 		window.top.gwtContentIframe.location.href = url;
 	}-*/;
 
+	
+	/**
+	 * Use Teaming's existing JavaScript to logout of Teaming.
+	 */
+	public static native void jsLogout() /*-{
+		if ( window.top.gwtContentIframe.ss_logoff != null )
+			window.top.gwtContentIframe.ss_logoff();;
+	}-*/;
 
 	/**
 	 * For the given listbox, select the item in the listbox that has the given value.

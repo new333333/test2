@@ -41,12 +41,18 @@
 <c:set var="accessibility_simple_ui" value='<%= org.kablink.teaming.util.SPropsUtil.getBoolean("accessibility.simple_ui", false) %>'/>
 <c:set var="ss_urlWindowState" value="maximized"/>
 <c:set var="ss_urlWindowState" value=""/>
+
+<script type="text/javascript">
+	var n_isGwtUIActive = false;
+</script>
+
 <% if (GwtUIHelper.isGwtUIActive(request)) { %>
 	<script type="text/javascript">
 		function notifyGwtUI() {
 			window.top.ss_contextLoaded("${ssBinder.id}");
 		}
 		ss_createOnLoadObj("notifyGwtUI_sendMail", notifyGwtUI);
+		n_isGwtUIActive = true;
 	</script>
 <% } %>
 <script type="text/javascript">
@@ -55,7 +61,14 @@ function ss_logoff() {
 	if(x == null || x == "") {
 		var y = '<%= org.kablink.teaming.web.util.WebUrlUtil.getServletRootURL(request) + org.kablink.teaming.web.WebKeys.SERVLET_LOGOUT %>';
 		//alert(y);
-		self.location.href=y;
+		// Are we running the new GWT ui?
+		if ( n_isGwtUIActive )
+		{
+			// Yes, update the top window's href.
+			window.top.location.href = y;
+		}
+		else
+			self.location.href=y;
 	} else {
 		//alert (x);
 		var y = '<%= org.kablink.teaming.web.util.WebUrlUtil.getServletRootURL(request) + org.kablink.teaming.web.WebKeys.SERVLET_LOGOUT %>';
@@ -88,7 +101,14 @@ function ss_logoff_from_teaming_then_sso(logoutURL) {
 	delete x;
 }      
 function ss_logoff_from_sso(s) {
-	self.location.href='<%= org.kablink.teaming.web.util.WebUrlUtil.getSsoProxyLogoffUrl(request) %>';
+	// Are we running the new GWT ui?
+	if ( n_isGwtUIActive )
+	{
+		// Yes, update the top window's href.
+		window.top.location.href = '<%= org.kablink.teaming.web.util.WebUrlUtil.getSsoProxyLogoffUrl(request) %>';
+	}
+	else
+		self.location.href='<%= org.kablink.teaming.web.util.WebUrlUtil.getSsoProxyLogoffUrl(request) %>';
 }
 </script>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>

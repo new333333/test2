@@ -566,7 +566,7 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case LOGOUT:
-			Window.alert( "Logout is not implemented yet." );
+			GwtClientHelper.jsLogout();
 			break;
 			
 		case MY_WORKSPACE:
