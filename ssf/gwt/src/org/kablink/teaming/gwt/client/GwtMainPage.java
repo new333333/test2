@@ -558,7 +558,10 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case HELP:
-			Window.alert( "Help is not implemented yet." );
+			String url;
+			
+			url = "http://www.novell.com/documentation/teaming21/team21_user/data/bookinfo.html#bookinfo";
+			Window.open( url, "Teaming_user_guide", "" );
 			break;
 
 		case LOGIN:
@@ -630,14 +633,36 @@ public class GwtMainPage extends Composite
 			savedSearch( obj );
 			break;
 			
-		case HIDE_LEFT_NAVIGATION:
 		case HIDE_MASTHEAD:
-		case SHOW_LEFT_NAVIGATION:
-		case SHOW_MASTHEAD:
-//!			...these need to be implemented...
-			Window.alert( "Action not implemented:  " + action.getUnlocalizedDesc() );
+			m_mastHead.setVisible( false );
 			break;
-
+			
+		case SHOW_MASTHEAD:
+			m_mastHead.setVisible( true );
+			break;
+			
+		case HIDE_LEFT_NAVIGATION:
+			// Hide the tree control
+			m_wsTreeCtrl.setVisible( false );
+			
+			// Reposition the content control to where the tree control used to be.
+			m_contentCtrl.addStyleName( "mainWorkspaceTreeControl" );
+			
+			// Relayout the content panel.
+			relayoutPage( true );
+			break;
+			
+		case SHOW_LEFT_NAVIGATION:
+			// Reposition the content control to its original position.
+			m_contentCtrl.removeStyleName( "mainWorkspaceTreeControl" );
+			
+			// Show the tree control.
+			m_wsTreeCtrl.setVisible( true );
+			
+			// Relayout the content panel.
+			relayoutPage( true );
+			break;
+			
 		case UNDEFINED:
 		default:
 			Window.alert( "Unknown action selected: " + action.getUnlocalizedDesc() );
