@@ -55,8 +55,8 @@ public class GwtUIDefaults {
 	public GwtUIDefaults() {
 		m_enabled = isSettingOn(GWT_UI_ENABLED_FLAG, "true");
 		if (m_enabled) {
-			m_default   = isSettingOn(GWT_UI_DEFAULT_FLAG,   "false");
-			m_exclusive = isSettingOn(GWT_UI_EXCLUSIVE_FLAG, "false");
+			m_default   = isSettingOn(GWT_UI_DEFAULT_FLAG,   "true");
+			m_exclusive = isSettingOn(GWT_UI_EXCLUSIVE_FLAG, "true");
 		}
 	}
 	
