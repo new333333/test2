@@ -56,6 +56,7 @@ public class MenuBarToggle extends Anchor {
 	private Image			m_baseImg;			// The base      Image.
 	private TeamingAction	m_altAction;		// The alternate TeamingAction.
 	private TeamingAction	m_baseAction;		// The base      TeamingAction.
+	private Widget			m_hoverWidget;		// The Widget any hover interaction is tied to. 
 	
 	/*
 	 * Inner class that implements clicking on a MenuBarToggle.
@@ -77,7 +78,10 @@ public class MenuBarToggle extends Anchor {
 		 * @param event
 		 */
 		public void onClick(ClickEvent event) {
-			// Fire the action...
+			// Remove any hover style from the button...
+			m_hoverWidget.removeStyleName("subhead-control-bg2");
+			
+			// ...fire the action...
 			TeamingAction action = (m_isBase ? m_baseAction : m_altAction);
 			m_actionTrigger.triggerAction(action);
 			
@@ -115,6 +119,7 @@ public class MenuBarToggle extends Anchor {
 		super();
 		
 		// ...store the parameters...
+		m_hoverWidget   = hoverWidget;
 		m_actionTrigger	= actionTrigger;
 		m_baseAction	= baseAction;
 		m_altAction		= altAction;
@@ -136,7 +141,7 @@ public class MenuBarToggle extends Anchor {
 		addClickHandler(new MenuToggleSelector());
 		
 		// ...and add mouse hover handling.
-		MenuHoverByWidget hover = new MenuHoverByWidget(hoverWidget, "subhead-control-bg2");
+		MenuHoverByWidget hover = new MenuHoverByWidget(m_hoverWidget, "subhead-control-bg2");
 		addMouseOverHandler(hover);
 		addMouseOutHandler( hover);
 	}
