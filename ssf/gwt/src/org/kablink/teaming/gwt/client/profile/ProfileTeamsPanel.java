@@ -146,9 +146,11 @@ public class ProfileTeamsPanel extends ProfileSectionPanel  {
 	{
 		if ( obj instanceof String )
 		{
-			if (isPermalink)
-			     Window.Location.replace( (String) obj );
-			else GwtClientHelper.jsLoadUrlInContentFrame( (String) obj );
+			GwtClientHelper.jsLoadUrlInTopWindow( (String) obj );
+			
+//			if (isPermalink)
+//			     Window.Location.replace( (String) obj );
+//			else GwtClientHelper.jsLoadUrlInTopWindow( (String) obj );
 		}
 		else
 			Window.alert( "in gotoUrl() and obj is not a String object" );

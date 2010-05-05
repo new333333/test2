@@ -107,6 +107,10 @@ public class GwtMainPage extends Composite
 		// For example, we never want the jsp login page to be loaded in the content control.
 		initHandlePageWithGWTJS( this );
 		
+		// Initialize ReguestActionHandler as native JavaScript to allow any content to register
+		//as an ActionRequestor - See GwtClientHelper:jsRegisterActionHandler
+		initRequestActionHandler( this );
+		
 		// Set the class name on the <body> element to "mainGwtTeamingPage"
 		bodyElement = RootPanel.getBodyElement();
 		bodyElement.setClassName( "mainTeamingPage" );
@@ -215,6 +219,17 @@ public class GwtMainPage extends Composite
 		}//end ss_handlePageWithGWT()
 	}-*/;
 
+	/*
+	 * Called to create a JavaScript method that will allow independent Content pages that are not 
+	 * instantiated in the GWTMainPage to be able to register as a actionRequestor.
+	 */
+	private native void initRequestActionHandler( GwtMainPage gwtMainPage ) /*-{
+		$wnd.ss_registerActionHandler = function( actionRequestor )
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::registerActionHandler(Lorg/kablink/teaming/gwt/client/util/ActionRequestor;)( actionRequestor );
+		}//end ss_registerActionHanler
+	}-*/;
+	
 	/*
 	 * Puts a context change from the traditional UI into effect.
 	 */
