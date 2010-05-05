@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -219,10 +219,20 @@ function ss_positionEntryDiv(moveTop) {
 }
 
 function ss_hideEntryDiv() {
+	// Are we running in the GWT UI?
+	if (ss_isGwtUIActive) {
+		// Yes!  Then we need see if the entry DIV is off window.top.
+		// Note that there appear to  be two of these now, one that's
+		// in window.top.document and one that's in self.document
+		// (which would be the GWT UI content IFRAME.)
+	    ss_hideEntryDivImpl(window.top.document.getElementById('ss_showentrydiv'));
+	}
+	
+	// The remainder of this code is unchanged from what was here
+	// BEFORE the GWT UI was implemented.
     var wObj1 = self.document.getElementById('ss_showentrydiv')
     if (wObj1 != null) {
-    	wObj1.style.visibility = "hidden";
-    	wObj1.style.display = "none";
+    	ss_hideEntryDivImpl(wObj1);
     	var wObj3 = self.document.getElementById('ss_iframe_holder_div')
     	if (0 == 1 && wObj3 != null) {
     		//Turned off because it doesn't work yet
@@ -233,6 +243,13 @@ function ss_hideEntryDiv() {
     	}
     }
     ss_showSpannedAreas();
+}
+
+function ss_hideEntryDivImpl(eDIV) {
+	if (eDIV != null) {
+    	eDIV.style.visibility = "hidden";
+    	eDIV.style.display = "none";
+	}
 }
 
 function ss_repositionEntryDiv() {

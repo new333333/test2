@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,7 +32,9 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
  
-%><%@ page import="org.kablink.teaming.ObjectKeys" %><%--
+%>
+<%@ page import="org.kablink.teaming.ObjectKeys" %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %><%--
 
 --%><fmt:setLocale value="${ssUser.locale}" scope="request" /><%--
 --%><fmt:setTimeZone value="${ssUser.timeZone.ID}" scope="request"/><%--
@@ -44,6 +46,11 @@
 --%>
 <script type="text/javascript">
 var undefined;
+<% if (GwtUIHelper.isGwtUIActive(request)) { %>
+	var ss_isGwtUIActive = true;
+<% } else { %>
+	var ss_isGwtUIActive = false;
+<% } %>
 var ss_urlBase = self.location.protocol + "//" + self.location.host;
 var ss_rootPath = "<html:rootPath/>";
 var ss_imagesPath = "<html:imagesPath/>";
