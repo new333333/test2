@@ -160,7 +160,7 @@ public class TinyMCE extends Composite
 				theme : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getTheme()(),
 				language : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getLanguage()(),
 				content_css : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getContentCss()(),
-				relative_urls: false,
+				relative_urls: conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getRelativeUrls()(),
 				remove_script_host : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getRemoveScriptHost()(),
 				width : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getWidth()(),
 				accessibility_warnings : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getAccessibilityWarnings()(),
