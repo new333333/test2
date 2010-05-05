@@ -51,6 +51,10 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -74,8 +78,6 @@ public class BrandingPanel extends Composite
 	private Image m_defaultBgImg = null;
 	private Image m_bgImg = null;
 	private GwtBrandingData m_brandingData = null;
-	
-	
 	
 	/**
 	 * This class displays the image or html defined in the branding
@@ -129,7 +131,22 @@ public class BrandingPanel extends Composite
 		{
 			// Adjust the height of the BrandingPanel to take into consideration this new image
 			// that has been loaded.
-			adjustBrandingPanelHeight();
+			Command cmd;
+			
+	        cmd = new Command()
+	        {
+	        	/**
+	        	 * 
+	        	 */
+	            public void execute()
+	            {
+	    			adjustBrandingPanelHeight();
+	            }
+	        };
+	        DeferredCommand.addCommand( cmd );
+	        
+	        // Clear any height style we may have applied.
+	        clearHeightStyle();
 		}// end onLoad()
 		
 		
@@ -213,8 +230,30 @@ public class BrandingPanel extends Composite
 						
 						// Yes
 						// Replace the content of this panel with the branding html.
+						m_panel.clear();
 						element = m_panel.getElement();
 						element.setInnerHTML( html );
+
+						Timer timer;
+
+						// The html we just added to the branding may have images in it.
+						// We need to wait until the browser has rendered the new html
+						// we just added before we adjust the height of the branding panel.
+						timer = new Timer()
+						{
+							/**
+							 * 
+							 */
+							@Override
+							public void run()
+							{
+						        // Clear any height style we may have applied.
+						        clearHeightStyle();
+				    			adjustBrandingPanelHeight();
+							}// end run()
+						};
+						
+						timer.schedule( 1000 );
 					}
 				}
 			}
@@ -281,11 +320,15 @@ public class BrandingPanel extends Composite
 	public void adjustBrandingPanelHeight()
 	{
 		int height;
+		int wrapperPanelHeight;
+		int contentPanelHeight;
 		String heightStr;
 		
 		// Set the height of the background image to be equal to the height of the content of the branding panel.
 		// Have a minimum height of 50 pixels.
-		height = m_wrapperPanel.getOffsetHeight();
+		wrapperPanelHeight = m_wrapperPanel.getOffsetHeight();
+		contentPanelHeight = m_contentPanel.getOffsetHeight();
+		height = Math.max( wrapperPanelHeight, contentPanelHeight );
 		if ( height < 50 )
 			height = 50;
 		heightStr = Integer.toString( height );
@@ -327,6 +370,7 @@ public class BrandingPanel extends Composite
 		}
 
 		m_mainPanel.setHeight( heightStr );
+		m_wrapperPanel.setHeight( heightStr );
 		m_bgPanel.setHeight( heightStr );
 		
 		// Notify all OnSizeChangeHandler that have registered.
@@ -337,6 +381,21 @@ public class BrandingPanel extends Composite
 		}
 	}// end adjustBrandingPanelHeight()
 
+	
+	/**
+	 * Clear any height style we may have applied.
+	 */
+	private void clearHeightStyle()
+	{
+		Style style;
+
+		style = m_mainPanel.getElement().getStyle();
+		style.clearHeight();
+		style = m_wrapperPanel.getElement().getStyle();
+		style.clearHeight();
+		
+	}// end clearHeightStyle()
+	
 	
 	/**
 	 * Return the branding data we are working with.
@@ -355,7 +414,22 @@ public class BrandingPanel extends Composite
 	{
 		// Adjust the height of the branding panel to take into consideration this new image
 		// that has been loaded.
-		adjustBrandingPanelHeight();
+		Command cmd;
+		
+        cmd = new Command()
+        {
+        	/**
+        	 * 
+        	 */
+            public void execute()
+            {
+    			adjustBrandingPanelHeight();
+            }
+        };
+        DeferredCommand.addCommand( cmd );
+        
+        // Clear any height styles we may have already applied.
+        clearHeightStyle();
 	}// end onLoad()
 	
 	
@@ -366,6 +440,9 @@ public class BrandingPanel extends Composite
 	{
 		m_brandingData = brandingData;
 		
+		// Clear any height styles we may have already applied
+		clearHeightStyle();
+
 		if ( brandingData != null )
 		{
 			// For the given branding data, adjust the background color or background image.
@@ -431,7 +508,23 @@ public class BrandingPanel extends Composite
 			m_contentPanel.updatePanel( brandingData ); 
 			
 			// Adjust the height of the branding panel to be equal to the height of the branding content panel.
-			adjustBrandingPanelHeight();
+			// Do this in as a DeferredCommand so the browser has a chance to render the new content.
+			{
+				Command cmd;
+				
+		        cmd = new Command()
+		        {
+		        	/**
+		        	 * 
+		        	 */
+		            public void execute()
+		            {
+		    			adjustBrandingPanelHeight();
+		            }
+		        };
+		        DeferredCommand.addCommand( cmd );
+				
+			}
 		}
 	}// end updateBrandingPanel()
 	

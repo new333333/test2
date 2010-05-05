@@ -46,21 +46,21 @@ public abstract class AbstractTinyMCEConfiguration
 	private String theme = "advanced";
 	private String language = GwtMainPage.m_requestInfo.getLanguage();
 	private String contentCss = GwtMainPage.m_requestInfo.getContentCss();
-	private String relativeUrls = "false";
-	private String removeScriptHost = "false";
+	private boolean relativeUrls = false;
+	private boolean removeScriptHost = false;
 	private String width = "100%";
-	private String accessibilityWarnings = "true";
-	private String accessibilityFocus = "true";
+	private boolean accessibilityWarnings = true;
+	private boolean accessibilityFocus = true;
 	private String entities = "39,#39,34,quot,38,amp,60,lt,62,gt";
-	private String gecko_spellcheck = "true";
+	private boolean gecko_spellcheck = true;
 	private String themeAdvancedToolbarLocation = "top";
 	private String themeAdvancedToolbarAlign = "left";
 	private String themeAdvancedStatusbarLocation = "bottom";
-	private String themeAdvancedResizing = "true";
-	private String themeAdvancedResizingUseCookie = "true";
-	private String themeAdvancedPath = "false";
+	private boolean themeAdvancedResizing = true;
+	private boolean themeAdvancedResizingUseCookie = true;
+	private boolean themeAdvancedPath = false;
 	private String themeAdvancedDisable = "image,advimage";
-	private String convertFontsToSpans = "true";
+	private boolean convertFontsToSpans = true;
 
 	private String documentBaseUrl = "";
 	private String skin = "o2k7";
@@ -90,11 +90,11 @@ public abstract class AbstractTinyMCEConfiguration
 	/**
 	 * 
 	 */
-	public String getAccessibilityFocus()
+	public boolean getAccessibilityFocus()
 	{
 		return accessibilityFocus;
 	}
-	public void setAccessibilityFocus( String accessibilityFocus )
+	public void setAccessibilityFocus( boolean accessibilityFocus )
 	{
 		this.accessibilityFocus = accessibilityFocus;
 	}
@@ -103,11 +103,11 @@ public abstract class AbstractTinyMCEConfiguration
 	/**
 	 * 
 	 */
-	public String getAccessibilityWarnings()
+	public boolean getAccessibilityWarnings()
 	{
 		return accessibilityWarnings;
 	}
-	public void setAccessibilityWarnings( String accessibilityWarnings )
+	public void setAccessibilityWarnings( boolean accessibilityWarnings )
 	{
 		this.accessibilityWarnings = accessibilityWarnings;
 	}
@@ -124,11 +124,11 @@ public abstract class AbstractTinyMCEConfiguration
 	/**
 	 * 
 	 */
-	public String getConvertFontsToSpans()
+	public boolean getConvertFontsToSpans()
 	{
 		return convertFontsToSpans;
 	}
-	public void setConvertFontsToSpans( String convertFontsToSpans )
+	public void setConvertFontsToSpans( boolean convertFontsToSpans )
 	{
 		this.convertFontsToSpans = convertFontsToSpans;
 	}
@@ -187,11 +187,11 @@ public abstract class AbstractTinyMCEConfiguration
 	/**
 	 * 
 	 */
-	public String getGeckoSpellCheck()
+	public boolean getGeckoSpellCheck()
 	{
 		return gecko_spellcheck;
 	}
-	public void setGeckoSpellCheck( String geckoSpellCheck )
+	public void setGeckoSpellCheck( boolean geckoSpellCheck )
 	{
 		this.gecko_spellcheck = geckoSpellCheck;
 	}
@@ -242,11 +242,11 @@ public abstract class AbstractTinyMCEConfiguration
 	/**
 	 * 
 	 */
-	public String getRelativeUrls()
+	public boolean getRelativeUrls()
 	{
 		return relativeUrls;
 	}
-	public void setRelativeUrls( String relativeUrls )
+	public void setRelativeUrls( boolean relativeUrls )
 	{
 		this.relativeUrls = relativeUrls;
 	}
@@ -255,11 +255,11 @@ public abstract class AbstractTinyMCEConfiguration
 	/**
 	 * 
 	 */
-	public String getRemoveScriptHost()
+	public boolean getRemoveScriptHost()
 	{
 		return removeScriptHost;
 	}
-	public void setRemoveScriptHost( String removeScriptHost )
+	public void setRemoveScriptHost( boolean removeScriptHost )
 	{
 		this.removeScriptHost = removeScriptHost;
 	}
@@ -445,20 +445,20 @@ public abstract class AbstractTinyMCEConfiguration
 	/**
 	 * 
 	 */
-	public String getThemeAdvancedPath()
+	public boolean getThemeAdvancedPath()
 	{
 		return themeAdvancedPath;
 	}
-	public void setThemeAdvancedPath( String themeAdvancedPath )
+	public void setThemeAdvancedPath( boolean themeAdvancedPath )
 	{
 		this.themeAdvancedPath = themeAdvancedPath;
 	}
 	
 	
-	public String getThemeAdvancedResizing() {
+	public boolean getThemeAdvancedResizing() {
 		return themeAdvancedResizing;
 	}
-	public void setThemeAdvancedResizing(String theme_advanced_resizing) {
+	public void setThemeAdvancedResizing( boolean theme_advanced_resizing) {
 		this.themeAdvancedResizing = theme_advanced_resizing;
 	}
 	
@@ -466,11 +466,11 @@ public abstract class AbstractTinyMCEConfiguration
 	/**
 	 * 
 	 */
-	public String getThemeAdvancedResizingUseCookie()
+	public boolean getThemeAdvancedResizingUseCookie()
 	{
 		return themeAdvancedResizingUseCookie;
 	}
-	public void setThemeAdvancedResizingUseCookie(String themeAdvancedResizingUseCookie )
+	public void setThemeAdvancedResizingUseCookie(boolean themeAdvancedResizingUseCookie )
 	{
 		this.themeAdvancedResizingUseCookie = themeAdvancedResizingUseCookie;
 	}
