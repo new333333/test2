@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -676,10 +676,19 @@ function ss_reloadOpenerParent(fallBackUrl) {
 	return false;
 }
 
-function ss_reloadOpener(fallBackUrl) {
+function ss_reloadOpener(fallBackUrl) {	
 	//Are we at the top window?
 	if (self.window != self.top) {
-		if (parent.ss_reloadUrl && parent.ss_reloadUrl != "") {
+		// No!  Are we running in the GWT UI?
+		if (ss_isGwtUIActive) {
+			// Yes!  Then submit the fallBackUrl to the GWT UI
+			// content frame.
+			window.top.gwtContentIframe.location.href = fallBackUrl;
+		}
+		
+		// The remainder of this code is unchanged from what was
+		// here BEFORE the GWT UI was implemented.
+		else if (parent.ss_reloadUrl && parent.ss_reloadUrl != "") {
 			parent.location.replace(parent.ss_reloadUrl);
 		} else {
 			parent.location.href = fallBackUrl;
