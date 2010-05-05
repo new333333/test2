@@ -144,6 +144,7 @@ public interface GwtRpcService extends RemoteService
 	public Boolean trackBinder(   String binderId );
 	public Boolean untrackBinder( String binderId );
 	public Boolean untrackPerson( String binderId );
+	public Boolean isPersonTracked( String binderId );
 	
 	// Save the branding data to the given binder.
 	public Boolean saveBrandingData( String binderId, GwtBrandingData brandingData ) throws GwtTeamingException;

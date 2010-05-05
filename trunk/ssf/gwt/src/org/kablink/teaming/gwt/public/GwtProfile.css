@@ -275,24 +275,14 @@ font-weight: bold;
 }
 .profile-follow {
 position:absolute;
-right: 5px;
+right: 4px;
 top: 5px;
 }
-.profile-follow a {
-color:#FFFFFF;
-font-size:100%;
-font-weight:bold;
-}
-.profile-follow a span {
--moz-border-radius:5px 5px 5px 5px;
-background-color:#5691A6;
-padding: 3px 30px;
-}
-.profile-follow a:hover span {
--moz-border-radius:5px 5px 5px 5px;
-background-image:url("/ssf/images/pics/teal_slice.png");
-color:#5691A6;
-}
+#.profile-follow a {
+#color:#FFFFFF;
+#font-size:100%;
+#font-weight:bold;
+#}
 .profile-workspace-link {
 	color:#1C5894 !important;
 	font-size: 0.8em !important;
@@ -345,6 +335,6 @@ color:#318998;
 }
 .profile-actions-edit {
 	position: absolute;
-	right: 224px;
+	right: 230px;
 	top: 4px;
 }

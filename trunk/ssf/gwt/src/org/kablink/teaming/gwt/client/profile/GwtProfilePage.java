@@ -2,9 +2,6 @@ package org.kablink.teaming.gwt.client.profile;
 
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
-import org.kablink.teaming.gwt.client.util.ActionRequestor;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -12,16 +9,15 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class GwtProfilePage extends Composite implements ActionHandler {
+public class GwtProfilePage extends Composite  {
+	
 	
 	private ProfileRequestInfo 	profileRequestInfo = null;
 	private ProfileMainPanel 	profileMainPanel;
@@ -183,20 +179,6 @@ public class GwtProfilePage extends Composite implements ActionHandler {
 		// Return a reference to the JavaScript variable called, m_requestInfo.
 		return $wnd.profileRequestInfo;
 	}-*/;
-
-	/*
-	 * Does what's necessary to wire the GwtMainPage to an ActionRequestor.
-	 */
-	private void registerActionHandler(ActionRequestor actionRequestor) {
-		// For now, all we need to do is add the GwtMainPage as an
-		// ActionHandler to the ActionRequestor.
-		actionRequestor.addActionHandler(this);
-	}// end registerActionHandler()
-
-	public void handleAction(TeamingAction action, Object obj) {
-		// TODO Auto-generated method stub
-
-	}
 	
 	public class ActionClickHandler implements ClickHandler {
 
@@ -219,7 +201,5 @@ public class GwtProfilePage extends Composite implements ActionHandler {
 				edit.setVisible(!visible);
 			}
 		}
-
 	}
-
 }

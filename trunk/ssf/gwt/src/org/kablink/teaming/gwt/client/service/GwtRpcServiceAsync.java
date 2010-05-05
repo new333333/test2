@@ -139,6 +139,7 @@ public interface GwtRpcServiceAsync
 	public void trackBinder(   String binderId, AsyncCallback<Boolean> callback );
 	public void untrackBinder( String binderId, AsyncCallback<Boolean> callback );
 	public void untrackPerson( String binderId, AsyncCallback<Boolean> callback );
+	public void isPersonTracked( String binderId, AsyncCallback<Boolean> callback );
 	
 	// Save the branding data to the given binder.
 	public void saveBrandingData( String binderId, GwtBrandingData brandingData, AsyncCallback<Boolean> callback );

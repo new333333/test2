@@ -1932,6 +1932,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return Boolean.TRUE;
 	}
 	
+	/**
+	 * Called to check if the current user is tracking the
+	 * person whose workspace is the specified binder.
+	 * 
+	 * @param binderId
+	 */
+	public Boolean isPersonTracked(String binderId) {
+		return BinderHelper.isPersonTracked(this, Long.parseLong(binderId));
+	}
+
+	
 	/*
 	 * Constructs a ToolbarItem based on a toolbar.
 	 */
@@ -2332,4 +2343,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return GwtProfileHelper.getUserStatus(this, sbinderId);
 	}
 
+
+	
 }// end GwtRpcServiceImpl

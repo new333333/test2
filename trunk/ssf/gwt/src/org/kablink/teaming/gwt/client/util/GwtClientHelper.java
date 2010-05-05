@@ -33,8 +33,8 @@
 
 package org.kablink.teaming.gwt.client.util;
 
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.ui.ListBox;
 
 
 /**
@@ -219,6 +219,14 @@ public class GwtClientHelper {
 		window.top.gwtContentIframe.location.href = url;
 	}-*/;
 
+	/**
+	 * Loads a URL into the top window.
+	 * 
+	 * @param url
+	 */
+	public static native void jsLoadUrlInTopWindow(String url) /*-{
+		window.top.location.href = url;
+	}-*/;
 	
 	/**
 	 * Use Teaming's existing JavaScript to logout of Teaming.
@@ -250,4 +258,12 @@ public class GwtClientHelper {
 		// If we get here it means we did not find an item in the listbox with the given value.
 		return -1;
 	}// end selectListboxItemByValue()
+	
+	/**
+	 * Use to register as an ActionRequestor to the GwtMainPage
+	 * @param requestor
+	 */
+	public static native void jsRegisterActionHandler( ActionRequestor requestor ) /*-{
+		window.top.ss_registerActionHandler( requestor );
+	}-*/;
 }
