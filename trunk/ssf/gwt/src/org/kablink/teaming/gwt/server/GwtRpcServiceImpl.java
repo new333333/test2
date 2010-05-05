@@ -1437,22 +1437,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @return
 	 */
 	public List<TreeInfo> getHorizontalTree( String binderIdS ) {
+		Binder binder;
 		List<TreeInfo> reply;
 		
 		// Can we access the Binder?
-		Binder binder;
-		try {
-			long binderId = Long.parseLong( binderIdS );
-			binder = getBinderModule().getBinder( binderId );
-		}
-		catch (AccessControlException ace) {
-			m_logger.debug( "GwtRpcServiceImpl.getHorizontalTree( Can't Access Binder (AccessControlException) ):  '" + binderIdS + "'");
-			binder = null;
-		}
-		catch (NumberFormatException nfe) {
-			m_logger.debug( "GwtRpcServiceImpl.getHorizontalTree( Can't Access Binder (NumberFormatException) ):  '" + ((null == binderIdS) ? "<nul>" : binderIdS) + "'");
-			binder = null;
-		}
+		binder = GwtServerHelper.getBinderForWorkspaceTree( this, binderIdS );
 		if (null == binder) {
 			// No!  Then we can't build any TreeInfo objects for it.
 			reply = new ArrayList<TreeInfo>();
@@ -1495,12 +1484,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public TreeInfo getHorizontalNode( String binderIdS )
 	{
+		Binder binder;
+		TreeInfo reply;
+		
 		// Access the Binder...
-		long binderId = Long.parseLong( binderIdS );
-		Binder binder = getBinderModule().getBinder( binderId );
+		binder = GwtServerHelper.getBinderForWorkspaceTree( this, binderIdS );
 
 		// ...and build the TreeInfo for it.
-		return GwtServerHelper.buildTreeInfoFromBinder( this, binder );
+		reply = ((null == binder) ? null : GwtServerHelper.buildTreeInfoFromBinder( this, binder ));
+		return reply;
 	}// end getHorizontalNode()
 
 	/**
@@ -1514,7 +1506,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		Workspace binderWS = BinderHelper.getBinderWorkspace( binder );
 		return String.valueOf( binderWS.getId() );
 	}// end getRootWorkspaceId() 
-	
+
 	/**
 	 * Returns a TreeInfo object containing the display information for
 	 * the Binder referred to by binderId from the perspective of the
@@ -1531,25 +1523,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public TreeInfo getVerticalTree( String binderIdS )
 	{
+		Binder binder;
 		TreeInfo reply;
 		
 		// Can we access the Binder?
-		long binderId;
-		Binder binder;
-		try {
-			binderId = Long.parseLong( binderIdS );
-			binder = getBinderModule().getBinder( binderId );
-		}
-		catch (AccessControlException ace) {
-			m_logger.debug( "GwtRpcServiceImpl.getVerticalTree( Can't Access Binder (AccessControlException) ):  '" + binderIdS + "'");
-			binderId = (-1L);
-			binder = null;
-		}
-		catch (NumberFormatException nfe) {
-			m_logger.debug( "GwtRpcServiceImpl.getVerticalTree( Can't Access Binder (NumberFormatException) ):  '" + ((null == binderIdS) ? "<nul>" : binderIdS) + "'");
-			binderId = (-1L);
-			binder = null;
-		}
+		binder = GwtServerHelper.getBinderForWorkspaceTree( this, binderIdS );
 		if (null == binder) {
 			// No!  We can't build a TreeInfo for it.
 			reply = new TreeInfo();
@@ -1567,8 +1545,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 			// ...calculate which additional Binder's that must be expanded
 			// ...to show the requested Binder...
+			long binderId      = Long.parseLong( binderIdS );
 			long binderWSIdVal = binderWSId.longValue();
-			if (binderId != binderWSIdVal) {
+			if ( binderId != binderWSIdVal ) {
 				binder = binder.getParentBinder();
 				while ( binder.getId().longValue() != binderWSIdVal )
 				{
@@ -1611,16 +1590,25 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public TreeInfo getVerticalNode( String binderIdS )
 	{
+		Binder binder;
+		TreeInfo reply;
+		
 		// Access the Binder...
-		long binderId = Long.parseLong( binderIdS );
-		Binder binder = getBinderModule().getBinder( binderId );
-
-		// ...note that the Binder will now be expanded...
-		ArrayList<Long> expandedBindersList = new ArrayList<Long>();
-		expandedBindersList.add( binderId );
-
-		// ...and build the TreeInfo folist.toArray(infoArray);r it.
-		return GwtServerHelper.buildTreeInfoFromBinder( this, binder, expandedBindersList );
+		binder = GwtServerHelper.getBinderForWorkspaceTree( this, binderIdS );
+		if ( null != binder )
+		{
+			// ...note that the Binder will now be expanded...
+			ArrayList<Long> expandedBindersList = new ArrayList<Long>();
+			expandedBindersList.add( Long.parseLong( binderIdS ));
+	
+			// ...and build the TreeInfo folist.toArray(infoArray);r it.
+			reply = GwtServerHelper.buildTreeInfoFromBinder( this, binder, expandedBindersList );
+		}
+		else
+		{
+			reply = null;
+		}
+		return reply;
 	}// end getVerticalNode()
 	
 	/**
