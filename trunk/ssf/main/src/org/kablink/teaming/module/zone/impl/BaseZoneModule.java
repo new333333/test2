@@ -42,6 +42,7 @@ import org.kablink.teaming.module.zone.ZoneException;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.web.servlet.filter.LoginFilter;
 
 
 public class BaseZoneModule extends AbstractZoneModule {
@@ -68,7 +69,19 @@ public class BaseZoneModule extends AbstractZoneModule {
 	}
 
 	public String getVirtualHost(String zoneName) {
-		return SPropsUtil.getString(SPropsUtil.SSF_DEFAULT_HOST);
+		String hostname;
+
+		// Read the host name from the properties file.
+		hostname = SPropsUtil.getString(SPropsUtil.SSF_DEFAULT_HOST);
+		
+		// Is the host name found in the properties file equal "dynamic"?
+		if ( hostname != null && hostname.equalsIgnoreCase( "dynamic" ) )
+		{
+			// This means that we should get the host name that is currently being used by Teaming.
+			hostname = LoginFilter.getHostName();
+		}
+		
+		return hostname;
 	}
 	protected void removeZone(String zoneName) {
 		logger.info("Cannot remove zone " + zoneName + " - Open source edition does not support multi zone");
