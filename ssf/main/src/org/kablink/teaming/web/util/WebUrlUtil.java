@@ -55,6 +55,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.servlet.filter.LoginFilter;
 import org.kablink.util.Http;
 import org.kablink.util.Validator;
 
@@ -870,9 +871,20 @@ public class WebUrlUtil {
 	private static String getStaticHostName() {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		if(zoneName.equals(SZoneConfig.getDefaultZoneName())) {
+			String hostname;
+			
 			// Default zone does not have virtual host name associated with it.
 			// Even if it did, we use the value specified in the properties file.
-			return SPropsUtil.getString(SPropsUtil.SSF_DEFAULT_HOST);
+			hostname = SPropsUtil.getString(SPropsUtil.SSF_DEFAULT_HOST);
+			
+			// Is the host name found in the properties file equal "dynamic"?
+			if ( hostname != null && hostname.equalsIgnoreCase( "dynamic" ) )
+			{
+				// This means that we should get the host name that is currently being used by Teaming.
+				hostname = LoginFilter.getHostName();
+			}
+			
+			return hostname; 
 		}
 		else {
 			return getZoneModule().getVirtualHost(zoneName);
