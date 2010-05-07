@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.util;
 
+import java.net.UnknownHostException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.SingletonViolationException;
@@ -60,14 +62,13 @@ public class SPropsUtil extends PropsUtil implements InitializingBean {
 	public static final String DEBUG_WEB_REQUEST_ENV_PRINT = "debug.web.request.env.print";
 	
 	public static final String SSF_CTX ="ssf.ctx";
-	public static final String SSF_DEFAULT_HOST = "ssf.default.host";
 	public static final String SSF_PORT = "ssf.port";
 	public static final String SSF_SECURE_PORT = "ssf.secure.port";
 	public static final String SSFS_CTX = "ssfs.ctx";
 	public static final String WIDEN_ACCESS="entryacl.widens.folderacl";
 	public static final String SIMPLEURL_CTX = "simpleurl.ctx";
 
-	protected Log logger = LogFactory.getLog(getClass());
+	protected static Log logger = LogFactory.getLog(SPropsUtil.class);
 
 	public SPropsUtil() {
 		if(instance != null)
@@ -93,4 +94,16 @@ public class SPropsUtil extends PropsUtil implements InitializingBean {
 		}	
 	}
 
+	public static String getDefaultHost() {
+		String host = getString("ssf.default.host");
+		if(host != null && host.equalsIgnoreCase("_dynamic")) {
+			try {
+				host = java.net.InetAddress.getLocalHost().getHostName();
+			} catch (UnknownHostException e) {
+				logger.warn(e.toString());
+				host = "localhost";
+			}
+		}
+		return host;
+	}
 }

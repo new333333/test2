@@ -62,7 +62,9 @@ public class ZoneContextValve extends ValveBase {
 	public void invoke(Request request, Response response) 
 	throws IOException, ServletException {
 		ZoneContextHolder.setServerName(request.getServerName());
+		ZoneContextHolder.setServerPort(request.getServerPort());
 		ZoneContextHolder.setClientAddr(request.getRemoteAddr());
+		ZoneContextHolder.setSecure(request.isSecure());
 		try {
 			getNext().invoke(request, response);
 		}

@@ -35,6 +35,8 @@ package org.kablink.teaming.asmodule.zonecontext;
 public class ZoneContextHolder {
 	
     private static final ThreadLocal<String> SERVER_NAME = new ThreadLocal<String>();
+    private static final ThreadLocal<Integer> SERVER_PORT = new ThreadLocal<Integer>();
+    private static final ThreadLocal<Boolean> IS_SECURE = new ThreadLocal<Boolean>();
     private static final ThreadLocal<String> CLIENT_ADDR = new ThreadLocal<String>();
 
     public static void setServerName(String serverName) {
@@ -43,6 +45,22 @@ public class ZoneContextHolder {
     
     public static String getServerName() {
     	return SERVER_NAME.get();
+    }
+    
+    public static void setServerPort(Integer serverPort) {
+    	SERVER_PORT.set(serverPort);
+    }
+    
+    public static Integer getServerPort() {
+    	return SERVER_PORT.get();
+    }
+    
+    public static void setSecure(Boolean secure) {
+    	IS_SECURE.set(secure);
+    }
+    
+    public static Boolean isSecure() {
+    	return IS_SECURE.get();
     }
     
     public static void setClientAddr(String clientAddr) {
@@ -55,6 +73,8 @@ public class ZoneContextHolder {
     
     public static void clear() {
     	SERVER_NAME.set(null);
+    	SERVER_PORT.set(null);
+    	IS_SECURE.set(null);
     	CLIENT_ADDR.set(null);
     }
 }

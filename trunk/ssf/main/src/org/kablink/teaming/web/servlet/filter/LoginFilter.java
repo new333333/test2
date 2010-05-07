@@ -71,8 +71,6 @@ import org.kablink.util.Http;
 import org.kablink.util.Validator;
 
 public class LoginFilter  implements Filter {
-	
-	private static String m_hostname = null;	// Currently this is only used by BaseZoneModule.getVirtualHost() and WebUrlUtil.getStaticHostName()
 
 	public void init(FilterConfig filterConfig) throws ServletException {
 	}
@@ -83,9 +81,6 @@ public class LoginFilter  implements Filter {
 
 		// Clear request context for the thread.
 		RequestContextHolder.clear();
-		
-		// Remember the host name from the request.
-		m_hostname = req.getServerName();
 		
 		try {
 			if(isAtRoot(req) && req.getMethod().equalsIgnoreCase("get")) {
@@ -133,15 +128,6 @@ public class LoginFilter  implements Filter {
 	
 	public void destroy() {
 	}
-	
-	
-	/**
-	 * Return the hostname that we got from the request. 
-	 */
-	public static String getHostName()
-	{
-		return m_hostname;
-	}// end getHostName()
 
 	protected void handleGuestAccess(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
 		if(isPathPermittedUnauthenticated(req.getPathInfo()) || isActionPermittedUnauthenticated(req.getParameter("action"))) {
