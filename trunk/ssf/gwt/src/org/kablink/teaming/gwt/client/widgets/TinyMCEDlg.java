@@ -59,6 +59,7 @@ public class TinyMCEDlg extends DlgBox
 	 * 
 	 */
 	public TinyMCEDlg(
+		String dlgTitle,
 		AbstractTinyMCEConfiguration tinyMCEConfig,
 		EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
 		EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
@@ -73,7 +74,7 @@ public class TinyMCEDlg extends DlgBox
 		m_tinyMCEConfig = tinyMCEConfig;
 		
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().addFileAttachmentDlgHeader(), editSuccessfulHandler, editCanceledHandler, properties ); 
+		createAllDlgContent( dlgTitle, editSuccessfulHandler, editCanceledHandler, properties ); 
 	}// end TinyMCEDlg()
 	
 
