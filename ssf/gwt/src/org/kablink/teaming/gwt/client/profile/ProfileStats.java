@@ -20,6 +20,7 @@ public class ProfileStats extends Composite {
 		
 		this.profileRequestInfo = requestInfo;
 		mainPanel = new FlowPanel();
+		mainPanel.addStyleName("user_stats");
 		
 		// ...its content panel...
 		grid = new Grid();
@@ -51,18 +52,28 @@ public class ProfileStats extends Composite {
 		initWidget(mainPanel);
 	}
 
+	/**
+	 * Add the user stats to the side panel
+	 */
 	private void addStats() {
 		
 		addStat(grid, "Following:", "25");
 		addStat(grid, "Followers:", "211");
 		addStat(grid, "Entries:", "10441234");
 		
-		if(profileRequestInfo.isOwner()) {
-			addStat(grid, "Data Quota:", "20", "MB");
-			addStat(grid, "Quota Used:", "2.77", "MB");
+		//if the quotas enable and is the owner or the admin then can see the quota
+		if(profileRequestInfo.isQuotasEnabled() && (profileRequestInfo.isOwner() ) ) {
+			addStat(grid, "Data Quota:", profileRequestInfo.getQuotasUserMaximum(), " MB");
+			addStat(grid, "Quota Used:", profileRequestInfo.getQuotasDiskSpacedUsed(), " MB");
 		}
 	}
 	
+	/**
+	 * Helper method to build the user stats
+	 * @param grid
+	 * @param title
+	 * @param value
+	 */
 	private void addStat(Grid grid, String title, String value) {
 		
 		Label titleLabel = new Label(title);
@@ -76,12 +87,22 @@ public class ProfileStats extends Composite {
 		row = row + 1;
 	}
 	
+	/**
+	 * Helper method to build the user stats
+	 * 
+	 * @param grid
+	 * @param title
+	 * @param value
+	 * @param end
+	 */
 	private void addStat(Grid grid, String title, String value, String end) {
 		
 		Label titleLabel = new Label(title);
 		//Label valueLabel = new Label(value);
 		InlineLabel valueLabel = new InlineLabel(value);
 		valueLabel.addStyleName( "bold" );
+		InlineLabel endLabel = new InlineLabel(end);
+		valueLabel.getElement().appendChild(endLabel.getElement());
 		
 		grid.insertRow(row);
 		grid.setWidget(row, 0, titleLabel);

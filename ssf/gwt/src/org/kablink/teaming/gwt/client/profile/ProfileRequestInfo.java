@@ -83,21 +83,64 @@ public class ProfileRequestInfo extends JavaScriptObject
 	 */
 	public final native String getCurrentUserWorkspaceId() /*-{ return this.currentUserWorkspaceId; }-*/;
 	
+	public final native String getBinderAdmin() /*-{ return this.binderAdmin; }-*/;
+	
+	public final native String getQuotasEnabled() /*-{ return this.quotasEnabled; }-*/;
+	
+	public final native String getQuotasUserMaximum() /*-{ return this.quotasUserMaximum; }-*/;
+	
+	public final native String getQuotasDiskSpacedUsed() /*-{ return this.quotasDiskSpacedUsed; }-*/;
+	
+	public final native String getQuotasDiskQuotaExceeded() /*-{ return this.quotasDiskQuotaExceeded; }-*/;
+	
+	public final native String getQuotasDiskQuotaHighWaterMarkExceeded() /*-{ return this.quotasDiskQuotaHighWaterMarkExceeded; }-*/;
+	
+	public final native String getUserDescription() /*-{ return this.userDescription; }-*/;
+	
 	/**
 	 * Is the workspace being referenced owned by the current user
 	 * @return
 	 */
 	public final boolean isOwner() {
-		boolean isOwner = false;
-		
 		if(getCurrentUserWorkspaceId() == getBinderId()) {
-			isOwner = true;
+			return true;
 		} 
-
-		return isOwner;
+		return false;
 	}
 
+	/**
+	 * Is the User viewing this profile the binder Admin
+	 * @return
+	 */
+	public final boolean isBinderAdmin() {
+		if(getBinderAdmin() != null){
+			return Boolean.parseBoolean(getBinderAdmin());
+		}
+		return false;
+	}
 
+	/**
+	 * Is the DiskQuota Enabled
+	 * @return
+	 */
+	public final boolean isQuotasEnabled() {
+		if(getQuotasEnabled() != null){
+			return Boolean.parseBoolean(getQuotasEnabled());
+		}
+		return false;
+	}
 	
-
+	public final boolean isDiskQuotaExceeded() {
+		if(getQuotasDiskQuotaExceeded() != null){
+			return Boolean.parseBoolean(getQuotasDiskQuotaExceeded());
+		}
+		return false;
+	}
+	
+	public final boolean isDiskQuotaHighWaterMarkExceeded() {
+		if(getQuotasDiskQuotaHighWaterMarkExceeded() != null){
+			return Boolean.parseBoolean(getQuotasDiskQuotaHighWaterMarkExceeded());
+		}
+		return false;
+	}
 }// end RequestInfo

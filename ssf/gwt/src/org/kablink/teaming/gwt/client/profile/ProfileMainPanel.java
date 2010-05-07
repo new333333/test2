@@ -36,6 +36,7 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 	private FlowPanel titlePanel;
 	private Anchor followingAnchor;
 	private boolean isFollowing;
+	private boolean isEditable = false;
 
 	/**
 	 * Constructor
@@ -59,6 +60,7 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 		// ...its content panel...
 		createContentPanel();
 
+		//Register with GwtMainPage, so we can fire an event
 		GwtClientHelper.jsRegisterActionHandler(this);
 		
 		// All composites must call initWidget() in their constructors.
@@ -117,6 +119,7 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 		titlePanel.add(actionPanel);
 
 		followingAnchor = new Anchor("Follow");
+		followingAnchor.setVisible(showFollowButton());
 		actionPanel.add(followingAnchor);
 		followingAnchor.addStyleName("editBrandingLink");
 		followingAnchor.addStyleName("editBrandingAdvancedLink");
@@ -179,6 +182,16 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 	}
 
 	/**
+	 * Use to determine if should show the follow button
+	 * @return
+	 */
+	private boolean showFollowButton() {
+		return !profileRequestInfo.isOwner();
+	}
+	
+	
+
+	/**
 	 * Create the Profile Main Content Section, this creates the grid that
 	 * should hold all of the user attribute name value pairs
 	 * 
@@ -207,7 +220,7 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 
 			Label title = new Label(attr.getTitle() + ":");
 			title.setStyleName("attrLabel");
-			Widget value = new ProfileAttributeWidget(attr).getWidget();
+			Widget value = new ProfileAttributeWidget(attr, isEditable).getWidget();
 
 			grid.insertRow(row);
 			grid.setWidget(row, 0, title);
@@ -327,6 +340,11 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 				});
 	}
 
+	/**
+	 * Check if is following this person
+	 * 
+	 * @return
+	 */
 	private boolean isFollowing(){
 		return isFollowing;
 	}
@@ -351,8 +369,16 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 		}
 	}
 	
+	/**
+	 * Use to trigger an action to GwtMainPage
+	 * @param action
+	 */
 	public void triggerAction(TeamingAction action) {
 		// Always use the initial form of the method.
 		triggerAction(action, null);
+	}
+
+	public void setEditable(boolean edit) {
+		isEditable  = edit;
 	}
 }
