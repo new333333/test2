@@ -55,13 +55,12 @@ height:100%;
 padding:0 0 10px 0;
 width:220px;
 text-align:left;
+position: relative;
 }
-
 .column-r .content {
 padding-right:5px;
 height:100%;
 }
-
 .profile-table {
 background-color:#F6F6F6;
 border-bottom:0 solid transparent;
@@ -171,7 +170,19 @@ margin-top:1.4em;
 padding:3px 0;
 text-transform:uppercase;
 }
-
+.userPhotoStats {
+}
+.user_stats {
+position:absolute;
+left: 90px;
+top: 2px;
+font-size: 1.1em;
+}
+.stats_error_msg {
+color: RED;
+margin-top: 10px;
+margin-left: 10px;
+}
 .statsTable  {
 border-bottom:0 solid transparent;
 border-left:0 solid transparent;
@@ -190,14 +201,13 @@ padding:3px;
 .statsTable td, .statsTable th, .statsTable tr,.statsTable table {
 	font-family:Arial,Helvetica,Geneva,Swiss,SunSans-Regular;
 }
-
-.column-r .photo img {
-clip:rect(0pt, 75px, 90px, 0pt);
-position:absolute;
-right:10px;
-top:10px;
-width:75px;
-z-index:100;
+.profilePhotoMain {
+padding-top:10px;
+height: 95px;
+}
+.profilePhoto a {
+	height: 75px;
+	width: 75px;
 }
 .attrLabel {
 font-size:0.8em;
@@ -334,7 +344,19 @@ margin-left: 5px;
 color:#318998;
 }
 .profile-actions-edit {
-	position: absolute;
-	right: 230px;
-	top: 4px;
+position: absolute;
+right: 230px;
+top: 4px;
+}
+.aboutHeading {
+border-bottom:medium none !important;
+clear: both;
+}
+.aboutLabel {
+	display: inline;
+	padding-right: 10px;
+}
+.aboutDesc {
+color: BLACK;
+text-transform: none;
 }
