@@ -41,6 +41,15 @@
 		Element item = (Element) request.getAttribute("item");
 %>
 
+	<ssf:ifLoggedIn>
+	  <c:if test="${ssUser == ssDefinitionEntry}">
+		<c:if test="${ss_quotasEnabled}">
+		    <c:set var="ssDiskQuota" ><fmt:formatNumber value="${ss_diskQuotaUserMaximum/1048576}" maxFractionDigits="0"/></c:set>
+		    <c:set var="ssDiskSpaceUsed" ><fmt:formatNumber value="${ssUser.diskSpaceUsed/1048576}" maxFractionDigits="2"/></c:set>
+		</c:if>
+	  </c:if>
+	</ssf:ifLoggedIn>
+
 <script type="text/javascript" language="javascript">
 		// Save away information such as the binder id and the adapted url for the request we are working with.
 		// Through an overlay we will access m_requestInfo from java.
@@ -48,6 +57,7 @@
 			binderId : '${ssBinder.id}',
 			currentUserWorkspaceId : '${ssUser.workspaceId}',
 			userName : '<ssf:userTitle user="${ssProfileConfigEntry}"/>',
+			binderAdmin : '${ss_isBinderAdmin}',
 			adaptedUrl : '<ssf:url crawlable="true"
 				adapter="true" portletName="ss_forum"
 					folderId="${ssBinder.id}" 
@@ -59,15 +69,30 @@
 					folderId="${ssUser.workspaceId}" 
 						 action="view_ws_listing" ><ssf:param 
 						name="profile" value="1" /></ssf:url>',
+			quotasEnabled : '${ss_quotasEnabled}',
+			quotasUserMaximum : '${ssDiskQuota}',
+			quotasDiskSpacedUsed : '${ssDiskSpaceUsed}',
+			quotasDiskQuotaExceeded : '${ss_diskQuotaExceeded}',
 		};
 </script>
 
 <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
+
 <div id="gwtProfileDiv">
+	<div id="profilePhoto" class="ss_user_photo" style="display:none;">
+	<a href="<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
+		value="${ssDefinitionEntry.owner.creation.principal.parentBinder.id}"/><ssf:param name="entryId" 
+		value="${ssDefinitionEntry.owner.creation.principal.id}"/><ssf:param name="newTab" 
+		value="1" /></ssf:url>" <ssf:title tag="title.goto.profile.page" />>
+		<ssf:buddyPhoto style="ss_thumbnail_standalone ss_thumbnail_small" 
+			photos="${ssDefinitionEntry.owner.customAttributes['picture'].value}" 
+			folderId="${ssDefinitionEntry.owner.parentBinder.id}" entryId="${ssDefinitionEntry.owner.id}" />
+	</a>
+</div>
 </div>
 
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   		configElement="<%= item %>" 
   		configJspStyle="${ssConfigJspStyle}" 
   		entry="${ssDefinitionEntry}" />
- 
+
