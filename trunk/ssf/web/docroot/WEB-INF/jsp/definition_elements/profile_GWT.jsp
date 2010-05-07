@@ -73,6 +73,9 @@
 			quotasUserMaximum : '${ssDiskQuota}',
 			quotasDiskSpacedUsed : '${ssDiskSpaceUsed}',
 			quotasDiskQuotaExceeded : '${ss_diskQuotaExceeded}',
+            modifyAllowed : '${ss_modifyEntryAllowed}',
+			modifyUrl : '${ss_modifyEntryAdapter}',
+		
 		};
 </script>
 
