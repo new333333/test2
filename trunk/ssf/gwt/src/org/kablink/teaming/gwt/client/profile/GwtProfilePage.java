@@ -16,13 +16,12 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 
-public class GwtProfilePage extends Composite  {
-	
-	
-	private ProfileRequestInfo 	profileRequestInfo = null;
-	private ProfileMainPanel 	profileMainPanel;
-	private ProfileSidePanel 	profileSidePanel;
-	private FlowPanel 			profilePanel;
+public class GwtProfilePage extends Composite {
+
+	private ProfileRequestInfo profileRequestInfo = null;
+	private ProfileMainPanel profileMainPanel;
+	private ProfileSidePanel profileSidePanel;
+	private FlowPanel profilePanel;
 	private InlineLabel edit;
 	private InlineLabel cancel;
 	private InlineLabel save;
@@ -42,19 +41,22 @@ public class GwtProfilePage extends Composite  {
 		profilePanel.addStyleName("profileSection");
 		mainProfilePage.add(profilePanel);
 
-		//The title Bar 
+		// The title Bar
 		createProfileTitleBar();
 
-		//Create a horizontal Panel to split the panel into a main info panel and a side panel
+		// Create a horizontal Panel to split the panel into a main info panel
+		// and a side panel
 		HorizontalPanel hPanel = createHorizontalPanel();
-		
-		//create main profile info panel
+
+		// create main profile info panel
 		createProfileMainPanel(hPanel);
-		
+
 		// Add the tracking info and team info to right pane
 		createProfileSidePanel(hPanel);
-		
-		//initialize the page with data
+
+		profileMainPanel.setEditable(true);
+
+		// initialize the page with data
 		initialize();
 
 		// All composites must call initWidget() in their constructors.
@@ -66,21 +68,22 @@ public class GwtProfilePage extends Composite  {
 		Timer timer = new Timer() {
 			@Override
 			public void run() {
-				createProfileInfoSections(profileRequestInfo);
+				createProfileInfoSections();
 			}// end run()
 		};
 
-		timer.schedule(20);
+		timer.schedule(5);
 	}
 
 	private HorizontalPanel createHorizontalPanel() {
-		
-		//Create a horizontal Panel to split the panel into a main info panel and a side panel
+
+		// Create a horizontal Panel to split the panel into a main info panel
+		// and a side panel
 		HorizontalPanel hPanel = new HorizontalPanel();
 		hPanel.addStyleName("profileTable");
 		hPanel.setWidth("100%");
 		profilePanel.add(hPanel);
-		
+
 		return hPanel;
 	}
 
@@ -99,15 +102,15 @@ public class GwtProfilePage extends Composite  {
 	}
 
 	private void createProfileTitleBar() {
-		
+
 		FlowPanel titleBar = new FlowPanel();
 		titleBar.addStyleName("column-head");
 		profilePanel.add(titleBar);
-		
+
 		// Title
 		Label profileLabel = new Label("Profile");
 		titleBar.add(profileLabel);
-		
+
 		createActions(titleBar);
 	}
 
@@ -115,20 +118,21 @@ public class GwtProfilePage extends Composite  {
 		FlowPanel actions = new FlowPanel();
 		actions.addStyleName("profile-actions-edit");
 		panel.add(actions);
-		
+
 		edit = new InlineLabel("Edit");
+		edit.setVisible(showEditButton());
 		edit.addStyleName("profile-action");
 		edit.addStyleName("profile-edit-button");
 		actions.add(edit);
 		edit.addClickHandler(new ActionClickHandler("Edit"));
-		
+
 		cancel = new InlineLabel("Cancel");
 		cancel.addStyleName("profile-action");
 		cancel.addStyleName("profile-cancel-button");
 		actions.add(cancel);
 		cancel.setVisible(false);
 		cancel.addClickHandler(new ActionClickHandler("Cancel"));
-		
+
 		save = new InlineLabel("Save");
 		save.addStyleName("profile-action");
 		save.addStyleName("profile-save-button");
@@ -136,8 +140,24 @@ public class GwtProfilePage extends Composite  {
 		save.setVisible(false);
 		save.addClickHandler(new ActionClickHandler("Save"));
 	}
-	
-	private void createProfileInfoSections(ProfileRequestInfo profileRequestInfo) {
+
+	/**
+	 * Use to determine if should show the edit button
+	 * 
+	 * @return true if owns this profile or is binderAdmin
+	 */
+	private boolean showEditButton() {
+		return profileRequestInfo.isBinderAdmin()
+				|| profileRequestInfo.isOwner();
+	}
+
+	/**
+	 * Create the Profile Heading Sections and their associated Profile
+	 * Attributes
+	 * 
+	 * @param profileRequestInfo
+	 */
+	private void createProfileInfoSections() {
 
 		GwtRpcServiceAsync gwtRpcService;
 
@@ -179,17 +199,18 @@ public class GwtProfilePage extends Composite  {
 		// Return a reference to the JavaScript variable called, m_requestInfo.
 		return $wnd.profileRequestInfo;
 	}-*/;
-	
+
 	public class ActionClickHandler implements ClickHandler {
 
 		String handlerId = null;
-		
+
 		public ActionClickHandler(String id) {
 			handlerId = id;
 		}
-		
+
 		public void onClick(ClickEvent event) {
-			if(handlerId.equals("Edit")){
+			if (handlerId.equals("Edit")) {
+
 				boolean visible = true;
 				cancel.setVisible(visible);
 				save.setVisible(visible);

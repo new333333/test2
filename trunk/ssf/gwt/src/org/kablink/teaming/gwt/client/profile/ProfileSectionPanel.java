@@ -6,12 +6,14 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 
 class ProfileSectionPanel extends FlowPanel {
 
 	protected GwtRpcServiceAsync	rpcService;			//
 	protected GwtTeamingMessages	messages; 			// The menu's messages.
 	ProfileRequestInfo 				profileRequestInfo; // Initial values passed 
+	private Label 					headingLabel;
 	
 	public ProfileSectionPanel(ProfileRequestInfo requestInfo, String title) {
 
@@ -21,8 +23,12 @@ class ProfileSectionPanel extends FlowPanel {
 		
 		//add a title to the section
 		if(title !=null) {
-			Label label = new Label(title);
-			add(label);
+			headingLabel = new Label(title);
+			add(headingLabel);
 		}
+	}
+	
+	public Label getHeadingLabel() {
+		return headingLabel;
 	}
 }
