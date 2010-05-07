@@ -890,12 +890,19 @@ body, table td, select
 {
 	border-left: 1px solid white;
 	color: #414648; /* dark grey */
-	display: inline-block;
 	font-size: 0.73em;
 	font-weight: normal;
 	padding: 3px 8px;
 	vertical-align: top;
 	white-space: nowrap;
+}
+.mainMenuBar_BoxPanelIE
+{
+	display: inline;
+}
+.mainMenuBar_BoxPanelNonIE
+{
+	display: inline-block;
 }
 .mainMenuBar_BoxText
 {
@@ -1026,12 +1033,8 @@ body, table td, select
 }
 .searchOptionsDlg_AdvancedSearchLabel
 {
-}
-.searchOptionsDlg_AdvancedSearchLabelPanel
-{
 
 	font-size: 11px;
-	display: inline-block;
 	padding: 4px 8px;
 	vertical-align: middle;
 	margin: 0px !important;

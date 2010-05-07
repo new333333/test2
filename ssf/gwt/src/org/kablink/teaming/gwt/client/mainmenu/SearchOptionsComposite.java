@@ -154,15 +154,12 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 	private void addAdvancedSearch() {
 		// Create the button label...
 		InlineLabel asLabel = new InlineLabel(m_messages.mainMenuSearchOptionsAdvancedSearch());
-		asLabel.addStyleName("searchOptionsDlg_AdvancedSearchLabel");
-		FlowPanel asLabelPanel = new FlowPanel();
-		asLabelPanel.addStyleName("searchOptionsDlg_AdvancedSearchLabelPanel mediumtext inside-btn2 btn-bg3 roundcornerSM");
-		asLabelPanel.add(asLabel);
+		asLabel.addStyleName("searchOptionsDlg_AdvancedSearchLabel mediumtext inside-btn2 btn-bg3 roundcornerSM");
 
 		// ...create the button Anchor...
 		Anchor asAnchor = new Anchor();
 		asAnchor.addStyleName("searchOptionsDlg_AdvancedSearchA");
-		asAnchor.getElement().appendChild(asLabelPanel.getElement());
+		asAnchor.getElement().appendChild(asLabel.getElement());
 		asAnchor.setTitle(m_messages.mainMenuSearchOptionsAdvancedSearch());
 		asAnchor.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {

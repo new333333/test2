@@ -198,6 +198,16 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
+	 * Returns true if we're running in any flavor of IE and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static native boolean jsIsIE() /*-{
+		return( navigator.userAgent.toLowerCase().indexOf("msie") > -1 );
+	}-*/;
+	
+	/**
 	 * Uses Teaming's existing ss_common JavaScript to launch a URL in
 	 * a new window.
 	 * 
