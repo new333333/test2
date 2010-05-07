@@ -2,6 +2,7 @@ package org.kablink.teaming.gwt.client.profile;
 
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -23,8 +24,8 @@ public class GwtProfilePage extends Composite {
 	private ProfileSidePanel profileSidePanel;
 	private FlowPanel profilePanel;
 	private InlineLabel edit;
-	private InlineLabel cancel;
-	private InlineLabel save;
+//	private InlineLabel cancel;
+//	private InlineLabel save;
 
 	public GwtProfilePage() {
 
@@ -54,7 +55,7 @@ public class GwtProfilePage extends Composite {
 		// Add the tracking info and team info to right pane
 		createProfileSidePanel(hPanel);
 
-		profileMainPanel.setEditable(true);
+		profileMainPanel.setEditable(false);
 
 		// initialize the page with data
 		initialize();
@@ -126,19 +127,19 @@ public class GwtProfilePage extends Composite {
 		actions.add(edit);
 		edit.addClickHandler(new ActionClickHandler("Edit"));
 
-		cancel = new InlineLabel("Cancel");
-		cancel.addStyleName("profile-action");
-		cancel.addStyleName("profile-cancel-button");
-		actions.add(cancel);
-		cancel.setVisible(false);
-		cancel.addClickHandler(new ActionClickHandler("Cancel"));
-
-		save = new InlineLabel("Save");
-		save.addStyleName("profile-action");
-		save.addStyleName("profile-save-button");
-		actions.add(save);
-		save.setVisible(false);
-		save.addClickHandler(new ActionClickHandler("Save"));
+//		cancel = new InlineLabel("Cancel");
+//		cancel.addStyleName("profile-action");
+//		cancel.addStyleName("profile-cancel-button");
+//		actions.add(cancel);
+//		cancel.setVisible(false);
+//		cancel.addClickHandler(new ActionClickHandler("Cancel"));
+//
+//		save = new InlineLabel("Save");
+//		save.addStyleName("profile-action");
+//		save.addStyleName("profile-save-button");
+//		actions.add(save);
+//		save.setVisible(false);
+//		save.addClickHandler(new ActionClickHandler("Save"));
 	}
 
 	/**
@@ -148,7 +149,7 @@ public class GwtProfilePage extends Composite {
 	 */
 	private boolean showEditButton() {
 		return profileRequestInfo.isBinderAdmin()
-				|| profileRequestInfo.isOwner();
+				|| profileRequestInfo.isModifyAllowed();
 	}
 
 	/**
@@ -211,15 +212,18 @@ public class GwtProfilePage extends Composite {
 		public void onClick(ClickEvent event) {
 			if (handlerId.equals("Edit")) {
 
-				boolean visible = true;
-				cancel.setVisible(visible);
-				save.setVisible(visible);
-				edit.setVisible(!visible);
+				String url = profileRequestInfo.getModifyUrl();
+				GwtClientHelper.jsLaunchUrlInWindow(url, "Modify Entry", 800, 800);
+				
+//				boolean visible = true;
+//				cancel.setVisible(visible);
+//				save.setVisible(visible);
+//				edit.setVisible(!visible);
 			} else {
-				boolean visible = false;
-				cancel.setVisible(visible);
-				save.setVisible(visible);
-				edit.setVisible(!visible);
+//				boolean visible = false;
+//				cancel.setVisible(visible);
+//				save.setVisible(visible);
+//				edit.setVisible(!visible);
 			}
 		}
 	}
