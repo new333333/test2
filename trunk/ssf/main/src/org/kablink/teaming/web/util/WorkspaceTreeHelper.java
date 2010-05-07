@@ -72,6 +72,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
@@ -274,6 +275,14 @@ public class WorkspaceTreeHelper {
 			if ((binder.getDefinitionType() != null) && 
 					(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
 				Principal owner = binder.getCreation().getPrincipal(); //creator is user
+				
+				try {
+					ProfileBinder pbinder = bs.getProfileModule().getProfileBinder();
+					if (bs.getProfileModule().testAccess(pbinder, ProfileOperation.manageEntries)) {
+						model.put(WebKeys.IS_BINDER_ADMIN, true);
+					}
+				} catch(AccessControlException ex) {}
+				
 				if (owner != null) {
 					//	turn owner into real object = not hibernate proxy
 					try {
@@ -327,7 +336,7 @@ public class WorkspaceTreeHelper {
 					}
 				}
 			}
-
+			
 			//Set up more standard beans
 			DashboardHelper.getDashboardMap(binder, userProperties.getProperties(), model);
 			if (!model.containsKey(WebKeys.SEEN_MAP)) 
