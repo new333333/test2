@@ -316,19 +316,43 @@ public class WorkspaceTreeHelper {
 						//Get the dashboard initial tab if one was passed in
 						String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
 						String profile = PortletRequestUtils.getStringParameter(request,"profile", "");
+						
+						
+						//if we don't find a Url Type look to see if there is a profile value
+						boolean showProfile = false;
 						if(type.equals("")) {
 							if(profile.equals("")){
-								if(user.getWorkspaceId().equals( binder.getId()) ) {
-									model.put("showProfile", false);
-								} else {
-									model.put("showProfile", true);
+								//if the profile value is not there, is this the binder the user's workspace
+                                //this just redirects all searches to the profile page but if this is yourself 
+								//then goto your workspace
+								if(!user.getWorkspaceId().equals( binder.getId()) ) {
+									showProfile = true;
 								}
 							} else 	if(profile.equals("1")){
-								model.put("showProfile", true);
-							} else {
-								model.put("showProfile", false);
+								showProfile = true;
 							}
+							model.put("showProfile", showProfile);
 						}
+						
+				        //Modify profile is not available to the guest user
+				        if (showProfile && 
+				        		!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+
+				        	boolean showModifyProfile = false;
+							if (owner.isActive() && bs.getProfileModule().testAccess(owner, ProfileOperation.modifyEntry)) {
+								showModifyProfile = true;
+							}
+
+				        	if (showModifyProfile) {
+								AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+								adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+								adapterUrl.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+								adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+								model.put(WebKeys.MODIFY_ENTRY_ALLOWED, true);
+								model.put(WebKeys.MODIFY_ENTRY_ADAPTER,  adapterUrl.toString());
+							}
+				        }
+						
 				        RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, request, response, 
 				        		binder.getId(), type, model);
 					} catch (Exception ex) {
@@ -1130,6 +1154,19 @@ public class WorkspaceTreeHelper {
 		String[] as = new String[principals.size()];
 		principals.toArray(as);
 		return as;
+	}
+	
+	
+	protected static void getShowModifyProfileAdapter(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, Map model, Workspace workspace){
+		
+		AdaptedPortletURL adapterUrl = null;
+		User user = RequestContextHolder.getRequestContext().getUser();
+
+		
+
+		
+		
 	}
 
     /**
