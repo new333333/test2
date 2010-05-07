@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.mainmenu;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -73,7 +74,9 @@ public class MenuBarBox extends FlowPanel {
 		// ...create a FlowPanel to contain the items in the box...
 		FlowPanel boxPanel = new FlowPanel();
 		boxPanel.getElement().setId(boxId);
-		boxPanel.addStyleName("mainMenuBar_BoxPanel");
+		String addedStyles = "mainMenuBar_BoxPanel ";
+		addedStyles += (GwtClientHelper.jsIsIE() ? "mainMenuBar_BoxPanelIE" : "mainMenuBar_BoxPanelNonIE");
+		boxPanel.addStyleName(addedStyles);
 
 		// ...add mouse over handling on the panel...
 		MenuHoverByID hover = new MenuHoverByID(boxId, "mainMenuBar_BoxHover");
