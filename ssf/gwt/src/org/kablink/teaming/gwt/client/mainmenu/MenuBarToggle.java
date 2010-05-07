@@ -106,7 +106,6 @@ public class MenuBarToggle extends Anchor {
 	 * Class constructor.
 	 * 
 	 * @param actionTrigger
-	 * @param hoverWidget
 	 * @param baseImgRes
 	 * @param baseTitle
 	 * @param baseAction
@@ -114,12 +113,12 @@ public class MenuBarToggle extends Anchor {
 	 * @param altTitle
 	 * @param altAction
 	 */
-	public MenuBarToggle(ActionTrigger actionTrigger, Widget hoverWidget, ImageResource baseImgRes, String baseTitle, TeamingAction baseAction, ImageResource altImgRes, String altTitle, TeamingAction altAction) {
+	public MenuBarToggle(ActionTrigger actionTrigger, ImageResource baseImgRes, String baseTitle, TeamingAction baseAction, ImageResource altImgRes, String altTitle, TeamingAction altAction) {
 		// Initialize the super class...
 		super();
 		
 		// ...store the parameters...
-		m_hoverWidget   = hoverWidget;
+		m_hoverWidget   = this;
 		m_actionTrigger	= actionTrigger;
 		m_baseAction	= baseAction;
 		m_altAction		= altAction;
