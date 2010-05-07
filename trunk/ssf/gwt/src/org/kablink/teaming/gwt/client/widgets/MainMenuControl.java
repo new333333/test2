@@ -150,25 +150,20 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		buttonsPanel.addStyleName("mainMenuButton_Group");
 		
 		// ...add the slide-left/right toggle...
-		FlowPanel panel = new FlowPanel();
-		panel.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
-		MenuBarToggle wsTreeSlider = new MenuBarToggle(this, panel, m_images.slideLeft(), m_messages.mainMenuAltLeftNavHideShow(), TeamingAction.HIDE_LEFT_NAVIGATION, m_images.slideRight(), m_messages.mainMenuAltLeftNavHideShow(), TeamingAction.SHOW_LEFT_NAVIGATION);
-		panel.add(wsTreeSlider);
-		buttonsPanel.add(panel);
+		MenuBarToggle wsTreeSlider = new MenuBarToggle(this, m_images.slideLeft(), m_messages.mainMenuAltLeftNavHideShow(), TeamingAction.HIDE_LEFT_NAVIGATION, m_images.slideRight(), m_messages.mainMenuAltLeftNavHideShow(), TeamingAction.SHOW_LEFT_NAVIGATION);
+		wsTreeSlider.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
+		buttonsPanel.add(wsTreeSlider);
 
 		// ...add the slide-up/down toggle...
-		panel = new FlowPanel();
-		panel.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
-		MenuBarToggle mastHeadSlider = new MenuBarToggle(this, panel, m_images.slideUp(), m_messages.mainMenuAltMastHeadHideShow(), TeamingAction.HIDE_MASTHEAD, m_images.slideDown(), m_messages.mainMenuAltMastHeadHideShow(), TeamingAction.SHOW_MASTHEAD);
-		panel.add(mastHeadSlider);
-		buttonsPanel.add(panel);
+		MenuBarToggle mastHeadSlider = new MenuBarToggle(this, m_images.slideUp(), m_messages.mainMenuAltMastHeadHideShow(), TeamingAction.HIDE_MASTHEAD, m_images.slideDown(), m_messages.mainMenuAltMastHeadHideShow(), TeamingAction.SHOW_MASTHEAD);
+		mastHeadSlider.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
+		buttonsPanel.add(mastHeadSlider);
 
 		// ...add the browse hierarchy button...
-		panel = new FlowPanel();
-		panel.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
-		MenuBarButton bhButton = new MenuBarButton(this, panel, m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), TeamingAction.BROWSE_HIERARCHY, new OnBrowseHierarchyInfo(panel));
-		panel.add(bhButton);
-		buttonsPanel.add(panel);
+		MenuBarButton bhButton = new MenuBarButton(this, m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), TeamingAction.BROWSE_HIERARCHY);
+		bhButton.setActionObject(new OnBrowseHierarchyInfo(bhButton));
+		bhButton.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
+		buttonsPanel.add(bhButton);
 
 		// ...if the user is allowed to exit GWT UI mode...
 		final ActionTrigger actionTrigger = this;
@@ -179,11 +174,9 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 			public void onSuccess(Boolean isGwtUIExclusive) {
 				if (!isGwtUIExclusive) {
 					// ...add the GWT UI button...
-					FlowPanel panel = new FlowPanel();
-					panel.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
-					MenuBarButton gwtUIButton = new MenuBarButton(actionTrigger, panel, m_images.gwtUI(), m_messages.mainMenuAltGwtUI(), TeamingAction.TOGGLE_GWT_UI);
-					panel.add(gwtUIButton);
-					buttonsPanel.add(panel);
+					MenuBarButton gwtUIButton = new MenuBarButton(actionTrigger, m_images.gwtUI(), m_messages.mainMenuAltGwtUI(), TeamingAction.TOGGLE_GWT_UI);
+					gwtUIButton.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
+					buttonsPanel.add(gwtUIButton);
 				}
 			}
 		});

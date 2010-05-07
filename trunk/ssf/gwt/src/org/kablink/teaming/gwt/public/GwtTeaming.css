@@ -833,7 +833,7 @@ body, table td, select
 }
 .mainMenuButton_Group
 {
-	display: inline-block;
+	display: inline;
 	font-size: 0.85em;
 	font-weight: bold;
 	letter-spacing: 0.05em;
@@ -899,7 +899,6 @@ body, table td, select
 }
 .mainMenuBar_BoxText
 {
-	display: inline-block;
 	vertical-align: middle;
 }
 .mainMenuPopup

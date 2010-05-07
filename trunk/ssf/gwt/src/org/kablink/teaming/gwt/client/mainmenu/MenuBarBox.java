@@ -39,7 +39,7 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.InlineLabel;
 
 
 
@@ -89,7 +89,7 @@ public class MenuBarBox extends FlowPanel {
 		}
 
 		// ...add the label for the box...
-		Label itemLabel = new Label(itemText);
+		InlineLabel itemLabel = new InlineLabel(itemText);
 		itemLabel.addStyleName("mainMenuBar_BoxText");
 		boxPanel.add(itemLabel);
 

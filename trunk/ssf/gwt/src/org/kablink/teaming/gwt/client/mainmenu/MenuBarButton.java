@@ -39,9 +39,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -75,12 +73,11 @@ public class MenuBarButton extends Anchor {
 	 * Class constructor.
 	 * 
 	 * @param actionTrigger
-	 * @param hoverWidget
 	 * @param imgRes
 	 * @param imgTitle
 	 * @param action
 	 */
-	public MenuBarButton(ActionTrigger actionTrigger, Widget hoverWidget, ImageResource imgRes, String imgTitle, TeamingAction action, Object actionObject) {
+	public MenuBarButton(ActionTrigger actionTrigger, ImageResource imgRes, String imgTitle, TeamingAction action, Object actionObject) {
 		// Initialize the super class...
 		super();
 		
@@ -102,13 +99,23 @@ public class MenuBarButton extends Anchor {
 		addClickHandler(new MenuButtonSelector());
 		
 		// ...add mouse over handling...
-		MenuHoverByWidget hover = new MenuHoverByWidget(hoverWidget, "subhead-control-bg2");
+		MenuHoverByWidget hover = new MenuHoverByWidget(this, "subhead-control-bg2");
 		addMouseOverHandler(hover);
 		addMouseOutHandler( hover);
 	}
 	
-	public MenuBarButton(ActionTrigger actionTrigger, FlowPanel hostPanel, ImageResource imgRes, String imgTitle, TeamingAction action) {
+	public MenuBarButton(ActionTrigger actionTrigger, ImageResource imgRes, String imgTitle, TeamingAction action) {
 		// Always use the other form of the constructor.
-		this(actionTrigger, hostPanel, imgRes, imgTitle, action, null);
+		this(actionTrigger, imgRes, imgTitle, action, null);
+	}
+
+	/**
+	 * Sets an Object for the teaming action.
+	 * 
+	 * @param actionObject
+	 */
+	public void setActionObject(Object actionObject) {
+		// Simply store the parameter.
+		m_actionObject = actionObject;
 	}
 }
