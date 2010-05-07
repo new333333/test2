@@ -97,6 +97,10 @@ public class ProfileRequestInfo extends JavaScriptObject
 	
 	public final native String getUserDescription() /*-{ return this.userDescription; }-*/;
 	
+	public final native boolean isModifyAllowed() /*-{ return this.modifyAllowed }-*/;
+	
+	public final native String getModifyUrl() /*-{ return this.modifyUrl }-*/;
+	
 	/**
 	 * Is the workspace being referenced owned by the current user
 	 * @return
