@@ -1151,6 +1151,7 @@ public class EditBrandingDlg extends DlgBox
 
 			// No, create a "Edit Advanced Branding" dialog.
 			m_editAdvancedBrandingDlg = new TinyMCEDlg(
+												GwtTeaming.getMessages().editAdvancedBranding(),
 												m_tinyMCEConfig,
 												editSuccessfulHandler,
 												editCanceledHandler,
