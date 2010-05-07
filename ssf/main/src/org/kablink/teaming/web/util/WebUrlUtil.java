@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -55,7 +56,6 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
-import org.kablink.teaming.web.servlet.filter.LoginFilter;
 import org.kablink.util.Http;
 import org.kablink.util.Validator;
 
@@ -591,6 +591,15 @@ public class WebUrlUtil {
 				else
 					secure = req.isSecure();
 			}
+			else if(ZoneContextHolder.getServerName() != null) {
+				host = ZoneContextHolder.getServerName();
+				if(port == -1)
+					port = ZoneContextHolder.getServerPort();
+				if(isSecure != null)
+					secure = isSecure; // don't get it from the context
+				else
+					secure = ZoneContextHolder.isSecure();
+			}
 			else {
 				if(logger.isTraceEnabled())
 					logger.trace("No context (http request) passed in. Getting values from properties file.");
@@ -609,6 +618,15 @@ public class WebUrlUtil {
 					secure = isSecure; // don't use req.isSecure() !
 				else
 					secure = req.isSecure();
+			}
+			else if(ZoneContextHolder.getServerName() != null) {
+				host = ZoneContextHolder.getServerName();
+				if(port == -1)
+					port = ZoneContextHolder.getServerPort();
+				if(isSecure != null)
+					secure = isSecure; // don't get it from the context
+				else
+					secure = ZoneContextHolder.isSecure();
 			}
 			else {
 				if(logger.isTraceEnabled())
@@ -653,6 +671,15 @@ public class WebUrlUtil {
 				else
 					secure = req.isSecure(); // get the context value from the req object
 			}
+			else if(ZoneContextHolder.getServerName() != null) {
+				host = ZoneContextHolder.getServerName();
+				if(port == -1)
+					port = ZoneContextHolder.getServerPort();
+				if(isSecure != null)
+					secure = isSecure; // don't get it from the context
+				else
+					secure = ZoneContextHolder.isSecure();
+			}
 			else {
 				if(logger.isTraceEnabled())
 					logger.trace("No context (portlet request) passed in. Getting values from properties file.");
@@ -672,6 +699,15 @@ public class WebUrlUtil {
 					secure = isSecure; // don't use req.isSecure() !
 				else
 					secure = req.isSecure(); // get the context value from the req object
+			}
+			else if(ZoneContextHolder.getServerName() != null) {
+				host = ZoneContextHolder.getServerName();
+				if(port == -1)
+					port = ZoneContextHolder.getServerPort();
+				if(isSecure != null)
+					secure = isSecure; // don't get it from the context
+				else
+					secure = ZoneContextHolder.isSecure();
 			}
 			else {
 				if(logger.isTraceEnabled())
@@ -871,20 +907,9 @@ public class WebUrlUtil {
 	private static String getStaticHostName() {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		if(zoneName.equals(SZoneConfig.getDefaultZoneName())) {
-			String hostname;
-			
 			// Default zone does not have virtual host name associated with it.
 			// Even if it did, we use the value specified in the properties file.
-			hostname = SPropsUtil.getString(SPropsUtil.SSF_DEFAULT_HOST);
-			
-			// Is the host name found in the properties file equal "dynamic"?
-			if ( hostname != null && hostname.equalsIgnoreCase( "dynamic" ) )
-			{
-				// This means that we should get the host name that is currently being used by Teaming.
-				hostname = LoginFilter.getHostName();
-			}
-			
-			return hostname; 
+			return SPropsUtil.getDefaultHost();
 		}
 		else {
 			return getZoneModule().getVirtualHost(zoneName);
