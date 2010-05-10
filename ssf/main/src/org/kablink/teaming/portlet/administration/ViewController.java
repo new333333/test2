@@ -76,6 +76,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.PortletPreferencesUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
@@ -668,7 +669,7 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		// Site Branding
-		if ( top != null )
+		if ( top != null && GwtUIHelper.isGwtUIActive( request ) )
 		{
 			// Does the user have the rights to modify the top binder
 			if ( getBinderModule().testAccess( top, BinderOperation.modifyBinder ) )
