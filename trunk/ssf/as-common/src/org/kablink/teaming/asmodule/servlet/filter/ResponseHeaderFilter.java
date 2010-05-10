@@ -33,6 +33,7 @@
 package org.kablink.teaming.asmodule.servlet.filter;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Enumeration;
 
 import javax.servlet.Filter;
@@ -41,6 +42,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class ResponseHeaderFilter implements Filter {
@@ -52,6 +54,34 @@ public class ResponseHeaderFilter implements Filter {
 		// Apply the headers
 		if(res instanceof HttpServletResponse) {
 			HttpServletResponse response = (HttpServletResponse) res;
+			
+			if ( req instanceof HttpServletRequest )
+			{
+				String requestURI;
+				HttpServletRequest httpRequest;
+				
+				// Are we dealing with a file that has ".nocache." in its name?
+				// A GWT constructed file will have ".nocache." in its file name.  We never
+				// want the browser to cache such a file.
+				httpRequest = (HttpServletRequest) req;
+				requestURI = httpRequest.getRequestURI();
+				if ( requestURI.contains( ".nocache." ) )
+				{
+					Date now;
+					
+					// Yes
+					now = new Date();
+					
+					response.setDateHeader( "Date", now.getTime() );
+
+					// Set the expiration date to yesterday.
+					response.setDateHeader( "Expires", now.getTime() - 86400000L );
+					
+					// Tell the browser to never cache this file.
+					response.setHeader( "Pragma", "no-cache" );
+					response.setHeader( "Cache-control", "no-cache, no-store, must-revalidate" );
+				}
+			}
 			
 			// Set the provided HTTP response parameters
 			for (Enumeration e = fc.getInitParameterNames(); e.hasMoreElements();) {
@@ -67,6 +97,7 @@ public class ResponseHeaderFilter implements Filter {
 					headerName = paramName.substring(0, index);
 					scheme = paramName.substring(index+1);
 				}
+				
 				// Set the header only if it isn't already set.
 				if(!response.containsHeader(headerName)) {
 					if(scheme != null) {
