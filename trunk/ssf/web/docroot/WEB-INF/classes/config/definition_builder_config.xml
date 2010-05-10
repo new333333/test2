@@ -1387,7 +1387,7 @@
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__presenceID"/>
-			<property name="name" caption="__data_name" type="text" value="precenceID" 
+			<property name="name" caption="__data_name" type="text" value="presenceID" 
 			  readonly="true" unique="//item[@type='data']"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 		</properties>
