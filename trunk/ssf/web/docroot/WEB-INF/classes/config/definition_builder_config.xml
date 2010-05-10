@@ -841,6 +841,7 @@
 			<option name="graphic" />
 			<option name="file" />
 			<option name="attachFiles" />
+			<option name="profileAboutMe" />
 			<option_select path="//item[@category='profileData']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
@@ -1381,7 +1382,22 @@
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
-	</item>	
+	</item>
+	<item name="profilePresence" caption="__presenceID" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__presenceID"/>
+			<property name="name" caption="__data_name" type="text" value="precenceID" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>		
 	<item name="profileEntryPicture" caption="__profile_entry_picture" type="data" multipleAllowed="false"
 		category="profileEntryData" display="form">
 		<properties>
@@ -1980,6 +1996,7 @@
 			<option name="profileSkypeId" initial="false" />
 			<option name="profileTwitterId" initial="false" />
 			<option name="profileInstantMessage" initial="false" />
+			<option name="profilePresence" initial="true" />
 			<option_select path="//item[@category='profileEntryData']" />
 		</options>
 		<jsps>
@@ -2029,6 +2046,7 @@
 			<option name="profileSkypeId" initial="false" />
 			<option name="profileTwitterId" initial="false" />
 			<option name="profileInstantMessage" initial="false" />
+			<option name="profilePresence" initial="true" />
 			<option_select definitionType="7" path="//item[@category='profileEntryViewData']" optionCaption="__profile_additional_options" />
 		</options>
 	</item>	
@@ -2069,7 +2087,7 @@
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
 		<options>
-			<option name="profileAboutMe" />
+			<option name="profileAboutMe" initial="true"/>
 			<option_select definitionType="7" path="//item[@category='userSideViewLayout']" optionCaption="__layout_options" />
 		</options>
 	</item>
