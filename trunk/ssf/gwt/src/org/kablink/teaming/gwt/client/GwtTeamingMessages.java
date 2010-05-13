@@ -485,4 +485,9 @@ public interface GwtTeamingMessages extends Messages
 	String exceededError();
 	String clearCurrentStatus();
 	
+	// The following strings are used with the Administration page.
+	String managementCategory();
+	String reportCategory();
+	String systemCategory();
+	
 }// end GwtTeamingMessages

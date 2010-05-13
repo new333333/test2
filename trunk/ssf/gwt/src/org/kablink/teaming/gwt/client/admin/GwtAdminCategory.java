@@ -30,57 +30,69 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.admin;
 
-package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
 
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.NamedFrame;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * This widget will display the Teaming content for a given folder/workspace
+ * This class represents a category of administration options, ie Reports
+ * @author jwootton
+ *
  */
-public class ContentControl extends Composite
+public class GwtAdminCategory
+	implements IsSerializable
 {
-	private NamedFrame m_frame;
+	private String m_localizedName = null;
+	private ArrayList<GwtAdminAction> m_adminActions;
 	
 	/**
 	 * 
 	 */
-	public ContentControl( String name )
+	public GwtAdminCategory()
 	{
-		FlowPanel mainPanel;
+		m_adminActions = new ArrayList<GwtAdminAction>();
+	}// end GwtAdminCategory()
+	
 
-		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "contentControl" );
+	/**
+	 * Add a GwtAdminOption to our list.
+	 */
 
-		// Give the iframe a name so that view_workarea_navbar.jsp, doesn't set the url of the browser.
-		m_frame = new NamedFrame( name );
-		m_frame.setPixelSize( 700, 500 );
-		m_frame.getElement().setId( "contentControl" );
-		m_frame.setUrl( "" );
-		mainPanel.add( m_frame );
-		
-		// All composites must call initWidget() in their constructors.
-		initWidget( mainPanel );
-	}// end ContentControl()
+	public void addAdminOption( GwtAdminAction adminOption )
+	{
+		m_adminActions.add( adminOption );
+	}// end addAdminOption()
 	
 	
 	/**
-	 * Set the width and height of this control.
+	 * 
 	 */
-	public void setDimensions( int width, int height )
+
+	public ArrayList<GwtAdminAction> getActions()
 	{
-		m_frame.setPixelSize( width, height );
-	}// end setDimensions()
+		return m_adminActions;
+	}// end getActions()
+
 	
 	/**
-	 * This method will set the url used by the iframe.
+	 * 
 	 */
-	public void setUrl( String url )
+	public String getLocalizedName()
 	{
-		m_frame.setUrl( url );
-	}// end setUrl()
-}// end ContentControl
+		return m_localizedName;
+	}// end getLocalizedName()
+
+	
+	/**
+	 * 
+	 */
+	public void setLocalizedName( String localizedName )
+	{
+		m_localizedName = localizedName;
+	}// end setLocalizedName()
+	
+}// end GwtAdminCategory

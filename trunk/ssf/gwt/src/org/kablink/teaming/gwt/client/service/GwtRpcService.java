@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
+import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
@@ -72,6 +73,9 @@ public interface GwtRpcService extends RemoteService
 {
 	// Do a search given the criteria found in the GwtSearchCriteria object.
 	public GwtSearchResults executeSearch( GwtSearchCriteria searchCriteria ) throws Exception;
+	
+	// Return the administration actions the user has rights to run.
+	public ArrayList<GwtAdminCategory> getAdminActions( String binderId ) throws GwtTeamingException;
 	
 	// Return a GwtBrandingData object for the given binder.
 	public GwtBrandingData getBinderBrandingData( String binderId ) throws GwtTeamingException;

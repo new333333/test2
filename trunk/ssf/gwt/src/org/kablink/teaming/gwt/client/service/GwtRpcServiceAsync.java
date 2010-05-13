@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
+import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtFolder;
@@ -44,6 +45,7 @@ import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
@@ -66,6 +68,9 @@ public interface GwtRpcServiceAsync
 {
 	// Do a search given the criteria found in the GwtSearchCriteria object.
 	public void executeSearch( GwtSearchCriteria searchCriteria, AsyncCallback<GwtSearchResults> callback );
+	
+	// Return the administration actions the user has rights to run.
+	public void getAdminActions( String binderId, AsyncCallback<ArrayList<GwtAdminCategory>> callback );
 	
 	// Return a GwtBrandingData object for the given binder.
 	public void getBinderBrandingData( String binderId, AsyncCallback<GwtBrandingData> callback );

@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.widgets.AdminControl;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg;
 import org.kablink.teaming.gwt.client.widgets.LoginDlg;
@@ -85,6 +86,7 @@ public class GwtMainPage extends Composite
 	private FlowPanel m_teamingRootPanel;
 	private MainMenuControl m_mainMenuCtrl;
 	private MastHead m_mastHead;
+	private AdminControl m_adminControl = null;
 	private PopupPanel m_breadCrumbBrowser;
 	private String m_selectedBinderId;
 	private WorkspaceTreeControl m_wsTreeCtrl;
@@ -144,7 +146,7 @@ public class GwtMainPage extends Composite
 		m_contentPanel.add( m_wsTreeCtrl );
 		
 		// Create the content control.
-		m_contentCtrl = new ContentControl();
+		m_contentCtrl = new ContentControl( "gwtContentIframe" );
 		m_contentCtrl.addStyleName( "mainContentControl" );
 		m_contentPanel.add( m_contentCtrl );
 		
@@ -561,7 +563,20 @@ public class GwtMainPage extends Composite
 		switch (action)
 		{
 		case ADMINISTRATION:
-			Window.alert( "Administration is not implemented yet." );
+			// Hide everything on the menu, the workspace tree control and the content control.
+			m_mainMenuCtrl.hideAllItemsOnMenubar();
+			m_wsTreeCtrl.setVisible( false );
+			m_contentCtrl.setVisible( false );
+			
+			// Have we already created an AdminControl?
+			if ( m_adminControl == null )
+			{
+				// No, create it.
+				m_adminControl = new AdminControl();
+				m_contentPanel.add( m_adminControl );
+			}
+			
+			m_adminControl.setVisible( true );
 			break;
 			
 		case EDIT_BRANDING:
