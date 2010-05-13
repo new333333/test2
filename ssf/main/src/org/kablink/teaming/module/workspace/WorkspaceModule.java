@@ -70,6 +70,12 @@ public interface WorkspaceModule {
 	public Workspace getTopWorkspace()
 		throws AccessControlException;
 
+	/**
+	 * Return the id of the top workspace
+	 * @return
+	 */
+	public Long getTopWorkspaceId();
+
   	/**
   	 * Return list of child binders, that have been verified for read access
   	 * and sorted by title
