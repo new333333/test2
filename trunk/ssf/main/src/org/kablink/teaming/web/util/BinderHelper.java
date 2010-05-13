@@ -724,11 +724,21 @@ public class BinderHelper {
 		}
         HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
 		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
+		Long topBinderId = bs.getWorkspaceModule().getTopWorkspaceId();
+		Binder topBinder = null;
+		try {
+			topBinder = bs.getWorkspaceModule().getTopWorkspace();
+		} catch(AccessControlException e) {}
 		Long binderId = user.getWorkspaceId();
-		if (binderId == null) binderId = bs.getWorkspaceModule().getTopWorkspace().getId();
-		Binder topBinder = bs.getWorkspaceModule().getTopWorkspace();
-		Binder myWorkspaceBinder = bs.getBinderModule().getBinder(user.getWorkspaceId());
-		Binder binder = bs.getBinderModule().getBinder(binderId);
+		if (binderId == null && topBinder != null) binderId = topBinder.getId();
+		Binder myWorkspaceBinder = null;
+		try {
+			myWorkspaceBinder = bs.getBinderModule().getBinder(user.getWorkspaceId());
+		} catch(AccessControlException e) {}
+		Binder binder = null;
+		try {
+			if (binderId != null) binder = bs.getBinderModule().getBinder(binderId);
+		} catch(AccessControlException e) {}
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_forum");
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.TOP_WORKSPACE, topBinder);
@@ -755,7 +765,7 @@ public class BinderHelper {
 		if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED) || 
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS) || 
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE)) {
-			List<Long> tbs = BinderHelper.setupWhatsNewBinderBeans(bs, topBinder, model, String.valueOf(pageNumber), type);
+			List<Long> tbs = BinderHelper.setupWhatsNewBinderBeans(bs, topBinder, topBinderId, model, String.valueOf(pageNumber), type);
 			Criteria crit = SearchUtils.bindersForAncestryBinders(bs, tbs);
 			Map results = bs.getBinderModule().executeSearchQuery(crit, 0, 10000);
 	    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
@@ -2437,6 +2447,10 @@ public class BinderHelper {
 		setupWhatsNewBinderBeans(bs, binder, model, page, "");
 	}
 	public static List<Long> setupWhatsNewBinderBeans(AllModulesInjected bs, Binder binder, Map model, String page,
+			String type) {
+		return setupWhatsNewBinderBeans(bs, binder, binder.getId(), model, page, type);
+	}
+	public static List<Long> setupWhatsNewBinderBeans(AllModulesInjected bs, Binder binder, Long binderId, Map model, String page,
 			String type) {		
         User user = RequestContextHolder.getRequestContext().getUser();
         //What's new is not available to the guest user
@@ -2492,7 +2506,9 @@ public class BinderHelper {
 				trackedPlaces.add((String)team.get(Constants.DOCID_FIELD));
 			}
 		} else {
-			trackedPlaces.add(binder.getId().toString());
+			if (binderId != null) {
+				trackedPlaces.add(binderId.toString());
+			}
 		}
 		List<Long> trackedBinderIds = new ArrayList<Long>();
 		for (String s_id : trackedPlaces) trackedBinderIds.add(Long.valueOf(s_id));

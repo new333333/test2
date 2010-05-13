@@ -213,6 +213,7 @@ public class SearchUtils {
 
 	public static List<String> getTrackedPeopleIds(AllModulesInjected bs, Binder binder) {
 		List<String> sIdList = new ArrayList<String>();
+		if (binder == null) return sIdList;
 		UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
 		Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
 		if (relevanceMap != null) {

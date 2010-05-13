@@ -95,7 +95,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
  
        return workspace;
     }
-    public Workspace getTopWorkspace() {
+   public Workspace getTopWorkspace() {
 		Workspace top = RequestContextHolder.getRequestContext().getZone();
 		// Check if the user has "read" access to the workspace.
 		try {
@@ -104,7 +104,11 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 			getAccessControlManager().checkOperation(top, WorkAreaOperation.VIEW_BINDER_TITLE);
 		}
 		return top;
-    }
+   }
+   public Long getTopWorkspaceId() {
+		Workspace top = RequestContextHolder.getRequestContext().getZone();
+		return top.getId();
+   }
    	public SortedSet<Binder> getWorkspaceTree(Long id) throws AccessControlException {
     	Workspace top = getWorkspace(id);
         User user = RequestContextHolder.getRequestContext().getUser();
