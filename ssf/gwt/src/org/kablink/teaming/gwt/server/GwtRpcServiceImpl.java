@@ -79,6 +79,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
+import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
@@ -98,9 +99,12 @@ import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
+import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
@@ -469,6 +473,65 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end executeSearch()
 	
 
+	/**
+	 * Return the administration options the user has rights to run.
+	 */
+	public ArrayList<GwtAdminCategory> getAdminActions( String binderId ) throws GwtTeamingException
+	{
+		try
+		{
+			ArrayList<GwtAdminCategory> adminActions;
+			BinderModule binderModule;
+			Long binderIdL;
+			
+			binderModule = getBinderModule();
+	
+			binderIdL = new Long( binderId );
+			
+			if ( binderIdL != null )
+			{
+				Binder binder;
+				
+				binder = binderModule.getBinder( binderIdL );
+
+				adminActions = GwtServerHelper.getAdminActions( binder, this );
+			}
+			else
+			{
+				m_logger.warn( "In GwtRpcServiceImpl.getAdminActions(), binderIdL is null" );
+				adminActions = new ArrayList<GwtAdminCategory>();
+			}
+			
+			return adminActions;
+		}
+		catch (NoBinderByTheIdException nbEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
+		catch (Exception e)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
+		}
+		
+	}// end getAdminActions()
+	
+	
 	/**
 	 * Return a GwtBrandingData object for the given binder.
 	 */

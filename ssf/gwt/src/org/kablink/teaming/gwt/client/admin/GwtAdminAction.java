@@ -30,57 +30,66 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.admin;
 
-package org.kablink.teaming.gwt.client.widgets;
 
 
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.NamedFrame;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * This widget will display the Teaming content for a given folder/workspace
+ * This class represents an administration option, ie ldap configuration
+ * @author jwootton
+ *
  */
-public class ContentControl extends Composite
+public class GwtAdminAction
+	implements IsSerializable
 {
-	private NamedFrame m_frame;
+	private String m_localizedName = null;
+	private String m_url = null;
+	private AdminAction m_action;
 	
 	/**
 	 * 
 	 */
-	public ContentControl( String name )
+	public GwtAdminAction()
 	{
-		FlowPanel mainPanel;
-
-		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "contentControl" );
-
-		// Give the iframe a name so that view_workarea_navbar.jsp, doesn't set the url of the browser.
-		m_frame = new NamedFrame( name );
-		m_frame.setPixelSize( 700, 500 );
-		m_frame.getElement().setId( "contentControl" );
-		m_frame.setUrl( "" );
-		mainPanel.add( m_frame );
-		
-		// All composites must call initWidget() in their constructors.
-		initWidget( mainPanel );
-	}// end ContentControl()
+	}// end GwtAdminAction()
 	
 	
 	/**
-	 * Set the width and height of this control.
+	 * 
 	 */
-	public void setDimensions( int width, int height )
+	public AdminAction getActionType()
 	{
-		m_frame.setPixelSize( width, height );
-	}// end setDimensions()
+		return m_action;
+	}// end getActionType()
+	
 	
 	/**
-	 * This method will set the url used by the iframe.
+	 * 
 	 */
-	public void setUrl( String url )
+	public String getLocalizedName()
 	{
-		m_frame.setUrl( url );
-	}// end setUrl()
-}// end ContentControl
+		return m_localizedName;
+	}// end getLocalizedName()
+	
+	
+	/**
+	 * 
+	 */
+	public String getUrl()
+	{
+		return m_url;
+	}// end getUrl()
+	
+	/**
+	 * 
+	 */
+	public void init( String localizedName, String url, AdminAction action )
+	{
+		m_localizedName = localizedName;
+		m_url = url;
+		m_action = action;
+	}// end init()
+}// end GwtAdminAction

@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.server.util;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -56,30 +57,53 @@ import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
+import org.kablink.teaming.gwt.client.admin.AdminAction;
+import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
+import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
+import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
+import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.module.definition.DefinitionModule.DefinitionOperation;
+import org.kablink.teaming.module.ldap.LdapModule;
+import org.kablink.teaming.module.ldap.LdapModule.LdapOperation;
+import org.kablink.teaming.module.license.LicenseChecker;
+import org.kablink.teaming.module.license.LicenseModule;
+import org.kablink.teaming.module.license.LicenseModule.LicenseOperation;
+import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
+import org.kablink.teaming.module.workspace.WorkspaceModule;
+import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.TagUtil;
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.GwtUIHelper;
@@ -98,6 +122,47 @@ import org.kablink.util.PropertyNotFoundException;
 public class GwtServerHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtServerHelper.class);
 	
+	/**
+	 * Inner class used compare two GwtAdminAction objects.
+	 */
+	private static class GwtAdminActionComparator implements Comparator<GwtAdminAction>
+	{
+		private Collator m_collator;
+		
+		/**
+		 * Class constructor.
+		 */
+		public GwtAdminActionComparator()
+		{
+			m_collator = Collator.getInstance();
+			m_collator.setStrength( Collator.IDENTICAL );
+		}// end GwtAdminActionComparator()
+
+	      
+		/**
+		 * Implements the Comparator.compare() method on two GwtAdminAction objects.
+		 *
+		 * Returns:
+		 *    -1 if adminAction1 <  adminAction2;
+		 *     0 if adminAction1 == adminAction2; and
+		 *     1 if adminAction1 >  adminAction2.
+		 */
+		public int compare( GwtAdminAction adminAction1, GwtAdminAction adminAction2 )
+		{
+			String s1, s2;
+
+			s1 = adminAction1.getLocalizedName();
+			if ( s1 == null )
+				s1 = "";
+
+			s2 = adminAction2.getLocalizedName();
+			if ( s2 == null )
+				s2 = "";
+
+			return 	m_collator.compare( s1, s2 );
+		}// end compare()
+	}// end GwtAdminActionComparator	   
+	   
 	/**
 	 * Inner class used compare two TeamInfo objects.
 	 */
@@ -427,6 +492,675 @@ public class GwtServerHelper {
 		
 		return reply;
 	}
+	
+	/**
+	 * Return a list of administration actions the user has rights to perform. 
+	 */
+	public static ArrayList<GwtAdminCategory> getAdminActions( Binder binder, AbstractAllModulesInjected allModules )
+	{
+		ArrayList<GwtAdminCategory> adminCategories;
+		GwtAdminCategory managementCategory;
+		GwtAdminCategory systemCategory;
+		GwtAdminCategory reportsCategory;
+		GwtAdminAction adminAction;
+		String title;
+		String url;
+		AdaptedPortletURL adaptedUrl;
+		User user;
+ 		Workspace top = null;
+		ProfileBinder profilesBinder;
+		DefinitionModule definitionModule;
+		LdapModule ldapModule;
+		AdminModule adminModule;
+		ProfileModule profileModule;
+		WorkspaceModule workspaceModule;
+		BinderModule binderModule;
+		LicenseModule licenseModule;
+		ZoneModule zoneModule;
+		
+		definitionModule = allModules.getDefinitionModule();
+		ldapModule = allModules.getLdapModule();
+		adminModule = allModules.getAdminModule();
+		profileModule = allModules.getProfileModule();
+		workspaceModule = allModules.getWorkspaceModule();
+		binderModule = allModules.getBinderModule();
+		licenseModule = allModules.getLicenseModule();
+		zoneModule = allModules.getZoneModule();
+		
+		user = GwtServerHelper.getCurrentUser();
+		
+ 		try
+ 		{
+			top = workspaceModule.getTopWorkspace();
+ 		}
+ 		catch( Exception e )
+ 		{}
+ 		
+ 		profilesBinder = profileModule.getProfileBinder();
+		
+		// Create an arraylist that will hold the GwtAdminCategory objects.
+		adminCategories = new ArrayList<GwtAdminCategory>();
+		
+		// Create a "Management" category
+		{
+	 		managementCategory = new GwtAdminCategory();
+	 		managementCategory.setLocalizedName( NLT.get( "administration.category.management" ) );
+			adminCategories.add( managementCategory );
+			
+			// Does the user have rights to "Add user"?
+			try
+			{
+				if ( profileModule.testAccess( profilesBinder, ProfileOperation.addEntry ) )
+				{
+					List defaultEntryDefinitions;
+
+					defaultEntryDefinitions = profilesBinder.getEntryDefinitions();
+					
+					if ( !defaultEntryDefinitions.isEmpty() )
+					{
+						Definition def = (Definition) defaultEntryDefinitions.get( 0 );
+						String[] nltArgs = new String[] {NLT.getDef(def.getTitle())};
+
+						title = NLT.get( "toolbar.new_with_arg", nltArgs );
+
+						adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+						adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY );
+						adaptedUrl.setParameter( WebKeys.URL_BINDER_ID, profilesBinder.getId().toString() );
+						adaptedUrl.setParameter( WebKeys.URL_ENTRY_TYPE, def.getId() );
+						url = adaptedUrl.toString();
+						
+						adminAction = new GwtAdminAction();
+						adminAction.init( title, url, AdminAction.ADD_USER );
+						
+						// Add this action to the "Management" category
+						managementCategory.addAdminOption( adminAction );
+					}
+				}
+			}
+			catch( AccessControlException e )
+			{}
+
+			// Does the user have rights to "Manage the search index"?
+			if ( top != null )
+			{
+				if ( ObjectKeys.SUPER_USER_INTERNALID.equals( user.getInternalId() ) && 
+					  binderModule.testAccess( top, BinderOperation.indexBinder ) )
+				{
+					// Yes
+					if ( adminModule.retrieveIndexNodes() != null )
+					{
+						GwtAdminCategory manageSearchIndexCategory;
+						
+						// Create a "manage search index category.
+				 		manageSearchIndexCategory = new GwtAdminCategory();
+				 		manageSearchIndexCategory.setLocalizedName( NLT.get( "administration.configure_search_index" ) );
+						adminCategories.add( manageSearchIndexCategory );
+						
+						// Add a "Folder Index" action
+						{
+							title = NLT.get( "administration.search.title.index" );
+	
+							adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+							adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_FOLDER_INDEX_CONFIGURE );
+							url = adaptedUrl.toString();
+							
+							adminAction = new GwtAdminAction();
+							adminAction.init( title, url, AdminAction.CONFIGURE_FOLDER_INDEX );
+							
+							// Add this action to the "manage search index" category
+							manageSearchIndexCategory.addAdminOption( adminAction );
+						}
+
+						// Add a "Folder Search Nodes" action
+						{
+							title = NLT.get( "administration.search.title.nodes" );
+	
+							adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+							adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_FOLDER_SEARCH_NODES_CONFIGURE );
+							url = adaptedUrl.toString();
+							
+							adminAction = new GwtAdminAction();
+							adminAction.init( title, url, AdminAction.CONFIGURE_FOLDER_SEARCH_NODES );
+							
+							// Add this action to the "manage search index" category
+							manageSearchIndexCategory.addAdminOption( adminAction );
+						}
+					}
+					else
+					{
+						// Add a "Manage the search index" action.
+						title = NLT.get( "administration.configure_search_index" );
+
+						adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+						adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_FOLDER_INDEX_CONFIGURE );
+						url = adaptedUrl.toString();
+						
+						adminAction = new GwtAdminAction();
+						adminAction.init( title, url, AdminAction.CONFIGURE_SEARCH_INDEX );
+						
+						// Add this action to the "management" category
+						managementCategory.addAdminOption( adminAction );
+					}
+				}
+			}
+
+			// Does the user have rights to "Manage groups"?
+			try
+			{
+				if ( profileModule.testAccess( profilesBinder, ProfileOperation.manageEntries ) )
+				{
+					// Yes
+					title = NLT.get( "administration.manage.groups" );
+
+					adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_GROUPS );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.MANAGE_GROUPS );
+					
+					// Add this action to the "management" category
+					managementCategory.addAdminOption( adminAction );
+				}
+			}
+			catch( AccessControlException e ) {}
+
+			// Does the user have rights to "Manage quotas"?
+			try
+			{
+				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+				{
+					// Yes
+					title = NLT.get( "administration.manage.quotas" );
+
+					adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_QUOTAS );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.MANAGE_QUOTAS );
+					
+					// Add this action to the "management" category
+					managementCategory.addAdminOption( adminAction );
+				}
+			}
+			catch(AccessControlException e) {}
+
+			// Does the user have rights to "Manage workspace and folder templates"?
+			if ( adminModule.testAccess( AdminOperation.manageTemplate ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configure_configurations" );
+
+				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.MANAGE_WORKSPACE_AND_FOLDER_TEMPLATES );
+				
+				// Add this action to the "management" category
+				managementCategory.addAdminOption( adminAction );
+			}
+
+			// Does the user have rights to "Manage license"?
+			if( ReleaseInfo.isLicenseRequiredEdition() )
+			{
+				if ( licenseModule.testAccess( LicenseOperation.manageLicense ) )
+				{
+					// Yes
+					title = NLT.get( "administration.manage.license" );
+
+					adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_LICENSE );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.MANAGE_LICENSE );
+					
+					// Add this action to the "management" category
+					managementCategory.addAdminOption( adminAction );
+				}
+			}
+
+			// Does the user have rights to "Manage zones"?
+			if ( LicenseChecker.isAuthorizedByLicense( "com.novell.teaming.module.zone.MultiZone" ) &&
+					zoneModule.testAccess() )
+			{
+				// Yes
+				title = NLT.get( "administration.manage.zones" );
+
+				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_ZONES );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.MANAGE_ZONES );
+				
+				// Add this action to the "management" category
+				managementCategory.addAdminOption( adminAction );
+			}
+
+			// Does the user have rights to "Manage applications"?
+			try
+			{
+				if ( profileModule.testAccess( profilesBinder, ProfileOperation.manageEntries ) )
+				{
+					// Yes
+					title = NLT.get( "administration.manage.applications" );
+
+					adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_APPLICATIONS );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.MANAGE_APPLICATIONS );
+					
+					// Add this action to the "management" category
+					managementCategory.addAdminOption( adminAction );
+				}
+			}
+			catch(AccessControlException e) {}
+
+			// Does the user have rights to "Manage application groups"?
+			try
+			{
+				if ( profileModule.testAccess( profilesBinder, ProfileOperation.manageEntries ) )
+				{
+					// Yes
+					title = NLT.get( "administration.manage.application.groups" );
+
+					adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_APPLICATION_GROUPS );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.MANAGE_APPLICATION_GROUPS );
+					
+					// Add this action to the "management" category
+					managementCategory.addAdminOption( adminAction );
+				}
+			}
+			catch(AccessControlException e) {}
+
+			// Does the user have rights to "Manage Extensions"?
+			if ( adminModule.testAccess( AdminOperation.manageExtensions ) )
+			{
+				// Yes
+				title = NLT.get( "administration.manage.extensions" );
+
+				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_EXTENSIONS );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.MANAGE_EXTENSIONS );
+				
+				// Add this action to the "management" category
+				managementCategory.addAdminOption( adminAction );
+			}
+		}
+		
+		// Create a "Reports" category
+		reportsCategory = new GwtAdminCategory();
+		reportsCategory.setLocalizedName( NLT.get( "administration.category.reports" ) );
+		adminCategories.add( reportsCategory );
+
+		// Does the user have rights to run reports?
+		if ( adminModule.testAccess( AdminOperation.report ) )
+		{
+			// Yes
+			// Create a "login report"
+			{
+				title = NLT.get( "administration.report.title.login" );
+
+				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_LOGIN_REPORT );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.REPORT_LOGIN );
+				
+				// Add this action to the "reports" category
+				reportsCategory.addAdminOption( adminAction );
+			}
+			
+			// Add a "License Report"
+			//License report
+			if( ReleaseInfo.isLicenseRequiredEdition() )
+			{
+				title = NLT.get( "administration.report.title.license" );
+
+				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_LICENSE_REPORT );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.REPORT_LICENSE );
+				
+				// Add this action to the "reports" category
+				reportsCategory.addAdminOption( adminAction );
+			}
+			
+			// Add a "Activity by User"
+			{
+				title = NLT.get( "administration.report.title.activityByUser" );
+
+				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ACTIVITY_REPORT_BY_USER );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.REPORT_ACTIVITY_BY_USER );
+				
+				// Add this action to the "reports" category
+				reportsCategory.addAdminOption( adminAction );
+			}
+			
+			// Add a "Disk usage report"
+			{
+				title = NLT.get( "administration.report.title.quota" );
+
+				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_QUOTA_REPORT );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.REPORT_DISK_USAGE );
+				
+				// Add this action to the "reports" category
+				reportsCategory.addAdminOption( adminAction );
+			}
+			
+			// Add a "Data quota exceeded report"
+			{
+				title = NLT.get( "administration.report.title.disk_quota_exceeded" );
+
+				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_QUOTA_EXCEEDED_REPORT );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.REPORT_DATA_QUOTA_EXCEEDED );
+				
+				// Add this action to the "reports" category
+				reportsCategory.addAdminOption( adminAction );
+			}
+			
+			// Add a "Data quota highwater exceeded report"
+			{
+				title = NLT.get( "administration.report.title.highwater_exceeded" );
+
+				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_QUOTA_HIGHWATER_EXCEEDED_REPORT );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.REPORT_DATA_QUOTA_HIGHWATER_EXCEEDED );
+				
+				// Add this action to the "reports" category
+				reportsCategory.addAdminOption( adminAction );
+			}
+			
+			// Add a "User access report"
+			{
+				title = NLT.get( "administration.report.title.user_access" );
+
+				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_USER_ACCESS_REPORT  );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.REPORT_USER_ACCESS );
+				
+				// Add this action to the "reports" category
+				reportsCategory.addAdminOption( adminAction );
+			}
+		}
+
+		// Add reports that everyone can run.
+		{
+			// Add a "Credits report" action.
+			{
+				title = NLT.get( "administration.credits" );
+	
+				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_CREDITS );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.REPORT_VIEW_CREDITS );
+				
+				// Add this action to the "reports" category
+				reportsCategory.addAdminOption( adminAction );
+			}
+		}
+
+		// Does the user have rights to run "Content Modification Log Report"?
+		if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+		{
+			// Yes
+			title = NLT.get( "administration.view_change_log" );
+			
+			adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+			adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_CHANGELOG );
+			url = adaptedUrl.toString();
+			
+			adminAction = new GwtAdminAction();
+			adminAction.init( title, url, AdminAction.REPORT_VIEW_CHANGELOG );
+			
+			// Add this action to the "reports" category
+			reportsCategory.addAdminOption( adminAction );
+		}
+
+		// Does the user have rights to run the "System error logs" report?
+		if ( adminModule.testAccess( AdminOperation.manageErrorLogs ) )
+		{
+			// Yes
+			title = NLT.get( "administration.system_error_logs" );
+			
+			adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+			adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ADMIN_ACTION_GET_LOG_FILES );
+			url = adaptedUrl.toString();
+			
+			adminAction = new GwtAdminAction();
+			adminAction.init( title, url, AdminAction.REPORT_VIEW_SYSTEM_ERROR_LOG );
+			
+			// Add this action to the "reports" category
+			reportsCategory.addAdminOption( adminAction );
+		}
+		
+		// Create a "System" category
+		{
+			systemCategory = new GwtAdminCategory();
+			systemCategory.setLocalizedName( NLT.get( "administration.category.system" ) );
+			adminCategories.add( systemCategory );
+
+			// Does the user have rights to "Form/View Designers"?
+			if ( definitionModule.testAccess(binder, Definition.FOLDER_ENTRY, DefinitionOperation.manageDefinition) ||
+				 definitionModule.testAccess(binder, Definition.WORKFLOW, DefinitionOperation.manageDefinition))
+			{
+				// Yes
+				title = NLT.get( "administration.definition_builder_designers" );
+
+				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.FORM_VIEW_DESIGNER );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+			
+			// Does the user have the rights to "ldap configuration"?
+			if ( ldapModule.testAccess(LdapOperation.manageLdap ) )
+			{
+				// Yes
+				if ( ldapModule.getLdapSchedule() != null )
+				{
+					title = NLT.get( "administration.configure_ldap" );
+
+					adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_LDAP_CONFIGURE );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.LDAP_CONFIG );
+					
+					// Add this action to the "system" category
+					systemCategory.addAdminOption( adminAction );
+				}
+			}
+			
+			// Does the user have rights to "configure guest access"?
+			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+			{
+				// Yes
+				if ( ReleaseInfo.isLicenseRequiredEdition() )
+					title = NLT.get( "administration.configure_userAccessOnly", NLT.get( "administration.configure_userAccess" ) );
+				else
+					title = NLT.get( "administration.configure_userAccess" );
+
+				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_USER_ACCESS );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.CONFIGURE_GUEST_ACCESS );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+
+			// Does the user have rights to "configure mobile access"?
+			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configure_mobileAccess" );
+
+				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_MOBILE_ACCESS );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.CONFIGURE_MOBILE_ACCESS );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+
+			// Does the user have rights to "Configure Role Definitions"?
+			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configure_roles" );
+
+				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ADMIN_ACTION_CONFIGURE_ROLES );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.CONFIGURE_ROLE_DEFINITIONS );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+			
+			// Does the user have rights to "Configure E-Mail"?
+			if ( adminModule.testAccess( AdminOperation.manageMail ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configure_mail" );
+
+				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_POSTINGJOB_CONFIGURE );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.CONFIGURE_EMAIL );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+
+			// Does the user have rights to "Import profiles"?
+			try
+			{
+				if ( profileModule.testAccess( profilesBinder, ProfileOperation.manageEntries ) )
+				{
+					// Yes
+					title = NLT.get( "administration.import.profiles" );
+
+					adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_PROFILES_IMPORT );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.IMPORT_PROFILES );
+					
+					// Add this action to the "system" category
+					systemCategory.addAdminOption( adminAction );
+				}
+			}
+			catch(AccessControlException e) {}
+
+			// Does the user have rights to "Access Control for Zone Administration functions"?
+			if ( adminModule.testAccess( AdminOperation.manageFunctionMembership ) )
+			{
+				ZoneConfig zoneConfig;
+				
+				// Yes
+				zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+				title = NLT.get( "administration.manage.accessControl" );
+
+				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL );
+				adaptedUrl.setParameter( WebKeys.URL_WORKAREA_ID, zoneConfig.getWorkAreaId().toString() );
+				adaptedUrl.setParameter( WebKeys.URL_WORKAREA_TYPE, zoneConfig.getWorkAreaType() );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.ACCESS_CONTROL_FOR_ZONE_ADMIN_FUNCTIONS );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+
+			// Does the user have rights to "Site Branding"
+			if ( top != null && binderModule.testAccess( top, BinderOperation.modifyBinder ) )
+			{
+				// Yes
+				title = NLT.get( "administration.modifySiteBranding" );
+
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, "", AdminAction.SITE_BRANDING );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+		}
+		
+		// Sort the administration actions in each category
+		GwtAdminActionComparator comparator;
+		comparator = new GwtAdminActionComparator();
+		for ( GwtAdminCategory category : adminCategories )
+		{
+			ArrayList<GwtAdminAction> adminActions;
+			
+			// Do we have more than 1 administration action in this category?
+			adminActions = category.getActions();
+			if ( adminActions != null && adminActions.size() > 1 )
+			{
+				// Yes, sort them.
+				Collections.sort( adminActions, comparator );
+			}
+		}
+		
+		return adminCategories;
+	}// end getAdminActions()
+	
 	
 	/**
 	 * Returns the entity type of a binder.
