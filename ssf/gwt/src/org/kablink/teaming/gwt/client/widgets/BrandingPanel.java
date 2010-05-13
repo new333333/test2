@@ -144,9 +144,6 @@ public class BrandingPanel extends Composite
 	            }
 	        };
 	        DeferredCommand.addCommand( cmd );
-	        
-	        // Clear any height style we may have applied.
-	        clearHeightStyle();
 		}// end onLoad()
 		
 		
@@ -247,8 +244,6 @@ public class BrandingPanel extends Composite
 							@Override
 							public void run()
 							{
-						        // Clear any height style we may have applied.
-						        clearHeightStyle();
 				    			adjustBrandingPanelHeight();
 							}// end run()
 						};
@@ -370,7 +365,7 @@ public class BrandingPanel extends Composite
 		}
 
 		m_mainPanel.setHeight( heightStr );
-		m_wrapperPanel.setHeight( heightStr );
+		//!!! m_wrapperPanel.setHeight( heightStr );
 		m_bgPanel.setHeight( heightStr );
 		
 		// Notify all OnSizeChangeHandler that have registered.
@@ -381,21 +376,6 @@ public class BrandingPanel extends Composite
 		}
 	}// end adjustBrandingPanelHeight()
 
-	
-	/**
-	 * Clear any height style we may have applied.
-	 */
-	private void clearHeightStyle()
-	{
-		Style style;
-
-		style = m_mainPanel.getElement().getStyle();
-		style.clearHeight();
-		style = m_wrapperPanel.getElement().getStyle();
-		style.clearHeight();
-		
-	}// end clearHeightStyle()
-	
 	
 	/**
 	 * Return the branding data we are working with.
@@ -427,9 +407,6 @@ public class BrandingPanel extends Composite
             }
         };
         DeferredCommand.addCommand( cmd );
-        
-        // Clear any height styles we may have already applied.
-        clearHeightStyle();
 	}// end onLoad()
 	
 	
@@ -440,9 +417,6 @@ public class BrandingPanel extends Composite
 	{
 		m_brandingData = brandingData;
 		
-		// Clear any height styles we may have already applied
-		clearHeightStyle();
-
 		if ( brandingData != null )
 		{
 			// For the given branding data, adjust the background color or background image.
