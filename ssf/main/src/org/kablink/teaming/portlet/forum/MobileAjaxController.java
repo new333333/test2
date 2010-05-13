@@ -500,7 +500,12 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			lastUpdate.setTime(lastUpdate.getTime() - TeamingFeedCache.feedClientUpdateInterval*60*1000 - 1);
 		}
 		model.put(WebKeys.TEAMING_LIVE_PREVIOUS_UPDATE_DATE, lastUpdate);
-		String view = BinderHelper.setupTeamingLiveBeans(bs, request, response, model, "mobile/show_teaming_live");
+		String view = "mobile/show_teaming_live";
+		try {
+			view = BinderHelper.setupTeamingLiveBeans(bs, request, response, model, "mobile/show_teaming_live");
+		} catch(AccessControlException e) {
+			view = "mobile/show_teaming_live_not_available";
+		}
 
 		//Reset the date used to see what is new
         Date updateDate = new Date();

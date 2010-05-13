@@ -59,7 +59,7 @@ public class TeamingFeedCache {
 	private static final int updateInterval = 1;             //Interval in minutes between updating the cache
 	public static final int feedClientUpdateInterval = 5;    //Interval in minutes between when the feed client does its update
 	private static final int searchInterval = 11;            //Find the entries created in the last n minutes
-	private static final int maxSearchHits = 10000;          //Maximum # of search results returned
+	private static final int maxSearchHits = 1000;           //Maximum # of search results returned
 	
 	private static ConcurrentMap<Long, FeedCache> zonedCache = new ConcurrentHashMap<Long, FeedCache>();
 
@@ -104,7 +104,7 @@ public class TeamingFeedCache {
     	    	}
         	}
         	cache.setBinderMap(newBinderMap);
-	        cache.setLastUpdate(new Date());
+	        cache.setLastUpdate(now);
 	        setFeedCacheForTheZone(cache);
     	}
     }
