@@ -713,7 +713,7 @@ public class BinderHelper {
 	}
 
 	public static String setupTeamingLiveBeans(AllModulesInjected bs, RenderRequest request, 
-			RenderResponse response, Map model, String view) {
+			RenderResponse response, Map model, String view) throws AccessControlException {
         User user = RequestContextHolder.getRequestContext().getUser();
 		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
