@@ -150,8 +150,10 @@ public interface GwtRpcServiceAsync
 	public void saveBrandingData( String binderId, GwtBrandingData brandingData, AsyncCallback<Boolean> callback );
 
 	// Return information about the User Profile
-	public void getProfileInfo(	String binderId, AsyncCallback<ProfileInfo> 	callback);
-	public void getTeams(		String binderId, AsyncCallback<List<TeamInfo>>  callback );
+	public void getProfileInfo(		String binderId, AsyncCallback<ProfileInfo> 	callback);
+	public void getQuickViewInfo( 	String binderId, AsyncCallback<ProfileInfo> 	callback);
+	public void getTeams(			String binderId, AsyncCallback<List<TeamInfo>>  callback );
+	public void getMicrBlogUrl( 	String binderId, AsyncCallback<String> 			callback);
 	
 	// The following are used for the UserStatus control
 	public void saveUserStatus(String status, 	AsyncCallback<Boolean> 		callback);

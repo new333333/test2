@@ -60,11 +60,11 @@ public abstract class DlgBox extends PopupPanel
 	private DlgButtonMode m_dlgBtnMode;
 	private Button		m_okBtn;
 	private Button		m_cancelBtn;
-	private FocusWidget m_focusWidget;	// Widget that should receive the focus when this dialog is shown.
-	private boolean m_modal;
-	private boolean m_visible = false;
-	
-	private static int m_numDlgsVisible = 0;	// Number of dialogs that are currently visible.
+	protected FocusWidget m_focusWidget;	// Widget that should receive the focus when this dialog is shown.
+	protected boolean m_modal;
+	protected boolean m_visible = false;
+    	
+	protected static int m_numDlgsVisible = 0;	// Number of dialogs that are currently visible.
 	
 	public enum DlgButtonMode {
 		Close,

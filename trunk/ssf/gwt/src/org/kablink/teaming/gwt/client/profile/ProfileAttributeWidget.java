@@ -1,5 +1,7 @@
 package org.kablink.teaming.gwt.client.profile;
 
+import java.util.List;
+
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
@@ -29,17 +31,37 @@ public class ProfileAttributeWidget  {
 				((TextBox) widget).setReadOnly(readOnly);
 			}
 		} else {
-			widget = new Label(attr.getValue().toString());
-			widget.addStyleName("profile-value");
 
 			if(attr.getDisplayType().equals("email") ) {
 				String url = "mailto:"+ attr.getValue().toString();
-
 				widget = new Anchor(attr.getValue().toString(), url);
 				widget.addStyleName("profile-value");
 				widget.addStyleName("profile-anchor");
-			}
+			} else {
+				int type = attr.getValueType();
+				switch(type){
+					case ProfileAttribute.STRING:
+					case ProfileAttribute.BOOLEAN:
+					case ProfileAttribute.LONG:
+					case ProfileAttribute.DATE:	
+						widget = new Label(attr.getValue().toString());
+						break;
+					case ProfileAttribute.LIST:
+						List<ProfileAttributeListElement> value = (List<ProfileAttributeListElement>)attr.getValue();
+						if(value != null && !value.isEmpty()){
+							ProfileAttributeListElement valItem = value.get(0);
+							if(valItem != null){
+								widget = new Label(valItem.getValue().toString());
+							}
+						}
+						break;
+					default: 
+						widget = new Label("No Attr Value defined");
+						break;
+				}
 
+				widget.addStyleName("profile-value");
+			}
 		}
 	}
 

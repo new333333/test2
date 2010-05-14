@@ -56,6 +56,9 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/close_14.png")
 	public ImageResource close14();
 
+	@Source("org/kablink/teaming/gwt/public/images/check_12.png")
+	public ImageResource check12();
+	
 	@Source("org/kablink/teaming/gwt/public/images/edit_10.png")
 	public ImageResource edit10();
 

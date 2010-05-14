@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.server;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1881,6 +1882,39 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getMyTeams()
 	
 	/**
+	 * Return the url needed to invoke the user's "micro-blog" page.  
+	 * 
+ 	 */
+	public String getMicrBlogUrl( String binderId ) throws GwtTeamingException
+	{
+		Principal p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
+		
+		// Does the user have rights to run the "site administration" page?
+		if ( p != null )
+		{
+			AdaptedPortletURL adapterUrl;
+			
+			Long random = System.currentTimeMillis();
+			
+			// Yes
+			adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+			adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST );
+			adapterUrl.setParameter( WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_MINIBLOG );
+			adapterUrl.setParameter( WebKeys.URL_USER_ID, p.getId().toString() );
+			adapterUrl.setParameter( WebKeys.URL_PAGE, "0" );
+			adapterUrl.setParameter( "randomNumber", Long.toString(random) );
+			
+			return adapterUrl.toString();
+		}
+		
+		GwtTeamingException ex;
+		
+		ex = new GwtTeamingException();
+		ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+		throw ex;
+	}// end getSiteAdministrationUrl()
+	
+	/**
 	 * Returns information about the recent place the current user has
 	 * visited.
 	 * 
@@ -2332,6 +2366,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		//get the binder
 		ProfileInfo profile = GwtProfileHelper.buildProfileInfo(this, Long.valueOf(binderId));
+		
+		return profile;
+	}
+	
+	
+	/**
+	 * Get the profile information for the Quick View based on the binder Id passed in.
+	 */
+	public ProfileInfo getQuickViewInfo(String binderId) {
+		
+		Long binderIdL = Long.valueOf(binderId);
+		
+		//get the binder
+		ProfileInfo profile = GwtProfileHelper.buildQuickViewProfileInfo(this, binderIdL);
 		
 		return profile;
 	}
