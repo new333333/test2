@@ -147,13 +147,13 @@ public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor, Nati
 	}
 
 	private Panel createPhotoPanel() {
-		FlowPanel panel = new FlowPanel();
-		panel.addStyleName("qViewPhoto");
+		FlowPanel pictureDiv = new FlowPanel();
+		pictureDiv.addStyleName("qViewPhoto");
 
 		avatar = new Image();
-		panel.add(avatar);
+		pictureDiv.add(avatar);
 
-		return panel;
+		return pictureDiv;
 	}
 
 	private Panel createActionsPanel() {
@@ -404,7 +404,20 @@ public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor, Nati
 			public void onSuccess(ProfileInfo profile) {
 
 				userId = profile.getUserId();
-				avatar.setUrl(profile.getPictureUrl());
+				
+				String url = profile.getPictureUrl();
+				if(url != null && !url.equals("")){
+					avatar.setUrl(profile.getPictureUrl());
+				} else {
+					FlowPanel w = (FlowPanel)avatar.getParent();
+					w.removeStyleName("qViewPhoto");
+					w.addStyleName("qViewPhoto_No");
+					FlowPanel panel = new FlowPanel();
+					w.add(panel);
+					panel.addStyleName("qViewPhotoHeight_No");
+					panel.addStyleName("ss_profile_photo_box_empty");
+					avatar.removeFromParent();
+				}
 				
 				int count = profile.getCategories().size();
 				int row = 0;
