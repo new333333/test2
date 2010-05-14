@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_user" caption="__definition_default_user" type="7" nextId="39" definitionType="7" databaseId="402883b90cc53079010cc539bf260007" internalId="402883b90cc53079010cc539bf260007"> 
-  <item name="profileEntryForm" caption="__profile_entry_form_definition" type="form" id="1"> 
+<definition name="_user" caption="__definition_default_user" type="7" nextId="95" definitionType="7" databaseId="402883b90cc53079010cc539bf260007" internalId="402883b90cc53079010cc539bf260007"> 
+  <item name="profileEntryForm" caption="__profile_entry_form_definition" type="form" id="1" display="form"> 
     <properties/>  
     <item name="profileEntryFormForm" caption="__form" id="2"> 
       <item name="profileName" caption="__profile_name" type="data" id="3"> 
@@ -10,18 +10,18 @@
           <property name="caption" value="__profile_name"/>  
           <property name="width" value=""/> 
         </properties> 
-      </item>
-      <item name="profilePassword" caption="__profile_password" type="data" category="profileEntryData" display="form" id="38">
-        <properties>
-          <property name="caption" value="__profile_password"/>
-          <property name="name" value="password"/>
-          <property name="width" value=""/>
-        </properties>
+      </item>  
+      <item name="profilePassword" caption="__profile_password" type="data" category="profileEntryData" display="form" id="38"> 
+        <properties> 
+          <property name="caption" value="__profile_password"/>  
+          <property name="name" value="password"/>  
+          <property name="width" value=""/> 
+        </properties> 
       </item>  
       <item name="table3" caption="__three_column_table" id="19"> 
         <properties> 
           <property name="name" value="table1"/>  
-          <property name="caption" value=""/>  
+          <property name="caption" value=""/> 
         </properties>  
         <item name="profileFirstName" caption="__firstName" type="data" id="5" category="profileEntryData"> 
           <properties> 
@@ -134,10 +134,173 @@
             <property name="onClick" value=""/> 
           </properties> 
         </item> 
-      </item> 
+      </item>  
+      <item name="profileHeadingPersonalForm" caption="__profile_heading_Personal_div" category="userFormLayout" display="form" id="39">
+        <properties>
+          <property name="caption" value=""/>
+        </properties>
+        <item name="profileJobTitle" caption="__jobTitle" type="data" id="40">
+          <properties>
+            <property name="caption" value="__jobTitle"/>
+            <property name="name" value="jobTitle"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+        <item name="profileState" caption="__state" type="data" id="41">
+          <properties>
+            <property name="caption" value="__state"/>
+            <property name="name" value="state"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+        <item name="profilePostalCode" caption="__postalCode" type="data" id="42">
+          <properties>
+            <property name="caption" value="__postalCode"/>
+            <property name="name" value="postalCode"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+      </item>
+      <item name="profileHeadingContactForm" caption="__profile_heading_Contact_div" category="userFormLayout" display="form" id="43">
+        <properties>
+          <property name="caption" value=""/>
+        </properties>
+        <item name="profileWorkPhone" caption="__workPhone" type="data" id="44">
+          <properties>
+            <property name="caption" value="__workPhone"/>
+            <property name="name" value="workPhone"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+        <item name="profileMobilePhone" caption="__mobilePhone" type="data" id="45">
+          <properties>
+            <property name="caption" value="__mobilePhone"/>
+            <property name="name" value="mobilePhone"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+        <item name="profileEmailAddress" caption="__emailAddress" type="data" id="46">
+          <properties>
+            <property name="caption" value="__emailAddress"/>
+            <property name="name" value="emailAddress"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+        <item name="profileMobileEmailAddress" caption="__mobileEmailAddress" type="data" id="47">
+          <properties>
+            <property name="caption" value="__mobileEmailAddress"/>
+            <property name="name" value="mobileEmailAddress"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+        <item name="profileTxtEmailAddress" caption="__txtEmailAddress" type="data" id="48">
+          <properties>
+            <property name="caption" value="__txtEmailAddress"/>
+            <property name="name" value="txtEmailAddress"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+        <item name="profileZonName" caption="__zonName" type="data" id="49">
+          <properties>
+            <property name="caption" value="__zonName"/>
+            <property name="name" value="zonName"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+        <item name="profilePresence" caption="__presenceID" type="data" id="50">
+          <properties>
+            <property name="caption" value="__presenceID"/>
+            <property name="name" value="presenceID"/>
+            <property name="width" value=""/>
+          </properties>
+        </item>
+      </item>
+      <item name="profileHeadingOrgForm" caption="__profile_heading_Org_div" category="userFormLayout" display="form" id="51">
+        <properties>
+          <property name="caption" value=""/>
+        </properties>
+        <item name="profileDepartment" caption="__department" type="data" id="52">
+          <properties>
+            <property name="caption" value="__department"/>
+            <property name="name" value="department"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+        <item name="profileManager" caption="__manager" type="data" id="53">
+          <properties>
+            <property name="caption" value="__manager"/>
+            <property name="name" value="manager"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+        <item name="profileLocation" caption="__location" type="data" id="54">
+          <properties>
+            <property name="caption" value="__location"/>
+            <property name="name" value="location"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+        <item name="profileOffice" caption="__office" type="data" id="55">
+          <properties>
+            <property name="caption" value="__office"/>
+            <property name="name" value="office"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+      </item>
+      <item name="profileHeadingOtherForm" caption="__profile_heading_Other_div" category="userFormLayout" display="form" id="56">
+        <properties>
+          <property name="caption" value=""/>
+        </properties>
+        <item name="profileWebsite" caption="__website" type="data" id="57">
+          <properties>
+            <property name="caption" value="__website"/>
+            <property name="name" value="website"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+        <item name="profileResponsibilities" caption="__responsibilities" type="data" id="58">
+          <properties>
+            <property name="caption" value="__responsibilities"/>
+            <property name="name" value="responsibilities"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+        <item name="profileInterests" caption="__interests" type="data" id="59">
+          <properties>
+            <property name="caption" value="__interests"/>
+            <property name="name" value="interests"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+        <item name="profileEducation" caption="__education" type="data" id="60">
+          <properties>
+            <property name="caption" value="__education"/>
+            <property name="name" value="education"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+      </item>
     </item> 
   </item>  
-  <item name="profileEntryView" caption="__profile_entry_view_definition" id="13"> 
+  <item name="profileEntryView" caption="__profile_entry_view_definition" id="13" display="view"> 
     <properties/>  
     <item name="profileTitle" caption="__profile_title" id="14"> 
       <properties> 
@@ -147,7 +310,7 @@
     <item name="table3View" caption="__three_column_table" category="generalViewLayout" id="25"> 
       <properties> 
         <property name="name" value=""/>  
-        <property name="caption" value=""/>  
+        <property name="caption" value=""/> 
       </properties>  
       <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" id="27" formItem="profileEmailAddress"> 
         <properties> 
@@ -199,7 +362,7 @@
       </properties> 
     </item> 
   </item>  
-  <item name="profileEntryBusinessCard" caption="__profile_entry_business_card_definition" id="15"> 
+  <item name="profileEntryBusinessCard" caption="__profile_entry_business_card_definition" id="15" display="view"> 
     <properties/>  
     <item name="profileEntryBusinessCardElements" caption="__profile_entry_business_card_elements" id="16"> 
       <properties> 
@@ -215,7 +378,7 @@
       </properties> 
     </item> 
   </item>  
-  <item name="profileEntryMiniBusinessCard" caption="__profile_entry_mini_business_card_definition" id="17"> 
+  <item name="profileEntryMiniBusinessCard" caption="__profile_entry_mini_business_card_definition" id="17" display="view"> 
     <properties/>  
     <item name="profileEntryMiniBusinessCardElements" caption="__profile_entry_mini_business_card_elements" id="18"> 
       <properties> 
@@ -228,9 +391,238 @@
       </properties> 
     </item> 
   </item>  
-  <properties> 
-    <property name="caption" value="__definition_default_user"/>  
-    <property name="name" value="_user"/> 
-  </properties>  
+  <properties>
+    <property name="caption" value="__definition_default_user"/>
+    <property name="name" value="_user"/>
+    <property name="type" value="profileGWT"/>
+  </properties>
+  <item name="profileEntryStandardView" caption="__profile_entry_standard_view" id="61">
+    <properties/>
+    <item name="profileHeadingPersonalView" caption="__profile_heading_Personal_div" category="userViewLayout" display="view" id="64">
+      <properties>
+        <property name="caption" value=""/>
+      </properties>
+      <item name="profileJobTitle" caption="__jobTitle" type="data" id="65">
+        <properties>
+          <property name="caption" value="__jobTitle"/>
+          <property name="name" value="jobTitle"/>
+          <property name="width" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+      <item name="profileState" caption="__state" type="data" id="66">
+        <properties>
+          <property name="caption" value="__state"/>
+          <property name="name" value="state"/>
+          <property name="width" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+      <item name="profilePostalCode" caption="__postalCode" type="data" id="67">
+        <properties>
+          <property name="caption" value="__postalCode"/>
+          <property name="name" value="postalCode"/>
+          <property name="width" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+    </item>
+    <item name="profileHeadingContactView" caption="__profile_heading_Contact_div" category="userViewLayout" display="view" id="68">
+      <properties>
+        <property name="caption" value=""/>
+      </properties>
+      <item name="profileWorkPhone" caption="__workPhone" type="data" id="69">
+        <properties>
+          <property name="caption" value="__workPhone"/>
+          <property name="name" value="workPhone"/>
+          <property name="width" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+      <item name="profileMobilePhone" caption="__mobilePhone" type="data" id="70">
+        <properties>
+          <property name="caption" value="__mobilePhone"/>
+          <property name="name" value="mobilePhone"/>
+          <property name="width" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+      <item name="profileEmailAddress" caption="__emailAddress" type="data" id="71">
+        <properties>
+          <property name="caption" value="__emailAddress"/>
+          <property name="name" value="emailAddress"/>
+          <property name="width" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+      <item name="profileMobileEmailAddress" caption="__mobileEmailAddress" type="data" id="72">
+        <properties>
+          <property name="caption" value="__mobileEmailAddress"/>
+          <property name="name" value="mobileEmailAddress"/>
+          <property name="width" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+      <item name="profileTxtEmailAddress" caption="__txtEmailAddress" type="data" id="73">
+        <properties>
+          <property name="caption" value="__txtEmailAddress"/>
+          <property name="name" value="txtEmailAddress"/>
+          <property name="width" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+      <item name="profileZonName" caption="__zonName" type="data" id="74">
+        <properties>
+          <property name="caption" value="__zonName"/>
+          <property name="name" value="zonName"/>
+          <property name="width" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+      <item name="profilePresence" caption="__presenceID" type="data" id="75">
+        <properties>
+          <property name="caption" value="__presenceID"/>
+          <property name="name" value="presenceID"/>
+          <property name="width" value=""/>
+        </properties>
+      </item>
+    </item>
+    <item name="profileHeadingOrgView" caption="__profile_heading_Org_div" category="userViewLayout" display="view" id="76">
+      <properties>
+        <property name="caption" value=""/>
+      </properties>
+      <item name="profileDepartment" caption="__department" type="data" id="77">
+        <properties>
+          <property name="caption" value="__department"/>
+          <property name="name" value="department"/>
+          <property name="width" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+      <item name="profileManager" caption="__manager" type="data" id="78">
+        <properties>
+          <property name="caption" value="__manager"/>
+          <property name="name" value="manager"/>
+          <property name="width" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+      <item name="profileLocation" caption="__location" type="data" id="79">
+        <properties>
+          <property name="caption" value="__location"/>
+          <property name="name" value="location"/>
+          <property name="width" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+      <item name="profileOffice" caption="__office" type="data" id="80">
+        <properties>
+          <property name="caption" value="__office"/>
+          <property name="name" value="office"/>
+          <property name="width" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+    </item>
+    <item name="profileHeadingOtherView" caption="__profile_heading_Other_div" category="userViewLayout" display="view" id="81">
+      <properties>
+        <property name="caption" value=""/>
+      </properties>
+      <item name="profileWebsite" caption="__website" type="data" id="82">
+        <properties>
+          <property name="caption" value="__website"/>
+          <property name="name" value="website"/>
+          <property name="width" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+      <item name="profileResponsibilities" caption="__responsibilities" type="data" id="83">
+        <properties>
+          <property name="caption" value="__responsibilities"/>
+          <property name="name" value="responsibilities"/>
+          <property name="width" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+      <item name="profileInterests" caption="__interests" type="data" id="84">
+        <properties>
+          <property name="caption" value="__interests"/>
+          <property name="name" value="interests"/>
+          <property name="width" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+      <item name="profileEducation" caption="__education" type="data" id="85">
+        <properties>
+          <property name="caption" value="__education"/>
+          <property name="name" value="education"/>
+          <property name="width" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+    </item>
+    <item name="profileHeadingPhotosAndImagesView" caption="__profile_heading_PhotosAndImages_div" category="userViewLayout" display="view" id="86">
+      <properties>
+        <property name="caption" value=""/>
+      </properties>
+    </item>
+    <item name="profileSidePanelView" caption="__profile_sidePanel_div" category="userViewLayout" display="view" id="87">
+      <properties>
+        <property name="caption" value=""/>
+      </properties>
+      <item name="profileStats" caption="__stats" category="userSideViewLayout" display="view" id="89">
+        <properties>
+          <property name="caption" value="__stats"/>
+        </properties>
+      </item>
+      <item name="profileAboutMe" caption="__aboutMe" type="data" id="88">
+        <properties>
+          <property name="caption" value="__aboutMe"/>
+          <property name="name" value="aboutMe"/>
+          <property name="width" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+      <item name="profileTeams" caption="__teams" category="userSideViewLayout" display="view" id="93">
+        <properties>
+          <property name="caption" value="__teams"/>
+        </properties>
+      </item>
+      <item name="profileFollowers" caption="__followers" category="userSideViewLayout" display="view" id="90">
+        <properties>
+          <property name="caption" value="__followers"/>
+        </properties>
+      </item>
+      <item name="profileFollowing" caption="__following" category="userSideViewLayout" display="view" id="91">
+        <properties>
+          <property name="caption" value="__following"/>
+        </properties>
+      </item>
+      <item name="profileSavedSearches" caption="__savedSearches" category="userSideViewLayout" display="view" id="92">
+        <properties>
+          <property name="caption" value="__savedSearches"/>
+        </properties>
+      </item>
+    </item>
+  </item>
+  <item name="profileEntrySimpleView" caption="__profile_entry_simple_view" id="62">
+    <properties/>
+    <item name="profileEntrySimpleViewElements" caption="__profile_entry_simple_view_elements" id="63" display="view">
+      <properties>
+        <property name="_elements" value="workPhone"/>
+        <property name="_elements" value="mobilePhone"/>
+        <property name="_elements" value="emailAddress"/>
+        <property name="_elements" value="mobileEmailAddress"/>
+        <property name="_elements" value="txtEmailAddress"/>
+        <property name="_elements" value="instantMessageID"/>
+      </properties>
+      <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" id="94" formItem="profileEntryPicture">
+        <properties>
+          <property name="caption" value="__profile_entry_picture"/>
+          <property name="name" value="picture"/>
+        </properties>
+      </item>
+    </item>
+  </item>
   <export-mappings/>
 </definition>
