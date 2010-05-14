@@ -217,8 +217,8 @@
 		<property name="preInterceptors">
 			<list>
 				<ref bean="performanceMonitorInterceptor"/>
-				<ref bean="indexSynchronizationManagerInterceptor"/>
 				<ref bean="moduleEventListenerManagerInterceptor"/>
+				<ref bean="indexSynchronizationManagerInterceptor"/>
 			</list>
 		</property>
 	</bean>

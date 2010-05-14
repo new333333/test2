@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.module.interceptor;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -114,7 +115,10 @@ public class EventListenerManagerInterceptor implements MethodInterceptor, Initi
 		catch(Throwable t) {
 			// Apply after-completion methods for thrown exception.
 			runAfterCompletion(listeners, listenerIndex, invocation, t);
-			throw t;
+			if(t instanceof InvocationTargetException)
+				throw ((InvocationTargetException) t).getTargetException();
+			else
+				throw t;
 		}
 	}
 	

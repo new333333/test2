@@ -38,6 +38,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 
 public class FolderModuleListener {
@@ -68,15 +70,24 @@ public class FolderModuleListener {
 	 * that the application layer is expecting. It is up to the descretion of the
 	 * person who develops or plugs in the listener to decide what makes or does
 	 * not make sense on a per case basis.
+	 * <p>
+	 * The pre-event method can throw one of the checked exceptions defined by the
+	 * corresponding module method that the pre-event method is intercepting an 
+	 * execution of. Or it could throw any unchecked exception of its own.
+	 * However, it is strongly recommended that in nearly all cases any exception 
+	 * thrown by the pre-event method should be a subclass of 
+	 * <code>org.kablink.teaming.exception.UncheckedCodedException</code>.
+	 * It provides the facility for localizing error messages and the error message
+	 * will be presented to end user in well formatted manner.
 	 * 
 	 * @return nothing in this case
 	 * @throws Exception in case of errors
 	 */
 	public void preAddEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
-    		Map fileItems, Map options) throws Exception {
+    		Map fileItems, Map options) throws WriteFilesException, WriteEntryDataException {
 		logger.info("preAddEntry: About to add an entry to the folder " + folderId + " with definition " + definitionId);
 	}
-	
+		
 	/**
 	 * Post-event method for FolderModule.AddEntry.
 	 * <p>
@@ -100,12 +111,32 @@ public class FolderModuleListener {
 	 * (eg. boolean). However, if the return type of the module method is 
 	 * <code>void</code>, this extra argument MUST NOT be specified in the signature
 	 * of the post-event method.
+	 * <p>
+	 * The post-event method can throw one of the checked exceptions defined by the
+	 * corresponding module method that the post-event method is intercepting an 
+	 * execution of. Or it could throw any unchecked exception of its own.
+	 * However, it is strongly recommended that in nearly all cases any exception 
+	 * thrown by the post-event method should be a subclass of 
+	 * <code>org.kablink.teaming.exception.UncheckedCodedException</code>.
+	 * It provides the facility for localizing error messages and the error message
+	 * will be presented to end user in well formatted manner.
+	 * <p>
+	 * It is also important to note that throwing an exception from a post-event
+	 * method does NOT automatically undo the state changes that the corresponding 
+	 * module method has already made to the system. That is, by the time this 
+	 * method is invoked, the transaction surrounding the module method (if any) 
+	 * may have already been committed and merely throwing an exception from the 
+	 * post-event method will not alter the outcome of the previously successful
+	 * execution of the module method. The exception thrown out of this method,
+	 * however, is likely to cause an error message to be displayed on the user
+	 * interface. If that's not a desirable effect, do not throw an exception from
+	 * this method. 
 	 * 
 	 * @param entry newly created entry returned from module method execution
 	 * @throws Exception in case of errors
 	 */
 	public void postAddEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
-    		Map fileItems, Map options, FolderEntry entry) throws Exception {
+    		Map fileItems, Map options, FolderEntry entry) throws WriteFilesException, WriteEntryDataException {
 		// This method illustrates accepting the result of the module event 
 		// as an object (FolderEntry). 
 		
@@ -116,7 +147,7 @@ public class FolderModuleListener {
 		
 		// Given the user name and the newly added entry, we can do something useful
 		// here. For example, making a web services call to a remote system to 
-		// synchronize the data, or posting this data to another web site, etc. 
+		// synchronize the data, or posting this data to another web site, etc.
 	}
 	
 	/**
@@ -136,13 +167,18 @@ public class FolderModuleListener {
 	 * type is appended to the argument list. At runtime, if the module method
 	 * throws an exception, the system takes the exception object and passes it
 	 * to the after-completion method so that the listener can examine the error.
+	 * <p>
+	 * Unlike with the pre and post event methods, the after-completion method can
+	 * throw an exception of any type. However, an exception thrown out of this
+     * method will not be propagated back up to the caller and no error message
+     * will be displayed on the user interface.
 	 * 
 	 * @param ex exception thrown on module method execution, if any
 	 * @throws Exception in case of errors
 	 */
 	public void afterCompletionAddEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems, Map options, Throwable ex) throws Exception {
-		logger.info("afterCompletionAddEntry: " + ((ex==null)? "Successful" : ex.toString()));
+		logger.info("afterCompletionAddEntry: " + ((ex==null)? "Successful" : ex.toString()));		
 	}
 	
 	
