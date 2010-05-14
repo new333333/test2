@@ -669,7 +669,7 @@ public class BuildDefinitionDivs extends TagSupport {
 										((Element)propertyNameElements.get(i)).isTextOnly()) {
 									propertyValue = ((Element)propertyNameElements.get(i)).getText();
 								} else {
-									propertyValue = ((Element)propertyNameElements.get(i)).attributeValue("value", "");
+									propertyValue = ((Element)propertyNameElements.get(i)).attributeValue("value", "").replaceAll("”", "\"");
 								}
 								if (!propertyValue.equals("")) {
 									//Add this value to the list so it can be used to set "selected" or "checked" values later
@@ -765,7 +765,7 @@ public class BuildDefinitionDivs extends TagSupport {
 								Element entryFormItemNameProperty = (Element) entryFormItem.selectSingleNode("./properties/property[@name='name']");
 								String entryFormItemNamePropertyValue = "";
 								if (entryFormItemNameProperty != null) {
-									entryFormItemNamePropertyValue = entryFormItemNameProperty.attributeValue("value", "");
+									entryFormItemNamePropertyValue = entryFormItemNameProperty.attributeValue("value", "").replaceAll("”", "\"");
 								}
 								String entryFormItemNamePropertyName = "";
 								if (entryFormItemNameProperty != null) {
@@ -780,7 +780,7 @@ public class BuildDefinitionDivs extends TagSupport {
 								Element entryFormItemCaptionProperty = (Element) entryFormItem.selectSingleNode("./properties/property[@name='caption']");
 								String entryFormItemCaptionPropertyValue = "";
 								if (entryFormItemCaptionProperty != null) {
-									entryFormItemCaptionPropertyValue = entryFormItemCaptionProperty.attributeValue("value", "");
+									entryFormItemCaptionPropertyValue = entryFormItemCaptionProperty.attributeValue("value", "").replaceAll("”", "\"");
 								}
 								if (entryFormItemCaptionPropertyValue.equals("")) {
 									entryFormItemCaptionPropertyValue = entryFormItemNamePropertyName;
@@ -850,8 +850,8 @@ public class BuildDefinitionDivs extends TagSupport {
 									if (selectedItemNameEle == null) {continue;}
 									Element selectedItemCaptionEle = (Element)selectedItem.selectSingleNode("properties/property[@name='caption']");
 									if (selectedItemCaptionEle == null) {continue;}
-									String selectedItemName = selectedItemNameEle.attributeValue("value", "");
-									String selectedItemCaption = selectedItemCaptionEle.attributeValue("value", "").replaceAll("&", "&amp;");
+									String selectedItemName = selectedItemNameEle.attributeValue("value", "").replaceAll("”", "\"");
+									String selectedItemCaption = selectedItemCaptionEle.attributeValue("value", "").replaceAll("&", "&amp;").replaceAll("”", "\"");
 									sb.append("<option value=\"").append(selectedItemName).append("\"");
 									for (int i = 0; i < propertyValues.size(); i++) {
 										if (((String)propertyValues.get(i)).equals(selectedItemName)) {
@@ -1633,6 +1633,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						}
 						if (!caption.equals("")) name = NLT.getDef(caption);
 						String value = property.attributeValue("value", "");
+						value = value.replaceAll("”", "\"");
 						if (!name.equals("") && !value.equals("")) {
 							if (!startDivText.equals("")) {
 								sb.append(startDivText);
