@@ -1222,7 +1222,7 @@ public class GwtMainPage extends Composite
 		final GwtProfileSimpleDlg dlg;
 		PopupPanel.PositionCallback posCallback;
 		
-		dlg = new GwtProfileSimpleDlg(false, false, 0, 0, binderId, userName);
+		dlg = new GwtProfileSimpleDlg(false, true, 0, 0, binderId, userName);
 		this.registerActionHandler(dlg);
 		
 		posCallback = new PopupPanel.PositionCallback()
