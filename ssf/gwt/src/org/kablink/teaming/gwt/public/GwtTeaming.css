@@ -1579,3 +1579,108 @@ a.ss_new_thread {
 	color: #3e6978;
 	text-decoration: none;
 	}
+	
+/* Quick View */
+.qViewDlg {
+	position: relative;
+	width: 460px;
+	min-height: 220px;
+	background:none repeat scroll 0 0 #FFFFFF;
+	-moz-border-radius-topleft:5px;
+	-moz-border-radius-topright:5px;
+}
+.qViewTitle {
+	color:#FFFFFF;
+	font-size:1.1em;
+	font-style:italic;
+	letter-spacing:0.05em;
+	overflow:auto;
+	padding-left:115px;
+	width:auto;
+	font-weight: normal;
+}
+.qViewMain {
+	min-height: 190px;
+}
+.qViewLeft {
+	left:10px;
+	top: 10px;
+	position:absolute;
+	width:100px;
+}
+.qViewRight {
+	left:110px;
+	margin:10px 10px 0 10px;
+	position:relative;
+	width:325px;
+	font-size: 0.8em;
+	min-height: 180px;
+}
+.qViewPhoto {
+}
+.qViewPhoto img {
+	width: 100px;
+	margin-bottom: 5px;
+}
+.qViewStatus {
+	padding-bottom: 10px;
+}
+.qViewStatusInline {
+	display:inline;
+}
+.qViewStatus-anchor{
+	color:#1C5894 !important;
+}
+.qViewStats {
+	position: absolute;
+	bottom: 0px;
+}
+.qViewFooter {
+}
+.qViewStatsLabel {
+	color:#666666;
+	display:inline;
+	font-size:0.8em;
+	padding-right:0.3em;
+	white-space:nowrap;
+}
+.qViewClose {
+	position:absolute;
+	right:4px;
+	top:4px;
+}
+.qViewInfoTable {
+	margin-bottom: 35px;
+}
+.qView-a {
+	font-size:10px;
+	font-style:normal;
+	font-weight:normal;
+	position: relative;
+	cursor: pointer;
+}
+.qView-action  {
+	-moz-border-radius:15px 15px 15px 15px;
+	background:url("images/putty_blend2.png") repeat-x scroll center bottom #FFFFFF;
+	color:#000000;
+	font-size:11px;
+	margin-top:5px;
+	padding:2px 5px;
+	text-align:center;
+}
+.qView-action-following  {
+	-moz-border-radius:15px 15px 15px 15px;
+	background:url("images/putty_blend4.png") repeat-x scroll center bottom #FFFFFF;
+	border:1px solid #BBBBB9;
+	color:#1C5894;
+	font-size:11px;
+	margin-top:5px;
+	padding:2px 5px;
+	text-align:center;
+}
+.qView-action-img {
+	margin-right: 5px;
+	position: absolute;
+	top: 9px;
+	left: 15px;
+}

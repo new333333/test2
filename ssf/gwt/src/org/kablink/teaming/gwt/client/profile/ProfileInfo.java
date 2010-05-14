@@ -8,6 +8,8 @@ public class ProfileInfo implements IsSerializable  {
 
 	private String title;
 	private String binderId;
+	private String userId;
+	private String pictureUrl;
 	
 	private ArrayList<ProfileCategory> categories = new ArrayList<ProfileCategory>();
 	
@@ -62,4 +64,18 @@ public class ProfileInfo implements IsSerializable  {
 		this.binderId = binderId;
 	}
 
+	public String getPictureUrl() {
+		return pictureUrl;
+	}
+
+	public void setPictureUrl(String pictureUrl) {
+		this.pictureUrl = pictureUrl;
+	}
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 }
