@@ -1649,6 +1649,14 @@ a.ss_new_thread {
 	width: 100px;
 	margin-bottom: 5px;
 }
+.qViewPhoto_No {
+	margin-left:25px;
+	margin-top:25px;
+	margin-bottom:10px;
+}
+.qViewPhotoHeight_No {
+	height:50px;
+}
 .qViewStatus {
 	padding-bottom: 10px;
 }
