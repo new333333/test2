@@ -102,6 +102,7 @@
 		     </c:if>
 		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'user_list'}">
 		         <option value="equals"><ssf:nlt tag="definition.operation_equals" text="Equals"/></option>
+		         <option value="contains"><ssf:nlt tag="definition.operation_contains" text="Contains"/></option>
 		     </c:if>
 	   </select>
 	   </c:if>

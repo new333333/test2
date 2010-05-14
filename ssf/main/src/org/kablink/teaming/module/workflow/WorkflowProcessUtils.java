@@ -61,6 +61,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.CommaSeparatedValue;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
@@ -583,7 +584,11 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 										if (!currentVal.toString().equals(value)) currentMatch=false;
 									}
 								} else if ("contains".equals(operation)) {
-									if (!currentVal.toString().contains(value)) currentMatch=false;									
+									if (currentVal instanceof CommaSeparatedValue) {
+										if (!((CommaSeparatedValue)currentVal).getValueSet().contains(value)) currentMatch=false;
+									} else {
+										if (!currentVal.toString().contains(value)) currentMatch=false;
+									}
 								} else if ("greaterThan".equals(operation)) {
 									NumberFormat numForm = NumberFormat.getInstance();
 									try {
