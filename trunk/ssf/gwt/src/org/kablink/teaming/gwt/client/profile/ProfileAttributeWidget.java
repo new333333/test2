@@ -56,7 +56,7 @@ public class ProfileAttributeWidget  {
 						}
 						break;
 					default: 
-						widget = new Label("No Attr Value defined");
+						widget = new Label("");
 						break;
 				}
 
