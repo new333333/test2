@@ -688,7 +688,7 @@ public class ViewEntryController extends  SAbstractController {
 							url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
 							url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_STOP_WORKFLOW);
 							url.setParameter(WebKeys.URL_WORKFLOW_TYPE, workflowDef.getId());
-							toolbar.addToolbarMenuItem("6_workflow", "", 
+							toolbar.addToolbarMenuItem("7_workflow", "", 
 									NLT.get("toolbar.menu.stopWorkflow", new String[] {wfTitle}), url, qualifiers);
 							runningWorkflowDefs.put(workflowDef.getId(), "1");
 						}
