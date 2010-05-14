@@ -119,6 +119,9 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/logout2.png")
 	public ImageResource logout2();
 
+	@Source("org/kablink/teaming/gwt/public/images/management_16.png")
+	public ImageResource management16();
+
 	@Source("org/kablink/teaming/gwt/public/images/mast_head_kablink_graphic.png")
 	public ImageResource mastHeadKablinkGraphic();
 
@@ -152,8 +155,14 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/previous_disabled_16.gif")
 	public ImageResource previousDisabled16();
 
+	@Source("org/kablink/teaming/gwt/public/images/report_16b.gif")
+	public ImageResource report16();
+
 	@Source("org/kablink/teaming/gwt/public/images/spinner16x16.gif")
 	public ImageResource spinner16();
+
+	@Source("org/kablink/teaming/gwt/public/images/system_config_16.png")
+	public ImageResource system16();
 
 	@Source("org/kablink/teaming/gwt/public/images/warn_icon16.gif")
 	public ImageResource warningIcon16();

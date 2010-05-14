@@ -48,6 +48,41 @@ public class GwtAdminCategory
 {
 	private String m_localizedName = null;
 	private ArrayList<GwtAdminAction> m_adminActions;
+	private GwtAdminCategoryType m_categoryType;
+	
+	/**
+	 * 
+	 */
+	public enum GwtAdminCategoryType implements IsSerializable
+	{
+		MANAGEMENT( "Management" ),
+		MANAGE_SEARCH_INDEX( "Manage search index" ),
+		REPORTS( "Reports" ),
+		SYSTEM( "System" ),
+
+		// This is used as a default case to store a GwtAdminCategoryType when
+		// there isn't a real value to store.
+		UNDEFINED( "Undefined GwtAdminCategoryType" );
+
+		private final String m_unlocalizedDesc;
+		
+		/**
+		 */
+		private GwtAdminCategoryType( String unlocalizedDesc )
+		{
+			m_unlocalizedDesc = unlocalizedDesc;
+		}// end AdminAction()
+		
+		
+		/**
+		 */
+		public String getUnlocalizedDesc()
+		{
+			return m_unlocalizedDesc;
+		}// end getUnlocalizedDesc()
+
+	}// end GwtAdminCategoryType
+
 	
 	/**
 	 * 
@@ -55,6 +90,7 @@ public class GwtAdminCategory
 	public GwtAdminCategory()
 	{
 		m_adminActions = new ArrayList<GwtAdminAction>();
+		m_categoryType = GwtAdminCategoryType.UNDEFINED;
 	}// end GwtAdminCategory()
 	
 
@@ -81,6 +117,15 @@ public class GwtAdminCategory
 	/**
 	 * 
 	 */
+	public GwtAdminCategoryType getCategoryType()
+	{
+		return m_categoryType;
+	}// end getCategoryType()
+	
+	
+	/**
+	 * 
+	 */
 	public String getLocalizedName()
 	{
 		return m_localizedName;
@@ -95,4 +140,11 @@ public class GwtAdminCategory
 		m_localizedName = localizedName;
 	}// end setLocalizedName()
 	
+	/**
+	 * 
+	 */
+	public void setCategoryType( GwtAdminCategoryType type )
+	{
+		m_categoryType = type;
+	}// end setCategoryType()
 }// end GwtAdminCategory

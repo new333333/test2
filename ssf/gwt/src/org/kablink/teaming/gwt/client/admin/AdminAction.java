@@ -76,9 +76,9 @@ public enum AdminAction implements IsSerializable
 	REPORT_VIEW_SYSTEM_ERROR_LOG( "Report: view system error log" ),
 	SITE_BRANDING( "Site branding" ),
 
-	// This is used as a default case to store a TeamingAction when
+	// This is used as a default case to store a AdminAction when
 	// there isn't a real value to store.
-	UNDEFINED( "Undefined Action - Should Never Be Triggered" );
+	UNDEFINED( "Undefined Admin Action - Should Never Be Triggered" );
 
 	private final String m_unlocalizedDesc;
 	

@@ -545,6 +545,7 @@ public class GwtServerHelper {
 		{
 	 		managementCategory = new GwtAdminCategory();
 	 		managementCategory.setLocalizedName( NLT.get( "administration.category.management" ) );
+	 		managementCategory.setCategoryType( GwtAdminCategory.GwtAdminCategoryType.MANAGEMENT );
 			adminCategories.add( managementCategory );
 			
 			// Does the user have rights to "Add user"?
@@ -594,6 +595,7 @@ public class GwtServerHelper {
 						// Create a "manage search index category.
 				 		manageSearchIndexCategory = new GwtAdminCategory();
 				 		manageSearchIndexCategory.setLocalizedName( NLT.get( "administration.configure_search_index" ) );
+				 		manageSearchIndexCategory.setCategoryType( GwtAdminCategory.GwtAdminCategoryType.MANAGE_SEARCH_INDEX );
 						adminCategories.add( manageSearchIndexCategory );
 						
 						// Add a "Folder Index" action
@@ -804,6 +806,7 @@ public class GwtServerHelper {
 		// Create a "Reports" category
 		reportsCategory = new GwtAdminCategory();
 		reportsCategory.setLocalizedName( NLT.get( "administration.category.reports" ) );
+		reportsCategory.setCategoryType( GwtAdminCategory.GwtAdminCategoryType.REPORTS );
 		adminCategories.add( reportsCategory );
 
 		// Does the user have rights to run reports?
@@ -974,6 +977,7 @@ public class GwtServerHelper {
 		{
 			systemCategory = new GwtAdminCategory();
 			systemCategory.setLocalizedName( NLT.get( "administration.category.system" ) );
+			systemCategory.setCategoryType( GwtAdminCategory.GwtAdminCategoryType.SYSTEM );
 			adminCategories.add( systemCategory );
 
 			// Does the user have rights to "Form/View Designers"?

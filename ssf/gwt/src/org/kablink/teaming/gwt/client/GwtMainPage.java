@@ -1180,6 +1180,13 @@ public class GwtMainPage extends Composite
 			}
 			
 			m_contentCtrl.setDimensions( width, height );
+			
+			// Do we have an Administration control?
+			if ( m_adminControl != null )
+			{
+				// Yes
+				m_adminControl.setSizeAndPositionOfContentControl();
+			}
 		}
 		else
 		{
