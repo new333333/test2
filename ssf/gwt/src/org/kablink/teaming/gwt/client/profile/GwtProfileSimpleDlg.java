@@ -479,7 +479,6 @@ public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor {
 			this.showProfile = profile;
 		}
 		
-		@Override
 		public void onClick(ClickEvent event) {
 			GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
 			rpcService.getBinderPermalink( binderId, new AsyncCallback<String>()
@@ -505,7 +504,6 @@ public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor {
 		}
 	}
 
-	@Override
 	public void addActionHandler(ActionHandler actionHandler) {
 		this.actionHandler = actionHandler;
 	}
@@ -602,7 +600,6 @@ public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor {
 			this.mbBinderId = binderId;
 		}
 		
-		@Override
 		public void onClick(ClickEvent event) {
 
 			// Issue an ajax request to save the user status to the db.  rpcCallback will
