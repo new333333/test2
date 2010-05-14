@@ -17,11 +17,15 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -31,8 +35,9 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.Widget;
 
-public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor {
+public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor, NativePreviewHandler {
 
 	private String binderId;
 	private Grid grid;
@@ -58,6 +63,10 @@ public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor {
 		this.userName = userName;
 
 		createAllDlgContent("Test Dialog", null, null, null);
+		
+		// Register a preview-event handler.  We do this so we can see the mouse-down event
+		// in and out side of the widget.
+		Event.addNativePreviewHandler( this );
 	}
 
 	/**
@@ -659,8 +668,8 @@ public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor {
 			// We don't want 2 glass panels.
 			if ( m_numDlgsVisible == 0 )
 			{
-				//setGlassEnabled( true );
-				//setGlassStyleName( "n-Transparent-Black-Div" );
+				setGlassEnabled( true );
+				setGlassStyleName( "n-Transparent-Black-Div" );
 			}
 		}
 		
@@ -694,5 +703,53 @@ public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor {
 			DeferredCommand.addCommand( cmd );
 		}
 	}// end show()
+	
+	/**
+	 * Using this onPreviewNativeEvent to check if the mouse click is in the input widget 
+	 */
+	public void onPreviewNativeEvent(NativePreviewEvent previewEvent) {
+
+
+		int eventType = previewEvent.getTypeInt();
+		
+		// We are only interested in mouse-down events.
+		if ( eventType != Event.ONMOUSEDOWN )
+			return;
+		
+		NativeEvent nativeEvent = previewEvent.getNativeEvent();
+		//EventTarget target = event.getEventTarget();
+		
+		if ( isMouseOver(this, nativeEvent.getClientX(), nativeEvent.getClientY())) {
+			return;
+		} else {
+			hide();
+			return;
+		}
+	}
+	
+	/**
+	 * Determine if the given coordinates are over this control.
+	 */
+	public boolean isMouseOver( Widget widget, int mouseX, int mouseY )
+	{
+		int left;
+		int top;
+		int width;
+		int height;
+		
+		// Get the position and dimensions of this control.
+		left = widget.getAbsoluteLeft();
+		top = widget.getAbsoluteTop();
+		height = widget.getOffsetHeight();
+		width = widget.getOffsetWidth();
+		
+		//Window.alert("MouseX: "+ mouseX + "MouseY: "+ mouseY + " Left: "+ left + "Top: "+ top+ "height: "+ height + " width: "+ width);
+		
+		// Is the mouse over this control?
+		if ( mouseY >= top && mouseY <= (top + height) && mouseX >= left && (mouseX <= left + width) )
+			return true;
+		
+		return false;
+	}// end isMouseOver()
 	
 }
