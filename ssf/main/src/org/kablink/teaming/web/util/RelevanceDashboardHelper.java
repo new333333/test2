@@ -55,11 +55,13 @@ import org.kablink.teaming.calendar.AbstractIntervalView;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.calendar.OneDayView;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.SharedEntity;
+import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
@@ -765,8 +767,22 @@ public class RelevanceDashboardHelper {
 	}
 	
 	public static void setupMyTagsBeans(AllModulesInjected bs, Map model) {
-		String findType = WebKeys.FIND_TYPE_PERSONAL_TAGS;
-		Collection myTags = bs.getBinderModule().getSearchTags("", findType);
+		Collection<Map> myTags;
+		if(SPropsUtil.getBoolean("setupMyTagsBeans.use.index", false)) {
+			String findType = WebKeys.FIND_TYPE_PERSONAL_TAGS;
+			myTags = bs.getBinderModule().getSearchTags("", findType);			
+		}
+		else {
+			List<Tag> tagObjs = getCoreDao().loadPersonalTagsByOwner(RequestContextHolder.getRequestContext().getUser().getEntityIdentifier());
+			myTags = new ArrayList<Map>();
+			if (tagObjs != null) {
+				for(Tag tagObj:tagObjs) {
+					HashMap tag = new HashMap();
+					tag.put(WebKeys.TAG_NAME, tagObj.getName());
+					myTags.add(tag);
+				}
+			}			
+		}
 		model.put(WebKeys.MY_TAGS, myTags);
 	}
 	public static void setupMyTagFreqBeans(AllModulesInjected bs, Map model) {
@@ -775,4 +791,8 @@ public class RelevanceDashboardHelper {
 		model.put(WebKeys.MY_TAGS_WITH_FREQ, myTags);
 	}
 	
+	private static CoreDao getCoreDao() {
+		return (CoreDao) SpringContextUtil.getBean("coreDao");
+	}
+
 }
