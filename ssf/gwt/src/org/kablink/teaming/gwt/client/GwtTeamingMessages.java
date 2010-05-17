@@ -505,5 +505,7 @@ public interface GwtTeamingMessages extends Messages
 	String qViewMicroBlogTitle();
 	String qViewFollowers();
 	String qViewEntries();
+	String qViewInstantMessage();
+	String qViewInstantMessageTitle();
 	
 }// end GwtTeamingMessages

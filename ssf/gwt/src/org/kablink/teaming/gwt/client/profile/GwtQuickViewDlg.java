@@ -59,6 +59,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 	private ActionHandler actionHandler;
 	private Image avatar;
 	private Anchor miniBlogA;
+	private QuickViewAction messageBtn;
 	
 	public GwtQuickViewDlg(boolean autoHide, boolean modal, int pos,
 			int pos2, String binderId, String userName) {
@@ -179,6 +180,10 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		conferenceBtn = new QuickViewAction(GwtTeaming.getMessages().qViewConference(),
 										GwtTeaming.getMessages().qViewConferenceTitle(),
 										"qView-a", "qView-action");
+		
+		messageBtn = new QuickViewAction(GwtTeaming.getMessages().qViewInstantMessage(),
+				GwtTeaming.getMessages().qViewInstantMessageTitle(),
+				"qView-a", "qView-action");
 
 		followBtn = new QuickViewAction(GwtTeaming.getMessages().qViewFollow(),
 										GwtTeaming.getMessages().qViewFollowTitle(),
@@ -235,6 +240,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		panel.add(profileBtn);
 		panel.add(workspaceBtn);
 		panel.add(conferenceBtn);
+		panel.add(messageBtn);
 		panel.add(followBtn);
 
 		return panel;
