@@ -37,7 +37,13 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor, NativePreviewHandler {
+/**
+ * This is the QuickView Dialog
+ * 
+ * @author nbjensen
+ *
+ */
+public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePreviewHandler {
 
 	private String binderId;
 	private Grid grid;
@@ -50,19 +56,18 @@ public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor, Nati
 	private Label entriesStat;
 	private Label statusLabel;
 	private String userName;
-	private String userId;
 	private ActionHandler actionHandler;
 	private Image avatar;
 	private Anchor miniBlogA;
 	
-	public GwtProfileSimpleDlg(boolean autoHide, boolean modal, int pos,
+	public GwtQuickViewDlg(boolean autoHide, boolean modal, int pos,
 			int pos2, String binderId, String userName) {
 		super(autoHide, modal, pos, pos2);
 
 		this.binderId = binderId;
 		this.userName = userName;
 
-		createAllDlgContent("Test Dialog", null, null, null);
+		createAllDlgContent("", null, null, null);
 		
 		// Register a preview-event handler.  We do this so we can see the mouse-down event
 		// in and out side of the widget.
@@ -161,17 +166,24 @@ public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor, Nati
 		ClickHandler clickHandler;
 		FlowPanel panel = new FlowPanel();
 		
-		profileBtn = new QuickViewAction("Profile", "qView-a", "qView-action");
+		profileBtn = new QuickViewAction(GwtTeaming.getMessages().qViewProfile(),
+										GwtTeaming.getMessages().qViewProfileTitle(), 
+										"qView-a", "qView-action");
 		profileBtn.addClickHandler(new WorkSpaceActionHandler(true));
 		
-		workspaceBtn = new QuickViewAction("Workspace", "qView-a",
-				"qView-action");
+		workspaceBtn = new QuickViewAction(GwtTeaming.getMessages().qViewWorkspace(),
+										 GwtTeaming.getMessages().qViewWorkspaceTitle(),
+										 "qView-a",	"qView-action");
 		workspaceBtn.addClickHandler(new WorkSpaceActionHandler(false));
 		
-		conferenceBtn = new QuickViewAction("Conference", "qView-a", "qView-action");
+		conferenceBtn = new QuickViewAction(GwtTeaming.getMessages().qViewConference(),
+										GwtTeaming.getMessages().qViewConferenceTitle(),
+										"qView-a", "qView-action");
 
-		followBtn = new QuickViewAction("Following", "qView-a",
-				"qView-action-following");
+		followBtn = new QuickViewAction(GwtTeaming.getMessages().qViewFollow(),
+										GwtTeaming.getMessages().qViewFollowTitle(),
+										"qView-a",
+										"qView-action-following");
 
 		// Add a clickhandler to the "advanced" link. When the user clicks on
 		// the link we
@@ -240,7 +252,8 @@ public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor, Nati
 		span.getElement().appendChild(statusLabel.getElement());
 		statusLabel.addStyleName("qViewStatusInline");
 		
-		miniBlogA = new Anchor("Micro-Blog");
+		miniBlogA = new Anchor(GwtTeaming.getMessages().qViewMicroBlog());
+		miniBlogA.setTitle(GwtTeaming.getMessages().qViewMicroBlogTitle());
 		status.add(miniBlogA);
 		
 		miniBlogA.addStyleName("qViewStatus-anchor");
@@ -273,7 +286,7 @@ public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor, Nati
 		span = new InlineLabel();
 		panel.add(span);
 
-		label = new Label("Following:");
+		label = new Label(GwtTeaming.getMessages().qViewFollowing());
 		label.addStyleName("qViewStatsLabel");
 		span.getElement().appendChild(label.getElement());
 
@@ -285,7 +298,7 @@ public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor, Nati
 		span = new InlineLabel();
 		panel.add(span);
 
-		label = new Label("Followers:");
+		label = new Label(GwtTeaming.getMessages().qViewFollowers());
 		label.addStyleName("qViewStatsLabel");
 		span.getElement().appendChild(label.getElement());
 
@@ -297,7 +310,7 @@ public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor, Nati
 		span = new InlineLabel();
 		panel.add(span);
 
-		label = new Label("Entries");
+		label = new Label(GwtTeaming.getMessages().qViewEntries());
 		label.addStyleName("qViewStatsLabel");
 		span.getElement().appendChild(label.getElement());
 
@@ -403,8 +416,6 @@ public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor, Nati
 
 			public void onSuccess(ProfileInfo profile) {
 
-				userId = profile.getUserId();
-				
 				String url = profile.getPictureUrl();
 				if(url != null && !url.equals("")){
 					avatar.setUrl(profile.getPictureUrl());
@@ -444,13 +455,14 @@ public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor, Nati
 		private Image img;
 		private boolean isChecked;
 
-		public QuickViewAction(String text, String anchorStlyeName,
+		public QuickViewAction(String text, String title, String anchorStlyeName,
 				String labelStyleName) {
 			super();
 
 			addStyleName(anchorStlyeName);
 
 			label = new Label(text);
+			label.setTitle(title);
 			label.addStyleName(labelStyleName);
 
 			getElement().appendChild(label.getElement());
@@ -556,10 +568,12 @@ public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor, Nati
 	 */
 	private void updateFollowingButton(boolean isFollowing) {
 		if(isFollowing) {
-			followBtn.setText("Following");
+			followBtn.setText(GwtTeaming.getMessages().qViewFollowing());
+			followBtn.setTitle(GwtTeaming.getMessages().qViewFollowingTitle());
 			followBtn.setChecked(true);
 		} else {
-			followBtn.setText("Follow");
+			followBtn.setText(GwtTeaming.getMessages().qViewFollow());
+			followBtn.setTitle(GwtTeaming.getMessages().qViewFollowTitle());
 			followBtn.setChecked(false);
 		}
 	}
@@ -661,7 +675,7 @@ public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor, Nati
 				public void onSuccess(String url) {
 					if(GwtClientHelper.hasString(url)) {
 						//GwtClientHelper.jsLoadUrlInContentFrame(url);
-						GwtClientHelper.jsLaunchUrlInWindow(url, "Micro-blog", 500, 500);
+						GwtClientHelper.jsLaunchUrlInWindow(url, GwtTeaming.getMessages().qViewMicroBlog(), 500, 500);
 						hide();
 					}
 				}
@@ -755,8 +769,6 @@ public class GwtProfileSimpleDlg extends DlgBox implements ActionRequestor, Nati
 		top = widget.getAbsoluteTop();
 		height = widget.getOffsetHeight();
 		width = widget.getOffsetWidth();
-		
-		//Window.alert("MouseX: "+ mouseX + "MouseY: "+ mouseY + " Left: "+ left + "Top: "+ top+ "height: "+ height + " width: "+ width);
 		
 		// Is the mouse over this control?
 		if ( mouseY >= top && mouseY <= (top + height) && mouseX >= left && (mouseX <= left + width) )

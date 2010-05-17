@@ -34,7 +34,7 @@
 package org.kablink.teaming.gwt.client;
 
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
-import org.kablink.teaming.gwt.client.profile.GwtProfileSimpleDlg;
+import org.kablink.teaming.gwt.client.profile.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
@@ -1226,10 +1226,10 @@ public class GwtMainPage extends Composite
 	@SuppressWarnings("unused")
 	private void invokeSimpleProfile( String binderId, String userName ) {
 
-		final GwtProfileSimpleDlg dlg;
+		final GwtQuickViewDlg dlg;
 		PopupPanel.PositionCallback posCallback;
 		
-		dlg = new GwtProfileSimpleDlg(false, true, 0, 0, binderId, userName);
+		dlg = new GwtQuickViewDlg(false, true, 0, 0, binderId, userName);
 		this.registerActionHandler(dlg);
 		
 		posCallback = new PopupPanel.PositionCallback()
