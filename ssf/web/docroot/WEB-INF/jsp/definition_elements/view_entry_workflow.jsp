@@ -50,11 +50,11 @@ function ss_checkForWorkflowStateSelection(obj) {
 <table border="0" cellspacing="0" cellpadding="0">
 <tr><th align="left" colspan="4" style="padding:0px 0px 6px 2px;"><ssf:nlt tag="workflow"/></th></tr>
 <tr>
-  <th align="left" class="ss_fineprint ss_underline ss_light" style="padding:0px 0px 4px 30px; font-weight:normal;">
+  <th align="left" class="ss_fineprint ss_underline ss_light" style="padding:0px 0px 4px 20px; font-weight:normal;">
     <ssf:nlt tag="workflow.process"/></th>
-  <th align="left" class="ss_fineprint ss_underline ss_light" style="padding:0px 0px 4px 30px; font-weight:normal;">
+  <th align="left" class="ss_fineprint ss_underline ss_light" style="padding:0px 0px 4px 20px; font-weight:normal;">
     <ssf:nlt tag="workflow.state"/></th>
-  <th align="left" class="ss_fineprint ss_underline ss_light" style="padding:0px 0px 4px 30px; font-weight:normal;" 
+  <th align="left" class="ss_fineprint ss_underline ss_light" style="padding:0px 0px 4px 20px; font-weight:normal;" 
     colspan="2">
     <ssf:nlt tag="workflow.action"/></th>
 </tr>
@@ -64,14 +64,14 @@ function ss_checkForWorkflowStateSelection(obj) {
   <c:set var="workflowTitle" value="${workflow.definition.title}"/>
     <c:if test="${empty workflow.threadName}">
 	  <tr>
-	    <td valign="top" style="padding:0px 0px 4px 30px;">
+	    <td valign="top" style="padding:0px 0px 4px 20px;">
 	      <c:if test="${workflowTitle != lastWorkflowTitle}">
 	        <ssf:nlt tag="${workflow.definition.title}" checkIfTag="true"/>
 	      </c:if>
 	    </td>
-	    <td valign="top" style="padding:0px 0px 4px 30px;">${ssWorkflowCaptions[workflow.id]}</td>
-	    <td valign="top" align="right" style="padding:0px 0px 4px 30px;">
+	    <td valign="top" style="padding:0px 0px 4px 20px;">${ssWorkflowCaptions[workflow.id]}</td>
 	    <c:if test="${!empty ssWorkflowTransitions[workflow.id]}">
+	      <td valign="top" align="right" style="padding:0px 0px 4px 20px;">
 	      <b><ssf:nlt tag="workflow.transitionTo" /></b>
 	      </td>
 	      <td valign="top" style="padding:0px 0px 4px 4px;">
@@ -97,16 +97,24 @@ function ss_checkForWorkflowStateSelection(obj) {
 		   value="<ssf:nlt tag="button.ok" text="OK"/>"
 		   onClick="return ss_checkForWorkflowStateSelection(this)">
 		  </form>
+		  </td>
 		</c:if>
-		</td>
 		<c:if test="${empty ssWorkflowTransitions[workflow.id]}">
-		  <td style="padding:0px 0px 4px 30px;"></td>
+		  <td colspan="2" style="padding:0px 0px 4px 20px;"></td>
 		</c:if>
+	  </tr>
+	  <tr>
+	    <td colspan="2" valign="top">
+	      <c:if test="${!empty ssWorkflowDescriptions[workflow.id]}">
+	        <div class="ss_entryDescription" style="margin:2px 2px 2px 20px; padding:4px;">${ssWorkflowDescriptions[workflow.id]}</div>
+	      </c:if>
+	    </td>
+	    <td colspan="2" valign="top"></td>
 	  </tr>
 	  <c:if test="${!empty ssWorkflowQuestions[workflow.id]}">
 	    <tr>
-	      <td valign="top" colspan="2" style="padding:0px 0px 4px 30px;"></td>
-	      <td valign="top" colspan="2" style="padding:0px 0px 4px 30px;">
+	      <td valign="top" colspan="2" style="padding:0px 0px 4px 20px;"></td>
+	      <td valign="top" colspan="2" style="padding:0px 0px 4px 20px;">
 		  <c:forEach var="question" items="${ssWorkflowQuestions[workflow.id]}">
 		    <form class="ss_style ss_form" method="post" 
 		      action="<ssf:url adapter="true" 
@@ -137,10 +145,10 @@ function ss_checkForWorkflowStateSelection(obj) {
         <c:if test="${workflow2.definition.id == workflow.definition.id}">
           <c:if test="${!empty workflow2.threadName}">
 			  <tr>
-			    <td valign="top" style="padding:0px 0px 4px 30px;">${ssWorkflowThreadCaptions[workflow2.id]}</td>
-			    <td valign="top" style="padding:0px 0px 4px 30px;">${ssWorkflowCaptions[workflow2.id]}</td>
+			    <td valign="top" style="padding:0px 0px 4px 20px;">${ssWorkflowThreadCaptions[workflow2.id]}</td>
+			    <td valign="top" style="padding:0px 0px 4px 20px;">${ssWorkflowCaptions[workflow2.id]}</td>
 			    <c:if test="${!empty ssWorkflowTransitions[workflow2.id]}">
-			      <td valign="top" align="right" style="padding:0px 0px 4px 30px;">
+			      <td valign="top" align="right" style="padding:0px 0px 4px 20px;">
 			        <b><ssf:nlt tag="workflow.transitionTo" 
 			        text="Transition to:"/></b></td>
 			      <td valign="top" style="padding:0px 0px 4px 4px;">
@@ -167,13 +175,17 @@ function ss_checkForWorkflowStateSelection(obj) {
 				  </td>
 				</c:if>
 				<c:if test="${empty ssWorkflowTransitions[workflow2.id]}">
-				  <td style="padding:0px 0px 4px 30px;"></td><td style="padding:0px 0px 4px 30px;"></td>
+				  <td style="padding:0px 0px 4px 20px;"></td><td style="padding:0px 0px 4px 20px;"></td>
 				</c:if>
 			  </tr>
 			  <c:if test="${!empty ssWorkflowQuestions[workflow2.id]}">
 			    <tr>
-			      <td valign="top" colspan="2" style="padding:0px 0px 4px 30px;"></td>
-			      <td valign="top" colspan="2" style="padding:0px 0px 4px 30px;">
+			      <td valign="top" colspan="2" style="padding:0px 0px 4px 20px;">
+			        <c:if test="${!empty ssWorkflowDescriptions[workflow2.id]}">
+			          <div class="ss_entryDescription" style="margin:2px 2px 2px 20px; padding:4px;">${ssWorkflowDescriptions[workflow2.id]}</div>
+			        </c:if>
+			      </td>
+			      <td valign="top" colspan="2" style="padding:0px 0px 4px 20px;">
 				  <c:forEach var="question" items="${ssWorkflowQuestions[workflow2.id]}">
 				    <form class="ss_style ss_form" method="post" 
 				      action="<ssf:url adapter="true" 
@@ -194,6 +206,17 @@ function ss_checkForWorkflowStateSelection(obj) {
 				     value="<ssf:nlt tag="button.ok" text="OK"/>">
 				    </form>
 				  </c:forEach>
+				  </td>
+				</tr>
+			  </c:if>
+			  <c:if test="${empty ssWorkflowQuestions[workflow2.id]}">
+			    <tr>
+			      <td valign="top" colspan="2" style="padding:0px 0px 4px 20px;">
+			        <c:if test="${!empty ssWorkflowDescriptions[workflow2.id]}">
+			          <div class="ss_entryDescription" style="margin:2px 2px 2px 20px; padding:4px;">${ssWorkflowDescriptions[workflow2.id]}</div>
+			        </c:if>
+			      </td>
+			      <td valign="top" colspan="2" style="padding:0px 0px 4px 20px;">
 				  </td>
 				</tr>
 			  </c:if>
