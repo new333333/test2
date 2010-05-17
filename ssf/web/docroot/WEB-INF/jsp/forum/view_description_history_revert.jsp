@@ -42,8 +42,14 @@
 <div class="ss_style ss_portlet" style="padding:10px;">
 <ssf:form title='<%= NLT.get("entry.revert") %>'>
 <div style="padding:10px 6px;">
-<span><ssf:nlt tag="entry.revert.warning"/>
-</span>
+  <span class="ss_bold"><ssf:nlt tag="entry.revert.warning"/></span>
+  <div>
+    <ul style="margin:2px; padding:0px 6px;">
+      <li><span><ssf:nlt tag="entry.revert.warning1"/></span></li>
+      <li><span><ssf:nlt tag="entry.revert.warning2"/></span></li>
+      <li><span><ssf:nlt tag="entry.revert.warning3"/></span></li>
+    </ul>
+  </div>
 </div>
 <form class="ss_style ss_form" method="post" action="<ssf:url     
 		adapter="true" 
@@ -59,7 +65,9 @@
   <table width="100%">
   <tr>
   <td valign="bottom">
-    <span style="padding-right:10px;">${change.folderEntry.attributes.logVersion}</span>
+    <span class="ss_bold" style="padding-right:10px;">
+      <ssf:nlt tag="entry.revert.version"><ssf:param name="value" value="${change.folderEntry.attributes.logVersion}"/></ssf:nlt>
+    </span>
     <c:set var="modifyDate"><fmt:formatDate timeZone="${ssUser.timeZone.ID}" type="both" value="${change.changeLog.operationDate}"/></c:set>
     <span>${modifyDate}</span>
   </td>
