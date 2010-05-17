@@ -435,13 +435,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return errors;
     }
     
-    protected void executeContentFilters(String fileName, FileUploadItem fui)
+    protected void executeContentFilters(Binder binder, String fileName, FileUploadItem fui)
     throws IOException, FilterException, UncheckedIOException {
     	InputStream is;
     	for(int i = 0; i < contentFilters.length; i++) {
     		is = fui.getInputStream();
     		try {
-    			contentFilters[i].filter(fileName, is);
+    			contentFilters[i].filter(binder, fileName, is);
     		}
     		finally {
     			try {
@@ -469,7 +469,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		try {
         		fui.makeReentrant();
         		
-        		executeContentFilters(fui.getOriginalFilename(), fui);
+        		executeContentFilters(binder, fui.getOriginalFilename(), fui);
     			
     			//Only advance on success
     			++i;
