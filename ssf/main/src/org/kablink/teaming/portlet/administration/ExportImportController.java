@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.tools.zip.ZipOutputStream;
 import org.dom4j.Document;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
@@ -221,6 +222,7 @@ public class ExportImportController  extends  SAbstractController {
 			} else {
 				UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
 				options = ListFolderHelper.getSearchFilter(this, request, getBinderModule().getBinder(binderId), userFolderProperties);
+				options.put(ObjectKeys.SEARCH_MAX_HITS, 100000);
 				Map formData = request.getParameterMap();
 				binderIds = TreeHelper.getSelectedIds(formData);
 			}
