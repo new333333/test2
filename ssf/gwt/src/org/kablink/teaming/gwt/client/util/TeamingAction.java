@@ -48,6 +48,7 @@ public enum TeamingAction implements IsSerializable
 	CLOSE_ADMINISTRATION( "Close Administration Page" ),
 	EDIT_BRANDING( "Edit Branding" ),
 	EDIT_PERSONAL_PREFERENCES( "Edit Personal Preferences" ),
+	EDIT_SITE_BRANDING ("Edit Site Branding" ),
 	BROWSE_HIERARCHY( "Browse Teaming's Hierarchy" ),
 	HELP( "Help" ),
 	HIDE_LEFT_NAVIGATION( "Hide the Left Navigation Panel" ),

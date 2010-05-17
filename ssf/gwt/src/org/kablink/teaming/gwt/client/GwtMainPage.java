@@ -276,20 +276,17 @@ public class GwtMainPage extends Composite
 	/**
 	 * Invoke the "Edit Branding" dialog.
 	 */
-	private void editBranding()
+	private void editBranding( GwtBrandingData brandingData )
 	{
-		GwtBrandingData brandingData;
-		GwtBrandingData siteBrandingData;
 		String brandingBinderId;
 		int x;
 		int y;
 		
-		// Get the branding data the masthead is currently working with.
-		brandingData = m_mastHead.getBrandingData();
-		
 		// Will the user be editing the site branding?
 		if ( brandingData.isSiteBranding() == false )
 		{
+			GwtBrandingData siteBrandingData;
+
 			// No
 			// If the administrator has set the branding rule to be "site branding only", tell the
 			// user they can't edit the branding.
@@ -304,7 +301,7 @@ public class GwtMainPage extends Composite
 		// Is the branding data inherited?  Branding is inherited if it came from a binder other than
 		// the binder we are working with.
 		brandingBinderId = brandingData.getBinderId();
-		if ( brandingBinderId.equalsIgnoreCase( m_mastHead.getBinderId() ) == false )
+		if ( brandingData.isSiteBranding() == false && brandingBinderId.equalsIgnoreCase( m_mastHead.getBinderId() ) == false )
 		{
 			// Yes, start with empty branding data.
 			brandingData = new GwtBrandingData();
@@ -401,7 +398,7 @@ public class GwtMainPage extends Composite
 						// Issue an ajax request to save the branding data to the db.  rpcSaveCallback will
 						// be called when we get the response back.
 						savedBrandingData = (GwtBrandingData) obj;
-						rpcService.saveBrandingData( m_mastHead.getBinderId(), (GwtBrandingData)obj, rpcSaveCallback );
+						rpcService.saveBrandingData( savedBrandingData.getBinderId(), (GwtBrandingData)obj, rpcSaveCallback );
 					}
 
 					return true;
@@ -587,6 +584,7 @@ public class GwtMainPage extends Composite
 			{
 				// No, create it.
 				m_adminControl = new AdminControl();
+				registerActionHandler( m_adminControl );
 				m_contentPanel.add( m_adminControl );
 			}
 			
@@ -605,11 +603,23 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case EDIT_BRANDING:
-			editBranding();
+			GwtBrandingData brandingData;
+			
+			// Get the branding data the masthead is currently working with.
+			brandingData = m_mastHead.getBrandingData();
+			
+			editBranding( brandingData );
 			break;
 			
 		case EDIT_PERSONAL_PREFERENCES:
 			editPersonalPreferences();
+			break;
+			
+		case EDIT_SITE_BRANDING:
+			GwtBrandingData siteBrandingData;
+			
+			siteBrandingData = m_mastHead.getSiteBrandingData();
+			editBranding( siteBrandingData );
 			break;
 			
 		case HELP:
