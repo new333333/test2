@@ -490,4 +490,20 @@ public interface GwtTeamingMessages extends Messages
 	String reportCategory();
 	String systemCategory();
 	
+	// The following string are used with the Quick View popup
+	String qViewProfile();
+	String qViewProfileTitle();
+	String qViewWorkspace();
+	String qViewWorkspaceTitle();
+	String qViewConference();
+	String qViewConferenceTitle();
+	String qViewFollow();
+	String qViewFollowTitle();
+	String qViewFollowing();
+	String qViewFollowingTitle();
+	String qViewMicroBlog();
+	String qViewMicroBlogTitle();
+	String qViewFollowers();
+	String qViewEntries();
+	
 }// end GwtTeamingMessages
