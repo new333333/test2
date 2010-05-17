@@ -36,13 +36,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.module.file.ContentFilter;
 import org.kablink.teaming.module.file.FilterException;
 import org.kablink.util.FileUtil;
 
 public class DummyContentFilter implements ContentFilter {
 
-	public void filter(String fileName, InputStream content) throws FilterException, IOException {
+	public void filter(Binder binder, String fileName, InputStream content) throws FilterException, IOException {
 		// Copy the file content into a byte array.
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		

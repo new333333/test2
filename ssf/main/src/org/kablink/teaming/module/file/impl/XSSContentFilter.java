@@ -36,6 +36,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.module.file.ContentFilter;
 import org.kablink.teaming.module.file.FilterException;
 import org.kablink.teaming.util.SPropsUtil;
@@ -54,7 +55,7 @@ public class XSSContentFilter implements ContentFilter {
 		xssCheck = new XSSCheck();
 	}
 	
-	public void filter(String fileName, InputStream content)
+	public void filter(Binder binder, String fileName, InputStream content)
 			throws FilterException, IOException {
 		if(matchFileExtension(fileName)) {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
