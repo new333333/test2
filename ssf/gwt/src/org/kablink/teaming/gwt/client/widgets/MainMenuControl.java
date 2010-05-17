@@ -78,6 +78,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	private MenuBarBox m_myWorkspaceBox;
 	private MenuBarBox m_myTeamsBox;
 	private MenuBarBox m_myFavoritesBox;
+	private MenuBarBox m_closeAdminBox;
 	private GwtTeamingMainMenuImageBundle m_images = GwtTeaming.getMainMenuImageBundle();
 	private GwtTeamingMessages m_messages = GwtTeaming.getMessages();
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
@@ -143,6 +144,26 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	}
 	
 	/*
+	 * Adds the "Close Administration" button to the common portion of the menu bar.
+	 * bar.
+	 */
+	private void addCloseAdministrationToCommon( FlowPanel menuPanel )
+	{
+		m_closeAdminBox = new MenuBarBox( "ss_mainMenuCloseAdmin", m_messages.close(), false );
+		m_closeAdminBox.addClickHandler(
+			new ClickHandler()
+			{
+				public void onClick( ClickEvent event )
+				{
+					triggerAction( TeamingAction.CLOSE_ADMINISTRATION );
+				}
+			});
+		menuPanel.add( m_closeAdminBox );
+		m_closeAdminBox.setVisible( false );
+	}// end addCloseAdministrationToCommon()
+	
+
+	/*
 	 * Adds the items to the menu bar that are always there, regardless
 	 * of context.
 	 */
@@ -191,6 +212,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		addMyWorkspaceToCommon(menuPanel);
 		addMyTeamsToCommon(    menuPanel);
 		addMyFavoritesToCommon(menuPanel);
+		addCloseAdministrationToCommon( menuPanel );
 	}
 	
 	/*
@@ -354,32 +376,10 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	
 	
 	/**
-	 * Hide all the menus and controls on this menu control.  This is used when we invoke
+	 * Show all the menus and controls on this menu control and hide the "close administration" menu item..  This is used when we close
 	 * the "site administration" page.
 	 */
-	public void hideAllItemsOnMenubar()
-	{
-		// Hide the widget that holds the "expand/contract left navigation", "expand/contract header" ... widgets
-		m_buttonsPanel.setVisible( false );
-		
-		// Hide "my workspace", "my teams" and "my favorites"
-		m_myWorkspaceBox.setVisible( false );
-		m_myTeamsBox.setVisible( false );
-		m_myFavoritesBox.setVisible( false );
-		
-		// Hide the panel that holds the menu items.
-		m_contextPanel.setVisible( false );
-		
-		// Hide the search panel.
-		m_searchPanel.setVisible( false );
-	}// end hideAllItemsOnMenubar()
-	
-
-	/**
-	 * Show all the menus and controls on this menu control.  This is used when we close
-	 * the "site administration" page.
-	 */
-	public void showAllItemsOnMenubar()
+	public void hideAdministrationMenubar()
 	{
 		// Show the widget that holds the "expand/contract left navigation", "expand/contract header" ... widgets
 		m_buttonsPanel.setVisible( true );
@@ -394,9 +394,37 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		
 		// Show the search panel.
 		m_searchPanel.setVisible( true );
-	}// end showAllItemsOnMenubar()
+		
+		// Hide the "close administration menu item.
+		m_closeAdminBox.setVisible( false );
+	}// end hideAdministrationMenubar()
 	
 	
+	/**
+	 * Hide all the menus and controls on this menu control and show the "close administration" menu item.  This is used when we invoke
+	 * the "site administration" page.
+	 */
+	public void showAdministrationMenubar()
+	{
+		// Hide the widget that holds the "expand/contract left navigation", "expand/contract header" ... widgets
+		m_buttonsPanel.setVisible( false );
+		
+		// Hide "my workspace", "my teams" and "my favorites"
+		m_myWorkspaceBox.setVisible( false );
+		m_myTeamsBox.setVisible( false );
+		m_myFavoritesBox.setVisible( false );
+		
+		// Hide the panel that holds the menu items.
+		m_contextPanel.setVisible( false );
+		
+		// Hide the search panel.
+		m_searchPanel.setVisible( false );
+		
+		// Show the "close administration" menu item.
+		m_closeAdminBox.setVisible( true );
+	}// end showAdministrationMenubar()
+	
+
 	/**
 	 * Fires a TeamingAction at the registered ActionHandler's.
 	 * 

@@ -578,7 +578,7 @@ public class GwtMainPage extends Composite
 		{
 		case ADMINISTRATION:
 			// Hide everything on the menu, the workspace tree control and the content control.
-			m_mainMenuCtrl.hideAllItemsOnMenubar();
+			m_mainMenuCtrl.showAdministrationMenubar();
 			m_wsTreeCtrl.setVisible( false );
 			m_contentCtrl.setVisible( false );
 			
@@ -591,6 +591,17 @@ public class GwtMainPage extends Composite
 			}
 			
 			m_adminControl.setVisible( true );
+			break;
+		
+		case CLOSE_ADMINISTRATION:
+			// Hide the AdminControl.
+			if ( m_adminControl != null )
+				m_adminControl.setVisible( false );
+			
+			// Show everything on the menu, the workspace tree control and the content control.
+			m_mainMenuCtrl.hideAdministrationMenubar();
+			m_wsTreeCtrl.setVisible( true );
+			m_contentCtrl.setVisible( true );
 			break;
 			
 		case EDIT_BRANDING:

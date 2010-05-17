@@ -45,6 +45,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public enum TeamingAction implements IsSerializable
 {
 	ADMINISTRATION( "Invoke Administration Page" ),
+	CLOSE_ADMINISTRATION( "Close Administration Page" ),
 	EDIT_BRANDING( "Edit Branding" ),
 	EDIT_PERSONAL_PREFERENCES( "Edit Personal Preferences" ),
 	BROWSE_HIERARCHY( "Browse Teaming's Hierarchy" ),
