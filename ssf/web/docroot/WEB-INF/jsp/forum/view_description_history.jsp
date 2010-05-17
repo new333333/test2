@@ -306,7 +306,14 @@ function dodiff()
 <td valign="top" width="90%">
   <c:set var="modifyDate"><fmt:formatDate timeZone="${ssUser.timeZone.ID}" type="both" value="${change.changeLog.operationDate}"/></c:set>
   <c:if test="${!empty change.changeLogEntry}">
-  <ssf:expandableArea title="${modifyDate}">
+  <c:set var="expandableAreaTitle">${modifyDate}<a style="margin-left:20px;" class="ss_tinyButton" 
+    href="<ssf:url><ssf:param 
+	name="action" value="view_editable_history"/><ssf:param 
+	name="operation" value="revert"/><ssf:param 
+	name="entityId" value="${ss_entityId}"/><ssf:param 
+	name="versionId" value="${change.folderEntry.attributes.logVersion}"/></ssf:url>"
+	><ssf:nlt tag="entry.comparison.revert"/></a></c:set>
+  <ssf:expandableArea title="${expandableAreaTitle}">
     <c:set var="changeLogEntry" value="${change.changeLogEntry}"/>
 	<jsp:useBean id="changeLogEntry" type="org.kablink.teaming.domain.DefinableEntity" />
 	<% 
@@ -359,7 +366,12 @@ function dodiff()
   <ssf:param name="value" value="<span id=\"versionNumberB\">x</span>"/>
   </ssf:nlt>
 </h3>
-<h4 id="diff-key"><ssf:nlt tag="entry.comparison.key"/></h4>
+<h4 id="diff-key">
+  <ssf:nlt tag="entry.comparison.key"/>
+  <br/>
+  <ssf:nlt tag="entry.comparison.note"/>
+</h4>
+
 <div class="ss_labelAbove"><ssf:nlt tag="general.title"/></div>
 <div id="diff-title" class="ss_entryTitle"></div>
 <div class="ss_labelAbove" style="padding-top:12px;"><ssf:nlt tag="__description"/></div>

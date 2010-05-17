@@ -1965,8 +1965,11 @@ public class BinderHelper {
 	}
 	
 	//Routine to build the beans for displaying entry versions
-	//  Each ChangeLog document is exploaded into a map of values
+	//  Each ChangeLog document is exploded into a map of values
 	public static List BuildChangeLogBeans(AllModulesInjected bs, DefinableEntity entity, List changeLogs) {
+		return BuildChangeLogBeans(bs, entity, changeLogs, null);
+	}
+	public static List BuildChangeLogBeans(AllModulesInjected bs, DefinableEntity entity, List changeLogs, Long version) {
 		List changeList = new ArrayList();
 		if (changeLogs == null) return changeList;
 
@@ -1976,49 +1979,52 @@ public class BinderHelper {
 			Element root = doc.getRootElement();
 			Map changeMap = new HashMap(); // doc.asXML()
 			changeMap.put("changeLog", log);
-			changeList.add(changeMap);
-			
-			//Build a pseudo entry object
-			FolderEntry fe = getEntryVersion(bs, entity, doc);
-			if (fe == null) continue;
-			changeMap.put("changeLogEntry", fe);
-			
-			//Get name of rootElement (e.g., folderEntry) and build a map of its elements
-			Map rootMap = new HashMap();
-			changeMap.put(root.getName(), rootMap);
-			Map attributeMap = new HashMap();
-			rootMap.put("attributes", attributeMap);
-			Iterator itAttr = root.attributeIterator();
-			while (itAttr.hasNext()) {
-				Attribute attr = (Attribute) itAttr.next();
-				attributeMap.put(attr.getName(),attr.getValue());
-			}
-
-			Iterator itRoot = root.elementIterator();
-			while (itRoot.hasNext()) {
-				Element ele = (Element) itRoot.next();
-				Map eleMap = (Map) rootMap.get(ele.getName());
-				if (eleMap == null) {
-					eleMap = new HashMap();
-					rootMap.put(ele.getName(), eleMap);
-				}
-				//Add the attributes
-				String name = ele.attributeValue("name");
-				attributeMap = new HashMap();
-				itAttr = ele.attributeIterator();
+			if (version != null && version.equals(log.getVersion()) || 
+					version == null) {
+				changeList.add(changeMap);
+				
+				//Build a pseudo entry object
+				FolderEntry fe = getEntryVersion(bs, entity, doc);
+				if (fe == null) continue;
+				changeMap.put("changeLogEntry", fe);
+				
+				//Get name of rootElement (e.g., folderEntry) and build a map of its elements
+				Map rootMap = new HashMap();
+				changeMap.put(root.getName(), rootMap);
+				Map attributeMap = new HashMap();
+				rootMap.put("attributes", attributeMap);
+				Iterator itAttr = root.attributeIterator();
 				while (itAttr.hasNext()) {
 					Attribute attr = (Attribute) itAttr.next();
-					attributeMap.put(attr.getName(), attr.getValue());
+					attributeMap.put(attr.getName(),attr.getValue());
 				}
-				//Add the data
-				if (Validator.isNull(name)) {
-					eleMap.put("attributes", attributeMap);
-					continue; //no way to add it
+	
+				Iterator itRoot = root.elementIterator();
+				while (itRoot.hasNext()) {
+					Element ele = (Element) itRoot.next();
+					Map eleMap = (Map) rootMap.get(ele.getName());
+					if (eleMap == null) {
+						eleMap = new HashMap();
+						rootMap.put(ele.getName(), eleMap);
+					}
+					//Add the attributes
+					String name = ele.attributeValue("name");
+					attributeMap = new HashMap();
+					itAttr = ele.attributeIterator();
+					while (itAttr.hasNext()) {
+						Attribute attr = (Attribute) itAttr.next();
+						attributeMap.put(attr.getName(), attr.getValue());
+					}
+					//Add the data
+					if (Validator.isNull(name)) {
+						eleMap.put("attributes", attributeMap);
+						continue; //no way to add it
+					}
+					Map dataMap = new HashMap();
+					dataMap.put("attributes", attributeMap);
+					dataMap.put("value", ele.getData());
+					eleMap.put(name, dataMap);
 				}
-				Map dataMap = new HashMap();
-				dataMap.put("attributes", attributeMap);
-				dataMap.put("value", ele.getData());
-				eleMap.put(name, dataMap);
 			}
 		}
 		return changeList;
