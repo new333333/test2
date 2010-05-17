@@ -3936,6 +3936,7 @@ public class BinderHelper {
 		Map threadMap = new HashMap();
 		Map questionsMap = new HashMap();
 		Map transitionMap = new HashMap();
+		Map descriptionMap = new HashMap();
 		for (int i=0; i<entryList.size(); i++) {
 			FolderEntry entry = (FolderEntry)entryList.get(i);
 			Set states = entry.getWorkflowStates();
@@ -3943,6 +3944,7 @@ public class BinderHelper {
 				WorkflowState ws = (WorkflowState)iter.next();
 				//store the UI caption for each state
 				captionMap.put(ws.getTokenId(), WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState()));
+				descriptionMap.put(ws.getTokenId(), WorkflowUtils.getStateDescription(ws.getDefinition(), ws.getState()));
 				//See if user can transition out of this state
 				if (!entry.isPreDeleted() && bs.getFolderModule().testTransitionOutStateAllowed(entry, ws.getTokenId())) {
 					//get all manual transitions
@@ -3965,6 +3967,7 @@ public class BinderHelper {
 		model.put(WebKeys.WORKFLOW_THREAD_CAPTIONS, threadMap);
 		model.put(WebKeys.WORKFLOW_QUESTIONS, questionsMap);
 		model.put(WebKeys.WORKFLOW_TRANSITIONS, transitionMap);
+		model.put(WebKeys.WORKFLOW_DESCRIPTIONS, descriptionMap);
 	}
 	
 	public static List getAllApplications(AllModulesInjected bs) {
