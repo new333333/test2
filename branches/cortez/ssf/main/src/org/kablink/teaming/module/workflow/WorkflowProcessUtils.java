@@ -552,7 +552,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 						if (currentMatch && !Validator.isNull(cName) && !Validator.isNull(operation)) {
 							Element vEle = (Element)eCondition.selectSingleNode("./value");
 							String value = null;
-							if (vEle != null) value=vEle.getText();
+							if (vEle != null) value=vEle.getText().trim();
 							
 							try {
 								currentVal = InvokeUtil.invokeGetter(entry, cName);
