@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.widgets;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -42,6 +44,10 @@ import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.ActionRequestor;
+import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -68,7 +74,9 @@ import com.google.gwt.user.client.ui.InlineLabel;
  * that displays the page for the selected administration action.
  */
 public class AdminControl extends Composite
+	implements ActionRequestor, ActionTrigger 
 {
+	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	private AdminActionsTreeControl m_adminActionsTreeControl = null;
 	private ContentControl m_contentControl = null;
 
@@ -424,6 +432,20 @@ public class AdminControl extends Composite
 	}// end AdminControl()
 	
 	
+
+	/**
+	 * Called to add an ActionHandler to this AdminControl.
+	 * 
+	 * Implements the ActionRequestor.addActionHandler() interface method.
+	 * 
+	 * @param actionHandler
+	 */
+	public void addActionHandler( ActionHandler actionHandler )
+	{
+		m_actionHandlers.add( actionHandler );
+	}// end addActionHandler()
+
+
 	/**
 	 * This method gets called when the user selects one of the administration actions.
 	 */
@@ -432,8 +454,8 @@ public class AdminControl extends Composite
 		// Are we dealing with the "Site Branding" action?
 		if ( adminAction.getActionType() == AdminAction.SITE_BRANDING )
 		{
-			// Yes
-			Window.alert( "Site Branding coming soon!!!" );
+			// Yes, inform all registered action handlers that the user wants to edit the site branding.
+			triggerAction( TeamingAction.EDIT_SITE_BRANDING );
 		}
 		else
 		{
@@ -482,6 +504,34 @@ public class AdminControl extends Composite
 		}
 		
 		m_contentControl.setDimensions( width, height );
-}// end setSizeAndPositionOfContentControl()
+	}// end setSizeAndPositionOfContentControl()
 
+	
+	/**
+	 * Fires a TeamingAction at the registered ActionHandler's.
+	 * 
+	 * Implements the ActionTrigger.triggerAction() method. 
+	 *
+	 * @param action
+	 * @param obj
+	 */
+	public void triggerAction( TeamingAction action, Object obj )
+	{
+		// Scan the ActionHandler's that have been registered...
+		for ( Iterator<ActionHandler> ahIT = m_actionHandlers.iterator(); ahIT.hasNext(); )
+		{
+			// ...firing the action at each.
+			ahIT.next().handleAction(action, obj);
+		}
+	}// end triggerAction()
+	
+	/**
+	 * 
+	 */
+	public void triggerAction( TeamingAction action )
+	{
+		// Always use the initial form of the method.
+		triggerAction( action, null );
+	}// end triggerAction()
+	
 }// end AdminControl
