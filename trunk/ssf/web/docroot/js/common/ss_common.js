@@ -8539,6 +8539,18 @@ function ss_getCookie ( cookie_name ) {
 function ss_escapeSQ(s) {
 	return ss_replaceSubStrAll(s, "'", "\\'");
 }
+function ss_checkIfVisible(obj) {
+	//Make sure this element is visible
+	var loopCounter = 0;
+	while (obj != null) {
+		if (obj.style && obj.style.display && obj.style.display == 'none' || 
+				obj.style && obj.style.visibility && obj.style.visibility == 'hidden') return false;
+		obj = obj.parentNode;
+		loopCounter++;
+		if (loopCounter > 1000) return true;
+	}
+	return true;
+}
 function ss_toggleGwtUI(goToUserWorkspace) {
 	ajaxToggleGwtUI_Submit(goToUserWorkspace);
 }

@@ -39,6 +39,34 @@
 <body class="tundra">
 </ssf:ifadapter>
 
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
+<script type="text/javascript">
+
+function submitRevertForm() {
+	var actionUrl = "<ssf:url     
+		adapter="true" 
+		portletName="ss_forum" 
+		action="view_editable_history" 
+		actionUrl="true">
+		<ssf:param name="entityId" value="${ss_entityId}" />
+		<ssf:param name="versionId" value="${ss_versionId}" />
+		<ssf:param name="operation" value="revert" />
+		<ssf:param name="operation2" value="okBtn" />
+		</ssf:url>";
+		var formName = "<%= org.kablink.teaming.web.WebKeys.DEFINITION_DEFAULT_FORM_NAME %>";
+	var formObj = self.document.forms[formName];
+	if (formObj == null && self.document.forms.length > 0) {
+		formObj = self.document.forms[self.document.forms.length-1];
+	}
+	if (formObj != null) {
+		formObj.action = actionUrl;
+		if (formObj.onsubmit != null && formObj.onsubmit != "") formObj.onsubmit();
+		formObj.submit();
+	}
+}
+
+</script>
+
 <div class="ss_style ss_portlet" style="padding:10px;">
 <ssf:form title='<%= NLT.get("entry.revert") %>'>
 <div style="padding:10px 6px;">
@@ -51,17 +79,8 @@
     </ul>
   </div>
 </div>
-<form class="ss_style ss_form" method="post" action="<ssf:url     
-		adapter="true" 
-		portletName="ss_forum" 
-		action="view_editable_history" 
-		actionUrl="true">
-		<ssf:param name="entityId" value="${ss_entityId}" />
-		<ssf:param name="versionId" value="${ss_versionId}" />
-		<ssf:param name="operation" value="revert" />
-		</ssf:url>"
->
-<c:forEach var="change" items="${ss_changeLogList}">
+<c:if test="${fn:length(ss_changeLogList) > 0}">
+  <c:set var="change" value="${ss_changeLogList[0]}"/>
   <table width="100%">
   <tr>
   <td valign="bottom">
@@ -72,7 +91,8 @@
     <span>${modifyDate}</span>
   </td>
   <td valign="top" align="right">
-    <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" style="margin:0px 20px 0px 0px;"/>
+    <input type="button" value="<ssf:nlt tag="button.ok"/>" style="margin:0px 20px 0px 0px;" 
+      onClick="submitRevertForm();return false;"/>
   </td>
   </tr>
   </table>
@@ -87,6 +107,8 @@
 		<c:if test="${!empty configEle}">
 		  <c:set var="ssBinderOriginalFromDescriptionHistory" value="${ssBinder}" />
 		  <c:set var="ssBinder" value="${changeLogEntry.parentBinder}" scope="request"/>
+		  <c:set var="ssEntryOriginalFromDescriptionHistory" value="${ssEntry}" />
+		  <c:set var="ssEntry" value="${changeLogEntry}" scope="request"/>
 		  <c:set var="ss_pseudoEntity" value="true" scope="request"/>
 		  <ssf:displayConfiguration 
 		    configDefinition="${changeLogEntry.entryDef.definition}" 
@@ -95,18 +117,45 @@
 		    entry="${changeLogEntry}" 
 		    processThisItem="true" />
 		  <c:set var="ssBinder" value="${ssBinderOriginalFromDescriptionHistory}" scope="request"/>
+		  <c:set var="ssEntry" value="${ssEntryOriginalFromDescriptionHistory}" scope="request"/>
 		</c:if>
     </div>
   </c:if>
-</c:forEach>
+</c:if>
 <div style="margin:10px 0px 0px 0px;">
-  <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" />
+  <input type="button" value="<ssf:nlt tag="button.ok"/>" onClick="submitRevertForm();return false;"/>
   &nbsp;&nbsp;&nbsp;
   <input type="button" value="<ssf:nlt tag="button.cancel"/>" onClick="self.window.close();return false;"/>
 </div>
-</form>
 </ssf:form>
 </div>
+
+<c:if test="${!empty change}">
+  <c:if test="${!empty change.changeLogEntry}">
+    <c:set var="changeLogEntry2" value="${change.changeLogEntry}"/>
+	<jsp:useBean id="changeLogEntry2" type="org.kablink.teaming.domain.DefinableEntity" />
+<% 
+  Element configEle2 = (Element)changeLogEntry2.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryForm']");
+%>
+   <div style="display:none;">
+	<c:if test="${!empty configEle}">
+	  <c:set var="ssBinderOriginalFromDescriptionHistory" value="${ssBinder}" />
+	  <c:set var="ssBinder" value="${changeLogEntry2.parentBinder}" scope="request"/>
+	  <c:set var="ssEntryOriginalFromDescriptionHistory" value="${ssEntry}" />
+	  <c:set var="ssEntry" value="${changeLogEntry}" scope="request"/>
+	  <c:set var="ss_pseudoEntity" value="true" scope="request"/>
+	  <ssf:displayConfiguration 
+	    configDefinition="${changeLogEntry2.entryDef.definition}" 
+	    configElement="<%= configEle2 %>"
+	    configJspStyle="form" 
+	    entry="${changeLogEntry2}" 
+	    processThisItem="true" />
+	  <c:set var="ssBinder" value="${ssBinderOriginalFromDescriptionHistory}" scope="request"/>
+	  <c:set var="ssEntry" value="${ssEntryOriginalFromDescriptionHistory}" scope="request"/>
+	</c:if>
+   </div>
+  </c:if>
+</c:if>
 <ssf:ifadapter>
 </body>
 </html>

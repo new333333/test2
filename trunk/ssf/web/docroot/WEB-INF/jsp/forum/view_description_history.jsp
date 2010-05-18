@@ -43,6 +43,7 @@
 del { font-weight: normal; text-decoration: none; color: #fff; background-color: #990033; }
 ins { font-weight: normal; text-decoration: none; color: #fff; background-color: #009933; }
 </style>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
   var wDiffStyleDelete = 'font-weight: normal; text-decoration: none; color: #fff; background-color: #990033;';
   var wDiffStyleInsert = 'font-weight: normal; text-decoration: none; color: #fff; background-color: #009933;';
@@ -324,6 +325,8 @@ function dodiff()
 		<c:if test="${!empty configEle}">
 		  <c:set var="ssBinderOriginalFromDescriptionHistory" value="${ssBinder}" />
 		  <c:set var="ssBinder" value="${changeLogEntry.parentBinder}" scope="request"/>
+		  <c:set var="ssEntryOriginalFromDescriptionHistory" value="${ssEntry}" />
+		  <c:set var="ssEntry" value="${changeLogEntry}" scope="request"/>
 		  <c:set var="ss_pseudoEntity" value="true" scope="request"/>
 		  <ssf:displayConfiguration 
 		    configDefinition="${changeLogEntry.entryDef.definition}" 
@@ -332,6 +335,7 @@ function dodiff()
 		    entry="${changeLogEntry}" 
 		    processThisItem="true" />
 		  <c:set var="ssBinder" value="${ssBinderOriginalFromDescriptionHistory}" scope="request"/>
+		  <c:set var="ssEntry" value="${ssEntryOriginalFromDescriptionHistory}" scope="request"/>
 		</c:if>
     </div>
   </ssf:expandableArea>

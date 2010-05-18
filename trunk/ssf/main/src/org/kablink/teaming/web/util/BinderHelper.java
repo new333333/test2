@@ -134,6 +134,7 @@ import org.kablink.teaming.search.filter.SearchFilterToMapConverter;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
+import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
@@ -2047,6 +2048,7 @@ public class BinderHelper {
 		}
 		
 		Element root = doc.getRootElement();  // doc.asXML()
+		Document defDoc = entity.getEntryDef().getDefinition();
 		
 		//Set the owner of the entry
 		Element hs = (Element)root.selectSingleNode("//historyStamp[@name='created']");
@@ -2139,6 +2141,7 @@ public class BinderHelper {
 			}
 			//Add the data
 			if (!Validator.isNull(name)) {
+				String itemType = DefinitionHelper.findAttributeType(name, defDoc);
 				if (name.equals("title")) {
 					entry.setTitle((String)ele.getData());
 				} else if (name.equals("description")) {
@@ -2146,7 +2149,7 @@ public class BinderHelper {
 					entry.setDescription(desc);
 				} else {
 					//This must be a custom attribute
-					Object attrValue = getAttributeValueFromChangeLog(type, (String)ele.getData());
+					Object attrValue = getAttributeValueFromChangeLog(type, itemType, (String)ele.getData());
 					entry.addCustomAttribute(name, attrValue);
 				}
 			}
@@ -2311,9 +2314,13 @@ public class BinderHelper {
 		return entry;
 	}
 
-    public static Object getAttributeValueFromChangeLog(String type, String value) {
+    public static Object getAttributeValueFromChangeLog(String type, String itemType, String value) {
     	if (type.equals(ObjectKeys.XTAG_TYPE_STRING)) {
-    		return value;
+    		if (itemType.equals("survey")) {
+    			return new Survey(value);
+    		} else {
+    			return value;
+    		}
     	} else if (type.equals(ObjectKeys.XTAG_TYPE_DESCRIPTION)) {
     		return new Description(value);
     	} else if (type.equals(ObjectKeys.XTAG_TYPE_COMMASEPARATED)) {
@@ -2325,7 +2332,7 @@ public class BinderHelper {
     	} else if (type.equals(ObjectKeys.XTAG_TYPE_LONG)) {
     		return Long.valueOf(value);
     	} else if (type.equals(ObjectKeys.XTAG_TYPE_DATE)) {
-    		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddTHHmmss");
+    		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
     		Date date;
     		try {
     			date = sdf.parse(value);
