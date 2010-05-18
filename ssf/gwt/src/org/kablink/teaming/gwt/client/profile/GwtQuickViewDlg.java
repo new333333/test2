@@ -22,6 +22,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
@@ -43,30 +44,35 @@ import com.google.gwt.user.client.ui.Widget;
  * @author nbjensen
  *
  */
-public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePreviewHandler {
+public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePreviewHandler{
 
 	private String binderId;
 	private Grid grid;
+	
 	private QuickViewAction workspaceBtn;
 	private QuickViewAction profileBtn;
 	private QuickViewAction conferenceBtn;
 	private QuickViewAction followBtn;
+	
 	private Label followingStat;
 	private Label followersStat;
 	private Label entriesStat;
 	private Label statusLabel;
+	
 	private String userName;
 	private ActionHandler actionHandler;
 	private Image avatar;
 	private Anchor miniBlogA;
 	private QuickViewAction messageBtn;
+	private Element clientElement;
 	
 	public GwtQuickViewDlg(boolean autoHide, boolean modal, int pos,
-			int pos2, String binderId, String userName) {
+			int pos2, String binderId, String userName, Element element) {
 		super(autoHide, modal, pos, pos2);
 
 		this.binderId = binderId;
 		this.userName = userName;
+		this.clientElement = element;
 
 		createAllDlgContent("", null, null, null);
 		
@@ -185,8 +191,8 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 				GwtTeaming.getMessages().qViewInstantMessageTitle(),
 				"qView-a", "qView-action");
 
-		followBtn = new QuickViewAction(GwtTeaming.getMessages().qViewFollow(),
-										GwtTeaming.getMessages().qViewFollowTitle(),
+		followBtn = new QuickViewAction("",
+										"",
 										"qView-a",
 										"qView-action-following");
 
@@ -383,7 +389,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 	@Override
 	public FocusWidget getFocusWidget() {
 
-		return null;
+		return workspaceBtn;
 	}
 
 	/**
@@ -771,10 +777,12 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		int height;
 		
 		// Get the position and dimensions of this control.
-		left = widget.getAbsoluteLeft();
-		top = widget.getAbsoluteTop();
+		left = widget.getAbsoluteLeft() - widget.getElement().getOwnerDocument().getScrollLeft();
+		top = widget.getAbsoluteTop() - widget.getElement().getOwnerDocument().getScrollTop();
 		height = widget.getOffsetHeight();
 		width = widget.getOffsetWidth();
+		
+		//Window.alert("mouseX: "+ mouseX + " mouseY: "+ mouseY + " left: "+ left + " top: "+ top + " height: "+ height + " width: "+ width + " ScrollTop: "+widget.getElement().getOwnerDocument().getScrollTop());
 		
 		// Is the mouse over this control?
 		if ( mouseY >= top && mouseY <= (top + height) && mouseX >= left && (mouseX <= left + width) )
