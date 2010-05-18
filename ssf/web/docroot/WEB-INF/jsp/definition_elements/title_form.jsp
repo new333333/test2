@@ -131,7 +131,7 @@ function ss_focusOnTitle() {
 		if (typeof formObj.title != 'undefined' && 
 				typeof formObj.title.type != 'undefined' && 
 				formObj.title.type == 'text') {
-			formObj.title.focus();
+			if (ss_checkIfVisible(formObj.title)) formObj.title.focus();
 		}
 	}
 }

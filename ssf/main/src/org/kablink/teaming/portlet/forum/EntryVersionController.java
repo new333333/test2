@@ -67,7 +67,8 @@ public class EntryVersionController extends  SAbstractController {
 		response.setRenderParameters(request.getParameterMap());
 		Map formData = request.getParameterMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		if (op.equals("revert") && formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
+		String op1 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
+		if (op.equals("revert") && op1.equals("okBtn") && WebHelper.isMethodPost(request)) {
 			Long entityId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTITY_ID);
 			DefinableEntity entity = null;
 			String entityType = PortletRequestUtils.getStringParameter(request,  "entityType", "folderEntry");
