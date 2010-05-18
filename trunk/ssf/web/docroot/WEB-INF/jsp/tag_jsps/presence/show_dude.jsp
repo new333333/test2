@@ -95,17 +95,7 @@
 </c:if>
 <a href="javascript: ;"
  class="ss_presence_dude"
- onClick="ss_popupPresenceMenu(this, 
-    '${ss_presence_user.id}', 
-    '<%= presenceUserTitle %>', 
-    '${ss_presence_userStatus}', 
-    '<%= presenceUserZonName %>', 
-    '<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${ss_presence_sweep_time}" type="both" timeStyle="short" dateStyle="medium" />', 
-    '<%= presenceUserEmailAddressName %>', 
-    '<%= presenceUserEmailAddressHost %>', 
-    '${ss_presence_vcard}', 
-    '${current}', '${ss_presence_component_id}', '${ss_presence_zonBridge}',
-    '<%= presenceUserSkypeId %>', '${ss_presence_user.workspaceId}');return false;"
+ onClick="window.top.ss_invokeSimpleProfile( this,'${ss_presence_user.workspaceId}','${presence_user_title}');return false;"
 ><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
  alt="<c:out value="${ss_presence_text}"/>"/></a>
   <c:if test="${ss_presence_show_title}">
@@ -119,7 +109,7 @@
 		  <a 
 		  <c:if test="${!empty ss_presence_target}">target="${ss_presence_target}"</c:if>
 		  href="<ssf:permalink entity="${ss_presence_user}"/>"
-		  onClick="ss_openUrlInParentWorkarea(this.href, '${ss_presence_user.workspaceId}', 'view_ws_listing', '${ss_presence_target}', '${ss_showUserClose}');return false;"
+		  onClick="window.top.ss_invokeSimpleProfile( this,'${ss_presence_user.workspaceId}','${presence_user_title}');return false;"
 		  ><span id="${ss_presence_user.id}" 
 		    class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle user="${ss_presence_user}"/></span></a>
 		  </c:if>
@@ -149,7 +139,7 @@
 	  <a href="<ssf:url windowState="maximized"><ssf:param 
 	  	name="action" value="view_ws_listing"/><ssf:param 
 	  	name="binderId" value="${ss_presence_user.workspaceId}"/></ssf:url>"
-	  onClick="ss_openUrlInWorkarea(this.href, '${ss_presence_user.workspaceId}', 'view_ws_listing');return false;"
+	  onClick="window.top.ss_invokeSimpleProfile( this,'${ss_presence_user.workspaceId}','${presence_user_title}');return false;"
 	  ><span id="${ss_presence_user.id}"  
 	    class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle user="${ss_presence_user}"/></span></a>
 	  </c:if>
