@@ -240,9 +240,9 @@ public class GwtMainPage extends Composite
 	 * Invoke the Simple User Profile or Quick View
 	 */
 	private native void initSimpleUserProfileJS( GwtMainPage gwtMainPage ) /*-{
-		$wnd.ss_invokeSimpleProfile = function( binderId, userName )
+		$wnd.ss_invokeSimpleProfile = function( element, binderId, userName )
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::invokeSimpleProfile(Ljava/lang/String;Ljava/lang/String;)( binderId, userName );
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::invokeSimpleProfile(Lcom/google/gwt/user/client/Element;Ljava/lang/String;Ljava/lang/String;)( element, binderId, userName );
 		}//end ss_invokeSimpleProfile
 	}-*/;	
 	
@@ -1245,25 +1245,27 @@ public class GwtMainPage extends Composite
 	 * Invoke the Simple Profile Dialog
 	 */
 	@SuppressWarnings("unused")
-	private void invokeSimpleProfile( String binderId, String userName ) {
+	private void invokeSimpleProfile(Element element, String binderId, String userName ) {
 
+		final int x = element.getAbsoluteLeft() + 80; 
+		final int y = element.getAbsoluteTop() - 100;
+		
 		final GwtQuickViewDlg dlg;
 		PopupPanel.PositionCallback posCallback;
 		
-		dlg = new GwtQuickViewDlg(false, true, 0, 0, binderId, userName);
+		dlg = new GwtQuickViewDlg(false, true, 0, 0, binderId, userName, element);
 		this.registerActionHandler(dlg);
 		
 		posCallback = new PopupPanel.PositionCallback()
 		{
 			public void setPosition(int offsetWidth, int offsetHeight)
 			{
-				int x;
-				int y;
+				//Window.alert("Absolute Left: "+ m_contentCtrl.getAbsoluteLeft() + " Offset: "+x + "Absolute Top: "+ m_contentCtrl.getAbsoluteTop() + " Offset: "+y);
 				
-				x = (Window.getClientWidth() - offsetWidth) / 2;
-				y = (Window.getClientHeight() - offsetHeight) / 3;
+				int posX = m_contentCtrl.getAbsoluteLeft() + x;
+				int posY = m_contentCtrl.getAbsoluteTop() + y;
 				
-				dlg.setPopupPosition( x, y );
+				dlg.setPopupPosition( posX, posY );
 			}// end setPosition()
 		};
 		dlg.setPopupPositionAndShow( posCallback );
