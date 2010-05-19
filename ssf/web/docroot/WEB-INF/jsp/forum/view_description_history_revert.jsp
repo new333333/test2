@@ -42,6 +42,23 @@
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
 
+function saveFileId(obj) {
+	var formName = "<%= org.kablink.teaming.web.WebKeys.DEFINITION_DEFAULT_FORM_NAME %>";
+	var formObj = self.document.forms[formName];
+	if (formObj == null && self.document.forms.length > 0) {
+		formObj = self.document.forms[self.document.forms.length-1];
+	}
+	if (formObj != null) {
+		if (typeof formObj[obj.name] == "undefined") {
+			var hiddenObj = self.document.createElement("input");
+			hiddenObj.setAttribute("type", "hidden");
+			hiddenObj.setAttribute("name", obj.name);
+			formObj.appendChild(hiddenObj);
+		}
+		formObj[obj.name].value = obj.checked;
+	}
+}
+
 function submitRevertForm() {
 	var actionUrl = "<ssf:url     
 		adapter="true" 
@@ -53,7 +70,7 @@ function submitRevertForm() {
 		<ssf:param name="operation" value="revert" />
 		<ssf:param name="operation2" value="okBtn" />
 		</ssf:url>";
-		var formName = "<%= org.kablink.teaming.web.WebKeys.DEFINITION_DEFAULT_FORM_NAME %>";
+	var formName = "<%= org.kablink.teaming.web.WebKeys.DEFINITION_DEFAULT_FORM_NAME %>";
 	var formObj = self.document.forms[formName];
 	if (formObj == null && self.document.forms.length > 0) {
 		formObj = self.document.forms[self.document.forms.length-1];
@@ -110,6 +127,7 @@ function submitRevertForm() {
 		  <c:set var="ssEntryOriginalFromDescriptionHistory" value="${ssEntry}" />
 		  <c:set var="ssEntry" value="${changeLogEntry}" scope="request"/>
 		  <c:set var="ss_pseudoEntity" value="true" scope="request"/>
+		  <c:set var="ss_pseudoEntityRevert" value="true" scope="request"/>
 		  <ssf:displayConfiguration 
 		    configDefinition="${changeLogEntry.entryDef.definition}" 
 		    configElement="<%= configEle %>"
@@ -144,6 +162,7 @@ function submitRevertForm() {
 	  <c:set var="ssEntryOriginalFromDescriptionHistory" value="${ssEntry}" />
 	  <c:set var="ssEntry" value="${changeLogEntry}" scope="request"/>
 	  <c:set var="ss_pseudoEntity" value="true" scope="request"/>
+	  <c:set var="ss_pseudoEntityRevert" value="true" scope="request"/>
 	  <ssf:displayConfiguration 
 	    configDefinition="${changeLogEntry2.entryDef.definition}" 
 	    configElement="<%= configEle2 %>"
