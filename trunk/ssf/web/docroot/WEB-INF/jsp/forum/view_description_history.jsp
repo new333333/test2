@@ -278,7 +278,7 @@ function dodiff()
 		action="view_editable_history" 
 		actionUrl="true">
 		<ssf:param name="entityId" value="${ss_entityId}" />
-		<ssf:param name="operation" value="modifyEntry" />
+		<ssf:param name="operation" value="view_edit_history" />
 		</ssf:url>"
 >
 <table class="ss_style" cellpadding="6" width="100%">

@@ -41,6 +41,7 @@
 
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
+var ss_viewing_entry_history = true;
 
 function saveFileId(obj) {
 	var formName = "<%= org.kablink.teaming.web.WebKeys.DEFINITION_DEFAULT_FORM_NAME %>";

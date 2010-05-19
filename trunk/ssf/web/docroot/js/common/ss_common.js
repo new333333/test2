@@ -6066,7 +6066,7 @@ function ss_checkForRequiredFields(obj) {
 				}
 
 				//No special cases, just tell the user what field has to be filled in
-				alert(title);
+				if (typeof ss_viewing_entry_history == "undefined") alert(title);
 				return false;
 			}
 		} catch(e) {
