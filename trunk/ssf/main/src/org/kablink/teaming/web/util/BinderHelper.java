@@ -84,6 +84,7 @@ import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CommaSeparatedValue;
@@ -109,6 +110,7 @@ import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
@@ -2155,6 +2157,7 @@ public class BinderHelper {
 			}
 		}
 		
+		//Set up the file attachments
 		Iterator itAttributeSets = root.selectNodes("//attribute-set").iterator();
 		while (itAttributeSets.hasNext()) {
 			Element setEle = (Element) itAttributeSets.next();
@@ -2243,6 +2246,29 @@ public class BinderHelper {
 							fa.setMinorVersion(Integer.valueOf(value));
 						} else if (name.equals("fileStatus")) {
 							fa.setFileStatus(Integer.valueOf(value));
+						}
+					}
+					//Finally, see if we can find the actual file version
+					Set<Attachment> attachments = entity.getAttachments();
+					FileAttachment fileAtt = null;
+					for (Attachment attachment : attachments) {
+						if (attachment instanceof FileAttachment) {
+							if (attachment.getId().equals(fa.getId())) {
+								fileAtt = (FileAttachment)attachment;
+								break;
+							}
+						}
+					}
+					if (fileAtt != null) {
+						//Found the attachment file, look for a version match
+						VersionAttachment fileVer = null;
+						Set<VersionAttachment> fileVersions = fileAtt.getFileVersions();
+						for (VersionAttachment fv : fileVersions) {
+							if (fv.getMajorVersion().equals(fa.getMajorVersion()) && 
+									fv.getMinorVersion().equals(fa.getMinorVersion())) {
+								fa.setId(fv.getId());
+								break;
+							}
 						}
 					}
 					entry.addAttachment(fa);

@@ -65,6 +65,16 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 <div class="ss_entryContent">
 
 <table width="90%" border="0" valign="top" cellpadding="1" cellspacing="0">
+<c:if test="${!empty ss_pseudoEntity}">
+<tr>
+	<td valign="top" style="padding-left: 19px;" nowrap>
+		<span class="ss_style ss_bold ss_smallprint"><c:out value="${property_caption}"/></span>
+		<br/>
+		<span class="ss_style ss_bold ss_smallprint"><ssf:nlt tag="entry.revert.select"/>
+	</td>
+</tr>
+</c:if>
+<c:if test="${empty ss_pseudoEntity}">
 <tr>
 	<td valign="top" style="padding-left: 19px;" nowrap>
 		<!-- We need the following image so the help spot has an initial position. -->
@@ -247,6 +257,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 					</div>
 	</td>	
 </tr>
+</c:if>
 </table>
 
 <c:set var="ss_viewEntryAttachmentDivId" value="ss_divAttachmentList${ssDefinitionEntry.id}${renderResponse.namespace}" scope="request"/>

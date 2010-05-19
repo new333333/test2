@@ -1245,7 +1245,7 @@ function ss_showHide(objId){
 	    		obj.style.display == '') {
 			obj.style.visibility="visible";
 			obj.style.display="block";
-			obj.focus();
+			if (ss_checkIfVisible(obj)) obj.focus();
 			return true;
 		} else {	
 			obj.style.visibility="hidden";

@@ -34,8 +34,10 @@ package org.kablink.teaming.portlet.forum;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -43,11 +45,14 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -55,6 +60,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.DashboardHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.portlet.ModelAndView;
@@ -84,6 +90,33 @@ public class EntryVersionController extends  SAbstractController {
 		    		response.setRenderParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());
 		    		return;
 				}
+				//The entry data is updated, now check for files to be reverted
+				Set<Attachment> attachments = entity.getAttachments();
+				Iterator itKeys = formData.keySet().iterator();
+				while (itKeys.hasNext()) {
+					String key = (String) itKeys.next();
+					FileAttachment fileAtt = null;
+					VersionAttachment fileVer = null;
+					if (key.startsWith("file_revert_")) {
+						String fileId = key.substring(12);
+						for (Attachment attachment : attachments) {
+							if (attachment instanceof FileAttachment) {
+								if (attachment.getId().equals(fileId)) {
+									fileAtt = (FileAttachment)attachment;
+									break;
+								}
+								fileVer = ((FileAttachment)attachment).findFileVersionById(fileId);
+								fileAtt = fileVer;
+								if (fileAtt != null) break;
+							}
+						}
+						if (fileVer != null) {
+							getFileModule().revertFileVersion(entity, fileVer);
+						}
+					}
+				}
+				BinderHelper.indexEntity(this, entity);
+
 				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());
 				response.setRenderParameter(WebKeys.URL_ENTRY_ID, entity.getId().toString());

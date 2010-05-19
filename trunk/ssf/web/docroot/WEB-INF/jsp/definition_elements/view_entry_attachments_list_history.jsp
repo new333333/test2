@@ -75,8 +75,13 @@
   <c:if test="${versionCount >= 1}">
     <c:set var="thumbRowSpan" value="2"/>
   </c:if>
-     <tr><td valign="top" colspan="7"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
+     <tr><td valign="top" colspan="8"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 	  <tr>
+	    <td valign="top" class="ss_att_meta" nowrap width="5%">
+	      <c:if test="${!empty ss_pseudoEntityRevert}">
+	        <input type="checkbox" name="file_revert_${selection.id}" onChange="saveFileId(this);" />
+	      </c:if>
+	    </td>
 		<td valign="top" width="80" rowspan="${thumbRowSpan}">
 		<div class="ss_thumbnail_gallery ss_thumbnail_tiny"> 
 			<img border="0" <ssf:alt text="${selection.fileItem.name}"/> 
@@ -111,15 +116,15 @@
 		</td>
 	</tr>
 	<tr>
-	  <td valign="top" colspan="6" class="ss_att_description" width="100%">
+	  <td valign="top" colspan="7" class="ss_att_description" width="100%">
 	    <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${selection.fileItem.description.text}</ssf:markup></div>
 	  </td>
 	</tr>	
 	<c:if test="${!empty selection.fileVersions && versionCount > 1}">
-        <tr><td valign="top" style="height:10px;" class="ss_att_title" colspan="7">
+        <tr><td valign="top" style="height:10px;" class="ss_att_title" colspan="8">
           <hr class="ss_att_divider" noshade="noshade" /></td></tr>
 		<tr>
-		  <td valign="top" class="ss_att_title ss_subhead2" colspan="7">
+		  <td valign="top" class="ss_att_title ss_subhead2" colspan="8">
 		    <c:set var="previousVersionsText" value='<%= NLT.get("entry.PreviousVersions", new String[] {String.valueOf(selection.getFileVersions().size()-1)}) %>'/>
 		    <c:if test="<%= owningBinder.isMirrored() %>">
 		      <c:set var="previousVersionsText" value='<%= NLT.get("entry.PreviousVersionsMirrored", new String[] {String.valueOf(selection.getFileVersions().size()-1)}) %>'/>
@@ -148,6 +153,11 @@
 		          	<c:when test="${status.count == 4}">
 						 <tr id="${ss_attachments_namespace}att_row${status.count}n"
 						   style="display: block; visibility: visible; ">
+						    <td valign="top" class="ss_att_meta" nowrap width="5%">
+	      					  <c:if test="${!empty ss_pseudoEntityRevert}">
+						        <input type="checkbox" name="file_revert_${selection.id}" onChange="saveFileId(this);"/>
+						      </c:if>
+						    </td>
 						    <td width="80">
 						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
 						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
@@ -163,6 +173,11 @@
 		          	<c:when test="${status.count == 10}">
 						 <tr id="${ss_attachments_namespace}att_row${status.count}n" 
 						   style="display: none; visibility: hidden; ">
+						    <td valign="top" class="ss_att_meta" nowrap width="5%">
+						      <c:if test="${!empty ss_pseudoEntityRevert}">
+						        <input type="checkbox" name="file_revert_${selection.id}" onChange="saveFileId(this);"/>
+						      </c:if>
+						    </td>
 						    <td width="80">
 						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
 						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
@@ -177,6 +192,11 @@
 			 	    </c:when>	
 		          	<c:when test="${status.count == 21}">
 						 <tr id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
+						    <td valign="top" class="ss_att_meta" nowrap width="5%">
+						      <c:if test="${!empty ss_pseudoEntityRevert}">
+						        <input type="checkbox" name="file_revert_${selection.id}" onChange="saveFileId(this);"/>
+						      </c:if>
+						    </td>
 						    <td width="80">
 						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
 						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
@@ -191,6 +211,11 @@
 			 	    </c:when>	
 		          	<c:when test="${status.count == 41}">
 						 <tr id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
+						    <td valign="top" class="ss_att_meta" nowrap width="5%">
+						      <c:if test="${!empty ss_pseudoEntityRevert}">
+						        <input type="checkbox" name="file_revert_${selection.id}" onChange="saveFileId(this);"/>
+						      </c:if>
+						    </td>
 						    <td width="80">
 						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
 						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
@@ -206,6 +231,11 @@
 			 	    </c:when>
 		          	<c:when test="${status.count == 81}">
 						 <tr id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
+						    <td valign="top" class="ss_att_meta" nowrap width="5%">
+						      <c:if test="${!empty ss_pseudoEntityRevert}">
+						        <input type="checkbox" name="file_revert_${selection.id}" onChange="saveFileId(this);"/>
+						      </c:if>
+						    </td>
 						    <td width="80">
 						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
 						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
@@ -229,6 +259,11 @@
 					</c:otherwise>
 				</c:choose>						
 						
+				<td valign="top" class="ss_att_meta" nowrap width="5%">
+				  <c:if test="${!empty ss_pseudoEntityRevert}">
+				    <input type="checkbox" name="file_revert_${selection.id}" onChange="saveFileId(this);"/>
+				  </c:if>
+				</td>
 				<td width="80">
 				  <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
 				    <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
@@ -263,6 +298,11 @@
 				</td>	
 			  </tr>	
 			  <tr style="display: block; visibility: visible;">
+				<td valign="top" class="ss_att_meta" nowrap width="5%">
+				  <c:if test="${!empty ss_pseudoEntityRevert}">
+				    <input type="checkbox" name="file_revert_${selection.id}" onChange="saveFileId(this);"/>
+				  </c:if>
+				</td>
 				<td width="80">
 				  <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
 					<img border="0" style="border:0px none #fff; width:35px;height:1px;" 
@@ -282,7 +322,7 @@
 	</c:if>
 </c:forEach>
 <c:if test="${selectionCount > 0}">
-     <tr><td valign="top" colspan="7"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
+     <tr><td valign="top" colspan="8"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 </c:if>
 </tbody>
 </table>
