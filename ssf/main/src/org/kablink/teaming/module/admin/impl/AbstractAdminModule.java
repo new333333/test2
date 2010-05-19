@@ -1002,6 +1002,33 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    	
    }
    
+   public List<ChangeLog> getEntryHistoryChanges(EntityIdentifier entityIdentifier) {
+	   FilterControls filter = new FilterControls();
+	   filter.add("entityId", entityIdentifier.getEntityId());
+	   filter.add("entityType", entityIdentifier.getEntityType().name());
+	   OrderBy order = new OrderBy();
+	   order.addColumn("operationDate");	   
+	   filter.setOrderBy(order);
+	   
+	   List<ChangeLog> changeLogs = getCoreDao().loadObjects(ChangeLog.class, filter, RequestContextHolder.getRequestContext().getZoneId()); 
+	   
+	   List<ChangeLog> entryChangeLogs = filterEntryHistoryChanges(changeLogs);
+	   
+	   return filterChangeLogs(entryChangeLogs); 
+   	
+   }
+   private List<ChangeLog> filterEntryHistoryChanges(List<ChangeLog> changeLogs) {
+	   List<ChangeLog> entryChangeLogs = new ArrayList<ChangeLog>();
+	   for (ChangeLog log: changeLogs) {
+		   if(log.getOperation().equals(ChangeLog.ADDENTRY)
+               || log.getOperation().equals(ChangeLog.MODIFYENTRY)
+			   || log.getOperation().equals(ChangeLog.FILEADD)
+			   || log.getOperation().equals(ChangeLog.FILEMODIFY)
+			   || log.getOperation().equals(ChangeLog.FILERENAME))
+			   entryChangeLogs.add(log);
+	   }
+	   return entryChangeLogs;
+   }
    public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, String operation) {
 	   FilterControls filter = new FilterControls();
 	   filter.add("entityId", entityIdentifier.getEntityId());

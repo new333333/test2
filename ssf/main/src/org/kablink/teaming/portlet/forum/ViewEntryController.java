@@ -794,7 +794,7 @@ public class ViewEntryController extends  SAbstractController {
 				qualifiers.put("popup", Boolean.TRUE);
 				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_EDITABLE_HISTORY);
-				adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY_ENTRY);
+				adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_EDIT_HISTORY);
 				adapterUrl.setParameter(WebKeys.URL_ENTITY_ID, entryId);
 				toolbar.addToolbarMenuItem("8_reports", "", NLT.get("toolbar.reports.editHistory"), adapterUrl.toString(), qualifiers);
 				

@@ -1969,10 +1969,12 @@ public class BinderHelper {
 	
 	//Routine to build the beans for displaying entry versions
 	//  Each ChangeLog document is exploded into a map of values
-	public static List BuildChangeLogBeans(AllModulesInjected bs, DefinableEntity entity, List changeLogs) {
-		return BuildChangeLogBeans(bs, entity, changeLogs, null);
+	public static List BuildChangeLogBeans(AllModulesInjected bs, DefinableEntity entity, 
+			List changeLogs, Map<Long,FolderEntry> folderEntries) {
+		return BuildChangeLogBeans(bs, entity, changeLogs, folderEntries, null);
 	}
-	public static List BuildChangeLogBeans(AllModulesInjected bs, DefinableEntity entity, List changeLogs, Long version) {
+	public static List BuildChangeLogBeans(AllModulesInjected bs, DefinableEntity entity, 
+			List changeLogs, Map<Long,FolderEntry> folderEntries, Long version) {
 		List changeList = new ArrayList();
 		if (changeLogs == null) return changeList;
 
@@ -1980,14 +1982,15 @@ public class BinderHelper {
 			ChangeLog log = (ChangeLog) changeLogs.get(i);
 			Document doc = log.getDocument();
 			Element root = doc.getRootElement();
+			Long logVersion = Long.valueOf(root.attributeValue("logVersion", "0"));
 			Map changeMap = new HashMap(); // doc.asXML()
 			changeMap.put("changeLog", log);
 			if (version != null && version.equals(log.getVersion()) || 
 					version == null) {
-				changeList.add(changeMap);
+				if (!folderEntries.containsKey(logVersion)) changeList.add(changeMap);
 				
 				//Build a pseudo entry object
-				FolderEntry fe = getEntryVersion(bs, entity, doc);
+				FolderEntry fe = getEntryVersion(bs, entity, doc, folderEntries);
 				if (fe == null) continue;
 				changeMap.put("changeLogEntry", fe);
 				
@@ -2034,13 +2037,19 @@ public class BinderHelper {
 	}
 	
 	//Routing to make a fake entry based on a change log
-	public static FolderEntry getEntryVersion(AllModulesInjected bs, DefinableEntity entity, Document doc) {
+	public static FolderEntry getEntryVersion(AllModulesInjected bs, DefinableEntity entity, 
+			Document doc, Map<Long,FolderEntry> folderEntries) {
 		if (entity == null) return null;
-		FolderEntry entry = new FolderEntry();
+		Element root = doc.getRootElement();  // doc.asXML()
+		Long logVersion = Long.valueOf(root.attributeValue("logVersion", "0"));
+		FolderEntry entry = folderEntries.get(logVersion);
+		if (entry == null) entry = new FolderEntry();
+		folderEntries.put(logVersion, entry);
 		entry.setId(entity.getId());
 		entry.setParentBinder(entity.getParentBinder());
 		entry.setDefinitionType(entity.getDefinitionType());
 		entry.setEntryDef(entity.getEntryDef());
+		entry.setLogVersion(logVersion);
 		if (entity instanceof FolderEntry) {
 			entry.setParentEntry(((FolderEntry)entity).getParentEntry());
 			entry.setParentFolder(((FolderEntry)entity).getParentFolder());
@@ -2049,7 +2058,6 @@ public class BinderHelper {
 			entry.setAverageRating(((FolderEntry)entity).getAverageRating());
 		}
 		
-		Element root = doc.getRootElement();  // doc.asXML()
 		Document defDoc = entity.getEntryDef().getDefinition();
 		
 		//Set the owner of the entry
@@ -2158,122 +2166,118 @@ public class BinderHelper {
 		}
 		
 		//Set up the file attachments
-		Iterator itAttributeSets = root.selectNodes("//attribute-set").iterator();
-		while (itAttributeSets.hasNext()) {
-			Element setEle = (Element) itAttributeSets.next();
-			//Add the attributes
-			String setName = (String)setEle.attributeValue("name");
-			if (setName.equals(ObjectKeys.XTAG_ENTITY_ATTACHMENTS)) {
-				//Add the file attachments
-				Iterator itFileAttachments = setEle.selectNodes("./fileAttachment").iterator();
-				while (itFileAttachments.hasNext()) {
-					Element fileAttachment = (Element)itFileAttachments.next();
-					String fileAttName = fileAttachment.attributeValue("name", "");
-					String fileAttId = fileAttachment.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_DATABASEID, "");
-					FileAttachment fa = new FileAttachment();
-					FileItem fi = new FileItem();
-					fa.setFileItem(fi);
-					fa.setId(fileAttId);
-					
-					//Set the owner and modifier of the attachment
-					Element hs2 = (Element)fileAttachment.selectSingleNode("./historyStamp[@name='created']");
-					if (hs2 == null) return null;
-					String authorId2 = hs2.attributeValue("author", "");
-					if (authorId2.equals("")) return null;
-					Set ids2 = new HashSet();
-					ids2.add(Long.valueOf(authorId2));
-					SortedSet pList2 = bs.getProfileModule().getPrincipals(ids2);
-					if (pList2.isEmpty()) return null;
-					HistoryStamp creation2 = new HistoryStamp();
-					creation2.setPrincipal((UserPrincipal)pList2.first());
-					String when2 = hs2.attributeValue("when", "");
-					SimpleDateFormat sdf2 = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z");
-					Date date2;
-					try {
-						date2 = sdf2.parse(when2);
-					} catch (ParseException e) {
-						continue;
-					}
-					creation2.setDate(date2);
-					fa.setCreation(creation2);
-					//Set the owner of the attachment
-					hs2 = (Element)fileAttachment.selectSingleNode("./historyStamp[@name='modified']");
-					if (hs2 == null) return null;
-					authorId2 = hs2.attributeValue("author", "");
-					if (authorId2.equals("")) return null;
-					ids2 = new HashSet();
-					ids2.add(Long.valueOf(authorId2));
-					pList2 = bs.getProfileModule().getPrincipals(ids2);
-					if (pList2.isEmpty()) return null;
-					HistoryStamp modification2 = new HistoryStamp();
-					modification2.setPrincipal((UserPrincipal)pList2.first());
-					when2 = hs2.attributeValue("when", "");
-					sdf2 = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z");
-					try {
-						date2 = sdf2.parse(when2);
-					} catch (ParseException e) {
-						continue;
-					}
-					modification2.setDate(date2);
-					fa.setModification(modification2);
-					
-					//Initialize fa in case it doesn't have a major and minor version
-					Element lastVersionEle = (Element) fileAttachment.selectSingleNode("./property[@name='lastVersion']");
-					if (lastVersionEle != null) {
-						String lv = lastVersionEle.getText();
-						fa.setMajorVersion(1);
-						if (!lv.equals("")) fa.setMinorVersion(Integer.valueOf(lv) - 1);
-					}
+		List<Element> fileAttachments = new ArrayList<Element>();
+		
+		Iterator itFileAttachments = root.selectNodes("//fileAttachment").iterator();
+		while (itFileAttachments.hasNext()) {
+			fileAttachments.add((Element)itFileAttachments.next());
+		}
+		
+		for (Element fileAttachment : fileAttachments) {
+			String fileAttName = fileAttachment.attributeValue("name", "");
+			String fileAttId = fileAttachment.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_DATABASEID, "");
+			FileAttachment fa = new FileAttachment();
+			FileItem fi = new FileItem();
+			fa.setFileItem(fi);
+			fa.setId(fileAttId);
+			
+			//Set the owner and modifier of the attachment
+			Element hs2 = (Element)fileAttachment.selectSingleNode("./historyStamp[@name='created']");
+			if (hs2 == null) return null;
+			String authorId2 = hs2.attributeValue("author", "");
+			if (authorId2.equals("")) return null;
+			Set ids2 = new HashSet();
+			ids2.add(Long.valueOf(authorId2));
+			SortedSet pList2 = bs.getProfileModule().getPrincipals(ids2);
+			if (pList2.isEmpty()) return null;
+			HistoryStamp creation2 = new HistoryStamp();
+			creation2.setPrincipal((UserPrincipal)pList2.first());
+			String when2 = hs2.attributeValue("when", "");
+			SimpleDateFormat sdf2 = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z");
+			Date date2;
+			try {
+				date2 = sdf2.parse(when2);
+			} catch (ParseException e) {
+				continue;
+			}
+			creation2.setDate(date2);
+			fa.setCreation(creation2);
+			//Set the owner of the attachment
+			hs2 = (Element)fileAttachment.selectSingleNode("./historyStamp[@name='modified']");
+			if (hs2 == null) return null;
+			authorId2 = hs2.attributeValue("author", "");
+			if (authorId2.equals("")) return null;
+			ids2 = new HashSet();
+			ids2.add(Long.valueOf(authorId2));
+			pList2 = bs.getProfileModule().getPrincipals(ids2);
+			if (pList2.isEmpty()) return null;
+			HistoryStamp modification2 = new HistoryStamp();
+			modification2.setPrincipal((UserPrincipal)pList2.first());
+			when2 = hs2.attributeValue("when", "");
+			sdf2 = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z");
+			try {
+				date2 = sdf2.parse(when2);
+			} catch (ParseException e) {
+				continue;
+			}
+			modification2.setDate(date2);
+			fa.setModification(modification2);
+			
+			//Initialize fa in case it doesn't have a major and minor version
+			Element lastVersionEle = (Element) fileAttachment.selectSingleNode("./property[@name='lastVersion']");
+			if (lastVersionEle != null) {
+				String lv = lastVersionEle.getText();
+				fa.setMajorVersion(1);
+				if (!lv.equals("")) fa.setMinorVersion(Integer.valueOf(lv) - 1);
+			}
 
-					Iterator itProperties = fileAttachment.selectNodes("./property").iterator();
-					while (itProperties.hasNext()) {
-						Element prop = (Element) itProperties.next();
-						String name = prop.attributeValue("name");
-						String value = prop.getText();
-						if (name.equals("fileName")) {
-							fi.setName(value);
-						} else if (name.equals("fileLength")) {
-							fi.setLength(Long.valueOf(value));
-						} else if (name.equals("fileDescription")) {
-							fi.setDescription(value);
-						} else if (name.equals("repository")) {
-							fa.setRepositoryName(value);
-						} else if (name.equals("lastVersion")) {
-							fa.setLastVersion(Integer.valueOf(value));
-						} else if (name.equals("majorVersion")) {
-							fa.setMajorVersion(Integer.valueOf(value));
-						} else if (name.equals("minorVersion")) {
-							fa.setMinorVersion(Integer.valueOf(value));
-						} else if (name.equals("fileStatus")) {
-							fa.setFileStatus(Integer.valueOf(value));
-						}
-					}
-					//Finally, see if we can find the actual file version
-					Set<Attachment> attachments = entity.getAttachments();
-					FileAttachment fileAtt = null;
-					for (Attachment attachment : attachments) {
-						if (attachment instanceof FileAttachment) {
-							if (attachment.getId().equals(fa.getId())) {
-								fileAtt = (FileAttachment)attachment;
-								break;
-							}
-						}
-					}
-					if (fileAtt != null) {
-						//Found the attachment file, look for a version match
-						VersionAttachment fileVer = null;
-						Set<VersionAttachment> fileVersions = fileAtt.getFileVersions();
-						for (VersionAttachment fv : fileVersions) {
-							if (fv.getMajorVersion().equals(fa.getMajorVersion()) && 
-									fv.getMinorVersion().equals(fa.getMinorVersion())) {
-								fa.setId(fv.getId());
-								break;
-							}
-						}
-					}
-					entry.addAttachment(fa);
+			Iterator itProperties = fileAttachment.selectNodes("./property").iterator();
+			while (itProperties.hasNext()) {
+				Element prop = (Element) itProperties.next();
+				String name = prop.attributeValue("name");
+				String value = prop.getText();
+				if (name.equals("fileName")) {
+					fi.setName(value);
+				} else if (name.equals("fileLength")) {
+					fi.setLength(Long.valueOf(value));
+				} else if (name.equals("fileDescription")) {
+					fi.setDescription(value);
+				} else if (name.equals("repository")) {
+					fa.setRepositoryName(value);
+				} else if (name.equals("lastVersion")) {
+					fa.setLastVersion(Integer.valueOf(value));
+				} else if (name.equals("majorVersion")) {
+					fa.setMajorVersion(Integer.valueOf(value));
+				} else if (name.equals("minorVersion")) {
+					fa.setMinorVersion(Integer.valueOf(value));
+				} else if (name.equals("fileStatus")) {
+					fa.setFileStatus(Integer.valueOf(value));
 				}
 			}
+			//Finally, see if we can find the actual file version
+			Set<Attachment> attachments = entity.getAttachments();
+			FileAttachment fileAtt = null;
+			for (Attachment attachment : attachments) {
+				if (attachment instanceof FileAttachment) {
+					if (attachment.getId().equals(fa.getId())) {
+						fileAtt = (FileAttachment)attachment;
+						break;
+					}
+				}
+			}
+			if (fileAtt != null) {
+				//Found the attachment file, look for a version match
+				VersionAttachment fileVer = null;
+				Set<VersionAttachment> fileVersions = fileAtt.getFileVersions();
+				for (VersionAttachment fv : fileVersions) {
+					if (fv.getMajorVersion().equals(fa.getMajorVersion()) && 
+							fv.getMinorVersion().equals(fa.getMinorVersion())) {
+						fa.setId(fv.getId());
+						break;
+					}
+				}
+			}
+			entry.addAttachment(fa);
 		}
 		
 		Iterator itEvents = root.selectNodes("//event").iterator();
@@ -2336,7 +2340,8 @@ public class BinderHelper {
 				}
 			}
 		}
-		
+		//Make sure there is a title if it is missing
+		if (Validator.isNull(entry.getTitle())) entry.setTitle(entity.getTitle());
 		return entry;
 	}
 

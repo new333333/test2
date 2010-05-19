@@ -137,6 +137,7 @@ public interface AdminModule {
     public boolean isMobileAccessEnabled();
     public void setMobileAccessEnabled(boolean mobileAccessEnabled);
     public MailConfig getMailConfig();
+    public List<ChangeLog> getEntryHistoryChanges(EntityIdentifier entityIdentifier);
     public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, String operation);
     /**
      * Get system functions

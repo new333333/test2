@@ -51,6 +51,7 @@ import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -142,22 +143,16 @@ public class EntryVersionController extends  SAbstractController {
 			if (entityType.equals(EntityType.folderEntry.name())) {
 				entity = getFolderModule().getEntry(null, entityId);
 			}
-			if (entity != null && operation.equals(ChangeLog.MODIFYENTRY)) {
+			Map<Long,FolderEntry> folderEntries = new HashMap<Long,FolderEntry>();
+			if (entity != null && operation.equals(WebKeys.OPERATION_VIEW_EDIT_HISTORY)) {
 				//Start the list with the "addEntry" entry
-				changes = getAdminModule().getChanges(entityIdentifier, ChangeLog.ADDENTRY);
-				changeList.addAll(BinderHelper.BuildChangeLogBeans(this, entity, changes));
-				changes = getAdminModule().getChanges(entityIdentifier, ChangeLog.MODIFYENTRY);
-				changeList.addAll(BinderHelper.BuildChangeLogBeans(this, entity, changes));
+				changes = getAdminModule().getEntryHistoryChanges(entityIdentifier);
+				changeList.addAll(BinderHelper.BuildChangeLogBeans(this, entity, changes, folderEntries));
 			} else if (entity != null && operation.equals("revert")) {
 				Long versionId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_VERSION_ID);
 				//Start the list with the "addEntry" entry
-				changes = getAdminModule().getChanges(entityIdentifier, ChangeLog.ADDENTRY);
-				changeList.addAll(BinderHelper.BuildChangeLogBeans(this, entity, changes, versionId));
-				if (changeList.isEmpty()) {
-					//Haven't found the version yet, look further
-					changes = getAdminModule().getChanges(entityIdentifier, ChangeLog.MODIFYENTRY);
-					changeList.addAll(BinderHelper.BuildChangeLogBeans(this, entity, changes, versionId));
-				}
+				changes = getAdminModule().getEntryHistoryChanges(entityIdentifier);
+				changeList.addAll(BinderHelper.BuildChangeLogBeans(this, entity, changes, folderEntries, versionId));
 				model.put(WebKeys.VERSION_ID, versionId);
 				viewPath = "forum/view_description_history_revert";
 			}

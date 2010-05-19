@@ -81,7 +81,7 @@ public class EntryWorkflowHistoryController extends  SAbstractController {
 			}
 			if (entity != null) {
 				changes = getAdminModule().getWorkflowChanges(entityIdentifier, null);			
-				changeList.addAll(BinderHelper.BuildChangeLogBeans(this, entity, changes));
+				changeList.addAll(BinderHelper.BuildChangeLogBeans(this, entity, changes, new HashMap<Long,FolderEntry>()));
 			}
 		}
 
