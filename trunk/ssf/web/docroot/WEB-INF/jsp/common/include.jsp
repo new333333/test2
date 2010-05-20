@@ -49,7 +49,7 @@
 --%><c:set var="licensedEdition" value="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>"/><%--
 --%><c:if test="${licensedEdition}"><%--
 --%><c:set var="ss_watermark" scope="request"><%--
---%><span style="color:red;font-size:12px;font-family:impact,arial black;">${ssProductName} 2.2 Beta</span><%--
+--%><span style="color:red;font-size:12px;font-family:impact,arial black;">${ssProductName} 3.0 Beta</span><%--
 --%></c:set><%--
 --%></c:if><%--
 --%><c:set var="ss_watermark" value="Durango" scope="request"/><%--
