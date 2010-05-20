@@ -707,4 +707,6 @@ public interface ProfileModule {
      * @return
      */
     public SortedSet<User> getUsersByEmail(String emailAddress, String emailType);
+    
+    public String[] getUserAndPasswordByName(String username);
 }
