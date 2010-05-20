@@ -1767,7 +1767,18 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	  }
 	  return result;
   }
-
+  
+  public String[] getUserAndPasswordByName(String username) {
+	  String[] result = new String[2];
+	  try {
+		  User user = findUserByName(username);
+		  result[0] = user.getName();
+		  result[1] = user.getPassword();
+	  }
+	  catch(NoUserByTheNameException e) {
+	  }
+	  return result;
+  }
   public static void main(String[] args) throws Exception {
 	  String xmlStr = "<mydata><elem1 attr1=\"hello\"><attribute name=\"A1\"/><property name=\"P1\"/></elem1><attribute name=\"A2\"/><attribute name=\"A3\"/><property name=\"P2\"/><elem2 attr2=\"hi\"><attribute name=\"A4\"/><property name=\"P3\"/></elem2></mydata>";
 	  

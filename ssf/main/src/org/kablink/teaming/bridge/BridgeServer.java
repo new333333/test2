@@ -36,6 +36,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
+import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.util.SZoneConfig;
@@ -105,8 +107,11 @@ public class BridgeServer {
 	private static Object invokeInternal(String contextZoneName, String contextUserName,
 			final Method methodObj, final Object obj, final Object[] methodArgs) 
 	throws Exception {		
-		if(contextZoneName == null)
-			contextZoneName = SZoneConfig.getDefaultZoneName();
+		if(contextZoneName == null) {
+			contextZoneName = getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName());
+			if(contextZoneName == null)
+				contextZoneName = SZoneConfig.getDefaultZoneName();
+		}
 		
 		if(contextUserName == null)
 			contextUserName = SZoneConfig.getAdminUserName(contextZoneName);
@@ -142,5 +147,9 @@ public class BridgeServer {
 		finally {
 			SessionUtil.sessionStop();
 		}
+	}
+	
+	private static ZoneModule getZoneModule() {
+		return (ZoneModule) SpringContextUtil.getBean("zoneModule");
 	}
 }
