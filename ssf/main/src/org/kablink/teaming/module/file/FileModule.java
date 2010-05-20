@@ -174,11 +174,12 @@ public interface FileModule {
      * object containing accumulated information about the errors.  
      * 
      * @param binder
+     * @param entity
      * @param fileUploadItems
      * @return
      * @throws FilterException
      */
-    public FilesErrors filterFiles(Binder binder, List<FileUploadItem> fileUploadItems) 
+    public FilesErrors filterFiles(Binder binder, DefinableEntity entity, List<FileUploadItem> fileUploadItems) 
     	throws FilterException;
     
     /**
