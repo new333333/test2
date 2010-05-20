@@ -983,7 +983,7 @@ body, table td, select
 {
 	border: 0px;
 	padding: 0px;
-	z-index: 301;
+	z-index: 351;
 }
 .mainMenuPopup_Item
 { 
@@ -1152,7 +1152,7 @@ body, table td, select
 /* Styles for the favorites dialog. */
 .favoritesDlg
 {
-	z-index: 301;
+	z-index: 351;
 }
 .favoritesDlg_Checkbox
 {
@@ -1180,7 +1180,7 @@ body, table td, select
 /* Styles for the folder options dialog. */
 .folderOptionsDlg
 {
-	z-index: 301;
+	z-index: 351;
 }
 .folderOptionsDlg_Radio
 {
@@ -1218,7 +1218,7 @@ body, table td, select
 /* Styles for the tag this dialog. */
 .tagThisDlg
 {
-	z-index: 301;
+	z-index: 351;
 }
 .tagThisDlg_Add
 {
