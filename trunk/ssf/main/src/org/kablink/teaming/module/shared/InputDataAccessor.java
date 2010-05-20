@@ -33,6 +33,7 @@
 package org.kablink.teaming.module.shared;
 
 import java.util.Date;
+import java.util.Set;
 
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.survey.Survey;
@@ -112,4 +113,49 @@ public interface InputDataAccessor {
 	public void setFieldsOnly(Boolean fieldsOnly);
 	public boolean isFieldsOnly();
 		
+	/**
+	 * Returns a set of keys whose values might be meaningfully representable 
+	 * in string. Therefore it is important to note that the returned set may not 
+	 * represent all the keys available in the object. Exactly what keys are
+	 * in the returned set depends on the actual implementation of this interface.
+	 * For example, for XML implementation of this interface, more elements are
+	 * representable in string (because everything is string in XML), hence the
+	 * returned set might contain more keys than typical implementations do.
+	 * On the other hand, for more strongly-typed implementation of this interface,
+	 * the keys representing non-String primitive type fields (eg. boolean field)
+	 * may not be included in the returned set.
+	 * <p>
+	 * Since this method does not guarantee to return ALL keys from the accessor
+	 * (as explained above), this method must NEVER be used to iterate over the
+	 * entire input data set. Instead, it should only be used by an application
+	 * that needs access to values of pure string type which does not necessarily
+	 * have valid representation in other primitive type (for example, the boolean
+	 * data type in Java are represented as "true" or "false" in string, and we
+	 * are assuming that the application is not interested in having access to
+	 * those values because certain level of validation was already performed
+	 * by the language system. Likewise, the application is not interested in
+	 * the string representation of valid numeric values). 
+	 * <p>
+	 * The fact that a key is included in the returned set does not necessarily
+	 * mean that its associated value is meaningfully represented in string. It
+	 * simply means that its value might be a string that the application is
+	 * interested in. So the returned set might be more comprehensive than necessary
+	 * depending on the implementation, and the value associated with the key
+	 * may not actually be a string (hence the word "potential"). 
+	 * <p>
+	 * For the above reasons, the caller is expected to use 
+	 * <code>String[] getValues(String)</code> method to retrieve the values of 
+	 * each key in the returned set. If the key doesn't really represent a string
+	 * (or an array of strings) value, then it will return <code>null</code>. 
+	 * <p>
+	 * All this complexity and seemingly-confusing semantics are to allow maximum
+	 * flexibility in the implementation of this interface. Some implementations
+	 * may have difficulty figuring out the types of values on its own without
+	 * aid from the external entity (such as the caller itself). This relaxed
+	 * semantics allows for an opportunity for self-contained implementation.
+	 * <p>
+	 * If there's no key meeting the criteria, it returns an empty set.
+	 * 
+	 */
+	public Set<String> keySetForPotentialStringValues();
 }

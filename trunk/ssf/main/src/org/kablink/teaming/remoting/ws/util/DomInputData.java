@@ -35,7 +35,9 @@ package org.kablink.teaming.remoting.ws.util;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -158,5 +160,18 @@ public class DomInputData implements InputDataAccessor {
 	}
 	public boolean isFieldsOnly() {
 		return this.fieldsOnly;
+	}
+
+	public Set<String> keySetForPotentialStringValues() {
+		Set<String> set = new HashSet<String>();
+		List<Element> result = root.selectNodes("attribute");
+		if(result != null) {
+			for(Element elem:result) {
+				String nameValue = elem.attributeValue("name");
+				if(nameValue != null)
+					set.add(nameValue);
+			}
+		}
+		return set;		
 	}
 }

@@ -35,6 +35,7 @@ package org.kablink.teaming.remoting.ws.model;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class DefinableEntity implements Serializable {
 	
@@ -225,6 +226,10 @@ public abstract class DefinableEntity implements Serializable {
 		return this.stringArrayFieldMap.get(name);
 	}
 	
+	public Set<String> customStringArrayFieldNames() {
+		return this.stringArrayFieldMap.keySet();
+	}
+	
 	public CustomStringField[] getCustomStringFields() {
 		CustomStringField[] array = new CustomStringField[stringFieldMap.size()];
 		return stringFieldMap.values().toArray(array);
@@ -245,6 +250,10 @@ public abstract class DefinableEntity implements Serializable {
 
 	public CustomStringField findCustomStringField(String name) {
 		return this.stringFieldMap.get(name);
+	}
+	
+	public Set<String> customStringFieldNames() {
+		return this.stringFieldMap.keySet();
 	}
 	
 	public CustomEventField[] getCustomEventFields() {
