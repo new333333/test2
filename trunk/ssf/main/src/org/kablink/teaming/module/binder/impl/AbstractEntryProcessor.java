@@ -312,7 +312,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     			}
     		}
    		}
-   		FilesErrors filterErrors = getFileModule().filterFiles(binder, fileUploadItems);
+   		FilesErrors filterErrors = getFileModule().filterFiles(binder, entry, fileUploadItems);
     	filterErrors.getProblems().addAll(nameErrors.getProblems());
     	return filterErrors;
     }
@@ -612,7 +612,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		}
     	}
    		
-    	FilesErrors filterErrors = getFileModule().filterFiles(binder, fileUploadItems);
+    	FilesErrors filterErrors = getFileModule().filterFiles(binder, entry, fileUploadItems);
     	filterErrors.getProblems().addAll(nameErrors.getProblems());
     	return filterErrors;
     }

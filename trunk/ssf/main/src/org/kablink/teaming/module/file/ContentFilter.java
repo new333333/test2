@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
 
 public interface ContentFilter {
 
@@ -43,11 +44,14 @@ public interface ContentFilter {
 	 * Applies filtering on the file content.
 	 * 
 	 * @param binder binder object closest from the file
+	 * @param entity entity to which the file is being attached, may be an entry or a binder. 
+	 * If the file is being attached to a binder, then this value is identical to the value
+	 * of the <code>binder</code> parameter.
 	 * @param fileName name of the input file
 	 * @param content content of the input file
 	 * @throws FilterException Thrown to indicate that the file failed to pass the filtering
 	 * @throws IOException Thrown to indicate that there is an I/O error
 	 */
-	public void filter(Binder binder, String fileName, InputStream content) throws FilterException, IOException;
+	public void filter(Binder binder, DefinableEntity entity, String fileName, InputStream content) throws FilterException, IOException;
 	
 }

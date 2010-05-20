@@ -73,8 +73,14 @@ public abstract class UncheckedCodedException extends RuntimeException implement
     public String getLocalizedMessage() {
     	try {
     		String str = NLT.get(getErrorCode(), getErrorArgs());
-    		if(msg != null)
-    			str = str + ": " + msg;
+    		if(str == null)
+    			str = "";
+    		if(msg != null) {
+    			if(str.length() > 0)
+    				str = str + ": " + msg;
+    			else
+    				str = msg;
+    		}
     		return str;
     	}
     	catch(Exception e) {
