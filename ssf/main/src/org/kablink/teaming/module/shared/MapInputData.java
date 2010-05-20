@@ -34,18 +34,16 @@ package org.kablink.teaming.module.shared;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
-import org.kablink.teaming.InternalException;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.EventHelper;
 
-import com.liferay.portlet.journal.action.GetStructureAction;
-
 public class MapInputData implements InputDataAccessor {
 
-	private Map source;
+	private Map<String,Object> source;
 	private Boolean fieldsOnly;
 	
 	public MapInputData(Map source) {
@@ -62,7 +60,7 @@ public class MapInputData implements InputDataAccessor {
 		else if (result instanceof String[]) 
 			return ((String[]) result)[0];
 		else
-			throw new InternalException("Illegal value type [" + result.getClass() + "]");
+			return null;
 	}
 	
 	public Date getDateValue(String key) {
@@ -101,7 +99,7 @@ public class MapInputData implements InputDataAccessor {
 		else if(result instanceof String)
 			return new String[] { (String) result };
 		else {
-			throw new InternalException("Illegal value type [" + result.getClass() + "]");			
+			return null;		
 		}
 	}
 
@@ -121,5 +119,9 @@ public class MapInputData implements InputDataAccessor {
 	}
 	public boolean isFieldsOnly() {
 		return this.fieldsOnly;
+	}
+
+	public Set<String> keySetForPotentialStringValues() {
+		return source.keySet();
 	}
 }

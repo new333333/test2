@@ -33,6 +33,8 @@
 package org.kablink.teaming.module.shared;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.survey.Survey;
@@ -85,5 +87,9 @@ public class EmptyInputData implements InputDataAccessor{
 	}
 	public boolean isFieldsOnly() {
 		return false;
+	}
+
+	public Set<String> keySetForPotentialStringValues() {
+		return new HashSet<String>();
 	}
 }

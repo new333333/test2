@@ -34,7 +34,9 @@ package org.kablink.teaming.module.shared;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.survey.Survey;
@@ -134,6 +136,13 @@ public class ChainedInputData implements InputDataAccessor {
 	}
 	public boolean isFieldsOnly() {
 		return this.fieldsOnly;
+	}
+
+	public Set<String> keySetForPotentialStringValues() {
+		Set set = new HashSet();
+		for(InputDataAccessor accessor : chainedAccessors)
+			set.addAll(accessor.keySetForPotentialStringValues());
+		return set;
 	}
 
 }

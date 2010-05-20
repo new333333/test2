@@ -36,7 +36,9 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -228,5 +230,15 @@ public class ModelInputData implements InputDataAccessor {
 	}
 	public boolean isFieldsOnly() {
 		return this.fieldsOnly;
+	}
+
+	public Set<String> keySetForPotentialStringValues() {
+		Set<String> set = new HashSet<String>();
+		set.add("definitionId");
+		set.add("title");
+		set.add("description");
+		set.addAll(entity.customStringFieldNames());
+		set.addAll(entity.customStringArrayFieldNames());
+		return set;
 	}
 }

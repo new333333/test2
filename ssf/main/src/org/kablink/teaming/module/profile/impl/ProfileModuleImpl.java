@@ -35,6 +35,7 @@
  *
  */
 package org.kablink.teaming.module.profile.impl;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -52,6 +53,7 @@ import java.util.TreeSet;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectExistsException;
 import org.kablink.teaming.ObjectKeys;
@@ -1235,7 +1237,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		return getCoreDao().loadObjects("from org.kablink.teaming.domain.Principal where zoneId=:zoneId and name in (:name)", params);
 
 	}
-	public class ElementInputData implements InputDataAccessor {
+	public static class ElementInputData implements InputDataAccessor {
 		private Element source;
 		private Boolean fieldsOnly;
 
@@ -1291,6 +1293,26 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		}
 		public boolean isFieldsOnly() {
 			return this.fieldsOnly;
+		}
+		public Set<String> keySetForPotentialStringValues() {
+			Set<String> set = new HashSet<String>();
+			List<Element> result = source.selectNodes("./attribute");
+			if(result != null) {
+				for(Element elem:result) {
+					String nameValue = elem.attributeValue("name");
+					if(nameValue != null)
+						set.add(nameValue);
+				}
+			}
+			result = source.selectNodes("./property");
+			if(result != null) {
+				for(Element elem:result) {
+					String nameValue = elem.attributeValue("name");
+					if(nameValue != null)
+						set.add(nameValue);
+				}
+			}
+			return set;
 		}
 	}
 	
@@ -1746,5 +1768,18 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	  return result;
   }
 
+  public static void main(String[] args) throws Exception {
+	  String xmlStr = "<mydata><elem1 attr1=\"hello\"><attribute name=\"A1\"/><property name=\"P1\"/></elem1><attribute name=\"A2\"/><attribute name=\"A3\"/><property name=\"P2\"/><elem2 attr2=\"hi\"><attribute name=\"A4\"/><property name=\"P3\"/></elem2></mydata>";
+	  
+	   SAXReader reader = new SAXReader();
+       Document document = reader.read(new StringReader(xmlStr));
+       Element elem = document.getRootElement();
+       ElementInputData eid = new ElementInputData(elem);
+       Set<String> set = eid.keySetForPotentialStringValues();
+       for(String key:set) {
+    	   System.out.println(key);
+       }
+  }
+  
 }
 
