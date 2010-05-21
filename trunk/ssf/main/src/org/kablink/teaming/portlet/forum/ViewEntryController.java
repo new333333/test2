@@ -597,6 +597,7 @@ public class ViewEntryController extends  SAbstractController {
 							adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 	
 							Map qualifiers = new HashMap();
+							qualifiers.put("nosort", true);
 							qualifiers.put("popup", new Boolean(true));
 							toolbar.addToolbarMenu("1_reply", replyText, 
 									adapterUrl.toString(), qualifiers);
@@ -604,6 +605,7 @@ public class ViewEntryController extends  SAbstractController {
 					} else {
 						toolbar.addToolbarMenu("1_reply", replyText);
 						Map qualifiers = new HashMap();
+						qualifiers.put("nosort", true);
 						qualifiers.put("popup", new Boolean(true));
 						for (int i = 0; i < replyStyles.size(); i++) {
 							String replyStyleId = (String)replyStyles.get(i);
@@ -629,10 +631,6 @@ public class ViewEntryController extends  SAbstractController {
 					getFolderModule().testAccess(entry, FolderOperation.modifyEntryFields)) {
 				if (isEntryReserved && !isLockedByAndLoginUserSame ) {
 					toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), nullPortletUrl, disabledQual);
-					if (entry.isTop()) {
-						toolbar.addToolbarMenu("4_move", NLT.get("toolbar.move"), nullPortletUrl, disabledQual);
-						toolbar.addToolbarMenu("5_copy", NLT.get("toolbar.copy"), nullPortletUrl, disabledQual);
-					}
 				}
 				else {
 					if (getFolderModule().testAccess(entry, FolderOperation.modifyEntry))
@@ -641,6 +639,7 @@ public class ViewEntryController extends  SAbstractController {
 						accessControlEntryMap.put("modifyEntryFields", new Boolean(true));
 					//The "Modify" menu
 					Map qualifiers = new HashMap();
+					qualifiers.put("nosort", true);
 					qualifiers.put("popup", new Boolean(true));
 					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
@@ -648,107 +647,9 @@ public class ViewEntryController extends  SAbstractController {
 					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
 					adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 					toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), adapterUrl.toString(), qualifiers);
-					if (entry.isTop()) {
-						//The "Move" menu
-						url = response.createActionURL();
-						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
-						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
-						url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-						url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-						toolbar.addToolbarMenu("4_move", NLT.get("toolbar.move"), url);
-						//The "Copy" menu
-						url = response.createActionURL();
-						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
-						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_COPY);
-						url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-						url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-						toolbar.addToolbarMenu("5_copy", NLT.get("toolbar.copy"), url);
-					}
-				}
-				List<Definition> configWorkflows = entry.getParentBinder().getWorkflowDefinitions();
-				Set<WorkflowState>runningWorkflows = entry.getWorkflowStates();
-				if (!configWorkflows.isEmpty() || !runningWorkflows.isEmpty()) {
-					//The "Workflow" menu
-					Map qualifiers = new HashMap();
-					qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.entryWorkflowMenu");
-					toolbar.addToolbarMenu("7_workflow", NLT.get("toolbar.entryWorkflow"), "", qualifiers);
-					
-					//See if there are workflows running
-					Map runningWorkflowDefs = new HashMap();
-					for (WorkflowState state:runningWorkflows) {
-						Definition workflowDef = state.getDefinition();
-						if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
-							String wfTitle = NLT.getDef(workflowDef.getTitle());
-							String wfTitle1 = wfTitle.replaceAll("'", "\\\\'");
-							qualifiers = new HashMap();
-							qualifiers.put("onClick", "return ss_confirmPost('" + NLT.get("entry.confirmStopWorkflow") + "', '"+wfTitle1+"', this.href)");
-							url = response.createActionURL();
-							url.setParameter(WebKeys.ACTION, WebKeys.ACTION_STOP_WORKFLOW);
-							url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-							url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-							url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_STOP_WORKFLOW);
-							url.setParameter(WebKeys.URL_WORKFLOW_TYPE, workflowDef.getId());
-							toolbar.addToolbarMenuItem("7_workflow", "", 
-									NLT.get("toolbar.menu.stopWorkflow", new String[] {wfTitle}), url, qualifiers);
-							runningWorkflowDefs.put(workflowDef.getId(), "1");
-						}
-					}
-					
-					for (Definition workflowDef:configWorkflows) {
-						if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
-							String wfTitle = NLT.getDef(workflowDef.getTitle());
-							String wfTitle1 = wfTitle.replaceAll("'", "\\\\'");
-							qualifiers = new HashMap();
-							qualifiers.put("onClick", "return ss_confirmPost('" + NLT.get("entry.confirmStartWorkflow") + "', '"+wfTitle1+"', this.href)");
-							url = response.createActionURL();
-							url.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_WORKFLOW);
-							url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-							url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-							url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_START_WORKFLOW);
-							url.setParameter(WebKeys.URL_WORKFLOW_TYPE, workflowDef.getId());
-							toolbar.addToolbarMenuItem("7_workflow", "", 
-									NLT.get("toolbar.menu.startWorkflow", new String[] {wfTitle}), url, qualifiers);
-						}
-					}
-				}
-						}
-	
-			//Does the user have access to reserve the entry
-			if (reserveAccessCheck) {
-				//If no one has reserved the entry, it can be locked
-				if (!isEntryReserved) {
-					Map qualifiers = new HashMap();
-					qualifiers.put("onClick", "ss_postToThisUrl(this.href);return false;");
-					url = response.createActionURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOCK_FOLDER_ENTRY);
-					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_LOCK);
-					url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-					url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-					toolbar.addToolbarMenu("3_lock", NLT.get("toolbar.lock"), url, qualifiers);
-				} else {
-				    //If some one has reserved the entry	
-					//If the person who has locked the entry and the logged in user are the same we allow access to unlock
-					//If the person who has logged in is the binder administrator we allow access to unlock
-					if (isLockedByAndLoginUserSame || isUserBinderAdministrator) {
-						Map qualifiers = new HashMap();
-						qualifiers.put("onClick", "ss_postToThisUrl(this.href);return false;");
-			   			url = response.createActionURL();
-						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOCK_FOLDER_ENTRY);
-						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_UNLOCK);
-						url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-						url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-						if(!isLockedByAndLoginUserSame) {
-							qualifiers.put("onClick", "return ss_confirmUnlockEntry(this);");
-							toolbar.addToolbarMenu("3_lock", NLT.get("toolbar.unlock"), url, qualifiers);
-						} else {
-							toolbar.addToolbarMenu("3_lock", NLT.get("toolbar.unlock"), url, qualifiers);
-						}
-					} else {
-						toolbar.addToolbarMenu("3_lock", NLT.get("toolbar.unlock"), nullPortletUrl, disabledQual);
-					}
 				}
 			}
-			
+				
 			if (getFolderModule().testAccess(entry, FolderOperation.deleteEntry)) {
 				//The "Delete" menu
 				if (isEntryReserved && !isLockedByAndLoginUserSame ) {
@@ -757,6 +658,7 @@ public class ViewEntryController extends  SAbstractController {
 				else {
 					accessControlEntryMap.put("deleteEntry", new Boolean(true));
 					Map qualifiers = new HashMap();
+					qualifiers.put("nosort", true);
 					qualifiers.put("onClick", "return ss_confirmDeleteEntry(this);");
 					url = response.createActionURL();
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
@@ -764,50 +666,69 @@ public class ViewEntryController extends  SAbstractController {
 					url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 					url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
 					url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-					toolbar.addToolbarMenu("5_delete", NLT.get("toolbar.delete"), url, qualifiers);
+					toolbar.addToolbarMenu("3_delete", NLT.get("toolbar.delete"), url, qualifiers);
 				}
 			}
-			
+				
+			//The "Actions" menu
+			toolbar.addToolbarMenu("4_actions", NLT.get("toolbar.actions"));
+
 			if (getFolderModule().testAccess(entry, FolderOperation.readEntry) && entry.isTop()) {
 				//The "Access Control" menu
 				accessControlEntryMap.put("accessControl", new Boolean(true));
 				Map qualifiers = new HashMap();
+				qualifiers.put("nosort", true);
 				qualifiers.put("popup", new Boolean(true));
 				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.accessControlMenu");
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
 				url.setParameter(WebKeys.URL_WORKAREA_ID, entryId); 
 				url.setParameter(WebKeys.URL_WORKAREA_TYPE, entry.getWorkAreaType()); 
-				toolbar.addToolbarMenu("6_accessControl", NLT.get("toolbar.menu.accessControl"), url, qualifiers);
+				toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.menu.accessControl"), url, qualifiers);
 			}
 			
-			if (getFolderModule().testAccess(entry, FolderOperation.report)) {
-				accessControlEntryMap.put("report", new Boolean(true));
-				Map qualifiers = new HashMap();
-				toolbar.addToolbarMenu("8_reports", NLT.get("toolbar.reports"), "", qualifiers);
-	
-				String servletUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_DOWNLOAD_REPORT + "?" +
-				WebKeys.URL_BINDER_ID + "=" + folderId + "&" + WebKeys.URL_ENTRY_ID + "=" + entryId + "&" +
-				WebKeys.URL_REPORT_TYPE + "=entry&forumOkBtn=OK"; 
-				toolbar.addToolbarMenuItem("8_reports", "", NLT.get("toolbar.reports.activity"), servletUrl, qualifiers);
-	
-				qualifiers.put("popup", Boolean.TRUE);
-				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_EDITABLE_HISTORY);
-				adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_EDIT_HISTORY);
-				adapterUrl.setParameter(WebKeys.URL_ENTITY_ID, entryId);
-				toolbar.addToolbarMenuItem("8_reports", "", NLT.get("toolbar.reports.editHistory"), adapterUrl.toString(), qualifiers);
-				
-				adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WORKFLOW_HISTORY);
-				adapterUrl.setParameter(WebKeys.URL_ENTITY_ID, entryId);
-				adapterUrl.setParameter(WebKeys.URL_FOLDER_ID, folderId);
-				toolbar.addToolbarMenuItem("8_reports", "", NLT.get("toolbar.reports.workflowHistory"), adapterUrl.toString(), qualifiers);
+			//Does the user have access to reserve the entry
+			if (reserveAccessCheck) {
+				//If no one has reserved the entry, it can be locked
+				if (!isEntryReserved) {
+					Map qualifiers = new HashMap();
+					qualifiers.put("nosort", true);
+					qualifiers.put("onClick", "ss_postToThisUrl(this.href);return false;");
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOCK_FOLDER_ENTRY);
+					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_LOCK);
+					url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+					url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+					toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.lock"), url, qualifiers);
+				} else {
+				    //If some one has reserved the entry	
+					//If the person who has locked the entry and the logged in user are the same we allow access to unlock
+					//If the person who has logged in is the binder administrator we allow access to unlock
+					if (isLockedByAndLoginUserSame || isUserBinderAdministrator) {
+						Map qualifiers = new HashMap();
+						qualifiers.put("nosort", true);
+						qualifiers.put("onClick", "ss_postToThisUrl(this.href);return false;");
+			   			url = response.createActionURL();
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOCK_FOLDER_ENTRY);
+						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_UNLOCK);
+						url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+						url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+						if(!isLockedByAndLoginUserSame) {
+							qualifiers.put("onClick", "return ss_confirmUnlockEntry(this);");
+							toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.unlock"), url, qualifiers);
+						} else {
+							toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.unlock"), url, qualifiers);
+						}
+					} else {
+						toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.unlock"), nullPortletUrl, disabledQual);
+					}
+				}
 			}
 			
 			if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
 				if (getBinderModule().testAccess(entry.getParentBinder(), BinderOperation.setProperty)) {
 					Map qualifiers = new HashMap();
+					qualifiers.put("nosort", true);
 					qualifiers.put("onClick", "if (parent.ss_confirmSetWikiHomepage) {return parent.ss_confirmSetWikiHomepage(this.href)} else {return false}");
 					qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.setWikiHomepage");
 					url = response.createActionURL();
@@ -816,12 +737,13 @@ public class ViewEntryController extends  SAbstractController {
 					url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 					url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
 					url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-					toolbar.addToolbarMenu("9_setHomepage", NLT.get("toolbar.setWikiHomepage"), url, qualifiers);
+					toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.setWikiHomepage"), url, qualifiers);
 				}
 			}	
 			
 			if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 				Map qualifiers = new HashMap();
+				qualifiers.put("nosort", true);
 				qualifiers.put("popup", new Boolean(true));
 				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.shareThis");
 				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
@@ -829,11 +751,113 @@ public class ViewEntryController extends  SAbstractController {
 				adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SHARE_THIS_BINDER);
 				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-				toolbar.addToolbarMenu("9_shareThis", NLT.get("toolbar.shareThis"), adapterUrl.toString(), qualifiers);
+				toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.shareThis"), adapterUrl.toString(), qualifiers);
+			}
+
+			if (entry.isTop()) {
+				//The "Move" menu item
+				Map qualifiers = new HashMap();
+				qualifiers.put("nosort", true);
+				qualifiers.put("popup", new Boolean(true));
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
+				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+				url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+				toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.move"), url, qualifiers);
+				//The "Copy" menu
+				qualifiers = new HashMap();
+				qualifiers.put("nosort", true);
+				qualifiers.put("popup", new Boolean(true));
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_COPY);
+				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+				url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+				toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.copy"), url, qualifiers);
+			}
+
+				
+			List<Definition> configWorkflows = entry.getParentBinder().getWorkflowDefinitions();
+			Set<WorkflowState>runningWorkflows = entry.getWorkflowStates();
+			if (!configWorkflows.isEmpty() || !runningWorkflows.isEmpty()) {
+				Map qualifiers = new HashMap();
+				
+				//The "Workflow" menu
+				//See if there are workflows running
+				Map runningWorkflowDefs = new HashMap();
+				for (WorkflowState state:runningWorkflows) {
+					Definition workflowDef = state.getDefinition();
+					if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
+						String wfTitle = NLT.getDef(workflowDef.getTitle());
+						String wfTitle1 = wfTitle.replaceAll("'", "\\\\'");
+						qualifiers = new HashMap();
+						qualifiers.put("nosort", true);
+						qualifiers.put("onClick", "return ss_confirmPost('" + NLT.get("entry.confirmStopWorkflow") + "', '"+wfTitle1+"', this.href)");
+						url = response.createActionURL();
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_STOP_WORKFLOW);
+						url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+						url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_STOP_WORKFLOW);
+						url.setParameter(WebKeys.URL_WORKFLOW_TYPE, workflowDef.getId());
+						toolbar.addToolbarMenuItem("4_actions", "workflow", 
+								NLT.get("toolbar.menu.stopWorkflow", new String[] {wfTitle}), url, qualifiers);
+						runningWorkflowDefs.put(workflowDef.getId(), "1");
+					}
+				}
+				
+				for (Definition workflowDef:configWorkflows) {
+					if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
+						String wfTitle = NLT.getDef(workflowDef.getTitle());
+						String wfTitle1 = wfTitle.replaceAll("'", "\\\\'");
+						qualifiers = new HashMap();
+						qualifiers.put("nosort", true);
+						qualifiers.put("onClick", "return ss_confirmPost('" + NLT.get("entry.confirmStartWorkflow") + "', '"+wfTitle1+"', this.href)");
+						url = response.createActionURL();
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_WORKFLOW);
+						url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+						url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_START_WORKFLOW);
+						url.setParameter(WebKeys.URL_WORKFLOW_TYPE, workflowDef.getId());
+						toolbar.addToolbarMenuItem("4_actions", "workflow", 
+								NLT.get("toolbar.menu.startWorkflow", new String[] {wfTitle}), url, qualifiers);
+					}
+				}
+			}
+	
+			if (getFolderModule().testAccess(entry, FolderOperation.report)) {
+				accessControlEntryMap.put("report", new Boolean(true));
+				Map qualifiers = new HashMap();
+				qualifiers.put("nosort", true);
+				toolbar.addToolbarMenu("5_history", NLT.get("toolbar.history"), "", qualifiers);
+	
+				qualifiers.put("popup", Boolean.TRUE);
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_EDITABLE_HISTORY);
+				adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_EDIT_HISTORY);
+				adapterUrl.setParameter(WebKeys.URL_ENTITY_ID, entryId);
+				toolbar.addToolbarMenuItem("5_history", "", NLT.get("toolbar.reports.editHistory"), adapterUrl.toString(), qualifiers);
+				
+				adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WORKFLOW_HISTORY);
+				adapterUrl.setParameter(WebKeys.URL_ENTITY_ID, entryId);
+				adapterUrl.setParameter(WebKeys.URL_FOLDER_ID, folderId);
+				toolbar.addToolbarMenuItem("5_history", "", NLT.get("toolbar.reports.workflowHistory"), adapterUrl.toString(), qualifiers);
+			}
+			
+			if (getFolderModule().testAccess(entry, FolderOperation.report)) {
+				accessControlEntryMap.put("report", new Boolean(true));
+				Map qualifiers = new HashMap();
+				qualifiers.put("nosort", true);
+				toolbar.addToolbarMenu("6_reports", NLT.get("toolbar.reports"), "", qualifiers);
+	
+				String servletUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_DOWNLOAD_REPORT + "?" +
+				WebKeys.URL_BINDER_ID + "=" + folderId + "&" + WebKeys.URL_ENTRY_ID + "=" + entryId + "&" +
+				WebKeys.URL_REPORT_TYPE + "=entry&forumOkBtn=OK"; 
+				toolbar.addToolbarMenuItem("6_reports", "", NLT.get("toolbar.reports.activity"), servletUrl, qualifiers);
 			}
 		}
-
-
+		
 		//The "Footer" menu
 		Toolbar footerToolbar = new Toolbar();
 		if (!isPreDeleted) {

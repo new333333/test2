@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.web.util;
 
+import java.util.LinkedHashMap;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Map;
@@ -105,21 +106,21 @@ public class Toolbar {
 	public void deleteToolbarMenu(String name) {
 		toolbar.remove(name);
 	}
-	private Map getCategory(String name, String category) {
+	private Map getCategory(String name, String category, Map qualifiers) {
 		if (this.toolbar.containsKey(name)) {
 			Map toolbarData = (Map) this.toolbar.get(name);
 			Map toolbarCategories = null;
 			if (toolbarData.containsKey("categories")) {
 				toolbarCategories = (Map) toolbarData.get("categories");
 			} else {
-				toolbarCategories = new HashMap();
+				toolbarCategories = new TreeMap();
 				toolbarData.put("categories", toolbarCategories);
 			}
 			Map toolbarCategory = null;
 			if (toolbarCategories.containsKey(category)) {
 				toolbarCategory = (Map) toolbarCategories.get(category);
 			} else {
-				toolbarCategory = new TreeMap();
+				toolbarCategory = new LinkedHashMap();
 				toolbarCategories.put(category, toolbarCategory);
 			}
 			return toolbarCategory;
@@ -132,11 +133,11 @@ public class Toolbar {
 		addToolbarMenuItem(name, category, title, urlParams, qualifiers);
 	}
 	public void addToolbarMenuItem(String name, String category, String title, Map urlParams, Map qualifiers) {
-		Map toolbarCategory = getCategory(name, category);
+		Map toolbarCategory = getCategory(name, category, qualifiers);
 		if (toolbarCategory == null) return;
-		SortedMap toolbarCategoryMap;
+		Map toolbarCategoryMap;
 		if (toolbarCategory.containsKey(title)) {
-			toolbarCategoryMap = (SortedMap) toolbarCategory.get(title);
+			toolbarCategoryMap = (Map) toolbarCategory.get(title);
 		} else {
 			toolbarCategoryMap = new TreeMap();
 		}
@@ -150,11 +151,11 @@ public class Toolbar {
 		addToolbarMenuItem(name, category, title, url, qualifiers);
 	}
 	public void addToolbarMenuItem(String name, String category, String title, PortletURL url, Map qualifiers) {
-		Map toolbarCategory = getCategory(name, category);
+		Map toolbarCategory = getCategory(name, category, qualifiers);
 		if (toolbarCategory == null) return;
-		SortedMap toolbarCategoryMap;
+		Map toolbarCategoryMap;
 		if (toolbarCategory.containsKey(title)) {
-			toolbarCategoryMap = (SortedMap) toolbarCategory.get(title);
+			toolbarCategoryMap = (Map) toolbarCategory.get(title);
 		} else {
 			toolbarCategoryMap = new TreeMap();
 		}
@@ -167,11 +168,11 @@ public class Toolbar {
 		addToolbarMenuItem(name, category, title, url, qualifiers);
 	}
 	public void addToolbarMenuItem(String name, String category, String title, String url, Map qualifiers) {
-		Map toolbarCategory = getCategory(name, category);
+		Map toolbarCategory = getCategory(name, category, qualifiers);
 		if (toolbarCategory == null) return;
-		SortedMap toolbarCategoryMap;
+		Map toolbarCategoryMap;
 		if (toolbarCategory.containsKey(title)) {
-			toolbarCategoryMap = (SortedMap) toolbarCategory.get(title);
+			toolbarCategoryMap = (Map) toolbarCategory.get(title);
 		} else {
 			toolbarCategoryMap = new TreeMap();
 		}
@@ -180,13 +181,13 @@ public class Toolbar {
 		toolbarCategory.put(title, toolbarCategoryMap);
 	}
 	public boolean checkToolbarMenuItem(String name, String category, String title) {
-		Map toolbarCategory = getCategory(name, category);
+		Map toolbarCategory = getCategory(name, category, new HashMap());
 		if (toolbarCategory != null && toolbarCategory.containsKey(title)) {
 			return true;
 		}
 		return false;
 	}
-	public SortedMap getToolbar() {
+	public Map getToolbar() {
 		return this.toolbar;
 	}
 }

@@ -230,28 +230,37 @@ function diff( o, n ) {
 var ss_diffOne = null;
 var ss_diffTwo = null;
 
-function ss_updateCompareButton()
-{
-	if(ss_diffOne && ss_diffTwo) {
+function ss_updateCompareButton() {
+	ss_diffOne = null;
+	ss_diffTwo = null;
+
+	//Look through all of the checkboxes to see if there are two set
+	var inputElements = document.getElementsByTagName("input");
+	for (var i = 0; i < inputElements.length; i++) {
+		var cbObj = inputElements[i];
+		if (cbObj != null && cbObj.type.toLowerCase() == "checkbox" && cbObj.checked) {
+			var vId = cbObj.id.substring(7);
+			if (ss_diffOne == null) {
+				ss_diffOne = i;
+			} else if (ss_diffTwo == null) {
+				ss_diffTwo = i;
+			} else {
+				ss_diffOne = null;
+				ss_diffTwo = null;
+				break;
+			}
+		}
+	}
+	if (ss_diffOne != null && ss_diffTwo != null) {
 		document.getElementById("compareBtn").disabled=false;
 	} else {
 		document.getElementById("compareBtn").disabled=true;
 	}
 }
-function ss_setOne(id)
-{
-	ss_diffOne = id;
-	ss_updateCompareButton();
-}
-function ss_setTwo(id)
-{
-	ss_diffTwo = id;
-	ss_updateCompareButton();
-}
 
 function dodiff()
 {
-	if(ss_diffOne && ss_diffTwo) {
+	if(ss_diffOne != null && ss_diffTwo != null) {
 		//var h = document.getElementById("diff-header");
 		//h.innerHTML = h.innerHTML.replace("xyzzy", ss_diffOne).replace("yxzzx", ss_diffTwo);
 		var vnA = document.getElementById("versionNumberA");
@@ -281,47 +290,55 @@ function dodiff()
 		<ssf:param name="operation" value="view_edit_history" />
 		</ssf:url>"
 >
-<table class="ss_style" cellpadding="6" width="100%">
+<table class="ss_style" cellpadding="6">
 <tr>
-<th colspan="2" style="text-align:center;"><ssf:nlt tag="entry.Version"/></th>
-<th><ssf:nlt tag="entry.data"/></th>
+<th colspan="2" style="text-align:left;"><ssf:nlt tag="entry.Version"/></th>
+<th><ssf:nlt tag="entry.modifiedOn"/></th>
+<th><ssf:nlt tag="entry.modifiedBy"/></th>
+<th></th>
+<th></th>
 </tr>
-<tr>
-<th style="text-align:center; padding-top:0px; padding-bottom:0px;"><ssf:nlt tag="entry.version.from"/></th>
-<th style="text-align:left; padding-left:8px; padding-top:0px; padding-bottom:0px;"><ssf:nlt tag="entry.version.to"/></th>
-<th style="padding-top:0px; padding-bottom:0px;"></th>
-</tr>
-<c:forEach var="change" items="${ss_changeLogList}">
+<c:forEach var="change" items="${ss_changeLogList}" varStatus="status">
 <tr>
 <td valign="top" width="5%" nowrap>
-  <span style="padding-right:10px;">${change.folderEntry.attributes.logVersion}</span>
-  <input type="radio" name="item1" 
-  value="${change.folderEntry.attributes.logVersion}" onclick="ss_setOne('${change.folderEntry.attributes.logVersion}')"
-  <c:if test="${change.folderEntry.attributes.logVersion == item1}"> checked="checked" </c:if> >
+  <span style="padding-right:6px;">${change.folderEntry.attributes.logVersion}</span>
 </td>
 <td valign="top" width="5%" nowrap>
-  <input type="radio" name="item2" 
-  value="${change.folderEntry.attributes.logVersion}" onclick="ss_setTwo('${change.folderEntry.attributes.logVersion}')"
-  <c:if test="${change.folderEntry.attributes.logVersion == item2}"> checked="checked" </c:if> >
+  <input type="checkbox" id="compare${change.folderEntry.attributes.logVersion}"
+  onChange="ss_updateCompareButton('${fn:length(ss_changeLogList)}')">
 </td>
-<td valign="top" width="90%">
-  <c:set var="modifyDate"><fmt:formatDate timeZone="${ssUser.timeZone.ID}" type="both" value="${change.changeLog.operationDate}"/></c:set>
-  <c:if test="${!empty change.changeLogEntry}">
-  <c:set var="expandableAreaTitle">${modifyDate}<a style="margin-left:20px;" class="ss_tinyButton" 
+<td valign="top" width="20%">
+  <fmt:formatDate timeZone="${ssUser.timeZone.ID}" type="both" value="${change.changeLog.operationDate}"/>
+</td>
+<td valign="top" width="30%">
+  <ssf:showUser user="${change.changeLogEntry.modification.principal}"/>
+</td>
+<td valign="top" width="20%">
+  <a href="javascript: ;" class="ss_tinyButton" onClick="ss_showHide('historyVersion_${status.count}');return false;">
+    <ssf:nlt tag="entry.revert.view"/>
+  </a>
+</td>
+<td valign="top" width="20%">
+  <a class="ss_tinyButton"
     href="<ssf:url><ssf:param 
 	name="action" value="view_editable_history"/><ssf:param 
 	name="operation" value="revert"/><ssf:param 
 	name="entityId" value="${ss_entityId}"/><ssf:param 
 	name="versionId" value="${change.folderEntry.attributes.logVersion}"/></ssf:url>"
-	><ssf:nlt tag="entry.comparison.revert"/></a></c:set>
-  <ssf:expandableArea title="${expandableAreaTitle}">
+	><ssf:nlt tag="entry.comparison.revert"/></a>
+</td>
+</tr>
+<tr>
+ <td colspan="2"></td>
+ <td colspan="6">
+   <c:if test="${!empty change.changeLogEntry}">
     <c:set var="changeLogEntry" value="${change.changeLogEntry}"/>
 	<jsp:useBean id="changeLogEntry" type="org.kablink.teaming.domain.DefinableEntity" />
 	<% 
 		Element configEle = (Element)changeLogEntry.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryView']");
 	%>
 	<c:set var="configEle" value="<%= configEle %>" />
-    <div style="padding:10px; border: 1px black solid;">
+    <div id="historyVersion_${status.count}" style="display:none; padding:10px; border: 1px black solid;">
 		<c:if test="${!empty configEle}">
 		  <c:set var="ssBinderOriginalFromDescriptionHistory" value="${ssBinder}" />
 		  <c:set var="ssBinder" value="${changeLogEntry.parentBinder}" scope="request"/>
@@ -338,7 +355,7 @@ function dodiff()
 		  <c:set var="ssEntry" value="${ssEntryOriginalFromDescriptionHistory}" scope="request"/>
 		</c:if>
     </div>
-  </ssf:expandableArea>
+   </c:if>
   <div style="display:none;">
     <span class="ss_entryTitle" id="title${change.folderEntry.attributes.logVersion}">
       ${change.folderEntry.attribute.title.value}
@@ -347,19 +364,15 @@ function dodiff()
   <div style="display:none;" class="ss_entryContent ss_entryDescription" id="desc${change.folderEntry.attributes.logVersion}">
     <ssf:markup entity="${changeLogEntry}">${change.folderEntry.attribute.description.value}</ssf:markup>
   </div>
-  </c:if>
-</td>
+ </td>
 </tr>
 </c:forEach>
-<tr>
-<td colspan="2" valign="top" nowrap>
+</table>
+<div>
   <input type="button" name="compareBtn" id="compareBtn" value="<ssf:nlt tag="button.compare"/>" disabled="true" onclick="dodiff();"/>
   &nbsp;&nbsp;&nbsp;
   <input type="button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;"/>
-</td>
-<td></td>
-</tr>
-</table>
+</div>
 </form>
 <br/>
 <br/>

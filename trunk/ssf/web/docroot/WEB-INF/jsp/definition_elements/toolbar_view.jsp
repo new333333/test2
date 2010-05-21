@@ -125,7 +125,11 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
         --%><div id="<%= menuTagDivId %>${renderResponse.namespace}" <%--
         --%> class="${ss_toolbar_style}_submenu" style=""><%--
         --%><ul class="${ss_toolbar_style}_submenu"><%--
+        --%><c:set var="toolbarCategoryItemSeen" value="false"/><%--
         --%><c:forEach var="toolbarMenuCategory" items="${toolbarMenu.value.categories}"><%--
+            --%><c:if test="${toolbarCategoryItemSeen && !empty toolbarMenuCategory.value}"><%--
+            --%><li><span class="ss_dropdownmenu_spacer">------------------------------</span></li><%--
+            --%></c:if><%--
         
             --%><c:forEach var="toolbarMenuCategoryItem" items="${toolbarMenuCategory.value}"><%--
 
@@ -194,6 +198,7 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
                     --%></span><%--
                     --%></a><%--
                     --%></li><%--
+                    --%><c:set var="toolbarCategoryItemSeen" value="true"/><%--
                 --%></c:if><%--
             --%></c:forEach><%--
         --%></c:forEach><%--
