@@ -407,7 +407,7 @@ div.ss_editorHints {
 
 /* entry styles: common to entry views and entry forms */
 .ss_entryPopupWrapper {
-	padding: 20px 6px;
+	/* padding: 20px 6px; */
 }
 
 .ss_entryTitle {

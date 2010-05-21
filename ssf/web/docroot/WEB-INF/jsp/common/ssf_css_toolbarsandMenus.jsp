@@ -168,7 +168,7 @@ li.ss_actions_bar_separator {
 	color:${ss_style_text_color} ;
 	display: inline;
 	padding:0px 7px;
-	}	
+	}
 .ss_actions_bar1 {
 	font-size: ${ss_style_font_smallprint};
 	font-family: ${ss_style_title_font_family};
@@ -202,7 +202,7 @@ table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 	}
 	/*ENTRY*/	
 table.ss_actions_bar3_pane, table.ss_actions_bar3_pane td {
- 	background-color: #AFC8E3; 
+ 	/* background-color: #AFC8E3; */
 	width: 100%;
 	/* height: 20px; */
 	padding: 4px 2px 0px 0px;
@@ -211,8 +211,8 @@ table.ss_actions_bar3_pane, table.ss_actions_bar3_pane td {
 	border-spacing: 0px;
 	} 
 table.ss_actions_bar4_pane {
-    background-image: url(<html:imagesPath/>pics/background_actionbar4.gif);
-	background-repeat: repeat-x;
+    /* background-image: url(<html:imagesPath/>pics/background_actionbar4.gif); */
+	/* background-repeat: repeat-x; */
 	width: 100%;
 	/* height: 20px; */
 	padding: 4px 0px 0px 0px;
@@ -552,6 +552,13 @@ ul.ss_dropdownmenu li {
   	margin-bottom: 2px;
   	padding-left: 2px;
 	} 
+	
+.ss_dropdownmenu_spacer {
+	text-align: center !important;
+	font-size: 8px;
+	color: #CCC !important;
+	padding-left: 10px;
+}
 /* POPUP PANES */
 
 .ss_popupTitleOptions {
@@ -734,11 +741,27 @@ div.ss_appConfigMenu ul {
 /* FAMILY TYPES = (10)unspecified (11)blog (12)calendar (13)discussion (14)photo (15)wiki (16)task (17)file */
 
 table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
- 	background-color: #72AEB6; 
+ 	/* background-color: #72AEB6; */
 	width: 100%;
 	padding: 0px 2px 0px 0px;
 	margin: 0px;
 	}
+.ss_actions_bar13_pane a {
+	-moz-border-radius:10px 10px 10px 10px;
+	background:none repeat scroll 0 0 #949494;
+	color:#FFFFFF;
+	margin-right:3px;
+	padding:2px 10px;
+	text-decoration:none;
+}	
+.ss_actions_bar13_pane_none {
+	-moz-border-radius:0px !important;
+	background:#FFFFFF !important;
+	color:#000000 !important;
+	margin-right:3px;
+	padding:0px 10px;
+	text-decoration:none;
+}
 .ss_actions_bar13_pane ul {
 	height:auto;
 }
@@ -751,11 +774,3 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 .ss_actions_bar13 li{
 	border-right: 1px solid white;
 	}		
-.ss_actions_bar13_temp {
-	font-weight: normal;
-	font-size: ${ss_style_font_finestprint};
-	font-family: ${ss_style_title_font_family};
-	padding: 4px 2px;
-	color: white !important;
-	text-decoration: underline !important;
-	}	

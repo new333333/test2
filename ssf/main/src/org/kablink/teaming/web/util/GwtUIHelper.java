@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
@@ -531,11 +530,11 @@ public class GwtUIHelper {
 		}
 
 		// Scan the names of toolbars we need to cache.
-		HashMap<String, SortedMap> tbHM = new HashMap<String, SortedMap>();
+		HashMap<String, Map> tbHM = new HashMap<String, Map>();
 		for (int i = 0; i < CACHED_TOOLBARS.length; i += 1) {
 			// Does a toolbar by this name exist?
 			String tbName = CACHED_TOOLBARS[i];
-			SortedMap tb = ((SortedMap) model.get(tbName));
+			Map tb = ((Map) model.get(tbName));
 			if ((null != tb) && (!(tb.isEmpty()))) {
 				// Yes! Add it to the HashMap.
 				fixupAdaptedPortletURLs(tb);

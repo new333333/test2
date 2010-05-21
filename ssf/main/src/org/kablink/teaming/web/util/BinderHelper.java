@@ -2082,6 +2082,7 @@ public class BinderHelper {
 		}
 		creation.setDate(date);
 		entry.setCreation(creation);
+		entry.setModification(creation);
 		
 		//Set the modifier of the entry
 		hs = (Element)root.selectSingleNode("//historyStamp[@name='modified']");
@@ -2091,7 +2092,7 @@ public class BinderHelper {
 				ids = new HashSet();
 				ids.add(Long.valueOf(authorId));
 				pList = bs.getProfileModule().getPrincipals(ids);
-				if (pList.isEmpty()) {
+				if (!pList.isEmpty()) {
 					entry.setOwner((Principal)pList.first());
 					HistoryStamp modification = new HistoryStamp();
 					modification.setPrincipal((UserPrincipal)pList.first());
