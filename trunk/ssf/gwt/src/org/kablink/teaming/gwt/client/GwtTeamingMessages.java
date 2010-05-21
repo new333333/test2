@@ -252,6 +252,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuBarMyTeams();
 	String mainMenuBarMyWorkspace();
 	String mainMenuBarRecentPlaces();
+	String mainMenuBarTopRanked();
 	String mainMenuBarWorkspace();
 	String mainMenuFavoritesAdd();
 	String mainMenuFavoritesDlgDelete();
@@ -301,6 +302,13 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuTagThisDlgPersonalTags();
 	String mainMenuTagThisDlgTags();
 	String mainMenuTagThisDlgWarningTagTruncated();
+	String mainMenuTopRankedDlgHeader();
+	String mainMenuTopRankedDlgNoItems();
+	String mainMenuTopRankedDlgPeople();
+	String mainMenuTopRankedDlgPlaces();
+	String mainMenuTopRankedDlgRating();
+	String mainMenuTopRankedDlgTopRankedPlaces();
+	String mainMenuTopRankedDlgTopRankedPeople();
 
 	// Strings used in the workspace tree control.
 	String treeCloseBreadCrumbs();

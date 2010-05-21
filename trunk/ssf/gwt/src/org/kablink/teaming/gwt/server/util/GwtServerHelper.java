@@ -60,6 +60,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
@@ -71,7 +72,9 @@ import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagType;
+import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
+import org.kablink.teaming.gwt.client.util.TopRankedInfo.TopRankedType;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
@@ -496,6 +499,7 @@ public class GwtServerHelper {
 	/**
 	 * Return a list of administration actions the user has rights to perform. 
 	 */
+	@SuppressWarnings("unchecked")
 	public static ArrayList<GwtAdminCategory> getAdminActions( Binder binder, AbstractAllModulesInjected allModules )
 	{
 		ArrayList<GwtAdminCategory> adminCategories;
@@ -538,7 +542,7 @@ public class GwtServerHelper {
  		
  		profilesBinder = profileModule.getProfileBinder();
 		
-		// Create an arraylist that will hold the GwtAdminCategory objects.
+		// Create an ArrayList that will hold the GwtAdminCategory objects.
 		adminCategories = new ArrayList<GwtAdminCategory>();
 		
 		// Create a "Management" category
@@ -1618,6 +1622,85 @@ public class GwtServerHelper {
 		return reply;
 	}
 
+	/**
+	 * Returns a List<TopRankedInfo> of the top ranked items from the
+	 * most recent search.
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<TopRankedInfo> getTopRanked(AllModulesInjected bs)
+	{
+		// Allocate an ArrayList to return the top ranked items in.
+		ArrayList<TopRankedInfo> triList = new ArrayList<TopRankedInfo>();
+		
+		// If we can't access the HttpSession...
+		HttpSession hSession = getCurrentHttpSession();
+		if (null == hSession) {
+			// ...we can't access the cached top ranked items to build
+			// ...the list from.  Bail.
+			m_logger.debug("GwtServerHelper.getTopRanked( 'Could not access the current HttpSession' )");
+			return triList;
+		}
+
+		// If there aren't any cached top ranked items... 
+		List<Map> peopleList = ((List<Map>) hSession.getAttribute(GwtUIHelper.CACHED_TOP_RANKED_PEOPLE_KEY)); int people = ((null == peopleList) ? 0 : peopleList.size());
+		List<Map> placesList = ((List<Map>) hSession.getAttribute(GwtUIHelper.CACHED_TOP_RANKED_PLACES_KEY)); int places = ((null == placesList) ? 0 : placesList.size());
+		if (0 == (people + places)) {
+			// ...we can't build a list.  Bail.
+			m_logger.debug("GwtServerHelper.getTopRanked( 'Could not access any cached items' )");
+			return triList;
+		}
+		
+		// Scan the top ranked people...
+		TopRankedInfo tri;
+		for (int i = 0; i < people; i += 1) {
+			// ...extract the Principal and reference count from this
+			// ...person... 
+			Map person = peopleList.get(i);
+			Principal user     = ((Principal) person.get(WebKeys.USER_PRINCIPAL));
+			Integer   refCount = ((Integer)   person.get(WebKeys.SEARCH_RESULTS_COUNT));
+			String    css      = ((String)    person.get(WebKeys.SEARCH_RESULTS_RATING_CSS));
+			
+			// ...use them to construct a TopRankedInfo object...
+			tri = new TopRankedInfo();
+			tri.setTopRankedType(TopRankedType.PERSON);
+			tri.setTopRankedName(user.getTitle());
+			tri.setTopRankedPermalinkUrl(PermaLinkUtil.getPermalink(user));
+			tri.setTopRankedRefCount((null == refCount) ? 0 : refCount.intValue());
+			tri.setTopRankedCSS(css);
+
+			// ...and add it to the list.
+			triList.add(tri);
+		}
+		
+		// Scan the top ranked places...
+		for (int i = 0; i < places; i += 1) {
+			// ...extract the Binder and reference count from this
+			// ...place... 
+			Map place = placesList.get(i);
+			Binder  binder   = ((Binder)  place.get(WebKeys.BINDER));
+			Integer refCount = ((Integer) place.get(WebKeys.SEARCH_RESULTS_COUNT));
+			String  css      = ((String)  place.get(WebKeys.SEARCH_RESULTS_RATING_CSS));
+
+			// ...use them to construct a TopRankedInfo object...
+			tri = new TopRankedInfo();
+			tri.setTopRankedType(TopRankedType.PLACE);
+			tri.setTopRankedName(binder.getTitle());
+			tri.setTopRankedHoverText(binder.getPathName());
+			tri.setTopRankedPermalinkUrl(PermaLinkUtil.getPermalink(binder));
+			tri.setTopRankedRefCount((null == refCount) ? 0 : refCount.intValue());
+			tri.setTopRankedCSS(css);
+
+			// ...and add it to the list.
+			triList.add(tri);
+		}
+
+		// If we get here, triList refers to an List<TopRankedInfo> of
+		// the top ranked items.  Return it.
+		return triList;
+	}
+	
 	/**
 	 * Returns the WorkspaceType of a binder.
 	 * 

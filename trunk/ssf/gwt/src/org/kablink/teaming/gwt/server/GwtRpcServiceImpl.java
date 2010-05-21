@@ -33,7 +33,6 @@
 package org.kablink.teaming.gwt.server;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -93,6 +92,7 @@ import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
@@ -100,12 +100,9 @@ import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
-import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.MapInputData;
-import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
@@ -1984,15 +1981,27 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}
 
 	/**
+	 * Returns a List<TopRankedInfo> of the top ranked items from the
+	 * most recent search.
+	 * 
+	 * @return
+	 */
+	public List<TopRankedInfo> getTopRanked()
+	{
+		return GwtServerHelper.getTopRanked( this );
+	}
+	
+	/**
 	 * Called to mark that the current user is tracking the specified
 	 * binder.
 	 * 
 	 * @param binderId
 	 */
-	public Boolean trackBinder( String binderId ) {
-		BinderHelper.trackThisBinder(this, Long.parseLong(binderId), "add");
+	public Boolean trackBinder( String binderId )
+	{
+		BinderHelper.trackThisBinder( this, Long.parseLong(binderId), "add" );
 		return Boolean.TRUE;
-	}
+	}// endtrackBinder()
 	
 	/**
 	 * Called to mark that the current user is no longer tracking the
@@ -2000,10 +2009,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @param binderId
 	 */
-	public Boolean untrackBinder( String binderId ) {
-		BinderHelper.trackThisBinder(this, Long.parseLong(binderId), "delete");
+	public Boolean untrackBinder( String binderId )
+	{
+		BinderHelper.trackThisBinder( this, Long.parseLong(binderId), "delete" );
 		return Boolean.TRUE;
-	}
+	}//end untrackBinder()
 	
 	/**
 	 * Called to mark that the current user is no longer tracking the
@@ -2011,11 +2021,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @param binderId
 	 */
-	public Boolean untrackPerson( String binderId ) {
-		Binder binder = getBinderModule().getBinder(Long.parseLong(binderId));
-		BinderHelper.trackThisBinder(this, binder.getOwnerId(), "deletePerson");
+	public Boolean untrackPerson( String binderId )
+	{
+		Binder binder = getBinderModule().getBinder( Long.parseLong( binderId ) );
+		BinderHelper.trackThisBinder( this, binder.getOwnerId(), "deletePerson" );
 		return Boolean.TRUE;
-	}
+	}//end untrackPerson()
 	
 	/**
 	 * Called to check if the current user is tracking the
@@ -2023,10 +2034,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @param binderId
 	 */
-	public Boolean isPersonTracked(String binderId) {
-		return BinderHelper.isPersonTracked(this, Long.parseLong(binderId));
-	}
-
+	public Boolean isPersonTracked( String binderId )
+	{
+		return BinderHelper.isPersonTracked( this, Long.parseLong( binderId ) );
+	}//end isPersonTracked()
 	
 	/*
 	 * Constructs a ToolbarItem based on a toolbar.

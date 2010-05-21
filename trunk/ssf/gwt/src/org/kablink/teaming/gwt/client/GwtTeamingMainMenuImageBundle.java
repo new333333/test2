@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client;
 
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.resources.client.ClientBundle.Source;
 
 
 /**
@@ -67,6 +66,9 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/menu_arrow.png")
 	public ImageResource menuArrow();
+	
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/rating_star.gif")
+	public ImageResource ratingStar();
 	
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/search_glass.png")
 	public ImageResource searchGlass();

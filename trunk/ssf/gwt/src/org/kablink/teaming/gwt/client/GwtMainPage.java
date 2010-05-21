@@ -75,7 +75,8 @@ public class GwtMainPage extends Composite
 {
 	public static boolean m_novellTeaming = true;
 	public static RequestInfo m_requestInfo;
-	
+
+	private boolean m_inSearch = false;
 	private ContentControl m_contentCtrl;
 	private EditBrandingDlg m_editBrandingDlg = null;
 	private PersonalPreferencesDlg m_personalPrefsDlg = null;
@@ -206,9 +207,9 @@ public class GwtMainPage extends Composite
 	 * view_workarea_navbar.jsp when new contexts are loaded.
 	 */
 	private native void initContextLoadHandlerJS(GwtMainPage gwtMainPage) /*-{
-		$wnd.ss_contextLoaded = function( binderId )
+		$wnd.ss_contextLoaded = function( binderId, inSearch )
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::contextLoaded(Ljava/lang/String;)( binderId );
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::contextLoaded(Ljava/lang/String;Ljava/lang/String;)( binderId, inSearch );
 		}//end ss_contextLoaded()
 	}-*/;
 
@@ -250,12 +251,26 @@ public class GwtMainPage extends Composite
 	 * Puts a context change from the traditional UI into effect.
 	 */
 	@SuppressWarnings("unused")
-	private void contextLoaded( String binderId ) {
-		contextLoaded( binderId, Instigator.CONTENT_CONTEXT_CHANGE );
+	private void contextLoaded( String binderId, String inSearch ) {
+		contextLoaded( binderId, Instigator.CONTENT_CONTEXT_CHANGE, ((null != inSearch) && Boolean.parseBoolean( inSearch )));
 	}
 	
-	private void contextLoaded( final String binderId, final Instigator instigator )
+	private void contextLoaded( String binderId, Instigator instigator ) {
+		contextLoaded( binderId, instigator, false );
+	}
+	
+	private void contextLoaded( String binderId, final Instigator instigator, boolean inSearch )
 	{
+		m_inSearch = inSearch;
+
+		// If we're in a search panel, we always show the root
+		// workspace in the sidebar tree.  That's the way it worked
+		// in the traditional UI so I kept that functionality intact.
+		final String contextBinderId;
+		if      ( m_inSearch )                            contextBinderId = "1";
+		else if ( GwtClientHelper.hasString( binderId ) ) contextBinderId = binderId;
+		else                                              contextBinderId = m_selectedBinderId;
+		
 		GwtTeaming.getRpcService().getBinderPermalink( binderId, new AsyncCallback<String>()
 		{
 			public void onFailure( Throwable t )
@@ -266,8 +281,11 @@ public class GwtMainPage extends Composite
 			public void onSuccess( String binderPermalink )
 			{
 				OnSelectBinderInfo osbInfo;
-				
-				osbInfo = new OnSelectBinderInfo( binderId, binderPermalink, false, instigator );
+				osbInfo = new OnSelectBinderInfo(
+					contextBinderId,
+					binderPermalink,
+					false,	// false -> Not trash.
+					instigator );
 				selectionChanged(osbInfo);
 			}// end onSuccess()
 		});
@@ -847,7 +865,7 @@ public class GwtMainPage extends Composite
 			if ( Instigator.CONTENT_CONTEXT_CHANGE == instigator )
 			{
 				// Yes!  Update the menu bar accordingly.
-				m_mainMenuCtrl.contextLoaded( m_selectedBinderId );
+				m_mainMenuCtrl.contextLoaded( m_selectedBinderId, m_inSearch );
 			}
 			else
 			{

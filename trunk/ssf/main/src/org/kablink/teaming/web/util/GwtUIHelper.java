@@ -72,8 +72,10 @@ public class GwtUIHelper {
 	
 	// The key into the session cache to store the GWT UI tab and
 	// toolbar beans.
-	public final static String CACHED_TABS_KEY		= "gwt-ui-tabs";
-	public final static String CACHED_TOOLBARS_KEY	= "gwt-ui-toolbars";
+	public final static String CACHED_TABS_KEY				= "gwt-ui-tabs";
+	public final static String CACHED_TOOLBARS_KEY			= "gwt-ui-toolbars";
+	public final static String CACHED_TOP_RANKED_PEOPLE_KEY	= "gwt-ui-topRankedPeople";
+	public final static String CACHED_TOP_RANKED_PLACES_KEY	= "gwt-ui-topRankedPlaces";
 	
 	// The names of the toolbar beans stored in the session cache for
 	// the GWT UI.
@@ -512,10 +514,12 @@ public class GwtUIHelper {
 			return;
 		}
 
-		// Clear any previous tabs and toolbars we may have cached.
+		// Clear any previous stuff we may have cached.
 		HttpSession hSession = WebHelper.getRequiredSession(hRequest);
 		hSession.removeAttribute(CACHED_TABS_KEY);
 		hSession.removeAttribute(CACHED_TOOLBARS_KEY);
+		hSession.removeAttribute(CACHED_TOP_RANKED_PEOPLE_KEY);
+		hSession.removeAttribute(CACHED_TOP_RANKED_PLACES_KEY);
 
 		// If we're not in GWT UI mode...
 		if (!(isGwtUIActive(hRequest))) {
@@ -542,10 +546,11 @@ public class GwtUIHelper {
 			}
 		}
 
-		// Finally, store the tabs and the HashMap of toolbars in the
-		// session cache.
-		hSession.setAttribute(CACHED_TABS_KEY, model.get(WebKeys.TABS));
-		hSession.setAttribute(CACHED_TOOLBARS_KEY, tbHM);
+		// Finally, store the stuff we cache in the session cache.
+		hSession.setAttribute(CACHED_TABS_KEY,              model.get(WebKeys.TABS));
+		hSession.setAttribute(CACHED_TOOLBARS_KEY,          tbHM);
+		hSession.setAttribute(CACHED_TOP_RANKED_PEOPLE_KEY, model.get(WebKeys.FOLDER_ENTRYPEOPLE));
+		hSession.setAttribute(CACHED_TOP_RANKED_PLACES_KEY, model.get(WebKeys.FOLDER_ENTRYPLACES));
 	}
 
 	/*

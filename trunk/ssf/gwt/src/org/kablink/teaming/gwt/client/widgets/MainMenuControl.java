@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.mainmenu.MyFavoritesMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.MyTeamsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlacesMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.SearchMenuPanel;
+import org.kablink.teaming.gwt.client.mainmenu.TopRankedDlg;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
@@ -57,7 +58,10 @@ import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
@@ -296,7 +300,6 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 			});
 		menuPanel.add(m_myWorkspaceBox);
 	}
-	
 
 	/*
 	 * Adds the Recent Places item to the context based portion of the
@@ -319,14 +322,50 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		}
 	}
 	
+	/*
+	 * Adds the Top Ranked item to the context based portion of the
+	 * menu bar.
+	 */
+	private void addTopRankedToContext() {
+		final ActionTrigger actionTrigger = this;
+		final MenuBarBox topRankedBox = new MenuBarBox("ss_mainMenuTopRanged", m_messages.mainMenuBarTopRanked());
+		topRankedBox.addClickHandler(
+			new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					// Remove the selection from the menu item...
+					Element menuItemElement = Document.get().getElementById("ss_mainMenuTopRanged");
+					menuItemElement.removeClassName("mainMenuPopup_BoxHover");
+					
+					// ...and run the top ranked dialog.
+					GwtTeaming.getRpcService().getTopRanked(new AsyncCallback<List<TopRankedInfo>>() {
+						public void onFailure(Throwable t) {
+							Window.alert(t.toString());
+						}
+						public void onSuccess(List<TopRankedInfo> triList) {
+							TopRankedDlg topRankedDlg = new TopRankedDlg(
+								false,	// false -> Don't auto hide.
+								true,	// true  -> Modal.
+								actionTrigger,
+								topRankedBox.getAbsoluteLeft(),
+								getPopupMenuTop(topRankedBox),
+								triList);
+							topRankedDlg.addStyleName("topRankedDlg");
+							topRankedDlg.show();
+						}
+					});
+				}
+			});
+		m_contextPanel.add(topRankedBox);
+	}
+	
 	/**
 	 * Called when a new context has been loaded into the content panel
 	 * to refresh the menu contents.
 	 * 
 	 * @param binderId
 	 */
-	public void contextLoaded(final String binderId) {
-		// Rebuild the context based panel based on the new context.  
+	public void contextLoaded(final String binderId, final boolean inSearch) {
+		// Rebuild the context based panel based on the new context.
 		m_contextPanel.clear();
 		GwtTeaming.getRpcService().getBinderInfo(binderId, new AsyncCallback<BinderInfo>() {
 			public void onFailure(Throwable t) {
@@ -345,9 +384,14 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 								Window.alert(t.toString());
 							}
 							public void onSuccess(final TeamManagementInfo tmi)  {
+								// Handle inSearch vs. not inSearch.
+//!								...this needs to be implemented...
 								addManageToContext(      toolbarItemList, tmi);
 								addRecentPlacesToContext(toolbarItemList);
 								addActionsToContext(     toolbarItemList);
+								if (inSearch) {
+									addTopRankedToContext();
+								}
 							}
 						});
 					}
@@ -374,57 +418,56 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		return top;
 	}
 	
-	
 	/**
-	 * Show all the menus and controls on this menu control and hide the "close administration" menu item..  This is used when we close
-	 * the "site administration" page.
+	 * Show all the menus and controls on this menu control and hide
+	 * the Close administration menu item..  This is used when we close
+	 * the Site Administration" page.
 	 */
-	public void hideAdministrationMenubar()
-	{
-		// Show the widget that holds the "expand/contract left navigation", "expand/contract header" ... widgets
-		m_buttonsPanel.setVisible( true );
+	public void hideAdministrationMenubar() {
+		// Show the widget that holds the expand/contract left
+		// navigation, expand/contract header, ... widgets.
+		m_buttonsPanel.setVisible(true);
 		
-		// Show "my workspace", "my teams" and "my favorites"
-		m_myWorkspaceBox.setVisible( true );
-		m_myTeamsBox.setVisible( true );
-		m_myFavoritesBox.setVisible( true );
+		// Show My Workspace, My Teams and My Favorites.
+		m_myWorkspaceBox.setVisible(true);
+		m_myTeamsBox.setVisible(true);
+		m_myFavoritesBox.setVisible(true);
 		
 		// Show the panel that holds the menu items.
-		m_contextPanel.setVisible( true );
+		m_contextPanel.setVisible(true);
 		
 		// Show the search panel.
-		m_searchPanel.setVisible( true );
+		m_searchPanel.setVisible(true);
 		
-		// Hide the "close administration menu item.
-		m_closeAdminBox.setVisible( false );
-	}// end hideAdministrationMenubar()
-	
+		// Hide the Close administration menu item.
+		m_closeAdminBox.setVisible(false);
+	}
 	
 	/**
-	 * Hide all the menus and controls on this menu control and show the "close administration" menu item.  This is used when we invoke
-	 * the "site administration" page.
+	 * Hide all the menus and controls on this menu control and shows
+	 * the Close administration menu item.  This is used when we invoke
+	 * the Site Administration page.
 	 */
-	public void showAdministrationMenubar()
-	{
-		// Hide the widget that holds the "expand/contract left navigation", "expand/contract header" ... widgets
-		m_buttonsPanel.setVisible( false );
+	public void showAdministrationMenubar() {
+		// Hide the widget that holds the expand/contract left
+		// navigation, expand/contract header, ... widgets
+		m_buttonsPanel.setVisible(false);
 		
-		// Hide "my workspace", "my teams" and "my favorites"
-		m_myWorkspaceBox.setVisible( false );
-		m_myTeamsBox.setVisible( false );
-		m_myFavoritesBox.setVisible( false );
+		// Hide My Workspace, My Teams and My Favorites.
+		m_myWorkspaceBox.setVisible(false);
+		m_myTeamsBox.setVisible(false);
+		m_myFavoritesBox.setVisible(false);
 		
 		// Hide the panel that holds the menu items.
-		m_contextPanel.setVisible( false );
+		m_contextPanel.setVisible(false);
 		
 		// Hide the search panel.
-		m_searchPanel.setVisible( false );
+		m_searchPanel.setVisible(false);
 		
-		// Show the "close administration" menu item.
-		m_closeAdminBox.setVisible( true );
-	}// end showAdministrationMenubar()
+		// Show the Close administration menu item.
+		m_closeAdminBox.setVisible(true);
+	}
 	
-
 	/**
 	 * Fires a TeamingAction at the registered ActionHandler's.
 	 * 
