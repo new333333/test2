@@ -45,7 +45,8 @@
 <% if (GwtUIHelper.isGwtUIActive(request)) { %>
 	<script type="text/javascript">
 		function notifyGwtUI() {
-			window.top.ss_contextLoaded("${ssBinder.id}");
+			var inSearch = ("function" == typeof ss_initSearchOptions);
+			window.top.ss_contextLoaded("${ssBinder.id}", String(inSearch));
 		}
 		ss_createOnLoadObj("notifyGwtUI_sendMail", notifyGwtUI);
 	</script>

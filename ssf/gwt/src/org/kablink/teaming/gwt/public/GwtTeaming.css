@@ -1282,6 +1282,68 @@ body, table td, select
 	width: 90%;
 }
 
+/* Styles for the top ranked dialog. */
+.topRankedDlg
+{
+	z-index: 351;
+}
+.topRankedDlg_Empty
+{
+	margin-top: 8px;
+}
+.topRankedDlg_Grid
+{
+	margin-top: 8px;
+}
+.topRankedDlg_ItemAnchor
+{
+	color: #0000fc;
+	cursor: pointer;
+	font-size: 1em;
+	padding-right: 3px;
+	text-decoration: none;
+}
+.topRankedDlg_ItemStar
+{
+	margin-left: 10px;
+}
+.topRankedDlg_Label
+{
+	color: #414648; /* dark grey */
+	line-height: 1.1em; 
+	margin-right: 5px;
+	padding: 0.2em 0.5em 0.3em; 
+	white-space: nowrap;
+}
+.topRankedDlg_SectionBanner
+{
+	font-size: 1em;
+	font-weight: bold;
+	padding-top: 8px;
+	padding-bottom: 5px;
+}
+.topRankedDlg_SectionBannerCell
+{
+}
+.topRankedDlg_SectionBannerRow
+{
+}
+.topRankedDlg_SectionHeaderCell
+{
+	font-size: .9em;
+}
+.topRankedDlg_SectionHeaderCellRating
+{
+	padding-left: 10px;
+	padding-right: 5px;
+}
+.topRankedDlg_SectionHeaderCellTitle
+{
+}
+.topRankedDlg_SectionHeaderRow
+{
+}
+
 /* Style for the main Teaming page. */
 .mainTeamingPage
 {
@@ -1719,3 +1781,14 @@ a.ss_new_thread {
 	top: 9px;
 	left: 15px;
 }
+
+.gwtUI_ss_brightest   {opacity: 1.0;}
+.gwtUI_ss_brightestIE {filter: alpha(opacity=100);}
+.gwtUI_ss_brighter    {opacity: 0.8;}
+.gwtUI_ss_brighterIE  {filter: alpha(opacity=80);}
+.gwtUI_ss_bright      {opacity: 7.0;}
+.gwtUI_ss_brightIE    {filter: alpha(opacity=70);}
+.gwtUI_ss_dim         {opacity: 0.6;}
+.gwtUI_ss_dimIE       {filter: alpha(opacity=60);}
+.gwtUI_ss_very_dim    {opacity: 0.4;}
+.gwtUI_ss_very_dimIE  {filter: alpha(opacity=40);}

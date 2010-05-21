@@ -55,6 +55,7 @@ import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.TagInfo;
+import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 
@@ -143,6 +144,7 @@ public interface GwtRpcService extends RemoteService
 	public List<SavedSearchInfo> getSavedSearches();
 	public TeamManagementInfo    getTeamManagementInfo(     String             binderId                                   );
 	public List<ToolbarItem>     getToolbarItems(           String             binderId                                   );
+	public List<TopRankedInfo>   getTopRanked();
 	
 	// The following are used to manage the tracking of binders.
 	public Boolean trackBinder(   String binderId );

@@ -45,7 +45,6 @@ import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
-import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
@@ -56,6 +55,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.TagInfo;
+import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -139,6 +139,7 @@ public interface GwtRpcServiceAsync
 	public void getSavedSearches(                                                                         AsyncCallback<List<SavedSearchInfo>> callback );
 	public void getTeamManagementInfo(     String             binderId,                                   AsyncCallback<TeamManagementInfo>    callback );
 	public void getToolbarItems(           String             binderId,                                   AsyncCallback<List<ToolbarItem>>     callback );
+	public void getTopRanked(                                                                             AsyncCallback<List<TopRankedInfo>>   callback );
 
 	// The following are used to manage the tracking of binders.
 	public void trackBinder(   String binderId, AsyncCallback<Boolean> callback );
