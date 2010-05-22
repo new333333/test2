@@ -79,7 +79,7 @@
 	  <tr>
 	    <td valign="top" class="ss_att_meta" nowrap width="5%">
 	      <c:if test="${!empty ss_pseudoEntityRevert}">
-	        <input type="checkbox" name="file_revert_${selection.id}" onChange="saveFileId(this);" />
+	        <input type="checkbox" name="file_revert_${selection.id}" onChange="saveFileId(this);" checked />
 	      </c:if>
 	    </td>
 		<td valign="top" width="80" rowspan="${thumbRowSpan}">
