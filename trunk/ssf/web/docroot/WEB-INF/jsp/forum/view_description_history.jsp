@@ -227,6 +227,17 @@ function diff( o, n ) {
 
 
 <script type="text/javascript">
+function clearAllCheckboxes() {
+	//Look through all of the checkboxes and clear them
+	var inputElements = document.getElementsByTagName("input");
+	for (var i = 0; i < inputElements.length; i++) {
+		var cbObj = inputElements[i];
+		if (cbObj != null && cbObj.type.toLowerCase() == "checkbox") {
+			cbObj.checked = false;
+		}
+	}
+}
+
 var ss_diffOne = null;
 var ss_diffTwo = null;
 
@@ -241,9 +252,9 @@ function ss_updateCompareButton() {
 		if (cbObj != null && cbObj.type.toLowerCase() == "checkbox" && cbObj.checked) {
 			var vId = cbObj.id.substring(7);
 			if (ss_diffOne == null) {
-				ss_diffOne = i;
+				ss_diffOne = vId;
 			} else if (ss_diffTwo == null) {
-				ss_diffTwo = i;
+				ss_diffTwo = vId;
 			} else {
 				ss_diffOne = null;
 				ss_diffTwo = null;
@@ -368,6 +379,9 @@ function dodiff()
 </tr>
 </c:forEach>
 </table>
+<div style="padding-bottom:10px;">
+  <input type="button" name="clearAllBtn" value="<ssf:nlt tag="button.clearAll"/>" onclick="clearAllCheckboxes();"/>
+</div>
 <div>
   <input type="button" name="compareBtn" id="compareBtn" value="<ssf:nlt tag="button.compare"/>" disabled="true" onclick="dodiff();"/>
   &nbsp;&nbsp;&nbsp;
