@@ -67,10 +67,10 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 <table width="90%" border="0" valign="top" cellpadding="1" cellspacing="0">
 <c:if test="${!empty ss_pseudoEntity}">
 <tr>
-	<td valign="top" style="padding-left: 19px;" nowrap>
+	<td valign="top" style="padding-left: 9px;" nowrap>
 		<span class="ss_style ss_bold ss_smallprint"><c:out value="${property_caption}"/></span>
 		<br/>
-		<span class="ss_style ss_bold ss_smallprint"><ssf:nlt tag="entry.revert.select"/>
+		<span class="ss_style ss_smallprint"><ssf:nlt tag="entry.revert.select"/>
 	</td>
 </tr>
 </c:if>
