@@ -90,12 +90,12 @@ public class EncryptedClassPathConfigFiles extends PropertiesClassPathConfigFile
 	        			if (Validator.isNull(val)) continue;//not supplied
 	        			if (!PropertyValueEncryptionUtils.isEncryptedValue(val)) {
 	        				String encVal = encryptor.encrypt(val);
-	        				int beginIndex = origStr.indexOf(eProps[i]);
+	        				int beginIndex = origStr.indexOf(eProps[i]+"=");
 	        				int index = origStr.indexOf("=", beginIndex+eProps[i].length());
 	        				index = origStr.indexOf(val, index+1);
 	        				String strToReplace = origStr.substring(beginIndex, index+val.length());
 	        				String strToReplaceWith = eProps[i] + "=ENC("+ encVal +")";
-	        				origStr.replace(strToReplace, strToReplaceWith);
+	        				origStr = origStr.replace(strToReplace, strToReplaceWith);
 	        				needUpdate = true;
 	        			}
 	        		}
