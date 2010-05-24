@@ -1957,7 +1957,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					tidy.setLowerLiterals(false);
 					tidy.setMakeClean(false);
 					tidy.setMakeBare(false);
-					tidy.setInputEncoding("UTF-8");
+					tidy.setInputEncoding("UTF8");
+					tidy.setOutputEncoding("UTF8");
 					tidy.setRawOut(true);
 					tidy.setSmartIndent(false);
 					tidy.setTidyMark(false);
