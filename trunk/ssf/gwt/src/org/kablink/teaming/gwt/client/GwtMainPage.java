@@ -1215,7 +1215,7 @@ public class GwtMainPage extends Composite
 				// Get the height of the browser window's client area.
 				clientHeight = Window.getClientHeight();
 				
-				height = clientHeight - m_contentPanel.getAbsoluteTop() - 20;
+				height = clientHeight - m_contentPanel.getAbsoluteTop() - 10;
 			}
 			
 			m_contentCtrl.setDimensions( width, height );

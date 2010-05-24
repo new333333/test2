@@ -579,6 +579,24 @@ public class MastHead extends Composite
 
 
 	/**
+	 * Return the height of the masthead
+	 */
+	public int getHeight()
+	{
+		int height;
+		
+		height = 0;
+		if ( m_siteBrandingPanel.isVisible() )
+			height += m_siteBrandingPanel.getOffsetHeight();
+		
+		if ( m_binderBrandingPanel.isVisible() )
+			height += m_binderBrandingPanel.getOffsetHeight();
+		
+		return height;
+	}// end getHeight()
+	
+	
+	/**
 	 * Return the site branding data.
 	 */
 	public GwtBrandingData getSiteBrandingData()
