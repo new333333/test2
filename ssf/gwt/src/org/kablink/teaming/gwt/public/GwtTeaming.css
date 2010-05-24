@@ -813,7 +813,6 @@ body, table td, select
 /* Style used for the content panel in Teaming's main page. */
 .mainContentPanel
 {
-	height: 100%;
 	position: relative;
 }
 
@@ -1357,7 +1356,6 @@ body, table td, select
 /* Style for the panel that holds the main Teaming page. */
 .mainTeamingPagePanel
 {
-	height: 100%;
 	width: 100%;
 }
 
