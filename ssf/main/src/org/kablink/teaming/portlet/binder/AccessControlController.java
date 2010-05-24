@@ -130,6 +130,31 @@ public class AccessControlController extends AbstractBinderController {
 			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", false);
 			getAdminModule().setWorkAreaFunctionMembershipInherited(workArea,inherit);			
 		
+		} else if (formData.containsKey("aclSelectionBtn") && WebHelper.isMethodPost(request)) {
+			if ((workArea instanceof FolderEntry) && ((FolderEntry)workArea).isTop()) {
+				String aclType = PortletRequestUtils.getStringParameter(request, "aclSelection", "entry");	
+				if (aclType.equals("folder")) {
+					getAdminModule().setEntryHasAcl(workArea, Boolean.FALSE, Boolean.TRUE);
+					SimpleProfiler.setProfiler(new SimpleProfiler("lucene"));
+					Map functionMemberships = new HashMap();
+					getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
+					if(logger.isDebugEnabled())
+						logger.debug(SimpleProfiler.toStr());
+					SimpleProfiler.clearProfiler();
+				} else if (aclType.equals("entry")) {
+					//Set the entry acl
+					Boolean includeFolderAcl = PortletRequestUtils.getBooleanParameter(request, "includeFolderAcl", true);
+					SimpleProfiler.setProfiler(new SimpleProfiler("lucene"));
+					Map functionMemberships = new HashMap();
+					getAccessResults(request, functionMemberships);
+					getAdminModule().setEntryHasAcl(workArea, Boolean.TRUE, includeFolderAcl);
+					getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
+					if(logger.isDebugEnabled())
+						logger.debug(SimpleProfiler.toStr());
+					SimpleProfiler.clearProfiler();
+				}
+			}
+		
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			if (workArea instanceof TemplateBinder) {
 				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);

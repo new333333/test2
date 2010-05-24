@@ -93,9 +93,24 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 <span class="ss_bold ss_largerprint"><ssf:nlt tag="access.configure"/></span> <ssf:inlineHelp jsp="workspaces_folders/menus_toolbars/access_control"/>
 <br/>
 <br/>
-<span><ssf:nlt tag="access.currentEntry"/></span>
-<span class="ss_bold"><ssf:nlt tag="${ssWorkArea.title}" checkIfTag="true"/></span>
-<br/>
+	<table cellpadding="0" cellspacing="0">
+	<tr>
+	<td><span><ssf:nlt tag="access.currentEntry"/></span>
+	</td>
+	<td style="padding-left:10px;">
+	<span class="ss_bold"><ssf:nlt tag="${ssWorkArea.title}" checkIfTag="true"/></span>
+	</td>
+	</tr>
+	<tr>
+	<td>
+	<span><ssf:nlt tag="access.entryOwner"/></span>
+	</td>
+	<td style="padding-left:10px;">
+	<span class="ss_bold"><ssf:userTitle user="${ssWorkArea.owner}"/> 
+		  <span class="ss_normal ss_smallprint ss_italic">(${ssWorkArea.owner.name})</span></span>
+	</td>
+	</tr>
+	</table>
 </td>
 <td align="right" valign="top">
 <form class="ss_form" method="post" style="display:inline;" 
@@ -121,36 +136,6 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 </div>
 </c:if>
 
-<c:if test="${!ssEntryHasEntryAcl}">
-<div>
-  <span class="ss_bold"><ssf:nlt tag="access.noEntryAclSet"/></span>
-  <ul>
-    <li>
-      <a href="<ssf:url action="configure_access_control"><ssf:param
-		  name="workAreaId" value="${ssWorkArea.parentBinder.id}"/><ssf:param
-		  name="workAreaType" value="${ssWorkArea.parentBinder.workAreaType}"/><ssf:param
-		  name="operation" value="view_access"/></ssf:url>"
-        onClick="ss_openUrlInPortlet(this.href, true, '600', '700');return false;"
-      ><ssf:nlt tag="access.viewWhoHasFolderAccess"/></a>
-    </li>
-    <c:if test="${ss_accessControlConfigureAllowed}">
-    <li>
-      <a href="javascript: ;"
-        onClick="ss_toggleShowDiv('ss_accessControlTable');return false;"
-      ><ssf:nlt tag="access.setEntryAcl"/></a>
-    </li>
-    </c:if>
-  </ul>
-</div>
-</c:if>
-
-<div id="ss_accessControlTable" 
-  <c:if test="${!ssEntryHasEntryAcl && empty ss_accessSortedGroups && empty ss_accessSortedUsers}">style="display:none;"</c:if>
->
-<c:if test="${ss_accessFunctionsCount <= 0}">
-<span class="ss_bold ss_italic"><ssf:nlt tag="access.noRoles"/></span><br/>
-</c:if>
-<c:if test="${ss_accessFunctionsCount > 0}">
 <form class="ss_form" 
   name="${renderResponse.namespace}rolesForm" 
   id="${renderResponse.namespace}rolesForm" 
@@ -163,6 +148,50 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 
 <input type="hidden" name="btnClicked"/>
 <input type="hidden" name="roleIdToAdd"/>
+
+<div>
+  <c:if test="${!ssEntryHasEntryAcl}"><span class="ss_bold">
+    <ssf:nlt tag="access.noEntryAclSet"/></span>
+    <span class="ss_smallprint" style="padding-left:20px;">
+      [<a href="<ssf:url action="configure_access_control"><ssf:param
+		  name="workAreaId" value="${ssWorkArea.parentBinder.id}"/><ssf:param
+		  name="workAreaType" value="${ssWorkArea.parentBinder.workAreaType}"/><ssf:param
+		  name="operation" value="view_access"/></ssf:url>"
+  		onClick="ss_openUrlInPortlet(this.href, true, '600', '700');return false;"
+	  ><ssf:nlt tag="access.viewWhoHasFolderAccess"/></a>]
+	</span>
+  </c:if>
+  <c:if test="${ssEntryHasEntryAcl}"><span class="ss_bold"><ssf:nlt tag="access.entryAclSet"/></span></c:if>
+  <br/>
+  <div style="padding:4px 0px 20px 10px;">
+   <c:if test="${ss_accessControlConfigureAllowed}">
+    <input type="radio" name="aclSelection" value="folder"  
+      <c:if test="${!ssEntryHasEntryAcl}"> checked </c:if>
+      <c:if test="${!ss_accessControlConfigureAllowed}"> disabled </c:if>
+    />
+    <span><ssf:nlt tag="access.entry.useFolderACL"/></span>
+    <br/>
+    <input type="radio" name="aclSelection" value="entry" 
+      <c:if test="${ssEntryHasEntryAcl}"> checked </c:if>
+      <c:if test="${!ss_accessControlConfigureAllowed}"> disabled </c:if>
+    />
+    <span><ssf:nlt tag="access.entry.specifyEntryACL"/></span>
+    <br/>
+    <div style="padding:4px 0px 20px 10px;">
+        <input type="submit" class="ss_submit" name="aclSelectionBtn" 
+ 		  value="<ssf:nlt tag="button.apply" />">
+	</div>
+   </c:if>
+  </div>
+</div>
+
+<div id="ss_accessControlTable" 
+  <c:if test="${!ssEntryHasEntryAcl && empty ss_accessSortedGroups && empty ss_accessSortedUsers}">style="display:none;"</c:if>
+>
+<c:if test="${ss_accessFunctionsCount <= 0}">
+<span class="ss_bold ss_italic"><ssf:nlt tag="access.noRoles"/></span><br/>
+</c:if>
+<c:if test="${ss_accessFunctionsCount > 0}">
 
 <c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
 
@@ -299,12 +328,12 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   title="<ssf:nlt tag="access.select"/>" /><span style="padding-left:4px;"><ssf:nlt tag="access.includeFolderAcl"/></span>
 </td>
 <td valign="bottom" style="padding-left:20px;">
-<a href="<ssf:url action="configure_access_control"><ssf:param
+<span class="ss_smallprint">[<a href="<ssf:url action="configure_access_control"><ssf:param
 		  name="workAreaId" value="${ssWorkArea.parentBinder.id}"/><ssf:param
 		  name="workAreaType" value="${ssWorkArea.parentBinder.workAreaType}"/><ssf:param
 		  name="operation" value="view_access"/></ssf:url>"
   onClick="ss_openUrlInPortlet(this.href, true, '600', '700');return false;"
-><ssf:nlt tag="access.viewWhoHasFolderAccess"/></a>
+><ssf:nlt tag="access.viewWhoHasFolderAccess"/></a>]</span>
 </td>
 </tr>
 </table>
@@ -313,28 +342,15 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 <input type="submit" class="ss_submit" name="okBtn" 
  onClick="ss_startSpinner();"
  value="<ssf:nlt tag="button.saveChanges" />">
-<c:if test="${ss_accessControlConfigureAllowed}">
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <input type="submit" class="ss_submit" name="delBtn" 
-    value="<ssf:nlt tag="access.deleteThisAcl"/>">
 </c:if>
- 
 </c:if>
 </form>
 <br/>
-</c:if>
-
-<c:if test="${ssWorkArea.workAreaType == 'zone'}">
-<div style="padding-bottom:10px;">
-* <ssf:nlt tag="access.zone.applicationsFiltering"/>
-</div>
-</c:if>
 
 <span class="ss_italic ss_small">[<ssf:nlt tag="access.superUser">
   <ssf:param name="value" useBody="true"><ssf:userTitle user="${ss_superUser}"/></ssf:param>
   <ssf:param name="value" value="${ss_superUser.name}"/>
   </ssf:nlt>]</span><br/>
-</div>
 </div>
 </ssf:box>
 
