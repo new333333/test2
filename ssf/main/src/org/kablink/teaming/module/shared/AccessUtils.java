@@ -58,6 +58,7 @@ import org.kablink.teaming.security.acl.AclAccessControlException;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.FunctionManager;
 import org.kablink.teaming.security.function.OperationAccessControlException;
+import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SPropsUtil;
@@ -318,6 +319,7 @@ public class AccessUtils  {
         if (user.isSuper()) return;
     	boolean widen = SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false);
     	OperationAccessControlException ace = null;
+    	OperationAccessControlExceptionNoName ace2 = null;
        	//First, check the entry ACL
        	try {
        		if (entry.hasEntryAcl()) {
@@ -328,7 +330,11 @@ public class AccessUtils  {
        			}
        			return;
        		}
-       	} catch (OperationAccessControlException ex) {ace = ex;}
+       	} catch (OperationAccessControlException ex) {
+       		ace = ex;
+       	} catch (OperationAccessControlExceptionNoName ex2) {
+       		ace2 = ex2;
+       	}
       	
        	//Next, see if entry allows other operations such as CREATOR_READ, CREATOR_MODIFY, CREATOR_DELETE
        	if (WorkAreaOperation.READ_ENTRIES.equals(operation) && user.equals(entry.getCreation().getPrincipal())) {
@@ -394,6 +400,8 @@ public class AccessUtils  {
        	//Nothing allowed the operation, so throw an error
        	if (ace != null) {
        		throw ace;
+       	} else if (ace2 != null) {
+       		throw ace2;
        	} else {
        		throw new AccessControlException();
        	}
@@ -403,7 +411,7 @@ public class AccessUtils  {
 		WfAcl.AccessType accessType = WfAcl.AccessType.delete;
 		if (WorkAreaOperation.READ_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.read;
 		if (WorkAreaOperation.MODIFY_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.write;
-		if (WorkAreaOperation.DELETE_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.delete;
+		if (WorkAreaOperation.DELETE_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.delete; 
  		if (!entry.hasAclSet()) {
 			//This entry does not have a workflow ACL set, so just go check for entry level access
  			operationCheck(user, binder, (Entry)entry, operation);
