@@ -54,6 +54,7 @@ import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -188,13 +189,28 @@ public class AccessControlController extends AbstractBinderController {
 			model.put(WebKeys.ENTRY_HAS_ENTRY_ACL, entry.hasEntryAcl());
 			wArea = entry;
 			model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(entry.getZoneId()));
+			Boolean configureAccess = false;
 			if (entry.hasEntryAcl()) {
-				model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, getAdminModule().testAccess(entry, AdminOperation.manageFunctionMembership));
-						
+				configureAccess = getAdminModule().testAccess(entry, AdminOperation.manageFunctionMembership);
+				if (!configureAccess && entry.isIncludeFolderAcl()) {
+					configureAccess = getFolderModule().testAccess(entry.getParentFolder(), FolderOperation.setEntryAcl);
+				}
+				if (!configureAccess && entry.isIncludeFolderAcl() && entry.getOwnerId().equals(user.getId())) {
+					configureAccess = getFolderModule().testAccess(entry.getParentFolder(), FolderOperation.entryOwnerSetAcl);
+				}
 			} else {
-				model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, 
-						getAdminModule().testAccess(entry.getParentBinder(), AdminOperation.manageFunctionMembership));
+				if (!configureAccess) {
+					configureAccess = getAdminModule().testAccess(entry.getParentFolder(), AdminOperation.manageFunctionMembership);
+				}
+				if (!configureAccess) {
+					configureAccess = getFolderModule().testAccess(entry.getParentFolder(), FolderOperation.setEntryAcl);
+				}
+				if (!configureAccess && entry.getOwnerId().equals(user.getId())) {
+					configureAccess = getFolderModule().testAccess(entry.getParentFolder(), FolderOperation.entryOwnerSetAcl);
+				}
 			}
+			model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, configureAccess);
+			
 		} else {
 			Binder binder = getBinderModule().getBinder(workAreaId);			
 			//Build the navigation beans

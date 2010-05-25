@@ -91,7 +91,10 @@ public interface FolderModule {
 	   overrideReserveEntry,
 	   synchronize,
 	   scheduleSynchronization,
-	   changeEntryTimestamps
+	   changeEntryTimestamps,
+	   entryOwnerSetAcl,
+	   setEntryAcl
+	   
    }
  
    /**

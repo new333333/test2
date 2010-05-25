@@ -608,7 +608,7 @@ public class EntityIndexUtils {
 			Set entryIds = AccessUtils.getReadAccessIds(entry);
 	   		String ids = LongIdUtil.getIdsAsString(entryIds);
 	       	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), Constants.READ_ACL_TEAM);
-	       	ids = ids.replaceFirst(ObjectKeys.OWNER_USER_ID.toString(), Constants.READ_ACL_BINDER_OWNER);
+	       	ids = ids.replaceFirst(ObjectKeys.OWNER_USER_ID.toString(), entry.getOwnerId().toString());
 	        if (entry.isIncludeFolderAcl()) ids = ids.trim() + " " + Constants.READ_ACL_ALL + " " + Constants.READ_ACL_GLOBAL;
 	       	if (Validator.isNull(ids)) return Constants.EMPTY_ACL_FIELD;
 	       	if (entryIds.contains(allUsersId)) {

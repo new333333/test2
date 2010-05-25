@@ -233,6 +233,12 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			case changeEntryTimestamps:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.BINDER_ADMINISTRATION);
 				break;				
+			case entryOwnerSetAcl:
+				getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
+				break;
+			case setEntryAcl:
+				getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_ENTRY_ACLS);
+				break;
 			default:
 				throw new NotSupportedException(operation.toString(), "checkAccess");
 				

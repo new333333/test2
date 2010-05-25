@@ -689,11 +689,11 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
       	for (WorkAreaFunctionMembership wfm:wfms) {
       		current.addAll(wfm.getMemberIds());
       	}
-      	//only reindex if readers were affected.  Do outside transaction
+      	//only re-index if readers were affected.  Do outside transaction
 		if (!origional.equals(current) && (workArea instanceof Binder)) {
 			Binder binder = (Binder)workArea;
 			loadBinderProcessor(binder).indexFunctionMembership(binder, true);
-		} else if (!origional.equals(current) && (workArea instanceof Entry)) {
+		} else if (workArea instanceof Entry) {
 			Entry entry = (Entry)workArea;
 			List entries = new ArrayList();
 			entries.add(entry);
