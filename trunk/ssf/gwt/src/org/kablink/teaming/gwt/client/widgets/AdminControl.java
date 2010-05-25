@@ -466,10 +466,28 @@ public class AdminControl extends Composite
 			if ( url != null && url.length() > 0 )
 			{
 				m_contentControl.setUrl( url );
-				m_contentControl.setVisible( true );
+				showContentPanel();
 			}
 		}
 	}// end adminActionSelected()
+	
+	/**
+	 * 
+	 */
+	public void hideContentPanel()
+	{
+		m_contentControl.setVisible( false );	
+	}// end hideContentPanel()
+	
+	
+	/**
+	 * 
+	 */
+	public void hideTreeControl()
+	{
+		m_adminActionsTreeControl.setVisible( false );	
+	}// end hideTreeControl()
+	
 	
 	/**
 	 * 
@@ -506,6 +524,24 @@ public class AdminControl extends Composite
 		m_contentControl.setDimensions( width, height );
 	}// end setSizeAndPositionOfContentControl()
 
+	
+	/**
+	 * 
+	 */
+	public void showContentPanel()
+	{
+		m_contentControl.setVisible( true );	
+	}// end showContentPanel()
+	
+	
+	/**
+	 * 
+	 */
+	public void showTreeControl()
+	{
+		m_adminActionsTreeControl.setVisible( true );	
+	}// end showTreeControl()
+	
 	
 	/**
 	 * Fires a TeamingAction at the registered ActionHandler's.

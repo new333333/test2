@@ -34,6 +34,7 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_mail") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
@@ -44,6 +45,23 @@
 
 <script type="text/javascript">
 var ${renderResponse.namespace}_savedIndex;
+
+/**
+ * 
+ */
+function handleCloseBtn()
+{
+<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+		// Tell the Teaming GWT ui to close the administration content panel.
+		window.top.ss_closeAdministrationContentPanel();
+		return false;
+<% 	}
+	else { %>
+		self.window.close();
+		return false;
+<%	} %>
+	
+}// end handleCloseBtn()
 
 function ${renderResponse.namespace}_showAliasDiv(index) {
 	
@@ -68,7 +86,7 @@ function ${renderResponse.namespace}_modifyAlias() {
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" />">
 <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="self.window.close();return false;"/>
+		  onClick="return handleCloseBtn();"/>
 </div>
 <input type="checkbox" class="ss_style" id="notifyenabled" name="notifyenabled" <c:if test="${ssScheduleInfonotify.enabled}">checked</c:if> />
 <label for="notifyenabled"><span class="ss_labelRight"><ssf:nlt tag="notify.schedule.enable"/> </span></label><ssf:inlineHelp jsp="workspaces_folders/misc_tools/enableOutgoingEmail"/>
@@ -144,7 +162,7 @@ ${alias.binder.title}&nbsp;&nbsp<span  class="ss_smallprint ss_light">(${alias.b
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" />">
 <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="self.window.close();return false;"/>
+		onClick="return handleCloseBtn();" />
 </div>
 </form>
 <div class="ss_style ss_popupMenu" style="visibility:hidden; display:block" name="${renderResponse.namespace}_modifyAliasDiv" id="${renderResponse.namespace}_modifyAliasDiv">

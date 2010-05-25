@@ -111,6 +111,10 @@ public class GwtMainPage extends Composite
 		// For example, we never want the jsp login page to be loaded in the content control.
 		initHandlePageWithGWTJS( this );
 		
+		// Initialize the JavaScript function that gets called when we want to close the
+		// administration content panel.
+		initCloseAdministrationContentPanelJS( this );
+		
 		// Initialize ReguestActionHandler as native JavaScript to allow any content to register
 		//as an ActionRequestor - See GwtClientHelper:jsRegisterActionHandler
 		initRequestActionHandler( this );
@@ -204,6 +208,17 @@ public class GwtMainPage extends Composite
 
 	/*
 	 * Called to create a JavaScript method that will be invoked from
+	 * an administration page when the user presses close or cancel in the administration page.
+	 */
+	private native void initCloseAdministrationContentPanelJS( GwtMainPage gwtMainPage ) /*-{
+		$wnd.ss_closeAdministrationContentPanel = function( pageName )
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::closeAdministrationContentPanel()();
+		}//end ss_closeAdministrationContentPanel()
+	}-*/;
+
+	/*
+	 * Called to create a JavaScript method that will be invoked from
 	 * view_workarea_navbar.jsp when new contexts are loaded.
 	 */
 	private native void initContextLoadHandlerJS(GwtMainPage gwtMainPage) /*-{
@@ -246,6 +261,19 @@ public class GwtMainPage extends Composite
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::invokeSimpleProfile(Lcom/google/gwt/user/client/Element;Ljava/lang/String;Ljava/lang/String;)( element, binderId, userName );
 		}//end ss_invokeSimpleProfile
 	}-*/;	
+	
+	
+	/**
+	 * This method will close the administration content panel.
+	 */
+	@SuppressWarnings("unused")
+	private void closeAdministrationContentPanel()
+	{
+		if ( m_adminControl != null )
+		{
+			m_adminControl.hideContentPanel();
+		}
+	}// end closeAdministrationContentPanel()
 	
 	/*
 	 * Puts a context change from the traditional UI into effect.
@@ -607,6 +635,7 @@ public class GwtMainPage extends Composite
 			}
 			
 			m_adminControl.setVisible( true );
+			relayoutPage( true );
 			break;
 		
 		case CLOSE_ADMINISTRATION:
@@ -618,6 +647,7 @@ public class GwtMainPage extends Composite
 			m_mainMenuCtrl.hideAdministrationMenubar();
 			m_wsTreeCtrl.setVisible( true );
 			m_contentCtrl.setVisible( true );
+			relayoutPage( true );
 			break;
 			
 		case EDIT_BRANDING:
@@ -722,29 +752,49 @@ public class GwtMainPage extends Composite
 			
 		case HIDE_MASTHEAD:
 			m_mastHead.setVisible( false );
+			relayoutPage( true );
 			break;
 			
 		case SHOW_MASTHEAD:
 			m_mastHead.setVisible( true );
+			relayoutPage( true );
 			break;
 			
 		case HIDE_LEFT_NAVIGATION:
-			// Hide the tree control
-			m_wsTreeCtrl.setVisible( false );
-			
-			// Reposition the content control to where the tree control used to be.
-			m_contentCtrl.addStyleName( "mainWorkspaceTreeControl" );
+			// Are we displaying the administration page?
+			if ( m_adminControl != null && m_adminControl.isVisible() == true )
+			{
+				// Yes
+				m_adminControl.hideTreeControl();
+			}
+			else
+			{
+				// Hide the tree control
+				m_wsTreeCtrl.setVisible( false );
+				
+				// Reposition the content control to where the tree control used to be.
+				m_contentCtrl.addStyleName( "mainWorkspaceTreeControl" );
+			}
 			
 			// Relayout the content panel.
 			relayoutPage( true );
 			break;
 			
 		case SHOW_LEFT_NAVIGATION:
-			// Reposition the content control to its original position.
-			m_contentCtrl.removeStyleName( "mainWorkspaceTreeControl" );
-			
-			// Show the tree control.
-			m_wsTreeCtrl.setVisible( true );
+			// Are we displaying the administration page?
+			if ( m_adminControl != null && m_adminControl.isVisible() == true )
+			{
+				// Yes
+				m_adminControl.showTreeControl();
+			}
+			else
+			{
+				// Reposition the content control to its original position.
+				m_contentCtrl.removeStyleName( "mainWorkspaceTreeControl" );
+				
+				// Show the tree control.
+				m_wsTreeCtrl.setVisible( true );
+			}
 			
 			// Relayout the content panel.
 			relayoutPage( true );

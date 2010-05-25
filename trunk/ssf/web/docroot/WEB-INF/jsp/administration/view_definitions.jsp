@@ -33,9 +33,31 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("toolbar.menu.definition_builder") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+
+<script type="text/javascript">
+	/**
+	 * 
+	 */
+	function handleCloseBtn()
+	{
+	<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+			// Tell the Teaming GWT ui to close the administration content panel.
+			window.top.ss_closeAdministrationContentPanel();
+			return false;
+	<% 	}
+		else { %>
+			self.window.close();
+			return false;
+	<%	} %>
+		
+	}// end handleCloseBtn()
+
+</script>
+
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
@@ -116,7 +138,7 @@ name="value" value="${ssBinder.title}"/></ssf:nlt></span>
 
 <form class="ss_style ss_form" >
 
-	<input type="submit" class="ss_submit" name="closeBtn" onclick="self.window.close();return false;" value="<ssf:nlt tag="button.close" text="Close"/>">
+	<input type="submit" class="ss_submit" name="closeBtn" onclick="return handleCloseBtn();" value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
 
 </c:if>

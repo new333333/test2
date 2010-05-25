@@ -78,6 +78,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 public class MainMenuControl extends Composite implements ActionRequestor, ActionTrigger {
 	private BinderInfo m_contextBinder;
 	private FlowPanel m_buttonsPanel;
+	private MenuBarButton m_bhButton;
 	private FlowPanel m_contextPanel;
 	private MenuBarBox m_myWorkspaceBox;
 	private MenuBarBox m_myTeamsBox;
@@ -188,10 +189,10 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		m_buttonsPanel.add(mastHeadSlider);
 
 		// ...add the browse hierarchy button...
-		MenuBarButton bhButton = new MenuBarButton(this, m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), TeamingAction.BROWSE_HIERARCHY);
-		bhButton.setActionObject(new OnBrowseHierarchyInfo(bhButton));
-		bhButton.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
-		m_buttonsPanel.add(bhButton);
+		m_bhButton = new MenuBarButton(this, m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), TeamingAction.BROWSE_HIERARCHY);
+		m_bhButton.setActionObject(new OnBrowseHierarchyInfo(m_bhButton));
+		m_bhButton.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
+		m_buttonsPanel.add(m_bhButton);
 
 		// ...if the user is allowed to exit GWT UI mode...
 		final ActionTrigger actionTrigger = this;
@@ -426,7 +427,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	public void hideAdministrationMenubar() {
 		// Show the widget that holds the expand/contract left
 		// navigation, expand/contract header, ... widgets.
-		m_buttonsPanel.setVisible(true);
+		m_bhButton.setVisible( true );
 		
 		// Show My Workspace, My Teams and My Favorites.
 		m_myWorkspaceBox.setVisible(true);
@@ -449,9 +450,8 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * the Site Administration page.
 	 */
 	public void showAdministrationMenubar() {
-		// Hide the widget that holds the expand/contract left
-		// navigation, expand/contract header, ... widgets
-		m_buttonsPanel.setVisible(false);
+		// Hide the browse button
+		m_bhButton.setVisible(false);
 		
 		// Hide My Workspace, My Teams and My Favorites.
 		m_myWorkspaceBox.setVisible(false);

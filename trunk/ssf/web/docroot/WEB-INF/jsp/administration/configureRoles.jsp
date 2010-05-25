@@ -33,9 +33,31 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_roles") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+
+<script type="text/javascript">
+	/**
+	 * 
+	 */
+	function handleCloseBtn()
+	{
+	<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+			// Tell the Teaming GWT ui to close the administration content panel.
+			window.top.ss_closeAdministrationContentPanel();
+			return false;
+	<% 	}
+		else { %>
+			self.window.close();
+			return false;
+	<%	} %>
+		
+	}// end handleCloseBtn()
+
+</script>
+
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
@@ -179,7 +201,7 @@
 	action="<ssf:url action="site_administration" actionUrl="false"/>" >
 
 	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="self.window.close();return false;"/>
+		  onClick="return handleCloseBtn();"/>
 </form>
 </ssf:form>
 </div>

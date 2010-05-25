@@ -46,7 +46,7 @@
 		<span><ssf:nlt tag="index.errorsFound"><ssf:param name="value" value="${ssErrorIndexingCount}"/></ssf:nlt></span>
 		<br/>
 		<br/>
-		<input type="button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;" />
+		<input type="button" value="<ssf:nlt tag="button.close"/>" onClick="return handleCloseBtn();" />
 	</div>
 </taconite-replace>
 

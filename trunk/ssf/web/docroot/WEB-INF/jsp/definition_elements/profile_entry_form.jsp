@@ -34,6 +34,8 @@
 %>
 <% // Form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
+
 <%
 	//Get the form item being displayed
 	Element item = (Element) request.getAttribute("item");
@@ -48,6 +50,35 @@
 		methodName = "post";
 	}
 %>
+
+<script type="text/javascript">
+	/**
+	 * 
+	 */
+	function handleCloseBtn()
+	{
+	<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+			// Are we running from the administration page?
+			if ( window.top.ss_closeAdministrationContentPanel )
+			{
+				// Yes
+				// Tell the Teaming GWT ui to close the administration content panel.
+				window.top.ss_closeAdministrationContentPanel();
+			}
+			else
+			{
+				self.window.close();
+			}
+			return false;
+	<% 	}
+		else { %>
+			self.window.close();
+			return true;
+	<%	} %>
+	
+	}// end handleCloseBtn()
+</script>
+
 <script type="text/javascript">
 var ss_checkTitleUrl = "<ssf:url 
 	adapter="true" 
@@ -225,7 +256,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
   <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"/>
   <input type="submit" class="ss_submit" 
     name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" 
-    onClick="self.window.close();return false;"/>
+    onClick="return handleCloseBtn();"/>
 </div>
 
 </form>  

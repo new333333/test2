@@ -33,11 +33,32 @@
  */
 %>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.report.title.login") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+
+<script type="text/javascript">
+	/**
+	 * 
+	 */
+	function handleCloseBtn()
+	{
+	<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+			// Tell the Teaming GWT ui to close the administration content panel.
+			window.top.ss_closeAdministrationContentPanel();
+			return false;
+	<% 	}
+		else { %>
+			self.window.close();
+			return false;
+	<%	} %>
+	
+	}// end handleCloseBtn()
+</script>
+
 <body class="ss_style_body tundra">
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <div class="ss_pseudoPortal">
@@ -61,7 +82,7 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
     <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="self.window.close();return false;"/>
+		  onClick="return handleCloseBtn();"/>
 </div>
    <br/>
    <br/>
@@ -154,7 +175,7 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
     <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="self.window.close();return false;"/>
+		  onClick="return handleCloseBtn();"/>
    </div>
 </form>
 <br>
