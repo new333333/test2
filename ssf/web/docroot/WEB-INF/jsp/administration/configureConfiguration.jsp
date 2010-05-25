@@ -33,9 +33,30 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_configurations") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+
+<script type="text/javascript">
+	/**
+	 * 
+	 */
+	function handleCloseBtn()
+	{
+	<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+			// Tell the Teaming GWT ui to close the administration content panel.
+			window.top.ss_closeAdministrationContentPanel();
+			return false;
+	<% 	}
+		else { %>
+			self.window.close();
+			return true;
+	<%	} %>
+	
+	}// end handleCloseBtn()
+</script>
+
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
@@ -101,7 +122,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 
 <form class="ss_style ss_form" >
 
-	<input type="submit" class="ss_submit" name="closeBtn" onClick="self.window.close();return false;" value="<ssf:nlt tag="button.close" text="Close"/>">
+	<input type="submit" class="ss_submit" name="closeBtn" onClick="return handleCloseBtn();" value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
 
 </c:if>
@@ -232,7 +253,7 @@ ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initSho
 <form method="post" action="<ssf:url><ssf:param 
 		name="action" value="configure_configuration"/></ssf:url>" >
 <div class="ss_buttonBarLeft">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" onclick="return handleCloseBtn();">
 </div>
 </form>
 </div>

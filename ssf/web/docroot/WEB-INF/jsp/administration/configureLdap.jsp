@@ -37,6 +37,7 @@
 <%@ page import="java.util.Locale" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.TreeMap" %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp"%>
 <c:set var="ss_windowTitle"
 	value='<%= NLT.get("administration.configure_ldap") %>' scope="request" />
@@ -62,7 +63,7 @@
 					<input type="button"
 						class="ss_submit" name="closeBtn"
 						value="<ssf:nlt tag="button.close" text="Close"/>"
-						onClick="self.window.close();return false;" />
+						onClick="handleCloseBtn();return false;" />
 				</div>
 				
 				<div>
@@ -272,7 +273,7 @@
 							class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
 					<input type="button" class="ss_submit" name="closeBtn"
 						value="<ssf:nlt tag="button.close" text="Close"/>"
-						onClick="self.window.close();return false;" />
+						onClick="handleCloseBtn();return false;" />
 				</div>
 				<input type="hidden" name="ldapConfigDoc" id="ldapConfigDoc" value="" />
 			</form>
@@ -611,6 +612,21 @@ function getSyncResults()
 	// when we get the response to the request.
 	ss_get_url( url, handleResponseToGetSyncResults );
 }// end getSyncResults()
+
+/**
+ * 
+ */
+function handleCloseBtn()
+{
+<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+		// Tell the Teaming GWT ui to close the administration content panel.
+		window.top.ss_closeAdministrationContentPanel();
+<% 	}
+	else { %>
+		self.window.close();
+<%	} %>
+	
+}// end handleCloseBtn()
 
 
 /**

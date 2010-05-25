@@ -35,12 +35,31 @@
 
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("access.configure") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript" src="<html:rootPath />js/binder/ss_access.js"></script>
 <script type="text/javascript">
+
+/**
+ * 
+ */
+function handleCloseBtn()
+{
+<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+		// Tell the Teaming GWT ui to close the administration content panel.
+		window.top.ss_closeAdministrationContentPanel();
+		return false;
+<% 	}
+	else { %>
+		self.window.close();
+		return false;
+<%	} %>
+	
+}// end handleCloseBtn()
+
 function ss_clearTextareas() {
 	var taList = self.document.getElementsByTagName("textarea");
 	for (var i = 0; i < taList.length; i++) {
@@ -138,7 +157,8 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 	name="actionUrl" value="true"/><ssf:param 
 	name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
 	name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
-  <input type="submit" class="ss_submit" name="closeBtn" 
+  <input type="submit" class="ss_submit" name="closeBtn"
+  	onClick="return handleCloseBtn();" 
     value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
 </td>
@@ -417,7 +437,8 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 	name="actionUrl" value="true"/><ssf:param 
 	name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
 	name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
-  <input type="submit" class="ss_submit" name="closeBtn" 
+  <input type="submit" class="ss_submit" name="closeBtn"
+  	onClick="return handleCloseBtn();" 
     value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
 </div>

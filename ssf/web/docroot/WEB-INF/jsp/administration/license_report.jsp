@@ -33,11 +33,32 @@
  */
 %>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.report.title.license") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+
+<script type="text/javascript">
+	/**
+	 * 
+	 */
+	function handleCloseBtn()
+	{
+	<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+			// Tell the Teaming GWT ui to close the administration content panel.
+			window.top.ss_closeAdministrationContentPanel();
+			return false;
+	<% 	}
+		else { %>
+			self.window.close();
+			return false;
+	<%	} %>
+	
+	}// end handleCloseBtn()
+</script>
+
 <body class="ss_style_body tundra">
 	<script type="text/javascript">
 		/**
@@ -118,7 +139,7 @@
 							    	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
 							     	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 							    	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-									  onClick="self.window.close();return false;"/>
+									  onClick="return handleCloseBtn();"/>
 								</div>
 							   	<br/>
 							   	<br/>
@@ -144,7 +165,7 @@
 							    	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
 							     	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 							    	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-									  onClick="self.window.close();return false;"/>
+									  onClick="return handleCloseBtn();"/>
 							   	</div>
 							</form>
 			

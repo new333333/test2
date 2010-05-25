@@ -33,6 +33,7 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_ldap") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
@@ -43,6 +44,23 @@
 
 	ss_createOnLoadObj( 'configureUserAccess', onLoadEventHandler );
 	
+	/**
+	 * 
+	 */
+	function handleCloseBtn()
+	{
+	<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+			// Tell the Teaming GWT ui to close the administration content panel.
+			window.top.ss_closeAdministrationContentPanel();
+			return false;
+	<% 	}
+		else { %>
+			self.window.close();
+			return false;
+	<%	} %>
+		
+	}// end handleCloseBtn()
+
 	/**
 	 * This function gets called when the page is loaded.
 	 */
@@ -113,7 +131,7 @@
 		<br/>
 		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
 			<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-				  onClick="self.window.close();return false;"/>
+				  onClick="return handleCloseBtn();"/>
 		</div>
 	  <div>
 	    <div>
@@ -148,7 +166,7 @@
 	<div class="ss_buttonBarLeft">
 		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
 		<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-			  onClick="self.window.close();return false;"/>
+			  onClick="return handleCloseBtn();"/>
 	</div>
 	</form>
 </ssf:form>

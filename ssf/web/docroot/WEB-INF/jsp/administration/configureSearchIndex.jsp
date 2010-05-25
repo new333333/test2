@@ -33,12 +33,33 @@
  */
 %>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_search_index") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+
+<script type="text/javascript">
+	/**
+	 * 
+	 */
+	function handleCloseBtn()
+	{
+	<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+			// Tell the Teaming GWT ui to close the administration content panel.
+			window.top.ss_closeAdministrationContentPanel();
+			return false;
+	<% 	}
+		else { %>
+			self.window.close();
+			return true;
+	<%	} %>
+	
+	}// end handleCloseBtn()
+</script>
+
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
@@ -61,7 +82,7 @@ String wsTreeName = "" + renderResponse.getNamespace();
   value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="self.window.close();return false;"/>
+		  onClick="return handleCloseBtn();"/>
 </div>
 <br>
 <span class="ss_largeprint ss_bold"><ssf:nlt tag="administration.configure.index.select"/></span>
@@ -145,7 +166,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
   value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="submit" class="ss_submit" name="closeBtn" 
- value="<ssf:nlt tag="button.close" text="Close"/>" onClick="self.window.close();return false;">
+ value="<ssf:nlt tag="button.close" text="Close"/>" onClick="return handleCloseBtn();">
 </div>
 <input type="hidden" name="btnClicked"/>
 </form>
@@ -156,7 +177,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <span><ssf:nlt tag="index.finished"/></span>
 <br/>
 <br/>
-<input type="button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;" />
+<input type="button" value="<ssf:nlt tag="button.close"/>" onClick="return handleCloseBtn();" />
 </div>
 </ssf:form>
 </div>
