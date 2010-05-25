@@ -185,6 +185,7 @@ public class WebKeys {
     public static final String URL_PAGE="page";
     public static final String URL_PAGE_SIZE="pageSize";
     public static final String URL_PORTAL_SIGNAL="portalSignalUrl";
+    public static final String URL_PROFILE="profile";
     public static final String URL_QUOTA_OPTION="ssQuotaOption";
     public static final String URL_USER_QUOTA_OPTION="ssUserQuotaOption";
     public static final String URL_QUOTA_THRESHOLD="ssQuotaThreshold";
@@ -350,6 +351,8 @@ public class WebKeys {
 	public static final String ACTION_SEND_EMAIL="send_email";
 	public static final String ACTION_SEND_ENTRY_EMAIL="send_entry_email";
 	public static final String ACTION_SCHEDULE_SYNCHRONIZATION="schedule_synchronization";
+	public static final String ACTION_SHOW_PROFILE="showProfile";
+	public static final String ACTION_SHOW_WORKSPACE="showWorkspace";
 	public static final String ACTION_SITE_ADMINISTRATION="site_administration";
 	public static final String ACTION_START_WORKFLOW="start_workflow";
 	public static final String ACTION_STOP_WORKFLOW="stop_workflow";

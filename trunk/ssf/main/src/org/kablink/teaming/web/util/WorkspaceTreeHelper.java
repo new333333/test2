@@ -315,23 +315,29 @@ public class WorkspaceTreeHelper {
 
 						//Get the dashboard initial tab if one was passed in
 						String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
-						String profile = PortletRequestUtils.getStringParameter(request,"profile", "");
-						
+						String profile = PortletRequestUtils.getStringParameter(request,WebKeys.URL_PROFILE, "");
 						
 						//if we don't find a Url Type look to see if there is a profile value
 						boolean showProfile = false;
+						
 						if(type.equals("")) {
 							if(profile.equals("")){
-								//if the profile value is not there, is this the binder the user's workspace
-                                //this just redirects all searches to the profile page but if this is yourself 
-								//then goto your workspace
-								if(!user.getWorkspaceId().equals( binder.getId()) ) {
+								//check for the Operation first, this would be a direct action to request the 
+								//profile view or the workspace								
+								//then if the profile value is not there, check this binder to the user's workspace
+                                //and redirect all searches to the profile view, but if the user is themself just  
+								//goto the workspace
+								if(operation != null && operation.equals(WebKeys.ACTION_SHOW_PROFILE)){
+									showProfile = true;
+								} else if(operation != null && operation.equals(WebKeys.ACTION_SHOW_WORKSPACE)){
+									showProfile = false;
+								} else if(!user.getWorkspaceId().equals( binder.getId()) ) {
 									showProfile = true;
 								}
-							} else 	if(profile.equals("1")){
+							} else if(profile.equals("1")){
 								showProfile = true;
 							}
-							model.put("showProfile", showProfile);
+							model.put(WebKeys.ACTION_SHOW_PROFILE, showProfile);
 						}
 						
 				        //Modify profile is not available to the guest user
