@@ -1671,10 +1671,11 @@ a.ss_new_thread {
 .qViewDlg {
 	position: relative;
 	width: 460px;
-	min-height: 220px;
 	background:none repeat scroll 0 0 #FFFFFF;
 	-moz-border-radius-topleft:5px;
 	-moz-border-radius-topright:5px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
 }
 .qViewTitle {
 	color:#FFFFFF;
@@ -1687,25 +1688,25 @@ a.ss_new_thread {
 	font-weight: normal;
 }
 .qViewMain {
-	min-height: 190px;
 }
 .qViewLeft {
-	left:10px;
-	top: 10px;
-	position:absolute;
-	width:100px;
+	margin: 0px 10px 20px;
+	width: 100px;
 }
 .qViewRight {
-	left:110px;
-	margin:10px 10px 0 10px;
-	position:relative;
-	width:325px;
-	font-size: 0.8em;
-	min-height: 180px;
+	margin:5px 0 0;
 }
 .qViewPhoto {
+	height: 80px;
+	position: relative;
+	margin-bottom: 10px;
+}
+.qViewActions {
 }
 .qViewPhoto img {
+	height: 100px;
+	top: -20px;
+	position: absolute;
 	width: 100px;
 	margin-bottom: 5px;
 }
@@ -1728,7 +1729,9 @@ a.ss_new_thread {
 }
 .qViewStats {
 	position: absolute;
-	bottom: 0px;
+	bottom: 10px;
+	margin-left: 5px;
+	margin-bottom: 5px;
 }
 .qViewFooter {
 }
@@ -1746,25 +1749,28 @@ a.ss_new_thread {
 }
 .qViewInfoTable {
 	margin-bottom: 35px;
+	margin-left: 5px;
 }
 .qView-a {
 	font-size:10px;
 	font-style:normal;
-	font-weight:normal;
-	position: relative;
+	font-weight:normal
 	cursor: pointer;
 }
 .qView-action  {
-	-moz-border-radius:15px 15px 15px 15px;
+	-moz-border-radius:15px;
+	-webkit-border-radius: 15px;
 	background:url("images/putty_blend2.png") repeat-x scroll center bottom #FFFFFF;
 	color:#000000;
 	font-size:11px;
 	margin-top:5px;
 	padding:2px 5px;
 	text-align:center;
+	position: relative;
 }
 .qView-action-following  {
-	-moz-border-radius:15px 15px 15px 15px;
+	-moz-border-radius:15px;
+	-webkit-border-radius: 15px;
 	background:url("images/putty_blend4.png") repeat-x scroll center bottom #FFFFFF;
 	border:1px solid #BBBBB9;
 	color:#1C5894;
@@ -1779,6 +1785,13 @@ a.ss_new_thread {
 	position: absolute;
 	top: 9px;
 	left: 15px;
+}
+.qView-follow-label {
+	display: inline;
+}
+.qView-follow-img {
+	vertical-align: middle;
+	padding-right: 1px;
 }
 .qView-arrow {
 left:-25px;

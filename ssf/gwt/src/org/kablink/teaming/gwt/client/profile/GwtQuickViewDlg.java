@@ -33,6 +33,7 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
@@ -139,7 +140,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 	@Override
 	public Panel createContent(Object props) {
 
-		FlowPanel mainPanel = new FlowPanel();
+		HorizontalPanel mainPanel = new HorizontalPanel();
 		mainPanel.addStyleName("qViewMain");
 
 		FlowPanel leftPanel = new FlowPanel();
@@ -180,6 +181,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 
 		ClickHandler clickHandler;
 		FlowPanel panel = new FlowPanel();
+		panel.addStyleName("qViewActions");
 		
 		profileBtn = new QuickViewAction(GwtTeaming.getMessages().qViewProfile(),
 										GwtTeaming.getMessages().qViewProfileTitle(), 
@@ -474,6 +476,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		private Label label;
 		private Image img;
 		private boolean isChecked;
+		private FlowPanel panel;
 
 		public QuickViewAction(String text, String title, String anchorStlyeName,
 				String labelStyleName) {
@@ -481,11 +484,27 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 
 			addStyleName(anchorStlyeName);
 
-			label = new Label(text);
-			label.setTitle(title);
-			label.addStyleName(labelStyleName);
+			if(labelStyleName.equals("qView-action-following") ){
+				panel = new FlowPanel();
+				panel.addStyleName(labelStyleName);
 
-			getElement().appendChild(label.getElement());
+				img = new Image(GwtTeaming.getImageBundle().check12());
+				img.addStyleName("qView-follow-img");
+				img.setVisible(false);
+				panel.add(img);
+
+				label = new Label(text);
+				label.addStyleName("qView-follow-label");
+				label.setTitle(title);
+				panel.add(label);
+				
+				getElement().appendChild(panel.getElement());
+			} else {
+				label = new Label(text);
+				label.setTitle(title);
+				label.addStyleName(labelStyleName);
+				getElement().appendChild(label.getElement());
+			}
 		}
 
 		public boolean isChecked() {
@@ -495,20 +514,22 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		public void setChecked(boolean checked) {
 			if(checked) {
 				isChecked = true;
-				label.removeStyleName("qView-action");
-				label.addStyleName("qView-action-following");
 				
-				if(img == null){
-					img = new Image(GwtTeaming.getImageBundle().check12());
-					getElement().appendChild(img.getElement());
-					img.addStyleName("qView-action-img");
-				} else {
+				if(panel != null){
+					panel.removeStyleName("qView-action");
+					panel.addStyleName("qView-action-following");
+				}
+				
+				if(img != null){
 					img.setVisible(true);
 				}
 			} else {
 				isChecked = false;
-				label.removeStyleName("qView-action-following");
-				label.addStyleName("qView-action");
+				
+				if(panel != null){
+					panel.removeStyleName("qView-action-following");
+					panel.addStyleName("qView-action");
+				}				
 
 				if(img != null){
 					img.setVisible(false);
