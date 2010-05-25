@@ -4,6 +4,7 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
@@ -102,6 +103,13 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		panel = new FlowPanel();
 		panel.addStyleName("qViewDlg");
 
+		Panel arrow = new FlowPanel();
+		arrow.addStyleName("qView-arrow");
+		panel.add(arrow);
+		
+		Image img = new Image(GwtTeaming.getImageBundle().arrowTrans50Left());
+		arrow.add(img);
+		
 		// Add the header.
 		header = createHeader(caption);
 		panel.add(header);
@@ -538,7 +546,9 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 					OnSelectBinderInfo osbInfo;
 					
 					if(showProfile){
-						binderUrl = GwtClientHelper.appendUrlParam( binderUrl, "operation", "profile" );
+						binderUrl = GwtClientHelper.appendUrlParam( binderUrl, "operation", "showProfile" );
+					} else {
+						binderUrl = GwtClientHelper.appendUrlParam( binderUrl, "operation", "showWorkspace" );
 					}
 					osbInfo = new OnSelectBinderInfo( binderId, binderUrl, false, Instigator.OTHER );
 					

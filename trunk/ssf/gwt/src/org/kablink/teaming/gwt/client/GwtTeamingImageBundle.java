@@ -175,4 +175,8 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	
 	@Source("org/kablink/teaming/gwt/public/images/entry_task.png")
 	public ImageResource entry_task();
+	
+	@Source("org/kablink/teaming/gwt/public/images/trans50_black_arrowleft.png")
+	public ImageResource arrowTrans50Left();
+	
 }// end GwtTeamingImageBundle
