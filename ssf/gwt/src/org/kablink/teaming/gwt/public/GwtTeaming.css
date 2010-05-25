@@ -1774,10 +1774,16 @@ a.ss_new_thread {
 	text-align:center;
 }
 .qView-action-img {
+	background:url("images/trans50_black_arrowleft.png");
 	margin-right: 5px;
 	position: absolute;
 	top: 9px;
 	left: 15px;
+}
+.qView-arrow {
+left:-25px;
+position:absolute;
+top:100px;
 }
 
 .gwtUI_ss_brightest   {opacity: 1.0;}

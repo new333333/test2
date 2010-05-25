@@ -1265,8 +1265,8 @@ public class GwtMainPage extends Composite
 	@SuppressWarnings("unused")
 	private void invokeSimpleProfile(Element element, String binderId, String userName ) {
 
-		final int x = element.getAbsoluteLeft() + 80; 
-		final int y = element.getAbsoluteTop() - 100;
+		final int x = element.getAbsoluteLeft() + 40; 
+		final int y = element.getAbsoluteTop() - 90;
 		
 		final GwtQuickViewDlg dlg;
 		PopupPanel.PositionCallback posCallback;
