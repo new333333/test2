@@ -754,7 +754,7 @@ public class ViewEntryController extends  SAbstractController {
 				toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.shareThis"), adapterUrl.toString(), qualifiers);
 			}
 
-			if (entry.isTop()) {
+			if (entry.isTop() && getFolderModule().testAccess(entry, FolderOperation.moveEntry)) {
 				//The "Move" menu item
 				Map qualifiers = new HashMap();
 				qualifiers.put("nosort", true);
@@ -765,8 +765,10 @@ public class ViewEntryController extends  SAbstractController {
 				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 				url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 				toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.move"), url, qualifiers);
+			}
+			if (entry.isTop() && getFolderModule().testAccess(entry, FolderOperation.copyEntry)) {
 				//The "Copy" menu
-				qualifiers = new HashMap();
+				Map qualifiers = new HashMap();
 				qualifiers.put("nosort", true);
 				qualifiers.put("popup", new Boolean(true));
 				url = response.createActionURL();

@@ -70,6 +70,7 @@ function ${wsTreeName}_showId(forum, obj, action) {
 	entryId="${ssEntry.id}"/>" name="${renderResponse.namespace}fm">
 <br/>
 
+<c:if test="${!empty ssWsDomTree}">
 <span class="ss_bold"><ssf:nlt tag="move.selectDestination"/></span>
 <br/>
 <div class="ss_indent_large">
@@ -79,8 +80,8 @@ function ${wsTreeName}_showId(forum, obj, action) {
 	singleSelect="${ssDefaultSaveLocationId}" 
 	singleSelectName="destination" />
 </div>
-
 <br/>
+</c:if>
 
 <!-- Displays the current save location, if one has already been
 	specified in current user session-->
