@@ -783,9 +783,15 @@
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>binder</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>org.kablink.teaming.domain.Binder</type>
+		</attribute>		
+		<attribute>
+			<name>entity</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>org.kablink.teaming.domain.DefinableEntity</type>
 		</attribute>		
 		<attribute>
 			<name>operation</name>

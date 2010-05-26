@@ -85,16 +85,20 @@
   	  <tr><td>
     	<!--input type="text" class="ss_text" name="communityTag"/ -->
    
-		<ssf:ifAccessAllowed binder = "${ssBinder}" operation = "manageTag">    
-		<ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="communityTag" type="communityTags" displayValueOnly="true" width="70px" singleItem="true" accessibilityText="title.add.community.tags" />
+		<c:set var="manageTagsAllowed" value="false"/>
+		<ssf:ifAccessAllowed binder = "${ssBinder}" operation = "manageTag">
+		  <c:set var="manageTagsAllowed" value="true"/>
 		</ssf:ifAccessAllowed>
-       
-    	<ssf:ifAccessAllowed binder = "${ssBinder}" operation = "manageTag">  
+		<ssf:ifAccessAllowed entity="${ssEntry}" operation = "manageTag">
+		  <c:set var="manageTagsAllowed" value="true"/>
+		</ssf:ifAccessAllowed>
+		<c:if test="${manageTagsAllowed}">
+		<ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="communityTag" type="communityTags" displayValueOnly="true" width="70px" singleItem="true" accessibilityText="title.add.community.tags" />
     	<a class="ss_linkButton" <%= addAnchorStyle %> href="javascript:;" 
        	  onClick="ss_tagAdd('${ss_tagViewNamespace}', '${ss_tagDivNumber}', '${ssBinder.id}', '${ss_tagObject.entityType}', '${ss_tagObject.id}');setTimeout('document.ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}.reset()', 100);return false;"
        	  <ssf:title tag="title.add.community.tags" />
     	><span><ssf:nlt tag="button.add"/></span></a>
-    	</ssf:ifAccessAllowed>  
+    	</c:if>  
 
       </td></tr>
     </tbody></table>
