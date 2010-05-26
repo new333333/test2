@@ -43,9 +43,11 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.presence.PresenceManager;
+import org.kablink.teaming.presence.PresenceInfo;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -57,7 +59,7 @@ import org.kablink.util.servlet.StringServletResponse;
  * @author Roy Klein
  *
  */
-public class PresenceInfo extends BodyTagSupport {
+public class PresenceInfoTag extends BodyTagSupport {
     private Principal user = null;
     private Boolean showTitle = false;
     private Boolean workspacePreDeleted = false;
@@ -66,6 +68,7 @@ public class PresenceInfo extends BodyTagSupport {
     private String zonName=null;
     private String componentId;
     private int userStatus=-1;
+	private String statusText="";
     private Boolean showOptionsInline=false;
     private String optionsDivId="";
     private Boolean close = false;
@@ -102,35 +105,73 @@ public class PresenceInfo extends BodyTagSupport {
 			}
 
 			PresenceManager presenceService = (PresenceManager)SpringContextUtil.getBean("presenceService");
+			String userID = "";
+			CustomAttribute attr = user1.getCustomAttribute("presenceID");
+			if (attr != null) {
+				userID = (String)attr.getValue();
+			}
 
-			if (this.workspacePreDeleted) {
-				userStatus = -99;
-			}
-			else {
-				if (zonName != null) {
-					userStatus = presenceService.getPresenceInfo(zonName);
-				} else if (user != null && user1 != null) {
-					userStatus = presenceService.getPresenceInfo(user1);
-				} else {
-					userStatus = -99;
+			User userAsking = RequestContextHolder.getRequestContext().getUser();
+			String userIDAsking = "";
+			if (userAsking != null) {
+				attr = userAsking.getCustomAttribute("presenceID");
+				if (attr != null) {
+					userIDAsking = (String)attr.getValue();
 				}
 			}
-			String dudeGif = "sym_s_white_dude.gif"; 
-			String altText = NLT.get("presence.none");
-			if (userStatus != -99) {
-				if (userStatus > 0) {
-					if ((userStatus & 16) == 16) {
-						dudeGif = "sym_s_yellow_dude.gif";
-						altText = NLT.get("presence.away");
-					} else {
-						dudeGif = "sym_s_green_dude.gif";
-						altText = NLT.get("presence.online");
+
+			String imProtocolString = "";
+			userStatus = PresenceInfo.STATUS_UNKNOWN;
+
+			if (userID != null && userID.length() > 0 && userIDAsking != null && userIDAsking.length() > 0) {
+				imProtocolString = presenceService.getIMProtocolString(userID);
+
+				if (!this.workspacePreDeleted) {
+					PresenceInfo pi = presenceService.getPresenceInfo(userIDAsking, userID);
+					if (pi != null) {
+						userStatus = pi.getStatus();
+						statusText = pi.getStatusText();
+					}	
+				}
+			}
+
+			String dudeGif;
+			switch (userStatus) {
+				case PresenceInfo.STATUS_AVAILABLE:
+					dudeGif = "sym_s_green_dude.gif";
+					if (statusText == null) {
+						statusText = NLT.get("presence.online");
 					}
-				} else if (userStatus == 0) {
+					break;
+				case PresenceInfo.STATUS_AWAY:
+					if (statusText == null) {
+						statusText = NLT.get("presence.away");
+					}
+					dudeGif = "sym_s_yellow_dude.gif";
+					break;
+				case PresenceInfo.STATUS_IDLE:
+					if (statusText == null) {
+						statusText = NLT.get("presence.idle");
+					}
+					dudeGif = "sym_s_yellow_dude.gif";
+					break;
+				case PresenceInfo.STATUS_BUSY:
+					if (statusText == null) {
+						statusText = NLT.get("presence.busy");
+					}
+					dudeGif = "sym_s_red_dude.gif";
+					break;
+				case PresenceInfo.STATUS_OFFLINE:
+					if (statusText == null) {
+						statusText = NLT.get("presence.offline");
+					}
 					dudeGif = "sym_s_gray_dude.gif";
-					altText = NLT.get("presence.offline");
-				}
+					break;
+				default:
+					dudeGif = "sym_s_white_dude.gif";
+					statusText = NLT.get("presence.none");
 			}
+
 			// Pass the user status to the jsp
 			httpReq.setAttribute(WebKeys.PRESENCE_USER, user1);
 			httpReq.setAttribute(WebKeys.PRESENCE_SHOW_TITLE, this.showTitle);
@@ -142,11 +183,12 @@ public class PresenceInfo extends BodyTagSupport {
 			// TODO get date in the user's local time zone
 			httpReq.setAttribute(WebKeys.PRESENCE_SWEEP_TIME, new Date());
 			httpReq.setAttribute(WebKeys.PRESENCE_DUDE, dudeGif);
-			httpReq.setAttribute(WebKeys.PRESENCE_TEXT, altText);
+			httpReq.setAttribute(WebKeys.PRESENCE_TEXT, statusText);
 			httpReq.setAttribute(WebKeys.PRESENCE_ZON_BRIDGE, "enabled");
 			httpReq.setAttribute(WebKeys.PRESENCE_COMPONENT_ID, this.componentId);
 			httpReq.setAttribute(WebKeys.PRESENCE_DIV_ID, this.optionsDivId);
 			httpReq.setAttribute(WebKeys.PRESENCE_SHOW_OPTIONS_INLINE, this.showOptionsInline);
+			httpReq.setAttribute(WebKeys.PRESENCE_IM_URL, imProtocolString);
 
 			// Output the presence info
 			String jsp = "/WEB-INF/jsp/tag_jsps/presence/show_dude.jsp";

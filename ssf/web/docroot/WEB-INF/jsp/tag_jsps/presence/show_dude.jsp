@@ -94,6 +94,7 @@
 <c:set var="current" value="current"/>
 </c:if>
 <a href="javascript: ;"
+ title="<c:out value="${ss_presence_text}"/>"
  class="ss_presence_dude"
  onClick="window.top.ss_invokeSimpleProfile( this,'${ss_presence_user.workspaceId}','${presence_user_title}');return false;"
 ><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"

@@ -5029,7 +5029,7 @@ function ss_savePenletLayout() {
 
 
 //Presence support
-function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, emailName, emailHost, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId, workspaceId) {
+function ss_popupPresenceMenu(x, userId, userTitle, status, imURL, sweepTime, emailName, emailHost, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId, workspaceId) {
     obj = self.document.getElementById('ss_presencePopUp'+ssNamespace)
     if (obj == null) {
 		obj = document.createElement("div");
@@ -5040,10 +5040,10 @@ function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTim
     	document.getElementsByTagName("body").item(0).appendChild(obj);
     }
     ss_moveObjectToBody(obj)
-	ss_presenceMenu('', x, userId, userTitle, status, screenName, sweepTime, emailName, emailHost, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId, workspaceId);
+	ss_presenceMenu('', x, userId, userTitle, status, imURL, sweepTime, emailName, emailHost, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId, workspaceId);
 }
 
-function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepTime, emailName, emailHost, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId, workspaceId) {
+function ss_presenceMenu(divId, x, userId, userTitle, status, imURL, sweepTime, emailName, emailHost, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId, workspaceId) {
     var obj;
     var objId = divId;
     if (objId == '') objId = 'ss_presencePopUp'+ssNamespace;
@@ -5083,30 +5083,30 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
         m += '</span><br><span class="ss_fineprint ss_gray">(' + ss_ostatus_at + ' ' + sweepTime + ')</span>';
     }
     m += '</td></tr>';
-    if (screenName != '') {
+    if (imURL != '') {
         if (current == '') {
             m += '<tr>';
             m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgimsg'+ssNamespace+'"></td>';
             if (status == 0) {
                 m += '<td class="ss_fineprint ss_gray">'+ss_ostatus_sendIm+'</td>';
             } else {
-                m += '<td><a class="ss_graymenu" href="iic:im?screenName=' + ss_escapeSQ(screenName) + '">'+ss_ostatus_sendIm+'</a></td>';
+                m += '<td><a class="ss_graymenu" href="' + imURL + '">'+ss_ostatus_sendIm+'</a></td>';
             }
             m += '</tr>';
         }
-        var schedule_meeting_url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"schedule_meeting", users:userId});
-        
-        m += '<tr>';
-        m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgimtg'+ssNamespace+'"></td>';
-        m += '<td><a class="ss_graymenu" href="iic:meetone?screenName=' + ss_escapeSQ(screenName) + '">'+ss_ostatus_startIm+'</a></td></tr>';
-        m += '<tr>';
-        m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgsched'+ssNamespace+'"></td>';
-        m += '<td><a class="ss_graymenu" href="javascript:ss_startMeeting(\'' + ss_escapeSQ(schedule_meeting_url) + '\');">'+ss_ostatus_schedIm+'</a></td></tr>';
-        m += '<tr>';
-        if (ssPresenceZonBridge == 'enabled') {
-        	m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgphone'+ssNamespace+'"></td>';
-        	m += '<td><a class="ss_graymenu" href="javascript:ss_startMeeting(\'' + ss_escapeSQ(schedule_meeting_url) + '\');">'+ss_ostatus_call+'</a></td></tr>';
-        }
+        //var schedule_meeting_url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"schedule_meeting", users:userId});
+        //
+        //m += '<tr>';
+        //m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgimtg'+ssNamespace+'"></td>';
+        //m += '<td><a class="ss_graymenu" href="iic:meetone?screenName=' + ss_escapeSQ(screenName) + '">'+ss_ostatus_startIm+'</a></td></tr>';
+        //m += '<tr>';
+        //m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgsched'+ssNamespace+'"></td>';
+        //m += '<td><a class="ss_graymenu" href="javascript:ss_startMeeting(\'' + ss_escapeSQ(schedule_meeting_url) + '\');">'+ss_ostatus_schedIm+'</a></td></tr>';
+        //m += '<tr>';
+        //if (ssPresenceZonBridge == 'enabled') {
+        //	m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgphone'+ssNamespace+'"></td>';
+        //	m += '<td><a class="ss_graymenu" href="javascript:ss_startMeeting(\'' + ss_escapeSQ(schedule_meeting_url) + '\');">'+ss_ostatus_call+'</a></td></tr>';
+        //}
 	}
 	if (userId != '' && current == '') {
         if (emailName != '') {
@@ -5130,13 +5130,13 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
 	if (userId != '') {
         m += '<tr>';
         m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgclipboard'+ssNamespace+'"></td>';
-        m += '<td id="addToClipboardTD' + ss_escapeSQ(screenName) + '"><a class="ss_graymenu" href="javascript: // ;" onclick="ss_muster.addUsersToClipboard([' + ss_escapeSQ(userId) + ']' + (divId != ''?', function () {$(\'addToClipboardTD'+ss_escapeSQ(screenName)+'\').innerHTML=\'OK\'}':'') + ');return false;">'+ss_ostatus_clipboard+'</a></td></tr>';
+        m += '<td id="addToClipboardTD' + userId + '"><a class="ss_graymenu" href="javascript: // ;" onclick="ss_muster.addUsersToClipboard([' + userId + ']' + (divId != ''?', function () {$(\'addToClipboardTD'+userId+'\').innerHTML=\'OK\'}':'') + ');return false;">'+ss_ostatus_clipboard+'</a></td></tr>';
 	}	
 	
     if (skypeId != '') {
         m += '<tr>';
         m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgskype' +ssNamespace+'"></td>';
-        m += '<td id="skypeId' + ss_escapeSQ(screenName) + '"><a class="ss_graymenu" href="skype:' + ss_escapeSQ(skypeId) + '?call">' +ss_ostatus_skype+'</a></td></tr>';
+        m += '<td id="skypeId' + userId + '"><a class="ss_graymenu" href="skype:' + skypeId + '?call">' +ss_ostatus_skype+'</a></td></tr>';
     }
 
     //View MiniBlog

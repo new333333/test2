@@ -42,8 +42,8 @@ import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.kablink.teaming.domain.User;
 import org.kablink.teaming.presence.PresenceManager;
+import org.kablink.teaming.presence.PresenceInfo;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -101,20 +101,54 @@ public class PresenceManagerImpl implements PresenceManager, PresenceManagerImpl
 		// Do any other cleanup stuff as necessary. 
 	}
 
-	public int getPresenceInfo(User user) {
-		return getPresenceInfo(user.getZonName());
-	}
 	public int getPresenceInfo(String zonName) {
 		if (!enabled) 
-			return -99;
-		zonName = User.getNormalizedConferencingName(zonName);
+			return PresenceInfo.STATUS_UNKNOWN;
 		if (presenceMap.containsKey(zonName)) {
 			return ((Integer)presenceMap.get(zonName)).intValue();
 		} else {
-			return -1;
+			return PresenceInfo.STATUS_UNKNOWN;
 		}
 	}
-	
+
+	public String getModuleName() {
+		return "Kablink Conferencing";
+	}
+
+	public PresenceInfo getPresenceInfo(String zonNameAsking, String zonName) {
+		int zonPresence = getPresenceInfo(zonName);
+		return new PresenceInfoImpl(zonPresence);
+	}
+
+	public String getIMProtocolString(String zonName) {
+		return "iic://im?screenName=" + zonName;
+	}
+
+	private class PresenceInfoImpl implements PresenceInfo {
+		private int presence = PresenceInfo.STATUS_UNKNOWN;
+		public PresenceInfoImpl(int zonPresence) {
+			mapAndSetPresence(zonPresence);
+		}
+		public int getStatus() {
+			return presence;
+		}
+		public String getStatusText() {
+			return "";
+		}
+		private void mapAndSetPresence(int zonPresence) {
+			if (zonPresence > 0) {
+				if ((zonPresence & 16) == 16) {
+					presence = PresenceInfo.STATUS_AWAY;
+				} else {
+					presence = PresenceInfo.STATUS_AVAILABLE;
+				} 
+			} else if (zonPresence == 0) {
+				presence = PresenceInfo.STATUS_OFFLINE;
+			} else {
+				presence = PresenceInfo.STATUS_UNKNOWN;
+			}
+		}
+	}
 
 	private class PresenceListener extends Thread {
 

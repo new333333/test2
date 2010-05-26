@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -32,11 +32,13 @@
  */
 package org.kablink.teaming.presence;
 
-import org.kablink.teaming.domain.User;
-
 public interface PresenceManager {
 
-	public int getPresenceInfo(User user);
-	public int getPresenceInfo(String user);
-	
+	public String getModuleName();
+
+	public PresenceInfo getPresenceInfo(String userIDAsking, String userID);
+
+	public String getIMProtocolString(String userID);
+
+	public boolean isEnabled();
 }

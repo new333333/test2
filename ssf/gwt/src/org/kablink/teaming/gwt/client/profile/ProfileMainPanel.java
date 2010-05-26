@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -85,7 +86,6 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 	 * Create the Title Area that contains the user's Name
 	 */
 	private void createTitleArea() {
-
 		// create a title div for the user title and actionable items
 		titlePanel = new FlowPanel();
 		titlePanel.addStyleName("profile-title-area");
@@ -97,9 +97,13 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 		anchor.addStyleName("profile-title");
 		titlePanel.add(anchor);
 
+		PresenceControl presence = new PresenceControl(profileRequestInfo.getBinderId(), true, true, true);
+
 		Anchor workspace = new Anchor("Workspace", url);
 		workspace.addStyleName("profile-workspace-link");
+
 		titlePanel.add(workspace);
+		titlePanel.add(presence);
 	}
 
 	/**

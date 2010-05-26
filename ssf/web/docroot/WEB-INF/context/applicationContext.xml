@@ -1005,10 +1005,8 @@ text/calendar											  ics
 	</bean>-->
 	
 	<!-- ================================ Presence Service =============================== -->
-	<bean id="presenceService" class="org.kablink.teaming.presence.impl.PresenceManagerImpl">
-		<property name="jabberServer"><value>${presence.service.jabber.server}</value></property>
-		<property name="jabberServerPort"><value>${presence.service.jabber.server.port}</value></property>
-		<property name="enabled"><value>${presence.service.enable}</value></property>
+	<bean id="presenceService"  parent="moduleNonTransactionProxy">
+		<property name="target"><ref bean="presenceServiceImpl"/></property>
 	</bean>
 	
 	<!-- ================================ Instant Collaboration Support==================== -->
