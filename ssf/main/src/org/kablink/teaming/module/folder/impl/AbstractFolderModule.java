@@ -239,6 +239,10 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			case setEntryAcl:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_ENTRY_ACLS);
 				break;
+			case report:
+				getAccessControlManager().checkOperation(folder,
+						WorkAreaOperation.GENERATE_REPORTS);
+				break;
 			default:
 				throw new NotSupportedException(operation.toString(), "checkAccess");
 				
