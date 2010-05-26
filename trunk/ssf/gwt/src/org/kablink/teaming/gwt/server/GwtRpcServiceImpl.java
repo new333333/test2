@@ -33,8 +33,12 @@
 package org.kablink.teaming.gwt.server;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +53,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Node;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.ExtensionInfo;
@@ -87,21 +92,23 @@ import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
+import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
+import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
-import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.filter.SearchFilter;
@@ -2453,6 +2460,41 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return GwtProfileHelper.getUserStatus(this, sbinderId);
 	}
 
+	public ProfileStats getProfileStats(String binderId) {
+		
+		Long userId = null;
+		Principal p = null;
 
-	
+		ProfileStats stats = new ProfileStats();
+		
+//		if(binderId != null) {
+//			p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
+//		}
+//		
+//		if(p != null){
+//			userId = p.getId();
+//		}
+//		
+//		Set<Long> memberIds = new HashSet();
+//		memberIds.add(userId);
+//		
+//		Date endDate = Calendar.getInstance().getTime();
+//		Calendar c = Calendar.getInstance();
+//		c.set(1990, 0, 0);
+//		
+//		Date startDate = c.getTime();
+//		
+//		
+//		List<Map<String,Object>> report = getReportModule().generateActivityReportByUser(memberIds, startDate, endDate, ReportModule.REPORT_TYPE_SUMMARY);
+//		Map<String,Object> row = null;
+//		if(!report.isEmpty()) row = report.get(0);
+//		
+//		if(row!=null){
+//			Object obj = row.get(AuditTrail.AuditType.add.name());
+//			
+//			stats.setEntries(obj.toString());
+//		}
+		
+		return stats;
+	}
 }// end GwtRpcServiceImpl

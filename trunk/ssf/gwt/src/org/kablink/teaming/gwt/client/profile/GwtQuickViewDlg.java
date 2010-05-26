@@ -4,7 +4,6 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
@@ -404,19 +403,42 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 
 	/**
 	 * Initialize the controls in the dialog with the values from the given
-	 * object. Currently there is nothing to initialize.
+	 * object. 
 	 */
 	public void init(Object props) {
 
 		getUserStatus();
 		createProfileInfoSections();
 
-		followingStat.setText("25");
-		followersStat.setText("231");
-		entriesStat.setText("1044");
+		updateUserStats();
 		
 		updateFollowingStatus();
 	}// end init()
+
+	private void updateUserStats() {
+
+		
+		
+		
+		GwtRpcServiceAsync gwtRpcService;
+
+		// create an async callback to handle the result of the request to get
+		AsyncCallback<ProfileStats> callback = new AsyncCallback<ProfileStats>() {
+			public void onFailure(Throwable t) {
+				// display error
+				Window.alert("Error: " + t.getMessage());
+			}
+
+			public void onSuccess(ProfileStats result) {
+				entriesStat.setText(result.getEntries());
+				followingStat.setText(result.getFollowing());
+				followersStat.setText(result.getFollowers());
+			}
+		};
+
+		gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
+		gwtRpcService.getProfileStats(binderId, callback);
+	}
 
 	/**
 	 * Create the Profile Heading Sections and their associated Profile

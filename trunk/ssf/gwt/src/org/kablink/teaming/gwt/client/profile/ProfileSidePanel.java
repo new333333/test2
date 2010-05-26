@@ -14,7 +14,7 @@ public class ProfileSidePanel extends Composite {
 	private ProfileSectionPanel trackedBy;
 	private ProfileSectionPanel savedSearches;
 	private FlowPanel rightColumn;
-	private ProfileStats statsPanel;
+	private ProfileStatsPanel statsPanel;
 	private FlowPanel photoPanel;
 
 	public ProfileSidePanel(final ProfileRequestInfo profileRequestInfo) {
@@ -70,11 +70,11 @@ public class ProfileSidePanel extends Composite {
 
 		if (attrExist(cat, "profileStats")) {
 			// Add the stats div to the upper left of the right column
-			statsPanel = new ProfileStats(profileRequestInfo);
+			statsPanel = new ProfileStatsPanel(profileRequestInfo);
 			photoPanel.add(statsPanel);
 		} else {
 			//create empty space 
-			statsPanel = new ProfileStats(profileRequestInfo);
+			statsPanel = new ProfileStatsPanel(profileRequestInfo);
 			rightColumn.add(statsPanel);
 		}
 
