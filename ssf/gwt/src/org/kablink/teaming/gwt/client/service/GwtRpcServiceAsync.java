@@ -35,16 +35,15 @@ package org.kablink.teaming.gwt.client.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
-import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
-import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
-
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
+import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
+import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
+import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
@@ -52,6 +51,7 @@ import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
+import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.TagInfo;
@@ -152,6 +152,7 @@ public interface GwtRpcServiceAsync
 
 	// Return information about the User Profile
 	public void getProfileInfo(		String binderId, AsyncCallback<ProfileInfo> 	callback);
+	public void getProfileStats(	String binderId, AsyncCallback<ProfileStats> 	callback);
 	public void getQuickViewInfo( 	String binderId, AsyncCallback<ProfileInfo> 	callback);
 	public void getTeams(			String binderId, AsyncCallback<List<TeamInfo>>  callback );
 	public void getMicrBlogUrl( 	String binderId, AsyncCallback<String> 			callback);
@@ -162,5 +163,6 @@ public interface GwtRpcServiceAsync
 	
 	// Return the url needed to invoke the "site administration" page.
 	public void getSiteAdministrationUrl( String binderId, AsyncCallback<String> callback );
+
 	
 }// end GwtRpcServiceAsync
