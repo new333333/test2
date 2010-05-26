@@ -619,7 +619,7 @@ public class EntityIndexUtils {
     	} else {
        		boolean personal = Utils.isWorkareaInProfilesTree(binder);
        		if (personal) {
-       			return Constants.READ_ACL_ALL;
+       			return entry.getOwnerId().toString() + " " + Constants.READ_ACL_ALL;
        		} else {
        			return Constants.READ_ACL_ALL + " " + Constants.READ_ACL_GLOBAL;
        		}
@@ -635,8 +635,11 @@ public class EntityIndexUtils {
     	boolean personal = Utils.isWorkareaInProfilesTree(binder);
 		//get default entry access
 		doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL, Field.Store.NO, Field.Index.TOKENIZED));
-		if (!personal) 
+		if (personal) {
+			doc.add(new Field(Constants.ENTRY_ACL_FIELD, entry.getOwnerId().toString(), Field.Store.NO, Field.Index.TOKENIZED));
+		} else {
 			doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_GLOBAL, Field.Store.NO, Field.Index.TOKENIZED));
+		}
     }
 
     //Add acl fields for binder for storage in search engine
