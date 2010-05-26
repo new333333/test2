@@ -175,6 +175,21 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	
 	@Source("org/kablink/teaming/gwt/public/images/entry_task.png")
 	public ImageResource entry_task();
+
+	@Source("org/kablink/teaming/gwt/public/images/presence_available16.png")
+	public ImageResource presenceAvailable16();
+
+	@Source("org/kablink/teaming/gwt/public/images/presence_away16.png")
+	public ImageResource presenceAway16();
+
+	@Source("org/kablink/teaming/gwt/public/images/presence_busy16.png")
+	public ImageResource presenceBusy16();
+
+	@Source("org/kablink/teaming/gwt/public/images/presence_offline16.png")
+	public ImageResource presenceOffline16();
+
+	@Source("org/kablink/teaming/gwt/public/images/presence_unknown16.png")
+	public ImageResource presenceUnknown16();
 	
 	@Source("org/kablink/teaming/gwt/public/images/trans50_black_arrowleft.png")
 	public ImageResource arrowTrans50Left();

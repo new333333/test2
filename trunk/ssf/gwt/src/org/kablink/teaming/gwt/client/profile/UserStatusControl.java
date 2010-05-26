@@ -6,6 +6,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
+import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
@@ -50,6 +51,9 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		FlowPanel mainPanel = new FlowPanel();
 		mainPanel.setStyleName("user_status");
 		
+		PresenceControl presence = new PresenceControl(getBinderId(), true, true, true);
+		mainPanel.add(presence);
+
 		statusText = new HTML();
 		statusText.setText(userStatus);
 		statusText.setWordWrap(true);

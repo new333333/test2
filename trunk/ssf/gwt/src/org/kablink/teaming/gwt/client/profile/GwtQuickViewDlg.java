@@ -6,6 +6,8 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
+import org.kablink.teaming.gwt.client.presence.InstantMessageClickHandler;
+import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
@@ -64,7 +66,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 	private ActionHandler actionHandler;
 	private Image avatar;
 	private Anchor miniBlogA;
-	private QuickViewAction messageBtn;
+	private QuickViewAction instantMessageBtn;
 	private Element clientElement;
 	
 	public GwtQuickViewDlg(boolean autoHide, boolean modal, int pos,
@@ -196,9 +198,31 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 										GwtTeaming.getMessages().qViewConferenceTitle(),
 										"qView-a", "qView-action");
 		
-		messageBtn = new QuickViewAction(GwtTeaming.getMessages().qViewInstantMessage(),
+		instantMessageBtn = new QuickViewAction(GwtTeaming.getMessages().qViewInstantMessage(),
 				GwtTeaming.getMessages().qViewInstantMessageTitle(),
 				"qView-a", "qView-action");
+		instantMessageBtn.addClickHandler(new InstantMessageClickHandler(binderId) {
+				// Override onClick so we can hide the dialog after launching
+				// the instant message.
+				public void onClick(ClickEvent event) {
+					super.onClick(event);
+					hide();
+				}
+			});
+
+		// Default button to not visible
+		instantMessageBtn.setVisible(false);
+
+		// Check if presence is enabled; set the button visible if it is.
+		GwtTeaming.getRpcService().isPresenceEnabled(new AsyncCallback<Boolean>() {
+				public void onFailure(Throwable t) {
+					instantMessageBtn.setVisible(false);
+				}
+				public void onSuccess(Boolean enabled) {
+					instantMessageBtn.setVisible(enabled);
+				}
+			});
+
 
 		followBtn = new QuickViewAction("",
 										"",
@@ -255,7 +279,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		panel.add(profileBtn);
 		panel.add(workspaceBtn);
 		panel.add(conferenceBtn);
-		panel.add(messageBtn);
+		panel.add(instantMessageBtn);
 		panel.add(followBtn);
 
 		return panel;
@@ -365,9 +389,19 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		panel = new FlowPanel();
 		panel.addStyleName("teamingDlgBoxHeader");
 
-		Label userName = new Label(this.userName);
-		userName.addStyleName("qViewTitle");
-		panel.add(userName);
+		FlowPanel titlePanel = new FlowPanel();
+		titlePanel.addStyleName("qViewTitle");
+
+		InlineLabel userName = new InlineLabel(this.userName);
+		userName.addStyleName("qViewTitleText");
+
+		PresenceControl presence = new PresenceControl(binderId, false, true, true);
+		presence.addStyleName("qViewPresence");
+
+		titlePanel.add(presence);
+		titlePanel.add(userName);
+
+		panel.add(titlePanel);
 
 		Anchor closeA = new Anchor();
 		closeA.addStyleName("qViewClose");

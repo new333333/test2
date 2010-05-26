@@ -53,8 +53,10 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Node;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.ExtensionInfo;
 import org.kablink.teaming.domain.FileAttachment;
@@ -91,6 +93,7 @@ import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
+import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
@@ -111,12 +114,15 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.presence.PresenceInfo;
+import org.kablink.teaming.presence.PresenceManager;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ExportHelper;
@@ -1918,6 +1924,155 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		throw ex;
 	}// end getSiteAdministrationUrl()
 	
+	/**
+	 * Return the URL needed to start an Instant Message with the user.
+	 * 
+ 	 */
+	public Boolean isPresenceEnabled( )
+	{
+		PresenceManager presenceService = (PresenceManager)SpringContextUtil.getBean("presenceService");
+		if (presenceService != null)
+		{
+			return presenceService.isEnabled();
+		}
+		else
+		{
+			return Boolean.FALSE;
+		}
+	}
+
+	/**
+	 * Return the URL needed to start an Instant Message with the user.
+	 * 
+ 	 */
+	public String getImUrl( String binderId ) throws GwtTeamingException
+	{
+		Principal p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
+
+		if ( p != null )
+		{
+			//Get a user object from the principal
+			User user = null;
+			if (p != null) {
+				if (user instanceof User) {
+					user = (User) p;
+				} else {
+					ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
+					try {
+						user = profileDao.loadUser(p.getId(), p.getZoneId());
+					}
+					catch(Exception e) {}
+				}
+			}
+
+			if (user != null) {
+				PresenceManager presenceService = (PresenceManager)SpringContextUtil.getBean("presenceService");
+				if (presenceService != null)
+				{
+					String userID = "";
+					CustomAttribute attr = user.getCustomAttribute("presenceID");
+					if (attr != null)
+					{
+						userID = (String)attr.getValue();
+					}
+					if (userID != null && userID.length() > 0)
+					{
+						return presenceService.getIMProtocolString(userID);
+					}
+				}
+			}
+			return "";
+		}
+ 
+		GwtTeamingException ex;
+
+		ex = new GwtTeamingException();
+		ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+		throw ex;
+	}// end getImUrl
+
+	public GwtPresenceInfo getPresenceInfo( String binderId ) throws GwtTeamingException
+	{
+		User userAsking = GwtServerHelper.getCurrentUser();
+		GwtPresenceInfo gwtPresence = new GwtPresenceInfo();
+
+		// Can't get presence if we are a guest
+		if ( userAsking != null && !(ObjectKeys.GUEST_USER_INTERNALID.equals( userAsking.getInternalId() ) ) )
+		{
+			Principal p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
+
+			if ( p != null )
+			{
+				// Get a user object from the principal
+				User user = null;
+				if (p != null) {
+					if (user instanceof User) {
+						user = (User) p;
+					} else {
+						ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
+						try {
+							user = profileDao.loadUser(p.getId(), p.getZoneId());
+						}
+						catch(Exception e) {}
+					}
+				}
+
+				if (user != null) {
+					PresenceManager presenceService = (PresenceManager)SpringContextUtil.getBean("presenceService");
+					if (presenceService != null)
+					{
+						PresenceInfo pi = null;
+						int userStatus =  PresenceInfo.STATUS_UNKNOWN;
+
+						String userID = "";
+						CustomAttribute attr = user.getCustomAttribute("presenceID");
+						if (attr != null)
+						{
+							userID = (String)attr.getValue();
+						}
+						  
+						String userIDAsking = "";
+						attr = userAsking.getCustomAttribute("presenceID");
+						if (attr != null)
+						{
+							userIDAsking = (String)attr.getValue();
+						}
+
+						if (userID != null && userID.length() > 0 && userIDAsking != null && userIDAsking.length() > 0)
+						{
+							pi = presenceService.getPresenceInfo(userIDAsking, userID);
+							if (pi != null) {
+								gwtPresence.setStatusText(pi.getStatusText());
+								userStatus = pi.getStatus();
+							}	
+						}
+						switch (userStatus) {
+							case PresenceInfo.STATUS_AVAILABLE:
+								gwtPresence.setStatus(GwtPresenceInfo.STATUS_AVAILABLE);
+								break;
+							case PresenceInfo.STATUS_AWAY:
+								gwtPresence.setStatus(GwtPresenceInfo.STATUS_AWAY);
+								break;
+							case PresenceInfo.STATUS_IDLE:
+								gwtPresence.setStatus(GwtPresenceInfo.STATUS_IDLE);
+								break;
+							case PresenceInfo.STATUS_BUSY:
+								gwtPresence.setStatus(GwtPresenceInfo.STATUS_BUSY);
+								break;
+							case PresenceInfo.STATUS_OFFLINE:
+								gwtPresence.setStatus(GwtPresenceInfo.STATUS_OFFLINE);
+								break;
+							default:
+								gwtPresence.setStatus(GwtPresenceInfo.STATUS_UNKNOWN);
+						}
+					}
+				}
+			}
+		}
+
+		return gwtPresence;
+	}// end getPresenceInfo
+
 	/**
 	 * Returns information about the recent place the current user has
 	 * visited.

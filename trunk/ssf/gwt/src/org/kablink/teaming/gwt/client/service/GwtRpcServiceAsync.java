@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
+import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
@@ -156,7 +157,10 @@ public interface GwtRpcServiceAsync
 	public void getQuickViewInfo( 	String binderId, AsyncCallback<ProfileInfo> 	callback);
 	public void getTeams(			String binderId, AsyncCallback<List<TeamInfo>>  callback );
 	public void getMicrBlogUrl( 	String binderId, AsyncCallback<String> 			callback);
-	
+	public void isPresenceEnabled(                   AsyncCallback<Boolean>			callback);
+	public void getImUrl(			String binderId, AsyncCallback<String> 			callback);
+	public void getPresenceInfo(    String binderId, AsyncCallback<GwtPresenceInfo> callback);
+
 	// The following are used for the UserStatus control
 	public void saveUserStatus(String status, 	AsyncCallback<Boolean> 		callback);
 	public void getUserStatus( String binderId,	AsyncCallback<UserStatus> 	callback); 

@@ -97,4 +97,10 @@
     
     <bean id="fiAdapter" class="org.kablink.teaming.repository.fi.impl.NullFIRepositorySessionFactoryAdapter"/>
 	
+    <!-- ============================= Presence Service    ============================ -->
+	<bean id="presenceServiceImpl" class="org.kablink.teaming.presence.impl.PresenceManagerImpl">
+		<property name="jabberServer"><value>${presence.service.jabber.server}</value></property>
+		<property name="jabberServerPort"><value>${presence.service.jabber.server.port}</value></property>
+		<property name="enabled"><value>${presence.service.enable}</value></property>
+	</bean>
 </beans>

@@ -1219,7 +1219,7 @@
 
 	<tag>
 		<name>presenceInfo</name>
-		<tag-class>org.kablink.teaming.taglib.PresenceInfo</tag-class>
+		<tag-class>org.kablink.teaming.taglib.PresenceInfoTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>user</name>

@@ -1677,15 +1677,21 @@ a.ss_new_thread {
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 }
-.qViewTitle {
+.qViewTitleText {
 	color:#FFFFFF;
 	font-size:1.1em;
 	font-style:italic;
 	letter-spacing:0.05em;
 	overflow:auto;
-	padding-left:115px;
 	width:auto;
 	font-weight: normal;
+}
+.qViewTitle {
+	padding-left:115px;
+	display:inline;
+}
+.qViewPresence {
+	display:inline;
 }
 .qViewMain {
 }
@@ -1785,6 +1791,11 @@ a.ss_new_thread {
 	position: absolute;
 	top: 9px;
 	left: 15px;
+}
+.presenceImgA {
+	cursor: pointer;
+	padding-right: 5px;
+	padding-left: 5px;
 }
 .qView-follow-label {
 	display: inline;
