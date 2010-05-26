@@ -105,6 +105,7 @@
 	      <property name="maxGroupsQuota" access="field"/>
 	      <property name="diskSpaceUsed" access="field"/>
 	      <property name="password" access="field" length="64"/>
+		  <property name="pwdenc" access="field" length="32"/>
 		  <property name="timeZone" access="field" length="80"/>
 		  <property name="locale" access="field" length="32"/>
 		  <property name="digestSeed"/>

@@ -1,6 +1,7 @@
 connect sitescape/sitescape;
 alter table SS_LdapConnectionConfig add ldapGuidAttribute varchar2(255 char);
 alter table SS_Principals add ldapGuid varchar2(128 char);
+alter table SS_Principals add pwdenc varchar2(32 char);
 create index ldapGuid_principal on SS_Principals (ldapGuid);
 ALTER TABLE SSQRTZ_job_details MODIFY JOB_NAME VARCHAR2(200);
 ALTER TABLE SSQRTZ_job_details MODIFY JOB_GROUP VARCHAR2(200);
@@ -43,4 +44,4 @@ ALTER TABLE SS_Attachments add description_format number(10,0);
 ALTER TABLE SS_Attachments add majorVersion number(10,0);
 ALTER TABLE SS_Attachments add minorVersion number(10,0);
 ALTER TABLE SS_Attachments add fileStatus number(10,0);
-INSERT INTO SS_SchemaInfo values (8);
+INSERT INTO SS_SchemaInfo values (9);

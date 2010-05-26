@@ -42,7 +42,7 @@ public class DigestUserDetailsService implements UserDetailsService {
 
 	private static final String SERVICE_BEAN_NAME = "profileModule";
 	
-	private static final String SERVICE_METHOD_NAME = "getUserAndPasswordByName";
+	private static final String SERVICE_METHOD_NAME = "getUsernameAndDecryptedPassword";
 	private static final Class[] SERVICE_METHOD_ARG_TYPES = new Class[] {String.class};
 	
 	public UserDetails loadUserByUsername(String username)
@@ -55,7 +55,6 @@ public class DigestUserDetailsService implements UserDetailsService {
 			if(val[0] == null)
 				throw new UsernameNotFoundException("User not found: " + username, username);
 			return new DigestUserDetails(username, val[1]);
-			//return new DigestUserDetails(username, "test");
 		} catch (Exception e) {
 			throw new UsernameNotFoundException(username, e);
 		}

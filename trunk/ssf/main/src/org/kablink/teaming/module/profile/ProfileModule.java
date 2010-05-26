@@ -708,5 +708,17 @@ public interface ProfileModule {
      */
     public SortedSet<User> getUsersByEmail(String emailAddress, String emailType);
     
-    public String[] getUserAndPasswordByName(String username);
+    /**
+     * Returns a string array of size two where the first element is the user's
+     * name and the second element the user's decrypted password.
+     * <p> 
+     * The username element will be <code>null</code> if the specified user
+     * is not found in the system. The password element will be <code>null</code>
+     * if the user's password is stored using asymmetric (i.e., irreversible)
+     * encryption algorithm.
+     * 
+     * @param username
+     * @return
+     */
+    public String[] getUsernameAndDecryptedPassword(String username);
 }

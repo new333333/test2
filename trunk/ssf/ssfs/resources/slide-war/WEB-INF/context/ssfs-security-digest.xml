@@ -21,7 +21,6 @@
 		<property name="key" value="U2l0ZVNjYXBl"/>
 	</bean>
 
-
 	<bean id="digestUserDetailsService" 
 		class="org.kablink.teaming.asmodule.spring.security.userdetails.DigestUserDetailsService">
 	</bean>

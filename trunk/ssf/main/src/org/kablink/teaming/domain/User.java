@@ -50,18 +50,10 @@ import java.util.TreeSet;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
-import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.Validator;
 
-
-/**
- * @hibernate.subclass discriminator-value="U" dynamic-update="true" node="User"
- *
- */
 public class User extends UserPrincipal implements IndividualPrincipal {
 	private final static int	WORK_DAY_START_DEFAULT	= 8;	// Original default was 6 in ss_calendar.js.
 	
@@ -77,6 +69,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected Date loginDate;
     protected String displayStyle;
     protected String password; //set by hibernate access="field"
+    protected String pwdenc; // set by hibernate access="field"
     protected Long digestSeed;
     protected String skypeId="";
     protected String twitterId="";
@@ -385,7 +378,15 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	 * @param clearTextPassword clear text password
 	 */
 	public void setPassword(String clearTextPassword) {
-		this.password = EncryptUtil.encryptPassword(clearTextPassword);
+		this.password = EncryptUtil.encryptPasswordForStorage(clearTextPassword, this);
+		this.pwdenc = EncryptUtil.passwordEncryptionAlgorithmForStorage(this);
+	}
+	
+	public String getPwdenc() {
+		return pwdenc;
+	}
+	public void setPwdenc(String pwdenc) {
+		this.pwdenc = pwdenc;
 	}
 	
     /**

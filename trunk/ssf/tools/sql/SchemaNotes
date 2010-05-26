@@ -37,4 +37,4 @@ In ss_Attachments:
   ALTER TABLE SS_Attachments add column fileStatus integer;
   majorVersion and minorVersion are used to add levels to file versions
   fileStatus is used to tag a version with Official, Draft, Obsolete, etc.
-
+alter table SS_Principals add column pwdenc varchar(32);

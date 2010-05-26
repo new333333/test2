@@ -285,7 +285,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
     	}
     	
     	if(password != null) {
-	   		if(!EncryptUtil.encryptPassword(password).equals(user.getPassword())) {
+	   		if(!EncryptUtil.encryptPasswordForMatching(password, user).equals(user.getPassword())) {
 	   			// Password does not match.
 	   			if(passwordAutoSynch) {
 	   				// We don't want to sync the password if the user is one of the 5
@@ -295,9 +295,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	   				{
 	   					// No
 		   				// Change the user's password to the value passed in. 
-		   				Map updates = new HashMap();
-		   				updates.put("password", password);
-		   				getProfileModule().modifyUserFromPortal(user, updates, null);
+	   					modifyPassword(user, password);
 	   				}
 	   			}
 	   			else {
@@ -314,11 +312,24 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	   				}
 	   			}
 	   		}
+	   		else { // The user-entered credential and the stored password do match.
+	   			if(!EncryptUtil.passwordEncryptionAlgorithmForMatching(user).equals(EncryptUtil.passwordEncryptionAlgorithmForStorage(user))) {
+	   				// The password encryption algorithm has changed since the last time the password was encrypted for this user.
+	   				// This is the opportunity to migrate the password to the latest encryption.
+	   				modifyPassword(user, password);
+	   			}
+	   		}
     	}
    		
 		return user;
 	}
 
+	void modifyPassword(User user, String password) {
+		Map updates = new HashMap();
+		updates.put("password", password);
+		getProfileModule().modifyUserFromPortal(user, updates, null);
+	}
+	
 	public User authenticate(String zoneName, Long userId, String binderId, String privateDigest, String authenticatorName) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		validateZone(zoneName);
