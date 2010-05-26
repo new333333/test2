@@ -88,6 +88,7 @@ import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
@@ -737,6 +738,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 	
 	public Map<String, Object> generateEntryAclReport(final Folder folder) {
+		getFolderModule().checkAccess(folder, FolderOperation.report);
 		Map<String, Object> report = new HashMap<String, Object>();
 		//First, get the number of entries in the binder
 		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
