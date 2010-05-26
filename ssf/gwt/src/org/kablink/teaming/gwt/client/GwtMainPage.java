@@ -635,7 +635,7 @@ public class GwtMainPage extends Composite
 			}
 			
 			m_adminControl.setVisible( true );
-			relayoutPage( true );
+			relayoutPage( false );
 			break;
 		
 		case CLOSE_ADMINISTRATION:
@@ -777,7 +777,7 @@ public class GwtMainPage extends Composite
 			}
 			
 			// Relayout the content panel.
-			relayoutPage( true );
+			relayoutPage( false );
 			break;
 			
 		case SHOW_LEFT_NAVIGATION:
@@ -797,7 +797,7 @@ public class GwtMainPage extends Composite
 			}
 			
 			// Relayout the content panel.
-			relayoutPage( true );
+			relayoutPage( false );
 			break;
 			
 		case UNDEFINED:
@@ -936,7 +936,7 @@ public class GwtMainPage extends Composite
 	public void onResize( ResizeEvent event )
 	{
 		// Adjust the height and width of the controls on this page.
-		relayoutPage( true );
+		relayoutPage( false );
 	}// end onResize()
 	
 	
@@ -1274,27 +1274,24 @@ public class GwtMainPage extends Composite
 			if ( m_adminControl != null )
 			{
 				// Yes
-				m_adminControl.setSizeAndPositionOfContentControl();
+				m_adminControl.relayoutPage();
 			}
 		}
 		else
 		{
-			Timer timer;
-
-			// No, set a timer and then relayout.
-			timer = new Timer()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void run()
-				{
-					relayoutPage( true );
-				}// end run()
-			};
+			Command cmd;
 			
-			timer.schedule( 250 );
+	        cmd = new Command()
+	        {
+	        	/**
+	        	 * 
+	        	 */
+	            public void execute()
+	            {
+					relayoutPage( true );
+	            }
+	        };
+	        DeferredCommand.addCommand( cmd );
 		}
 	}// end relayoutPage()
 

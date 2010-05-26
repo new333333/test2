@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -57,7 +58,6 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -208,13 +208,13 @@ public class AdminControl extends Composite
 					img = new Image( imgResource );
 				}
 				
-				cellFormatter.setWidth( row, 1, String.valueOf( img.getWidth() ) );
 				m_mainTable.setWidget( row, 1, img );
 				
 				// Add the category name
 				categoryName = new InlineLabel( category.getLocalizedName() );
 				categoryName.addStyleName( "adminCategoryName" );
 				m_mainTable.setWidget( row, 2, categoryName );
+				cellFormatter.setWidth( row, 2, "100%" );
 				
 				++row;
 			}
@@ -421,11 +421,10 @@ public class AdminControl extends Composite
         	 */
             public void execute()
             {
-				setSizeAndPositionOfContentControl();
+				relayoutPage();
             }
         };
-        DeferredCommand.addCommand( cmd );
-		
+        DeferredCommand.addCommand( cmd );		
 
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -461,6 +460,9 @@ public class AdminControl extends Composite
 		{
 			String url;
 			
+			// Position the content control.
+			relayoutPageNow();
+			
 			// Get the url used by the selected action.
 			url = adminAction.getUrl();
 			if ( url != null && url.length() > 0 )
@@ -492,14 +494,33 @@ public class AdminControl extends Composite
 	/**
 	 * 
 	 */
-	public void setSizeAndPositionOfContentControl()
+	public void relayoutPage()
+	{
+		Command cmd;
+		
+		cmd = new Command()
+		{
+			public void execute()
+			{
+				relayoutPageNow();
+			}
+		};
+		DeferredCommand.addCommand( cmd );
+	}// end relayoutPage()
+	
+	
+	/**
+	 * 
+	 */
+	private void relayoutPageNow()
 	{
 		int width;
 		int height;
 		int x;
-		
+		Style style;
+
+		// Calculate where the content control should be positioned.
 		x = m_adminActionsTreeControl.getAbsoluteLeft() + m_adminActionsTreeControl.getOffsetWidth() + 8;
-		DOM.setStyleAttribute( m_contentControl.getElement(), "left", String.valueOf( x ) + "px" );
 		
 		// Calculate how wide the ContentControl should be.
 		{
@@ -521,8 +542,17 @@ public class AdminControl extends Composite
 			height = clientHeight - m_contentControl.getAbsoluteTop() - 20;
 		}
 		
+		// Set the width and height of the content control.
 		m_contentControl.setDimensions( width, height );
-	}// end setSizeAndPositionOfContentControl()
+
+		// Set the left position of the content control.
+		style = m_contentControl.getElement().getStyle();
+		style.setLeft( x, Style.Unit.PX );
+
+		// Set the height of the tree control.
+		style = m_adminActionsTreeControl.getElement().getStyle();
+		style.setHeight( height, Style.Unit.PX );
+	}// end relayoutPageNow()
 
 	
 	/**
