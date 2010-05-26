@@ -22,9 +22,8 @@
 	background-color: #EAEBE8;
 	padding: 0 0 8px;
 	position: absolute;
-	overflow-x: auto;
+	overflow: auto;
 	top: 8px;
-	width: 400px;
 	z-index: 100;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
