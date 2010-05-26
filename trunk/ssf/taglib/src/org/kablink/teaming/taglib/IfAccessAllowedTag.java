@@ -44,10 +44,14 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.dom4j.Document;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.BinderModuleImpl;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -65,31 +69,40 @@ import org.kablink.util.servlet.StringServletResponse;
 public class IfAccessAllowedTag extends BodyTagSupport {
 	
 	private Binder binder = null;
+	private DefinableEntity entity = null;
 	
 	private BinderModule binderModule = null;
+	private FolderModule folderModule = null;
 	
 	private String operation = null;
 	
 	private BinderModule.BinderOperation binderOperation = null;
+	private FolderModule.FolderOperation folderOperation = null;
 
 	public int doStartTag() throws JspTagException {
 		try {
-			if(binder == null){
+			if(binder == null && entity == null){
 				return SKIP_BODY;
 			}	
 			if(binderOperation == null){
 				return SKIP_BODY;
 			}			
 			binderModule = (BinderModule)SpringContextUtil.getBean("binderModule");
+			folderModule = (FolderModule)SpringContextUtil.getBean("folderModule");
 			
-			if(binderModule.testAccess(binder, binderOperation)){
+			if(binder != null && binderModule.testAccess(binder, binderOperation)){
+				return EVAL_BODY_INCLUDE;
+			}
+			if(entity != null && entity instanceof FolderEntry && folderModule.testAccess((FolderEntry)entity, folderOperation)){
 				return EVAL_BODY_INCLUDE;
 			}
 		} catch (Exception e) {
 			throw new JspTagException(e.getLocalizedMessage());
 		} finally {
 			this.binder = null;
+			this.entity = null;
 			this.binderModule = null;
+			this.folderModule = null;
 			this.operation = null;
 			this.binderOperation = null;
 		}
@@ -109,8 +122,13 @@ public class IfAccessAllowedTag extends BodyTagSupport {
 		this.binder = binder;
 	}
 	
+	public void setEntity(DefinableEntity entity) {
+		this.entity = entity;
+	}
+	
 	public void setOperation(String operation) {
 		this.operation = operation;
 		binderOperation = BinderModule.BinderOperation.valueOf(operation);
+		folderOperation = FolderModule.FolderOperation.valueOf(operation);
 	}
 }
