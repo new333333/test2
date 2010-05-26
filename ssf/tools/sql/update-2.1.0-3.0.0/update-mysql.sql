@@ -1,6 +1,7 @@
 use sitescape;
 alter table SS_LdapConnectionConfig add column ldapGuidAttribute varchar(255);
 alter table SS_Principals add column ldapGuid varchar(128);
+alter table SS_Principals add column pwdenc varchar(32);
 create index ldapGuid_principal on SS_Principals (ldapGuid);
 ALTER TABLE SSQRTZ_JOB_DETAILS MODIFY JOB_NAME VARCHAR(200);
 ALTER TABLE SSQRTZ_JOB_DETAILS MODIFY JOB_GROUP VARCHAR(200);
@@ -43,4 +44,4 @@ ALTER TABLE SS_Attachments add column description_format integer;
 ALTER TABLE SS_Attachments add column majorVersion integer;
 ALTER TABLE SS_Attachments add column minorVersion integer;
 ALTER TABLE SS_Attachments add column fileStatus integer;
-INSERT INTO SS_SchemaInfo values (8);
+INSERT INTO SS_SchemaInfo values (9);

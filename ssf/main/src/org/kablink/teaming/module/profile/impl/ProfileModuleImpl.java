@@ -1744,7 +1744,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	  // The user making the call does not have the right to manage profile entries. 
     	  // In this case, we require that the old password be specified. 
     	  // Note: This code needs to be kept in synch with the similar check in ModifyEntryController.java.
-    	  if(oldPassword == null || oldPassword.equals("") || !EncryptUtil.encryptPassword(oldPassword).equals(user.getPassword()))
+    	  if(oldPassword == null || oldPassword.equals("") || !EncryptUtil.encryptPasswordForMatching(oldPassword, user).equals(user.getPassword()))
     		  // The user didn't enter the old/current password or they entered it incorrectly.
     		  throw new PasswordMismatchException("errorcode.password.invalid");
       }
@@ -1768,12 +1768,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	  return result;
   }
   
-  public String[] getUserAndPasswordByName(String username) {
+  public String[] getUsernameAndDecryptedPassword(String username) {
 	  String[] result = new String[2];
 	  try {
 		  User user = findUserByName(username);
 		  result[0] = user.getName();
-		  result[1] = user.getPassword();
+		  result[1] = EncryptUtil.decryptPasswordForMatching(user);
 	  }
 	  catch(NoUserByTheNameException e) {
 	  }

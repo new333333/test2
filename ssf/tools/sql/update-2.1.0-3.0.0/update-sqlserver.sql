@@ -1,6 +1,7 @@
 use sitescape;
 alter table SS_LdapConnectionConfig add ldapGuidAttribute varchar(255) null;
 alter table SS_Principals add ldapGuid varchar(128) null;
+alter table SS_Principals add pwdenc varchar(32) null;
 create index ldapGuid_principal on SS_Principals (ldapGuid);
 
 IF EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[FK_SSQRTZ_JOB_LISTENERS_SSQRTZ_JOB_DETAILS]') AND OBJECTPROPERTY(id, N'ISFOREIGNKEY') = 1)
@@ -181,4 +182,4 @@ alter table SS_Attachments add minorVersion int null;
 alter table SS_Attachments add fileStatus int null;
 
 
-INSERT INTO SS_SchemaInfo values (8);
+INSERT INTO SS_SchemaInfo values (9);
