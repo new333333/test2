@@ -494,6 +494,7 @@ public interface GwtTeamingMessages extends Messages
 	String clearCurrentStatus();
 	
 	// The following strings are used with the Administration page.
+	String administrationHeader();
 	String managementCategory();
 	String reportCategory();
 	String systemCategory();

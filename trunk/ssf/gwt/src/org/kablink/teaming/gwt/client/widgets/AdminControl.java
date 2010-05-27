@@ -66,6 +66,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 
 
 /**
@@ -302,8 +303,33 @@ public class AdminControl extends Composite
 			// Create a table that will hold all the top level administration categories
 			m_mainTable = new FlexTable();
 			m_mainTable.addStyleName( "adminCategoriesTable" );
+			m_mainTable.setCellPadding( 0 );
+			m_mainTable.setCellSpacing( 0 );
 			
 			mainPanel.add( m_mainTable );
+			
+			// Add the header
+			{
+				Label header;
+				FlexTable table;
+				FlexTable.FlexCellFormatter cellFormatter;
+				
+				table = new FlexTable();
+				table.addStyleName( "adminActionsTreeControlHeader" );
+				table.setCellPadding( 0 );
+				table.setCellSpacing( 0 );
+				
+				cellFormatter = table.getFlexCellFormatter();
+				
+				header = new Label( GwtTeaming.getMessages().administrationHeader() );
+				header.addStyleName( "adminActionsTreeControlHeader2" );
+				table.setWidget( 0, 0, header );
+				
+				table.setWidget( 0, 1, new Label( "" ) );
+				cellFormatter.setWidth( 0, 1, "100%" );
+				
+				m_mainTable.setWidget( 0, 0, table );
+			}
 			
 			// Create the callback that will be used when we issue an ajax call to get the administration actions.
 			m_rpcGetAdminActionsCallback = new AsyncCallback<ArrayList<GwtAdminCategory>>()
