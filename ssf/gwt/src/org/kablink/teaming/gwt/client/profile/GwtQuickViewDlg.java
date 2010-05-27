@@ -22,6 +22,10 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
@@ -457,14 +461,16 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		private Image img;
 		private boolean isChecked;
 		private FlowPanel panel;
+		private String labelStyle;
 
 		public QuickViewAction(String text, String title, String anchorStlyeName,
 				String labelStyleName) {
 			super();
 
+			labelStyle = labelStyleName;
 			addStyleName(anchorStlyeName);
 
-			if(labelStyleName.equals("qView-action-following") ){
+			if(labelStyle.equals("qView-action-following") ){
 				panel = new FlowPanel();
 				panel.addStyleName(labelStyleName);
 
@@ -485,6 +491,25 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 				label.addStyleName(labelStyleName);
 				getElement().appendChild(label.getElement());
 			}
+			
+			addMouseOverHandler(new MouseOverHandler() {
+				public void onMouseOver(MouseOverEvent event) {
+					if(labelStyle.equals("qView-action-following") ){
+						panel.addStyleName("qView-action2");
+					} else {
+						label.addStyleName("qView-action2");
+					}
+				}});
+			
+			addMouseOutHandler(new MouseOutHandler(){
+				public void onMouseOut(MouseOutEvent event) {
+					if(labelStyle.equals("qView-action-following") ){
+						panel.removeStyleName("qView-action2");
+					} else {
+						label.removeStyleName("qView-action2");
+					}
+
+				}});
 		}
 
 		public boolean isChecked() {
