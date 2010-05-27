@@ -1752,20 +1752,7 @@ a.ss_new_thread {
 .qViewStatus-anchor{
 	color:#1C5894 !important;
 }
-.qViewStats {
-	position: absolute;
-	bottom: 10px;
-	margin-left: 5px;
-	margin-bottom: 5px;
-}
 .qViewFooter {
-}
-.qViewStatsLabel {
-	color:#666666;
-	display:inline;
-	font-size:0.8em;
-	padding-right:0.3em;
-	white-space:nowrap;
 }
 .qViewClose {
 	position:absolute;
