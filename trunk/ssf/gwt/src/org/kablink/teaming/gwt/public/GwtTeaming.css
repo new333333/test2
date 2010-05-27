@@ -1780,6 +1780,10 @@ a.ss_new_thread {
 	text-align:center;
 	position: relative;
 }
+.qView-action2 {
+	color: #FFFFFF;
+	background: url(images/teal_slice.png) repeat-x center;
+}
 .qView-action-following  {
 	-moz-border-radius:15px;
 	-webkit-border-radius: 15px;
