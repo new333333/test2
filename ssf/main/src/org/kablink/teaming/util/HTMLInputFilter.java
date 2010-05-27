@@ -240,7 +240,7 @@ public class HTMLInputFilter
     vSelfClosingTags = new String[] { "img", "br", "hr" };
     vNeedClosingTags = new String[] { "a", "b", "strong", "i", "em", "p", "span", "div", "table", "tr", "td", "th" };
     vAllowedProtocols = new String[] { "*", "http", "https", "mailto" }; 
-    vDisAllowedProtocols = new String[] { "ftp" }; // no ftp.
+    vDisAllowedProtocols = new String[] { "" }; 
     vProtocolAtts = new String[] { "src", "href", "cite", "scheme" };
     vRemoveBlanks = new String[] { "a", "b", "strong", "i", "em", "p" };
     vRemoveBlanksPatterns1 = new HashMap<String,Pattern>();
