@@ -37,7 +37,7 @@
 
 
 <c:choose>
-	<c:when test="${showProfile == 'true'}">
+	<c:when test="${showProfile == 'true' && !empty ssRelevanceDashboardConfigElement}">
 		<div class="ss_style ss_portlet">
 			<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/profile.jsp" />
 		</div>
