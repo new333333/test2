@@ -775,6 +775,8 @@ public class MarkupUtil {
 								</script>
 				    		 */
 				    		Integer id = ++youtubeDivId;
+				    		String ytUrl = s_url.replaceFirst("youtube.com/watch\\?v=", "youtube.com/v/");
+				    		ytUrl = ytUrl.replaceFirst("youtube.com\\?v=", "youtube.com/v/");
 				    		if (youtubeDivId > 1000000) youtubeDivId = 0;
 				    		titleLink.append("<div id=\"ss_videoDiv"+id.toString()+"\">\n");
 				    		titleLink.append("<div id=\"ytapiplayer"+id.toString()+"\">\n");
@@ -789,7 +791,7 @@ public class MarkupUtil {
 				    		titleLink.append("<script type=\"text/javascript\">\n");
 				    		titleLink.append("var params = { allowScriptAccess: \"always\" };\n");
 				    		titleLink.append("var atts = { id: \"myytplayer\" };\n");
-				    		titleLink.append("swfobject.embedSWF(\"").append(s_url.replace("?v=", "/v/"));
+				    		titleLink.append("swfobject.embedSWF(\"").append(ytUrl);
 				    		titleLink.append("?enablejsapi=1&playerapiid=ytplayer\",");
 				    		titleLink.append(" \"ytapiplayer"+id.toString()+"\", \"").append(s_width).append("\", ");
 				    		titleLink.append("\"").append(s_height).append("\", \"8\", null, null, params, atts);\n");
