@@ -57,9 +57,6 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 	private QuickViewAction conferenceBtn;
 	private QuickViewAction followBtn;
 	
-	private Label followingStat;
-	private Label followersStat;
-	private Label entriesStat;
 	private Label statusLabel;
 	
 	private String userName;
@@ -162,8 +159,6 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 
 		rightPanel.add(statusPanel);
 		rightPanel.add(infoPanel);
-
-		rightPanel.add(createStatsPanel());
 
 		return mainPanel;
 	}
@@ -321,51 +316,6 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		return grid;
 	}
 
-	private Panel createStatsPanel() {
-		FlowPanel panel = new FlowPanel();
-		panel.addStyleName("qViewStats");
-
-		InlineLabel span;
-		Label label;
-
-		span = new InlineLabel();
-		panel.add(span);
-
-		label = new Label(GwtTeaming.getMessages().qViewFollowing());
-		label.addStyleName("qViewStatsLabel");
-		span.getElement().appendChild(label.getElement());
-
-		followingStat = new Label();
-		followingStat.addStyleName("qViewStatsLabel");
-		followingStat.addStyleName("bold");
-		span.getElement().appendChild(followingStat.getElement());
-
-		span = new InlineLabel();
-		panel.add(span);
-
-		label = new Label(GwtTeaming.getMessages().qViewFollowers());
-		label.addStyleName("qViewStatsLabel");
-		span.getElement().appendChild(label.getElement());
-
-		followersStat = new Label();
-		followersStat.addStyleName("qViewStatsLabel");
-		followersStat.addStyleName("bold");
-		span.getElement().appendChild(followersStat.getElement());
-
-		span = new InlineLabel();
-		panel.add(span);
-
-		label = new Label(GwtTeaming.getMessages().qViewEntries());
-		label.addStyleName("qViewStatsLabel");
-		span.getElement().appendChild(label.getElement());
-
-		entriesStat = new Label();
-		entriesStat.addStyleName("qViewStatsLabel");
-		entriesStat.addStyleName("bold");
-		span.getElement().appendChild(entriesStat.getElement());
-
-		return panel;
-	}
 
 	/*
 	 * Override the createFooter() method so we can control what buttons are in
@@ -443,37 +393,11 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 
 		getUserStatus();
 		createProfileInfoSections();
-
-		updateUserStats();
 		
 		updateFollowingStatus();
 	}// end init()
 
-	private void updateUserStats() {
-
-		
-		
-		
-		GwtRpcServiceAsync gwtRpcService;
-
-		// create an async callback to handle the result of the request to get
-		AsyncCallback<ProfileStats> callback = new AsyncCallback<ProfileStats>() {
-			public void onFailure(Throwable t) {
-				// display error
-				Window.alert("Error: " + t.getMessage());
-			}
-
-			public void onSuccess(ProfileStats result) {
-				entriesStat.setText(result.getEntries());
-				followingStat.setText(result.getFollowing());
-				followersStat.setText(result.getFollowers());
-			}
-		};
-
-		gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
-		gwtRpcService.getProfileStats(binderId, callback);
-	}
-
+	
 	/**
 	 * Create the Profile Heading Sections and their associated Profile
 	 * Attributes
