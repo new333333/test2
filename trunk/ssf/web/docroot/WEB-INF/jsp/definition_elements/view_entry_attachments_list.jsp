@@ -491,7 +491,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						    </td>
 							<td valign="top" colspan="6" style="padding-left: 5px; font-weight: normal;">
 							  <a href="javascript: // " 
-							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 4, 9)" 
+							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 4, 9);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 4, 9);" 
 							    class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
 						 </tr>
 			 	    </c:when>
@@ -506,7 +506,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						    </td>
 							<td valign="top" colspan="6" style="padding-left: 5px; font-weight: normal;">
 							<a href="javascript: // " 
-							  onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 10, 20)" 
+							  onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 10, 20);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 10, 20);" 
 							  class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
 						 </tr>
 			 	    </c:when>	
@@ -520,7 +520,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						    </td>
 							<td valign="top" colspan="6" style="padding-left: 5px; font-weight: normal;">
 							  <a href="javascript: // " 
-							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 21, 40)" 
+							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 21, 40);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 21, 40);" 
 							    class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
 						 </tr>
 			 	    </c:when>	
@@ -535,7 +535,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 							<td valign="top" colspan="6" 
 							  style="padding-left: 5px; font-weight: normal;">
 							  <a href="javascript: // " 
-							  onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 41, 80)" 
+							  onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 41, 80);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 41, 80);" 
 							  class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
 						 </tr>
 			 	    </c:when>
@@ -549,7 +549,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						    </td>
 							<td valign="top" colspan="6" style="padding-left: 5px; font-weight: normal;">
 							  <a href="javascript: // " 
-							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 81)" 
+							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 81);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 81);" 
 							    class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
 						 </tr>
 			 	    </c:when>				 	    
@@ -717,7 +717,14 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				  </div>
 				</td>	
 			  </tr>	
-			  <tr style="display: block; visibility: visible;">
+			  <c:choose>
+				<c:when test="${status.count <= 3}">
+					<tr style="display: block; visibility: visible;">
+				</c:when>	
+				<c:otherwise>						
+					<tr id="${ss_attachments_namespace}att_desc_row${status.count}" style="display: none; visibility: hidden; ">
+				</c:otherwise>
+			  </c:choose>						
 				<td width="80">
 				  <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
 					<img border="0" style="border:0px none #fff; width:35px;height:1px;" 

@@ -511,6 +511,7 @@ public interface ObjectKeys {
 
     //change log element attributes
     public static final String XTAG_ATTRIBUTE_OPERATION="operation";
+    public static final String XTAG_ATTRIBUTE_COMMENT="comment";
     public static final String XTAG_ATTRIBUTE_MODIFIEDBY="modifiedBy";
     public static final String XTAG_ATTRIBUTE_MODIFIEDON="modifiedOn";
     public static final String XTAG_ATTRIBUTE_LOGVERSION="logVersion";

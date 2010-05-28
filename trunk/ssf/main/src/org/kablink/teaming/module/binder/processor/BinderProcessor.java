@@ -85,4 +85,5 @@ public interface BinderProcessor {
      */
     public void moveBinderFixup(Binder binder);
 	public ChangeLog processChangeLog(Binder binder, String operation);
+	public ChangeLog processChangeLog(Binder binder, String operation, String comment);
 }

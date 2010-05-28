@@ -1985,6 +1985,8 @@ public class BinderHelper {
 			Long logVersion = Long.valueOf(root.attributeValue("logVersion", "0"));
 			Map changeMap = new HashMap(); // doc.asXML()
 			changeMap.put("changeLog", log);
+			changeMap.put("operation", root.attributeValue("operation", ""));
+			changeMap.put("comment", root.attributeValue("comment", "").split(","));
 			if (version != null && version.equals(log.getVersion()) || 
 					version == null) {
 				if (!folderEntries.containsKey(logVersion)) changeList.add(changeMap);
@@ -2175,7 +2177,6 @@ public class BinderHelper {
 		}
 		
 		for (Element fileAttachment : fileAttachments) {
-			String fileAttName = fileAttachment.attributeValue("name", "");
 			String fileAttId = fileAttachment.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_DATABASEID, "");
 			FileAttachment fa = new FileAttachment();
 			FileItem fi = new FileItem();
@@ -2278,7 +2279,30 @@ public class BinderHelper {
 					}
 				}
 			}
-			entry.addAttachment(fa);
+			//See if this file attachment already exists in the entry
+			Iterator itAtts = entry.getAttachments().iterator();
+			boolean attFound = false;
+			while (itAtts.hasNext()) {
+				Attachment att = (Attachment)itAtts.next();
+				if (att instanceof FileAttachment) {
+					FileAttachment fAtt = (FileAttachment) att;
+					if (fa.getFileItem().getName().equals(fAtt.getFileItem().getName())) {
+						attFound = true;
+						//The file names are the same. See if this is a higher version
+						if (fa.getMajorVersion() > fAtt.getMajorVersion() ||
+								(fa.getMajorVersion() == fAtt.getMajorVersion() && fa.getMinorVersion() > fAtt.getMinorVersion())) {
+							//This attachment is newer, replace the older one with this
+							entry.removeAttachment(att);
+							entry.addAttachment(fa);
+							break;
+						}
+					}
+				}
+			}
+			if (!attFound) {
+				//The attachment wasn't found, so add this one
+				entry.addAttachment(fa);
+			}
 		}
 		
 		Iterator itEvents = root.selectNodes("//event").iterator();
