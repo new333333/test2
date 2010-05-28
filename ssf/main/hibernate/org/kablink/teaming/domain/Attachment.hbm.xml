@@ -59,6 +59,9 @@
         </component>
       </component>
       <property name="lastVersion"/>
+      <property name="majorVersion" column="majorVersion"/>
+      <property name="minorVersion" column="minorVersion"/>
+      <property name="fileStatus" column="fileStatus"/>
 
       <bag inverse="true" access="field" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" batch-size="4" name="fileVersions">
         <key column="parentAttachment"/>
