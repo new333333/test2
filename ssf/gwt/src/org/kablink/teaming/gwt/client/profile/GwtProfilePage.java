@@ -1,5 +1,6 @@
 package org.kablink.teaming.gwt.client.profile;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
@@ -102,7 +103,7 @@ public class GwtProfilePage extends Composite {
 		profilePanel.add(titleBar);
 
 		// Title
-		Label profileLabel = new Label("Profile");
+		Label profileLabel = new Label(GwtTeaming.getMessages().qViewProfile());
 		titleBar.add(profileLabel);
 	}
 
