@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
+import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
@@ -175,5 +176,8 @@ public interface GwtRpcService extends RemoteService
 	
 	// Return the url needed to invoke the "site administration" page.
 	public String getSiteAdministrationUrl( String binderId ) throws GwtTeamingException;
+	
+	// Get upgrade information
+	public GwtUpgradeInfo getUpgradeInfo() throws GwtTeamingException;
 	
 }// end GwtRpcService

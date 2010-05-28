@@ -634,14 +634,14 @@ public class GwtMainPage extends Composite
 				m_contentPanel.add( m_adminControl );
 			}
 			
-			m_adminControl.setVisible( true );
+			m_adminControl.showControl();
 			relayoutPage( false );
 			break;
 		
 		case CLOSE_ADMINISTRATION:
 			// Hide the AdminControl.
 			if ( m_adminControl != null )
-				m_adminControl.setVisible( false );
+				m_adminControl.hideControl();
 			
 			// Show everything on the menu, the workspace tree control and the content control.
 			m_mainMenuCtrl.hideAdministrationMenubar();

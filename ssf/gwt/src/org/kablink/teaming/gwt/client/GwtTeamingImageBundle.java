@@ -77,6 +77,9 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/help2.png")
 	public ImageResource help2();
 
+	@Source("org/kablink/teaming/gwt/public/images/info2.gif")
+	public ImageResource info2();
+
 	@Source("org/kablink/teaming/gwt/public/images/lpe_custom_jsp.gif")
 	public ImageResource landingPageEditorCustomJsp();
 

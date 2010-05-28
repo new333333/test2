@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
+import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
@@ -168,5 +169,7 @@ public interface GwtRpcServiceAsync
 	// Return the url needed to invoke the "site administration" page.
 	public void getSiteAdministrationUrl( String binderId, AsyncCallback<String> callback );
 
+	// Return upgrade information.
+	public void getUpgradeInfo( AsyncCallback<GwtUpgradeInfo> callback );
 	
 }// end GwtRpcServiceAsync
