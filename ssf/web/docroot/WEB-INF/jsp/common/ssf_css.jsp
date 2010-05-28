@@ -1327,7 +1327,7 @@ table.ss_attachments_list td.ss_att_space {
 	}
 table.ss_attachments_list td.ss_att_description {
 	font-size: 10px;
-    padding: 0px 20px;
+    padding: 0px 0px;
 	}
 .ss_subhead2 {
 	color: ${ss_style_text_color};

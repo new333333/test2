@@ -116,7 +116,8 @@
 		</td>
 	</tr>
 	<tr>
-	  <td valign="top" colspan="7" class="ss_att_description" width="100%">
+	  <td></td>
+	  <td valign="top" colspan="6" class="ss_att_description" width="100%">
 	    <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${selection.fileItem.description.text}</ssf:markup></div>
 	  </td>
 	</tr>	
