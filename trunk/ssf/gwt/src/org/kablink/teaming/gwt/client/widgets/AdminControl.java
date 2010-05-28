@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
+import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
@@ -61,12 +62,16 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
 
 
 /**
@@ -77,10 +82,151 @@ import com.google.gwt.user.client.ui.Label;
 public class AdminControl extends Composite
 	implements ActionRequestor, ActionTrigger 
 {
+	private AsyncCallback<GwtUpgradeInfo> m_rpcGetUpgradeInfoCallback = null;
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	private AdminActionsTreeControl m_adminActionsTreeControl = null;
 	private ContentControl m_contentControl = null;
+	private AdminInfoDlg m_adminInfoDlg = null;
 
+	/**
+	 * Class used for the ui of the "Administration Information" dialog
+	 */
+	public class AdminInfoDlg extends DlgBox
+	{
+		private Button m_closeBtn;
+		private FlexTable m_table;
+		
+		/**
+		 * 
+		 */
+		public AdminInfoDlg(
+			boolean autoHide,
+			boolean modal,
+			int xPos,
+			int yPos )
+		{
+			super( autoHide, modal, xPos, yPos );
+		
+			String headerText;
+			
+			// Create the header, content and footer of this dialog box.
+			headerText = GwtTeaming.getMessages().adminInfoDlgHeader();
+			createAllDlgContent( headerText, null, null, null ); 
+		}// end LoginDlg()
+		
+		/**
+		 * Create all the controls that make up the dialog box.
+		 */
+		public Panel createContent( Object props )
+		{
+			FlowPanel mainPanel = null;
+			
+			mainPanel = new FlowPanel();
+			mainPanel.setStyleName( "teamingDlgBoxContent" );
+			
+			m_table = new FlexTable();
+			m_table.setCellSpacing( 4 );
+			m_table.addStyleName( "dlgContent" );
+			
+			// The content of the dialog will be created in refreshContent() which will be called
+			// when we get the GwtUpgradeInfo object from the server.
+			
+			mainPanel.add( m_table );
+
+			init( props );
+
+			return mainPanel;
+		}// end createContent()
+		
+		
+		/*
+		 * Override the createFooter() method so we can control what buttons are in the footer.
+		 */
+		public Panel createFooter()
+		{
+			FlowPanel panel;
+			
+			panel = new FlowPanel();
+			
+			// Associate this panel with its stylesheet.
+			panel.setStyleName( "teamingDlgBoxFooter" );
+			
+			m_closeBtn = new Button( GwtTeaming.getMessages().close() );
+			m_closeBtn.addClickHandler( this );
+			m_closeBtn.addStyleName( "teamingButton" );
+			panel.add( m_closeBtn );
+
+			return panel;
+		}// end createFooter()
+		
+		
+		/**
+		 * 
+		 */
+		public Object getDataFromDlg()
+		{
+			// Nothing to do.
+			return new Object();
+		}// end getDataFromDlg()
+		
+		
+		/**
+		 *  
+		 */
+		public FocusWidget getFocusWidget()
+		{
+			return null;
+		}// end getFocusWidget()
+
+		
+		/**
+		 * Initialize the controls in the dialog with the values from the given GwtUpgradeInfo object.
+		 */
+		public void init( Object props )
+		{
+			// Nothing to do.
+		}// end init()
+
+		
+		/*
+		 * This method gets called when the user clicks on a button in the footer.
+		 */
+		public void onClick( ClickEvent event )
+		{
+			Object	source;
+			
+			// Get the object that was clicked on.
+			source = event.getSource();
+			
+			// Did the user click on close?
+			if ( source == m_closeBtn )
+			{
+				// Yes
+				hide();
+			}
+		}// end onClick()
+
+		/**
+		 * Refresh the content of this dialog with the new information found in the given GwtUpgradeInfo object.
+		 */
+		public void refreshContent( GwtUpgradeInfo upgradeInfo )
+		{
+			int row = 0;
+			
+			// Clear any existing content.
+			m_table.clear();
+			
+			// Add a row for the Teaming release information
+			{
+				m_table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgRelease() );
+				m_table.setText( row, 1, upgradeInfo.getReleaseInfo() );
+				
+				++row;
+			}
+		}// end refreshContent()
+	}// end AdminInfoDlg
+	
+	
 	/**
 	 * Class used for the ui for an administration action.
 	 */
@@ -287,7 +433,7 @@ public class AdminControl extends Composite
 	{
 		// m_rpcGetAdminActionsCallback is our callback that gets called when the ajax request to get the administration actions completes.
 		private AsyncCallback<ArrayList<GwtAdminCategory>> m_rpcGetAdminActionsCallback = null;
-		
+		private AsyncCallback<GwtUpgradeInfo> m_rpcGetUpgradeInfoCallback2 = null;
 		private FlexTable m_mainTable;
 		
 		/**
@@ -325,8 +471,29 @@ public class AdminControl extends Composite
 				header.addStyleName( "adminActionsTreeControlHeader2" );
 				table.setWidget( 0, 0, header );
 				
-				table.setWidget( 0, 1, new Label( "" ) );
-				cellFormatter.setWidth( 0, 1, "100%" );
+				// Add an image the user can click on to get administration information
+				{
+					ImageResource imgResource;
+					Image img;
+
+					imgResource = GwtTeaming.getImageBundle().info2();
+					img = new Image( imgResource );
+					img.addStyleName( "cursorPointer" );
+					img.addStyleName( "margin-right-5" );
+					img.addClickHandler( new ClickHandler()
+					{
+						public void onClick( ClickEvent event  )
+						{
+							// Issue an ajax request to get the upgrade information from the server.
+							// When we get the response the callback will open the AdminInfoDlg.
+							getUpgradeInfoFromServer( m_rpcGetUpgradeInfoCallback2 );
+						}// end onClick()
+					}
+					);
+					table.setWidget( 0, 1, img );
+					cellFormatter.setHorizontalAlignment( 0, 1, HasHorizontalAlignment.ALIGN_RIGHT );
+					cellFormatter.setWidth( 0, 1, "100%" );
+				}
 				
 				m_mainTable.setWidget( 0, 0, table );
 			}
@@ -362,6 +529,34 @@ public class AdminControl extends Composite
 				}// end onSuccess()
 			};
 
+			// Create the callback that will be used when we issue an ajax call to get upgrade information
+			m_rpcGetUpgradeInfoCallback2 = new AsyncCallback<GwtUpgradeInfo>()
+			{
+				/**
+				 * 
+				 */
+				public void onFailure( Throwable t )
+				{
+					String cause;
+					
+					cause = t.getLocalizedMessage();
+					if ( cause == null )
+						cause = t.toString();
+					
+					Window.alert( cause );
+				}// end onFailure()
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				public void onSuccess( GwtUpgradeInfo upgradeInfo )
+				{
+					// Show the AdminInfoDlg
+					showAdminInfoDlg( upgradeInfo );
+				}// end onSuccess()
+			};
+
 			// Issue a deferred command to get the administration actions the user has rights to run.
 			{
 				Command cmd;
@@ -377,7 +572,6 @@ public class AdminControl extends Composite
 		            }
 		        };
 		        DeferredCommand.addCommand( cmd );
-				
 			}
 			
 			initWidget( mainPanel );
@@ -439,6 +633,38 @@ public class AdminControl extends Composite
 		m_contentControl.addStyleName( "adminContentControl" );
 		mainPanel.add( m_contentControl );
 		
+		// Create the callback that will be used when we issue an ajax call to get upgrade information
+		m_rpcGetUpgradeInfoCallback = new AsyncCallback<GwtUpgradeInfo>()
+		{
+			/**
+			 * 
+			 */
+			public void onFailure( Throwable t )
+			{
+				String cause;
+				
+				cause = t.getLocalizedMessage();
+				if ( cause == null )
+					cause = t.toString();
+				
+				Window.alert( cause );
+			}// end onFailure()
+	
+			/**
+			 * 
+			 * @param result
+			 */
+			public void onSuccess( GwtUpgradeInfo upgradeInfo )
+			{
+				// Are there upgrade tasks that need to be performed?
+				if ( upgradeInfo.doUpgradeTasksExist() )
+				{
+					// Yes, invoke the AdminInfoDlg.
+					showAdminInfoDlg( upgradeInfo );
+				}
+			}// end onSuccess()
+		};
+
 		// Set the position of the content control.
         cmd = new Command()
         {
@@ -498,6 +724,21 @@ public class AdminControl extends Composite
 			}
 		}
 	}// end adminActionSelected()
+
+	
+	/**
+	 * Issue an ajax request to get the upgrade information from the server.
+	 */
+	public void getUpgradeInfoFromServer( AsyncCallback<GwtUpgradeInfo> callback )
+	{
+		GwtRpcServiceAsync rpcService;
+		
+		rpcService = GwtTeaming.getRpcService();
+		
+		// Issue an ajax request to get the upgrade information
+		rpcService.getUpgradeInfo(  callback );
+	}// end getUpgradeInfoFromServer()
+
 	
 	/**
 	 * 
@@ -506,6 +747,15 @@ public class AdminControl extends Composite
 	{
 		m_contentControl.setVisible( false );	
 	}// end hideContentPanel()
+	
+	
+	/**
+	 * 
+	 */
+	public void hideControl()
+	{
+		setVisible( false );
+	}// end hideControl()
 	
 	
 	/**
@@ -584,11 +834,58 @@ public class AdminControl extends Composite
 	/**
 	 * 
 	 */
+	public void showAdminInfoDlg( GwtUpgradeInfo upgradeInfo )
+	{
+		// Invoke the "Administration Information" dialog.
+		if ( m_adminInfoDlg == null )
+		{
+			int x;
+			int y;
+			
+			x = m_adminActionsTreeControl.getAbsoluteLeft() + m_adminActionsTreeControl.getOffsetWidth();
+			y = m_adminActionsTreeControl.getAbsoluteTop();
+			m_adminInfoDlg = new AdminInfoDlg( false, true, x, y );
+		}
+		
+		m_adminInfoDlg.refreshContent( upgradeInfo );
+		m_adminInfoDlg.show();
+	}// end showAdminInfoDlg()
+	
+	
+	/**
+	 * 
+	 */
 	public void showContentPanel()
 	{
 		m_contentControl.setVisible( true );	
 	}// end showContentPanel()
 	
+	
+	/**
+	 * 
+	 */
+	public void showControl()
+	{
+		Command cmd;
+		
+		// Issue an ajax request to get the upgrade information from the server.
+        cmd = new Command()
+        {
+        	/**
+        	 * 
+        	 */
+            public void execute()
+            {
+            	// When we get the upgrade info from the server our callback will check to
+            	// see if upgrade tasks exists.  If they do, the callback will invoke the
+            	// AdminInfoDlg which will show the user the tasks they need to do.
+				getUpgradeInfoFromServer( m_rpcGetUpgradeInfoCallback );
+            }
+        };
+        DeferredCommand.addCommand( cmd );		
+
+		setVisible( true );
+	}// end showControl()
 	
 	/**
 	 * 

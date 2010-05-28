@@ -87,6 +87,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
+import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
@@ -122,6 +123,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -1377,6 +1379,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
     }// end getTutorialPanelState()
     
     
+	/**
+	 * Return a GwtUpgradeInfo object.
+	 */
+	public GwtUpgradeInfo getUpgradeInfo() throws GwtTeamingException
+	{
+		GwtUpgradeInfo upgradeInfo;
+		
+		upgradeInfo = new GwtUpgradeInfo();
+		
+		// Get the Teaming version and build information
+		upgradeInfo.setReleaseInfo( ReleaseInfo.getReleaseInfo() );
+		
+		return upgradeInfo;
+	}// end getSiteBrandingData()
+	
+	
     public ExtensionInfoClient[] getExtensionInfo()
     {
     	List<ExtensionInfo> extList =  new ArrayList<ExtensionInfo>(); 

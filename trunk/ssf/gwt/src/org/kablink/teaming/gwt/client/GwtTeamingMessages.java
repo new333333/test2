@@ -527,4 +527,7 @@ public interface GwtTeamingMessages extends Messages
 	String presenceOffline();
 	String presenceUnknown();
 
+	// The following strings are used in the Administration Information dialog
+	String adminInfoDlgHeader();
+	String adminInfoDlgRelease();
 }// end GwtTeamingMessages
