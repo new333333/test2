@@ -252,7 +252,7 @@ public class GwtProfileHelper {
 			} else if(name.equals("zonName")){
 				value = u.getZonName();
 			} else {
-				
+
 				//Read the custom attribute
 				CustomAttribute cAttr = u.getCustomAttribute(name);
 				//Convert the Custom Attribute to a Profile Attribute for serialization purposes
