@@ -276,4 +276,5 @@ public class GwtClientHelper {
 	public static native void jsRegisterActionHandler( ActionRequestor requestor ) /*-{
 		window.top.ss_registerActionHandler( requestor );
 	}-*/;
+	
 }
