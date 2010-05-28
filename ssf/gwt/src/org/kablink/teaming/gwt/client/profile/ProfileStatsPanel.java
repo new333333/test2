@@ -1,6 +1,12 @@
 package org.kablink.teaming.gwt.client.profile;
 
+import org.kablink.teaming.gwt.client.service.GwtRpcService;
+import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
@@ -57,15 +63,29 @@ public class ProfileStatsPanel extends Composite {
 	 */
 	private void addStats() {
 		
-		addStat(grid, "Following:", "25");
-		addStat(grid, "Followers:", "211");
-		addStat(grid, "Entries:", "10441234");
+		// create an async callback to handle the result of the request to get
+		// the state:
+		AsyncCallback<ProfileStats> callback = new AsyncCallback<ProfileStats>() {
+			public void onFailure(Throwable t) {
+				// display error
+				Window.alert("Error: " + t.getMessage());
+			}
+
+			public void onSuccess(ProfileStats stats) {
+				addStat(grid, "Entries", stats.getEntries());
+				addStat(grid, "Following:", stats.getFollowing());
+
+				//if the quotas enable and is the owner or the admin then can see the quota
+				if(profileRequestInfo.isQuotasEnabled() && (profileRequestInfo.isOwner()) ) {
+					addStat(grid, "Data Quota:", profileRequestInfo.getQuotasUserMaximum(), " MB");
+					addStat(grid, "Quota Used:", profileRequestInfo.getQuotasDiskSpacedUsed(), " MB");
+				}
+			}
+		};
+
+		GwtRpcServiceAsync gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
+		gwtRpcService.getProfileStats(profileRequestInfo.getBinderId(), callback);
 		
-		//if the quotas enable and is the owner or the admin then can see the quota
-		if(profileRequestInfo.isQuotasEnabled() && (profileRequestInfo.isOwner() ) ) {
-			addStat(grid, "Data Quota:", profileRequestInfo.getQuotasUserMaximum(), " MB");
-			addStat(grid, "Quota Used:", profileRequestInfo.getQuotasDiskSpacedUsed(), " MB");
-		}
 	}
 	
 	/**
