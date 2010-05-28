@@ -2142,6 +2142,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		
 	}
 	public ChangeLog processChangeLog(Binder binder, String operation) {
+		return processChangeLog(binder, operation, "");
+	}
+	public ChangeLog processChangeLog(Binder binder, String operation, String comment) {
 		ChangeLog changes = new ChangeLog(binder, operation);
 		//any changes here should be considered to template export
 		Element element = ChangeLogUtils.buildLog(changes, binder);

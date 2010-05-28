@@ -110,6 +110,7 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
+import org.kablink.util.search.Constants;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -826,12 +827,15 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		}
      } 
 	private void processAccessChangeLog(WorkArea workArea, String operation) {
-        if ((workArea instanceof Binder) && !(workArea instanceof TemplateBinder)) {
+		processAccessChangeLog(workArea, operation, "");
+	}
+	private void processAccessChangeLog(WorkArea workArea, String operation, String comment) {
+		if ((workArea instanceof Binder) && !(workArea instanceof TemplateBinder)) {
         	Binder binder = (Binder)workArea;
         	User user = RequestContextHolder.getRequestContext().getUser();
         	binder.incrLogVersion();
         	binder.setModification(new HistoryStamp(user));
-        	loadBinderProcessor(binder).processChangeLog(binder, operation);
+        	loadBinderProcessor(binder).processChangeLog(binder, operation, comment);
        	}
 	}
 	
@@ -984,7 +988,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	   order.addColumn("operationDate");	   
 	   filter.setOrderBy(order);
 	   
-	   return filterChangeLogs(getCoreDao().loadObjects(ChangeLog.class, filter, RequestContextHolder.getRequestContext().getZoneId()));
+	   List<ChangeLog> changeLogs = getCoreDao().loadObjects(ChangeLog.class, filter, RequestContextHolder.getRequestContext().getZoneId());
+		  return filterChangeLogs(changeLogs, false);
 	   //need to filter for access
    }
    public List<ChangeLog> getChanges(EntityIdentifier entityIdentifier, String operation) {
@@ -998,7 +1003,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	   order.addColumn("operationDate");	   
 	   filter.setOrderBy(order);
 	   
-	   return filterChangeLogs(getCoreDao().loadObjects(ChangeLog.class, filter, RequestContextHolder.getRequestContext().getZoneId())); 
+	   List<ChangeLog> changeLogs = getCoreDao().loadObjects(ChangeLog.class, filter, RequestContextHolder.getRequestContext().getZoneId());
+	   return filterChangeLogs(changeLogs, false); 
    	
    }
    
@@ -1014,7 +1020,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	   
 	   List<ChangeLog> entryChangeLogs = filterEntryHistoryChanges(changeLogs);
 	   
-	   return filterChangeLogs(entryChangeLogs); 
+	   return filterChangeLogs(entryChangeLogs, true); 
    	
    }
    private List<ChangeLog> filterEntryHistoryChanges(List<ChangeLog> changeLogs) {
@@ -1044,7 +1050,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	   
 	   List<ChangeLog> wfChangeLogs = filterWorkflowChanges(changeLogs);
 	   
-	   return filterChangeLogs(wfChangeLogs); 
+	   return filterChangeLogs(wfChangeLogs, true); 
    	
    }
    
@@ -1062,7 +1068,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	   }
 	   return wfChangeLogs;
    }
-   private List<ChangeLog> filterChangeLogs(List<ChangeLog> changeLogs) {
+   private List<ChangeLog> filterChangeLogs(List<ChangeLog> changeLogs, Boolean addLogsWithNoAcls) {
 	   User user = RequestContextHolder.getRequestContext().getUser();
 	   if (user.isSuper()) return changeLogs;
 	   // get the current users acl set
@@ -1078,7 +1084,13 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			   if (doc == null) continue;
 			   Element root = doc.getRootElement();
 			   if (root == null) continue;
-			   if (AccessUtils.checkAccess(root, userStringIds)) result.add(log);
+			   Element acl = (Element)root.selectSingleNode(Constants.FOLDER_ACL_FIELD);
+			   if (acl == null && addLogsWithNoAcls) {
+				   //If there is no acl info, add the log entry anyway
+				   result.add(log);
+			   } else {
+				   if (AccessUtils.checkAccess(root, userStringIds)) result.add(log);
+			   }
 		   } catch (Exception ex) {
 			   logger.error("Error processing change log: " + log.getId() + " " + ex.getLocalizedMessage());
 		   }

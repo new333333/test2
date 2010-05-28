@@ -974,7 +974,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         User user = RequestContextHolder.getRequestContext().getUser();
     	
     	HistoryStamp reservation = entry.getReservation();
-    	if(reservation == null) { // The entry is not currently reserved. 
+    	if (reservation == null) { // The entry is not currently reserved. 
     		// We must check if any of the files in the entry is locked
     		// by another user. 
     		
@@ -985,20 +985,20 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     		
     		boolean atLeastOneFileLockedByAnotherUser = false;
     		Collection<FileAttachment> fAtts = entry.getFileAttachments();
-    		for(FileAttachment fa :fAtts) {
+    		for (FileAttachment fa :fAtts) {
     			if(fa.getFileLock() != null && !fa.getFileLock().getOwner().equals(user)) {
     				atLeastOneFileLockedByAnotherUser = true;
     				break;
     			}
     		}	
     		
-    		if(!atLeastOneFileLockedByAnotherUser) {
+    		if (!atLeastOneFileLockedByAnotherUser) {
     			// All remaining effective locks are owned by the same user
     			// or there are no effective locks at all.
     			// Proceed and reserve the entry.
     			entry.setReservation(user);
-    		}
-    		else { // One or more lock is held by someone else.
+    	 	    loadProcessor(entry.getParentFolder()).indexEntry(entry);
+    		} else { // One or more lock is held by someone else.
     			// Build error information.
     			List<FileLockInfo> info = new ArrayList<FileLockInfo>();
         		for(FileAttachment fa :fAtts) {
@@ -1011,13 +1011,11 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	    		}		    			
 	    		throw new FilesLockedByOtherUsersException(info);
     		}
-    	}
-    	else {	
+    	} else {	
     		// The entry is currently reserved. 
-    		if(reservation.getPrincipal().equals(user)) {
+    		if (reservation.getPrincipal().equals(user)) {
     			// The entry is reserved by the same user. Noop.
-    		}
-    		else {
+    		} else {
     			// The entry is reserved by another user.
     			throw new ReservedByAnotherUserException(entry);
     		}
@@ -1040,24 +1038,22 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	   User user = RequestContextHolder.getRequestContext().getUser();
     	
 	   HistoryStamp reservation = entry.getReservation();
-	   if(reservation == null) { 
+	   if (reservation == null) { 
     		// The entry is not currently reserved by anyone. 
     		// Nothing to do. 
-	   }
-	   else {
+	   } else {
     		boolean isUserBinderAdministrator = false;
     		try {
     			checkAccess(entry, FolderOperation.overrideReserveEntry);
     			isUserBinderAdministrator = true;
-    		}
-    		catch (AccessControlException ac) {};    		
+    		} catch (AccessControlException ac) {};    		
     		
-    		if(reservation.getPrincipal().equals(user) || isUserBinderAdministrator) {
+    		if (reservation.getPrincipal().equals(user) || isUserBinderAdministrator) {
     			// The entry is currently reserved by the same user or if the user happens to be a binder administrator 
     			// Cancel the reservation.
     			entry.clearReservation();
-    		}
-    		else {
+    	 	    loadProcessor(entry.getParentFolder()).indexEntry(entry);
+    		} else {
     			// The entry is currently reserved by another user. 
     			throw new ReservedByAnotherUserException(entry);
     		}

@@ -1246,10 +1246,20 @@ function ss_showHide(objId){
 			obj.style.visibility="visible";
 			obj.style.display="block";
 			if (ss_checkIfVisible(obj)) obj.focus();
+			
+			//Signal that the layout changed
+			if (!obj.style.position || obj.style.position != "absolute") {
+				ssf_onLayoutChange();
+			}
 			return true;
 		} else {	
 			obj.style.visibility="hidden";
 			obj.style.display="none";
+			
+			//Signal that the layout changed
+			if (!obj.style.position || obj.style.position != "absolute") {
+				ssf_onLayoutChange();
+			}
 			return false;
 		} 
 	}
@@ -7995,6 +8005,8 @@ function ss_showAttachmentVersions(prefix, start, end) {
 	while (more) {
 		var rowObj = document.getElementById(prefix + count);
 		if (!rowObj) {
+			//Call the routines that want to be called on layout changes
+		    ssf_onLayoutChange();
 			return;
 		}
 		rowObj.style.display = 'block';
@@ -8007,6 +8019,8 @@ function ss_showAttachmentVersions(prefix, start, end) {
 		rowObj.style.display = 'block';
 		rowObj.style.visibility = 'visible';
 	}	
+	//Call the routines that want to be called on layout changes
+    ssf_onLayoutChange();
 }
 
 

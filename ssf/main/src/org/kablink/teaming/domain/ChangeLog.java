@@ -51,6 +51,7 @@ import org.kablink.teaming.util.XmlFileUtil;
  *
  */
 public class ChangeLog extends ZonedObject {
+	//Operations
 	public static final String ADDENTRY="addEntry";
 	public static final String MODIFYENTRY="modifyEntry";
 	public static final String DELETEENTRY="deleteEntry";
@@ -77,11 +78,18 @@ public class ChangeLog extends ZonedObject {
 	public static final String FILEMOVE="moveFile";
 	public static final String ACCESSMODIFY="modifyAccess";
 	public static final String CHANGETIMESTAMPS="changeTimestamps";
+	
+	//Comments
+	public static final String COMMENT_INCR_FILE_MAJOR_VERSION="incrFileMajorVersion";
+	public static final String COMMENT_REVERT_FILE_VERSION="revertFileVersion";
+	public static final String COMMENT_SET_FILE_COMMENT="setFileComment";
+	public static final String COMMENT_SET_FILE_STATUS="setFileStatus";
 
 	protected static final Log logger = LogFactory.getLog(ChangeLog.class);
 	
 	protected String id;
 	protected String operation;
+	protected String comment;
 	protected String userName;
 	protected Long userId;
 	protected Date operationDate;
@@ -97,10 +105,16 @@ public class ChangeLog extends ZonedObject {
 	public ChangeLog() {
 	}
 	public ChangeLog(DefinableEntity entity, String operation) {
-		this(entity, operation, null);
+		this(entity, operation, (Principal)null);
+	}
+	public ChangeLog(DefinableEntity entity, String operation, String comment) {
+		this(entity, operation, comment, (Principal)null);
 	}
 	
-	public ChangeLog(DefinableEntity entity, String operation, Principal principal) {	
+	public ChangeLog(DefinableEntity entity, String operation, Principal principal) {
+		this(entity, operation, "", (Principal)null);
+	}
+	public ChangeLog(DefinableEntity entity, String operation, String comment, Principal principal) {	
 		Binder binder;
 		if (entity instanceof Binder) {
 			binder = (Binder)entity;
@@ -113,6 +127,7 @@ public class ChangeLog extends ZonedObject {
 		if(binder.getBinderKey() != null) // temporary workaround for issue #515
 			this.owningBinderKey = binder.getBinderKey().getSortKey();
 		this.operation = operation;
+		this.comment = comment;
 		if (operation.contains("Workflow") && entity instanceof WorkflowSupport) {
 			WorkflowSupport wfEntry = (WorkflowSupport)entity;
 			this.operationDate = wfEntry.getWorkflowChange().getDate();
@@ -235,6 +250,17 @@ public class ChangeLog extends ZonedObject {
 		this.operation = operation;
 	}
     /**
+     * Return the comment being logged
+     * @hibernate.property length="128"
+     * @return
+     */
+	public String getComment() {
+		return comment;
+	}
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+    /**
      * Return the name of the user that generated the log.
      * @hibernate.property length="82"
      * @return
@@ -277,6 +303,7 @@ public class ChangeLog extends ZonedObject {
 			root.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_DATABASEID, getEntityId().toString());
 			root.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_LOGVERSION, getVersion().toString());
 			root.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_OPERATION, getOperation());
+			root.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_COMMENT, getComment());
 			root.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_MODIFIEDBY, getUserName());
 			root.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_MODIFIEDON, getOperationDate().toString());
 		}

@@ -306,30 +306,43 @@ function dodiff()
 <th colspan="2" style="text-align:left;"><ssf:nlt tag="entry.Version"/></th>
 <th><ssf:nlt tag="entry.modifiedOn"/></th>
 <th><ssf:nlt tag="entry.modifiedBy"/></th>
+<th><ssf:nlt tag="entry.change"/></th>
 <th></th>
 <th></th>
 </tr>
 <c:forEach var="change" items="${ss_changeLogList}" varStatus="status">
 <tr>
-<td valign="top" width="5%" nowrap>
+<td valign="top" nowrap>
   <span style="padding-right:6px;">${change.folderEntry.attributes.logVersion}</span>
 </td>
-<td valign="top" width="5%" nowrap>
+<td valign="top" nowrap>
   <input type="checkbox" id="compare${change.folderEntry.attributes.logVersion}"
   onChange="ss_updateCompareButton('${fn:length(ss_changeLogList)}')">
 </td>
-<td valign="top" width="20%">
+<td valign="top" nowrap>
   <fmt:formatDate timeZone="${ssUser.timeZone.ID}" type="both" value="${change.changeLog.operationDate}"/>
 </td>
-<td valign="top" width="30%">
+<td valign="top" nowrap>
   <ssf:showUser user="${change.changeLogEntry.modification.principal}"/>
 </td>
-<td valign="top" width="20%">
+<td valign="top" nowrap>
+  <c:set var="commentSeen" value="false"/>
+  <c:forEach var="changeComment" items="${change.comment}">
+    <c:if test="${!empty changeComment}">
+      <div>${changeComment}</div>
+      <c:set var="commentSeen" value="true"/>
+    </c:if>
+  </c:forEach>
+  <c:if test="${!commentSeen}">
+    <div>${change.operation}</div>
+  </c:if>
+</td>
+<td valign="top" nowrap>
   <a href="javascript: ;" class="ss_tinyButton" onClick="ss_showHide('historyVersion_${status.count}');return false;">
     <ssf:nlt tag="entry.revert.view"/>
   </a>
 </td>
-<td valign="top" width="20%">
+<td valign="top" nowrap>
   <a class="ss_tinyButton"
     href="<ssf:url><ssf:param 
 	name="action" value="view_editable_history"/><ssf:param 

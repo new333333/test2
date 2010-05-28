@@ -865,9 +865,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************   
 
 
-	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
+    public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
+    	return processChangeLog(entry, operation, "");
+    }
+	public ChangeLog processChangeLog(DefinableEntity entry, String operation, String comment) {
 		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);
-		ChangeLog changes = new ChangeLog(entry, operation);
+		ChangeLog changes = new ChangeLog(entry, operation, comment);
 		Element element = ChangeLogUtils.buildLog(changes, entry);
 		//add folderEntry fields
 		if (entry instanceof FolderEntry) {

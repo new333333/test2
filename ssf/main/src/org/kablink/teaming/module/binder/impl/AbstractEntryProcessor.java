@@ -944,6 +944,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 			}
 		}
 		getWorkflowModule().modifyWorkflowStateOnResponse(wEntry);
+		entry.incrLogVersion();
 		processChangeLog(entry, ChangeLog.ADDWORKFLOWRESPONSE);
     	getReportModule().addAuditTrail(AuditType.modify, entry);
 		indexEntry(entry);
@@ -1352,12 +1353,18 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     
 
-	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
-		return processChangeLog(entry, operation, true);
+    public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
+    	return processChangeLog(entry, operation, "");
+    }
+    public ChangeLog processChangeLog(DefinableEntity entry, String operation, String comment) {
+		return processChangeLog(entry, operation, comment, true);
 	}
-	public ChangeLog processChangeLog(DefinableEntity entry, String operation, boolean saveIt) {
+    public ChangeLog processChangeLog(DefinableEntity entry, String operation, boolean saveIt) {
+    	return processChangeLog(entry, operation, "", saveIt);
+    }
+	public ChangeLog processChangeLog(DefinableEntity entry, String operation, String comment, boolean saveIt) {
 		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);
-		ChangeLog changes = new ChangeLog(entry, operation);
+		ChangeLog changes = new ChangeLog(entry, operation, comment);
 		ChangeLogUtils.buildLog(changes, entry);
 		if (saveIt) getCoreDao().save(changes);
 		return changes;

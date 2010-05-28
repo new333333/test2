@@ -47,6 +47,7 @@ import java.util.TreeSet;
 
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.util.NLT;
@@ -456,6 +457,12 @@ public class FileAttachment extends Attachment {
 		return addChangeLog(parent, true);
 	}
 	public Element addChangeLog(Element parent, boolean includeVersions) {
+		DefinableEntity entry = getOwner().getEntity();
+		if (entry instanceof Binder) {
+			EntityIndexUtils.addReadAccess(parent, (Binder)entry, true);
+		} else {
+			EntityIndexUtils.addReadAccess(parent, entry.getParentBinder(), entry, true);
+		}
 		Element element = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_FILEATTACHMENT);
 		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_DATABASEID, getId());
 		if (!Validator.isNull(getName())) element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, getName());

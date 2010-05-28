@@ -674,21 +674,21 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	newTopVa.setFileStatus(va.getFileStatus());
     	newTopVa.getParentAttachment().setFileStatus(va.getFileStatus());
     	newTopVa.getFileItem().setDescription(va.getFileItem().getDescription());
-    	newTopVa.setMajorVersion(oldTopVa.getMajorVersion());
-    	newTopVa.setMinorVersion(oldTopVa.getMinorVersion() + 1);
-    	newTopVa.getParentAttachment().setMajorVersion(oldTopVa.getMajorVersion());
-    	newTopVa.getParentAttachment().setMinorVersion(oldTopVa.getMinorVersion() + 1);
+    	newTopVa.getParentAttachment().setMajorVersion(newTopVa.getMajorVersion());
+    	newTopVa.getParentAttachment().setMinorVersion(newTopVa.getMinorVersion());
 
     	setEntityModification(entity);
-    	ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
-		ChangeLogUtils.buildLog(changes, va.getParentAttachment());
+    	entity.incrLogVersion();
+    	ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY, ChangeLog.COMMENT_REVERT_FILE_VERSION);
+		ChangeLogUtils.buildLog(changes, newTopVa.getParentAttachment());
 		saveChangeLogTransactional(changes);
 	}
 
 	public void modifyFileComment(DefinableEntity entity, FileAttachment fileAtt, Description description) {
 		fileAtt.getFileItem().setDescription(description);
 		setEntityModification(entity);
-		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
+		entity.incrLogVersion();
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY, ChangeLog.COMMENT_SET_FILE_COMMENT);
 		ChangeLogUtils.buildLog(changes, fileAtt);
 		saveChangeLogTransactional(changes);
 	}
@@ -696,7 +696,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	public void modifyFileStatus(DefinableEntity entity, FileAttachment fileAtt, FileStatus fileStatus) {
 		fileAtt.setFileStatus(FileStatus.valueOf(fileStatus));
 		setEntityModification(entity);
-		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
+		entity.incrLogVersion();
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY, ChangeLog.COMMENT_SET_FILE_STATUS);
 		ChangeLogUtils.buildLog(changes, fileAtt);
 		saveChangeLogTransactional(changes);
 	}
@@ -705,7 +706,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		fileAtt.setMajorVersion(fileAtt.getMajorVersion() + 1);
 		fileAtt.setMinorVersion(0);
 		setEntityModification(entity);
-		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
+		entity.incrLogVersion();
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY, ChangeLog.COMMENT_INCR_FILE_MAJOR_VERSION);
 		ChangeLogUtils.buildLog(changes, fileAtt);
 		saveChangeLogTransactional(changes);
 	}
@@ -742,6 +744,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			VersionAttachment v = (VersionAttachment) i.next();
 			v.getFileItem().setName(newName);
 		}
+		entity.incrLogVersion();
 		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILERENAME);
 		ChangeLogUtils.buildLog(changes, fa);
 		getCoreDao().save(changes);
@@ -887,6 +890,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 
 		// Update the metadata
+		entity.incrLogVersion();
 		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEVERSIONDELETE);
 		ChangeLogUtils.buildLog(changes, va);
 
