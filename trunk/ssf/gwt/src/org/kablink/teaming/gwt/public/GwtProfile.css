@@ -283,16 +283,19 @@ font-weight: bold;
 .profile-title-area {
 	position:relative;	
 }
-.profile-follow {
+.profile-actions{
 position:absolute;
 right: 4px;
-top: 5px;
+top: 0px;
 }
-#.profile-follow a {
-#color:#FFFFFF;
-#font-size:100%;
-#font-weight:bold;
-#}
+.profile-action {
+	padding-bottom: 4px;
+}
+.profile-action a {
+display:block;
+text-align: center;
+}
+* html .profile-action a {width:100%;}
 .profile-workspace-link {
 	color:#1C5894 !important;
 	font-size: 0.8em !important;
@@ -340,14 +343,7 @@ padding:0.12em 0.8em;
 cursor:pointer;
 margin-left: 5px;
 }
-.profile-action  {
-color:#318998;
-}
-.profile-actions-edit {
-position: absolute;
-right: 230px;
-top: 4px;
-}
+
 .aboutHeading {
 border-bottom:medium none !important;
 clear: both;
@@ -359,4 +355,10 @@ clear: both;
 .aboutDesc {
 color: BLACK;
 text-transform: none;
+}
+.profile-selected-bg {
+	background:url("images/putty_blend4.png") repeat;
+	background-position:bottom;
+	color:#1C5894 !important;
+	border:1px solid #BBBBB9;
 }

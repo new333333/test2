@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -35,9 +36,9 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 	private int row = 0;
 	private FlowPanel mainPanel;
 	private FlowPanel titlePanel;
-	private Anchor followingAnchor;
-	private boolean isFollowing;
+	private ProfileFollowingWidget followingAnchor;
 	private boolean isEditable = false;
+	private Anchor edit;
 
 	/**
 	 * Constructor
@@ -93,6 +94,7 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 
 		String userName = profileRequestInfo.getUserName();
 		String url = profileRequestInfo.getAdaptedUrl();
+		
 		Anchor anchor = new Anchor(userName, url);
 		anchor.addStyleName("profile-title");
 		titlePanel.add(anchor);
@@ -112,50 +114,19 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 	 * 
 	 */
 	private void createActionsArea() {
-
-		ClickHandler clickHandler;
-		MouseOverHandler mouseOverHandler;
-		MouseOutHandler mouseOutHandler;
-
-		FlowPanel actionPanel = new FlowPanel();
-		actionPanel.addStyleName("profile-follow");
-
-		titlePanel.add(actionPanel);
-
-		followingAnchor = new Anchor("Follow");
-		followingAnchor.setVisible(showFollowButton());
-		actionPanel.add(followingAnchor);
-		followingAnchor.addStyleName("editBrandingLink");
-		followingAnchor.addStyleName("editBrandingAdvancedLink");
-		followingAnchor.addStyleName("roundcornerSM");
-		followingAnchor.addStyleName("subhead-control-bg1");
-
-		// Add a clickhandler to the "advanced" link. When the user clicks on
-		// the link we
-		// will invoke the "edit advanced branding" dialog.
-		clickHandler = new ClickHandler() {
-			/**
-			 * Invoke the "edit advanced branding" dialog
-			 */
-			public void onClick(ClickEvent event) {
-				Anchor anchor;
-
-				anchor = (Anchor) event.getSource();
-
-				if(isFollowing()) {
-					unfollowPerson();
-				} else {
-					followPerson();
-				}
-			}// end onClick()
-		};
-		followingAnchor.addClickHandler(clickHandler);
+		
+		FlowPanel actionsPanel = new FlowPanel();
+		actionsPanel.addStyleName("profile-actions");
+		titlePanel.add(actionsPanel);
+		
+		//create the following action
+		followingAnchor = createFollowingAction(actionsPanel);
+		
+		//create the edit action
+		edit = createEditAction(actionsPanel);
 
 		// Add a mouse-over handler
-		mouseOverHandler = new MouseOverHandler() {
-			/**
-			 * 
-			 */
+		MouseOverHandler mouseOverHandler = new MouseOverHandler() {
 			public void onMouseOver(MouseOverEvent event) {
 				Widget widget;
 
@@ -164,13 +135,11 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 				widget.addStyleName("subhead-control-bg2");
 			}// end onMouseOver()
 		};
-		followingAnchor.addMouseOverHandler(mouseOverHandler);
+		edit.addMouseOverHandler(mouseOverHandler);
+		
 
 		// Add a mouse-out handler
-		mouseOutHandler = new MouseOutHandler() {
-			/**
-			 * 
-			 */
+		MouseOutHandler mouseOutHandler = new MouseOutHandler() {
 			public void onMouseOut(MouseOutEvent event) {
 				Widget widget;
 
@@ -180,11 +149,51 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 				removeMouseOverStyles(widget);
 			}// end onMouseOut()
 		};
-		followingAnchor.addMouseOutHandler(mouseOutHandler);
+		edit.addMouseOutHandler(mouseOutHandler);
 		
 		updateFollowingStatus();
 	}
 
+
+	private ProfileFollowingWidget createFollowingAction(FlowPanel panel){
+
+		FlowPanel followPanel = new FlowPanel();
+		followPanel.addStyleName("profile-action");
+		panel.add(followPanel);
+		
+		ProfileFollowingWidget fAnchor = new ProfileFollowingWidget("Following","qView-action-following");
+		fAnchor.setVisible(showFollowButton());
+		followPanel.add(fAnchor);
+		
+		fAnchor.addStyleName("editBrandingLink");
+		fAnchor.addStyleName("editBrandingAdvancedLink");
+		fAnchor.addStyleName("roundcornerSM");
+		fAnchor.addStyleName("subhead-control-bg1");
+		
+		fAnchor.addClickHandler(new ActionClickHandler("FollowId"));;
+		
+		return fAnchor;
+	}
+	
+	private Anchor createEditAction(FlowPanel panel) {
+		
+		FlowPanel actions = new FlowPanel();
+		actions.addStyleName("profile-action");
+		panel.add(actions);
+
+		Anchor eAnchor = new Anchor("Edit");
+		eAnchor.addStyleName("editBrandingLink");
+		eAnchor.addStyleName("editBrandingAdvancedLink");
+		eAnchor.addStyleName("roundcornerSM");
+		eAnchor.addStyleName("subhead-control-bg1");
+		eAnchor.setVisible(showEditButton());
+
+		actions.add(eAnchor);
+		eAnchor.addClickHandler(new ActionClickHandler("EditId"));
+
+		return eAnchor;
+	}
+	
 	/**
 	 * Use to determine if should show the follow button
 	 * @return
@@ -334,23 +343,12 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 					public void onSuccess( Boolean success )
 					{
 						if(success.booleanValue()) {
-							followingAnchor.setText("Following");
-							isFollowing = true;
+							updateFollowingButton(true);
 						} else {
-							followingAnchor.setText("Follow");
-							isFollowing = false;
+							updateFollowingButton(false);
 						}
 					}// end onSuccess()
 				});
-	}
-
-	/**
-	 * Check if is following this person
-	 * 
-	 * @return
-	 */
-	private boolean isFollowing(){
-		return isFollowing;
 	}
 
 	public void addActionHandler(ActionHandler actionHandler) {
@@ -384,5 +382,131 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 
 	public void setEditable(boolean edit) {
 		isEditable  = edit;
+	}
+	
+	public class ActionClickHandler implements ClickHandler {
+
+		String handlerId = null;
+		public ActionClickHandler(String id) {
+			handlerId = id;
+		}
+
+		public void onClick(ClickEvent event) {
+			if (handlerId.equals("EditId")) {
+				String url = profileRequestInfo.getModifyUrl();
+				GwtClientHelper.jsLaunchUrlInWindow(url, "Modify Entry", 800, 800);
+			} else if(handlerId.equals("FollowId")) {
+				if(followingAnchor.isChecked()) {
+					unfollowPerson();
+				} else {
+					followPerson();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Use to determine if should show the edit button
+	 * 
+	 * @return true if owns this profile or is binderAdmin
+	 */
+	private boolean showEditButton() {
+		return profileRequestInfo.isBinderAdmin()
+				|| profileRequestInfo.isModifyAllowed();
+	}
+
+	/**
+	 * Update the follow button 
+	 * @param isFollowing
+	 */
+	private void updateFollowingButton(boolean isFollowing) {
+		if(isFollowing) {
+			followingAnchor.setText(GwtTeaming.getMessages().qViewFollowing());
+			followingAnchor.setTitle(GwtTeaming.getMessages().qViewFollowingTitle());
+			followingAnchor.setChecked(true);
+		} else {
+			followingAnchor.setText(GwtTeaming.getMessages().qViewFollow());
+			followingAnchor.setTitle(GwtTeaming.getMessages().qViewFollowTitle());
+			followingAnchor.setChecked(false);
+		}
+	}
+	
+	private class ProfileFollowingWidget extends Anchor {
+
+		private Label label;
+		private Image img;
+		private boolean isChecked;
+		private FlowPanel panel;
+
+		public ProfileFollowingWidget(String text, String title) {
+			super();
+
+			panel = new FlowPanel();
+
+			img = new Image(GwtTeaming.getImageBundle().check12());
+			img.addStyleName("qView-follow-img");
+			img.setVisible(false);
+			panel.add(img);
+
+			label = new Label(text);
+			label.addStyleName("qView-follow-label");
+			label.setTitle(title);
+			panel.add(label);
+			
+			getElement().appendChild(panel.getElement());
+			
+			
+			// Add a mouse-over handler
+			addMouseOverHandler( new MouseOverHandler() {
+				public void onMouseOver(MouseOverEvent event) {
+					if(!isChecked()){
+						removeStyleName("subhead-control-bg1");
+						addStyleName("subhead-control-bg2");
+					} else {
+						removeStyleName("profile-selected-bg");
+						addStyleName("subhead-control-bg2");
+					}
+				}// end onMouseOver()
+			});
+
+			// Add a mouse-out handler
+			addMouseOutHandler( new MouseOutHandler() {
+				public void onMouseOut(MouseOutEvent event) {
+					if(!isChecked()){
+						removeStyleName("subhead-control-bg2");
+						addStyleName("subhead-control-bg1");
+					} else {
+						removeStyleName("subhead-control-bg2");
+						addStyleName("profile-selected-bg");
+					}
+				}// end onMouseOut()
+			});
+		}
+
+		public boolean isChecked() {
+			return isChecked;
+		}
+
+		public void setChecked(boolean checked) {
+			if(checked) {
+				isChecked = true;
+				if(img != null){
+					removeStyleName("subhead-control-bg1");
+					addStyleName("profile-selected-bg");
+					img.setVisible(true);
+				}
+			} else {
+				isChecked = false;
+				if(img != null){
+					removeStyleName("profile-selected-bg");
+					addStyleName("subhead-control-bg1");
+					img.setVisible(false);
+				}
+			}
+		}
+		
+		public void setText(String text) {
+			label.setText(text);
+		}
 	}
 }

@@ -2,11 +2,8 @@ package org.kablink.teaming.gwt.client.profile;
 
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -14,7 +11,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 
 public class GwtProfilePage extends Composite {
@@ -23,9 +19,6 @@ public class GwtProfilePage extends Composite {
 	private ProfileMainPanel profileMainPanel;
 	private ProfileSidePanel profileSidePanel;
 	private FlowPanel profilePanel;
-	private InlineLabel edit;
-//	private InlineLabel cancel;
-//	private InlineLabel save;
 
 	public GwtProfilePage() {
 
@@ -111,45 +104,6 @@ public class GwtProfilePage extends Composite {
 		// Title
 		Label profileLabel = new Label("Profile");
 		titleBar.add(profileLabel);
-
-		createActions(titleBar);
-	}
-
-	private void createActions(FlowPanel panel) {
-		FlowPanel actions = new FlowPanel();
-		actions.addStyleName("profile-actions-edit");
-		panel.add(actions);
-
-		edit = new InlineLabel("Edit");
-		edit.setVisible(showEditButton());
-		edit.addStyleName("profile-action");
-		edit.addStyleName("profile-edit-button");
-		actions.add(edit);
-		edit.addClickHandler(new ActionClickHandler("Edit"));
-
-//		cancel = new InlineLabel("Cancel");
-//		cancel.addStyleName("profile-action");
-//		cancel.addStyleName("profile-cancel-button");
-//		actions.add(cancel);
-//		cancel.setVisible(false);
-//		cancel.addClickHandler(new ActionClickHandler("Cancel"));
-//
-//		save = new InlineLabel("Save");
-//		save.addStyleName("profile-action");
-//		save.addStyleName("profile-save-button");
-//		actions.add(save);
-//		save.setVisible(false);
-//		save.addClickHandler(new ActionClickHandler("Save"));
-	}
-
-	/**
-	 * Use to determine if should show the edit button
-	 * 
-	 * @return true if owns this profile or is binderAdmin
-	 */
-	private boolean showEditButton() {
-		return profileRequestInfo.isBinderAdmin()
-				|| profileRequestInfo.isModifyAllowed();
 	}
 
 	/**
@@ -201,30 +155,4 @@ public class GwtProfilePage extends Composite {
 		return $wnd.profileRequestInfo;
 	}-*/;
 
-	public class ActionClickHandler implements ClickHandler {
-
-		String handlerId = null;
-
-		public ActionClickHandler(String id) {
-			handlerId = id;
-		}
-
-		public void onClick(ClickEvent event) {
-			if (handlerId.equals("Edit")) {
-
-				String url = profileRequestInfo.getModifyUrl();
-				GwtClientHelper.jsLaunchUrlInWindow(url, "Modify Entry", 800, 800);
-				
-//				boolean visible = true;
-//				cancel.setVisible(visible);
-//				save.setVisible(visible);
-//				edit.setVisible(!visible);
-			} else {
-//				boolean visible = false;
-//				cancel.setVisible(visible);
-//				save.setVisible(visible);
-//				edit.setVisible(!visible);
-			}
-		}
-	}
 }

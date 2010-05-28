@@ -2622,33 +2622,33 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 		ProfileStats stats = new ProfileStats();
 		
-//		if(binderId != null) {
-//			p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
-//		}
-//		
-//		if(p != null){
-//			userId = p.getId();
-//		}
-//		
-//		Set<Long> memberIds = new HashSet();
-//		memberIds.add(userId);
-//		
-//		Date endDate = Calendar.getInstance().getTime();
-//		Calendar c = Calendar.getInstance();
-//		c.set(1990, 0, 0);
-//		
-//		Date startDate = c.getTime();
-//		
-//		
-//		List<Map<String,Object>> report = getReportModule().generateActivityReportByUser(memberIds, startDate, endDate, ReportModule.REPORT_TYPE_SUMMARY);
-//		Map<String,Object> row = null;
-//		if(!report.isEmpty()) row = report.get(0);
-//		
-//		if(row!=null){
-//			Object obj = row.get(AuditTrail.AuditType.add.name());
-//			
-//			stats.setEntries(obj.toString());
-//		}
+		if(binderId != null) {
+			p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
+		}
+		
+		if(p != null){
+			userId = p.getId();
+		}
+		
+		Set<Long> memberIds = new HashSet();
+		memberIds.add(userId);
+		
+		Date endDate = Calendar.getInstance().getTime();
+		Calendar c = Calendar.getInstance();
+		c.set(1990, 0, 0);
+		
+		Date startDate = c.getTime();
+		
+		
+		List<Map<String,Object>> report = getReportModule().generateActivityReportByUser(memberIds, startDate, endDate, ReportModule.REPORT_TYPE_SUMMARY);
+		Map<String,Object> row = null;
+		if(!report.isEmpty()) row = report.get(0);
+		
+		if(row!=null){
+			Object obj = row.get(AuditTrail.AuditType.add.name());
+			
+			stats.setEntries(obj.toString());
+		}
 		
 		return stats;
 	}

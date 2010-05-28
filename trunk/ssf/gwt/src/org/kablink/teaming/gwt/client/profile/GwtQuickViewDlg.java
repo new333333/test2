@@ -56,9 +56,9 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 	private String binderId;
 	private Grid grid;
 	
-	private QuickViewAction workspaceBtn;
-	private QuickViewAction profileBtn;
-	private QuickViewAction conferenceBtn;
+	private ProfileActionWidget workspaceBtn;
+	private ProfileActionWidget profileBtn;
+	private ProfileActionWidget conferenceBtn;
 	private QuickViewAction followBtn;
 	
 	private Label statusLabel;
@@ -67,7 +67,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 	private ActionHandler actionHandler;
 	private Image avatar;
 	private Anchor miniBlogA;
-	private QuickViewAction instantMessageBtn;
+	private ProfileActionWidget instantMessageBtn;
 	private Element clientElement;
 	
 	public GwtQuickViewDlg(boolean autoHide, boolean modal, int pos,
@@ -183,21 +183,21 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		FlowPanel panel = new FlowPanel();
 		panel.addStyleName("qViewActions");
 		
-		profileBtn = new QuickViewAction(GwtTeaming.getMessages().qViewProfile(),
+		profileBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewProfile(),
 										GwtTeaming.getMessages().qViewProfileTitle(), 
 										"qView-a", "qView-action");
 		profileBtn.addClickHandler(new WorkSpaceActionHandler(true));
 		
-		workspaceBtn = new QuickViewAction(GwtTeaming.getMessages().qViewWorkspace(),
+		workspaceBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewWorkspace(),
 										 GwtTeaming.getMessages().qViewWorkspaceTitle(),
 										 "qView-a",	"qView-action");
 		workspaceBtn.addClickHandler(new WorkSpaceActionHandler(false));
 		
-		conferenceBtn = new QuickViewAction(GwtTeaming.getMessages().qViewConference(),
+		conferenceBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewConference(),
 										GwtTeaming.getMessages().qViewConferenceTitle(),
 										"qView-a", "qView-action");
 		
-		instantMessageBtn = new QuickViewAction(GwtTeaming.getMessages().qViewInstantMessage(),
+		instantMessageBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewInstantMessage(),
 				GwtTeaming.getMessages().qViewInstantMessageTitle(),
 				"qView-a", "qView-action");
 		instantMessageBtn.addClickHandler(new InstantMessageClickHandler(binderId) {
@@ -222,11 +222,8 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 				}
 			});
 
-
-		followBtn = new QuickViewAction("",
-										"",
-										"qView-a",
-										"qView-action-following");
+		followBtn = new QuickViewAction("", "", "qView-a",
+											    "qView-action-following");
 
 		// Add a clickhandler to the "advanced" link. When the user clicks on
 		// the link we
@@ -379,7 +376,6 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 
 	@Override
 	public Object getDataFromDlg() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -455,97 +451,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		gwtRpcService.getQuickViewInfo(binderId, callback);
 	}
 
-	private class QuickViewAction extends Anchor {
-
-		private Label label;
-		private Image img;
-		private boolean isChecked;
-		private FlowPanel panel;
-		private String labelStyle;
-
-		public QuickViewAction(String text, String title, String anchorStlyeName,
-				String labelStyleName) {
-			super();
-
-			labelStyle = labelStyleName;
-			addStyleName(anchorStlyeName);
-
-			if(labelStyle.equals("qView-action-following") ){
-				panel = new FlowPanel();
-				panel.addStyleName(labelStyleName);
-
-				img = new Image(GwtTeaming.getImageBundle().check12());
-				img.addStyleName("qView-follow-img");
-				img.setVisible(false);
-				panel.add(img);
-
-				label = new Label(text);
-				label.addStyleName("qView-follow-label");
-				label.setTitle(title);
-				panel.add(label);
-				
-				getElement().appendChild(panel.getElement());
-			} else {
-				label = new Label(text);
-				label.setTitle(title);
-				label.addStyleName(labelStyleName);
-				getElement().appendChild(label.getElement());
-			}
-			
-			addMouseOverHandler(new MouseOverHandler() {
-				public void onMouseOver(MouseOverEvent event) {
-					if(labelStyle.equals("qView-action-following") ){
-						panel.addStyleName("qView-action2");
-					} else {
-						label.addStyleName("qView-action2");
-					}
-				}});
-			
-			addMouseOutHandler(new MouseOutHandler(){
-				public void onMouseOut(MouseOutEvent event) {
-					if(labelStyle.equals("qView-action-following") ){
-						panel.removeStyleName("qView-action2");
-					} else {
-						label.removeStyleName("qView-action2");
-					}
-
-				}});
-		}
-
-		public boolean isChecked() {
-			return isChecked;
-		}
-
-		public void setChecked(boolean checked) {
-			if(checked) {
-				isChecked = true;
-				
-				if(panel != null){
-					panel.removeStyleName("qView-action");
-					panel.addStyleName("qView-action-following");
-				}
-				
-				if(img != null){
-					img.setVisible(true);
-				}
-			} else {
-				isChecked = false;
-				
-				if(panel != null){
-					panel.removeStyleName("qView-action-following");
-					panel.addStyleName("qView-action");
-				}				
-
-				if(img != null){
-					img.setVisible(false);
-				}
-			}
-		}
-		
-		public void setText(String text) {
-			label.setText(text);
-		}
-	}
+	
 	
 	/**
 	 * This workSpaceActionHandler handles the actions on the profile button or the workspace button.
@@ -827,4 +733,100 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		return false;
 	}// end isMouseOver()
 	
+	private class QuickViewAction extends Anchor {
+
+		private Label label;
+		private Image img;
+		private boolean isChecked;
+		private FlowPanel panel;
+		private String labelStyle;
+
+		public QuickViewAction(String text, String title, String anchorStlyeName,
+				String labelStyleName) {
+			super();
+
+			labelStyle = labelStyleName;
+			addStyleName(anchorStlyeName);
+
+			if(labelStyle.equals("qView-action-following") ){
+				panel = new FlowPanel();
+				panel.addStyleName(labelStyleName);
+
+				img = new Image(GwtTeaming.getImageBundle().check12());
+				img.addStyleName("qView-follow-img");
+				img.setVisible(false);
+				panel.add(img);
+
+				label = new Label(text);
+				label.addStyleName("qView-follow-label");
+				label.setTitle(title);
+				panel.add(label);
+				
+				getElement().appendChild(panel.getElement());
+			} else {
+				label = new Label(text);
+				label.setTitle(title);
+				label.addStyleName(labelStyleName);
+				getElement().appendChild(label.getElement());
+			}
+			
+			addMouseOverHandler(new MouseOverHandler() {
+				public void onMouseOver(MouseOverEvent event) {
+					if(labelStyle.equals("qView-action-following") ){
+						panel.addStyleName("qView-action2");
+					} else {
+						label.addStyleName("qView-action2");
+					}
+				}});
+			
+			addMouseOutHandler(new MouseOutHandler(){
+				public void onMouseOut(MouseOutEvent event) {
+					if(labelStyle.equals("qView-action-following") ){
+						panel.removeStyleName("qView-action2");
+					} else {
+						label.removeStyleName("qView-action2");
+					}
+
+				}});
+		}
+
+		public boolean isChecked() {
+			return isChecked;
+		}
+
+		public void setChecked(boolean checked) {
+			if(checked) {
+				isChecked = true;
+				
+				if(panel != null){
+					panel.removeStyleName("qView-action");
+					panel.addStyleName("qView-action-following");
+				}
+				
+				if(img != null){
+					img.setVisible(true);
+				}
+			} else {
+				isChecked = false;
+				
+				if(panel != null){
+					panel.removeStyleName("qView-action-following");
+					panel.addStyleName("qView-action");
+				}				
+
+				if(img != null){
+					img.setVisible(false);
+				}
+			}
+		}
+		
+		public void setText(String text) {
+			if(label!=null){
+				label.setText(text);
+			} else {
+				setText(text);
+			}
+		}
+	}
+
 }

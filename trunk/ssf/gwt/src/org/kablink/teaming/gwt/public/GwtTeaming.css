@@ -1768,6 +1768,7 @@ a.ss_new_thread {
 	font-style:normal;
 	font-weight:normal
 	cursor: pointer;
+	display:block;
 }
 .qView-action  {
 	-moz-border-radius:15px;
