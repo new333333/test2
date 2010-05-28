@@ -181,5 +181,6 @@ alter table SS_Attachments add majorVersion int null;
 alter table SS_Attachments add minorVersion int null;
 alter table SS_Attachments add fileStatus int null;
 
+alter table SS_ChangeLogs add comment varchar(128);
 
-INSERT INTO SS_SchemaInfo values (9);
+INSERT INTO SS_SchemaInfo values (10);

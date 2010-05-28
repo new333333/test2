@@ -44,4 +44,5 @@ ALTER TABLE SS_Attachments add column description_format integer;
 ALTER TABLE SS_Attachments add column majorVersion integer;
 ALTER TABLE SS_Attachments add column minorVersion integer;
 ALTER TABLE SS_Attachments add column fileStatus integer;
-INSERT INTO SS_SchemaInfo values (9);
+ALTER TABLE SS_ChangeLogs add column comment varchar(128);
+INSERT INTO SS_SchemaInfo values (10);
