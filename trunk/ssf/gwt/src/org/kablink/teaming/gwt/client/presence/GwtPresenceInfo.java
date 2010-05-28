@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,8 +34,7 @@ package org.kablink.teaming.gwt.client.presence;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class GwtPresenceInfo implements IsSerializable
-{
+public class GwtPresenceInfo implements IsSerializable {
 	public static final int STATUS_UNKNOWN = -1;
 	public static final int STATUS_OFFLINE = 0;
 	public static final int STATUS_AVAILABLE = 1;
@@ -46,23 +45,19 @@ public class GwtPresenceInfo implements IsSerializable
 	private int m_status = STATUS_UNKNOWN;
 	private String m_statusText = "";
 
-	public void setStatus(int status)
-	{
+	public void setStatus(int status) {
 		m_status = status;
 	}
 
-	public int getStatus()
-	{
+	public int getStatus() {
 		return m_status;
 	}
 
-	public void setStatusText(String statusText)
-	{
+	public void setStatusText(String statusText) {
 		m_statusText = statusText;
 	}
 
-	public String getStatusText()
-	{
+	public String getStatusText() {
 		return m_statusText;
 	}
 
