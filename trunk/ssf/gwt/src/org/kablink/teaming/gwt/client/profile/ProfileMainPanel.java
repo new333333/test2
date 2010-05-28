@@ -32,6 +32,7 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	ProfileRequestInfo profileRequestInfo;
+	
 	private Grid grid;
 	private int row = 0;
 	private FlowPanel mainPanel;
@@ -87,6 +88,7 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 	 * Create the Title Area that contains the user's Name
 	 */
 	private void createTitleArea() {
+
 		// create a title div for the user title and actionable items
 		titlePanel = new FlowPanel();
 		titlePanel.addStyleName("profile-title-area");
@@ -96,12 +98,16 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 		String url = profileRequestInfo.getAdaptedUrl();
 		
 		Anchor anchor = new Anchor(userName, url);
+		anchor.setTitle(GwtTeaming.getMessages().qViewWorkspaceTitle());
+		
 		anchor.addStyleName("profile-title");
 		titlePanel.add(anchor);
 
 		PresenceControl presence = new PresenceControl(profileRequestInfo.getBinderId(), true, true, true);
 
-		Anchor workspace = new Anchor("Workspace", url);
+		Anchor workspace = new Anchor( GwtTeaming.getMessages().qViewWorkspace(), url);
+		workspace.setTitle(GwtTeaming.getMessages().qViewWorkspaceTitle());
+		
 		workspace.addStyleName("profile-workspace-link");
 
 		titlePanel.add(workspace);
@@ -161,7 +167,8 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 		followPanel.addStyleName("profile-action");
 		panel.add(followPanel);
 		
-		ProfileFollowingWidget fAnchor = new ProfileFollowingWidget("Following","qView-action-following");
+		ProfileFollowingWidget fAnchor = new ProfileFollowingWidget(GwtTeaming.getMessages().qViewFollowing(),
+																	GwtTeaming.getMessages().qViewFollowingTitle());
 		fAnchor.setVisible(showFollowButton());
 		followPanel.add(fAnchor);
 		
@@ -181,7 +188,9 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 		actions.addStyleName("profile-action");
 		panel.add(actions);
 
-		Anchor eAnchor = new Anchor("Edit");
+		Anchor eAnchor = new Anchor(GwtTeaming.getMessages().profileEdit());
+		eAnchor.setTitle(GwtTeaming.getMessages().profileEditTitle());
+		
 		eAnchor.addStyleName("editBrandingLink");
 		eAnchor.addStyleName("editBrandingAdvancedLink");
 		eAnchor.addStyleName("roundcornerSM");
@@ -507,6 +516,10 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 		
 		public void setText(String text) {
 			label.setText(text);
+		}
+		
+		public void setTitle(String text) {
+			label.setTitle(text);
 		}
 	}
 }

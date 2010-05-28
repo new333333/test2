@@ -515,6 +515,10 @@ public interface GwtTeamingMessages extends Messages
 	String qViewInstantMessage();
 	String qViewInstantMessageTitle();
 
+	//Profile
+	String profileEdit();
+	String profileEditTitle();
+	
 	// Presence related strings
 	String presenceAvailable();
 	String presenceAway();
