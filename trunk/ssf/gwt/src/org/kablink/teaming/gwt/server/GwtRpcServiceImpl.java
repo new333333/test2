@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.server;
 
+import static org.kablink.util.search.Constants.MODIFICATION_DATE_FIELD;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -49,6 +51,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Node;
@@ -117,6 +120,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.presence.PresenceInfo;
 import org.kablink.teaming.presence.PresenceManager;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
@@ -136,6 +140,9 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
+
+import bsh.util.Util;
 
 
 /**
@@ -2639,34 +2646,55 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		Principal p = null;
 
 		ProfileStats stats = new ProfileStats();
-		
 		if(binderId != null) {
 			p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
 		}
+
+		Long binderIdL = Long.parseLong(binderId);
+		Binder binder = getBinderModule().getBinder(binderIdL);
+		List<String> trackedIds = SearchUtils.getTrackedPeopleIds(this, binder);
+		stats.setFollowing(""+trackedIds.size());
+
+//		if(p != null){
+//			userId = p.getId();
+//		}
+//		
+//		Set<Long> memberIds = new HashSet();
+//		memberIds.add(userId);
+//		
+//		Date endDate = Calendar.getInstance().getTime();
+//		Calendar c = Calendar.getInstance();
+//		c.set(1990, 0, 0);
+//		
+//		Date startDate = c.getTime();
+//		
+//		
+//		List<Map<String,Object>> report = getReportModule().generateActivityReportByUser(memberIds, startDate, endDate, ReportModule.REPORT_TYPE_SUMMARY);
+//		Map<String,Object> row = null;
+//		if(!report.isEmpty()) row = report.get(0);
+//		
+//		if(row!=null){
+//			Object obj = row.get(AuditTrail.AuditType.add.name());
+//			
+//			stats.setEntries(obj.toString());
+//		}
+	
+		List binderIds = new ArrayList();
+		binderIds.add(binderId);
+	    
+		//get entries created within last 30 days
+		Date creationDate = new Date();
+		creationDate.setTime(creationDate.getTime() - ObjectKeys.SEEN_TIMEOUT_DAYS*24*60*60*1000);
 		
-		if(p != null){
-			userId = p.getId();
-		}
+		String startDate = DateTools.dateToString(creationDate, DateTools.Resolution.SECOND);
+		String now = DateTools.dateToString(new Date(), DateTools.Resolution.SECOND);
+		Criteria crit = SearchUtils.newEntriesDescendants(binderIds);
+		crit.add(org.kablink.util.search.Restrictions.between(
+				MODIFICATION_DATE_FIELD, startDate, now));
+		Map results = getBinderModule().executeSearchQuery(crit, 0, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
+    	List<Map> entries = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 		
-		Set<Long> memberIds = new HashSet();
-		memberIds.add(userId);
-		
-		Date endDate = Calendar.getInstance().getTime();
-		Calendar c = Calendar.getInstance();
-		c.set(1990, 0, 0);
-		
-		Date startDate = c.getTime();
-		
-		
-		List<Map<String,Object>> report = getReportModule().generateActivityReportByUser(memberIds, startDate, endDate, ReportModule.REPORT_TYPE_SUMMARY);
-		Map<String,Object> row = null;
-		if(!report.isEmpty()) row = report.get(0);
-		
-		if(row!=null){
-			Object obj = row.get(AuditTrail.AuditType.add.name());
-			
-			stats.setEntries(obj.toString());
-		}
+    	stats.setEntries( ""+entries.size() );
 		
 		return stats;
 	}
