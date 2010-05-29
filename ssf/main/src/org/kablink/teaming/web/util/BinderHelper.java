@@ -2175,6 +2175,13 @@ public class BinderHelper {
 		while (itFileAttachments.hasNext()) {
 			fileAttachments.add((Element)itFileAttachments.next());
 		}
+		if (fileAttachments.size() == 0) {
+			//No file attachments found, Look to see if this is a version attachment
+			Iterator itVersionAttachments = root.selectNodes("//versionAttachment").iterator();
+			while (itVersionAttachments.hasNext()) {
+				fileAttachments.add((Element)itVersionAttachments.next());
+			}
+		}
 		
 		for (Element fileAttachment : fileAttachments) {
 			String fileAttId = fileAttachment.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_DATABASEID, "");
