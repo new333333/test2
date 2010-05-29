@@ -43,6 +43,16 @@
 <script type="text/javascript">
 var ss_viewing_entry_history = true;
 
+function ss_history_revert_init() {
+	//Called at onLoad to initialize the fileId checkboxes
+	var inputList = self.document.getElementsByTagName("input");
+	for (var i = 0; i < inputList.length; i++) {
+		if (inputList[i].type == "checkbox" && inputList[i].name && inputList[i].name.indexOf("file_revert_") == 0) {
+			saveFileId(inputList[i]);
+		}
+	}
+}
+
 function saveFileId(obj) {
 	var formName = "<%= org.kablink.teaming.web.WebKeys.DEFINITION_DEFAULT_FORM_NAME %>";
 	var formObj = self.document.forms[formName];
@@ -83,6 +93,7 @@ function submitRevertForm() {
 	}
 }
 
+ss_createOnLoadObj("ss_history_revert_init", ss_history_revert_init);
 </script>
 
 <div class="ss_style ss_portlet" style="padding:10px;">

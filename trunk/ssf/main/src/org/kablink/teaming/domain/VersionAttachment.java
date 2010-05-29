@@ -113,7 +113,11 @@ public class VersionAttachment extends FileAttachment {
 			
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_NAME, getFileItem().getName());
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_LENGTH, Long.toString(getFileItem().getLength()));
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_DESCRIPTION, getFileItem().getDescription().getText());
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_REPOSITORY, getRepositoryName());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_MAJOR_VERSION, getMajorVersion().toString());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_MINOR_VERSION, getMinorVersion().toString());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_STATUS, getFileStatus().toString());
 			
 		}
 		return element;
