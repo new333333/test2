@@ -109,22 +109,21 @@ tinyMCE.init(
   accessibility_focus: true,
   entities:  "39,#39,34,quot,38,amp,60,lt,62,gt",
   gecko_spellcheck : true,
-  plugins: "compat2x,table,<%--
+  plugins: "compat2x,pdw,table,<%--
   --%><c:if test="${empty ssInlineNoImage && !ssBinder.mirrored}">ss_addimage,</c:if><%--
   --%>preview,paste,ss_wikilink<c:if test="${isShowYouTube}">,ss_youtube</c:if>",
-  theme_advanced_buttons3_add : "pastetext,pasteword,selectall",
   theme_advanced_toolbar_location: "top", theme_advanced_toolbar_align: "top", 
   theme_advanced_toolbar_align: "left", theme_advanced_statusbar_location: "bottom", 
   theme_advanced_resizing: true, 
   convert_fonts_to_spans: true,
   theme_advanced_styles: "8px=ss_size_8px;9px=ss_size_9px;10px=ss_size_10px;11px=ss_size_11px;12px=ss_size_12px;13px=ss_size_13px;14px=ss_size_14px;15px=ss_size_15px;16px=ss_size_16px;18px=ss_size_18px;20px=ss_size_20px;24px=ss_size_24px;28px=ss_size_28px;32px=ss_size_32px",
-  theme_advanced_buttons1_add: "forecolor,backcolor",
-  theme_advanced_buttons2_add: "pastetext,pasteword<%--
+  theme_advanced_buttons1_add: "pdw_toggle",
+  theme_advanced_buttons2_add: "|<%--
   --%><c:if test="${empty ssInlineNoImage}">,ss_addimage</c:if><%--
   --%><c:if test="${!empty wikiLinkBinderId}">,ss_wikilink</c:if><c:if test="${isShowYouTube}">,ss_youtube</c:if>",
   theme_advanced_path: false,
-  theme_advanced_buttons3_add: "tablecontrols", 
-  theme_advanced_disable : "image,advimage",
+  pdw_toggle_on : 1,
+  pdw_toggle_toolbars : "2",
   theme_advanced_resizing_use_cookie : true});
 
 tinyMCE.addI18n('${ssUser.locale.language}.ss_addimage_dlg',{
@@ -137,6 +136,9 @@ imageSelectBox : ss_imageSelections${element_id},
 missing_img : "<ssf:nlt tag="editor.addimage.noImage"/>"
 });
 
+tinyMCE.addI18n('${ssUser.locale.language}.pdw',{
+	description : "<ssf:nlt tag="editor.pdw.desc"/>"
+	});
 tinyMCE.addI18n('${ssUser.locale.language}.ss_addimage',{
 desc_no : "<ssf:nlt tag="editor.addimage.overQuota"/>"
 });
@@ -188,12 +190,10 @@ tinyMCE.init(
 	  theme_advanced_resizing: true, 
 	  convert_fonts_to_spans: true,
 	  theme_advanced_styles: "8px=ss_size_8px;9px=ss_size_9px;10px=ss_size_10px;11px=ss_size_11px;12px=ss_size_12px;13px=ss_size_13px;14px=ss_size_14px;15px=ss_size_15px;16px=ss_size_16px;18px=ss_size_18px;20px=ss_size_20px;24px=ss_size_24px;28px=ss_size_28px;32px=ss_size_32px",
-	  theme_advanced_buttons1_add: "forecolor,backcolor",
-	  theme_advanced_buttons2_add: "pastetext,pasteword<%--
+	  theme_advanced_buttons2_add: "|<%--
 	  --%><c:if test="${empty ssInlineNoImage}">,ss_addimage</c:if><%--
 	  --%><c:if test="${!empty wikiLinkBinderId}">,ss_wikilink</c:if><c:if test="${isShowYouTube}">,ss_youtube</c:if>",
 	  theme_advanced_path: false,
-	  theme_advanced_buttons3_add: "tablecontrols", 
 	  theme_advanced_disable : "image,advimage",
 	  theme_advanced_resizing_use_cookie : true});
 
@@ -207,9 +207,12 @@ tinyMCE.init(
 	missing_img : "<ssf:nlt tag="editor.addimage.noImage"/>"
 	});
 
+	tinyMCE.addI18n('${ssUser.locale.language}.pdw',{
+		description : "<ssf:nlt tag="editor.pdw.desc"/>"
+		});
 	tinyMCE.addI18n('${ssUser.locale.language}.ss_addimage',{
-	desc_no : "<ssf:nlt tag="editor.addimage.overQuota"/>"
-	});
+		desc_no : "<ssf:nlt tag="editor.addimage.overQuota"/>"
+		});
 	tinyMCE.addI18n('${ssUser.locale.language}.ss_wikilink',{
 	desc : "<ssf:nlt tag="editor.wikilink.title"/>"
 	});
