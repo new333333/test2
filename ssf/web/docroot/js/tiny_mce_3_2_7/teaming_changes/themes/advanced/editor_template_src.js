@@ -67,9 +67,9 @@
 			t.settings = s = extend({
 				theme_advanced_path : true,
 				theme_advanced_toolbar_location : 'bottom',
-				theme_advanced_buttons1 : "fontselect,fontsizeselect,formatselect,|,bold,italic,underline,|,forecolor,bullist,numlist,indent,outdent,|,justifyleft,justifycenter,justifyright,justifyfull,|,code,|,fullpage,pdw_toggle",
-				theme_advanced_buttons2 : "hr,link,unlink,backcolor,|,table,split_cells,merge_cells,row_props,cell_props,|,pastetext,pasteword,|,undo,redo,|,sub,sup,strikethrough,|,charmap,removeformat,anchor,cleanup",
-				theme_advanced_buttons3 : "",
+				theme_advanced_buttons1 : "styleselect,formatselect,|,bold,italic,underline,|,forecolor,bullist,numlist,indent,outdent,|,justifyleft,justifycenter,justifyright,justifyfull,|,code,|,fullpage,pdw_toggle",
+				theme_advanced_buttons2 : "hr,link,unlink,image,media,backcolor,|,undo,redo,|,anchor,image,cleanup,help,code",
+				theme_advanced_buttons3 : "hr,removeformat,visualaid,|,sub,sup,|,charmap",
 				theme_advanced_blockformats : "p,address,pre,h1,h2,h3,h4,h5,h6",
 				theme_advanced_toolbar_align : "center",
 				theme_advanced_fonts : "Andale Mono=andale mono,times;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;Comic Sans MS=comic sans ms,sans-serif;Courier New=courier new,courier;Georgia=georgia,palatino;Helvetica=helvetica;Impact=impact,chicago;Symbol=symbol;Tahoma=tahoma,arial,helvetica,sans-serif;Terminal=terminal,monaco;Times New Roman=times new roman,times;Trebuchet MS=trebuchet ms,geneva;Verdana=verdana,geneva;Webdings=webdings;Wingdings=wingdings,zapf dingbats",
