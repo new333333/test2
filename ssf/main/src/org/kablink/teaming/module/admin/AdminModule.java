@@ -42,6 +42,7 @@ import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.ExtensionInfo;
+import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.NoApplicationByTheIdException;
@@ -136,6 +137,8 @@ public interface AdminModule {
     
     public boolean isMobileAccessEnabled();
     public void setMobileAccessEnabled(boolean mobileAccessEnabled);
+    public HomePageConfig getHomePageConfig();
+    public void setHomePageConfig(HomePageConfig homePageConfig);
     public MailConfig getMailConfig();
     public List<ChangeLog> getEntryHistoryChanges(EntityIdentifier entityIdentifier);
     public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, String operation);

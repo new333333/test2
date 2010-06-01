@@ -1059,6 +1059,23 @@ public class GwtServerHelper {
 				systemCategory.addAdminOption( adminAction );
 			}
 
+			// Does the user have rights to "configure hope page"?
+			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configure_homePage" );
+
+				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_HOME_PAGE );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.CONFIGURE_HOME_PAGE );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+
 			// Does the user have rights to "Configure Role Definitions"?
 			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
 			{

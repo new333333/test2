@@ -39,6 +39,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	public static Integer ZONE_LATEST_VERSION=7;  //This is used to introduce changes and fix things up between releases.
 	private Integer upgradeVersion=ZONE_LATEST_VERSION; 
 	private AuthenticationConfig authenticationConfig;
+	private HomePageConfig homePageConfig;
 	private Boolean mobileAccessEnabled; // access="field"
 	private Boolean diskQuotasEnabled;
 	private Integer diskQuotaUserDefault;
@@ -50,6 +51,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	public ZoneConfig(Long zoneId) {
 		this.zoneId = zoneId;
 		this.authenticationConfig = new AuthenticationConfig();
+		this.homePageConfig = new HomePageConfig();
 		this.mailConfig = new MailConfig();
 	}
 	public void setZoneId(Long zoneId)
@@ -68,6 +70,12 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     }
     public void setAuthenticationConfig(AuthenticationConfig authenticationConfig) {
     	this.authenticationConfig = authenticationConfig;
+    }
+    public HomePageConfig getHomePageConfig() {
+    	return homePageConfig;
+    }
+    public void setHomePageConfig(HomePageConfig homePageConfig) {
+    	this.homePageConfig = homePageConfig;
     }
     public boolean isMobileAccessEnabled() {
 		if (mobileAccessEnabled != null)
