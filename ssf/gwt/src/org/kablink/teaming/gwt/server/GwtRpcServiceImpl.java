@@ -1392,11 +1392,110 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	public GwtUpgradeInfo getUpgradeInfo() throws GwtTeamingException
 	{
 		GwtUpgradeInfo upgradeInfo;
+		User user;
 		
+		user = GwtServerHelper.getCurrentUser();
+
 		upgradeInfo = new GwtUpgradeInfo();
 		
 		// Get the Teaming version and build information
 		upgradeInfo.setReleaseInfo( ReleaseInfo.getReleaseInfo() );
+		
+		// Identify any upgrade tasks that may need to be performed.
+		{
+	 		Workspace top = null;
+	 		String upgradeVersionCurrent;
+
+	 		try
+	 		{
+				top = getWorkspaceModule().getTopWorkspace();
+	 		}
+	 		catch( Exception e )
+	 		{
+	 		}
+
+	 		if ( top != null )
+	 			upgradeVersionCurrent = (String)top.getProperty( ObjectKeys.BINDER_PROPERTY_UPGRADE_VERSION );
+	 		else
+	 			upgradeVersionCurrent = ObjectKeys.PRODUCT_UPGRADE_VERSION;
+
+ 			// Are we dealing with the "admin" user?
+ 	 		if ( ObjectKeys.SUPER_USER_INTERNALID.equals( user.getInternalId() ) )
+ 	 		{
+ 	 			// Yes, Were there upgrade tasks to be performed?
+ 		 		if ( upgradeVersionCurrent == null || !upgradeVersionCurrent.equals( ObjectKeys.PRODUCT_UPGRADE_VERSION ) )
+ 		 		{
+ 					UserProperties adminUserProperties;
+
+ 					// Yes.
+ 		 			adminUserProperties = getProfileModule().getUserProperties( user.getId() );
+
+ 		 			// See if all upgrade tasks have been done
+ 		 			if ( "true".equals( adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX ) ) &&
+ 		 				 "true".equals( adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS ) ) &&
+ 		 				 "true".equals( adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES ) ) &&
+ 		 				 "true".equals( adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_ACCESS_CONTROLS ) ) )
+ 		 			{
+ 		 				// All upgrade tasks are done, mark the upgrade complete
+ 		 				if ( top != null )
+ 		 				{
+ 		 					getBinderModule().setProperty( top.getId(), ObjectKeys.BINDER_PROPERTY_UPGRADE_VERSION, ObjectKeys.PRODUCT_UPGRADE_VERSION );
+ 		 					upgradeVersionCurrent = ObjectKeys.PRODUCT_UPGRADE_VERSION;
+ 		 				}
+ 		 			}
+ 		 		}
+	 		}
+	 		
+	 		// Are there upgrade tasks to be performed?
+	 		if ( upgradeVersionCurrent == null || upgradeVersionCurrent.equalsIgnoreCase( ObjectKeys.PRODUCT_UPGRADE_VERSION ) == false )
+	 		{
+	 			// Yes.
+	 			upgradeInfo.setUpgradeTasksExist( true );
+	 			
+		 		// Are we dealing with the "admin" user?
+		 		if ( ObjectKeys.SUPER_USER_INTERNALID.equals( user.getInternalId() ) )
+		 		{
+		 			String property;
+		 			UserProperties adminUserProperties;
+		 			
+		 			// Yes
+ 		 			adminUserProperties = getProfileModule().getUserProperties( user.getId() );
+ 		 			upgradeInfo.setIsAdmin( true );
+
+ 		 			// Do the definitions need to be reset?
+		 			property = (String) adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS );
+		 			if ( property == null || property.length() == 0 )
+		 			{
+		 				// Yes
+		 				upgradeInfo.addUpgradeTask( GwtUpgradeInfo.UpgradeTask.UPGRADE_DEFINITIONS );
+		 			}
+
+		 			// Do the templates need to be reset?
+		 			property = (String) adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES );
+		 			if ( property == null || property.length() == 0 )
+		 			{
+		 				// Yes
+		 				upgradeInfo.addUpgradeTask( GwtUpgradeInfo.UpgradeTask.UPGRADE_TEMPLATES );
+		 			}
+
+		 			// Does re-indexing need to be performed?
+		 			property = (String) adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX );
+		 			if ( property == null || property.length() == 0 )
+		 			{
+		 				// Yes
+		 				upgradeInfo.addUpgradeTask( GwtUpgradeInfo.UpgradeTask.UPGRADE_SEARCH_INDEX );
+		 			}
+		 			
+		 			// Do access controls need to be defined for all applications?
+		 			property = (String) adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_ACCESS_CONTROLS );
+		 			if ( property == null || property.length() == 0 )
+		 			{
+		 				// Yes
+		 				upgradeInfo.addUpgradeTask( GwtUpgradeInfo.UpgradeTask.UPGRADE_ACCESS_CONTROLS );
+		 			}
+		 		}
+	 		}
+		}
 		
 		return upgradeInfo;
 	}// end getSiteBrandingData()
