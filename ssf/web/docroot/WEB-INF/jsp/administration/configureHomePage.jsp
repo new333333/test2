@@ -42,7 +42,6 @@
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
 function ss_saveBinderId(id) {
-	alert(id)
 	var obj = self.document.getElementById("homePageId")
 	obj.value = id;
 }
@@ -92,6 +91,7 @@ function handleCloseBtn() {
 	    		formElement="searchText" 
 	    		type="places"
 	    		singleItem="true"
+	    		width="300px"
 	    		accessibilityText="search.Places.alt"
 	    		clickRoutine="ss_saveBinderId"/>
 	    	<input type="hidden" id="homePageId" name="homePageId" value=""/>
@@ -107,6 +107,7 @@ function handleCloseBtn() {
 	    		formElement="searchText" 
 	    		type="places"
 	    		singleItem="true"
+	    		width="300px"
 	    		accessibilityText="search.Places.alt"
 	    		clickRoutine="ss_saveGuestBinderId"/>
 	    	<input type="hidden" id="guestHomePageId" name="guestHomePageId" value=""/>

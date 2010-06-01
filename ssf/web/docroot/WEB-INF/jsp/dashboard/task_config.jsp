@@ -124,7 +124,7 @@
 				<div style="margin-left: 20px;">
 					<ssf:nlt tag="dashboard.task.assignedToUser"/>
 					<ssf:find formName="${formName}" formElement="assignedTo" type="user" 
-					  userList="<%= userListSet %>" addCurrentUser="true"/>
+					  userList="<%= userListSet %>" addCurrentUser="true" width="150px"/>
 				</div>
 			<br/>
 				<ssf:nlt tag="dashboard.task.assignedToOr"/>
@@ -132,7 +132,7 @@
 				<div style="margin-left: 20px;">
 					<ssf:nlt tag="dashboard.task.assignedToGroup"/>
 					<ssf:find formName="${formName}" formElement="assignedToGroup" type="group" 
-					  userList="<%= groupListSet %>"/>
+					  userList="<%= groupListSet %>" width="150px"/>
 				</div>
 			<br/>
 				<ssf:nlt tag="dashboard.task.assignedToOr"/>
@@ -140,7 +140,7 @@
 				<div style="margin-left: 20px;">
 					<ssf:nlt tag="dashboard.task.assignedToTeam"/>
 					<ssf:find formName="${formName}" formElement="assignedToTeam" type="teams" 
-					  userList="<%= teamList %>"/>	
+					  userList="<%= teamList %>" width="150px"/>	
 				</div>
 			
 			<c:if test="${!empty ssDashboard.beans[ssComponentId].ssBinder}">

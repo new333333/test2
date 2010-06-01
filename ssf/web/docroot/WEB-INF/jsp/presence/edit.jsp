@@ -65,7 +65,7 @@
  text="Users"/></td>
 <td valign="top">
   <ssf:find formName="${renderResponse.namespace}fm" formElement="users" 
-    type="user" userList="${ssUsers}"/>
+    type="user" userList="${ssUsers}" width="200px"/>
 </td>
 </tr>
 <tr>
@@ -73,7 +73,7 @@
  text="Groups"/></td>
 <td valign="top">
   <ssf:find formName="${renderResponse.namespace}fm" formElement="groups" 
-    type="group" userList="${ssGroups}"/>
+    type="group" userList="${ssGroups}" width="200px"/>
 </td>
 </tr>
 

@@ -346,14 +346,14 @@ function ss_checkForm(obj) {
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 <td valign="top">
   <ssf:find formName="${renderResponse.namespace}fm" formElement="users" 
-    type="user" userList="${ssUsers}" binderId="${ssBinder.id}"/>
+    type="user" userList="${ssUsers}" binderId="${ssBinder.id}" width="200px"/>
 </td>
 </tr>
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
 <td valign="top">
   <ssf:find formName="${renderResponse.namespace}fm" formElement="groups" 
-    type="group" userList="${ssGroups}"/>
+    type="group" userList="${ssGroups}" width="200px"/>
 </td>
 </tr>
 <tr><td colspan="2">

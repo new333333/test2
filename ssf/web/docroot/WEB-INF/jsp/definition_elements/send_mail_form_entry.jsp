@@ -49,20 +49,23 @@
 <% /* User selection. */ %>
 <div class="ss_entryContent">
 	<span class="ss_labelAbove"><ssf:nlt tag="entry.sendMail.toList" /></span>
-	<ssf:find formName="${formName}" formElement="_sendMail_toList" type="user" userList="<%= new java.util.HashSet() %>" sendingEmail="true" />
+	<ssf:find formName="${formName}" formElement="_sendMail_toList" type="user" 
+	userList="<%= new java.util.HashSet() %>" sendingEmail="true" width="150px" />
 	<ssf:clipboard type="user" formElement="_sendMail_toList" />
 </div>
 
 <% /* Group selection. */ %>
 <div class="ss_entryContent">
  	<span class="ss_labelAbove"><ssf:nlt tag="entry.sendMail.toList.groups" /></span>
-	<ssf:find formName="${formName}" formElement="_sendMail_toList_groups" type="group" sendingEmail="true" />
+	<ssf:find formName="${formName}" formElement="_sendMail_toList_groups" 
+	type="group" sendingEmail="true" width="150px" />
 </div>
 
 <% /* Named team selection. */ %>
 <div class="ss_entryContent">
 	<span class="ss_labelAbove"><ssf:nlt tag="entry.sendMail.toList.teams" /></span>
-	<ssf:find formName="${formName}" formElement="_sendMail_toList_teams" type="teams" sendingEmail="true" />
+	<ssf:find formName="${formName}" formElement="_sendMail_toList_teams" type="teams" 
+	sendingEmail="true" width="150px" />
 </div>
 
 <% /* Local team selection. */ %>

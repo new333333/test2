@@ -53,14 +53,14 @@
 <span class="ss_bold"><ssf:nlt tag="relevance.selectUsers"/></span>
 <br/>
   <ssf:find formName="${renderResponse.namespace}fm" formElement="users" 
-    type="user" userList="${ssUsers}" binderId="${ssBinderId}"/>
+    type="user" userList="${ssUsers}" binderId="${ssBinderId}" width="150px"/>
 
 <br/>
 
 <span class="ss_bold"><ssf:nlt tag="relevance.selectGroups"/></span>
 <br/>
   <ssf:find formName="${renderResponse.namespace}fm" formElement="groups" 
-    type="group" userList="${ssGroups}" sendingEmail="true"/>
+    type="group" userList="${ssGroups}" sendingEmail="true" width="150px"/>
     
 <br/>
 <br/>

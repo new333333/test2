@@ -69,7 +69,7 @@
 									<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 									<td valign="top">
 									  <ssf:find formName="startMeetingForm" formElement="users" 
-									    type="user" userList="${ssUsers}" />
+									    type="user" userList="${ssUsers}" width="150px" />
 									</td>
 								</tr>
 								<tr>

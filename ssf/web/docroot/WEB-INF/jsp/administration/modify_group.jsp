@@ -74,14 +74,14 @@ function ss_saveResults() {
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 <td valign="top">
   <ssf:find formName="ss_groupForm" formElement="users" 
-    type="user" userList="${ssUsers}" binderId="${ssBinderId}"/>
+    type="user" userList="${ssUsers}" binderId="${ssBinderId}" width="150px"/>
 </td>
 </tr>
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
 <td valign="top">
   <ssf:find formName="ss_groupForm" formElement="groups" 
-    type="group" userList="${ssGroups}"/>
+    type="group" userList="${ssGroups}" width="150px"/>
 </td>
 </tr>
 <tr><td colspan="2">

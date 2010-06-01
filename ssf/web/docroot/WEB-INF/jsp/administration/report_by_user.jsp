@@ -102,7 +102,7 @@
    <span class="ss_bold"><ssf:nlt tag="administration.report.label.selectUsers"/></span>
    <br/>
   <ssf:find formName="${formName}" formElement="users" 
-    type="user" />
+    type="user" width="150px" />
    <br/>
    <input type="radio" class="ss_radio" name="ss_reportFlavor" value="summary" id="summary" checked="checked" />
    <label class="ss_radio_label" for="summary"><ssf:nlt tag="administration.report.label.activitySummary"/></label>
