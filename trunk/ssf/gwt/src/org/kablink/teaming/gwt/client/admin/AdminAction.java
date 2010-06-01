@@ -49,6 +49,7 @@ public enum AdminAction implements IsSerializable
 	CONFIGURE_FOLDER_INDEX( "Configure folder index" ),
 	CONFIGURE_FOLDER_SEARCH_NODES( "Configure folder search nodes" ),
 	CONFIGURE_GUEST_ACCESS( "Configure guest access" ),
+	CONFIGURE_HOME_PAGE( "Configure home page" ),
 	CONFIGURE_MOBILE_ACCESS( "Configure mobile access" ),
 	CONFIGURE_ROLE_DEFINITIONS( "Configure role definitions" ),
 	CONFIGURE_SEARCH_INDEX( "Configure search index" ),

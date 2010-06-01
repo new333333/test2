@@ -167,6 +167,8 @@ public class WebKeys {
 	public static final String URL_FILE_VERSION = "fileVersion";
 	public static final String URL_FILE_VIEW_TYPE = "viewType";
 	public static final String URL_GROUP_ID="groupId";
+	public static final String URL_HOME_PAGE_ID="homePageId";
+	public static final String URL_GUEST_HOME_PAGE_ID="guestHomePageId";
 	public static final String URL_IDS="ids";
 	public static final String URL_ADD_DEFAULT_ENTRY_FROM_INFRAME = "addEntryFromIFrame";
     public static final String URL_MOBILE_URL="url";
@@ -295,6 +297,7 @@ public class WebKeys {
 	public static final String ACTION_ACCESS_CONTROL = "configure_access_control";
 	public static final String ACTION_CLOSE_WINDOW="close_window"; 
 	public static final String ACTION_CONFIGURE_DEFINITIONS = "configure_definitions";
+	public static final String ACTION_CONFIGURE_HOME_PAGE="configure_home_page";
 	public static final String ACTION_CONFIGURE_MOBILE_ACCESS="configure_mobile_access";
 	public static final String ACTION_CONFIGURE_USER_ACCESS="configure_user_access";
 	public static final String ACTION_DEFINITION_BUILDER = "definition_builder";
@@ -888,6 +891,7 @@ public class WebKeys {
     public static final String HELP_PANEL_TAG="ss_help_panel_tag";
     public static final String HELP_SPOT="helpSpot";
     public static final String HELP_CPANEL_SHOW="help_cpanel_show";
+    public static final String HOMEPAGE_CONFIG="ssHomePageConfig";
     public static final String IMAGE_FILE_URL="ssImageFileUrl";
     public static final String INHERIT_FROM_PARENT="ssInheritFromParent";
     public static final String INLINE_NO_IMAGE="ssInlineNoImage";
@@ -1346,6 +1350,7 @@ public class WebKeys {
     public static final String VIEW_ADD_TEAM_MEMBERS = "binder/add_team_members";
     public static final String VIEW_ADMIN_CHANGELOG="administration/changeLog";
     public static final String VIEW_ADMIN_UPDATE_CHANGELOG="administration/updateChangeLog";
+    public static final String VIEW_ADMIN_CONFIGURE_HOME_PAGE="administration/configureHomePage";
     public static final String VIEW_ADMIN_CONFIGURE_LDAP="administration/configureLdap";
     public static final String VIEW_ADMIN_CONFIGURE_MOBILE_ACCESS="administration/configureMobileAccess";
     public static final String VIEW_ADMIN_CONFIGURE_USER_ACCESS="administration/configureUserAccess";
