@@ -69,7 +69,8 @@ public interface AdminModule {
 		report,
 		manageFunctionMembership,
 		manageErrorLogs,
-		manageExtensions
+		manageExtensions,
+		manageIndex
 	}
 	/**
 	 * The method name to be called is used as the operation.   This
@@ -263,4 +264,5 @@ public interface AdminModule {
 	public void addExtension(ExtensionInfo extension);
 	public void modifyExtension(ExtensionInfo extension);
 	
+	public void optimizeIndex(String[] nodeNames) throws ManageIndexException, AccessControlException;
  }

@@ -80,6 +80,7 @@ import org.kablink.teaming.jobs.EmailNotification;
 import org.kablink.teaming.jobs.EmailPosting;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.admin.ManageIndexException;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.binder.processor.EntryProcessor;
@@ -95,6 +96,7 @@ import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
+import org.kablink.teaming.search.LuceneWriteSession;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.accesstoken.AccessToken;
 import org.kablink.teaming.security.function.Function;
@@ -326,6 +328,11 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				}
 
   				break;
+  			case manageIndex: 
+  				// Or should we allow only 'admin' to be able to manage index since we display
+  				// the UI only for admin??
+  				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
+   				break;
 			default:
    				throw new NotSupportedException(operation.toString(), "checkAccess");
 		}
@@ -1134,4 +1141,19 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		
 		getAccessTokenManager().destroyApplicationScopedToken(new AccessToken(token));
 	}
+	
+	public void optimizeIndex(String[] nodeNames) throws ManageIndexException, AccessControlException {
+		checkAccess(AdminOperation.manageIndex);
+		
+		LuceneWriteSession luceneSession = getLuceneSessionFactory()
+				.openWriteSession(nodeNames);
+		try {
+			luceneSession.optimize();
+		}
+		catch(Exception e) {
+			throw new ManageIndexException("errorcode.optimize.index", null, e);
+		} finally {
+			luceneSession.close();
+		}
+	} 
 }
