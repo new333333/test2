@@ -51,7 +51,9 @@
 	{
 	<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
 			// Tell the Teaming GWT ui to close the administration content panel.
-			window.top.ss_closeAdministrationContentPanel();
+			if ( window.parent.ss_closeAdministrationContentPanel )
+				window.parent.ss_closeAdministrationContentPanel();
+
 			return false;
 	<% 	}
 		else { %>
