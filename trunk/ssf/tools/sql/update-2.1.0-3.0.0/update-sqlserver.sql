@@ -183,4 +183,7 @@ alter table SS_Attachments add fileStatus int null;
 
 alter table SS_ChangeLogs add comment varchar(128);
 
-INSERT INTO SS_SchemaInfo values (10);
+alter table SS_ZoneConfig add defaultHomePageId numeric(19,0);
+alter table SS_ZoneConfig add defaultGuestHomePageId numeric(19,0);
+
+INSERT INTO SS_SchemaInfo values (11);
