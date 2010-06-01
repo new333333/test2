@@ -774,3 +774,87 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 .ss_actions_bar13 li{
 	border-right: 1px solid white;
 	}		
+
+
+/* Teaming - Tabs */
+
+.wg-tabs {
+	text-align: center;
+	border-bottom: 1px solid #e6e6e4;
+	}
+.wg-tab, .wg-tab-b {
+	font-size: .7em;
+	font-weight: normal;
+	padding: 5px 10px;
+	margin: 2px 0px;
+	background: #fff;
+	display:inline-block;
+	cursor: pointer;
+	}
+.wg-tab {
+	color: #fff;
+	background: #949494;
+	}	
+.wg-tab:hover, .selected-menu {
+	color: #fff;
+	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
+	}	
+.wg-tab.on, .wg-tab-b.on {
+	color: #000;
+	font-size: .8em;
+	font-weight: bold;
+	background: #e6e6e4;
+	cursor: pointer;
+	display: inline;
+	padding-bottom: 15px;
+	}
+.wg-tab-content {
+	background: #e6e6e4;
+	border: 3px solid #e6e6e4;
+	height: 300px;
+	overflow: auto;
+	display: none;
+	margin: 3px 10px 10px 10px;
+	padding: 2px 5px;
+	}	
+.tabactions {
+	font-size: 12px;
+	text-align: right;
+	margin: 5px;
+	}
+.inactive  { color: #6c8899 }
+.margintop1 { margin-top: 0.3em }
+.margintop2 { margin-top: 0.5em }
+.margintop3 { margin-top: 1em }
+.marginleft1 { margin-left: 1em }
+.marginleft1b { font-size: 0.85em; margin-left: 1em }
+.marginleft2 { margin-left: 2em }
+.marginleft3 { margin-left: 3em }
+.marginleft4 { margin-left: 4em }
+.marginbottom1 { margin-bottom: 0.3em }
+.marginbottom2 { margin-bottom: 0.5em }
+.marginbottom3 { margin-bottom: 1em }
+.roundcorner {
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	}
+.roundcornerSM {
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	}	
+.roundcornerSM-bottom {
+	-moz-border-radius-bottomleft: 5px;
+	-moz-border-radius-bottomright: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+	}	
+.roundcornerSM-top {
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
+	}	
+.roundcornerLG {
+	-moz-border-radius: 40px;
+	-webkit-border-radius: 40px;
+	}
