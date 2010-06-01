@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
+import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -11,7 +12,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Widget;
 
 
 public class ProfileTeamsPanel extends ProfileSectionPanel  {
@@ -19,18 +19,16 @@ public class ProfileTeamsPanel extends ProfileSectionPanel  {
 	private final String IDBASE = "myTeams_";
 	protected List<TeamInfo> teamList;
 
-	public ProfileTeamsPanel(ProfileRequestInfo profileRequestInfo, String title) {
+	public ProfileTeamsPanel(ProfileRequestInfo profileRequestInfo, String title, ActionTrigger trigger) {
 		
-		super(profileRequestInfo, title);
+		super(profileRequestInfo, title, trigger);
 		
 		setStyleName("tracking-subhead");
 	
 		getTeams();
 	}
 
-	private void addContentWidget(Widget w) {
-		add(w);
-	}
+	
 	
 	private void getTeams() {
 		
@@ -47,20 +45,18 @@ public class ProfileTeamsPanel extends ProfileSectionPanel  {
 				SideBarAnchor sbA;
 				for (Iterator<TeamInfo> tIT = tList.iterator(); tIT.hasNext(); ) {
 					
-					//if 
-					if(teamCount == 4) {
-						String teamId = (IDBASE + "More");
-						sbA = new SideBarAnchor(teamId, "more...", "more...", new TeamClickHandler(new TeamInfo()));
-						addContentWidget(sbA);
-						return;
-					}
-					
 					// ...creating an item structure for each.
 					TeamInfo team = tIT.next();
 					String teamId = (IDBASE + team.getBinderId());
 					
 					sbA = new SideBarAnchor(teamId, team.getTitle(), team.getEntityPath(), new TeamClickHandler(team));
-					addContentWidget(sbA);
+					boolean visible = true;
+					if(teamCount > 3){
+						visible = false;
+						showExpandButton();
+					}
+					
+					addContentWidget(sbA, visible);
 					teamCount += 1;
 				}
 				
@@ -70,7 +66,7 @@ public class ProfileTeamsPanel extends ProfileSectionPanel  {
 					// ...that.
 					Label content = new Label(messages.mainMenuMyTeamsNoTeams());
 					//content.addStyle():
-					addContentWidget(content);
+					addContentWidget(content, true);
 				}
 			}
 			
@@ -111,7 +107,7 @@ public class ProfileTeamsPanel extends ProfileSectionPanel  {
 		}
 	}
 
-	private void expand() {
+	protected void expand2() {
 		
 		Window.alert("Expand button pressed");
 		

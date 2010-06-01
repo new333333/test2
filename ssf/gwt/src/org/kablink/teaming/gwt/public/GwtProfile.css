@@ -163,12 +163,18 @@ white-space:nowrap;
 }
 
 .tracking-subhead {
-border-bottom:1px solid #D2D5D1;
 color:#666666;
 font-size:0.9em;
 margin-top:1.4em;
 padding:3px 0;
 text-transform:uppercase;
+}
+.profileSectionTitle {
+border-bottom:1px solid #D2D5D1;
+}
+.sideBarTitle {
+	padding-right: 5px;
+	display:inline;
 }
 .userPhotoStats {
 }

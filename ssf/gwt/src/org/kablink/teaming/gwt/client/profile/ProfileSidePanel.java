@@ -1,9 +1,15 @@
 package org.kablink.teaming.gwt.client.profile;
 
+import org.kablink.teaming.gwt.client.service.GwtRpcService;
+import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.ActionTrigger;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.Label;
 
 public class ProfileSidePanel extends Composite {
 
@@ -16,10 +22,12 @@ public class ProfileSidePanel extends Composite {
 	private FlowPanel rightColumn;
 	private ProfileStatsPanel statsPanel;
 	private FlowPanel photoPanel;
+	private ActionTrigger actionTrigger;
 
-	public ProfileSidePanel(final ProfileRequestInfo profileRequestInfo) {
+	public ProfileSidePanel(final ProfileRequestInfo profileRequestInfo, ActionTrigger trigger) {
 
 		this.profileRequestInfo = profileRequestInfo;
+		actionTrigger = trigger;
 
 		final FlowPanel rightContent = new FlowPanel();
 		rightContent.setStyleName("column-r");
@@ -81,7 +89,7 @@ public class ProfileSidePanel extends Composite {
 		if (attrExist(cat, "profileAboutMe")) {
 			
 			aboutMeSection = new ProfileTrackSectionPanel(profileRequestInfo,
-					"About Me:");
+					"About Me", actionTrigger);
 			aboutMeSection.addStyleName("aboutHeading");
 			aboutMeSection.addStyleName("smalltext");
 			aboutMeSection.getHeadingLabel().setStyleName("aboutLabel");
@@ -95,29 +103,46 @@ public class ProfileSidePanel extends Composite {
 		}
 
 		if (attrExist(cat, "profileTeams")) {
-			teamsSection = new ProfileTeamsPanel(profileRequestInfo, "Teams:");
+			teamsSection = new ProfileTeamsPanel(profileRequestInfo, "Teams", actionTrigger);
 			rightColumn.add(teamsSection);
 		}
 
-		if (attrExist(cat, "profileFollowers")) {
-			trackingSection = new ProfileTrackSectionPanel(profileRequestInfo,
-					"Following:");
-			rightColumn.add(trackingSection);
-		}
+//		if (attrExist(cat, "profileFollowers")) {
+//			trackingSection = new ProfileTrackSectionPanel(profileRequestInfo,
+//					"Following", actionTrigger);
+//			rightColumn.add(trackingSection);
+//		}
 
 		if (attrExist(cat, "profileFollowing")) {
 			trackedBy = new ProfileTrackSectionPanel(profileRequestInfo,
-					"Followers:");
+					"Followers", actionTrigger);
 			rightColumn.add(trackedBy);
 		}
 
 		if (attrExist(cat, "profileSavedSearches")) {
 			if (profileRequestInfo.isOwner()) {
 				savedSearches = new ProfileSearchesSectionPanel(
-						profileRequestInfo, "Saved Searches:");
+						profileRequestInfo, "Saved Searches",actionTrigger);
 				rightColumn.add(savedSearches);
 			}
 		}
+		
+		// create an async callback to handle the result of the request to get
+		// the state:
+		AsyncCallback<ProfileStats> callback = new AsyncCallback<ProfileStats>() {
+			public void onFailure(Throwable t) {
+				// display error
+				Window.alert("Error: " + t.getMessage());
+			}
+
+			public void onSuccess(ProfileStats stats) {
+				statsPanel.addStats(stats);
+			}
+		};
+
+		GwtRpcServiceAsync gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
+		gwtRpcService.getProfileStats(profileRequestInfo.getBinderId(), callback);
+
 	}
 
 	private boolean attrExist(ProfileCategory cat, String name) {
@@ -134,4 +159,6 @@ public class ProfileSidePanel extends Composite {
 		}
 		return null;
 	}
+	
+	
 }
