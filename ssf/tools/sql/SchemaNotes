@@ -42,3 +42,9 @@ alter table SS_Principals add column pwdenc varchar(32);
 Version 10:
 In SS_ChangeLogs:
   ALTER TABLE SS_ChangeLogs add column comment varchar(128);
+
+Version 11:
+In SS_ZoneConfig:
+  ALTER TABLE SS_ZoneConfig add column defaultHomePage varchar(19);
+  ALTER TABLE SS_ZoneConfig add column defaultGuestHomePage varchar(19);
+  
