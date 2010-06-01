@@ -285,7 +285,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
     	}
     	
     	if(password != null) {
-	   		if(!EncryptUtil.encryptPasswordForMatching(password, user).equals(user.getPassword())) {
+    		if(!EncryptUtil.checkPassword(password, user)) {
 	   			// Password does not match.
 	   			if(passwordAutoSynch) {
 	   				// We don't want to sync the password if the user is one of the 5

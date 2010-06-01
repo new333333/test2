@@ -90,10 +90,35 @@ public class EncryptUtil {
 		}
 	}
 	
+	public static boolean checkPassword(String passwordToCheck, User user) {
+		if(passwordToCheck == null)
+			return false;
+		String alg = passwordEncryptionAlgorithmForMatching(user);
+		if(alg.equals(SOLE_SYMMETRIC_ENCRYPTION_ALGORITHM)) {
+			if(logger.isDebugEnabled())
+				logger.debug("Checking password for the user " + user.getName() + " using symmetric algorithm " + alg);
+			// Since encryption of the same password value doesn't necessarily result in the same encrypted value,
+			// we must decrypt the user's stored password and compare it with the user entered value.
+			return passwordToCheck.equals(getStringEncryptor().decrypt(user.getPassword()));
+		}
+		for(String asymAlg : ASYMMETRIC_ENCRYPTION_ALGORITHMS) {
+			if(alg.equals(asymAlg)) {
+				if(logger.isDebugEnabled())
+					logger.debug("Checking password for the user " + user.getName() + " using asymmetric algorithm " + alg);
+				// Apply the same algorithm to the user entered value and compare it with the user's 
+				// stored (encrypted) password.
+				return PasswordEncryptor.encrypt(alg, passwordToCheck).equals(user.getPassword());
+			}
+		}
+		return false;
+	}
+	
+	/*
 	public static String encryptPasswordForMatching(String passwordToMatch, User user) {
 		String alg = passwordEncryptionAlgorithmForMatching(user);
 		return encryptPassword(alg, passwordToMatch, user.getName());
 	}
+	*/
 	
 	public static String encryptPasswordForStorage(String passwordToStore, User user) {
 		// This is the time to individualize the password encryption algorithm for the user if it hasn't happened yet. 

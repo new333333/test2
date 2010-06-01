@@ -138,7 +138,8 @@ public class ModifyEntryController extends SAbstractController {
 		            	if ( p instanceof User && !password.equals("") && !password.equals(password3) )
 		            	{
 		            		// If the user didn't enter the current password or they entered it incorrectly, tell them about it.
-		            		if ( passwordOriginal.equals("") || !EncryptUtil.encryptPasswordForMatching(passwordOriginal, (User)p).equals(((User)p).getPassword())) {
+		            		if ( passwordOriginal.equals("") || 
+		            				!EncryptUtil.checkPassword(passwordOriginal, (User)p)) {
 		                		setupReloadPreviousPage(response, NLT.get("errorcode.password.invalid"));
 		                		return;
 		            		}
