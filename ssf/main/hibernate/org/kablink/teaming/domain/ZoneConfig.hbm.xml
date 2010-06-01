@@ -17,6 +17,10 @@
 		<property name="simpleUrlPostingEnabled"/>
    		<property name="sendMailEnabled"/>
     </component>
+    <component name="homePageConfig" class="org.kablink.teaming.domain.HomePageConfig">
+		<property name="defaultHomePageId"/>
+		<property name="defaultGuestHomePageId"/>
+    </component>
      <component name="authenticationConfig" class="org.kablink.teaming.domain.AuthenticationConfig">
  		 <property name="allowLocalLogin" />
  		 <property name="allowAnonymousAccess"/>
