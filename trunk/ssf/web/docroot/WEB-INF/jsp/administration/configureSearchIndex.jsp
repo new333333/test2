@@ -250,14 +250,15 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 	id="${renderResponse.namespace}fm2"
 	onSubmit="return ss_submitIndexingForm("${renderResponse.namespace}fm2");" >
 <input type="hidden" name="operation" value="optimize"/>
-<div class="ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="okBtn" 
-  value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="return handleCloseBtn();"/>
-</div>
 <br>
+<c:if test="${empty ssSearchNodes}">
+<div>
+  <span class="ss_bold"><ssf:nlt tag="administration.search.index.optimize" /></span>
+</div>
+<div>
+  <span><ssf:nlt tag="administration.search.index.optimize2" /></span>
+</div>
+</c:if>
 <c:if test="${!empty ssSearchNodes}">
 <br>
 <br>
