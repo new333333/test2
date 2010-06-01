@@ -36,56 +36,22 @@ public class ProfileStatsPanel extends Composite {
 		grid.setStyleName("statsTable");
 		mainPanel.add(grid);
 		
-		{
-			Timer timer;
-			timer = new Timer()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void run()
-				{
-					addStats();
-				}// end run()
-
-				
-			};
-			
-			timer.schedule( 25 );
-		}
-		
 		initWidget(mainPanel);
 	}
 
 	/**
 	 * Add the user stats to the side panel
 	 */
-	private void addStats() {
-		
-		// create an async callback to handle the result of the request to get
-		// the state:
-		AsyncCallback<ProfileStats> callback = new AsyncCallback<ProfileStats>() {
-			public void onFailure(Throwable t) {
-				// display error
-				Window.alert("Error: " + t.getMessage());
-			}
+	public void addStats(ProfileStats stats) {
 
-			public void onSuccess(ProfileStats stats) {
-				addStat(grid, "Entries", stats.getEntries());
-				addStat(grid, "Following:", stats.getFollowing());
+		addStat(grid, "Entries", stats.getEntries());
+		addStat(grid, "Following:", stats.getFollowing());
 
-				//if the quotas enable and is the owner or the admin then can see the quota
-				if(profileRequestInfo.isQuotasEnabled() && (profileRequestInfo.isOwner()) ) {
-					addStat(grid, "Data Quota:", profileRequestInfo.getQuotasUserMaximum(), " MB");
-					addStat(grid, "Quota Used:", profileRequestInfo.getQuotasDiskSpacedUsed(), " MB");
-				}
-			}
-		};
-
-		GwtRpcServiceAsync gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
-		gwtRpcService.getProfileStats(profileRequestInfo.getBinderId(), callback);
-		
+		//if the quotas enable and is the owner or the admin then can see the quota
+		if(profileRequestInfo.isQuotasEnabled() && (profileRequestInfo.isOwner()) ) {
+			addStat(grid, "Data Quota:", profileRequestInfo.getQuotasUserMaximum(), " MB");
+			addStat(grid, "Quota Used:", profileRequestInfo.getQuotasDiskSpacedUsed(), " MB");
+		}
 	}
 	
 	/**

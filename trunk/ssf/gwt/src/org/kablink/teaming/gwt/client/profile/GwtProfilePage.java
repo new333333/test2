@@ -1,8 +1,17 @@
 package org.kablink.teaming.gwt.client.profile;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.ActionRequestor;
+import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
@@ -14,8 +23,9 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 
-public class GwtProfilePage extends Composite {
+public class GwtProfilePage extends Composite implements ActionRequestor, ActionTrigger {
 
+	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	private ProfileRequestInfo profileRequestInfo = null;
 	private ProfileMainPanel profileMainPanel;
 	private ProfileSidePanel profileSidePanel;
@@ -25,6 +35,9 @@ public class GwtProfilePage extends Composite {
 
 		// Get information about the request we are dealing with.
 		profileRequestInfo = getProfileRequestInfo();
+		
+		//Register with GwtMainPage, so we can fire an event
+		GwtClientHelper.jsRegisterActionHandler(this);
 
 		// Outer div around the page
 		FlowPanel mainProfilePage = new FlowPanel();
@@ -83,7 +96,7 @@ public class GwtProfilePage extends Composite {
 	}
 
 	private void createProfileSidePanel(HorizontalPanel panel) {
-		profileSidePanel = new ProfileSidePanel(profileRequestInfo);
+		profileSidePanel = new ProfileSidePanel(profileRequestInfo, this);
 		panel.add(profileSidePanel);
 		panel.setCellHorizontalAlignment(profileSidePanel,
 				HasHorizontalAlignment.ALIGN_RIGHT);
@@ -91,7 +104,7 @@ public class GwtProfilePage extends Composite {
 
 	private void createProfileMainPanel(HorizontalPanel panel) {
 		// Add the profile info to the left pane
-		profileMainPanel = new ProfileMainPanel(profileRequestInfo);
+		profileMainPanel = new ProfileMainPanel(profileRequestInfo, this);
 		panel.add(profileMainPanel);
 		panel.setCellWidth(profileMainPanel, "100%");
 	}
@@ -127,7 +140,6 @@ public class GwtProfilePage extends Composite {
 
 			public void onSuccess(ProfileInfo profile) {
 				int count = profile.getCategories().size();
-				int row = 0;
 				for (int i = 0; i < count; i++) {
 
 					ProfileCategory cat = profile.get(i);
@@ -155,5 +167,37 @@ public class GwtProfilePage extends Composite {
 		// Return a reference to the JavaScript variable called, m_requestInfo.
 		return $wnd.profileRequestInfo;
 	}-*/;
+
+	/**
+	 * Add an action Handler.  This handler will perform the necessary action when an action is triggered.
+	 */
+	public void addActionHandler(ActionHandler actionHandler) {
+		m_actionHandlers.add(actionHandler);
+	}
+	
+	/**
+	 * Fires a TeamingAction at the registered ActionHandler's.
+	 * 
+	 * Implements the ActionTrigger.triggerAction() method. 
+	 *
+	 * @param action
+	 * @param obj
+	 */
+	public void triggerAction(TeamingAction action, Object obj) {
+		// Scan the ActionHandler's that have been registered...
+		for (Iterator<ActionHandler> ahIT = m_actionHandlers.iterator(); ahIT.hasNext(); ) {
+			// ...firing the action at each.
+			ahIT.next().handleAction(action, obj);
+		}
+	}
+	
+	/**
+	 * Use to trigger an action to GwtMainPage
+	 * @param action
+	 */
+	public void triggerAction(TeamingAction action) {
+		// Always use the initial form of the method.
+		triggerAction(action, null);
+	}
 
 }

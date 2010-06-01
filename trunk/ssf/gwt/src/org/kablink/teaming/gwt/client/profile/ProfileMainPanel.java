@@ -8,6 +8,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
+import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
@@ -28,9 +29,8 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ProfileMainPanel extends Composite implements ActionRequestor {
+public class ProfileMainPanel extends Composite {
 
-	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	ProfileRequestInfo profileRequestInfo;
 	
 	private Grid grid;
@@ -41,15 +41,18 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 	private boolean isEditable = false;
 	private Anchor edit;
 
+	private ActionTrigger actionTrigger;
+
 	/**
 	 * Constructor
 	 * 
 	 * @param profileRequestInfo
 	 */
-	public ProfileMainPanel(final ProfileRequestInfo profileRequestInfo) {
+	public ProfileMainPanel(final ProfileRequestInfo profileRequestInfo, ActionTrigger trigger) {
 
 		this.profileRequestInfo = profileRequestInfo;
-
+		this.actionTrigger = trigger;
+		
 		// create the main panel
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName("profile-Content-c");
@@ -63,9 +66,6 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 		// ...its content panel...
 		createContentPanel();
 
-		//Register with GwtMainPage, so we can fire an event
-		GwtClientHelper.jsRegisterActionHandler(this);
-		
 		// All composites must call initWidget() in their constructors.
 		initWidget(mainPanel);
 	}
@@ -283,7 +283,7 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 	 */
 	private void followPerson() {
 		
-		triggerAction(TeamingAction.TRACK_BINDER);
+		actionTrigger.triggerAction(TeamingAction.TRACK_BINDER);
 		
 //		GwtTeaming.getRpcService().trackBinder(
 //				profileRequestInfo.getBinderId(), new AsyncCallback<Boolean>() {
@@ -314,7 +314,7 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 	 */
 	private void unfollowPerson() {
 		
-		triggerAction(TeamingAction.UNTRACK_PERSON);
+		actionTrigger.triggerAction(TeamingAction.UNTRACK_PERSON);
 		
 //		GwtTeaming.getRpcService().untrackPerson( profileRequestInfo.getBinderId(), new AsyncCallback<Boolean>()
 //		{
@@ -360,34 +360,6 @@ public class ProfileMainPanel extends Composite implements ActionRequestor {
 				});
 	}
 
-	public void addActionHandler(ActionHandler actionHandler) {
-		m_actionHandlers.add(actionHandler);
-	}
-	
-	/**
-	 * Fires a TeamingAction at the registered ActionHandler's.
-	 * 
-	 * Implements the ActionTrigger.triggerAction() method. 
-	 *
-	 * @param action
-	 * @param obj
-	 */
-	public void triggerAction(TeamingAction action, Object obj) {
-		// Scan the ActionHandler's that have been registered...
-		for (Iterator<ActionHandler> ahIT = m_actionHandlers.iterator(); ahIT.hasNext(); ) {
-			// ...firing the action at each.
-			ahIT.next().handleAction(action, obj);
-		}
-	}
-	
-	/**
-	 * Use to trigger an action to GwtMainPage
-	 * @param action
-	 */
-	public void triggerAction(TeamingAction action) {
-		// Always use the initial form of the method.
-		triggerAction(action, null);
-	}
 
 	public void setEditable(boolean edit) {
 		isEditable  = edit;

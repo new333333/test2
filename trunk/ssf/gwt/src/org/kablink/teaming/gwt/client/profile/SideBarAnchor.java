@@ -11,6 +11,7 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 
 /**
@@ -21,6 +22,9 @@ import com.google.gwt.user.client.ui.Label;
  */
 public class SideBarAnchor extends FlowPanel 
 {
+
+	private Anchor mpA;
+	private Image image;
 
 	/**
 	 * Class constructor.
@@ -39,16 +43,20 @@ public class SideBarAnchor extends FlowPanel
 		FlowPanel mpaLabelPanel = new FlowPanel();
 		mpaLabelPanel.getElement().setId(id);
 		mpaLabelPanel.addStyleName("profileSideBar_Item");
-		
-		Label mpaLabel = new Label(displayText);
-		mpaLabel.addStyleName("profileSideBar_ItemText");
-	
+
 		// ...create the Anchor...
-		Anchor mpA = new Anchor();
+		mpA = new Anchor();
 		//mpA.setWidth("100%");
 		mpA.addStyleName("profileSideBar_ItemA");
 		if (GwtClientHelper.hasString(altText)) {
 			mpA.setTitle(altText);
+		}
+
+		if(displayText != null){
+			Label mpaLabel = new Label(displayText);
+			mpaLabel.addStyleName("profileSideBar_ItemText");
+			// ...and connect everything together.
+			mpA.getElement().appendChild(mpaLabel.getElement());
 		}
 		
 		mpA.addClickHandler(ch);
@@ -56,8 +64,6 @@ public class SideBarAnchor extends FlowPanel
 		mpA.addMouseOverHandler(mpaHover);
 		mpA.addMouseOutHandler( mpaHover);
 	
-		// ...and connect everything together.
-		mpA.getElement().appendChild(mpaLabel.getElement());
 		mpaLabelPanel.add(mpA);
 		add(mpaLabelPanel);
 	}
@@ -98,6 +104,19 @@ public class SideBarAnchor extends FlowPanel
 			// Simply add the hover style.
 			Element selectorPanel_New = Document.get().getElementById(m_hoverId);
 			selectorPanel_New.addClassName(m_hoverStyle);
+		}
+	}
+
+	public void setImage(Image img) {
+		
+		if(image != null){
+			mpA.getElement().removeChild(image.getElement());
+		}
+		
+		if(img != null)
+		{
+			mpA.getElement().appendChild(image.getElement());
+			image = img;
 		}
 	}
 }
