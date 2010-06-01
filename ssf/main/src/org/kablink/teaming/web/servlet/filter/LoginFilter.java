@@ -51,8 +51,13 @@ import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.domain.AuthenticationConfig;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.HomePageConfig;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portal.PortalLogin;
@@ -212,10 +217,33 @@ public class LoginFilter  implements Filter {
 	
 	protected String getWorkspaceURL(final HttpServletRequest req) {
 		final String userId;
-		if(WebHelper.isGuestLoggedIn(req))
+		Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
+		HomePageConfig homePageConfig = getZoneModule().getZoneConfig(zoneId).getHomePageConfig();
+		if (WebHelper.isGuestLoggedIn(req) && homePageConfig != null) {
+			Long binderId = homePageConfig.getDefaultGuestHomePageId();
+			if (binderId == null) binderId = homePageConfig.getDefaultHomePageId();
+			if (binderId != null) {
+				return PermaLinkUtil.getPermalink(binderId, EntityType.folder);
+			}
+		} else if (!WebHelper.isGuestLoggedIn(req) && homePageConfig != null && 
+				homePageConfig.getDefaultHomePageId() != null) {
+			final Long binderId = homePageConfig.getDefaultHomePageId();
+			try {
+				return (String) RunasTemplate.runas(new RunasCallback() {
+					public Object doAs() {
+						//See if this binder exists and is accessible. 
+						//  If not, go to the user workspace page instead
+						Binder binder = getBinderModule().getBinder(binderId);
+						return PermaLinkUtil.getPermalink(binderId, EntityType.folder);
+					}
+				}, WebHelper.getRequiredZoneName(req), WebHelper.getRequiredUserId(req));									
+			} catch(Exception e) {}
+		}
+		if (WebHelper.isGuestLoggedIn(req)) {
 			userId = WebKeys.URL_USER_ID_PLACE_HOLDER;
-		else
+		} else {
 			userId = WebHelper.getRequiredUserId(req).toString();
+		}
 		
 		return (String) RunasTemplate.runasAdmin(new RunasCallback() {
 			public Object doAs() {
@@ -266,6 +294,14 @@ public class LoginFilter  implements Filter {
 	
 	private AuthenticationModule getAuthenticationModule() {
 		return (AuthenticationModule) SpringContextUtil.getBean("authenticationModule");
+	}	
+
+	private AdminModule getAdminModule() {
+		return (AdminModule) SpringContextUtil.getBean("adminModule");
+	}	
+
+	private BinderModule getBinderModule() {
+		return (BinderModule) SpringContextUtil.getBean("binderModule");
 	}	
 
 	private ZoneModule getZoneModule() {

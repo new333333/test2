@@ -36,16 +36,22 @@
 <%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_mobile") %>' scope="request"/>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_homePage") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
-	/**
-	 * 
-	 */
-	function handleCloseBtn()
-	{
+function ss_saveBinderId(id) {
+	alert(id)
+	var obj = self.document.getElementById("homePageId")
+	obj.value = id;
+}
+function ss_saveGuestBinderId(id) {
+	var obj = self.document.getElementById("guestHomePageId")
+	obj.value = id;
+}
+
+function handleCloseBtn() {
 	<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
 			// Tell the Teaming GWT ui to close the administration content panel.
 			window.top.ss_closeAdministrationContentPanel();
@@ -56,12 +62,12 @@
 			return false;
 	<%	} %>
 		
-	}// end handleCloseBtn()
+} // end handleCloseBtn()
 </script>"
 
 <body class="ss_style_body tundra">
 <div class="ss_style ss_portlet">
-<c:set var="titleTag" value='<%= NLT.get("administration.configure.homePage") %>'/>
+<c:set var="titleTag" value='<%= NLT.get("administration.configure_homePage") %>'/>
 <ssf:form title="${titleTag}" >
 
 	<c:if test="${!empty ssException}">
@@ -83,10 +89,12 @@
 			</span><br/>
 	        <ssf:find 
 	    		formName="fm${renderResponse.namespace}" 
-	    		formElement="homePageId" 
+	    		formElement="searchText" 
 	    		type="places"
 	    		singleItem="true"
-	    		accessibilityText='search.Places.alt'/>
+	    		accessibilityText="search.Places.alt"
+	    		clickRoutine="ss_saveBinderId"/>
+	    	<input type="hidden" id="homePageId" name="homePageId" value=""/>
 			<br/>
 			<br/>
 	    </div>
@@ -96,10 +104,12 @@
 			</span><br/>
 	        <ssf:find 
 	    		formName="fm${renderResponse.namespace}" 
-	    		formElement="guestHomePageId" 
+	    		formElement="searchText" 
 	    		type="places"
 	    		singleItem="true"
-	    		accessibilityText='search.Places.alt'/>
+	    		accessibilityText="search.Places.alt"
+	    		clickRoutine="ss_saveGuestBinderId"/>
+	    	<input type="hidden" id="guestHomePageId" name="guestHomePageId" value=""/>
 			<br/>
 			<br/>
 	    </div>
