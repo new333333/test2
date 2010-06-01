@@ -97,7 +97,7 @@
 	  id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if></div>
 	<c:if test="${empty ssReadOnlyFields[property_name] && empty ss_fieldModifyDisabled}">
 		<ssf:find formName="${formName}" formElement="${property_name}" type="user" 
-		  userList="<%= userListSet %>"/>
+		  userList="<%= userListSet %>" width="100px"/>
 		<ssf:clipboard type="user" formElement="${property_name}" />
 	</c:if>
 	<c:if test="${!empty ssReadOnlyFields[property_name] || !empty ss_fieldModifyDisabled}">

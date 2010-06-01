@@ -47,7 +47,7 @@
 		<td valign="top">
 			<ssf:find formName="definitionbuilder" formElement="data_users" 
 				type="user" userList="${ss_userList}"
-				clickRoutine="ss_ug_saveResults"/>
+				clickRoutine="ss_ug_saveResults" width="100px"/>
 		</td>
 	</tr>
 	<tr>
@@ -57,7 +57,7 @@
 		<td valign="top">
 			<ssf:find formName="definitionbuilder" formElement="data_groups" 
 				type="group" userList="${ss_groupList}"
-				clickRoutine="ss_ug_saveResults"/>
+				clickRoutine="ss_ug_saveResults" width="100px"/>
 		</td>
 	</tr>
   </tbody>

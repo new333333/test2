@@ -47,14 +47,14 @@
 				<td valign="top">
 					<ssf:find formName="${ss_dashboard_config_form_name}" formElement="data_users" 
     					type="user" userList="${ssDashboard.beans[ssComponentId].ssUsers}" 
-    					binderId="${ssBinder.id}"/>
+    					binderId="${ssBinder.id}" width="200px"/>
 				</td>
 			</tr>
 			<tr>
 				<td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
 				<td valign="top">
 					<ssf:find formName="${ss_dashboard_config_form_name}" formElement="data_groups" 
-						type="group" userList="${ssDashboard.beans[ssComponentId].ssGroups}"/>
+						type="group" userList="${ssDashboard.beans[ssComponentId].ssGroups}" width="200px"/>
 				</td>
 			</tr>
 			<tr>

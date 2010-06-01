@@ -122,14 +122,14 @@
 								<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 								<td valign="top">
 			  						<ssf:find formName="${renderResponse.namespace}fm" formElement="users" 
-			    						type="user" userList="${ssUsers}" sendingEmail="true"/>
+			    						type="user" userList="${ssUsers}" sendingEmail="true" width="200px"/>
 								</td>
 							</tr>
 							<tr>
 								<td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
 								<td valign="top">
 			  						<ssf:find formName="${renderResponse.namespace}fm" formElement="groups" 
-			    						type="group" userList="${ssGroups}" sendingEmail="true"/>
+			    						type="group" userList="${ssGroups}" sendingEmail="true" width="200px"/>
 								</td>
 							</tr>
 						</table>

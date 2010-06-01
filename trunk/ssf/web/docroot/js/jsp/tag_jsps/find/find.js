@@ -713,7 +713,9 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		if (textObj == null) {
 			textObj = self.parent.document.getElementById('ss_combobox_autocomplete_' + that._singlePrefix);
 		}
-		if (textObj != null) textObj.focus();
+		if (textObj != null) {
+			try {textObj.focus();} catch(e){}
+		}
 	}
 
 	this.blurTextArea = function() {
@@ -801,7 +803,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	this.addValueByElement = function(id, obj) {
 		if (that._itemAlreadyAddedMultiple(id)) {
 			that._inputObj.value = "";
-			that._inputObj.focus();
+			try {that._inputObj.focus();} catch(e){}
 			return;
 		}
 		var spanObj = obj.getElementsByTagName("span").item(0);
@@ -826,7 +828,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		that._callRoutineMultiple(id, spanObj.innerHTML, onAddCallbacks);
 		that._highlight(newLiObj);
 		that._inputObj.value = "";
-		that._inputObj.focus();
+		try {that._inputObj.focus();} catch(e){}
 	}
 	
 	this.addGroupValueByElement = function(id, obj) {
@@ -860,7 +862,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		that._callRoutineMultiple(id, spanObj.innerHTML, onAddCallbacks);
 		that._highlight(newLiObj);
 		that._inputObj.value = "";
-		that._inputObj.focus();
+		try {that._inputObj.focus();} catch(e){}
 	}
 	
 	this._callRoutineMultiple = function(id, txt, callbacks) {

@@ -60,7 +60,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
     private Set userList;    
     private String formName = "";
     private String formElement;
-    private String width = "30";
+    private String width = "70px";
     private String type;
     private Boolean singleItem;
     private Boolean leaveResultsVisible;
@@ -160,7 +160,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			this.formName = "";
 			this.userList = null;
 			this.singleItem = false;
-			this.width = "30";
+			this.width = "70px";
 			this.clickRoutine = "";
 			this.clickRoutineObj = "";
 			this.findMultipleObj = "";

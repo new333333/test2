@@ -74,7 +74,7 @@
   id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if></div>
 <c:if test="${empty ssReadOnlyFields[property_name] && empty ss_fieldModifyDisabled}">
 <ssf:find formName="${formName}" formElement="${property_name}" type="teams" 
-	userList="<%= teamListSet %>"/>
+	userList="<%= teamListSet %>" width="100px"/>
 </c:if>
 <c:if test="${!empty ssReadOnlyFields[property_name] || !empty ss_fieldModifyDisabled}">
 <c:forEach var="teamItem" items="<%= teamListSet %>">

@@ -79,14 +79,14 @@
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 <td valign="top">
   <ssf:find formName="${renderResponse.namespace}fm" formElement="users" 
-    type="user" userList="${ssUsers}" binderId="${ssBinder.id}" sendingEmail="true"/>
+    type="user" userList="${ssUsers}" binderId="${ssBinder.id}" sendingEmail="true" width="150px"/>
 </td>
 </tr>
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
 <td valign="top">
   <ssf:find formName="${renderResponse.namespace}fm" formElement="groups" 
-    type="group" userList="${ssGroups}" sendingEmail="true"/>
+    type="group" userList="${ssGroups}" sendingEmail="true" width="150px"/>
 </td>
 </tr>
 </table>
@@ -107,14 +107,14 @@
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 <td valign="top">
   <ssf:find formName="${renderResponse.namespace}fm" formElement="ccusers" 
-    type="user" sendingEmail="true" />
+    type="user" sendingEmail="true" width="150px" />
 </td>
 </tr>
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
 <td valign="top">
   <ssf:find formName="${renderResponse.namespace}fm" formElement="ccgroups" 
-    type="group" sendingEmail="true"/>
+    type="group" sendingEmail="true" width="150px"/>
 </td>
 </tr>
 </table>
@@ -126,14 +126,14 @@
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 <td valign="top">
   <ssf:find formName="${renderResponse.namespace}fm" formElement="bccusers" 
-    type="user" sendingEmail="true" />
+    type="user" sendingEmail="true" width="150px" />
 </td>
 </tr>
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
 <td valign="top">
   <ssf:find formName="${renderResponse.namespace}fm" formElement="bccgroups" 
-    type="group" sendingEmail="true"/>
+    type="group" sendingEmail="true" width="150px"/>
 </td>
 </tr>
 </table>

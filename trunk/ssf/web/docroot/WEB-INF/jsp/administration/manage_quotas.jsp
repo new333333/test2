@@ -177,7 +177,7 @@ function ss_showModifyDiv(id) {
   					<tr>
 						<td class="ss_cellvalign"><span class="ss_bold"><ssf:nlt tag="__definition_default_group"/>:&nbsp;</span></td>
 						<td valign="top">
-							<ssf:find formName="form1" formElement="addGroups" type="group" />
+							<ssf:find formName="form1" formElement="addGroups" type="group" width="150px" />
 						</td>
 					</tr>
 					<tr>
@@ -283,7 +283,7 @@ function ss_showModifyDiv(id) {
   					<tr>
 						<td class="ss_cellvalign"><span class="ss_bold"><ssf:nlt tag="__definition_default_user"/>:&nbsp;</span></td>
 						<td valign="top">
-							<ssf:find formName="form1" formElement="addUsers" type="user" />
+							<ssf:find formName="form1" formElement="addUsers" type="user" width="150px" />
 						</td>
 					</tr>
 					<tr>

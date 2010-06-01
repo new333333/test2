@@ -115,7 +115,7 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
 	<!-- Find people -->
 		<div class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton${renderResponse.namespace}"
 	     onMouseOver="this.style.cursor = 'pointer';">
-		<ssf:find formName="${formName}" formElement="users" type="user"/>
+		<ssf:find formName="${formName}" formElement="users" type="user" width="200px"/>
 		</div>
   
    </div>
