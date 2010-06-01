@@ -76,61 +76,78 @@ public class ManageSearchIndexController extends  SAbstractController {
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		String btnClicked = PortletRequestUtils.getStringParameter(request, "btnClicked", "");
+		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if ((formData.containsKey("okBtn") || btnClicked.equals("okBtn")) && WebHelper.isMethodPost(request)) {
-			//Get the binders to be indexed
-			Collection<Long> ids = TreeHelper.getSelectedIds(formData);
+			if (operation.equals("index")) {
+				//Get the binders to be indexed
+				Collection<Long> ids = TreeHelper.getSelectedIds(formData);
+				
+				String[] nodeNames = null;
+				String searchNodesPresent = PortletRequestUtils.getStringParameter(request, "searchNodesPresent", "");
+				if(searchNodesPresent.equals("1")) { // H/A environment
+					nodeNames = (String[])formData.get(WebKeys.URL_SEARCH_NODE_NAME);
+					if(nodeNames == null || nodeNames.length == 0) {
+						// The user selected no node, probably by mistake.
+						// In this case, there's no work to perform.
+						response.setRenderParameters(formData);
+						return;
+					}
+				}
+				
+				// Create a new status ticket
+				StatusTicket statusTicket = WebStatusTicket.newStatusTicket(PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none"), request);
+				SimpleProfiler profiler = null; 
+				if (logger.isDebugEnabled()) {
+					profiler = new SimpleProfiler("manageSearchIndex");
+					SimpleProfiler.setProfiler(profiler);
+				}
+				IndexErrors errors = new IndexErrors();
+				Collection idsIndexed = getBinderModule().indexTree(ids, statusTicket, nodeNames, errors);
+				//if people selected and not yet index; index content only, not the whole ws tree
+				String idChoices = TreeHelper.getSelectedIdsAsString(formData);
+				if (idChoices.contains(usersAndGroups)) {
+					ProfileBinder pf = getProfileModule().getProfileBinder();
+					if (!idsIndexed.contains(pf.getId())) {
+						errors.add(getBinderModule().indexBinder(pf.getId(), true)); 
+					}
+				}
+	    		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true");
+				if (logger.isDebugEnabled()) {
+					logger.debug(SimpleProfiler.toStr());
+					SimpleProfiler.clearProfiler();
+				}
+				response.setRenderParameters(formData);
+				response.setRenderParameter(WebKeys.ERROR_INDEXING_COUNT, errors.getErrorCount().toString());
+				if (errors.getErrorCount() > 0) {
+					List binderIds = new ArrayList();
+					for (Binder b : errors.getBinders()) {
+						binderIds.add(b.getId().toString());
+						logger.error(NLT.get("error.indexing.binders", new String[] {b.getId().toString(), b.getTitle()}));
+					}
+					List entryIds = new ArrayList();
+					for (Entry e : errors.getEntries()) {
+						entryIds.add(e.getId().toString());
+						logger.error(NLT.get("error.indexing.entries", new String[] {e.getId().toString(), e.getTitle()}));
+					}
+					if (binderIds.size() > 0)
+						response.setRenderParameter(WebKeys.ERROR_INDEXING_BINDERS, (String[])binderIds.toArray(new String[binderIds.size()]));
+					if (entryIds.size() > 0)
+						response.setRenderParameter(WebKeys.ERROR_INDEXING_ENTRIES, (String[])entryIds.toArray(new String[entryIds.size()]));
+				}
 			
-			String[] nodeNames = null;
-			String searchNodesPresent = PortletRequestUtils.getStringParameter(request, "searchNodesPresent", "");
-			if(searchNodesPresent.equals("1")) { // H/A environment
-				nodeNames = (String[])formData.get(WebKeys.URL_SEARCH_NODE_NAME);
-				if(nodeNames == null || nodeNames.length == 0) {
-					// The user selected no node, probably by mistake.
-					// In this case, there's no work to perform.
-					response.setRenderParameters(formData);
-					return;
+			} else if (operation.equals("optimize")) {
+				String[] nodeNames = null;
+				String searchNodesPresent = PortletRequestUtils.getStringParameter(request, "searchNodesPresent", "");
+				if(searchNodesPresent.equals("1")) { // H/A environment
+					nodeNames = (String[])formData.get(WebKeys.URL_SEARCH_NODE_NAME);
+					if(nodeNames == null || nodeNames.length == 0) {
+						// The user selected no node, probably by mistake.
+						// In this case, there's no work to perform.
+						response.setRenderParameters(formData);
+						return;
+					}
 				}
-			}
-			
-			// Create a new status ticket
-			StatusTicket statusTicket = WebStatusTicket.newStatusTicket(PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none"), request);
-			SimpleProfiler profiler = null; 
-			if (logger.isDebugEnabled()) {
-				profiler = new SimpleProfiler("manageSearchIndex");
-				SimpleProfiler.setProfiler(profiler);
-			}
-			IndexErrors errors = new IndexErrors();
-			Collection idsIndexed = getBinderModule().indexTree(ids, statusTicket, nodeNames, errors);
-			//if people selected and not yet index; index content only, not the whole ws tree
-			String idChoices = TreeHelper.getSelectedIdsAsString(formData);
-			if (idChoices.contains(usersAndGroups)) {
-				ProfileBinder pf = getProfileModule().getProfileBinder();
-				if (!idsIndexed.contains(pf.getId())) {
-					errors.add(getBinderModule().indexBinder(pf.getId(), true)); 
-				}
-			}
-    		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true");
-			if (logger.isDebugEnabled()) {
-				logger.debug(SimpleProfiler.toStr());
-				SimpleProfiler.clearProfiler();
-			}
-			response.setRenderParameters(formData);
-			response.setRenderParameter(WebKeys.ERROR_INDEXING_COUNT, errors.getErrorCount().toString());
-			if (errors.getErrorCount() > 0) {
-				List binderIds = new ArrayList();
-				for (Binder b : errors.getBinders()) {
-					binderIds.add(b.getId().toString());
-					logger.error(NLT.get("error.indexing.binders", new String[] {b.getId().toString(), b.getTitle()}));
-				}
-				List entryIds = new ArrayList();
-				for (Entry e : errors.getEntries()) {
-					entryIds.add(e.getId().toString());
-					logger.error(NLT.get("error.indexing.entries", new String[] {e.getId().toString(), e.getTitle()}));
-				}
-				if (binderIds.size() > 0)
-					response.setRenderParameter(WebKeys.ERROR_INDEXING_BINDERS, (String[])binderIds.toArray(new String[binderIds.size()]));
-				if (entryIds.size() > 0)
-					response.setRenderParameter(WebKeys.ERROR_INDEXING_ENTRIES, (String[])entryIds.toArray(new String[entryIds.size()]));
+				getAdminModule().optimizeIndex(nodeNames);
 			}
 		} else
 			response.setRenderParameters(formData);

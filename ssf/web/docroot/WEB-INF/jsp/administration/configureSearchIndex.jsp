@@ -40,13 +40,12 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_search_index") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%
+String wsTreeName = "" + renderResponse.getNamespace();
+%>
 
 <script type="text/javascript">
-	/**
-	 * 
-	 */
-	function handleCloseBtn()
-	{
+function handleCloseBtn() {
 	<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
 			// Tell the Teaming GWT ui to close the administration content panel.
 			window.top.ss_closeAdministrationContentPanel();
@@ -57,41 +56,59 @@
 			return true;
 	<%	} %>
 	
-	}// end handleCloseBtn()
-</script>
+}  // end handleCloseBtn()
 
-<body class="ss_style_body tundra">
-<div class="ss_pseudoPortal">
-<div class="ss_style ss_portlet">
+var currentIndexTabShowing = "manageIndex";
+function ss_showIndexTab(id) {
+	if (currentIndexTabShowing != null) {
+		var divObj = self.document.getElementById(currentIndexTabShowing + "Div")
+		divObj.style.display = "none";
+		var tabObj = self.document.getElementById(currentIndexTabShowing + "Tab");
+		tabObj.className = "wg-tab roundcornerSM";
+		currentIndexTabShowing = null;
+	}
+	currentIndexTabShowing = id;
+	var divObj = self.document.getElementById(currentIndexTabShowing + "Div");
+	var tabObj = self.document.getElementById(currentIndexTabShowing + "Tab");
+	divObj.style.display = "block";
+	tabObj.className = "wg-tab roundcornerSM on";
+}
 
-<ssf:form titleTag="administration.configure_search_index">
-<%
-String wsTreeName = "" + renderResponse.getNamespace();
-%>
-<table class="ss_style" width="100%"><tr><td>
+var currentHoverOverTab = null;
+function ss_hoverOverIndexTab(id) {
+	if (currentIndexTabShowing != null) {
+		var tabObj = self.document.getElementById(currentIndexTabShowing + "Tab");
+		tabObj.className = "wg-tab roundcornerSM on";
+	}
+	if (currentHoverOverTab != null && currentHoverOverTab != currentIndexTabShowing) {
+		var tabObj = self.document.getElementById(currentHoverOverTab + "Tab");
+		tabObj.className = "wg-tab roundcornerSM";
+		currentHoverOverTab = null;
+	}
+	currentHoverOverTab = id;
+	var tabObj = self.document.getElementById(id + "Tab");
+	if (currentHoverOverTab == currentIndexTabShowing) {
+		tabObj.className = "wg-tab roundcornerSM selected-menu on";
+	} else {
+		tabObj.className = "wg-tab roundcornerSM selected-menu";
+	}
+}
 
-<form class="ss_style ss_form" 
-	action="<ssf:url adapter="true" portletName="ss_administration" action="configure_index" actionUrl="true"></ssf:url>" 
-	method="post" 
-	name="${renderResponse.namespace}fm"
-	id="${renderResponse.namespace}fm"
-	onSubmit="return ss_submitIndexingForm();" >
-
-<div class="ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="okBtn" 
-  value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="return handleCloseBtn();"/>
-</div>
-<br>
-<span class="ss_largeprint ss_bold"><ssf:nlt tag="administration.configure.index.select"/></span>
-<br>
-<span class="ss_smallprint" style="padding-left:10px;"><ssf:nlt tag="administration.configure_search_index_hint"/></span>
-<br>
-<br>
-
-<script type="text/javascript">
+function ss_hoverOverStoppedIndexTab(id) {
+	if (currentHoverOverTab != null) {
+		var tabObj = self.document.getElementById(currentHoverOverTab + "Tab");
+		if (currentHoverOverTab == currentIndexTabShowing) {
+			tabObj.className = "wg-tab roundcornerSM on";
+		} else {
+			tabObj.className = "wg-tab roundcornerSM";
+		}
+		currentHoverOverTab = null;
+	}
+	if (currentIndexTabShowing != null) {
+		var tabObj = self.document.getElementById(currentIndexTabShowing + "Tab");
+		tabObj.className = "wg-tab roundcornerSM on";
+	}
+}
 
 var ss_indexTimeout = null;
 var ss_indexStatusTicket = ss_random++;
@@ -112,12 +129,12 @@ function ss_getOperationStatus()
 	ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
 }
 
-function ss_submitIndexingForm() {
-	var formObj = document.forms['${renderResponse.namespace}fm'];
+function ss_submitIndexingForm(formName) {
+	var formObj = document.forms[formName];
 	formObj.btnClicked.value = ss_buttonSelected;
 	if (ss_buttonSelected == 'okBtn') {
 		formObj.action = '<ssf:url adapter="true" portletName="ss_administration" action="configure_index" actionUrl="true"></ssf:url>&ss_statusId='+ss_indexStatusTicket
-		ss_submitFormViaAjax('${renderResponse.namespace}fm', 'ss_indexingDone');
+		ss_submitFormViaAjax(formName, 'ss_indexingDone');
 		ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
 		return false;
 	} else {
@@ -139,6 +156,55 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 }
 
 </script>
+
+<body class="ss_style_body tundra">
+<div class="ss_pseudoPortal">
+<div class="ss_style ss_portlet">
+
+<ssf:form titleTag="administration.configure_search_index">
+<br/>
+<br/>
+<div style="text-align: left; margin: 0px 10px; border: 0pt none;" 
+  class="wg-tabs margintop3 marginbottom2">
+  <div id="manageIndexTab" class="wg-tab roundcornerSM on" 
+    onMouseOver="ss_hoverOverIndexTab('manageIndex');"
+    onMouseOut="ss_hoverOverStoppedIndexTab('manageIndex');"
+    onClick="ss_showIndexTab('manageIndex');">
+    <ssf:nlt tag="administration.search.manage.index.tab"/>
+  </div>
+  <div id="manageOptimizeTab" class="wg-tab roundcornerSM" 
+    onMouseOver="ss_hoverOverIndexTab('manageOptimize');"
+    onMouseOut="ss_hoverOverStoppedIndexTab('manageOptimize');"
+    onClick="ss_showIndexTab('manageOptimize');">
+    <ssf:nlt tag="administration.search.manage.optimize.tab"/>
+  </div>
+</div>
+
+<div id="manageIndexDiv" style="display:block;" class="wg-tab-content">
+<table class="ss_style" width="100%"><tr><td>
+
+<form class="ss_style ss_form" 
+	action="<ssf:url adapter="true" portletName="ss_administration" action="configure_index" actionUrl="true"></ssf:url>" 
+	method="post" 
+	name="${renderResponse.namespace}fm"
+	id="${renderResponse.namespace}fm"
+	onSubmit="return ss_submitIndexingForm('${renderResponse.namespace}fm');" >
+<input type="hidden" name="operation" value="index"/>
+
+<div class="ss_buttonBarRight">
+<input type="submit" class="ss_submit" name="okBtn" 
+  value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+		  onClick="return handleCloseBtn();"/>
+</div>
+<br>
+<span class="ss_largeprint ss_bold"><ssf:nlt tag="administration.configure.index.select"/></span>
+<br>
+<span class="ss_smallprint" style="padding-left:10px;"><ssf:nlt tag="administration.configure_search_index_hint"/></span>
+<br>
+<br>
+
 <ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  
   rootOpen="true" topId="${ssWsDomTreeBinderId}" 
   multiSelect="<%= new ArrayList() %>" multiSelectPrefix="id" />
@@ -172,6 +238,57 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 </form>
 <br>
 </td></tr></table>
+</div>
+
+<div id="manageOptimizeDiv" style="display:none;" class="wg-tab-content">
+<table class="ss_style" width="100%"><tr><td>
+
+<form class="ss_style ss_form" 
+	action="<ssf:url adapter="true" portletName="ss_administration" action="configure_index" actionUrl="true"></ssf:url>" 
+	method="post" 
+	name="${renderResponse.namespace}fm2"
+	id="${renderResponse.namespace}fm2"
+	onSubmit="return ss_submitIndexingForm("${renderResponse.namespace}fm2");" >
+<input type="hidden" name="operation" value="optimize"/>
+<div class="ss_buttonBarRight">
+<input type="submit" class="ss_submit" name="okBtn" 
+  value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+		  onClick="return handleCloseBtn();"/>
+</div>
+<br>
+<c:if test="${!empty ssSearchNodes}">
+<br>
+<br>
+<span class="ss_bold"><ssf:nlt tag="administration.configure.nodes.select" text="Select the nodes to apply the re-indexing to:"/></span>
+<br>
+<br>
+<ssf:nlt tag="administration.configure.nodes.select.detail"/>
+<br>
+  <c:forEach var="node" items="${ssSearchNodes}">
+    <input type="checkbox" name="searchNodeName" value="${node.nodeName}" <c:if test="${node.userModeAccess == 'offline' || !node.noDeferredUpdateLogRecords}">disabled</c:if>>
+    ${node.title} (${node.nodeName}) - <ssf:nlt tag="administration.search.node.usermodeaccess.${node.userModeAccess}"/>, <ssf:nlt tag="administration.search.node.deferredupdatelog.enabled.${node.enableDeferredUpdateLog}"/>, <ssf:nlt tag="administration.search.node.nodeferredupdatelogrecords.${node.noDeferredUpdateLogRecords}"/>
+    <br/>
+  </c:forEach>
+  <input type="hidden" name="searchNodesPresent" value="1"/>
+</c:if>
+<br>
+<br>
+<div class="ss_buttonBarLeft">
+<input type="submit" class="ss_submit" name="okBtn" 
+  value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="submit" class="ss_submit" name="closeBtn" 
+ value="<ssf:nlt tag="button.close" text="Close"/>" onClick="return handleCloseBtn();">
+</div>
+<input type="hidden" name="btnClicked"/>
+</form>
+<br>
+</td>
+</tr>
+</table>
+</div>
 
 <div id="ss_indexing_done_div" style="position:absolute;display:none;background-color:#fff;">
 <span><ssf:nlt tag="index.finished"/></span>
