@@ -529,5 +529,11 @@ public interface GwtTeamingMessages extends Messages
 
 	// The following strings are used in the Administration Information dialog
 	String adminInfoDlgHeader();
+	String adminInfoDlgLoginAsAdmin();
 	String adminInfoDlgRelease();
+	String adminInfoDlgUpgradeAccessControls();
+	String adminInfoDlgUpgradeDefinitions();
+	String adminInfoDlgUpgradeSearchIndex();
+	String adminInfoDlgUpgradeTasksNotDone();
+	String adminInfoDlgUpgradeTemplates();
 }// end GwtTeamingMessages

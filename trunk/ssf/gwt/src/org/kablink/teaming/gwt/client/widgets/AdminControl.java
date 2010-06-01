@@ -50,7 +50,10 @@ import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.UListElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -212,16 +215,94 @@ public class AdminControl extends Composite
 		public void refreshContent( GwtUpgradeInfo upgradeInfo )
 		{
 			int row = 0;
-			
+			FlexTable.FlexCellFormatter cellFormatter; 
+
 			// Clear any existing content.
 			m_table.clear();
 			
+			cellFormatter = m_table.getFlexCellFormatter();
+
 			// Add a row for the Teaming release information
 			{
 				m_table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgRelease() );
 				m_table.setText( row, 1, upgradeInfo.getReleaseInfo() );
+				cellFormatter.setWidth( row, 1, "100%" );
 				
 				++row;
+			}
+			
+			// Are there upgrade tasks that need to be performed?
+			if ( upgradeInfo.doUpgradeTasksExist() )
+			{
+				// Yes
+				
+				// Add text to let the user know there are upgrade tasks that need to be completed.
+				++row;
+				cellFormatter.setColSpan( row, 0, 2 );
+				m_table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgUpgradeTasksNotDone() );
+				++row;
+
+				// Are we dealing with the "admin" user?
+				if ( upgradeInfo.getIsAdmin() )
+				{
+					ArrayList<GwtUpgradeInfo.UpgradeTask> upgradeTasks;
+					
+					// Yes
+					// Get the list of upgrade tasks
+					upgradeTasks = upgradeInfo.getUpgradeTasks();
+					
+					if ( upgradeTasks != null && upgradeTasks.size() > 0 )
+					{
+						UListElement uList;
+						
+						uList = Document.get().createULElement();
+					
+						// Display a message for each upgrade task.
+						for ( GwtUpgradeInfo.UpgradeTask task : upgradeTasks )
+						{
+							String taskInfo;
+							
+							taskInfo = null;
+							switch ( task )
+							{
+							case UPGRADE_ACCESS_CONTROLS:
+								taskInfo = GwtTeaming.getMessages().adminInfoDlgUpgradeAccessControls();
+								break;
+								
+							case UPGRADE_DEFINITIONS:
+								taskInfo = GwtTeaming.getMessages().adminInfoDlgUpgradeDefinitions();
+								break;
+								
+							case UPGRADE_SEARCH_INDEX:
+								taskInfo = GwtTeaming.getMessages().adminInfoDlgUpgradeSearchIndex();
+								break;
+								
+							case UPGRADE_TEMPLATES:
+								taskInfo = GwtTeaming.getMessages().adminInfoDlgUpgradeTemplates();
+								break;
+							}
+							
+							if ( taskInfo != null )
+							{
+								LIElement liElement;
+
+								liElement = Document.get().createLIElement();
+								liElement.setInnerText( taskInfo );
+								
+								uList.appendChild( liElement );
+							}
+						}
+						
+						cellFormatter.setColSpan( row, 0, 2 );
+						m_table.setHTML( row, 0, uList.getString() );
+					}
+				}
+				else
+				{
+					cellFormatter.setColSpan( row, 0, 2 );
+					m_table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgLoginAsAdmin() );
+					++row;
+				}
 			}
 		}// end refreshContent()
 	}// end AdminInfoDlg
