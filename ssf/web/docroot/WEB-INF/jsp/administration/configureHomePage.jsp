@@ -53,9 +53,7 @@ function ss_saveGuestBinderId(id) {
 function handleCloseBtn() {
 	<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
 			// Tell the Teaming GWT ui to close the administration content panel.
-			if ( window.parent.ss_closeAdministrationContentPanel )
-				window.parent.ss_closeAdministrationContentPanel();
-
+			window.parent.ss_closeAdministrationContentPanel();
 			return false;
 	<% 	}
 		else { %>
@@ -64,7 +62,7 @@ function handleCloseBtn() {
 	<%	} %>
 		
 } // end handleCloseBtn()
-</script>"
+</script>
 
 <body class="ss_style_body tundra">
 <div class="ss_style ss_portlet">
@@ -75,19 +73,15 @@ function handleCloseBtn() {
 	<span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span></br>
 	</c:if>
 
+	<br/>
 	<form class="ss_style ss_form" name="${renderResponse.namespace}fm" method="post" 
 	  action="<ssf:url action="configure_home_page" actionUrl="true"/>">
-		<div class="ss_buttonBarRight">
-		<br/>
-		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
-			<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-				  onClick="return handleCloseBtn();"/>
-		</div>
 	  <div>
 	    <div>
 			<span class="ss_labelAbove">
 			    <ssf:nlt tag="administration.config.defaultHomePage"/>
-			</span><br/>
+			</span>
+			<br/>
 	        <ssf:find 
 	    		formName="fm${renderResponse.namespace}" 
 	    		formElement="searchText" 
@@ -98,6 +92,13 @@ function handleCloseBtn() {
 	    		clickRoutine="ss_saveBinderId"/>
 	    	<input type="hidden" id="homePageId" name="homePageId" value=""/>
 			<br/>
+			<c:if test="${!empty ssDefaultHomePageBinder}">
+			  <span><ssf:nlt tag="administration.config.currentDefaultHomePage"><ssf:param
+			    name="value" useBody="true"><a
+			    href="<ssf:url action="viewFolderList" binderId="${ssDefaultHomePageBinder.id}"/>"
+			  >${ssDefaultHomePageBinder.title}</a></ssf:param></ssf:nlt></span>
+			<br/>
+			</c:if>
 			<br/>
 	    </div>
 	    <div>
@@ -114,6 +115,13 @@ function handleCloseBtn() {
 	    		clickRoutine="ss_saveGuestBinderId"/>
 	    	<input type="hidden" id="guestHomePageId" name="guestHomePageId" value=""/>
 			<br/>
+			<c:if test="${!empty ssDefaultGuestHomePageBinder}">
+			  <span><ssf:nlt tag="administration.config.currentDefaultGuestHomePage"><ssf:param
+			    name="value" useBody="true"><a
+			    href="<ssf:url action="viewFolderList" binderId="${ssDefaultGuestHomePageBinder.id}"/>"
+			  >${ssDefaultGuestHomePageBinder.title}</a></ssf:param></ssf:nlt></span>
+			<br/>
+			</c:if>
 			<br/>
 	    </div>
 	  </div>

@@ -39,6 +39,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
@@ -67,7 +68,22 @@ public class ConfigureHomePageController extends  SAbstractController {
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 
-		model.put(WebKeys.HOMEPAGE_CONFIG, getAdminModule().getHomePageConfig());
+		HomePageConfig homePageConfig = getAdminModule().getHomePageConfig();
+		model.put(WebKeys.HOMEPAGE_CONFIG, homePageConfig);
+		Long defaultHomePageId = homePageConfig.getDefaultHomePageId();
+		Long defaultGuestHomePageId = homePageConfig.getDefaultGuestHomePageId();
+		if (defaultHomePageId != null) {
+			try {
+				Binder binder = getBinderModule().getBinder(defaultHomePageId);
+				model.put(WebKeys.DEFAULT_HOMEPAGE_BINDER, binder);
+			} catch(Exception e) {}
+		}
+		if (defaultGuestHomePageId != null) {
+			try {
+				Binder binder = getBinderModule().getBinder(defaultGuestHomePageId);
+				model.put(WebKeys.DEFAULT_GUEST_HOMEPAGE_BINDER, binder);
+			} catch(Exception e) {}
+		}
 
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_HOME_PAGE, model);
 		
