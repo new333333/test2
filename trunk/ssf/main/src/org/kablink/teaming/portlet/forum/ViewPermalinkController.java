@@ -541,7 +541,7 @@ public class ViewPermalinkController  extends SAbstractController {
 				model.put( "myWorkspaceUrl", myWSUrl );
 				
 				// Add the flag that tells us if we are running Novell or Kablink Teaming to the response.
-				isNovellTeaming = PortletRequestUtils.getStringParameter( request, "isNovellTeaming", "true" );
+				isNovellTeaming = Boolean.toString( ReleaseInfo.isLicenseRequiredEdition() );
 				model.put( "isNovellTeaming", isNovellTeaming );
 				
 				// Add a flag that tells us if the user is logged in.

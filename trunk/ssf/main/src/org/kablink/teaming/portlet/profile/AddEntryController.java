@@ -60,6 +60,7 @@ import org.kablink.teaming.web.portlet.ParamsWrappedActionRequest;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.portlet.ModelAndView;
@@ -143,9 +144,21 @@ public class AddEntryController extends SAbstractController {
     			}
 
     			getProfileModule().addUser(entryType, inputData, fileMap, null);
-				setupReloadOpener(response, binderId);
-				//flag reload of folder listing
-				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
+
+    			// Are we running the new GWT ui?
+    			if ( GwtUIHelper.isGwtUIActive( request ) )
+    			{
+    				// Yes, set up the response to close the window.
+    				response.setRenderParameter( WebKeys.ACTION, WebKeys.ACTION_CLOSE_WINDOW );
+    			}
+    			else
+    			{
+    				// No
+        			setupReloadOpener(response, binderId);
+
+        			//flag reload of folder listing
+    				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
+    			}
     		}
 		} else if (formData.containsKey("cancelBtn")) {
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());				

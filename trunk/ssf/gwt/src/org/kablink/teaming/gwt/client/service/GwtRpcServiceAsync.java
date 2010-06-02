@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
+import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
@@ -165,6 +166,9 @@ public interface GwtRpcServiceAsync
 	// The following are used for the UserStatus control
 	public void saveUserStatus(String status, 	AsyncCallback<Boolean> 		callback);
 	public void getUserStatus( String binderId,	AsyncCallback<UserStatus> 	callback); 
+	
+	// Return information about self registration.
+	public void getSelfRegistrationInfo( AsyncCallback<GwtSelfRegistrationInfo> callback );
 	
 	// Return the url needed to invoke the "site administration" page.
 	public void getSiteAdministrationUrl( String binderId, AsyncCallback<String> callback );

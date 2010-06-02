@@ -33,15 +33,26 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
+import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -54,6 +65,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -72,7 +84,10 @@ public class LoginDlg extends DlgBox
 	private Label m_authenticatingMsg = null;
 	private String m_loginUrl = null;
 	private String m_springSecurityRedirect = null;	// This values tells Teaming what url to go to after the user authenticates.
-	
+	private GwtSelfRegistrationInfo m_selfRegInfo = null;
+	private Label m_selfRegLink = null;
+	private AsyncCallback<GwtSelfRegistrationInfo> m_rpcGetSelfRegInfoCallback = null;
+
 	/**
 	 * 
 	 */
@@ -98,6 +113,36 @@ public class LoginDlg extends DlgBox
 		else
 			headerText = GwtTeaming.getMessages().loginDlgKablinkHeader();
 		
+		// Create the callback that will be used when we issue an ajax call to get upgrade information
+		m_rpcGetSelfRegInfoCallback = new AsyncCallback<GwtSelfRegistrationInfo>()
+		{
+			/**
+			 * 
+			 */
+			public void onFailure( Throwable t )
+			{
+				String cause;
+				
+				cause = t.getLocalizedMessage();
+				if ( cause == null )
+					cause = t.toString();
+				
+				Window.alert( cause );
+			}// end onFailure()
+	
+			/**
+			 * 
+			 * @param result
+			 */
+			public void onSuccess( GwtSelfRegistrationInfo selfRegInfo )
+			{
+				m_selfRegInfo = selfRegInfo;
+				
+				// Hide or show the self registration controls.
+				updateSelfRegistrationControls( selfRegInfo );
+			}// end onSuccess()
+		};
+
 		createAllDlgContent( headerText, null, null, properties ); 
 	}// end LoginDlg()
 	
@@ -117,6 +162,8 @@ public class LoginDlg extends DlgBox
 	{
 		FlowPanel mainPanel = null;
 		FlexTable table;
+		FlexTable selfRegTable;
+		FlexTable.FlexCellFormatter cellFormatter;
 		int row = 0;
 		
 		mainPanel = new FlowPanel();
@@ -130,7 +177,8 @@ public class LoginDlg extends DlgBox
 		table = new FlexTable();
 		table.setCellSpacing( 4 );
 		table.addStyleName( "dlgContent" );
-		
+		cellFormatter = table.getFlexCellFormatter();
+
 		// Add a row for the "user id" controls.
 		{
 			table.setText( row, 0, GwtTeaming.getMessages().loginDlgUserId() );
@@ -161,13 +209,10 @@ public class LoginDlg extends DlgBox
 		
 		// Add a "login failed" label to the dialog.
 		{
-			FlexTable.FlexCellFormatter cellFormatter;
-
 			m_loginFailedMsg = new Label( GwtTeaming.getMessages().loginDlgLoginFailed() );
 			m_loginFailedMsg.addStyleName( "loginFailedMsg" );
 			m_loginFailedMsg.setVisible( false );
 			
-			cellFormatter = table.getFlexCellFormatter();
 			cellFormatter.setHorizontalAlignment( row, 0, HasHorizontalAlignment.ALIGN_RIGHT );
 			table.setWidget( row, 1, m_loginFailedMsg );
 			++row;
@@ -175,13 +220,10 @@ public class LoginDlg extends DlgBox
 		
 		// Add a "Authenticating..." label to the dialog.
 		{
-			FlexTable.FlexCellFormatter cellFormatter;
-
 			m_authenticatingMsg = new Label( GwtTeaming.getMessages().loginDlgAuthenticating() );
 			m_authenticatingMsg.addStyleName( "loginAuthenticatingMsg" );
 			m_authenticatingMsg.setVisible( false );
 			
-			cellFormatter = table.getFlexCellFormatter();
 			cellFormatter.setHorizontalAlignment( row, 0, HasHorizontalAlignment.ALIGN_RIGHT );
 			table.setWidget( row, 1, m_authenticatingMsg );
 			++row;
@@ -202,7 +244,89 @@ public class LoginDlg extends DlgBox
 		
 		m_formPanel.add( table );
 		
+		// Create a "Create new account" link that will initially be hidden.
+		// We will show this link later when we get the response to our request to get
+		// self registration info and self registration is allowed.
+		{
+			ClickHandler clickHandler;
+			MouseOverHandler mouseOverHandler;
+			MouseOutHandler mouseOutHandler;
+			FlexTable.FlexCellFormatter selfRegCellFormatter;
+			
+			selfRegTable = new FlexTable();
+			selfRegCellFormatter = selfRegTable.getFlexCellFormatter();
+			
+			m_selfRegLink = new Label( GwtTeaming.getMessages().loginDlgCreateNewAccount() );
+			m_selfRegLink.addStyleName( "margintop3" );
+			m_selfRegLink.addStyleName( "selfRegLink1" );
+			m_selfRegLink.addStyleName( "selfRegLink2" );
+			m_selfRegLink.addStyleName( "subhead-control-bg1" );
+			m_selfRegLink.addStyleName( "roundcornerSM" );
+			m_selfRegLink.setVisible( false );
+			
+			// Add a clickhandler to the "Create new account" link.  When the user clicks on the link we
+			// will invoke the "Create user" page.
+			clickHandler = new ClickHandler()
+			{
+				/**
+				 * Clear all branding information.
+				 */
+				public void onClick( ClickEvent event )
+				{
+					String url;
+					
+					// Get the url we need to invoke the "Create User" page.
+					url = m_selfRegInfo.getCreateUserUrl();
+					
+					// Invoke the "Create User" page in a new window.
+					Window.open( url, "self_reg_create_new_account", "height=750,resizeable,scrollbars,width=750" );
+				}//end onClick()
+			};
+			m_selfRegLink.addClickHandler( clickHandler );
+			
+			// Add a mouse-over handler
+			mouseOverHandler = new MouseOverHandler()
+			{
+				/**
+				 * 
+				 */
+				public void onMouseOver( MouseOverEvent event )
+				{
+					Widget widget;
+					
+					widget = (Widget)event.getSource();
+					widget.removeStyleName( "subhead-control-bg1" );
+					widget.addStyleName( "subhead-control-bg2" );
+				}// end onMouseOver()
+			};
+			m_selfRegLink.addMouseOverHandler( mouseOverHandler );
+
+			// Add a mouse-out handler
+			mouseOutHandler = new MouseOutHandler()
+			{
+				/**
+				 * 
+				 */
+				public void onMouseOut( MouseOutEvent event )
+				{
+					Widget widget;
+					
+					// Remove the background color we added to the anchor when the user moved the mouse over the anchor.
+					widget = (Widget)event.getSource();
+					widget.removeStyleName( "subhead-control-bg2" );
+					widget.addStyleName( "subhead-control-bg1" );
+				}// end onMouseOut()
+			};
+			m_selfRegLink.addMouseOutHandler( mouseOutHandler );
+			
+			selfRegTable.setWidget( 0, 0, m_selfRegLink );
+			selfRegCellFormatter.setWordWrap( 0, 0, false );
+			selfRegTable.setWidget( 0, 1, new Label( " " ) );
+			selfRegCellFormatter.setWidth( 0, 1, "100%" );
+		}
+		
 		mainPanel.add( m_formPanel );
+		mainPanel.add( selfRegTable );
 
 		init( props );
 
@@ -291,6 +415,18 @@ public class LoginDlg extends DlgBox
 	
 	
 	/**
+	 * Issue an ajax request to get self registration info from the server.
+	 */
+	private void getSelfRegistrationInfoFromServer()
+	{
+		GwtRpcServiceAsync rpcService;
+		
+		rpcService = GwtTeaming.getRpcService();
+		
+		// Issue an ajax request to get self registration information
+		rpcService.getSelfRegistrationInfo( m_rpcGetSelfRegInfoCallback );
+	}// end getAdminActionsFromServer()
+	/**
 	 * 
 	 */
 	public void hideAuthenticatingMsg()
@@ -368,6 +504,29 @@ public class LoginDlg extends DlgBox
 	
 	
 	/**
+	 * Override this method so we can issue an ajax request to get information about self
+	 * registration every time this dialog is invoked.
+	 */
+	public void show()
+	{
+		Command cmd;
+		
+		super.show();
+		
+		cmd = new Command()
+		{
+			public void execute()
+			{
+				// Issue an ajax request to get self registration info
+				getSelfRegistrationInfoFromServer();
+			}
+		};
+		DeferredCommand.addCommand( cmd );
+		
+	}// end show()
+	
+	
+	/**
 	 * 
 	 */
 	public void showAuthenticatingMsg()
@@ -400,4 +559,27 @@ public class LoginDlg extends DlgBox
 		m_formPanel.submit();
 		
 	}// end submitLoginRequest()
+	
+	
+	/**
+	 * Show or hide the controls dealing with self registration depending on the values in
+	 * the given GwtSelfRegistrationInfo object.
+	 */
+	private void updateSelfRegistrationControls( GwtSelfRegistrationInfo selfRegInfo )
+	{
+		String url;
+		
+		// Is self registration allowed?
+		url = selfRegInfo.getCreateUserUrl();
+		if ( selfRegInfo.isSelfRegistrationAllowed() && url != null && url.length() > 0 )
+		{
+			// Yes, show the self registration button.
+			m_selfRegLink.setVisible( true );
+		}
+		else
+		{
+			// No, hide the self registration button.
+			m_selfRegLink.setVisible( false );
+		}
+	}// end updateSelfRegistrationControls()
 }// end LoginDlg

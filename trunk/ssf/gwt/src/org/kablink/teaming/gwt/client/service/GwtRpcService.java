@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
+import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
@@ -173,6 +174,9 @@ public interface GwtRpcService extends RemoteService
 	// UserStatusControl.
 	public Boolean saveUserStatus(String status) throws GwtTeamingException;
 	public UserStatus getUserStatus(String binderId) throws GwtTeamingException; 
+	
+	// Return information about self registration.
+	public GwtSelfRegistrationInfo getSelfRegistrationInfo() throws GwtTeamingException;
 	
 	// Return the url needed to invoke the "site administration" page.
 	public String getSiteAdministrationUrl( String binderId ) throws GwtTeamingException;
