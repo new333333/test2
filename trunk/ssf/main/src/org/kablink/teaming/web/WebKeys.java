@@ -734,6 +734,8 @@ public class WebKeys {
     public static final String DEBUG_OFF="off";
     public static final String DEFAULT_FOLDER_DEFINITION="ssDefaultFolderDefinition";
     public static final String DEFAULT_GROUP_FILTER="ssDefaultGroupFilter";
+    public static final String DEFAULT_HOMEPAGE_BINDER="ssDefaultHomePageBinder";
+    public static final String DEFAULT_GUEST_HOMEPAGE_BINDER="ssDefaultGuestHomePageBinder";
     public static final String DEFAULT_LOCALE = "ssDefaultLocaleId";
     public static final String DEFAULT_TIME_ZONE = "ssDefaultTimeZone";
     public static final String DEFAULT_USER_FILTER="ssDefaultUserFilter";
