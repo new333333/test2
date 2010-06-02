@@ -1031,8 +1031,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        				   		IndexErrors entryErrors = indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), null, true, entryTags);
        				   		errors.add(entryErrors);
        				   	} catch(Exception e) {
-       				   		logger.error("Error indexing entry: (" + entry.getId().toString() + ") " + entry.getTitle());
-       				   		logger.error("   Error: " + e.toString());
+       				   		logger.error("Error indexing entry: (" + entry.getId().toString() + ") " + entry.getTitle(), e);
        				   		errors.addError(entry);
        				   	}
        	       			SimpleProfiler.stopProfiler("indexEntries_indexEntryWithAttachments");
