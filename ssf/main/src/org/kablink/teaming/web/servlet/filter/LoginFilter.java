@@ -45,6 +45,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.PortletSessionContext;
 import org.kablink.teaming.context.request.RequestContext;
@@ -54,11 +55,13 @@ import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.HomePageConfig;
+import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.license.LicenseChecker;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portal.PortalLogin;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -225,19 +228,39 @@ public class LoginFilter  implements Filter {
 			if (binderId != null) {
 				return PermaLinkUtil.getPermalink(binderId, EntityType.folder);
 			}
-		} else if (!WebHelper.isGuestLoggedIn(req) && homePageConfig != null && 
-				homePageConfig.getDefaultHomePageId() != null) {
-			final Long binderId = homePageConfig.getDefaultHomePageId();
+		} else if (!WebHelper.isGuestLoggedIn(req)) {
+			//This user is logged in. Look for a default home page
 			try {
-				return (String) RunasTemplate.runas(new RunasCallback() {
+				String url = (String)RunasTemplate.runas(new RunasCallback() {
 					public Object doAs() {
 						//See if this binder exists and is accessible. 
 						//  If not, go to the user workspace page instead
-						Binder binder = getBinderModule().getBinder(binderId);
-						return PermaLinkUtil.getPermalink(binderId, EntityType.folder);
+						UserProperties userProperties = getProfileModule().getUserProperties(null);
+						Long userHomePageId = (Long)userProperties.getProperty(ObjectKeys.USER_PROPERTY_DEFAULT_HOME_PAGE);
+						if (userHomePageId != null) {
+							//The user has defined a home page. See if it is accessible
+							Binder binder = getBinderModule().getBinder(userHomePageId);
+							return PermaLinkUtil.getPermalink(userHomePageId, EntityType.folder);
+						}
+						return null;
 					}
-				}, WebHelper.getRequiredZoneName(req), WebHelper.getRequiredUserId(req));									
+				}, WebHelper.getRequiredZoneName(req), WebHelper.getRequiredUserId(req));
+				if (url != null) return url;
 			} catch(Exception e) {}
+			if (homePageConfig != null && homePageConfig.getDefaultHomePageId() != null) {
+				//The admin has defined a default home page. See if it is accessible
+				final Long binderId = homePageConfig.getDefaultHomePageId();
+				try {
+					return (String) RunasTemplate.runas(new RunasCallback() {
+						public Object doAs() {
+							//See if this binder exists and is accessible. 
+							//  If not, go to the user workspace page instead
+							Binder binder = getBinderModule().getBinder(binderId);
+							return PermaLinkUtil.getPermalink(binderId, EntityType.folder);
+						}
+					}, WebHelper.getRequiredZoneName(req), WebHelper.getRequiredUserId(req));									
+				} catch(Exception e) {}
+			}
 		}
 		if (WebHelper.isGuestLoggedIn(req)) {
 			userId = WebKeys.URL_USER_ID_PLACE_HOLDER;
@@ -294,6 +317,10 @@ public class LoginFilter  implements Filter {
 	
 	private AuthenticationModule getAuthenticationModule() {
 		return (AuthenticationModule) SpringContextUtil.getBean("authenticationModule");
+	}	
+
+	private ProfileModule getProfileModule() {
+		return (ProfileModule) SpringContextUtil.getBean("profileModule");
 	}	
 
 	private AdminModule getAdminModule() {
