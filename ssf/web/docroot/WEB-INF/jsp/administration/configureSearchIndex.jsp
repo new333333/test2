@@ -264,10 +264,13 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <c:if test="${!empty ssSearchNodes}">
 <br>
 <br>
-<span class="ss_bold"><ssf:nlt tag="administration.configure.nodes.select" text="Select the nodes to apply the re-indexing to:"/></span>
+<div>
+  <span class="ss_bold"><ssf:nlt tag="administration.configure.nodes.selectOptimize" /></span>
+</div>
+<div>
+  <span><ssf:nlt tag="administration.search.index.optimize2" /></span>
+</div>
 <br>
-<br>
-<ssf:nlt tag="administration.configure.nodes.select.detail"/>
 <br>
   <c:forEach var="node" items="${ssSearchNodes}">
     <input type="checkbox" name="searchNodeName" value="${node.nodeName}" <c:if test="${node.userModeAccess == 'offline' || !node.noDeferredUpdateLogRecords}">disabled</c:if>>
