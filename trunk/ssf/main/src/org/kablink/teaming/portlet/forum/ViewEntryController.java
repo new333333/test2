@@ -629,7 +629,7 @@ public class ViewEntryController extends  SAbstractController {
 		    
 			if (getFolderModule().testAccess(entry, FolderOperation.modifyEntry) ||
 					getFolderModule().testAccess(entry, FolderOperation.modifyEntryFields)) {
-				if (isEntryReserved && !isLockedByAndLoginUserSame ) {
+				if ((isEntryReserved && !isLockedByAndLoginUserSame) || entry.getParentFolder().isMirroredAndReadOnly()) {
 					toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), nullPortletUrl, disabledQual);
 				}
 				else {
@@ -652,7 +652,7 @@ public class ViewEntryController extends  SAbstractController {
 				
 			if (getFolderModule().testAccess(entry, FolderOperation.deleteEntry)) {
 				//The "Delete" menu
-				if (isEntryReserved && !isLockedByAndLoginUserSame ) {
+				if ((isEntryReserved && !isLockedByAndLoginUserSame) || entry.getParentFolder().isMirroredAndReadOnly()) {
 					toolbar.addToolbarMenu("5_delete", NLT.get("toolbar.delete"), nullPortletUrl, disabledQual);
 				}
 				else {
@@ -941,7 +941,6 @@ public class ViewEntryController extends  SAbstractController {
 
 		return toolbar;
 	}
-
 
 	protected void buildNoEntryBeans(RenderRequest request, 
 			RenderResponse response, Folder folder, String entryTitle, Map model) {
