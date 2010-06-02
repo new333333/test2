@@ -481,6 +481,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				} catch (AccessControlException ex) {
 					// Skip the ones we cannot access
 				} catch (Exception ex) {
+					logger.error("Error indexing binder " + binder, ex);
 					errors.addError(binder);
 				}
 

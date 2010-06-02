@@ -1793,6 +1793,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			indexDoc = buildIndexDocumentFromBinder(binder, tags);
 		} catch(Exception e) {
 			//An error occurred, increment the error count and return. No more can be done.
+			logger.error("Error indexing binder " + binder, e);
 			errors.addError(binder);
 			return errors;
 		}
@@ -1808,7 +1809,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	try {
            		IndexSynchronizationManager.addDocument(buildIndexDocumentFromBinderFile(binder, fa, fui, tags));
            	} catch (Exception ex) {
-        		logger.error("Error index file for binder " + binder + " attachment" + fa + " " + ex.getLocalizedMessage());
+        		logger.error("Error indexing file for binder " + binder + " attachment" + fa, ex);
         		errors.addError(binder);
         	}
         }
