@@ -38,7 +38,8 @@
 <% if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
 	<script type="text/javascript">
 		// Tell the Teaming GWT ui to handle login.
-		window.top.ss_handlePageWithGWT( 'login-page' );
+		if ( window.parent.ss_handlePageWithGWT )
+			window.parent.ss_handlePageWithGWT( 'login-page' );
 	</script>
 <% }
    else { %>

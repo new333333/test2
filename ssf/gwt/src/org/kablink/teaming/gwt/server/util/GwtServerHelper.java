@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.server.util;
 
 import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -67,6 +68,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.FolderType;
@@ -82,6 +84,7 @@ import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
+import org.kablink.teaming.gwt.client.widgets.LoginDlg;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -1563,6 +1566,52 @@ public class GwtServerHelper {
 		// the user's saved searches.  Return it.
 		return ssList;
 	}
+	
+	/**
+	 * Return information about self registration.
+	 */
+	public static GwtSelfRegistrationInfo getSelfRegistrationInfo( AllModulesInjected ami )
+	{
+		GwtSelfRegistrationInfo selfRegInfo;
+		boolean selfRegAllowed;
+		
+		selfRegInfo = new GwtSelfRegistrationInfo();
+		
+		// Set the flag that indicates whether self registration is allowed.
+		selfRegAllowed = MiscUtil.canDoSelfRegistration( ami );
+		selfRegInfo.setSelfRegistrationAllowed( selfRegAllowed );
+		if ( selfRegAllowed )
+		{
+			ProfileModule			profileModule;
+			Map<String, Definition>	entryDefsMap;
+			Definition				def;
+			Collection<Definition>	entryDefsCollection;
+			Iterator<Definition>	entryDefsIterator;
+
+			profileModule = ami.getProfileModule();
+			
+			// There is only 1 entry definition for a Profile binder.  Get it.
+			entryDefsMap = profileModule.getProfileBinderEntryDefsAsMap();
+			entryDefsCollection = entryDefsMap.values();
+			entryDefsIterator = entryDefsCollection.iterator();
+			if ( entryDefsIterator.hasNext() )
+			{
+				AdaptedPortletURL	adapterUrl;
+
+				def = (Definition) entryDefsIterator.next();
+
+				// Create the url needed to invoke the "Add User" page.
+				adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+				adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY );
+				adapterUrl.setParameter( WebKeys.URL_BINDER_ID, profileModule.getProfileBinderId().toString() );
+				adapterUrl.setParameter( WebKeys.URL_ENTRY_TYPE, def.getId() );
+				
+				selfRegInfo.setCreateUserUrl( adapterUrl.toString() );
+			}
+		}
+		
+		return selfRegInfo;
+	}// end getSelfRegistrationInfo()
 	
 	/*
 	 * Extracts a non-null string from a JSONObject.

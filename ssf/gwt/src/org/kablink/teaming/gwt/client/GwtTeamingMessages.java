@@ -221,6 +221,7 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used in the login dialog.
 	String loginDlgAuthenticating();
+	String loginDlgCreateNewAccount();
 	String loginDlgKablinkHeader();
 	String loginDlgLoginFailed();
 	String loginDlgNovellHeader();

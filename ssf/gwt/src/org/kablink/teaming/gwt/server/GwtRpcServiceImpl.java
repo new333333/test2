@@ -35,12 +35,9 @@ package org.kablink.teaming.gwt.server;
 import static org.kablink.util.search.Constants.MODIFICATION_DATE_FIELD;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,7 +54,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Node;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -81,6 +77,7 @@ import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
+import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.GwtTag;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
@@ -106,6 +103,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
+import org.kablink.teaming.gwt.client.widgets.LoginDlg;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
@@ -115,7 +113,6 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
-import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.presence.PresenceInfo;
@@ -142,7 +139,6 @@ import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 
-import bsh.util.Util;
 
 
 /**
@@ -2218,6 +2214,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 		return GwtServerHelper.getSavedSearches( this );
 	}// end getSavedSearches()
+	
+	
+	/**
+	 * Return information about self registration.
+	 */
+	public GwtSelfRegistrationInfo getSelfRegistrationInfo()
+	{
+		return GwtServerHelper.getSelfRegistrationInfo( this );
+	}// end getSelfRegistrationInfo()
 	
 	/**
 	 * Returns a List<ToolbarItem> of the ToolbarItem's

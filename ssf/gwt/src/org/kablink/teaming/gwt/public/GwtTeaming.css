@@ -202,7 +202,7 @@ body, table td, select
 }
 
 /* Style used for the "Advanced" link in the "edit branding" dialog. */
-.editBrandingAdvancedLink, .editorOverridesLink1
+.editBrandingAdvancedLink, .editorOverridesLink1, .selfRegLink1
 {
 	padding: 4px 8px;
 }
@@ -218,7 +218,7 @@ body, table td, select
 }
 
 /* Style used for links in the "edit branding" dialog. */
-.editBrandingLink, .editorOverridesLink2
+.editBrandingLink, .editorOverridesLink2, .selfRegLink2
 {
 	color: #3e6978;
 	cursor: pointer;
