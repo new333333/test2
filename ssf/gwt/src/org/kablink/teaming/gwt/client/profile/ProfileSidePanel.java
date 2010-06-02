@@ -16,8 +16,7 @@ public class ProfileSidePanel extends Composite {
 	private ProfileRequestInfo profileRequestInfo;
 	private ProfileSectionPanel aboutMeSection;
 	private ProfileSectionPanel teamsSection;
-	private ProfileSectionPanel trackingSection;
-	private ProfileSectionPanel trackedBy;
+	private ProfileSectionPanel followingSection;
 	private ProfileSectionPanel savedSearches;
 	private FlowPanel rightColumn;
 	private ProfileStatsPanel statsPanel;
@@ -88,7 +87,7 @@ public class ProfileSidePanel extends Composite {
 
 		if (attrExist(cat, "profileAboutMe")) {
 			
-			aboutMeSection = new ProfileTrackSectionPanel(profileRequestInfo,
+			aboutMeSection = new ProfileFollowSectionPanel(profileRequestInfo,
 					"About Me", actionTrigger);
 			aboutMeSection.addStyleName("aboutHeading");
 			aboutMeSection.addStyleName("smalltext");
@@ -107,17 +106,17 @@ public class ProfileSidePanel extends Composite {
 			rightColumn.add(teamsSection);
 		}
 
-//		if (attrExist(cat, "profileFollowers")) {
-//			trackingSection = new ProfileTrackSectionPanel(profileRequestInfo,
-//					"Following", actionTrigger);
-//			rightColumn.add(trackingSection);
-//		}
-
 		if (attrExist(cat, "profileFollowing")) {
-			trackedBy = new ProfileTrackSectionPanel(profileRequestInfo,
-					"Followers", actionTrigger);
-			rightColumn.add(trackedBy);
+			followingSection = new ProfileFollowSectionPanel(profileRequestInfo,
+					"Following", actionTrigger);
+			rightColumn.add(followingSection);
 		}
+
+//		if (attrExist(cat, "profileFollowers")) {
+//			trackedBy = new ProfileTrackSectionPanel(profileRequestInfo,
+//					"Followers", actionTrigger);
+//			rightColumn.add(trackedBy);
+//		}
 
 		if (attrExist(cat, "profileSavedSearches")) {
 			if (profileRequestInfo.isOwner()) {

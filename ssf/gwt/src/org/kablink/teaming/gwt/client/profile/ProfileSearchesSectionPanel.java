@@ -18,17 +18,17 @@ public class ProfileSearchesSectionPanel extends ProfileSectionPanel {
 	private final String IDBASE = "mySearches_";
 	private List<SavedSearchInfo> ssList;
 	
+	/**
+	 * Create the saved searches
+	 * 
+	 * @param profileRequestInfo
+	 * @param title
+	 * @param trigger
+	 */
 	public ProfileSearchesSectionPanel(ProfileRequestInfo profileRequestInfo, String title, ActionTrigger trigger) {
-		
 		super(profileRequestInfo, title, trigger);
-		
 		setStyleName("tracking-subhead");
-
-		getSavedSearches();
-		
-	}
-	
-	private void getSavedSearches(){
+		//populate the saved searches list
 		populateSavedSearchList();
 	}
 	
