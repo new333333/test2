@@ -1353,7 +1353,7 @@ public class ListFolderHelper {
 		int defaultEntryDefs = ((null == defaultEntryDefinitions) ? 0 : defaultEntryDefinitions.size());
 		model.put(WebKeys.URL_BINDER_ENTRY_DEFS, String.valueOf( defaultEntryDefs ));
 		
-		if(!(folder.isMirrored() && folder.getResourceDriverName() == null)) {
+		if((!(folder.isMirrored() && folder.getResourceDriverName() == null)) && !folder.isMirroredAndReadOnly()) {
 			if (defaultEntryDefs > 1) {
 				int count = 1;
 				int	defaultEntryDefIndex = getDefaultFolderEntryDefinitionIndex(
