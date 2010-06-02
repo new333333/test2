@@ -78,10 +78,11 @@ function handleCloseBtn() {
 	  action="<ssf:url action="configure_home_page" actionUrl="true"/>">
 	  <div>
 	    <div>
+	      <fieldset class="ss_fieldset">
+	       <legend class="ss_legend"><ssf:nlt tag="administration.config.legend.defaultHomePage" /></legend>
 			<span class="ss_labelAbove">
 			    <ssf:nlt tag="administration.config.defaultHomePage"/>
 			</span>
-			<br/>
 	        <ssf:find 
 	    		formName="fm${renderResponse.namespace}" 
 	    		formElement="searchText" 
@@ -90,21 +91,35 @@ function handleCloseBtn() {
 	    		width="300px"
 	    		accessibilityText="search.Places.alt"
 	    		clickRoutine="ss_saveBinderId"/>
-	    	<input type="hidden" id="homePageId" name="homePageId" value=""/>
+	    	<input type="hidden" id="homePageId" name="homePageId" value="${ssHomePageConfig.defaultHomePageId}"/>
 			<br/>
 			<c:if test="${!empty ssDefaultHomePageBinder}">
-			  <span><ssf:nlt tag="administration.config.currentDefaultHomePage"><ssf:param
+			 <div style="padding-left:20px;">
+			  <span class="ss_bold"><ssf:nlt tag="administration.config.currentDefaultHomePage"><ssf:param
 			    name="value" useBody="true"><a
 			    href="<ssf:url action="viewFolderList" binderId="${ssDefaultHomePageBinder.id}"/>"
-			  >${ssDefaultHomePageBinder.title}</a></ssf:param></ssf:nlt></span>
-			<br/>
+			    title="${ssDefaultHomePageBinder.pathName}"
+			  >
+			    <span class="ss_normal">${ssDefaultHomePageBinder.title}</span>
+			  </a></ssf:param></ssf:nlt></span>
+			  <br/>
+			  <table cellspacing="0" cellpadding="0">
+			  <tr>
+			  <td align="bottom"><input type="checkbox" name="deleteHomePage"/></td>
+			  <td align="bottom"><span><ssf:nlt tag="button.delete"/></span></td>
+			  </tr>
+			  </table>
+			</div>
 			</c:if>
-			<br/>
+		  </fieldset>
+		  <br/>
 	    </div>
 	    <div>
+	      <fieldset class="ss_fieldset">
+	       <legend class="ss_legend"><ssf:nlt tag="administration.config.legend.defaultGuestHomePage" /></legend>
 			<span class="ss_labelAbove">
 			    <ssf:nlt tag="administration.config.defaultGuestHomePage"/>
-			</span><br/>
+			</span>
 	        <ssf:find 
 	    		formName="fm${renderResponse.namespace}" 
 	    		formElement="searchText" 
@@ -113,16 +128,27 @@ function handleCloseBtn() {
 	    		width="300px"
 	    		accessibilityText="search.Places.alt"
 	    		clickRoutine="ss_saveGuestBinderId"/>
-	    	<input type="hidden" id="guestHomePageId" name="guestHomePageId" value=""/>
+	    	<input type="hidden" id="guestHomePageId" name="guestHomePageId" 
+	    	  value="${ssHomePageConfig.defaultGuestHomePageId}"/>
 			<br/>
 			<c:if test="${!empty ssDefaultGuestHomePageBinder}">
-			  <span><ssf:nlt tag="administration.config.currentDefaultGuestHomePage"><ssf:param
-			    name="value" useBody="true"><a
-			    href="<ssf:url action="viewFolderList" binderId="${ssDefaultGuestHomePageBinder.id}"/>"
-			  >${ssDefaultGuestHomePageBinder.title}</a></ssf:param></ssf:nlt></span>
-			<br/>
+			  <div style="padding-left:20px;">
+			    <span class="ss_bold"><ssf:nlt tag="administration.config.currentDefaultGuestHomePage"><ssf:param
+			      name="value" useBody="true"><a
+			      href="<ssf:url action="viewFolderList" binderId="${ssDefaultGuestHomePageBinder.id}"/>"
+			      title="${ssDefaultGuestHomePageBinder.pathName}"
+			    >
+			    <span class="ss_normal">${ssDefaultGuestHomePageBinder.title}</span>
+			    </a></ssf:param></ssf:nlt></span><br/>
+			    <table cellspacing="0" cellpadding="0">
+			    <tr>
+			    <td align="bottom"><input type="checkbox" name="deleteGuestHomePage"/></td>
+			    <td align="bottom"><span><ssf:nlt tag="button.delete"/></span></td>
+			    </tr>
+			    </table>
+			  </div>
 			</c:if>
-			<br/>
+		 </fieldset>
 	    </div>
 	  </div>
 	<br/>

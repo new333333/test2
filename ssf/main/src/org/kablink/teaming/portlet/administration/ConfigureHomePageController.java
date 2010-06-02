@@ -55,6 +55,10 @@ public class ConfigureHomePageController extends  SAbstractController {
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			Long defaultHomePageId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_HOME_PAGE_ID);
 			Long defaultGuestHomePageId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_GUEST_HOME_PAGE_ID);
+			Boolean deleteHomePageId = PortletRequestUtils.getBooleanParameter(request, "deleteHomePage", false);
+			Boolean deleteGuestHomePageId = PortletRequestUtils.getBooleanParameter(request, "deleteGuestHomePage", false);
+			if (deleteHomePageId) defaultHomePageId = null;
+			if (deleteGuestHomePageId) defaultGuestHomePageId = null;
 			HomePageConfig homePageConfig = new HomePageConfig();
 			homePageConfig.setDefaultHomePageId(defaultHomePageId);
 			homePageConfig.setDefaultGuestHomePageId(defaultGuestHomePageId);
