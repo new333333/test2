@@ -57,7 +57,6 @@ import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -101,6 +100,7 @@ public class GwtMainPage extends Composite
 	{
 		Element bodyElement;
 		String url;
+		String errMsg;
 
 		// Initialize the context load handler used by the traditional
 		// UI to tell the GWT UI that a context has been loaded.
@@ -138,6 +138,19 @@ public class GwtMainPage extends Composite
 		m_mastHead = new MastHead( m_requestInfo );
 		registerActionHandler( m_mastHead );
 		m_teamingRootPanel.add( m_mastHead );
+
+		// Is there an error message to be displayed?
+		errMsg = m_requestInfo.getErrMsg();
+		if ( errMsg != null && errMsg.length() > 0 )
+		{
+			// Yes, tell the user
+			Window.alert( errMsg );
+			
+			// Execute a deferred command to take the user to their workspace.
+			handleAction( TeamingAction.MY_WORKSPACE, null );
+			
+			return;
+		}
 		
 		// Add the main menu to the page.
 		m_mainMenuCtrl = new MainMenuControl();

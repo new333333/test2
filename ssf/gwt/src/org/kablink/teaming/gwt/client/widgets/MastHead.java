@@ -122,7 +122,7 @@ public class MastHead extends Composite
 		
         m_requestInfo = requestInfo;
         m_mastheadBinderId = m_requestInfo.getBinderId();
-		
+
 		m_mainMastheadPanel = new FlowPanel();
 		m_mainMastheadPanel.addStyleName( "mastHead" );
 		
@@ -200,6 +200,7 @@ public class MastHead extends Composite
 						cause = t.toString();
 				}
 				
+				//!!!Window.alert( "get site branding failed" );
 				errMsg = messages.getBrandingRPCFailed( cause );
 				Window.alert( errMsg );
 			}// end onFailure()
@@ -253,6 +254,7 @@ public class MastHead extends Composite
 						cause = t.toString();
 				}
 				
+				//!!!Window.alert( "get binder branding failed" );
 				errMsg = messages.getBrandingRPCFailed( cause );
 				Window.alert( errMsg );
 			}// end onFailure()
@@ -368,7 +370,11 @@ public class MastHead extends Composite
 			};
 			
 			// Issue an ajax request to get the url for the "site administration" action.
-			GwtTeaming.getRpcService().getSiteAdministrationUrl( m_mastheadBinderId, rpcCallback );
+			if ( m_mastheadBinderId != null && m_mastheadBinderId.length() > 0 )
+			{
+				//!!!Window.alert( "about to call getSiteAdministrationUrl(), binderId: '" + m_mastheadBinderId + "'" );
+				GwtTeaming.getRpcService().getSiteAdministrationUrl( m_mastheadBinderId, rpcCallback );
+			}
 			
 		}
 		
@@ -570,8 +576,9 @@ public class MastHead extends Composite
 		rpcService = GwtTeaming.getRpcService();
 		
 		// Do we have a binder id?
-		if ( m_mastheadBinderId != null )
+		if ( m_mastheadBinderId != null && m_mastheadBinderId.length() > 0 )
 		{
+			//!!!Window.alert( "about to call getBinderBrandingData(), binderId: '" + m_mastheadBinderId + "'" );
 			// Yes, Issue an ajax request to get the branding data for the given binder.
 			rpcService.getBinderBrandingData( m_mastheadBinderId, m_rpcGetBinderBrandingCallback );
 		}
@@ -762,14 +769,17 @@ public class MastHead extends Composite
 	 */
 	public void setBinderId( String binderId )
 	{
-		// Did the binder id change?
-		if ( m_mastheadBinderId == null || m_mastheadBinderId.equalsIgnoreCase( binderId ) == false )
+		if ( binderId != null && binderId.length() > 0 )
 		{
-			// Yes
-			m_mastheadBinderId = binderId;
-			
-			// Issue an ajax request to get the binder branding data for the given binder.
-			getBinderBrandingDataFromServer();
+			// Did the binder id change?
+			if ( m_mastheadBinderId == null || m_mastheadBinderId.equalsIgnoreCase( binderId ) == false )
+			{
+				// Yes
+				m_mastheadBinderId = binderId;
+				
+				// Issue an ajax request to get the binder branding data for the given binder.
+				getBinderBrandingDataFromServer();
+			}
 		}
 	}// end setBinderId()
 

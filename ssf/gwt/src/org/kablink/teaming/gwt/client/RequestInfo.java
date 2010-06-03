@@ -69,6 +69,12 @@ public class RequestInfo extends JavaScriptObject
 	
 	
 	/**
+	 * Return the error message we should display.  This class is an overlay on the JavaScript object called m_requestInfo.
+	 */
+	public final native String getErrMsg() /*-{ return this.errMsg; }-*/;
+	
+	
+	/**
 	 * Return the url used for simple searches.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
 	public final native String getSimpleSearchUrl() /*-{ return this.simpleSearchUrl; }-*/;

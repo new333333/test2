@@ -188,6 +188,7 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used with the MastHead
 	String administrationHint();
 	String getBrandingRPCFailed( String cause );
+	String guest();
 	String helpHint();
 	String loginHint();
 	String logoutHint();
