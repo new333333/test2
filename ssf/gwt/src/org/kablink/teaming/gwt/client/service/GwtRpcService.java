@@ -63,6 +63,7 @@ import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -113,6 +114,8 @@ public interface GwtRpcService extends RemoteService
 	public ExtensionInfoClient[] removeExtension(String id) throws ExtensionDefinitionInUseException;
 	public ExtensionFiles getExtensionFiles(String id, String zoneName);
 	
+	// Returns a permalink for the given userId
+	public String getUserPermalink(String userId);
 	// Returns a permalink to the currently logged in user's workspace.
 	public String getUserWorkspacePermalink();
 	

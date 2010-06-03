@@ -11,10 +11,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
@@ -22,6 +25,9 @@ import org.kablink.teaming.domain.CustomAttributeListElement;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.GwtUser;
+import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeAttachment;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
@@ -30,17 +36,22 @@ import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.TrackedUser;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
+import org.kablink.teaming.gwt.server.GwtRpcServiceImpl;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Criteria;
 
 public class GwtProfileHelper {
+	
+	
+	protected static Log logger = LogFactory.getLog(GwtServerHelper.class);
 	
 	/**
 	 * This helper method is for the User Profile and reads the User definition and iterates through each of its elements.
@@ -512,25 +523,35 @@ public class GwtProfileHelper {
 		
     	//Get the tracked persons by this user
 		ProfileStats stats = new ProfileStats();
-		TrackedUser user = null;
+		GwtUser user = null;
 		
 		List<String> trackedIds = getTrackedPersonsIds(bs, binderId);
-		for(String trackedId: trackedIds){
+		for(String trackedId: trackedIds) {
 			
 			try {
-				User u = (User) bs.getProfileModule().getEntry(Long.parseLong(trackedId));
+				Principal principal = bs.getProfileModule().getEntry(Long.parseLong(trackedId));
+				Binder binder = bs.getBinderModule().getBinder( principal.getWorkspaceId() );
 				
-				user = new TrackedUser();
-				user.setId(trackedId);
-				user.setTitle(u.getTitle());
+				// Yes!  Construct a GwtUser object for it.
+				user = new GwtUser();
+				user.setUserId( principal.getId() );
+				user.setWorkspaceId( binder.getId() );
+				user.setName( principal.getName() );
+				user.setTitle( principal.getTitle() );
+				user.setWorkspaceTitle( binder.getTitle() );
+				user.setViewWorkspaceUrl( PermaLinkUtil.getPermalink( binder ) );
 				
 				stats.addTrackedUser(user);
-			} 
+			}
 			catch (AccessControlException ex)
 			{
 				//No rights to view this user so don't add them to the list
 			}
-			
+			catch ( Exception e )
+			{
+				//Log error
+				logger.error("Error getting stats for user with binderId "+binderId, e);
+			}
 		}
 
 		//Get the number of recent entries
