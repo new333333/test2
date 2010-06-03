@@ -1,12 +1,13 @@
 package org.kablink.teaming.gwt.client.profile;
 
+import java.util.*;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ProfileStats  implements IsSerializable {
 
 	private String entries = "0";
-	private String followers = "0";
-	private String following = "0";
+	private ArrayList<TrackedUser> trackedUsers = new ArrayList<TrackedUser>();
 
 	//Must have default constructor in order to serialize
 	public ProfileStats() {}
@@ -19,21 +20,15 @@ public class ProfileStats  implements IsSerializable {
 		return this.entries;
 	}
 
-	public String getFollowers() {
-		return followers;
+	public ArrayList<TrackedUser> getTrackedUsers() {
+		return trackedUsers;
 	}
 
-	public void setFollowers(String followers) {
-		this.followers = followers;
-	}
-
-	public String getFollowing() {
-		return following;
-	}
-
-	public void setFollowing(String following) {
-		this.following = following;
+	public void addTrackedUser(TrackedUser user) {
+		trackedUsers.add(user);
 	}
 	
-	
+	public int getTrackedCnt(){
+		return trackedUsers.size(); 
+	}
 }

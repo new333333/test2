@@ -1,5 +1,7 @@
 package org.kablink.teaming.gwt.server.util;
 
+import static org.kablink.util.search.Constants.MODIFICATION_DATE_FIELD;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -9,8 +11,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
@@ -23,13 +27,18 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttributeAttachment;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
+import org.kablink.teaming.gwt.client.profile.ProfileStats;
+import org.kablink.teaming.gwt.client.profile.TrackedUser;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.module.report.ReportModule;
+import org.kablink.teaming.search.SearchUtils;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.Validator;
+import org.kablink.util.search.Criteria;
 
 public class GwtProfileHelper {
 	
@@ -492,5 +501,119 @@ public class GwtProfileHelper {
 		return userStatus;
 	}
 
-	
+	/**
+	 * Get the user's stats associated with this binderId. Find the user that belongs to this binderId and the user's stats.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @return
+	 */
+	public static ProfileStats getStats(AllModulesInjected bs, String binderId) {
+		
+    	//Get the tracked persons by this user
+		ProfileStats stats = new ProfileStats();
+		TrackedUser user = null;
+		
+		List<String> trackedIds = getTrackedPersonsIds(bs, binderId);
+		for(String trackedId: trackedIds){
+			
+			try {
+				User u = (User) bs.getProfileModule().getEntry(Long.parseLong(trackedId));
+				
+				user = new TrackedUser();
+				user.setId(trackedId);
+				user.setTitle(u.getTitle());
+				
+				stats.addTrackedUser(user);
+			} 
+			catch (AccessControlException ex)
+			{
+				//No rights to view this user so don't add them to the list
+			}
+			
+		}
+
+		//Get the number of recent entries
+		stats.setEntries( Integer.toString( getRecentEntries(bs, binderId) ) );
+    	
+    	return stats;
+    }
+
+    /**
+     * This is the persons being tracked by a given user.  Look up user and who the user is following
+     * using the binderId.
+     * 
+     * @param bs
+     * @param binderId
+     * @return
+     */
+    public static List<String> getTrackedPersonsIds(AllModulesInjected bs, String binderId) {
+
+    	Long binderIdL = Long.parseLong(binderId);
+		Binder binder = bs.getBinderModule().getBinder(binderIdL);
+		List<String> trackedIds = SearchUtils.getTrackedPeopleIds(bs, binder);
+		
+		return trackedIds;
+    }
+    
+    /**
+     * Get the recent entries count for this user
+     * 
+     * @param bs
+     * @param binderId
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+	public static int getRecentEntries(AllModulesInjected bs, String binderId){
+    	
+    	List<String> binderIds = new ArrayList<String>();
+		binderIds.add(binderId);
+	    
+		//get entries created within last 30 days
+		Date creationDate = new Date();
+		creationDate.setTime(creationDate.getTime() - ObjectKeys.SEEN_TIMEOUT_DAYS*24*60*60*1000);
+		
+		String startDate = DateTools.dateToString(creationDate, DateTools.Resolution.SECOND);
+		String now = DateTools.dateToString(new Date(), DateTools.Resolution.SECOND);
+		Criteria crit = SearchUtils.newEntriesDescendants(binderIds);
+		crit.add(org.kablink.util.search.Restrictions.between(
+				MODIFICATION_DATE_FIELD, startDate, now));
+		Map results = bs.getBinderModule().executeSearchQuery(crit, 0, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
+    	List<Map> entries = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+    	
+    	return ((entries != null) ? entries.size() : 0);
+    }
+    
+//    public static int getEntriesByAudit(AllModulesInjected bs, String binderId) {
+//		int count = 0;
+//    
+//    	Long userId = null;
+//		Principal p = null;
+//		if(binderId != null) {
+//			p = getPrincipalByBinderId(bs, binderId);
+//		}
+//		if(p != null){
+//			userId = p.getId();
+//		}
+//		
+//		Set<Long> memberIds = new HashSet();
+//		memberIds.add(userId);
+//		
+//		Date endDate = Calendar.getInstance().getTime();
+//		Calendar c = Calendar.getInstance();
+//		c.set(1990, 0, 0);
+//		
+//		Date startDate = c.getTime();
+//		
+//		
+//		List<Map<String,Object>> report = getReportModule().generateActivityReportByUser(memberIds, startDate, endDate, ReportModule.REPORT_TYPE_SUMMARY);
+//		Map<String,Object> row = null;
+//		if(!report.isEmpty()) row = report.get(0);
+//		
+//		if(row!=null){
+//			Object obj = row.get(AuditTrail.AuditType.add.name());
+//			count = obj.toString()
+//		}
+//    	return count;
+//    }
 }
