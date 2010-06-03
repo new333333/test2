@@ -136,6 +136,7 @@ public class ProfileSidePanel extends Composite {
 
 			public void onSuccess(ProfileStats stats) {
 				statsPanel.addStats(stats);
+				((ProfileFollowSectionPanel) followingSection).addtrackedPersons(stats);
 			}
 		};
 
