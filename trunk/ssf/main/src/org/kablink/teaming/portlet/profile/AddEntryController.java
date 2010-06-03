@@ -145,8 +145,8 @@ public class AddEntryController extends SAbstractController {
 
     			getProfileModule().addUser(entryType, inputData, fileMap, null);
 
-    			// Are we running the new GWT ui?
-    			if ( GwtUIHelper.isGwtUIActive( request ) )
+    			// Are we running the new GWT UI and doing a self registration?
+    			if ( GwtUIHelper.isGwtUIActive( request ) && isGuestUser() )
     			{
     				// Yes, set up the response to close the window.
     				response.setRenderParameter( WebKeys.ACTION, WebKeys.ACTION_CLOSE_WINDOW );
