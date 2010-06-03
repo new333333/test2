@@ -2732,6 +2732,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}
 
 	/**
+	 * Return the "user permalink" url
+	 */
+	public String getUserPermalink( String userId )
+	{
+		if ( userId != null && userId.length() > 0 )
+		{
+			Long userIdL = new Long( userId );
+			
+			User u = (User) getProfileModule().getEntry(userIdL);
+			return PermaLinkUtil.getPermalink(u);
+		}
+		
+		return "";
+	}
+	
+	/**
 	 * Get the User Status from their Micro Blog
 	 * @param binderId This is the binderId of the workspace we are loading
 	 * 

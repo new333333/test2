@@ -107,6 +107,9 @@ public interface GwtRpcServiceAsync
 	public void removeExtension(String id, AsyncCallback<ExtensionInfoClient[]> callback);
 	public void getExtensionFiles(String id, String zoneName, AsyncCallback<ExtensionFiles> callback);
 	
+	// Returns a permalink for the given userId
+	public void getUserPermalink(String userId, AsyncCallback<String> callback);
+
 	// Returns a permalink to the currently logged in user's workspace.
 	public void getUserWorkspacePermalink(AsyncCallback<String> callback);
 	
