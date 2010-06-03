@@ -226,8 +226,24 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 									
 								//Also set up the default values for all properties defined in the definition configuration
 								//  These will be overwritten by the real values (if they exist) below
-								List<Element> itemDefinitionProperties = itemDefinition.selectNodes("properties/property");
+								List<Element> itemDefinitionProperties = new ArrayList<Element>();
 								Map propertyValuesMap = new HashMap();
+								if ("dataView".equals(nextItem.attributeValue("type"))) { 
+									//See if this data item has properties from the form element
+									Element entryFormItem = (Element)configDefinition.getRootElement().selectSingleNode("item[@type='form']");
+									if (entryFormItem != null) {
+										String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
+										if (Validator.isNotNull(nameValue)) {
+											//Find the actual data element if the form part of the definition
+											Element itemEle = (Element)entryFormItem.selectSingleNode(".//item/properties/property[@name='name' and @value='" + nameValue + "']");
+											if (itemEle != null) {
+												itemDefinitionProperties.addAll(itemEle.selectNodes("../../properties/property"));
+											}
+										}
+									}
+								}
+
+								itemDefinitionProperties.addAll(itemDefinition.selectNodes("properties/property"));
 								Map savedReqAttributes = new HashMap();
 								String propertyName = "";
 								String propertyConfigType = "";
@@ -243,7 +259,7 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 										//get all items with same name
 										List<Element> selProperties = nextItem.selectNodes("properties/property[@name='"+propertyName+"']");
 										if (selProperties == null) continue;
-										//There might be multiple values so bulid a list
+										//There might be multiple values so build a list
 										List propertyValues = new ArrayList();
 										for (Element selItem:selProperties) {
 											String selValue = NLT.getDef(selItem.attributeValue("value", ""));
@@ -297,31 +313,6 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 													//Create a bean for the remote app id
 													if (!remoteAppId.equals("")) 
 														propertyValuesMap.put("property_remoteApp", new Long(remoteAppId));
-												}
-											}
-										}
-									}
-								}
-								//See if this item is a url data view item
-								if (formItem.equals("url")) {
-									//Get the url target from the form side of the definition
-									Element entryFormItem = (Element)configDefinition.getRootElement().selectSingleNode("item[@type='form']");
-									if (entryFormItem != null) {
-										//Get the target of the url element we are looking for in the form part of the definition
-										String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
-										if (Validator.isNotNull(nameValue)) {
-											//Find the actual url element if the form part of the definition
-											Element itemEle = (Element)entryFormItem.selectSingleNode(".//item/properties/property[@name='name' and @value='" + nameValue + "']");
-											if (itemEle != null) {
-												//Found the form element, get the "properties" element
-												itemEle = itemEle.getParent();
-												//Now get the property where the target value is stored
-												Element targetEle = (Element)itemEle.selectSingleNode("./property[@name='target']");
-												if (targetEle != null) {
-													//Ok, we have the url target property, now get the boolean
-													String targetValue = targetEle.attributeValue("value", "");
-													//Create a bean for the target
-													propertyValuesMap.put("property_target", new Boolean(targetValue));
 												}
 											}
 										}
