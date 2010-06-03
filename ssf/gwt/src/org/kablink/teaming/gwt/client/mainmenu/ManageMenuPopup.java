@@ -73,7 +73,6 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private ToolbarItem m_calendarImportTBI;		// The calendar import           toolbar item, if found.
 	private ToolbarItem m_commonActionsTBI;			// The common actions            toolbar item, if found.
 	private ToolbarItem m_emailNotificationTBI;		// The email notification        toolbar item, if found.
-	private ToolbarItem m_folderActionsTBI;			// The folder actions            toolbar item, if found.
 	private ToolbarItem m_folderViewsTBI;			// The folder views              toolbar item, if found.
 	private ToolbarItem m_shareThisTBI;				// The share this                toolbar item, if found.
 	private ToolbarItem m_trackBinderTBI;			// The binder tracking           toolbar item, if found.
@@ -81,7 +80,6 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private ToolbarItem m_whatsNewTBI;				// The what's new                toolbar item, if found.
 	private ToolbarItem m_whatsUnreadTBI;			// The what's unread             toolbar item, if found.
 	private ToolbarItem m_whoHasAccessTBI;			// The who has access            toolbar item, if found.
-	private ToolbarItem m_workspaceActionsTBI;		// The workspace actions         toolbar item, if found.
 
 	/**
 	 * Class constructor.
@@ -149,6 +147,25 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	}
 
 	/*
+	 * Copies the nested ToolbarItem's from one ToolbarItem to another.
+	 */
+	private static void copyNestedToolbarItems(ToolbarItem tbiDest, ToolbarItem tbiSrc) {
+		// If we have both source and destination ToolbarItems's...
+		if ((null != tbiDest) && (null != tbiSrc)) {		
+			// ...and the source has a nested List<ToolBarItem>...
+			List<ToolbarItem> nestedSrcTBIList = tbiSrc.getNestedItemsList();
+			if (null != nestedSrcTBIList) {
+				// ...scan them...
+				for (Iterator<ToolbarItem> tbiIT = nestedSrcTBIList.iterator(); tbiIT.hasNext(); ) {
+					// ...and store them in the destination's nested
+					// ...List<ToolbarItem>.
+					tbiDest.addNestedItem(tbiIT.next());
+				}
+			}
+		}
+	}
+
+	/*
 	 * Called to process the various menu items into ordered lists of
 	 * items that appear in the various sections of the menu.
 	 */
@@ -173,15 +190,15 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		addNestedItemFromUrl(m_showBucket, m_commonActionsTBI, "binder_report");
 
 		// ...then the actions section...
-		addNestedItemFromUrl(m_actionsBucket, m_folderActionsTBI,    "add_binder",    "add_folder");
-		addNestedItemFromUrl(m_actionsBucket, m_folderActionsTBI,    "add_binder",    "add_subFolder");
-		addNestedItemFromUrl(m_actionsBucket, m_workspaceActionsTBI, "add_binder",    "add_workspace");
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI,    "modify_binder", "delete");
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI,    "modify_binder", "modify");
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI,    "modify_binder", "copy");
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI,    "modify_binder", "move");
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI,    "export_import");
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI,    "manage_definitions");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_folder");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_subFolder");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_workspace");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "delete");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "modify");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "copy");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "move");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "export_import");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "manage_definitions");
 		
 		// ...then the team section...
 		if ((null != m_tmi) && m_tmi.isTeamManagementEnabled()) {
@@ -320,9 +337,13 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				ToolbarItem adminTBI = tbi.getNestedToolbarItem("administration");
 				categoriesTBI = ((null == adminTBI) ? null : adminTBI.getNestedToolbarItem("categories"));
 				if (null != categoriesTBI) {
-					m_folderActionsTBI    = categoriesTBI.getNestedToolbarItem("folders");
-					m_commonActionsTBI    = categoriesTBI.getNestedToolbarItem(null);
-					m_workspaceActionsTBI = categoriesTBI.getNestedToolbarItem("workspace");
+					m_commonActionsTBI = new ToolbarItem();
+					copyNestedToolbarItems(m_commonActionsTBI, categoriesTBI.getNestedToolbarItem(null));
+					copyNestedToolbarItems(m_commonActionsTBI, categoriesTBI.getNestedToolbarItem("addBinder"));
+					copyNestedToolbarItems(m_commonActionsTBI, categoriesTBI.getNestedToolbarItem("configuration"));
+					copyNestedToolbarItems(m_commonActionsTBI, categoriesTBI.getNestedToolbarItem("folders"));
+					copyNestedToolbarItems(m_commonActionsTBI, categoriesTBI.getNestedToolbarItem("reports"));
+					copyNestedToolbarItems(m_commonActionsTBI, categoriesTBI.getNestedToolbarItem("workspace"));
 				}
 				m_whoHasAccessTBI = tbi.getNestedToolbarItem("whohasaccess");
 			}
@@ -373,9 +394,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			 (null != m_whoHasAccessTBI)                                                     ||
 			((null != m_calendarImportTBI)   && m_calendarImportTBI.hasNestedToolbarItems()) ||
 			((null != m_commonActionsTBI)    && m_commonActionsTBI.hasNestedToolbarItems())  ||
-			((null != m_folderActionsTBI)    && m_folderActionsTBI.hasNestedToolbarItems())  ||
-			((null != m_folderViewsTBI)      && m_folderViewsTBI.hasNestedToolbarItems(2))   ||
-			((null != m_workspaceActionsTBI) && m_workspaceActionsTBI.hasNestedToolbarItems()));
+			((null != m_folderViewsTBI)      && m_folderViewsTBI.hasNestedToolbarItems(2)));
 		if (reply) {
 			fillBuckets();
 		}
@@ -485,17 +504,12 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			showFolderOptions(m_folderViewsTBI, m_calendarImportTBI);
 
 			// Finally, a section containing anything that's left over.
-			boolean hasLeftOversSection =
-				(((null != m_commonActionsTBI)    && m_commonActionsTBI.hasNestedToolbarItems())  ||
-				 ((null != m_folderActionsTBI)    && m_folderActionsTBI.hasNestedToolbarItems())  ||
-				 ((null != m_workspaceActionsTBI) && m_workspaceActionsTBI.hasNestedToolbarItems()));
+			boolean hasLeftOversSection = ((null != m_commonActionsTBI) && m_commonActionsTBI.hasNestedToolbarItems());
 			if (hasLeftOversSection && isSpacerNeeded()) {
 				// ...and add a spacer when required.
 				addSpacerMenuItem();
 			}
 			addNestedContextMenuItems(IDBASE, m_commonActionsTBI);
-			addNestedContextMenuItems(IDBASE, m_folderActionsTBI);
-			addNestedContextMenuItems(IDBASE, m_workspaceActionsTBI);
 		}
 					
 		// Finally, show the popup.
