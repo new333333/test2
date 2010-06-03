@@ -132,9 +132,6 @@ public class ViewPermalinkController  extends SAbstractController {
 				{
 					String binderId = "";
 					String urlStr = "";
-					String fullName;
-					String firstName;
-					String lastName;
 
 					// No, don't redirect the url.
 
@@ -154,37 +151,6 @@ public class ViewPermalinkController  extends SAbstractController {
 					// Add the adapted portlet url.
 					response.setRenderParameter( "adaptedUrl", urlStr );
 					
-					// Add the url that will take the user to their workspace.
-					{
-						String myWSUrl = "";
-
-						myWSUrl = PermaLinkUtil.getPermalink( user );
-						
-						// Add the "my workspace" url to the response.
-						response.setRenderParameter( "myWorkspaceUrl", myWSUrl );
-					}
-					
-					// Add a flag that tells us if we are running Novell or Kablink Teaming.
-					response.setRenderParameter( "isNovellTeaming", Boolean.toString( ReleaseInfo.isLicenseRequiredEdition() ) );
-					
-					// Add the user's name.
-					firstName = user.getFirstName();
-					lastName = user.getLastName();
-					if ( firstName != null )
-					{
-						fullName = firstName;
-						if ( lastName != null )
-							fullName += " " + lastName;
-					}
-					else if ( lastName != null )
-					{
-						fullName = lastName;
-					}
-					else
-						fullName = user.getName();
-						
-					fullName += " (" + user.getName() + ")";
-					response.setRenderParameter( "userFullName", fullName );
 					return;
 				}
 				
@@ -518,13 +484,17 @@ public class ViewPermalinkController  extends SAbstractController {
 			param = PortletRequestUtils.getStringParameter( request, "seen_by_gwt", "");
 			if ( param == null || !param.equalsIgnoreCase( "1" ) )
 			{
-			   String urlStr;
-			   String userName;
-			   String myWSUrl;
-			   String isNovellTeaming;
+				String urlStr;
+			   	String userName;
+			   	String isNovellTeaming;
+			   	String accessException;
+			   	String myWSUrl = "";
+			   	User user;
 			   
 				// No, let the gwt page handle this permalink
-				
+
+				user = RequestContextHolder.getRequestContext().getUser();
+
 				// Add the binder id to the response.
 				model.put( WebKeys.URL_BINDER_ID, binderId );
 
@@ -532,23 +502,90 @@ public class ViewPermalinkController  extends SAbstractController {
 				urlStr = PortletRequestUtils.getStringParameter( request, "adaptedUrl", "" );
 				model.put( "adaptedUrl", urlStr );
 
-				// Add the user's name to the response.
-				userName = PortletRequestUtils.getStringParameter( request, "userFullName", "" );
-				model.put( "userFullName", userName );
-				
 				// Add the "my workspace" url to the response.
-				myWSUrl = PortletRequestUtils.getStringParameter( request, "myWorkspaceUrl", "" );
-				model.put( "myWorkspaceUrl", myWSUrl );
+				{
+					myWSUrl = PermaLinkUtil.getPermalink( user );
+					model.put( "myWorkspaceUrl", myWSUrl );
+				}
 				
 				// Add the flag that tells us if we are running Novell or Kablink Teaming to the response.
 				isNovellTeaming = Boolean.toString( ReleaseInfo.isLicenseRequiredEdition() );
 				model.put( "isNovellTeaming", isNovellTeaming );
 				
-				// Add a flag that tells us if the user is logged in.
-				model.put( "isUserLoggedIn", !WebHelper.isGuestLoggedIn( request ) );
-				
-				// Add a flag that tells us if we should prompt for login.
-				model.put( "promptForLogin", "false" );
+				// Get the flag that tells us if the user has rights to this permalink.
+				accessException = PortletRequestUtils.getStringParameter( request, "accessException" );
+
+				// Is a user logged in?
+				if ( WebHelper.isGuestLoggedIn( request ) )
+				{
+					// No
+					// Add a flag that tells that indicates a user is not logged in.
+					model.put( "isUserLoggedIn", "false" );
+
+					// Add the name "Guest" to the response
+					userName = NLT.get( "administration.initial.guestTitle" );
+					model.put( "userFullName", userName );
+
+					// Does Guest have rights to view the permalink?
+					if ( accessException != null && accessException.equalsIgnoreCase( "true" ) )
+					{
+						// No, add a flag that tells us to prompt for login.
+						model.put( "promptForLogin", "true" );
+					}
+					else
+					{
+						// Add a flag that tells us we don't need to prompt for login.
+						model.put( "promptForLogin", "false" );
+					}
+				}
+				else
+				{
+					// Yes
+					// Add a flag that tells that indicates a user is logged in.
+					model.put( "isUserLoggedIn", "true" );
+					model.put( "promptForLogin", "false" );
+
+					// Add the user's name to the response.
+					{
+						String firstName;
+						String lastName;
+						String fullName;
+						
+						// Add the user's name.
+						firstName = user.getFirstName();
+						lastName = user.getLastName();
+						if ( firstName != null )
+						{
+							fullName = firstName;
+							if ( lastName != null )
+								fullName += " " + lastName;
+						}
+						else if ( lastName != null )
+						{
+							fullName = lastName;
+						}
+						else
+							fullName = user.getName();
+							
+						fullName += " (" + user.getName() + ")";
+						
+						model.put( "userFullName", fullName );
+					}
+
+					// Does this user have rights to view the permalink?
+					if ( accessException != null && accessException.equalsIgnoreCase( "true" ) )
+					{
+						String errMsg;
+						
+						// No
+						// Get the error message that will be displayed to the user.
+						errMsg = NLT.get( "permalink.access.denied" );
+						model.put( "errMsg", errMsg );
+						
+						model.put( "adaptedUrl", "" );
+						model.put( WebKeys.URL_BINDER_ID, "" );
+					}
+				}
 				
 				//Set up the standard beans
 				BinderHelper.setupStandardBeans(this, request, response, model);
