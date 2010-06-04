@@ -138,6 +138,34 @@ public class ViewPermalinkController  extends SAbstractController {
 					// Get the url that we would have redirected to.
 					if ( adaptedPortletUrl != null )
 					{
+						String action;
+						
+						// Are we dealing with an action of "view_ws_listing"?
+						action = adaptedPortletUrl.getParameterSingleValue( WebKeys.URL_ACTION );
+						if ( action != null && action.equalsIgnoreCase( WebKeys.ACTION_VIEW_WS_LISTING ) )
+						{
+							String entryId;
+							
+							// Yes, does the "entityId" parameter equal "ss_user_id_place_holder"?
+							entryId = adaptedPortletUrl.getParameterSingleValue( WebKeys.URL_ENTRY_ID );
+							if ( entryId != null && entryId.equalsIgnoreCase( WebKeys.URL_USER_ID_PLACE_HOLDER ) )
+							{
+								Long userId;
+								
+								// Yes, get the binder id of the user's workspace.
+								userId = WebHelper.getRequiredUserId( request );
+					 			binderId  = getProfileModule().getEntryWorkspaceId( userId ).toString();
+								if ( binderId != null && binderId.length() > 0 )
+								{
+									// Create a new url that just has the "action" and "binderId" parameters.
+									adaptedPortletUrl = new AdaptedPortletURL( request, "ss_forum", true );
+
+									adaptedPortletUrl.setParameter( WebKeys.URL_ACTION, WebKeys.ACTION_VIEW_WS_LISTING  );
+						 			adaptedPortletUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
+								}
+							}
+						}
+						
 						binderId = adaptedPortletUrl.getParameterSingleValue( WebKeys.URL_BINDER_ID );
 						if ( binderId == null )
 						   binderId = "";
