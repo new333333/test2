@@ -83,15 +83,28 @@
 
 <div id="gwtProfileDiv">
 	<div id="profilePhoto" class="ss_user_photo" style="display:none;">
-	<a href="<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
-		value="${ssDefinitionEntry.owner.creation.principal.parentBinder.id}"/><ssf:param name="entryId" 
-		value="${ssDefinitionEntry.owner.creation.principal.id}"/><ssf:param name="newTab" 
-		value="1" /></ssf:url>" <ssf:title tag="title.goto.profile.page" />>
-		<ssf:buddyPhoto style="ss_thumbnail_standalone ss_thumbnail_small" 
-			photos="${ssDefinitionEntry.owner.customAttributes['picture'].value}" 
-			folderId="${ssDefinitionEntry.owner.parentBinder.id}" entryId="${ssDefinitionEntry.owner.id}" />
-	</a>
-</div>
+	  <div class="ss_thumbnail_standalone ss_thumbnail_small">
+		<div>
+			<a onclick="ss_showThisImage(this);return false;" href="javascript:;">
+				<c:if test="${empty ssDefinitionEntry.owner.customAttributes['picture']}">
+					<img src="<html:imagesPath/>pics/UserPhoto.png" 
+			    	 alt="${userTitle}" />
+	     		</c:if>
+				<c:if test="${!empty ssDefinitionEntry.owner.customAttributes['picture']}">
+				  <c:set var="selections" value="${ssDefinitionEntry.owner.customAttributes['picture'].value}" />
+				  <c:set var="pictureCount" value="0"/>
+				  <c:forEach var="selection" items="${selections}">
+				    <c:if test="${pictureCount == 0}">
+					   <img  src="<ssf:fileUrl webPath="readScaledFile" file="${selection}"/>"
+				     alt="${userTitle}" />
+				    </c:if>
+				    <c:set var="pictureCount" value="${pictureCount + 1}"/>
+				  </c:forEach>
+				</c:if>
+			</a>
+		</div>
+	  </div>
+	</div>
 </div>
 
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
