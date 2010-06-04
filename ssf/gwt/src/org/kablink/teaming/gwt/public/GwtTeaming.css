@@ -972,6 +972,17 @@ body, table td, select
 	vertical-align: top;
 	white-space: nowrap;
 }
+.mainMenuBar_BoxPanelOpen
+{
+	background: #81b2bd url(images/slice_blend_teal_27.png) repeat-x;
+	border-left: 1px solid white;
+	color: #fff;
+	font-size: 0.73em;
+	font-weight: normal;
+	padding: 3px 8px;
+	vertical-align: top;
+	white-space: nowrap;
+}
 .mainMenuBar_BoxPanelIE
 {
 	display: inline;
@@ -986,8 +997,9 @@ body, table td, select
 }
 .mainMenuPopup
 {
-	background-color: #ffffff; 
-	text-align: left; 
+	background-color: #3a3e40;
+	text-align: left;
+	top: 0px; 
 	/* width: 200px; */
 }
 .mainMenuPopup_Bottom
@@ -995,7 +1007,6 @@ body, table td, select
 	margin-bottom: 0px;
 	padding-bottom: 0px;
 	padding-top: 5px;
-	border-bottom: 3px solid #5aa7e3;
 }
 .mainMenuPopup_Core
 {
@@ -1015,49 +1026,29 @@ body, table td, select
 }
 .mainMenuPopup_ItemHover
 {
-	background: url(images/blue_slice.png) repeat-x center;
-	color: #FFFFFF !important;
+	background: none repeat scroll 0 0 #505354;
+	color: #81B2BD !important;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 .mainMenuPopup_ItemSpacer 
 {
-	background: url(images/dotline_bg.gif) repeat-x;
-	font-size: 0.85em;
-	margin-left: 0.5em;
-	padding: 0.3em;
+	border-top: 1px solid #353838;
+	border-bottom: 1px solid #505354;
+	margin-top: 3px;
+	margin-bottom: 3px;
 }
 .mainMenuPopup_ItemPanel
 {
 }
 .mainMenuPopup_ItemText
 {
-	color: #414648; /* dark grey */
+	color: #fff;
 	cursor: pointer;
 	display: inline;
 	font-size: .9em;
 	margin: 0px;
 	padding: 2px 5px;
-}
-.mainMenuPopup_TitleBar
-{
-	color: #F6F6F6;
-	font-size: .9em;
-	font-weight: bold;
-	background: url(images/blue_slice.png) repeat-x;
-	background-position: bottom;
-	margin-bottom: 0.5em;
-	padding: 5px; 
-	padding-top: 6px; 
-}
-.mainMenuPopup_TitleBarCloseA
-{
-}
-.mainMenuPopup_TitleBarCloseImg
-{
-	float: right;
-}
-.mainMenuPopup_TitleBarText
-{
-	display: inline;
 }
 .mainMenuSearch_ButtonAnchor
 {
