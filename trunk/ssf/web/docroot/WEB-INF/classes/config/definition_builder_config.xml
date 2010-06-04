@@ -2107,6 +2107,9 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
+		<options>
+			<option_select definitionType="7" path="//item[@category='profileEntryViewData']" optionCaption="__profile_additional_options" />
+		</options>
 	</item>
 
 	<item name="profileSidePanelView" caption="__profile_sidePanel_div" category="userViewLayout" display="view" canBeDeleted="true" multipleAllowed="false">
