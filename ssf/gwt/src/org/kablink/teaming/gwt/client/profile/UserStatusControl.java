@@ -196,7 +196,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 						cause = t.toString();
 				}
 				
-				errMsg = messages.getBrandingRPCFailed( cause );
+				errMsg = messages.setStatusRPCFailed( cause );
 				Window.alert( errMsg );
 			}
 
@@ -273,7 +273,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 						cause = t.toString();
 				}
 				
-				errMsg = messages.getBrandingRPCFailed( cause );
+				errMsg = messages.getStatusRPCFailed( cause );
 				Window.alert( errMsg );
 			}
 
