@@ -1,4 +1,4 @@
-package org.kablink.teaming.gwt.client.profile;
+package org.kablink.teaming.gwt.client.profile.widgets;
 
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 

@@ -1,8 +1,10 @@
-package org.kablink.teaming.gwt.client.profile;
+package org.kablink.teaming.gwt.client.profile.widgets;
 
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtUser;
+import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
+import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
