@@ -389,6 +389,8 @@ public class WebKeys {
  	public static final String OPERATION_REMOVE_FROM_CLIPBOARD = "remove_from_clipboard";
  	public static final String OPERATION_REVERT = "revert";
     public static final String OPERATION_DELETE="delete";
+    public static final String OPERATION_DISABLE="disable";
+    public static final String OPERATION_ENABLE="enable";
     public static final String OPERATION_MODIFY="modify";
     public static final String OPERATION_MODIFY_GROUP="modify_group";
     public static final String OPERATION_MOVE="move";
@@ -1387,6 +1389,7 @@ public class WebKeys {
     public static final String VIEW_BUILD_FILTER_SELECT = "binder/build_filter_select";
     public static final String VIEW_CONFIGURE = "binder/configure";
     public static final String VIEW_CONFIRM_DELETE_USER_WORKSPACE="profile/confirm_delete_user_workspace";
+    public static final String VIEW_CONFIRM_DISABLE_USER_ACCOUNT="profile/confirm_disable_user_account";
     public static final String VIEW_CUSTOM_EXTENSION_UNKNOWN="forum/custom_extension_unknown";
     public static final String VIEW_DEFINITIONS="administration/view_definitions";
     public static final String VIEW_DEFINITION="definition_builder/view_definition_builder";

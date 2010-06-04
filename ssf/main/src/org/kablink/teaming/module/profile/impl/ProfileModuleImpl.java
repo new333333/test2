@@ -1149,6 +1149,17 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    }
 
    //RW transaction
+   public void disableEntry(Long principalId, boolean disabled) {
+       Principal entry = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), false);
+       checkAccess(entry, ProfileOperation.deleteEntry);
+       if (entry.isReserved()) 
+    	   throw new NotSupportedException("errorcode.principal.reserved", new Object[]{entry.getName()});
+       if (entry.isLocal()) {
+           ProfileCoreProcessor processor=loadProcessor(entry.getParentBinder());
+    	   processor.disableEntry(entry, disabled);
+       }
+   }
+   //RW transaction
    public void deleteEntry(Long principalId, Map options) {
 	   deleteEntry(principalId, options, false);
    }

@@ -88,6 +88,18 @@ public class ModifyEntryController extends SAbstractController {
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 			response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
+		} else if (formData.containsKey("okBtn") && op.equals(WebKeys.OPERATION_DISABLE) && WebHelper.isMethodPost(request)) {
+			getProfileModule().disableEntry(entryId, true);			
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
+			response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
+		} else if (formData.containsKey("okBtn") && op.equals(WebKeys.OPERATION_ENABLE) && WebHelper.isMethodPost(request)) {
+			getProfileModule().disableEntry(entryId, false);			
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
+			response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
 		} else if (formData.containsKey("okBtn") && op.equals("") && WebHelper.isMethodPost(request)) {
 	        //Modifying the profile is not available to the guest user
 	        if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
@@ -208,6 +220,10 @@ public class ModifyEntryController extends SAbstractController {
 			model.put(WebKeys.ENTRY, entry);
 			model.put(WebKeys.BINDER, entry.getParentBinder());
 			return new ModelAndView(WebKeys.VIEW_CONFIRM_DELETE_USER_WORKSPACE, model);
+		} else if (op.equals(WebKeys.OPERATION_DISABLE) || op.equals(WebKeys.OPERATION_ENABLE)) {
+			model.put(WebKeys.ENTRY, entry);
+			model.put(WebKeys.BINDER, entry.getParentBinder());
+			return new ModelAndView(WebKeys.VIEW_CONFIRM_DISABLE_USER_ACCOUNT, model);
 		} else {
 			model.put(WebKeys.ENTRY, entry);
 			model.put(WebKeys.FOLDER, entry.getParentBinder());

@@ -168,19 +168,20 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <br/>
 <div style="text-align: left; margin: 0px 10px; border: 0pt none;" 
   class="wg-tabs margintop3 marginbottom2">
-  <div id="manageIndexTab" class="wg-tab roundcornerSM on" 
+  <table><tr><td><div id="manageIndexTab" class="wg-tab roundcornerSM on" 
     onMouseOver="ss_hoverOverIndexTab('manageIndex');"
     onMouseOut="ss_hoverOverStoppedIndexTab('manageIndex');"
     onClick="ss_showIndexTab('manageIndex');">
     <ssf:nlt tag="administration.search.manage.index.tab"/>
-  </div>
+  </div></td><td>
   <div id="manageOptimizeTab" class="wg-tab roundcornerSM" 
     onMouseOver="ss_hoverOverIndexTab('manageOptimize');"
     onMouseOut="ss_hoverOverStoppedIndexTab('manageOptimize');"
     onClick="ss_showIndexTab('manageOptimize');">
     <ssf:nlt tag="administration.search.manage.optimize.tab"/>
-  </div>
+  </div></td></tr></table>
 </div>
+<div class="ss_clear"></div>
 
 <div id="manageIndexDiv" style="display:block;" class="wg-tab-content">
 <table class="ss_style" width="100%"><tr><td>
@@ -250,7 +251,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 	method="post" 
 	name="${renderResponse.namespace}fm2"
 	id="${renderResponse.namespace}fm2"
-	onSubmit="return ss_submitIndexingForm("${renderResponse.namespace}fm2");" >
+	onSubmit="return ss_submitIndexingForm('${renderResponse.namespace}fm2');" >
 <input type="hidden" name="operation" value="optimize"/>
 <br>
 <c:if test="${empty ssSearchNodes}">

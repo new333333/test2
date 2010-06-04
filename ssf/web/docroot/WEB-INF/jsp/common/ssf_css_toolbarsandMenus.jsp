@@ -805,7 +805,7 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	font-weight: bold;
 	background: #e6e6e4;
 	cursor: pointer;
-	display: inline;
+	display: inline-block;
 	padding-bottom: 15px;
 	}
 .wg-tab-content {
