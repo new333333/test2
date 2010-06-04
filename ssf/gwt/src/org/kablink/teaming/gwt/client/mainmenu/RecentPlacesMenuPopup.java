@@ -84,14 +84,23 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 			// Hide the menu...
 			hide();
 			
-			// ...and trigger a selection changed event.
-			m_actionTrigger.triggerAction(
-				TeamingAction.SELECTION_CHANGED,
-				new OnSelectBinderInfo(
-					m_place.getBinderId(),
-					m_place.getPermalinkUrl(),
-					false,
-					Instigator.OTHER));
+			// ...and trigger the appropriate event for the place.
+			switch (m_place.getTypeEnum()) {
+			case BINDER:
+				m_actionTrigger.triggerAction(
+					TeamingAction.SELECTION_CHANGED,
+					new OnSelectBinderInfo(
+						m_place.getBinderId(),
+						m_place.getPermalinkUrl(),
+						false,
+						Instigator.OTHER));
+				
+				break;
+			
+			case SEARCH:
+				Window.alert("...Search for '" + m_place.getTitle() + "' needs to be implemented...\n\n" + (m_place.getSearchQuick() ? "Quick" : "Saved") + ":  " + m_place.getSearchQuery());
+				break;
+			}
 		}
 	}
 	
@@ -176,7 +185,7 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 				for (Iterator<RecentPlaceInfo> rpIT = mtList.iterator(); rpIT.hasNext(); ) {
 					// ...creating an item structure for each.
 					RecentPlaceInfo place = rpIT.next();
-					String rpId = (IDBASE + place.getBinderId());
+					String rpId = (IDBASE + place.getId());
 					
 					rpA = new MenuPopupAnchor(rpId, place.getTitle(), place.getEntityPath(), new PlaceClickHandler(place));
 					addContentWidget(rpA);

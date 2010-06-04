@@ -44,13 +44,28 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *
  */
 public class RecentPlaceInfo implements IsSerializable {
-	private String m_binderId;		// The place's binder ID.
-	private String m_entityPath;	// The place's entity path.
-	private String m_entryId;		// The place's binder ID.
-	private String m_id;			// The place's ID.
-	private String m_permalinkUrl;	// The place's permalink URL.
-	private String m_title;			// The place's title.
-	private String m_type;			// The place's type.
+	/**
+	 * Enumeration used to communicate the type of a recent place item
+	 * between the client and the server as part of a GWT RPC request.
+	 *
+	 */
+	public enum RecentPlaceType implements IsSerializable {
+		BINDER,
+		SEARCH,
+		
+		UNKNOWN,
+	}
+
+	private boolean			m_searchQuick;							// true -> This is a quick search, false -> It's not.
+	private RecentPlaceType m_typeEnum = RecentPlaceType.UNKNOWN;	// 
+	private String          m_binderId;								// The place's binder ID.
+	private String          m_entityPath;							// The place's entity path.
+	private String          m_entryId;								// The place's binder ID.
+	private String          m_id;									// The place's ID.
+	private String          m_permalinkUrl;							// The place's permalink URL.
+	private String          m_searchQuery;							// The place's search query.
+	private String          m_title;								// The place's title.
+	private String          m_type;									// The place's type.
 	
 	/**
 	 * Constructor method.
@@ -107,6 +122,25 @@ public class RecentPlaceInfo implements IsSerializable {
 	}
 
 	/**
+	 * Returns the place's search query.
+	 * 
+	 * @return
+	 */
+	public String getSearchQuery() {
+		return m_searchQuery;
+	}
+
+	/**
+	 * Returns true if this recent place is a quick search and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean getSearchQuick() {
+		return m_searchQuick;
+	}
+
+	/**
 	 * Returns the place's title.
 	 * 
 	 * @return
@@ -122,6 +156,15 @@ public class RecentPlaceInfo implements IsSerializable {
 	 */
 	public String getType() {
 		return m_type;
+	}
+
+	/**
+	 * Returns the place's type enumeration value.
+	 * 
+	 * @return
+	 */
+	public RecentPlaceType getTypeEnum() {
+		return m_typeEnum;
 	}
 
 	/**
@@ -170,6 +213,35 @@ public class RecentPlaceInfo implements IsSerializable {
 	}
 	
 	/**
+	 * Stores the search query string to the place.
+	 *  
+	 * @param searchQuery
+	 */
+	public void setSearchQuery(String searchQuery) {
+		m_searchQuery = searchQuery;
+	}
+	
+	/**
+	 * Stores whether this recent place is a quick search or not.
+	 *  
+	 * @param searchQuick
+	 */
+	public void setSearchQuick(String searchQuick) {
+		setSearchQuick(null != searchQuick && searchQuick.equalsIgnoreCase("true"));
+	}
+	
+	/**
+	 * Stores whether this recent place is a quick search or not.
+	 *  
+	 * @param searchQuick
+	 */
+	public void setSearchQuick(boolean searchQuick) {
+		if (RecentPlaceType.SEARCH == m_typeEnum)
+			 m_searchQuick = searchQuick;
+		else m_searchQuick = false;
+	}
+	
+	/**
 	 * Stores the title to the place.
 	 *  
 	 * @param title
@@ -185,5 +257,11 @@ public class RecentPlaceInfo implements IsSerializable {
 	 */
 	public void setType(String type) {
 		m_type = type;
+		if (null != type) {
+			m_typeEnum = (type.equals("search") ? RecentPlaceType.SEARCH : RecentPlaceType.BINDER);
+		}
+		else {
+			m_typeEnum = RecentPlaceType.UNKNOWN;
+		}
 	}
 }
