@@ -1,6 +1,7 @@
 package org.kablink.teaming.gwt.client.profile;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -9,7 +10,7 @@ public class ProfileInfo implements IsSerializable  {
 	private String title;
 	private String binderId;
 	private String userId;
-	private String pictureUrl;
+	private ArrayList<String> pictureUrls = new ArrayList<String>();
 	
 	private ArrayList<ProfileCategory> categories = new ArrayList<ProfileCategory>();
 	
@@ -65,12 +66,19 @@ public class ProfileInfo implements IsSerializable  {
 	}
 
 	public String getPictureUrl() {
+		String pictureUrl = null;
+		if((!pictureUrls.isEmpty())){ pictureUrl = pictureUrls.get(0); };
 		return pictureUrl;
 	}
 
-	public void setPictureUrl(String pictureUrl) {
-		this.pictureUrl = pictureUrl;
+	public List<String> getPicutres() {
+		return pictureUrls;
 	}
+	
+	public void addPictureUrl(String pictureUrl) {
+		this.pictureUrls.add(pictureUrl);
+	}
+	
 	public String getUserId() {
 		return userId;
 	}
