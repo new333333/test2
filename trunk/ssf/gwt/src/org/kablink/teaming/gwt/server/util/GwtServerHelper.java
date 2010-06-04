@@ -84,7 +84,6 @@ import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
-import org.kablink.teaming.gwt.client.widgets.LoginDlg;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -1507,18 +1506,32 @@ public class GwtServerHelper {
 			// ...creating a RecentPlaceInfo object for each...
 			TabEntry tab = ((TabEntry) tabIT.next());
 			RecentPlaceInfo rpi = new RecentPlaceInfo();
-			Long binderId = tab.getBinderId();
-			rpi.setBinderId(String.valueOf(binderId));
-			rpi.setEntityPath(((String) tab.getData().get("path")));
-			rpi.setEntryId(String.valueOf(tab.getEntryId()));
-			rpi.setId(String.valueOf(tab.getTabId()));
-			rpi.setPermalink(PermaLinkUtil.getPermalink(bs.getBinderModule().getBinder(binderId)));
-			rpi.setType(tab.getType());
 			String title = ((String) tab.getData().get("title"));
 			if (title.length() > maxTitle) {
 				title = (title.substring(0, maxTitle) + "...");
 			}
 			rpi.setTitle(title);
+			rpi.setId(String.valueOf(tab.getTabId()));
+			rpi.setType(tab.getType());
+			switch (rpi.getTypeEnum()) {
+			case BINDER:
+				Long binderId = tab.getBinderId();
+				rpi.setBinderId(String.valueOf(binderId));
+				rpi.setEntityPath(((String) tab.getData().get("path")));
+				rpi.setEntryId(String.valueOf(tab.getEntryId()));
+				rpi.setPermalink(PermaLinkUtil.getPermalink(bs.getBinderModule().getBinder(binderId)));
+				
+				break;
+				
+			case SEARCH:
+				rpi.setSearchQuery(tab.getQuery());
+				rpi.setSearchQuick(((Boolean) tab.getData().get("quickSearch")));
+				
+				break;
+
+			default:
+				continue;
+			}
 			
 			// ...adding it to the list of them...
 			rpiList.add(rpi);
@@ -1570,6 +1583,7 @@ public class GwtServerHelper {
 	/**
 	 * Return information about self registration.
 	 */
+	@SuppressWarnings("unchecked")
 	public static GwtSelfRegistrationInfo getSelfRegistrationInfo( AllModulesInjected ami )
 	{
 		GwtSelfRegistrationInfo selfRegInfo;
