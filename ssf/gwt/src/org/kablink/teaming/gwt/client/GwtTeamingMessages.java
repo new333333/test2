@@ -494,6 +494,9 @@ public interface GwtTeamingMessages extends Messages
 	String exceededMax(int value);
 	String exceededError();
 	String clearCurrentStatus();
+	String setStatusRPCFailed(String cause);
+	String getStatusRPCFailed(String cause);
+
 	
 	// The following strings are used with the Administration page.
 	String administrationHeader();
@@ -516,7 +519,9 @@ public interface GwtTeamingMessages extends Messages
 	String qViewMicroBlogTitle();
 	String qViewInstantMessage();
 	String qViewInstantMessageTitle();
+	String qViewMicroBlogRPCFailed(String cause);
 
+	
 	//Profile
 	String profileEdit();
 	String profileEditTitle();
@@ -538,4 +543,5 @@ public interface GwtTeamingMessages extends Messages
 	String adminInfoDlgUpgradeSearchIndex();
 	String adminInfoDlgUpgradeTasksNotDone();
 	String adminInfoDlgUpgradeTemplates();
+	
 }// end GwtTeamingMessages
