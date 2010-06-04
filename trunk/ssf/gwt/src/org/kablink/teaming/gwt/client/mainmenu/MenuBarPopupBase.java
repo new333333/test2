@@ -42,13 +42,11 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -65,6 +63,7 @@ public abstract class MenuBarPopupBase extends PopupPanel {
 	protected GwtTeamingMainMenuImageBundle	m_images;			// The menu's images.
 	protected GwtTeamingMessages			m_messages;			// The menu's messages.
 	protected GwtRpcServiceAsync			m_rpcService;		//
+	private   MenuBarBox					m_menuBarBox;			// The menu bar box associated with a popup when opened.
 	private   VerticalPanel					m_contentPanel;		// A VerticalPanel that will hold the popup's contents.
 	
 	/**
@@ -76,6 +75,15 @@ public abstract class MenuBarPopupBase extends PopupPanel {
 	public MenuBarPopupBase(ActionTrigger actionTrigger, String title) {
 		// Construct the super class...
 		super(true);
+
+		// Add a close handler to the popup so that it can restore the
+		// menu bar box's styles when the popup menu is closed.
+		addCloseHandler(new CloseHandler<PopupPanel>(){
+			public void onClose(CloseEvent<PopupPanel> event) {
+				removeAutoHidePartner(m_menuBarBox.getElement());
+				m_menuBarBox.popupMenuClosed();
+				m_menuBarBox = null;
+			}});
 
 		// ...store the parameters...
 		m_actionTrigger	= actionTrigger;
@@ -91,10 +99,9 @@ public abstract class MenuBarPopupBase extends PopupPanel {
 
 		// ...create the popup's innards...
 		DockPanel dp = new DockPanel();
-		dp.addStyleName("mainMenuPopup");
-		dp.add(createPopupTitleBar(title, m_images), DockPanel.NORTH);
-		dp.add(createPopupContentPanel(),            DockPanel.CENTER);
-		dp.add(createPopupBottom(m_images),          DockPanel.SOUTH);
+		dp.addStyleName("mainMenuPopup roundcornerSM-bottom smalltext");
+		dp.add(createPopupContentPanel(),   DockPanel.CENTER);
+		dp.add(createPopupBottom(m_images), DockPanel.SOUTH);
 
 		// ...and add it to the popup.
 		setWidget(dp);
@@ -191,36 +198,6 @@ public abstract class MenuBarPopupBase extends PopupPanel {
 		return m_contentPanel;
 	}
 	
-	/*
-	 * Creates the title bar for the popup.
-	 */
-	private FlowPanel createPopupTitleBar(String title, GwtTeamingMainMenuImageBundle images) {
-		// Create the title bar's panel...
-		FlowPanel panel = new FlowPanel();
-		panel.addStyleName("mainMenuPopup_TitleBar");
-
-		// ...add the title text...
-		Label titleLabel = new Label(title);
-		titleLabel.addStyleName("mainMenuPopup_TitleBarText");
-		panel.add(titleLabel);
-
-		// ...add a close Anchor...
-		Anchor closeA = new Anchor();
-		closeA.addStyleName("mainMenuPopup_TitleBarCloseA");
-		Image closeImg = new Image(images.closeCircle16());
-		closeImg.addStyleName("mainMenuPopup_TitleBarCloseImg");
-		closeA.getElement().appendChild(closeImg.getElement());
-		closeA.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				hide();
-			}
-		});
-		panel.add(closeA);
-		
-		// ...and return the panel.
-		return panel;
-	}
-
 	/**
 	 * Returns true if the menu bar has content and false otherwise.
 	 * 
@@ -230,6 +207,14 @@ public abstract class MenuBarPopupBase extends PopupPanel {
 		return (0 < m_contentPanel.getWidgetCount());
 	}
 
+	/**
+	 * Called to close the menu.
+	 */
+	final public void hideMenu() {
+		// Simply hide the popup.
+		hide();
+	}
+	
 	/**
 	 * Returns false if the last widget added was a spacer and true
 	 * otherwise.
@@ -266,6 +251,23 @@ public abstract class MenuBarPopupBase extends PopupPanel {
 	 * @return
 	 */
 	public abstract boolean shouldShowMenu();
+
+	/**
+	 * Called to show the menu associated with the given menu bar box.
+	 * 
+	 * @param menuBarBox
+	 */
+	final public void showMenu(MenuBarBox menuBarBox) {
+		// Show the menu...
+		showPopup(menuBarBox.getBoxLeft(), menuBarBox.getBoxBottom());
+		
+		// ...and tell its box that its got an open popup menu
+		// ...associated with it...
+		m_menuBarBox = menuBarBox;
+		addAutoHidePartner(m_menuBarBox.getElement());
+		m_menuBarBox.popupMenuOpened();
+		
+	}
 	
 	/**
 	 * Classes that extend do what needs to be done to show their

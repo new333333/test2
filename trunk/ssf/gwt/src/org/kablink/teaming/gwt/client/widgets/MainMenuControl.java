@@ -87,6 +87,8 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	private GwtTeamingMainMenuImageBundle m_images = GwtTeaming.getMainMenuImageBundle();
 	private GwtTeamingMessages m_messages = GwtTeaming.getMessages();
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
+	private MyFavoritesMenuPopup m_myFavoritesMenuPopup;
+	private MyTeamsMenuPopup m_myTeamsMenuPopup;
 	private SearchMenuPanel m_searchPanel;
 	
 	/**
@@ -140,8 +142,9 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 			actionsBox.addClickHandler(
 				new ClickHandler() {
 					public void onClick(ClickEvent event) {
-						int left = actionsBox.getAbsoluteLeft();
-						amp.showPopup(left, getPopupMenuTop(actionsBox));
+						if (amp.isShowing())
+						     amp.hideMenu();
+						else amp.showMenu(actionsBox);
 					}
 				});
 			m_contextPanel.add(actionsBox);
@@ -242,8 +245,9 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 			manageBox.addClickHandler(
 				new ClickHandler() {
 					public void onClick(ClickEvent event) {
-						int left = manageBox.getAbsoluteLeft();
-						mmp.showPopup(left, getPopupMenuTop(manageBox));
+						if (mmp.isShowing())
+						     mmp.hideMenu();
+						else mmp.showMenu(manageBox);
 					}
 				});
 			m_contextPanel.add(manageBox);
@@ -260,10 +264,15 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		m_myFavoritesBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
-					int left = m_myFavoritesBox.getAbsoluteLeft();
-					MyFavoritesMenuPopup mfmp = new MyFavoritesMenuPopup(actionTrigger);
-					mfmp.setCurrentBinder(m_contextBinder);
-					mfmp.showPopup(left, getPopupMenuTop(m_myFavoritesBox));
+					if (null == m_myFavoritesMenuPopup) {
+						m_myFavoritesMenuPopup = new MyFavoritesMenuPopup(actionTrigger);
+						m_myFavoritesMenuPopup.setCurrentBinder(m_contextBinder);
+						m_myFavoritesMenuPopup.showMenu(m_myFavoritesBox);
+					}
+					else {
+					     m_myFavoritesMenuPopup.hideMenu();
+					     m_myFavoritesMenuPopup = null;
+					}
 				}
 			});
 		menuPanel.add(m_myFavoritesBox);
@@ -278,10 +287,15 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		m_myTeamsBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
-					int left = m_myTeamsBox.getAbsoluteLeft();
-					MyTeamsMenuPopup mtmp = new MyTeamsMenuPopup(actionTrigger);
-					mtmp.setCurrentBinder(m_contextBinder);
-					mtmp.showPopup(left, getPopupMenuTop(m_myTeamsBox));
+					if (null == m_myTeamsMenuPopup) {
+						m_myTeamsMenuPopup = new MyTeamsMenuPopup(actionTrigger);
+						m_myTeamsMenuPopup.setCurrentBinder(m_contextBinder);
+						m_myTeamsMenuPopup.showMenu(m_myTeamsBox);
+					}
+					else {
+					     m_myTeamsMenuPopup.hideMenu();
+					     m_myTeamsMenuPopup = null;
+					}
 				}
 			});
 		menuPanel.add(m_myTeamsBox);
@@ -315,8 +329,9 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 			rpBox.addClickHandler(
 				new ClickHandler() {
 					public void onClick(ClickEvent event) {
-						int left = rpBox.getAbsoluteLeft();
-						rpmp.showPopup(left, getPopupMenuTop(rpBox));
+						if (rpmp.isShowing())
+						     rpmp.hideMenu();
+						else rpmp.showMenu(rpBox);
 					}
 				});
 			m_contextPanel.add(rpBox);
@@ -348,7 +363,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 								true,	// true  -> Modal.
 								actionTrigger,
 								topRankedBox.getAbsoluteLeft(),
-								getPopupMenuTop(topRankedBox),
+								topRankedBox.getElement().getAbsoluteBottom(),
 								triList);
 							topRankedDlg.addStyleName("topRankedDlg");
 							topRankedDlg.show();
@@ -401,24 +416,6 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		});
 	}
 
-	/*
-	 * Returns where to position the top of popup menus.
-	 * 
-	 * Note:  This is a hack to get around a problem I don't
-	 * understand.  With Firefox, the MenuBarBox's offset height is
-	 * always 0.  With IE, Chrome, Safari, ... it works.  This hack
-	 * basically makes the menu popups come up in the same position,
-	 * regardless of browser. 
-	 */
-	private int getPopupMenuTop(MenuBarBox mbb) {
-		int mbbHeight = mbb.getOffsetHeight();
-		int top;
-		if (0 == mbbHeight)
-			 top = (mbb.getAbsoluteTop() - 20);
-		else top = (mbb.getElement().getAbsoluteBottom() - mbbHeight);
-		return top;
-	}
-	
 	/**
 	 * Show all the menus and controls on this menu control and hide
 	 * the Close administration menu item..  This is used when we close
@@ -467,7 +464,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		// Show the Close administration menu item.
 		m_closeAdminBox.setVisible(true);
 	}
-	
+
 	/**
 	 * Fires a TeamingAction at the registered ActionHandler's.
 	 * 

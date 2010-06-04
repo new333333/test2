@@ -52,6 +52,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
  */
 public class MenuBarBox extends FlowPanel {
 	private Anchor m_boxA;
+	private FlowPanel m_boxPanel;
 	
 	/**
 	 * Class constructor.
@@ -72,11 +73,11 @@ public class MenuBarBox extends FlowPanel {
 		m_boxA.addStyleName("mainMenuBar_BoxA");
 
 		// ...create a FlowPanel to contain the items in the box...
-		FlowPanel boxPanel = new FlowPanel();
-		boxPanel.getElement().setId(boxId);
+		m_boxPanel = new FlowPanel();
+		m_boxPanel.getElement().setId(boxId);
 		String addedStyles = "mainMenuBar_BoxPanel ";
 		addedStyles += (GwtClientHelper.jsIsIE() ? "mainMenuBar_BoxPanelIE" : "mainMenuBar_BoxPanelNonIE");
-		boxPanel.addStyleName(addedStyles);
+		m_boxPanel.addStyleName(addedStyles);
 
 		// ...add mouse over handling on the panel...
 		MenuHoverByID hover = new MenuHoverByID(boxId, "mainMenuBar_BoxHover");
@@ -88,25 +89,25 @@ public class MenuBarBox extends FlowPanel {
 			// ...add it...
 			Image itemImg = new Image(itemImgRes);
 			itemImg.addStyleName("mainMenuBar_BoxImg");
-			boxPanel.add(itemImg);
+			m_boxPanel.add(itemImg);
 		}
 
 		// ...add the label for the box...
 		InlineLabel itemLabel = new InlineLabel(itemText);
 		itemLabel.addStyleName("mainMenuBar_BoxText");
-		boxPanel.add(itemLabel);
+		m_boxPanel.add(itemLabel);
 
 		// ...if we need a drop down image for the box...
 		if (dropdown) {
 			// ...add it...
 			Image dropDownImg = new Image(GwtTeaming.getMainMenuImageBundle().menuArrow());
 			dropDownImg.addStyleName("mainMenuBar_BoxDropDownImg");
-			boxPanel.add(dropDownImg);
+			m_boxPanel.add(dropDownImg);
 		}
 
 		// ...and finally, add the panel to the Anchor and the Anchor
 		// ...to the box.
-		m_boxA.getElement().appendChild(boxPanel.getElement());
+		m_boxA.getElement().appendChild(m_boxPanel.getElement());
 		add(m_boxA);
 	}
 	
@@ -132,5 +133,41 @@ public class MenuBarBox extends FlowPanel {
 	 */
 	public void addClickHandler(ClickHandler ch) {
 		m_boxA.addClickHandler(ch);
+	}
+
+	/**
+	 * Returns the menu bar box's absolute bottom position.
+	 * 
+	 * @return
+	 */
+	public int getBoxBottom() {
+		return getElement().getAbsoluteBottom();
+	}
+	
+	/**
+	 * Returns the menu bar box's absolute left position.
+	 * 
+	 * @return
+	 */
+	public int getBoxLeft () {
+		return getAbsoluteLeft();
+	}
+	
+	/**
+	 * Sets the widget's styles to reflect that it has a closed popup
+	 * menu associated with it.
+	 */
+	public void popupMenuClosed() {
+		m_boxPanel.removeStyleName("mainMenuBar_BoxPanelOpen");
+		m_boxPanel.addStyleName(   "mainMenuBar_BoxPanel"    );
+	}
+	
+	/**
+	 * Sets the widget's styles to reflect that it has an open popup
+	 * menu associated with it.
+	 */
+	public void popupMenuOpened() {
+		m_boxPanel.removeStyleName("mainMenuBar_BoxPanel"    );
+		m_boxPanel.addStyleName(   "mainMenuBar_BoxPanelOpen");
 	}
 }
