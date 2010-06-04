@@ -559,7 +559,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 						cause = t.toString();
 				}
 				
-				errMsg = messages.getBrandingRPCFailed( cause );
+				errMsg = messages.getStatusRPCFailed( cause );
 				Window.alert( errMsg );
 			}
 
@@ -622,7 +622,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 							cause = t.toString();
 					}
 					
-					errMsg = messages.getBrandingRPCFailed( cause );
+					errMsg = messages.qViewMicroBlogRPCFailed( cause );
 					Window.alert( errMsg );
 				}
 
