@@ -5,6 +5,8 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -70,10 +72,34 @@ public class ProfileAttributeWidget  {
 						break;
 					case ProfileAttribute.LIST:
 						List<ProfileAttributeListElement> value = (List<ProfileAttributeListElement>)attr.getValue();
-						if(value != null && !value.isEmpty()){
-							ProfileAttributeListElement valItem = value.get(0);
-							if(valItem != null){
-								widget = new Label(valItem.getValue().toString());
+						if(value != null){
+
+							if(value.size() == 1){
+								ProfileAttributeListElement valItem = value.get(0);
+								if(valItem != null){
+									widget = new Label(valItem.getValue().toString());
+								}
+							} else {
+								widget = new FlowPanel();
+								for(ProfileAttributeListElement valItem: value){
+									if(attr.getDataName().equals("picture")) {
+										widget.addStyleName("profile_gallery");
+										widget.addStyleName("ss_thumbnail_small");
+									
+										FlowPanel div = new FlowPanel();
+										((FlowPanel)widget).add(div);
+
+										Anchor anchor = new Anchor();
+										div.add(anchor);
+										
+										String sval = valItem.getValue().toString();
+										Image img = new Image(sval);
+										
+										anchor.getElement().appendChild(img.getElement());
+									} else {
+										((FlowPanel)widget).add(new Label(valItem.getValue().toString()));
+									}
+								}
 							}
 						}
 						break;

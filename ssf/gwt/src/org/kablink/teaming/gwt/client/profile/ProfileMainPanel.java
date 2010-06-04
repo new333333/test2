@@ -22,6 +22,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -33,7 +34,7 @@ public class ProfileMainPanel extends Composite {
 
 	ProfileRequestInfo profileRequestInfo;
 	
-	private Grid grid;
+	private FlexTable grid;
 	private int row = 0;
 	private FlowPanel mainPanel;
 	private FlowPanel titlePanel;
@@ -75,11 +76,11 @@ public class ProfileMainPanel extends Composite {
 	 * name value pairs
 	 */
 	private void createContentPanel() {
-		grid = new Grid();
+		grid = new FlexTable();
 		grid.setWidth("100%");
 		grid.setCellSpacing(0);
 		grid.setCellPadding(0);
-		grid.resizeColumns(3);
+		//grid.resizeColumns(3);
 		grid.setStyleName("sectionTable");
 		mainPanel.add(grid);
 	}
@@ -222,20 +223,19 @@ public class ProfileMainPanel extends Composite {
 	 * @param rowCount
 	 * @return
 	 */
-	public int createProfileInfoSection(final ProfileCategory cat, Grid grid,
+	public int createProfileInfoSection(final ProfileCategory cat, FlexTable grid,
 			int rowCount) {
 		int row = rowCount;
 
 		Label sectionHeader = new Label(cat.getTitle());
 		sectionHeader.setStyleName("sectionHeading");
 
-		grid.insertRow(row);
 		grid.setWidget(row, 0, sectionHeader);
 
 		// remove the bottom border from the section heading titles
-		grid.getCellFormatter().setStyleName(row, 0, "sectionHeadingRBB");
-		grid.getCellFormatter().setStyleName(row, 1, "sectionHeadingRBB");
-		grid.getCellFormatter().setStyleName(row, 2, "sectionHeadingRBB");
+		grid.getFlexCellFormatter().setStyleName(row, 0, "sectionHeadingRBB");
+		grid.getFlexCellFormatter().setStyleName(row, 1, "sectionHeadingRBB");
+		grid.getFlexCellFormatter().setStyleName(row, 2, "sectionHeadingRBB");
 		row = row + 1;
 
 		for (ProfileAttribute attr : cat.getAttributes()) {
@@ -244,12 +244,18 @@ public class ProfileMainPanel extends Composite {
 			title.setStyleName("attrLabel");
 			Widget value = new ProfileAttributeWidget(attr, isEditable).getWidget();
 
-			grid.insertRow(row);
-			grid.setWidget(row, 0, title);
-			grid.setWidget(row, 1, value);
-			grid.getCellFormatter().setWidth(row, 1, "70%");
-			grid.getCellFormatter().setHorizontalAlignment(row, 1,
-					HasHorizontalAlignment.ALIGN_LEFT);
+			if(!attr.getDataName().equals("picture")) {
+				grid.setWidget(row, 0, title);
+				grid.setWidget(row, 1, value);
+				grid.getFlexCellFormatter().setWidth(row, 1, "70%");
+				grid.getFlexCellFormatter().setHorizontalAlignment(row, 1,
+						HasHorizontalAlignment.ALIGN_LEFT);
+			} else {
+				grid.setWidget(row, 0, value);
+				grid.getFlexCellFormatter().setColSpan(row, 0, 2);
+				grid.getFlexCellFormatter().setHorizontalAlignment(row, 0,
+						HasHorizontalAlignment.ALIGN_LEFT);
+			}
 
 			row = row + 1;
 		}

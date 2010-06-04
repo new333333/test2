@@ -329,11 +329,11 @@ public class GwtProfileHelper {
 		    							String path;
 		    							
 		    							webPath = WebUrlUtil.getServletRootURL();
-		    							path = WebUrlUtil.getFileUrl(webPath, "readThumbnail", attach.getOwner().getEntity(), attach.toString());
+		    							path = WebUrlUtil.getFileUrl(webPath, "readScaledFile", attach.getOwner().getEntity(), attach.toString());
 		    							
 		    							//Check if null, this will guarantee we use the first picture we come across
 		    							if(Validator.isNull(profile.getPictureUrl())){
-		    								profile.setPictureUrl(path);
+		    								profile.addPictureUrl(path);
 		    							}
 		    							
 		    							//Create a new Profile Attribute to convert the data to
