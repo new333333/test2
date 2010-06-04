@@ -910,61 +910,113 @@ public class WorkspaceTreeHelper {
 		
 			boolean showModifyProfileMenu = false;
 			boolean showDeleteProfileMenu = false;
+			boolean showDisableProfileMenu = false;
+			boolean showDropdownMenu = false;
 			if (owner.isActive() && bs.getProfileModule().testAccess(owner, ProfileOperation.modifyEntry)) {
 				showModifyProfileMenu = true;
 			}
 		
-			if (owner.isActive() && bs.getProfileModule().testAccess(owner, ProfileOperation.deleteEntry)) {
+			if ((owner.isActive() || (owner.isLocal() && owner.isDisabled())) && 
+					bs.getProfileModule().testAccess(owner, ProfileOperation.deleteEntry)) {
 				//Don't let a user delete his or her own account
-				if (!owner.getId().equals(user.getId())) showDeleteProfileMenu = true;
+				if (!owner.getId().equals(user.getId())) {
+					showDeleteProfileMenu = true;
+					if (owner.isLocal()) {
+						showDisableProfileMenu = true;
+					}
+				}
+			}
+			if ((showModifyProfileMenu && (showDeleteProfileMenu || showDisableProfileMenu)) || 
+					(showDeleteProfileMenu && (showModifyProfileMenu || showDisableProfileMenu)) ||
+					(showDisableProfileMenu && (showModifyProfileMenu || showDeleteProfileMenu))) {
+				showDropdownMenu = true;
 			}
 			
 	        //Modify profile is not available to the guest user
 	        if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-				if (showDeleteProfileMenu && showModifyProfileMenu) {
+				if (showDropdownMenu) {
 					qualifiers = new HashMap();
 					qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.modifyProfileButton");
 					toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.manageThisProfile"), new HashMap(), qualifiers);
 					//	The "Modify" menu item
-					qualifiers = new HashMap();
-					qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
-					adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
-					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
-					adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
-					toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.modify"), adapterUrl.toString(), qualifiers);
+					if (showModifyProfileMenu) {
+						qualifiers = new HashMap();
+						qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
+						adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+						adapterUrl.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+						adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+						toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.modify"), adapterUrl.toString(), qualifiers);
+					}
+					//	The "Disable" menu item
+					if (showDisableProfileMenu) {
+						qualifiers = new HashMap();
+						qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
+						url = response.createActionURL();
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+						String menuText;
+						if (owner.isDisabled()) {
+							url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ENABLE);
+							menuText = NLT.get("toolbar.enable");
+						} else {
+							url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DISABLE);
+							menuText = NLT.get("toolbar.disable");
+						}
+						url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+						url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+						toolbar.addToolbarMenuItem("4_manageProfile", "", menuText, url, qualifiers);
+					}
 					//	The "Delete" menu item
-					qualifiers = new HashMap();
-					qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
-					url = response.createActionURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
-					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
-					url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
-					url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
-					toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.delete"), url, qualifiers);
-				}
-				if (showModifyProfileMenu && !showDeleteProfileMenu) {
+					if (showDeleteProfileMenu) {
+						qualifiers = new HashMap();
+						qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
+						url = response.createActionURL();
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
+						url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+						url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+						toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.delete"), url, qualifiers);
+					}
+				} else {
 					//	The "Modify" menu item
-					qualifiers = new HashMap();
-					qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.modifyProfileButton");
-					qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
-					adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
-					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
-					adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
-					toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.menu.modify_profile"), adapterUrl.toString(), qualifiers);
-				}
-				if (!showModifyProfileMenu && showDeleteProfileMenu) {
+					if (showModifyProfileMenu) {
+						qualifiers = new HashMap();
+						qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.modifyProfileButton");
+						qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
+						adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+						adapterUrl.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+						adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+						toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.menu.modify_profile"), adapterUrl.toString(), qualifiers);
+					}
+					//	The "disable" menu item
+					if (showDisableProfileMenu) {
+						qualifiers = new HashMap();
+						qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.modifyProfileButton");
+						qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
+						url = response.createActionURL();
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+						if (owner.isDisabled()) {
+							url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ENABLE);
+						} else {
+							url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DISABLE);
+						}
+						url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+						url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+						toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.disable"), url, qualifiers);
+					}
 					//	The "delete" menu item
-					qualifiers = new HashMap();
-					qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.modifyProfileButton");
-					qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
-					url = response.createActionURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
-					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
-					url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
-					url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
-					toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.delete"), url, qualifiers);
+					if (showDeleteProfileMenu) {
+						qualifiers = new HashMap();
+						qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.modifyProfileButton");
+						qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
+						url = response.createActionURL();
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
+						url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+						url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+						toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.delete"), url, qualifiers);
+					}
 				}
 	        }
 		}

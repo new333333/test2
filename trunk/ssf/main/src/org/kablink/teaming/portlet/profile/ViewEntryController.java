@@ -144,6 +144,26 @@ public class ViewEntryController extends SAbstractController {
 		}
 	
     
+		//	The "Disable/Enable" menu
+		if (getProfileModule().testAccess(entry, ProfileOperation.deleteEntry)) {
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+			if (entry.isDisabled()) {
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ENABLE);
+			} else {
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DISABLE);
+			}
+			url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+			url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+			if (entry.isDisabled()) {
+				toolbar.addToolbarMenu("3_disable", NLT.get("toolbar.enable"), url, qualifiers);
+			} else {
+				toolbar.addToolbarMenu("3_disable", NLT.get("toolbar.disable"), url, qualifiers);
+			}
+		}
+    
 		//	The "Delete" menu
 		if (getProfileModule().testAccess(entry, ProfileOperation.deleteEntry)) {
 			Map qualifiers = new HashMap();
@@ -153,7 +173,7 @@ public class ViewEntryController extends SAbstractController {
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
 			url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
-			toolbar.addToolbarMenu("3_delete", NLT.get("toolbar.delete"), url, qualifiers);
+			toolbar.addToolbarMenu("4_delete", NLT.get("toolbar.delete"), url, qualifiers);
 		}
     
 		model.put(WebKeys.FOLDER_ENTRY_TOOLBAR, toolbar.getToolbar());

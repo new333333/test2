@@ -42,6 +42,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
@@ -64,6 +65,7 @@ public interface EntryProcessor extends BinderProcessor {
     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, Map options);  
     public Entry copyEntry(Binder binder, Entry entry, Binder destination, Map options);
     public void copyEntries(Binder source, Binder binder, Map options);
+    public void disableEntry(Principal entry, boolean disable);
     public void deleteEntry(Binder binder, Entry entry, boolean deleteMirroredSource, Map options);
     public void deleteEntryWorkflow(Binder binder, Entry entry, Definition definition);
     public void modifyEntry(Binder binder, Entry entry, InputDataAccessor inputData, Map fileItems, 

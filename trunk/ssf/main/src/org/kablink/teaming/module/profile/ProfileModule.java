@@ -170,11 +170,18 @@ public interface ProfileModule {
 	 */
 	public void checkAccess(Principal entry, ProfileOperation operation) throws AccessControlException;
 	/**
+	 * Disable an entry.  
+	 * @param entryId - group or use id
+	 * @throws AccessControlException
+	 * @throws WriteFilesException
+	 */
+	public void disableEntry( Long entryId, boolean disabled)
+	throws AccessControlException;
+	/**
 	 * Delete an entry.  If the entry is a user, will not delete the user workspace by default
 	 * @param entryId - group or use id
 	 * @param options - additional processing options or null (See ObjectKeys.INPUT_OPTION_DELETE_USE_WORKSPACE)
 	 * @throws AccessControlException
-	 * @throws WriteFilesException
 	 */
 	public void deleteEntry( Long entryId, Map options)
 	throws AccessControlException, WriteFilesException, WriteEntryDataException;

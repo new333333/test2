@@ -59,6 +59,7 @@ import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WorkflowResponse;
@@ -706,6 +707,17 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 				"errorcode.notsupported.copyEntry", new String[]{source.getTitle()});
     }
  
+    public void disableEntry(final Principal entry, final boolean disable) {
+		SimpleProfiler.startProfiler("deleteEntry_transactionExecute");
+		getTransactionTemplate().execute(new TransactionCallback() {
+    		public Object doInTransaction(TransactionStatus status) {
+    			SimpleProfiler.startProfiler("disableEntry");
+    			entry.setDisabled(disable);
+    			SimpleProfiler.stopProfiler("disableEntry");
+    			return null;
+    		}});
+    	SimpleProfiler.stopProfiler("deleteEntry_transactionExecute");
+    }
     //***********************************************************************************************************   
     //no transaction expected
     public void deleteEntry(final Binder parentBinder, final Entry entry, final boolean deleteMirroredSource, Map options) {
