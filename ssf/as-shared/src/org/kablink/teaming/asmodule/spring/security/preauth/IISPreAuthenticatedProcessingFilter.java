@@ -39,6 +39,9 @@ import org.springframework.security.ui.preauth.AbstractPreAuthenticatedProcessin
 public class IISPreAuthenticatedProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
 
     protected Object getPreAuthenticatedPrincipal(HttpServletRequest httpRequest) {
+    	if(logger.isDebugEnabled())
+    		logger.debug("Remote address: " + httpRequest.getRemoteAddr());
+    	
         Object principal = httpRequest.getUserPrincipal() == null ? null : httpRequest.getUserPrincipal().getName();
         if (logger.isDebugEnabled()) {
             logger.debug("PreAuthenticated IIS principal: " + principal);
