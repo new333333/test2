@@ -1,4 +1,4 @@
-package org.kablink.teaming.gwt.client.profile;
+package org.kablink.teaming.gwt.client.profile.widgets;
 
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
@@ -15,7 +15,7 @@ public class ProfileActionWidget extends Anchor {
 	protected Image img;
 	protected FlowPanel panel;
 
-	protected ProfileActionWidget(String text, String title, String anchorStlyeName, String labelStyleName) {
+	public ProfileActionWidget(String text, String title, String anchorStlyeName, String labelStyleName) {
 		super();
 
 		this.setText(text);

@@ -34,7 +34,7 @@
 package org.kablink.teaming.gwt.client;
 
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
-import org.kablink.teaming.gwt.client.profile.GwtQuickViewDlg;
+import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;

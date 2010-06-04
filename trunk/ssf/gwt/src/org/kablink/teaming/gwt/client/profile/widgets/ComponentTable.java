@@ -1,4 +1,4 @@
-package org.kablink.teaming.gwt.client.profile;
+package org.kablink.teaming.gwt.client.profile.widgets;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;

@@ -1,5 +1,7 @@
 package org.kablink.teaming.gwt.client.profile;
 
+import org.kablink.teaming.gwt.client.profile.widgets.ProfileAttributeWidget;
+
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;

@@ -1,4 +1,4 @@
-package org.kablink.teaming.gwt.client.profile;
+package org.kablink.teaming.gwt.client.profile.widgets;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
@@ -8,6 +8,10 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.presence.InstantMessageClickHandler;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
+import org.kablink.teaming.gwt.client.profile.ProfileCategory;
+import org.kablink.teaming.gwt.client.profile.ProfileClientUtil;
+import org.kablink.teaming.gwt.client.profile.ProfileInfo;
+import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;

@@ -1,7 +1,9 @@
-package org.kablink.teaming.gwt.client.profile;
+package org.kablink.teaming.gwt.client.profile.widgets;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
+import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.user.client.ui.Anchor;

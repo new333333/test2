@@ -1,4 +1,4 @@
-package org.kablink.teaming.gwt.client.profile;
+package org.kablink.teaming.gwt.client.profile.widgets;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -6,6 +6,9 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
+import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
+import org.kablink.teaming.gwt.client.profile.ProfileCategory;
+import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
