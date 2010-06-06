@@ -300,12 +300,18 @@ public class QueryBuilder {
 		Node child = (Node) children.get(0);
 		if (child.getName().equalsIgnoreCase(FIELD_TERMS_ELEMENT)) {
 			if (exact) {
-				termText = fieldName + ":\"" + child.getText() + "\"";
+				if(fieldName != null && !fieldName.equals(""))
+					termText = fieldName + ":\"" + child.getText() + "\"";
+				else
+					termText = "\"" + child.getText() + "\"";
 				if (nearText != null) {
 					termText += "~" + nearText;
 				}
 			} else {
-				termText = fieldName + ":(" + child.getText() + ")";
+				if(fieldName != null && !fieldName.equals(""))
+					termText = fieldName + ":(" + child.getText() + ")";
+				else
+					termText = child.getText();
 			}
 		}
 		return termText;
