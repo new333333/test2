@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -126,7 +127,8 @@ public class SearchFilterToSearchBooleanConverter {
 		    			lang = checkLanguage(filterTerm.getText(),parent, lang);
 		    			String text = filterTerm.getText();
 		    			String caseSensitive = filterTerm.attributeValue(SearchFilterKeys.FilterTypeCaseSensitive, "false");
-		    			if (!caseSensitive.equals("true")) text = text.toLowerCase(user.getLocale());
+		    			if (!caseSensitive.equals("true")) 
+		    				text = lowerCaseSearchText(text, user.getLocale());
 		    			addSearchTextField(block, text);
 		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeCreatorByName)) {
 		    			lang = checkLanguage(filterTerm.getText(),parent, lang);
@@ -879,7 +881,8 @@ public class SearchFilterToSearchBooleanConverter {
 
 	private static void addSearchTextField(Element block, String text) {
 		Element field = block.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.ALL_TEXT_FIELD);
+		// Do NOT add ALL_TEXT_FIELD as the field name. Instead, leave it blank.
+		// The Lucene query parser will assign the terms to the appropriate default field.
 		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child.setText(text);
 	}
@@ -953,4 +956,20 @@ public class SearchFilterToSearchBooleanConverter {
 		return element;
 	}
 	
+	private static String lowerCaseSearchText(String searchText, Locale locale) {
+		final String OR = "111or222";
+		final String AND = "333and444";
+		final String NOT = "555not666";
+		final String TO = "777to888";
+		searchText = searchText.replace("OR", OR);
+		searchText = searchText.replace("AND", AND);
+		searchText = searchText.replace("NOT", NOT);
+		searchText = searchText.replace("TO", TO);
+		searchText = searchText.toLowerCase(locale);
+		searchText = searchText.replace(OR, "OR");
+		searchText = searchText.replace(AND, "AND");
+		searchText = searchText.replace(NOT, "NOT");
+		searchText = searchText.replace(TO, "TO");
+		return searchText;
+	}
 }
