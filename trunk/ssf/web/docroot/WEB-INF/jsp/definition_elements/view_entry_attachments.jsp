@@ -68,7 +68,6 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 <c:if test="${!empty ss_pseudoEntity}">
 <tr>
 	<td valign="top" style="padding-left: 9px;" nowrap>
-		<span class="ss_style ss_bold ss_smallprint"><c:out value="${property_caption}"/></span>
 		<c:if test="${!empty ss_pseudoEntityRevert}">
 		  <br/>
 		  <span class="ss_style ss_smallprint"><ssf:nlt tag="entry.revert.select"/>
@@ -84,7 +83,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 		  	<ssHelpSpot helpId="workspaces_folders/entries/attachments" offsetX="-20" offsetY="-5"
     					title="<ssf:nlt tag="helpSpot.attachments"/>">
 			</ssHelpSpot>
-			<c:out value="${property_caption}"/>:&nbsp;&nbsp;
+			<c:if test="${!empty property_caption}"><c:out value="${property_caption}"/>:&nbsp;&nbsp;</c:if>
 		</span>
 	</td>
 
