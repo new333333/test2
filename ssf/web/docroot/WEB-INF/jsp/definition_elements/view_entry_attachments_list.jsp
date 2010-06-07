@@ -157,7 +157,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	    </div>
 		</td>
 		
-		<td valign="top" style="height:20px;" class="ss_att_title" width="30%">
+		<td valign="top" style="height:20px;" class="ss_att_title" width="27%">
 		<%
 			if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
 		%>
@@ -278,7 +278,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		 </c:if>
 		</td>
 		
-		<td valign="top" width="15%"><span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+		<td valign="top" width="20%"><span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${selection.modification.date}" type="date" 
 					 dateStyle="medium" /></span> <span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${selection.modification.date}" type="time" 
@@ -289,7 +289,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		  <ssf:nlt tag="file.sizeKB" text="KB"/>
 		</td>
 		
-		<td valign="top" class="ss_att_meta_wrap ss_att_space" width="25%">${selection.modification.principal.title}</td>
+		<td valign="top" class="ss_att_meta_wrap ss_att_space" width="20%">${selection.modification.principal.title}</td>
 		<td valign="top" class="ss_att_meta" width="20%">
 		  <a class="ss_tinyButton ss_fineprint" href="javascript: ;" 
 		    onClick="ss_showHide('ss_fileActionsMenu_${selection.id}');return false;"
@@ -583,7 +583,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				      src="<html:imagesPath/>pics/1pix.gif"/>
 				  </div>
 				</td>
-				<td valign="top" class="ss_att_title" width="30%" style="font-weight: normal;">
+				<td valign="top" class="ss_att_title" width="27%" style="font-weight: normal;">
 				<c:if test="<%= !owningBinder.isMirrored() %>">
 					<a style="text-decoration: none;"
 					  href="<ssf:fileUrl file="${fileVersion}"/>" 
@@ -647,14 +647,14 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				 </c:if>
 				</td>
 		
-				<td valign="top" width="15%">
+				<td valign="top" width="20%">
 				  <span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${fileVersion.modification.date}" type="date" 
 					 dateStyle="medium" /></span> <span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${fileVersion.modification.date}" type="time" 
 					 timeStyle="short" /></span></td>
 				<td valign="top" class="ss_att_meta" nowrap width="5%"><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${fileVersion.fileItem.lengthKB}"/> <ssf:nlt tag="file.sizeKB" text="KB"/></td>
-				<td valign="top" class="ss_att_meta_wrap ss_att_space" width="25%">${fileVersion.modification.principal.title}</td>
+				<td valign="top" class="ss_att_meta_wrap ss_att_space" width="20%">${fileVersion.modification.principal.title}</td>
 				<td valign="top" class="ss_att_meta" width="20%">
 				  <a class="ss_tinyButton ss_fineprint" href="javascript: ;" 
 				    onClick="ss_showHide('ss_fileActionsMenu_${fileVersion.versionNumber}');return false;"
