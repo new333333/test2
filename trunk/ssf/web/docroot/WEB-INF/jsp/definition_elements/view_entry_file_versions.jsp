@@ -413,7 +413,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	</tr>	
 	<c:if test="${!empty selection.fileVersions && versionCount > 1}">
         <tr><td valign="top" style="height:10px;" class="ss_att_title" colspan="7">
-          <hr class="ss_att_divider" noshade="noshade" /></td></tr>
+          <hr class="ss_att_divider" noshade="noshade" style="margin:0px 0px 0px 10px;"/></td></tr>
 		  <c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1" varStatus="status">
 <%
 	String vfn = selection.getFileItem().getName();
