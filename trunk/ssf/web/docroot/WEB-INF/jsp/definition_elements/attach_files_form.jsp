@@ -62,7 +62,7 @@
 <td valign="top" style="padding-left:10px;">${selection.fileItem.name}</td>
 <td valign="top" style="padding-left:16px;">
   <a href="javascript: ;" onClick="ss_showHide('editCommentDiv_${selection.id}');return false;">
-    <span class="ss_fineprint"><ssf:nlt tag="file.editComment"/></span>
+    <span class="ss_fineprint"><ssf:nlt tag="file.addComment"/></span>
   </a>
   <div id="editCommentDiv_${selection.id}" style="padding:4px; display:none;">
     <ssf:htmleditor name="ss_attachFile${selection.id}.description" height="100" 

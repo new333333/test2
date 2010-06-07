@@ -998,14 +998,14 @@ function ss_showRelevanceTab(s, namespace) {
 function ss_setFileStatus(entityId, entityType, fileId, statusObjId, fileStatus) {
 	ss_setupStatusMessageDiv();
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"set_file_status", entityId:entityId, entityType:entityType, fileId:fileId, fileStatus:fileStatus});
-	ss_post_to_url(url, "", ss_postRequestSetFileStatus, fileId);
+	ss_post_to_url(url, "", ss_postRequestSetFileStatus, {fileId:fileId, statusObjId:statusObjId});
 }
-function ss_postRequestSetFileStatus(s, fileId) {
-	var statusObj = self.document.getElementById("fileStatus_" + fileId);
+function ss_postRequestSetFileStatus(s, data) {
+	var statusObj = self.document.getElementById("fileStatus"+data.statusObjId+"_" + data.fileId);
 	if (statusObj != null) {
 		statusObj.innerHTML = s;
 	}
-	ss_showHide('ss_fileStatusMenu_' + fileId);
+	ss_showHide("ss_fileStatusMenu"+data.statusObjId+"_" + data.fileId);
 }
 
 function ss_executeJavascript(xmlNode) {

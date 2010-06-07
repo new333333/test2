@@ -63,7 +63,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 <tbody>
 <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
 <tr>
-  <th colspan="2" style="padding-left:56px;"><ssf:nlt tag="file.name"/></th>
+  <th style="padding-right:4px;"><ssf:nlt tag="file.name"/></th>
   <th style="padding-right:4px;"><ssf:nlt tag="entry.Version"/></th>
   <th style="padding-right:4px;"><ssf:nlt tag="file.status"/></th>
   <th style="padding-right:4px;"><ssf:nlt tag="file.date"/></th>
@@ -72,6 +72,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
   <th><ssf:nlt tag="toolbar.actions"/></th>
 </tr>
 </c:if>
+
 <c:set var="selectionCount" value="0"/>
 <c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" >
   <jsp:useBean id="selection" type="org.kablink.teaming.domain.FileAttachment" />
@@ -102,61 +103,8 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
   <c:forEach var="fileVersion" items="${selection.fileVersionsUnsorted}">
     <c:set var="versionCount" value="${versionCount + 1}"/>
   </c:forEach>
-  <c:set var="thumbRowSpan" value="2"/>
-  <c:if test="${versionCount >= 1}">
-    <c:set var="thumbRowSpan" value="2"/>
-  </c:if>
-     <tr><td valign="top" colspan="8"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
-	  <tr>
-		<td valign="top" width="80" rowspan="${thumbRowSpan}">
-		<div class="ss_thumbnail_gallery ss_thumbnail_tiny"> 
-		<%
-			if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
-		%>
-			<a style="text-decoration: none;" href="<ssf:fileUrl file="${selection}"/>" 
-					    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
-					
-				    <ssf:title tag="title.open.file">
-					    <ssf:param name="value" value="${selection.fileItem.name}" />
-				    </ssf:title>
-					     ><img border="0" <ssf:alt text="${selection.fileItem.name}"/> src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>"/></a>
-
-		<%  }
-			if (isIECheck && ext.equals(".ppt") && editInPlaceSupported) {
-		%>
-			<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="applet">
-				<ssf:isFileEditorConfiguredForOS relativeFilePath="${selection.fileItem.name}" operatingSystem="<%= operatingSystem %>">
-					<a style="text-decoration: none;" href="<ssf:ssfsInternalAttachmentUrl 
-						binder="${ssDefinitionEntry.parentBinder}"
-						entity="${ssDefinitionEntry}"
-						fileAttachment="${selection}"/>" 
-						onClick="javascript:ss_openWebDAVFile('${ssDefinitionEntry.parentBinder.id}', 
-						    '${ssDefinitionEntry.id}', 
-						    '${ss_attachments_namespace}', 
-						    '<%= operatingSystem %>', 
-							'${selection.id}');
-							return false;"
-				    	<ssf:title tag="title.open.file">
-					      <ssf:param name="value" value="${selection.fileItem.name}" />
-				    	</ssf:title>
-					><img border="0" <ssf:alt text="${selection.fileItem.name}"/> 
-					  src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>"/></a>
-				</ssf:isFileEditorConfiguredForOS>
-			</ssf:editorTypeToUseForEditInPlace>
-			
-			<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="webdav">
-				<a href="<ssf:ssfsInternalAttachmentUrl 
-						binder="${ssDefinitionEntry.parentBinder}"
-						entity="${ssDefinitionEntry}"
-						fileAttachment="${selection}"/>"
-				><img border="0" <ssf:alt text="${selection.fileItem.name}"/> 
-					  src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>"/></a>
-			</ssf:editorTypeToUseForEditInPlace>
-		<%  }  %>
-
-	    </div>
-		</td>
-		
+     <tr><td valign="top" colspan="7"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
+	  <tr>		
 		<td valign="top" style="height:20px;" class="ss_att_title" width="30%">
 		<%
 			if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
@@ -226,6 +174,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 			  </c:if>
 			</c:if>
 		</td>
+		
 		<td valign="top" class="ss_att_meta" nowrap width="3%">
 		  <span style="padding:0px 4px;"><ssf:nlt tag="file.versionNumber"><ssf:param
 			name="value" value="${selection.fileVersion}"/></ssf:nlt></span>
@@ -234,37 +183,37 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		<td valign="top" class="ss_att_meta" nowrap width="5%">
 		 <c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 		  <div>
-		    <a href="javascript: ;" onClick="ss_showHide('ss_fileStatusMenu_${selection.id}');return false;"
-		    ><span id="fileStatus_${selection.id}">
+		    <a href="javascript: ;" onClick="ss_showHide('ss_fileStatusMenu2_${selection.id}');return false;"
+		    ><span id="fileStatus2_${selection.id}">
 		      <c:if test="${selection.fileStatus != 0}">${selection.fileStatusText}</c:if>
 		      <c:if test="${selection.fileStatus == 0}"><ssf:nlt tag="file.statusNoStatus"/></c:if>
 		      </span><img style="padding:0px 4px;" src="<html:imagesPath/>pics/menudown.gif" /></a>
 		  </div>
-		  <div id="ss_fileStatusMenu_${selection.id}" 
+		  <div id="ss_fileStatusMenu2_${selection.id}" 
 		    style="display:none; background:#fff; border:1px #ccc solid;">
 		    <div><span class="ss_bold"><ssf:nlt tag="file.setStatus"/></span></div>
 		    <ul style="margin:0px;padding:0px 10px 0px 10px;">
 			  <li>
 			    <a href="javascript: ;" 
-			      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${selection.id}', '', '0');return false;">
+			      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${selection.id}', '2', '0');return false;">
 			      <ssf:nlt tag="file.statusNone"/>
 			    </a>
 			  </li>
 			  <li>
 			    <a href="javascript: ;" 
-			      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${selection.id}', '', '1');return false;">
+			      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${selection.id}', '2', '1');return false;">
 			      <ssf:nlt tag="file.status1"/>
 			    </a>
 			  </li>
 			  <li>
 			    <a href="javascript: ;" 
-			      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${selection.id}', '', '2');return false;">
+			      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${selection.id}', '2', '2');return false;">
 			      <ssf:nlt tag="file.status2"/>
 			    </a>
 			  </li>
 			  <li>
 			    <a href="javascript: ;" 
-			      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${selection.id}', '', '3');return false;">
+			      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${selection.id}', '2', '3');return false;">
 			      <ssf:nlt tag="file.status3"/>
 			    </a>
 			  </li>
@@ -292,9 +241,9 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		<td valign="top" class="ss_att_meta_wrap ss_att_space" width="25%">${selection.modification.principal.title}</td>
 		<td valign="top" class="ss_att_meta" width="20%">
 		  <a class="ss_tinyButton ss_fineprint" href="javascript: ;" 
-		    onClick="ss_showHide('ss_fileActionsMenu_${selection.id}');return false;"
+		    onClick="ss_showHide('ss_fileActionsMenu2_${selection.id}');return false;"
 		  ><ssf:nlt tag="file.actions"/></a>
-		  <div id="ss_fileActionsMenu_${selection.id}" 
+		  <div id="ss_fileActionsMenu2_${selection.id}" 
 		    style="display:none; background:#fff; border:1px #ccc solid;">
 		    <ul style="margin:0px;padding:0px 10px 0px 10px;">
 			  <li>
@@ -458,23 +407,14 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		</td>
 	</tr>
 	<tr>
-	  <td valign="top" colspan="7" class="ss_att_description" width="100%">
+	  <td valign="top" colspan="7" class="ss_att_description" style="padding-left:10px;" width="100%">
 	    <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${selection.fileItem.description.text}</ssf:markup></div>
 	  </td>
 	</tr>	
-	<c:if test="${!ss_showPrimaryFileAttachmentOnly}">
 	<c:if test="${!empty selection.fileVersions && versionCount > 1}">
-        <tr><td valign="top" style="height:10px;" class="ss_att_title" colspan="8">
+        <tr><td valign="top" style="height:10px;" class="ss_att_title" colspan="7">
           <hr class="ss_att_divider" noshade="noshade" /></td></tr>
-		<tr>
-		  <td valign="top" class="ss_att_title ss_subhead2" colspan="8">
-		    <c:set var="previousVersionsText" value='<%= NLT.get("entry.PreviousVersions", new String[] {String.valueOf(selection.getFileVersions().size()-1)}) %>'/>
-		    <c:if test="<%= owningBinder.isMirrored() %>">
-		      <c:set var="previousVersionsText" value='<%= NLT.get("entry.PreviousVersionsMirrored", new String[] {String.valueOf(selection.getFileVersions().size()-1)}) %>'/>
-		    </c:if>
-		    <ssf:expandableArea title="${previousVersionsText}">
-			  <table class="ss_attachments_list" cellpadding="0" cellspacing="0" width="100%">
-			  <c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1" varStatus="status">
+		  <c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1" varStatus="status">
 <%
 	String vfn = selection.getFileItem().getName();
 	String vext = "";
@@ -492,98 +432,8 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		}
 	}
 %>
-	          	<c:choose>
-		          	<c:when test="${status.count == 4}">
-						 <tr id="${ss_attachments_namespace}att_row${status.count}n"
-						   style="display: block; visibility: visible; ">
-						    <td width="80">
-						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
-						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
-						          src="<html:imagesPath/>pics/1pix.gif"/>
-						      </div>
-						    </td>
-							<td valign="top" colspan="7" style="padding-left: 5px; font-weight: normal;">
-							  <a href="javascript: // " 
-							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 4, 9);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 4, 9);" 
-							    class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
-						 </tr>
-			 	    </c:when>
-		          	<c:when test="${status.count == 10}">
-						 <tr id="${ss_attachments_namespace}att_row${status.count}n" 
-						   style="display: none; visibility: hidden; ">
-						    <td width="80">
-						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
-						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
-						          src="<html:imagesPath/>pics/1pix.gif"/>
-						      </div>
-						    </td>
-							<td valign="top" colspan="7" style="padding-left: 5px; font-weight: normal;">
-							<a href="javascript: // " 
-							  onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 10, 20);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 10, 20);" 
-							  class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
-						 </tr>
-			 	    </c:when>	
-		          	<c:when test="${status.count == 21}">
-						 <tr id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
-						    <td width="80">
-						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
-						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
-						          src="<html:imagesPath/>pics/1pix.gif"/>
-						      </div>
-						    </td>
-							<td valign="top" colspan="7" style="padding-left: 5px; font-weight: normal;">
-							  <a href="javascript: // " 
-							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 21, 40);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 21, 40);" 
-							    class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
-						 </tr>
-			 	    </c:when>	
-		          	<c:when test="${status.count == 41}">
-						 <tr id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
-						    <td width="80">
-						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
-						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
-						          src="<html:imagesPath/>pics/1pix.gif"/>
-						      </div>
-						    </td>
-							<td valign="top" colspan="7" 
-							  style="padding-left: 5px; font-weight: normal;">
-							  <a href="javascript: // " 
-							  onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 41, 80);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 41, 80);" 
-							  class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
-						 </tr>
-			 	    </c:when>
-		          	<c:when test="${status.count == 81}">
-						 <tr id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
-						    <td width="80">
-						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
-						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
-						          src="<html:imagesPath/>pics/1pix.gif"/>
-						      </div>
-						    </td>
-							<td valign="top" colspan="7" style="padding-left: 5px; font-weight: normal;">
-							  <a href="javascript: // " 
-							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 81);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 81);" 
-							    class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
-						 </tr>
-			 	    </c:when>				 	    
-		 	    </c:choose>	 	    
-		 	    
-				<c:choose>
-					<c:when test="${status.count <= 3}">
-						<tr style="display: block; visibility: visible;">
-					</c:when>	
-					<c:otherwise>						
-						<tr id="${ss_attachments_namespace}att_row${status.count}" style="display: none; visibility: hidden; ">
-					</c:otherwise>
-				</c:choose>						
-						
-				<td width="80">
-				  <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
-				    <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
-				      src="<html:imagesPath/>pics/1pix.gif"/>
-				  </div>
-				</td>
-				<td valign="top" class="ss_att_title" width="30%" style="font-weight: normal;">
+			<tr>
+				<td valign="top" class="ss_att_title" width="30%" style="padding-left:10px; font-weight: normal;">
 				<c:if test="<%= !owningBinder.isMirrored() %>">
 					<a style="text-decoration: none;"
 					  href="<ssf:fileUrl file="${fileVersion}"/>" 
@@ -595,45 +445,47 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						><%= vfnBr %></a>
 				</c:if>
 				</td>
-				<td valign="top" class="ss_att_meta" nowrap width="3%"><span style="padding-left:8px;"><ssf:nlt tag="file.versionNumber"><ssf:param
-						name="value" value="${fileVersion.fileVersion}"/></ssf:nlt></span>
+				
+				<td valign="top" class="ss_att_meta" nowrap width="3%">
+				  <span style="padding-left:8px;"><ssf:nlt tag="file.versionNumber"><ssf:param
+					name="value" value="${fileVersion.fileVersion}"/></ssf:nlt></span>
 				</td>
 
 				<td valign="top" class="ss_att_meta" nowrap width="5%">
 				 <c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 				  <div>
-				    <a href="javascript: ;" onClick="ss_showHide('ss_fileStatusMenu_${fileVersion.id}');return false;"
-				    ><span id="fileStatus_${fileVersion.id}">
+				    <a href="javascript: ;" onClick="ss_showHide('ss_fileStatusMenu2_${fileVersion.id}');return false;"
+				    ><span id="fileStatus2_${fileVersion.id}">
 				      <c:if test="${fileVersion.fileStatus != 0}">${fileVersion.fileStatusText}</c:if>
 				      <c:if test="${fileVersion.fileStatus == 0}"><ssf:nlt tag="file.statusNoStatus"/></c:if>
 				      </span>
 				      <img style="padding:0px 4px;" src="<html:imagesPath/>pics/menudown.gif" /></a>
 				  </div>
-				  <div id="ss_fileStatusMenu_${fileVersion.id}" 
+				  <div id="ss_fileStatusMenu2_${fileVersion.id}" 
 				    style="display:none; background:#fff; border:1px #ccc solid;">
 		    		<div><span class="ss_bold"><ssf:nlt tag="file.setStatus"/></span></div>
 				    <ul style="margin:0px;padding:0px 10px 0px 10px;">
 					  <li>
 					    <a href="javascript: ;" 
-					      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${fileVersion.id}', '', '0');return false;">
+					      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${fileVersion.id}', '2', '0');return false;">
 					      <ssf:nlt tag="file.statusNone"/>
 					    </a>
 					  </li>
 					  <li>
 					    <a href="javascript: ;" 
-					    onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${fileVersion.id}', '', '1');return false;">
+					    onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${fileVersion.id}', '2', '1');return false;">
 					      <ssf:nlt tag="file.status1"/>
 					    </a>
 					  </li>
 					  <li>
 					    <a href="javascript: ;" 
-					    onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${fileVersion.id}', '', '2');return false;">
+					    onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${fileVersion.id}', '2', '2');return false;">
 					      <ssf:nlt tag="file.status2"/>
 					    </a>
 					  </li>
 					  <li>
 					    <a href="javascript: ;" 
-					    onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${fileVersion.id}', '', '3');return false;">
+					    onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${fileVersion.id}', '2', '3');return false;">
 					      <ssf:nlt tag="file.status3"/>
 					    </a>
 					  </li>
@@ -657,9 +509,9 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				<td valign="top" class="ss_att_meta_wrap ss_att_space" width="25%">${fileVersion.modification.principal.title}</td>
 				<td valign="top" class="ss_att_meta" width="20%">
 				  <a class="ss_tinyButton ss_fineprint" href="javascript: ;" 
-				    onClick="ss_showHide('ss_fileActionsMenu_${fileVersion.versionNumber}');return false;"
+				    onClick="ss_showHide('ss_fileActionsMenu2_${fileVersion.versionNumber}');return false;"
 				  ><ssf:nlt tag="file.actions"/></a>
-				  <div id="ss_fileActionsMenu_${fileVersion.versionNumber}" 
+				  <div id="ss_fileActionsMenu2_${fileVersion.versionNumber}" 
 				     style="display:none; background:#fff; border:1px #ccc solid;">
 		    		<ul style="margin:0px;padding:0px 10px 0px 10px;">
 						<c:if test="<%= !owningBinder.isMirrored() %>">
@@ -743,21 +595,16 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					  src="<html:imagesPath/>pics/1pix.gif"/>
 				  </div>
 				</td>
-			    <td valign="top" width="100%" colspan="7" class="ss_att_description">
+			    <td valign="top" width="100%" colspan="7" class="ss_att_description" style="padding-left:10px;">
 			      <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${fileVersion.fileItem.description.text}</ssf:markup></div>
 			    </td>
 			  </tr>	
 				
  	    	</c:forEach>
- 	    	</table>
- 	    	</ssf:expandableArea>
-		  </td>
-		</tr>
-	</c:if>
 	</c:if>
 </c:forEach>
 <c:if test="${selectionCount > 0}">
-     <tr><td valign="top" colspan="8"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
+     <tr><td valign="top" colspan="7"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 </c:if>
 </tbody>
 </table>
