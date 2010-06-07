@@ -157,4 +157,9 @@ public class RequestInfo extends JavaScriptObject
 	 */
 	public final native boolean promptForLogin() /*-{ return this.promptForLogin; }-*/;
 
+	/**
+	 * Return the url needed to invoke the "Teaming Feed" page.
+	 */
+	public final native String getTeamingFeedUrl() /*-{ return this.teamingFeedUrl; }-*/;
+	
 }// end RequestInfo

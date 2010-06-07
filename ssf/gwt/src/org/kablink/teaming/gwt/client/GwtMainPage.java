@@ -837,6 +837,13 @@ public class GwtMainPage extends Composite
 			// Relayout the content panel.
 			relayoutPage( false );
 			break;
+		
+		case TEAMING_FEED:
+			String teamingFeedUrl;
+			
+			teamingFeedUrl = m_requestInfo.getTeamingFeedUrl();
+			Window.open( teamingFeedUrl, "_teaming_feed", "width=500,height=700,resizable,scrollbars" );
+			break;
 			
 		case UNDEFINED:
 		default:

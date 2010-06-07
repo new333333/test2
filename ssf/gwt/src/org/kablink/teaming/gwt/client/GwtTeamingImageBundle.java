@@ -203,4 +203,9 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/trans50_black_arrowleft.png")
 	public ImageResource arrowTrans50Left();
 	
+	@Source("org/kablink/teaming/gwt/public/images/teaming_feed1.png")
+	public ImageResource teamingFeed1();
+
+	@Source("org/kablink/teaming/gwt/public/images/teaming_feed2.png")
+	public ImageResource teamingFeed2();
 }// end GwtTeamingImageBundle

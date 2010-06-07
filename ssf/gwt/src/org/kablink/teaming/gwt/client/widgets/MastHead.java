@@ -88,6 +88,8 @@ public class MastHead extends Composite
 	private Image m_adminImg2 = null;
 	private Image m_personalPrefsImg1 = null;
 	private Image m_personalPrefsImg2 = null;
+	private Image m_teamingFeedImg1 = null;
+	private Image m_teamingFeedImg2 = null;
 	private Image m_logoutImg1 = null;
 	private Image m_logoutImg2 = null;
 	private Image m_loginImg1 = null;
@@ -96,6 +98,7 @@ public class MastHead extends Composite
 	private Image m_helpImg2 = null;
 	private Anchor m_adminLink = null;
 	private Anchor m_personalPrefsLink = null;
+	private Anchor m_teamingFeedLink = null;
 	private Anchor m_logoutLink = null;
 	private Anchor m_loginLink = null;
 	private Anchor m_helpLink = null;
@@ -160,6 +163,7 @@ public class MastHead extends Composite
 			// Add the global actions to the masthead.
 			addAdministrationAction();
 			addPersonalPreferencesAction();
+			addTeamingFeedAction();
 			addLoginLogoutAction();
 			addHelpAction();
 			
@@ -506,6 +510,41 @@ public class MastHead extends Composite
 	
 	
 	/**
+	 * If the user is logged in, add the "Teaming Feed" link to the global actions panel.
+	 */
+	private void addTeamingFeedAction()
+	{
+		// Is the user logged in?
+		if ( m_requestInfo.isUserLoggedIn() )
+		{
+			ImageResource imgResource;
+			Element linkElement;
+
+			// Yes, add the "Teaming Feed" action.
+			m_teamingFeedLink = new Anchor();
+			m_teamingFeedLink.addStyleName( "brandingLink" );
+			m_teamingFeedLink.addClickHandler( this );
+			m_teamingFeedLink.addMouseOutHandler( this );
+			m_teamingFeedLink.addMouseOverHandler( this );
+			linkElement = m_teamingFeedLink.getElement();
+			
+			// Add the mouse-out image to the link.
+			imgResource = GwtTeaming.getImageBundle().teamingFeed1();
+			m_teamingFeedImg1 = new Image( imgResource );
+			linkElement.appendChild( m_teamingFeedImg1.getElement() );
+			
+			// Add the mouse-over image to the link.
+			imgResource = GwtTeaming.getImageBundle().teamingFeed2();
+			m_teamingFeedImg2 = new Image( imgResource );
+			m_teamingFeedImg2.setVisible( false );
+			linkElement.appendChild( m_teamingFeedImg2.getElement() );
+			
+			m_globalActionsPanel.add( m_teamingFeedLink );
+		}
+	}// end addPersonalPreferencesAction()
+	
+	
+	/**
 	 * Display the mouse-out image for the give widget and remove the mouse-over hint.
 	 */
 	private void doMouseOutActions( Widget eventSource )
@@ -520,6 +559,11 @@ public class MastHead extends Composite
 		{
 			m_personalPrefsImg1.setVisible( true );
 			m_personalPrefsImg2.setVisible( false );
+		}
+		else if ( eventSource == m_teamingFeedLink )
+		{
+			m_teamingFeedImg1.setVisible( true );
+			m_teamingFeedImg2.setVisible( false );
 		}
 		else if ( eventSource == m_logoutLink )
 		{
@@ -652,6 +696,10 @@ public class MastHead extends Composite
 			{
 				actionHandlerIT.next().handleAction( TeamingAction.EDIT_PERSONAL_PREFERENCES, null );
 			}
+			else if ( eventSource == m_teamingFeedLink )
+			{
+				actionHandlerIT.next().handleAction( TeamingAction.TEAMING_FEED, null );
+			}
 			else if ( eventSource == m_logoutLink )
 			{
 				actionHandlerIT.next().handleAction( TeamingAction.LOGOUT, null );
@@ -712,6 +760,13 @@ public class MastHead extends Composite
 			m_personalPrefsImg2.setVisible( true );
 			
 			hint = GwtTeaming.getMessages().personalPreferencesHint();
+		}
+		else if ( eventSource == m_teamingFeedLink )
+		{
+			m_teamingFeedImg1.setVisible( false );
+			m_teamingFeedImg2.setVisible( true );
+			
+			hint = GwtTeaming.getMessages().teamingFeedHint();
 		}
 		else if ( eventSource == m_logoutLink )
 		{
