@@ -194,6 +194,7 @@ public interface GwtTeamingMessages extends Messages
 	String logoutHint();
 	String myWorkspaceHint();
 	String personalPreferencesHint();
+	String teamingFeedHint();
 	
 	// Strings used in the edit branding dialog.
 	String addImage();
