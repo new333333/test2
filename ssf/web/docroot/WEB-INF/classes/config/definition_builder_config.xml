@@ -241,6 +241,7 @@
 			<property name="type" caption="__type" type="selectbox" 
 				  default="form" value="form">
 				<option name="form" caption="__entry_form" />
+				<option name="file" caption="__entry_form_file" />
 				<option name="guestbook" caption="__entry_form_guestbook" />
 				<option name="task" caption="__entry_form_task" />
 				<option name="survey" caption="__entry_form_survey" />
@@ -391,6 +392,7 @@
 			<property name="type" caption="__type" type="selectbox" 
 				  default="entryView" value="entryView">
 				<option name="entryView" caption="__entry_view" />
+				<option name="file" caption="__entry_file" />
 				<option name="guestbook" caption="__entry_guestbook" />
 				<option name="miniblog" caption="__entry_miniblog" />
 				<help>ihelp.designers.view_type</help>
@@ -450,6 +452,17 @@
 	</item>
 		
 	
+		
+	<item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" 
+	  category="entryViewData" display="view">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__entry_commentsAndAttachments"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_comments_and_attachments.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_comments_and_attachments.jsp" />
+		</jsps>
+	</item>
 		
 	<item name="entryComments" caption="__entry_comments" category="entryViewData" display="view">
 		<properties>

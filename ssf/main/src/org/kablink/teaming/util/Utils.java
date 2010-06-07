@@ -142,7 +142,11 @@ public class Utils {
 			result = NLT.get("user.title", values.toArray(), title);
 			result = result.trim().replaceAll("  ", " ");
 		}
-		
+		if (user.isDisabled()) {
+			List ta = new ArrayList();
+			ta.add(result.trim());
+			result =  NLT.get("user.title.disabled", ta.toArray(), result.trim());
+		}
 		return result.trim();
 	}
 	

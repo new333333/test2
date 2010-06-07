@@ -783,17 +783,17 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	border-bottom: 1px solid #e6e6e4;
 	}
 .wg-tab, .wg-tab-b {
-	font-size: .7em;
+	background:none repeat scroll 0 0 #FFFFFF;
+	font-size: 12px;
 	font-weight: normal;
 	padding: 5px 10px;
 	margin: 2px 0px;
-	background: #fff;
 	display:inline-block;
 	cursor: pointer;
 	}
 .wg-tab {
 	color: #fff;
-	background: #949494;
+	background:none repeat scroll 0 0 #949494;
 	}	
 .wg-tab:hover, .selected-menu {
 	color: #fff;
@@ -801,20 +801,20 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	}	
 .wg-tab.on, .wg-tab-b.on {
 	color: #000;
-	font-size: .8em;
+	font-size: 13px;
 	font-weight: bold;
-	background: #e6e6e4;
+	background:none repeat scroll 0 0 #E6E6E4;
 	cursor: pointer;
-	display: inline-block;
+	display: inline;
 	padding-bottom: 15px;
 	}
 .wg-tab-content {
-	background: #e6e6e4;
+	background:none repeat scroll 0 0 #E6E6E4;
 	border: 3px solid #e6e6e4;
 	height: 300px;
 	overflow: auto;
 	display: none;
-	margin: 3px 10px 10px 10px;
+	margin: 0px 10px 10px;
 	padding: 2px 5px;
 	}	
 .tabactions {

@@ -69,6 +69,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	decorateBox = true;
 }
 %>
+<c:set var="ss_boxTitle" value="<%= title %>"/>
 <c:set var="colWidth" value="99"/>
 <c:if test="<%= showMoveIcon %>">
     <c:set var="colWidth" value="${colWidth - 35}"/>
@@ -94,9 +95,11 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	    <col width="35%"/>
 		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
 	  </c:if>
-	  <col width="${colWidth}%"/>
+	  <c:if test="${!empty ss_boxTitle}"><col width="${colWidth}%"/></c:if>
+	  <c:if test="${empty ss_boxTitle}"><col width="0%"/></c:if>
 	  <c:if test="<%= showMoveIcon %>">
-	    <col width="35%"/>
+	    <c:if test="${empty ss_boxTitle}"><col width="${colWidth + 35}%"/></c:if>
+	    <c:if test="${!empty ss_boxTitle}"><col width="35%"/></c:if>
 		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
 	  </c:if>
 	  <c:if test="<%= showCloseIcon %>">
@@ -123,8 +126,14 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	    src="<html:imagesPath/>pics/1pix.gif"/></div></td>
 	  </c:if>
 
-	  <td class="ss_title_bar" align="center"><div class="ss_title_bar" align="center"
-	    style="margin:0px; padding:0px;"><%= title %></div></td>
+	  <c:if test="${empty ss_boxTitle}">
+	    <td class="ss_title_bar" align="center"></td>
+	  </c:if>
+	
+	  <c:if test="${!empty ss_boxTitle}">
+	    <td class="ss_title_bar" align="center"><div class="ss_title_bar" align="center"
+	      style="margin:0px; padding:0px;">${ss_boxTitle}</div></td>
+	  </c:if>
 	
 	  <c:if test="<%= showMoveIcon %>">
 	    <td class="ss_title_bar"><div onMouseDown="<%= showMoveRoutine %>"
