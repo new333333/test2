@@ -37,6 +37,7 @@
 <%@ page import="org.kablink.teaming.util.SPropsUtil" %>
 <%@ page import="org.kablink.util.PropertyNotFoundException" %>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
@@ -53,6 +54,11 @@
   </div>
 </c:if>
 
+<%
+// Only add the login widget if we aren't running the gwt ui.
+if ( !( GwtUIHelper.isGwtUIActive( request ) ) )
+{
+%>
 <c:if test="${ssUser.internalId == guestInternalId}">
   <script type="text/javascript">
     function ss_setReturnUrl() {
@@ -92,3 +98,6 @@
   </form>
  </ssf:sidebarPanel>  
 </c:if>
+<%
+}
+%>
