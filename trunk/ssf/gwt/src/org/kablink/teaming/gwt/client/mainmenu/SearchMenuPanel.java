@@ -38,8 +38,6 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
@@ -47,7 +45,6 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 
 
@@ -99,27 +96,10 @@ public class SearchMenuPanel extends FlowPanel {
 		searchAnchor.addStyleName("mainMenuSearch_ButtonAnchor");
 		searchAnchor.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				// Turn off any over indicator on the menu bar item...
+				// Turn off any over indicator on the menu bar item and
+				// perform the search.
 				searchMenu.getElement().removeClassName("subhead-control-bg2");
-				
-				// ...construct the search options composite...
-				final PopupPanel soPopup = new PopupPanel(false, true);
-				soPopup.setAnimationEnabled(true);
-//!				searchOptions.setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
-				soPopup.addStyleName("mainMenuSearchOptions_Browser roundcornerSM-bottom");
-				SearchOptionsComposite searchOptionsComposite = new SearchOptionsComposite(soPopup, m_actionTrigger);
-				searchOptionsComposite.addStyleName("mainMenuSearchOptions");
-				soPopup.setWidget(searchOptionsComposite);
-				
-				// ...and position and show it as per the position of
-				// ...the search panel on the menu.
-				soPopup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-					public void setPosition(int offsetWidth, int offsetHeight) {
-						int soPopupLeft = ((m_searchInput.getAbsoluteLeft() + m_searchInput.getOffsetWidth()) - offsetWidth);
-						int soPopupTop  = searchMenu.getParent().getElement().getAbsoluteBottom();
-						soPopup.setPopupPosition(soPopupLeft, soPopupTop);
-					}
-				});
+				doSearch();
 			}
 		});
 		
@@ -147,14 +127,21 @@ public class SearchMenuPanel extends FlowPanel {
 				char key = event.getCharCode();
 				if ('\r' == key) {
 					// Yes!  Perform the search.
-					String searchFor = m_searchInput.getValue();
-					m_searchInput.setValue("");
-					m_actionTrigger.triggerAction(TeamingAction.SIMPLE_SEARCH, searchFor);
+					doSearch();
 				}
 			}
 		});
 		
 		// ...and add the Anchor to the panel.
 		add(m_searchInput);
+	}
+	
+	/*
+	 * Performs a search on the search widget's contents.
+	 */
+	private void doSearch() {
+		String searchFor = m_searchInput.getValue();
+		m_searchInput.setValue("");
+		m_actionTrigger.triggerAction(TeamingAction.SIMPLE_SEARCH, searchFor);
 	}
 }

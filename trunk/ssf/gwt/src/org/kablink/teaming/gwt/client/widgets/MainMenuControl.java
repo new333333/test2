@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.mainmenu.MyFavoritesMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.MyTeamsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlacesMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.SearchMenuPanel;
+import org.kablink.teaming.gwt.client.mainmenu.SearchOptionsComposite;
 import org.kablink.teaming.gwt.client.mainmenu.TopRankedDlg;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
@@ -68,6 +69,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 
 /**
@@ -79,6 +81,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	private BinderInfo m_contextBinder;
 	private FlowPanel m_buttonsPanel;
 	private MenuBarButton m_bhButton;
+	private MenuBarButton m_soButton;
 	private FlowPanel m_contextPanel;
 	private MenuBarBox m_myWorkspaceBox;
 	private MenuBarBox m_myTeamsBox;
@@ -96,7 +99,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	/**
 	 * Constructor method.
 	 */
-	public MainMenuControl() {
+	public MainMenuControl() {		
 		// Create the menu's main panel...
 		FlowPanel menuPanel = new FlowPanel();
 		menuPanel.addStyleName("mainMenuControl");
@@ -114,6 +117,30 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		// ...add the search widgets to the right end of the menu...
 		m_searchPanel = new SearchMenuPanel(this);
 		menuPanel.add(m_searchPanel);
+		final MainMenuControl mainMenu = this;
+		m_soButton = new MenuBarButton(m_images.searchOptions(), m_messages.mainMenuAltSearchOptions(), new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				m_soButton.removeStyleName("subhead-control-bg2");
+				final PopupPanel soPopup = new PopupPanel(true, false);
+				soPopup.setAnimationEnabled(false);
+//!				m_searchOptionsPopup.setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
+				soPopup.addStyleName("mainMenuSearchOptions_Browser roundcornerSM-bottom");
+				SearchOptionsComposite searchOptionsComposite = new SearchOptionsComposite(soPopup, mainMenu);
+				searchOptionsComposite.addStyleName("mainMenuSearchOptions");
+				soPopup.setWidget(searchOptionsComposite);
+				
+				// ...and position and show it as per the position of
+				// ...the search panel on the menu.
+				soPopup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+					public void setPosition(int offsetWidth, int offsetHeight) {
+						int soPopupLeft = ((m_soButton.getAbsoluteLeft() + m_soButton.getOffsetWidth()) - offsetWidth);
+						int soPopupTop  = mainMenu.getParent().getElement().getAbsoluteBottom();
+						soPopup.setPopupPosition(soPopupLeft, soPopupTop);
+					}
+				});
+			}});
+		m_soButton.addStyleName("mainMenuButton mainMenuSearchOptions_Button subhead-control-bg1 roundcornerSM");
+		menuPanel.add(m_soButton);
 		
 		// ...and finally, all composites must call initWidget() in
 		// ...their constructors.

@@ -63,7 +63,7 @@ public abstract class MenuBarPopupBase extends PopupPanel {
 	protected GwtTeamingMainMenuImageBundle	m_images;			// The menu's images.
 	protected GwtTeamingMessages			m_messages;			// The menu's messages.
 	protected GwtRpcServiceAsync			m_rpcService;		//
-	private   MenuBarBox					m_menuBarBox;			// The menu bar box associated with a popup when opened.
+	private   MenuBarBox					m_menuBarBox;		// The menu bar box associated with a popup when opened.
 	private   VerticalPanel					m_contentPanel;		// A VerticalPanel that will hold the popup's contents.
 	
 	/**
@@ -94,7 +94,6 @@ public abstract class MenuBarPopupBase extends PopupPanel {
 		// ...and initialize everything else.
 		addStyleName("mainMenuPopup_Core");
 		setAnimationEnabled(false);
-//!		setAnimationEnabled(true);
 //!		setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
 
 		// ...create the popup's innards...

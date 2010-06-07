@@ -1074,7 +1074,7 @@ body, table td, select
 	border-left: none;
 	display: block;
 	position: absolute;
-	right: 10px;
+	right: 43px;
 	top: 1px;
 	white-space: nowrap;
 }
@@ -1089,6 +1089,16 @@ body, table td, select
 	border: 0px;
 	padding: 0px;
 	z-index: 310;
+}
+.mainMenuSearchOptions_Button
+{
+	padding: 1px;
+	border-left: none;
+	display: block;
+	position: absolute;
+	right: 10px;
+	top: 1px;
+	white-space: nowrap;
 }
 
 /* Styles for the search options dialog. */
