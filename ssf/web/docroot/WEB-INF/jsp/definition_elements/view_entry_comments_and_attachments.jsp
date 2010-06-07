@@ -120,6 +120,15 @@ function ss_hoverOverStoppedCommentsAttachmentsTab(id) {
     <ssf:nlt tag="__entry_attachments"/>
   </div>
   </td>
+  <td valign="middle">
+  <div id="viewFileVersions${ss_viewCommentsAttachmentsDivCount}Tab" 
+    class="wg-tab roundcornerSM <c:if test="${!empty ss_pseudoEntity}">on</c:if>" 
+    onMouseOver="ss_hoverOverCommentsAttachmentsTab('viewFileVersions${ss_viewCommentsAttachmentsDivCount}');"
+    onMouseOut="ss_hoverOverStoppedCommentsAttachmentsTab('viewFileVersions${ss_viewCommentsAttachmentsDivCount}');"
+    onClick="ss_showCommentsAttachmentsTab('viewFileVersions${ss_viewCommentsAttachmentsDivCount}');">
+    <ssf:nlt tag="__entry_file_versions"/>
+  </div>
+  </td>
   </tr>
   </table>
 </div>
@@ -129,7 +138,15 @@ function ss_hoverOverStoppedCommentsAttachmentsTab(id) {
   <c:if test="${!empty ss_pseudoEntity}">style="display:block;"</c:if>
   class="wg-tab-content">
   <c:set var="property_caption" value="" scope="request"/>
+  <c:set var="ss_showPrimaryFileAttachmentOnly" value="true" scope="request"/>
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
+</div>
+
+<div id="viewFileVersions${ss_viewCommentsAttachmentsDivCount}Div" 
+  style="display:none;"
+  class="wg-tab-content">
+  <c:set var="property_caption" value="" scope="request"/>
+  <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_file_versions.jsp" />
 </div>
 
 <c:if test="${empty ss_pseudoEntity}">
