@@ -774,6 +774,10 @@ public class GwtMainPage extends Composite
 			savedSearch( obj );
 			break;
 			
+		case RECENT_PLACE_SEARCH:
+			recentPlaceSearch( obj );
+			break;
+			
 		case TAG_SEARCH:
 			tagSearch( obj );
 			break;
@@ -1267,6 +1271,27 @@ public class GwtMainPage extends Composite
 		else
 			Window.alert( "in savedSearch() and obj is not a String object" );
 	}//end savedSearch()
+
+	/*
+	 * This method will be called to perform a recent place search on
+	 * an integer received as a parameter.
+	 * 
+	 * Implements the RECENT_PLACE_SEARCH teaming action.
+	 */
+	private void recentPlaceSearch( Object obj )
+	{
+		if ( ( null == obj ) || ( obj instanceof Integer ))
+		{
+			Integer searchFor;
+
+			// What tab is the recent place search for?
+			searchFor = ((Integer) obj);
+			String searchUrl = (m_requestInfo.getRecentPlaceSearchUrl() + "&tabId=" + String.valueOf(searchFor.intValue()));
+			GwtClientHelper.jsLoadUrlInContentFrame(searchUrl);
+		}
+		else
+			Window.alert( "in recentPlaceSearch() and obj is not an Integer object" );
+	}//end recentPlaceSearch()
 
 	/*
 	 * This method will be called to perform a search on a tag name
