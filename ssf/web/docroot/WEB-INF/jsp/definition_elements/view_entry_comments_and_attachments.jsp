@@ -34,20 +34,24 @@
 %>
 <% // View entry comments and attachments in tabs %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${empty ss_viewCommentsAttachmentsDivCount}">
+  <c:set var="ss_viewCommentsAttachmentsDivCount" value="0" scope="request"/>
+</c:if>
+<c:set var="ss_viewCommentsAttachmentsDivCount" value="${ss_viewCommentsAttachmentsDivCount + 1}" scope="request"/>
 <script type="text/javascript">
-var currentCommentsAttachmentsTabShowing = "viewComments";
+var currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} = "viewComments${ss_viewCommentsAttachmentsDivCount}";
 var currentCommentsAttachmentsHoverOverTab = null;
 function ss_showCommentsAttachmentsTab(id) {
-	if (currentCommentsAttachmentsTabShowing != null) {
-		var divObj = self.document.getElementById(currentCommentsAttachmentsTabShowing + "Div")
+	if (currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} != null) {
+		var divObj = self.document.getElementById(currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} + "Div")
 		divObj.style.display = "none";
-		var tabObj = self.document.getElementById(currentCommentsAttachmentsTabShowing + "Tab");
+		var tabObj = self.document.getElementById(currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} + "Tab");
 		tabObj.className = "wg-tab roundcornerSM";
-		currentCommentsAttachmentsTabShowing = null;
+		currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} = null;
 	}
-	currentCommentsAttachmentsTabShowing = id;
-	var divObj = self.document.getElementById(currentCommentsAttachmentsTabShowing + "Div");
-	var tabObj = self.document.getElementById(currentCommentsAttachmentsTabShowing + "Tab");
+	currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} = id;
+	var divObj = self.document.getElementById(currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} + "Div");
+	var tabObj = self.document.getElementById(currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} + "Tab");
 	divObj.style.display = "block";
 	tabObj.className = "wg-tab roundcornerSM on";
 	
@@ -56,19 +60,19 @@ function ss_showCommentsAttachmentsTab(id) {
 }
 
 function ss_hoverOverCommentsAttachmentsTab(id) {
-	if (currentCommentsAttachmentsTabShowing != null) {
-		var tabObj = self.document.getElementById(currentCommentsAttachmentsTabShowing + "Tab");
+	if (currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} != null) {
+		var tabObj = self.document.getElementById(currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} + "Tab");
 		tabObj.className = "wg-tab roundcornerSM on";
 	}
 	if (currentCommentsAttachmentsHoverOverTab != null && 
-			currentCommentsAttachmentsHoverOverTab != currentCommentsAttachmentsTabShowing) {
+			currentCommentsAttachmentsHoverOverTab != currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount}) {
 		var tabObj = self.document.getElementById(currentCommentsAttachmentsHoverOverTab + "Tab");
 		tabObj.className = "wg-tab roundcornerSM";
 		currentCommentsAttachmentsHoverOverTab = null;
 	}
 	currentCommentsAttachmentsHoverOverTab = id;
 	var tabObj = self.document.getElementById(id + "Tab");
-	if (currentCommentsAttachmentsHoverOverTab == currentCommentsAttachmentsTabShowing) {
+	if (currentCommentsAttachmentsHoverOverTab == currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount}) {
 		tabObj.className = "wg-tab roundcornerSM selected-menu on";
 	} else {
 		tabObj.className = "wg-tab roundcornerSM selected-menu";
@@ -78,15 +82,15 @@ function ss_hoverOverCommentsAttachmentsTab(id) {
 function ss_hoverOverStoppedCommentsAttachmentsTab(id) {
 	if (currentCommentsAttachmentsHoverOverTab != null) {
 		var tabObj = self.document.getElementById(currentCommentsAttachmentsHoverOverTab + "Tab");
-		if (currentCommentsAttachmentsHoverOverTab == currentCommentsAttachmentsTabShowing) {
+		if (currentCommentsAttachmentsHoverOverTab == currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount}) {
 			tabObj.className = "wg-tab roundcornerSM on";
 		} else {
 			tabObj.className = "wg-tab roundcornerSM";
 		}
 		currentCommentsAttachmentsHoverOverTab = null;
 	}
-	if (currentCommentsAttachmentsTabShowing != null) {
-		var tabObj = self.document.getElementById(currentCommentsAttachmentsTabShowing + "Tab");
+	if (currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} != null) {
+		var tabObj = self.document.getElementById(currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} + "Tab");
 		tabObj.className = "wg-tab roundcornerSM on";
 	}
 }
@@ -97,19 +101,22 @@ function ss_hoverOverStoppedCommentsAttachmentsTab(id) {
   class="wg-tabs margintop3 marginbottom2">
   <table cellspacing="0" cellpadding="0">
   <tr>
+  <c:if test="${empty ss_pseudoEntity}">
   <td valign="middle">
-  <div id="viewCommentsTab" class="wg-tab roundcornerSM on" 
-    onMouseOver="ss_hoverOverCommentsAttachmentsTab('viewComments');"
-    onMouseOut="ss_hoverOverStoppedCommentsAttachmentsTab('viewComments');"
-    onClick="ss_showCommentsAttachmentsTab('viewComments');">
+  <div id="viewComments${ss_viewCommentsAttachmentsDivCount}Tab" class="wg-tab roundcornerSM on" 
+    onMouseOver="ss_hoverOverCommentsAttachmentsTab('viewComments${ss_viewCommentsAttachmentsDivCount}');"
+    onMouseOut="ss_hoverOverStoppedCommentsAttachmentsTab('viewComments${ss_viewCommentsAttachmentsDivCount}');"
+    onClick="ss_showCommentsAttachmentsTab('viewComments${ss_viewCommentsAttachmentsDivCount}');">
     <ssf:nlt tag="__entry_comments"/>
   </div>
   </td>
+  </c:if>
   <td valign="middle">
-  <div id="viewAttachmentsTab" class="wg-tab roundcornerSM" 
-    onMouseOver="ss_hoverOverCommentsAttachmentsTab('viewAttachments');"
-    onMouseOut="ss_hoverOverStoppedCommentsAttachmentsTab('viewAttachments');"
-    onClick="ss_showCommentsAttachmentsTab('viewAttachments');">
+  <div id="viewAttachments${ss_viewCommentsAttachmentsDivCount}Tab" 
+    class="wg-tab roundcornerSM <c:if test="${!empty ss_pseudoEntity}">on</c:if>" 
+    onMouseOver="ss_hoverOverCommentsAttachmentsTab('viewAttachments${ss_viewCommentsAttachmentsDivCount}');"
+    onMouseOut="ss_hoverOverStoppedCommentsAttachmentsTab('viewAttachments${ss_viewCommentsAttachmentsDivCount}');"
+    onClick="ss_showCommentsAttachmentsTab('viewAttachments${ss_viewCommentsAttachmentsDivCount}');">
     <ssf:nlt tag="__entry_attachments"/>
   </div>
   </td>
@@ -117,12 +124,19 @@ function ss_hoverOverStoppedCommentsAttachmentsTab(id) {
   </table>
 </div>
 
-<div id="viewAttachmentsDiv" style="display:none;" class="wg-tab-content">
+<div id="viewAttachments${ss_viewCommentsAttachmentsDivCount}Div" 
+  <c:if test="${empty ss_pseudoEntity}">style="display:none;"</c:if>
+  <c:if test="${!empty ss_pseudoEntity}">style="display:block;"</c:if>
+  class="wg-tab-content">
+  <c:set var="property_caption" value="" scope="request"/>
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
 </div>
 
-<div id="viewCommentsDiv" style="display:block;" class="wg-tab-content">
+<c:if test="${empty ss_pseudoEntity}">
+<div id="viewComments${ss_viewCommentsAttachmentsDivCount}Div" style="display:block;" class="wg-tab-content">
+  <c:set var="property_caption" value="" scope="request"/>
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_replies.jsp" />
 </div>
+</c:if>
 
 </div>
