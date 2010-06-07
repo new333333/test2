@@ -122,6 +122,9 @@ public class GwtMainPage extends Composite
 		// Initialize JavaScript to perform Popup for User Profile
 		initSimpleUserProfileJS( this );
 		
+		// Initialize JavaScript that handles the landing page options
+		initHandleLandingPageOptionsJS( this );
+		
 		// Set the class name on the <body> element to "mainGwtTeamingPage"
 		bodyElement = RootPanel.getBodyElement();
 		bodyElement.setClassName( "mainTeamingPage" );
@@ -239,6 +242,18 @@ public class GwtMainPage extends Composite
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::contextLoaded(Ljava/lang/String;Ljava/lang/String;)( binderId, inSearch );
 		}//end ss_contextLoaded()
+	}-*/;
+
+	/*
+	 * Called to create a JavaScript method that will be invoked from a page that holds a landing page.
+	 * There are options in the landing page settings to hide the masthead, hide the sidebar, etc.
+	 * This method will show/hide controls based on these settings.
+	 */
+	private native void initHandleLandingPageOptionsJS( GwtMainPage gwtMainPage ) /*-{
+		$wnd.ss_handleLandingPageOptions = function( hideMasthead, hideSidebar, showBranding )
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::handleLandingPageOptions(ZZZ)( hideMasthead, hideSidebar, showBranding );
+		}//end ss_handleLandingPageOptions()
 	}-*/;
 
 	/*
@@ -765,11 +780,13 @@ public class GwtMainPage extends Composite
 			
 		case HIDE_MASTHEAD:
 			m_mastHead.setVisible( false );
+			m_mainMenuCtrl.setMastheadSliderMenuItemState( TeamingAction.SHOW_MASTHEAD );
 			relayoutPage( true );
 			break;
 			
 		case SHOW_MASTHEAD:
 			m_mastHead.setVisible( true );
+			m_mainMenuCtrl.setMastheadSliderMenuItemState( TeamingAction.HIDE_MASTHEAD );
 			relayoutPage( true );
 			break;
 			
@@ -788,6 +805,8 @@ public class GwtMainPage extends Composite
 				// Reposition the content control to where the tree control used to be.
 				m_contentCtrl.addStyleName( "mainWorkspaceTreeControl" );
 			}
+
+			m_mainMenuCtrl.setWorkspaceTreeSliderMenuItemState( TeamingAction.SHOW_LEFT_NAVIGATION );
 			
 			// Relayout the content panel.
 			relayoutPage( false );
@@ -809,6 +828,8 @@ public class GwtMainPage extends Composite
 				m_wsTreeCtrl.setVisible( true );
 			}
 			
+			m_mainMenuCtrl.setWorkspaceTreeSliderMenuItemState( TeamingAction.HIDE_LEFT_NAVIGATION );
+
 			// Relayout the content panel.
 			relayoutPage( false );
 			break;
@@ -821,6 +842,26 @@ public class GwtMainPage extends Composite
 	}// end handleAction()
 	
 	
+	/**
+	 * This method will handle the landing page options such as "hide the masthead", "hide the sidebar", etc.
+	 */
+	@SuppressWarnings("unused")
+	private void handleLandingPageOptions( boolean hideMasthead, boolean hideSidebar, boolean showBranding )
+	{
+		// Hide or show the sidebar.
+		if ( hideSidebar )
+			handleAction( TeamingAction.HIDE_LEFT_NAVIGATION, null );
+		else
+			handleAction( TeamingAction.SHOW_LEFT_NAVIGATION, null );
+		
+		// Hide or show the masthead.
+		if ( hideMasthead )
+			handleAction( TeamingAction.HIDE_MASTHEAD, null );
+		else
+			handleAction( TeamingAction.SHOW_MASTHEAD, null );
+	}// end handleLandingPageOptions()
+	
+
 	/**
 	 * This method will handle the given page ui in gwt instead of having the jsp page do the work.
 	 */

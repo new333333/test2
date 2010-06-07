@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
@@ -54,6 +55,7 @@ public class MenuBarToggle extends Anchor {
 	private ActionTrigger	m_actionTrigger;	// The interface to trigger TeamingAction's through.
 	private Image			m_altImg;			// The alternate Image.
 	private Image			m_baseImg;			// The base      Image.
+	private Image 			m_currentImg;		// Current image being displayed.
 	private TeamingAction	m_altAction;		// The alternate TeamingAction.
 	private TeamingAction	m_baseAction;		// The base      TeamingAction.
 	private Widget			m_hoverWidget;		// The Widget any hover interaction is tied to. 
@@ -62,13 +64,12 @@ public class MenuBarToggle extends Anchor {
 	 * Inner class that implements clicking on a MenuBarToggle.
 	 */
 	private class MenuToggleSelector implements ClickHandler {
-		private boolean m_isBase;		// true -> Toggle is set to the base action.  false -> It's set to the alternate action.
 
 		/**
 		 * Class constructor.
 		 */
 		MenuToggleSelector() {
-			m_isBase = true;
+			m_currentImg = m_baseImg;
 			getElement().appendChild(m_baseImg.getElement());
 		}
 		
@@ -78,26 +79,25 @@ public class MenuBarToggle extends Anchor {
 		 * @param event
 		 */
 		public void onClick(ClickEvent event) {
+			TeamingAction action;
+			
 			// Remove any hover style from the button...
 			m_hoverWidget.removeStyleName("subhead-control-bg2");
 			
 			// ...fire the action...
-			TeamingAction action = (m_isBase ? m_baseAction : m_altAction);
-			m_actionTrigger.triggerAction(action);
+			if ( m_currentImg == m_baseImg )
+				action = m_baseAction;
+			else
+				action = m_altAction;
+			
+			m_actionTrigger.triggerAction( action );
 			
 			// ...and toggle the state of the MenuBarToggle.
-			Image addImg;
-			Image removeImg;
-			if (m_isBase) {
-				addImg    = m_altImg;
-				removeImg = m_baseImg;
-			}
-			else {
-				addImg    = m_baseImg;
-				removeImg = m_altImg;
-			}
-			m_isBase = (!m_isBase);
-			getElement().replaceChild(addImg.getElement(), removeImg.getElement());
+			if ( action == m_baseAction )
+				action = m_altAction;
+			else
+				action = m_baseAction;
+			setImage( action );
 		}
 	}
 
@@ -144,4 +144,47 @@ public class MenuBarToggle extends Anchor {
 		addMouseOverHandler(hover);
 		addMouseOutHandler( hover);
 	}
+	
+	/**
+	 * Set the image for this menu bar toggle.
+	 */
+	public void setImage( TeamingAction action )
+	{
+		Image addImg;
+		Image removeImg;
+		
+		if ( action == m_altAction ) {
+			addImg    = m_altImg;
+			removeImg = m_baseImg;
+		}
+		else {
+			addImg    = m_baseImg;
+			removeImg = m_altImg;
+		}
+		
+		// Does the image need to change?
+		if ( addImg != m_currentImg )
+		{
+			// Yes
+			m_currentImg = addImg;
+			getElement().replaceChild(addImg.getElement(), removeImg.getElement());
+		}
+		
+	}// end setImage()
+	
+	
+	/**
+	 * Set the state of this toggle to the given action.
+	 */
+	public void setState( TeamingAction action )
+	{
+		// Make sure we were based a valid state.
+		if ( action != m_baseAction && action != m_altAction )
+		{
+			Window.alert( "invalid state passed to MenuBarToggle.setState(): " + action.name() );
+			return;
+		}
+		
+		setImage( action );
+	}// end setState()
 }

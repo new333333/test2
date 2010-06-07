@@ -84,6 +84,8 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	private MenuBarBox m_myTeamsBox;
 	private MenuBarBox m_myFavoritesBox;
 	private MenuBarBox m_closeAdminBox;
+	private MenuBarToggle m_wsTreeSlider;
+	private MenuBarToggle m_mastHeadSlider;
 	private GwtTeamingMainMenuImageBundle m_images = GwtTeaming.getMainMenuImageBundle();
 	private GwtTeamingMessages m_messages = GwtTeaming.getMessages();
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
@@ -182,14 +184,14 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		m_buttonsPanel.addStyleName("mainMenuButton_Group");
 		
 		// ...add the slide-left/right toggle...
-		MenuBarToggle wsTreeSlider = new MenuBarToggle(this, m_images.slideLeft(), m_messages.mainMenuAltLeftNavHideShow(), TeamingAction.HIDE_LEFT_NAVIGATION, m_images.slideRight(), m_messages.mainMenuAltLeftNavHideShow(), TeamingAction.SHOW_LEFT_NAVIGATION);
-		wsTreeSlider.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
-		m_buttonsPanel.add(wsTreeSlider);
+		m_wsTreeSlider = new MenuBarToggle(this, m_images.slideLeft(), m_messages.mainMenuAltLeftNavHideShow(), TeamingAction.HIDE_LEFT_NAVIGATION, m_images.slideRight(), m_messages.mainMenuAltLeftNavHideShow(), TeamingAction.SHOW_LEFT_NAVIGATION);
+		m_wsTreeSlider.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
+		m_buttonsPanel.add(m_wsTreeSlider);
 
 		// ...add the slide-up/down toggle...
-		MenuBarToggle mastHeadSlider = new MenuBarToggle(this, m_images.slideUp(), m_messages.mainMenuAltMastHeadHideShow(), TeamingAction.HIDE_MASTHEAD, m_images.slideDown(), m_messages.mainMenuAltMastHeadHideShow(), TeamingAction.SHOW_MASTHEAD);
-		mastHeadSlider.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
-		m_buttonsPanel.add(mastHeadSlider);
+		m_mastHeadSlider = new MenuBarToggle(this, m_images.slideUp(), m_messages.mainMenuAltMastHeadHideShow(), TeamingAction.HIDE_MASTHEAD, m_images.slideDown(), m_messages.mainMenuAltMastHeadHideShow(), TeamingAction.SHOW_MASTHEAD);
+		m_mastHeadSlider.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
+		m_buttonsPanel.add(m_mastHeadSlider);
 
 		// ...add the browse hierarchy button...
 		m_bhButton = new MenuBarButton(this, m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), TeamingAction.BROWSE_HIERARCHY);
@@ -440,6 +442,24 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		// Hide the Close administration menu item.
 		m_closeAdminBox.setVisible(false);
 	}
+	
+	/**
+	 * Set the state of the "show/hide masthead" menu item.
+	 */
+	public void setMastheadSliderMenuItemState( TeamingAction action )
+	{
+		m_mastHeadSlider.setState( action );
+	}// end setMastheadSliderMenuItemState()
+	
+	
+	/**
+	 * Set the state of the "show/hide workspace tree" menu item.
+	 */
+	public void setWorkspaceTreeSliderMenuItemState( TeamingAction action )
+	{
+		m_wsTreeSlider.setState( action );
+	}// end setWorkspaceTreeSliderMenuItemState()
+	
 	
 	/**
 	 * Hide all the menus and controls on this menu control and shows
