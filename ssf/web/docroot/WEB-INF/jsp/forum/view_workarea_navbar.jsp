@@ -48,7 +48,29 @@
 			var inSearch = ("function" == typeof ss_initSearchOptions);
 			window.top.ss_contextLoaded("${ssBinder.id}", String(inSearch));
 		}
+
+		/**
+		 * This function will call into the gwt code and show/hide the masthead and workspace tree control appropriately.
+		 */
+		function handleLandingPageOptions()
+		{
+			<c:if test="${ !empty ss_mashupHideMasthead && !empty ss_mashupHideSidebar && !empty ss_mashupShowBranding }">
+				var hideMasthead;
+				var hideSidebar;
+				var showBranding;
+
+				hideMasthead = ${ss_mashupHideMasthead};
+				hideSidebar = ${ss_mashupHideSidebar};
+				showBranding = ${ss_mashupShowBranding}; 
+				if ( window.parent.ss_handleLandingPageOptions )
+				{
+					window.parent.ss_handleLandingPageOptions( hideMasthead, hideSidebar, showBranding );
+				}
+			</c:if>
+		}// end showLandingPageOptions()
+
 		ss_createOnLoadObj("notifyGwtUI_sendMail", notifyGwtUI);
+		ss_createOnLoadObj( "notifyGwtUI_handleLandingPageOptions", handleLandingPageOptions );
 	</script>
 <% } %>
 <script type="text/javascript">
