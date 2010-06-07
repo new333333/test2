@@ -97,7 +97,7 @@ function ss_hoverOverStoppedCommentsAttachmentsTab(id) {
   class="wg-tabs margintop3 marginbottom2">
   <table cellspacing="0" cellpadding="0">
   <tr>
-  <td valign="top">
+  <td valign="middle">
   <div id="viewCommentsTab" class="wg-tab roundcornerSM on" 
     onMouseOver="ss_hoverOverCommentsAttachmentsTab('viewComments');"
     onMouseOut="ss_hoverOverStoppedCommentsAttachmentsTab('viewComments');"
@@ -105,7 +105,7 @@ function ss_hoverOverStoppedCommentsAttachmentsTab(id) {
     <ssf:nlt tag="__entry_comments"/>
   </div>
   </td>
-  <td valign="top">
+  <td valign="middle">
   <div id="viewAttachmentsTab" class="wg-tab roundcornerSM" 
     onMouseOver="ss_hoverOverCommentsAttachmentsTab('viewAttachments');"
     onMouseOut="ss_hoverOverStoppedCommentsAttachmentsTab('viewAttachments');"
