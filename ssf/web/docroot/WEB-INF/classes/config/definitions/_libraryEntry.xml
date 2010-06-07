@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_libraryEntry" caption="__definition_default_library_entry" type="1" nextId="33" definitionType="1" databaseId="402883c6115753d8011157829367000f" internalId="402883c6115753d8011157829367000f"> 
+<definition name="_libraryEntry" caption="__definition_default_library_entry" type="1" nextId="35" definitionType="1" databaseId="402883c6115753d8011157829367000f" internalId="402883c6115753d8011157829367000f"> 
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1"> 
     <properties/>  
     <item name="entryFormForm" caption="__form" id="2"> 
@@ -9,14 +9,14 @@
         <property name="type" value="form"/> 
       </properties>  
       <item name="title" caption="__title" type="data" id="3" display="form"> 
-        <properties>
-          <property name="caption" value="__title"/>
-          <property name="name" value="title"/>
-          <property name="width" value="60"/>
-          <property name="generated" value="false"/>
-          <property name="itemSource" value="upload"/>
-          <property name="required" value="false"/>
-        </properties>
+        <properties> 
+          <property name="caption" value="__title"/>  
+          <property name="name" value="title"/>  
+          <property name="width" value="60"/>  
+          <property name="generated" value="false"/>  
+          <property name="itemSource" value="upload"/>  
+          <property name="required" value="false"/> 
+        </properties> 
       </item>  
       <item name="guestName" caption="__guestName" type="data" category="entryData" display="form" id="31"> 
         <properties> 
@@ -108,16 +108,11 @@
         <property name="caption" value="__entry_workflow"/> 
       </properties> 
     </item>  
-    <item name="entryAttachments" caption="__entry_attachments" category="commonEntryViewData" id="24"> 
-      <properties> 
-        <property name="caption" value="__entry_attachments"/> 
-      </properties> 
-    </item>  
-    <item name="entryComments" caption="__entry_comments" category="entryViewData" id="26"> 
-      <properties> 
-        <property name="caption" value="__entry_comments"/> 
-      </properties> 
-    </item> 
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="33">
+      <properties>
+        <property name="caption" value=""/>
+      </properties>
+    </item>
   </item>  
   <item name="entryBlogView" caption="__entry_blog_view_definition" id="16"> 
     <properties> 
@@ -138,16 +133,11 @@
         <property name="caption" value="__entry_workflow"/> 
       </properties> 
     </item>  
-    <item name="entryBlogAttachments" caption="__entry_attachments" category="blogEntryViewData" id="25"> 
-      <properties> 
-        <property name="caption" value="__entry_attachments"/> 
-      </properties> 
-    </item>  
-    <item name="entryBlogComments" caption="__entry_comments" category="blogEntryViewData" id="27"> 
-      <properties> 
-        <property name="caption" value="__entry_comments"/> 
-      </properties> 
-    </item> 
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="34">
+      <properties>
+        <property name="caption" value=""/>
+      </properties>
+    </item>
   </item>  
   <properties> 
     <property name="name" value="_libraryEntry"/>  
