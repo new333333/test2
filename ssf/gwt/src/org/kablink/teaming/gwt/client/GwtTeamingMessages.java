@@ -248,6 +248,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuAltGwtUI();
 	String mainMenuAltLeftNavHideShow();
 	String mainMenuAltMastHeadHideShow();
+	String mainMenuAltSearchOptions();
 	String mainMenuBarActions();
 	String mainMenuBarFolder();
 	String mainMenuBarMyFavorites();

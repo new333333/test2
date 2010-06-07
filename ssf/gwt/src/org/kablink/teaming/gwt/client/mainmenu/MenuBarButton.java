@@ -76,8 +76,10 @@ public class MenuBarButton extends Anchor {
 	 * @param imgRes
 	 * @param imgTitle
 	 * @param action
+	 * @param actionObject
+	 * @param clickHandler
 	 */
-	public MenuBarButton(ActionTrigger actionTrigger, ImageResource imgRes, String imgTitle, TeamingAction action, Object actionObject) {
+	public MenuBarButton(ActionTrigger actionTrigger, ImageResource imgRes, String imgTitle, TeamingAction action, Object actionObject, ClickHandler clickHandler) {
 		// Initialize the super class...
 		super();
 		
@@ -96,7 +98,10 @@ public class MenuBarButton extends Anchor {
 		
 		// ...tie things together...
 		getElement().appendChild(img.getElement());
-		addClickHandler(new MenuButtonSelector());
+		if (null == clickHandler) {
+			clickHandler = new MenuButtonSelector();
+		}
+		addClickHandler(clickHandler);
 		
 		// ...add mouse over handling...
 		MenuHoverByWidget hover = new MenuHoverByWidget(this, "subhead-control-bg2");
@@ -104,9 +109,19 @@ public class MenuBarButton extends Anchor {
 		addMouseOutHandler( hover);
 	}
 	
+	public MenuBarButton(ActionTrigger actionTrigger, ImageResource imgRes, String imgTitle, TeamingAction action, Object actionObject) {
+		// Always use the initial form of the constructor.
+		this(actionTrigger, imgRes, imgTitle, action, actionObject, null);
+	}
+	
 	public MenuBarButton(ActionTrigger actionTrigger, ImageResource imgRes, String imgTitle, TeamingAction action) {
-		// Always use the other form of the constructor.
-		this(actionTrigger, imgRes, imgTitle, action, null);
+		// Always use the initial form of the constructor.
+		this(actionTrigger, imgRes, imgTitle, action, null, null);
+	}
+	
+	public MenuBarButton(ImageResource imgRes, String imgTitle, ClickHandler clickHandler) {
+		// Always use the initial form of the constructor.
+		this(null, imgRes, imgTitle, null, null, clickHandler);
 	}
 
 	/**

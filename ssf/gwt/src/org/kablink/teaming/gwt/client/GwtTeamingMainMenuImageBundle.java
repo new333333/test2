@@ -70,6 +70,9 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/rating_star.gif")
 	public ImageResource ratingStar();
 	
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/search_adv.png")
+	public ImageResource searchOptions();
+
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/search_glass.png")
 	public ImageResource searchGlass();
 
