@@ -84,7 +84,7 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 			// Hide the menu...
 			hide();
 			
-			// ...and trigger the appropriate event for the place.
+			// ...and trigger the appropriate action for the place.
 			switch (m_place.getTypeEnum()) {
 			case BINDER:
 				m_actionTrigger.triggerAction(
@@ -98,7 +98,10 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 				break;
 			
 			case SEARCH:
-				Window.alert("...Search for '" + m_place.getTitle() + "' needs to be implemented...\n\n" + (m_place.getSearchQuick() ? "Quick" : "Saved") + ":  " + m_place.getSearchQuery());
+				m_actionTrigger.triggerAction(
+					TeamingAction.RECENT_PLACE_SEARCH,
+					new Integer(m_place.getId()));
+				
 				break;
 			}
 		}
