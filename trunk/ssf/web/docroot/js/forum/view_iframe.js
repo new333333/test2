@@ -300,7 +300,7 @@ function ss_startDragDiv(type) {
     if (self.document.onmouseup) ss_divDragSavedMouseUp = self.document.onmouseup;
     self.document.onmousemove = ss_divDrag
     self.document.onmouseup = ss_divStopDrag
-    if (ss_divDragMoveType == 'move') {
+    if (ss_divDragMoveType == 'move' || ss_divDragMoveType == 'resize') {
     	if (self.document.onmouseout) ss_divDragSavedMouseOut = self.document.onmouseout;
     	self.document.onmouseout = ss_divDrag
     }
@@ -389,7 +389,7 @@ function ss_divStopDrag(evt) {
     }
     self.document.onmousemove = ss_divDragSavedMouseMove;
     self.document.onmouseup = ss_divDragSavedMouseUp;
-    if (ss_divDragMoveType == 'move') {
+    if (ss_divDragMoveType == 'move' || ss_divDragMoveType == 'resize') {
     	self.document.onmouseout = ss_divDragSavedMouseOut;
     }
     setTimeout("ss_entryClearDrag();",100);

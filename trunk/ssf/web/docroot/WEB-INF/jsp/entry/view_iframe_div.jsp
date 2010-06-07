@@ -70,12 +70,14 @@
     <ssf:param name="box_width" value="400" />
     <ssf:param name="box_color" value="${ss_entry_border_color}" />
     <ssf:param name="box_canvas_color" value="${ss_style_background_color_opaque}" />
-    <ssf:param name="box_title" useBody="true">
-      <div >
-      <c:set var="ss_history_bar_table_class" value="ss_title_bar_history_bar" scope="request"/>
-      <jsp:include page="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" />
-      </div>
-    </ssf:param>
+    <c:if test="${!empty ssFolder.id && !empty ssFolderEntries}">
+      <ssf:param name="box_title" useBody="true">
+        <div >
+        <c:set var="ss_history_bar_table_class" value="ss_title_bar_history_bar" scope="request"/>
+        <jsp:include page="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" />
+        </div>
+      </ssf:param>
+    </c:if>
     <ssf:param name="box_show_resize_icon" value="true" />
     <ssf:param name="box_show_resize_routine" value="ss_startDragDiv('resize')" />
     <ssf:param name="box_show_resize_gif" value="icons/resize_east_west.gif" />

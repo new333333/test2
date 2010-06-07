@@ -93,7 +93,6 @@
   </c:if>
 </c:if>
 <c:if test="${propertyValues_displayType[0] == 'leftAligned'}">
-<div>
 <table>
 <tr>
 <td valign="top">

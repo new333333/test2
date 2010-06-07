@@ -35,6 +35,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <% // History and entry navigation bar %>
+<c:if test="${!empty ssFolder.id && !empty ssFolderEntries}">
 <c:if test="${empty ss_history_bar_loaded}">
 <c:set var="ss_history_bar_imageId" value="0" scope="request"/>
 <c:set var="ss_history_bar_loaded" value="1" scope="request"/>
@@ -138,3 +139,4 @@ var ss_history_bar_loaded = 1;
   border:1px solid black; background-color:#fff; x-index:1000;">
   <span><ssf:nlt tag="nav.noEntries"/></span>
 </div>
+</c:if>

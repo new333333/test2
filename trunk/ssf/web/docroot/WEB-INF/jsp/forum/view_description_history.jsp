@@ -313,11 +313,11 @@ function dodiff()
 <c:forEach var="change" items="${ss_changeLogList}" varStatus="status">
 <tr>
 <td valign="bottom" nowrap>
-  <span style="padding-right:6px;">${change.folderEntry.attributes.logVersion}</span>
-</td>
-<td valign="bottom" nowrap>
   <input type="checkbox" id="compare${change.folderEntry.attributes.logVersion}"
   onChange="ss_updateCompareButton('${fn:length(ss_changeLogList)}')">
+</td>
+<td valign="bottom" nowrap>
+  <span style="padding-right:6px;">${change.folderEntry.attributes.logVersion}</span>
 </td>
 <td valign="bottom" nowrap>
   <fmt:formatDate timeZone="${ssUser.timeZone.ID}" type="both" value="${change.changeLog.operationDate}"/>
