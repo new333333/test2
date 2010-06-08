@@ -44,6 +44,8 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
@@ -68,6 +70,7 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 	private int m_folderViewsListCount;				// Count of items in m_folderViewsList.
 	private List<ToolbarItem> m_calendarImportList;	// List of calendar import toolbar items.
 	private List<ToolbarItem> m_folderViewsList;	// List of folder view     toolbar items.
+	private String m_binderId;						// The ID of the binder the folder options dialog is running against.
 	private ToolbarItem m_configureColumnsTBI;		// A configure columns toolbar item, if configuring columns is applicable in the given context.
 
 	/*
@@ -90,12 +93,13 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 	 * @param calendarImportsList
 	 * @param folderViewsList
 	 */
-	public FolderOptionsDlg(boolean autoHide, boolean modal, int left, int top, ToolbarItem configureColumnsTBI, List<ToolbarItem> calendarImportsList, List<ToolbarItem> folderViewsList) {
+	public FolderOptionsDlg(boolean autoHide, boolean modal, int left, int top, String binderId, ToolbarItem configureColumnsTBI, List<ToolbarItem> calendarImportsList, List<ToolbarItem> folderViewsList) {
 		// Initialize the superclass...
 		super(autoHide, modal, left, top);
 
 		// ...initialize everything else...
 		m_messages            = GwtTeaming.getMessages();
+		m_binderId            = binderId;
 		m_configureColumnsTBI = configureColumnsTBI;
 		m_calendarImportList  = calendarImportsList; m_calendarImportListCount = ((null == m_calendarImportList) ? 0 : m_calendarImportList.size());
 		m_folderViewsList     = folderViewsList;     m_folderViewsListCount    = ((null == m_folderViewsList)    ? 0 : m_folderViewsList.size());
@@ -106,12 +110,16 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 			m_folderViewsListCount = 0;
 		}
 	
-		// ...and create the dialog's content.
+		// ...create the dialog's content...
 		createAllDlgContent(
 			m_messages.mainMenuFolderOptionsDlgHeader(),
 			this,	// The dialog's EditSuccessfulHandler.
 			this,	// The dialog's EditCanceledHandler.
-			null);	// Data passed via global data members. 
+			null);	// Data passed via global data members.
+
+		// ...and check the default folder view, if there's one to be
+		// ...checked.
+		checkDefaultFolderView();
 	}
 	
 	/*
@@ -131,6 +139,42 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 		grid.setWidget(row, 0, header);
 	}
 
+	/*
+	 * Checks the radio button corresponding to the default folder view
+	 * for the binder we're running against.
+	 */
+	private void checkDefaultFolderView() {
+		// Did we display any folder view options in the dialog?
+		if (0 < m_folderViewsListCount) {
+			// Yes!  Does the folder we're working on have a default
+			// view defined?
+			GwtTeaming.getRpcService().getDefaultFolderDefinitionId(m_binderId, new AsyncCallback<String>() {
+				public void onFailure(Throwable t) {
+					Window.alert(t.toString());
+				}
+				public void onSuccess(String folderDefId) {
+					if (GwtClientHelper.hasString(folderDefId)) {
+						// Yes!  Scan the folder view options.
+						for (int i = 0; i < m_folderViewsListCount; i += 1) {
+							// Is this the folder view option that
+							// corresponds to the folder's default
+							// view definition?
+							ToolbarItem tbi = m_folderViewsList.get(i);
+							String url = tbi.getUrl();
+							if (GwtClientHelper.hasString(url) && (0 < url.indexOf(folderDefId))) {
+								// Yes!  Check its radio button.
+								String rbId = (IDBASE + tbi.getName() + IDTAIL_RADIO);
+								InputElement rb = Document.get().getElementById(rbId).getFirstChildElement().cast();
+								rb.setChecked(true);								
+								break;
+							}
+						}
+					}
+				}
+			});
+		}		
+	}
+	
 	/**
 	 * Creates all the controls that make up the dialog.
 	 * 
