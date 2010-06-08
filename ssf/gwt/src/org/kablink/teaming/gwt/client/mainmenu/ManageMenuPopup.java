@@ -72,6 +72,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private TeamManagementInfo m_tmi;				// The team management information for which team management menu items should appear on the menu.
 	private ToolbarItem m_calendarImportTBI;		// The calendar import           toolbar item, if found.
 	private ToolbarItem m_commonActionsTBI;			// The common actions            toolbar item, if found.
+	private ToolbarItem m_configureColumnsTBI;		// The configure columns         toolbar item, if found.
 	private ToolbarItem m_emailNotificationTBI;		// The email notification        toolbar item, if found.
 	private ToolbarItem m_folderViewsTBI;			// The folder views              toolbar item, if found.
 	private ToolbarItem m_shareThisTBI;				// The share this                toolbar item, if found.
@@ -376,16 +377,18 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			}
 			
 			else if (tbName.equalsIgnoreCase("ssGwtMiscToolbar")) {
-				m_shareThisTBI   = tbi.getNestedToolbarItem("share");
-				m_trackBinderTBI = tbi.getNestedToolbarItem("track");
-				m_trackPersonTBI = tbi.getNestedToolbarItem("trackPerson");
+				m_configureColumnsTBI = tbi.getNestedToolbarItem("configureColumns");
+				m_shareThisTBI        = tbi.getNestedToolbarItem("share");
+				m_trackBinderTBI      = tbi.getNestedToolbarItem("track");
+				m_trackPersonTBI      = tbi.getNestedToolbarItem("trackPerson");
 			}
 		}
 		
 		// Return true if we found any of the manage menu items and
 		// false otherwise.
 		boolean reply =
-			((null != m_emailNotificationTBI)                                                ||
+			((null != m_configureColumnsTBI)                                                 ||
+			 (null != m_emailNotificationTBI)                                                ||
 			 (null != m_shareThisTBI)                                                        ||
 			 (null != m_trackBinderTBI)                                                      ||
 			 (null != m_trackPersonTBI)                                                      ||
@@ -408,7 +411,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private void showFolderOptions(final ToolbarItem folderViewsTBI, final ToolbarItem calendarImportTBI) {
 		// If there aren't any folder options...
 		if ((!(hasNestedItems(folderViewsTBI, 2))) &&
-			(!(hasNestedItems(calendarImportTBI)))) {
+			(!(hasNestedItems(calendarImportTBI))) &&
+			(null == m_configureColumnsTBI)) {
 			// ...bail.
 			return;
 		}
@@ -430,6 +434,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 					true,	// true  -> Modal.
 					m_menuLeft,
 					m_menuTop,
+					m_configureColumnsTBI,
 					((null == calendarImportTBI) ? null : calendarImportTBI.getNestedItemsList()),
 					((null == folderViewsTBI)    ? null : folderViewsTBI.getNestedItemsList()));
 				folderOptionsDlg.addStyleName("folderOptionsDlg");

@@ -143,6 +143,35 @@ public class GwtUIHelper {
 	}
 	
 	/*
+	 * Adds a configure columns item to the toolbar.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void addConfigureColumnsToToolbar(AllModulesInjected bs, RenderRequest request, Map model, Binder binder, Toolbar tb) {
+		// In the current context, can the user configure columns?
+		// Note:  The check here follows the same logic as implemented
+		// in sidebar_configure_columns.jsp.
+		String viewType = ((String) model.get(WebKeys.VIEW_TYPE));
+		if (MiscUtil.hasString(viewType)) {
+			if (viewType.equalsIgnoreCase("folder") ||
+					viewType.equalsIgnoreCase("table") ||
+					viewType.equalsIgnoreCase("file")) {
+				// Yes!  Construct a Configure Columns toolbar item.
+				AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+				url.setParameter(WebKeys.ACTION, "__ajax_request");
+				url.setParameter(WebKeys.URL_OPERATION, "configure_folder_columns");
+				url.setParameter(WebKeys.URL_BINDER_ID, String.valueOf(binder.getId()));
+				HashMap qualifiers = new HashMap();
+				qualifiers.put("onClick", "ss_createPopupDiv(this, 'ss_folder_column_menu');return false;");
+				tb.addToolbarMenu(
+					"configureColumns",
+					NLT.get("misc.configureColumns"),
+					url.toString(),
+					qualifiers);
+			}
+		}
+	}
+	
+	/*
 	 * Adds a send email item to the toolbar.
 	 */
 	@SuppressWarnings("unchecked")
@@ -414,11 +443,12 @@ public class GwtUIHelper {
 				if (EntityIdentifier.EntityType.profiles != binder.getEntityType()) {
 					// Yes!  Add toolbar items to track and share the
 					// binder.
-					addClipboardToToolbar(  bs, request, model, binder, gwtMiscToolbar);
-					addSendEmailToToolbar(  bs, request, model, binder, gwtMiscToolbar);
-					addShareBinderToToolbar(bs, request, model, binder, gwtMiscToolbar);
-					addTrackBinderToToolbar(bs, request, model, binder, gwtMiscToolbar);
-					addTrashToToolbar(      bs, request, model, binder, gwtMiscToolbar);
+					addClipboardToToolbar(       bs, request, model, binder, gwtMiscToolbar);
+					addConfigureColumnsToToolbar(bs, request, model, binder, gwtMiscToolbar);
+					addSendEmailToToolbar(       bs, request, model, binder, gwtMiscToolbar);
+					addShareBinderToToolbar(     bs, request, model, binder, gwtMiscToolbar);
+					addTrackBinderToToolbar(     bs, request, model, binder, gwtMiscToolbar);
+					addTrashToToolbar(           bs, request, model, binder, gwtMiscToolbar);
 				}
 			}
 		}
