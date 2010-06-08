@@ -514,6 +514,11 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
+			<name>toggleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<name>action</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

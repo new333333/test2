@@ -58,6 +58,7 @@ public class ExpandableAreaTag extends BodyTagSupport implements ParamAncestorTa
 	private String _bodyContent;
 	private String title = "";
 	private String titleClass = "ss_bold";
+	private String toggleClass = "";
 	private String action = "";
 	private Boolean initOpen = false;
 	private Map _values;
@@ -87,6 +88,7 @@ public class ExpandableAreaTag extends BodyTagSupport implements ParamAncestorTa
 			req.setAttribute("title", this.title);
 			if (this._values.containsKey("title")) req.setAttribute("title", this._values.get("title"));
 			req.setAttribute("titleClass", this.titleClass);
+			req.setAttribute("toggleClass", this.toggleClass);
 			req.setAttribute("initOpen", this.initOpen);
 			StringServletResponse res = new StringServletResponse(httpRes);
 			rd.include(req, res);
@@ -100,6 +102,7 @@ public class ExpandableAreaTag extends BodyTagSupport implements ParamAncestorTa
 			req = new DynamicServletRequest(httpReq);
 			req.setAttribute("title", this.title);
 			req.setAttribute("titleClass", this.titleClass);
+			req.setAttribute("toggleClass", this.toggleClass);
 			req.setAttribute("initOpen", this.initOpen);
 
 			res = new StringServletResponse(httpRes);
@@ -114,6 +117,7 @@ public class ExpandableAreaTag extends BodyTagSupport implements ParamAncestorTa
 		finally {
 			this.title = "";
 			this.titleClass = "ss_bold";
+			this.toggleClass = "";
 			this.action = "";
 			this.initOpen = false;
 			this._values = null;
@@ -126,6 +130,10 @@ public class ExpandableAreaTag extends BodyTagSupport implements ParamAncestorTa
 
 	public void setTitleClass(String titleClass) {
 	    this.titleClass = titleClass;
+	}
+
+	public void setToggleClass(String toggleClass) {
+	    this.toggleClass = toggleClass;
 	}
 
 	public void setAction(String action) {

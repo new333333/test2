@@ -313,6 +313,9 @@ div.ss_widgetContent {
 .ss_expandable_area_title {
   width: 100%;
   }
+.ss_expandable_area_toggle_indent20 {
+  padding-left: 20px;
+  }
 .ss_expandable_area_content {
   display: none;
   visibility: hidden;

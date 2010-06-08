@@ -326,18 +326,7 @@ function dodiff()
   <ssf:showUser user="${change.changeLogEntry.modification.principal}"/>
 </td>
 <td valign="bottom" nowrap>
-  <c:set var="commentSeen" value="false"/>
-  <c:forEach var="changeComment" items="${change.comment}">
-    <c:if test="${!empty changeComment}">
-      <c:set var="changeText">changeLog.comment.${changeComment}</c:set>
-      <div><ssf:nlt tag="${changeText}"/></div>
-      <c:set var="commentSeen" value="true"/>
-    </c:if>
-  </c:forEach>
-  <c:if test="${!commentSeen}">
-    <c:set var="changeText">changeLog.operation.${change.operation}</c:set>
-    <div><ssf:nlt tag="${changeText}"/></div>
-  </c:if>
+  <div><ssf:nlt tag="changeLog.operation.${change.operation}"/></div>
 </td>
 <td valign="bottom" nowrap>
   <a href="javascript: ;" class="ss_tinyButton" onClick="ss_showHide('historyVersion_${status.count}');return false;">

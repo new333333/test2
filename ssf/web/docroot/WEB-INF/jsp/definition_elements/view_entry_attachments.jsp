@@ -62,7 +62,7 @@ var ss_labelButtonCancel = "<ssf:nlt tag="button.cancel"/>";
 var ss_labelEntryChooseFileWarning = "<ssf:nlt tag="entry.chooseFileWarningMessage"/>";
 var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAttachmentHelpText"/>";
 </script>
-<div class="ss_entryContent">
+<div class="ss_entryContent" style="padding-top:10px;">
 
 <table width="90%" border="0" valign="top" cellpadding="1" cellspacing="0">
 <c:if test="${!empty ss_pseudoEntity}">

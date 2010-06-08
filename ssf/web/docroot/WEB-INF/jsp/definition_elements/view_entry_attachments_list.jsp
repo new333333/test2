@@ -472,7 +472,8 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		    <c:if test="<%= owningBinder.isMirrored() %>">
 		      <c:set var="previousVersionsText" value='<%= NLT.get("entry.PreviousVersionsMirrored", new String[] {String.valueOf(selection.getFileVersions().size()-1)}) %>'/>
 		    </c:if>
-		    <ssf:expandableArea title="${previousVersionsText}">
+		    <ssf:expandableArea title="${previousVersionsText}" titleClass="ss_normal" 
+		      toggleClass="ss_expandable_area_toggle_indent20">
 			  <table class="ss_attachments_list" cellpadding="0" cellspacing="0" width="100%">
 			  <c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1" varStatus="status">
 <%
