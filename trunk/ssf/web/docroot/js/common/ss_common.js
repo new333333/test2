@@ -1222,6 +1222,24 @@ function ss_toggleShowDiv(divName, namespace) {
 	}
 }
 
+//Routine to hide or show a region using a collapse/expand button
+function ss_toggleRegion(aObj, divId) {
+	var divObj = self.document.getElementById(divId);
+	var buttonSrc = aObj.firstChild.src;
+	var reExpand = /expand([^\/]*\.png)/
+	var reCollapse = /collapse([^\/]*\.png)/
+	if (buttonSrc.search(reExpand) >= 0) {
+		divObj.className = "wg-tab-content";
+		aObj.firstChild.src = buttonSrc.replace(reExpand, "collapse$1")
+	} else {
+		var divHeight = ss_getDivHeight(divId);
+		if (parseInt(divHeight) >= 300) divObj.className = "wg-tab-content-clipped";
+		aObj.firstChild.src = buttonSrc.replace(reCollapse, "expand$1")
+	}
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
+}
+
 function ss_checkIfParentDivHidden(divId) {
     var obj = self.document.getElementById(divId)
     if (obj != null) {

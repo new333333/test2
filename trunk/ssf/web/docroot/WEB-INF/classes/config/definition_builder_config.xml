@@ -454,7 +454,7 @@
 	
 		
 	<item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" 
-	  category="entryViewData" display="view">
+	  category="entryViewData" display="view" multipleAllowed="false">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__entry_commentsAndAttachments"/>
 		</properties>

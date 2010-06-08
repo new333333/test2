@@ -811,9 +811,16 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 .wg-tab-content {
 	background:none repeat scroll 0 0 #E6E6E4;
 	border: 3px solid #e6e6e4;
+	display: block;
+	margin: 0px 10px 10px;
+	padding: 2px 5px;
+	}	
+.wg-tab-content-clipped {
+	background:none repeat scroll 0 0 #E6E6E4;
+	border: 3px solid #e6e6e4;
 	height: 300px;
 	overflow: auto;
-	display: none;
+	display: block;
 	margin: 0px 10px 10px;
 	padding: 2px 5px;
 	}	

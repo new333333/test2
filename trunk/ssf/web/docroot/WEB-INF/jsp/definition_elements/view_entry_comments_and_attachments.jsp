@@ -99,10 +99,10 @@ function ss_hoverOverStoppedCommentsAttachmentsTab(id) {
 <div class="ss_entryContent">
 <div style="text-align: left; margin: 0px 10px; border: 0pt none;" 
   class="wg-tabs margintop3 marginbottom2">
-  <table cellspacing="0" cellpadding="0">
+  <table cellspacing="0" cellpadding="0" width="100%">
   <tr>
   <c:if test="${empty ss_pseudoEntity}">
-  <td valign="middle">
+  <td valign="middle" width="1%" nowrap>
   <div id="viewComments${ss_viewCommentsAttachmentsDivCount}Tab" class="wg-tab roundcornerSM on" 
     onMouseOver="ss_hoverOverCommentsAttachmentsTab('viewComments${ss_viewCommentsAttachmentsDivCount}');"
     onMouseOut="ss_hoverOverStoppedCommentsAttachmentsTab('viewComments${ss_viewCommentsAttachmentsDivCount}');"
@@ -111,7 +111,7 @@ function ss_hoverOverStoppedCommentsAttachmentsTab(id) {
   </div>
   </td>
   </c:if>
-  <td valign="middle">
+  <td valign="middle" width="1%" nowrap>
   <div id="viewAttachments${ss_viewCommentsAttachmentsDivCount}Tab" 
     class="wg-tab roundcornerSM <c:if test="${!empty ss_pseudoEntity}">on</c:if>" 
     onMouseOver="ss_hoverOverCommentsAttachmentsTab('viewAttachments${ss_viewCommentsAttachmentsDivCount}');"
@@ -120,7 +120,7 @@ function ss_hoverOverStoppedCommentsAttachmentsTab(id) {
     <ssf:nlt tag="__entry_attachments"/>
   </div>
   </td>
-  <td valign="middle">
+  <td valign="middle" width="1%" nowrap>
   <div id="viewFileVersions${ss_viewCommentsAttachmentsDivCount}Tab" 
     class="wg-tab roundcornerSM <c:if test="${!empty ss_pseudoEntity}">on</c:if>" 
     onMouseOver="ss_hoverOverCommentsAttachmentsTab('viewFileVersions${ss_viewCommentsAttachmentsDivCount}');"
@@ -129,31 +129,36 @@ function ss_hoverOverStoppedCommentsAttachmentsTab(id) {
     <ssf:nlt tag="__entry_file_versions"/>
   </div>
   </td>
+  <td valign="middle" align="right" width="97%" nowrap>
+    <a href="javascript: ;" onClick="this, ss_toggleRegion(this, 'commentsAndAttachmentsRegion');return false;" 
+      alt="<ssf:nlt tag="general.expandCollapseRegion"/>"
+    ><img src="<html:rootPath/>images/pics/collapse_16_yellow.png"/></a>
+  </td>
   </tr>
   </table>
 </div>
 
+<div id="commentsAndAttachmentsRegion" class="wg-tab-content">
 <div id="viewAttachments${ss_viewCommentsAttachmentsDivCount}Div" 
   <c:if test="${empty ss_pseudoEntity}">style="display:none;"</c:if>
   <c:if test="${!empty ss_pseudoEntity}">style="display:block;"</c:if>
-  class="wg-tab-content">
+>
   <c:set var="property_caption" value="" scope="request"/>
   <c:set var="ss_showPrimaryFileAttachmentOnly" value="true" scope="request"/>
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
 </div>
 
-<div id="viewFileVersions${ss_viewCommentsAttachmentsDivCount}Div" 
-  style="display:none;"
-  class="wg-tab-content">
+<div id="viewFileVersions${ss_viewCommentsAttachmentsDivCount}Div" style="display:none;">
   <c:set var="property_caption" value="" scope="request"/>
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_file_versions.jsp" />
 </div>
 
 <c:if test="${empty ss_pseudoEntity}">
-<div id="viewComments${ss_viewCommentsAttachmentsDivCount}Div" style="display:block;" class="wg-tab-content">
+<div id="viewComments${ss_viewCommentsAttachmentsDivCount}Div" style="display:block;">
   <c:set var="property_caption" value="" scope="request"/>
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_replies.jsp" />
 </div>
 </c:if>
+</div>
 
 </div>
