@@ -95,7 +95,28 @@
 			} catch(e) {
 			}
 		}
-		</script>
+
+		// ss_wikiLinkUrl is used with the tinyMCE editor plugin that lets you insert a link to a Teaming page.
+		var ss_wikiLinkUrl = "<ssf:url adapter="true" actionUrl="true" portletName="ss_forum" action="__ajax_request">
+			  					<ssf:param name="operation" value="wikilink_form" />
+			  					<ssf:param name="binderId" value="${wikiLinkBinderId}" />
+		    				   </ssf:url>";
+
+		// ss_youTubeUrl and ss_invalidYouTubeUrl are used with the tinyMCE editor plugin that lets you add a youtube video.
+		var ss_youTubeUrl = "<ssf:url adapter="true" actionUrl="true" portletName="ss_forum" action="__ajax_request">
+			  					<ssf:param name="operation" value="youtube_form" />
+		    				  </ssf:url>";
+		var ss_invalidYouTubeUrl = "<%= NLT.get("__youTubeInvalidUrl").replaceAll("\"", "\\\\\"") %>";
+
+		// The following variables are used by the tinyMCE editor plugin that lets you
+		// upload an image and insert it into the tinyMCE editor.
+		var ss_imageUploadError1 = "<ssf:nlt tag="imageUpload.badFile"/>"
+		var ss_imageUploadUrl = "<ssf:url adapter="true" actionUrl="true" portletName="ss_forum" action="__ajax_request">
+			  						<ssf:param name="operation" value="upload_image_file" />
+		    					 </ssf:url>";
+		var ss_imageSelections_ss_htmleditor = "<select name='srcUrl' id='srcUrl'></select>";
+		
+	</script>
 	<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js"></script>
 	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
 	<script type="text/javascript" language="javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
