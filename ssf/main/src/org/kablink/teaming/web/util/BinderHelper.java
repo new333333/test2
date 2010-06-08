@@ -1986,7 +1986,6 @@ public class BinderHelper {
 			Map changeMap = new HashMap(); // doc.asXML()
 			changeMap.put("changeLog", log);
 			changeMap.put("operation", root.attributeValue("operation", ""));
-			changeMap.put("comment", root.attributeValue("comment", "").split(","));
 			if (version != null && version.equals(log.getVersion()) || 
 					version == null) {
 				if (!folderEntries.containsKey(logVersion)) changeList.add(changeMap);

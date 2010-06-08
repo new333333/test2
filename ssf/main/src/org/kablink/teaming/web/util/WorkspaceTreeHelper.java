@@ -922,7 +922,7 @@ public class WorkspaceTreeHelper {
 				if (!owner.getId().equals(user.getId())) {
 					showDeleteProfileMenu = true;
 					if (owner.isLocal()) {
-						showDisableProfileMenu = true;
+						//showDisableProfileMenu = true;
 					}
 				}
 			}

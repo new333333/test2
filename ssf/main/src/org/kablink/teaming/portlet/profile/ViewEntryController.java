@@ -158,9 +158,9 @@ public class ViewEntryController extends SAbstractController {
 			url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 			if (entry.isDisabled()) {
-				toolbar.addToolbarMenu("3_disable", NLT.get("toolbar.enable"), url, qualifiers);
+				//toolbar.addToolbarMenu("3_disable", NLT.get("toolbar.enable"), url, qualifiers);
 			} else {
-				toolbar.addToolbarMenu("3_disable", NLT.get("toolbar.disable"), url, qualifiers);
+				//toolbar.addToolbarMenu("3_disable", NLT.get("toolbar.disable"), url, qualifiers);
 			}
 		}
     

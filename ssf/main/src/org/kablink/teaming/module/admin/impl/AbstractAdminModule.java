@@ -843,15 +843,12 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		}
      } 
 	private void processAccessChangeLog(WorkArea workArea, String operation) {
-		processAccessChangeLog(workArea, operation, "");
-	}
-	private void processAccessChangeLog(WorkArea workArea, String operation, String comment) {
 		if ((workArea instanceof Binder) && !(workArea instanceof TemplateBinder)) {
         	Binder binder = (Binder)workArea;
         	User user = RequestContextHolder.getRequestContext().getUser();
         	binder.incrLogVersion();
         	binder.setModification(new HistoryStamp(user));
-        	loadBinderProcessor(binder).processChangeLog(binder, operation, comment);
+        	loadBinderProcessor(binder).processChangeLog(binder, operation);
        	}
 	}
 	
@@ -1046,6 +1043,10 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
                || log.getOperation().equals(ChangeLog.MODIFYENTRY)
 			   || log.getOperation().equals(ChangeLog.FILEADD)
 			   || log.getOperation().equals(ChangeLog.FILEMODIFY)
+			   || log.getOperation().equals(ChangeLog.FILEMODIFY_INCR_MAJOR_VERSION)
+			   || log.getOperation().equals(ChangeLog.FILEMODIFY_REVERT)
+			   || log.getOperation().equals(ChangeLog.FILEMODIFY_SET_COMMENT)
+			   || log.getOperation().equals(ChangeLog.FILEMODIFY_SET_STATUS)
 			   || log.getOperation().equals(ChangeLog.FILERENAME))
 			   entryChangeLogs.add(log);
 	   }

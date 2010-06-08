@@ -1365,17 +1365,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
 
     public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
-    	return processChangeLog(entry, operation, "");
-    }
-    public ChangeLog processChangeLog(DefinableEntity entry, String operation, String comment) {
-		return processChangeLog(entry, operation, comment, true);
+		return processChangeLog(entry, operation, true);
 	}
-    public ChangeLog processChangeLog(DefinableEntity entry, String operation, boolean saveIt) {
-    	return processChangeLog(entry, operation, "", saveIt);
-    }
-	public ChangeLog processChangeLog(DefinableEntity entry, String operation, String comment, boolean saveIt) {
+	public ChangeLog processChangeLog(DefinableEntity entry, String operation, boolean saveIt) {
 		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);
-		ChangeLog changes = new ChangeLog(entry, operation, comment);
+		ChangeLog changes = new ChangeLog(entry, operation);
 		ChangeLogUtils.buildLog(changes, entry);
 		if (saveIt) getCoreDao().save(changes);
 		return changes;
