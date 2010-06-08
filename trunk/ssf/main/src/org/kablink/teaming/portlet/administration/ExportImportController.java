@@ -51,10 +51,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.tools.zip.ZipOutputStream;
 import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.portletadapter.portlet.HttpServletResponseReachable;
 import org.kablink.teaming.security.AccessControlException;
@@ -90,6 +92,8 @@ public class ExportImportController  extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		if(operation.equals(WebKeys.OPERATION_IMPORT)){
 			binderId = PortletRequestUtils.getLongParameter(request,  WebKeys.URL_BINDER_ID);
+			Binder binder = getBinderModule().getBinder(binderId);
+			getBinderModule().checkAccess(binder, BinderOperation.export);
 			
 			if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 				Map fileMap=null;
@@ -142,6 +146,9 @@ public class ExportImportController  extends  SAbstractController {
 			RenderResponse response) throws Exception {
 		
 		binderId = PortletRequestUtils.getLongParameter(request,  WebKeys.URL_BINDER_ID);
+		Binder binder = getBinderModule().getBinder(binderId);
+		getBinderModule().checkAccess(binder, BinderOperation.export);
+		
 		HttpServletResponse res = ((HttpServletResponseReachable)response).getHttpServletResponse();		
 		Map<String,Object> model = new HashMap<String,Object>();
 		
