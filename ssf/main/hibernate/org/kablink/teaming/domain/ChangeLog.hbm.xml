@@ -13,7 +13,6 @@
     <property name="userId"/>
     <property name="operationDate" type="timestamp"/>
     <property name="operation" length="32"/>
-    <property name="comment" length="128"/>
     <property name="version"/>
 <!-- use length to force medium blog in mysql -->
     <property name="xmlString" length="2000000" type="org.springframework.orm.hibernate3.support.ClobStringType"/>   
