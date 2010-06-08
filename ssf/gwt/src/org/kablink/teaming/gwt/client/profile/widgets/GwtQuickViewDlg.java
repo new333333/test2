@@ -393,7 +393,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 	 * Initialize the controls in the dialog with the values from the given
 	 * object. 
 	 */
-	public void init(Object props) {
+	private void init(Object props) {
 
 		getUserStatus();
 		createProfileInfoSections();

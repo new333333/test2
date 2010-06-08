@@ -327,9 +327,11 @@ public class GwtProfileHelper {
 	    		    				if(name.equals("picture") && (attach instanceof FileAttachment)){
 		    							String webPath;
 		    							String path;
+		    							String fileName;
 		    							
 		    							webPath = WebUrlUtil.getServletRootURL();
-		    							path = WebUrlUtil.getFileUrl(webPath, "readScaledFile", attach.getOwner().getEntity(), attach.toString());
+		    							fileName = attach.toString();
+		    							path = WebUrlUtil.getFileUrl(webPath, "readScaledFile", attach.getOwner().getEntity(), fileName);
 		    							
 		    							//Check if null, this will guarantee we use the first picture we come across
 		    							if(Validator.isNull(profile.getPictureUrl())){
@@ -338,10 +340,8 @@ public class GwtProfileHelper {
 		    							
 		    							//Create a new Profile Attribute to convert the data to
 					    				pAtrLE = new ProfileAttributeListElement(name, pAttr);
-		    		    				pAttach = new ProfileAttributeAttachment(attach.getName(), attach.getId(), path);
+		    		    				pAttach = new ProfileAttributeAttachment(fileName, attach.getId(), path);
 		    		    				
-		    		    				
-				    	    			
 	    		    				} else {
 	    		    					//Create a new Profile Attribute to convert the data to
 					    				pAtrLE = new ProfileAttributeListElement(name, pAttr);
