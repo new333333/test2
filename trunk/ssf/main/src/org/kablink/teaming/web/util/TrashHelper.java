@@ -943,9 +943,6 @@ public class TrashHelper {
 	public static void changeBinder_Log(BinderProcessor processor, Binder binder, String operation) {
 		processor.processChangeLog(binder, operation);
 	}
-	public static void changeBinder_Log(BinderProcessor processor, Binder binder, String operation, String comment) {
-		processor.processChangeLog(binder, operation, comment);
-	}
 
 	/*
 	 * Writes logging information about an entry change. 

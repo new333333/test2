@@ -105,9 +105,6 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
 	public ChangeLog processChangeLog(Binder binder, String operation) { 
 		return null;
 	}
-	public ChangeLog processChangeLog(Binder binder, String operation, String comment) { 
-		return null;
-	}
     public void indexFunctionMembership(Binder binder, boolean cascade) {
     	//don't index
     }
