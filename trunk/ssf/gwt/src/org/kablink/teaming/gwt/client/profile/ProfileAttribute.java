@@ -138,7 +138,6 @@ public class ProfileAttribute implements IsSerializable {
          }	else if (value instanceof ProfileAttributeAttachment) {
          	valueType = ATTACHMENT;
          	ProfileAttributeAttachment att = (ProfileAttributeAttachment)value; 
-         	att.setName(name);
          	stringValue=att.getId();
          	attachment = att;
          }  else {

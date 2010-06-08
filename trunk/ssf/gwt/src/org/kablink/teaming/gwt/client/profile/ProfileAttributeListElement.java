@@ -24,14 +24,14 @@ public class ProfileAttributeListElement extends ProfileAttribute implements IsS
 	public ProfileAttribute getParent() {
 		return parent;
 	}
-	protected void setParent(ProfileAttribute p) {
+	public void setParent(ProfileAttribute p) {
 		this.parent = p;
 	}
 
-	protected int getPosition() {
+	public int getPosition() {
 		return position;
 	}
-	protected void setPosition(int pos) {
+	public void setPosition(int pos) {
 		this.position = pos;
 	}
  }

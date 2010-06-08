@@ -392,3 +392,38 @@ div.profile_gallery a:hover {
     text-decoration: underline;
     color: #0000FC;
 }
+.profileUpload {
+	margin-bottom:8px;
+	margin-top:2px;
+}
+.profileUploadButton {
+	margin-left: 5px;
+}
+.profileUploadPanel {
+}
+.profileUploadPanel form {
+	display:inline;
+}
+.modifyAvatarDlg {
+position: relative;
+background:none repeat scroll 0 0 #FFFFFF;
+-moz-border-radius-topleft:5px;
+-moz-border-radius-topright:5px;
+-webkit-border-top-left-radius: 5px;
+-webkit-border-top-right-radius: 5px;
+}
+.modifyAvatarTitle{
+text-align: center;
+font-size: 0.9em;
+padding-right: 15px;
+}
+.modifyAvatarDlgContent{
+	margin: 5px;
+	padding: 2px;
+}
+.modifyAvatarDlgPhoto{
+	padding: 5px;
+}
+.modifyAvatarDlgActions{
+	margin: 20px;
+}

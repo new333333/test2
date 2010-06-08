@@ -1,20 +1,17 @@
 package org.kablink.teaming.gwt.client.profile.widgets;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
-import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
+import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -24,26 +21,31 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
-public class ProfileMainPanel extends Composite {
+public class ProfileMainPanel extends Composite implements SubmitCompleteHandler {
 
 	ProfileRequestInfo profileRequestInfo;
 	
 	private FlexTable grid;
-	private int row = 0;
 	private FlowPanel mainPanel;
 	private FlowPanel titlePanel;
 	private ProfileFollowingWidget followingAnchor;
 	private boolean isEditable = false;
 	private Anchor edit;
+	private int m_uniqueId = 1;
 
 	private ActionTrigger actionTrigger;
 
@@ -226,21 +228,25 @@ public class ProfileMainPanel extends Composite {
 	 * @param rowCount
 	 * @return
 	 */
-	public int createProfileInfoSection(final ProfileCategory cat, FlexTable grid,
-			int rowCount) {
-		int row = rowCount;
+	public void createProfileInfoSection(final ProfileCategory cat, FlexTable grid) {
 
+		int row = grid.getRowCount();
+		
 		Label sectionHeader = new Label(cat.getTitle());
 		sectionHeader.setStyleName("sectionHeading");
 
 		grid.setWidget(row, 0, sectionHeader);
+		grid.getFlexCellFormatter().setColSpan(row, 0, 2);
 
 		// remove the bottom border from the section heading titles
 		grid.getFlexCellFormatter().setStyleName(row, 0, "sectionHeadingRBB");
-		grid.getFlexCellFormatter().setStyleName(row, 1, "sectionHeadingRBB");
-		grid.getFlexCellFormatter().setStyleName(row, 2, "sectionHeadingRBB");
-		row = row + 1;
-
+		
+		if(cat.getName().equals("profileHeadingPhotosAndImagesView")) {
+			if(profileRequestInfo.isModifyAllowed()){
+				buildUploadImage(grid);
+			}
+		}
+		
 		for (ProfileAttribute attr : cat.getAttributes()) {
 
 			Label title = new Label(attr.getTitle() + ":");
@@ -248,24 +254,79 @@ public class ProfileMainPanel extends Composite {
 			Widget value = new ProfileAttributeWidget(attr, isEditable).getWidget();
 
 			if(!attr.getDataName().equals("picture")) {
+				row = grid.getRowCount();
 				grid.setWidget(row, 0, title);
 				grid.setWidget(row, 1, value);
 				grid.getFlexCellFormatter().setWidth(row, 1, "70%");
 				grid.getFlexCellFormatter().setHorizontalAlignment(row, 1,
 						HasHorizontalAlignment.ALIGN_LEFT);
 			} else {
+				//This must be a picture attribute
+				value = new ProfileAvatarArea(attr, isEditable).getWidget();
+				row = grid.getRowCount();
 				grid.setWidget(row, 0, value);
 				grid.getFlexCellFormatter().setColSpan(row, 0, 2);
 				grid.getFlexCellFormatter().setHorizontalAlignment(row, 0,
 						HasHorizontalAlignment.ALIGN_LEFT);
 			}
-
-			row = row + 1;
 		}
-
-		return row;
 	}
 
+	private void buildUploadImage(FlexTable grid) {
+		
+		FlowPanel panel = new FlowPanel();
+		panel.addStyleName("profileUploadPanel");
+		panel.setWidth("100%");
+		
+		//create a form element in order to upload a new photo
+		final FormPanel formPanel = new FormPanel();
+		panel.add(formPanel);
+		
+		formPanel.setEncoding( FormPanel.ENCODING_MULTIPART );
+		formPanel.setMethod( FormPanel.METHOD_POST );
+		formPanel.addSubmitCompleteHandler( this );
+		
+		FileUpload fileUpload = new FileUpload();
+		fileUpload.addStyleName("profileUpload");
+		String name = "picture";
+		fileUpload.setName( name );
+		InputElement input = fileUpload.getElement().cast();
+		input.setSize(40);
+		input.setId(name);
+		
+		formPanel.add(fileUpload);
+		formPanel.getElement().setId("form1");
+		formPanel.setAction( profileRequestInfo.getModifyUrl() + "&okBtn=1" );
+	
+		final Anchor uploadBtn = new Anchor("Upload");
+		uploadBtn.setTitle("Select to upload photo");
+		uploadBtn.addClickHandler( new ClickHandler(){
+				public void onClick(ClickEvent event){
+					formPanel.submit();
+				}
+			});
+		
+		uploadBtn.setVisible(false);
+		uploadBtn.addStyleName("profile-anchor");
+		uploadBtn.addStyleName("profileUploadButton");
+		//add the upload button to the div
+		panel.add(uploadBtn);
+		
+		//if the file upload changes, add the upload button
+		fileUpload.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event) {
+				uploadBtn.setVisible(true);
+			}
+		});
+		
+		//panel.add(upload);
+		int row = grid.getRowCount();
+		grid.setWidget(row, 0, panel );
+		grid.getFlexCellFormatter().setColSpan(row, 0 , 2);
+		// remove the bottom border from the section heading titles
+		grid.getFlexCellFormatter().setStyleName(row, 0, "sectionHeadingRBB");
+	}
+	
 	/**
 	 * Set the Profile Category which contains the heading label and all of the
 	 * child Profile Attributes
@@ -273,7 +334,7 @@ public class ProfileMainPanel extends Composite {
 	 * @param cat
 	 */
 	public void setCategory(ProfileCategory cat) {
-		row = createProfileInfoSection(cat, grid, row);
+		createProfileInfoSection(cat, grid);
 	}
 
 	/**
@@ -502,5 +563,11 @@ public class ProfileMainPanel extends Composite {
 		public void setTitle(String text) {
 			label.setTitle(text);
 		}
+	}
+
+	@Override
+	public void onSubmitComplete(SubmitCompleteEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
 }
