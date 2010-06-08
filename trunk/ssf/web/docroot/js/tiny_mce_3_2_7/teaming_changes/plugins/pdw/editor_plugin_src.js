@@ -30,6 +30,7 @@
 			// Register the command so that it can be invoked by using tinyMCE.activeEditor.execCommand('mceExample');
 			ed.addCommand('mcePDWToggleToolbars', function() {
 			
+				
 				var cm = ed.controlManager, id, j;
 				
 				for(j = 0; j < tbIds.length; j++){
@@ -48,11 +49,23 @@
 						DOM.show(id);
 						t._resizeIframe(ed, tbIds[j], -26);
 						ed.settings.pdw_toggle_on = 0;
+						var aObj = self.document.getElementById(ed.id + "_pdw_toggle")
+						var src = aObj.firstChild.src;
+						if (src.indexOf("expand_20_yellow.png") > 0) {
+							src = src.substr(0, src.indexOf("expand_20_yellow.png")) + "collapse_20_yellow.png";
+							aObj.firstChild.src = src;
+						}
 					} else {
-						cm.setActive('pdw_toggle', 1);
+						cm.setActive('pdw_toggle', 0);
 						DOM.hide(id);
 						t._resizeIframe(ed, tbIds[j], 26);
 						ed.settings.pdw_toggle_on = 1;
+						var aObj = self.document.getElementById(ed.id + "_pdw_toggle")
+						var src = aObj.firstChild.src;
+						if (src.indexOf("collapse_20_yellow.png") > 0) {
+							src = src.substr(0, src.indexOf("collapse_20_yellow.png")) + "expand_20_yellow.png";
+							aObj.firstChild.src = src;
+						}
 					}
 				}
 				
@@ -62,7 +75,7 @@
 			ed.addButton('pdw_toggle', {
 				title : ed.getLang('pdw.description', 0),
 				cmd : 'mcePDWToggleToolbars',
-				image : url + '/img/table_menu.png'
+				image : url + '/img/expand_20_yellow.png'
 			});
 			
 			ed.onPostRender.add(function(){
@@ -74,7 +87,7 @@
 					for(i = 0; i < toolbars.length; i++){
 						tbId = ed.getParam('', 'toolbar' + (toolbars[i]).replace(' ',''));
 						id = ed.controlManager.get(tbId).id;
-						cm.setActive('pdw_toggle', 1);
+						cm.setActive('pdw_toggle', 0);
 						DOM.hide(id);
 						t._resizeIframe(ed, tbId, 26);
 					}
