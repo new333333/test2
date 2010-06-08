@@ -545,6 +545,15 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	}
 
 	/*
+	 * Forces the tree to reload regardless of the circumstances.
+	 */
+	private void reloadTree() {
+		// To reload it, simply re-root it at the same point that it's
+		// currently rooted.
+		reRootTree(getRootTreeInfo().getBinderInfo().getBinderId());
+	}
+	
+	/*
 	 * Re-roots the WorkspaceTreeControl to a new Binder.
 	 */
 	private void reRootTree(final String newRootBinderId) {
@@ -579,6 +588,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		
 		// Is the requested Binder available in those we've already
 		// got loaded?
+		final boolean forceReload = binderInfo.getForceSidebarReload();
 		final String binderId = String.valueOf(binderInfo.getBinderId());
 		final TreeInfo targetTI = TreeInfo.findBinderTI(getRootTreeInfo(), binderId);
 		if (null != targetTI) {
@@ -586,8 +596,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			switch (binderInfo.getInstigator()) {
 			case CONTENT_CONTEXT_CHANGE:
 			case SIDEBAR_TREE:
-				// No!  Simply select the Binder.
-				selectBinder(targetTI);
+				if (forceReload)
+					 reloadTree();
+				else selectBinder(targetTI);
 				break;
 
 			default:
@@ -607,7 +618,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 						// we need to re-root?
 						if (rootWorkspaceId.equals(getRootTreeInfo().getBinderInfo().getBinderId())) {
 							// No!  Simply select the Binder.
-							selectBinder(targetTI);
+							if (forceReload)
+								 reloadTree();
+							else selectBinder(targetTI);
 						}
 						else {
 							// Yes, we need to re-root!

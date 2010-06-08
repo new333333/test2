@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
  * @author drfoster@novell.com
  */
 public class OnSelectBinderInfo {
+	private boolean m_forceSidebarReload;	// true -> Regardless of the instigator, force the sidebar tree to reload.
 	private boolean m_isPermalinkUrl;
 	private boolean m_isTrash;
 	private Instigator m_instigator = Instigator.OTHER;
@@ -130,6 +131,16 @@ public class OnSelectBinderInfo {
 	}
 
 	/**
+	 * Returns the true if the sidebar should be forced to reload
+	 * regardless of the instigator and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean getForceSidebarReload() {
+		return m_forceSidebarReload;
+	}
+	
+	/**
 	 * Returns the instigator of the Binder selection, if known.
 	 * 
 	 * @return
@@ -173,6 +184,16 @@ public class OnSelectBinderInfo {
 		fixupUrl();
 	}
 
+	/**
+	 * Stores a true/false flag indicating whether the sidebar should
+	 * be forced to reload regardless of the instigator.
+	 * 
+	 * @param forceSidebarReload
+	 */
+	public void setForceSidebarReload(boolean forceSidebarReload) {
+		m_forceSidebarReload = forceSidebarReload;
+	}
+	
 	/**
 	 * Store an instigator for the binder selection.
 	 * 

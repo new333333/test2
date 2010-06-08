@@ -318,6 +318,11 @@ public class GwtMainPage extends Composite
 	private void contextLoaded( String binderId, final Instigator instigator, boolean inSearch )
 	{
 		m_inSearch = inSearch;
+		
+		final boolean forceSidebarReload = m_requestInfo.forceSidebarReload();
+		if (forceSidebarReload) {
+			m_requestInfo.clearSidebarReload();
+		}
 
 		// If we're in a search panel, we always show the root
 		// workspace in the sidebar tree.  That's the way it worked
@@ -342,6 +347,9 @@ public class GwtMainPage extends Composite
 					binderPermalink,
 					false,	// false -> Not trash.
 					instigator );
+				if (forceSidebarReload) {
+					osbInfo.setForceSidebarReload(forceSidebarReload);
+				}
 				selectionChanged(osbInfo);
 			}// end onSuccess()
 		});
@@ -970,7 +978,7 @@ public class GwtMainPage extends Composite
 			// If we're not coming from a WorkspaceTreeControl context
 			// change...
 			instigator = binderInfo.getInstigator();
-			if ( Instigator.SIDEBAR_TREE != instigator )
+			if (( Instigator.SIDEBAR_TREE != instigator ) || binderInfo.getForceSidebarReload() )
 			{
 				// Tell the WorkspaceTreeControl to change contexts.
 				m_wsTreeCtrl.setSelectedBinder( binderInfo );
