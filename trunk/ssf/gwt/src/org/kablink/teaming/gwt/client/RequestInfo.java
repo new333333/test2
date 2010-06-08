@@ -161,5 +161,13 @@ public class RequestInfo extends JavaScriptObject
 	 * Return the url needed to invoke the "Teaming Feed" page.
 	 */
 	public final native String getTeamingFeedUrl() /*-{ return this.teamingFeedUrl; }-*/;
-	
+
+	/**
+	 * Returns true if we should false the sidebar to reload regardless
+	 * of an operation and false otherwise.
+	 * 
+	 * @return
+	 */
+	public final native boolean forceSidebarReload() /*-{ return this.forceSidebarReload;  }-*/;
+	public final native void    clearSidebarReload() /*-{ this.forceSidebarReload = false; }-*/;
 }// end RequestInfo
