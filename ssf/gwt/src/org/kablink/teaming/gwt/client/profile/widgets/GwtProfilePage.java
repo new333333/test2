@@ -50,6 +50,7 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 
 		// Main Panel
 		profilePanel = new FlowPanel();
+		profilePanel.setHeight("600px");
 		profilePanel.addStyleName("profileSection");
 		mainProfilePage.add(profilePanel);
 
@@ -87,6 +88,7 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 		
 		timer = new Timer() {
 			public void run() {
+				profilePanel.setHeight("");
 				triggerAction(TeamingAction.SIZE_CHANGED);
 			}
 		};
