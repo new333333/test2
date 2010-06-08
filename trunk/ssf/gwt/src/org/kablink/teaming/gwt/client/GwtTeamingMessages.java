@@ -266,6 +266,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuFavoritesEditDlgHeader();
 	String mainMenuFavoritesNoFavorites();
 	String mainMenuFavoritesRemove();
+	String mainMenuFolderOptionsDlgConfigure();
 	String mainMenuFolderOptionsDlgFolderViews();
 	String mainMenuFolderOptionsDlgHeader();
 	String mainMenuFolderOptionsDlgImportCalendar();

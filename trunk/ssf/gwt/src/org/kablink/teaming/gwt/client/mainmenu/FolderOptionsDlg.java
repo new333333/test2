@@ -68,6 +68,7 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 	private int m_folderViewsListCount;				// Count of items in m_folderViewsList.
 	private List<ToolbarItem> m_calendarImportList;	// List of calendar import toolbar items.
 	private List<ToolbarItem> m_folderViewsList;	// List of folder view     toolbar items.
+	private ToolbarItem m_configureColumnsTBI;		// A configure columns toolbar item, if configuring columns is applicable in the given context.
 
 	/*
 	 * Inner class that wraps labels displayed in the dialog's content.
@@ -89,14 +90,15 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 	 * @param calendarImportsList
 	 * @param folderViewsList
 	 */
-	public FolderOptionsDlg(boolean autoHide, boolean modal, int left, int top, List<ToolbarItem> calendarImportsList, List<ToolbarItem> folderViewsList) {
+	public FolderOptionsDlg(boolean autoHide, boolean modal, int left, int top, ToolbarItem configureColumnsTBI, List<ToolbarItem> calendarImportsList, List<ToolbarItem> folderViewsList) {
 		// Initialize the superclass...
 		super(autoHide, modal, left, top);
 
 		// ...initialize everything else...
-		m_messages           = GwtTeaming.getMessages();
-		m_calendarImportList = calendarImportsList; m_calendarImportListCount = ((null == m_calendarImportList) ? 0 : m_calendarImportList.size());
-		m_folderViewsList    = folderViewsList;     m_folderViewsListCount    = ((null == m_folderViewsList)    ? 0 : m_folderViewsList.size());
+		m_messages            = GwtTeaming.getMessages();
+		m_configureColumnsTBI = configureColumnsTBI;
+		m_calendarImportList  = calendarImportsList; m_calendarImportListCount = ((null == m_calendarImportList) ? 0 : m_calendarImportList.size());
+		m_folderViewsList     = folderViewsList;     m_folderViewsListCount    = ((null == m_folderViewsList)    ? 0 : m_folderViewsList.size());
 		if (1 == m_folderViewsListCount) {
 			// We ignore the folder view options if there is only one
 			// to select from.
@@ -144,7 +146,7 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 		VerticalPanel vp = new VerticalPanel();
 
 		// Are there any folder options to display in the dialog?
-		if (0 < (m_folderViewsListCount + m_calendarImportListCount)) {
+		if (0 < (m_folderViewsListCount + m_calendarImportListCount) || (null != m_configureColumnsTBI)) {
 			// Yes!  Create a grid to contain them... 
 			m_folderOptionsGrid = new Grid(0, 2);
 			m_folderOptionsGrid.addStyleName("folderOptionsDlg_Grid");
@@ -157,6 +159,12 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 				for (int i = 0; i < m_folderViewsListCount; i += 1) {
 					renderRow(m_folderOptionsGrid, m_folderOptionsGrid.getRowCount(), m_folderViewsList.get(i), false);
 				}
+			}
+			
+			// ...render the configure columns into the panel...
+			if (null != m_configureColumnsTBI) {
+				addHeaderRow(m_folderOptionsGrid, m_folderOptionsGrid.getRowCount(), m_messages.mainMenuFolderOptionsDlgConfigure());
+				renderRow(m_folderOptionsGrid, m_folderOptionsGrid.getRowCount(), m_configureColumnsTBI, false);
 			}
 
 			// ...render the calendar import options into the panel...
@@ -288,6 +296,14 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 			}
 		}
 		
+		// If we get here, we didn't find the folder option as a
+		// calendar option either!  Is it the configure columns toolbar
+		// item?
+		if ((null != m_configureColumnsTBI) && m_configureColumnsTBI.getName().equals(foId)) {
+			// Yes!  Return it.
+			return m_configureColumnsTBI;			
+		}
+		
 		// If we get here, we couldn't find a ToolbarItem with the
 		// requested ID.  Return null.
 		return null;
@@ -342,7 +358,11 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 		cb.getElement().setId(rowId + IDTAIL_RADIO);
 		cb.setValue(checked);
 		grid.setWidget(row, 0, cb);
-		grid.setWidget(row, 1, new DlgLabel(tbi.getName()));
+		String txt = tbi.getTitle();
+		if (!(GwtClientHelper.hasString(txt))) {
+			txt = tbi.getName();
+		}
+		grid.setWidget(row, 1, new DlgLabel(txt));
 		grid.getCellFormatter().setWidth(row, 1, "100%");
 	}
 }
