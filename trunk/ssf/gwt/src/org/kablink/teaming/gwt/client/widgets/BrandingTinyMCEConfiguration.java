@@ -158,7 +158,7 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 			addFile : messages.@org.kablink.teaming.gwt.client.GwtTeamingMessages::addFile()(),
 			addUrl : messages.@org.kablink.teaming.gwt.client.GwtTeamingMessages::addUrl()(),
 			imageName : messages.@org.kablink.teaming.gwt.client.GwtTeamingMessages::imageName()(),
-			imageSelectBox : 'ss_imageSelectionsss_htmleditor_description',
+			imageSelectBox : 'ss_imageSelections_ss_htmleditor',
 			missing_img : messages.@org.kablink.teaming.gwt.client.GwtTeamingMessages::missingImage()()
 			} );
 	}-*/;
