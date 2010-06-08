@@ -52,15 +52,19 @@ public abstract class AbstractTinyMCEConfiguration
 	private boolean accessibilityFocus = true;
 	private String entities = "39,#39,34,quot,38,amp,60,lt,62,gt";
 	private boolean gecko_spellcheck = true;
+	private String[] plugins = new String[] {"compat2x", "pdw", "table", "ss_addimage", "preview", "paste", "ss_wikilink", "ss_youtube"};
 	private String themeAdvancedToolbarLocation = "top";
 	private String themeAdvancedToolbarAlign = "left";
 	private String themeAdvancedStatusbarLocation = "bottom";
 	private boolean themeAdvancedResizing = true;
+	private boolean convertFontsToSpans = true;
 	private boolean themeAdvancedResizingUseCookie = true;
 	private boolean themeAdvancedPath = false;
 	private String themeAdvancedDisable = "image,advimage";
-	private boolean convertFontsToSpans = true;
-
+	
+	private int pdwToggle = 1;
+	private String pdwToggleToolbars = "2";
+	
 	private String documentBaseUrl = "";
 	private String skin = "o2k7";
 	private String entityEncoding = "raw";
@@ -69,12 +73,10 @@ public abstract class AbstractTinyMCEConfiguration
 	private String externalImageListUrl = "editor_stuf/lists/image_list.js";
 	private String mediaExternalListUrl = "editor_stuf/lists/media_list.js";
 	
-	private String[] plugins = new String[] {"compat2x", "table", "ss_addimage", "preview", "paste", "ss_wikilink", "ss_youtube"};
-	
 	private String[] themeAdvancedButtons1 = new String[] {"fontselect", "fontsizeselect", "formatselect", "|", "bold", "italic", "underline", "|", "forecolor", "bullist", "numlist", "indent", "outdent", "|", "justifyleft", "justifycenter", "justifyright", "justifyfull", "|", "code", "|", "fullpage", "pdw_toggle"};
-	private String[] themeAdvancedButtons1Add = new String[] {"forecolor" , "backcolor"};
+	private String[] themeAdvancedButtons1Add = new String[] {""};
 	private String[] themeAdvancedButtons2 = new String[] {"hr", "link", "unlink", "backcolor", "|", "table", "split_cells", "merge_cells", "row_props", "cell_props", "|", "pastetext", "pasteword", "|", "undo", "redo", "|", "sub", "sup", "strikethrough", "|", "charmap", "removeformat", "anchor", "cleanup"};
-	private String[] themeAdvancedButtons2Add = new String[] {"pastetext", "pasteword", "ss_addimage", "ss_wikilink", "ss_youtube"};
+	private String[] themeAdvancedButtons2Add = new String[] {"|", "ss_addimage", "ss_wikilink", "ss_youtube"};
 	private String[] themeAdvancedButtons3 = new String[] {""};
 	private String[] themeAdvancedButtons3Add = new String[] {"tablecontrols"};
 	private String[] themeAdvancedButtons4 = new String[] {"insertlayer", "moveforward", "movebackward", "absolute", "|", "styleprops", "|", "cite", "abbr", "acronym", "del", "ins", "attribs", "|", "visualchars", "nonbreaking", "template", "pagebreak"};
@@ -224,6 +226,32 @@ public abstract class AbstractTinyMCEConfiguration
 	}
 	public void setMode(String mode) {
 		this.mode = mode;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public int getPdwToggle()
+	{
+		return pdwToggle;
+	}
+	public void setPdwToggle( int pdwToggle )
+	{
+		this.pdwToggle = pdwToggle;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public String getPdwToggleToolbars()
+	{
+		return pdwToggleToolbars;
+	}
+	public void setPdwToggleToolbars( String pdwToggleToolbars )
+	{
+		this.pdwToggleToolbars = pdwToggleToolbars;
 	}
 	
 	

@@ -475,6 +475,7 @@ public interface GwtTeamingMessages extends Messages
 	String insertLinkToTeamingPage();
 	String missingImage();
 	String overQuota();
+	String showHideToolbars();
 	String srcFile();
 	String youTubeDimensions();
 	String youTubeTitle();
