@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 
-import com.google.gwt.user.client.Window;
 
 /**
  * 
@@ -72,15 +71,21 @@ public abstract class AbstractTinyMCEConfiguration
 	
 	private String[] plugins = new String[] {"compat2x", "table", "ss_addimage", "preview", "paste", "ss_wikilink", "ss_youtube"};
 	
-	private String[] themeAdvancedButtons1 = new String[] {"mymenubutton" , "newdocument" , "|", "bold", "italic", "underline", "strikethrough", "|", "justifyleft", "justifycenter", "justifyright", "justifyfull", "formatselect"};
+	private String[] themeAdvancedButtons1 = new String[] {"fontselect", "fontsizeselect", "formatselect", "|", "bold", "italic", "underline", "|", "forecolor", "bullist", "numlist", "indent", "outdent", "|", "justifyleft", "justifycenter", "justifyright", "justifyfull", "|", "code", "|", "fullpage", "pdw_toggle"};
 	private String[] themeAdvancedButtons1Add = new String[] {"forecolor" , "backcolor"};
-	private String[] themeAdvancedButtons2 = new String[] {"cut", "copy", "paste", "pastetext", "pasteword", "|", "search,replace", "|", "bullist", "numlist", "|", "outdent", "indent", "blockquote", "|", "undo", "redo", "|", "link", "unlink", "anchor", "cleanup", "code", "|", "insertdate", "inserttime"};
+	private String[] themeAdvancedButtons2 = new String[] {"hr", "link", "unlink", "backcolor", "|", "table", "split_cells", "merge_cells", "row_props", "cell_props", "|", "pastetext", "pasteword", "|", "undo", "redo", "|", "sub", "sup", "strikethrough", "|", "charmap", "removeformat", "anchor", "cleanup"};
 	private String[] themeAdvancedButtons2Add = new String[] {"pastetext", "pasteword", "ss_addimage", "ss_wikilink", "ss_youtube"};
-	private String[] themeAdvancedButtons3 = new String[] {"hr", "removeformat", "visualaid", "|", "sub", "sup", "|", "charmap", "iespell", "advhr", "|", "ltr", "rtl", "|", "fullscreen"};
+	private String[] themeAdvancedButtons3 = new String[] {""};
 	private String[] themeAdvancedButtons3Add = new String[] {"tablecontrols"};
 	private String[] themeAdvancedButtons4 = new String[] {"insertlayer", "moveforward", "movebackward", "absolute", "|", "styleprops", "|", "cite", "abbr", "acronym", "del", "ins", "attribs", "|", "visualchars", "nonbreaking", "template", "pagebreak"};
+	private String[] themeAdvancedBlockFormats= new String[] {"p", "address", "pre", "h1", "h2", "h3", "h4", "h5", "h6"};
 	private String themeAdvancedStyles = "8px=ss_size_8px;9px=ss_size_9px;10px=ss_size_10px;11px=ss_size_11px;12px=ss_size_12px;13px=ss_size_13px;14px=ss_size_14px;15px=ss_size_15px;16px=ss_size_16px;18px=ss_size_18px;20px=ss_size_20px;24px=ss_size_24px;28px=ss_size_28px;32px=ss_size_32px";
-	
+	private String themeAdvancedFonts = "Andale Mono=andale mono,times;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;Comic Sans MS=comic sans ms,sans-serif;Courier New=courier new,courier;Georgia=georgia,palatino;Helvetica=helvetica;Impact=impact,chicago;Symbol=symbol;Tahoma=tahoma,arial,helvetica,sans-serif;Terminal=terminal,monaco;Times New Roman=times new roman,times;Trebuchet MS=trebuchet ms,geneva;Verdana=verdana,geneva;Webdings=webdings;Wingdings=wingdings,zapf dingbats";
+	private int themeAdvancedMoreColors = 1;
+	private int themeAdvancedRowHeight = 23;
+	private int themeAdvancedResizeHorizontal = 1;
+	private String themeAdvancedFontSizes = "1,2,3,4,5,6,7";
+		
 
 	/**
 	 * Configurations that need to add a language pack to the tinyMCE editor should implement this method.
@@ -289,6 +294,23 @@ public abstract class AbstractTinyMCEConfiguration
 	}
 	
 	
+	public String getThemeAdvancedBlockFormats() {
+		String button1 = "";
+		int c = 1;
+		for (String p : themeAdvancedBlockFormats) {
+			button1 += p;
+			if (c < themeAdvancedButtons1.length) {
+				button1 += ", ";
+			}
+			++c;
+		}
+		return button1;
+	}
+	public void setThemeAdvancedBlockFormats(String[] theme_advanced_blockformats) {
+		this.themeAdvancedBlockFormats = theme_advanced_blockformats;
+	}
+	
+	
 	public String getThemeAdvancedButtons1() {
 		String button1 = "";
 		int c = 1;
@@ -445,6 +467,45 @@ public abstract class AbstractTinyMCEConfiguration
 	/**
 	 * 
 	 */
+	public String getThemeAdvancedFonts()
+	{
+		return themeAdvancedFonts;
+	}
+	public void setThemeAdvancedFonts( String themeAdvancedFonts )
+	{
+		this.themeAdvancedFonts = themeAdvancedFonts;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public String getThemeAdvancedFontSizes()
+	{
+		return themeAdvancedFontSizes;
+	}
+	public void setThemeAdvancedFontSizes( String themeAdvancedFontSizes )
+	{
+		this.themeAdvancedFontSizes = themeAdvancedFontSizes;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public int getThemeAdvancedMoreColors()
+	{
+		return themeAdvancedMoreColors;
+	}
+	public void setThemeAdvancedMoreColors( int themeAdvancedMoreColors )
+	{
+		this.themeAdvancedMoreColors = themeAdvancedMoreColors;
+	}
+	
+	
+	/**
+	 * 
+	 */
 	public boolean getThemeAdvancedPath()
 	{
 		return themeAdvancedPath;
@@ -452,6 +513,19 @@ public abstract class AbstractTinyMCEConfiguration
 	public void setThemeAdvancedPath( boolean themeAdvancedPath )
 	{
 		this.themeAdvancedPath = themeAdvancedPath;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public int getThemeAdvancedResizeHorizontal()
+	{
+		return themeAdvancedResizeHorizontal;
+	}
+	public void setThemeAdvancedResizeHorizontal( int themeAdvancedResizeHorizontal )
+	{
+		this.themeAdvancedResizeHorizontal = themeAdvancedResizeHorizontal;
 	}
 	
 	
@@ -473,6 +547,19 @@ public abstract class AbstractTinyMCEConfiguration
 	public void setThemeAdvancedResizingUseCookie(boolean themeAdvancedResizingUseCookie )
 	{
 		this.themeAdvancedResizingUseCookie = themeAdvancedResizingUseCookie;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public int getThemeAdvancedRowHeight()
+	{
+		return themeAdvancedRowHeight;
+	}
+	public void setThemeAdvancedRowHeight( int themeAdvancedRowHeight )
+	{
+		this.themeAdvancedRowHeight = themeAdvancedRowHeight;
 	}
 	
 	
