@@ -33,6 +33,7 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 	private ProfileMainPanel profileMainPanel;
 	private ProfileSidePanel profileSidePanel;
 	private FlowPanel profilePanel;
+	private FlowPanel mainProfilePage;
 
 	public GwtProfilePage() {
 
@@ -43,7 +44,7 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 		GwtClientHelper.jsRegisterActionHandler(this);
 
 		// Outer div around the page
-		FlowPanel mainProfilePage = new FlowPanel();
+		mainProfilePage = new FlowPanel();
 		mainProfilePage.getElement().setId("profileContents");
 		mainProfilePage.addStyleName("section1");
 
@@ -77,13 +78,20 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 	private void initialize() {
 
 		Timer timer = new Timer() {
-			@Override
 			public void run() {
 				createProfileInfoSections();
 			}// end run()
 		};
 
-		timer.schedule(5);
+		timer.schedule(25);
+		
+		timer = new Timer() {
+			public void run() {
+				triggerAction(TeamingAction.SIZE_CHANGED);
+			}
+		};
+		
+		timer.schedule(150);
 	}
 
 	private HorizontalPanel createHorizontalPanel() {
