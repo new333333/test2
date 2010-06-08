@@ -61,6 +61,7 @@ import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
@@ -85,7 +86,7 @@ public class LoginDlg extends DlgBox
 	private String m_loginUrl = null;
 	private String m_springSecurityRedirect = null;	// This values tells Teaming what url to go to after the user authenticates.
 	private GwtSelfRegistrationInfo m_selfRegInfo = null;
-	private Label m_selfRegLink = null;
+	private InlineLabel m_selfRegLink = null;
 	private AsyncCallback<GwtSelfRegistrationInfo> m_rpcGetSelfRegInfoCallback = null;
 
 	/**
@@ -162,7 +163,6 @@ public class LoginDlg extends DlgBox
 	{
 		FlowPanel mainPanel = null;
 		FlexTable table;
-		FlexTable selfRegTable;
 		FlexTable.FlexCellFormatter cellFormatter;
 		int row = 0;
 		
@@ -240,6 +240,7 @@ public class LoginDlg extends DlgBox
 			hiddenInput.setValue( m_springSecurityRedirect );
 			
 			table.setWidget( row, 0, hiddenInput );
+			++row;
 		}
 		
 		m_formPanel.add( table );
@@ -251,12 +252,8 @@ public class LoginDlg extends DlgBox
 			ClickHandler clickHandler;
 			MouseOverHandler mouseOverHandler;
 			MouseOutHandler mouseOutHandler;
-			FlexTable.FlexCellFormatter selfRegCellFormatter;
 			
-			selfRegTable = new FlexTable();
-			selfRegCellFormatter = selfRegTable.getFlexCellFormatter();
-			
-			m_selfRegLink = new Label( GwtTeaming.getMessages().loginDlgCreateNewAccount() );
+			m_selfRegLink = new InlineLabel( GwtTeaming.getMessages().loginDlgCreateNewAccount() );
 			m_selfRegLink.addStyleName( "margintop3" );
 			m_selfRegLink.addStyleName( "selfRegLink1" );
 			m_selfRegLink.addStyleName( "selfRegLink2" );
@@ -319,14 +316,12 @@ public class LoginDlg extends DlgBox
 			};
 			m_selfRegLink.addMouseOutHandler( mouseOutHandler );
 			
-			selfRegTable.setWidget( 0, 0, m_selfRegLink );
-			selfRegCellFormatter.setWordWrap( 0, 0, false );
-			selfRegTable.setWidget( 0, 1, new Label( " " ) );
-			selfRegCellFormatter.setWidth( 0, 1, "100%" );
+			cellFormatter.setColSpan( row, 0, 2 );
+			table.setWidget( row, 0, m_selfRegLink );
+			++row;
 		}
 		
 		mainPanel.add( m_formPanel );
-		mainPanel.add( selfRegTable );
 
 		init( props );
 
