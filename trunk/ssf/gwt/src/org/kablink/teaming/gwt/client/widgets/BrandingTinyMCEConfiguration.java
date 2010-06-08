@@ -132,6 +132,9 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 		
 		// Add a language pack for the YouTube plugin.
 		addYouTubeLanguagePack( getLanguage() + ".ss_youtube", messages );
+
+		// Add a language pack for the plugin that shows/hides the 2nd row of controls in the tiny mce toolbar.
+		addToolbarLanguagePack( getLanguage() + ".pdw", messages );
 	}// end addLanguagePacks()
 
 	
@@ -167,6 +170,16 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 	protected native void addInsertLinkToTeamingPageLanguagePack( String langPrefix, GwtTeamingMessages messages ) /*-{
 		$wnd.tinyMCE.addI18n( langPrefix, {
 			desc : messages.@org.kablink.teaming.gwt.client.GwtTeamingMessages::insertLinkToTeamingPage()()
+			} );
+	}-*/;
+	
+
+	/**
+	 * Add a language package to the Tiny MCE editor for plugins that toggles the 2nd row of controls in the tiny mce toolbar.
+	 */
+	protected native void addToolbarLanguagePack( String langPrefix, GwtTeamingMessages messages ) /*-{
+		$wnd.tinyMCE.addI18n( langPrefix, {
+			description : messages.@org.kablink.teaming.gwt.client.GwtTeamingMessages::showHideToolbars()()
 			} );
 	}-*/;
 	

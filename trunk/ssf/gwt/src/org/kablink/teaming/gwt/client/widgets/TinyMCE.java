@@ -166,7 +166,11 @@ public class TinyMCE extends Composite
 				accessibility_focus : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getAccessibilityFocus()(),
 				entities : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getEntities()(),
 				gecko_spellcheck : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getGeckoSpellCheck()(),
+				plugins : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getPlugins()(),
 
+				pdw_toggle_on : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getPdwToggle()(),
+				pdw_toggle_toolbars : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getPdwToggleToolbars()(),
+				
 				// Theme options
 				// excluded buttons: ,fontselect,fontsizeselect,preview,image,help,|,forecolor,backcolor tablecontrols,|,,emotions,media,|,print
 				theme_advanced_path : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedPath()(),
@@ -175,8 +179,8 @@ public class TinyMCE extends Composite
 				theme_advanced_buttons2 : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons2()(),
 				theme_advanced_buttons3 : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons3()(),
 				//theme_advanced_buttons4 : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons4()(),
-				//theme_advanced_buttons1_add : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons1Add()(),
-				//theme_advanced_buttons2_add : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons2Add()(),
+				theme_advanced_buttons1_add : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons1Add()(),
+				theme_advanced_buttons2_add : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons2Add()(),
 				//theme_advanced_buttons3_add : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedButtons3Add()(),
 				theme_advanced_blockformats : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedBlockFormats()(),
 				theme_advanced_toolbar_align : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedToolbarAlign()(),
@@ -192,7 +196,6 @@ public class TinyMCE extends Composite
 				theme_advanced_styles : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedStyles()(),
 				theme_advanced_disable : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getThemeAdvancedDisable()(),
 				convert_fonts_to_spans : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getConvertFontsToSpans()(),
-				plugins : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getPlugins()(),
 
 				document_base_url : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getDocumentBaseUrl()()
 				
