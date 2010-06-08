@@ -124,6 +124,7 @@ tinyMCE.init(
   theme_advanced_path: false,
   pdw_toggle_on : 1,
   pdw_toggle_toolbars : "2",
+  pdw_element_id : "ss_htmleditor_${element_name}",
   theme_advanced_resizing_use_cookie : true});
 
 tinyMCE.addI18n('${ssUser.locale.language}.ss_addimage_dlg',{
