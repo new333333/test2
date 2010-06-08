@@ -32,10 +32,7 @@
  */
 package org.kablink.teaming.gwt.server;
 
-import static org.kablink.util.search.Constants.MODIFICATION_DATE_FIELD;
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -48,7 +45,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Node;
@@ -103,7 +99,6 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
-import org.kablink.teaming.gwt.client.widgets.LoginDlg;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
@@ -117,7 +112,6 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.presence.PresenceInfo;
 import org.kablink.teaming.presence.PresenceManager;
-import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
@@ -137,7 +131,6 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.search.Constants;
-import org.kablink.util.search.Criteria;
 
 
 
@@ -1989,7 +1982,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 		return GwtServerHelper.getBinderInfo( this, binderId );
 	}//end getBinderInfo()
-	
+
+	/**
+	 * Returns the ID of the default view definition of a folder.
+	 * 
+	 * @return
+	 */
+	public String getDefaultFolderDefinitionId( String binderId ) {
+		return GwtServerHelper.getDefaultFolderDefinitionId( this, binderId );
+	}
+
 	/**
 	 * Returns information about the current user's favorites.
 	 * 

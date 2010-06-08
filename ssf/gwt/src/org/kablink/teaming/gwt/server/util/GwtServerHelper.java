@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -110,6 +111,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -1373,6 +1375,32 @@ public class GwtServerHelper {
 	private static List<Long> getExpandedBindersList(AllModulesInjected bs) {
 		UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
 		List<Long> reply= ((List<Long>) userProperties.getProperty(ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST));
+		return reply;
+	}
+
+	/**
+	 * Returns the ID of the default view definition of a folder.
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static String getDefaultFolderDefinitionId(AllModulesInjected bs, String binderIdS) {
+		// Does the user have a default definition selected for this
+		// binder?
+		Long binderId = Long.valueOf(binderIdS);
+		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(getCurrentUser().getId(), binderId);
+		String userSelectedDefinition = ((String) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
+
+		// If we can find the default definition for this binder...
+		HashMap model = new HashMap();
+		Binder binder = bs.getBinderModule().getBinder(binderId);
+		DefinitionHelper.getDefinitions(binder, model, userSelectedDefinition);		
+		Definition def = ((Definition) model.get(WebKeys.DEFAULT_FOLDER_DEFINITION));
+
+		// ...return it's ID or if we can't find it, return an empty
+		// ...string.
+		String reply = ((null == def) ? "" : def.getId());
+		m_logger.debug("GwtServerHelper.getDefaultFolderDefinitionId( binderId:  '" + binderIdS + "' ):  '" + reply);
 		return reply;
 	}
 	

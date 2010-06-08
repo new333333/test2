@@ -434,6 +434,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 					true,	// true  -> Modal.
 					m_menuLeft,
 					m_menuTop,
+					m_currentBinder.getBinderId(),
 					m_configureColumnsTBI,
 					((null == calendarImportTBI) ? null : calendarImportTBI.getNestedItemsList()),
 					((null == folderViewsTBI)    ? null : folderViewsTBI.getNestedItemsList()));
