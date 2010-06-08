@@ -47,7 +47,7 @@ renderRequest.setAttribute("ss_expandable_area_name_count", new Integer(nameCoun
 String name = "ss_expandableAreaDiv" + nameCount.toString();
 %>
 
-<div class="ss_expandable_area_title">
+<div class="ss_expandable_area_title ${toggleClass}">
 
 <table class="ss_style" cellspacing="0" cellpadding="2">
 <tr>

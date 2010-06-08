@@ -1313,6 +1313,7 @@ table.ss_attachments_list hr.ss_att_divider {
 	}
 table.ss_attachments_list td.ss_att_meta, .ss_att_meta {
 	font-size: 10px;
+	font-weight: normal;
 	white-space: nowrap;
 	padding-left: 5px;
 	color: ${ss_style_metadata_color};
