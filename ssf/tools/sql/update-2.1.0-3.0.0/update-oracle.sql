@@ -44,7 +44,6 @@ ALTER TABLE SS_Attachments add description_format number(10,0);
 ALTER TABLE SS_Attachments add majorVersion number(10,0);
 ALTER TABLE SS_Attachments add minorVersion number(10,0);
 ALTER TABLE SS_Attachments add fileStatus number(10,0);
-ALTER TABLE SS_ChangeLogs add comment varchar2(128 char);
 ALTER TABLE SS_ZoneConfig add defaultHomePageId number(19,0);
 ALTER TABLE SS_ZoneConfig add defaultGuestHomePageId number(19,0);
 INSERT INTO SS_SchemaInfo values (11);
