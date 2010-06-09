@@ -34,6 +34,20 @@
 %>
 <% // View entry comments and attachments in tabs %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%
+	//Get the user's desired region view (if set)
+	String regionView_commentsAndAttachmentsRegion = "expanded";
+	Map userProperties = (Map)  request.getAttribute("ssUserProperties");
+	if (userProperties != null && userProperties.containsKey("regionView.commentsAndAttachmentsRegion")) {
+		regionView_commentsAndAttachmentsRegion = (String) userProperties.get("regionView.commentsAndAttachmentsRegion");
+	}
+	if ("collapsed".equals(regionView_commentsAndAttachmentsRegion)) {
+		%><c:set var="regionClass" value="wg-tab-content-clipped"/><c:set var="regionImg" value="expand_16_yellow.png"/><%
+	} else {
+		%><c:set var="regionClass" value="wg-tab-content"/><c:set var="regionImg" value="collapse_16_yellow.png"/><%
+	}
+%>
+
 <c:if test="${empty ss_tabDivCount}">
   <c:set var="ss_tabDivCount" value="0" scope="request"/>
 </c:if>
@@ -83,15 +97,16 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
   </td>
   </c:if>
   <td valign="middle" align="right" width="97%" nowrap>
-    <a href="javascript: ;" onClick="this, ss_toggleRegion(this, 'commentsAndAttachmentsRegion');return false;" 
+    <a href="javascript: ;" 
+      onClick="this, ss_toggleRegion(this, 'commentsAndAttachmentsRegion', 'commentsAndAttachmentsRegion');return false;" 
       alt="<ssf:nlt tag="general.expandCollapseRegion"/>"
-    ><img src="<html:rootPath/>images/pics/collapse_16_yellow.png"/></a>
+    ><img src="<html:rootPath/>images/pics/${regionImg}"/></a>
   </td>
   </tr>
   </table>
 </div>
 
-<div id="commentsAndAttachmentsRegion" class="wg-tab-content">
+<div id="commentsAndAttachmentsRegion" class="${regionClass}">
 <div id="viewAttachments${ss_tabDivCount}Div" 
   <c:if test="${empty ss_pseudoEntity}">style="display:none;"</c:if>
   <c:if test="${!empty ss_pseudoEntity}">style="display:block;"</c:if>

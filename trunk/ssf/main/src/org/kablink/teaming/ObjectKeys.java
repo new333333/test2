@@ -382,6 +382,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_PERMALINK_URL = "userPermalinkUrl";
     public static final String USER_PROPERTY_PINNED_ENTRIES = "userPinnedEntries";
     public static final String USER_PROPERTY_PORTAL_URL = "userPortalUrl";
+    public static final String USER_PROPERTY_REGION_VIEW = "regionView";
     public static final String USER_PROPERTY_SEARCH_RESULTS_FOLDER_COLUMNS = "userSearchResultsFolderColumns";
     public static final String USER_PROPERTY_SEARCH_RESULTS_COLUMN_POSITIONS="searchResultsColumnPositions";
     public static final String USER_PROPERTY_SAVED_SEARCH_QUERIES="userSearchQueries";
