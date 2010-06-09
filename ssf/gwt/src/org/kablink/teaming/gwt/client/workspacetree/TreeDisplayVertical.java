@@ -549,14 +549,15 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	private void reloadTree() {
 		// To reload it, simply re-root it at the same point that it's
-		// currently rooted.
-		reRootTree(getRootTreeInfo().getBinderInfo().getBinderId());
+		// currently rooted, reselecting the previously selected binder.
+		reRootTree(getRootTreeInfo().getBinderInfo().getBinderId(), m_selectedBinderId);
 	}
 	
 	/*
-	 * Re-roots the WorkspaceTreeControl to a new Binder.
+	 * Re-roots the WorkspaceTreeControl to a new Binder and optionally
+	 * selects a binder.
 	 */
-	private void reRootTree(final String newRootBinderId) {
+	private void reRootTree(final String newRootBinderId, final Long selectedBinderId) {
 		// Read the TreeInfo for the selected Binder...
 		getRpcService().getVerticalTree(newRootBinderId, new AsyncCallback<TreeInfo>() {
 			public void onFailure(Throwable t) {
@@ -567,8 +568,24 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				setRootTreeInfo(rootTI);
 				m_rootPanel.clear();
 				render(newRootBinderId, m_rootPanel);
+				
+				// If we're supposed to select a binder as part of the
+				// re-rooting...
+				if (null != selectedBinderId) {
+					// ...and we can find that binder...
+					TreeInfo selectedBinderTI = TreeInfo.findBinderTI(rootTI, String.valueOf(selectedBinderId.longValue()));
+					if (null != selectedBinderTI) {
+						// ...select it.
+						selectBinder(selectedBinderTI);
+					}
+				}
 			}
 		});
+	}
+	
+	private void reRootTree(final String newRootBinderId) {
+		// Always use the initial form of the method.
+		reRootTree(newRootBinderId, null);
 	}
 	
 	/**
