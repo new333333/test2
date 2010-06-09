@@ -1240,6 +1240,69 @@ function ss_toggleRegion(aObj, divId) {
 	if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
 }
 
+//Routines to handle tabs
+var ss_currentTabShowing = new Array();
+var ss_currentHoverOverTab = new Array();
+function ss_initTab(tabName, id) {
+	ss_currentTabShowing["tab"+id] = tabName;
+	ss_currentHoverOverTab["tab"+id] = null;
+	ss_showTab(tabName, id);
+}
+function ss_showTab(tabName, id) {
+	if (ss_currentTabShowing["tab"+id] != null) {
+		var divObj = self.document.getElementById(ss_currentTabShowing["tab"+id] + "Div")
+		divObj.style.display = "none";
+		var tabObj = self.document.getElementById(ss_currentTabShowing["tab"+id] + "Tab");
+		tabObj.className = "wg-tab roundcornerSM";
+		ss_currentTabShowing["tab"+id] = null;
+	}
+	ss_currentTabShowing["tab"+id] = tabName;
+	var divObj = self.document.getElementById(ss_currentTabShowing["tab"+id] + "Div");
+	var tabObj = self.document.getElementById(ss_currentTabShowing["tab"+id] + "Tab");
+	divObj.style.display = "block";
+	tabObj.className = "wg-tab roundcornerSM on";
+	
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+}
+
+function ss_hoverOverTab(tabName, id) {
+	if (ss_currentTabShowing["tab"+id] != null) {
+		var tabObj = self.document.getElementById(ss_currentTabShowing["tab"+id] + "Tab");
+		tabObj.className = "wg-tab roundcornerSM on";
+	}
+	if (ss_currentHoverOverTab["tab"+id] != null && 
+			ss_currentHoverOverTab["tab"+id] != ss_currentTabShowing["tab"+id]) {
+		var tabObj = self.document.getElementById(ss_currentHoverOverTab["tab"+id] + "Tab");
+		tabObj.className = "wg-tab roundcornerSM";
+		ss_currentHoverOverTab["tab"+id] = null;
+	}
+	ss_currentHoverOverTab["tab"+id] = tabName;
+	var tabObj = self.document.getElementById(ss_currentHoverOverTab["tab"+id] + "Tab");
+	if (ss_currentHoverOverTab["tab"+id] == ss_currentTabShowing["tab"+id]) {
+		tabObj.className = "wg-tab roundcornerSM selected-menu on";
+	} else {
+		tabObj.className = "wg-tab roundcornerSM selected-menu";
+	}
+}
+
+function ss_hoverOverTabStopped(tabName, id) {
+	if (ss_currentHoverOverTab["tab"+id] != null) {
+		var tabObj = self.document.getElementById(ss_currentHoverOverTab["tab"+id] + "Tab");
+		if (ss_currentHoverOverTab["tab"+id] == ss_currentTabShowing["tab"+id]) {
+			tabObj.className = "wg-tab roundcornerSM on";
+		} else {
+			tabObj.className = "wg-tab roundcornerSM";
+		}
+		ss_currentHoverOverTab["tab"+id] = null;
+	}
+	if (ss_currentTabShowing["tab"+id] != null) {
+		var tabObj = self.document.getElementById(ss_currentTabShowing["tab"+id] + "Tab");
+		tabObj.className = "wg-tab roundcornerSM on";
+	}
+}
+
+
 function ss_checkIfParentDivHidden(divId) {
     var obj = self.document.getElementById(divId)
     if (obj != null) {
@@ -4051,6 +4114,13 @@ function ss_showEntryDivInitialization(namespace) {
 	holderObj.id = "ss_iframe_holder_div";
 }
 
+function ss_hideEntryDivOnLoad() {
+	//alert(window.name)
+	if (window.name == 'gwtContentIframe' || 
+			window.name == 'adminContentControl') {
+		ss_hideEntryDiv();
+	}
+}
 function ss_hideEntryDiv() {
 	// Are we running in the GWT UI?
 	if (ss_isGwtUIActive) {
