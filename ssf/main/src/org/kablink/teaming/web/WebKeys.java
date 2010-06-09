@@ -496,6 +496,7 @@ public class WebKeys {
 	public static final String OPERATION_SAVE_ENTRY_HEIGHT = "save_entry_height";
 	public static final String OPERATION_SAVE_FOLDER_COLUMNS = "save_folder_columns";
 	public static final String OPERATION_SAVE_RATING = "save_rating";
+	public static final String OPERATION_SAVE_REGION_VIEW = "save_region_view";
 	public static final String OPERATION_SAVE_WINDOW_HEIGHT = "save_window_height";
 	public static final String OPERATION_SHOW_ALL_DASHBOARD_COMPONENTS = "show_all_dashboard_components";
 	public static final String OPERATION_SHOW_FOLDER_PAGE = "show_folder_page";

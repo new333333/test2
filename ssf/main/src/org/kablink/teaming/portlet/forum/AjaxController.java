@@ -390,6 +390,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 		} else if (op.equals(WebKeys.OPERATION_SAVE_ENTRY_HEIGHT)) {
 			return ajaxSaveEntryHeight(request, response);
 			
+		} else if (op.equals(WebKeys.OPERATION_SAVE_REGION_VIEW)) {
+			return ajaxSaveRegionView(request, response);
+			
 		} else if (op.equals(WebKeys.OPERATION_MODIFY_TAGS)) {
 			return ajaxShowTags(request, response);
 		} else if (op.equals(WebKeys.OPERATION_WORKSPACE_TREE)) {
@@ -1286,6 +1289,17 @@ public class AjaxController  extends SAbstractControllerRetry {
 		}
 		response.setContentType("text/xml");
 		return new ModelAndView("forum/save_entry_height_return", model);
+	}
+
+	private ModelAndView ajaxSaveRegionView(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String regionId = PortletRequestUtils.getStringParameter(request, "id");
+		String regionState = PortletRequestUtils.getStringParameter(request, "state", "expanded");
+		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_REGION_VIEW + "." + regionId, regionState);
+
+		response.setContentType("text/xml");
+		return new ModelAndView("forum/ajax_return", model);
 	}
 
 	private ModelAndView ajaxSetFileStatusReturn(RenderRequest request, 
