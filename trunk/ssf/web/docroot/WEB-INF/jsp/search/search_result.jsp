@@ -43,6 +43,7 @@
 <jsp:include page="/WEB-INF/jsp/search/search_js.jsp" />
 
 <script type="text/javascript">
+function ss_getSearchTabId() {return ss_currentTabId;}
 var ss_entriesSeen = new Array();
 var ss_entryList = new Array();
 var ss_entryCount = 0;

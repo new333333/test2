@@ -46,7 +46,11 @@
 	<script type="text/javascript">
 		function notifyGwtUI() {
 			var inSearch = ("function" == typeof ss_initSearchOptions);
-			window.top.ss_contextLoaded("${ssBinder.id}", String(inSearch));
+			var searchTabId = "";
+			if (inSearch && ("function" == typeof ss_getSearchTabId)) {
+				searchTabId = ss_getSearchTabId();
+			}
+			window.top.ss_contextLoaded("${ssBinder.id}", String(inSearch), searchTabId);
 		}
 
 		/**
