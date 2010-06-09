@@ -71,6 +71,7 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
     <ssf:nlt tag="__entry_attachments"/>
   </div>
   </td>
+  <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
   <td valign="middle" width="1%" nowrap>
   <div id="viewFileVersions${ss_tabDivCount}Tab" 
     class="wg-tab roundcornerSM" 
@@ -80,6 +81,7 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
     <ssf:nlt tag="__entry_file_versions"/>
   </div>
   </td>
+  </c:if>
   <td valign="middle" align="right" width="97%" nowrap>
     <a href="javascript: ;" onClick="this, ss_toggleRegion(this, 'commentsAndAttachmentsRegion');return false;" 
       alt="<ssf:nlt tag="general.expandCollapseRegion"/>"
