@@ -115,7 +115,6 @@
 		var ss_imageUploadUrl = "<ssf:url adapter="true" actionUrl="true" portletName="ss_forum" action="__ajax_request">
 			  						<ssf:param name="operation" value="upload_image_file" />
 		    					 </ssf:url>";
-		var ss_imageSelections_ss_htmleditor = "<select name='srcUrl' id='srcUrl'></select>";
 		
 	</script>
 	<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js"></script>
