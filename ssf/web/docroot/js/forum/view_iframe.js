@@ -218,40 +218,6 @@ function ss_positionEntryDiv(moveTop) {
 	ss_entryLastScrollTop = ss_getScrollXY()[1];
 }
 
-function ss_hideEntryDiv() {
-	// Are we running in the GWT UI?
-	if (ss_isGwtUIActive) {
-		// Yes!  Then we need see if the entry DIV is off window.top.
-		// Note that there appear to  be two of these now, one that's
-		// in window.top.document and one that's in self.document
-		// (which would be the GWT UI content IFRAME.)
-	    ss_hideEntryDivImpl(window.top.document.getElementById('ss_showentrydiv'));
-	}
-	
-	// The remainder of this code is unchanged from what was here
-	// BEFORE the GWT UI was implemented.
-    var wObj1 = self.document.getElementById('ss_showentrydiv')
-    if (wObj1 != null) {
-    	ss_hideEntryDivImpl(wObj1);
-    	var wObj3 = self.document.getElementById('ss_iframe_holder_div')
-    	if (0 == 1 && wObj3 != null) {
-    		//Turned off because it doesn't work yet
-    		//Delete the iframe obj; it will get recreated again
-    		var iframeObj = self.document.getElementById('ss_showentryframe')
-    		if (iframeObj != null) iframeObj.parentNode.removeChild(iframeObj);
-    		ss_setObjectHeight(wObj3, "200px");
-    	}
-    }
-    ss_showSpannedAreas();
-}
-
-function ss_hideEntryDivImpl(eDIV) {
-	if (eDIV != null) {
-    	eDIV.style.visibility = "hidden";
-    	eDIV.style.display = "none";
-	}
-}
-
 function ss_repositionEntryDiv() {
     //ss_debug('reposition div')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
