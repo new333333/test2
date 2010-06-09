@@ -222,6 +222,17 @@ public class GwtMainPage extends Composite
 
 	}// end GwtMainPage()
 
+
+	/*
+	 * Hide the popup entry iframe div if one exists.
+	 */
+	private native void hideEntryPopupDiv() /*-{
+		if ( $wnd.ss_hideEntryDivOnLoad !== undefined )
+		{
+			$wnd.ss_hideEntryDivOnLoad();
+		}
+	}-*/;
+
 	/*
 	 * Called to create a JavaScript method that will be invoked from
 	 * an administration page when the user presses close or cancel in the administration page.
@@ -656,6 +667,9 @@ public class GwtMainPage extends Composite
 		switch (action)
 		{
 		case ADMINISTRATION:
+			// Hide any popup entry iframe divs.
+			hideEntryPopupDiv();
+			
 			// Hide everything on the menu, the workspace tree control and the content control.
 			m_mainMenuCtrl.showAdministrationMenubar();
 			m_wsTreeCtrl.setVisible( false );
