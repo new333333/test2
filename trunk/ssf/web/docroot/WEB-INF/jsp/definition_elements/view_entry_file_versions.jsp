@@ -64,11 +64,11 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
 <tr>
   <th style="padding-right:4px;"><ssf:nlt tag="file.name"/></th>
-  <th style="padding-right:4px;"><ssf:nlt tag="entry.Version"/></th>
-  <th style="padding-right:4px;"><ssf:nlt tag="file.status"/></th>
-  <th style="padding-right:4px;"><ssf:nlt tag="file.date"/></th>
-  <th style="padding-right:4px;"><ssf:nlt tag="file.size"/></th>
-  <th style="padding-right:4px;"><ssf:nlt tag="entry.modifiedBy"/></th>
+  <th align="center" style="padding:0px 4px;"><ssf:nlt tag="entry.Version"/></th>
+  <th style="padding:0px 4px;"><ssf:nlt tag="file.status"/></th>
+  <th style="padding:0px 4px;"><ssf:nlt tag="file.date"/></th>
+  <th align="center" style="padding:0px 4px;"><ssf:nlt tag="file.size"/></th>
+  <th style="padding:0px 4px;"><ssf:nlt tag="entry.modifiedBy"/></th>
   <th><ssf:nlt tag="toolbar.actions"/></th>
 </tr>
 </c:if>
