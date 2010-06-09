@@ -152,13 +152,15 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 	 * Add a language package to the Tiny MCE editor for the "add image dialog" plugin.
 	 */
 	protected native void addAddImageDialogLanguagePack( String langPrefix, GwtTeamingMessages messages ) /*-{
+		var ss_imageSelections_ss_htmleditor = "<select name='srcUrl' id='srcUrl'></select>";
+		
 		$wnd.tinyMCE.addI18n( langPrefix, {
 			overQuota : ' ',
 			srcFile : messages.@org.kablink.teaming.gwt.client.GwtTeamingMessages::srcFile()(),
 			addFile : messages.@org.kablink.teaming.gwt.client.GwtTeamingMessages::addFile()(),
 			addUrl : messages.@org.kablink.teaming.gwt.client.GwtTeamingMessages::addUrl()(),
 			imageName : messages.@org.kablink.teaming.gwt.client.GwtTeamingMessages::imageName()(),
-			imageSelectBox : 'ss_imageSelections_ss_htmleditor',
+			imageSelectBox : ss_imageSelections_ss_htmleditor,
 			missing_img : messages.@org.kablink.teaming.gwt.client.GwtTeamingMessages::missingImage()()
 			} );
 	}-*/;
