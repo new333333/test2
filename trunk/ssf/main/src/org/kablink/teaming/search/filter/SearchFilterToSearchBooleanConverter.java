@@ -961,15 +961,50 @@ public class SearchFilterToSearchBooleanConverter {
 		final String AND = "333and444";
 		final String NOT = "555not666";
 		final String TO = "777to888";
-		searchText = searchText.replace("OR", OR);
-		searchText = searchText.replace("AND", AND);
-		searchText = searchText.replace("NOT", NOT);
-		searchText = searchText.replace("TO", TO);
-		searchText = searchText.toLowerCase(locale);
+		
+		searchText = searchText.replaceAll("\\bOR\\b", OR);
+		searchText = searchText.replaceAll("\\bAND\\b", AND);
+		searchText = searchText.replaceAll("\\bNOT\\b", NOT);
+		searchText = searchText.replaceAll("\\bTO\\b", TO);
+		
+		StringBuilder sb = new StringBuilder();
+		int len = searchText.length();
+		char c;
+		boolean inField = false;
+		for(int i = len-1; i >= 0; i--) {
+			c = searchText.charAt(i);
+			if(c == ':') {
+				if(i > 0) {
+					if(searchText.charAt(i-1) != '\\') {
+						inField = true;
+					}
+				}
+			}
+			else if(!Character.isLetter(c)) {
+				inField = false;
+			}
+			if(!inField)
+				c = Character.toLowerCase(c);
+			sb.append(c);
+		}
+		searchText = sb.reverse().toString();
+		
 		searchText = searchText.replace(OR, "OR");
 		searchText = searchText.replace(AND, "AND");
 		searchText = searchText.replace(NOT, "NOT");
 		searchText = searchText.replace(TO, "TO");
 		return searchText;
 	}
+	
+	public static void main(String[] args) throws Exception {
+		String searchText = "(James)OR{smith}";
+		System.out.println(lowerCaseSearchText(searchText, Locale.ENGLISH));
+		
+		searchText = "Novell AND ((Teaming NOT SiteScape) OR IBM)";
+		System.out.println(lowerCaseSearchText(searchText, Locale.ENGLISH));
+		
+		searchText = "(Teaming OR title:Novell NOT Status:bad) AND birthDate:[20090505* TO 20100830*]";
+		System.out.println(lowerCaseSearchText(searchText, Locale.ENGLISH));
+	}
+	
 }
