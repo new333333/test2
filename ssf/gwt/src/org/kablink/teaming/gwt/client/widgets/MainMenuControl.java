@@ -65,6 +65,8 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
@@ -297,10 +299,13 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 						m_myFavoritesMenuPopup = new MyFavoritesMenuPopup(actionTrigger);
 						m_myFavoritesMenuPopup.setCurrentBinder(m_contextBinder);
 						m_myFavoritesMenuPopup.showMenu(m_myFavoritesBox);
+						m_myFavoritesMenuPopup.addCloseHandler(new CloseHandler<PopupPanel>(){
+							public void onClose(CloseEvent<PopupPanel> event) {
+							     m_myFavoritesMenuPopup = null;
+							}});
 					}
 					else {
 					     m_myFavoritesMenuPopup.hideMenu();
-					     m_myFavoritesMenuPopup = null;
 					}
 				}
 			});
@@ -320,10 +325,13 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 						m_myTeamsMenuPopup = new MyTeamsMenuPopup(actionTrigger);
 						m_myTeamsMenuPopup.setCurrentBinder(m_contextBinder);
 						m_myTeamsMenuPopup.showMenu(m_myTeamsBox);
+						m_myTeamsMenuPopup.addCloseHandler(new CloseHandler<PopupPanel>(){
+							public void onClose(CloseEvent<PopupPanel> event) {
+								m_myTeamsMenuPopup = null;
+							}});
 					}
 					else {
 					     m_myTeamsMenuPopup.hideMenu();
-					     m_myTeamsMenuPopup = null;
 					}
 				}
 			});
