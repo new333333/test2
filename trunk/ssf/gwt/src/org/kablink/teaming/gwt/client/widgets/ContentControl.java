@@ -34,6 +34,10 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.FrameElement;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.NamedFrame;
@@ -67,6 +71,25 @@ public class ContentControl extends Composite
 		initWidget( mainPanel );
 	}// end ContentControl()
 	
+	
+	/**
+	 * Clear the contents of the iframe.
+	 */
+	public void clear()
+	{
+		Element element;
+		
+		element = m_frame.getElement();
+		if ( element instanceof FrameElement )
+		{
+			FrameElement frameElement;
+			String html;
+			
+			html = "<body><div style=\"text-align: center\">" + GwtTeaming.getMessages().oneMomentPlease() + "</div></body>";
+			frameElement = (FrameElement) element;
+			frameElement.getContentDocument().getBody().setInnerHTML( html );
+		}
+	}
 	
 	/**
 	 * Set the width and height of this control.

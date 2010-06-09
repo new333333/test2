@@ -800,8 +800,22 @@ public class AdminControl extends Composite
 			url = adminAction.getUrl();
 			if ( url != null && url.length() > 0 )
 			{
+				Command cmd;
+
+				// Clear the iframe's content 
+				m_contentControl.clear();
+				
+				// Set the iframe's content to the selected administration page.
 				m_contentControl.setUrl( url );
-				showContentPanel();
+				
+				cmd = new Command()
+				{
+					public void execute()
+					{
+						showContentPanel();
+					}
+				};
+				DeferredCommand.addCommand( cmd );
 			}
 		}
 	}// end adminActionSelected()
