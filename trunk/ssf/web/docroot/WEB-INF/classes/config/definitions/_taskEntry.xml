@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_taskEntry" caption="__definition_default_task_entry" type="1" nextId="67" definitionType="1" databaseId="402883c1129b1f8101129b28bbe50002"> 
+<definition name="_taskEntry" caption="__definition_default_task_entry" type="1" nextId="69" definitionType="1" databaseId="402883c1129b1f8101129b28bbe50002"> 
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1"> 
     <properties/>  
     <item name="entryFormForm" caption="__form" id="2"> 
@@ -13,7 +13,7 @@
           <property name="generated" value=""/>  
           <property name="itemSource" value=""/> 
         </properties> 
-      </item>
+      </item>  
       <item name="guestName" caption="__guestName" type="data" category="entryData" display="form" id="63"> 
         <properties> 
           <property name="caption" value="__guest.default.caption"/>  
@@ -79,15 +79,15 @@
             <property name="default" value="false"/> 
           </properties> 
         </item>  
-        <properties>
-          <property name="caption" value="__task_priority"/>
-          <property name="name" value="priority"/>
-          <property name="multipleAllowed" value="false"/>
-          <property name="size" value="1"/>
-          <property name="required" value="false"/>
-          <property name="fieldModificationAllowed" value="false"/>
-          <property name="userVersionAllowed" value="false"/>
-        </properties>
+        <properties> 
+          <property name="caption" value="__task_priority"/>  
+          <property name="name" value="priority"/>  
+          <property name="multipleAllowed" value="false"/>  
+          <property name="size" value="1"/>  
+          <property name="required" value="false"/>  
+          <property name="fieldModificationAllowed" value="false"/>  
+          <property name="userVersionAllowed" value="false"/> 
+        </properties> 
       </item>  
       <item name="user_list" caption="__user_list" type="data" category="commonEntryData" id="28"> 
         <properties> 
@@ -153,15 +153,15 @@
             <property name="default" value="false"/> 
           </properties> 
         </item>  
-        <properties>
-          <property name="caption" value="__task_status"/>
-          <property name="name" value="status"/>
-          <property name="multipleAllowed" value="false"/>
-          <property name="size" value="1"/>
-          <property name="required" value="false"/>
-          <property name="fieldModificationAllowed" value="false"/>
-          <property name="userVersionAllowed" value="false"/>
-        </properties>
+        <properties> 
+          <property name="caption" value="__task_status"/>  
+          <property name="name" value="status"/>  
+          <property name="multipleAllowed" value="false"/>  
+          <property name="size" value="1"/>  
+          <property name="required" value="false"/>  
+          <property name="fieldModificationAllowed" value="false"/>  
+          <property name="userVersionAllowed" value="false"/> 
+        </properties> 
       </item>  
       <item name="selectbox" caption="__selectbox" type="data" category="commonEntryData" id="36" display="form"> 
         <item name="selectboxSelection" caption="__selection" id="37"> 
@@ -241,15 +241,15 @@
             <property name="default" value="false"/> 
           </properties> 
         </item>  
-        <properties>
-          <property name="caption" value="__task_completed"/>
-          <property name="name" value="completed"/>
-          <property name="multipleAllowed" value="false"/>
-          <property name="size" value="1"/>
-          <property name="required" value="false"/>
-          <property name="fieldModificationAllowed" value="false"/>
-          <property name="userVersionAllowed" value="false"/>
-        </properties>
+        <properties> 
+          <property name="caption" value="__task_completed"/>  
+          <property name="name" value="completed"/>  
+          <property name="multipleAllowed" value="false"/>  
+          <property name="size" value="1"/>  
+          <property name="required" value="false"/>  
+          <property name="fieldModificationAllowed" value="false"/>  
+          <property name="userVersionAllowed" value="false"/> 
+        </properties> 
       </item>  
       <item name="attachFiles" caption="__attach_files" type="data" id="5"> 
         <properties> 
@@ -364,16 +364,12 @@
         <property name="caption" value="__task_time_period"/> 
       </properties> 
     </item>  
-    <item name="entryAttachments" caption="__entry_attachments" id="14"> 
-      <properties> 
-        <property name="caption" value="__entry_attachments"/> 
-      </properties> 
-    </item>  
-    <item name="entryComments" caption="__entry_comments" id="15"> 
-      <properties> 
-        <property name="caption" value="__entry_comments"/> 
-      </properties> 
-    </item> 
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="67">
+      <properties>
+        <property name="caption" value=""/>
+        <property name="tabTitle" value="comments"/>
+      </properties>
+    </item>
   </item>  
   <item name="entryBlogView" caption="__entry_blog_view_definition" id="16"> 
     <properties> 
@@ -424,16 +420,12 @@
         <property name="caption" value="__task_status"/> 
       </properties> 
     </item>  
-    <item name="entryBlogAttachments" caption="__entry_attachments" id="20"> 
-      <properties> 
-        <property name="caption" value="__entry_attachments"/> 
-      </properties> 
-    </item>  
-    <item name="entryBlogComments" caption="__entry_comments" id="21"> 
-      <properties> 
-        <property name="caption" value="__entry_comments"/> 
-      </properties> 
-    </item> 
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="68">
+      <properties>
+        <property name="caption" value=""/>
+        <property name="tabTitle" value="comments"/>
+      </properties>
+    </item>
   </item>  
   <properties> 
     <property name="name" value="_taskEntry"/>  
