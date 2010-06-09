@@ -34,66 +34,17 @@
 %>
 <% // View entry comments and attachments in tabs %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${empty ss_viewCommentsAttachmentsDivCount}">
-  <c:set var="ss_viewCommentsAttachmentsDivCount" value="0" scope="request"/>
+<c:if test="${empty ss_tabDivCount}">
+  <c:set var="ss_tabDivCount" value="0" scope="request"/>
 </c:if>
-<c:set var="ss_viewCommentsAttachmentsDivCount" value="${ss_viewCommentsAttachmentsDivCount + 1}" scope="request"/>
+<c:set var="ss_tabDivCount" value="${ss_tabDivCount + 1}" scope="request"/>
+<c:set var="ss_thisCurrentTab" value="viewComments${ss_tabDivCount}"/>
+<c:if test="${!empty ss_pseudoEntity}">
+  <c:set var="ss_thisCurrentTab" value="viewAttachments${ss_tabDivCount}"/>
+</c:if>
 <script type="text/javascript">
-var currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} = "viewComments${ss_viewCommentsAttachmentsDivCount}";
-var currentCommentsAttachmentsHoverOverTab = null;
-function ss_showCommentsAttachmentsTab(id) {
-	if (currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} != null) {
-		var divObj = self.document.getElementById(currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} + "Div")
-		divObj.style.display = "none";
-		var tabObj = self.document.getElementById(currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} + "Tab");
-		tabObj.className = "wg-tab roundcornerSM";
-		currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} = null;
-	}
-	currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} = id;
-	var divObj = self.document.getElementById(currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} + "Div");
-	var tabObj = self.document.getElementById(currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} + "Tab");
-	divObj.style.display = "block";
-	tabObj.className = "wg-tab roundcornerSM on";
-	
-	//Signal that the layout changed
-	if (ssf_onLayoutChange) ssf_onLayoutChange();
-}
-
-function ss_hoverOverCommentsAttachmentsTab(id) {
-	if (currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} != null) {
-		var tabObj = self.document.getElementById(currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} + "Tab");
-		tabObj.className = "wg-tab roundcornerSM on";
-	}
-	if (currentCommentsAttachmentsHoverOverTab != null && 
-			currentCommentsAttachmentsHoverOverTab != currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount}) {
-		var tabObj = self.document.getElementById(currentCommentsAttachmentsHoverOverTab + "Tab");
-		tabObj.className = "wg-tab roundcornerSM";
-		currentCommentsAttachmentsHoverOverTab = null;
-	}
-	currentCommentsAttachmentsHoverOverTab = id;
-	var tabObj = self.document.getElementById(id + "Tab");
-	if (currentCommentsAttachmentsHoverOverTab == currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount}) {
-		tabObj.className = "wg-tab roundcornerSM selected-menu on";
-	} else {
-		tabObj.className = "wg-tab roundcornerSM selected-menu";
-	}
-}
-
-function ss_hoverOverStoppedCommentsAttachmentsTab(id) {
-	if (currentCommentsAttachmentsHoverOverTab != null) {
-		var tabObj = self.document.getElementById(currentCommentsAttachmentsHoverOverTab + "Tab");
-		if (currentCommentsAttachmentsHoverOverTab == currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount}) {
-			tabObj.className = "wg-tab roundcornerSM on";
-		} else {
-			tabObj.className = "wg-tab roundcornerSM";
-		}
-		currentCommentsAttachmentsHoverOverTab = null;
-	}
-	if (currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} != null) {
-		var tabObj = self.document.getElementById(currentCommentsAttachmentsTabShowing${ss_viewCommentsAttachmentsDivCount} + "Tab");
-		tabObj.className = "wg-tab roundcornerSM on";
-	}
-}
+ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}", 
+		function() {ss_initTab('${ss_thisCurrentTab}', '${ss_tabDivCount}');});
 </script>
 
 <div class="ss_entryContent">
@@ -103,29 +54,29 @@ function ss_hoverOverStoppedCommentsAttachmentsTab(id) {
   <tr>
   <c:if test="${empty ss_pseudoEntity}">
   <td valign="middle" width="1%" nowrap>
-  <div id="viewComments${ss_viewCommentsAttachmentsDivCount}Tab" class="wg-tab roundcornerSM on" 
-    onMouseOver="ss_hoverOverCommentsAttachmentsTab('viewComments${ss_viewCommentsAttachmentsDivCount}');"
-    onMouseOut="ss_hoverOverStoppedCommentsAttachmentsTab('viewComments${ss_viewCommentsAttachmentsDivCount}');"
-    onClick="ss_showCommentsAttachmentsTab('viewComments${ss_viewCommentsAttachmentsDivCount}');">
+  <div id="viewComments${ss_tabDivCount}Tab" class="wg-tab roundcornerSM on" 
+    onMouseOver="ss_hoverOverTab('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');"
+    onMouseOut="ss_hoverOverTabStopped('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');"
+    onClick="ss_showTab('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');">
     <ssf:nlt tag="__entry_comments"/>
   </div>
   </td>
   </c:if>
   <td valign="middle" width="1%" nowrap>
-  <div id="viewAttachments${ss_viewCommentsAttachmentsDivCount}Tab" 
+  <div id="viewAttachments${ss_tabDivCount}Tab" 
     class="wg-tab roundcornerSM <c:if test="${!empty ss_pseudoEntity}">on</c:if>" 
-    onMouseOver="ss_hoverOverCommentsAttachmentsTab('viewAttachments${ss_viewCommentsAttachmentsDivCount}');"
-    onMouseOut="ss_hoverOverStoppedCommentsAttachmentsTab('viewAttachments${ss_viewCommentsAttachmentsDivCount}');"
-    onClick="ss_showCommentsAttachmentsTab('viewAttachments${ss_viewCommentsAttachmentsDivCount}');">
+    onMouseOver="ss_hoverOverTab('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');"
+    onMouseOut="ss_hoverOverTabStopped('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');"
+    onClick="ss_showTab('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');">
     <ssf:nlt tag="__entry_attachments"/>
   </div>
   </td>
   <td valign="middle" width="1%" nowrap>
-  <div id="viewFileVersions${ss_viewCommentsAttachmentsDivCount}Tab" 
-    class="wg-tab roundcornerSM <c:if test="${!empty ss_pseudoEntity}">on</c:if>" 
-    onMouseOver="ss_hoverOverCommentsAttachmentsTab('viewFileVersions${ss_viewCommentsAttachmentsDivCount}');"
-    onMouseOut="ss_hoverOverStoppedCommentsAttachmentsTab('viewFileVersions${ss_viewCommentsAttachmentsDivCount}');"
-    onClick="ss_showCommentsAttachmentsTab('viewFileVersions${ss_viewCommentsAttachmentsDivCount}');">
+  <div id="viewFileVersions${ss_tabDivCount}Tab" 
+    class="wg-tab roundcornerSM" 
+    onMouseOver="ss_hoverOverTab('viewFileVersions${ss_tabDivCount}', '${ss_tabDivCount}');"
+    onMouseOut="ss_hoverOverTabStopped('viewFileVersions${ss_tabDivCount}', '${ss_tabDivCount}');"
+    onClick="ss_showTab('viewFileVersions${ss_tabDivCount}', '${ss_tabDivCount}');">
     <ssf:nlt tag="__entry_file_versions"/>
   </div>
   </td>
@@ -139,22 +90,22 @@ function ss_hoverOverStoppedCommentsAttachmentsTab(id) {
 </div>
 
 <div id="commentsAndAttachmentsRegion" class="wg-tab-content">
-<div id="viewAttachments${ss_viewCommentsAttachmentsDivCount}Div" 
+<div id="viewAttachments${ss_tabDivCount}Div" 
   <c:if test="${empty ss_pseudoEntity}">style="display:none;"</c:if>
   <c:if test="${!empty ss_pseudoEntity}">style="display:block;"</c:if>
 >
   <c:set var="property_caption" value="" scope="request"/>
   <c:set var="ss_showPrimaryFileAttachmentOnly" value="true" scope="request"/>
-  <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
+  <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachments_tab.jsp" />
 </div>
 
-<div id="viewFileVersions${ss_viewCommentsAttachmentsDivCount}Div" style="display:none;">
+<div id="viewFileVersions${ss_tabDivCount}Div" style="display:none;">
   <c:set var="property_caption" value="" scope="request"/>
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_file_versions.jsp" />
 </div>
 
 <c:if test="${empty ss_pseudoEntity}">
-<div id="viewComments${ss_viewCommentsAttachmentsDivCount}Div" style="display:block;">
+<div id="viewComments${ss_tabDivCount}Div" style="display:block;">
   <c:set var="property_caption" value="" scope="request"/>
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_replies.jsp" />
 </div>
