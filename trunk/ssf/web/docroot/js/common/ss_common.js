@@ -676,7 +676,7 @@ function ss_reloadOpenerParent(fallBackUrl) {
 	return false;
 }
 
-function ss_reloadOpener(fallBackUrl) {	
+function ss_reloadOpener(fallBackUrl) {
 	//Are we at the top window?
 	if (self.window != self.top) {
 		// No!  Are we running in the GWT UI?
@@ -699,7 +699,13 @@ function ss_reloadOpener(fallBackUrl) {
 				self.opener.location.replace(self.opener.ss_reloadUrl);
 				setTimeout('self.window.close();', 200)
 			} else {
-				self.opener.location.href = fallBackUrl;
+				if (ss_isGwtUIActive) {
+					self.opener.top.m_requestInfo.forceSidebarReload = true;
+					self.opener.top.gwtContentIframe.location.href = fallBackUrl;
+				}
+				else {
+					self.opener.location.href = fallBackUrl;
+				}
 				setTimeout('self.window.close();', 200)
 			}
 		} catch (e) {
