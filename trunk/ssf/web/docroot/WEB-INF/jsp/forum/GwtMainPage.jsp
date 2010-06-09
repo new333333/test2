@@ -80,7 +80,7 @@
 			recentPlaceSearchUrl: '<ssf:escapeJavaScript><ssf:url action="advanced_search" actionUrl="true"><ssf:param name="operation" value="viewPage"/></ssf:url></ssf:escapeJavaScript>'
 		};
 
-		var ss_workareaIframeOffset = 50;
+		var ss_workareaIframeOffset = 0;
 		function ss_setWorkareaIframeSize() {
 			//If possible, try to directly set the size of the iframe
 			//This may fail if the iframe is showing something in another domain
