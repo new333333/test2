@@ -464,6 +464,17 @@
 		</jsps>
 	</item>
 		
+	<item name="entryRepliesAndAttachments" caption="__entry_commentsAndAttachments" 
+	  category="entryViewData" display="view" multipleAllowed="false">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__entry_repliesAndAttachments"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_comments_and_attachments.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_comments_and_attachments.jsp" />
+		</jsps>
+	</item>
+		
 	<item name="entryComments" caption="__entry_comments" category="entryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__entry_comments"/>
