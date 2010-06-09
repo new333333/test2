@@ -72,7 +72,7 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
     onMouseOver="ss_hoverOverTab('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');"
     onMouseOut="ss_hoverOverTabStopped('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');"
     onClick="ss_showTab('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');">
-    <ssf:nlt tag="__entry_comments"/>
+    (${fn:length(ssFolderEntryDescendants)}) <ssf:nlt tag="__entry_comments"/>
   </div>
   </td>
   </c:if>
