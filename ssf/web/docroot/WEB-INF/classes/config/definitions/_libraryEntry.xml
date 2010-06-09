@@ -108,11 +108,12 @@
         <property name="caption" value="__entry_workflow"/> 
       </properties> 
     </item>  
-    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="33">
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="33"> 
       <properties>
         <property name="caption" value=""/>
+        <property name="tabTitle" value="comments"/>
       </properties>
-    </item>
+    </item> 
   </item>  
   <item name="entryBlogView" caption="__entry_blog_view_definition" id="16"> 
     <properties> 
@@ -133,11 +134,12 @@
         <property name="caption" value="__entry_workflow"/> 
       </properties> 
     </item>  
-    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="34">
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="34"> 
       <properties>
         <property name="caption" value=""/>
+        <property name="tabTitle" value="comments"/>
       </properties>
-    </item>
+    </item> 
   </item>  
   <properties> 
     <property name="name" value="_libraryEntry"/>  

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_surveyEntry" caption="__definition_default_survey_entry" type="1" nextId="61" definitionType="1" databaseId="402883c1129b1f8101129b28bbe50004"> 
+<definition name="_surveyEntry" caption="__definition_default_survey_entry" type="1" nextId="63" definitionType="1" databaseId="402883c1129b1f8101129b28bbe50004"> 
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1"> 
     <properties/>  
     <item name="entryFormForm" caption="__form" id="2"> 
@@ -13,14 +13,14 @@
           <property name="generated" value=""/>  
           <property name="itemSource" value=""/> 
         </properties> 
-      </item>
-      <item name="guestName" caption="__guestName" type="data" category="entryData" display="form" id="60">
-        <properties>
-          <property name="caption" value="__guest.default.caption"/>
-          <property name="name" value="_guestName"/>
-          <property name="width" value=""/>
-          <property name="required" value="false"/>
-        </properties>
+      </item>  
+      <item name="guestName" caption="__guestName" type="data" category="entryData" display="form" id="60"> 
+        <properties> 
+          <property name="caption" value="__guest.default.caption"/>  
+          <property name="name" value="_guestName"/>  
+          <property name="width" value=""/>  
+          <property name="required" value="false"/> 
+        </properties> 
       </item>  
       <item name="description" caption="__description" type="data" id="4"> 
         <properties> 
@@ -106,11 +106,6 @@
         <property name="caption" value="__entry_workflow"/> 
       </properties> 
     </item>  
-    <item name="entryAttachments" caption="__entry_attachments" id="14"> 
-      <properties> 
-        <property name="caption" value="__entry_attachments"/> 
-      </properties> 
-    </item>  
     <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="57" formItem="date_time"> 
       <properties> 
         <property name="name" value="due_date"/>  
@@ -123,14 +118,15 @@
         <property name="caption" value="__survey_questions"/> 
       </properties> 
     </item>  
-    <item name="entryComments" caption="__entry_comments" id="15"> 
-      <properties> 
-        <property name="caption" value="__entry_comments"/> 
-      </properties> 
-    </item>  
     <properties> 
       <property name="type" value="entryView"/> 
-    </properties> 
+    </properties>  
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="61">
+      <properties>
+        <property name="caption" value=""/>
+        <property name="tabTitle" value="comments"/>
+      </properties>
+    </item>
   </item>  
   <item name="entryBlogView" caption="__entry_blog_view_definition" id="16"> 
     <item name="titleBlogView" caption="__title" id="17"> 
@@ -148,16 +144,6 @@
         <property name="caption" value="__entry_workflow"/> 
       </properties> 
     </item>  
-    <item name="entryBlogAttachments" caption="__entry_attachments" id="20"> 
-      <properties> 
-        <property name="caption" value="__entry_attachments"/> 
-      </properties> 
-    </item>  
-    <item name="entryBlogComments" caption="__entry_comments" id="21"> 
-      <properties> 
-        <property name="caption" value="__entry_comments"/> 
-      </properties> 
-    </item>  
     <properties> 
       <property name="type" value="blog"/> 
     </properties>  
@@ -166,7 +152,13 @@
         <property name="name" value="due_date"/>  
         <property name="caption" value="__due_date"/> 
       </properties> 
-    </item> 
+    </item>  
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="62">
+      <properties>
+        <property name="caption" value=""/>
+        <property name="tabTitle" value="comments"/>
+      </properties>
+    </item>
   </item>  
   <properties> 
     <property name="name" value="_surveyEntry"/>  

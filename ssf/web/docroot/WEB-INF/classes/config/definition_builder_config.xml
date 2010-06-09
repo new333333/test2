@@ -454,20 +454,14 @@
 	
 		
 	<item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" 
-	  category="entryViewData" display="view" multipleAllowed="false">
+	  category="entryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__entry_commentsAndAttachments"/>
-		</properties>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_comments_and_attachments.jsp" />
-			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_comments_and_attachments.jsp" />
-		</jsps>
-	</item>
-		
-	<item name="entryRepliesAndAttachments" caption="__entry_commentsAndAttachments" 
-	  category="entryViewData" display="view" multipleAllowed="false">
-		<properties>
-			<property name="caption" caption="__caption" type="text" value="__entry_repliesAndAttachments"/>
+			<property name="tabTitle" caption="__entry_tabTitle" type="selectbox" 
+				  default="comments" value="">
+				<option name="comments" caption="__entry_comments" />
+				<option name="replies" caption="__entry_replies" />
+			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_comments_and_attachments.jsp" />
