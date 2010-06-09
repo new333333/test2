@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.util;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 
 /**
@@ -276,5 +277,17 @@ public class GwtClientHelper {
 	public static native void jsRegisterActionHandler( ActionRequestor requestor ) /*-{
 		window.top.ss_registerActionHandler( requestor );
 	}-*/;
-	
+
+	/**
+	 * Sets a PopupPanel to use roll-down animation to open.  Currently
+	 * the GWT API for this is inaccessible.  Once it becomes
+	 * available, this method needs to be changed to enable animations
+	 * and set their type to ROLL_DOWN.
+	 * 
+	 * @param popup
+	 */
+	public static void rollDownPopup(PopupPanel popup) {
+		popup.setAnimationEnabled(false);
+//!		popup.setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
+	}
 }

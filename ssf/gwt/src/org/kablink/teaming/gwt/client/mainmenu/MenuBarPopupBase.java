@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
@@ -93,8 +94,7 @@ public abstract class MenuBarPopupBase extends PopupPanel {
 		
 		// ...and initialize everything else.
 		addStyleName("mainMenuPopup_Core");
-		setAnimationEnabled(false);
-//!		setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
+		GwtClientHelper.rollDownPopup(this);
 
 		// ...create the popup's innards...
 		DockPanel dp = new DockPanel();

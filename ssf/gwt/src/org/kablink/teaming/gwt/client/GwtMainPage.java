@@ -76,6 +76,7 @@ public class GwtMainPage extends Composite
 	public static RequestInfo m_requestInfo;
 
 	private boolean m_inSearch = false;
+	private String m_searchTabId = "";
 	private ContentControl m_contentCtrl;
 	private EditBrandingDlg m_editBrandingDlg = null;
 	private PersonalPreferencesDlg m_personalPrefsDlg = null;
@@ -249,9 +250,9 @@ public class GwtMainPage extends Composite
 	 * view_workarea_navbar.jsp when new contexts are loaded.
 	 */
 	private native void initContextLoadHandlerJS(GwtMainPage gwtMainPage) /*-{
-		$wnd.ss_contextLoaded = function( binderId, inSearch )
+		$wnd.ss_contextLoaded = function( binderId, inSearch, searchTabId )
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::contextLoaded(Ljava/lang/String;Ljava/lang/String;)( binderId, inSearch );
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::contextLoaded(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)( binderId, inSearch, searchTabId );
 		}//end ss_contextLoaded()
 	}-*/;
 
@@ -318,17 +319,22 @@ public class GwtMainPage extends Composite
 	 * Puts a context change from the traditional UI into effect.
 	 */
 	@SuppressWarnings("unused")
-	private void contextLoaded( String binderId, String inSearch ) {
-		contextLoaded( binderId, Instigator.CONTENT_CONTEXT_CHANGE, ((null != inSearch) && Boolean.parseBoolean( inSearch )));
+	private void contextLoaded( String binderId, String inSearch, String searchTabId ) {
+		contextLoaded(
+			binderId,
+			Instigator.CONTENT_CONTEXT_CHANGE,
+			((null != inSearch) && Boolean.parseBoolean( inSearch )),
+			searchTabId );
 	}
 	
 	private void contextLoaded( String binderId, Instigator instigator ) {
-		contextLoaded( binderId, instigator, false );
+		contextLoaded( binderId, instigator, false, "" );
 	}
 	
-	private void contextLoaded( String binderId, final Instigator instigator, boolean inSearch )
+	private void contextLoaded( String binderId, final Instigator instigator, boolean inSearch, String searchTabId )
 	{
-		m_inSearch = inSearch;
+		m_inSearch    = inSearch;
+		m_searchTabId = searchTabId;
 		
 		final boolean forceSidebarReload = m_requestInfo.forceSidebarReload();
 		if (forceSidebarReload) {
@@ -1002,7 +1008,7 @@ public class GwtMainPage extends Composite
 			if ( Instigator.CONTENT_CONTEXT_CHANGE == instigator )
 			{
 				// Yes!  Update the menu bar accordingly.
-				m_mainMenuCtrl.contextLoaded( m_selectedBinderId, m_inSearch );
+				m_mainMenuCtrl.contextLoaded( m_selectedBinderId, m_inSearch, m_searchTabId );
 			}
 			else
 			{
@@ -1098,8 +1104,7 @@ public class GwtMainPage extends Composite
 			registerActionHandler( breadCrumbTree );
 
 			m_breadCrumbBrowser = new PopupPanel(true);
-			m_breadCrumbBrowser.setAnimationEnabled(true);
-//!			m_breadCrumbBrowser.setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
+			GwtClientHelper.rollDownPopup(m_breadCrumbBrowser);
 			m_breadCrumbBrowser.addStyleName( "mainBreadCrumb_Browser roundcornerSM-bottom" );
 			m_breadCrumbBrowser.setWidget( breadCrumbTree );
 			

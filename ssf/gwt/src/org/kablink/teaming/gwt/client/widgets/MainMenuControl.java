@@ -57,6 +57,7 @@ import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
@@ -124,8 +125,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 			public void onClick(ClickEvent event) {
 				m_soButton.removeStyleName("subhead-control-bg2");
 				final PopupPanel soPopup = new PopupPanel(true, false);
-				soPopup.setAnimationEnabled(false);
-//!				m_searchOptionsPopup.setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
+				GwtClientHelper.rollDownPopup(soPopup);
 				soPopup.addStyleName("mainMenuSearchOptions_Browser roundcornerSM-bottom");
 				SearchOptionsComposite searchOptionsComposite = new SearchOptionsComposite(soPopup, mainMenu);
 				searchOptionsComposite.addStyleName("mainMenuSearchOptions");
@@ -374,6 +374,14 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 			m_contextPanel.add(rpBox);
 		}
 	}
+
+	/*
+	 * Add the Saved Searches item to the context based portion of the
+	 * menu bar.
+	 */
+	private void addManageSavedSearchesToContext(String searchTabId) {
+//!		...this needs to be implemented...
+	}
 	
 	/*
 	 * Adds the Top Ranked item to the context based portion of the
@@ -415,9 +423,19 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * Called when a new context has been loaded into the content panel
 	 * to refresh the menu contents.
 	 * 
+	 * Note:  If searchTabId as a non-null, non-empty value, it will be
+	 *    used as the ID of the current tab (i.e., search results) and
+	 *    implies that that the current search can be saved.
+	 *    
+	 *    If it's null or an empty value, it implies that there is no
+	 *    current search that can be saved and no saving capabilities
+	 *    will be exposed.
+	 *    
 	 * @param binderId
+	 * @param inSearch
+	 * @param searchTabId
 	 */
-	public void contextLoaded(final String binderId, final boolean inSearch) {
+	public void contextLoaded(final String binderId, final boolean inSearch, final String searchTabId) {
 		// Rebuild the context based panel based on the new context.
 		m_contextPanel.clear();
 		GwtTeaming.getRpcService().getBinderInfo(binderId, new AsyncCallback<BinderInfo>() {
@@ -438,12 +456,12 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 							}
 							public void onSuccess(final TeamManagementInfo tmi)  {
 								// Handle inSearch vs. not inSearch.
-//!								...this needs to be implemented...
 								addManageToContext(      toolbarItemList, tmi);
 								addRecentPlacesToContext(toolbarItemList);
 								addActionsToContext(     toolbarItemList);
 								if (inSearch) {
 									addTopRankedToContext();
+									addManageSavedSearchesToContext(searchTabId);
 								}
 							}
 						});
