@@ -135,6 +135,7 @@ public interface GwtTeamingMessages extends Messages
 	String _5();
 	String cancel();
 	String ok();
+	String oneMomentPlease();
 	String percent();
 	String showBorder();
 	String showTitle();
