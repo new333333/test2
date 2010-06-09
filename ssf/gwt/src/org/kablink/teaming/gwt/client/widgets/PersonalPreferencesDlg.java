@@ -73,7 +73,6 @@ public class PersonalPreferencesDlg extends DlgBox
 	private ListBox m_entryDisplayStyleListbox;
 	private TextBox m_numEntriesPerPageTxtBox;
 	private CheckBox m_showToolTips;
-	private CheckBox m_showTutorialPanel;
 	private Anchor m_editorOverridesAnchor;
 	
 
@@ -147,13 +146,6 @@ public class PersonalPreferencesDlg extends DlgBox
 		{
 			m_showToolTips = new CheckBox( messages.showToolTips() );
 			table.setWidget( nextRow, 0, m_showToolTips );
-			++nextRow;
-		}
-		
-		// Create the controls for "show tutorial panel"
-		{
-			m_showTutorialPanel = new CheckBox( messages.showTutorialPanel() );
-			table.setWidget( nextRow, 0, m_showTutorialPanel );
 			++nextRow;
 		}
 		
@@ -295,10 +287,6 @@ public class PersonalPreferencesDlg extends DlgBox
 		value = m_showToolTips.getValue();
 		personalPrefs.setShowToolTips( value.booleanValue() );
 		
-		// Get the value of "Show tutorial panel".
-		value = m_showTutorialPanel.getValue();
-		personalPrefs.setShowTutorialPanel( value );
-		
 		return personalPrefs;
 	}// end getDataFromDlg()
 	
@@ -339,8 +327,6 @@ public class PersonalPreferencesDlg extends DlgBox
 		m_numEntriesPerPageTxtBox.setValue( String.valueOf( personalPrefs.getNumEntriesPerPage() ) );
 		
 		m_showToolTips.setValue( personalPrefs.getShowToolTips() );
-		
-		m_showTutorialPanel.setValue( personalPrefs.getShowTutorialPanel() );
 		
 		// Show/hide the "Define editor overrides..." button depending on whether or not
 		// "editor overrides" are supported.

@@ -33,7 +33,10 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 
+<% /* Only display the tutorial panel if we are running the old ui. */ %>
+<% 	if ( GwtUIHelper.isGwtUIActive( request ) == false ) { %>
 <div style="width: 100%; background-image: url('<html:imagesPath/>pics/tutorial/bgVideoBanner.gif'); background-repeat: repeat-x; ">
 	<% /* This table is displayed when the user collapses the video tutorial. */ %>
 	<table id="collapsedTutorialTable" width="100%" style="padding: 4px; display: none;">
@@ -142,4 +145,4 @@
 		</tr>
 	</table>
 </div>
-
+<% } %>

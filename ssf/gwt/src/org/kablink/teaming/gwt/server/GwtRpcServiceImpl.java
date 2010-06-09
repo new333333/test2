@@ -2621,7 +2621,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					else
 						tutorialPanelState = "1";
 					
-					profileModule.setUserProperty( null, ObjectKeys.USER_PROPERTY_TUTORIAL_PANEL_STATE, tutorialPanelState );
+					// We don't have a tutorial panel any more (as of Durango).
+					// profileModule.setUserProperty( null, ObjectKeys.USER_PROPERTY_TUTORIAL_PANEL_STATE, tutorialPanelState );
 				}
 				
 				// Save the "number of entries per page" preference
