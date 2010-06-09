@@ -4128,7 +4128,8 @@ function ss_showEntryDivInitialization(namespace) {
 
 function ss_hideEntryDivOnLoad() {
 	//alert(window.name)
-	if (window.name == 'gwtContentIframe' || 
+	if (window.name == '' || 
+			window.name == 'gwtContentIframe' || 
 			window.name == 'adminContentControl') {
 		ss_hideEntryDiv();
 	}
