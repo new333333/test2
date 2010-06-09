@@ -565,7 +565,6 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		}
 	}
 
-	@Override
 	public void onSubmitComplete(SubmitCompleteEvent event) {
 		// TODO Auto-generated method stub
 		
