@@ -33,6 +33,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 
 <% // Support routines for invoking the page that plays the tutorial videos. %>
 
@@ -82,6 +83,11 @@
 	{
 		var	table;
 
+		// If we are running the GWT ui then bail.
+		<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+			return;
+		<% } %>
+		
 		// Hide the collapsed tutorial table.
 		table = document.getElementById( 'collapsedTutorialTable' );
 		table.style.display = 'none';
@@ -112,6 +118,11 @@
 		var initialState;
 		var lang;
 
+		// If we are running the GWT ui then bail.
+		<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+			return;
+		<% } %>
+		
 		lang = '${teamingLang}';
 
 		// Is the user looking at a landing page or his own workspace?
@@ -200,6 +211,11 @@
 	 */
 	function isLandingPage()
 	{
+		// If we are running the GWT ui then bail.
+		<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+			return;
+		<% } %>
+			
 		if ( m_inLandingPage =='true' )
 			return true;
 
@@ -212,6 +228,11 @@
 	 */
 	function isOwnWorkspace()
 	{
+		// If we are running the GWT ui then bail.
+		<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+			return;
+		<% } %>
+			
 		// Is the id of the workspace we are looking at the same as the id of the user's workspace?
 		if ( ${ssBinder.id} == ${ssUser.workspaceId} )
 		{
@@ -232,6 +253,11 @@
 		var	url;
 		var	obj;
 
+		// If we are running the GWT ui then bail.
+		<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+			return;
+		<% } %>
+		
 		// Set up the object that will be used in the ajax request.
 		obj = new Object();
 		obj.operation = 'save_user_tutorial_panel_state';
@@ -253,6 +279,11 @@
 	{
 		var	table;
 
+		// If we are running the GWT ui then bail.
+		<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+			return;
+		<% } %>
+		
 		// Hide the expanded tutorial table.
 		table = document.getElementById( 'expandedTutorialTable' );
 		table.style.display = 'none';
@@ -281,6 +312,11 @@
 	{
 		var	table;
 
+		// If we are running the GWT ui then bail.
+		<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+			return;
+		<% } %>
+		
 		// Hide the collapsed tutorial table.
 		table = document.getElementById( 'collapsedTutorialTable' );
 		table.style.display = 'none';
@@ -311,6 +347,11 @@
 		var		winHeight;
 		var		winWidth;
 
+		// If we are running the GWT ui then bail.
+		<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+			return;
+		<% } %>
+		
 		// Create the appropriate url based on the tutorial the user selected.
 		url = 'http://www.brainstorminc.com/cbt/teaming/index.php?category=';
 		if ( tutorialName == 'whatIsTeaming' )
@@ -378,6 +419,11 @@
 		var anchor;
 		var span;
 
+		// If we are running the GWT ui then bail.
+		<% 	if ( GwtUIHelper.isGwtUIActive( request ) ) { %>
+			return;
+		<% } %>
+		
 		anchor = document.getElementById( 'tutorialPanelPrefAnchor' );
 		span = document.getElementById( 'tutorialPanelPrefSpan' );
 		if ( anchor != null && span != null )
