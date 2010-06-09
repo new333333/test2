@@ -73,7 +73,7 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
         if(indexDescriptionFieldAsis)
         	strippedText = text;
         else
-        	strippedText = Html.stripHtml(text);
+        	strippedText = Html.stripHtml(text).trim();
             
         //only real description field is stored as a field
         if ("description".equals(dataElemName)) {
