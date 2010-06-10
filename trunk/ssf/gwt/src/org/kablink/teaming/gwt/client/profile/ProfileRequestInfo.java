@@ -65,7 +65,7 @@ public class ProfileRequestInfo extends JavaScriptObject
 	/**
 	 * Return the user's name.  This class is an overlay on the JavaScript object called profileRequestInfo.
 	 */
-	public final native String getUserName() /*-{ return this.userName; }-*/;
+	public final native String getUserName() /*-{ return this.profileUserName; }-*/;
 
 	/**
 	 * Return the path to Teaming's images.  This class is an overlay on the JavaScript object called profileRequestInfo.
@@ -83,23 +83,23 @@ public class ProfileRequestInfo extends JavaScriptObject
 	 */
 	public final native String getCurrentUserWorkspaceId() /*-{ return this.currentUserWorkspaceId; }-*/;
 	
-	public final native String getBinderAdmin() /*-{ return this.binderAdmin; }-*/;
+	public final native boolean isBinderAdmin() /*-{ return this.isBinderAdmin; }-*/;
 	
-	public final native String getQuotasEnabled() /*-{ return this.quotasEnabled; }-*/;
+	public final native boolean isQuotasEnabled() /*-{ return this.isQuotasEnabled; }-*/;
 	
 	public final native String getQuotasUserMaximum() /*-{ return this.quotasUserMaximum; }-*/;
 	
 	public final native String getQuotasDiskSpacedUsed() /*-{ return this.quotasDiskSpacedUsed; }-*/;
 	
-	public final native String getQuotasDiskQuotaExceeded() /*-{ return this.quotasDiskQuotaExceeded; }-*/;
-	
-	public final native String getQuotasDiskQuotaHighWaterMarkExceeded() /*-{ return this.quotasDiskQuotaHighWaterMarkExceeded; }-*/;
+	public final native boolean isDiskQuotaExceeded() /*-{ return this.isQuotasDiskQuotaExceeded; }-*/;
 	
 	public final native String getUserDescription() /*-{ return this.userDescription; }-*/;
 	
 	public final native boolean isModifyAllowed() /*-{ return this.modifyAllowed }-*/;
 	
 	public final native String getModifyUrl() /*-{ return this.modifyUrl }-*/;
+	
+	public final native boolean isDiskQuotaHighWaterMarkExceeded() /*-{ return this.isDiskQuotaHighWaterMarkExceeded; }-*/;
 	
 	/**
 	 * Is the workspace being referenced owned by the current user
@@ -112,39 +112,4 @@ public class ProfileRequestInfo extends JavaScriptObject
 		return false;
 	}
 
-	/**
-	 * Is the User viewing this profile the binder Admin
-	 * @return
-	 */
-	public final boolean isBinderAdmin() {
-		if(getBinderAdmin() != null){
-			return Boolean.parseBoolean(getBinderAdmin());
-		}
-		return false;
-	}
-
-	/**
-	 * Is the DiskQuota Enabled
-	 * @return
-	 */
-	public final boolean isQuotasEnabled() {
-		if(getQuotasEnabled() != null){
-			return Boolean.parseBoolean(getQuotasEnabled());
-		}
-		return false;
-	}
-	
-	public final boolean isDiskQuotaExceeded() {
-		if(getQuotasDiskQuotaExceeded() != null){
-			return Boolean.parseBoolean(getQuotasDiskQuotaExceeded());
-		}
-		return false;
-	}
-	
-	public final boolean isDiskQuotaHighWaterMarkExceeded() {
-		if(getQuotasDiskQuotaHighWaterMarkExceeded() != null){
-			return Boolean.parseBoolean(getQuotasDiskQuotaHighWaterMarkExceeded());
-		}
-		return false;
-	}
 }// end RequestInfo
