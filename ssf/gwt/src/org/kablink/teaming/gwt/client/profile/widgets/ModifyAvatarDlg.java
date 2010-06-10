@@ -1,34 +1,50 @@
 package org.kablink.teaming.gwt.client.profile.widgets;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeAttachment;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
+import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
-public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler  {
+public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, SubmitCompleteHandler  {
 
 	ProfileAttributeListElement attrEle;
+	private ProfileAttributeAttachment attach;
+	private EditSuccessfulHandler editSuccessfulHandler;
+	private ProfileRequestInfo profileRequestInfo;
 	
-	public ModifyAvatarDlg(boolean autoHide, boolean modal, int pos, int pos2, ProfileAttributeListElement attrItem) {
+	public ModifyAvatarDlg(boolean autoHide, boolean modal, int pos, int pos2, ProfileAttributeListElement attrItem, ProfileRequestInfo requestInfo, EditSuccessfulHandler editSuccessfulHandler) {
 		super(autoHide, modal, pos, pos2);
 		
 		this.attrEle = attrItem;
+		this.editSuccessfulHandler=editSuccessfulHandler;
+		this.profileRequestInfo = requestInfo;
+		
+		attach = (ProfileAttributeAttachment) attrEle.getValue();
 		
 		createAllDlgContent("", null, null, null);
 		
@@ -80,7 +96,6 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler  {
 	
 	
 	private void init(Object properties) {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -93,7 +108,6 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler  {
 		panel = new FlowPanel();
 		panel.addStyleName("teamingDlgBoxHeader");
 
-		ProfileAttributeAttachment attach = (ProfileAttributeAttachment) attrEle.getValue();
 		String stitle = attach.getName();
 		if(stitle == null){
 			stitle = ""; 
@@ -139,6 +153,17 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler  {
 		panel.add(content);
 		content.addStyleName("modifyAvatarDlgActions");
 		
+		//create a form element in order to upload a new photo
+		final FormPanel formPanel = new FormPanel();
+		panel.add(formPanel);
+		
+		formPanel.setEncoding( FormPanel.ENCODING_MULTIPART );
+		formPanel.setMethod( FormPanel.METHOD_POST );
+		formPanel.addSubmitCompleteHandler( this );
+		
+		formPanel.getElement().setId("form1");
+		formPanel.setAction( profileRequestInfo.getModifyUrl() + "&okBtn=1" + "&profile=1" );
+		
 		Anchor setDefaultAvatar = new Anchor();
 		content.add(setDefaultAvatar);
 		setDefaultAvatar.addStyleName("qView-a");
@@ -147,9 +172,12 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler  {
 		
 		setDefaultAvatar.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event) {
-				
-			}});
-		
+				//get the ordered list of picture id's, with this one at the top
+				Hidden hidden = new Hidden("picture__order", getReOrderList());
+				formPanel.add(hidden);
+				formPanel.submit();
+			}
+		});
 		
 		Anchor removeAvatar = new Anchor();
 		content.add(removeAvatar);
@@ -159,10 +187,42 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler  {
 		
 		removeAvatar.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event) {
-				
+				Hidden hidden = new Hidden("_delete_"+ attach.getId(), "");
+				formPanel.add(hidden);
+				formPanel.submit();
 			}});
 		
 		return panel;
+	}
+	
+	//The modify controller expects the picture ids in an order list in which the pictures need to be displayed
+	//Get the ProfileAttribute which has the list of ProfileAttributeListElements
+	//We can then generate the current order of the pictures then reorder them to what the user selects
+	private String getReOrderList() {
+		ArrayList<String> idList = new ArrayList<String>();
+
+		ProfileAttribute pAttr = attrEle.getParent();
+		List<ProfileAttributeListElement> attrList = (List<ProfileAttributeListElement>)pAttr.getValue();
+
+		String setId = attach.getId();
+		idList.add(setId);
+		
+		for(ProfileAttributeListElement attrItem: attrList){
+			String id =((ProfileAttributeAttachment) attrItem.getValue()).getId();
+			if(id.equals(setId)) { continue; }
+			idList.add(id);
+		}
+		
+		String orderedString = null;
+		for(String idString: idList){
+			if(orderedString != null) { 
+				orderedString += ' '; 
+				orderedString += idString;
+			}
+			if(orderedString == null) {	orderedString = idString; }
+		}
+		
+		return orderedString;
 	}
 	
 	/*
@@ -232,4 +292,20 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler  {
 		
 		return false;
 	}// end isMouseOver()
+	
+	/**
+	 * This method will get called when we get the response to our "modify binder" request.
+	 */
+	public void onSubmitComplete( FormPanel.SubmitCompleteEvent event )
+	{
+		// Do we have an editSuccessfulHandler?
+		if ( editSuccessfulHandler != null )
+		{
+			// Yes, call it.
+			editSuccessfulHandler.editSuccessful( null );
+		}
+		
+		// Close this dialog.
+		hide();
+	}// end onSubmitComplete()
 }
