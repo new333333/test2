@@ -72,7 +72,10 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
     onMouseOver="ss_hoverOverTab('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');"
     onMouseOut="ss_hoverOverTabStopped('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');"
     onClick="ss_showTab('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');">
-    (${fn:length(ssFolderEntryDescendants)}) <ssf:nlt tag="__entry_comments"/>
+    <ssf:nlt tag="__entry_comments"/>
+    <c:if test="${ssDefinitionEntry.top}">
+      <span class="ss_smallprint">(${fn:length(ssFolderEntryDescendants)})</span>
+    </c:if>
   </div>
   </td>
   </c:if>
@@ -83,9 +86,10 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
     onMouseOut="ss_hoverOverTabStopped('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');"
     onClick="ss_showTab('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');">
     <ssf:nlt tag="__entry_attachments"/>
+    <span class="ss_smallprint">(${fn:length(ssDefinitionEntry.fileAttachments)})</span>
   </div>
   </td>
-  <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
+  <c:if test="${!empty ssDefinitionEntry.fileAttachments && fn:length(ssDefinitionEntry.fileAttachments) > 1}">
   <td valign="middle" width="1%" nowrap>
   <div id="viewFileVersions${ss_tabDivCount}Tab" 
     class="wg-tab roundcornerSM" 
@@ -96,17 +100,22 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
   </div>
   </td>
   </c:if>
-  <td valign="middle" align="right" width="97%" nowrap>
+  <td valign="middle" align="right" width="97%" nowrap>&nbsp;
+    <c:if test="${ssDefinitionEntry.top}">
     <a href="javascript: ;" 
       onClick="this, ss_toggleRegion(this, 'commentsAndAttachmentsRegion', 'commentsAndAttachmentsRegion');return false;" 
-      alt="<ssf:nlt tag="general.expandCollapseRegion"/>"
+      alt="<ssf:nlt tag="general.expandCollapseRegion"/>" title="<ssf:nlt tag="general.expandCollapseRegion"/>"
     ><img src="<html:rootPath/>images/pics/${regionImg}"/></a>
+    </c:if>
   </td>
   </tr>
   </table>
 </div>
 
-<div id="commentsAndAttachmentsRegion" class="${regionClass}">
+<div id="commentsAndAttachmentsRegion" 
+  <c:if test="${ssDefinitionEntry.top}">class="${regionClass}"</c:if>
+  <c:if test="${!ssDefinitionEntry.top}">class="wg-tab-content"</c:if>
+>
 <div id="viewAttachments${ss_tabDivCount}Div" 
   <c:if test="${empty ss_pseudoEntity}">style="display:none;"</c:if>
   <c:if test="${!empty ss_pseudoEntity}">style="display:block;"</c:if>
