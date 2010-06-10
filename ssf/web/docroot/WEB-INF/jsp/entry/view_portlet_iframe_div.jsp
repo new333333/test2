@@ -81,6 +81,7 @@
   width:600px; height:80%; display:none;">
   <ssf:box>
     <ssf:param name="box_id" value="<%= portletOverlayInnerDiv %>" />
+    <ssf:param name="box_title_id" value="ss_showEntryDivTitle" />
     <ssf:param name="box_class" value="ss_box_top_rounded ss_class_showentryinternaldiv" />
     <ssf:param name="box_width" value="400" />
     <ssf:param name="box_color" value="${ss_entry_border_color}" />

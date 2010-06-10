@@ -1556,6 +1556,17 @@ div.ss_box_top_rounded {
 	margin: 2px 2px 0px 2px;
 }
 
+.ss_box_title, .ss_box_title:visited {
+	color: ${ss_box_title_color};
+	font-weight: normal;
+	text-decoration:none;
+}
+
+.ss_box_title:hover {
+	color: ${ss_box_title_hover_color};
+	font-weight: normal;
+}
+
 .ss_box_minimum_height {
 	height: 1px;
 	margin: 0px;

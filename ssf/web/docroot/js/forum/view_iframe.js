@@ -46,6 +46,19 @@ var ss_entryLastScrollTop = 0
 	//ss_debug("init: "+ss_entryWindowLeft)
 
 function ss_setEntryDivHeight() {
+	var boxTitle = "";
+	try {
+		if (typeof window.ss_showentryframe != "undefined" && 
+				typeof window.ss_showentryframe.document.title != "undefined") {
+			boxTitle = window.ss_showentryframe.document.title;
+		}
+	} catch(e) {}
+	var boxTitleArea = self.document.getElementById("ss_showEntryDivTitle");
+	if (boxTitleArea != null && boxTitle != "") {
+		try {
+			boxTitleArea.innerHTML = "<a class='ss_box_title' href='"+window.ss_showentryframe.location.href+"' target='ss_showentryframe'>"+boxTitle+"</a>";
+		} catch(e) {}
+	}
 	setTimeout("ss_positionEntryDiv(true);", 100);
 }
 function ss_showForumEntryInIframe(url) {
