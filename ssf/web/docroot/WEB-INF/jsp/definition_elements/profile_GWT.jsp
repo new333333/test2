@@ -37,50 +37,46 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp"     %>
 <%
-		//Get the form item being displayed
-		Element item = (Element) request.getAttribute("item");
+	//Get the form item being displayed
+	Element item = (Element) request.getAttribute("item");
 %>
 
-	<ssf:ifLoggedIn>
-	  <c:if test="${ssUser == ssDefinitionEntry}">
-		<c:if test="${ss_quotasEnabled}">
-		    <c:set var="ssDiskQuota" ><fmt:formatNumber value="${ss_diskQuotaUserMaximum/1048576}" maxFractionDigits="0"/></c:set>
-		    <c:set var="ssDiskSpaceUsed" ><fmt:formatNumber value="${ssUser.diskSpaceUsed/1048576}" maxFractionDigits="2"/></c:set>
-		</c:if>
-	  </c:if>
-	</ssf:ifLoggedIn>
+<ssf:ifLoggedIn>
+  <c:if test="${ssUser == ssDefinitionEntry}">
+	<c:if test="${ss_quotasEnabled}">
+	    <c:set var="ssDiskQuota" ><fmt:formatNumber value="${ss_diskQuotaUserMaximum/1048576}" maxFractionDigits="0"/></c:set>
+	    <c:set var="ssDiskSpaceUsed" ><fmt:formatNumber value="${ssUser.diskSpaceUsed/1048576}" maxFractionDigits="2"/></c:set>
+	</c:if>
+  </c:if>
+</ssf:ifLoggedIn>
 
 <script type="text/javascript" language="javascript">
-		// Save away information such as the binder id and the adapted url for the request we are working with.
-		// Through an overlay we will access m_requestInfo from java.
-		var profileRequestInfo = {
-			binderId : '${ssBinder.id}',
-			currentUserWorkspaceId : '${ssUser.workspaceId}',
-			userName : '<ssf:userTitle user="${ssProfileConfigEntry}"/>',
-			binderAdmin : '${ss_isBinderAdmin}',
-			adaptedUrl : '<ssf:url crawlable="true"
-				adapter="true" portletName="ss_forum"
-					folderId="${ssBinder.id}" 
-						 action="view_ws_listing" ><ssf:param 
-							name="profile" value="0" /></ssf:url>',
-			imagesPath : '<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
-			myWSUrl : '<ssf:url crawlable="true"
-				adapter="true" portletName="ss_forum"
-					folderId="${ssUser.workspaceId}" 
-						 action="view_ws_listing" ><ssf:param 
-						name="profile" value="1" /></ssf:url>',
-			quotasEnabled : '${ss_quotasEnabled}',
-			quotasUserMaximum : '${ssDiskQuota}',
-			quotasDiskSpacedUsed : '${ssDiskSpaceUsed}',
-			quotasDiskQuotaExceeded : '${ss_diskQuotaExceeded}',
-            modifyAllowed : '${ss_modifyEntryAllowed}',
-			modifyUrl : '${ss_modifyEntryAdapter}',
-		
-		};
-</script>
+	 //Save away information such as the binder id and the adapted url for the request we are working with.
+	 //Through an overlay we will access profileRequestInfo from java.
+	 var profileRequestInfo = { binderId:'${ssBinder.id}',
+			 	currentUserWorkspaceId : '${ssUser.workspaceId}',
+				profileUserName : '<ssf:userTitle user="${ssProfileConfigEntry}"/>',
+				adaptedUrl : '<ssf:url crawlable="true"
+					adapter="true" portletName="ss_forum"
+						folderId="${ssBinder.id}" 
+							 action="view_ws_listing" ><ssf:param name="profile" value="0" /></ssf:url>',
+				imagesPath : '<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
+				myWSUrl : '<ssf:url crawlable="true"
+					adapter="true" portletName="ss_forum"
+						folderId="${ssUser.workspaceId}" 
+							 action="view_ws_listing" ><ssf:param 
+							name="profile" value="1" /></ssf:url>',
+				quotasUserMaximum : '${ssDiskQuota}',
+				quotasDiskSpacedUsed : '${ssDiskSpaceUsed}',
+	            modifyUrl : '${ss_modifyEntryAdapter}',
+				isQuotasEnabled : ${ss_quotasEnabled},
+				isQuotasDiskQuotaExceeded : ${ss_diskQuotaExceeded},
+				isDiskQuotaHighWaterMarkExceeded: ${ss_diskQuotaHighWaterMarkExceeded},
+	            isModifyAllowed : ${ss_modifyEntryAllowed},
+				isBinderAdmin : ${ss_isBinderAdmin} };
+</script>	
 
 <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
-
 <div id="gwtProfileDiv">
 	<div id="profilePhoto" class="ss_user_photo" style="display:none;">
 	  <div class="ss_thumbnail_standalone ss_thumbnail_small">
@@ -106,6 +102,7 @@
 	  </div>
 	</div>
 </div>
+
 
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   		configElement="<%= item %>" 
