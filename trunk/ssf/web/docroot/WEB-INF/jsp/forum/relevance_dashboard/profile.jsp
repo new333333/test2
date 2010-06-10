@@ -44,7 +44,7 @@
 	<div class="ss_clear_float"></div>
 </c:if>
 
-<c:if test="${ss_formViewStyle != 'profileGWT'}">
+<c:if test="${ss_gwtProfile != 'true'}">
 	<ssf:ifLoggedIn>
 	  <c:if test="${ssUser == ssDefinitionEntry}">
 		<c:if test="${ss_quotasEnabled}">
