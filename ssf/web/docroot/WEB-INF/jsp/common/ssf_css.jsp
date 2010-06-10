@@ -3514,7 +3514,7 @@ div.ss_searchFormFooter {
 	background-color: #e8eff7;
 }
 #ss_searchForm input { 
-	width: 150px;
+	width: 400px;
 	border: 1px solid #333;
 	}
 #ss_searchForm th {text-align:left;padding: 0px 0px 0px 12px;}
