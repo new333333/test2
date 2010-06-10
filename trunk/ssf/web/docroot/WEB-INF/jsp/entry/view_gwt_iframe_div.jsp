@@ -66,6 +66,7 @@
   width:600px; display:none;">
   <ssf:box>
     <ssf:param name="box_id" value="ss_iframe_box_div" />
+    <ssf:param name="box_title_id" value="ss_showEntryDivTitle" />
     <ssf:param name="box_width" value="400" />
     <ssf:param name="box_color" value="${ss_entry_border_color}" />
     <ssf:param name="box_canvas_color" value="${ss_style_background_color_opaque}" />

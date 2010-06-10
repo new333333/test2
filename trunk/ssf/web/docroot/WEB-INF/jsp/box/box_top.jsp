@@ -49,6 +49,7 @@ if (iWidth == 0) {
 	width = width + "px";
 }
 
+String boxTitleId = ParamUtil.get(request, "box_title_id", "");
 String boxClass = ParamUtil.get(request, "box_class", "ss_box_top_rounded");
 String boxStyle = ParamUtil.get(request, "box_style", "");
 boolean boldTitle = ParamUtil.get(request, "box_bold_title", true);
@@ -70,6 +71,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 }
 %>
 <c:set var="ss_boxTitle" value="<%= title %>"/>
+<c:set var="ss_boxTitleId" value="<%= boxTitleId %>"/>
 <c:set var="colWidth" value="99"/>
 <c:if test="<%= showMoveIcon %>">
     <c:set var="colWidth" value="${colWidth - 35}"/>
@@ -127,12 +129,12 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	  </c:if>
 
 	  <c:if test="${empty ss_boxTitle}">
-	    <td class="ss_title_bar" align="center"></td>
+	    <td class="ss_title_bar" align="center" nowrap><span id="${ss_boxTitleId}"></span></td>
 	  </c:if>
 	
 	  <c:if test="${!empty ss_boxTitle}">
-	    <td class="ss_title_bar" align="center"><div class="ss_title_bar" align="center"
-	      style="margin:0px; padding:0px;">${ss_boxTitle}</div></td>
+	    <td class="ss_title_bar" align="center" nowrap><div class="ss_title_bar" align="center"
+	      style="margin:0px; padding:0px;"><span id="${ss_boxTitleId}">${ss_boxTitle}</span></div></td>
 	  </c:if>
 	
 	  <c:if test="<%= showMoveIcon %>">
