@@ -64,7 +64,6 @@ import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -154,6 +153,8 @@ public interface GwtRpcService extends RemoteService
 	public TeamManagementInfo    getTeamManagementInfo(        String             binderId                                   );
 	public List<ToolbarItem>     getToolbarItems(              String             binderId                                   );
 	public List<TopRankedInfo>   getTopRanked();
+	public Boolean               removeSavedSearch(                                            SavedSearchInfo ssi           );
+	public SavedSearchInfo       saveSearch(                   String             searchTabId, SavedSearchInfo ssi           );
 	
 	// The following are used to manage the tracking of binders.
 	public Boolean trackBinder(   String binderId );

@@ -2284,6 +2284,29 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 		return GwtServerHelper.getTopRanked( this );
 	}
+
+	/**
+	 * Removes a search based on its SavedSearchInfo.
+	 * 
+	 * @param ssi
+	 * 
+	 * @return
+	 */
+	public Boolean removeSavedSearch( SavedSearchInfo ssi ) {
+		return GwtServerHelper.removeSavedSearch( this, ssi );
+	}// end removeSavedSearch()
+	
+	/**
+	 * Saves a search based on its tab ID and SavedSearchInfo.
+	 * 
+	 * @param searchTabId
+	 * @param ssi
+	 * 
+	 * @return
+	 */
+	public SavedSearchInfo saveSearch( String searchTabId, SavedSearchInfo ssi ) {
+		return GwtServerHelper.saveSearch( this, searchTabId, ssi );
+	}// end saveSearch()
 	
 	/**
 	 * Called to mark that the current user is tracking the specified
@@ -2615,6 +2638,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				
 				// Save the "show tutorial panel" preference
 				{
+					@SuppressWarnings("unused")
 					String tutorialPanelState;
 					
 					if ( personalPrefs.getShowTutorialPanel() )

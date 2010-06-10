@@ -2051,6 +2051,93 @@ public class GwtServerHelper {
 		return Boolean.TRUE;
 	}
 	
+	/**
+	 * Removes a search based on its SavedSearchInfo.
+	 *
+	 * @param bs
+	 * @param ssi
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static Boolean removeSavedSearch(AllModulesInjected bs, SavedSearchInfo ssi) {
+		// Does the user contain any saved searches?
+		UserProperties userProperties = bs.getProfileModule().getUserProperties(getCurrentUser().getId());
+		Map properties = userProperties.getProperties();		
+		if (properties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
+			// Yes!  Can we find a saved search by the given name?
+			Map userQueries = (Map)properties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
+			String queryName = ssi.getName();
+			if (userQueries.containsKey(queryName)) {
+				// Yes!  Remove it and save the modified search saved
+				// list.
+				userQueries.remove(queryName);
+				bs.getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES, userQueries);
+			}
+		}
+
+		// If we get here, the removal was successful.  Return true.
+		return Boolean.TRUE;
+	}
+	
+	/**
+	 * Saves a search based on its tab ID and SavedSearchInfo.
+	 *
+	 * @param bs
+	 * @param searchTabId
+	 * @param ssi
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static SavedSearchInfo saveSearch(AllModulesInjected bs, String searchTabId, SavedSearchInfo ssi) {
+		// If we can't access the HttpSession...
+		HttpSession hSession = getCurrentHttpSession();
+		if (null == hSession) {
+			// ...we can't access the cached tabs to save the search
+			// ...with.  Bail.
+			m_logger.debug("GwtServerHelper.save( 'Could not access the current HttpSession' )");
+			return null;
+		}
+
+		// If we can't access the cached tabs... 
+		Tabs tabs = ((Tabs) hSession.getAttribute(GwtUIHelper.CACHED_TABS_KEY));
+		if (null == tabs) {
+			// ...we can't save the search.  Bail.
+			m_logger.debug("GwtServerHelper.saveSearch( 'Could not access any cached tabs' )");
+			return null;
+		}
+		
+		// If we can't find the tab to save...
+		Integer tabId = Integer.parseInt(searchTabId);
+		Tabs.TabEntry tab = tabs.findTab(Tabs.SEARCH, tabId);
+		if (null == tab) {
+			// ...we can't save anything.  Bail.
+			return null;
+		}
+
+		// Get the user's currently defined saved searches...
+		UserProperties userProperties = bs.getProfileModule().getUserProperties(getCurrentUser().getId());
+		Map properties = userProperties.getProperties();
+		Map userQueries = new HashMap();
+		if (properties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
+			userQueries = (Map)properties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
+		}
+
+		// ...store the tab as a saved search into them...
+		String queryName = ssi.getName();
+		userQueries.put(queryName, tab.getQuery());
+		bs.getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES, userQueries);
+		Map tabOptions = tab.getData();
+		tabOptions.put(Tabs.TITLE, queryName);
+		tab.setData(tabOptions);
+
+		// ...and return a SavedSearchInfo for the newly saved search.
+		SavedSearchInfo reply = new SavedSearchInfo();
+		reply.setName(ssi.getName());
+		return reply;
+	}
+	
 	/*
 	 * Stores the expanded Binder's List in a UserProperties.
 	 */
