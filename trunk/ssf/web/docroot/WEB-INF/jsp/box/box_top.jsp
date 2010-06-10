@@ -74,10 +74,10 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 <c:set var="ss_boxTitleId" value="<%= boxTitleId %>"/>
 <c:set var="colWidth" value="99"/>
 <c:if test="<%= showMoveIcon %>">
-    <c:set var="colWidth" value="${colWidth - 35}"/>
+    <c:set var="colWidth" value="${colWidth - 45}"/>
 </c:if>
 <c:if test="<%= showMoveIcon %>">
-    <c:set var="colWidth" value="${colWidth - 35}"/>
+    <c:set var="colWidth" value="${colWidth - 45}"/>
 </c:if>
 <c:if test="<%= showCloseIcon %>">
     <c:set var="colWidth" value="${colWidth - 10}"/>
@@ -94,18 +94,17 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
 	  </c:if>
 	  <c:if test="<%= showMoveIcon %>">
-	    <col width="35%"/>
+	    <col width="45%"/>
 		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
 	  </c:if>
-	  <c:if test="${!empty ss_boxTitle}"><col width="${colWidth}%"/></c:if>
+	  <c:if test="${!empty ss_boxTitle}"><col width="1%"/></c:if>
 	  <c:if test="${empty ss_boxTitle}"><col width="0%"/></c:if>
 	  <c:if test="<%= showMoveIcon %>">
-	    <c:if test="${empty ss_boxTitle}"><col width="${colWidth + 35}%"/></c:if>
-	    <c:if test="${!empty ss_boxTitle}"><col width="35%"/></c:if>
+	    <col width="45%"/>
 		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
 	  </c:if>
 	  <c:if test="<%= showCloseIcon %>">
-	    <col width="10%"/>
+	    <col width="6%"/>
 		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
 	  </c:if>
 	  <col width="8"/>
