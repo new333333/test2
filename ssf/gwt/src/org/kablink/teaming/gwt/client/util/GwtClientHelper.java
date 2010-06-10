@@ -191,6 +191,17 @@ public class GwtClientHelper {
 		eval(jsString);
 	}-*/;
 
+	
+	/**
+	 * Search for <script type="text/javascript"> elements found in the given html element
+	 * and execute the javascript.
+	 * 
+	 * @param htmlElement
+	 */
+	public static native void jsExecuteJavaScript( Element htmlElement ) /*-{
+		window.parent.ss_executeJavascript( htmlElement );
+	}-*/;
+
 	/**
 	 * Invoke the "define editor overrides" dialog.
 	 */
