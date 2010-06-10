@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.dom.client.Element;
@@ -224,6 +225,7 @@ public class BrandingPanel extends Composite
 					if ( html != null && html.length() > 0 )
 					{
 						Element element;
+						Timer timer;
 						
 						// Yes
 						// Replace the content of this panel with the branding html.
@@ -231,7 +233,7 @@ public class BrandingPanel extends Composite
 						element = m_panel.getElement();
 						element.setInnerHTML( html );
 
-						Timer timer;
+						GwtClientHelper.jsExecuteJavaScript( element );
 
 						// The html we just added to the branding may have images in it.
 						// We need to wait until the browser has rendered the new html
