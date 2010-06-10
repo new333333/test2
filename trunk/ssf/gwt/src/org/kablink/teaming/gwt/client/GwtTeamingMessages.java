@@ -258,6 +258,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuAltSearchOptions();
 	String mainMenuBarActions();
 	String mainMenuBarFolder();
+	String mainMenuBarManageSavedSearches();
 	String mainMenuBarMyFavorites();
 	String mainMenuBarMyTeams();
 	String mainMenuBarMyWorkspace();
@@ -281,6 +282,16 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuManageBrandWorkspace();
 	String mainMenuManageEditTeam();
 	String mainMenuManageFolderOptions();
+	String mainMenuManageSavedSearchesDlgDeleteSearch();
+	String mainMenuManageSavedSearchesDlgErrorSearchDuplicate();
+	String mainMenuManageSavedSearchesDlgErrorSearchHasInvalidData();
+	String mainMenuManageSavedSearchesDlgHeader();
+	String mainMenuManageSavedSearchesDlgLinks();
+	String mainMenuManageSavedSearchesDlgNoItems();
+	String mainMenuManageSavedSearchesDlgSave();
+	String mainMenuManageSavedSearchesDlgSavedSearches();
+	String mainMenuManageSavedSearchesDlgSaveSearch();
+	String mainMenuManageSavedSearchesDlgWarningNameTruncated();
 	String mainMenuManageSendTeamEmail();
 	String mainMenuManageStartTeamConference();
 	String mainMenuManageTagThisFolder();

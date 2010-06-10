@@ -52,9 +52,6 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/close_x.png")
 	public ImageResource closeX();
 
-	@Source("org/kablink/teaming/gwt/public/images/MainMenu/tag_delete.gif")
-	public ImageResource tagDelete();
-	
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/gwt.png")
 	public ImageResource gwtUI();
 
@@ -73,6 +70,9 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/search_adv.png")
 	public ImageResource searchOptions();
 
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/search_delete.gif")
+	public ImageResource searchDelete();
+	
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/search_glass.png")
 	public ImageResource searchGlass();
 
@@ -90,4 +90,7 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/spacer_1px.png")
 	public ImageResource spacer1px();
+	
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/tag_delete.gif")
+	public ImageResource tagDelete();	
 }

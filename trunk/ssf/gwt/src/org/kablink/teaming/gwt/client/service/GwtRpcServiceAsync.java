@@ -148,6 +148,8 @@ public interface GwtRpcServiceAsync
 	public void getTeamManagementInfo(        String             binderId,                                   AsyncCallback<TeamManagementInfo>    callback );
 	public void getToolbarItems(              String             binderId,                                   AsyncCallback<List<ToolbarItem>>     callback );
 	public void getTopRanked(                                                                                AsyncCallback<List<TopRankedInfo>>   callback );
+	public void removeSavedSearch(                                            SavedSearchInfo ssi,           AsyncCallback<Boolean>               callback );
+	public void saveSearch(                   String             searchTabId, SavedSearchInfo ssi,           AsyncCallback<SavedSearchInfo>       callback );
 
 	// The following are used to manage the tracking of binders.
 	public void trackBinder(   String binderId, AsyncCallback<Boolean> callback );

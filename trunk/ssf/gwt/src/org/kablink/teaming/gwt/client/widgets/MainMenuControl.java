@@ -42,12 +42,14 @@ import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.mainmenu.ActionsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
+import org.kablink.teaming.gwt.client.mainmenu.ManageSavedSearchesDlg;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarBox;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarButton;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarToggle;
 import org.kablink.teaming.gwt.client.mainmenu.MyFavoritesMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.MyTeamsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlacesMenuPopup;
+import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SearchMenuPanel;
 import org.kablink.teaming.gwt.client.mainmenu.SearchOptionsComposite;
 import org.kablink.teaming.gwt.client.mainmenu.TopRankedDlg;
@@ -379,8 +381,37 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * Add the Saved Searches item to the context based portion of the
 	 * menu bar.
 	 */
-	private void addManageSavedSearchesToContext(String searchTabId) {
-//!		...this needs to be implemented...
+	private void addManageSavedSearchesToContext(final String searchTabId) {
+		final ActionTrigger actionTrigger = this;
+		final MenuBarBox manageSavedSearchesBox = new MenuBarBox("ss_mainMenuManageSavedSearches", m_messages.mainMenuBarManageSavedSearches());
+		manageSavedSearchesBox.addClickHandler(
+			new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					// Remove the selection from the menu item...
+					Element menuItemElement = Document.get().getElementById("ss_mainMenuManageSavedSearches");
+					menuItemElement.removeClassName("mainMenuPopup_BoxHover");
+					
+					// ...and run the manage saved searches dialog.
+					GwtTeaming.getRpcService().getSavedSearches(new AsyncCallback<List<SavedSearchInfo>>() {
+						public void onFailure(Throwable t) {
+							Window.alert(t.toString());
+						}
+						public void onSuccess(List<SavedSearchInfo> ssList) {
+							ManageSavedSearchesDlg mssDlg = new ManageSavedSearchesDlg(
+								false,	// false -> Don't auto hide.
+								true,	// true  -> Modal.
+								actionTrigger,
+								manageSavedSearchesBox.getAbsoluteLeft(),
+								manageSavedSearchesBox.getElement().getAbsoluteBottom(),
+								ssList,
+								searchTabId);
+							mssDlg.addStyleName("manageSavedSearchesDlg");
+							mssDlg.show();
+						}
+					});
+				}
+			});
+		m_contextPanel.add(manageSavedSearchesBox);
 	}
 	
 	/*
