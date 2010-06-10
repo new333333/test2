@@ -299,6 +299,7 @@ public class WorkspaceTreeHelper {
 						if(typeNode != null) {
 							String value = ((Element)typeNode).attributeValue("value");
 							if(value != null && value.equals("profileGWT")){
+								model.put("ss_gwtProfile", true);
 								model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
 										profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryStandardView']"));
 							} else {
