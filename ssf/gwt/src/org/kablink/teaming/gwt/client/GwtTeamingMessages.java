@@ -133,6 +133,11 @@ public interface GwtTeamingMessages extends Messages
 	String _3();
 	String _4();
 	String _5();
+	String _6();
+	String _7();
+	String _8();
+	String _9();
+	String _10();
 	String cancel();
 	String ok();
 	String oneMomentPlease();

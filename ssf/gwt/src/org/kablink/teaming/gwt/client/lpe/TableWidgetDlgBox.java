@@ -166,6 +166,11 @@ public class TableWidgetDlgBox extends DlgBox
 		m_numColsCtrl.addItem( GwtTeaming.getMessages()._3(), "3" );
 		m_numColsCtrl.addItem( GwtTeaming.getMessages()._4(), "4" );
 		m_numColsCtrl.addItem( GwtTeaming.getMessages()._5(), "5" );
+		m_numColsCtrl.addItem( GwtTeaming.getMessages()._6(), "6" );
+		m_numColsCtrl.addItem( GwtTeaming.getMessages()._7(), "7" );
+		m_numColsCtrl.addItem( GwtTeaming.getMessages()._8(), "8" );
+		m_numColsCtrl.addItem( GwtTeaming.getMessages()._9(), "9" );
+		m_numColsCtrl.addItem( GwtTeaming.getMessages()._10(), "10" );
 		m_numColsCtrl.addChangeHandler( this );
 		m_table.setWidget( 1, 1, m_numColsCtrl );
 		
