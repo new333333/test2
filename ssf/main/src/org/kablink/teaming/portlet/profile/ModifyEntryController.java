@@ -178,8 +178,14 @@ public class ModifyEntryController extends SAbstractController {
 				//See if there was a request to reorder the graphic files
 				String graphicFileIds = PortletRequestUtils.getStringParameter(request, "_graphic_id_order", "");
 	        }
-			
-			setupReloadOpener(response, binderId, entryId);
+	       
+	        if(formData.containsKey("profile")) {
+	    		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+	    		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+	        	response.setRenderParameter("profile", "1");
+	        } else {
+				setupReloadOpener(response, binderId, entryId);
+	        }
 			//flag reload of folder listing
 			//response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
 		} else if (formData.containsKey("cancelBtn")) {
