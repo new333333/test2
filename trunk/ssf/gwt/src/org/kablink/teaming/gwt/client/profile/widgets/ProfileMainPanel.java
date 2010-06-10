@@ -1,14 +1,23 @@
 package org.kablink.teaming.gwt.client.profile.widgets;
 
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
+import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
+import org.kablink.teaming.gwt.client.service.GwtRpcService;
+import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -21,19 +30,18 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.dom.client.NodeList;
 
 public class ProfileMainPanel extends Composite implements SubmitCompleteHandler {
 
@@ -45,9 +53,13 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	private ProfileFollowingWidget followingAnchor;
 	private boolean isEditable = false;
 	private Anchor edit;
-	private int m_uniqueId = 1;
-
 	private ActionTrigger actionTrigger;
+	private ProfileAvatarArea profileAvatarArea;
+	private EditSuccessfulHandler editAvatarSuccessHandler;
+
+	private FileUpload fileUpload;
+
+	private Anchor uploadBtn;
 
 	/**
 	 * Constructor
@@ -245,15 +257,16 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 			if(profileRequestInfo.isModifyAllowed()){
 				buildUploadImage(grid);
 			}
+			
+			editAvatarSuccessHandler = createAvatarSuccessHandler();
 		}
 		
 		for (ProfileAttribute attr : cat.getAttributes()) {
-
-			Label title = new Label(attr.getTitle() + ":");
-			title.setStyleName("attrLabel");
-			Widget value = new ProfileAttributeWidget(attr, isEditable).getWidget();
-
 			if(!attr.getDataName().equals("picture")) {
+				Label title = new Label(attr.getTitle() + ":");
+				title.setStyleName("attrLabel");
+
+				Widget value = new ProfileAttributeWidget(attr, isEditable).getWidget();
 				row = grid.getRowCount();
 				grid.setWidget(row, 0, title);
 				grid.setWidget(row, 1, value);
@@ -262,9 +275,9 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 						HasHorizontalAlignment.ALIGN_LEFT);
 			} else {
 				//This must be a picture attribute
-				value = new ProfileAvatarArea(attr, isEditable).getWidget();
+				profileAvatarArea = new ProfileAvatarArea(attr, isEditable, getRequestInfo(), editAvatarSuccessHandler);
 				row = grid.getRowCount();
-				grid.setWidget(row, 0, value);
+				grid.setWidget(row, 0, profileAvatarArea);
 				grid.getFlexCellFormatter().setColSpan(row, 0, 2);
 				grid.getFlexCellFormatter().setHorizontalAlignment(row, 0,
 						HasHorizontalAlignment.ALIGN_LEFT);
@@ -286,7 +299,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		formPanel.setMethod( FormPanel.METHOD_POST );
 		formPanel.addSubmitCompleteHandler( this );
 		
-		FileUpload fileUpload = new FileUpload();
+		fileUpload = new FileUpload();
 		fileUpload.addStyleName("profileUpload");
 		String name = "picture";
 		fileUpload.setName( name );
@@ -296,9 +309,9 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		
 		formPanel.add(fileUpload);
 		formPanel.getElement().setId("form1");
-		formPanel.setAction( profileRequestInfo.getModifyUrl() + "&okBtn=1" );
+		formPanel.setAction( profileRequestInfo.getModifyUrl() + "&okBtn=1" + "&profile=1" );
 	
-		final Anchor uploadBtn = new Anchor("Upload");
+		uploadBtn = new Anchor("Upload");
 		uploadBtn.setTitle("Select to upload photo");
 		uploadBtn.addClickHandler( new ClickHandler(){
 				public void onClick(ClickEvent event){
@@ -566,7 +579,93 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	}
 
 	public void onSubmitComplete(SubmitCompleteEvent event) {
-		// TODO Auto-generated method stub
+		// Do we have an editSuccessfulHandler?
+		if ( editAvatarSuccessHandler != null )
+		{
+			// Yes, call it.
+			editAvatarSuccessHandler.editSuccessful( null );
+		}
+	}
+	
+	public ProfileRequestInfo getRequestInfo() {
+		return profileRequestInfo;
+	}
+	
+	private EditSuccessfulHandler createAvatarSuccessHandler() {
 		
+		if(editAvatarSuccessHandler == null) {
+			
+			editAvatarSuccessHandler = new EditSuccessfulHandler() {
+				public boolean editSuccessful(Object obj) {
+					
+					if(profileAvatarArea != null) {
+						profileAvatarArea.clear();
+					}
+					
+					if(fileUpload != null) {
+						InputElement input = fileUpload.getElement().cast();
+						input.setValue("");
+					}
+					
+					if(uploadBtn != null & uploadBtn.isVisible()){
+						uploadBtn.setVisible(false);
+					}
+					
+					//rebuild the avatar area
+					GwtRpcServiceAsync gwtRpcService;
+
+					// create an async callback to handle the result of the request to get
+					// the state:
+					AsyncCallback<ProfileAttribute> callback = new AsyncCallback<ProfileAttribute>() {
+						public void onFailure(Throwable t) {
+							// display error
+							Window.alert("Error: " + t.getMessage());
+						}
+
+						public void onSuccess(ProfileAttribute attr) {
+							
+							profileAvatarArea.createWidget(attr);
+							
+							
+							//replace the image on sidebar with the current image
+							List<ProfileAttributeListElement> value = (List<ProfileAttributeListElement>)attr.getValue();
+							if(value != null && value.size() > 0){
+								ProfileAttributeListElement valItem = value.get(0);
+								String sval = valItem.getValue().toString();
+										
+								Image img = new Image(sval);
+		
+								// Find the element that this RootPanel will wrap.
+								Element elem = Document.get().getElementById("profilePhoto");
+								Element oldChild = null;
+								Element anchor = null;
+								
+								NodeList alist = (NodeList) elem.getElementsByTagName("a");
+								if(alist!=null && alist.getLength() > 0){
+									anchor = (Element) alist.getItem(0);
+								}
+								NodeList imgList = (NodeList) elem.getElementsByTagName("img");
+								if(imgList!=null && imgList.getLength() > 0){
+									oldChild = (Element) imgList.getItem(0);
+								}
+								
+								if(anchor != null) {
+									anchor.removeChild(oldChild);
+									anchor.appendChild(img.getElement());
+								}
+							}	
+				    
+						}
+					};
+
+					gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
+					gwtRpcService.getProfileAvatars(profileRequestInfo.getBinderId(), callback);
+					
+					return true;
+				}
+			};
+		}
+		
+		return editAvatarSuccessHandler;
 	}
 }

@@ -2,35 +2,40 @@ package org.kablink.teaming.gwt.client.profile.widgets;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
+import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.Widget;
 
-public class ProfileAvatarArea  {
+public class ProfileAvatarArea extends FlowPanel  {
 	
-	private Widget widget;
 	private boolean isEditMode = false;
-
-	public ProfileAvatarArea(ProfileAttribute attr, boolean editMode) {
+	private EditSuccessfulHandler editSuccessfulHandler;
+	private ProfileRequestInfo profileRequestInfo;
+	
+	public ProfileAvatarArea(ProfileAttribute attr, boolean editMode, ProfileRequestInfo requestInfo, EditSuccessfulHandler editSuccessfulHandler) {
+		
+		super();
 		isEditMode = editMode;
-		widget = new FlowPanel();
-		widget.addStyleName("profile_gallery");
-		widget.addStyleName("ss_thumbnail_small");
+		this.editSuccessfulHandler=editSuccessfulHandler;
+		this.profileRequestInfo = requestInfo;
+		
+		addStyleName("profile_gallery");
+		addStyleName("ss_thumbnail_small");
 
 		createWidget(attr);
 	}
 	
-	private void createWidget(ProfileAttribute attr){
+	public void createWidget(ProfileAttribute attr){
 		
 		List<ProfileAttributeListElement> value = (List<ProfileAttributeListElement>)attr.getValue();
 		if(value != null){
@@ -38,7 +43,7 @@ public class ProfileAvatarArea  {
 				if(attr.getDataName().equals("picture")) {
 					
 					FlowPanel div = new FlowPanel();
-					((FlowPanel)widget).add(div);
+					add(div);
 
 					Anchor anchor = new Anchor();
 					div.add(anchor);
@@ -48,16 +53,11 @@ public class ProfileAvatarArea  {
 					Image img = new Image(sval);
 					anchor.getElement().appendChild(img.getElement());
 				} else {
-					((FlowPanel)widget).add(new Label(valItem.getValue().toString()));
+					add(new Label(valItem.getValue().toString()));
 				}
 			}
 		}
 	} //end createWidget
-	
-
-	public Widget getWidget() {
-		return widget;
-	}
 
 	public boolean isEditMode() {
 		return isEditMode;
@@ -117,13 +117,13 @@ public class ProfileAvatarArea  {
 
 		public void onClick(ClickEvent event) {
 			
-			final ModifyAvatarDlg dlg = new ModifyAvatarDlg(false, false, 0, 0, item);
+			final ModifyAvatarDlg dlg = new ModifyAvatarDlg(false, false, 0, 0, item, profileRequestInfo, editSuccessfulHandler);
 			PopupPanel.PositionCallback posCallback = new PopupPanel.PositionCallback()
 			{
 				public void setPosition(int offsetWidth, int offsetHeight)
 				{
-					x = anchor.getAbsoluteLeft();
-					y = anchor.getAbsoluteTop() - widget.getOffsetHeight();
+					x = anchor.getAbsoluteLeft() + 60;
+					y = anchor.getAbsoluteTop() - dlg.getOffsetHeight() - 60;
 
 					dlg.setPopupPosition( x, y );
 				}

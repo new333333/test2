@@ -91,6 +91,7 @@ import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
+import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
@@ -2767,10 +2768,21 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Get the stats for the user
 	 * @param binderId This is the binderId of the person you want to get stats on.
 	 * 
-	 * return ProfileStats This object contains the stat info to display
+	 * @return ProfileStats This object contains the stat info to display
 	 */
 	public ProfileStats getProfileStats(String binderId) {
 		
 		return GwtProfileHelper.getStats(this, binderId);
+	}
+
+	/**
+	 * Get the avatars for the user profile
+	 * @param binderId  This is the binderId of the user.
+	 * 
+	 * @return ProfileAttribute  The ProfileAttribute contains the information needed to populate the avatars
+	 */
+	public ProfileAttribute getProfileAvatars(String binderId) {
+		ProfileAttribute attr = GwtProfileHelper.getProfileAvatars(this, Long.valueOf(binderId));
+		return attr;
 	}
 }// end GwtRpcServiceImpl

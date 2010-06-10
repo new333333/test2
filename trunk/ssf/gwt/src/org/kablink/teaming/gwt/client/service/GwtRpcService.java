@@ -55,6 +55,7 @@ import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
+import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
@@ -63,6 +64,7 @@ import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -166,6 +168,7 @@ public interface GwtRpcService extends RemoteService
 	// User Profiles
 	public ProfileInfo 		getProfileInfo(String binderId);
 	public ProfileStats     getProfileStats(String binderId);
+	public ProfileAttribute getProfileAvatars(String binderId);
 	public ProfileInfo 		getQuickViewInfo(String binderId);
 	public List<TeamInfo> 	getTeams(String binderId);
 	public String getMicrBlogUrl( String binderId ) throws GwtTeamingException;

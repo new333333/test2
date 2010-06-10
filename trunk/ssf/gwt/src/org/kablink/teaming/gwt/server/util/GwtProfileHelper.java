@@ -32,6 +32,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
+import org.kablink.teaming.gwt.server.GwtRpcServiceImpl;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
@@ -127,6 +128,41 @@ public class GwtProfileHelper {
 		}
 		
 		return profile;
+	}
+	
+	public static ProfileAttribute getProfileAvatars(AllModulesInjected bs, Long binderId) {
+		
+		ProfileAttribute attribute = new ProfileAttribute();
+		
+		//get the binder
+		Binder binder = bs.getBinderModule().getBinder(Long.valueOf(binderId));
+		Principal owner = binder.getCreation().getPrincipal(); //creator is user
+		
+		if (owner != null) {
+			//User u = user;
+			User u = (User) bs.getProfileModule().getEntry(owner.getId());
+				
+			//Get the Elements name - which is the attribute name
+			String attrName = "picture";
+			attribute.setName(attrName);
+			
+			//Now get the title for this attribute
+			attribute.setTitle(NLT.get("__profile_entry_picture"));
+
+			String dataName = "picture";
+			attribute.setDataName(dataName);
+			
+			if(attribute.getTitle() == null){
+				attribute.setTitle(NLT.get("profile.element."+dataName, dataName));
+			}
+			
+			//Read the custom attribute
+			CustomAttribute cAttr = u.getCustomAttribute(attribute.getDataName());
+			//Convert the Custom Attribute to a Profile Attribute for serialization purposes
+			convertCustomAttrToProfileAttr(u, cAttr, attribute, attribute.getDataName(), null);
+		}
+		
+		return attribute;
 	}
 	
 	/**
@@ -334,7 +370,7 @@ public class GwtProfileHelper {
 		    							path = WebUrlUtil.getFileUrl(webPath, "readScaledFile", attach.getOwner().getEntity(), fileName);
 		    							
 		    							//Check if null, this will guarantee we use the first picture we come across
-		    							if(Validator.isNull(profile.getPictureUrl())){
+		    							if(profile != null && Validator.isNull(profile.getPictureUrl())){
 		    								profile.addPictureUrl(path);
 		    							}
 		    							
@@ -599,6 +635,8 @@ public class GwtProfileHelper {
     	
     	return ((entries != null) ? entries.size() : 0);
     }
+
+
     
 //    public static int getEntriesByAudit(AllModulesInjected bs, String binderId) {
 //		int count = 0;
