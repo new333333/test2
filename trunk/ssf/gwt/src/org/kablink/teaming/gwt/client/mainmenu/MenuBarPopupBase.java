@@ -76,6 +76,8 @@ public abstract class MenuBarPopupBase extends PopupPanel {
 	public MenuBarPopupBase(ActionTrigger actionTrigger, String title) {
 		// Construct the super class...
 		super(true);
+		setGlassEnabled(true);
+		setGlassStyleName("mainMenuPopup_Glass");
 
 		// Add a close handler to the popup so that it can restore the
 		// menu bar box's styles when the popup menu is closed.

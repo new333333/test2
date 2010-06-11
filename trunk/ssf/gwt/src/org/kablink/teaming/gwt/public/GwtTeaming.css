@@ -995,6 +995,13 @@ body, table td, select
 {
 	vertical-align: middle;
 }
+.mainMenuPopup_Glass
+{
+	background-color: #000;
+	filter: alpha(opacity=0);
+	opacity: 0.0;
+	z-index: 299;
+}
 .mainMenuPopup
 {
 	background-color: #3a3e40;
