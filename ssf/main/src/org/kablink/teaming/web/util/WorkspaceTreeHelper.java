@@ -280,6 +280,8 @@ public class WorkspaceTreeHelper {
 					ProfileBinder pbinder = bs.getProfileModule().getProfileBinder();
 					if (bs.getProfileModule().testAccess(pbinder, ProfileOperation.manageEntries)) {
 						model.put(WebKeys.IS_BINDER_ADMIN, true);
+					} else {
+						model.put(WebKeys.IS_BINDER_ADMIN, false);
 					}
 				} catch(AccessControlException ex) {}
 				
@@ -357,6 +359,8 @@ public class WorkspaceTreeHelper {
 								adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
 								model.put(WebKeys.MODIFY_ENTRY_ALLOWED, true);
 								model.put(WebKeys.MODIFY_ENTRY_ADAPTER,  adapterUrl.toString());
+							} else {
+								model.put(WebKeys.MODIFY_ENTRY_ALLOWED, false);
 							}
 				        }
 						
