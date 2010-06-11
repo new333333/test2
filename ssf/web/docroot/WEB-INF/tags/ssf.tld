@@ -979,6 +979,27 @@
 	</tag>
 
 	<tag>
+		<name>showHelp</name>
+		<tag-class>org.kablink.teaming.taglib.ShowHelpTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>guideName</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>pageId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>sectionId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>
+
+	<tag>
 		<name>mailto</name>
 		<tag-class>org.kablink.teaming.taglib.MailtoTag</tag-class>
 		<body-content>JSP</body-content>

@@ -66,7 +66,7 @@
 				<tr>
 					<td align="left">
 						<span class="ss_bold"><ssf:nlt tag="notify.header"/></span>
-						<ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_notifications_folder_settings"/>
+						<ssf:showHelp guideName="adv_user" pageId="mngfolder_sendnotification" />
 					</td>
 				</tr>
 				<tr>

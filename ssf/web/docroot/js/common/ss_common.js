@@ -3247,6 +3247,11 @@ var ss_helpSystem = {
 		}
 	},
 
+	showHelp : function( helpUrl )
+	{
+		window.open( helpUrl, "teaming_help_window", "resizeable,scrollbar" );
+	},
+
 	toggleShowHelpCPanel: function () {
 		if (dojo.style(document.getElementById("ss_help_welcome_panel_body"), "display") != 'none') {
 			this.recordShowHelpCPanel("hidden");
@@ -6681,7 +6686,7 @@ function ssEditAppConfig(menuDIV) {
 		eTD.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Banner'] + this.NBSP2));
 		eA         = document.createElement("a");
 		eA.href    = "#";
-		eA.onclick = function(e) {ss_helpSystem.showInlineHelpSpotInfo(this, 'sidebar/edit_app_config', '', 0, 0, 10, 10);return false;};
+		eA.onclick = function(e) {ss_helpSystem.showHelp( 'http://www.novell.com/documentation/teaming30/team30_user/data/trouble_editoroverrides.html' );return false;};
 		eIMG       = document.createElement("img");
  		eIMG.alt   =
  		eIMG.title = this.strings['sidebar.appConfig.Banner.Alt.Help'];

@@ -71,7 +71,7 @@
 		<div id="ss_searchForm">
 			<div id="ss_searchForm_main">
 				<c:if test="${!filterDefinition}">
-					<h4><ssf:nlt tag="searchForm.advanced.Title"/> <ssf:inlineHelp jsp="navigation_bar/advanced_search" /></h4>
+					<h4><ssf:nlt tag="searchForm.advanced.Title"/> <ssf:showHelp guideName="user" pageId="nav_search_advanced" /> </h4>
 				</c:if>
 				<div class="ss_clear"></div>
 				<table>

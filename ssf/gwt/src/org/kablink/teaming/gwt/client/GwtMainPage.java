@@ -730,7 +730,7 @@ public class GwtMainPage extends Composite
 			String url;
 			
 			url = "http://www.novell.com/documentation/teaming21/team21_user/data/bookinfo.html#bookinfo";
-			Window.open( url, "Teaming_user_guide", "" );
+			Window.open( url, "teaming_help_window", "resizeable,scrollbars" );
 			break;
 
 		case LOGIN:

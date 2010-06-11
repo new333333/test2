@@ -91,7 +91,7 @@ function ${renderResponse.namespace}_modifyAlias() {
 		  onClick="return handleCloseBtn();"/>
 </div>
 <input type="checkbox" class="ss_style" id="notifyenabled" name="notifyenabled" <c:if test="${ssScheduleInfonotify.enabled}">checked</c:if> />
-<label for="notifyenabled"><span class="ss_labelRight"><ssf:nlt tag="notify.schedule.enable"/> </span></label><ssf:inlineHelp jsp="workspaces_folders/misc_tools/enableOutgoingEmail"/>
+<label for="notifyenabled"><span class="ss_labelRight"><ssf:nlt tag="notify.schedule.enable"/> </span></label><ssf:showHelp guideName="admin" pageId="Emailintegration" />
 <br/>
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="notify.header" /></legend>	

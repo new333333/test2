@@ -44,7 +44,7 @@
            --%><img align="absmiddle" src="<html:tinyMcePath/>plugins/ss_wikilink/images/wikilink.gif" alt="Wikilink" title="" /><%--
        --%></ssf:param><%--   
      --%></ssf:nlt>  <%--
-     --%><ssf:inlineHelp jsp="workspaces_folders/entries/link_to_entry_markup"/><br/>
+     --%><ssf:showHelp guideName="user" pageId="entry_linking" /><br/>
      <ssf:nlt tag="editor.wikilink.tip3"/>
      </div>
    </div>
