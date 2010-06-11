@@ -1230,7 +1230,10 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	 * @param Set of principalIds
 	 * @returns Set of userIds
 	 */
-	public Set<Long> explodeGroups(final Collection<Long> ids, Long zoneId) {   
+    public Set<Long> explodeGroups(final Collection<Long> ids, Long zoneId) {
+    	return explodeGroups(ids, zoneId, true);
+    }
+	public Set<Long> explodeGroups(final Collection<Long> ids, Long zoneId, boolean allowAllUsersGroup) {   
 		long begin = System.currentTimeMillis();
 		try {
 			if ((ids == null) || ids.isEmpty()) return new TreeSet();
@@ -1275,7 +1278,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	            }
 	        );
 			Long allId = getReservedId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zoneId);
-			if (ids.contains(allId) || users.contains(allId)) {
+			if (allowAllUsersGroup && (ids.contains(allId) || users.contains(allId))) {
 				//need to remove some users from the all users group.  Original list may add them back in.
 				//so need to do this step last
 				List<Object[]> result = getCoreDao().loadObjects(

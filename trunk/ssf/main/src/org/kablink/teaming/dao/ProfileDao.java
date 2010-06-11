@@ -103,6 +103,7 @@ public interface ProfileDao {
      * @return
      */
  	public Set<Long> explodeGroups(Collection<Long> ids, Long zoneId); 
+ 	public Set<Long> explodeGroups(Collection<Long> ids, Long zoneId, boolean allowAllUsersGroup); 
  	/**
  	 * Locate a user by name.  This is used for login
  	 * @param principalName

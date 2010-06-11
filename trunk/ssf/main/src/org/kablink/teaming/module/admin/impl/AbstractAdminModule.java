@@ -968,11 +968,12 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     private Set<InternetAddress> getEmail(Collection<Long>ids, List errors) {
     	Set<InternetAddress> addrs=null;
     	if (ids != null && !ids.isEmpty()) {
-    		boolean sendingToAllUsersIsAllowed = SPropsUtil.getBoolean("mail.allowSendToAllUsers", true);
+    		boolean sendingToAllUsersIsAllowed = SPropsUtil.getBoolean("mail.allowSendToAllUsers", false);
     		Long allUsersGroupId = Utils.getAllUsersGroupId();
     		if (!sendingToAllUsersIsAllowed && ids.contains(allUsersGroupId)) ids.remove(allUsersGroupId);
 			addrs = new HashSet();
- 			Set<Long> cc = getProfileDao().explodeGroups(ids, RequestContextHolder.getRequestContext().getZoneId());
+ 			Set<Long> cc = getProfileDao().explodeGroups(ids, 
+ 					RequestContextHolder.getRequestContext().getZoneId(), sendingToAllUsersIsAllowed);
  			List<User> users = getCoreDao().loadObjects(cc, User.class, RequestContextHolder.getRequestContext().getZoneId());
  			for (User e:users) {
  				try {
