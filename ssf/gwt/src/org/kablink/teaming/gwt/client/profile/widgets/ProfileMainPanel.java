@@ -213,7 +213,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		eAnchor.addStyleName("editBrandingAdvancedLink");
 		eAnchor.addStyleName("roundcornerSM");
 		eAnchor.addStyleName("subhead-control-bg1");
-		eAnchor.setVisible(showEditButton());
+		eAnchor.setVisible(isProfileModifable());
 
 		actions.add(eAnchor);
 		eAnchor.addClickHandler(new ActionClickHandler("EditId"));
@@ -254,7 +254,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		grid.getFlexCellFormatter().setStyleName(row, 0, "sectionHeadingRBB");
 		
 		if(cat.getName().equals("profileHeadingPhotosAndImagesView")) {
-			if(profileRequestInfo.isModifyAllowed()){
+			if(isProfileModifable()){
 				buildUploadImage(grid);
 			}
 			
@@ -474,7 +474,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	 * 
 	 * @return true if owns this profile or is binderAdmin
 	 */
-	private boolean showEditButton() {
+	private boolean isProfileModifable() {
 		return profileRequestInfo.isBinderAdmin()
 				|| profileRequestInfo.isModifyAllowed();
 	}
@@ -624,37 +624,39 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 
 						public void onSuccess(ProfileAttribute attr) {
 							
-							profileAvatarArea.createWidget(attr);
-							
-							
-							//replace the image on sidebar with the current image
-							List<ProfileAttributeListElement> value = (List<ProfileAttributeListElement>)attr.getValue();
-							if(value != null && value.size() > 0){
-								ProfileAttributeListElement valItem = value.get(0);
-								String sval = valItem.getValue().toString();
-										
-								Image img = new Image(sval);
-		
-								// Find the element that this RootPanel will wrap.
-								Element elem = Document.get().getElementById("profilePhoto");
-								Element oldChild = null;
-								Element anchor = null;
-								
-								NodeList alist = (NodeList) elem.getElementsByTagName("a");
-								if(alist!=null && alist.getLength() > 0){
-									anchor = (Element) alist.getItem(0);
-								}
-								NodeList imgList = (NodeList) elem.getElementsByTagName("img");
-								if(imgList!=null && imgList.getLength() > 0){
-									oldChild = (Element) imgList.getItem(0);
-								}
-								
-								if(anchor != null) {
-									anchor.removeChild(oldChild);
-									anchor.appendChild(img.getElement());
-								}
-							}	
-				    
+							try {
+								profileAvatarArea.createWidget(attr);
+
+								//replace the image on sidebar with the current image
+								List<ProfileAttributeListElement> value = (List<ProfileAttributeListElement>)attr.getValue();
+								if(value != null && value.size() > 0){
+									ProfileAttributeListElement valItem = value.get(0);
+									String sval = valItem.getValue().toString();
+											
+									Image img = new Image(sval);
+			
+									// Find the element that this RootPanel will wrap.
+									Element elem = Document.get().getElementById("profilePhoto");
+									Element oldChild = null;
+									Element anchor = null;
+									
+									NodeList alist = (NodeList) elem.getElementsByTagName("a");
+									if(alist!=null && alist.getLength() > 0){
+										anchor = (Element) alist.getItem(0);
+									}
+									NodeList imgList = (NodeList) elem.getElementsByTagName("img");
+									if(imgList!=null && imgList.getLength() > 0){
+										oldChild = (Element) imgList.getItem(0);
+									}
+									
+									if(anchor != null) {
+										anchor.removeChild(oldChild);
+										anchor.appendChild(img.getElement());
+									}
+								}	
+							} catch (Exception e) {
+								Window.alert("Error modifying avatar" + e.getMessage());
+							}
 						}
 					};
 
