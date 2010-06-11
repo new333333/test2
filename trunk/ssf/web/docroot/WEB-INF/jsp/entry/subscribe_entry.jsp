@@ -58,7 +58,7 @@
 	request.setAttribute("currentStyles", currentStyles);
 %>
 </c:if>
-<ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_notifications_explained"/>
+<ssf:showHelp guideName="user" pageId="informed_notifications" />
 <c:if test="${!empty currentStyles}"> <input type="hidden" name="_subscribe_element_present" value="1"/> </c:if>
 	
 <c:set var="nothing" value="${true}"/>
