@@ -82,6 +82,7 @@ import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.smtp.SMTPManager;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 
@@ -273,7 +274,8 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 				
 			}
 			//expand groups so we can remove users
-			userIds.addAll(getProfileDao().explodeGroups(groupIds, folder.getZoneId()));
+			boolean sendingToAllUsersIsAllowed = SPropsUtil.getBoolean("mail.allowSendToAllUsers", false);
+			userIds.addAll(getProfileDao().explodeGroups(groupIds, folder.getZoneId(), sendingToAllUsersIsAllowed));
 			Map<Long, String[]> userSubs = new HashMap();
 			//Remove users wanting nothing first.  The user could appear 2X in the list, 1 for folder subscription, 1 for entry
 			//so process removes first

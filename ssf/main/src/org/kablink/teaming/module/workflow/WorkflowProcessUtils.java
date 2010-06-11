@@ -85,6 +85,8 @@ import org.kablink.teaming.module.workflow.support.WorkflowCondition;
 import org.kablink.teaming.util.InvokeUtil;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.ObjectPropertyNotFoundException;
+import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
 
@@ -183,6 +185,9 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		    		}
 		    	}
 	    	}
+	    	Long allUsersId = Utils.getAllUsersGroupId();
+	    	boolean sendingToAllUsersIsAllowed = SPropsUtil.getBoolean("mail.allowSendToAllUsers", false);
+	    	if (allUsersId != null && !sendingToAllUsersIsAllowed) ids.remove(allUsersId);
 	    	return getUsers(ids);
  		} else return null;
 
@@ -921,7 +926,9 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	}
 
 	protected static List<User> getUsers(final Set<Long>ids) {
-		Set userIds = getInstance().getProfileDao().explodeGroups(ids, RequestContextHolder.getRequestContext().getZoneId());
+		boolean sendingToAllUsersIsAllowed = SPropsUtil.getBoolean("mail.allowSendToAllUsers", false);
+		Set userIds = getInstance().getProfileDao().explodeGroups(ids, 
+				RequestContextHolder.getRequestContext().getZoneId(), sendingToAllUsersIsAllowed);
 		return getInstance().getProfileDao().loadUsers(userIds, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	public static Long getRunAsUser(Element item, WorkflowSupport wfEntry, WorkflowState currentWs) {

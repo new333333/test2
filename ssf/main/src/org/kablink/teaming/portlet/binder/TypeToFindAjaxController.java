@@ -272,7 +272,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 					// to disallow sending email to the all users
 		    		// group?
 					boolean sendingEmail = PortletRequestUtils.getBooleanParameter(request, WebKeys.SENDING_EMAIL, false);
-					if (sendingEmail && (!(SPropsUtil.getBoolean("mail.allowSendToAllUsers", true)))) {
+					if (sendingEmail && (!(SPropsUtil.getBoolean("mail.allowSendToAllUsers", false)))) {
 						// Yes!  We need to remove the all users group
 						// from the search results.  Scan them.
 						int size = searchEntries.size();
