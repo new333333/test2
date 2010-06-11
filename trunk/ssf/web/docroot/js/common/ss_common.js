@@ -8727,6 +8727,19 @@ function ajaxToggleGwtUI_Submit(goToUserWorkspace) {
 		goToUserWorkspace);
 }
 
+/*
+ * Called to force the GWT content IFRAME to resize itself based on
+ * it's contents.
+ */
+function resizeGwtContent(reason) {
+	if (ss_isGwtUIActive) {
+		if ("function" == typeof window.top.ss_setWorkareaIframeSize) {
+//			alert("resizeGwtContent( reason:  '" + reason + "' )");
+			window.top.ss_setWorkareaIframeSize();
+		}
+	}
+}
+
 dojo.require("dijit.dijit");
 dojo.require("dojo.fx");
 dojo.require("dojo.io.iframe");
