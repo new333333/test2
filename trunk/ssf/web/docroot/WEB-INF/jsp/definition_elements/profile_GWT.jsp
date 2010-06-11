@@ -83,16 +83,14 @@
 		<div>
 			<a onclick="ss_showThisImage(this);return false;" href="javascript:;">
 				<c:if test="${empty ssDefinitionEntry.owner.customAttributes['picture']}">
-					<img src="<html:imagesPath/>pics/UserPhoto.png" 
-			    	 alt="${userTitle}" />
+					<img src="<html:imagesPath/>pics/UserPhoto.png" alt="${userTitle}" />
 	     		</c:if>
 				<c:if test="${!empty ssDefinitionEntry.owner.customAttributes['picture']}">
 				  <c:set var="selections" value="${ssDefinitionEntry.owner.customAttributes['picture'].value}" />
 				  <c:set var="pictureCount" value="0"/>
 				  <c:forEach var="selection" items="${selections}">
 				    <c:if test="${pictureCount == 0}">
-					   <img  src="<ssf:fileUrl webPath="readScaledFile" file="${selection}"/>"
-				     alt="${userTitle}" />
+					   <img  src="<ssf:fileUrl webPath="readScaledFile" file="${selection}"/>" alt="${userTitle}" />
 				    </c:if>
 				    <c:set var="pictureCount" value="${pictureCount + 1}"/>
 				  </c:forEach>
