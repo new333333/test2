@@ -97,8 +97,13 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	    <col width="45%"/>
 		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
 	  </c:if>
-	  <c:if test="${!empty ss_boxTitle}"><col width="1%"/></c:if>
-	  <c:if test="${empty ss_boxTitle}"><col width="0%"/></c:if>
+	  <c:if test="<%= showMoveIcon %>">
+	    <c:if test="${!empty ss_boxTitle}"><col width="1%"/></c:if>
+	    <c:if test="${empty ss_boxTitle}"><col width="0%"/></c:if>
+	  </c:if>
+	  <c:if test="<%= !showMoveIcon %>">
+	    <col width="${colWidth}"/>
+	  </c:if>
 	  <c:if test="<%= showMoveIcon %>">
 	    <col width="45%"/>
 		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
