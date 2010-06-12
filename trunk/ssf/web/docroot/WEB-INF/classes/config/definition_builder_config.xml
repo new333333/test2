@@ -165,7 +165,7 @@
 			<property name="caption" caption="__caption" type="text" value="__description"/>
 		</properties>
 		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_data.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" />
 		</jsps>
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription"/>
@@ -426,7 +426,7 @@
 			<property name="showDocNumber" caption="__showDocNumber" type="boolean" default="true"/>
 		</properties>
 		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/title_view.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_data.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_title.jsp" />
 		</jsps>
 		<notify velocity="title.vm"/>
@@ -2453,6 +2453,11 @@
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="height" caption="__height_px" type="text"/>
+			<property name="toolbarType" caption="__toolbarType" type="selectbox" 
+				  default="standard" value="standard">
+				<option name="standard" caption="__toolbarType_standard" />
+				<option name="minimal" caption="__toolbarType_minimal" />
+			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>

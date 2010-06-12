@@ -116,7 +116,7 @@
 
   <div>
   <c:if test="${textFormat != '2'}">
-  <ssf:htmleditor name="${property_name}" id="ss_htmleditor_${property_name}" 
+  <ssf:htmleditor name="${property_name}" id="ss_htmleditor_${property_name}" toolbar="${propertyValues_toolbarType[0]}"
     height="<%= height %>"><ssf:markup type="form" leaveSectionsUnchanged="true"
     entity="${ssDefinitionEntry}">${textValue}</ssf:markup></ssf:htmleditor>
   </c:if>

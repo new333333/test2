@@ -43,6 +43,11 @@
 	//Get the item being displayed
 	Element item = (Element) request.getAttribute("item");
 	String itemType = (String) item.attributeValue("formItem", "");
+	if (itemType.equals("")) {
+		//Handle special cases
+		if (item.attributeValue("name", "").equals("titleView")) itemType = "title";
+		if (item.attributeValue("name", "").equals("descriptionView")) itemType = "description";
+	}
 	if (itemType.equals("title")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_title.jsp" %><%
 
