@@ -80,7 +80,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
     <c:set var="colWidth" value="${colWidth - 45}"/>
 </c:if>
 <c:if test="<%= showCloseIcon %>">
-    <c:set var="colWidth" value="${colWidth - 10}"/>
+    <c:set var="colWidth" value="${colWidth - 6}"/>
 </c:if>
 
 <c:set var="ss_boxColCount" value="2" scope="request"/>
@@ -102,7 +102,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	    <c:if test="${empty ss_boxTitle}"><col width="0%"/></c:if>
 	  </c:if>
 	  <c:if test="<%= !showMoveIcon %>">
-	    <col width="${colWidth}"/>
+	    <col width="${colWidth}%"/>
 	  </c:if>
 	  <c:if test="<%= showMoveIcon %>">
 	    <col width="45%"/>

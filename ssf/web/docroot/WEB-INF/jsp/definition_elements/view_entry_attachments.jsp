@@ -74,6 +74,7 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
   </div>
   </td>
   </c:if>
+  <td valign="middle" width="98%" nowrap>&nbsp;</td>
   </tr>
   </table>
 </div>
