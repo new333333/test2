@@ -354,7 +354,15 @@ function ss_divDrag(evt) {
     	//lightBox.style.width = ss_getBodyWidth()  + "px";
     	//lightBox.style.height = ss_getBodyHeight()  + "px";
 	    
-        return false
+	    var sel ;
+	    if (document.selection && document.selection.empty) {
+	    	document.selection.empty() ;
+	    } else if (window.getSelection) {
+	    	sel = window.getSelection();
+	    	if (sel && sel.removeAllRanges) sel.removeAllRanges();
+	    }
+
+	    return false
     
     } else {
         return true
@@ -374,6 +382,15 @@ function ss_divStopDrag(evt) {
     setTimeout("ss_entryClearDrag();",100);
     ss_draggingDiv = false;
     ss_entryWindowTopOriginal = ss_entryWindowTop;
+    
+    var sel ;
+    if (document.selection && document.selection.empty) {
+    	document.selection.empty() ;
+    } else if (window.getSelection) {
+    	sel = window.getSelection();
+    	if (sel && sel.removeAllRanges) sel.removeAllRanges();
+    }
+
     setTimeout("ss_saveEntryWidth(ss_entryWindowWidth, ss_entryWindowTop, ss_entryWindowLeft);", 500)
     return false
 }
