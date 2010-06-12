@@ -74,10 +74,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 <c:set var="ss_boxTitleId" value="<%= boxTitleId %>"/>
 <c:set var="colWidth" value="99"/>
 <c:if test="<%= showMoveIcon %>">
-    <c:set var="colWidth" value="${colWidth - 45}"/>
-</c:if>
-<c:if test="<%= showMoveIcon %>">
-    <c:set var="colWidth" value="${colWidth - 45}"/>
+    <c:set var="colWidth" value="${colWidth - 90}"/>
 </c:if>
 <c:if test="<%= showCloseIcon %>">
     <c:set var="colWidth" value="${colWidth - 6}"/>
@@ -90,11 +87,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	<table cellspacing="0" cellpadding="0" width="100%">
 	  <col width="8"/>
 	  <c:if test="<%= showResizeIcon %>">
-	    <col width="20"/>
-		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
-	  </c:if>
-	  <c:if test="<%= showMoveIcon %>">
-	    <col width="45%"/>
+	    <col width="32"/>
 		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
 	  </c:if>
 	  <c:if test="<%= showMoveIcon %>">
@@ -105,7 +98,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	    <col width="${colWidth}%"/>
 	  </c:if>
 	  <c:if test="<%= showMoveIcon %>">
-	    <col width="45%"/>
+	    <col width="90%"/>
 		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
 	  </c:if>
 	  <c:if test="<%= showCloseIcon %>">
@@ -117,28 +110,24 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	  <td><img border="0" <ssf:alt/>
 	    src="<html:imagesPath/>roundcorners3/corner1.gif"></td>
 	  <c:if test="<%= showResizeIcon %>">
-		<td class="ss_title_bar" align="left"><div style="display:inline; width:20px; 
+		<td class="ss_title_bar" align="left"><div style="display:inline; width:40px; 
 		    background-position:center left;
             background-image:url(<html:imagesPath/><%= showResizeGif %>);
             background-repeat:no-repeat;" onMouseDown="<%= showResizeRoutine %>"
 		  ><span class="ss_box_small_icon" 
-		  style="cursor:w-resize; width:20px;"><img border="0" <ssf:alt/> src="<html:imagesPath/>pics/1pix.gif" 
-		  style="width: 20px; height: 12px;"></span></div></td>
-	  </c:if>
-
-	  <c:if test="<%= showMoveIcon %>">
-	    <td class="ss_title_bar"><div onMouseDown="<%= showMoveRoutine %>"
-	    style="margin:0px; cursor:move; padding:0px;"><img <ssf:alt/> border="0" style="height:15px;"
-	    src="<html:imagesPath/>pics/1pix.gif"/></div></td>
+		  style="cursor:w-resize; width:20px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div></td>
 	  </c:if>
 
 	  <c:if test="${empty ss_boxTitle}">
-	    <td class="ss_title_bar" align="center" nowrap><span id="${ss_boxTitleId}"></span></td>
+	    <td class="ss_title_bar" nowrap><span id="${ss_boxTitleId}"></span></td>
 	  </c:if>
 	
 	  <c:if test="${!empty ss_boxTitle}">
-	    <td class="ss_title_bar" align="center" nowrap><div class="ss_title_bar" align="center"
-	      style="margin:0px; padding:0px;"><span id="${ss_boxTitleId}">${ss_boxTitle}</span></div></td>
+	    <td class="ss_title_bar" nowrap>
+	      <div class="ss_title_bar" style="margin:0px; padding:0px;">
+	        <span style="padding-left: 10px;" id="${ss_boxTitleId}">${ss_boxTitle}</span>
+	      </div>
+	    </td>
 	  </c:if>
 	
 	  <c:if test="<%= showMoveIcon %>">
