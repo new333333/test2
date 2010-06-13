@@ -75,6 +75,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 <c:set var="selectionCount" value="0"/>
 <c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" >
   <jsp:useBean id="selection" type="org.kablink.teaming.domain.FileAttachment" />
+  <c:set var="ss_attachedFile" value="${selection}" scope="request" />
 <%
 	String fn = selection.getFileItem().getName();
 	String ext = "";

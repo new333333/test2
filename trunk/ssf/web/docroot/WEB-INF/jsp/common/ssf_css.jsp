@@ -423,6 +423,14 @@ div.ss_editorHints {
   font-size: ${ss_style_font_largerprint};
   font-family: ${ss_style_title_font_family};
   margin-bottom: 10px;
+  padding: 0px 6px;
+  }
+.ss_entryTitleFileVersion {
+  font-weight: normal;
+  font-size: ${ss_style_font_normalprint};
+  font-family: ${ss_style_title_font_family};
+  margin-bottom: 10px;
+  padding: 0px 6px;
   }
 /* container for entry content: description, signature, attachments, data gathered from entry form */
 
