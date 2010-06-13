@@ -418,6 +418,12 @@ div.ss_editorHints {
   margin-top: 4px;
   margin-left: 15px; 
   }
+.ss_entryTitleFile {
+  font-weight: normal;
+  font-size: ${ss_style_font_largerprint};
+  font-family: ${ss_style_title_font_family};
+  margin-bottom: 10px;
+  }
 /* container for entry content: description, signature, attachments, data gathered from entry form */
 
 .ss_entryContent {

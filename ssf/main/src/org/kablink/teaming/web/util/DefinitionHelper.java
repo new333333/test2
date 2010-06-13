@@ -733,6 +733,28 @@ public class DefinitionHelper {
 		return retVal;
 	}
 	
+	
+	//Routine to figure out which attached file is the primary file (if any)
+	public static void getPrimaryFile(FolderEntry entry, Map model) {
+		Definition def = entry.getEntryDef();
+		Document defDoc = def.getDefinition();
+		Element root = defDoc.getRootElement();
+		
+		//See if there is a title element getting its source from some other element
+       	Element titleEle = (Element) root.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@name='title']");
+       	if (titleEle != null) {
+       		Element itemSource = (Element) titleEle.selectSingleNode("properties/property[@name='itemSource']");
+       		if (itemSource != null) {
+       			String itemDataName = itemSource.attributeValue("value", "");
+       			if (!itemDataName.equals("")) {
+       				//Found the data element that is the source for the title
+					model.put(WebKeys.PRIMARY_FILE_ATTRIBUTE, itemDataName);
+       			}
+       		}
+       	}
+	}
+
+	
 	public static void buildMashupBeans(AllModulesInjected bs, DefinableEntity entity, 
 			Document definitionConfig, Map model, RenderRequest request ) {
 		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);

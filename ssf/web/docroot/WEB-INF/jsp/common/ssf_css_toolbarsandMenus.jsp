@@ -758,8 +758,8 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	-moz-border-radius:0px !important;
 	background:#FFFFFF !important;
 	color:#000000 !important;
-	margin-right:3px;
-	padding:0px 10px;
+	margin:0px !important;
+	padding:0px !important;
 	text-decoration:none;
 }
 .ss_actions_bar13_pane ul {

@@ -49,7 +49,11 @@
 		if (item.attributeValue("name", "").equals("descriptionView")) itemType = "description";
 	}
 	if (itemType.equals("title")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_title.jsp" %><%
+		%>
+		<c:if test="${!ss_entryAttributesSeen['title']}">
+		  <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_title.jsp" %>
+		</c:if>
+		<%
 
 	} else if (itemType.equals("description")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_description.jsp" %><%

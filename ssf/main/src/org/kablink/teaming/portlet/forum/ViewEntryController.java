@@ -1048,6 +1048,8 @@ public class ViewEntryController extends  SAbstractController {
 		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='"+viewType+"']") == false) {
 			DefinitionHelper.getDefaultEntryView(entry, model, "//item[@name='"+viewType+"']");
 		}
+		//Figure out which is the "primary file" for this entry (if any)
+		DefinitionHelper.getPrimaryFile(entry, model);
 
 		//only start transaction if necessary
 		List replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));

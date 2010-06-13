@@ -1030,6 +1030,7 @@ public class WebKeys {
     public static final String PRESENCE_ZON_BRIDGE="ss_presence_zonBridge";
     public static final String PRESENCE_IM_URL="ss_presence_imUrl";
     public static final String PREV_PAGE="ss_prevPage";
+	public static final String PRIMARY_FILE_ATTRIBUTE="ssPrimaryFileAttribute";
 	public static final String PRODUCT_NAME="ssProductName";
 	public static final String PRODUCT_TITLE="ssProductTitle";
 	public static final String PRODUCT_CONFERENCING_NAME="ssProductConferencingName";

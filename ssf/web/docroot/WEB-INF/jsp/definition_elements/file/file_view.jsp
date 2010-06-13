@@ -35,16 +35,26 @@
 <% //View an entry %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
+<%
+	Map<String,Boolean> ss_entryAttributesSeen = new java.util.HashMap<String,Boolean>();
+%>
+<c:set var="ss_entryAttributesSeen" value="<%= ss_entryAttributesSeen %>" scope="request" />
 
 <div class="ss_style ss_portlet_style ss_portlet">
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
+
+<% // Navigation links %>
+<div id="ss_entry_view_navigation_links" style="display:none">
+  <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
+</div>
+
 <table cellspacing="0" cellpadding="0" width="100%" class="ss_actions_bar13_pane">
-<tr><td valign="top">
+<tr><td valign="top" width="95%">
   <ssHelpSpot helpId="workspaces_folders/entries/entry_toolbar" offsetX="0" 
     title="<ssf:nlt tag="helpSpot.entryToolbar"/>"></ssHelpSpot>
 <ssf:toolbar toolbar="${ssFolderEntryToolbar}" style="ss_actions_bar13 ss_actions_bar" />
 </td>
-<td valign="top" nowrap style="padding-top:5px">
+<td valign="top" align="right" width="5%" nowrap style="padding-top:5px">
   <ssf:ifadapter>
   	<a class="ss_actions_bar13_pane_none" href="javascript: window.print();"><img border="0" 
       alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
@@ -58,10 +68,80 @@
 </tr>
 </table>
 
-<% // Navigation links %>
-<div id="ss_entry_view_navigation_links" style="display:none">
-  <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
-</div>
+<div style="padding: 0.4em;">
+<c:if test="${!empty ssPrimaryFileAttribute}">
+  <c:set var="selections" value="${ssDefinitionEntry.customAttributes[ssPrimaryFileAttribute].valueSet}" />
+  <c:forEach var="selection" items="${selections}" varStatus="status">
+    <c:if test="${status.first}">
+<%
+	ss_entryAttributesSeen.put("title", true);
+%>
+      <table cellspacing="0" cellpadding="0">
+      <tr>
+      <td valign="middle">
+      <div class="ss_thumbnail_tiny">
+        <img border="0" <ssf:alt text="${selection.fileItem.name}"/> 
+		  src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>"/>
+      </div>
+      </td>
+      <td valign="middle">
+	  <div class="ss_entryTitleFile">
+      <a target="_blank" 
+      href="<ssf:fileUrl file="${selection}"/>" 
+      >${selection.fileItem.name}
+      </a>
+      </div>
+      </td>
+      </tr>
+      </table>
+    </c:if>
+  </c:forEach>
+</c:if>
+<c:if test="${!ss_entryAttributesSeen['title']}">
+  <c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" varStatus="status">
+    <c:if test="${status.first}">
+<%
+	ss_entryAttributesSeen.put("title", true);
+%>
+      <table cellspacing="0" cellpadding="0">
+      <tr>
+      <td valign="middle">
+      <div class="ss_thumbnail_tiny">
+        <img border="0" <ssf:alt text="${selection.fileItem.name}"/> 
+		  src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>"/>
+      </div>
+      </td>
+      <td valign="middle">
+	  <div class="ss_entryTitleFile">
+      <a target="_blank" 
+      href="<ssf:fileUrl file="${selection}"/>" 
+      >${selection.fileItem.name}
+      </a>
+      </div>
+      </td>
+      </tr>
+      </table>
+    </c:if>
+  </c:forEach>
+</c:if>
+<c:if test="${!ss_entryAttributesSeen['title']}">
+<%
+	ss_entryAttributesSeen.put("title", true);
+%>
+	<div class="ss_entryTitleFile">
+	<ssf:titleLink action="view_folder_entry" entryId="${ssDefinitionEntry.id}" 
+		binderId="${ssDefinitionEntry.parentFolder.id}" entityType="${ssDefinitionEntry.entityType}"
+		namespace="${renderResponse.namespace}_${ssDefinitionEntry.id}">
+			<ssf:param name="url" useBody="true">
+				<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+				folderId="${ssDefinitionEntry.parentFolder.id}" 
+				action="view_folder_entry" entryId="${ssDefinitionEntry.id}" actionUrl="true" ><ssf:param
+				name="namespace" value="${ss_title_namespace}"/></ssf:url>
+			</ssf:param>
+			<c:out value="${ssDefinitionEntry.title}" escapeXml="true"/>
+	</ssf:titleLink>
+	</div>
+</c:if>
 
 <c:if test="${empty ss_entryLinkCounter}"><c:set var="ss_entryLinkCounter" value="0" scope="request"/></c:if>
 <c:set var="ss_entryLinkCounter" value="${ss_entryLinkCounter + 1}" scope="request"/>
@@ -72,6 +152,7 @@
   configJspStyle="${ssConfigJspStyle}" 
   entry="${ssDefinitionEntry}" />
   
+</div>
 </div>
 </div>
 <script type="text/javascript">
