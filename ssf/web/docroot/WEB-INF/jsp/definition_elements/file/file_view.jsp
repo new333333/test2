@@ -35,11 +35,7 @@
 <% //View an entry %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
-<c:choose>
-  <c:when test="${propertyValues_type[0] == 'file'}">
-	<jsp:include page="/WEB-INF/jsp/definition_elements/file/file_view.jsp" />
-  </c:when>
-  <c:otherwise>
+
 <div class="ss_style ss_portlet_style ss_portlet">
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 <table cellspacing="0" cellpadding="0" width="100%" class="ss_actions_bar13_pane">
@@ -59,14 +55,6 @@
       <ssf:alt tag="navigation.help"/> src="<html:imagesPath/>icons/help.png" />
     </a>&nbsp;&nbsp;
 </td>
-</tr>
-</table>
-<table cellspacing="0" cellpadding="0" width="100%">
-<tr>
-<td valign="top">
-<c:set var="ss_defFam" value="entry" scope="request"/>
-
-<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view.jsp" /></td>
 </tr>
 </table>
 
@@ -93,5 +81,3 @@ function ss_focusOnEntry() {
 ss_createOnLoadObj("ss_focusOnEntry", ss_focusOnEntry);
 </script>
 <%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
-  </c:otherwise>
-</c:choose>
