@@ -34,14 +34,6 @@
           <property name="required" value=""/> 
         </properties> 
       </item>  
-      <item name="entryAttributes" caption="__attributes" type="data" category="entryData" display="form" id="25"> 
-        <properties> 
-          <property name="caption" value="__attributes"/>  
-          <property name="name" value="attributes"/>  
-          <property name="source" value="attributes"/>  
-          <property name="required" value="false"/> 
-        </properties> 
-      </item>  
       <item name="attachFiles" caption="__attach_files" type="data" id="5"> 
         <properties> 
           <property name="name" value="ss_attachFile"/>  
@@ -109,18 +101,12 @@
         </properties> 
       </item> 
     </item>  
-    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" display="view" id="26" formItem="entryAttributes"> 
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="28"> 
       <properties> 
-        <property name="caption" value="__attributes"/>  
-        <property name="name" value="attributes"/> 
+        <property name="caption" value=""/>  
+        <property name="tabTitle" value="replies"/> 
       </properties> 
-    </item>  
-    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="28">
-      <properties>
-        <property name="caption" value=""/>
-        <property name="tabTitle" value="replies"/>
-      </properties>
-    </item>
+    </item> 
   </item>  
   <item name="entryBlogView" caption="__entry_blog_view_definition" id="16" display="view"> 
     <properties> 
@@ -141,18 +127,12 @@
         <property name="caption" value="__entry_workflow"/> 
       </properties> 
     </item>  
-    <item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="blogEntryViewData" display="view" id="27" formItem="entryAttributes"> 
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="29"> 
       <properties> 
-        <property name="caption" value="__attributes"/>  
-        <property name="name" value="attributes"/> 
+        <property name="caption" value="__entry_commentsAndAttachments"/>  
+        <property name="tabTitle" value="replies"/> 
       </properties> 
-    </item>  
-    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="29">
-      <properties>
-        <property name="caption" value="__entry_commentsAndAttachments"/>
-        <property name="tabTitle" value="replies"/>
-      </properties>
-    </item>
+    </item> 
   </item>  
   <properties> 
     <property name="caption" value="__definition_default_discussion_entry"/>  

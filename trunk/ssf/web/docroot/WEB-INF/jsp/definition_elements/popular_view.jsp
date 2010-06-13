@@ -34,6 +34,8 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:if test="${!ss_pseudoEntity}">
+<c:if test="${empty ss_popular_view_seen}">
+<c:set var="ss_popular_view_seen" value="true" scope="request"/>
 <c:if test="${empty ss_ratingSupportLoaded}">
 <div id="ss_rating_info_div${renderResponse.namespace}" 
   style="position:absolute; display:none; visibility:hidden;
@@ -45,30 +47,27 @@
 </c:if>
 <c:set var="ss_ratingDivId" value="ss_rating_div_${renderResponse.namespace}${ssDefinitionEntry.id}" 
   scope="request"/>
+<div align="right">
+<table cellspacing="0" cellpadding="0">
+<tr>
 <c:choose>
   <c:when test="${ss_defFam == 'entry'}">
-	<div align="right">
-	<table cellspacing="0" cellpadding="0">
-		<tr>
 		<td valign="middle" nowrap colspan="2">  
 		  <ssHelpSpot helpId="workspaces_folders/entries/rating" offsetX="-20" offsetY="-3" 
   			title="<ssf:nlt tag="helpSpot.rating"/>"></ssHelpSpot>
 			<%@ include file="/WEB-INF/jsp/forum/rating.jsp" %>
 		</td>
-		</tr><tr>
   </c:when>
   <c:otherwise>
-  	<div>
-  	<table cellspacing="0" cellpadding="0">
-	<tr>
 		<td valign="middle" nowrap>  
 		 <ssHelpSpot helpId="workspaces_folders/entries/rating" offsetX="-20" offsetY="-3" 
   			title="<ssf:nlt tag="helpSpot.rating"/>"></ssHelpSpot>
 			<%@ include file="/WEB-INF/jsp/forum/rating.jsp" %>
 		</td>
-		<td>&nbsp;&nbsp;&nbsp;</td>
   </c:otherwise>
 </c:choose> 
+</tr>
+<tr>
  <td valign="middle" nowrap align="right"> 
 <c:if test="${ssDefinitionEntry.top}">
 
@@ -111,4 +110,5 @@
 </tr>
 </table>
 </div><!--end of alignment-->
+</c:if>
 </c:if>

@@ -116,6 +116,7 @@
 			<property name="showPicture" caption="__show_picture" type="boolean" default="false"/>
 			<property name="displayType" caption="__displayType" type="selectbox" default="inline">
 				<option name="inline" caption="__display_inline"/>
+				<option name="inlineWithRating" caption="__display_inline_with_rating"/>
 				<option name="leftAligned" caption="__display_left_aligned"/>
 			</property>
 		</properties>
