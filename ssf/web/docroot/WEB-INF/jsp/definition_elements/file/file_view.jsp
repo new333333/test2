@@ -78,20 +78,22 @@
 %>
       <table cellspacing="0" cellpadding="0">
       <tr>
-      <td valign="middle">
+      <td valign="bottom">
       <div class="ss_thumbnail_tiny">
-        <img border="0" <ssf:alt text="${selection.fileItem.name}"/> 
-		  src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>"/>
+        <c:set var="ss_attachedFile" value="${selection}" scope="request" />
+        <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_thumbnail.jsp" />
       </div>
       </td>
-      <td valign="middle">
+      <td valign="bottom">
 	  <div class="ss_entryTitleFile">
-      <a target="_blank" 
-      href="<ssf:fileUrl file="${selection}"/>" 
-      >${selection.fileItem.name}
-      </a>
+        <c:set var="ss_attachedFile" value="${selection}" scope="request" />
+        <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_title.jsp" />
       </div>
       </td>
+		<td valign="bottom" nowrap>
+		  <div class="ss_entryTitleFileVersion"><ssf:nlt tag="file.versionNumber"><ssf:param
+			name="value" value="${selection.fileVersion}"/></ssf:nlt></div>
+		</td>
       </tr>
       </table>
     </c:if>
@@ -105,13 +107,13 @@
 %>
       <table cellspacing="0" cellpadding="0">
       <tr>
-      <td valign="middle">
+      <td valign="bottom">
       <div class="ss_thumbnail_tiny">
         <img border="0" <ssf:alt text="${selection.fileItem.name}"/> 
 		  src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>"/>
       </div>
       </td>
-      <td valign="middle">
+      <td valign="bottom">
 	  <div class="ss_entryTitleFile">
       <a target="_blank" 
       href="<ssf:fileUrl file="${selection}"/>" 
