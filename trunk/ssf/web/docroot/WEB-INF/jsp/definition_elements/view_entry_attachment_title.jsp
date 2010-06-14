@@ -39,7 +39,6 @@
 <jsp:useBean id="ss_attachedFile" type="org.kablink.teaming.domain.FileAttachment" scope="request"/>
 <c:set var="ss_attachments_namespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_attachments_namespace" value="${ss_namespace}"/></c:if>
-<div id="${ss_viewEntryAttachmentDivId}">
 <%
 boolean isIECheck = BrowserSniffer.is_ie(request);
 String strBrowserType = "nonie";

@@ -78,21 +78,34 @@
 %>
       <table cellspacing="0" cellpadding="0">
       <tr>
-      <td valign="bottom">
-      <div class="ss_thumbnail_tiny">
-        <c:set var="ss_attachedFile" value="${selection}" scope="request" />
-        <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_thumbnail.jsp" />
-      </div>
-      </td>
-      <td valign="bottom">
-	  <div class="ss_entryTitleFile">
-        <c:set var="ss_attachedFile" value="${selection}" scope="request" />
-        <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_title.jsp" />
-      </div>
-      </td>
-		<td valign="bottom" nowrap>
+        <td valign="middle">
+          <div class="ss_thumbnail_tiny ss_thumbnail_standalone">
+            <c:set var="ss_attachedFile" value="${selection}" scope="request" />
+            <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_thumbnail.jsp" />
+          </div>
+        </td>
+        <td valign="middle">
+	      <div class="ss_entryTitleFile">
+            <c:set var="ss_attachedFile" value="${selection}" scope="request" />
+            <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_title.jsp" />
+          </div>
+        </td>
+	    <td valign="middle" nowrap>
 		  <div class="ss_entryTitleFileVersion"><ssf:nlt tag="file.versionNumber"><ssf:param
 			name="value" value="${selection.fileVersion}"/></ssf:nlt></div>
+		</td>
+		<td valign="middle" nowrap>
+          <div class="ss_entryTitleFileVersion">
+            <c:set var="ss_attachedFile" value="${selection}" scope="request" />
+            <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_status.jsp" />
+          </div>
+		</td>
+		<td valign="middle" nowrap>
+          <div class="ss_entryTitleFileVersion">
+            <c:set var="ss_attachedFileIsVersion" value="false" scope="request" />
+            <c:set var="ss_attachedFile" value="${selection}" scope="request" />
+            <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions.jsp" />
+          </div>
 		</td>
       </tr>
       </table>
