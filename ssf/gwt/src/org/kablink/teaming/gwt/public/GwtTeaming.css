@@ -949,8 +949,11 @@ body, table td, select
 }
 .mainMenuBar_BoxDropDownImg
 {
-	margin-left: 5px;
 	vertical-align: middle;
+}
+.mainMenuBar_BoxDropDownImgNonIE
+{
+	margin-left: 5px;
 }
 .mainMenuBar_BoxHover
 {
@@ -959,8 +962,11 @@ body, table td, select
 }
 .mainMenuBar_BoxImg
 {
-	margin-right: 2px;
 	vertical-align: middle;
+}
+.mainMenuBar_BoxImgNonIE
+{
+	margin-right: 2px;
 }
 .mainMenuBar_BoxPanel
 {

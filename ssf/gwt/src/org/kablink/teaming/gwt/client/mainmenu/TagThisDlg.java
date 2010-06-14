@@ -150,9 +150,9 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 		e.setId(OPTION_HEADER_ID);
 		e.addClassName("tagThisDlg_SectionHeaderRow");
 		e = grid.getCellFormatter().getElement(row, 0);
-		e.setAttribute("colspan", "2");
 		e.addClassName("tagThisDlg_SectionHeaderCell");
 		grid.setWidget(row, 0, header);
+		GwtClientHelper.setGridColSpan(grid, row, 0, 2);
 	}
 
 	/*
@@ -298,8 +298,7 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 			grid.insertRow(row);
 			String rowId = (IDBASE + "Add_" + tagType);
 			grid.getRowFormatter().getElement(row).setId(rowId);
-			Element e = grid.getCellFormatter().getElement(row, 0);
-			e.setAttribute("colspan", "2");
+			GwtClientHelper.setGridColSpan(grid, row, 0, 2);
 
 			// Create a panel for the add widgets...
 			FlowPanel addPanel = new FlowPanel();

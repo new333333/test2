@@ -89,6 +89,9 @@ public class MenuBarBox extends FlowPanel {
 			// ...add it...
 			Image itemImg = new Image(itemImgRes);
 			itemImg.addStyleName("mainMenuBar_BoxImg");
+			if (!(GwtClientHelper.jsIsIE())) {
+				itemImg.addStyleName("mainMenuBar_BoxImgNonIE");
+			}
 			m_boxPanel.add(itemImg);
 		}
 
@@ -102,6 +105,9 @@ public class MenuBarBox extends FlowPanel {
 			// ...add it...
 			Image dropDownImg = new Image(GwtTeaming.getMainMenuImageBundle().menuArrow());
 			dropDownImg.addStyleName("mainMenuBar_BoxDropDownImg");
+			if (!(GwtClientHelper.jsIsIE())) {
+				dropDownImg.addStyleName("mainMenuBar_BoxDropDownImgNonIE");
+			}
 			m_boxPanel.add(dropDownImg);
 		}
 

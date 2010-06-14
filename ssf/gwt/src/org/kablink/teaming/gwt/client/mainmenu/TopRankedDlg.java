@@ -125,9 +125,9 @@ public class TopRankedDlg extends DlgBox implements EditSuccessfulHandler, EditC
 		Element e = grid.getRowFormatter().getElement(row); 
 		e.addClassName("topRankedDlg_SectionBannerRow");
 		e = grid.getCellFormatter().getElement(row, 0);
-		e.setAttribute("colspan", "2");
 		e.addClassName("topRankedDlg_SectionBannerCell");
 		grid.setWidget(row, 0, banner);
+		GwtClientHelper.setGridColSpan(grid, row, 0, 2);
 	}
 
 	/*

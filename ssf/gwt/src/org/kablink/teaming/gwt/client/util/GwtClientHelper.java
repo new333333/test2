@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.util;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 
@@ -301,4 +302,31 @@ public class GwtClientHelper {
 		popup.setAnimationEnabled(false);
 //!		popup.setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
 	}
+	
+	/**
+	 * Sets up a colspan="span" that spans the cells of a row in a
+	 * Grid beginning at index start in a way that works on IE, FF, ...
+	 *
+	 * Note:  This is a hack to get around the inability to natively
+	 *        set a colspan on cells of GWT Grid.
+	 *
+	 * @param grid
+	 * @param row
+	 * @param cell
+	 */
+	public static void setGridColSpan(Grid grid, int row, int start, int span) {
+		jsFixFirstCol(grid.getCellFormatter().getElement(row, start));
+		for (int i = 1; i < span; i += 1) {
+			start += 1;
+			jsFixOtherCols(grid.getRowFormatter(). getElement(row), start);
+		}
+		
+	}
+	private static native void jsFixFirstCol(Element eTD) /*-{
+		eTD.colSpan = 2;
+		eTD.width = "100%";
+	}-*/;
+	private static native void jsFixOtherCols(Element eTR, int cell) /*-{
+		eTR.deleteCell(cell);
+	}-*/;
 }
