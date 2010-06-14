@@ -1229,6 +1229,14 @@ function ss_toggleShowDiv(divName, namespace) {
 }
 
 //Routine to hide or show a region using a collapse/expand button
+var ss_toggleRegionSize = 300;
+function ss_toggleRegionInit(divId, imgId) {
+	var divHeight = ss_getDivHeight(divId);
+	if (parseInt(divHeight) >= ss_toggleRegionSize) {
+		var imgObj = self.document.getElementById(imgId);
+		if (imgObj != null) imgObj.style.display = "block";
+	}
+}
 function ss_toggleRegion(aObj, divId, regionId) {
 	var urlParams = {operation:"save_region_view",id:regionId};
 	var divObj = self.document.getElementById(divId);
@@ -1241,7 +1249,7 @@ function ss_toggleRegion(aObj, divId, regionId) {
 		urlParams.state = "expanded";
 	} else {
 		var divHeight = ss_getDivHeight(divId);
-		if (parseInt(divHeight) >= 300) divObj.className = "wg-tab-content-clipped";
+		if (parseInt(divHeight) >= ss_toggleRegionSize) divObj.className = "wg-tab-content-clipped";
 		aObj.firstChild.src = buttonSrc.replace(reCollapse, "expand$1")
 		urlParams.state = "collapsed";
 	}
