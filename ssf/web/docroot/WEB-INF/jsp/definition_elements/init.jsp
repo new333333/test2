@@ -51,4 +51,5 @@
 --%><%@ page import="org.kablink.teaming.domain.User" %><%--
 --%><%@ page import="org.kablink.teaming.util.NLT" %><%--
 --%><%@ include file="/WEB-INF/jsp/common/include.jsp" %><%--
---%><%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
+--%><%@ include file="/WEB-INF/jsp/forum/init.jsp" %><%--
+--%><c:if test="${empty ss_divCounter}"><c:set var="ss_divCounter" value="0" scope="request" /></c:if>
