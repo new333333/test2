@@ -34,6 +34,7 @@
 %>
 <% // View entry comments and attachments in tabs %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="ss_divCounter" value="${ss_divCounter + 1}" scope="request" />
 <%
 	//Get the user's desired region view (if set)
 	String regionView_commentsAndAttachmentsRegion = "expanded";
@@ -102,17 +103,25 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
   </c:if>
   <td valign="middle" align="right" width="97%" nowrap>&nbsp;
     <c:if test="${ssDefinitionEntry.top}">
+    <div id="commentsAndAttachmentsRegionImg${ss_divCounter}" style="display:none;">
     <a href="javascript: ;" 
-      onClick="this, ss_toggleRegion(this, 'commentsAndAttachmentsRegion', 'commentsAndAttachmentsRegion');return false;" 
+      onClick="ss_toggleRegion(this, 'commentsAndAttachmentsRegion${ss_divCounter}', 'commentsAndAttachmentsRegion');return false;" 
       alt="<ssf:nlt tag="general.expandCollapseRegion"/>" title="<ssf:nlt tag="general.expandCollapseRegion"/>"
     ><img src="<html:rootPath/>images/pics/${regionImg}"/></a>
+    </div>
     </c:if>
   </td>
   </tr>
   </table>
 </div>
-
-<div id="commentsAndAttachmentsRegion" 
+<c:if test="${ssDefinitionEntry.top}">
+<script type="text/javascript">
+ss_createOnLoadObj("commentsAndAttachmentsRegion${ss_divCounter}", function() {
+	ss_toggleRegionInit('commentsAndAttachmentsRegion${ss_divCounter}', 'commentsAndAttachmentsRegionImg${ss_divCounter}');
+});
+</script>
+</c:if>
+<div id="commentsAndAttachmentsRegion${ss_divCounter}" 
   <c:if test="${ssDefinitionEntry.top}">class="${regionClass}"</c:if>
   <c:if test="${!ssDefinitionEntry.top}">class="wg-tab-content"</c:if>
 >
