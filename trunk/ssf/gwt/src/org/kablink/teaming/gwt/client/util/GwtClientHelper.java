@@ -260,6 +260,37 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
+	 * Use to register as an ActionRequestor to the GwtMainPage
+	 * @param requestor
+	 */
+	public static native void jsRegisterActionHandler( ActionRequestor requestor ) /*-{
+		window.top.ss_registerActionHandler( requestor );
+	}-*/;
+
+	/**
+	 * Called to force the GWT UI content area to resize itself based
+	 * on its current content.
+	 * 
+	 * @param reason
+	 */
+	public static native void jsResizeGwtContent(String reason) /*-{
+		window.top.resizeGwtContent(reason);
+	}-*/;
+
+	/**
+	 * Sets a PopupPanel to use roll-down animation to open.  Currently
+	 * the GWT API for this is inaccessible.  Once it becomes
+	 * available, this method needs to be changed to enable animations
+	 * and set their type to ROLL_DOWN.
+	 * 
+	 * @param popup
+	 */
+	public static void rollDownPopup(PopupPanel popup) {
+		popup.setAnimationEnabled(false);
+//!		popup.setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
+	}
+	
+	/**
 	 * For the given listbox, select the item in the listbox that has the given value.
 	 */
 	public static int selectListboxItemByValue( ListBox listbox, String value )
@@ -281,27 +312,6 @@ public class GwtClientHelper {
 		// If we get here it means we did not find an item in the listbox with the given value.
 		return -1;
 	}// end selectListboxItemByValue()
-	
-	/**
-	 * Use to register as an ActionRequestor to the GwtMainPage
-	 * @param requestor
-	 */
-	public static native void jsRegisterActionHandler( ActionRequestor requestor ) /*-{
-		window.top.ss_registerActionHandler( requestor );
-	}-*/;
-
-	/**
-	 * Sets a PopupPanel to use roll-down animation to open.  Currently
-	 * the GWT API for this is inaccessible.  Once it becomes
-	 * available, this method needs to be changed to enable animations
-	 * and set their type to ROLL_DOWN.
-	 * 
-	 * @param popup
-	 */
-	public static void rollDownPopup(PopupPanel popup) {
-		popup.setAnimationEnabled(false);
-//!		popup.setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
-	}
 	
 	/**
 	 * Sets up a colspan="span" that spans the cells of a row in a
