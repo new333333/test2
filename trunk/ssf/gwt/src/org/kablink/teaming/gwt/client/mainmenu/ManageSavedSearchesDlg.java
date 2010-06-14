@@ -138,9 +138,9 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 		e.setId(SECTION_HEADER_ID);
 		e.addClassName("manageSavedSearchesDlg_SectionHeaderRow");
 		e = grid.getCellFormatter().getElement(row, 0);
-		e.setAttribute("colspan", "2");
 		e.addClassName("manageSavedSearchesDlg_SectionHeaderCell");
 		grid.setWidget(row, 0, header);
+		GwtClientHelper.setGridColSpan(grid, row, 0, 2);
 	}
 
 	/*
@@ -283,8 +283,7 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 		grid.insertRow(row);
 		String rowId = (IDBASE + "SaveSearch");
 		grid.getRowFormatter().getElement(row).setId(rowId);
-		Element e = grid.getCellFormatter().getElement(row, 0);
-		e.setAttribute("colspan", "2");
+		GwtClientHelper.setGridColSpan(grid, row, 0, 2);
 
 		// Create a panel for the save widgets...
 		FlowPanel savePanel = new FlowPanel();

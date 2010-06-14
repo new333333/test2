@@ -134,9 +134,9 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 		e.setId(OPTION_HEADER_ID);
 		e.addClassName("folderOptionsDlg_SectionHeaderRow");
 		e = grid.getCellFormatter().getElement(row, 0);
-		e.setAttribute("colspan", "2");
 		e.addClassName("folderOptionsDlg_SectionHeaderCell");
 		grid.setWidget(row, 0, header);
+		GwtClientHelper.setGridColSpan(grid, row, 0, 2);
 	}
 
 	/*
