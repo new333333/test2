@@ -1638,6 +1638,15 @@ body, table td, select
 	z-index: 1001;
 }
 
+.teamingDlgBox_Glass
+{
+	background-color: #000;
+	filter: alpha(opacity=50);
+	opacity: 0.5;
+	overflow: hidden;
+	z-index: 1000;
+}
+
 .teamingDlgBox .popupContent
 {
 	background-color: #f6f6f6;

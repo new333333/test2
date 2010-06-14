@@ -319,7 +319,7 @@ public abstract class DlgBox extends PopupPanel
 			if ( m_numDlgsVisible == 0 )
 			{
 				setGlassEnabled( true );
-				setGlassStyleName( "n-Transparent-Black-Div" );
+				setGlassStyleName( "teamingDlgBox_Glass" );
 			}
 		}
 		
