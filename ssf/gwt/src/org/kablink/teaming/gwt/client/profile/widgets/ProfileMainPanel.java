@@ -458,7 +458,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		public void onClick(ClickEvent event) {
 			if (handlerId.equals("EditId")) {
 				String url = profileRequestInfo.getModifyUrl();
-				GwtClientHelper.jsLaunchUrlInWindow(url, "Modify Entry", 800, 800);
+				GwtClientHelper.jsLaunchUrlInWindow(url, "_blank", 800, 800);
 			} else if(handlerId.equals("FollowId")) {
 				if(followingAnchor.isChecked()) {
 					unfollowPerson();
