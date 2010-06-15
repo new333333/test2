@@ -85,15 +85,6 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 		};
 
 		timer.schedule(25);
-		
-		timer = new Timer() {
-			public void run() {
-				profilePanel.setHeight("");
-				triggerAction(TeamingAction.SIZE_CHANGED);
-			}
-		};
-		
-		timer.schedule(150);
 	}
 
 	private HorizontalPanel createHorizontalPanel() {
@@ -163,6 +154,9 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 
 					profileMainPanel.setCategory(cat);
 				}
+				
+				// relayout the page now
+				relayoutPage();
 			}
 		};
 
@@ -172,6 +166,17 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 
 	}
 
+	private void relayoutPage() {
+		Timer timer = new Timer() {
+			public void run() {
+				profilePanel.setHeight("");
+				triggerAction(TeamingAction.SIZE_CHANGED);
+			}
+		};
+		
+		timer.schedule(25);
+	}
+	
 	/**
 	 * Use JSNI to grab the JavaScript object that holds the information about
 	 * the request dealing with.
