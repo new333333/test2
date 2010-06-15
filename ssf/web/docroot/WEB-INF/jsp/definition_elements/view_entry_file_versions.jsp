@@ -237,7 +237,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		  <ssf:nlt tag="file.sizeKB" text="KB"/>
 		</td>
 		
-		<td valign="top" class="ss_att_meta_wrap ss_att_space" width="20%">${selection.modification.principal.title}</td>
+		<td valign="top" class="ss_att_meta_wrap ss_att_space" width="20%">${selection.modification.principal.userTitle}</td>
 		<td valign="top" class="ss_att_meta" width="20%">
 		  <a class="ss_tinyButton ss_fineprint" href="javascript: ;" 
 		    onClick="ss_showHide('ss_fileActionsMenu2_${selection.id}');return false;"
@@ -505,7 +505,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				     value="${fileVersion.modification.date}" type="time" 
 					 timeStyle="short" /></span></td>
 				<td valign="top" class="ss_att_meta" nowrap width="5%"><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${fileVersion.fileItem.lengthKB}"/> <ssf:nlt tag="file.sizeKB" text="KB"/></td>
-				<td valign="top" class="ss_att_meta_wrap ss_att_space" width="20%">${fileVersion.modification.principal.title}</td>
+				<td valign="top" class="ss_att_meta_wrap ss_att_space" width="20%">${fileVersion.modification.principal.userTitle}</td>
 				<td valign="top" class="ss_att_meta" width="20%">
 				  <a class="ss_tinyButton ss_fineprint" href="javascript: ;" 
 				    onClick="ss_showHide('ss_fileActionsMenu2_${fileVersion.versionNumber}');return false;"

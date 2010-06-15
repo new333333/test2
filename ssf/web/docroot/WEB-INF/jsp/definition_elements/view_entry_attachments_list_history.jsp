@@ -111,7 +111,7 @@
 		  <ssf:nlt tag="file.sizeKB" text="KB"/>
 		</td>
 		
-		<td valign="top" class="ss_att_meta_wrap ss_att_space" width="25%">${selection.modification.principal.title}</td>
+		<td valign="top" class="ss_att_meta_wrap ss_att_space" width="25%">${selection.modification.principal.userTitle}</td>
 		<td valign="top" class="ss_att_meta" width="20%">
 		</td>
 	</tr>

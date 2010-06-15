@@ -50,7 +50,8 @@
 			if (inSearch && ("function" == typeof ss_getSearchTabId)) {
 				searchTabId = ss_getSearchTabId();
 			}
-			window.top.ss_contextLoaded("${ssBinder.id}", String(inSearch), searchTabId);
+			if (typeof window.top.ss_contextLoaded != "undefined") 
+				window.top.ss_contextLoaded("${ssBinder.id}", String(inSearch), searchTabId);
 		}
 
 		/**
