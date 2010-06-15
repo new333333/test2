@@ -54,7 +54,7 @@
 			operation="mobile_show_workspace"
 			binderId="${ssDefinitionEntry.modification.principal.workspaceId}" />"
 		  ><span class="ss_mobile_light ss_mobile_small"
-		  >${ssDefinitionEntry.modification.principal.title}</span></a>
+		  >${ssDefinitionEntry.modification.principal.userTitle}</span></a>
 		</div>
 		<div>
 		<span class="ss_mobile_light ss_mobile_small"><fmt:formatDate 
