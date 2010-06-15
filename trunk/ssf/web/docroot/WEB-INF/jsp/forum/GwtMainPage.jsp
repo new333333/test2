@@ -115,7 +115,26 @@
 		var ss_imageUploadUrl = "<ssf:url adapter="true" actionUrl="true" portletName="ss_forum" action="__ajax_request">
 			  						<ssf:param name="operation" value="upload_image_file" />
 		    					 </ssf:url>";
-		
+
+		/*
+		 * Implementation method for GwtClientHelper.jsEvalString().
+		 *
+		 * Note:  The code contained here was originally inside that
+		 *    native method but GWT's obfuscation used for our
+		 *    production compile broke it.
+		 */
+		function jsEvalStringImpl(url, jsString) {
+			// Setup an object to pass through the URL...
+			var hrefObj = {href: url};
+			
+			// ...patch the JavaScript string...
+			jsString = jsString.replace("this", "hrefObj");
+			jsString = jsString.replace("return false;", "");
+			jsString = ("window.top.gwtContentIframe." + jsString);
+			
+			// ...and evaluate it.
+			eval(jsString);
+		}
 	</script>
 	<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js"></script>
 	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
