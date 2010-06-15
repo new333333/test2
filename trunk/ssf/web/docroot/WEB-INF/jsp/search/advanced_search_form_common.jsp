@@ -221,8 +221,8 @@
 					
 					<c:if test="${!filterDefinition}">
 						<tr>
-							<td colspan="2" 
-							  style="text-align: right !important; padding-bottom: 3px; padding-top: 8px;">
+							<td colspan="3" 
+							  style="text-align: center !important; padding-bottom: 3px; padding-top: 8px;">
 								<c:if test="${empty disableSearchButton || disableSearchButton == 0}">
 								<a class="ss_searchButton" href="javascript: ss_search();" ><img <ssf:alt tag="alt.search"/> 
 					  				src="<html:imagesPath/>pics/1pix.gif" /> <ssf:nlt tag="searchForm.button.label"/></a> 
