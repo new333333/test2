@@ -176,20 +176,15 @@ public class GwtClientHelper {
 	 * Evaluates a JavaScript string containing embedded
 	 * JavaScript. 
 	 * 
+	 * Note:  The code that's now in GwtMainPage.jsEvalStringImpl() was
+	 *    originally inside this method but GWT's obfuscation used for
+	 *    our production compiles broke it.
+	 * 
 	 * @param url
 	 * @param jsString
 	 */
 	public static native void jsEvalString(String url, String jsString) /*-{
-		// Setup an object to pass through the URL...
-		var hrefObj = {href: url};
-		
-		// ...patch the JavaScript string...
-		jsString = jsString.replace("this", "hrefObj");
-		jsString = jsString.replace("return false;", "");
-		jsString = ("window.top.gwtContentIframe." + jsString);
-		
-		// ...and evaluate it.
-		eval(jsString);
+		window.top.jsEvalStringImpl(url, jsString);
 	}-*/;
 
 	
