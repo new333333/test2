@@ -487,7 +487,6 @@ public class QueryBuilder {
 			}
 		}
 		String entryAll = ENTRY_ALL;
-		if (canOnlySeeCommonGroupMembers) entryAll = ENTRY_ALL_GLOBAL;
 		
 		// folderAcl:1,2,3...
 		if (widen) {
