@@ -285,7 +285,7 @@
 				</tr>
 				<tr>
 				  <td valign="top"><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.LastActivity"/></h4></td>
-				  <td>
+				  <td style="padding-top:10px;">
 					<div id="ss_lastActivities_container" class="ss_options_container">				
 						<div id="ss_lastActivities_options" class="ss_options"></div>
 					</div>
