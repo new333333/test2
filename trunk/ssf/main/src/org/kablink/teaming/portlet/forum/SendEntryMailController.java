@@ -116,7 +116,7 @@ public class SendEntryMailController extends SAbstractController {
 					try {
 						AccessUtils.readCheck((User)p, entry);
 					} catch(AccessControlException e) {
-						noAccessPrincipals.add(p.getTitle() + " (" + p.getName() + ")");
+						noAccessPrincipals.add(p.getUserTitle() + " (" + p.getName() + ")");
 					}
 				}
 			}

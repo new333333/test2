@@ -78,10 +78,12 @@
 <%  editInPlaceSupported = true;  %>
   </ssf:ifSupportsEditInPlace>
 
-  <a href="javascript: ;" 
-    onClick="ss_showHide('ss_fileActionsMenu${ss_divCounter}_${ss_attachedFile.id}');return false;"
-  ><ssf:nlt tag="file.actions"/>
-  <img style="vertical-align: bottom;" src="<html:rootPath/>images/pics/menu_arrow.png"/></a>
+  <div>
+    <a href="javascript: ;" 
+      onClick="ss_showHide('ss_fileActionsMenu${ss_divCounter}_${ss_attachedFile.id}');return false;"
+    ><ssf:nlt tag="file.actions"/>
+    <img style="vertical-align: bottom;" src="<html:rootPath/>images/pics/menu_arrow.png"/></a>
+  </div>
   <div id="ss_fileActionsMenu${ss_divCounter}_${ss_attachedFile.id}" 
     style="position:absolute; display:none; background:#fff; border:1px #ccc solid;">
     <ul style="margin:0px;padding:0px 10px 0px 10px;">

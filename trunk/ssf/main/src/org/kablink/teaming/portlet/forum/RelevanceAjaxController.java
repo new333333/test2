@@ -193,14 +193,14 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		}
 
 		getProfileModule().setShares(entity, ids, teams);
-		String title = entity.getTitle();
+		String title = entity.getUserTitle();
 		if (entity.getParentBinder() != null) title = entity.getParentBinder().getPathName() + "/" + title;
 		String addedComments = PortletRequestUtils.getStringParameter(request, "mailBody", "");
 		// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
 		Description body = new Description("<a href=\"" + PermaLinkUtil.getPermalink((ActionRequest) null, entity) +
 				"\">" + title + "</a><br/><br/>" + addedComments);
 		try {
-			Map status = getAdminModule().sendMail(ids, teams, null, null, null, NLT.get("relevance.mailShared", new Object[]{RequestContextHolder.getRequestContext().getUser().getTitle()}), body);
+			Map status = getAdminModule().sendMail(ids, teams, null, null, null, NLT.get("relevance.mailShared", new Object[]{RequestContextHolder.getRequestContext().getUser().getUserTitle()}), body);
 			Set totalIds = new HashSet();
 			totalIds.addAll(ids);
 			Set<Principal> totalUsers = getProfileModule().getPrincipals(totalIds);
@@ -210,7 +210,7 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 					try {
 						AccessUtils.readCheck((User)p, (DefinableEntity) entity);
 					} catch(AccessControlException e) {
-						noAccessPrincipals.add(p.getTitle() + " (" + p.getName() + ")");
+						noAccessPrincipals.add(p.getUserTitle() + " (" + p.getName() + ")");
 					}
 				}
 			}

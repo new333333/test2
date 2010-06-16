@@ -696,7 +696,7 @@ public class WorkspaceTreeHelper {
 			SortedMap<String, Group> teamGroups = new TreeMap();
 			for (Principal p : usersAndGroups) {
 				if (p instanceof User) {
-					teamUsers.put(p.getTitle(), (User)p);
+					teamUsers.put(p.getUserTitle(), (User)p);
 				} else if (p instanceof Group) {
 					teamGroups.put(p.getTitle(), (Group)p);
 				}

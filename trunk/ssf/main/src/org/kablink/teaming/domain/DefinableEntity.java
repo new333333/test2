@@ -45,8 +45,10 @@ import java.util.TreeSet;
 
 import org.kablink.teaming.comparator.FileAttachmentComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.util.CollectionUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.WebHelper;
 
 /**
@@ -125,6 +127,18 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
         //set the normalized title
 		setNormalTitle(WebHelper.getNormalizedTitle(title));
     }
+	
+    /**
+     * Redacted title (if user has limited view of users)
+     */
+    public String getUserTitle() {
+		if (EntityType.user.equals(this.getEntityType())) {
+			return Utils.getUserTitle((User)this);
+		} else {
+			return this.getTitle();
+		}
+	}
+
     /**
      * Normalized title for wiki links
      * @hibernate.property length="256"

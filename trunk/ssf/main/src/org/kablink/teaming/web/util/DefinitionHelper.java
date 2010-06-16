@@ -74,6 +74,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -1308,7 +1309,7 @@ public class DefinitionHelper {
 		// Handle structured fields of the entry known at compile time.
 		entryElem.addAttribute("id", entry.getId().toString());
 		entryElem.addAttribute("name", entry.getName());
-		entryElem.addAttribute("title", entry.getTitle());
+		entryElem.addAttribute("title", entry.getUserTitle());
 		entryElem.addAttribute("emailAddress", entry.getEmailAddress());
 		entryElem.setText(entry.getName());
 

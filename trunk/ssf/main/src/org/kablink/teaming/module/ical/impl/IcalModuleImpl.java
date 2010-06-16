@@ -2145,7 +2145,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			for (User user:users) {
 				// ...adding information about each to the component.
 				ParameterList attendeeParams = new ParameterList();
-				attendeeParams.add(new Cn(user.getTitle()));
+				attendeeParams.add(new Cn(user.getUserTitle()));
 				attendeeParams.add(Role.REQ_PARTICIPANT);
 				String uri = "MAILTO:" + user.getEmailAddress();
 				try {
@@ -2170,7 +2170,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 
 		Principal principal = (Principal) entry.getCreation().getPrincipal();
 		ParameterList organizerParams = new ParameterList();
-		organizerParams.add(new Cn(principal.getTitle()));
+		organizerParams.add(new Cn(principal.getUserTitle()));
 
 		String uri = "MAILTO:" + principal.getEmailAddress();
 		try {

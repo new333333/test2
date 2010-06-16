@@ -282,7 +282,7 @@ public class GwtProfileHelper {
 			if(name.equals("name")) {
 				value = u.getName();
 			} else if(name.equals("title")) {
-				value = u.getTitle();
+				value = u.getUserTitle();
 			} else if(name.equals("phone")) {
 				value = u.getPhone();
 			} else if(name.equals("emailAddress")){
@@ -568,7 +568,7 @@ public class GwtProfileHelper {
 				user.setUserId( principal.getId() );
 				user.setWorkspaceId( binder.getId() );
 				user.setName( principal.getName() );
-				user.setTitle( principal.getTitle() );
+				user.setTitle( principal.getUserTitle() );
 				user.setWorkspaceTitle( binder.getTitle() );
 				user.setViewWorkspaceUrl( PermaLinkUtil.getPermalink( binder ) );
 				

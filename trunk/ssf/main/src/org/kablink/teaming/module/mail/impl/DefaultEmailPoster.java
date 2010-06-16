@@ -189,7 +189,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		// If no recipient specified then user the current context user
 		if(postAsUser != null) {
 			try {
-				from = new InternetAddress(postAsUser.getEmailAddress(), postAsUser.getTitle());
+				from = new InternetAddress(postAsUser.getEmailAddress(), postAsUser.getUserTitle());
 			} catch (UnsupportedEncodingException ex) {
 				logger.error("Error building internet address for: " + postAsUser.getEmailAddress() + " Error: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
 			}

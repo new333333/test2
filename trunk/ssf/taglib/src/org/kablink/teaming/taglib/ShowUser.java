@@ -48,6 +48,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
@@ -55,6 +56,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.servlet.StringServletResponse;
 
@@ -92,13 +94,14 @@ public class ShowUser extends BodyTagSupport {
 			ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
 			if (this.close == null) this.close = false;
 			
-			// Get a user object from the principal
-			if ((user != null) && !(user instanceof User) && !(user instanceof Group)) {
+			// Get a user object from the principal (do this always if user has limited view of users)
+			if ((user != null) && !(user instanceof User) && !(user instanceof Group) || 
+					Utils.canUserOnlySeeCommonGroupMembers()) {
 				try {
 					//this will remove the proxy and return a real user or group
 					//currently looks like this code is expecting a User
 					//get user even if deleted.
-					user = profileDao.loadUserPrincipal(user.getId(), user.getZoneId(), false);
+					user = profileDao.loadUserPrincipal(user.getId(), RequestContextHolder.getRequestContext().getZoneId(), false);
 				} catch (Exception e) {
 					logger.warn(e);
 				}

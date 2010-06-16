@@ -50,6 +50,7 @@ import org.kablink.teaming.presence.PresenceManager;
 import org.kablink.teaming.presence.PresenceInfo;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.servlet.StringServletResponse;
 
@@ -93,12 +94,12 @@ public class PresenceInfoTag extends BodyTagSupport {
 			//Get a user object from the principal
 			User user1 = null;
 			if (user != null) {
-				if (user instanceof User) {
+				if (user instanceof User && !Utils.canUserOnlySeeCommonGroupMembers()) {
 					user1 = (User) user;
 				} else {
 					ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
 					try {
-						user1 = profileDao.loadUser(user.getId(), user.getZoneId());
+						user1 = profileDao.loadUser(user.getId(), RequestContextHolder.getRequestContext().getZoneId());
 					}
 					catch(Exception e) {}
 				}

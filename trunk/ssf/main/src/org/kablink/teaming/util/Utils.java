@@ -112,6 +112,15 @@ public class Utils {
 	}
 	
 	public static String getUserTitle(User user) {
+		if (canUserOnlySeeCommonGroupMembers()) {
+			try {
+				//this will remove the proxy and return a real user or group
+				//currently looks like this code is expecting a User
+				//get user even if deleted.
+				ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
+				user = (User)profileDao.loadUserPrincipal(user.getId(), RequestContextHolder.getRequestContext().getZoneId(), false);
+			} catch (Exception e) {}
+		}
 		List values = new ArrayList();
 		String result = "";
 		

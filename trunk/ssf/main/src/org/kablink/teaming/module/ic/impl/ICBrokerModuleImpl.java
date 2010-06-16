@@ -583,7 +583,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 			User participant = (User) userIt.next();
 			Vector part = new Vector();
 			part.add(User.getNormalizedConferencingName(participant.getZonName()));
-			part.add(participant.getTitle());
+			part.add(participant.getUserTitle());
 			part.add(participant.getPhone());
 			part.add(participant.getEmailAddress());
 			part.add(0);

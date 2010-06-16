@@ -1138,7 +1138,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				reply.setUserId( user.getId() );
 				reply.setWorkspaceId( binder.getId() );
 				reply.setName( user.getName() );
-				reply.setTitle( user.getTitle() );
+				reply.setTitle( user.getUserTitle() );
 				reply.setWorkspaceTitle( user.getWSTitle() );
 				reply.setViewWorkspaceUrl( PermaLinkUtil.getPermalink( binder ) );
 			}

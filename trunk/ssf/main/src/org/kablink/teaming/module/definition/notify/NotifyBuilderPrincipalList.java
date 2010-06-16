@@ -55,7 +55,7 @@ public class NotifyBuilderPrincipalList extends AbstractNotifyBuilder {
     	TreeSet titles = new TreeSet();
     	for (Iterator iter=users.iterator(); iter.hasNext();) {
     		Principal p = (Principal)iter.next();
-    		titles.add(p.getTitle());
+    		titles.add(p.getUserTitle());
     	}
     	ctx.put("ssTitles", titles);
     	super.build(visitor, template, ctx);
