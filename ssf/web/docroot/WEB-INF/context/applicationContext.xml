@@ -93,9 +93,9 @@
 		<property name="dashboardModule"><ref bean="dashboardModule"/></property>	
 		<property name="reportModule"><ref bean="reportModule"/></property>
 		<property name="icBrokerModule"><ref bean="icBrokerModule"/></property>			
-		<property name="icalModule"><ref local="icalModule"/></property>
-		<property name="rssModule"><ref local="rssModule"/></property>
-		<property name="licenseModule"><ref local="licenseModule"/></property>
+		<property name="icalModule"><ref bean="icalModule"/></property>
+		<property name="rssModule"><ref bean="rssModule"/></property>
+		<property name="licenseModule"><ref bean="licenseModule"/></property>
 		<property name="zoneModule"><ref bean="zoneModule"/></property>
 	</bean>
 
@@ -107,7 +107,7 @@
 	<bean id="oracleExtractor" class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor">
 	</bean>
 	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler">
-		<property name="nativeJdbcExtractor"><ref local="oracleExtractor"/></property>
+		<property name="nativeJdbcExtractor"><ref bean="oracleExtractor"/></property>
 	  </bean>
 
  -->
@@ -153,7 +153,7 @@
 	</bean>
 	
 	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-		<property name="dataSource"><ref local="dataSource"/></property>
+		<property name="dataSource"><ref bean="dataSource"/></property>
 		<property name="autoStartup"><value>true</value></property>
 		<!--Need enough time for modules to startup and possibly register jobs -->
 		<property name="startupDelay"><value>60</value></property>
@@ -256,7 +256,7 @@
 	
 	<bean id="definitionHelper" class="org.kablink.teaming.web.util.DefinitionHelper">
 		<property name="definitionModule"><ref bean="definitionModule"/> </property>
-		<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
+		<property name="definitionBuilderConfig"><ref bean="definitionBuilderConfig"/></property>		
 	</bean>
 	
 	<bean id="encryptor" class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
@@ -393,8 +393,8 @@
 	<bean id="portletLogContextInfoUponExceptionInterceptor" class="org.kablink.teaming.web.portlet.handler.LogContextInfoInterceptor"/>
 		
 	<bean id="portletUserSynchInterceptor" class="org.kablink.teaming.web.portlet.handler.UserSynchInterceptor" depends-on="sPropsUtil">
-		<property name="profileDao"><ref local="profileDao"/></property>
-		<property name="profileModule"><ref local="profileModule"/></property>
+		<property name="profileDao"><ref bean="profileDao"/></property>
+		<property name="profileModule"><ref bean="profileModule"/></property>
 	</bean>	
 
 	<bean id="portletUrlToStringHelper" class="org.kablink.teaming.portletadapter.PortletUrlToStringHelper"/>
@@ -441,7 +441,7 @@
 	</bean>
 		
 	<bean id="indexSynchronizationManager" class="org.kablink.teaming.search.IndexSynchronizationManager">
-		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
+		<property name="luceneSessionFactory"><ref bean="luceneSessionFactory"/></property>
 	</bean>
 	
 	<bean id="indexSynchronizationManagerInterceptor" class="org.kablink.teaming.search.interceptor.IndexSynchronizationManagerInterceptor">
@@ -450,7 +450,7 @@
 	<!-- ============================== Document Converter ============================ -->
 
 	<bean id="converterCommon" abstract="true">
-        <property name="fileModule"><ref local="fileModule"/></property>
+        <property name="fileModule"><ref bean="fileModule"/></property>
     </bean>
 	
 	<!--  OpenOffice converter for 'view file as HTML' functionality
@@ -493,8 +493,8 @@
 	<bean id="icalModule" parent="moduleNonTransactionProxy">
 		<property name="target">
 		    <bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.ical.impl.IcalModuleImpl">	
-		    	<property name="binderModule"><ref local="binderModule"/></property>
-		    	<property name="folderModule"><ref local="folderModule"/></property>
+		    	<property name="binderModule"><ref bean="binderModule"/></property>
+		    	<property name="folderModule"><ref bean="folderModule"/></property>
 		    </bean>
 		</property>
 		<!--<property name="proxyInterfaces">
@@ -505,14 +505,14 @@
 	<!-- ================================ Security Service =============================== -->
 	
 	<bean id="accessControlManager" class="org.kablink.teaming.security.impl.AccessControlManagerImpl" depends-on="sPropsUtil">
-		<property name="functionManager"><ref local="functionManager"/></property>
-		<property name="workAreaFunctionMembershipManager"><ref local="workAreaFunctionMembershipManager"/></property>
-		<property name="coreDao"><ref local="coreDao"/></property>
-		<property name="profileDao"><ref local="profileDao"/></property>
+		<property name="functionManager"><ref bean="functionManager"/></property>
+		<property name="workAreaFunctionMembershipManager"><ref bean="workAreaFunctionMembershipManager"/></property>
+		<property name="coreDao"><ref bean="coreDao"/></property>
+		<property name="profileDao"><ref bean="profileDao"/></property>
 		<property name="licenseManager"><ref bean="licenseManager"/></property>
 	</bean>
 	<!--<bean id="accessControlManager" class="org.kablink.teaming.security.impl.NullAccessControlManager">
-		<property name="profileDao"><ref local="profileDao"/></property>
+		<property name="profileDao"><ref bean="profileDao"/></property>
 	</bean>
 	-->
 	
@@ -520,11 +520,11 @@
 	</bean>
 
 	<bean id="functionManager" class="org.kablink.teaming.security.function.impl.FunctionManagerImpl">
-		<property name="securityDao"><ref local="securityDao"/></property>
+		<property name="securityDao"><ref bean="securityDao"/></property>
 	</bean>
 
 	<bean id="workAreaFunctionMembershipManager" class="org.kablink.teaming.security.function.impl.WorkAreaFunctionMembershipManagerImpl">
-		<property name="securityDao"><ref local="securityDao"/></property>		
+		<property name="securityDao"><ref bean="securityDao"/></property>		
 	</bean>
 	
 	<bean id="securityDao" class="org.kablink.teaming.security.dao.impl.SecurityDaoImpl">
@@ -532,12 +532,12 @@
 	</bean>
 	
 	<bean id="authenticationManager"  class="org.kablink.teaming.security.authentication.impl.AuthenticationManagerImpl" depends-on="sPropsUtil">
-			<property name="profileDao"><ref local="profileDao"/></property>						
-			<property name="coreDao"><ref local="coreDao"/></property>						
-			<property name="adminModule"><ref local="adminModule"/></property>						
-			<property name="profileModule"><ref local="profileModule"/></property>						
-			<property name="reportModule"><ref local="reportModule"/></property>						
-			<property name="ldapModule"><ref local="ldapModule"/></property>						
+			<property name="profileDao"><ref bean="profileDao"/></property>						
+			<property name="coreDao"><ref bean="coreDao"/></property>						
+			<property name="adminModule"><ref bean="adminModule"/></property>						
+			<property name="profileModule"><ref bean="profileModule"/></property>						
+			<property name="reportModule"><ref bean="reportModule"/></property>						
+			<property name="ldapModule"><ref bean="ldapModule"/></property>						
 	</bean>	
 	
 	<bean id="stringCheckUtil" class = "org.kablink.teaming.util.stringcheck.StringCheckUtil" depends-on="sPropsUtil">
@@ -546,9 +546,9 @@
 	<bean id="accessTokenManager" parent="baseTransactionProxy">
 		<property name="target">
 			<bean class="org.kablink.teaming.security.accesstoken.impl.AccessTokenManagerImpl">
-				<property name="profileDao"><ref local="profileDao"/></property>							
-				<property name="securityDao"><ref local="securityDao"/></property>							
-				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
+				<property name="profileDao"><ref bean="profileDao"/></property>							
+				<property name="securityDao"><ref bean="securityDao"/></property>							
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
 			</bean>
 		</property>
 		<property name="transactionAttributes">
@@ -574,16 +574,16 @@
 	     refering module. -->
 	     
 	<bean id="dependOnCommonServicesTemplate" abstract="true">
-		<property name="coreDao"><ref local="coreDao"/></property>
-		<property name="folderDao"><ref local="folderDao"/></property>
-		<property name="profileDao"><ref local="profileDao"/></property>
+		<property name="coreDao"><ref bean="coreDao"/></property>
+		<property name="folderDao"><ref bean="folderDao"/></property>
+		<property name="profileDao"><ref bean="profileDao"/></property>
 		<property name="functionManager"><ref bean="functionManager"/></property>	
-		<property name="accessControlManager"><ref local="accessControlManager"/></property>
-		<property name="aclManager"><ref local="aclManager"/></property>
-		<property name="scheduler"><ref local="scheduler"/></property>
-		<property name="processorManager"><ref local="modelProcessorManager"/></property>
-		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
-		<property name="workAreaFunctionMembershipManager"><ref local="workAreaFunctionMembershipManager"/></property>
+		<property name="accessControlManager"><ref bean="accessControlManager"/></property>
+		<property name="aclManager"><ref bean="aclManager"/></property>
+		<property name="scheduler"><ref bean="scheduler"/></property>
+		<property name="processorManager"><ref bean="modelProcessorManager"/></property>
+		<property name="luceneSessionFactory"><ref bean="luceneSessionFactory"/></property>
+		<property name="workAreaFunctionMembershipManager"><ref bean="workAreaFunctionMembershipManager"/></property>
 		<property name="resourceDriverManager"><ref bean="resourceDriverManager"/></property>
 		<property name="licenseManager"><ref bean="licenseManager"/></property>
 		<property name="accessTokenManager"><ref bean="accessTokenManager"/></property>
@@ -591,19 +591,19 @@
 	</bean>
 	
 	<bean id="processorDependencyTemplate" parent="dependOnCommonServicesTemplate" abstract="true">
-		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
-		<property name="definitionModule"><ref local="definitionModule"/></property>
+		<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+		<property name="definitionModule"><ref bean="definitionModule"/></property>
 		<property name="workflowModule"><ref bean="workflowModule"/></property>
-		<property name="fileModule"><ref local="fileModule"/></property>
-		<property name="reportModule"><ref local="reportModule"/></property>
-		<property name="rssModule"><ref local="rssModule"/></property>
+		<property name="fileModule"><ref bean="fileModule"/></property>
+		<property name="reportModule"><ref bean="reportModule"/></property>
+		<property name="rssModule"><ref bean="rssModule"/></property>
 		<property name="textConverterManager"><ref bean="textConverterManager"/></property>
 	</bean>
 	
 	<bean id="workspaceModule" parent="moduleTransactionProxy">
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.workspace.impl.WorkspaceModuleImpl">
-				<property name="definitionModule"><ref local="definitionModule"/></property>
+				<property name="definitionModule"><ref bean="definitionModule"/></property>
 			</bean>
 		</property>
 	</bean>
@@ -637,14 +637,14 @@
 	<bean id="templateModule" parent="moduleTransactionProxy">
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.template.impl.TemplateModuleImpl">
-				<property name="adminModule"><ref local="adminModule"/></property>
-				<property name="definitionModule"><ref local="definitionModule"/></property>
-				<property name="folderModule"><ref local="folderModule"/></property>
-				<property name="workspaceModule"><ref local="workspaceModule"/></property>
-				<property name="binderModule"><ref local="binderModule"/></property>
-				<property name="dashboardModule"><ref local="dashboardModule"/></property>
-				<property name="fileModule"><ref local="fileModule"/></property>
-				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
+				<property name="adminModule"><ref bean="adminModule"/></property>
+				<property name="definitionModule"><ref bean="definitionModule"/></property>
+				<property name="folderModule"><ref bean="folderModule"/></property>
+				<property name="workspaceModule"><ref bean="workspaceModule"/></property>
+				<property name="binderModule"><ref bean="binderModule"/></property>
+				<property name="dashboardModule"><ref bean="dashboardModule"/></property>
+				<property name="fileModule"><ref bean="fileModule"/></property>
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
 			</bean>
 		</property>
 		<!-- addBinder provides transaction semantics at a finer
@@ -689,10 +689,10 @@
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.profile.impl.ProfileModuleImpl">
 				<property name="definitionModule"><ref bean="definitionModule"/></property>
-				<property name="templateModule"><ref local="templateModule"/></property>
-				<property name="adminModule"><ref local="adminModule"/></property>
-				<property name="binderModule"><ref local="binderModule"/></property>
-				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
+				<property name="templateModule"><ref bean="templateModule"/></property>
+				<property name="adminModule"><ref bean="adminModule"/></property>
+				<property name="binderModule"><ref bean="binderModule"/></property>
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
 			</bean>
 		</property>
 		<!-- addUser, addGroup, addEntries, modifyEntry, addUserFromPortal,modifyUserFromPortal, addUserWorkspace, addApplication, addApplicationGroup provide transaction semantics at a finer
@@ -721,8 +721,8 @@
 	<bean id="binderModule" parent="moduleTransactionProxy">
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.binder.impl.BinderModuleImpl">
-				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
-				<property name="runAsyncManager"><ref local="runAsyncManager"/></property>
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+				<property name="runAsyncManager"><ref bean="runAsyncManager"/></property>
 			</bean>
 		</property>
 		<!-- addBinder, modifyBinder, setTeamMembers, setTeamMembershipInherited, deleteBinder, copyBinder provide transaction semantics at a finer
@@ -752,7 +752,7 @@
 	</bean>
 	<bean id="binderAccessUtils" class="org.kablink.teaming.module.shared.AccessUtils">
 		<property name="accessControlManager"><ref bean="accessControlManager"/> </property>
-		<property name="profileDao"><ref local="profileDao"/></property>
+		<property name="profileDao"><ref bean="profileDao"/></property>
 	</bean>
 	<bean id="definitionBuilderConfig" class="org.kablink.teaming.module.definition.DefinitionConfigurationBuilder"
 		depends-on="licenseChecker">
@@ -769,8 +769,8 @@
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.definition.impl.DefinitionModuleImpl">
 				<property name="workflowModule"><ref bean="workflowModule"/></property>
-				<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
-				<property name="binderModule"><ref local="binderModule"/></property>
+				<property name="definitionBuilderConfig"><ref bean="definitionBuilderConfig"/></property>		
+				<property name="binderModule"><ref bean="binderModule"/></property>
 			</bean>	
 		</property>
 	</bean>
@@ -793,7 +793,7 @@
 	<bean id="dashboardModule" parent="moduleTransactionProxy">
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.dashboard.impl.DashboardModuleImpl">
-				<property name="binderModule"><ref local="binderModule"/></property>
+				<property name="binderModule"><ref bean="binderModule"/></property>
 			</bean>	
 		</property>
 	</bean>
@@ -812,29 +812,29 @@
 		</property>
 	</bean>
 	<bean id="defaultEmailFormatter" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.mail.impl.DefaultEmailFormatter" depends-on="notifyBuilderUtil">
-		<property name="definitionModule"><ref local="definitionModule"/></property>
-		<property name="mailModule"><ref local="mailModule"/></property>
+		<property name="definitionModule"><ref bean="definitionModule"/></property>
+		<property name="mailModule"><ref bean="mailModule"/></property>
 		<property name="zoneModule"><ref bean="zoneModule"/></property>
-		<property name="icalModule"><ref local="icalModule"/></property>
-		<property name="smtpService"><ref local="smtpService"/></property>
-		<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
+		<property name="icalModule"><ref bean="icalModule"/></property>
+		<property name="smtpService"><ref bean="smtpService"/></property>
+		<property name="definitionBuilderConfig"><ref bean="definitionBuilderConfig"/></property>		
 
 	</bean>
 	<bean id="notifyBuilderUtil" class="org.kablink.teaming.module.definition.notify.NotifyBuilderUtil">
-		<property name="velocityEngine"><ref local="velocityEmailEngine"/></property>
-		<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
+		<property name="velocityEngine"><ref bean="velocityEmailEngine"/></property>
+		<property name="definitionBuilderConfig"><ref bean="definitionBuilderConfig"/></property>		
 		<property name="toolboxConfig"><value>config/toolbox.xml</value></property>
 	</bean>
 	
 	<bean id="defaultEmailPoster" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.mail.impl.DefaultEmailPoster">
-		<property name="folderModule"><ref local="folderModule"/></property>
-		<property name="icalModule"><ref local="icalModule"/></property>
+		<property name="folderModule"><ref bean="folderModule"/></property>
+		<property name="icalModule"><ref bean="icalModule"/></property>
 	</bean>
 
 	<bean id="fileModule" parent="moduleNonTransactionProxy">
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.file.impl.FileModuleImpl" depends-on="sPropsUtil">
-				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
 			</bean>
 		</property>
 		<!--<property name="proxyInterfaces">
@@ -845,7 +845,7 @@
 	<bean id="convertedFileModule" parent="moduleNonTransactionProxy">
 		<property name="target">
 			<bean class="org.kablink.teaming.module.file.impl.ConvertedFileModuleImpl" depends-on="sPropsUtil">
-				<property name="fileModule"><ref local="fileModule"/></property>
+				<property name="fileModule"><ref bean="fileModule"/></property>
 				<property name="htmlConverterManager"><ref bean="htmlConverterManager"/></property>
 				<property name="imageConverterManager"><ref bean="imageConverterManager"/></property>
 			</bean>
@@ -861,7 +861,7 @@
 			<bean class="org.kablink.teaming.module.report.impl.ReportModuleImpl" depends-on="sPropsUtil">
 				<property name="coreDao"><ref bean="coreDao"/></property>
 				<property name="profileDao"><ref bean="profileDao"/></property>
-				<property name="accessControlManager"><ref local="accessControlManager"/></property>
+				<property name="accessControlManager"><ref bean="accessControlManager"/></property>
 				<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 				<property name="binderModule"><ref bean="binderModule"/></property>
 				<property name="folderModule"><ref bean="folderModule"/></property>
@@ -881,8 +881,8 @@
 	<bean id="ssfs" class="org.springframework.aop.framework.ProxyFactoryBean" depends-on="sPropsUtil">
 		<property name="target">
 			<bean class="org.kablink.teaming.ssfs.server.impl.KablinkFileSystemImpl" parent="dependOnAllModulesTemplate">
-				<property name="mimeTypes"><ref local="mimeTypes"/></property>
-				<property name="coreDao"><ref local="coreDao"/></property>
+				<property name="mimeTypes"><ref bean="mimeTypes"/></property>
+				<property name="coreDao"><ref bean="coreDao"/></property>
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
@@ -962,12 +962,12 @@ text/calendar											  ics
 	</bean>
 	<bean id="profileDao" class="org.kablink.teaming.dao.impl.ProfileDaoImpl" depends-on="zoneConfig,sPropsUtil">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
-		<property name="coreDao"><ref local="coreDao"/></property>
+		<property name="coreDao"><ref bean="coreDao"/></property>
 	</bean>
 
 	<bean id="folderDao" class="org.kablink.teaming.dao.impl.FolderDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
-		<property name="coreDao"><ref local="coreDao"/></property>
+		<property name="coreDao"><ref bean="coreDao"/></property>
 	</bean>
 
 	<!-- ======================== File & Repository Services ====================== -->
@@ -980,7 +980,7 @@ text/calendar											  ics
 
 	<bean id="jackrabbitRepository" class="org.kablink.teaming.repository.jcr.jackrabbit.JCRRepositorySessionFactory"
 		init-method="initialize" destroy-method="shutdown">	
-		<property name="fileTypeMap"><ref local="mimeTypes"/></property>
+		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
 		<property name="repositoryRootDir"><value>${data.jackrabbitrepository.root.dir}/jackrabbit</value></property>
 		<property name="homeSubdirName"><value>home</value></property>
 		<property name="configFileName"><value>jackrabbit-repository.xml</value></property>
@@ -1032,18 +1032,18 @@ text/calendar											  ics
 	<bean id="mailJndiAccessor" class="org.springframework.jndi.JndiAccessor"/>
 	<bean id="mailSender" class="org.kablink.teaming.module.mail.impl.JavaMailSenderImpl">
 		<property name="defaultEncoding"><value>utf-8</value></property>
-		<property name="defaultFileTypeMap"><ref local="mimeTypes"/></property>
+		<property name="defaultFileTypeMap"><ref bean="mimeTypes"/></property>
 	</bean>
 
 	<bean id="mailModule" parent="moduleNonTransactionProxy">
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.mail.impl.MailModuleImpl" 
 					depends-on="zoneConfig, springContextUtil">
-				<property name="mailSender"><ref local="mailSender"/></property>
-				<property name="jndiAccessor"><ref local="mailJndiAccessor"/></property>
+				<property name="mailSender"><ref bean="mailSender"/></property>
+				<property name="jndiAccessor"><ref bean="mailJndiAccessor"/></property>
 				<property name="mailRootDir"><value>${data.root.dir}/mail</value></property>
-				<property name="icalModule"><ref local="icalModule"/></property>
-				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
+				<property name="icalModule"><ref bean="icalModule"/></property>
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
 			</bean>	
 		</property>
 		<!--<property name="proxyInterfaces">
@@ -1066,11 +1066,11 @@ text/calendar											  ics
 	<!-- ============================== Web Services Components ============================ -->
 	
 	<bean id="loginInfoInterceptor" class="org.kablink.teaming.remoting.ws.interceptor.LoginInfoInterceptor">
-		<property name="reportModule"><ref local="reportModule"/></property>
+		<property name="reportModule"><ref bean="reportModule"/></property>
 	</bean>
 	
 	<bean id="accessTokenValidationInterceptor" class="org.kablink.teaming.remoting.ws.interceptor.AccessTokenValidationInterceptor">
-		<property name="accessTokenManager"><ref local="accessTokenManager"/></property>
+		<property name="accessTokenManager"><ref bean="accessTokenManager"/></property>
 		<property name="zoneModule"><ref bean="zoneModule"/></property>
 	</bean>
 	
@@ -1154,7 +1154,7 @@ text/calendar											  ics
 	<bean id="folderService" parent="wsProxyTemplate">
 		<property name="target">
 			<bean class="org.kablink.teaming.remoting.ws.service.folder.attachments.FolderServiceImpl" parent="dependOnAllModulesTemplate">
-				<property name="processorManager"><ref local="modelProcessorManager"/></property>
+				<property name="processorManager"><ref bean="modelProcessorManager"/></property>
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
@@ -1257,8 +1257,8 @@ text/calendar											  ics
 	
 	<!-- ============================== Remote Application Support ============================ -->
 	<bean id="remoteApplicationManager" class="org.kablink.teaming.remoteapplication.impl.RemoteApplicationManagerImpl">
-		<property name="profileDao"><ref local="profileDao"/></property>
-		<property name="accessTokenManager"><ref local="accessTokenManager"/></property>
+		<property name="profileDao"><ref bean="profileDao"/></property>
+		<property name="accessTokenManager"><ref bean="accessTokenManager"/></property>
 	</bean>
 	
 	<!-- ================================  JMX/MBean Support =============================== -->
@@ -1269,40 +1269,40 @@ text/calendar											  ics
 	          <ref bean="luceneSessionFactory"/>
 	        </entry>
 	        <entry key="Teaming:type=Converter,name=htmlOpenOfficeConverter">
-	          <ref local="htmlOpenOfficeConverter"/>
+	          <ref bean="htmlOpenOfficeConverter"/>
 	        </entry>
 	        <entry key="Teaming:type=Converter,name=textOpenOfficeConverter">
-	          <ref local="textOpenOfficeConverter"/>
+	          <ref bean="textOpenOfficeConverter"/>
 	        </entry>
 	        <entry key="Teaming:type=Converter,name=imageOpenOfficeConverter">
-	          <ref local="imageOpenOfficeConverter"/>
+	          <ref bean="imageOpenOfficeConverter"/>
 	        </entry>
 	        <entry key="Teaming:type=Module,name=rssModule">
-	          <ref local="rssModule"/>
+	          <ref bean="rssModule"/>
 	        </entry>
 			<entry key="Teaming:type=Repository,name=simpleFileRepository">
-	          <ref local="simpleFileRepository"/>
+	          <ref bean="simpleFileRepository"/>
 	        </entry>
 	        <entry key="Teaming:type=Repository,name=jackrabbitRepository">
-	          <ref local="jackrabbitRepository"/>
+	          <ref bean="jackrabbitRepository"/>
 	        </entry>
 	        <!--<entry key="Teaming:type=Repository,name=webdavRepository">
-	          <ref local="webdavRepository"/>
+	          <ref bean="webdavRepository"/>
 	        </entry>-->
 	        <entry key="Teaming:type=Realtime,name=presenceService">
-	          <ref local="presenceService"/>
+	          <ref bean="presenceService"/>
 	        </entry>
 	        <entry key="Teaming:type=Module,name=icBrokerModule">
-	          <ref local="icBrokerModule"/>
+	          <ref bean="icBrokerModule"/>
 	        </entry>
 	        <entry key="Teaming:type=Hibernate,name=hibernateStatisticsService">
-	          <ref local="hibernateStatisticsService"/>
+	          <ref bean="hibernateStatisticsService"/>
 	        </entry>
 	        <entry key="Teaming:type=Module,name=folderModule">
 	          <ref bean="folderModuleTarget"/>
 	        </entry>
 	        <entry key="Teaming:type=Server,name=smtpService">
-	          <ref local="smtpService"/>
+	          <ref bean="smtpService"/>
 	        </entry>
 	      </map>
 	    </property>
