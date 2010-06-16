@@ -143,16 +143,16 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 			}
 
 			public void onSuccess(ProfileInfo profile) {
-				int count = profile.getCategories().size();
-				for (int i = 0; i < count; i++) {
+				for (ProfileCategory cat: profile.getCategories()) {
+					if(cat != null) {
+						String catName = cat.getName();
+						if (catName != null && catName.equals("profileSidePanelView")) {
+							profileSidePanel.setCategory(cat);
+							continue;
+						}
 
-					ProfileCategory cat = profile.get(i);
-					if (cat.getName().equals("profileSidePanelView")) {
-						profileSidePanel.setCategory(cat);
-						continue;
+						profileMainPanel.setCategory(cat);
 					}
-
-					profileMainPanel.setCategory(cat);
 				}
 				
 				// relayout the page now

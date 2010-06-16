@@ -27,39 +27,44 @@ public class ProfileAttributeWidget  {
 	
 	private void createWidget(ProfileAttribute attr){
 		
+		widget = new Label("");
+		
 		if(isEditMode){
-			widget = new TextBox();
-			widget.addStyleName("profile-value");
-
-			((TextBox) widget).setText(attr.getValue().toString());
-			boolean readOnly = false;
-			if(readOnly){
-				((TextBox) widget).setReadOnly(readOnly);
+			if(attr.getValue() != null) {
+				widget = new TextBox();
+				((TextBox) widget).setText(attr.getValue().toString());
+				boolean readOnly = false;
+				if(readOnly){
+					((TextBox) widget).setReadOnly(readOnly);
+				}
 			}
+			widget.addStyleName("profile-value");
 		} else {
-
 			if(attr.getDisplayType().equals("email") ) {
-				String url = "mailto:"+ attr.getValue().toString();
-				widget = new Anchor(attr.getValue().toString(), url);
+				if(attr.getValue() != null) {
+					String url = "mailto:"+ attr.getValue().toString();
+					widget = new Anchor(attr.getValue().toString(), url);
+				} 
 				widget.addStyleName("profile-value");
 				widget.addStyleName("profile-anchor");
 			} else if (attr.getName().equals("profileWebsite")) {
 				String label = "";
 				String uri = "";
-				
-				String labeledUri = attr.getValue().toString();
-				if(GwtClientHelper.hasString(labeledUri)){
-					int index = hasLabel(labeledUri);
-					if(index > -1){
-						label = labeledUri.substring(0, index);
-						uri = appendUrlToHttp(labeledUri.substring(index+1, labeledUri.length()));
-					} else {
-						label = labeledUri;
-						uri = appendUrlToHttp(labeledUri);
+				if(attr.getValue() != null) {
+					String labeledUri = attr.getValue().toString();
+					if(GwtClientHelper.hasString(labeledUri)){
+						int index = hasLabel(labeledUri);
+						if(index > -1){
+							label = labeledUri.substring(0, index);
+							uri = appendUrlToHttp(labeledUri.substring(index+1, labeledUri.length()));
+						} else {
+							label = labeledUri;
+							uri = appendUrlToHttp(labeledUri);
+						}
 					}
-				}
-				
-				widget = new Anchor(label, uri, "_blank");
+					widget = new Anchor(label, uri, "_blank");
+				} 
+
 				widget.addStyleName("profile-value");
 				widget.addStyleName("profile-anchor");
 			}
@@ -69,33 +74,43 @@ public class ProfileAttributeWidget  {
 					case ProfileAttribute.STRING:
 					case ProfileAttribute.BOOLEAN:
 					case ProfileAttribute.LONG:
-					case ProfileAttribute.DATE:	
-						widget = new Label(attr.getValue().toString());
+					case ProfileAttribute.DATE:
+						if(attr.getValue() != null) {
+							widget = new Label(attr.getValue().toString());
+						}
 						break;
 					case ProfileAttribute.LIST:
-						List<ProfileAttributeListElement> value = (List<ProfileAttributeListElement>)attr.getValue();
-						if(value != null){
-							widget = new FlowPanel();
-							for(ProfileAttributeListElement valItem: value){
-								if(attr.getDataName().equals("picture")) {
-									widget.addStyleName("profile_gallery");
-									widget.addStyleName("ss_thumbnail_small");
-								
-									FlowPanel div = new FlowPanel();
-									((FlowPanel)widget).add(div);
+						if(attr.getValue() != null) {
+							List<ProfileAttributeListElement> value = (List<ProfileAttributeListElement>)attr.getValue();
+							if(value != null){
+								widget = new FlowPanel();
+								for(ProfileAttributeListElement valItem: value){
+									if(attr.getDataName().equals("picture")) {
+										widget.addStyleName("profile_gallery");
+										widget.addStyleName("ss_thumbnail_small");
+									
+										FlowPanel div = new FlowPanel();
+										((FlowPanel)widget).add(div);
 
-									Anchor anchor = new Anchor();
-									div.add(anchor);
-									
-									String sval = valItem.getValue().toString();
-									Image img = new Image(sval);
-									
-									anchor.getElement().appendChild(img.getElement());
-								} else {
-									((FlowPanel)widget).add(new Label(valItem.getValue().toString()));
+										Anchor anchor = new Anchor();
+										div.add(anchor);
+										
+										if(valItem.getValue() != null){
+											String sval = valItem.getValue().toString();
+											Image img = new Image(sval);
+											anchor.getElement().appendChild(img.getElement());
+										}
+									} else {
+										String val = "";
+										if(valItem.getValue() != null) {
+											val = valItem.getValue().toString();
+										}
+										
+										((FlowPanel)widget).add(new Label(val));
+									}
 								}
 							}
-						}
+						} 
 						break;
 					default: 
 						widget = new Label("");
