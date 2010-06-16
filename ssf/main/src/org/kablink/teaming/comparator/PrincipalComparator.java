@@ -69,8 +69,8 @@ public class PrincipalComparator implements Comparator {
 		if (f1==null) return -1;
 		if (f2 == null) return 1;
 		String t1,t2;
-		t1 = f1.getTitle().toLowerCase();
-		t2 = f2.getTitle().toLowerCase();
+		t1 = f1.getUserTitle().toLowerCase();
+		t2 = f2.getUserTitle().toLowerCase();
 		 
 		int result=0;
 		if ((t1!=null) && (t2 != null)) {

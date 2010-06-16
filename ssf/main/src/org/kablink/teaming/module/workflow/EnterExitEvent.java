@@ -484,7 +484,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 					addrs.add(ia);
 				}
 			} catch (AddressException ae) {
-				logger.error("Skipping email notifications for " + u.getTitle() + " Bad email address");
+				logger.error("Skipping email notifications for " + u.getUserTitle() + " Bad email address");
 			}
 		} 
 		return addrs;

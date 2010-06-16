@@ -143,7 +143,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		  <ssf:nlt tag="file.sizeKB" text="KB"/>
 		</td>
 		
-		<td valign="top" class="ss_att_meta_wrap ss_att_space" width="20%">${selection.modification.principal.userTitle}</td>
+		<td valign="top" class="ss_att_meta_wrap ss_att_space" width="20%"><ssf:showUser user="${selection.modification.principal}"/></td>
 		<td valign="top" class="ss_att_meta" width="20%">
           <c:set var="ss_attachedFileIsVersion" value="false" scope="request" />
           <c:set var="ss_attachedFile" value="${selection}" scope="request" />
@@ -309,7 +309,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					 timeStyle="short" /></span></td>
 				<td valign="top" class="ss_att_meta" nowrap width="5%"><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${fileVersion.fileItem.lengthKB}"/> <ssf:nlt tag="file.sizeKB" text="KB"/></td>
 				<td valign="top" class="ss_att_meta_wrap ss_att_space" width="20%">
-				  <ssf:userTitle user="${fileVersion.modification.principal}"/></td>
+				  <ssf:showUser user="${fileVersion.modification.principal}"/></td>
 				<td valign="top" class="ss_att_meta" width="20%">
 		          <c:set var="ss_attachedFileIsVersion" value="true" scope="request" />
 		          <c:set var="ss_attachedFile" value="${fileVersion}" scope="request" />

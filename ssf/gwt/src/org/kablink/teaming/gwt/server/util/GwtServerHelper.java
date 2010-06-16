@@ -1773,7 +1773,7 @@ public class GwtServerHelper {
 			// ...use them to construct a TopRankedInfo object...
 			tri = new TopRankedInfo();
 			tri.setTopRankedType(TopRankedType.PERSON);
-			tri.setTopRankedName(user.getTitle());
+			tri.setTopRankedName(user.getUserTitle());
 			tri.setTopRankedPermalinkUrl(PermaLinkUtil.getPermalink(user));
 			tri.setTopRankedRefCount((null == refCount) ? 0 : refCount.intValue());
 			tri.setTopRankedCSS(css);

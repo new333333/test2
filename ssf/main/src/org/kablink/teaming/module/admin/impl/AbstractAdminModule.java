@@ -932,7 +932,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	Map message = new HashMap();
        	try {
        		InternetAddress ia = new InternetAddress(user.getEmailAddress());
-       		String userName = user.getTitle();
+       		String userName = user.getUserTitle();
        		if ((null != userName) && (0 < userName.length())) {
        			ia.setPersonal(userName);
        		}
@@ -944,7 +944,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				emailAddr = "";
 				errorMsg = NLT.get("sendMail.noEmailAddress");
 			}
-			errors.add(0, NLT.get("errorcode.badFromAddress", new Object[] {user.getTitle(), emailAddr, errorMsg})); 
+			errors.add(0, NLT.get("errorcode.badFromAddress", new Object[] {user.getUserTitle(), emailAddr, errorMsg})); 
 			//cannot send without valid from address
 			return result;
     	}
@@ -957,9 +957,9 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		message.put(MailModule.BCC, getEmail(bccIds, errors));
  		MailSentStatus results;
  		if (entry != null) {
- 			results = getMailModule().sendMail(entry, message, user.getTitle() + " email", sendAttachments);    		
+ 			results = getMailModule().sendMail(entry, message, user.getUserTitle() + " email", sendAttachments);    		
  		} else {
- 			results = getMailModule().sendMail(RequestContextHolder.getRequestContext().getZone(), message, user.getTitle() + " email");    		
+ 			results = getMailModule().sendMail(RequestContextHolder.getRequestContext().getZone(), message, user.getUserTitle() + " email");    		
     	}
 		result.put(ObjectKeys.SENDMAIL_STATUS, results);
 		return result;
@@ -985,7 +985,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
  						emailAddr = "";
  						errorMsg = NLT.get("sendMail.noEmailAddress");
  					}
- 					errors.add(NLT.get("errorcode.badToAddress", new Object[] {e.getTitle(), emailAddr, errorMsg})); 
+ 					errors.add(NLT.get("errorcode.badToAddress", new Object[] {e.getUserTitle(), emailAddr, errorMsg})); 
  				}
  			}
  		}

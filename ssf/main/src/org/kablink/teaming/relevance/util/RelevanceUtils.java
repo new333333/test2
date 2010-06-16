@@ -180,7 +180,7 @@ public final class RelevanceUtils
 				addUniqueUserToSet(reply, ((User) modifierPrincipal));
 			}
 			else {
-				getRelevanceEngine().getRelevanceLogger().debug("RelevanceUtils.getAttachmentUsers( 'Non-User UserPrincipal ignored.' ):  Title:  '" + modifierPrincipal.getTitle() + "'");
+				getRelevanceEngine().getRelevanceLogger().debug("RelevanceUtils.getAttachmentUsers( 'Non-User UserPrincipal ignored.' ):  Title:  '" + modifierPrincipal.getUserTitle() + "'");
 			}
 		}
 		

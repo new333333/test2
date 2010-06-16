@@ -223,8 +223,8 @@ public class WorkAreaHelper {
 					sortedGroupsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
 					sortedGroupsMapAll.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
 				} else if (p instanceof User) {
-					sortedUsersMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
-					sortedUsersMapAll.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
+					sortedUsersMap.put(p.getUserTitle().toLowerCase() + p.getName().toString(), p);
+					sortedUsersMapAll.put(p.getUserTitle().toLowerCase() + p.getName().toString(), p);
 				} else if (p instanceof Application) {
 					sortedApplicationsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
 				} else if (p instanceof ApplicationGroup) {
@@ -265,8 +265,8 @@ public class WorkAreaHelper {
 								sortedGroupsMapAll.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
 							} else if (p instanceof User) {
 								users.put(p.getId(), p);
-								sortedUsersMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
-								sortedUsersMapAll.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
+								sortedUsersMap.put(p.getUserTitle().toLowerCase() + p.getName().toString(), p);
+								sortedUsersMapAll.put(p.getUserTitle().toLowerCase() + p.getName().toString(), p);
 							} else if (p instanceof Application) {
 								applications.put(p.getId(), p);
 								sortedApplicationsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
@@ -289,7 +289,7 @@ public class WorkAreaHelper {
 					for (Map.Entry me : users.entrySet()) operationUsers.put(me.getKey(), me.getValue());
 					if (pMap.containsKey(WebKeys.OWNER)) {
 						operationUsers.put(binderOwner.getId(), binderOwner);
-						sortedUsersMapAll.put(binderOwner.getTitle().toLowerCase() + binderOwner.getName().toString(), binderOwner);
+						sortedUsersMapAll.put(binderOwner.getUserTitle().toLowerCase() + binderOwner.getName().toString(), binderOwner);
 					}
 					
 					if (!operationMemberships.containsKey(WebKeys.GROUPS)) operationMemberships.put(WebKeys.GROUPS, new HashMap());
@@ -305,7 +305,7 @@ public class WorkAreaHelper {
 								sortedGroupsMapAll.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
 								operationGroups.put(p.getId(), p);
 							} else if (p instanceof User) {
-								sortedUsersMapAll.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
+								sortedUsersMapAll.put(p.getUserTitle().toLowerCase() + p.getName().toString(), p);
 								operationUsers.put(p.getId(), p);
 							}
 						}

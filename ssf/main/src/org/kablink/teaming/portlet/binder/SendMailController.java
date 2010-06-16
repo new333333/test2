@@ -113,7 +113,7 @@ public class SendMailController extends SAbstractController {
 						try {
 							AccessUtils.readCheck((User)p, (WorkArea)binder);
 						} catch(AccessControlException e) {
-							noAccessPrincipals.add(p.getTitle() + " (" + p.getName() + ")");
+							noAccessPrincipals.add(p.getUserTitle() + " (" + p.getName() + ")");
 						}
 					}
 				}

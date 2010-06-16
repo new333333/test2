@@ -1841,7 +1841,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			List result = new ArrayList();
 			for (int i = 0; i < principals.size(); i++) {
 				Principal principal = (Principal)principals.get(i);
-				if (principal instanceof User) {
+				if (EntityType.user.equals(principal.getEntityType())) {
 					if (user.getId() == principal.getId()) {
 						//Always allow a user to see his/her own profile
 						if (!result.contains(principal)) result.add(principal);

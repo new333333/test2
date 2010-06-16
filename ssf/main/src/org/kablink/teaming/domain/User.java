@@ -125,9 +125,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     	if (Validator.isNotNull(val)) return val;
     	return getName();		
 	}
-	public String getUserTitle() {
-		return Utils.getUserTitle(this);
-	}
 	public void setTitle(String title) {
 		if (!isDeleted())
 			throw new NotSupportedException("errorcode.notsupported.setTitle");

@@ -66,11 +66,11 @@ public class EntryComparator implements Comparator {
 		if (f2 == null) return 1;
 		String t1,t2;
 		if (type.equals(SortByField.title)) {
-			t1 = f1.getTitle().toLowerCase();
-			t2 = f2.getTitle().toLowerCase();
+			t1 = f1.getUserTitle().toLowerCase();
+			t2 = f2.getUserTitle().toLowerCase();
 		} else {
-			t1 = f1.getParentBinder().getPathName().toLowerCase() + "/" + f1.getTitle().toLowerCase();
-			t2 = f2.getParentBinder().getPathName().toLowerCase() + "/" + f2.getTitle().toLowerCase();
+			t1 = f1.getParentBinder().getPathName().toLowerCase() + "/" + f1.getUserTitle().toLowerCase();
+			t2 = f2.getParentBinder().getPathName().toLowerCase() + "/" + f2.getUserTitle().toLowerCase();
 			
 		}
 		int result=0;

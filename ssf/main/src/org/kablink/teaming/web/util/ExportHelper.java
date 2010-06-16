@@ -2163,7 +2163,7 @@ public class ExportHelper {
 		// Handle structured fields of the entry known at compile time.
 		entryElem.addAttribute("id", entry.getId().toString());
 		entryElem.addAttribute("name", entry.getName());
-		entryElem.addAttribute("title", entry.getTitle());
+		entryElem.addAttribute("title", entry.getUserTitle());
 		entryElem.addAttribute("emailAddress", entry.getEmailAddress());
 		entryElem.setText(entry.getName());
 
