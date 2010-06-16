@@ -253,7 +253,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		// remove the bottom border from the section heading titles
 		grid.getFlexCellFormatter().setStyleName(row, 0, "sectionHeadingRBB");
 		
-		if(cat.getName().equals("profileHeadingPhotosAndImagesView")) {
+		if(cat.getName() != null && cat.getName().equals("profileHeadingPhotosAndImagesView")) {
 			if(isProfileModifable()){
 				buildUploadImage(grid);
 			}
@@ -262,8 +262,12 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		}
 		
 		for (ProfileAttribute attr : cat.getAttributes()) {
-			if(!attr.getDataName().equals("picture")) {
-				Label title = new Label(attr.getTitle() + ":");
+			
+			String dataName = attr.getDataName();
+			if(dataName != null && !dataName.equals("picture")) {
+				String stitle = (GwtClientHelper.hasString(attr.getTitle())? attr.getTitle() : "");
+				
+				Label title = new Label(stitle + ":");
 				title.setStyleName("attrLabel");
 
 				Widget value = new ProfileAttributeWidget(attr, isEditable).getWidget();

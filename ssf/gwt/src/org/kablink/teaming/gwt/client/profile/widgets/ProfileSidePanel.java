@@ -26,6 +26,7 @@ public class ProfileSidePanel extends Composite {
 	private ProfileStatsPanel statsPanel;
 	private FlowPanel photoPanel;
 	private ActionTrigger actionTrigger;
+	private ProfileStats profileStats;
 
 	public ProfileSidePanel(final ProfileRequestInfo profileRequestInfo, ActionTrigger trigger) {
 
@@ -57,10 +58,10 @@ public class ProfileSidePanel extends Composite {
 	}
 
 	private void createMessageDiv() {
-		FlowPanel msgDiv = null; 
-		InlineLabel msgLabel = null;
-		
 		if(profileRequestInfo.isQuotasEnabled() && profileRequestInfo.isOwner()) {
+			FlowPanel msgDiv = null; 
+			InlineLabel msgLabel = null;
+
 			if(profileRequestInfo.isDiskQuotaExceeded()){
 				msgDiv = new FlowPanel();
 				msgLabel = new InlineLabel("Data quota exceeded!");
@@ -68,12 +69,12 @@ public class ProfileSidePanel extends Composite {
 				msgDiv = new FlowPanel();
 				msgLabel = new InlineLabel("Data quota almost exceeded!");
 			}
-		}
-		
-		if(msgLabel != null){
-			msgDiv.addStyleName("stats_error_msg");
-			msgDiv.add(msgLabel);
-			photoPanel.add(msgDiv);
+
+			if(msgDiv != null && msgLabel != null) {
+				msgDiv.addStyleName("stats_error_msg");
+				msgDiv.add(msgLabel);
+				photoPanel.add(msgDiv);
+			}
 		}
 	}
 
@@ -98,11 +99,15 @@ public class ProfileSidePanel extends Composite {
 			aboutMeSection.getHeadingLabel().setStyleName("aboutLabel");
 			rightColumn.add(aboutMeSection);
 			
-			String aboutMeText = (String)findAttrByName(cat, "profileAboutMe").getValue();
-			InlineLabel aboutMeLabel = new InlineLabel(aboutMeText);
-			aboutMeLabel.setStyleName("aboutDesc");
-			
-			aboutMeSection.add(aboutMeLabel);
+			ProfileAttribute attr = findAttrByName(cat, "profileAboutMe");
+			if(attr != null) {
+				if(attr.getValue() != null) {
+					String aboutMeText = (String) attr.getValue();
+					InlineLabel aboutMeLabel = new InlineLabel(aboutMeText);
+					aboutMeLabel.setStyleName("aboutDesc");
+					aboutMeSection.add(aboutMeLabel);
+				}
+			}
 		}
 
 		if (attrExist(cat, "profileTeams")) {
@@ -130,24 +135,40 @@ public class ProfileSidePanel extends Composite {
 			}
 		}
 		
+		//Populate the sidebar widgets
+		fillProfileStats();
+	}
+	
+	private void fillProfileStats() {
+
 		// create an async callback to handle the result of the request to get
 		// the state:
 		AsyncCallback<ProfileStats> callback = new AsyncCallback<ProfileStats>() {
+
 			public void onFailure(Throwable t) {
 				// display error
 				Window.alert("Error: " + t.getMessage());
 			}
 
 			public void onSuccess(ProfileStats stats) {
-				statsPanel.addStats(stats);
-				((ProfileFollowSectionPanel) followingSection).addtrackedPersons(stats);
+				profileStats = stats;
+
+				if(statsPanel != null) {
+					statsPanel.addStats(profileStats);
+				}
+
+				if(followingSection != null) {
+					((ProfileFollowSectionPanel) followingSection).addtrackedPersons(profileStats);
+				}
 			}
 		};
 
-		GwtRpcServiceAsync gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
-		gwtRpcService.getProfileStats(profileRequestInfo.getBinderId(), callback);
-
+		if(profileStats == null) {
+			GwtRpcServiceAsync gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
+			gwtRpcService.getProfileStats(profileRequestInfo.getBinderId(), callback);
+		}
 	}
+	
 
 	private boolean attrExist(ProfileCategory cat, String name) {
 		if(findAttrByName(cat, name) != null )

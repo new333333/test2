@@ -10,6 +10,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -36,24 +37,30 @@ public class ProfileAvatarArea extends FlowPanel  {
 	}
 	
 	public void createWidget(ProfileAttribute attr){
-		
-		List<ProfileAttributeListElement> value = (List<ProfileAttributeListElement>)attr.getValue();
-		if(value != null){
-			for(ProfileAttributeListElement valItem: value){
-				if(attr.getDataName().equals("picture")) {
-					
-					FlowPanel div = new FlowPanel();
-					add(div);
+		if(attr.getValue() != null) {
+			List<ProfileAttributeListElement> value = (List<ProfileAttributeListElement>)attr.getValue();
+			if(value != null){
+				for(ProfileAttributeListElement valItem: value){
+					if(attr.getDataName().equals("picture")) {
+						FlowPanel div = new FlowPanel();
+						add(div);
 
-					Anchor anchor = new Anchor();
-					div.add(anchor);
-					anchor.addClickHandler(new PictureClickHandler(valItem, anchor));
-					
-					String sval = valItem.getValue().toString();
-					Image img = new Image(sval);
-					anchor.getElement().appendChild(img.getElement());
-				} else {
-					add(new Label(valItem.getValue().toString()));
+						Anchor anchor = new Anchor();
+						div.add(anchor);
+						anchor.addClickHandler(new PictureClickHandler(valItem, anchor));
+						
+						if(valItem.getValue() != null) {
+							String sval = valItem.getValue().toString();
+							Image img = new Image(sval);
+							anchor.getElement().appendChild(img.getElement());
+						}
+					} else {
+						if(valItem.getValue() != null) {
+							add(new Label(valItem.getValue().toString()));
+						} else {
+							add(new Label(""));
+						}
+					}
 				}
 			}
 		}
@@ -117,18 +124,22 @@ public class ProfileAvatarArea extends FlowPanel  {
 
 		public void onClick(ClickEvent event) {
 			
-			final ModifyAvatarDlg dlg = new ModifyAvatarDlg(false, false, 0, 0, item, profileRequestInfo, editSuccessfulHandler);
-			PopupPanel.PositionCallback posCallback = new PopupPanel.PositionCallback()
-			{
-				public void setPosition(int offsetWidth, int offsetHeight)
+			if(item != null && anchor != null) {
+				final ModifyAvatarDlg dlg = new ModifyAvatarDlg(false, false, 0, 0, item, profileRequestInfo, editSuccessfulHandler);
+				PopupPanel.PositionCallback posCallback = new PopupPanel.PositionCallback()
 				{
-					x = anchor.getAbsoluteLeft() + 60;
-					y = anchor.getAbsoluteTop() - dlg.getOffsetHeight() - 60;
+					public void setPosition(int offsetWidth, int offsetHeight)
+					{
+						x = anchor.getAbsoluteLeft() + 60;
+						y = anchor.getAbsoluteTop() - dlg.getOffsetHeight() - 60;
 
-					dlg.setPopupPosition( x, y );
-				}
-			};
-			dlg.setPopupPositionAndShow( posCallback );
+						dlg.setPopupPosition( x, y );
+					}
+				};
+				dlg.setPopupPositionAndShow( posCallback );
+			} else {
+				Window.alert("Error finding Avatar, no item was found to modify.");
+			}
 		}
 	}
 }
