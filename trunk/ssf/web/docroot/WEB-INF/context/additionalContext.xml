@@ -88,7 +88,7 @@
     <!--  Relevance manager integration. -->
     <bean id="relevanceEngineImpl" class="org.kablink.teaming.relevance.impl.RelevanceEngine" />
     <bean id="relevanceManager" class="org.kablink.teaming.relevance.impl.RelevanceManagerImpl">
-        <property name="relevanceEngine"><ref local="relevanceEngineImpl"/></property>
+        <property name="relevanceEngine"><ref bean="relevanceEngineImpl"/></property>
     </bean>
         
     <!-- ============================= File Integration Service ============================ -->
