@@ -35,15 +35,16 @@
 <%@ page import="org.kablink.teaming.web.util.DefinitionHelper" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 
-
+<c:set var="captionValue" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
+<c:set var="caption" value=""/>
+<% String caption = ""; %>
+<c:if test="${!empty captionValue}">
 <%
-	String caption = "";
-	if(ssDefinitionEntry.getCustomAttributes().get(property_name) != null) {
-		caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
-					(String) ((CustomAttribute) ssDefinitionEntry.getCustomAttributes().get(property_name)).getValue());
-		caption = NLT.getDef(caption);
-	}
+	caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
+			(String) pageContext.getAttribute("captionValue"));
+	caption = NLT.getDef(caption);
 %>
+</c:if>
 <c:set var="caption" value="<%= caption %>"/>
 
 <% //Radio view %>
@@ -60,21 +61,24 @@
     <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
       <c:set var="perUserPropertyName1" value="${property_name}.${perUserUser.name}"/>
       <jsp:useBean id="perUserPropertyName1" type="String" />
+<c:set var="captionValue" value="${ssDefinitionEntry.customAttributes[perUserPropertyName1].value}"/>
+<c:set var="caption" value=""/>
+<% caption = ""; %>
+<c:if test="${!empty captionValue}">
 <%
-	caption = "";
-	if(ssDefinitionEntry.getCustomAttributes().get(perUserPropertyName1) != null) {
-		caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
-					(String) ((CustomAttribute) ssDefinitionEntry.getCustomAttributes().get(perUserPropertyName1)).getValue());
-		caption = NLT.getDef(caption);
-	}
+	caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
+			(String) pageContext.getAttribute("captionValue"));
+	caption = NLT.getDef(caption);
 %>
+</c:if>
+<c:set var="caption" value="<%= caption %>"/>
       <tr>
       <td style="padding-left:10px;">
 		<div class="ss_entryContent"><ssf:showUser user="${perUserUser}"/></div>
 	  </td>
 	  <td style="padding-left:10px;">
 		<span class="${ss_element_display_style_item}">
-	  		<c:out value="<%= caption %>" escapeXml="false"/>
+	  		<c:out value="${caption}" escapeXml="false"/>
 		</span>
       </td>
       </tr>
@@ -107,21 +111,24 @@
     <c:forEach var="perUserUser" items="${ss_userVersionPrincipals}">
       <c:set var="perUserPropertyName2" value="${property_name}.${perUserUser.name}"/>
       <jsp:useBean id="perUserPropertyName2" type="String" />
+<c:set var="captionValue" value="${ssDefinitionEntry.customAttributes[perUserPropertyName2].value}"/>
+<c:set var="caption" value=""/>
+<% caption = ""; %>
+<c:if test="${!empty captionValue}">
 <%
-	caption = "";
-	if (ssDefinitionEntry.getCustomAttributes().get(perUserPropertyName2) != null) {
-		caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
-					(String) ((CustomAttribute) ssDefinitionEntry.getCustomAttributes().get(perUserPropertyName2)).getValue());
-		caption = NLT.getDef(caption);
-	}
+	caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
+			(String) pageContext.getAttribute("captionValue"));
+	caption = NLT.getDef(caption);
 %>
+</c:if>
+<c:set var="caption" value="<%= caption %>"/>
       <tr>
       <td style="padding-left:10px;">
 		<div class="ss_entryContent"><ssf:showUser user="${perUserUser}"/></div>
 	  </td>
 	  <td style="padding-left:10px;">
 		<span class="${ss_element_display_style_item}">
-	  		<c:out value="<%= caption %>" escapeXml="false"/>
+	  		<c:out value="${caption}" escapeXml="false"/>
 		</span>
       </td>
       </tr>

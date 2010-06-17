@@ -69,6 +69,7 @@ import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
@@ -1286,6 +1287,10 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			return new Survey(key);
 		}
 		
+		public Description getDescriptionValue(String key) {
+			return new Description(getSingleValue(key));
+		}
+
 		public boolean exists(String key) {
 			Element result = (Element)source.selectSingleNode("./attribute[@name='" + key + "'] | ./property[@name='" + key + "']");
 			if (result == null) return false;

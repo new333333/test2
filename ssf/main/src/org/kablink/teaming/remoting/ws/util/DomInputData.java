@@ -41,6 +41,7 @@ import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.shared.InputDataAccessor;
@@ -122,6 +123,19 @@ public class DomInputData implements InputDataAccessor {
 		}
 		return null;
 	}
+
+	public Description getDescriptionValue(String key) {
+		Element elem = (Element) root.selectSingleNode("attribute[@name='" + key + "']");
+		
+		if (elem != null) {
+			String text = StringCheckUtil.check(elem.getText());
+			String format = elem.attributeValue("format", String.valueOf(Description.FORMAT_HTML));
+			return new Description(text, Integer.valueOf(format));
+		} else {
+			return null;
+		}
+	}
+
 	public String[] getValues(String key) {
 		List nodes = root.selectNodes("attribute[@name='" + key + "']/value");
 		if(nodes.size() == 0) {

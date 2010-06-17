@@ -42,6 +42,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.shared.InputDataAccessor;
@@ -196,6 +197,10 @@ public class ModelInputData implements InputDataAccessor {
 			return new Survey(textVal);
 		}
 		return null;
+	}
+
+	public Description getDescriptionValue(String key) {
+		return new Description(getSingleValue(key));
 	}
 
 	public String[] getValues(String key) {

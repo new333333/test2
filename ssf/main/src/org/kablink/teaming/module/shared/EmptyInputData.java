@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.web.util.EventHelper;
@@ -72,6 +73,10 @@ public class EmptyInputData implements InputDataAccessor{
 		return null;
 	}
 	
+	public Description getDescriptionValue(String key) {
+		return null;
+	}
+
 	public boolean exists(String key) {
 		return false;
 	}

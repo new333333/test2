@@ -1283,17 +1283,31 @@ public class ExportHelper {
 						// check actual entity type of the data in the xml file
 						if (entType.equals("entry")) {
 							if (parentId == null) {
-								folder_addEntryWithXML(null, newBinderId, topBinderId,
+								try {
+									folder_addEntryWithXML(null, newBinderId, topBinderId,
 										def, xmlStr, tempDir, entryIdMap, binderIdMap, 
 										definitionIdMap, entryId, statusTicket, reportMap, nameCache);
 							
-								Integer count = (Integer)reportMap.get(entries);
-								reportMap.put(entries, ++count);
+									Integer count = (Integer)reportMap.get(entries);
+									reportMap.put(entries, ++count);
+								} catch(Exception e) {
+									Integer c = (Integer)reportMap.get(errors);
+									reportMap.put(errors, ++c);
+									((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
+									logger.error(e);
+								}
 							} else {
 								Long newParentId = (Long) entryIdMap.get(parentId);
-								folder_addReplyWithXML(null, newBinderId, topBinderId,
-										newParentId, def, xmlStr, tempDir, entryIdMap, binderIdMap, 
-										definitionIdMap, entryId, reportMap, nameCache);
+								try {
+									folder_addReplyWithXML(null, newBinderId, topBinderId,
+											newParentId, def, xmlStr, tempDir, entryIdMap, binderIdMap, 
+											definitionIdMap, entryId, reportMap, nameCache);
+								} catch(Exception e) {
+									Integer c = (Integer)reportMap.get(errors);
+									reportMap.put(errors, ++c);
+									((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
+									logger.error(e);
+								}
 							}
 						}
 					}
@@ -1336,11 +1350,18 @@ public class ExportHelper {
 
 						// check actual entity type of the data in the xml file
 						if (entType.equals("workspace")) {
-							binder_addBinderWithXML(null, newParentId, def,
-									xmlStr, binderId, topBinderId, binderIdMap, definitionIdMap, tempDir, reportMap,
-									statusTicket, nameCache);
-							Integer count = (Integer)reportMap.get(workspaces);
-							reportMap.put(workspaces, ++count);
+							try {
+								binder_addBinderWithXML(null, newParentId, def,
+										xmlStr, binderId, topBinderId, binderIdMap, definitionIdMap, tempDir, reportMap,
+										statusTicket, nameCache);
+								Integer count = (Integer)reportMap.get(workspaces);
+								reportMap.put(workspaces, ++count);
+							} catch(Exception e) {
+								Integer c = (Integer)reportMap.get(errors);
+								reportMap.put(errors, ++c);
+								((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
+								logger.error(e);
+							}
 						}
 					}
 
@@ -1388,12 +1409,18 @@ public class ExportHelper {
 
 						// check actual entity type of the data in the xml file
 						if (entType.equals("folder")) {
-							binder_addBinderWithXML(null, newParentId, def,
-									xmlStr, binderId, topBinderId, binderIdMap, definitionIdMap, tempDir, reportMap, 
-									statusTicket, nameCache);
-							Integer count = (Integer)reportMap.get(folders);
-							reportMap.put(folders, ++count);
-
+							try {
+								binder_addBinderWithXML(null, newParentId, def,
+										xmlStr, binderId, topBinderId, binderIdMap, definitionIdMap, tempDir, reportMap, 
+										statusTicket, nameCache);
+								Integer count = (Integer)reportMap.get(folders);
+								reportMap.put(folders, ++count);
+							} catch(Exception e) {
+								Integer c = (Integer)reportMap.get(errors);
+								reportMap.put(errors, ++c);
+								((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
+								logger.error(e);
+							}
 						}
 					}
 				}
@@ -1660,7 +1687,11 @@ public class ExportHelper {
 						return null;
 					}
 				});
-			} catch(Exception e) {}
+			} catch(Exception e) {
+				Integer c = (Integer)reportMap.get(errors);
+				reportMap.put(errors, ++c);
+				((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
+			}
 
 			return newEntryId;
 		} catch (WriteFilesException e) {

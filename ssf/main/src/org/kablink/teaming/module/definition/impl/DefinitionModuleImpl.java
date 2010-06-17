@@ -1928,9 +1928,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		//We have the element name, see if it has a value in the input data
 		if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
 			if (inputData.exists(nameValue)) {
-				Description description = new Description();
-				String text = mapInputData(inputData.getSingleValue(nameValue));
-				if (SPropsUtil.getBoolean("HTML.validate", true)) {
+				Description description = inputData.getDescriptionValue(nameValue);
+				String text = mapInputData(description.getText());
+				if (SPropsUtil.getBoolean("HTML.validate", true) && description.getFormat() == Description.FORMAT_HTML) {
 					ByteArrayInputStream sr = new ByteArrayInputStream(text.getBytes());
 					ByteArrayOutputStream sw = new ByteArrayOutputStream();
 					TidyMessageListener tml = new TidyMessageListener();
@@ -1972,20 +1972,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					org.w3c.dom.Document doc = tidy.parseDOM(sr, sw);
 					if (tml.isErrors() || tidy.getParseErrors() > 0) {
 						entryDataErrors.addProblem(new Problem(Problem.INVALID_HTML, null));
+						description.setText("");
 					} else {
 						description.setText(sw.toString());
-						String format = inputData.getSingleValue(nameValue + ".format");
-						if (format != null) {
-							description.setFormat(Integer.valueOf(format));
-						}
 					}
 				} else {
 					//HTML validation is turned off, just use whatever the user passed in
 					description.setText(text);
-					String format = inputData.getSingleValue(nameValue + ".format");
-					if (format != null) {
-						description.setFormat(Integer.valueOf(format));
-					}
 				}
 				//Deal with any markup language transformations before storing the description
 				MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
