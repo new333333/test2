@@ -522,6 +522,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		
 		// Show the search panel.
 		m_searchPanel.setVisible(true);
+		m_soButton.setVisible(true);
 		
 		// Hide the Close administration menu item.
 		m_closeAdminBox.setVisible(false);
@@ -564,6 +565,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		
 		// Hide the search panel.
 		m_searchPanel.setVisible(false);
+		m_soButton.setVisible(false);
 		
 		// Show the Close administration menu item.
 		m_closeAdminBox.setVisible(true);
