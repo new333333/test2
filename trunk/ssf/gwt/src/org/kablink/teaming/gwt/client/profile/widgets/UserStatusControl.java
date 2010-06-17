@@ -212,8 +212,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 
 				//Get the text from the input widget and set the status text field
 				statusText.setText(status);
-				Date date = new Date();
-				setTime(date);
+				setTime(new Date(), new Date());
 				
 				//clear the input field once the statusText has been populated...
 				input.setText("");
@@ -292,7 +291,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 					if(description != null && !description.equals("")){
 						statusText.setText(description);
 						//show time
-						setTime(result.getModifyDate());
+						setTime(result.getModifyDate(), result.getCurrentDate());
 						showStatus(true);
 					} else {
 						//Set the visibility of the status text, time and clear link
@@ -451,15 +450,15 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
     /**
      * Set the time
      * @param modifyDate
+     * @param date 
      */
-    private void setTime(Date modifyDate) {
+    private void setTime(Date modifyDate, Date currentDate) {
     	
     	long sec = 1000;
     	long min = 60 * sec;
     	long hour = 60 * min;
     	long day = 24 * hour;
     	
-		Date currentDate = new Date();
 		long currentTime = currentDate.getTime();
 		long modifyTime = modifyDate.getTime();
 		long diffTime = currentTime - modifyTime;

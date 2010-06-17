@@ -538,6 +538,7 @@ public class GwtProfileHelper {
 			userStatus.setMiniBlogId(statusUser.getMiniBlogId());
 			userStatus.setStatus(description);
 			userStatus.setModifyDate(modifyDate);
+			userStatus.setCurrentDate(new Date());
 		}
 		
 		return userStatus;
