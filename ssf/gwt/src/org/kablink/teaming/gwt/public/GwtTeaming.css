@@ -312,7 +312,7 @@ body, table td, select
 /* Style used for an item in a search result list. */
 .findSearchResultItemWidget
 {
-	margin-bottom: .65em;
+	margin-bottom: .25em;
 	margin-left: .5em;
 	margin-right: .5em;
 	white-space: nowrap;
@@ -914,7 +914,7 @@ body, table td, select
 	font-weight: bold;
 	letter-spacing: 0.05em;
 	padding-left: 6px;
-	padding-right: 2em;
+	padding-right: 1em;
 }
 .mainMenuButton_WidgetAnchor
 {
@@ -974,7 +974,7 @@ body, table td, select
 	color: #414648; /* dark grey */
 	font-size: 0.73em;
 	font-weight: normal;
-	padding: 3px 8px;
+	padding: 3px 6px;
 	vertical-align: top;
 	white-space: nowrap;
 }
