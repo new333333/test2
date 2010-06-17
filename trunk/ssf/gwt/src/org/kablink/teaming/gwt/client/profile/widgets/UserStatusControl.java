@@ -59,6 +59,9 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		statusText.setText(userStatus);
 		statusText.setWordWrap(true);
 		statusText.setStyleName("user_status_text");
+		if(GwtClientHelper.jsIsIE()){
+			statusText.addStyleName("user_status_textIE");
+		}
 		mainPanel.add(statusText);
 		
 		timeLabel = new InlineLabel();
@@ -88,6 +91,10 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		input.setVisibleLines(ONE_LINE);
 		input.setText(GwtTeaming.getMessages().statusMessage());
 		input.setStyleName("user_status_input");
+		if(GwtClientHelper.jsIsIE()){
+			input.addStyleName("user_status_inputIE");
+		}
+		
 		updatePanel.add(input);
 		
 		mainPanel.add(updatePanel);
