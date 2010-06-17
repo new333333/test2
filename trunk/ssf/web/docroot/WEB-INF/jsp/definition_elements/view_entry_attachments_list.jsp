@@ -63,7 +63,7 @@
 </c:if>
 <c:if test="${!empty primaryFileId}">
   <c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" >
-    <c:if test="${selection.id == primaryFileId}">
+    <c:if test="${1 == 0 && selection.id == primaryFileId}">
       <c:set var="ss_attachedFileSelection" value="${selection}" scope="request"/>
       <c:set var="ss_attachedFileRowClass" value="ss_attachments_list_primary_file" scope="request"/>
       <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachments_list_item.jsp" />
