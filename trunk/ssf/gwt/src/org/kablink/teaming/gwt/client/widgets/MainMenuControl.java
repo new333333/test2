@@ -449,6 +449,20 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 			});
 		m_contextPanel.add(topRankedBox);
 	}
+
+	/**
+	 * Called to remove the context based menu items (Workspace,
+	 * Folder, ...) from the menu bar.
+	 * 
+	 * This is typically done immediately before a known context switch
+	 * so that invalid menu items (i.e., those based on a previous
+	 * context) are not available until the new context fully loads.
+	 */
+	public void clearContextMenus() {
+		if (null != m_contextPanel) {
+			m_contextPanel.clear();
+		}
+	}
 	
 	/**
 	 * Called when a new context has been loaded into the content panel
@@ -468,7 +482,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 */
 	public void contextLoaded(final String binderId, final boolean inSearch, final String searchTabId) {
 		// Rebuild the context based panel based on the new context.
-		m_contextPanel.clear();
+		clearContextMenus();
 		GwtTeaming.getRpcService().getBinderInfo(binderId, new AsyncCallback<BinderInfo>() {
 			public void onFailure(Throwable t) {
 				m_contextBinder = null;

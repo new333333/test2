@@ -743,10 +743,12 @@ public class GwtMainPage extends Composite
 			
 		case MY_WORKSPACE:
 			// Change the browser's URL.
+			m_mainMenuCtrl.clearContextMenus();
 			gotoUrl( m_requestInfo.getMyWorkspaceUrl(), true );
 			break;
 			
 		case SELECTION_CHANGED:
+			m_mainMenuCtrl.clearContextMenus();
 			selectionChanged( obj );
 			break;
 		
@@ -771,10 +773,12 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case GOTO_CONTENT_URL:
+			m_mainMenuCtrl.clearContextMenus();
 			gotoUrl( obj, false );
 			break;
 
 		case GOTO_PERMALINK_URL:
+			m_mainMenuCtrl.clearContextMenus();
 			gotoUrl( obj, true );
 			break;
 
@@ -791,22 +795,27 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case SIMPLE_SEARCH:
+			m_mainMenuCtrl.clearContextMenus();
 			simpleSearch( obj );
 			break;
 			
 		case ADVANCED_SEARCH:
+			m_mainMenuCtrl.clearContextMenus();
 			advancedSearch();
 			break;
 			
 		case SAVED_SEARCH:
+			m_mainMenuCtrl.clearContextMenus();
 			savedSearch( obj );
 			break;
 			
 		case RECENT_PLACE_SEARCH:
+			m_mainMenuCtrl.clearContextMenus();
 			recentPlaceSearch( obj );
 			break;
 			
 		case TAG_SEARCH:
+			m_mainMenuCtrl.clearContextMenus();
 			tagSearch( obj );
 			break;
 			
