@@ -219,18 +219,7 @@ height: 95px;
 font-size:0.8em;
 white-space:nowrap;
 }
-.user_status {
-}
-.user_status_text {
-margin: 0;
-display:inline;
-}
-.user_status_time  {
-color:#666666;
-font-size:10px;
-padding-right:10px;
-white-space:nowrap;
-}
+
 .marginleft1  {
 margin-left:1em;
 }
@@ -242,15 +231,28 @@ text-decoration:none;
 float: right;
 margin-right:13px;
 }
+.user_status {
+}
+.user_status_text {
+margin: 0;
+display:inline;
+font-size: 14px;
+}
+.user_status_time  {
+color:#666666;
+font-size:10px;
+padding-right:10px;
+white-space:nowrap;
+}
 .user_status_input {
 margin-top: 0.5em;
 width: 500px;
 }
-.user_status_update {
-}
 .user_status_info {
 margin-top: 2px;
 width: 520px;
+}
+.user_status_update {
 }
 .user_status_textAmount {
 margin-right: 0.25em;
