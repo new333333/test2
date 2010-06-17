@@ -87,10 +87,15 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
     onMouseOut="ss_hoverOverTabStopped('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');"
     onClick="ss_showTab('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');">
     <ssf:nlt tag="__entry_attachments"/>
-    <span class="ss_smallprint">(${fn:length(ssDefinitionEntry.fileAttachments)})</span>
+    <c:if test="${empty ssPrimaryFileAttribute}">
+      <span class="ss_smallprint">(${fn:length(ssDefinitionEntry.fileAttachments)})</span>
+    </c:if>
+    <c:if test="${!empty ssPrimaryFileAttribute && !empty ssDefinitionEntry.fileAttachments}">
+      <span class="ss_smallprint">(${fn:length(ssDefinitionEntry.fileAttachments) - 1})</span>
+    </c:if>
   </div>
   </td>
-  <c:if test="${!empty ssDefinitionEntry.fileAttachments && fn:length(ssDefinitionEntry.fileAttachments) > 1}">
+  <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
   <td valign="middle" width="1%" nowrap>
   <div id="viewFileVersions${ss_tabDivCount}Tab" 
     class="wg-tab roundcornerSM" 
