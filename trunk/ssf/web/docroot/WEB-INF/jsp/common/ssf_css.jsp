@@ -1963,7 +1963,7 @@ div.ss_sidebar_panel_featured {
 	padding-right: 5px;
 	}
 .ss_title_bar {
-	background-image: url(<html:imagesPath/>roundcorners3/background_dc_bar.jpg);
+	background-image: url(<html:imagesPath/>roundcorners3/background_dc_bar.png);
 	color: #333333;
 	margin:0px;
 	padding-bottom: 4px;
@@ -1977,13 +1977,13 @@ div.ss_sidebar_panel_featured {
 	white-space: nowrap;
 	}		
 .ss_title_bar_inner1 {
-	background:url(<html:imagesPath/>roundcorners3/corner1.gif) no-repeat left;
-	height:24px;
+	background:url(<html:imagesPath/>roundcorners3/corner1.png) no-repeat left;
+	height:30px;
 	width:8px;
 	}		
 .ss_title_bar_inner2 {
-	background:url(<html:imagesPath/>roundcorners3/corner2.gif) no-repeat right;
-	height:24px;
+	background:url(<html:imagesPath/>roundcorners3/corner2.png) no-repeat right;
+	height:30px;
 	width:8px;
 	}
 .ss_title_bar strong {
@@ -1997,7 +1997,7 @@ div.ss_sidebar_panel_featured {
 .ss_title_bar_icons {
 	float:right;
 	margin:0px;
-padding:1px 0px 0px 10px;
+	padding:1px 0px 0px 10px;
 	cursor:auto;
 }
 .ss_title_bar_icons li {
