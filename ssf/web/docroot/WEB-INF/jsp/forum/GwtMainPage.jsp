@@ -50,7 +50,7 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
-    <title>GwtTeaming</title>
+    <title>${ssProductName}</title>
     
 	<script type="text/javascript" src="<html:tinyMcePath/>tiny_mce.js"></script>
 	

@@ -301,7 +301,14 @@ public class GwtMainPage extends Composite
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::invokeSimpleProfile(Lcom/google/gwt/user/client/Element;Ljava/lang/String;Ljava/lang/String;)( element, binderId, userName );
 		}//end ss_invokeSimpleProfile
 	}-*/;	
-	
+
+	/*
+	 * Copies the <title> text from the GWT content IFRAME to the
+	 * main GWT page's <title>.
+	 */
+	private static native void jsFixupGwtMainTitle() /*-{
+		$wnd.top.document.title = $wnd.top.gwtContentIframe.document.title;
+	}-*/;
 	
 	/**
 	 * This method will close the administration content panel.
@@ -335,6 +342,8 @@ public class GwtMainPage extends Composite
 	{
 		m_inSearch    = inSearch;
 		m_searchTabId = searchTabId;
+		
+		jsFixupGwtMainTitle();
 		
 		final boolean forceSidebarReload = m_requestInfo.forceSidebarReload();
 		if (forceSidebarReload) {
@@ -1072,7 +1081,7 @@ public class GwtMainPage extends Composite
 			private native void jsToggleGwtUI()
 			/*-{
 				// Toggle the GWT UI state.
-				window.top.ss_toggleGwtUI( false );
+				$wnd.top.ss_toggleGwtUI( false );
 			}-*/; // end jsToggleGwtUI()
 
 			private native void jsLoadUserWorkspaceURL( String userWorkspaceURL )
@@ -1080,7 +1089,7 @@ public class GwtMainPage extends Composite
 				// Give the GWT UI state toggling 1/2
 				// second to complete and reload the user
 				// workspace.
-				window.setTimeout( function(){window.top.location.href = userWorkspaceURL;}, 500 );
+				$wnd.setTimeout( function(){$wnd.top.location.href = userWorkspaceURL;}, 500 );
 			}-*/; // end jsLoadUserWorkspace()
 		});// end AsyncCallback()
 	}// end toggleGwtUI()
@@ -1457,5 +1466,4 @@ public class GwtMainPage extends Composite
 		};
 		dlg.setPopupPositionAndShow( posCallback );
 	}
-	
 }// end GwtMainPage
