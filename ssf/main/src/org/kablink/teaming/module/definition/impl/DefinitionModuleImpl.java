@@ -1929,64 +1929,66 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
 			if (inputData.exists(nameValue)) {
 				Description description = inputData.getDescriptionValue(nameValue);
-				String text = mapInputData(description.getText());
-				if (SPropsUtil.getBoolean("HTML.validate", true) && description.getFormat() == Description.FORMAT_HTML) {
-					ByteArrayInputStream sr = new ByteArrayInputStream(text.getBytes());
-					ByteArrayOutputStream sw = new ByteArrayOutputStream();
-					TidyMessageListener tml = new TidyMessageListener();
-					Tidy tidy = new Tidy();
-					tidy.setQuiet(true);
-					tidy.setShowWarnings(false);
-					tidy.setMessageListener(tml);
-					tidy.setPrintBodyOnly(true);
-					tidy.setFixUri(false);
-					tidy.setFixComments(false);
-					tidy.setAsciiChars(false);
-					tidy.setBreakBeforeBR(false);
-					tidy.setBurstSlides(false);
-					tidy.setDropEmptyParas(false);
-					tidy.setDropFontTags(false);
-					tidy.setDropProprietaryAttributes(false);
-					tidy.setEncloseBlockText(false);
-					tidy.setEncloseText(false);
-					tidy.setIndentAttributes(false);
-					tidy.setIndentCdata(false);
-					tidy.setIndentContent(false);
-					tidy.setLiteralAttribs(true);
-					tidy.setLogicalEmphasis(false);
-					tidy.setLowerLiterals(false);
-					tidy.setMakeClean(false);
-					tidy.setMakeBare(false);
-					tidy.setInputEncoding("UTF8");
-					tidy.setOutputEncoding("UTF8");
-					tidy.setRawOut(true);
-					tidy.setSmartIndent(false);
-					tidy.setTidyMark(false);
-					tidy.setWrapAsp(false);
-					tidy.setWrapAttVals(false);
-					tidy.setWrapJste(false);
-					tidy.setWrapPhp(false);
-					tidy.setWrapScriptlets(false);
-					tidy.setWrapSection(false);
-					tidy.setWraplen(1000000);
-					org.w3c.dom.Document doc = tidy.parseDOM(sr, sw);
-					if (tml.isErrors() || tidy.getParseErrors() > 0) {
-						entryDataErrors.addProblem(new Problem(Problem.INVALID_HTML, null));
-						description.setText("");
+				if (description != null) {
+					String text = mapInputData(description.getText());
+					if (SPropsUtil.getBoolean("HTML.validate", true) && description.getFormat() == Description.FORMAT_HTML) {
+						ByteArrayInputStream sr = new ByteArrayInputStream(text.getBytes());
+						ByteArrayOutputStream sw = new ByteArrayOutputStream();
+						TidyMessageListener tml = new TidyMessageListener();
+						Tidy tidy = new Tidy();
+						tidy.setQuiet(true);
+						tidy.setShowWarnings(false);
+						tidy.setMessageListener(tml);
+						tidy.setPrintBodyOnly(true);
+						tidy.setFixUri(false);
+						tidy.setFixComments(false);
+						tidy.setAsciiChars(false);
+						tidy.setBreakBeforeBR(false);
+						tidy.setBurstSlides(false);
+						tidy.setDropEmptyParas(false);
+						tidy.setDropFontTags(false);
+						tidy.setDropProprietaryAttributes(false);
+						tidy.setEncloseBlockText(false);
+						tidy.setEncloseText(false);
+						tidy.setIndentAttributes(false);
+						tidy.setIndentCdata(false);
+						tidy.setIndentContent(false);
+						tidy.setLiteralAttribs(true);
+						tidy.setLogicalEmphasis(false);
+						tidy.setLowerLiterals(false);
+						tidy.setMakeClean(false);
+						tidy.setMakeBare(false);
+						tidy.setInputEncoding("UTF8");
+						tidy.setOutputEncoding("UTF8");
+						tidy.setRawOut(true);
+						tidy.setSmartIndent(false);
+						tidy.setTidyMark(false);
+						tidy.setWrapAsp(false);
+						tidy.setWrapAttVals(false);
+						tidy.setWrapJste(false);
+						tidy.setWrapPhp(false);
+						tidy.setWrapScriptlets(false);
+						tidy.setWrapSection(false);
+						tidy.setWraplen(1000000);
+						org.w3c.dom.Document doc = tidy.parseDOM(sr, sw);
+						if (tml.isErrors() || tidy.getParseErrors() > 0) {
+							entryDataErrors.addProblem(new Problem(Problem.INVALID_HTML, null));
+							description.setText("");
+						} else {
+							description.setText(sw.toString());
+						}
 					} else {
-						description.setText(sw.toString());
+						//HTML validation is turned off, just use whatever the user passed in
+						description.setText(text);
 					}
-				} else {
-					//HTML validation is turned off, just use whatever the user passed in
-					description.setText(text);
+					//Deal with any markup language transformations before storing the description
+					MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
+					MarkupUtil.scanDescriptionForAttachmentFileUrls(description);
+					MarkupUtil.scanDescriptionForICLinks(description);
+					MarkupUtil.scanDescriptionForYouTubeLinks(description);
+					MarkupUtil.scanDescriptionForExportTitleUrls(description);
+					if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, description);
 				}
-				//Deal with any markup language transformations before storing the description
-				MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
-				MarkupUtil.scanDescriptionForAttachmentFileUrls(description);
-				MarkupUtil.scanDescriptionForICLinks(description);
-				MarkupUtil.scanDescriptionForYouTubeLinks(description);
-				MarkupUtil.scanDescriptionForExportTitleUrls(description);
-				if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, description);
 			}
 		} else if (itemName.equals("folderBranding") || itemName.equals("workspaceBranding")) {
 			if (inputData.exists(nameValue)) {
