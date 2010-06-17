@@ -13,6 +13,7 @@ public class UserStatus implements IsSerializable{
 	
 	private String status;
 	private Date modifyDate;
+	private Date currentDate;
 	private Long miniBlogId;
 	
 	public UserStatus() {};
@@ -37,5 +38,11 @@ public class UserStatus implements IsSerializable{
 
 	public Long getMiniBlogId() {
 		return miniBlogId;
+	}
+	public Date getCurrentDate() {
+		return currentDate;
+	}
+	public void setCurrentDate(Date currentDate) {
+		this.currentDate = currentDate;
 	}
 }
