@@ -36,11 +36,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import org.hibernate.FetchMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.StaleObjectStateException;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
@@ -265,26 +267,50 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
             final Long workAreaId, final String workAreaType, 
             final String workAreaOperationName) {
 		long begin = System.currentTimeMillis();
-		try {
-	    	List matches = (List) getHibernateTemplate().execute(
-	                new HibernateCallback() {
-	                    public Object doInHibernate(Session session) throws HibernateException {
-	                        // The following query performs 4 table joins in a single SQL query.
-	                        return session.getNamedQuery("get-WorkAreaFunctionMembershipByOperation")
-	                       		.setLong(ZONE_ID, zoneId)
-	                            .setLong(WORK_AREA_ID, workAreaId.longValue())
-	                        	.setString(WORK_AREA_TYPE, workAreaType)
-	                        	.setString(WORK_AREA_OPERATION_NAME, workAreaOperationName)
-	                         	.setCacheable(true)
-	                         	.list();
-	                    }
-	                }
-	            );
-	    	return matches;
-    	}
-    	finally {
-    		end(begin, "findWorkAreaFunctionMembershipsByOperation(Long,Long,String,String)");
-    	}
+		
+		int retryCount = 0;
+		//The loop will retry up to 2 times if it fails the first time
+		while(retryCount < 3) {
+			try {
+		    	List matches = (List) getHibernateTemplate().execute(
+		                new HibernateCallback() {
+		                    public Object doInHibernate(Session session) throws HibernateException {
+		                        // The following query performs 4 table joins in a single SQL query.
+		                        return session.getNamedQuery("get-WorkAreaFunctionMembershipByOperation")
+		                       		.setLong(ZONE_ID, zoneId)
+		                            .setLong(WORK_AREA_ID, workAreaId.longValue())
+		                        	.setString(WORK_AREA_TYPE, workAreaType)
+		                        	.setString(WORK_AREA_OPERATION_NAME, workAreaOperationName)
+		                         	.setCacheable(true)
+		                         	.list();
+		                    }
+		                }
+		            );
+		    	return matches;
+	    	} catch (org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException ol) {
+				++retryCount;
+				if (retryCount >= 3) {
+					throw ol;
+				}
+				try {
+					//wait a couple .2 ms
+					Thread.sleep(200);
+				} catch (InterruptedException e) {}
+			} catch (StaleObjectStateException os) {
+				++retryCount;
+				if (retryCount >= 3) {
+					throw os;
+				}
+				try {
+					//wait a couple .2 ms
+					Thread.sleep(200);
+				} catch (InterruptedException e) {}
+			}
+	    	finally {
+	    		end(begin, "findWorkAreaFunctionMembershipsByOperation(Long,Long,String,String)");
+	    	}
+		}
+		return null;
     }
     
     public List findWorkAreaByOperation(final Long zoneId,
