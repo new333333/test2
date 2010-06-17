@@ -302,7 +302,7 @@
 			<name>entry</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>org.kablink.teaming.domain.DefinableEntity</type>
+			<type>java.lang.Object</type>
 		</attribute>		
 		<attribute>
 			<name>processThisItem</name>

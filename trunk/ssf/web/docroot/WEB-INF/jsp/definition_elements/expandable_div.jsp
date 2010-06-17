@@ -43,6 +43,7 @@
 <ssf:expandableArea title="${property_caption}">
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
-  configJspStyle="${ssConfigJspStyle}" />
+  configJspStyle="${ssConfigJspStyle}"
+  entry="${ssDefinitionEntry}" />
 </ssf:expandableArea>
 

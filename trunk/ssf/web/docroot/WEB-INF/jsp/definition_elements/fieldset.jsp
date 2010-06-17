@@ -51,7 +51,8 @@
 <c:set var="ss_element_display_style" value="" scope="request"/>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
-  configJspStyle="${ssConfigJspStyle}" />
+  configJspStyle="${ssConfigJspStyle}" 
+  entry="${ssDefinitionEntry}" />
 <c:set var="ss_element_display_style" value="${ss_element_display_style_saved_fieldset}" scope="request"/>
 </fieldset>
 </div>

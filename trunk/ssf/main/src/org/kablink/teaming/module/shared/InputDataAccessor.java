@@ -35,6 +35,7 @@ package org.kablink.teaming.module.shared;
 import java.util.Date;
 import java.util.Set;
 
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.survey.Survey;
 
@@ -106,6 +107,8 @@ public interface InputDataAccessor {
 	public int getCount();
 
 	public Survey getSurveyValue(String nameValue);
+	
+	public Description getDescriptionValue(String key);
 	
 	/**
 	 * Mark this as limited to fields only as specified in the definition file

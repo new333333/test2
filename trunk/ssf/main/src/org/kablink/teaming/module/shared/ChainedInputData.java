@@ -38,6 +38,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.survey.Survey;
 
@@ -115,6 +116,16 @@ public class ChainedInputData implements InputDataAccessor {
 		Survey value = null;
 		for(InputDataAccessor accessor : chainedAccessors) {
 			value = accessor.getSurveyValue(nameValue);
+			if(value != null)
+				return value;
+		}
+		return null;
+	}
+
+	public Description getDescriptionValue(String key) {
+		Description value = null;
+		for(InputDataAccessor accessor : chainedAccessors) {
+			value = accessor.getDescriptionValue(key);
 			if(value != null)
 				return value;
 		}

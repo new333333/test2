@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.web.util.DateHelper;
@@ -88,6 +89,17 @@ public class MapInputData implements InputDataAccessor {
 			return null;
 		}
 		return new Survey(stringValue);
+	}
+
+	public Description getDescriptionValue(String key) {
+		if(source.containsKey(key) && source.get(key) instanceof Description) {
+			return (Description) source.get(key);
+		}
+		String stringValue = this.getSingleValue(key);
+		if (stringValue == null || "".equals(stringValue)) {
+			return null;
+		}
+		return new Description(stringValue);
 	}
 
 	public String[] getValues(String key) {

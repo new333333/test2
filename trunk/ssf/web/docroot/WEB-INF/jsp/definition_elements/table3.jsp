@@ -52,8 +52,11 @@
 				Element tdItem1 = (Element) itItems.next();
 %>
 <td>
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="<%= tdItem1 %>" configJspStyle="${ssConfigJspStyle}" 
+<ssf:displayConfiguration 
+  configDefinition="${ssConfigDefinition}" 
+  configElement="<%= tdItem1 %>" 
+  configJspStyle="${ssConfigJspStyle}" 
+  entry="${ssDefinitionEntry}"
   processThisItem="true" />
 </td>
 <%
@@ -62,8 +65,11 @@
 					Element tdItem2 = (Element) itItems.next();
 %>
 <td>
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="<%= tdItem2 %>" configJspStyle="${ssConfigJspStyle}" 
+<ssf:displayConfiguration 
+  configDefinition="${ssConfigDefinition}" 
+  configElement="<%= tdItem2 %>" 
+  configJspStyle="${ssConfigJspStyle}" 
+  entry="${ssDefinitionEntry}"
   processThisItem="true" />
 </td>
 <%
@@ -78,8 +84,11 @@
 					Element tdItem3 = (Element) itItems.next();
 %>
 <td>
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="<%= tdItem3 %>" configJspStyle="${ssConfigJspStyle}" 
+<ssf:displayConfiguration 
+  configDefinition="${ssConfigDefinition}" 
+  configElement="<%= tdItem3 %>" 
+  configJspStyle="${ssConfigJspStyle}" 
+  entry="${ssDefinitionEntry}"
   processThisItem="true" />
 </td>
 <%

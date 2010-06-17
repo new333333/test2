@@ -55,7 +55,8 @@ ss_html_element_map.put(ss_html_element.toString(), property_htmlBottom);
 <c:out value="${property_htmlTop}" escapeXml="false"/>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
-  configJspStyle="${ssConfigJspStyle}" />
+  configJspStyle="${ssConfigJspStyle}"
+  entry="${ssDefinitionEntry}" />
 <c:out value="<%= ss_html_element_map.get(ss_html_element.toString()) %>" escapeXml="false"/>
 <c:set var="ss_html_element" value="${ss_html_element - 1}" scope="request"/>
 <c:if test="${!empty ss_element_display_style && 

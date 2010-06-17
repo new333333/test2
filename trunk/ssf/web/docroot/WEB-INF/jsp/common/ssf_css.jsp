@@ -1332,6 +1332,9 @@ table.ss_attachments_list td.ss_att_meta, .ss_att_meta {
 	padding-left: 5px;
 	color: ${ss_style_metadata_color};
 	}
+tr.ss_attachments_list_primary_file, tr.ss_attachments_list_primary_file td {
+    background-color: #cccccc;
+}
 .ss_att_meta_wrap {
 	font-size: 10px !important;
 	padding-left: 5px;
