@@ -49,7 +49,7 @@
 <c:set var="binderId" value="${ssDefinitionEntry.id}" />
 <c:set var="myWorkspaceId" value="${ssUser.workspaceId}" />
 
-<div class="ss_myStatusFrame <c:if test="${binderId == myWorkspaceId}">ss_myStatusHeight</c:if>" id="${ss_statusId}" >
+<div class="ss_myStatusFrame" id="${ss_statusId}" >
     <%@ include file="/WEB-INF/jsp/profile/user_status2.jsp" %>
   </div>
 </c:if>
