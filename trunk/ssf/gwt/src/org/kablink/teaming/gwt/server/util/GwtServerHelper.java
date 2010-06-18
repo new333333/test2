@@ -1722,7 +1722,9 @@ public class GwtServerHelper {
 		List allSubBinders = binder.getBinders();
 		for (Iterator bi = allSubBinders.iterator(); bi.hasNext(); ) {
 			Binder subBinder = ((Binder) bi.next());
-			if ((!(isBinderPreDeleted(subBinder))) && bs.getBinderModule().testAccess(subBinder, BinderOperation.readEntries)) {
+			if ((!(isBinderPreDeleted(subBinder))) && 
+					(bs.getBinderModule().testAccess(subBinder, BinderOperation.readEntries) || 
+					bs.getBinderModule().testAccess(subBinder, BinderOperation.viewBinderTitle))) {
 				reply.add(0, subBinder);
 			}
 		}
