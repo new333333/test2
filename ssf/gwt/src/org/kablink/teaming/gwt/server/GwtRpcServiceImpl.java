@@ -338,13 +338,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					Map<String,String> entry;
 					GwtFolder folder;
 					String folderId;
+					String folderTitle;
 
 					// Get the next folder in the search results.
 					entry = (Map) it.next();
 
 					// Pull information about this folder from the search results.
 					folderId = entry.get( "_docId" );
-					folder = getFolder( null, folderId );
+					folderTitle = entry.get( "_extendedTitle" );
+					folder = getFolderImpl( null, folderId, folderTitle );
 					if ( folder != null )
 						results.add( folder );
 				}
@@ -992,6 +994,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public GwtFolder getFolder( String zoneUUID, String folderId ) throws GwtTeamingException
 	{
+		return getFolderImpl( zoneUUID, folderId, null );
+	}
+	
+	private GwtFolder getFolderImpl( String zoneUUID, String folderId, String folderTitle ) throws GwtTeamingException
+	{
 		BinderModule binderModule;
 		Binder binder = null;
 		GwtFolder folder = null;
@@ -1032,7 +1039,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			{
 				String url;
 
-				folder.setFolderName( binder.getTitle() );
+				folder.setFolderName( MiscUtil.hasString( folderTitle ) ? folderTitle : binder.getTitle() );
 			
 				parentBinder = binder.getParentBinder();
 				if ( parentBinder != null )
