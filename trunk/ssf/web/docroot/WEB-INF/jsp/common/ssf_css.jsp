@@ -411,12 +411,13 @@ div.ss_editorHints {
 }
 
 .ss_entryTitle {
+  display: block;
   font-weight: normal;
   font-size: ${ss_style_font_largerprint};
   font-family: ${ss_style_title_font_family};
-  margin-bottom: 10px;
-  margin-top: 4px;
-  margin-left: 15px; 
+  margin-top: -30px;
+  margin-left: 5px;
+  margin-right: 130px;
   }
 .ss_entryTitleFile {
   font-weight: normal;
@@ -442,7 +443,7 @@ div.ss_editorHints {
   	font-style: normal !important;
   	}
 div.ss_entryContent a {
-  	color:#5A9A98!important;
+  	color:#5601A6!important;
 	}
 div.ss_entryContent a:hover {
   	text-decoration:underline;
@@ -478,7 +479,7 @@ div.ss_entryDescription ol li {
     list-style-type: decimal;
 	}
 div.ss_entryDescription a {
-  	color:#5A9A98!important;
+  	color:#5601A6!important;
 	}
 div.ss_entryDescription a:hover {
   	text-decoration:underline;
@@ -608,7 +609,7 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
   font-family: Arial, sans-serif;
   white-space: nowrap;
   text-decoration: none !important;
-  border: 1px solid #5A9A98;
+  border: 1px solid #5601A6;
   background-image: url(<html:imagesPath/>pics/background_inline_button_blue.gif);
   background-repeat: repeat-x;
 	}	
@@ -649,7 +650,7 @@ input.ss_submit:hover, input.ss_linkButton:hover, a.ss_linkButton:hover {
 input.ss_tinyButton, a.ss_tinyButton:link, a.ss_tinyButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
  	font-size: ${ss_style_font_fineprint};
-    border: 1px solid #5A9A98;
+    border: 1px solid #5601A6;
     background-image: url(<html:imagesPath/>pics/background_inline_button_blue.gif);
     background-repeat: repeat-x;
   	padding: 0px 3px 0px 3px;
@@ -1573,7 +1574,8 @@ div.ss_box_top_rounded {
 	margin: 2px 2px 0px 2px;
 }
 
-.ss_box_title, .ss_box_title:visited {
+.ss_box_title,
+.ss_box_title:visited {
 	color: ${ss_box_title_color};
 	font-weight: bold;
 	text-decoration:none;
@@ -1964,9 +1966,9 @@ div.ss_sidebar_panel_featured {
 	}
 .ss_title_bar {
 	background-image: url(<html:imagesPath/>roundcorners3/background_dc_bar.png);
-	color: #333333;
-	margin:0px;
-	padding-bottom: 4px;
+	color: #fff;
+	margin: 0px;
+	height: 28px;
 	}
 .ss_title_bar * {
 	background-color: transparent;
@@ -3594,7 +3596,7 @@ a.ss_searchButton2:hover img {
 }
 
 a.ss_advanced:link, a.ss_advanced:hover, a.ss_advanced:visited, a.ss_advanced:active {
-	color: #0000FF;
+	color: #135C8F;
 	text-decoration:underline;
 	margin:0px 0px 0px 6px;
 }
@@ -3605,7 +3607,7 @@ a.ss_parentPointer:hover, a.ss_parentPointer:link, a.ss_parentPointer:hover, a.s
     outline: dotted 1px gray;
 	}
 a.ss_parentPointer:hover {
-	color: #0000ff;
+	color: #135C8F;
 	text-decoration:underline;
     outline: dotted 1px gray;
 }
@@ -3614,7 +3616,7 @@ a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 	text-decoration:underline;
 }	
 a.ss_parentPointer:visited, a.ss_parentPointer:hover {
-	color: #0000ff;
+	color: #135C8F;
 	text-decoration:underline;
 }
 
@@ -3695,7 +3697,7 @@ h3.ss_entryTitle a {
 h3.ss_entryTitle a:hover,
 h3.ss_entryTitle a:link,
 h3.ss_entryTitle a:active {
-	color:#0000FF !important;
+	color:#135C8F !important;
 }
 
 h3.ss_entryTitle a:visited {

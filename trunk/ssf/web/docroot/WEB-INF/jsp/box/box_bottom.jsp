@@ -54,8 +54,9 @@ boolean brWrapContent = ParamUtil.get(request, "box_br_wrap_content", false);
 
 <%@ include file="/WEB-INF/jsp/box/box_bottom-ext.jsp" %>
 	  <tr>
-	  <td colspan="${ss_boxColCount + 1}" style=" background-color:${boxBgColor};"><div 
-	    class="ss_decor-round-corners-bottom3"><div><div></div></div></div></td>
+	  	<td colspan="${ss_boxColCount + 1}">
+	  		<div class="ss_decor-round-corners-bottom3"><div><div></div></div></div>
+		</td>
 	  </tr>
 	</table>
 </div>

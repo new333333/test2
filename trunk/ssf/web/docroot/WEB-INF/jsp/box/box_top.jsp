@@ -108,7 +108,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	  <col width="8"/>
 	  <tr>
 	  <td><img border="0" <ssf:alt/>
-	    src="<html:imagesPath/>roundcorners3/corner1.gif"></td>
+	    src="<html:imagesPath/>roundcorners3/corner1.png"></td>
 	  <c:if test="<%= showResizeIcon %>">
 		<td class="ss_title_bar" align="left"><div style="display:inline; width:40px; 
 		    background-position:center left;
@@ -145,11 +145,11 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 			 title="<ssf:nlt tag="icon.close" text="Close" />" 
 			 vspace="0" width="14" ></a></span></td>
 	  </c:if>
-	  <td><img <ssf:alt/> border="0" src="<html:imagesPath/>roundcorners3/corner2.gif"></td>
+	  <td><img <ssf:alt/> border="0" src="<html:imagesPath/>roundcorners3/corner2.png"></td>
 	  </tr>
 	  
 	  <tr>
-	  <td class="ss_decor-border7" colspan="${ss_boxColCount}" style="background-color:${boxBgColor};">
+	  <td class="ss_decor-border7" colspan="${ss_boxColCount}">
 
 <c:if test="<%= brWrapContent %>">
   <br>
