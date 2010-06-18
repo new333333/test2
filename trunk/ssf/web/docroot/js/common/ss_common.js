@@ -5021,6 +5021,8 @@ function ss_centerPopupDiv(targetDiv, inContainer) {
 	    }
 		x = parseInt(x + bodyX - ss_getObjectWidth(targetDiv) / 2)
 		y = parseInt(y + bodyY - ss_getObjectHeight(targetDiv) / 2)
+		if (x < 0) x = 0;
+		if (y < 0) y = 0;
 		targetDiv.style.left = x + "px";
 		targetDiv.style.top = y + "px";
 }
