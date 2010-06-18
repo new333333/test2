@@ -84,19 +84,18 @@
       </item> 
     </item> 
   </item>  
-  <item name="entryView" caption="__entry_view_definition" id="9"> 
-    <properties> 
-      <property name="type" value="entryView"/> 
-    </properties>  
+  <item name="entryView" caption="__entry_view_definition" id="9" display="view"> 
     <item name="titleView" caption="__title" id="10"> 
       <properties> 
         <property name="caption" value="__title"/> 
       </properties> 
     </item>  
-    <item name="entrySignatureView" caption="__entry_signature" id="11"> 
-      <properties> 
-        <property name="caption" value=""/> 
-      </properties> 
+    <item name="entrySignatureView" caption="__entry_signature" id="11" category="commonEntryViewData" display="view"> 
+      <properties>
+        <property name="caption" value="__author"/>
+        <property name="showPicture" value="false"/>
+        <property name="displayType" value="inlineWithRating"/>
+      </properties>
     </item>  
     <item name="descriptionView" caption="__description" id="12"> 
       <properties> 
@@ -113,7 +112,10 @@
         <property name="caption" value=""/>
         <property name="tabTitle" value="comments"/>
       </properties>
-    </item> 
+    </item>  
+    <properties>
+      <property name="type" value="file"/>
+    </properties>
   </item>  
   <item name="entryBlogView" caption="__entry_blog_view_definition" id="16"> 
     <properties> 
