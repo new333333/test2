@@ -1575,7 +1575,7 @@ div.ss_box_top_rounded {
 
 .ss_box_title, .ss_box_title:visited {
 	color: ${ss_box_title_color};
-	font-weight: normal;
+	font-weight: bold;
 	text-decoration:none;
 }
 
@@ -1814,21 +1814,21 @@ div.ss_content_outer table, div.ss_portlet table, table.ss_style, div.ss_popup_b
 }
 
 .ss_decor-round-corners-bottom3 {
-	background:url(<html:imagesPath/>roundcorners3/border2.gif) repeat-x bottom;
+	background:url(<html:imagesPath/>roundcorners3/border2.png) repeat-x bottom;
 }
 .ss_decor-round-corners-bottom3 div {
-	background:url(<html:imagesPath/>roundcorners3/corner3.jpg) no-repeat left;
+	background:url(<html:imagesPath/>roundcorners3/corner3.png) no-repeat left;
 }
 .ss_decor-round-corners-bottom3 div div {
-	background:url(<html:imagesPath/>roundcorners3/corner4.jpg) no-repeat right;
+	background:url(<html:imagesPath/>roundcorners3/corner4.png) no-repeat right;
 	height:7px;
 	font-size:1px;
 }
 .ss_decor-border7 {
-	background:url(<html:imagesPath/>roundcorners3/border3.jpg) repeat-y left;
+	background:url(<html:imagesPath/>roundcorners3/border3.png) repeat-y left;
 }
 .ss_decor-border8 {
-	background:url(<html:imagesPath/>roundcorners3/border4.gif) repeat-y right;
+	background:url(<html:imagesPath/>roundcorners3/border4.png) repeat-y right;
 }
 
 .ss_decor-round-corners-top2{
@@ -3692,7 +3692,9 @@ h3.ss_entryTitle a {
 	color: #333333;
 }
 
-h3.ss_entryTitle a:hover,h3.ss_entryTitle a:link, h3.ss_entryTitle a:active {
+h3.ss_entryTitle a:hover,
+h3.ss_entryTitle a:link,
+h3.ss_entryTitle a:active {
 	color:#0000FF !important;
 }
 
