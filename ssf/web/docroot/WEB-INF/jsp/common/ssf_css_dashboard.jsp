@@ -253,7 +253,7 @@ div.ss_canvas {
 	font-style: italic;
 	}
 #ss_nextPage{			/* to use when need to display left right arrows */
-	border-bottom:dotted 1px #5A9A98;
+	border-bottom:dotted 1px #5691A6;
 	margin:5px;
 	padding-right: 5px;
 	
@@ -331,7 +331,7 @@ div.ss_canvas {
 	padding-left: 30px;
 	padding-top: 3px;
 	padding-bottom: 1.6em;
-	border-bottom:1px dotted #5A9A98;
+	border-bottom:1px dotted #5691A6;
     list-style:none !important;
     list-style-image: url(<html:imagesPath/>pics/1pix.gif) !important;
 	}
@@ -346,7 +346,7 @@ div.ss_canvas {
 	padding-left: 30px;
 	padding-top: 3px;
 	padding-bottom: 1.6em;
-	border-bottom:1px dotted #5A9A98;
+	border-bottom:1px dotted #5691A6;
     list-style:none !important;
     list-style-image: url(<html:imagesPath/>pics/1pix.gif) !important;
 	}	
@@ -368,7 +368,7 @@ div.ss_canvas {
 	list-style-type: square;
 	padding-top:3px;
 	padding-bottom:3px;
-	border-bottom:1px dotted #5A9A98;
+	border-bottom:1px dotted #5691A6;
 	}
 	/* CALENDAR ACTIVE LINKS */
 #ss_cal_para a{
@@ -388,7 +388,7 @@ div.ss_canvas {
 #ss_mydocs_para li{
 	list-style-type: square;
 	padding-bottom:0px;
-	border-bottom:1px dotted #5A9A98;
+	border-bottom:1px dotted #5691A6;
 	padding-bottom: 1.6em;
 	}
 	/* ACTIVE LINK */
@@ -414,7 +414,7 @@ div.ss_canvas {
 	}
 #ss_hot_para li{
 	list-style-type: square;	
-	border-bottom:1px dotted #5A9A98;
+	border-bottom:1px dotted #5691A6;
 	margin:0pt 0pt 0pt 15px;
 	padding-bottom: 1.6em;
 	}	
@@ -423,7 +423,7 @@ div.ss_canvas {
 #ss_survey{
 	margin: 1% 0 5% 0;
 	color:#555;
-	border:1px solid #5A9A98;
+	border:1px solid #5691A6;
 	}
 	
 	/*TAGS*/
@@ -434,13 +434,13 @@ div.ss_canvas {
 	margin-left: 4px !important;
 	margin-bottom: 10px;
 	background: #FFF;
-	border: dotted 1px #5A9A98;
+	border: dotted 1px #5691A6;
 	}
 	/* NOTES */
 #ss_notes{
 	margin: 1% 0 5% 0;
 	color:#555;
-	border:1px solid #5A9A98;
+	border:1px solid #5691A6;
 	}
 	/* BOOKMARKS */
 #ss_bookmarks{
@@ -530,7 +530,7 @@ div.ss_canvas {
 .ss_pt_para ul li{
 	margin-left: -10px;
 	list-style-type: disc;
-	border-bottom:1px dotted #5A9A98;	
+	border-bottom:1px dotted #5691A6;	
 	}
 .ss_prioValue{
 	font-weight:bold;
@@ -593,7 +593,7 @@ div.ss_canvas {
 	padding: 5px 0 15px 20px;
 }
 #ss_para {
-	border: 1px dotted #5A9A98;
+	border: 1px dotted #5691A6;
 	padding-left: 15px;
 	padding-bottom: 15px;
 	color: #555555;
@@ -609,7 +609,7 @@ div.ss_canvas {
 	margin-left:-10px;
 	}
 #ss_para_activity {
-	border: 1px dotted #5A9A98;
+	border: 1px dotted #5691A6;
 	padding-left: 15px;
 	padding-bottom: 15px;
 	color: #555555;
@@ -670,20 +670,18 @@ div.ss_canvas {
 	}
 /*======THIS IS FOR THE DISCUSSION PAGE STYLE========*/
 .ss_link_7, .ss_link_7 span {
-	font-style: italic;
 	font-weight: 400;
 	font-family: Arial, Helvetica, sans-serif;
-	letter-spacing:-1px;
-	color:#5A9A98!important;
+	color:#5691A6 !important;
 	font-size:18px;
 	}
 .ss_link_7 a:hover {
 	text-decoration: none;
-	color:#999!important;
+	color:#135c8f !important;
 	}		
 .ss_link_8, .ss_link_8 span{
 	font-family: ${ss_style_folder_view_font_family};
-	color:#5A9A98!important;
+	color:#5691A6!important;
 	font-size:${ss_style_font_normalprint};
 	}
 				

@@ -48,14 +48,16 @@ boolean brWrapContent = ParamUtil.get(request, "box_br_wrap_content", false);
   <br>
 </c:if>
 	  </td>
-	  <td class="ss_decor-border8" style="background-color:${boxBgColor};"></td>
+	  <td class="ss_decor-border8"></td>
 	  </tr>
 
 
 <%@ include file="/WEB-INF/jsp/box/box_bottom-ext.jsp" %>
 	  <tr>
 	  	<td colspan="${ss_boxColCount + 1}">
+			<img <ssf:alt/> border="0" src="<html:imagesPath/>roundcorners3/corner3.png">
 	  		<div class="ss_decor-round-corners-bottom3"><div><div></div></div></div>
+			<img <ssf:alt/> border="0" src="<html:imagesPath/>roundcorners3/corner4.png">
 		</td>
 	  </tr>
 	</table>

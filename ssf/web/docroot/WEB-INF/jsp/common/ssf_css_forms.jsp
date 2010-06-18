@@ -97,7 +97,7 @@ td.ss_cellvalign {
 	white-space: normal;
 	}
 .objlist tr.title td  	 /* apply to the first row in table */
-	 { color: #5A9A98; 
+	 { color: #5691A6; 
 	 font-size: 1.1em;
 	 font-weight: bold;
 	 background-color: #e9f1f1;
@@ -105,7 +105,7 @@ td.ss_cellvalign {
 	 text-indent: 0.15em;
 	 letter-spacing: 1px; 
 	 padding: 3px; 
-	 border-top: 1px solid #5A9A98;
+	 border-top: 1px solid #5691A6;
 	}
 	 
 .objlist tr.menu td	/* apply to the row after the title */ 
@@ -177,7 +177,7 @@ td.rightend
 	letter-spacing:-1px;
 	font-family:Georgia, "Times New Roman", Times, serif !important;
 	font-weight:normal !important;
-	color:#5A9A98;
+	color:#5691A6;
 	}
 .ss_table_wrap {
 	display: table;
@@ -186,7 +186,7 @@ td.rightend
 	border-bottom-width: thin;
 	border-left-width: thin;
 	border-style: solid;
-	border-top-color: #5A9A98;
+	border-top-color: #5691A6;
 	border-right-color: #CCCCCC;
 	border-bottom-color: #CCCCCC;
 	border-left-color: #CCCCCC;
@@ -198,7 +198,7 @@ td.rightend
 	border-bottom-width: thin;
 	border-left-width: thin;
 	border-style: solid;
-	border-top-color: #5A9A98;
+	border-top-color: #5691A6;
 	border-right-color: #CCCCCC;
 	border-bottom-color: #CCCCCC;
 	border-left-color: #CCCCCC;
@@ -210,7 +210,7 @@ td.rightend
 	border-bottom-width: thin;
 	border-left-width: thin;
 	border-style: solid;
-	border-top-color: #5A9A98;
+	border-top-color: #5691A6;
 	border-right-color: #CCCCCC;
 	border-bottom-color: #CCCCCC;
 	border-left-color: #CCCCCC;
@@ -310,7 +310,7 @@ td.rightend
 	font-family: ${ss_style_font_family};
 	font-size: 10px;
 	text-align: left;
-	border: dotted 1px #5A9A98;
+	border: dotted 1px #5691A6;
 	padding: 3px;
 	margin: 6px;
 	}
@@ -341,7 +341,7 @@ fieldset{
  	padding-bottom:12px;
   	padding-top: 18px;
   	display: block;
-  	border: 1px dotted #5A9A98;
+  	border: 1px dotted #5691A6;
   	background-image: url(<html:imagesPath/>pics/login_bk.png);
   	background-repeat: repeat;
   	width: 480px;
@@ -350,10 +350,10 @@ fieldset{
 	} 
 .ss_fieldset_mashup {
   	display: inline;
-  	border: 1px dotted #5A9A98;
+  	border: 1px dotted #5691A6;
 	} 
 fieldset.ss_fieldset_square {
-  	border: 1px solid #5A9A98;
+  	border: 1px solid #5691A6;
   	padding: 5px;
   	margin-top: 12px;
 	}
@@ -427,7 +427,7 @@ fieldset a:hover {
   font-family: Arial, sans-serif;
   white-space: nowrap;
   text-decoration: none !important;
-  border: 1px solid #5A9A98;
+  border: 1px solid #5691A6;
   background-image: url(<html:imagesPath/>pics/background_inline_button_blue.gif);
   background-repeat: repeat-x;
 }
@@ -439,7 +439,7 @@ fieldset a:hover {
 	}
 .ss_inlineButton:hover, input[type="reset"].ss_inlineButton:hover, input[type="button"].ss_inlineButton:hover, input[type="submit"].ss_inlineButton:hover, button.ss_inlineButton:hover {
   border: 1px dotted #333;
-  color: #999;
+  color: #135c8f;
 }
 .ss_inlineButton span {
   padding: 0px 6px 0px 6px;
@@ -461,7 +461,7 @@ fieldset a:hover {
   font-family: Arial, sans-serif;
   white-space: nowrap;
   text-decoration: none !important;
-  border: 1px solid #5A9A98;
+  border: 1px solid #5691A6;
   background-image: url(<html:imagesPath/>pics/background_inline_button_blue.gif);
   background-repeat: repeat-x;
 }
@@ -473,7 +473,7 @@ fieldset a:hover {
 	}
 .ss_inlineButtonSmall:hover, input[type="reset"].ss_inlineButtonSmall:hover, input[type="button"].ss_inlineButtonSmall:hover, input[type="submit"].ss_inlineButtonSmall:hover, button.ss_inlineButtonSmall:hover {
   border: 1px dotted #333;
-  color: #999;
+  color: #135c8f;
 }
 .ss_inlineButtonSmall span {
   padding: 0px 4px 0px 4px;
