@@ -167,7 +167,7 @@ ss_createOnLoadObj("ss_history_revert_init", ss_history_revert_init);
 <% 
   Element configEle2 = (Element)changeLogEntry2.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryForm']");
 %>
-   <div style="display:none;">
+   <div style="display:block;">
 	<c:if test="${!empty configEle}">
 	  <c:set var="ssBinderOriginalFromDescriptionHistory" value="${ssBinder}" />
 	  <c:set var="ssBinder" value="${changeLogEntry2.parentBinder}" scope="request"/>

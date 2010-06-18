@@ -824,6 +824,10 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	margin: 0px 10px 10px;
 	padding: 2px 5px;
 	}	
+.wg-tab-iframe {
+	height: 600px;
+	width: 100%;
+	}	
 .tabactions {
 	font-size: 12px;
 	text-align: right;

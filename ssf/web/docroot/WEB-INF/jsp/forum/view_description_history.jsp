@@ -284,6 +284,11 @@ function dodiff()
 		document.getElementById("diff").focus();
 	}
 }
+
+function ss_resizeIframeArea() {
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+	if (parent.ssf_onLayoutChange) parent.ssf_onLayoutChange();
+}
 </script>
 
 <div class="ss_style ss_portlet" style="padding:10px;">
@@ -329,7 +334,7 @@ function dodiff()
   <div><ssf:nlt tag="changeLog.operation.${change.operation}"/></div>
 </td>
 <td valign="bottom" nowrap>
-  <a href="javascript: ;" class="ss_tinyButton" onClick="ss_showHide('historyVersion_${status.count}');return false;">
+  <a href="javascript: ;" class="ss_tinyButton" onClick="ss_showHide('historyVersion_${status.count}');ss_resizeIframeArea();return false;">
     <ssf:nlt tag="entry.revert.view"/>
   </a>
 </td>
@@ -344,8 +349,7 @@ function dodiff()
 </td>
 </tr>
 <tr>
- <td colspan="2"></td>
- <td colspan="6">
+ <td colspan="8">
    <c:if test="${!empty change.changeLogEntry}">
     <c:set var="changeLogEntry" value="${change.changeLogEntry}"/>
 	<jsp:useBean id="changeLogEntry" type="org.kablink.teaming.domain.DefinableEntity" />
