@@ -353,20 +353,35 @@ public class LocalLuceneWriteSession extends LocalLuceneSession implements Lucen
 		if(debugEnabled)
 			logger.debug("LocalLucene: clearIndex took: " + (endTime - startTime) + " milliseconds");
 	}
-
+	
 	private String getTastingText(Document doc) {
-		String text = "";
-		Field allText = doc.getField(Constants.ALL_TEXT_FIELD);
-		if (allText != null) 
-			text = allText.stringValue();
-		if (text.length() == 0) {
+		String text = getTastingTextFromAllTextField(doc);
+		if (text == null || text.length() == 0) {
 			Field title = doc.getField(Constants.TITLE_FIELD);
 			if (title != null) 
 				text = title.stringValue();
 		}
+		if(text == null)
+			text = "";
 		if (text.length()> 1024) 
 			return text.substring(0,1024);
-		else return text;
+		else 
+			return text;
+	}
+	
+	private String getTastingTextFromAllTextField(Document doc) {
+		StringBuilder sb = new StringBuilder();
+		Field[] allTextFields = doc.getFields(Constants.ALL_TEXT_FIELD);
+		String piece;
+		for(Field allTextField:allTextFields) {
+			piece = allTextField.stringValue();
+			if(piece != null && piece.length()>0) {
+				if(sb.length() > 0)
+					sb.append(" ");
+				sb.append(piece);
+			}
+		}
+		return sb.toString();
 	}
 	
 	public static Analyzer getAnalyzer(String snippet) {
