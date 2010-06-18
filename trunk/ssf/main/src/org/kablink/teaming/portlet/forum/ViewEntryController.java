@@ -831,32 +831,18 @@ public class ViewEntryController extends  SAbstractController {
 				accessControlEntryMap.put("report", new Boolean(true));
 				Map qualifiers = new HashMap();
 				qualifiers.put("nosort", true);
-				toolbar.addToolbarMenu("5_history", NLT.get("toolbar.history"), "", qualifiers);
-	
-				qualifiers.put("popup", Boolean.TRUE);
-				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_EDITABLE_HISTORY);
-				adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_EDIT_HISTORY);
-				adapterUrl.setParameter(WebKeys.URL_ENTITY_ID, entryId);
-				toolbar.addToolbarMenuItem("5_history", "", NLT.get("toolbar.reports.editHistory"), adapterUrl.toString(), qualifiers);
-				
-				adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WORKFLOW_HISTORY);
-				adapterUrl.setParameter(WebKeys.URL_ENTITY_ID, entryId);
-				adapterUrl.setParameter(WebKeys.URL_FOLDER_ID, folderId);
-				toolbar.addToolbarMenuItem("5_history", "", NLT.get("toolbar.reports.workflowHistory"), adapterUrl.toString(), qualifiers);
-			}
-			
-			if (getFolderModule().testAccess(entry, FolderOperation.report)) {
-				accessControlEntryMap.put("report", new Boolean(true));
-				Map qualifiers = new HashMap();
-				qualifiers.put("nosort", true);
 				toolbar.addToolbarMenu("6_reports", NLT.get("toolbar.reports"), "", qualifiers);
 	
 				String servletUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_DOWNLOAD_REPORT + "?" +
 				WebKeys.URL_BINDER_ID + "=" + folderId + "&" + WebKeys.URL_ENTRY_ID + "=" + entryId + "&" +
 				WebKeys.URL_REPORT_TYPE + "=entry&forumOkBtn=OK"; 
 				toolbar.addToolbarMenuItem("6_reports", "", NLT.get("toolbar.reports.activity"), servletUrl, qualifiers);
+				
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WORKFLOW_HISTORY);
+				adapterUrl.setParameter(WebKeys.URL_ENTITY_ID, entryId);
+				adapterUrl.setParameter(WebKeys.URL_FOLDER_ID, folderId);
+				toolbar.addToolbarMenuItem("6_reports", "", NLT.get("toolbar.reports.workflowHistory"), adapterUrl.toString(), qualifiers);
 			}
 		}
 		

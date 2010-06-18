@@ -41,5 +41,6 @@
 <div class="ss_style ss_portlet" width="100%">
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
-  configJspStyle="${ssConfigJspStyle}" />
+  configJspStyle="${ssConfigJspStyle}" 
+  entry="${ssDefinitionEntry}" />
 </div>

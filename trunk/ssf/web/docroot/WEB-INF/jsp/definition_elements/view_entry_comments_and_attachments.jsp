@@ -34,6 +34,34 @@
 %>
 <% // View entry comments and attachments in tabs %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<script type="text/javascript">
+function ss_showHideEntryHistoryDiv(iframeId) {
+	var url = "<ssf:url ><ssf:param 
+		name="action" value="view_editable_history"/><ssf:param 
+		name="actionUrl" value="true"/><ssf:param 
+		name="operation" value="view_edit_history"/><ssf:param 
+		name="entityId" value="${ssEntry.id}"/></ssf:url>";
+	var iframeObj = self.document.getElementById(iframeId);
+	if (typeof iframeObj.src == "undefined" || iframeObj.src == "") iframeObj.src = url;
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+	if (self.parent.ssf_onLayoutChange) self.parent.ssf_onLayoutChange();
+}
+
+var ss_entryHistoryIframeOffset = 50;
+function ss_resizeEntryHistoryIframe(iframeId) {
+	try {
+		var iframeDiv = document.getElementById(iframeId)
+		eval("var iframeHeight = parseInt(window." + iframeId + ".document.body.scrollHeight);")
+		if (iframeHeight > 200) {
+			iframeDiv.style.height = iframeHeight + ss_entryHistoryIframeOffset + "px"
+		}
+	} catch(e) {}
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+	if (self.parent.ssf_onLayoutChange) self.parent.ssf_onLayoutChange();
+}
+</script>
 <c:set var="ss_divCounter" value="${ss_divCounter + 1}" scope="request" />
 <%
 	//Get the user's desired region view (if set)
@@ -85,7 +113,7 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
     class="wg-tab roundcornerSM <c:if test="${!empty ss_pseudoEntity}">on</c:if>" 
     onMouseOver="ss_hoverOverTab('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');"
     onMouseOut="ss_hoverOverTabStopped('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');"
-    onClick="ss_showTab('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');">
+    onClick="ss_showTab('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');return false;">
     <ssf:nlt tag="__entry_attachments"/>
     <c:if test="${empty ssPrimaryFileAttribute}">
       <span class="ss_smallprint">(${fn:length(ssDefinitionEntry.fileAttachments)})</span>
@@ -95,13 +123,24 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
     </c:if>
   </div>
   </td>
+  <c:if test="${ssDefinitionEntry.top && ss_accessControlMap[ssEntry.id]['report']}">
+  <td valign="middle" width="1%" nowrap>
+  <div id="viewEntryHistory${ss_tabDivCount}Tab" 
+    class="wg-tab roundcornerSM" 
+    onMouseOver="ss_hoverOverTab('viewEntryHistory${ss_tabDivCount}', '${ss_tabDivCount}');"
+    onMouseOut="ss_hoverOverTabStopped('viewEntryHistory${ss_tabDivCount}', '${ss_tabDivCount}');"
+    onClick="ss_showTab('viewEntryHistory${ss_tabDivCount}', '${ss_tabDivCount}');ss_showHideEntryHistoryDiv('viewEntryHistory${ss_tabDivCount}Iframe');return false;">
+    <ssf:nlt tag="entry.versionHistory"/>
+  </div>
+  </td>
+  </c:if>
   <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
   <td valign="middle" width="1%" nowrap>
   <div id="viewFileVersions${ss_tabDivCount}Tab" 
     class="wg-tab roundcornerSM" 
     onMouseOver="ss_hoverOverTab('viewFileVersions${ss_tabDivCount}', '${ss_tabDivCount}');"
     onMouseOut="ss_hoverOverTabStopped('viewFileVersions${ss_tabDivCount}', '${ss_tabDivCount}');"
-    onClick="ss_showTab('viewFileVersions${ss_tabDivCount}', '${ss_tabDivCount}');">
+    onClick="ss_showTab('viewFileVersions${ss_tabDivCount}', '${ss_tabDivCount}');return false;">
     <ssf:nlt tag="__entry_file_versions"/>
   </div>
   </td>
@@ -138,6 +177,13 @@ ss_createOnLoadObj("commentsAndAttachmentsRegion${ss_divCounter}", function() {
   <c:set var="ss_showPrimaryFileAttachmentOnly" value="true" scope="request"/>
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachments_tab.jsp" />
 </div>
+
+<c:if test="${ssDefinitionEntry.top && ss_accessControlMap[ssEntry.id]['report']}">
+<div id="viewEntryHistory${ss_tabDivCount}Div" style="display:none;">
+  <iframe id="viewEntryHistory${ss_tabDivCount}Iframe" name="viewEntryHistory${ss_tabDivCount}Iframe" 
+    onLoad="ss_resizeEntryHistoryIframe('viewEntryHistory${ss_tabDivCount}Iframe')" class="wg-tab-iframe" >xxx</iframe>
+</div>
+</c:if>
 
 <div id="viewFileVersions${ss_tabDivCount}Div" style="display:none;">
   <c:set var="property_caption" value="" scope="request"/>

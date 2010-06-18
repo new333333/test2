@@ -130,7 +130,7 @@ var ss_entryViewStyle = "${ss_entryViewStyle}";
 
 var ss_1pix = ss_imagesPath + "pics/1pix.gif";
 var ss_forumColorsCssUrl = "<ssf:url webPath="viewCss"><ssf:param 
-		name="theme" value="${ssUser.theme}"/></ssf:url>";
+		name="theme" value=""/></ssf:url>";
 
 var ss_AjaxBaseUrl = "<ssf:url adapter="true" portletName="ss_forum" actionUrl="true" />";
 
@@ -179,7 +179,7 @@ if (typeof ss_hideEntryDivOnLoad != "undefined") ss_hideEntryDivOnLoad();
   <link href="<html:rootPath/>${ss_mashupCss}" rel="stylesheet" type="text/css" />
 </c:if>
 <link href="<html:rootPath/>css/slider_swing.css" rel="stylesheet" type="text/css" />
-<link href="<ssf:url webPath="viewCss"> <ssf:param name="theme" value="${ssUser.theme}"/>
+<link href="<ssf:url webPath="viewCss"> <ssf:param name="theme" value=""/>
 	    </ssf:url>" rel="stylesheet" type="text/css" />
 <c:if test="${!empty ss_toolbar_url_subscribe_rss}">
 <link rel="alternate" type="application/rss+xml" id="ss_rssLink"
