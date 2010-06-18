@@ -169,7 +169,8 @@ body.ss_style_body {
 	}
 .ss_style a:hover {
   	color: ${ss_style_link_hover_color};
-  	text-decoration: none;
+	background: #81b2bd url(<html:imagesPath/>pics/teal_slice.png) repeat-x;
+	padding: 4px;
 	}
 .ss_title_link {
   	text-decoration:underline;
@@ -420,8 +421,8 @@ div.ss_editorHints {
   margin-right: 130px;
   }
 .ss_entryTitleFile {
-  font-weight: normal;
-  font-size: ${ss_style_font_largerprint};
+  font-weight: bold;
+  font-size: ${ss_style_font_largestprint};
   font-family: ${ss_style_title_font_family};
   margin-bottom: 10px;
   padding: 0px 6px;
@@ -443,7 +444,7 @@ div.ss_editorHints {
   	font-style: normal !important;
   	}
 div.ss_entryContent a {
-  	color:#5691A6 !important;
+  	color:#135c8f !important;
 	}
 div.ss_entryContent a:hover {
   	text-decoration:underline;
