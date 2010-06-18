@@ -38,7 +38,7 @@
 }
 
 .ss_related_div {
-	border: 1px #999999 solid;
+	border: 1px #135c8f solid;
 	position: relative;
 	font-weight: normal;
 	top: 0px;

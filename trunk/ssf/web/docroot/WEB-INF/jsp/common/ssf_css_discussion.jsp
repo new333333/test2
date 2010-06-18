@@ -137,14 +137,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-style: italic;
 	font-weight: 200;
 	font-family: Arial, Helvetica, sans-serif;
-	color:#5A9A98!important;
+	color:#5691A6!important;
 	}
 #ss_topic_box_h1 * a, #ss_topic_box_h1 * span, #ss_topic_box_h1 table *  {
 	font-size: 20px;
 	font-style: italic;
 	font-weight: 200;
 	font-family: Arial, Helvetica, sans-serif;
-	color:#5A9A98!important;
+	color:#5691A6!important;
 	}
 #ss_topic_box_h1 * a:hover {
 	font-size: 20px;
@@ -195,7 +195,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-size: 20px;
 	font-style:italic;
 	font-weight:bold;
-	color:#5A9A98!important;
+	color:#5691A6!important;
 }
 <!--#ss_profile_box_h1_old{-->
 <!--	margin: 2px 0 2px 0;-->
@@ -204,14 +204,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <!--	font-weight: 200;-->
 <!--	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;-->
 <!--	letter-spacing:-2px;-->
-<!--	color:#5A9A98!important;-->
+<!--	color:#5691A6!important;-->
 <!--	}-->
 #ss_profile_box_h1 * a, #ss_profile_box_h1 * span, #ss_profile_box_h1 table *  {
 	font-size: 20px;
 	font-style: italic;
 	font-weight: 200;
 	font-family: Arial, Helvetica, sans-serif;
-	color:#5A9A98!important;
+	color:#5691A6!important;
 	}
 <!--#ss_profile_box_h1_old * a:hover {-->
 <!--	font-size: 20px;-->
@@ -268,15 +268,15 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-style:italic;
 	font-weight: 200;
 	font-family: Arial, Helvetica, sans-serif;	
-	color:#5A9A98!important;
+	color:#5691A6!important;
 	}
 .ss_title_th1{
-	color:#5A9A98!important;
+	color:#5691A6!important;
 	font-size: 1.0em;
 	font-weight: 300;
 	}	
 .ss_title_th1 a{
-	color:#5A9A98!important;
+	color:#5691A6!important;
 	}	
 .ss_title_th1 a:hover{
 	color: #555 !important;	
@@ -453,7 +453,7 @@ a.ss_new_thread:hover {
 .ss_navbar_current {
 	font-weight: bold !important;
 	color:#F47400;
-	border: dotted 1px #999999 !important; /* text-decoration: underline; */
+	border: dotted 1px #135c8f !important; /* text-decoration: underline; */
 	padding:1px 5px 1px 5px;
 	}	
 .ss_navbar_new {
@@ -642,7 +642,7 @@ a.ss_new_thread:hover {
 	}
 .ss_attribute {
 	background-color: #DBEDFF!important;
-	border: 0.4px solid #999999!important;
+	border: 0.4px solid #135c8f!important;
 	margin-bottom: 5px;
 	margin-right: 3px;
 	}	
@@ -686,6 +686,6 @@ div.ss_replies_indent_picture {
 	font-style:italic;
 	font-weight: 200;
 	font-family: Arial, Helvetica, sans-serif;	
-	color:#5A9A98!important;
+	color:#5691A6!important;
 	}
 	  

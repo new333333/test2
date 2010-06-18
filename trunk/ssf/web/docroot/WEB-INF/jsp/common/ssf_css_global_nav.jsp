@@ -92,8 +92,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	/* MASTHEAD CODE */
 	
 .ss_search_bar{
-	background-color: #5A9A98;
-	border-bottom: 2px solid #5A9A98;
+	background-color: #5691A6;
+	border-bottom: 2px solid #5691A6;
 	}
 .ss_searchtext {
 	font-family: Arial, Helvetica, sans-serif !important;
@@ -182,7 +182,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-weight: bold;
 	overflow: hidden;
 	font-size: 36px !important;
-	color: #999999 !important;
+	color: #135c8f !important;
 	text-indent: 5px;
 	}
 .ss_masthead_top div {
@@ -210,7 +210,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-position: left center;
 	font-size: 11px !important;
 	font-weight: bold;
-	color: #5A9A98 !important;		/* boulder: #5A9A98; kablink: #449EFF */
+	color: #5691A6 !important;		/* boulder: #5691A6; kablink: #449EFF */
 	white-space:nowrap !important;
 	}
 .ss_masthead_fullscreen {
@@ -229,7 +229,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color: #F47400 !important;
 	}	
 .ss_masthead_favorites a {
-	color: #444 !important;		/* boulder: #5A9A98; kablink: #449EFF */
+	color: #444 !important;		/* boulder: #5691A6; kablink: #449EFF */
 	}
 ss_masthead_favorites a:hover{
 	color: #F47400 !important;

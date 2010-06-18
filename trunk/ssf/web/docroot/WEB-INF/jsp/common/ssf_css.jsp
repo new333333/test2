@@ -415,7 +415,7 @@ div.ss_editorHints {
   font-weight: normal;
   font-size: ${ss_style_font_largerprint};
   font-family: ${ss_style_title_font_family};
-  margin-top: -30px;
+  margin-top: -35px;
   margin-left: 5px;
   margin-right: 130px;
   }
@@ -443,7 +443,7 @@ div.ss_editorHints {
   	font-style: normal !important;
   	}
 div.ss_entryContent a {
-  	color:#5601A6!important;
+  	color:#5691A6 !important;
 	}
 div.ss_entryContent a:hover {
   	text-decoration:underline;
@@ -479,7 +479,7 @@ div.ss_entryDescription ol li {
     list-style-type: decimal;
 	}
 div.ss_entryDescription a {
-  	color:#5601A6!important;
+  	color:#5691A6 !important;
 	}
 div.ss_entryDescription a:hover {
   	text-decoration:underline;
@@ -496,13 +496,6 @@ div.ss_perUserViewElement {
 }
 
 div.ss_editableTab {
-  background-color: ${ss_style_background_color_opaque};
-  margin-left: 0px;
-  margin-top: 2px;
-  padding-top: 0px;
-  padding-bottom: 6px;
-  padding-right: 5px;
-  padding-left: 5px;
 }
 
 div.ss_editableSectionEditBtn {
@@ -609,7 +602,7 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
   font-family: Arial, sans-serif;
   white-space: nowrap;
   text-decoration: none !important;
-  border: 1px solid #5601A6;
+  border: 1px solid #5691A6;
   background-image: url(<html:imagesPath/>pics/background_inline_button_blue.gif);
   background-repeat: repeat-x;
 	}	
@@ -650,7 +643,7 @@ input.ss_submit:hover, input.ss_linkButton:hover, a.ss_linkButton:hover {
 input.ss_tinyButton, a.ss_tinyButton:link, a.ss_tinyButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
  	font-size: ${ss_style_font_fineprint};
-    border: 1px solid #5601A6;
+    border: 1px solid #5691A6;
     background-image: url(<html:imagesPath/>pics/background_inline_button_blue.gif);
     background-repeat: repeat-x;
   	padding: 0px 3px 0px 3px;
@@ -2020,7 +2013,7 @@ div.ss_sidebar_panel_featured {
     position:absolute;
 	display:none;
 	z-index:500;
-	border: 1px solid #999999;
+	border: 1px solid #135c8f;
 	}
 .ss_title_menu_dd li {
   list-style-type:none;
@@ -3711,7 +3704,7 @@ div.ss_entryDetails {padding:0px 0px 6px 24px;}
 div.ss_entryDetails p {
 	margin:0px 3px 1px 0px;
 	font-size: ${ss_style_font_smallprint};
-	color: #999999;
+	color: #135c8f;
 }
 img.ss_attachment_thumbnail {width:80px;height:74px;padding:0px; margin:0px;}
 .ss_label {}
@@ -3853,7 +3846,7 @@ ul.ss_survey_users_list {
 }
 
 table.ss_milestones_list td.ss_completed, table.ss_milestones_list td.ss_completed a {
-	color: #999966;
+	color: #135c8f966;
 }
 
 table.ss_milestones_list td.ss_overdue, table.ss_milestones_list td.ss_overdue a {

@@ -88,7 +88,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-size: 13px;
 	font-weight: bold;
 	letter-spacing: .1em;
-	background: #5A9A98 url(<html:imagesPath/>pics/H_bg_blend_teal.png) repeat-x;
+	background: #5691A6 url(<html:imagesPath/>pics/H_bg_blend_teal.png) repeat-x;
 	padding: 4px;
 	}
 .ss_diagDivContent {
@@ -769,7 +769,7 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	font-weight: bold;
 	font-size: ${ss_style_font_smallprint};
 	font-family: ${ss_style_title_font_family};
-	padding: 5px 2px;
+	padding: 0px 2px;
 	}
 .ss_actions_bar13 li{
 	border-right: 1px solid white;
