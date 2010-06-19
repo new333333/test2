@@ -287,7 +287,7 @@ function dodiff()
 
 function ss_resizeIframeArea() {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
-	if (parent.ssf_onLayoutChange) parent.ssf_onLayoutChange();
+	if (self.parent.ssf_onLayoutChange) self.parent.ssf_onLayoutChange();
 }
 </script>
 
@@ -349,7 +349,8 @@ function ss_resizeIframeArea() {
 </td>
 </tr>
 <tr>
- <td colspan="8">
+ <td></td>
+ <td colspan="7">
    <c:if test="${!empty change.changeLogEntry}">
     <c:set var="changeLogEntry" value="${change.changeLogEntry}"/>
 	<jsp:useBean id="changeLogEntry" type="org.kablink.teaming.domain.DefinableEntity" />
