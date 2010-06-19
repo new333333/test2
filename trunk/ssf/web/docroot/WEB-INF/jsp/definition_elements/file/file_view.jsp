@@ -68,7 +68,7 @@
 </tr>
 </table>
 
-<div style="padding: 0.4em;">
+<div style="padding: 0px 0.4em;">
 <c:if test="${!empty ssPrimaryFileAttribute}">
   <c:set var="selections" value="${ssDefinitionEntry.customAttributes[ssPrimaryFileAttribute].valueSet}" />
   <c:forEach var="selection" items="${selections}" varStatus="status">

@@ -169,8 +169,10 @@ body.ss_style_body {
 	}
 .ss_style a:hover {
   	color: ${ss_style_link_hover_color};
-	background: #81b2bd url(<html:imagesPath/>pics/teal_slice.png) repeat-x;
-	padding: 4px;
+	background: url(<html:imagesPath/>pics/teal_slice.png) repeat-x;
+    background-position:  left center;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 	}
 .ss_title_link {
   	text-decoration:underline;
