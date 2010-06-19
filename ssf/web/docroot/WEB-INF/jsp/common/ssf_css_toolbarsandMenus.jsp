@@ -825,7 +825,7 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	padding: 2px 5px;
 	}	
 .wg-tab-iframe {
-	height: 600px;
+	height: 290px;
 	width: 100%;
 	}	
 .tabactions {

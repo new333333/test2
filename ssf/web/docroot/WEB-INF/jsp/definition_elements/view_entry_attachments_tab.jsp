@@ -198,20 +198,6 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	</c:if>
 		
 	</ul>
-	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-	  <div id="ss_div_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
-	    name="ss_div_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
-	    style="visibility:visible;display:block; width:1px; height:1px;">
-		<div align="right">
-			<iframe frameborder="0" 
-			  id="ss_iframe_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
-			  name="ss_iframe_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
-			  src="<html:rootPath/>js/forum/null.html" 
-			  height="1" width="1"
-			  title="<ssf:nlt tag="entry.AttachFilesByWebDav" />" >xxx</iframe>
-		</div>
-	  </div>
-	</c:if>
 	</td>
 </tr>
 <tr>

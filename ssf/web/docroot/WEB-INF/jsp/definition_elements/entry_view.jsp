@@ -86,12 +86,28 @@
   
 </div>
 </div>
+<%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
+  </c:otherwise>
+</c:choose>
+<c:set var="ss_attachments_namespace" value="${renderResponse.namespace}"/>
+<c:if test="${!empty ss_namespace}"><c:set var="ss_attachments_namespace" value="${ss_namespace}"/></c:if>
+<c:if test="${ss_accessControlMap[ssEntry.id]['modifyEntry']}">
+  <div id="ss_div_fileopen${ssEntry.id}${ss_attachments_namespace}" 
+    name="ss_div_fileopen${ssEntry.id}${ss_attachments_namespace}" 
+    style="visibility:visible;display:block; width:1px; height:1px;">
+	<div align="right">
+		<iframe frameborder="0" 
+		  id="ss_iframe_fileopen${ssEntry.id}${ss_attachments_namespace}" 
+		  name="ss_iframe_fileopen${ssEntry.id}${ss_attachments_namespace}" 
+		  src="<html:rootPath/>js/forum/null.html" 
+		  height="1" width="1"
+		  title="<ssf:nlt tag="entry.AttachFilesByWebDav" />" >xxx</iframe>
+	</div>
+  </div>
+</c:if>
 <script type="text/javascript">
 function ss_focusOnEntry() {
 	ss_setFocusToFirstA("ss_entryTop${ss_entryLinkCounter}");
 }
 ss_createOnLoadObj("ss_focusOnEntry", ss_focusOnEntry);
 </script>
-<%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
-  </c:otherwise>
-</c:choose>
