@@ -165,50 +165,9 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		</td>
 
 		<td valign="top" class="ss_att_meta" nowrap width="5%">
-		 <c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-		  <div>
-		    <a href="javascript: ;" onClick="ss_showHide('ss_fileStatusMenu2_${selection.id}');return false;"
-		    ><span id="fileStatus2_${selection.id}">
-		      <c:if test="${selection.fileStatus != 0}">${selection.fileStatusText}</c:if>
-		      <c:if test="${selection.fileStatus == 0}"><ssf:nlt tag="file.statusNoStatus"/></c:if>
-		      </span><img style="padding:0px 4px;" src="<html:imagesPath/>pics/menudown.gif" /></a>
-		  </div>
-		  <div id="ss_fileStatusMenu2_${selection.id}" 
-		    style="display:none; background:#fff; border:1px #ccc solid;">
-		    <div><span class="ss_bold"><ssf:nlt tag="file.setStatus"/></span></div>
-		    <ul style="margin:0px;padding:0px 10px 0px 10px;">
-			  <li>
-			    <a href="javascript: ;" 
-			      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${selection.id}', '2', '0');return false;">
-			      <ssf:nlt tag="file.statusNone"/>
-			    </a>
-			  </li>
-			  <li>
-			    <a href="javascript: ;" 
-			      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${selection.id}', '2', '1');return false;">
-			      <ssf:nlt tag="file.status1"/>
-			    </a>
-			  </li>
-			  <li>
-			    <a href="javascript: ;" 
-			      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${selection.id}', '2', '2');return false;">
-			      <ssf:nlt tag="file.status2"/>
-			    </a>
-			  </li>
-			  <li>
-			    <a href="javascript: ;" 
-			      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${selection.id}', '2', '3');return false;">
-			      <ssf:nlt tag="file.status3"/>
-			    </a>
-			  </li>
-			</ul>
-		  </div>
-		 </c:if>
-		 <c:if test="${!ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-		  <div>
-		    <span>${selection.fileStatusText}</span>
-		  </div>
-		 </c:if>
+          <c:set var="ss_attachedFileIsVersion" value="false" scope="request" />
+          <c:set var="ss_attachedFile" value="${selection}" scope="request" />
+          <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_status.jsp" />
 		</td>
 		
 		<td valign="top" width="20%"><span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
@@ -224,170 +183,9 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		
 		<td valign="top" class="ss_att_meta_wrap ss_att_space" width="20%">${selection.modification.principal.userTitle}</td>
 		<td valign="top" class="ss_att_meta" width="20%">
-		  <a class="ss_tinyButton ss_fineprint" href="javascript: ;" 
-		    onClick="ss_showHide('ss_fileActionsMenu2_${selection.id}');return false;"
-		  ><ssf:nlt tag="file.actions"/></a>
-		  <div id="ss_fileActionsMenu2_${selection.id}" 
-		    style="display:none; background:#fff; border:1px #ccc solid;">
-		    <ul style="margin:0px;padding:0px 10px 0px 10px;">
-			  <li>
-				<%
-					if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
-				%>
-					<a style="text-decoration: none;" href="<ssf:fileUrl file="${selection}"/>" 
-					  onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
-					><span><ssf:nlt tag="file.view"/></span></a>
-		
-				<%  }
-					if (isIECheck && ext.equals(".ppt") && editInPlaceSupported) {
-				%>
-					<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="applet">
-						<ssf:isFileEditorConfiguredForOS relativeFilePath="${selection.fileItem.name}" 
-						  operatingSystem="<%= operatingSystem %>">
-							<a style="text-decoration: none;" href="<ssf:ssfsInternalAttachmentUrl 
-								binder="${ssDefinitionEntry.parentBinder}"
-								entity="${ssDefinitionEntry}"
-								fileAttachment="${selection}"/>" 
-								onClick="javascript:ss_openWebDAVFile('${ssDefinitionEntry.parentBinder.id}', 
-								    '${ssDefinitionEntry.id}', 
-								    '${ss_attachments_namespace}', 
-								    '<%= operatingSystem %>', 
-									'${selection.id}');
-									return false;"
-							><span><ssf:nlt tag="file.view"/></span></a>
-						</ssf:isFileEditorConfiguredForOS>
-					</ssf:editorTypeToUseForEditInPlace>
-					
-					<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="webdav">
-						<a href="<ssf:ssfsInternalAttachmentUrl 
-								binder="${ssDefinitionEntry.parentBinder}"
-								entity="${ssDefinitionEntry}"
-								fileAttachment="${selection}"/>"
-						><span><ssf:nlt tag="file.view"/></span></a>
-					</ssf:editorTypeToUseForEditInPlace>
-				<%  }  %>
-			  </li>
-
-			  <ssf:ifSupportsViewAsHtml relativeFilePath="${selection.fileItem.name}" browserType="<%=strBrowserType%>">
-				<li>
-				  <a target="_blank" style="text-decoration: none;" href="<ssf:url 
-				    webPath="viewFile"
-				    folderId="${ssDefinitionEntry.parentBinder.id}"
-			   	 	entryId="${ssDefinitionEntry.id}"
-				    entityType="${ssDefinitionEntry.entityType}" >
-			    	<ssf:param name="fileId" value="${selection.id}"/>
-			    	<ssf:param name="fileTime" value="${selection.modification.date.time}"/>
-			    	<ssf:param name="viewType" value="html"/>
-			    	</ssf:url>" title="<ssf:nlt tag="title.open.file.in.html.format" />" 
-			       ><span><ssf:nlt tag="file.viewAsHtml" /></span></a>
-			    </li>
-			  </ssf:ifSupportsViewAsHtml>
-
-			  <ssf:ifnotaccessible>
-				<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-					<ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}" browserType="<%=strBrowserType%>">
-						<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="applet">
-							<ssf:isFileEditorConfiguredForOS relativeFilePath="${selection.fileItem.name}" operatingSystem="<%= operatingSystem %>">
-								<c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
-								  <li>
-								    <a href="javascript: ;" 
-									  onClick='javascript:<c:if test="${!empty ss_quotaMessage}">alert("${ss_quotaMessage}");</c:if>
-									    ss_openWebDAVFile("${ssDefinitionEntry.parentBinder.id}", "${ssDefinitionEntry.id}", "${ss_attachments_namespace}", "<%= operatingSystem %>", 
-										"${selection.id}");
-										return false;'
-								    ><span><ssf:nlt tag="file.editFile"/></span></a>
-								  </li>
-								</c:if>
-								<c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
-								  <li>
-								  <a href="javascript: ;" 
-									onClick='alert("${ss_quotaMessage}");return false;'
-								  ><span><ssf:nlt tag="file.editFile"/></span></a>
-								  </li>
-								</c:if>
-							</ssf:isFileEditorConfiguredForOS>
-						</ssf:editorTypeToUseForEditInPlace>
-							
-						<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="webdav">
-							  <c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
-							    <li>
-							      <a href="<ssf:ssfsInternalAttachmentUrl 
-									binder="${ssDefinitionEntry.parentBinder}"
-									entity="${ssDefinitionEntry}"
-									fileAttachment="${selection}"/>"
-								  <c:if test="${!empty ss_quotaMessage}">onClick='alert("${ss_quotaMessage}");'</c:if>
-								  ><span><ssf:nlt tag="file.editFile"/></span></a>
-								</li>
-							  </c:if>
-							  <c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
-							    <li>
-								  <a href="javascript: ;" 
-									onClick='alert("${ss_quotaMessage}");return false;'
-								  ><span><ssf:nlt tag="file.editFile"/></span></a>
-								</li>
-							  </c:if>
-						</ssf:editorTypeToUseForEditInPlace>
-					
-					</ssf:ifSupportsEditInPlace>
-				  </c:if>	
-				</ssf:ifnotaccessible>
-				
-				<li>
-				  <a target="_blank" style="text-decoration: none;" 
-				    href="<ssf:fileUrl zipUrl="true" entity="${ssDefinitionEntry}" fileId="${selection.id}" />" 
-			       ><span><ssf:nlt tag="file.downloadAsZip" /></span></a>
-				</li>
-				
-				<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-				  <li>
-				    <a href="<ssf:url
-					    adapter="true" 
-					    portletName="ss_forum" 
-					    action="modify_file" 
-					    actionUrl="false" 
-					    ><ssf:param name="entityId" value="${ssDefinitionEntry.id}"/><ssf:param 
-					    name="entityType" value="${ssDefinitionEntry.entityType}"/><ssf:param 
-					    name="fileId" value="${selection.id}"/><ssf:param 
-					    name="operation" value="modify_file_description"/></ssf:url>"
-				      onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
-					><span><ssf:nlt tag="file.addComment"/></span></a>
-				  </li>
-				</c:if>
-
-				<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-				  <li>
-				    <a href="<ssf:url
-					    adapter="true" 
-					    portletName="ss_forum" 
-					    action="modify_file" 
-					    actionUrl="false" 
-					    ><ssf:param name="entityId" value="${ssDefinitionEntry.id}"/><ssf:param 
-					    name="entityType" value="${ssDefinitionEntry.entityType}"/><ssf:param 
-					    name="fileId" value="${selection.id}"/><ssf:param 
-					    name="operation" value="modify_file_major_version"/></ssf:url>"
-				      onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
-					><span><ssf:nlt tag="file.command.incrementMajorVersion"/></span></a>
-				  </li>
-				</c:if>
-
-				<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['deleteEntry']}">
-				  <li>
-				    <a href="<ssf:url
-					    adapter="true" 
-					    portletName="ss_forum" 
-					    action="modify_file" 
-					    actionUrl="false" 
-					    ><ssf:param name="entityId" value="${ssDefinitionEntry.id}"/><ssf:param 
-					    name="entityType" value="${ssDefinitionEntry.entityType}"/><ssf:param 
-					    name="fileId" value="${selection.id}"/><ssf:param 
-					    name="operation" value="delete"/></ssf:url>"
-				      onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
-					><span><ssf:nlt tag="file.command.deleteVersion"/></span></a>
-				  </li>
-				</c:if>
-
-			</ul>
-		  </div>
+          <c:set var="ss_attachedFileIsVersion" value="false" scope="request" />
+          <c:set var="ss_attachedFile" value="${selection}" scope="request" />
+          <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions.jsp" />
 		</td>
 	</tr>
 	<tr class="${ss_attachedFileRowClass}">
@@ -436,51 +234,9 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				</td>
 
 				<td valign="top" class="ss_att_meta" nowrap width="5%">
-				 <c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-				  <div>
-				    <a href="javascript: ;" onClick="ss_showHide('ss_fileStatusMenu2_${fileVersion.id}');return false;"
-				    ><span id="fileStatus2_${fileVersion.id}">
-				      <c:if test="${fileVersion.fileStatus != 0}">${fileVersion.fileStatusText}</c:if>
-				      <c:if test="${fileVersion.fileStatus == 0}"><ssf:nlt tag="file.statusNoStatus"/></c:if>
-				      </span>
-				      <img style="padding:0px 4px;" src="<html:imagesPath/>pics/menudown.gif" /></a>
-				  </div>
-				  <div id="ss_fileStatusMenu2_${fileVersion.id}" 
-				    style="display:none; background:#fff; border:1px #ccc solid;">
-		    		<div><span class="ss_bold"><ssf:nlt tag="file.setStatus"/></span></div>
-				    <ul style="margin:0px;padding:0px 10px 0px 10px;">
-					  <li>
-					    <a href="javascript: ;" 
-					      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${fileVersion.id}', '2', '0');return false;">
-					      <ssf:nlt tag="file.statusNone"/>
-					    </a>
-					  </li>
-					  <li>
-					    <a href="javascript: ;" 
-					    onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${fileVersion.id}', '2', '1');return false;">
-					      <ssf:nlt tag="file.status1"/>
-					    </a>
-					  </li>
-					  <li>
-					    <a href="javascript: ;" 
-					    onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${fileVersion.id}', '2', '2');return false;">
-					      <ssf:nlt tag="file.status2"/>
-					    </a>
-					  </li>
-					  <li>
-					    <a href="javascript: ;" 
-					    onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${fileVersion.id}', '2', '3');return false;">
-					      <ssf:nlt tag="file.status3"/>
-					    </a>
-					  </li>
-					</ul>
-				  </div>
-				 </c:if>
-				 <c:if test="${!ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-				  <div>
-				    <span>${fileVersion.fileStatusText}</span>
-				  </div>
-				 </c:if>
+          		  <c:set var="ss_attachedFileIsVersion" value="true" scope="request" />
+          		  <c:set var="ss_attachedFile" value="${fileVersion}" scope="request" />
+          		  <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_status.jsp" />
 				</td>
 		
 				<td valign="top" width="20%">
@@ -492,77 +248,9 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				<td valign="top" class="ss_att_meta" nowrap width="5%"><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${fileVersion.fileItem.lengthKB}"/> <ssf:nlt tag="file.sizeKB" text="KB"/></td>
 				<td valign="top" class="ss_att_meta_wrap ss_att_space" width="20%">${fileVersion.modification.principal.userTitle}</td>
 				<td valign="top" class="ss_att_meta" width="20%">
-				  <a class="ss_tinyButton ss_fineprint" href="javascript: ;" 
-				    onClick="ss_showHide('ss_fileActionsMenu2_${fileVersion.versionNumber}');return false;"
-				  ><ssf:nlt tag="file.actions"/></a>
-				  <div id="ss_fileActionsMenu2_${fileVersion.versionNumber}" 
-				     style="display:none; background:#fff; border:1px #ccc solid;">
-		    		<ul style="margin:0px;padding:0px 10px 0px 10px;">
-						<c:if test="<%= !owningBinder.isMirrored() %>">
-		    		      <li>
-							<a style="text-decoration: none;"
-							  href="<ssf:fileUrl file="${fileVersion}"/>" 
-								    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${fileVersion.fileItem.name}"/>');"
-							><span><ssf:nlt tag="file.view"/></span></a>
-		    		      </li>
-						</c:if>
-
-						<li>
-						  <a target="_blank" style="text-decoration: none;" 
-						    href="<ssf:fileUrl zipUrl="true" entity="${ssDefinitionEntry}" fileId="${fileVersion.id}" />" 
-					       ><span><ssf:nlt tag="file.downloadAsZip" /></span></a>
-						</li>
-
-						<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-						  <li>
-						    <a href="<ssf:url
-							    adapter="true" 
-							    portletName="ss_forum" 
-							    action="modify_file" 
-							    actionUrl="false" 
-							    ><ssf:param name="entityId" value="${ssDefinitionEntry.id}"/><ssf:param 
-							    name="entityType" value="${ssDefinitionEntry.entityType}"/><ssf:param 
-							    name="fileId" value="${fileVersion.id}"/><ssf:param 
-							    name="operation" value="modify_file_description"/></ssf:url>"
-						      onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
-							><span><ssf:nlt tag="file.addComment"/></span></a>
-						  </li>
-						</c:if>
-
-						<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-						  <li>
-						    <a href="<ssf:url
-							    adapter="true" 
-							    portletName="ss_forum" 
-							    action="modify_file" 
-							    actionUrl="false" 
-							    ><ssf:param name="entityId" value="${ssDefinitionEntry.id}"/><ssf:param 
-							    name="entityType" value="${ssDefinitionEntry.entityType}"/><ssf:param 
-							    name="fileId" value="${fileVersion.id}"/><ssf:param 
-							    name="operation" value="modify_file_revert"/></ssf:url>"
-						      onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
-							><span><ssf:nlt tag="file.command.revertVersion"/></span></a>
-						  </li>
-						</c:if>
-
-						<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['deleteEntry']}">
-						  <li>
-						    <a href="<ssf:url
-							    adapter="true" 
-							    portletName="ss_forum" 
-							    action="modify_file" 
-							    actionUrl="false" 
-							    ><ssf:param name="entityId" value="${ssDefinitionEntry.id}"/><ssf:param 
-							    name="entityType" value="${ssDefinitionEntry.entityType}"/><ssf:param 
-							    name="fileId" value="${fileVersion.id}"/><ssf:param 
-							    name="operation" value="delete"/></ssf:url>"
-						      onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
-							><span><ssf:nlt tag="file.command.deleteVersion"/></span></a>
-						  </li>
-						</c:if>
-
-				    </ul>
-				  </div>
+          		  <c:set var="ss_attachedFileIsVersion" value="true" scope="request" />
+          		  <c:set var="ss_attachedFile" value="${fileVersion}" scope="request" />
+          		  <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions.jsp" />
 				</td>	
 			  </tr>	
 			  <c:choose>

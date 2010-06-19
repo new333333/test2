@@ -191,7 +191,7 @@ public class AddAttachmentController extends SAbstractController {
 		FolderEntry entry=null;
 		if (op.equals(WebKeys.OPERATION_ADD_FILES_BY_BROWSE_FOR_ENTRY)) {
 			model.put(WebKeys.ENTRY_ATTACHMENT_DIV_CLOSE_FUNCTION, closeDivFunctionName);
-			path="definition_elements/close_div";
+			path="forum/reload_parent";
 		} else {
 			Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
 			entry  = getFolderModule().getEntry(folderId, entryId);
