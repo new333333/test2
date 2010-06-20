@@ -1230,27 +1230,28 @@ function ss_toggleShowDiv(divName, namespace) {
 }
 
 //Routine to hide or show a region using a collapse/expand button
-var ss_toggleRegionSize = 300;
-function ss_toggleRegionInit(divId, imgId) {
+function ss_toggleRegionInit(divId, imgId, ss_toggleRegionSize, initialRegionClass) {
 	var divHeight = ss_getDivHeight(divId);
 	if (parseInt(divHeight) >= ss_toggleRegionSize) {
 		var imgObj = self.document.getElementById(imgId);
 		if (imgObj != null) imgObj.style.display = "block";
+		var divObj = self.document.getElementById(divId);
+		divObj.className = initialRegionClass;
 	}
 }
-function ss_toggleRegion(aObj, divId, regionId) {
+function ss_toggleRegion(aObj, divId, regionId, baseClassName, ss_toggleRegionSize) {
 	var urlParams = {operation:"save_region_view",id:regionId};
 	var divObj = self.document.getElementById(divId);
 	var buttonSrc = aObj.firstChild.src;
 	var reExpand = /expand([^\/]*\.png)/
 	var reCollapse = /collapse([^\/]*\.png)/
 	if (buttonSrc.search(reExpand) >= 0) {
-		divObj.className = "wg-tab-content";
+		divObj.className = baseClassName;
 		aObj.firstChild.src = buttonSrc.replace(reExpand, "collapse$1")
 		urlParams.state = "expanded";
 	} else {
 		var divHeight = ss_getDivHeight(divId);
-		if (parseInt(divHeight) >= ss_toggleRegionSize) divObj.className = "wg-tab-content-clipped";
+		if (parseInt(divHeight) >= ss_toggleRegionSize) divObj.className = baseClassName+"-clipped";
 		aObj.firstChild.src = buttonSrc.replace(reCollapse, "expand$1")
 		urlParams.state = "collapsed";
 	}

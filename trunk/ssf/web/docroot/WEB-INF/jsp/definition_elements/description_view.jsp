@@ -31,24 +31,53 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-%><%--
---%><% //Description view %><%--
---%><%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %><%--
---%><c:set var="textFormat" value=""/><%--
---%><c:if test="${!empty ssDefinitionEntry.description.format}"><%--
---%><c:set var="textFormat" value="${ssDefinitionEntry.description.format}"/><%--
---%></c:if><%--
---%><c:if test="${!empty ssDefinitionEntry.description.text}"><%--
-    --%><ssf:editable entity="${ssDefinitionEntry}" element="description" aclMap="${ss_accessControlMap}"><%--
-		 --%><c:if test="${textFormat == '2'}"><%--
-		   --%><ssf:textFormat formatAction="textToHtml">${ssDefinitionEntry.description.text}</ssf:textFormat><%--
-		 --%></c:if><%--
-		 --%><c:if test="${textFormat != '2'}"><%--
-		   --%><span><%--
-		     --%><ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" 
-		     >${ssDefinitionEntry.description.text}</ssf:markup><%--
-		   --%></span><%--
-		 --%></c:if><%--
-        --%><div class="ss_clear"></div><%--
---%></ssf:editable><%--
---%></c:if>
+%>
+<% //Description view %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="ss_divCounter" value="${ss_divCounter + 1}" scope="request" />
+<%
+	//Get the user's desired region view (if set)
+	String regionView_descriptionRegion = "expanded";
+	Map userProperties = (Map)  request.getAttribute("ssUserProperties");
+	if (userProperties != null && userProperties.containsKey("regionView.descriptionRegion")) {
+		regionView_descriptionRegion = (String) userProperties.get("regionView.descriptionRegion");
+	}
+	if ("collapsed".equals(regionView_descriptionRegion)) {
+		%><c:set var="regionClass" value="wg-description-content-clipped"/><c:set var="regionImg" value="expand_16_yellow.png"/><%
+	} else {
+		%><c:set var="regionClass" value="wg-description-content"/><c:set var="regionImg" value="collapse_16_yellow.png"/><%
+	}
+%>
+<c:set var="textFormat" value=""/>
+<c:if test="${!empty ssDefinitionEntry.description.format}">
+  <c:set var="textFormat" value="${ssDefinitionEntry.description.format}"/>
+</c:if>
+<c:if test="${!empty ssDefinitionEntry.description.text}">
+    <c:if test="${ssDefinitionEntry.top}">
+    <div id="descriptionRegionImg${ss_divCounter}" align="right" style="display:none; width:100%;">
+      <a href="javascript: ;" 
+        onClick="ss_toggleRegion(this, 'descriptionRegion${ss_divCounter}', 'descriptionRegion', 'wg-description-content', 200);return false;" 
+        alt="<ssf:nlt tag="general.expandCollapseRegion"/>" title="<ssf:nlt tag="general.expandCollapseRegion"/>"
+      ><img src="<html:rootPath/>images/pics/${regionImg}"/></a>
+    </div>
+    </c:if>
+    <div id="descriptionRegion${ss_divCounter}" style="width:100%;">
+	  <ssf:editable entity="${ssDefinitionEntry}" element="description" aclMap="${ss_accessControlMap}">
+		<c:if test="${textFormat == '2'}">
+		  <ssf:textFormat formatAction="textToHtml">${ssDefinitionEntry.description.text}</ssf:textFormat>
+		</c:if>
+		<c:if test="${textFormat != '2'}">
+		  <span>
+			<ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" 
+			>${ssDefinitionEntry.description.text}</ssf:markup>
+		  </span>
+		</c:if>
+		<div class="ss_clear"></div>
+	  </ssf:editable>
+    </div>
+<script type="text/javascript">
+ss_createOnLoadObj("descriptionRegion${ss_divCounter}", function() {
+	ss_toggleRegionInit('descriptionRegion${ss_divCounter}', 'descriptionRegionImg${ss_divCounter}', 200, '${regionClass}');
+});
+</script>
+</c:if>

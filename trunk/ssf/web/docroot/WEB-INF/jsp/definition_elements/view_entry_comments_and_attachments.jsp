@@ -156,7 +156,7 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
     <c:if test="${ssDefinitionEntry.top}">
     <div id="commentsAndAttachmentsRegionImg${ss_divCounter}" style="display:none;">
     <a href="javascript: ;" 
-      onClick="ss_toggleRegion(this, 'commentsAndAttachmentsRegion${ss_divCounter}', 'commentsAndAttachmentsRegion');return false;" 
+      onClick="ss_toggleRegion(this, 'commentsAndAttachmentsRegion${ss_divCounter}', 'commentsAndAttachmentsRegion', 'wg-tab-content', 300);return false;" 
       alt="<ssf:nlt tag="general.expandCollapseRegion"/>" title="<ssf:nlt tag="general.expandCollapseRegion"/>"
     ><img src="<html:rootPath/>images/pics/${regionImg}"/></a>
     </div>
@@ -168,14 +168,11 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
 <c:if test="${ssDefinitionEntry.top}">
 <script type="text/javascript">
 ss_createOnLoadObj("commentsAndAttachmentsRegion${ss_divCounter}", function() {
-	ss_toggleRegionInit('commentsAndAttachmentsRegion${ss_divCounter}', 'commentsAndAttachmentsRegionImg${ss_divCounter}');
+	ss_toggleRegionInit('commentsAndAttachmentsRegion${ss_divCounter}', 'commentsAndAttachmentsRegionImg${ss_divCounter}', 300, '${regionClass}');
 });
 </script>
 </c:if>
-<div id="commentsAndAttachmentsRegion${ss_divCounter}" 
-  <c:if test="${ssDefinitionEntry.top}">class="${regionClass}"</c:if>
-  <c:if test="${!ssDefinitionEntry.top}">class="wg-tab-content"</c:if>
->
+<div id="commentsAndAttachmentsRegion${ss_divCounter}" class="wg-tab-content">
 <div id="viewAttachments${ss_tabDivCount}Div" 
   <c:if test="${empty ss_pseudoEntity}">style="display:none;"</c:if>
   <c:if test="${!empty ss_pseudoEntity}">style="display:block;"</c:if>
