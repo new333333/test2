@@ -776,6 +776,22 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	}		
 
 
+/* Description region */
+.wg-description-content {
+	border: 1px solid #e6e6e4;
+	display: block;
+	margin: 0px;
+	padding: 0px;
+	}	
+.wg-description-content-clipped {
+	border: 1px solid #e6e6e4;
+	height: 200px;
+	overflow: auto;
+	display: block;
+	margin: 0px;
+	padding: 0px;
+	}	
+
 /* Teaming - Tabs */
 
 .wg-tabs {
