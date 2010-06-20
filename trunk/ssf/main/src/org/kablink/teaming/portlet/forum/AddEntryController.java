@@ -76,9 +76,11 @@ import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.FileUploadItem;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
@@ -267,7 +269,14 @@ public class AddEntryController extends SAbstractController {
 	        	    	//Using the Folder object that was already present or that was recently created 
 	        	    	Folder entryCreationFolder = getFolderModule().getFolder(lngFolderIdToUse);
 	        	    	//Checking to see if the folder already contains the file that we are trying to create
-	        	    	FolderEntry preExistingEntry = getFolderModule().getLibraryFolderEntryByFileName(entryCreationFolder, strDecodedFileName);
+	        	    	FolderEntry preExistingEntry = null;
+	        	    	try {
+	        	    		preExistingEntry = getFolderModule().getLibraryFolderEntryByFileName(entryCreationFolder, strDecodedFileName);
+	        	    	} catch(AccessControlException ace) {
+	        	    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, NLT.get("entry.duplicateFileInLibrary2"));
+	        	    		blnCheckForAppletFile = false;
+	        	    		break;
+	        	    	}
 	        	    	
 	        	    	//If there is not pre-existing entry - we create a new entry
 	        	    	//If there is a pre-existing entry - we modify the entry
