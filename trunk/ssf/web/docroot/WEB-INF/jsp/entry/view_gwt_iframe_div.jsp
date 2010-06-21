@@ -77,7 +77,7 @@
     <ssf:param name="box_show_move_routine" value="ss_startDragDiv('move')" />
     <ssf:param name="box_show_close_icon" value="true" />
     <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
-  <div id="ss_iframe_holder_div" style="padding:4px;">
+  <div id="ss_iframe_holder_div" style="padding: 0 4px;">
   <iframe id="ss_showentryframe"
   	title="<ssf:nlt tag = "iframe.entry"/>" 
     name="ss_showentryframe" style="width:100%; 
