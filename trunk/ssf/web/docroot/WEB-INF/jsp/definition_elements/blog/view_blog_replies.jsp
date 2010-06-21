@@ -114,7 +114,7 @@
   id="${renderResponse.namespace}ss_blog_add_reply_iframe_${ssDefinitionEntry._docId}"
   name="${renderResponse.namespace}ss_blog_add_reply_iframe_${ssDefinitionEntry._docId}"
   src="<html:rootPath/>js/forum/null.html" 
-  onLoad="if (parent.ss_showBlogReplyIframe) parent.ss_showBlogReplyIframe(this, '${renderResponse.namespace}', '${ssBinder.id}','${ssDefinitionEntry._docId}');" 
+  onLoad="if (ss_showBlogReplyIframe) ss_showBlogReplyIframe(this, '${renderResponse.namespace}', '${ssBinder.id}','${ssDefinitionEntry._docId}');" 
   width="100%" frameBorder="0">xxx</iframe>
 </div>
 </c:if>
