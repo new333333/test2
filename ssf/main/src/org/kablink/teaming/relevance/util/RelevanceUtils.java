@@ -51,6 +51,7 @@ import org.kablink.teaming.relevance.Relevance;
 import org.kablink.teaming.relevance.RelevanceManager;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.MiscUtil;
 
 
@@ -180,7 +181,7 @@ public final class RelevanceUtils
 				addUniqueUserToSet(reply, ((User) modifierPrincipal));
 			}
 			else {
-				getRelevanceEngine().getRelevanceLogger().debug("RelevanceUtils.getAttachmentUsers( 'Non-User UserPrincipal ignored.' ):  Title:  '" + modifierPrincipal.getUserTitle() + "'");
+				getRelevanceEngine().getRelevanceLogger().debug("RelevanceUtils.getAttachmentUsers( 'Non-User UserPrincipal ignored.' ):  Title:  '" + Utils.getUserTitle(modifierPrincipal) + "'");
 			}
 		}
 		

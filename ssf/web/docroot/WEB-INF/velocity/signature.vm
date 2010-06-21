@@ -102,13 +102,13 @@ $ssVisitor.visit()
 #end
 </div>
 #else
-#ss_print("${property_caption} ${ssVisitor.Entity.Creation.Principal.Title}")
+#ss_print("${property_caption} $ssVisitor.getUserTitle(${ssVisitor.Entity.Creation.Principal})")
 #if ($ssVisitor.Entity.PostedBy)
 #ss_print(" ($ssVisitor.getNLT('entry.postedBy') ${ssVisitor.Entity.PostedBy})")
 #end 
 #ss_printLn(" $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Creation.Date})")
 #if ($ssVisitor.Entity.Modification.Date.Time gt $ssVisitor.Entity.Creation.Date.Time)
-#ss_printLn("      $ssVisitor.getNLT('entry.modifiedBy') ${ssVisitor.Entity.Modification.Principal.UserTitle} $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Modification.Date})")
+#ss_printLn("      $ssVisitor.getNLT('entry.modifiedBy') $ssVisitor.getUserTitle(${ssVisitor.Entity.Modification.Principal}) $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Modification.Date})")
 #end
 $ssVisitor.visit()
 #end

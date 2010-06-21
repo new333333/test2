@@ -57,6 +57,7 @@ import org.kablink.teaming.module.ic.RecordType;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.springframework.beans.factory.DisposableBean;
@@ -583,7 +584,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 			User participant = (User) userIt.next();
 			Vector part = new Vector();
 			part.add(User.getNormalizedConferencingName(participant.getZonName()));
-			part.add(participant.getUserTitle());
+			part.add(Utils.getUserTitle(participant));
 			part.add(participant.getPhone());
 			part.add(participant.getEmailAddress());
 			part.add(0);

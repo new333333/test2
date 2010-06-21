@@ -120,6 +120,7 @@ import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ExportHelper;
@@ -1144,7 +1145,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				reply.setUserId( user.getId() );
 				reply.setWorkspaceId( binder.getId() );
 				reply.setName( user.getName() );
-				reply.setTitle( user.getUserTitle() );
+				reply.setTitle( Utils.getUserTitle(user) );
 				reply.setWorkspaceTitle( user.getWSTitle() );
 				reply.setViewWorkspaceUrl( PermaLinkUtil.getPermalink( binder ) );
 			}

@@ -64,6 +64,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractControllerRetry;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -193,14 +194,19 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		}
 
 		getProfileModule().setShares(entity, ids, teams);
-		String title = entity.getUserTitle();
+		String title;
+		if (entity instanceof Principal) {
+			title = Utils.getUserTitle((Principal)entity);
+		} else {
+			title = entity.getTitle();
+		}
 		if (entity.getParentBinder() != null) title = entity.getParentBinder().getPathName() + "/" + title;
 		String addedComments = PortletRequestUtils.getStringParameter(request, "mailBody", "");
 		// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
 		Description body = new Description("<a href=\"" + PermaLinkUtil.getPermalink((ActionRequest) null, entity) +
 				"\">" + title + "</a><br/><br/>" + addedComments);
 		try {
-			Map status = getAdminModule().sendMail(ids, teams, null, null, null, NLT.get("relevance.mailShared", new Object[]{RequestContextHolder.getRequestContext().getUser().getUserTitle()}), body);
+			Map status = getAdminModule().sendMail(ids, teams, null, null, null, NLT.get("relevance.mailShared", new Object[]{Utils.getUserTitle(RequestContextHolder.getRequestContext().getUser())}), body);
 			Set totalIds = new HashSet();
 			totalIds.addAll(ids);
 			Set<Principal> totalUsers = getProfileModule().getPrincipals(totalIds);
@@ -210,7 +216,7 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 					try {
 						AccessUtils.readCheck((User)p, (DefinableEntity) entity);
 					} catch(AccessControlException e) {
-						noAccessPrincipals.add(p.getUserTitle() + " (" + p.getName() + ")");
+						noAccessPrincipals.add(Utils.getUserTitle(p) + " (" + p.getName() + ")");
 					}
 				}
 			}

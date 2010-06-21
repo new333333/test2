@@ -932,7 +932,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	Map message = new HashMap();
        	try {
        		InternetAddress ia = new InternetAddress(user.getEmailAddress());
-       		String userName = user.getUserTitle();
+       		String userName = Utils.getUserTitle(user);
        		if ((null != userName) && (0 < userName.length())) {
        			ia.setPersonal(userName);
        		}
@@ -944,7 +944,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				emailAddr = "";
 				errorMsg = NLT.get("sendMail.noEmailAddress");
 			}
-			errors.add(0, NLT.get("errorcode.badFromAddress", new Object[] {user.getUserTitle(), emailAddr, errorMsg})); 
+			errors.add(0, NLT.get("errorcode.badFromAddress", new Object[] {Utils.getUserTitle(user), emailAddr, errorMsg})); 
 			//cannot send without valid from address
 			return result;
     	}
@@ -957,9 +957,9 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		message.put(MailModule.BCC, getEmail(bccIds, errors));
  		MailSentStatus results;
  		if (entry != null) {
- 			results = getMailModule().sendMail(entry, message, user.getUserTitle() + " email", sendAttachments);    		
+ 			results = getMailModule().sendMail(entry, message, Utils.getUserTitle(user) + " email", sendAttachments);    		
  		} else {
- 			results = getMailModule().sendMail(RequestContextHolder.getRequestContext().getZone(), message, user.getUserTitle() + " email");    		
+ 			results = getMailModule().sendMail(RequestContextHolder.getRequestContext().getZone(), message, Utils.getUserTitle(user) + " email");    		
     	}
 		result.put(ObjectKeys.SENDMAIL_STATUS, results);
 		return result;
@@ -985,7 +985,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
  						emailAddr = "";
  						errorMsg = NLT.get("sendMail.noEmailAddress");
  					}
- 					errors.add(NLT.get("errorcode.badToAddress", new Object[] {e.getUserTitle(), emailAddr, errorMsg})); 
+ 					errors.add(NLT.get("errorcode.badToAddress", new Object[] {Utils.getUserTitle(e), emailAddr, errorMsg})); 
  				}
  			}
  		}

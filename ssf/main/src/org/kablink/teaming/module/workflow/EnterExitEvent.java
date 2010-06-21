@@ -90,6 +90,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -484,7 +485,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 					addrs.add(ia);
 				}
 			} catch (AddressException ae) {
-				logger.error("Skipping email notifications for " + u.getUserTitle() + " Bad email address");
+				logger.error("Skipping email notifications for " + Utils.getUserTitle(u) + " Bad email address");
 			}
 		} 
 		return addrs;

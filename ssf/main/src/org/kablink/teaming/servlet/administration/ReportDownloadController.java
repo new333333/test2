@@ -63,6 +63,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.servlet.SAbstractController;
 import org.kablink.teaming.web.tree.TreeHelper;
@@ -450,7 +451,7 @@ public class ReportDownloadController extends  SAbstractController {
 						String userName;
 						
 						// Does the user's name have a ',' in it?
-						userName = user.getUserTitle() + " (" + user.getName() + ")";
+						userName = Utils.getUserTitle(user) + " (" + user.getName() + ")";
 						indexOfComma = userName.indexOf( ',' ); 
 						if ( indexOfComma >= 0 )
 						{

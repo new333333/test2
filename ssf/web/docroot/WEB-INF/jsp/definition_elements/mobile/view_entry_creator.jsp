@@ -41,7 +41,7 @@
 	    action="__ajax_mobile"
 	    operation="mobile_show_workspace"
 	    binderId="${ssDefinitionEntry.creation.principal.workspaceId}" />"
-	  >${ssDefinitionEntry.creation.principal.title}</a>
+	  ><ssf:userTitle user="${ssDefinitionEntry.creation.principal}"/></a>
   </span>
   <c:if test="${!empty ssDefinitionEntry.postedBy}">
     <br/>
