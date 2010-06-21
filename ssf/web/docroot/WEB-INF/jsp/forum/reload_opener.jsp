@@ -63,6 +63,9 @@ function ss_doReload() {
 		ss_random++;
 		url = ss_replaceSubStr(url, "ss_entry_id_place_holder", "${ssEntryId}")
 		url = ss_replaceSubStr(url, "ss_randomPlaceholder", ss_random)
+		if (self.opener.top.m_requestInfo) {
+			self.opener.top.m_requestInfo.forceSidebarReload = true;
+		}
 		self.opener.location.href = url;
 		self.opener.focus();
 	} else if (self.opener) {
