@@ -1116,15 +1116,13 @@ table.ss_mouseOverInfo {
 }
 .ss_mouseOverInfo span {
   position:relative;
-  left:-1px;
+  color: #5691A6;
   top:0px;
-  border:1px solid black;
   padding-right:10px;
 }
 .ss_mouseOverInfo td a.ss_title_menu span {
   position:relative;
   top:0px;
-  border:1px solid black;
   padding-right:10px;
 }
 .ss_mouseOverInfo td a.ss_title_menu img {
@@ -1577,7 +1575,7 @@ div.ss_box_top_rounded {
 
 .ss_box_title:hover {
 	color: ${ss_box_title_hover_color};
-	font-weight: normal;
+	font-weight: bold;
 }
 
 .ss_box_minimum_height {

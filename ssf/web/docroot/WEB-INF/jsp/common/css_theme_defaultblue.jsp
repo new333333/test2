@@ -190,7 +190,7 @@
   --
 --%><c:set var="ss_style_link_color" value="#135c8f" scope="request"/><%--
 --%><c:set var="ss_style_link_visited_color" value="#135c8f" scope="request"/><%--	
---%><c:set var="ss_style_link_hover_color" value="#5691A6" scope="request"/><%--
+--%><c:set var="ss_style_link_hover_color" value="#135c8f" scope="request"/><%--
 
 --%><%--
   --
