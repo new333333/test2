@@ -41,7 +41,6 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletSecurityException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.util.SpringContextUtil;
 
 public class AdaptedPortletURL {
@@ -127,16 +126,7 @@ public class AdaptedPortletURL {
 	 */
 	public static AdaptedPortletURL createAdaptedPortletURLOutOfWebContext
 		(String portletName, boolean action) {
-		
-		if(ZoneContextHolder.getServerName() != null) {
-			String host = ZoneContextHolder.getServerName();
-			int port = ZoneContextHolder.getServerPort();
-			boolean secure = ZoneContextHolder.isSecure();
-			return new AdaptedPortletURL(portletName, action, secure, host, port);
-		}
-		else {
-			return new AdaptedPortletURL(portletName, action);
-		}
+		return new AdaptedPortletURL(portletName, action);
 	}
 	
 	/**
