@@ -48,7 +48,7 @@
 <span class="ss_bold"><ssf:nlt tag="access.applications"/></span>
 <br/>
   <c:forEach var="user" items="${ssUsers}" varStatus="status">
-	${user.title} (${user.name})<br/>
+	${user.title} (<ssf:userName user="${user}"/>)<br/>
   </c:forEach>
 </c:if>
 

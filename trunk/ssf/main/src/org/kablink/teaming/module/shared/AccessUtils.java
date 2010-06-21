@@ -593,6 +593,7 @@ public class AccessUtils  {
     
     public static User getZoneSuperUser(Long zoneId) {
 		User superUser = getInstance().getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, zoneId);
+		superUser = (User) getInstance().getProfileDao().loadUserPrincipal(superUser.getId(), zoneId, false);
 		return superUser;
     }
     

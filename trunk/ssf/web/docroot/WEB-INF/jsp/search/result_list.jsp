@@ -97,7 +97,7 @@
 							</div>
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
-									<h3 class="ss_entryTitle">
+									<div class="ss_entryTitleSearchResults">
 
 	
 
@@ -137,7 +137,7 @@
 									    	<c:out value="${entry.title}"/>
 										</ssf:titleLink>
 	
-									</h3>
+									</div>
 									<div class="ss_clear">&nbsp;</div>
 								</div>
 								<p id="summary_${status.count}">
@@ -209,7 +209,7 @@
 							</div>
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
-									<h3 class="ss_entryTitle">
+									<div class="ss_entryTitleSearchResults">
 											<ssf:titleLink 
 												entryId="${entry._docId}" binderId="${entry._binderId}" 
 												entityType="${entry._entityType}"  
@@ -223,7 +223,7 @@
 										    	<c:out value="${entry._fileName}"/>
 											</ssf:titleLink>
 											
-									</h3>
+									</div>
 									<div class="ss_clear">&nbsp;</div>
 								</div>
 							</div>
@@ -287,14 +287,14 @@
 							<div class="ss_thumbnail">
 								<c:if test="${!empty entry._fileID}"><img alt="<ssf:nlt tag="alt.entry"/>"
 								
-								  src="<ssf:fileUrl webPath="readThumbnail" search="${entry}"/> />
+								  src="<ssf:fileUrl webPath="readThumbnail" search="${entry}"/>" />
 								</c:if>
 								<c:if test="${empty entry._fileID}"><img alt="<ssf:nlt tag="alt.entry"/>"
-								  src="<html:brandedImagesPath/>pics/thumbnail_no_photo.jpg"/></c:if>
+								  src="<html:brandedImagesPath/>pics/thumbnail_no_photo.jpg/>"/></c:if>
 							</div>
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
-									<h3 class="ss_entryTitle">
+									<div class="ss_entryTitleSearchResults">
 	
 										<ssf:titleLink 
 											entryId="${entry._docId}" binderId="${entry._binderId}" 
@@ -318,7 +318,7 @@
 									    	<c:out value="${entry.title}"/>
 										</ssf:titleLink>
 	
-									</h3>
+									</div>
 									<div class="ss_clear">&nbsp;</div>
 								</div>
 								<p id="summary_${status.count}">	
@@ -343,7 +343,7 @@
 							</div>
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
-									<h3 class="ss_entryTitle">
+									<div class="ss_entryTitleSearchResults">
 										<ssf:titleLink 
 											entryId="${entry._docId}" binderId="${entry._binderId}" 
 											entityType="${entry._entityType}"  
@@ -356,7 +356,7 @@
 	
 									    	<c:out value="${entry._fileName}"/>
 										</ssf:titleLink>
-									</h3>
+									</div>
 									<div class="ss_clear">&nbsp;</div>
 								</div>
 							</div>
@@ -390,9 +390,9 @@
 							</div>
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
-									<h3 class="ss_entryTitle">
+									<div class="ss_entryTitleSearchResults">
 										<c:out value="${entry.title}"/>
-									</h3>
+									</div>
 									<div class="ss_clear">&nbsp;</div>
 								</div>
 								<p id="summary_${status.count}">
@@ -434,7 +434,7 @@
 							</div>
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
-									<h3 class="ss_entryTitle">
+									<div class="ss_entryTitleSearchResults">
 										<ssf:titleLink 
 											entryId="${entryDocId}" 
 											binderId="${entryBinderId}" 
@@ -462,7 +462,7 @@
 											</ssf:param>
 									    	<c:out value="${entry.title}"/>
 										</ssf:titleLink>
-									</h3>
+									</div>
 									<div class="ss_clear">&nbsp;</div>
 								</div>
 								<p id="summary_${status.count}">
@@ -507,7 +507,7 @@
 								</c:if>								
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
-									<h3 class="ss_entryTitle">
+									<div class="ss_entryTitleSearchResults">
 											<ssf:titleLink 
 												entryId="${entry._docId}" binderId="${entry._docId}" 
 												entityType="${entry._entityType}"  
@@ -521,7 +521,7 @@
 										    	<c:out value="${entry._fileName}"/>
 											</ssf:titleLink>
 											
-									</h3>
+									</div>
 									<div class="ss_clear">&nbsp;</div>
 								</div>
 							</div>

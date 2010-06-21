@@ -45,7 +45,7 @@
 	parseInBrowser="true">
 	<span id="ss_accessControlOwner${ss_namespace}"
 	  class="ss_bold"><ssf:userTitle user="${ssWorkArea.owner}"/> 
-	  <span class="ss_normal ss_smallprint ss_italic">(${ssWorkArea.owner.name})</span></span>
+	  <span class="ss_normal ss_smallprint ss_italic">(<ssf:userName user="${ssWorkArea.owner}"/>)</span></span>
 	</taconite-replace>
 
 </c:if>

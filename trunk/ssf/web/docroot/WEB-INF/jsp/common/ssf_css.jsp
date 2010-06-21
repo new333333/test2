@@ -3683,20 +3683,22 @@ div.ss_entry_folderListView {
 	float: left;
 	width: 600px;	
 }
-h3.ss_entryTitle {
-   /* float:left;margin:0px; */
+.ss_entryTitleSearchResults {
+   font-size: 14px;
+   font-weight: bold;
+   padding: 4px;
 }
-h3.ss_entryTitle a {
+.ss_entryTitleSearchResults a {
 	color: #333333;
 }
 
-h3.ss_entryTitle a:hover,
-h3.ss_entryTitle a:link,
-h3.ss_entryTitle a:active {
+.ss_entryTitleSearchResults a:hover,
+.ss_entryTitleSearchResults a:link,
+.ss_entryTitleSearchResults a:active {
 	color:#135C8F !important;
 }
 
-h3.ss_entryTitle a:visited {
+.ss_entryTitleSearchResults a:visited {
 	color:  purple;
 }
 div.ss_more {
