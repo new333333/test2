@@ -74,6 +74,7 @@ public enum TeamingAction implements IsSerializable
 	TAG_SEARCH( "Executes a Search Using a String as a tag Name" ),
 	TEAMING_FEED( "Open the Teaming Feed window" ),
 	RECENT_PLACE_SEARCH( "Executes a Recent Place Search" ),
+	PRE_CONTEXT_SWITCH( "Tells the UI That a Context Switch is About to Take Place" ),
 
 	// This is used as a default case to store a TeamingAction when
 	// there isn't a real value to store.

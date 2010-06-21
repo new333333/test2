@@ -107,6 +107,11 @@ public class GwtMainPage extends Composite
 		// UI to tell the GWT UI that a context has been loaded.
 		initContextLoadHandlerJS(this);
 		
+		// Initialize the pre context switch handler used by the
+		// traditional UI to tell the GWT UI that a context switch is
+		// about to occur.
+		initPreContextSwitchJS(this);
+		
 		// Initialize the JavaScript function that gets called when we want to handle a page using
 		// GWT instead of in jsp.
 		// For example, we never want the jsp login page to be loaded in the content control.
@@ -254,6 +259,17 @@ public class GwtMainPage extends Composite
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::contextLoaded(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)( binderId, inSearch, searchTabId );
 		}//end ss_contextLoaded()
+	}-*/;
+
+	/*
+	 * Called to create a JavaScript method that will be invoked from
+	 * the traditional UI just before a context switch occurs.
+	 */
+	private native void initPreContextSwitchJS(GwtMainPage gwtMainPage) /*-{
+		$wnd.ss_preContextSwitch = function()
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::preContextSwitch()();
+		}//end ss_preContextSwitch()
 	}-*/;
 
 	/*
@@ -752,12 +768,12 @@ public class GwtMainPage extends Composite
 			
 		case MY_WORKSPACE:
 			// Change the browser's URL.
-			m_mainMenuCtrl.clearContextMenus();
+			preContextSwitch();
 			gotoUrl( m_requestInfo.getMyWorkspaceUrl(), true );
 			break;
 			
 		case SELECTION_CHANGED:
-			m_mainMenuCtrl.clearContextMenus();
+			preContextSwitch();
 			selectionChanged( obj );
 			break;
 		
@@ -782,12 +798,12 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case GOTO_CONTENT_URL:
-			m_mainMenuCtrl.clearContextMenus();
+			preContextSwitch();
 			gotoUrl( obj, false );
 			break;
 
 		case GOTO_PERMALINK_URL:
-			m_mainMenuCtrl.clearContextMenus();
+			preContextSwitch();
 			gotoUrl( obj, true );
 			break;
 
@@ -804,27 +820,31 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case SIMPLE_SEARCH:
-			m_mainMenuCtrl.clearContextMenus();
+			preContextSwitch();
 			simpleSearch( obj );
 			break;
 			
 		case ADVANCED_SEARCH:
-			m_mainMenuCtrl.clearContextMenus();
+			preContextSwitch();
 			advancedSearch();
 			break;
 			
 		case SAVED_SEARCH:
-			m_mainMenuCtrl.clearContextMenus();
+			preContextSwitch();
 			savedSearch( obj );
 			break;
 			
 		case RECENT_PLACE_SEARCH:
-			m_mainMenuCtrl.clearContextMenus();
+			preContextSwitch();
 			recentPlaceSearch( obj );
 			break;
 			
+		case PRE_CONTEXT_SWITCH:
+			preContextSwitch();
+			break;
+			
 		case TAG_SEARCH:
-			m_mainMenuCtrl.clearContextMenus();
+			preContextSwitch();
 			tagSearch( obj );
 			break;
 			
@@ -1344,6 +1364,19 @@ public class GwtMainPage extends Composite
 		else
 			Window.alert( "in recentPlaceSearch() and obj is not an Integer object" );
 	}//end recentPlaceSearch()
+
+	/*
+	 * This method will do whatever needs to be done from a UI
+	 * perspective to prepare for an pending context switch.
+	 * 
+	 * Implements the PRE_CONTEXT_SWITCH teaming action.
+	 */
+	private void preContextSwitch() {
+		if ( null != m_mainMenuCtrl )
+		{
+			m_mainMenuCtrl.clearContextMenus();
+		}
+	}// end preContextSwitch()
 
 	/*
 	 * This method will be called to perform a search on a tag name
