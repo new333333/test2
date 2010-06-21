@@ -8757,6 +8757,18 @@ function resizeGwtContent(reason) {
 	}
 }
 
+/*
+ * Called to allow the GWT UI to do whatever needs to be done from a UI
+ * perspective to prepare for an pending context switch.
+ */
+function preContextSwitch() {
+	// If there's a GWT UI ss_preContextSwitch() function defined...
+	if (typeof window.top.ss_preContextSwitch != "undefined") {
+		// ...call it.
+		window.top.ss_preContextSwitch();
+	}
+}
+
 dojo.require("dijit.dijit");
 dojo.require("dojo.fx");
 dojo.require("dojo.io.iframe");

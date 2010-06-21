@@ -44,7 +44,13 @@
 
 <% if (GwtUIHelper.isGwtUIActive(request)) { %>
 	<script type="text/javascript">
-		function notifyGwtUI() {
+		/*
+		 * onload event handler.
+		 *
+		 * Calls into the GWT code to notify it that a new context has
+		 * been loaded into the content frame.
+		 */
+		function notifyGwtUI_ContextLoaded() {
 			var inSearch = ("function" == typeof ss_initSearchOptions);
 			var searchTabId = "";
 			if (inSearch && ("function" == typeof ss_getSearchTabId)) {
@@ -54,8 +60,11 @@
 				window.top.ss_contextLoaded("${ssBinder.id}", String(inSearch), searchTabId);
 		}
 
-		/**
-		 * This function will call into the gwt code and show/hide the masthead and workspace tree control appropriately.
+		/*
+		 * onload event handler.
+		 *
+		 * This function will call into the gwt code and show/hide the
+		 * masthead and workspace tree control appropriately.
 		 */
 		function handleLandingPageOptions()
 		{
@@ -74,7 +83,7 @@
 			</c:if>
 		}// end showLandingPageOptions()
 
-		ss_createOnLoadObj("notifyGwtUI_sendMail", notifyGwtUI);
+		ss_createOnLoadObj( "notifyGwtUI_ContextLoaded",            notifyGwtUI_ContextLoaded);
 		ss_createOnLoadObj( "notifyGwtUI_handleLandingPageOptions", handleLandingPageOptions );
 	</script>
 <% } %>
