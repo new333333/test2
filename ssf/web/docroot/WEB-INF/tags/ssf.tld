@@ -2127,6 +2127,18 @@
 	</tag>
 
 	<tag>
+		<name>userName</name>
+		<tag-class>org.kablink.teaming.taglib.UserNameTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>user</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>org.kablink.teaming.domain.Principal</type>
+		</attribute>		
+	</tag>
+	
+	<tag>
 		<name>userTitle</name>
 		<tag-class>org.kablink.teaming.taglib.UserTitleTag</tag-class>
 		<body-content>JSP</body-content>

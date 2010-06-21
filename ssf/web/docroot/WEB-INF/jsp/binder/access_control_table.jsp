@@ -311,7 +311,7 @@
 <TR class="${rowClass}">
   <TD class="ss_table_paragraph"></TD>
   <TD class="ss_table_paragraph"><ssf:userTitle user="${user}"/></TD>
-  <TD class="ss_table_paragraph">${user.name}</TD>
+  <TD class="ss_table_paragraph"><ssf:userName user="${user}"/></TD>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <TD class="ss_table_paragraph" align="center" noWrap="noWrap">
 <c:if test="${!ssWorkArea.functionMembershipInherited}">

@@ -107,7 +107,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 	</td>
 	<td style="padding-left:10px;">
 	<span class="ss_bold"><ssf:userTitle user="${ssWorkArea.owner}"/> 
-		  <span class="ss_normal ss_smallprint ss_italic">(${ssWorkArea.owner.name})</span></span>
+		  <span class="ss_normal ss_smallprint ss_italic">(<ssf:userName user="${ssWorkArea.owner}"/>)</span></span>
 	</td>
 	</tr>
 	</table>
@@ -349,7 +349,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 
 <span class="ss_italic ss_small">[<ssf:nlt tag="access.superUser">
   <ssf:param name="value" useBody="true"><ssf:userTitle user="${ss_superUser}"/></ssf:param>
-  <ssf:param name="value" value="${ss_superUser.name}"/>
+  <ssf:param name="value" useBody="true"><ssf:userName user="${ss_superUser}"/></ssf:param>
   </ssf:nlt>]</span><br/>
 </div>
 </ssf:box>

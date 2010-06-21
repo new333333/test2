@@ -339,7 +339,7 @@ function ss_showModifyDiv(id) {
 								<tr class="no-regrow">
 									<td class="ss_cellvalign"><span class="ss_bold"><ssf:nlt tag="__definition_default_user"/>:&nbsp;</span></td>
 									<td style="white-space: nowrap">
-										${user.title}&nbsp;(${user.name})
+										${user.title}&nbsp;(<ssf:userName user="${user}"/>)
 									</td>
 								</tr>
 								<tr class="no-regrow">
@@ -362,7 +362,7 @@ function ss_showModifyDiv(id) {
 
 	        </td>
 	        <td>
-	          ${user.name}
+	          <ssf:userName user="${user}"/>
 	        </td>
 	        <td align="center">
 	          ${user.diskQuota}

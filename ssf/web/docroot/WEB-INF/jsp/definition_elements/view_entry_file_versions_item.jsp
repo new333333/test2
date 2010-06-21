@@ -137,7 +137,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 			  <br/>
 			  <img <ssf:alt tag="alt.locked"/> src="<html:imagesPath/>pics/sym_s_caution.gif"/>
 			  <span class="ss_fineprint"><ssf:nlt tag="entry.lockedBy">
-	    		<ssf:param name="value" value="${selection.fileLock.owner.title}"/>
+	    		<ssf:param name="value" useBody="true"><ssf:userTitle user="${selection.fileLock.owner.title}"/></ssf:param>
 			  </ssf:nlt></span>
 			  <c:if test="${ss_canForceFileUnlock}">
 			    <div>

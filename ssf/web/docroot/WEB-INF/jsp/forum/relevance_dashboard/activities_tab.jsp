@@ -43,7 +43,7 @@
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title ss_green ss_recentfolder_image">
 		  <ssf:nlt tag="relevance.documents">
-		    <ssf:param name="value" value="${ssBinder.owner.title}"/>
+		    <ssf:param name="value" useBody="true"><ssf:userTitle user="${ssBinder.owner}"/></ssf:param>
 		  </ssf:nlt>
 		</div>
 	</ssf:param>
@@ -60,7 +60,7 @@
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title ss_green">
 		  <ssf:nlt tag="relevance.visitedEntries">
-		    <ssf:param name="value" value="${ssBinder.owner.title}"/>
+		    <ssf:param name="value" useBody="true"><ssf:userTitle user="${ssBinder.owner}"/></ssf:param>
 		  </ssf:nlt>
 		</div>
 	</ssf:param>

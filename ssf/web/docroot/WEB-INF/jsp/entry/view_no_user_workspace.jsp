@@ -48,7 +48,7 @@
 <ssf:form title='<%= NLT.get("general.statusReport") %>'>
 <ssf:nlt tag="errorcode.no.user.workspace">
   <ssf:param name="value" useBody="true">
-    <span class="ss_bold">${ss_userObject.title} (${ss_userObject.name})</span>
+    <span class="ss_bold">${ss_userObject.title} (<ssf:userName user="${ss_userObject}"/>)</span>
   </ssf:param>
 </ssf:nlt>
 <br/>

@@ -76,10 +76,10 @@
 <span class="ss_bold"><ssf:nlt tag="team.inheritedTeamMembers"/></span><br/>
 <ul>
 <c:forEach var="teamMember" items="${ssUsers}">
-  <li>${teamMember.title} <span class="ss_smallprint">(${teamMember.name})</span></li>
+  <li>${teamMember.title} <span class="ss_smallprint">(<ssf:userName user="${teamMember}"/>)</span></li>
 </c:forEach>
 <c:forEach var="teamMember" items="${ssGroups}">
-  <li>${teamMember.title} <span class="ss_smallprint">(${teamMember.name})</span></li>
+  <li>${teamMember.title} <span class="ss_smallprint">(<ssf:userName user="${teamMember}"/>)</span></li>
 </c:forEach>
 </ul>
 </c:if>
