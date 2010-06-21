@@ -129,17 +129,6 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     }
 	
     /**
-     * Redacted title (if user has limited view of users)
-     */
-    public String getUserTitle() {
-		if (EntityType.user.equals(this.getEntityType())) {
-			return Utils.getUserTitle((User)this);
-		} else {
-			return this.getTitle();
-		}
-	}
-
-    /**
      * Normalized title for wiki links
      * @hibernate.property length="256"
      * @return

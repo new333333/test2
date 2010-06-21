@@ -39,6 +39,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.Validator;
@@ -282,7 +283,7 @@ public class GwtProfileHelper {
 			if(name.equals("name")) {
 				value = u.getName();
 			} else if(name.equals("title")) {
-				value = u.getUserTitle();
+				value = Utils.getUserTitle(u);
 			} else if(name.equals("phone")) {
 				value = u.getPhone();
 			} else if(name.equals("emailAddress")){
@@ -569,7 +570,7 @@ public class GwtProfileHelper {
 				user.setUserId( principal.getId() );
 				user.setWorkspaceId( binder.getId() );
 				user.setName( principal.getName() );
-				user.setTitle( principal.getUserTitle() );
+				user.setTitle( Utils.getUserTitle(principal) );
 				user.setWorkspaceTitle( binder.getTitle() );
 				user.setViewWorkspaceUrl( PermaLinkUtil.getPermalink( binder ) );
 				

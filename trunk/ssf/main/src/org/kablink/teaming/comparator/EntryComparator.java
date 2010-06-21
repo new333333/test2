@@ -38,6 +38,7 @@ import java.util.Comparator;
 import java.util.Locale;
 
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.util.Utils;
 
 
 /**
@@ -66,11 +67,11 @@ public class EntryComparator implements Comparator {
 		if (f2 == null) return 1;
 		String t1,t2;
 		if (type.equals(SortByField.title)) {
-			t1 = f1.getUserTitle().toLowerCase();
-			t2 = f2.getUserTitle().toLowerCase();
+			t1 = Utils.getUserTitle(f1).toLowerCase();
+			t2 = Utils.getUserTitle(f2).toLowerCase();
 		} else {
-			t1 = f1.getParentBinder().getPathName().toLowerCase() + "/" + f1.getUserTitle().toLowerCase();
-			t2 = f2.getParentBinder().getPathName().toLowerCase() + "/" + f2.getUserTitle().toLowerCase();
+			t1 = f1.getParentBinder().getPathName().toLowerCase() + "/" + Utils.getUserTitle(f1).toLowerCase();
+			t2 = f2.getParentBinder().getPathName().toLowerCase() + "/" + Utils.getUserTitle(f2).toLowerCase();
 			
 		}
 		int result=0;

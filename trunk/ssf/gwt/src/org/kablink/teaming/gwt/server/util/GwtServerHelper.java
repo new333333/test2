@@ -109,6 +109,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.TagUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
@@ -1775,7 +1776,7 @@ public class GwtServerHelper {
 			// ...use them to construct a TopRankedInfo object...
 			tri = new TopRankedInfo();
 			tri.setTopRankedType(TopRankedType.PERSON);
-			tri.setTopRankedName(user.getUserTitle());
+			tri.setTopRankedName(Utils.getUserTitle(user));
 			tri.setTopRankedPermalinkUrl(PermaLinkUtil.getPermalink(user));
 			tri.setTopRankedRefCount((null == refCount) ? 0 : refCount.intValue());
 			tri.setTopRankedCSS(css);

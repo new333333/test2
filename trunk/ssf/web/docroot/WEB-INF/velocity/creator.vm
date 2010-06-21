@@ -37,7 +37,7 @@
 #end
 </div>
 #else
-#ss_print("${property_caption} $ssVisitor.Entity.Creation.Principal.Title")
+#ss_print("${property_caption} $ssVisitor.getUserTitle($ssVisitor.Entity.Creation.Principal)")
 #if ($ssVisitor.Entity.PostedBy)
 #ss_print(" ($ssVisitor.getNLT('entry.postedBy') ${ssVisitor.Entity.PostedBy})")
 #end

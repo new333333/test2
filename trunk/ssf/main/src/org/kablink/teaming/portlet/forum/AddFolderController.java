@@ -61,6 +61,7 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.WorkspaceAddWorkspaceHelper;
@@ -125,7 +126,7 @@ public class AddFolderController extends SAbstractController {
 					Set teamMemberIds = newBinder.getTeamMemberIds();
 					if (!teamMemberIds.isEmpty()) {
 						Map status = getAdminModule().sendMail(teamMemberIds, null, null, null, null,
-								NLT.get("binder.announcement", new Object[] {user.getUserTitle(), newBinder.getTitle()}), 
+								NLT.get("binder.announcement", new Object[] {Utils.getUserTitle(user), newBinder.getTitle()}), 
 								new Description(messageBody, Description.FORMAT_HTML));
 					}
 				}

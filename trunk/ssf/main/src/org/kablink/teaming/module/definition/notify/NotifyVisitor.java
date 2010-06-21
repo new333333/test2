@@ -44,8 +44,11 @@ import org.apache.velocity.VelocityContext;
 import org.dom4j.Element;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 
@@ -140,6 +143,12 @@ public class NotifyVisitor {
 	}
 	public String getFileLink(FileAttachment attachment) {
 		return PermaLinkUtil.getFilePermalink(attachment);
+	}
+	public String getUserTitle(Principal p) {
+		return Utils.getUserTitle(p);
+	}
+	public String getUserName(Principal p) {
+		return Utils.getUserName(p);
 	}
 
 }

@@ -38,6 +38,7 @@ import java.util.Comparator;
 import java.util.Locale;
 
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.util.Utils;
 
 
 /**
@@ -69,8 +70,8 @@ public class PrincipalComparator implements Comparator {
 		if (f1==null) return -1;
 		if (f2 == null) return 1;
 		String t1,t2;
-		t1 = f1.getUserTitle().toLowerCase();
-		t2 = f2.getUserTitle().toLowerCase();
+		t1 = Utils.getUserTitle(f1).toLowerCase();
+		t2 = Utils.getUserTitle(f2).toLowerCase();
 		 
 		int result=0;
 		if ((t1!=null) && (t2 != null)) {

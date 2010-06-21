@@ -97,6 +97,7 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.TagUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.util.Validator;
@@ -696,7 +697,7 @@ public class WorkspaceTreeHelper {
 			SortedMap<String, Group> teamGroups = new TreeMap();
 			for (Principal p : usersAndGroups) {
 				if (p instanceof User) {
-					teamUsers.put(p.getUserTitle(), (User)p);
+					teamUsers.put(Utils.getUserTitle(p), (User)p);
 				} else if (p instanceof Group) {
 					teamGroups.put(p.getTitle(), (Group)p);
 				}

@@ -71,6 +71,7 @@ import org.kablink.teaming.module.mail.EmailPoster;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
@@ -189,7 +190,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		// If no recipient specified then user the current context user
 		if(postAsUser != null) {
 			try {
-				from = new InternetAddress(postAsUser.getEmailAddress(), postAsUser.getUserTitle());
+				from = new InternetAddress(postAsUser.getEmailAddress(), Utils.getUserTitle(postAsUser));
 			} catch (UnsupportedEncodingException ex) {
 				logger.error("Error building internet address for: " + postAsUser.getEmailAddress() + " Error: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
 			}

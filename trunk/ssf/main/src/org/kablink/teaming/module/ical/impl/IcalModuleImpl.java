@@ -123,6 +123,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
 import org.kablink.util.cal.DayAndPosition;
@@ -2145,7 +2146,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			for (User user:users) {
 				// ...adding information about each to the component.
 				ParameterList attendeeParams = new ParameterList();
-				attendeeParams.add(new Cn(user.getUserTitle()));
+				attendeeParams.add(new Cn(Utils.getUserTitle(user)));
 				attendeeParams.add(Role.REQ_PARTICIPANT);
 				String uri = "MAILTO:" + user.getEmailAddress();
 				try {
@@ -2170,7 +2171,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 
 		Principal principal = (Principal) entry.getCreation().getPrincipal();
 		ParameterList organizerParams = new ParameterList();
-		organizerParams.add(new Cn(principal.getUserTitle()));
+		organizerParams.add(new Cn(Utils.getUserTitle(principal)));
 
 		String uri = "MAILTO:" + principal.getEmailAddress();
 		try {

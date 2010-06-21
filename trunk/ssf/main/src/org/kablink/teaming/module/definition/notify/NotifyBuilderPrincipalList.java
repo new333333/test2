@@ -40,6 +40,7 @@ import org.apache.velocity.VelocityContext;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.util.ResolveIds;
+import org.kablink.teaming.util.Utils;
 
 /**
 *
@@ -55,7 +56,7 @@ public class NotifyBuilderPrincipalList extends AbstractNotifyBuilder {
     	TreeSet titles = new TreeSet();
     	for (Iterator iter=users.iterator(); iter.hasNext();) {
     		Principal p = (Principal)iter.next();
-    		titles.add(p.getUserTitle());
+    		titles.add(Utils.getUserTitle(p));
     	}
     	ctx.put("ssTitles", titles);
     	super.build(visitor, template, ctx);

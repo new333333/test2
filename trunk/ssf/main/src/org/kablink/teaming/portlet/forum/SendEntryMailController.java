@@ -57,6 +57,7 @@ import org.kablink.teaming.module.mail.MailSentStatus;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -116,7 +117,7 @@ public class SendEntryMailController extends SAbstractController {
 					try {
 						AccessUtils.readCheck((User)p, entry);
 					} catch(AccessControlException e) {
-						noAccessPrincipals.add(p.getUserTitle() + " (" + p.getName() + ")");
+						noAccessPrincipals.add(Utils.getUserTitle(p) + " (" + p.getName() + ")");
 					}
 				}
 			}

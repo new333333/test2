@@ -43,7 +43,9 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
@@ -111,8 +113,52 @@ public class Utils {
 			throw new IllegalArgumentException(uncheckedException);
 	}
 	
+	public static String getUserName(Principal p) {
+		if (p instanceof User) {
+			return p.getName();
+		} else {
+			//See if this is a proxy object for the user
+			if (EntityType.user.equals(p.getEntityType())) {
+				ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
+				User user = (User)profileDao.loadUserPrincipal(p.getId(), RequestContextHolder.getRequestContext().getZoneId(), false);
+				return user.getName();
+			}
+			return p.getName();
+		}
+	}
+	public static String getUserName(User user) {
+		return user.getName();
+	}
+	
+	public static String getUserTitle(DefinableEntity entity) {
+		if (entity instanceof Principal) {
+			return getUserTitle((Principal) entity);
+		} else {
+			return entity.getTitle();
+		}
+	}
+	public static String getUserTitle(Principal p) {
+		if (EntityType.user.equals(p.getEntityType())) {
+			if (!(p instanceof User)) {
+				try {
+					//this will remove the proxy and return a real user or group
+					//currently looks like this code is expecting a User
+					//get user even if deleted.
+					ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
+					User user = (User)profileDao.loadUserPrincipal(p.getId(), RequestContextHolder.getRequestContext().getZoneId(), false);
+					return getUserTitle(user, false);
+				} catch (Exception e) {}
+			} 
+			return getUserTitle((User) p);
+		} else {
+			return p.getTitle();
+		}
+	}
 	public static String getUserTitle(User user) {
-		if (canUserOnlySeeCommonGroupMembers()) {
+		return getUserTitle(user, true);
+	}
+	public static String getUserTitle(User user, boolean loadPrincipal) {
+		if (loadPrincipal && canUserOnlySeeCommonGroupMembers()) {
 			try {
 				//this will remove the proxy and return a real user or group
 				//currently looks like this code is expecting a User

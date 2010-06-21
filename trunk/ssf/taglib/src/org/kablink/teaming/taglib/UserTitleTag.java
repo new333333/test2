@@ -83,7 +83,7 @@ public class UserTitleTag extends BodyTagSupport {
 				JspWriter jspOut = pageContext.getOut();
 				String result = user.getTitle();
 				if (user instanceof User) {
-					result = Utils.getUserTitle((User) user);
+					result = Utils.getUserTitle(user);
 				} else {
 					ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
 					// Get a user object from the principal
@@ -93,7 +93,7 @@ public class UserTitleTag extends BodyTagSupport {
 							//currently looks like this code is expecting a User
 							//get user even if deleted.
 							user = profileDao.loadUserPrincipal(user.getId(), user.getZoneId(), false);
-							result = Utils.getUserTitle((User) user);
+							result = Utils.getUserTitle(user);
 						} catch(Exception e) {}
 					}
 				}

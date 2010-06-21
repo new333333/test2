@@ -129,6 +129,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TempFileUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.util.ZipEntryStream;
 import org.kablink.teaming.web.util.WebUrlUtil;
@@ -2194,7 +2195,7 @@ public class ExportHelper {
 		// Handle structured fields of the entry known at compile time.
 		entryElem.addAttribute("id", entry.getId().toString());
 		entryElem.addAttribute("name", entry.getName());
-		entryElem.addAttribute("title", entry.getUserTitle());
+		entryElem.addAttribute("title", Utils.getUserTitle(entry));
 		entryElem.addAttribute("emailAddress", entry.getEmailAddress());
 		entryElem.setText(entry.getName());
 
