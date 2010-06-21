@@ -414,13 +414,12 @@ div.ss_editorHints {
 }
 
 .ss_entryTitle {
-  display: block;
   font-weight: normal;
   font-size: ${ss_style_font_largerprint};
   font-family: ${ss_style_title_font_family};
-  margin-top: -35px;
-  margin-left: 5px;
-  margin-right: 130px;
+  margin-top: 4px;
+  margin-left: 15px;
+  margin-right: 10px;
   }
 .ss_entryTitleFile {
   font-weight: bold;
@@ -449,7 +448,6 @@ div.ss_entryContent a {
   	color:#135c8f !important;
 	}
 div.ss_entryContent a:hover {
-  	text-decoration:underline;
 	}
 .ss_entryContent table {
   background-color:inherit;
