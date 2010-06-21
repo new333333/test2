@@ -532,7 +532,7 @@ public class ViewPermalinkController  extends SAbstractController {
 
 				// Add the "my workspace" url to the response.
 				{
-					myWSUrl = PermaLinkUtil.getPermalink( user );
+					myWSUrl = PermaLinkUtil.getPermalink( request, user );
 					model.put( "myWorkspaceUrl", myWSUrl );
 				}
 				

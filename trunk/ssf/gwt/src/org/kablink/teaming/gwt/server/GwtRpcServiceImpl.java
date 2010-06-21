@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
@@ -2491,7 +2490,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				if ( getBinderModule().testAccess( binder, BinderOperation.manageTeamMembers ) )
 				{
 					// ...store the team management URL...
-					adapterUrl = new AdaptedPortletURL( ((PortletRequest) null), "ss_forum", true );
+					adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 					adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_TEAM_MEMBER );
 					adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
 					adapterUrl.setParameter( WebKeys.URL_BINDER_TYPE, binder.getEntityType().name() );
@@ -2502,7 +2501,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				if ( MiscUtil.hasString( user.getEmailAddress() ) )
 				{
 					// ...store the send mail URL...
-					adapterUrl = new AdaptedPortletURL( ((PortletRequest) null), "ss_forum", true );
+					adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 					adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL );
 					adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
 					adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString() );
@@ -2513,7 +2512,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				if ( getIcBrokerModule().isEnabled() )
 				{
 					// ...store the team meeting URL.
-					adapterUrl = new AdaptedPortletURL( ((PortletRequest) null), "ss_forum", true );
+					adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 					adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING );
 					adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
 					adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString() );

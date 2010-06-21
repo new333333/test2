@@ -184,7 +184,7 @@ public class LoginController  extends SAbstractControllerRetry {
 			{
 				String myWSUrl = "";
 
-				myWSUrl = PermaLinkUtil.getPermalink( user );
+				myWSUrl = PermaLinkUtil.getPermalink( request, user );
 				model.put( "myWorkspaceUrl", myWSUrl );
 			}
 			
