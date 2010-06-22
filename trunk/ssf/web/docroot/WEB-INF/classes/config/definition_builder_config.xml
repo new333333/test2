@@ -2356,12 +2356,6 @@
 		</properties>
 	</item>
 
-	<item name="profileFollowers" caption="__followers" canBeDeleted="true" multipleAllowed="false" category="userSideViewLayout" display="view">
-		<properties>
-			<property name="caption" caption="__caption" type="text" value="__followers"/>
-		</properties>
-	</item>
-
 	<item name="profileFollowing" caption="__following" canBeDeleted="true" multipleAllowed="false" category="userSideViewLayout" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__following"/>
