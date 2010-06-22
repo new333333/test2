@@ -36,6 +36,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.kablink.teaming.util.SPropsUtil;
+
 /**
  * <code>Operation</code> class defines an operation that can be performed
  * to a <code>WorkArea</code>.
@@ -89,14 +91,17 @@ public class WorkAreaOperation {
     private String name;
     private boolean zoneWide=false;
     private WorkAreaOperation(String name) {
-        this.name = name;
-        Instances.put(name, this);
+	    this.name = name;
+    	if (!"viewBinderTitle".equals(name) || 
+    			SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
+		    Instances.put(name, this);
+    	}
     }
     
     private WorkAreaOperation(String name, boolean zoneWide) {
         this.name = name;
         this.zoneWide = zoneWide;
-        Instances.put(name, this);
+    	Instances.put(name, this);
     }
     public String getName() {
         return name;

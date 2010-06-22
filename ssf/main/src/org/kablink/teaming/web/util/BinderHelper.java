@@ -431,7 +431,9 @@ public class BinderHelper {
 						model.put(WebKeys.IS_BINDER_MIRRORED_FOLDER, ((Folder)binder).isMirrored());
 					}
 					model.put(WebKeys.BINDER_READ_ENTRIES, bs.getBinderModule().testAccess(binder, BinderOperation.readEntries));
-					model.put(WebKeys.BINDER_VIEW_BINDER_TITLE, bs.getBinderModule().testAccess(binder, BinderOperation.viewBinderTitle));
+					if (SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
+						model.put(WebKeys.BINDER_VIEW_BINDER_TITLE, bs.getBinderModule().testAccess(binder, BinderOperation.viewBinderTitle));
+					}
 				} catch(Exception e) {
 					logger.debug("BinderHelper.setupStandardBeans(Exception:  '" + MiscUtil.exToString(e) + "')");
 					BinderHelper.getBinderAccessibleUrl(bs, null, null, request, response, model);
