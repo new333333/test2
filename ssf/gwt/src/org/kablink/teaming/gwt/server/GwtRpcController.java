@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -42,7 +42,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -60,6 +59,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
  * @author jwootton
  *
  */
+@SuppressWarnings("serial")
 public class GwtRpcController extends RemoteServiceServlet
 	implements
         Controller, ServletContextAware
@@ -67,6 +67,7 @@ public class GwtRpcController extends RemoteServiceServlet
 	private Log 				m_logger = LogFactory.getLog(GwtRpcController.class);
     private ServletContext		m_servletContext;
     private RemoteService		m_remoteService;
+	@SuppressWarnings("unchecked")
 	private Class				m_remoteServiceClass;
 
     /**
@@ -88,12 +89,13 @@ public class GwtRpcController extends RemoteServiceServlet
     @Override
     public String processCall( String payload ) throws SerializationException
     {
+		HttpSession session = null;
+        String methodName = null;
+        
         try
         {
             RPCRequest	rpcRequest;
-    		HttpSession session = null;
             Method method;
-            String methodName = null;
         	String results;
 
             rpcRequest = RPC.decodeRequest( payload, m_remoteServiceClass );
@@ -113,6 +115,18 @@ public class GwtRpcController extends RemoteServiceServlet
             		
             		// Store the HttpServletRequest in the session cache using the method name as the key.
             		session = request.getSession();
+            		HttpServletRequest cachedRequest = null;
+            		try
+            		{
+            			cachedRequest = ((HttpServletRequest) session.getAttribute( methodName ));
+            		}
+            		catch ( Exception e )
+            		{
+            			cachedRequest = null;
+            		}
+            		if (null != cachedRequest) {
+            			m_logger.error( "GwtRpcController.processCall( HttpServletRequest for method '" + methodName + "' is already in the cache.  Overwritting it. )" );
+            		}
             		session.setAttribute( methodName, request );
             	}
             }
@@ -120,10 +134,6 @@ public class GwtRpcController extends RemoteServiceServlet
             // delegate work to the spring injected service
             results = RPC.invokeAndEncodeResponse( m_remoteService, rpcRequest.getMethod(), rpcRequest.getParameters() );
             	
-            // Remove the HttpServletRequest object from the session cache.
-            if ( session != null && methodName != null )
-            	session.removeAttribute( methodName );
-            
             return results;
         }
         catch (IncompatibleRemoteServiceException ex)
@@ -132,6 +142,12 @@ public class GwtRpcController extends RemoteServiceServlet
                             "An IncompatibleRemoteServiceException was thrown while processing this call.",
                             ex );
             return RPC.encodeResponseForFailure( null, ex );
+        }
+        finally
+        {
+            // Remove the HttpServletRequest object from the session cache.
+            if ( session != null && methodName != null )
+            	session.removeAttribute( methodName );
         }
     }// end processCall()
     
