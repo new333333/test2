@@ -56,7 +56,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
@@ -88,12 +87,10 @@ import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CommaSeparatedValue;
-import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DashboardPortlet;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
@@ -113,9 +110,7 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.domain.Event.FreeBusyType;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
@@ -124,7 +119,6 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
-import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.portlet.forum.ViewController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -134,7 +128,6 @@ import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilterRequestParser;
 import org.kablink.teaming.search.filter.SearchFilterToMapConverter;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -1075,6 +1068,29 @@ public class BinderHelper {
 		
 	}
 
+	/**
+	 * 
+	 */
+	public static Map getDefaultSortOrderForSearch( RenderRequest request )
+	{
+		String sortBy;
+   		Map options = new HashMap();
+		
+		// TODO To be fixed
+		// These four pieces of data (or something equivalent) must come from the browser 
+		// via request object. For now, this information is fixed (hard-coded). 
+
+   		// Get the "sort by" value from the request.  If it is not there we default to sort-by-relevence.
+		sortBy = PortletRequestUtils.getStringParameter( request, WebKeys.SEARCH_FORM_SORT_BY, "sortByRelevence" );
+
+		options.put( ObjectKeys.SEARCH_SORT_BY, sortBy );
+		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
+		options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY, Constants.MODIFICATION_DATE_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, Boolean.TRUE);
+		
+		return options;
+	}// end getDefaultSortOrderForSearch()
+	
 	public static String getDisplayType(PortletRequest request) {
 		PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
 		String pName = pConfig.getPortletName();
@@ -3149,6 +3165,7 @@ public class BinderHelper {
 		model.put(WebKeys.SEARCH_FORM_PREDELETED_ONLY, options.get(ObjectKeys.SEARCH_PRE_DELETED));
 		model.put("resultsCount", options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
 		model.put("summaryWordCount", (Integer)options.get(WebKeys.SEARCH_FORM_SUMMARY_WORDS));
+		model.put( "sortBy", options.get( ObjectKeys.SEARCH_SORT_BY ) );
 
 		model.put("quickSearch", options.get(WebKeys.SEARCH_FORM_QUICKSEARCH));
 		
@@ -3157,6 +3174,7 @@ public class BinderHelper {
 		Map options = prepareSearchOptions(bs, request);
 		Map model = new HashMap();
 		model.put("resultsCount", options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
+		model.put( "sortBy", options.get( ObjectKeys.SEARCH_SORT_BY ) );
 		model.put("quickSearch", false);
 		
 		model.putAll(prepareSavedQueries(bs));
@@ -3172,7 +3190,9 @@ public class BinderHelper {
 	
 	public static Map prepareSearchOptions(AllModulesInjected bs, RenderRequest request) {
 		
-		Map options = new HashMap();
+		Map options;
+		
+		options = getDefaultSortOrderForSearch( request );
 		
 		Boolean searchCaseSensitive = false;
 		Boolean searchPreDeletedOnly = false;

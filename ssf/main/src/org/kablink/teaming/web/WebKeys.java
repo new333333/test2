@@ -1092,6 +1092,7 @@ public class WebKeys {
     // used in search form in standard and dashboard search
     public static final String SEARCH_FORM_MAX_HITS="data_resultsCount";
     public static final String SEARCH_FORM_SUMMARY_WORDS="data_summaryWordCount";
+    public static final String SEARCH_FORM_SORT_BY = "data_sortBy";
     public static final String SEARCH_FORM_QUICKSEARCH="quickSearch";
     public static final String SEARCH_FORM_SEARCH_FILTERS="ss_searchSearchForms";
     public static final String SEARCH_FORM_SEARCH_FILTER_DATA="ss_searchSearchFormData";
