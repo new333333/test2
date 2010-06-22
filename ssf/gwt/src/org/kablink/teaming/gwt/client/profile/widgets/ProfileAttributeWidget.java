@@ -159,9 +159,9 @@ public class ProfileAttributeWidget  {
 				index = labeledUri.indexOf(':');
 
 				//Make sure http is not prepended to it.
-				String label = labeledUri.substring(0, index+1);
-				found = (0 < labeledUri.indexOf("http:"));
-				if(!found){
+				String label = labeledUri.substring(0, index);
+				if(label.indexOf("http") > -1) {
+					index = -1;
 					return index;
 				}
 			}
