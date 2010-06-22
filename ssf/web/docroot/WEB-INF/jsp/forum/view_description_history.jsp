@@ -319,7 +319,9 @@ function ss_resizeIframeArea() {
 <tr>
 <td valign="bottom" nowrap>
   <input type="checkbox" id="compare${change.folderEntry.attributes.logVersion}"
-  onChange="ss_updateCompareButton('${fn:length(ss_changeLogList)}')">
+  onChange="ss_updateCompareButton('${fn:length(ss_changeLogList)}')"
+  onClick="ss_updateCompareButton('${fn:length(ss_changeLogList)}')"
+  >
 </td>
 <td valign="bottom" nowrap>
   <span style="padding-right:6px;">${change.folderEntry.attributes.logVersion}</span>
