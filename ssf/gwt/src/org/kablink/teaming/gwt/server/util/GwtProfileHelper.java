@@ -86,7 +86,7 @@ public class GwtProfileHelper {
 							ProfileCategory cat = new ProfileCategory();
 							String caption = catItem.attributeValue("caption", "");
 							String name = catItem.attributeValue("name", "");
-							String title = NLT.get(caption);
+							String title = NLT.getDef(caption);
 							
 							cat.setTitle(title);
 							cat.setName(name);
@@ -106,7 +106,7 @@ public class GwtProfileHelper {
 									String attrTitle = captionElement.attributeValue("value");
 
 									//Now get the title for this attribute
-									attr.setTitle(NLT.get(attrTitle));
+									attr.setTitle(NLT.getDef(attrTitle));
 								}
 
 								Element nameElement = (Element) attrElement.selectSingleNode("properties/property[@name='name']");
@@ -199,7 +199,7 @@ public class GwtProfileHelper {
 							ProfileCategory cat = new ProfileCategory();
 							String caption = catItem.attributeValue("caption", "");
 							String name = catItem.attributeValue("name", "");
-							String title = NLT.get(caption);
+							String title = NLT.getDef(caption);
 							
 							cat.setTitle(title);
 							cat.setName(name);
@@ -232,7 +232,7 @@ public class GwtProfileHelper {
 									String attrTitle = captionElement.attributeValue("value");
 
 									//Now get the title for this attribute
-									attr.setTitle(NLT.get(attrTitle));
+									attr.setTitle(NLT.getDef(attrTitle));
 								}
 
 								Element nameElement = (Element) attrElement.selectSingleNode("properties/property[@name='name']");
