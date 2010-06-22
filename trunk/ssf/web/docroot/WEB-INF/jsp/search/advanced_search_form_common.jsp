@@ -113,6 +113,15 @@
 								<option value="50" <c:if test="${summaryWordCount == 50}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="50"/></ssf:nlt></option>
 								<option value="100" <c:if test="${summaryWordCount == 100}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="100"/></ssf:nlt></option>
 							</select>
+							<br/>
+
+							<label for="data_sortBy">
+								<ssf:nlt tag="searchForm.advanced.options.sortBy"/> 
+							</label>
+							<select class="ss_compactSelectBox" name="data_sortBy" id="data_sortBy">
+								<option value="sortByRelevance" <c:if test="${sortyBy == 'sortByRelevance'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.relevance"></ssf:nlt></option>
+								<option value="sortByDate" <c:if test="${sortBy == 'sortByDate'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.date"></ssf:nlt></option>
+							</select>
 						</td>
 					</tr>
 					<tr>

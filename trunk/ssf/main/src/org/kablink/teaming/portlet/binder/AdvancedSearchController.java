@@ -144,11 +144,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		*/
 
        if (op.equals(WebKeys.SEARCH_RESULTS)) {
-    	   	// TODO To be fixed
-    	    // The information about sort order must come from the browser via request object.
-    	    // For now, this information is hard coded and passed in to prepareSearchResultData()
-    	    // method as an additional (fifth) argument. 
-        	BinderHelper.prepareSearchResultData(this, request, tabs, model, getDefaultSortOrderForSearch());
+        	BinderHelper.prepareSearchResultData(this, request, tabs, model, null );
         	addPropertiesForFolderView(model);
         	buildToolbars(model, request);
 
@@ -174,11 +170,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 
         	return prepBeans(request, new ModelAndView(BinderHelper.getViewListingJsp(this, ObjectKeys.SEARCH_RESULTS_DISPLAY), model));
         } else if (op.equals(WebKeys.SEARCH_SAVED_QUERY)) {
-    	   	// TODO To be fixed
-    	    // The information about sort order must come from the browser via request object
-        	// or from the saved query object. For now, this information is hard coded and 
-        	// passed in to prepareSavedQueryResultData() method as an additional (fourth) argument. 
-        	model.putAll(BinderHelper.prepareSavedQueryResultData(this, request, tabs, getDefaultSortOrderForSearch()));
+        	model.putAll(BinderHelper.prepareSavedQueryResultData(this, request, tabs, null ));
         	addPropertiesForFolderView(model);
         	buildToolbars(model, request);
         	
@@ -212,18 +204,6 @@ public class AdvancedSearchController extends AbstractBinderController {
 
         	return prepBeans(request, new ModelAndView("search/search_form", model));
         }
-	}
-	
-	private Map getDefaultSortOrderForSearch() {
-		// TODO To be fixed
-		// These four pieces of data (or something equivalent) must come from the browser 
-		// via request object. For now, this information is fixed (hard-coded). 
-   		Map options = new HashMap();
-		options.put(ObjectKeys.SEARCH_SORT_BY, ObjectKeys.SEARCH_SORT_BY_RELEVANCE);
-		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
-		options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY, Constants.MODIFICATION_DATE_FIELD);
-		options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, Boolean.TRUE);	   
-		return options;
 	}
 	
 	public void addPropertiesForFolderView(Map model) {
