@@ -1689,6 +1689,13 @@ body, table td, select
 	-webkit-border-top-right-radius: 3px;
 }
 
+/* Used by GwtClientHelper.setGridColSpan() to hide a cell in a Grid. */
+.grid_HideCell
+{
+	visibility: hidden;
+	display: none;
+}
+
 /* Styles used to position something in the upper right hand corner of its parent. */
 .upperRight
 {

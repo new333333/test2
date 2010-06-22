@@ -323,16 +323,13 @@ public class GwtClientHelper {
 		jsFixFirstCol(grid.getCellFormatter().getElement(row, start));
 		for (int i = 1; i < span; i += 1) {
 			start += 1;
-			jsFixOtherCols(grid.getRowFormatter(). getElement(row), start);
+			grid.getCellFormatter().getElement(row, start).addClassName("grid_HideCell");
 		}
 		
 	}
 	private static native void jsFixFirstCol(Element eTD) /*-{
 		eTD.colSpan = 2;
 		eTD.width = "100%";
-	}-*/;
-	private static native void jsFixOtherCols(Element eTR, int cell) /*-{
-		eTR.deleteCell(cell);
 	}-*/;
 	
 	public static String convertSpecialCharsToHTML( String s ) {
