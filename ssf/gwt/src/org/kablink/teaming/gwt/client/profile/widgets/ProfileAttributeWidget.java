@@ -8,6 +8,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
@@ -47,7 +48,7 @@ public class ProfileAttributeWidget  {
 				} 
 				widget.addStyleName("profile-value");
 				widget.addStyleName("profile-anchor");
-			} else if (attr.getName().equals("profileWebsite")) {
+			} else if (attr.getDataName().equals("labeledUri")) {
 				String label = "";
 				String uri = "";
 				if(attr.getValue() != null) {
@@ -64,11 +65,9 @@ public class ProfileAttributeWidget  {
 					}
 					widget = new Anchor(label, uri, "_blank");
 				} 
-
 				widget.addStyleName("profile-value");
 				widget.addStyleName("profile-anchor");
-			}
-			else {
+			} else {
 				int type = attr.getValueType();
 				switch(type){
 					case ProfileAttribute.STRING:
@@ -76,7 +75,8 @@ public class ProfileAttributeWidget  {
 					case ProfileAttribute.LONG:
 					case ProfileAttribute.DATE:
 						if(attr.getValue() != null) {
-							widget = new Label(attr.getValue().toString());
+							String s = attr.getValue().toString();
+							widget = new HTML(GwtClientHelper.convertSpecialCharsToHTML(s));
 						}
 						break;
 					case ProfileAttribute.LIST:

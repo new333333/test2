@@ -334,4 +334,16 @@ public class GwtClientHelper {
 	private static native void jsFixOtherCols(Element eTR, int cell) /*-{
 		eTR.deleteCell(cell);
 	}-*/;
+	
+	public static String convertSpecialCharsToHTML( String s ) {
+	    if(GwtClientHelper.hasString(s))
+	    {
+			s = s.replaceAll( "&quot;", "\"" );
+		    s = s.replaceAll( "&lt;", "<" );
+		    s = s.replaceAll( "&gt;", ">" );
+		    s = s.replaceAll( "&amp;", "&" );
+	    }
+	    
+	    return s;
+	}
 }
