@@ -33,12 +33,16 @@
 package org.kablink.teaming.gwt.server;
 
 
+import java.lang.reflect.Method;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -73,6 +77,7 @@ public class GwtRpcController extends RemoteServiceServlet
         HttpServletResponse response) throws Exception
     {
         super.doPost( request, response );
+        
         return null;
     }// end handleRequest()
     
@@ -86,11 +91,40 @@ public class GwtRpcController extends RemoteServiceServlet
         try
         {
             RPCRequest	rpcRequest;
+    		HttpSession session = null;
+            Method method;
+            String methodName = null;
+        	String results;
 
             rpcRequest = RPC.decodeRequest( payload, m_remoteServiceClass );
 
+            // Add the HttpServletRequest object we are dealing with to the session cache
+            // using the method name as the key.  This allows any method in GwtRpcServiceImpl.java
+            // to have access to the HttpServletRequest if they need it.
+            method = rpcRequest.getMethod();
+            if ( method != null )
+            {
+                methodName = method.getName();
+            	if ( methodName != null )
+            	{
+            		HttpServletRequest request;
+            		
+            		request = getThreadLocalRequest();
+            		
+            		// Store the HttpServletRequest in the session cache using the method name as the key.
+            		session = request.getSession();
+            		session.setAttribute( methodName, request );
+            	}
+            }
+
             // delegate work to the spring injected service
-            return RPC.invokeAndEncodeResponse( m_remoteService, rpcRequest.getMethod(), rpcRequest.getParameters() );
+            results = RPC.invokeAndEncodeResponse( m_remoteService, rpcRequest.getMethod(), rpcRequest.getParameters() );
+            	
+            // Remove the HttpServletRequest object from the session cache.
+            if ( session != null && methodName != null )
+            	session.removeAttribute( methodName );
+            
+            return results;
         }
         catch (IncompatibleRemoteServiceException ex)
         {
