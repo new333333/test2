@@ -49,6 +49,43 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
 		function() {ss_initTab('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');});
 </script>
 
+<script type="text/javascript">
+var ss_entryHistoryLoaded${ss_divCounter} = false;
+function ss_showHideEntryHistoryDiv${ss_divCounter}(iframeId) {
+	var url = "<ssf:url ><ssf:param 
+		name="action" value="view_editable_history"/><ssf:param 
+		name="actionUrl" value="true"/><ssf:param 
+		name="operation" value="view_edit_history"/><ssf:param 
+		name="entityId" value="${ssEntry.id}"/></ssf:url>";
+	var iframeObj = self.document.getElementById(iframeId);
+	if (!ss_entryHistoryLoaded${ss_divCounter}) {
+		iframeObj.src = url;
+		ss_entryHistoryLoaded${ss_divCounter} = true;
+	}
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+	if (self.parent.ssf_onLayoutChange) self.parent.ssf_onLayoutChange();
+	if (self.parent.parent.ssf_onLayoutChange) self.parent.parent.ssf_onLayoutChange();
+	ss_resizeEntryHistoryIframe(iframeId);
+}
+
+var ss_entryHistoryIframeOffset = 50;
+function ss_resizeEntryHistoryIframe(iframeId) {
+	try {
+		var iframeDiv = document.getElementById(iframeId)
+		eval("var iframeHeight = parseInt(window." + iframeId + ".document.body.scrollHeight);")
+		if (typeof iframeDiv.style.height == "undefined" || iframeDiv.style.height == "" || 
+				(iframeHeight > 200 && parseInt(iframeDiv.style.height) != iframeHeight)) {
+			iframeDiv.style.height = parseInt(iframeHeight + ss_entryHistoryIframeOffset) + "px"
+			//Signal that the layout changed
+			if (ssf_onLayoutChange) ssf_onLayoutChange();
+			if (self.parent.ssf_onLayoutChange) self.parent.ssf_onLayoutChange();
+			if (self.parent.parent.ssf_onLayoutChange) self.parent.parent.ssf_onLayoutChange();
+		}
+	} catch(e) {}
+}
+</script>
+
 <div class="ss_entryContent">
 <div style="text-align: left; margin: 0px 10px; border: 0pt none;" 
   class="wg-tabs margintop3 marginbottom2">
@@ -69,6 +106,17 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
     </c:if>
   </div>
   </td>
+  <c:if test="${ssDefinitionEntry.top}">
+  <td valign="middle" width="1%" nowrap>
+  <div id="viewEntryHistory${ss_tabDivCount}Tab" 
+    class="wg-tab roundcornerSM" 
+    onMouseOver="ss_hoverOverTab('viewEntryHistory${ss_tabDivCount}', '${ss_tabDivCount}');"
+    onMouseOut="ss_hoverOverTabStopped('viewEntryHistory${ss_tabDivCount}', '${ss_tabDivCount}');"
+    onClick="ss_showTab('viewEntryHistory${ss_tabDivCount}', '${ss_tabDivCount}');ss_showHideEntryHistoryDiv${ss_divCounter}('viewEntryHistory${ss_tabDivCount}Iframe');return false;">
+    <ssf:nlt tag="entry.versionHistory"/>
+  </div>
+  </td>
+  </c:if>
   <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
   <td valign="middle" width="1%" nowrap>
   <div id="viewFileVersions${ss_tabDivCount}Tab" 
@@ -93,6 +141,19 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
   <c:set var="ss_showPrimaryFileAttachmentOnly" value="true" scope="request"/>
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachments_tab.jsp" />
 </div>
+
+<c:if test="${ssDefinitionEntry.top}">
+<div id="viewEntryHistory${ss_tabDivCount}Div" style="display:none;">
+  <iframe id="viewEntryHistory${ss_tabDivCount}Iframe" name="viewEntryHistory${ss_tabDivCount}Iframe" 
+    onLoad="ss_resizeEntryHistoryIframe('viewEntryHistory${ss_tabDivCount}Iframe')" 
+    src="<html:rootPath/>js/forum/null.html" class="wg-tab-iframe" >xxx</iframe>
+</div>
+<script type="text/javascript">
+ss_createOnLayoutChangeObj('ss_resizeEntryHistoryIframe${ss_divCounter}',
+		function() {ss_resizeEntryHistoryIframe('viewEntryHistory${ss_tabDivCount}Iframe');});
+
+</script>
+</c:if>
 
 <div id="viewFileVersions${ss_tabDivCount}Div" style="display:none;">
   <c:set var="property_caption" value="" scope="request"/>
