@@ -85,7 +85,7 @@ public class ProfileSearchesSectionPanel extends ProfileSectionPanel {
 		if (0 == count) {
 			// ...put something in the menu that tells the user
 			// ...that.
-			Label content = new Label(messages.mainMenuSearchOptionsNoSavedSearches());
+			Label content = new Label(messages.profileNoSavedSearches());
 			//content.addStyle():
 			addContentWidget(content, true);
 			

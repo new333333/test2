@@ -546,6 +546,8 @@ public interface GwtTeamingMessages extends Messages
 	//Profile
 	String profileEdit();
 	String profileEditTitle();
+	String profileNotFollowing();
+	String profileNoSavedSearches();
 	
 	// Presence related strings
 	String presenceAvailable();
