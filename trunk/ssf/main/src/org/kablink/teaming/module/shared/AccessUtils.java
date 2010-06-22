@@ -142,7 +142,8 @@ public class AccessUtils  {
 			/* access to folder ((entryAcl:all and folderAcl:1,2,3) OR (entryAcl:all and folderAcl:team and teamAcl:1,2,3)
 			 * access to entry  OR (entryAcl:1,2,3) OR (entryAcl:team AND teamAcl:1,2,3))
 			 * */ 
-			if (entryAcl.equals(Constants.READ_ACL_ALL)) {
+			String testAcl = " "+entryAcl+" ";
+			if (testAcl.contains(" "+Constants.READ_ACL_ALL+" ")) {
 				//(entryAcl:all and folderAcl:1,2,3)
 				for (int i=0; i<folderAclArray.length; ++i) {
 					if (userIds.contains(folderAclArray[i])) return true;
@@ -197,7 +198,10 @@ public class AccessUtils  {
 			if (!found) return false;				
 			//check entry for match ((entryAcl:all,1,2,3) OR (entryAcl:team and teamAcl:1,2,3)))
 			//(entryAcl:all,1,2,3)
-			if (entryAcl.equals(Constants.READ_ACL_ALL)) return true;
+			String testAcl = " "+entryAcl+" ";
+			if (testAcl.contains(" "+Constants.READ_ACL_ALL+" ")) {
+				return true;
+			}
 			for (int i=0; i<entryAclArray.length; ++i) {
 				if (userIds.contains(entryAclArray[i])) return true;
 			}
