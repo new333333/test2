@@ -786,6 +786,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		} else if (!SPropsUtil.getBoolean("mail.posting.offWhenEmpty", true)) {
 			zoneConfig.getMailConfig().setPostingEnabled(true);
 		}
+		//Enable/Disable access control rights
+		if (!SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
+			WorkAreaOperation.deleteInstance("viewBinderTitle");
+		}
 
 	}
 
@@ -1197,13 +1201,16 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	}
 
 	private Function addViewBinderTitleRole(Workspace top) {
-		Function function = new Function();
-		function.setZoneId(top.getId());
-		function.setName(ObjectKeys.ROLE_TITLE_VIEW_BINDER_TITLE);
-		function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
-		function.addOperation(WorkAreaOperation.VIEW_BINDER_TITLE);
-		//generate functionId
-		getFunctionManager().addFunction(function);
+		Function function = null;
+		if (SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
+			function = new Function();
+			function.setZoneId(top.getId());
+			function.setName(ObjectKeys.ROLE_TITLE_VIEW_BINDER_TITLE);
+			function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
+			function.addOperation(WorkAreaOperation.VIEW_BINDER_TITLE);
+			//generate functionId
+			getFunctionManager().addFunction(function);
+		}
 		return function;
 	}
 

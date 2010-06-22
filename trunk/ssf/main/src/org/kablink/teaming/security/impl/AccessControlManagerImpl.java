@@ -193,6 +193,11 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		if (!workAreaOperation.equals(WorkAreaOperation.READ_ENTRIES) && 
 				!workAreaOperation.equals(WorkAreaOperation.VIEW_BINDER_TITLE) && 
 				!getLicenseManager().validLicense())return false;
+		if (workAreaOperation.equals(WorkAreaOperation.VIEW_BINDER_TITLE)) {
+			if (!SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
+				return false;
+			}
+		}
 		if (workArea.isFunctionMembershipInherited()) {
 			WorkArea parentWorkArea = workArea.getParentWorkArea();
 			if (parentWorkArea == null)

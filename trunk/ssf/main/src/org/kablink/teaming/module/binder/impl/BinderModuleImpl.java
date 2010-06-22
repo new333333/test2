@@ -293,8 +293,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						WorkAreaOperation.READ_ENTRIES);
 				break;
 			case viewBinderTitle:
-				getAccessControlManager().checkOperation(binder,
+				if (SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
+					getAccessControlManager().checkOperation(binder,
 						WorkAreaOperation.VIEW_BINDER_TITLE);
+				} else {
+					getAccessControlManager().checkOperation(binder,
+							WorkAreaOperation.READ_ENTRIES);
+				}
 				break;
 			default:
 				throw new NotSupportedException(operation.toString(),
