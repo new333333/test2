@@ -139,11 +139,11 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	  <c:if test="<%= showCloseIcon %>">
 		<td class="ss_title_bar" align="right"><span class="ss_box_small_icon"><a 
 			 href="javascript: ;" onClick="<%= showCloseRoutine %>;return false;"><img border="0" <ssf:alt/>
-			 height="14" hspace="0" 
+			 height="16" hspace="0" 
 			 name="p_${renderResponse.namespace}_close" 
 			 src="<html:imagesPath/>icons/close_teal16.png" 
 			 title="<ssf:nlt tag="icon.close" text="Close" />" 
-			 vspace="0" width="14" ></a></span></td>
+			 vspace="0" width="16" ></a></span></td>
 	  </c:if>
 	  <td><img <ssf:alt/> border="0" src="<html:imagesPath/>roundcorners3/corner2.png"></td>
 	  </tr>
