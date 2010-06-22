@@ -53,7 +53,9 @@ import net.sf.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.HttpSessionContext;
 import org.kablink.teaming.context.request.RequestContext;
@@ -63,6 +65,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.Tag;
@@ -70,7 +73,10 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.gwt.client.GwtBrandingData;
+import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.FolderType;
@@ -116,9 +122,11 @@ import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.Tabs;
+import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.Tabs.TabEntry;
 import org.kablink.util.PropertyNotFoundException;
 
@@ -1191,6 +1199,244 @@ public class GwtServerHelper {
 		
 		return adminCategories;
 	}// end getAdminActions()
+	
+	
+	/**
+	 * Return the branding data for the given binder.
+	 */
+	public static GwtBrandingData getBinderBrandingData( AbstractAllModulesInjected allModules, String binderId, HttpServletRequest request ) throws GwtTeamingException
+	{
+		BinderModule binderModule;
+		Binder binder;
+		Long binderIdL;
+		GwtBrandingData brandingData;
+		
+		brandingData = new GwtBrandingData();
+		
+		try
+		{
+			binderModule = allModules.getBinderModule();
+	
+			binderIdL = new Long( binderId );
+			
+			// Get the binder object.
+			if ( binderIdL != null )
+			{
+				String branding;
+				GwtBrandingDataExt brandingExt;
+				Binder brandingSourceBinder;
+				String brandingSourceBinderId;
+				
+				binder = binderModule.getBinder( binderIdL );
+				
+				// Get the binder where branding comes from.
+				brandingSourceBinder = binder.getBrandingSource();
+				
+				brandingSourceBinderId = brandingSourceBinder.getId().toString();
+				brandingData.setBinderId( brandingSourceBinderId );
+
+				// Get the branding that should be applied for this binder.
+				branding = brandingSourceBinder.getBranding();
+				
+				// For some unknown reason, if there is no branding in the db the string we get back
+				// will contain only a \n.  We don't want that.
+				if ( branding != null && branding.length() == 1 && branding.charAt( 0 ) == '\n' )
+					branding = "";
+				
+				// Parse the branding and replace any markup with the appropriate url.  For example,
+				// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
+				branding = MarkupUtil.markupStringReplacement( null, null, request, null, brandingSourceBinder, branding, "view" );
+	
+				brandingData.setBranding( branding );
+				
+				// Get the additional branding information.
+				{
+					String xmlStr;
+					
+					brandingExt = new GwtBrandingDataExt();
+					
+					// Is there old-style branding?
+					if ( branding != null && branding.length() > 0 )
+					{
+						// Yes
+						brandingExt.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_ADVANCED );
+					}
+					else
+					{
+						// No
+						brandingExt.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_IMAGE );
+					}
+
+					// Get the xml that represents the branding data.  The following is an example of what the xml should look like.
+					// 	<brandingData fontColor="" brandingImgName="some name" brandingType="image/advanced">
+					// 		<background color="" imgName="" />
+					// 	</brandingData>
+					xmlStr = brandingSourceBinder.getBrandingExt();
+					
+					if ( xmlStr != null )
+					{
+						try
+			    		{
+			    			Document doc;
+			    			Node node;
+			    			Node attrNode;
+		        			String imgName;
+							String fileUrl;
+							String webPath;
+							
+							webPath = WebUrlUtil.getServletRootURL( request );
+
+							// Parse the xml string into an xml document.
+							doc = DocumentHelper.parseText( xmlStr );
+			    			
+			    			// Get the root element.
+			    			node = doc.getRootElement();
+			    			
+			    			// Get the font color.
+			    			attrNode = node.selectSingleNode( "@fontColor" );
+			    			if ( attrNode != null )
+			    			{
+			        			String fontColor;
+			
+			        			fontColor = attrNode.getText();
+			        			brandingExt.setFontColor( fontColor );
+			    			}
+			    			
+			    			// Get the name of the branding image
+			    			attrNode = node.selectSingleNode( "@brandingImgName" );
+			    			if ( attrNode != null )
+			    			{
+			        			imgName = attrNode.getText();
+
+			    				if ( imgName != null && imgName.length() > 0 )
+			    				{
+			    					brandingExt.setBrandingImgName( imgName );
+
+			    					// Is the image name "__no image__" or "__default teaming image__"?
+			    					// These are special names that don't represent a real image file name.
+			    					if ( !imgName.equalsIgnoreCase( "__no image__" ) && !imgName.equalsIgnoreCase( "__default teaming image__" ) )
+			    					{
+			    						// No, Get a url to the file.
+				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, brandingSourceBinder, imgName );
+				    					brandingExt.setBrandingImgUrl( fileUrl );
+			    					}
+			    				}
+			    			}
+			    			
+			    			// Get the type of branding, "advanced" or "image"
+			    			attrNode = node.selectSingleNode( "@brandingType" );
+			    			if ( attrNode != null )
+			    			{
+			    				String type;
+			    				
+			    				type = attrNode.getText();
+			    				if ( type != null && type.equalsIgnoreCase( GwtBrandingDataExt.BRANDING_TYPE_IMAGE ) )
+			    					brandingExt.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_IMAGE );
+			    				else
+			    					brandingExt.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_ADVANCED );
+			    			}
+			    			
+			    			// Get the branding rule.
+			    			attrNode = node.selectSingleNode( "@brandingRule" );
+			    			if ( attrNode != null )
+			    			{
+			    				String ruleName;
+			    				
+			    				ruleName = attrNode.getText();
+			    				if ( ruleName != null )
+			    				{
+			    					if ( ruleName.equalsIgnoreCase( GwtBrandingDataExt.BrandingRule.BINDER_BRANDING_OVERRIDES_SITE_BRANDING.toString() ) )
+			    						brandingExt.setBrandingRule( GwtBrandingDataExt.BrandingRule.BINDER_BRANDING_OVERRIDES_SITE_BRANDING );
+			    					else if ( ruleName.equalsIgnoreCase( GwtBrandingDataExt.BrandingRule.DISPLAY_BOTH_SITE_AND_BINDER_BRANDING.toString() ) )
+			    						brandingExt.setBrandingRule( GwtBrandingDataExt.BrandingRule.DISPLAY_BOTH_SITE_AND_BINDER_BRANDING );
+			    					else if ( ruleName.equalsIgnoreCase( GwtBrandingDataExt.BrandingRule.DISPLAY_SITE_BRANDING_ONLY.toString() ) )
+			    						brandingExt.setBrandingRule( GwtBrandingDataExt.BrandingRule.DISPLAY_SITE_BRANDING_ONLY );
+			    				}
+			    			}
+			    			
+			    			// Get the <background color="" imgName="" stretchImg="" /> node
+			    			node = node.selectSingleNode( "background" );
+			    			if ( node != null )
+			    			{
+			    				// Get the background color.
+			    				attrNode = node.selectSingleNode( "@color" );
+			    				if ( attrNode != null )
+			    				{
+			        				String bgColor;
+			
+			        				bgColor = attrNode.getText();
+			        				brandingExt.setBackgroundColor( bgColor );
+			    				}
+			    				
+			    				// Get the name of the background image.
+			    				attrNode = node.selectSingleNode( "@imgName" );
+			    				if ( attrNode != null )
+			    				{
+			        				imgName = attrNode.getText();
+
+				    				if ( imgName != null && imgName.length() > 0 )
+				    				{
+				    					// Get a url to the file.
+				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, brandingSourceBinder, imgName );
+				    					brandingExt.setBackgroundImgUrl( fileUrl );
+				    					
+				    					brandingExt.setBackgroundImgName( imgName );
+				    				}
+			    				}
+
+			    				// Get the value of whether or not to stretch the background image.
+	        					brandingExt.setBackgroundImgStretchValue( true );
+			    				attrNode = node.selectSingleNode( "@stretchImg" );
+			    				if ( attrNode != null )
+			    				{
+			        				String stretch;
+			
+			        				stretch = attrNode.getText();
+			        				if ( stretch != null && stretch.equalsIgnoreCase( "false" ) )
+			        					brandingExt.setBackgroundImgStretchValue( false );
+			    				}
+			    			}
+			    		}
+			    		catch(Exception e)
+			    		{
+			    			m_logger.warn( "Unable to parse branding ext " + xmlStr );
+			    		}
+					}
+					
+					brandingData.setBrandingExt( brandingExt );
+				}
+				
+				// Are we dealing with site branding?
+				{
+					Binder topWorkspace;
+					
+					// Get the top workspace.
+					topWorkspace = allModules.getWorkspaceModule().getTopWorkspace();				
+					
+					// Are we dealing with the site branding.
+					if ( binderIdL.compareTo( topWorkspace.getId() ) == 0 )
+					{
+						// Yes
+						brandingData.setIsSiteBranding( true );
+					}
+				}
+			}
+		}
+		catch (NoBinderByTheIdException nbEx)
+		{
+			// Nothing to do
+		}
+		catch (AccessControlException acEx)
+		{
+			// Nothing to do
+		}
+		catch (Exception e)
+		{
+			// Nothing to do
+		}
+		
+		return brandingData;
+	}// end getBinderBrandingData()
 	
 	
 	/**
