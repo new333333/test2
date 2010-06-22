@@ -161,8 +161,11 @@ li.ss_actions_bar_separator {
 	padding:4px 7px;
 	}
 .ss_actions_bar li a:hover{
-	color: #333 ;
-	background-image: none !important;
+	color: #fff;
+	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
+	background-position: center;
+	-moz-border-radius:10px 10px 10px 10px;
+	-webkit-border-radius:10px 10px 10px 10px;
 	}
 .ss_actions_bar li a.ss_actions_bar_inline, .ss_actions_bar li a.ss_actions_bar_inline:visited  {
 	color:${ss_style_text_color} ;
@@ -748,6 +751,7 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	}
 .ss_actions_bar13_pane a {
 	-moz-border-radius:10px 10px 10px 10px;
+	-webkit-border-radius:10px 10px 10px 10px;
 	background:none repeat scroll 0 0 #949494;
 	color:#FFFFFF;
 	margin-right:3px;
@@ -756,6 +760,7 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 }	
 .ss_actions_bar13_pane_none {
 	-moz-border-radius:0px !important;
+	-webkit-border-radius:0px !important;
 	background:#FFFFFF !important;
 	color:#000000 !important;
 	margin:0px !important;
@@ -803,7 +808,7 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	font-size: 12px;
 	font-weight: normal;
 	padding: 5px 10px;
-	margin: 2px 0px;
+	margin: 2px 5px 2px 0px;
 	display:inline-block;
 	cursor: pointer;
 	}
@@ -823,6 +828,7 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	cursor: pointer;
 	display: inline;
 	padding-bottom: 15px;
+	margin-right: 5px;
 	}
 .wg-tab-content {
 	background:none repeat scroll 0 0 #E6E6E4;

@@ -541,7 +541,7 @@ div.ss_replies .ss_editableTab {
 	background-color: ${ss_style_background_color_opaque};
 	}
 div.ss_workflow { 
-  	border: 1px #666666 solid;
+  	border: 1px #999 solid;
   	padding: 2px;
 	}
 .ss_replies .ss_entryDescription {
@@ -1807,15 +1807,30 @@ div.ss_content_outer table, div.ss_portlet table, table.ss_style, div.ss_popup_b
 	background:url(<html:imagesPath/>roundcorners2/border.gif) repeat-y right;
 }
 
+.ss_decor-round-corners-bottom-left {
+	background:url(<html:imagesPath/>roundcorners3/corner3.png) no-repeat;
+	width: 8px;
+	height: 8px;
+	}
+.ss_decor-round-corners-bottom-center {
+	background:url(<html:imagesPath/>roundcorners3/border2.png) repeat-x;
+	height: 8px;
+	}
+.ss_decor-round-corners-bottom-right {
+	background:url(<html:imagesPath/>roundcorners3/corner4.png) no-repeat;
+	width: 8px;
+	height: 8px;
+	}
+
 .ss_decor-round-corners-bottom3 {
 	background:url(<html:imagesPath/>roundcorners3/border2.png) repeat-x bottom;
 }
 .ss_decor-round-corners-bottom3 div {
-	background:url(<html:imagesPath/>roundcorners3/corner3.png) no-repeat left;
+	background:url(<html:imagesPath/>roundcorners3/corner3.png) no-repeat left top;
 }
 .ss_decor-round-corners-bottom3 div div {
-	background:url(<html:imagesPath/>roundcorners3/corner4.png) no-repeat right;
-	height:7px;
+	background:url(<html:imagesPath/>roundcorners3/corner4.png) no-repeat right top;
+	height:8px;
 	font-size:1px;
 }
 .ss_decor-border7 {
