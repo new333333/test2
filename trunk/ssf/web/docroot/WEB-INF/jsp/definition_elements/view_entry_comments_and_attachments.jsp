@@ -131,7 +131,7 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
     </c:if>
   </div>
   </td>
-  <c:if test="${ssDefinitionEntry.top && ss_accessControlMap[ssEntry.id]['report']}">
+  <c:if test="${ssDefinitionEntry.top}">
   <td valign="middle" width="1%" nowrap>
   <div id="viewEntryHistory${ss_tabDivCount}Tab" 
     class="wg-tab roundcornerSM" 
@@ -183,7 +183,7 @@ ss_createOnLoadObj("commentsAndAttachmentsRegion${ss_divCounter}", function() {
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachments_tab.jsp" />
 </div>
 
-<c:if test="${ssDefinitionEntry.top && ss_accessControlMap[ssEntry.id]['report']}">
+<c:if test="${ssDefinitionEntry.top}">
 <div id="viewEntryHistory${ss_tabDivCount}Div" style="display:none;">
   <iframe id="viewEntryHistory${ss_tabDivCount}Iframe" name="viewEntryHistory${ss_tabDivCount}Iframe" 
     onLoad="ss_resizeEntryHistoryIframe('viewEntryHistory${ss_tabDivCount}Iframe')" 
