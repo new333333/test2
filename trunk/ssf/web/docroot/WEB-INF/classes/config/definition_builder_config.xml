@@ -2261,6 +2261,7 @@
 			<option name="profileJobTitle" caption="__jobTitle" initial="true"/>
 			<option name="profileBirthDay" caption="__birthDay" initial="true"/>
 			<option name="profileBirthYear" caption="__birthYear" initial="true"/>
+			<option name="profileRank" caption="__rank" initial="true"/>
 			<option name="profileStreet" caption="__street" initial="false"/>
 			<option name="profileCity" caption="__city" initial="false"/>
 			<option name="profileState" caption="__state" initial="true"/>
