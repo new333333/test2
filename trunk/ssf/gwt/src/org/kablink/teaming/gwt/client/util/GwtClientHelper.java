@@ -331,16 +331,4 @@ public class GwtClientHelper {
 		eTD.colSpan = 2;
 		eTD.width = "100%";
 	}-*/;
-	
-	public static String convertSpecialCharsToHTML( String s ) {
-	    if(GwtClientHelper.hasString(s))
-	    {
-			s = s.replaceAll( "&quot;", "\"" );
-		    s = s.replaceAll( "&lt;", "<" );
-		    s = s.replaceAll( "&gt;", ">" );
-		    s = s.replaceAll( "&amp;", "&" );
-	    }
-	    
-	    return s;
-	}
 }
