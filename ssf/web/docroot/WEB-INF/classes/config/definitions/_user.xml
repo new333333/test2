@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_user" caption="__definition_default_user" type="7" nextId="119" definitionType="7" databaseId="402883b90cc53079010cc539bf260007" internalId="402883b90cc53079010cc539bf260007"> 
+<definition name="_user" caption="__definition_default_user" type="7" nextId="126" definitionType="7" databaseId="402883b90cc53079010cc539bf260007" internalId="402883b90cc53079010cc539bf260007"> 
   <item name="profileEntryForm" caption="__profile_entry_form_definition" type="form" id="1" display="form"> 
     <properties/>  
     <item name="profileEntryFormForm" caption="__form" id="2"> 
@@ -139,6 +139,14 @@
         <properties> 
           <property name="caption" value=""/> 
         </properties>  
+        <item name="profileAboutMe" caption="__aboutMe" type="data" category="profileEntryData" display="form" id="119">
+          <properties>
+            <property name="caption" value="__aboutMe"/>
+            <property name="name" value="aboutMe"/>
+            <property name="width" value=""/>
+            <property name="required" value="false"/>
+          </properties>
+        </item>
         <item name="profileJobTitle" caption="__jobTitle" type="data" id="40"> 
           <properties> 
             <property name="caption" value="__jobTitle"/>  
@@ -273,59 +281,59 @@
             <property name="required" value=""/> 
           </properties> 
         </item>  
-        <item name="profileInterests" caption="__interests" type="data" category="profileEntryData" display="form" id="96">
-          <properties>
-            <property name="name" value="interests"/>
-            <property name="caption" value="__interests"/>
-            <property name="height" value=""/>
-            <property name="toolbarType" value="standard"/>
-            <property name="required" value="false"/>
-            <property name="fieldModificationAllowed" value="false"/>
-          </properties>
-        </item>
-        <item name="profileResponsibilities" caption="__responsibilities" type="data" category="profileEntryData" display="form" id="97">
-          <properties>
-            <property name="caption" value="__responsibilities"/>
-            <property name="name" value="responsibilities"/>
-            <property name="height" value=""/>
-            <property name="toolbarType" value="minimal"/>
-            <property name="required" value="false"/>
-            <property name="fieldModificationAllowed" value="false"/>
-          </properties>
-        </item>
-        <item name="profileCompetencies" caption="__competencies" type="data" category="profileEntryData" display="form" id="98">
-          <properties>
-            <property name="caption" value="__competencies"/>
-            <property name="name" value="competencies"/>
-            <property name="required" value="false"/>
-            <property name="fieldModificationAllowed" value="false"/>
-          </properties>
-        </item>
-        <item name="profileJobFunctions" caption="__jobFunction" type="data" category="profileEntryData" display="form" id="99">
-          <properties>
-            <property name="caption" value="__jobFunction"/>
-            <property name="name" value="jobFunction"/>
-            <property name="required" value="false"/>
-            <property name="fieldModificationAllowed" value="false"/>
-          </properties>
-        </item>
-        <item name="profileQualifications" caption="__qualifications" type="data" category="profileEntryData" display="form" id="100">
-          <properties>
-            <property name="caption" value="__qualifications"/>
-            <property name="name" value="qualifications"/>
-            <property name="required" value="false"/>
-            <property name="fieldModificationAllowed" value="false"/>
-          </properties>
-        </item>
-        <item name="profileWebsite" caption="__website" type="data" category="profileEntryData" display="form" id="109">
-          <properties>
-            <property name="caption" value="__website"/>
-            <property name="name" value="website"/>
-            <property name="toolbarType" value="standard"/>
-            <property name="required" value="false"/>
-            <property name="fieldModificationAllowed" value="false"/>
-          </properties>
-        </item>
+        <item name="profileInterests" caption="__interests" type="data" category="profileEntryData" display="form" id="96"> 
+          <properties> 
+            <property name="name" value="interests"/>  
+            <property name="caption" value="__interests"/>  
+            <property name="height" value=""/>  
+            <property name="toolbarType" value="standard"/>  
+            <property name="required" value="false"/>  
+            <property name="fieldModificationAllowed" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="profileResponsibilities" caption="__responsibilities" type="data" category="profileEntryData" display="form" id="97"> 
+          <properties> 
+            <property name="caption" value="__responsibilities"/>  
+            <property name="name" value="responsibilities"/>  
+            <property name="height" value=""/>  
+            <property name="toolbarType" value="minimal"/>  
+            <property name="required" value="false"/>  
+            <property name="fieldModificationAllowed" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="profileCompetencies" caption="__competencies" type="data" category="profileEntryData" display="form" id="98"> 
+          <properties> 
+            <property name="caption" value="__competencies"/>  
+            <property name="name" value="competencies"/>  
+            <property name="required" value="false"/>  
+            <property name="fieldModificationAllowed" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="profileJobFunctions" caption="__jobFunction" type="data" category="profileEntryData" display="form" id="99"> 
+          <properties> 
+            <property name="caption" value="__jobFunction"/>  
+            <property name="name" value="jobFunction"/>  
+            <property name="required" value="false"/>  
+            <property name="fieldModificationAllowed" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="profileQualifications" caption="__qualifications" type="data" category="profileEntryData" display="form" id="100"> 
+          <properties> 
+            <property name="caption" value="__qualifications"/>  
+            <property name="name" value="qualifications"/>  
+            <property name="required" value="false"/>  
+            <property name="fieldModificationAllowed" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="profileWebsite" caption="__website" type="data" category="profileEntryData" display="form" id="109"> 
+          <properties> 
+            <property name="caption" value="__website"/>  
+            <property name="name" value="website"/>  
+            <property name="toolbarType" value="standard"/>  
+            <property name="required" value="false"/>  
+            <property name="fieldModificationAllowed" value="false"/> 
+          </properties> 
+        </item> 
       </item> 
     </item> 
   </item>  
@@ -553,75 +561,75 @@
         </properties> 
       </item> 
     </item>  
-    <item name="profileHeadingOtherView" caption="__profile_heading_Other_div" category="userViewLayout" display="view" id="111">
-      <properties>
-        <property name="caption" value=""/>
-      </properties>
-      <item name="profileWebsite" caption="__website" type="data" id="112">
-        <properties>
-          <property name="caption" value="__website"/>
-          <property name="name" value="website"/>
-          <property name="toolbarType" value="standard"/>
-          <property name="required" value=""/>
-          <property name="fieldModificationAllowed" value=""/>
-        </properties>
-      </item>
-      <item name="profileResponsibilities" caption="__responsibilities" type="data" id="113">
-        <properties>
-          <property name="caption" value="__responsibilities"/>
-          <property name="name" value="responsibilities"/>
-          <property name="height" value=""/>
-          <property name="toolbarType" value="minimal"/>
-          <property name="required" value=""/>
-          <property name="fieldModificationAllowed" value=""/>
-        </properties>
-      </item>
-      <item name="profileJobFunctions" caption="__jobFunction" type="data" id="114">
-        <properties>
-          <property name="caption" value="__jobFunction"/>
-          <property name="name" value="jobFunction"/>
-          <property name="toolbarType" value="standard"/>
-          <property name="required" value=""/>
-          <property name="fieldModificationAllowed" value=""/>
-        </properties>
-      </item>
-      <item name="profileInterests" caption="__interests" type="data" id="115">
-        <properties>
-          <property name="name" value="interests"/>
-          <property name="caption" value="__interests"/>
-          <property name="height" value=""/>
-          <property name="toolbarType" value="minimal"/>
-          <property name="required" value=""/>
-          <property name="fieldModificationAllowed" value=""/>
-        </properties>
-      </item>
-      <item name="profileEducation" caption="__education" type="data" id="116">
-        <properties>
-          <property name="caption" value="__education"/>
-          <property name="name" value="education"/>
-          <property name="width" value=""/>
-          <property name="required" value=""/>
-        </properties>
-      </item>
-      <item name="profileCompetencies" caption="__competencies" type="data" id="117">
-        <properties>
-          <property name="caption" value="__competencies"/>
-          <property name="name" value="competencies"/>
-          <property name="toolbarType" value="standard"/>
-          <property name="required" value=""/>
-          <property name="fieldModificationAllowed" value=""/>
-        </properties>
-      </item>
-      <item name="profileQualifications" caption="__qualifications" type="data" id="118">
-        <properties>
-          <property name="caption" value="__qualifications"/>
-          <property name="name" value="qualifications"/>
-          <property name="toolbarType" value="standard"/>
-          <property name="required" value=""/>
-          <property name="fieldModificationAllowed" value=""/>
-        </properties>
-      </item>
-    </item>
+    <item name="profileHeadingOtherView" caption="__profile_heading_Other_div" category="userViewLayout" display="view" id="111"> 
+      <properties> 
+        <property name="caption" value=""/> 
+      </properties>  
+      <item name="profileWebsite" caption="__website" type="data" id="112"> 
+        <properties> 
+          <property name="caption" value="__website"/>  
+          <property name="name" value="website"/>  
+          <property name="toolbarType" value="standard"/>  
+          <property name="required" value=""/>  
+          <property name="fieldModificationAllowed" value=""/> 
+        </properties> 
+      </item>  
+      <item name="profileResponsibilities" caption="__responsibilities" type="data" id="113"> 
+        <properties> 
+          <property name="caption" value="__responsibilities"/>  
+          <property name="name" value="responsibilities"/>  
+          <property name="height" value=""/>  
+          <property name="toolbarType" value="minimal"/>  
+          <property name="required" value=""/>  
+          <property name="fieldModificationAllowed" value=""/> 
+        </properties> 
+      </item>  
+      <item name="profileJobFunctions" caption="__jobFunction" type="data" id="114"> 
+        <properties> 
+          <property name="caption" value="__jobFunction"/>  
+          <property name="name" value="jobFunction"/>  
+          <property name="toolbarType" value="standard"/>  
+          <property name="required" value=""/>  
+          <property name="fieldModificationAllowed" value=""/> 
+        </properties> 
+      </item>  
+      <item name="profileInterests" caption="__interests" type="data" id="115"> 
+        <properties> 
+          <property name="name" value="interests"/>  
+          <property name="caption" value="__interests"/>  
+          <property name="height" value=""/>  
+          <property name="toolbarType" value="minimal"/>  
+          <property name="required" value=""/>  
+          <property name="fieldModificationAllowed" value=""/> 
+        </properties> 
+      </item>  
+      <item name="profileEducation" caption="__education" type="data" id="116"> 
+        <properties> 
+          <property name="caption" value="__education"/>  
+          <property name="name" value="education"/>  
+          <property name="width" value=""/>  
+          <property name="required" value=""/> 
+        </properties> 
+      </item>  
+      <item name="profileCompetencies" caption="__competencies" type="data" id="117"> 
+        <properties> 
+          <property name="caption" value="__competencies"/>  
+          <property name="name" value="competencies"/>  
+          <property name="toolbarType" value="standard"/>  
+          <property name="required" value=""/>  
+          <property name="fieldModificationAllowed" value=""/> 
+        </properties> 
+      </item>  
+      <item name="profileQualifications" caption="__qualifications" type="data" id="118"> 
+        <properties> 
+          <property name="caption" value="__qualifications"/>  
+          <property name="name" value="qualifications"/>  
+          <property name="toolbarType" value="standard"/>  
+          <property name="required" value=""/>  
+          <property name="fieldModificationAllowed" value=""/> 
+        </properties> 
+      </item> 
+    </item>  
     <item name="profileHeadingPhotosAndImagesView" caption="__profile_heading_PhotosAndImages_div" category="userViewLayout" display="view" id="86"> 
       <properties> 
         <property name="caption" value=""/> 
@@ -633,44 +641,39 @@
         </properties> 
       </item> 
     </item>  
-    <item name="profileSidePanelView" caption="__profile_sidePanel_div" category="userViewLayout" display="view" id="87"> 
-      <properties> 
-        <property name="caption" value=""/> 
-      </properties>  
-      <item name="profileStats" caption="__stats" category="userSideViewLayout" display="view" id="89"> 
-        <properties> 
-          <property name="caption" value="__stats"/> 
-        </properties> 
-      </item>  
-      <item name="profileAboutMe" caption="__aboutMe" type="data" id="88"> 
-        <properties> 
-          <property name="caption" value="__aboutMe"/>  
-          <property name="name" value="aboutMe"/>  
-          <property name="width" value=""/>  
-          <property name="required" value=""/> 
-        </properties> 
-      </item>  
-      <item name="profileTeams" caption="__teams" category="userSideViewLayout" display="view" id="93"> 
-        <properties> 
-          <property name="caption" value="__teams"/> 
-        </properties> 
-      </item>  
-      <item name="profileFollowers" caption="__followers" category="userSideViewLayout" display="view" id="90"> 
-        <properties> 
-          <property name="caption" value="__followers"/> 
-        </properties> 
-      </item>  
-      <item name="profileFollowing" caption="__following" category="userSideViewLayout" display="view" id="91"> 
-        <properties> 
-          <property name="caption" value="__following"/> 
-        </properties> 
-      </item>  
-      <item name="profileSavedSearches" caption="__savedSearches" category="userSideViewLayout" display="view" id="92"> 
-        <properties> 
-          <property name="caption" value="__savedSearches"/> 
-        </properties> 
-      </item> 
-    </item> 
+    <item name="profileSidePanelView" caption="__profile_sidePanel_div" category="userViewLayout" display="view" id="120">
+      <properties>
+        <property name="caption" value=""/>
+      </properties>
+      <item name="profileAboutMe" caption="__aboutMe" type="data" id="121">
+        <properties>
+          <property name="caption" value="__aboutMe"/>
+          <property name="name" value="aboutMe"/>
+          <property name="width" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+      <item name="profileStats" caption="__stats" category="userSideViewLayout" display="view" id="122">
+        <properties>
+          <property name="caption" value="__stats"/>
+        </properties>
+      </item>
+      <item name="profileTeams" caption="__teams" category="userSideViewLayout" display="view" id="123">
+        <properties>
+          <property name="caption" value="__teams"/>
+        </properties>
+      </item>
+      <item name="profileFollowing" caption="__following" category="userSideViewLayout" display="view" id="124">
+        <properties>
+          <property name="caption" value="__following"/>
+        </properties>
+      </item>
+      <item name="profileSavedSearches" caption="__savedSearches" category="userSideViewLayout" display="view" id="125">
+        <properties>
+          <property name="caption" value="__savedSearches"/>
+        </properties>
+      </item>
+    </item>
   </item>  
   <item name="profileEntrySimpleView" caption="__profile_entry_simple_view" id="62"> 
     <properties/>  
