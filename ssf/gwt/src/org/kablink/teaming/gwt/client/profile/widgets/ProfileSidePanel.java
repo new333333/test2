@@ -7,12 +7,14 @@ import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 public class ProfileSidePanel extends Composite {
@@ -103,7 +105,7 @@ public class ProfileSidePanel extends Composite {
 			if(attr != null) {
 				if(attr.getValue() != null) {
 					String aboutMeText = (String) attr.getValue();
-					InlineLabel aboutMeLabel = new InlineLabel(aboutMeText);
+					HTML aboutMeLabel = new HTML(aboutMeText);
 					aboutMeLabel.setStyleName("aboutDesc");
 					aboutMeSection.add(aboutMeLabel);
 				}
