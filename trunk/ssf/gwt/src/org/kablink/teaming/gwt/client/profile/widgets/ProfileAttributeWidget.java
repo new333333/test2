@@ -76,7 +76,7 @@ public class ProfileAttributeWidget  {
 					case ProfileAttribute.DATE:
 						if(attr.getValue() != null) {
 							String s = attr.getValue().toString();
-							widget = new HTML(GwtClientHelper.convertSpecialCharsToHTML(s));
+							widget = new HTML(s);
 						}
 						break;
 					case ProfileAttribute.LIST:
