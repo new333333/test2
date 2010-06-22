@@ -60,8 +60,9 @@ function ss_resizeEntryHistoryIframe(iframeId) {
 	try {
 		var iframeDiv = document.getElementById(iframeId)
 		eval("var iframeHeight = parseInt(window." + iframeId + ".document.body.scrollHeight);")
-		if (iframeHeight > 200 && parseInt(iframeDiv.style.height) != iframeHeight + ss_entryHistoryIframeOffset) {
-			iframeDiv.style.height = iframeHeight + ss_entryHistoryIframeOffset + "px"
+		if (typeof iframeDiv.style.height == "undefined" || iframeDiv.style.height == "" || 
+				(iframeHeight > 200 && parseInt(iframeDiv.style.height) != iframeHeight)) {
+			iframeDiv.style.height = parseInt(iframeHeight + ss_entryHistoryIframeOffset) + "px"
 			//Signal that the layout changed
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 			if (self.parent.ssf_onLayoutChange) self.parent.ssf_onLayoutChange();
