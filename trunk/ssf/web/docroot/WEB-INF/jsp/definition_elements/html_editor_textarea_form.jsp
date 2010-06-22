@@ -93,8 +93,7 @@
     <c:set var="textValue" value="${ssDefinitionEntry.branding}"/>
   </c:if>
   <c:if test="${property_name != 'description' && property_name != 'branding'}" >
-    <c:set var="textValue" value="${ssDefinitionEntry.customAttributes[property_name].value.text}"/>
-    <c:set var="textFormat" value="${ssDefinitionEntry.customAttributes[property_name].value.format}"/>
+    <c:set var="textValue" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
   </c:if>
   <c:if test="${!empty ss_sectionText}"><c:set var="textValue" value="${ss_sectionText}"/></c:if>
 </c:if>
