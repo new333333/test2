@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
@@ -1482,6 +1483,25 @@ public class GwtServerHelper {
 		}
 		return reply;
 	}
+	
+	/**
+	 * Given a method name, return the HttpServletRequest object that is stored in the session
+	 * cache using the method name as the key.
+	 */
+	public static HttpServletRequest getHttpServletRequest( String methodName )
+	{
+		HttpSession session;
+		HttpServletRequest request = null;
+		Object obj;
+		
+		// Get the object stored in the session cache using the method name as the key.
+		session = GwtServerHelper.getCurrentHttpSession();
+		obj = session.getAttribute( methodName );
+		if ( obj != null && obj instanceof HttpServletRequest )
+			request = (HttpServletRequest) obj;
+		
+		return request;
+	}// end getHttpServletRequest()
 	
 	/**
 	 * Returns information about the teams the current user is a member of.
