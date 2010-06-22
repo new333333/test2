@@ -343,26 +343,26 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static TreeInfo buildTreeInfoFromBinder(AllModulesInjected bs, Binder binder, List<Long> expandedBindersList) {
+	public static TreeInfo buildTreeInfoFromBinder(HttpServletRequest request, AllModulesInjected bs, Binder binder, List<Long> expandedBindersList) {
 		// Always use the private implementation of this method.
-		return buildTreeInfoFromBinderImpl(bs, binder, expandedBindersList, (null != expandedBindersList), 0);
+		return buildTreeInfoFromBinderImpl(request, bs, binder, expandedBindersList, (null != expandedBindersList), 0);
 	}
 	
-	public static TreeInfo buildTreeInfoFromBinder(AllModulesInjected bs, Binder binder) {
+	public static TreeInfo buildTreeInfoFromBinder(HttpServletRequest request, AllModulesInjected bs, Binder binder) {
 		// Always use the private implementation of this method.
-		return buildTreeInfoFromBinderImpl(bs, binder, null, false, 0);
+		return buildTreeInfoFromBinderImpl(request, bs, binder, null, false, 0);
 	}
 	
 	/*
 	 * Builds a TreeInfo object for a given Binder.
 	 */
-	private static TreeInfo buildTreeInfoFromBinderImpl(AllModulesInjected bs, Binder binder, List<Long> expandedBindersList, boolean mergeUsersExpansions, int depth) {
+	private static TreeInfo buildTreeInfoFromBinderImpl(HttpServletRequest request, AllModulesInjected bs, Binder binder, List<Long> expandedBindersList, boolean mergeUsersExpansions, int depth) {
 		// Construct the base TreeInfo for the Binder.
 		TreeInfo reply = new TreeInfo();
 		reply.setBinderInfo(getBinderInfo(binder));
 		reply.setBinderTitle(binder.getTitle());
 		reply.setBinderChildren(binder.getBinderCount());
-		String binderPermalink = PermaLinkUtil.getPermalink(binder);
+		String binderPermalink = PermaLinkUtil.getPermalink(request, binder);
 		reply.setBinderPermalink(binderPermalink);
 		reply.setBinderTrashPermalink(GwtUIHelper.getTrashPermalink(binderPermalink));
 		if (binder instanceof Folder) {
@@ -386,7 +386,7 @@ public class GwtServerHelper {
 			for (Iterator<Binder> biIT = childBinderList.iterator(); biIT.hasNext(); ) {
 				// ...creating a TreeInfo for each...
 				Binder subBinder = biIT.next();
-				TreeInfo subWsTI = buildTreeInfoFromBinderImpl(bs, subBinder, expandedBindersList, false, (depth + 1));
+				TreeInfo subWsTI = buildTreeInfoFromBinderImpl(request, bs, subBinder, expandedBindersList, false, (depth + 1));
 				childTIList.add(subWsTI);
 			}
 			
@@ -417,12 +417,12 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static List<TreeInfo> buildTreeInfoFromBinderList(AllModulesInjected bs, List<Long> bindersList) {
+	public static List<TreeInfo> buildTreeInfoFromBinderList(HttpServletRequest request, AllModulesInjected bs, List<Long> bindersList) {
 		ArrayList<TreeInfo> reply = new ArrayList<TreeInfo>();
 		for (Iterator<Long> lIT = bindersList.iterator(); lIT.hasNext(); ) {
 			Binder binder = getBinderForWorkspaceTree(bs, lIT.next());
 			if (null != binder) {
-				reply.add(buildTreeInfoFromBinderImpl(bs, binder, null, false, (-1)));
+				reply.add(buildTreeInfoFromBinderImpl(request, bs, binder, null, false, (-1)));
 			}
 		}
 		return reply;
@@ -506,7 +506,7 @@ public class GwtServerHelper {
 	 * Return a list of administration actions the user has rights to perform. 
 	 */
 	@SuppressWarnings("unchecked")
-	public static ArrayList<GwtAdminCategory> getAdminActions( Binder binder, AbstractAllModulesInjected allModules )
+	public static ArrayList<GwtAdminCategory> getAdminActions( HttpServletRequest request, Binder binder, AbstractAllModulesInjected allModules )
 	{
 		ArrayList<GwtAdminCategory> adminCategories;
 		GwtAdminCategory managementCategory;
@@ -574,7 +574,7 @@ public class GwtServerHelper {
 
 						title = NLT.get( "toolbar.new_with_arg", nltArgs );
 
-						adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+						adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 						adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY );
 						adaptedUrl.setParameter( WebKeys.URL_BINDER_ID, profilesBinder.getId().toString() );
 						adaptedUrl.setParameter( WebKeys.URL_ENTRY_TYPE, def.getId() );
@@ -612,7 +612,7 @@ public class GwtServerHelper {
 						{
 							title = NLT.get( "administration.search.title.index" );
 	
-							adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+							adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 							adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_FOLDER_INDEX_CONFIGURE );
 							url = adaptedUrl.toString();
 							
@@ -627,7 +627,7 @@ public class GwtServerHelper {
 						{
 							title = NLT.get( "administration.search.title.nodes" );
 	
-							adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+							adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 							adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_FOLDER_SEARCH_NODES_CONFIGURE );
 							url = adaptedUrl.toString();
 							
@@ -643,7 +643,7 @@ public class GwtServerHelper {
 						// Add a "Manage the search index" action.
 						title = NLT.get( "administration.configure_search_index" );
 
-						adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+						adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 						adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_FOLDER_INDEX_CONFIGURE );
 						url = adaptedUrl.toString();
 						
@@ -664,7 +664,7 @@ public class GwtServerHelper {
 					// Yes
 					title = NLT.get( "administration.manage.groups" );
 
-					adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_GROUPS );
 					url = adaptedUrl.toString();
 					
@@ -685,7 +685,7 @@ public class GwtServerHelper {
 					// Yes
 					title = NLT.get( "administration.manage.quotas" );
 
-					adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_QUOTAS );
 					url = adaptedUrl.toString();
 					
@@ -704,7 +704,7 @@ public class GwtServerHelper {
 				// Yes
 				title = NLT.get( "administration.configure_configurations" );
 
-				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION );
 				url = adaptedUrl.toString();
 				
@@ -723,7 +723,7 @@ public class GwtServerHelper {
 					// Yes
 					title = NLT.get( "administration.manage.license" );
 
-					adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_LICENSE );
 					url = adaptedUrl.toString();
 					
@@ -742,7 +742,7 @@ public class GwtServerHelper {
 				// Yes
 				title = NLT.get( "administration.manage.zones" );
 
-				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_ZONES );
 				url = adaptedUrl.toString();
 				
@@ -761,7 +761,7 @@ public class GwtServerHelper {
 					// Yes
 					title = NLT.get( "administration.manage.applications" );
 
-					adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_APPLICATIONS );
 					url = adaptedUrl.toString();
 					
@@ -782,7 +782,7 @@ public class GwtServerHelper {
 					// Yes
 					title = NLT.get( "administration.manage.application.groups" );
 
-					adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_APPLICATION_GROUPS );
 					url = adaptedUrl.toString();
 					
@@ -801,7 +801,7 @@ public class GwtServerHelper {
 				// Yes
 				title = NLT.get( "administration.manage.extensions" );
 
-				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_EXTENSIONS );
 				url = adaptedUrl.toString();
 				
@@ -827,7 +827,7 @@ public class GwtServerHelper {
 			{
 				title = NLT.get( "administration.report.title.login" );
 
-				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_LOGIN_REPORT );
 				url = adaptedUrl.toString();
 				
@@ -844,7 +844,7 @@ public class GwtServerHelper {
 			{
 				title = NLT.get( "administration.report.title.license" );
 
-				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_LICENSE_REPORT );
 				url = adaptedUrl.toString();
 				
@@ -859,7 +859,7 @@ public class GwtServerHelper {
 			{
 				title = NLT.get( "administration.report.title.activityByUser" );
 
-				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ACTIVITY_REPORT_BY_USER );
 				url = adaptedUrl.toString();
 				
@@ -874,7 +874,7 @@ public class GwtServerHelper {
 			{
 				title = NLT.get( "administration.report.title.quota" );
 
-				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_QUOTA_REPORT );
 				url = adaptedUrl.toString();
 				
@@ -889,7 +889,7 @@ public class GwtServerHelper {
 			{
 				title = NLT.get( "administration.report.title.disk_quota_exceeded" );
 
-				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_QUOTA_EXCEEDED_REPORT );
 				url = adaptedUrl.toString();
 				
@@ -904,7 +904,7 @@ public class GwtServerHelper {
 			{
 				title = NLT.get( "administration.report.title.highwater_exceeded" );
 
-				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_QUOTA_HIGHWATER_EXCEEDED_REPORT );
 				url = adaptedUrl.toString();
 				
@@ -919,7 +919,7 @@ public class GwtServerHelper {
 			{
 				title = NLT.get( "administration.report.title.user_access" );
 
-				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_USER_ACCESS_REPORT  );
 				url = adaptedUrl.toString();
 				
@@ -937,7 +937,7 @@ public class GwtServerHelper {
 			{
 				title = NLT.get( "administration.credits" );
 	
-				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_CREDITS );
 				url = adaptedUrl.toString();
 				
@@ -955,7 +955,7 @@ public class GwtServerHelper {
 			// Yes
 			title = NLT.get( "administration.view_change_log" );
 			
-			adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+			adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 			adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_CHANGELOG );
 			url = adaptedUrl.toString();
 			
@@ -972,7 +972,7 @@ public class GwtServerHelper {
 			// Yes
 			title = NLT.get( "administration.system_error_logs" );
 			
-			adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+			adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 			adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ADMIN_ACTION_GET_LOG_FILES );
 			url = adaptedUrl.toString();
 			
@@ -997,7 +997,7 @@ public class GwtServerHelper {
 				// Yes
 				title = NLT.get( "administration.definition_builder_designers" );
 
-				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS );
 				url = adaptedUrl.toString();
 				
@@ -1016,7 +1016,7 @@ public class GwtServerHelper {
 				{
 					title = NLT.get( "administration.configure_ldap" );
 
-					adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_LDAP_CONFIGURE );
 					url = adaptedUrl.toString();
 					
@@ -1037,7 +1037,7 @@ public class GwtServerHelper {
 				else
 					title = NLT.get( "administration.configure_userAccess" );
 
-				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_USER_ACCESS );
 				url = adaptedUrl.toString();
 				
@@ -1054,7 +1054,7 @@ public class GwtServerHelper {
 				// Yes
 				title = NLT.get( "administration.configure_mobileAccess" );
 
-				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_MOBILE_ACCESS );
 				url = adaptedUrl.toString();
 				
@@ -1071,7 +1071,7 @@ public class GwtServerHelper {
 				// Yes
 				title = NLT.get( "administration.configure_homePage" );
 
-				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_HOME_PAGE );
 				url = adaptedUrl.toString();
 				
@@ -1088,7 +1088,7 @@ public class GwtServerHelper {
 				// Yes
 				title = NLT.get( "administration.configure_roles" );
 
-				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ADMIN_ACTION_CONFIGURE_ROLES );
 				url = adaptedUrl.toString();
 				
@@ -1105,7 +1105,7 @@ public class GwtServerHelper {
 				// Yes
 				title = NLT.get( "administration.configure_mail" );
 
-				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_POSTINGJOB_CONFIGURE );
 				url = adaptedUrl.toString();
 				
@@ -1124,7 +1124,7 @@ public class GwtServerHelper {
 					// Yes
 					title = NLT.get( "administration.import.profiles" );
 
-					adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_PROFILES_IMPORT );
 					url = adaptedUrl.toString();
 					
@@ -1146,7 +1146,7 @@ public class GwtServerHelper {
 				zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
 				title = NLT.get( "administration.manage.accessControl" );
 
-				adaptedUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", false );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL );
 				adaptedUrl.setParameter( WebKeys.URL_WORKAREA_ID, zoneConfig.getWorkAreaId().toString() );
 				adaptedUrl.setParameter( WebKeys.URL_WORKAREA_TYPE, zoneConfig.getWorkAreaType() );
@@ -1500,6 +1500,10 @@ public class GwtServerHelper {
 		if ( obj != null && obj instanceof HttpServletRequest )
 			request = (HttpServletRequest) obj;
 		
+		if (null == request) {
+			m_logger.error("GwtServerHelper.getHttpServletRequest( Can't find cached HttpServletRequest for method '" + methodName + "' )");
+		}
+		
 		return request;
 	}// end getHttpServletRequest()
 	
@@ -1508,9 +1512,9 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static List<TeamInfo> getMyTeams(AllModulesInjected bs) {
+	public static List<TeamInfo> getMyTeams(HttpServletRequest request, AllModulesInjected bs) {
 		User user = getCurrentUser();
-		return getTeams(bs, user.getId());
+		return getTeams(request, bs, user.getId());
 	}
 
 	/**
@@ -1520,7 +1524,7 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<RecentPlaceInfo> getRecentPlaces(AllModulesInjected bs) {
+	public static List<RecentPlaceInfo> getRecentPlaces(HttpServletRequest request, AllModulesInjected bs) {
 		// Allocate an ArrayList to return the recent places in.
 		ArrayList<RecentPlaceInfo> rpiList = new ArrayList<RecentPlaceInfo>();
 		
@@ -1568,7 +1572,7 @@ public class GwtServerHelper {
 				rpi.setBinderId(String.valueOf(binderId));
 				rpi.setEntityPath(((String) tab.getData().get("path")));
 				rpi.setEntryId(String.valueOf(tab.getEntryId()));
-				rpi.setPermalink(PermaLinkUtil.getPermalink(bs.getBinderModule().getBinder(binderId)));
+				rpi.setPermalink(PermaLinkUtil.getPermalink(request, bs.getBinderModule().getBinder(binderId)));
 				
 				break;
 				
@@ -1633,7 +1637,7 @@ public class GwtServerHelper {
 	 * Return information about self registration.
 	 */
 	@SuppressWarnings("unchecked")
-	public static GwtSelfRegistrationInfo getSelfRegistrationInfo( AllModulesInjected ami )
+	public static GwtSelfRegistrationInfo getSelfRegistrationInfo( HttpServletRequest request, AllModulesInjected ami )
 	{
 		GwtSelfRegistrationInfo selfRegInfo;
 		boolean selfRegAllowed;
@@ -1664,7 +1668,7 @@ public class GwtServerHelper {
 				def = (Definition) entryDefsIterator.next();
 
 				// Create the url needed to invoke the "Add User" page.
-				adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+				adapterUrl = new AdaptedPortletURL( request, "ss_forum", true );
 				adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY );
 				adapterUrl.setParameter( WebKeys.URL_BINDER_ID, profileModule.getProfileBinderId().toString() );
 				adapterUrl.setParameter( WebKeys.URL_ENTRY_TYPE, def.getId() );
@@ -1701,7 +1705,7 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<TeamInfo> getTeams(AllModulesInjected bs, Long userId) {
+	public static List<TeamInfo> getTeams(HttpServletRequest request, AllModulesInjected bs, Long userId) {
 		// Allocate an ArrayList<TeamInfo> to hold the teams.
 		ArrayList<TeamInfo> reply = new ArrayList<TeamInfo>();
 
@@ -1711,10 +1715,10 @@ public class GwtServerHelper {
 			// ...adding a TeamInfo for each to the reply list.
 			Map myTeam = myTeamsIT.next();
 			TeamInfo ti = new TeamInfo();
-			ti.setBinderId(   ((String) myTeam.get(      "_docId"     )));
-			ti.setEntityPath( ((String) myTeam.get(      "_entityPath")));
-			ti.setPermalink(  PermaLinkUtil.getPermalink( myTeam       ));
-			ti.setTitle(      ((String) myTeam.get(      "title"      )));
+			ti.setBinderId(   ((String) myTeam.get(      "_docId"        )));
+			ti.setEntityPath( ((String) myTeam.get(      "_entityPath"   )));
+			ti.setPermalink(  PermaLinkUtil.getPermalink( request, myTeam ));
+			ti.setTitle(      ((String) myTeam.get(      "title"         )));
 			reply.add(ti);
 		}
 		
@@ -1760,7 +1764,7 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<TopRankedInfo> getTopRanked(AllModulesInjected bs)
+	public static List<TopRankedInfo> getTopRanked(HttpServletRequest request, AllModulesInjected bs)
 	{
 		// Allocate an ArrayList to return the top ranked items in.
 		ArrayList<TopRankedInfo> triList = new ArrayList<TopRankedInfo>();
@@ -1797,7 +1801,7 @@ public class GwtServerHelper {
 			tri = new TopRankedInfo();
 			tri.setTopRankedType(TopRankedType.PERSON);
 			tri.setTopRankedName(Utils.getUserTitle(user));
-			tri.setTopRankedPermalinkUrl(PermaLinkUtil.getPermalink(user));
+			tri.setTopRankedPermalinkUrl(PermaLinkUtil.getPermalink(request, user));
 			tri.setTopRankedRefCount((null == refCount) ? 0 : refCount.intValue());
 			tri.setTopRankedCSS(css);
 
@@ -1819,7 +1823,7 @@ public class GwtServerHelper {
 			tri.setTopRankedType(TopRankedType.PLACE);
 			tri.setTopRankedName(binder.getTitle());
 			tri.setTopRankedHoverText(binder.getPathName());
-			tri.setTopRankedPermalinkUrl(PermaLinkUtil.getPermalink(binder));
+			tri.setTopRankedPermalinkUrl(PermaLinkUtil.getPermalink(request, binder));
 			tri.setTopRankedRefCount((null == refCount) ? 0 : refCount.intValue());
 			tri.setTopRankedCSS(css);
 

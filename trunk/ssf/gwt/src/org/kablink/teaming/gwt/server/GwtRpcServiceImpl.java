@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
@@ -148,7 +149,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * This method is meant to search for applications or entries or groups or places or tags or teams or users.
 	 */
 	@SuppressWarnings("unchecked")
-	private GwtSearchResults doSearch( GwtSearchCriteria searchCriteria ) throws Exception
+	private GwtSearchResults doSearch( HttpServletRequest request, GwtSearchCriteria searchCriteria ) throws Exception
 	{
 		Map options;
 		List searchTerms;
@@ -346,7 +347,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					// Pull information about this folder from the search results.
 					folderId = entry.get( "_docId" );
 					folderTitle = entry.get( "_extendedTitle" );
-					folder = getFolderImpl( null, folderId, folderTitle );
+					folder = getFolderImpl( request, null, folderId, folderTitle );
 					if ( folder != null )
 						results.add( folder );
 				}
@@ -431,7 +432,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 					// Pull information about this user from the search results.
 					userId = entry.get( "_docId" );
-					gwtUser = getGwtUser( null, userId );
+					gwtUser = getGwtUser( request, null, userId );
 					if ( gwtUser != null )
 						results.add( gwtUser );
 				}
@@ -472,7 +473,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case TAG:
 		case TEAMS:
 		case USER:
-			searchResults = doSearch( searchCriteria );
+			searchResults = doSearch( GwtServerHelper.getHttpServletRequest( "executeSearch" ), searchCriteria );
 			break;
 				
 		default:
@@ -506,7 +507,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				
 				binder = binderModule.getBinder( binderIdL );
 
-				adminActions = GwtServerHelper.getAdminActions( binder, this );
+				adminActions = GwtServerHelper.getAdminActions( GwtServerHelper.getHttpServletRequest( "getAdminActions" ), binder, this );
 			}
 			else
 			{
@@ -893,7 +894,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				}
 				
 				// Create a url that can be used to view this entry.
-				url = PermaLinkUtil.getPermalink( entry );
+				url = PermaLinkUtil.getPermalink( GwtServerHelper.getHttpServletRequest( "getEntry" ), entry );
 				folderEntry.setViewEntryUrl( url );
 			}
 		}
@@ -994,10 +995,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public GwtFolder getFolder( String zoneUUID, String folderId ) throws GwtTeamingException
 	{
-		return getFolderImpl( zoneUUID, folderId, null );
+		return getFolderImpl( GwtServerHelper.getHttpServletRequest( "getFolder" ), zoneUUID, folderId, null );
 	}
 	
-	private GwtFolder getFolderImpl( String zoneUUID, String folderId, String folderTitle ) throws GwtTeamingException
+	private GwtFolder getFolderImpl( HttpServletRequest request, String zoneUUID, String folderId, String folderTitle ) throws GwtTeamingException
 	{
 		BinderModule binderModule;
 		Binder binder = null;
@@ -1046,7 +1047,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					folder.setParentBinderName( parentBinder.getPathName() );
 
 				// Create a url that can be used to view this folder.
-				url = PermaLinkUtil.getPermalink( binder );
+				url = PermaLinkUtil.getPermalink( request, binder );
 				folder.setViewFolderUrl( url );
 			}
 		}
@@ -1082,7 +1083,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Return a GwtUser object for the given user id
 	 */
-	public GwtUser getGwtUser( String zoneUUID, String userId ) throws GwtTeamingException
+	public GwtUser getGwtUser( HttpServletRequest request, String zoneUUID, String userId ) throws GwtTeamingException
 	{
 		Binder binder = null;
 		BinderModule bm = getBinderModule();
@@ -1147,7 +1148,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				reply.setName( user.getName() );
 				reply.setTitle( Utils.getUserTitle(user) );
 				reply.setWorkspaceTitle( user.getWSTitle() );
-				reply.setViewWorkspaceUrl( PermaLinkUtil.getPermalink( binder ) );
+				reply.setViewWorkspaceUrl( PermaLinkUtil.getPermalink( request, binder ) );
 			}
 		}
 		catch ( AccessControlException acEx )
@@ -1180,7 +1181,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			Long binderIdL = new Long( binderId );
 			Binder binder = getBinderModule().getBinder( binderIdL );
-			return PermaLinkUtil.getPermalink( binder );
+			return PermaLinkUtil.getPermalink( GwtServerHelper.getHttpServletRequest( "getBinderPermalink" ), binder );
 		}
 		
 		return "";
@@ -1196,7 +1197,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		Long binderIdL;
 
 		// Create a url that can be used to modify a binder.
-		adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+		adapterUrl = new AdaptedPortletURL( GwtServerHelper.getHttpServletRequest( "getModifyBinderUrl" ), "ss_forum", true );
 		adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER );
 		adapterUrl.setParameter( WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY );
 		adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
@@ -1316,7 +1317,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			AdaptedPortletURL adapterUrl;
 			
 			// Yes
-			adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+			adapterUrl = new AdaptedPortletURL( GwtServerHelper.getHttpServletRequest( "getSiteAdministrationUrl" ), "ss_forum", true );
 			adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_SITE_ADMINISTRATION );
 			adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
 			
@@ -1584,7 +1585,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	public String getUserWorkspacePermalink()
 	{
 		Binder userWS = getBinderModule().getBinder( GwtServerHelper.getCurrentUser().getWorkspaceId() );
-		return PermaLinkUtil.getPermalink( userWS );
+		return PermaLinkUtil.getPermalink( GwtServerHelper.getHttpServletRequest( "getUserWorkspacePermalink" ), userWS );
 	}// end getUserWorkspacePermalink()
 	
 	/**
@@ -1657,6 +1658,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 			// ...and build the TreeInfo for the request Binder.
 			reply = GwtServerHelper.buildTreeInfoFromBinderList(
+				GwtServerHelper.getHttpServletRequest( "getHorizontalTree" ),
 				this,
 				bindersList );
 		}
@@ -1686,7 +1688,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		binder = GwtServerHelper.getBinderForWorkspaceTree( this, binderIdS );
 
 		// ...and build the TreeInfo for it.
-		reply = ((null == binder) ? null : GwtServerHelper.buildTreeInfoFromBinder( this, binder ));
+		reply = ((null == binder) ? null : GwtServerHelper.buildTreeInfoFromBinder( GwtServerHelper.getHttpServletRequest( "getHorizontalNode" ), this, binder ));
 		return reply;
 	}// end getHorizontalNode()
 
@@ -1753,6 +1755,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			// ...build the TreeInfo for the request Binder...
 			reply = GwtServerHelper.buildTreeInfoFromBinder(
+				GwtServerHelper.getHttpServletRequest( "getVerticalTree" ),
 				this,
 				binderWS,
 				expandedBindersList );
@@ -1797,7 +1800,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			expandedBindersList.add( Long.parseLong( binderIdS ));
 	
 			// ...and build the TreeInfo folist.toArray(infoArray);r it.
-			reply = GwtServerHelper.buildTreeInfoFromBinder( this, binder, expandedBindersList );
+			reply = GwtServerHelper.buildTreeInfoFromBinder( GwtServerHelper.getHttpServletRequest( "getVerticalNode" ), this, binder, expandedBindersList );
 		}
 		else
 		{
@@ -2018,7 +2021,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public List<TeamInfo> getMyTeams()
 	{
-		return GwtServerHelper.getMyTeams( this );
+		return GwtServerHelper.getMyTeams( GwtServerHelper.getHttpServletRequest( "getMyTeams" ), this );
 	}// end getMyTeams()
 	
 	/**
@@ -2037,7 +2040,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			Long random = System.currentTimeMillis();
 			
 			// Yes
-			adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext( "ss_forum", true );
+			adapterUrl = new AdaptedPortletURL( GwtServerHelper.getHttpServletRequest( "getMicrBlogUrl" ), "ss_forum", true );
 			adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST );
 			adapterUrl.setParameter( WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_MINIBLOG );
 			adapterUrl.setParameter( WebKeys.URL_USER_ID, p.getId().toString() );
@@ -2211,7 +2214,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public List<RecentPlaceInfo> getRecentPlaces()
 	{
-		return GwtServerHelper.getRecentPlaces( this );
+		return GwtServerHelper.getRecentPlaces( GwtServerHelper.getHttpServletRequest( "getRecentPlaces" ), this );
 	}// end getRecentPlaces()
 	
 	/**
@@ -2231,7 +2234,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public GwtSelfRegistrationInfo getSelfRegistrationInfo()
 	{
-		return GwtServerHelper.getSelfRegistrationInfo( this );
+		return GwtServerHelper.getSelfRegistrationInfo( GwtServerHelper.getHttpServletRequest( "getSelfRegistrationInfo" ), this );
 	}// end getSelfRegistrationInfo()
 	
 	/**
@@ -2289,7 +2292,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public List<TopRankedInfo> getTopRanked()
 	{
-		return GwtServerHelper.getTopRanked( this );
+		return GwtServerHelper.getTopRanked( GwtServerHelper.getHttpServletRequest( "getTopRanked" ), this );
 	}
 
 	/**
@@ -2483,6 +2486,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			if ( EntityIdentifier.EntityType.profiles != binder.getEntityType() )
 			{
 				AdaptedPortletURL adapterUrl;
+				HttpServletRequest request = GwtServerHelper.getHttpServletRequest( "getTeamManagementInfo" ); 
 			
 				// Yes!  Then the user is allowed to view team membership.
 				tmi.setViewAllowed( true );
@@ -2491,7 +2495,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				if ( getBinderModule().testAccess( binder, BinderOperation.manageTeamMembers ) )
 				{
 					// ...store the team management URL...
-					adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
+					adapterUrl = new AdaptedPortletURL( request, "ss_forum", true );
 					adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_TEAM_MEMBER );
 					adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
 					adapterUrl.setParameter( WebKeys.URL_BINDER_TYPE, binder.getEntityType().name() );
@@ -2502,7 +2506,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				if ( MiscUtil.hasString( user.getEmailAddress() ) )
 				{
 					// ...store the send mail URL...
-					adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
+					adapterUrl = new AdaptedPortletURL( request, "ss_forum", true );
 					adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL );
 					adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
 					adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString() );
@@ -2513,7 +2517,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				if ( getIcBrokerModule().isEnabled() )
 				{
 					// ...store the team meeting URL.
-					adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
+					adapterUrl = new AdaptedPortletURL( request, "ss_forum", true );
 					adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING );
 					adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
 					adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString() );
@@ -2733,15 +2737,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		Long userId = null;
 		Principal p = null;
 
-		if(binderId != null) {
+		if (binderId != null) {
 			p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
 		}
 		
-		if(p != null){
+		if (p != null){
 			userId = p.getId();
 		}
 		
-		return GwtServerHelper.getTeams( this, userId );
+		return GwtServerHelper.getTeams( GwtServerHelper.getHttpServletRequest( "getTeams" ), this, userId );
 	}// end getMyTeams()
 
 	/**
@@ -2776,7 +2780,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			Long userIdL = new Long( userId );
 			
 			User u = (User) getProfileModule().getEntry(userIdL);
-			return PermaLinkUtil.getPermalink(u);
+			return PermaLinkUtil.getPermalink( GwtServerHelper.getHttpServletRequest( "getUserPermalink" ), u );
 		}
 		
 		return "";
