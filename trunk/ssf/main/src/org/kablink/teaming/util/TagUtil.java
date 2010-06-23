@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.SortedSet;
@@ -60,6 +61,24 @@ public class TagUtil {
      * @param allTags
      * @return
      */
+    public static Map<String, List<Tag>> splitTags(Collection<Tag> tags) {
+        Map results = new HashMap();
+  
+        List publicTags = new ArrayList();
+        List privateTags = new ArrayList();
+        for (Tag t: tags) {
+        	if (t.isPublic()) {
+       			publicTags.add(t);
+        	} else {
+       			privateTags.add(t);
+         	}
+        }
+        
+        results.put(ObjectKeys.COMMUNITY_ENTITY_TAGS, publicTags);
+        results.put(ObjectKeys.PERSONAL_ENTITY_TAGS, privateTags);
+        return results;
+    }
+    
     public static Map<String, SortedSet<Tag>> uniqueTags(Collection<Tag> tags) {
         Map results = new HashMap();
         User user = RequestContextHolder.getRequestContext().getUser();

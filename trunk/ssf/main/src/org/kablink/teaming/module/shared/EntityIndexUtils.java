@@ -821,9 +821,9 @@ public class EntityIndexUtils {
     	String aclTag = "";
     	String lowerAclTag = "";
     	   	
-    	Map<String, SortedSet<Tag>> uniqueTags = TagUtil.uniqueTags(allTags);
-    	SortedSet<Tag> pubTags = uniqueTags.get(ObjectKeys.COMMUNITY_ENTITY_TAGS);
-    	SortedSet<Tag> privTags = uniqueTags.get(ObjectKeys.PERSONAL_ENTITY_TAGS);
+    	Map<String, List<Tag>> uniqueTags = TagUtil.splitTags(allTags);
+    	List<Tag> pubTags = uniqueTags.get(ObjectKeys.COMMUNITY_ENTITY_TAGS);
+    	List<Tag> privTags = uniqueTags.get(ObjectKeys.PERSONAL_ENTITY_TAGS);
     	Field ttfTagField = new Field(Constants.TAG_FIELD_TTF, "", Field.Store.NO, Field.Index.UN_TOKENIZED);
     	// index all the public tags (allTags field and tag_acl field)
 		for (Tag thisTag: pubTags) {
