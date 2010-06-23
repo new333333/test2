@@ -553,7 +553,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Return the "document base url" that is used in tinyMCE configuration
 	 */
-	public String getDocumentBaseUrl( String binderId ) throws GwtTeamingException
+	public String getDocumentBaseUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
 		String baseUrl = null;
 		BinderModule binderModule;
@@ -571,7 +571,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				String webPath;
 				
 				binder = binderModule.getBinder( binderIdL );
-				webPath = WebUrlUtil.getServletRootURL();
+				webPath = WebUrlUtil.getServletRootURL( getRequest( ri ) );
 				baseUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, binder, "" );
 			}
 		}

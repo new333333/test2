@@ -88,7 +88,7 @@ public interface GwtRpcService extends RemoteService
 	public GwtBrandingData getBinderBrandingData( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
 	
 	// Return the "document base url" that is used in tinyMCE configuration
-	public String getDocumentBaseUrl( String binderId ) throws GwtTeamingException;
+	public String getDocumentBaseUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
 	
 	// Return an Entry object for the given entry id.
 	public GwtFolderEntry getEntry( HttpRequestInfo ri, String zoneUUID, String entryId ) throws GwtTeamingException;

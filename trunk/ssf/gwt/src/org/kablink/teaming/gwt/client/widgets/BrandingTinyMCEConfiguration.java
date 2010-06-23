@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -209,7 +210,7 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 		rpcService = GwtTeaming.getRpcService();
 		
 		// Issue an ajax request to get the base url for the binder.
-		rpcService.getDocumentBaseUrl( m_binderId, m_rpcCallback );
+		rpcService.getDocumentBaseUrl( new HttpRequestInfo(), m_binderId, m_rpcCallback );
 	}// end getDocumentBaseUrlFromServer()
 	
 	
