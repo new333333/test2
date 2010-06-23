@@ -2581,9 +2581,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return ProfileStats This object contains the stat info to display
 	 */
-	public ProfileStats getProfileStats(String binderId) {
+	public ProfileStats getProfileStats(HttpRequestInfo ri, String binderId) {
 		
-		return GwtProfileHelper.getStats(this, binderId);
+		return GwtProfileHelper.getStats(getRequest(ri), this, binderId);
 	}
 
 	/**

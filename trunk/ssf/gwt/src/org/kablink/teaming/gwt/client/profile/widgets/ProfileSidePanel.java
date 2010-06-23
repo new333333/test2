@@ -7,7 +7,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
@@ -167,7 +167,7 @@ public class ProfileSidePanel extends Composite {
 
 		if(profileStats == null) {
 			GwtRpcServiceAsync gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
-			gwtRpcService.getProfileStats(profileRequestInfo.getBinderId(), callback);
+			gwtRpcService.getProfileStats(new HttpRequestInfo(), profileRequestInfo.getBinderId(), callback);
 		}
 	}
 	
