@@ -171,6 +171,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /***********************************
 /* USER PROFILE */
 
+<%
+/**
 <!--#ss_profile_box_old { -->
 <!--	margin: 8px 0 8px 0;-->
 <!--	border: 1px #CCCCCC solid; -->
@@ -182,7 +184,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <!--	vertical-align:top;-->
 <!--	background-color:#f2f2f2;-->
 <!--	}-->
-
+**/
+%>
 #ss_profile_box {
 	-moz-border-radius:5px 5px 5px 5px;
 	background:none repeat scroll 0 0 #E9F1F1;
@@ -197,6 +200,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-weight:bold;
 	color:#5691A6!important;
 }
+<%
+/**
 <!--#ss_profile_box_h1_old{-->
 <!--	margin: 2px 0 2px 0;-->
 <!--	font-size: 20px;-->
@@ -206,6 +211,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <!--	letter-spacing:-2px;-->
 <!--	color:#5691A6!important;-->
 <!--	}-->
+**/
+%>
 #ss_profile_box_h1 * a, #ss_profile_box_h1 * span, #ss_profile_box_h1 table *  {
 	font-size: 20px;
 	font-style: italic;
@@ -213,6 +220,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-family: Arial, Helvetica, sans-serif;
 	color:#5691A6!important;
 	}
+<%
+/**
 <!--#ss_profile_box_h1_old * a:hover {-->
 <!--	font-size: 20px;-->
 <!--	font-style: italic;-->
@@ -226,7 +235,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <!--	color:#3e6978 !important;-->
 <!--}-->
 <!---->
-
+**/
+%>
 #ss_profile_box_h1 a:hover {
 	font-family: Arial, Helvetica, sans-serif;
 	color:#3e6978!important;

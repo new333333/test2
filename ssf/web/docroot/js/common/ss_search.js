@@ -939,7 +939,7 @@ function ss_removeOption(orderNo) {
 }
 
 function ss_search() {
-	ss_prepareAdditionalSearchOptions();
+	ss_prepareAdditionalSearchOptions(document.getElementById('ss_advSearchForm'));
 	document.getElementById('ss_advSearchForm').submit();
 }
 
@@ -1016,7 +1016,7 @@ function ss_goToSearchResultPageByInputValue(inputId) {
 	document.location.href = url;
 }
 
-function ss_prepareAdditionalSearchOptions() {
+function ss_prepareAdditionalSearchOptions(formObj) {
 	var numbers = new Array();
 	var types = new Array();
 	for (var i=0; i<ss_userOptionsCounter; i++) {
@@ -1027,6 +1027,9 @@ function ss_prepareAdditionalSearchOptions() {
 	}
 	document.getElementById("searchNumbers").value = numbers.join(" ");
 	document.getElementById("searchTypes").value = types.join(" ");
+	if (typeof formObj != "undefined") {
+		formObj.action = ss_getSelectedBinders(formObj.action);
+	}
 	return true;
 }
 
