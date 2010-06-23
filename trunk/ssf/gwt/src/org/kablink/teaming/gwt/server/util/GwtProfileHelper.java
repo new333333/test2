@@ -590,7 +590,7 @@ public class GwtProfileHelper {
 		}
 
 		//Get the number of recent entries
-		stats.setEntries( Integer.toString( getRecentEntries(bs, binderId) ) );
+		//stats.setEntries( Integer.toString( getRecentEntries(bs, binderId) ) );
     	
     	return stats;
     }

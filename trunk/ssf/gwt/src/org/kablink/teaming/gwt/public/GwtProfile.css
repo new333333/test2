@@ -51,15 +51,14 @@ padding:0 10px 10px;
 
 .column-r  {
 background:none repeat scroll 0 0 #E6E6E4;
-height:100%;
 padding:0 0 10px 0;
 width:220px;
 text-align:left;
 position: relative;
 }
 .column-r .content {
+clear:both;
 padding-right:5px;
-height:100%;
 }
 .profile-table {
 background-color:#F6F6F6;
@@ -156,16 +155,15 @@ padding:10px 0px 5px;
   border-color: white;
   padding: 5px;
 }
-
 td td label {
 font-size:0.8em;
 white-space:nowrap;
 }
-
 .tracking-subhead {
 color:#666666;
 font-size:0.9em;
-margin-top:1.4em;
+padding-top:10px;
+margin-bottom:1.5em;
 padding:3px 0;
 text-transform:uppercase;
 }
@@ -173,16 +171,17 @@ text-transform:uppercase;
 border-bottom:1px solid #D2D5D1;
 }
 .sideBarTitle {
-	padding-right: 5px;
-	display:inline;
+padding-right: 5px;
+display:inline;
 }
-.userPhotoStats {
+.s-topContent {
+clear:both;
+padding-bottom: 20px;
 }
 .user_stats {
-position:absolute;
-left: 90px;
-top: 2px;
+float: left;
 font-size: 1.1em;
+height: 105px;
 }
 .stats_error_msg {
 color: RED;
@@ -196,30 +195,27 @@ border-right:0 solid transparent;
 margin-top:0.5em;
 padding-bottom:0.5em;
 }
-
 .statsTable td {
 background-color:transparent;
 border-bottom:1px solid #D2D5D1;
 font-size:0.75em;
 padding:3px;
 }
-
 .statsTable td, .statsTable th, .statsTable tr,.statsTable table {
 	font-family:Arial,Helvetica,Geneva,Swiss,SunSans-Regular;
 }
 .profilePhotoMain {
+float: left;
 padding-top:10px;
-height: 95px;
+padding-bottom: 10px;
 }
 .profilePhoto a {
-	height: 75px;
 	width: 75px;
 }
 .attrLabel {
 font-size:0.8em;
 white-space:nowrap;
 }
-
 .marginleft1  {
 margin-left:1em;
 }
@@ -232,8 +228,8 @@ float: right;
 margin-right:13px;
 }
 .user_status {
-	clear: both;
-	display: inline;
+clear: both;
+display: inline;
 }
 .user_status_text {
 margin: 0;
@@ -361,10 +357,12 @@ margin-left: 5px;
 }
 .aboutHeading {
 border-bottom:medium none !important;
-clear: both;
+padding:10px;
+color: #666666;
+font-size: 0.9em;
+text-transform: uppercase;
 }
 .aboutLabel {
-display: inline;
 padding-right: 10px;
 }
 .aboutDesc {

@@ -40,8 +40,8 @@ public class ProfileStatsPanel extends Composite {
 	 */
 	public void addStats(ProfileStats stats) {
 
-		addStat(grid, "Entries", stats.getEntries());
-		addStat(grid, "Following:", Integer.toString(stats.getTrackedCnt()) );
+		//addStat(grid, "Entries", stats.getEntries());
+		//addStat(grid, "Following:", Integer.toString(stats.getTrackedCnt()) );
 
 		//if the quotas enable and is the owner or the admin then can see the quota
 		if(profileRequestInfo.isQuotasEnabled() && (profileRequestInfo.isOwner()) ) {
