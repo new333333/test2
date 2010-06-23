@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.Window;
@@ -278,7 +279,7 @@ public class CustomJspProperties
 			// Yes, Issue an ajax request to get the GwtFolder object for the given folder id.
 			m_rpcInProgress = true;
 			rpcService = GwtTeaming.getRpcService();
-			rpcService.getFolder( m_zoneUUID, m_folderId, m_folderCallback );
+			rpcService.getFolder( new HttpRequestInfo(), m_zoneUUID, m_folderId, m_folderCallback );
 		}
 		// Do we have an entry id?
 		else if ( m_entryId != null )
@@ -286,7 +287,7 @@ public class CustomJspProperties
 			// Yes, Issue an ajax request to get the GwtFolderEntry object for the given entry id.
 			m_rpcInProgress = true;
 			rpcService = GwtTeaming.getRpcService();
-			rpcService.getEntry( m_zoneUUID, m_entryId, m_folderEntryCallback );
+			rpcService.getEntry( new HttpRequestInfo(), m_zoneUUID, m_entryId, m_folderEntryCallback );
 		}
 	}// end getDataFromServer()
 	

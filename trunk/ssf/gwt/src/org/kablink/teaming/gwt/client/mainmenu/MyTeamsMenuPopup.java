@@ -38,6 +38,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -165,7 +166,7 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 		}
 		
 		// Otherwise, read the users teams.
-		m_rpcService.getMyTeams(new AsyncCallback<List<TeamInfo>>() {
+		m_rpcService.getMyTeams(new HttpRequestInfo(), new AsyncCallback<List<TeamInfo>>() {
 			public void onFailure(Throwable t) {
 				Window.alert(t.toString());
 			}

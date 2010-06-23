@@ -60,6 +60,7 @@ import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
@@ -429,7 +430,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 					menuItemElement.removeClassName("mainMenuPopup_BoxHover");
 					
 					// ...and run the top ranked dialog.
-					GwtTeaming.getRpcService().getTopRanked(new AsyncCallback<List<TopRankedInfo>>() {
+					GwtTeaming.getRpcService().getTopRanked(new HttpRequestInfo(), new AsyncCallback<List<TopRankedInfo>>() {
 						public void onFailure(Throwable t) {
 							Window.alert(t.toString());
 						}
@@ -495,7 +496,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 						Window.alert(t.toString());
 					}
 					public void onSuccess(final List<ToolbarItem> toolbarItemList)  {
-						GwtTeaming.getRpcService().getTeamManagementInfo(binderId, new AsyncCallback<TeamManagementInfo>() {
+						GwtTeaming.getRpcService().getTeamManagementInfo(new HttpRequestInfo(), binderId, new AsyncCallback<TeamManagementInfo>() {
 							public void onFailure(Throwable t) {
 								Window.alert(t.toString());
 							}

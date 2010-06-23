@@ -58,6 +58,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
@@ -71,29 +72,29 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface GwtRpcServiceAsync
 {
 	// Do a search given the criteria found in the GwtSearchCriteria object.
-	public void executeSearch( GwtSearchCriteria searchCriteria, AsyncCallback<GwtSearchResults> callback );
+	public void executeSearch( HttpRequestInfo ri, GwtSearchCriteria searchCriteria, AsyncCallback<GwtSearchResults> callback );
 	
 	// Return the administration actions the user has rights to run.
-	public void getAdminActions( String binderId, AsyncCallback<ArrayList<GwtAdminCategory>> callback );
+	public void getAdminActions( HttpRequestInfo ri, String binderId, AsyncCallback<ArrayList<GwtAdminCategory>> callback );
 	
 	// Return a GwtBrandingData object for the given binder.
-	public void getBinderBrandingData( String binderId, AsyncCallback<GwtBrandingData> callback );
+	public void getBinderBrandingData( HttpRequestInfo ri, String binderId, AsyncCallback<GwtBrandingData> callback );
 	
 	// Return the "document base url" that is used in tinyMCE configuration
 	public void getDocumentBaseUrl( String binderId, AsyncCallback<String> callback );
 	
 	// Return an Entry object for the given entry id.
-	public void getEntry( String zoneUUID, String entryId, AsyncCallback<GwtFolderEntry> callback );
+	public void getEntry( HttpRequestInfo ri, String zoneUUID, String entryId, AsyncCallback<GwtFolderEntry> callback );
 	
 	// Return a list of the names of the files that are attachments of the given binder.
 	public void getFileAttachments( String binderId, AsyncCallback<ArrayList<String>> callback );
 
 	// Return a Folder object for the given folder id.
-	public void getFolder( String zoneUUID, String folderId, AsyncCallback<GwtFolder> callback );
+	public void getFolder( HttpRequestInfo ri, String zoneUUID, String folderId, AsyncCallback<GwtFolder> callback );
 	
 	// Returns various binder URLs.
-	public void getBinderPermalink( String binderId, AsyncCallback<String> callback );
-	public void getModifyBinderUrl( String binderId, AsyncCallback<String> callback );
+	public void getBinderPermalink( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback );
+	public void getModifyBinderUrl( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback );
 	
     public void getTutorialPanelState( AsyncCallback<String> callback );
 
@@ -102,17 +103,17 @@ public interface GwtRpcServiceAsync
 	public void savePersonalPreferences( GwtPersonalPreferences personalPrefs, AsyncCallback<Boolean> callback );
 	
     // Return a GwtBrandingData object for the global workspace.
-	public void getSiteBrandingData( AsyncCallback<GwtBrandingData> callback );
+	public void getSiteBrandingData( HttpRequestInfo ri, AsyncCallback<GwtBrandingData> callback );
 	
 	public void getExtensionInfo( AsyncCallback<ExtensionInfoClient[]> callback );
 	public void removeExtension(String id, AsyncCallback<ExtensionInfoClient[]> callback);
 	public void getExtensionFiles(String id, String zoneName, AsyncCallback<ExtensionFiles> callback);
 	
 	// Returns a permalink for the given userId
-	public void getUserPermalink(String userId, AsyncCallback<String> callback);
+	public void getUserPermalink(HttpRequestInfo ri, String userId, AsyncCallback<String> callback);
 
 	// Returns a permalink to the currently logged in user's workspace.
-	public void getUserWorkspacePermalink(AsyncCallback<String> callback);
+	public void getUserWorkspacePermalink( HttpRequestInfo ri, AsyncCallback<String> callback );
 	
 	// The following are used to interact with the GWT UI defaults.
 	public void getGwtUIDefault(   AsyncCallback<Boolean> callback );
@@ -121,13 +122,13 @@ public interface GwtRpcServiceAsync
 	
 	// The following are used in the implementation of the various
 	// forms of the WorkspaceTreeControl.
-	public void getHorizontalTree(   String binderId, AsyncCallback<List<TreeInfo>> callback );
-	public void getHorizontalNode(   String binderId, AsyncCallback<TreeInfo>       callback );
-	public void getRootWorkspaceId(  String binderId, AsyncCallback<String>         callback );
-	public void getVerticalTree(     String binderId, AsyncCallback<TreeInfo>       callback );
-	public void getVerticalNode(     String binderId, AsyncCallback<TreeInfo>       callback );
-	public void persistNodeCollapse( String binderId, AsyncCallback<Boolean>        callback );
-	public void persistNodeExpand(   String binderId, AsyncCallback<Boolean>        callback );
+	public void getHorizontalTree(   HttpRequestInfo ri, String binderId, AsyncCallback<List<TreeInfo>> callback );
+	public void getHorizontalNode(   HttpRequestInfo ri, String binderId, AsyncCallback<TreeInfo>       callback );
+	public void getRootWorkspaceId(                      String binderId, AsyncCallback<String>         callback );
+	public void getVerticalTree(     HttpRequestInfo ri, String binderId, AsyncCallback<TreeInfo>       callback );
+	public void getVerticalNode(     HttpRequestInfo ri, String binderId, AsyncCallback<TreeInfo>       callback );
+	public void persistNodeCollapse(                     String binderId, AsyncCallback<Boolean>        callback );
+	public void persistNodeExpand(                       String binderId, AsyncCallback<Boolean>        callback );
 
 	// The following are used in the implementation of the
 	// MainMenuControl.
@@ -136,18 +137,18 @@ public interface GwtRpcServiceAsync
 	public void updateFavorites(                                           List<FavoriteInfo> favoritesList, AsyncCallback<Boolean>               callback );
 	public void getBinderTags(                String             binderId,                                   AsyncCallback<List<TagInfo>>         callback );
 	public void canManagePublicBinderTags(    String             binderId,                                   AsyncCallback<Boolean>               callback );
-	public void addBinderTag(                 String             binderId,      TagInfo       binderTag,     AsyncCallback<TagInfo>               callback );
-	public void removeBinderTag(              String             binderId,      TagInfo       binderTag,     AsyncCallback<Boolean>               callback );
+	public void addBinderTag(                 String             binderId, TagInfo            binderTag,     AsyncCallback<TagInfo>               callback );
+	public void removeBinderTag(              String             binderId, TagInfo            binderTag,     AsyncCallback<Boolean>               callback );
 	public void updateBinderTags(             String             binderId, List<TagInfo>      binderTags,    AsyncCallback<Boolean>               callback );
 	public void getBinderInfo(                String             binderId,                                   AsyncCallback<BinderInfo>            callback );
 	public void getDefaultFolderDefinitionId( String             binderId,                                   AsyncCallback<String>                callback );
 	public void getFavorites(                                                                                AsyncCallback<List<FavoriteInfo>>    callback );
-	public void getMyTeams(                                                                                  AsyncCallback<List<TeamInfo>>        callback );
-	public void getRecentPlaces(                                                                             AsyncCallback<List<RecentPlaceInfo>> callback );
+	public void getMyTeams(                   HttpRequestInfo    ri,                                         AsyncCallback<List<TeamInfo>>        callback );
+	public void getRecentPlaces(              HttpRequestInfo    ri,                                         AsyncCallback<List<RecentPlaceInfo>> callback );
 	public void getSavedSearches(                                                                            AsyncCallback<List<SavedSearchInfo>> callback );
-	public void getTeamManagementInfo(        String             binderId,                                   AsyncCallback<TeamManagementInfo>    callback );
+	public void getTeamManagementInfo(        HttpRequestInfo    ri,          String          binderId,      AsyncCallback<TeamManagementInfo>    callback );
 	public void getToolbarItems(              String             binderId,                                   AsyncCallback<List<ToolbarItem>>     callback );
-	public void getTopRanked(                                                                                AsyncCallback<List<TopRankedInfo>>   callback );
+	public void getTopRanked(                 HttpRequestInfo    ri,                                         AsyncCallback<List<TopRankedInfo>>   callback );
 	public void removeSavedSearch(                                            SavedSearchInfo ssi,           AsyncCallback<Boolean>               callback );
 	public void saveSearch(                   String             searchTabId, SavedSearchInfo ssi,           AsyncCallback<SavedSearchInfo>       callback );
 
@@ -165,8 +166,8 @@ public interface GwtRpcServiceAsync
 	public void getProfileStats(	String binderId, AsyncCallback<ProfileStats> 	callback);
 	public void getProfileAvatars(	String binderId, AsyncCallback<ProfileAttribute>callback);
 	public void getQuickViewInfo( 	String binderId, AsyncCallback<ProfileInfo> 	callback);
-	public void getTeams(			String binderId, AsyncCallback<List<TeamInfo>>  callback );
-	public void getMicrBlogUrl( 	String binderId, AsyncCallback<String> 			callback);
+	public void getTeams(			HttpRequestInfo ri, String binderId, AsyncCallback<List<TeamInfo>>  callback );
+	public void getMicrBlogUrl( 	HttpRequestInfo ri, String binderId, AsyncCallback<String> 			callback);
 	public void isPresenceEnabled(                   AsyncCallback<Boolean>			callback);
 	public void getImUrl(			String binderId, AsyncCallback<String> 			callback);
 	public void getPresenceInfo(    String binderId, AsyncCallback<GwtPresenceInfo> callback);
@@ -176,10 +177,10 @@ public interface GwtRpcServiceAsync
 	public void getUserStatus( String binderId,	AsyncCallback<UserStatus> 	callback); 
 	
 	// Return information about self registration.
-	public void getSelfRegistrationInfo( AsyncCallback<GwtSelfRegistrationInfo> callback );
+	public void getSelfRegistrationInfo( HttpRequestInfo ri, AsyncCallback<GwtSelfRegistrationInfo> callback );
 	
 	// Return the url needed to invoke the "site administration" page.
-	public void getSiteAdministrationUrl( String binderId, AsyncCallback<String> callback );
+	public void getSiteAdministrationUrl( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback );
 
 	// Return upgrade information.
 	public void getUpgradeInfo( AsyncCallback<GwtUpgradeInfo> callback );

@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.dom.client.Element;
@@ -428,7 +429,7 @@ public class AddFileAttachmentDlg extends DlgBox
 		rpcService = GwtTeaming.getRpcService();
 		
 		// Issue an ajax request to get the "modify binder" url.
-		rpcService.getModifyBinderUrl( m_binderId, m_rpcCallback );
+		rpcService.getModifyBinderUrl( new HttpRequestInfo(), m_binderId, m_rpcCallback );
 	}// end getModifyBinderUrl()
 
 	

@@ -17,6 +17,7 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -471,7 +472,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		
 		public void onClick(ClickEvent event) {
 			GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
-			rpcService.getBinderPermalink( binderId, new AsyncCallback<String>()
+			rpcService.getBinderPermalink( new HttpRequestInfo(), binderId, new AsyncCallback<String>()
 			{
 				public void onFailure( Throwable t ) {
 					Window.alert( t.toString() );
@@ -598,7 +599,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 
 			// Issue an ajax request to save the user status to the db.  rpcCallback will
 			// be called when we get the response back.
-			rpcService.getMicrBlogUrl(mbBinderId, rpcCallback );
+			rpcService.getMicrBlogUrl(new HttpRequestInfo(), mbBinderId, rpcCallback );
 		}
 
 		

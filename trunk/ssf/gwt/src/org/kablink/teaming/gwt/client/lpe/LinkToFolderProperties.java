@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.Window;
@@ -197,7 +198,7 @@ public class LinkToFolderProperties
 			// Yes, Issue an ajax request to get the GwtFolder object for the given folder id.
 			m_rpcInProgress = true;
 			rpcService = GwtTeaming.getRpcService();
-			rpcService.getFolder( m_zoneUUID, m_folderId, m_folderCallback );
+			rpcService.getFolder( new HttpRequestInfo(), m_zoneUUID, m_folderId, m_folderCallback );
 		}
 	}// end getDataFromServer()
 	

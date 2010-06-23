@@ -48,6 +48,7 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.dom.client.Document;
@@ -689,7 +690,7 @@ public class AdminControl extends Composite
 			
 			// Issue an ajax request to get the administration actions the user has rights to perform.
 			binderId = GwtMainPage.m_requestInfo.getBinderId();
-			rpcService.getAdminActions( binderId, m_rpcGetAdminActionsCallback );
+			rpcService.getAdminActions( new HttpRequestInfo(), binderId, m_rpcGetAdminActionsCallback );
 		}// end getAdminActionsFromServer()
 	}// end AdminActionsTreeControl
 

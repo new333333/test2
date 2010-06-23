@@ -36,6 +36,7 @@ import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -419,7 +420,7 @@ public class LoginDlg extends DlgBox
 		rpcService = GwtTeaming.getRpcService();
 		
 		// Issue an ajax request to get self registration information
-		rpcService.getSelfRegistrationInfo( m_rpcGetSelfRegInfoCallback );
+		rpcService.getSelfRegistrationInfo( new HttpRequestInfo(), m_rpcGetSelfRegInfoCallback );
 	}// end getAdminActionsFromServer()
 	/**
 	 * 

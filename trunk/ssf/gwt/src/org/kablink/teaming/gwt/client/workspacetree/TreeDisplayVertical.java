@@ -37,6 +37,7 @@ import java.util.Iterator;
 
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
@@ -154,7 +155,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					public void onSuccess(Boolean success) {
 						// Yes!  Can we get a TreeInfo for the
 						// expansion?
-						rpcService.getVerticalNode(m_ti.getBinderInfo().getBinderId(), new AsyncCallback<TreeInfo>() {
+						rpcService.getVerticalNode(new HttpRequestInfo(), m_ti.getBinderInfo().getBinderId(), new AsyncCallback<TreeInfo>() {
 							public void onFailure(Throwable t) {}
 							public void onSuccess(TreeInfo expandedTI) {
 								// Yes!  Update the TreeInfo, and if
@@ -559,7 +560,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	private void reRootTree(final String newRootBinderId, final Long selectedBinderId) {
 		// Read the TreeInfo for the selected Binder...
-		getRpcService().getVerticalTree(newRootBinderId, new AsyncCallback<TreeInfo>() {
+		getRpcService().getVerticalTree(new HttpRequestInfo(), newRootBinderId, new AsyncCallback<TreeInfo>() {
 			public void onFailure(Throwable t) {
 				Window.alert(t.toString());
 			}

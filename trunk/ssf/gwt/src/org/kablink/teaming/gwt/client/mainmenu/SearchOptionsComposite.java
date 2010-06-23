@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -319,7 +320,7 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 	 * Loads a binder into the context pane.
 	 */
 	private void loadBinder(final String binderId) {
-		GwtTeaming.getRpcService().getBinderPermalink(binderId, new AsyncCallback<String>() {
+		GwtTeaming.getRpcService().getBinderPermalink(new HttpRequestInfo(), binderId, new AsyncCallback<String>() {
 			public void onFailure(Throwable t) {
 				Window.alert( t.toString() );
 			}

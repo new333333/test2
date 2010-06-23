@@ -60,6 +60,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
@@ -78,36 +79,36 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface GwtRpcService extends RemoteService
 {
 	// Do a search given the criteria found in the GwtSearchCriteria object.
-	public GwtSearchResults executeSearch( GwtSearchCriteria searchCriteria ) throws Exception;
+	public GwtSearchResults executeSearch( HttpRequestInfo ri, GwtSearchCriteria searchCriteria ) throws Exception;
 	
 	// Return the administration actions the user has rights to run.
-	public ArrayList<GwtAdminCategory> getAdminActions( String binderId ) throws GwtTeamingException;
+	public ArrayList<GwtAdminCategory> getAdminActions( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
 	
 	// Return a GwtBrandingData object for the given binder.
-	public GwtBrandingData getBinderBrandingData( String binderId ) throws GwtTeamingException;
+	public GwtBrandingData getBinderBrandingData( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
 	
 	// Return the "document base url" that is used in tinyMCE configuration
 	public String getDocumentBaseUrl( String binderId ) throws GwtTeamingException;
 	
 	// Return an Entry object for the given entry id.
-	public GwtFolderEntry getEntry( String zoneUUID, String entryId ) throws GwtTeamingException;
+	public GwtFolderEntry getEntry( HttpRequestInfo ri, String zoneUUID, String entryId ) throws GwtTeamingException;
 	
 	// Return a list of the names of the files that are attachments of the given binder.
 	public ArrayList<String> getFileAttachments( String binderId ) throws GwtTeamingException;
 	
 	// Return a Folder object for the given folder id.
-	public GwtFolder getFolder( String zoneUUID, String folderId ) throws GwtTeamingException;
+	public GwtFolder getFolder( HttpRequestInfo ri, String zoneUUID, String folderId ) throws GwtTeamingException;
 	
 	// Returns various binder URLs.
-	public String getBinderPermalink( String binderId );
-	public String getModifyBinderUrl( String binderId );
+	public String getBinderPermalink( HttpRequestInfo ri, String binderId );
+	public String getModifyBinderUrl( HttpRequestInfo ri, String binderId );
 	
 	// The following deal with personal preferences.
 	public GwtPersonalPreferences getPersonalPreferences();
 	public Boolean savePersonalPreferences( GwtPersonalPreferences personalPrefs ) throws GwtTeamingException;
 	
 	// Return a GwtBrandingData object for the global workspace.
-	public GwtBrandingData getSiteBrandingData() throws GwtTeamingException;
+	public GwtBrandingData getSiteBrandingData( HttpRequestInfo ri ) throws GwtTeamingException;
 	
 	public String getTutorialPanelState();
 	public ExtensionInfoClient[] getExtensionInfo();
@@ -115,9 +116,9 @@ public interface GwtRpcService extends RemoteService
 	public ExtensionFiles getExtensionFiles(String id, String zoneName);
 	
 	// Returns a permalink for the given userId
-	public String getUserPermalink(String userId);
+	public String getUserPermalink(HttpRequestInfo ri, String userId);
 	// Returns a permalink to the currently logged in user's workspace.
-	public String getUserWorkspacePermalink();
+	public String getUserWorkspacePermalink( HttpRequestInfo ri );
 	
 	// The following are used to interact with the GWT UI defaults.
 	public Boolean getGwtUIDefault();
@@ -126,13 +127,13 @@ public interface GwtRpcService extends RemoteService
 	
 	// The following are used in the implementation of the various
 	// forms of the WorkspaceTreeControl.
-	public List<TreeInfo> getHorizontalTree(   String binderId );
-	public TreeInfo       getHorizontalNode(   String binderId );
-	public String         getRootWorkspaceId(  String binderId );
-	public TreeInfo       getVerticalTree(     String binderId );
-	public TreeInfo       getVerticalNode(     String binderId );
-	public Boolean        persistNodeCollapse( String binderId );
-	public Boolean        persistNodeExpand(   String binderId );
+	public List<TreeInfo> getHorizontalTree(   HttpRequestInfo ri, String binderId );
+	public TreeInfo       getHorizontalNode(   HttpRequestInfo ri, String binderId );
+	public String         getRootWorkspaceId(                      String binderId );
+	public TreeInfo       getVerticalTree(     HttpRequestInfo ri, String binderId );
+	public TreeInfo       getVerticalNode(     HttpRequestInfo ri, String binderId );
+	public Boolean        persistNodeCollapse(                     String binderId );
+	public Boolean        persistNodeExpand(                       String binderId );
 	
 	// The following are used in the implementation of the
 	// MainMenuControl.
@@ -141,18 +142,18 @@ public interface GwtRpcService extends RemoteService
 	public Boolean               updateFavorites(                                           List<FavoriteInfo> favoritesList );
 	public List<TagInfo>         getBinderTags(                String             binderId                                   );
 	public Boolean               canManagePublicBinderTags(    String             binderId                                   );
-	public TagInfo               addBinderTag(                 String             binderId,      TagInfo       binderTag     );
-	public Boolean               removeBinderTag(              String             binderId,      TagInfo       binderTag     );
+	public TagInfo               addBinderTag(                 String             binderId, TagInfo            binderTag     );
+	public Boolean               removeBinderTag(              String             binderId, TagInfo            binderTag     );
 	public Boolean               updateBinderTags(             String             binderId, List<TagInfo>      binderTags    );
 	public BinderInfo            getBinderInfo(                String             binderId                                   );
 	public String                getDefaultFolderDefinitionId( String binderId );
 	public List<FavoriteInfo>    getFavorites();
-	public List<TeamInfo>        getMyTeams();
-	public List<RecentPlaceInfo> getRecentPlaces();
+	public List<TeamInfo>        getMyTeams(                   HttpRequestInfo    ri                                         );
+	public List<RecentPlaceInfo> getRecentPlaces(              HttpRequestInfo    ri                                         );
 	public List<SavedSearchInfo> getSavedSearches();
-	public TeamManagementInfo    getTeamManagementInfo(        String             binderId                                   );
+	public TeamManagementInfo    getTeamManagementInfo(        HttpRequestInfo    ri,          String          binderId      );
 	public List<ToolbarItem>     getToolbarItems(              String             binderId                                   );
-	public List<TopRankedInfo>   getTopRanked();
+	public List<TopRankedInfo>   getTopRanked(                 HttpRequestInfo    ri                                         );
 	public Boolean               removeSavedSearch(                                            SavedSearchInfo ssi           );
 	public SavedSearchInfo       saveSearch(                   String             searchTabId, SavedSearchInfo ssi           );
 	
@@ -171,8 +172,8 @@ public interface GwtRpcService extends RemoteService
 	public ProfileStats     getProfileStats(String binderId);
 	public ProfileAttribute getProfileAvatars(String binderId);
 	public ProfileInfo 		getQuickViewInfo(String binderId);
-	public List<TeamInfo> 	getTeams(String binderId);
-	public String getMicrBlogUrl( String binderId ) throws GwtTeamingException;
+	public List<TeamInfo> 	getTeams(HttpRequestInfo ri, String binderId);
+	public String getMicrBlogUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
 	public Boolean isPresenceEnabled();
 	public String getImUrl( String binderId ) throws GwtTeamingException;
 	public GwtPresenceInfo getPresenceInfo( String binderId ) throws GwtTeamingException;
@@ -183,10 +184,10 @@ public interface GwtRpcService extends RemoteService
 	public UserStatus getUserStatus(String binderId) throws GwtTeamingException; 
 	
 	// Return information about self registration.
-	public GwtSelfRegistrationInfo getSelfRegistrationInfo() throws GwtTeamingException;
+	public GwtSelfRegistrationInfo getSelfRegistrationInfo( HttpRequestInfo ri ) throws GwtTeamingException;
 	
 	// Return the url needed to invoke the "site administration" page.
-	public String getSiteAdministrationUrl( String binderId ) throws GwtTeamingException;
+	public String getSiteAdministrationUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
 	
 	// Get upgrade information
 	public GwtUpgradeInfo getUpgradeInfo() throws GwtTeamingException;
