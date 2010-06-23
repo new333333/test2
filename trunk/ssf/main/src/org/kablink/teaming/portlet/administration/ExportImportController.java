@@ -115,7 +115,7 @@ public class ExportImportController  extends  SAbstractController {
 					reportMap.put(ExportHelper.errors, new Integer(0));
 					reportMap.put(ExportHelper.errorList, new ArrayList());
 			    	try {
-			    		getBinderModule().importZip(binderId, fIn, statusTicket, reportMap);	
+			    		ExportHelper.importZip(binderId, fIn, statusTicket, reportMap);	
 			    	} catch(ExportException e) {
 			    		reportMap.put("errors", (Integer)reportMap.get("errors") + 1);
 			    		List eList = (List)reportMap.get("errorList");

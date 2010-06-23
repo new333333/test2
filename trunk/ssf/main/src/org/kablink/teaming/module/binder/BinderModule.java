@@ -590,8 +590,6 @@ public interface BinderModule {
 			Collection<Long> binderIds, Boolean noSubBinders, StatusTicket statusTicket, 
 			Map reportMap) throws Exception;
 	
-	public void importZip(Long binderId, InputStream fIn, StatusTicket statusTicket, Map reportMap) throws IOException;
-	
 	public String filename8BitSingleByteOnly(FileAttachment attachment, boolean _8BitSingleByteOnly);
 	public String filename8BitSingleByteOnly(String fileName, String fallBackName, boolean _8BitSingleByteOnly);
 	

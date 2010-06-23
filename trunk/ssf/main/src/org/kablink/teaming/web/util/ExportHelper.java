@@ -101,6 +101,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.EntryDataErrors;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.binder.impl.EntryDataErrors.Problem;
@@ -151,7 +152,7 @@ import static org.kablink.util.search.Restrictions.in;
  */
 
 public class ExportHelper {
-	protected static final Log logger = LogFactory.getLog(Binder.class);
+	protected static final Log logger = LogFactory.getLog(ExportHelper.class);
 	private static BinderModule binderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
 	private static FolderModule folderModule = (FolderModule) SpringContextUtil.getBean("folderModule");
 	private static FileModule fileModule = (FileModule) SpringContextUtil.getBean("fileModule");
@@ -1094,11 +1095,13 @@ public class ExportHelper {
 
 	public static void importZip(Long binderId, InputStream fIn, StatusTicket statusTicket,
 			Map reportMap) throws IOException, ExportException {
+		Binder binder = binderModule.getBinder(binderId);
+		binderModule.checkAccess(binder, BinderOperation.export);
+		
 		getNumberFormat();
 		
 		statusTicket.setStatus(NLT.get("loading.files") + "...");
 		Map<String, Principal> nameCache = new HashMap();
-		Binder binder = binderModule.getBinder(binderId);
 		ZipInputStream zIn = new ZipInputStream(fIn);
 
 		// key-value pairs: old exported entry id - new entry id assigned during
@@ -1113,7 +1116,9 @@ public class ExportHelper {
 		// during import
 		HashMap<String, Definition> definitionIdMap = new HashMap<String, Definition>();
 
+		logger.debug("Unzipping to disk temporarily...");
 		String tempDir = deploy(zIn);
+		logger.debug("Unzipping completed");
 
 		try {
 			File tempDirFile = new File(tempDir);
@@ -1518,6 +1523,8 @@ public class ExportHelper {
 		final Map<String, Definition> fDefIdMap = new HashMap<String, Definition>(definitionIdMap);
 
 		try {
+			if(logger.isDebugEnabled())
+				logger.debug("Adding binder to parent " + parentId + " with definition " + def.getId());
 			Long newBinderId = binderModule.addBinder(new Long(parentId),
 					def.getId(), new DomInputData(doc, iCalModule),
 					new HashMap(), null).getId().longValue();
@@ -1540,6 +1547,8 @@ public class ExportHelper {
 			addBinderFileAttachments(newBinderId, topBinderId, binderIdMap, doc, tempDir, reportMap);
 
 			// team members
+			if(logger.isDebugEnabled())
+				logger.debug("Adding team members to binder " + newBinderId);
 			addTeamMembers(newBinderId, doc, nameCache);
 
 			// workflows
@@ -1547,6 +1556,8 @@ public class ExportHelper {
 			final Map fNameCache = nameCache;
 			statusTicket.setStatus(NLT.get("administration.export_import.importing", new String[] {binder.getPathName()}));
 
+			if(logger.isDebugEnabled())
+				logger.debug("Importing workflows for the binder " + newBinderId);
 			transactionTemplate.execute(new TransactionCallback() {
 				public Object doInTransaction(TransactionStatus status) {
 
@@ -1554,11 +1565,12 @@ public class ExportHelper {
 					importSettingsList(doc, binder, fDefIdMap, rMap, topBinder);
 
 					// workflows
-					importWorkflows(doc, binder, fDefIdMap, rMap, fNameCache, topBinder);
+					importWorkflows(doc, binder, fDefIdMap, rMap, fNameCache, topBinder, true);
 					return null;
 				}
 			});
 
+			// Don't evict the binder, since we need to reference it repeatedly while processing entries contained in the binder.
 			return newBinderId;
 		} catch (WriteFilesException e) {
 			Integer c = (Integer)reportMap.get(errors);
@@ -1602,11 +1614,16 @@ public class ExportHelper {
 		Map options = new HashMap();
 		//Set the entry creator and modifier fields
 		setSignature(options, doc, nameCache);
+		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
+
 		try {
 			// create new entry
-			long newEntryId = folderModule.addEntry(new Long(binderId),
+			if(logger.isDebugEnabled())
+				logger.debug("Adding entry in binder " + binderId + " with definition " + def.getId());
+			final FolderEntry entry = folderModule.addEntry(new Long(binderId),
 					def.getId(), new DomInputData(doc, iCalModule), null,
-					options).getId().longValue();
+					options);
+			long newEntryId = entry.getId().longValue();
 
 			// add entry id to entry id map
 			entryIdMap.put(entryId, newEntryId);
@@ -1615,8 +1632,9 @@ public class ExportHelper {
 			addFileAttachments(binderId, newEntryId, topBinderId, doc, tempDir, reportMap, binderIdMap, entryIdMap);
 			
 			// workflows
+			if(logger.isDebugEnabled())
+				logger.debug("Importing workflows for the entry " + newEntryId);
 			try {
-				final FolderEntry entry = folderModule.getEntry(null, newEntryId);
 				final Map fDefinitionIdMap = definitionIdMap;
 				final Map rMap = reportMap;
 				final Map fNameCache = nameCache;
@@ -1624,12 +1642,23 @@ public class ExportHelper {
 						new String[] {"[" + String.valueOf(reportMap.get("entries")) + "] " + entry.getTitle()}));
 				transactionTemplate.execute(new TransactionCallback() {
 					public Object doInTransaction(TransactionStatus status) {
-						importWorkflows(doc, entry, fDefinitionIdMap, rMap, fNameCache, topBinder);
+						importWorkflows(doc, entry, fDefinitionIdMap, rMap, fNameCache, topBinder, false);
 						return null;
 					}
 				});
 			} catch(Exception e) {}
 
+			// Index the entry only once
+			if(logger.isDebugEnabled())
+				logger.debug("Indexing the entry " + newEntryId);
+			folderModule.indexEntry(entry, false);
+			
+			// We're done with the entry. Kick it out of cache.
+			if(logger.isDebugEnabled())
+				logger.debug("Clearing the session");
+			coreDao.flush();
+			coreDao.clear();
+			
 			return newEntryId;
 		} catch (WriteFilesException e) {
 			Integer c = (Integer)reportMap.get(errors);
@@ -1663,12 +1692,15 @@ public class ExportHelper {
 		Map options = new HashMap();
 		//Set the entry creator and modifier fields
 		setSignature(options, doc, nameCache);
+		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
 		try {
 			// add new reply
-			long newEntryId = folderModule.addReply(new Long(binderId),
+			if(logger.isDebugEnabled())
+				logger.debug("Adding reply to entry " + parentId + " + in binder " + binderId);
+			final FolderEntry entry = folderModule.addReply(new Long(binderId),
 					new Long(parentId), def.getId(),
-					new DomInputData(doc, iCalModule), null, options).getId()
-					.longValue();
+					new DomInputData(doc, iCalModule), null, options);
+			long newEntryId = entry.getId().longValue();
 
 			// add entry reply id to entry id map
 			entryIdMap.put(entryId, newEntryId);
@@ -1677,14 +1709,15 @@ public class ExportHelper {
 			addFileAttachments(binderId, newEntryId, topBinderId, doc, tempDir, reportMap, binderIdMap, entryIdMap);
 
 			// workflows
+			if(logger.isDebugEnabled())
+				logger.debug("Importing workflows for the reply " + newEntryId);			
 			try {
-				final FolderEntry entry = folderModule.getEntry(null, newEntryId);
 				final Map fDefinitionIdMap = definitionIdMap;
 				final Map rMap = reportMap;
 				final Map fNameCache = nameCache;
 				transactionTemplate.execute(new TransactionCallback() {
 					public Object doInTransaction(TransactionStatus status) {
-						importWorkflows(doc, entry, fDefinitionIdMap, rMap, fNameCache, topBinder);
+						importWorkflows(doc, entry, fDefinitionIdMap, rMap, fNameCache, topBinder, false);
 						return null;
 					}
 				});
@@ -1693,6 +1726,11 @@ public class ExportHelper {
 				reportMap.put(errors, ++c);
 				((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
 			}
+
+			// Index the reply only once
+			if(logger.isDebugEnabled())
+				logger.debug("Indexing reply " + newEntryId);
+			folderModule.indexEntry(entry, false);
 
 			return newEntryId;
 		} catch (WriteFilesException e) {
@@ -1810,6 +1848,8 @@ public class ExportHelper {
 	private static void addFileVersions(Long binderId, Long entryId,
 			String fileDataItemName, String filename, String href,
 			int numVersions, String versionsDir, Map reportMap) {
+		Map options = new HashMap();
+		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
 
 		String fileExt = EntityIndexUtils.getFileExtension(filename);
 		InputStream iStream = null;
@@ -1819,8 +1859,10 @@ public class ExportHelper {
 				try {
 					iStream = new FileInputStream(new File(versionsDir
 							+ File.separator + i + "." + fileExt));
+					if(logger.isDebugEnabled())
+						logger.debug("Adding file " + filename + " to entry " + entryId + " in binder " + binderId);
 					folderModule.modifyEntry(binderId, entryId,
-							fileDataItemName, filename, iStream);
+							fileDataItemName, filename, iStream, options);
 					iStream.close();
 					Integer count = (Integer)reportMap.get(files);
 					reportMap.put(files, ++count);
@@ -1836,8 +1878,10 @@ public class ExportHelper {
 
 		try {
 			iStream = new FileInputStream(new File(href));
+			if(logger.isDebugEnabled())
+				logger.debug("Adding file " + filename + " to entry " + entryId + " in binder " + binderId);
 			folderModule.modifyEntry(binderId, entryId, fileDataItemName,
-					filename, iStream);
+					filename, iStream, options);
 			iStream.close();
 			Integer count = (Integer)reportMap.get(files);
 			reportMap.put(files, ++count);
@@ -1943,6 +1987,8 @@ public class ExportHelper {
 				try {
 					iStream = new FileInputStream(new File(versionsDir
 							+ File.separator + i + "." + fileExt));
+					if(logger.isDebugEnabled())
+						logger.debug("Adding file " + filename + " to binder " + binderId);
 					binderModule.modifyBinder(binderId,
 							fileDataItemName, filename, iStream);
 					iStream.close();
@@ -1960,6 +2006,8 @@ public class ExportHelper {
 
 		try {
 			iStream = new FileInputStream(new File(href));
+			if(logger.isDebugEnabled())
+				logger.debug("Adding file " + filename + " to binder " + binderId);
 			binderModule.modifyBinder(binderId, fileDataItemName,
 					filename, iStream);
 			iStream.close();
@@ -2204,7 +2252,7 @@ public class ExportHelper {
 
 	private static void importWorkflows(Document entityDoc, DefinableEntity entity, 
 			Map<String, Definition> definitionIdMap, Map reportMap, 
-			Map<String, Principal> nameCache, Binder topBinder) {
+			Map<String, Principal> nameCache, Binder topBinder, boolean doIndex) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String zoneUUID = entityDoc.getRootElement().attributeValue("zoneUUID", "");
 		
@@ -2296,7 +2344,7 @@ public class ExportHelper {
 				needsToBeIndexed = true;
 
 			}
-			if (needsToBeIndexed) {
+			if (needsToBeIndexed && doIndex) {
 				//Re-index this entry
 				folderModule.indexEntry((FolderEntry)entity, false);
 			}

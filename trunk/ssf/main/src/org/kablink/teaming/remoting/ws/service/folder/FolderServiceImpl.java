@@ -631,7 +631,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		fileName = originalFile.getName();
 
 		try {
-			getFolderModule().modifyEntry(null, entryId, fileUploadDataItemName, fileName, new ByteArrayInputStream(fileContent));
+			getFolderModule().modifyEntry(null, entryId, fileUploadDataItemName, fileName, new ByteArrayInputStream(fileContent), null);
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);

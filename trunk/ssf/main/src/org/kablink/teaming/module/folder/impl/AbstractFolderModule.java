@@ -353,6 +353,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     //no transaction by default
     public FolderEntry addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems, Map options) throws AccessControlException, WriteFilesException, WriteEntryDataException {
+    	long begin = System.currentTimeMillis();
     	aeCount.incrementAndGet();
 
         Folder folder = loadFolder(folderId);
@@ -372,12 +373,14 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         }
         
         FolderEntry entry = (FolderEntry) processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems, options);
+        end(begin, "addEntry");
         return entry;
     }
     //no transaction    
 	public FolderEntry addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems, Map options) 
 			throws AccessControlException, WriteFilesException, WriteEntryDataException {
+		long begin = System.currentTimeMillis();
     	arCount.incrementAndGet();
         //load parent entry
         FolderEntry entry = loadEntry(folderId, parentId);    	
@@ -399,6 +402,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 
         Definition def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
         FolderEntry reply = processor.addReply(entry, def, inputData, fileItems, options);
+        end(begin, "addReply");
         return reply;
     }
     //no transaction    
@@ -430,7 +434,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options) 
     throws AccessControlException, WriteFilesException, WriteEntryDataException, ReservedByAnotherUserException {
-        
+    	long begin = System.currentTimeMillis();
     	meCount.incrementAndGet();
         FolderEntry entry = loadEntry(folderId, entryId);   	
 		try {
@@ -457,18 +461,18 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     		}
     	}
     	processor.modifyEntry(folder, entry, inputData, fileItems, delAtts, fileRenamesTo, options);
-         
-    }    
+        end(begin, "modifyEntry");
+    }   
     
     //no transaction
-    public void modifyEntry(Long folderId, Long entryId, String fileDataItemName, String fileName, InputStream content)
+    public void modifyEntry(Long folderId, Long entryId, String fileDataItemName, String fileName, InputStream content, Map options)
 	throws AccessControlException, WriteFilesException, WriteEntryDataException, ReservedByAnotherUserException {
     	MultipartFile mf = new SimpleMultipartFile(fileName, content);
     	Map<String, MultipartFile> fileItems = new HashMap<String, MultipartFile>();
     	if(fileDataItemName == null)
     		fileDataItemName = ObjectKeys.FILES_FROM_APPLET_FOR_BINDER + "1";
     	fileItems.put(fileDataItemName, mf);
-    	modifyEntry(folderId, entryId, new EmptyInputData(), fileItems, null, null, null);
+    	modifyEntry(folderId, entryId, new EmptyInputData(), fileItems, null, null, options);
     }
 
 

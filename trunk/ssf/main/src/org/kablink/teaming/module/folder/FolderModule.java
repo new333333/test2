@@ -472,7 +472,7 @@ public interface FolderModule {
      * @throws WriteEntryDataException
      * @throws ReservedByAnotherUserException
      */
-    public void modifyEntry(Long folderId, Long entryId, String fileDataItemName, String fileName, InputStream content)
+    public void modifyEntry(Long folderId, Long entryId, String fileDataItemName, String fileName, InputStream content, Map options)
 		throws AccessControlException, WriteFilesException, WriteEntryDataException, ReservedByAnotherUserException;
     /**
      * Move an entry workflow from the state identified as stateId to a new state.

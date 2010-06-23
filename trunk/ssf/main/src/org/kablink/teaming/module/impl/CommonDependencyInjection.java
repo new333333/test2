@@ -176,4 +176,11 @@ public abstract class CommonDependencyInjection {
     	this.relevanceManager = relevanceManager;
     }
 
+	protected void end(long begin, String methodName) {
+		if(debugEnabled) {
+			long diff = System.currentTimeMillis() - begin;
+			logger.debug(diff + " ms, " + methodName);
+		}	
+	}
+
 }
