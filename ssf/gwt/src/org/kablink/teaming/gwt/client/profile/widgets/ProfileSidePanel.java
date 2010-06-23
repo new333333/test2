@@ -24,39 +24,36 @@ public class ProfileSidePanel extends Composite {
 	private ProfileSectionPanel teamsSection;
 	private ProfileSectionPanel followingSection;
 	private ProfileSectionPanel savedSearches;
-	private FlowPanel rightColumn;
+	private FlowPanel content;
 	private ProfileStatsPanel statsPanel;
-	private FlowPanel photoPanel;
 	private ActionTrigger actionTrigger;
 	private ProfileStats profileStats;
+	private FlowPanel topContent;
 
 	public ProfileSidePanel(final ProfileRequestInfo profileRequestInfo, ActionTrigger trigger) {
 
 		this.profileRequestInfo = profileRequestInfo;
 		actionTrigger = trigger;
 
-		final FlowPanel rightContent = new FlowPanel();
-		rightContent.setStyleName("column-r");
+		final FlowPanel columnr = new FlowPanel();
+		columnr.setStyleName("column-r");
 
-		photoPanel = new FlowPanel();
-		photoPanel.addStyleName("userPhotoStats");
-		rightContent.add(photoPanel);
+		// Add the top Content panel
+		topContent = new FlowPanel();
+		topContent.addStyleName("s-topContent");
+		columnr.add(topContent);
+		
+		// Add the Content
+		content = new FlowPanel();
+		content.addStyleName("content");
+		columnr.add(content);
 		
 		// Add the User's Photo and link
 		ProfilePhoto photo = new ProfilePhoto(profileRequestInfo);
-		photoPanel.add(photo);
-
-		// Add the Content
-		rightColumn = new FlowPanel();
-		rightColumn.addStyleName("content");
-		rightContent.add(rightColumn);
-
-		
-		//Add error Div
-		createMessageDiv();
+		topContent.add(photo);
 		
 		// All composites must call initWidget() in their constructors.
-		initWidget(rightContent);
+		initWidget(columnr);
 	}
 
 	private void createMessageDiv() {
@@ -75,7 +72,7 @@ public class ProfileSidePanel extends Composite {
 			if(msgDiv != null && msgLabel != null) {
 				msgDiv.addStyleName("stats_error_msg");
 				msgDiv.add(msgLabel);
-				photoPanel.add(msgDiv);
+				topContent.add(msgDiv);
 			}
 		}
 	}
@@ -85,21 +82,23 @@ public class ProfileSidePanel extends Composite {
 		if (attrExist(cat, "profileStats")) {
 			// Add the stats div to the upper left of the right column
 			statsPanel = new ProfileStatsPanel(profileRequestInfo);
-			photoPanel.add(statsPanel);
+			topContent.add(statsPanel);
 		} else {
 			//create empty space 
 			statsPanel = new ProfileStatsPanel(profileRequestInfo);
-			rightColumn.add(statsPanel);
+			topContent.add(statsPanel);
 		}
+		
+		//Add error Div
+		createMessageDiv();
 
 		if (attrExist(cat, "profileAboutMe")) {
 			
-			aboutMeSection = new ProfileFollowSectionPanel(profileRequestInfo,
-					"About Me", actionTrigger);
-			aboutMeSection.addStyleName("aboutHeading");
+			aboutMeSection = new ProfileFollowSectionPanel(profileRequestInfo, "About Me", actionTrigger);
+			aboutMeSection.setStyleName("aboutHeading");
 			aboutMeSection.addStyleName("smalltext");
 			aboutMeSection.getHeadingLabel().setStyleName("aboutLabel");
-			rightColumn.add(aboutMeSection);
+			topContent.add(aboutMeSection);
 			
 			ProfileAttribute attr = findAttrByName(cat, "profileAboutMe");
 			if(attr != null) {
@@ -114,13 +113,13 @@ public class ProfileSidePanel extends Composite {
 
 		if (attrExist(cat, "profileTeams")) {
 			teamsSection = new ProfileTeamsPanel(profileRequestInfo, "Teams", actionTrigger);
-			rightColumn.add(teamsSection);
+			content.add(teamsSection);
 		}
 
 		if (attrExist(cat, "profileFollowing")) {
 			followingSection = new ProfileFollowSectionPanel(profileRequestInfo,
 					"Following", actionTrigger);
-			rightColumn.add(followingSection);
+			content.add(followingSection);
 		}
 
 //		if (attrExist(cat, "profileFollowers")) {
@@ -133,7 +132,7 @@ public class ProfileSidePanel extends Composite {
 			if (profileRequestInfo.isOwner()) {
 				savedSearches = new ProfileSearchesSectionPanel(
 						profileRequestInfo, "Saved Searches",actionTrigger);
-				rightColumn.add(savedSearches);
+				content.add(savedSearches);
 			}
 		}
 		
