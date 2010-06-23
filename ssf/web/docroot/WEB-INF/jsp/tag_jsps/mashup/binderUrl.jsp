@@ -64,6 +64,7 @@
 		  action="view_permalink" 
 		  binderId="${mashupBinder.id}">
 		  <ssf:param name="entityType" value="${mashupBinder.entityType}"/>
+		  <ssf:param name="seen_by_gwt" value="1" />
 		  </ssf:url>">
 	  <c:if test="${empty mashup_attributes['title']}">
 	    <span>${mashupBinder.title}</span>

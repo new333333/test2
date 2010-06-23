@@ -83,6 +83,7 @@
 		  action="view_permalink" 
 		  binderId="${mashupBinder.id}">
 		  <ssf:param name="entityType" value="${mashupBinder.entityType}"/>
+		  <ssf:param name="seen_by_gwt" value="1" />
 		  </ssf:url>"><span>${mashupBinder.title}</span></a>
 		<c:if test="${ssConfigJspStyle == 'form'}">
 		  <span class="ss_italic ss_smallprint ss_normal">(${mashupBinder.parentBinder.pathName})</span>
@@ -105,6 +106,7 @@
 		      binderId="${entry._binderId}"
 		      entryId="${entry._docId}"
 		      ><ssf:param name="entityType" value="folderEntry"/>
+		      <ssf:param name="seen_by_gwt" value="1" />
 		      </ssf:url>">
 	          <span>${entry.title}</span>
 	        </a>
@@ -123,6 +125,7 @@
 				  binderId="${entry._binderId}"
 				  entryId="${entry._docId}">
 				  <ssf:param name="entityType" value="folderEntry"/>
+				  <ssf:param name="seen_by_gwt" value="1" />
 				  </ssf:url>">
 		  	    <span>${entry.title}</span>
 		  	  </a>
