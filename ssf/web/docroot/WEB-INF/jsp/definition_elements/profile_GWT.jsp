@@ -55,7 +55,7 @@
 	 //Through an overlay we will access profileRequestInfo from java.
 	 var profileRequestInfo = { binderId:'${ssBinder.id}',
 			 	currentUserWorkspaceId : '${ssUser.workspaceId}',
-				profileUserName : '<ssf:userTitle user="${ssProfileConfigEntry}"/>',
+				profileUserName : '<ssf:escapeJavaScript><ssf:userTitle user="${ssProfileConfigEntry}"/></ssf:escapeJavaScript>',
 				adaptedUrl : '<ssf:url crawlable="true"
 					adapter="true" portletName="ss_forum"
 						folderId="${ssBinder.id}" 
