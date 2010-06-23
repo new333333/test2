@@ -145,7 +145,7 @@
   <table border="0" cellspacing="0" cellpadding="0">
   <tr><td valign="top"><input type="checkbox" name="disable" id="notifyType_${ssSubscription.id.entityId}_4"
   <c:if test="${!empty currentStyles['4']}"> checked="checked"</c:if>
-  /></td><td><label for="notifyType_${ssSubscription.id.entityId}_4"><ssf:nlt tag="subscribe.disable"/></label> <ssf:showHelp guideName="user" pageId="informed_notifications_override" /></td></tr></table><br/>
+  /></td><td><label for="notifyType_${ssSubscription.id.entityId}_4"><ssf:nlt tag="subscribe.disable"/></label> <ssf:showHelp guideName="user" pageId="informed_notifications" sectionId="informed_notifications_override" /></td></tr></table><br/>
   
   <br/>
     <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"

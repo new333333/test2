@@ -97,7 +97,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 		name="binderId" value="${ssBinder.id}"/></ssf:url>" >
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.defineSimpleUrl"/>  
-    	<ssf:showHelp guideName="user" pageId="workspace_simpleurl" />
+    	<ssf:showHelp guideName="user" pageId="workspace_mnggeneral" sectionId="workspace_mnggeneral_simpleurl" />
     </legend>
 
     <span class="ss_labelAbove"><ssf:nlt tag="simpleUrl.currentlyDefinedUrls"/></span>
@@ -306,7 +306,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 		<fieldset class="ss_fieldset">
 			<legend class="ss_legend">
 				<ssf:nlt tag="binder.configure.folderDefinitionFixups.banner" text="Recursively apply"/>
-				<ssf:showHelp guideName="adv_user" pageId="folder_recursivedefinition" />
+				<ssf:showHelp guideName="adv_user" pageId="mngfolder_entrytype" sectionId="mngfolder_entrytype_recursivedefinition" />
 			</legend>
 	
 		    <c:if test="${!empty ss_fixupThreadStatus}">
@@ -439,7 +439,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 
 <c:if test="${ssBinder.entityType == 'folder'}">
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedViews" text="Allowed views"/> <ssf:showHelp guideName="adv_user" pageId="folder_alternateviews" /> </legend>
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedViews" text="Allowed views"/> <ssf:showHelp guideName="adv_user" pageId="mngfolder_view" sectionId="mngfolder_view_alternate" /> </legend>
 
     <c:set var="folderViewCount" value=""/>
     <c:forEach var="item" items="${ssAllBinderDefinitions}">
@@ -475,7 +475,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 
   <c:if test="${!empty folderViewCount}">
     <fieldset class="ss_fieldset">
-      <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default view"/> <ssf:showHelp guideName="adv_user" pageId="folder_defaultview" /> </legend>
+      <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default view"/> <ssf:showHelp guideName="adv_user" pageId="mngfolder_view" sectionId="mngfolder_view_default" /> </legend>
 
       <c:forEach var="item" items="${ssAllBinderDefinitions}">
         <c:if test="${!empty allDefinitionsMap[item.value.id]}">
@@ -495,7 +495,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   </c:if>
 
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultEntryTypes" text="Default entry types"/> <ssf:showHelp guideName="adv_user" pageId="folder_entrytypes" /> </legend>
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultEntryTypes" text="Default entry types"/> <ssf:showHelp guideName="adv_user" pageId="mngfolder_entrytype" sectionId="mngfolder_entrytype_enablealternate" /> </legend>
 
     <c:forEach var="item" items="${ssAllEntryDefinitions}">
    	   <c:if test="${item.value.binderId == -1}">
@@ -533,7 +533,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   <% //only display if have workflows - which covers the case where workflow is not supported %>
 <c:if test="${!empty ssAllWorkflowDefinitions}">
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.workflowAssociations" text="Workflow associations"/> <ssf:showHelp guideName="adv_user" pageId="workflow_associatingentries" /> </legend>
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.workflowAssociations" text="Workflow associations"/> <ssf:showHelp guideName="adv_user" pageId="workflow_enable" sectionId="workflow_enable_created" /> </legend>
 
 	<table>	
     <tr><th><span class="ss_bold"><ssf:nlt tag="workflow.type.entry"/></span></th></tr>
@@ -597,7 +597,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   </fieldset>
   
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedWorkflows" text="Allowed workflows"/>  <ssf:showHelp guideName="adv_user" pageId="workflow_allowed" /> </legend>
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedWorkflows" text="Allowed workflows"/>  <ssf:showHelp guideName="adv_user" pageId="workflow_enable" sectionId="workflow_enable_manual" /> </legend>
 
     <c:forEach var="item" items="${ssAllWorkflowDefinitions}">
    	   <c:if test="${item.value.binderId == -1}">

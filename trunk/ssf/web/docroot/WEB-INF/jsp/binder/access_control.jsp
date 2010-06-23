@@ -197,7 +197,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   		name="actionUrl" value="true"/><ssf:param 
   		name="workAreaType" value="${ssWorkArea.workAreaType}"/><ssf:param 
   		name="workAreaId" value="${ssWorkArea.workAreaId}"/></ssf:url>">
-  <ssf:nlt tag="binder.configure.access_control.inherit"/> <ssf:showHelp guideName="adv_user" pageId="access_mngusers_activate" />
+  <ssf:nlt tag="binder.configure.access_control.inherit"/>
   <br/>
   &nbsp;&nbsp;&nbsp;<input type="radio" name="inherit" value="yes" id="yes" ${yes_checked}>
   <label for="yes"><ssf:nlt tag="general.yes"/></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
