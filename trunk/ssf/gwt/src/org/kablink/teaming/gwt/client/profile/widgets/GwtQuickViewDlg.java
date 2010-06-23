@@ -453,7 +453,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		};
 
 		gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
-		gwtRpcService.getQuickViewInfo(binderId, callback);
+		gwtRpcService.getQuickViewInfo(new HttpRequestInfo(), binderId, callback);
 	}
 
 	

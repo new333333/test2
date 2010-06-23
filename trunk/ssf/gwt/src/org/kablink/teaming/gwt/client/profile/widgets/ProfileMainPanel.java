@@ -13,6 +13,7 @@ import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.GWT;
@@ -665,7 +666,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 					};
 
 					gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
-					gwtRpcService.getProfileAvatars(profileRequestInfo.getBinderId(), callback);
+					gwtRpcService.getProfileAvatars(new HttpRequestInfo(), profileRequestInfo.getBinderId(), callback);
 					
 					return true;
 				}
