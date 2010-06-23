@@ -2479,10 +2479,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Get the profile information based on the binder Id passed in.
 	 */
-	public ProfileInfo getProfileInfo(String binderId) {
+	public ProfileInfo getProfileInfo(HttpRequestInfo ri, String binderId) {
 		
 		//get the binder
-		ProfileInfo profile = GwtProfileHelper.buildProfileInfo(this, Long.valueOf(binderId));
+		ProfileInfo profile = GwtProfileHelper.buildProfileInfo(getRequest( ri ), this, Long.valueOf(binderId));
 		
 		return profile;
 	}
@@ -2491,12 +2491,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Get the profile information for the Quick View based on the binder Id passed in.
 	 */
-	public ProfileInfo getQuickViewInfo(String binderId) {
+	public ProfileInfo getQuickViewInfo(HttpRequestInfo ri, String binderId) {
 		
 		Long binderIdL = Long.valueOf(binderId);
 		
 		//get the binder
-		ProfileInfo profile = GwtProfileHelper.buildQuickViewProfileInfo(this, binderIdL);
+		ProfileInfo profile = GwtProfileHelper.buildQuickViewProfileInfo(getRequest( ri ), this, binderIdL);
 		
 		return profile;
 	}
@@ -2592,8 +2592,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return ProfileAttribute  The ProfileAttribute contains the information needed to populate the avatars
 	 */
-	public ProfileAttribute getProfileAvatars(String binderId) {
-		ProfileAttribute attr = GwtProfileHelper.getProfileAvatars(this, Long.valueOf(binderId));
+	public ProfileAttribute getProfileAvatars(HttpRequestInfo ri, String binderId) {
+		ProfileAttribute attr = GwtProfileHelper.getProfileAvatars(getRequest( ri ), this, Long.valueOf(binderId));
 		return attr;
 	}
 }// end GwtRpcServiceImpl

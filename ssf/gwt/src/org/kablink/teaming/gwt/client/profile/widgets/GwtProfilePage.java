@@ -14,6 +14,7 @@ import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.GWT;
@@ -162,7 +163,7 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 
 		gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
 		gwtRpcService
-				.getProfileInfo(profileRequestInfo.getBinderId(), callback);
+				.getProfileInfo(new HttpRequestInfo(), profileRequestInfo.getBinderId(), callback);
 
 	}
 

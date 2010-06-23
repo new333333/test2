@@ -162,10 +162,10 @@ public interface GwtRpcServiceAsync
 	public void saveBrandingData( String binderId, GwtBrandingData brandingData, AsyncCallback<Boolean> callback );
 
 	// Return information about the User Profile
-	public void getProfileInfo(		String binderId, AsyncCallback<ProfileInfo> 	callback);
+	public void getProfileInfo(		HttpRequestInfo ri, String binderId, AsyncCallback<ProfileInfo> 	callback);
 	public void getProfileStats(	HttpRequestInfo ri, String binderId, AsyncCallback<ProfileStats> 	callback);
-	public void getProfileAvatars(	String binderId, AsyncCallback<ProfileAttribute>callback);
-	public void getQuickViewInfo( 	String binderId, AsyncCallback<ProfileInfo> 	callback);
+	public void getProfileAvatars(	HttpRequestInfo ri, String binderId, AsyncCallback<ProfileAttribute>callback);
+	public void getQuickViewInfo( 	HttpRequestInfo ri, String binderId, AsyncCallback<ProfileInfo> 	callback);
 	public void getTeams(			HttpRequestInfo ri, String binderId, AsyncCallback<List<TeamInfo>>  callback );
 	public void getMicrBlogUrl( 	HttpRequestInfo ri, String binderId, AsyncCallback<String> 			callback);
 	public void isPresenceEnabled(                   AsyncCallback<Boolean>			callback);

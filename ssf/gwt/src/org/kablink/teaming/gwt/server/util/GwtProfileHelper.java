@@ -34,7 +34,6 @@ import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
-import org.kablink.teaming.gwt.server.GwtRpcServiceImpl;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
@@ -61,7 +60,7 @@ public class GwtProfileHelper {
 	 * @param binderId
 	 * @return ProfileInfo  The main class that contains other helper classes
 	 */
-	public static ProfileInfo buildProfileInfo(AllModulesInjected bs, Long binderId) {
+	public static ProfileInfo buildProfileInfo(HttpServletRequest request, AllModulesInjected bs, Long binderId) {
 
 		ProfileInfo profile = new ProfileInfo();
 
@@ -125,7 +124,7 @@ public class GwtProfileHelper {
 							}
 							
 							//Get the value for this attribute
-							buildAttributeInfo(u, cat, profile);
+							buildAttributeInfo(request, u, cat, profile);
 					}
 				}
 		}
@@ -133,7 +132,7 @@ public class GwtProfileHelper {
 		return profile;
 	}
 	
-	public static ProfileAttribute getProfileAvatars(AllModulesInjected bs, Long binderId) {
+	public static ProfileAttribute getProfileAvatars(HttpServletRequest request, AllModulesInjected bs, Long binderId) {
 		
 		ProfileAttribute attribute = new ProfileAttribute();
 		
@@ -162,7 +161,7 @@ public class GwtProfileHelper {
 			//Read the custom attribute
 			CustomAttribute cAttr = u.getCustomAttribute(attribute.getDataName());
 			//Convert the Custom Attribute to a Profile Attribute for serialization purposes
-			convertCustomAttrToProfileAttr(u, cAttr, attribute, attribute.getDataName(), null);
+			convertCustomAttrToProfileAttr(request, u, cAttr, attribute, attribute.getDataName(), null);
 		}
 		
 		return attribute;
@@ -177,7 +176,7 @@ public class GwtProfileHelper {
 	 * @param binderId
 	 * @return ProfileInfo  The main class that contains other helper classes
 	 */
-	public static ProfileInfo buildQuickViewProfileInfo(AllModulesInjected bs, Long binderId) {
+	public static ProfileInfo buildQuickViewProfileInfo(HttpServletRequest request, AllModulesInjected bs, Long binderId) {
 		ProfileInfo profile = new ProfileInfo();
 
 		//get the binder
@@ -251,7 +250,7 @@ public class GwtProfileHelper {
 							}
 							
 							//Get the value for this attribute
-							buildAttributeInfo(u, cat, profile);
+							buildAttributeInfo(request, u, cat, profile);
 					}
 				}
 		}
@@ -267,7 +266,7 @@ public class GwtProfileHelper {
 	 * @param cat - ProfileCategory or section headings that are defined in the user definiton
 	 * @param profile
 	 */
-	private static void buildAttributeInfo(User u, ProfileCategory cat, ProfileInfo profile) {
+	private static void buildAttributeInfo(HttpServletRequest request, User u, ProfileCategory cat, ProfileInfo profile) {
 		
 		List<ProfileAttribute> attrs = cat.getAttributes();
 		
@@ -310,7 +309,7 @@ public class GwtProfileHelper {
 				//Read the custom attribute
 				CustomAttribute cAttr = u.getCustomAttribute(name);
 				//Convert the Custom Attribute to a Profile Attribute for serialization purposes
-				convertCustomAttrToProfileAttr(u, cAttr, pAttr, name, profile);
+				convertCustomAttrToProfileAttr(request, u, cAttr, pAttr, name, profile);
 				
 				//done here, continue to the next attribute
 				continue;
@@ -334,7 +333,7 @@ public class GwtProfileHelper {
 	 * @param pAttr
 	 * @param name
 	 */
-	private static void convertCustomAttrToProfileAttr(User u, CustomAttribute cAttr, ProfileAttribute pAttr, String name, ProfileInfo profile) {
+	private static void convertCustomAttrToProfileAttr(HttpServletRequest request, User u, CustomAttribute cAttr, ProfileAttribute pAttr, String name, ProfileInfo profile) {
 		
 		if(cAttr != null) {
 		    switch(cAttr.getValueType()) {
@@ -368,7 +367,7 @@ public class GwtProfileHelper {
 		    							String path;
 		    							String fileName;
 		    							
-		    							webPath = WebUrlUtil.getServletRootURL();
+		    							webPath = WebUrlUtil.getServletRootURL(request);
 		    							fileName = attach.toString();
 		    							path = WebUrlUtil.getFileUrl(webPath, "readScaledFile", attach.getOwner().getEntity(), fileName);
 		    							
@@ -397,7 +396,7 @@ public class GwtProfileHelper {
 				    			//Create a new Profile Attribute to convert the data to
 			    				ProfileAttributeListElement pAtrLE = new ProfileAttributeListElement(name, pAttr);
 				    			//then get this attribute lists elements
-			    				convertCustomAttrToProfileAttr(u, cAtrLE, pAtrLE , name, profile);
+			    				convertCustomAttrToProfileAttr(request, u, cAtrLE, pAtrLE , name, profile);
 		    	    			//then add them to the linked list
 			    				pvList.add(((ProfileAttributeListElement)iter.next()).getValue());
 	    	    			}

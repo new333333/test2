@@ -168,10 +168,10 @@ public interface GwtRpcService extends RemoteService
 	
 	// The following are used in the implementation of the
 	// User Profiles
-	public ProfileInfo 		getProfileInfo(String binderId);
+	public ProfileInfo 		getProfileInfo(HttpRequestInfo ri, String binderId);
 	public ProfileStats     getProfileStats(HttpRequestInfo ri, String binderId);
-	public ProfileAttribute getProfileAvatars(String binderId);
-	public ProfileInfo 		getQuickViewInfo(String binderId);
+	public ProfileAttribute getProfileAvatars(HttpRequestInfo ri, String binderId);
+	public ProfileInfo 		getQuickViewInfo(HttpRequestInfo ri, String binderId);
 	public List<TeamInfo> 	getTeams(HttpRequestInfo ri, String binderId);
 	public String getMicrBlogUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
 	public Boolean isPresenceEnabled();
