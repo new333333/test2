@@ -81,7 +81,7 @@ public interface GwtRpcServiceAsync
 	public void getBinderBrandingData( HttpRequestInfo ri, String binderId, AsyncCallback<GwtBrandingData> callback );
 	
 	// Return the "document base url" that is used in tinyMCE configuration
-	public void getDocumentBaseUrl( String binderId, AsyncCallback<String> callback );
+	public void getDocumentBaseUrl( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback );
 	
 	// Return an Entry object for the given entry id.
 	public void getEntry( HttpRequestInfo ri, String zoneUUID, String entryId, AsyncCallback<GwtFolderEntry> callback );
