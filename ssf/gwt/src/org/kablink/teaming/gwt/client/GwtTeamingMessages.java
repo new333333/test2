@@ -138,6 +138,7 @@ public interface GwtTeamingMessages extends Messages
 	String _8();
 	String _9();
 	String _10();
+	String beta();
 	String cancel();
 	String ok();
 	String oneMomentPlease();
