@@ -7,6 +7,7 @@ import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -33,7 +34,7 @@ public class ProfileTeamsPanel extends ProfileSectionPanel  {
 	
 	private void getTeams() {
 		
-		rpcService.getTeams(profileRequestInfo.getBinderId(), new AsyncCallback<List<TeamInfo>>() {
+		rpcService.getTeams(new HttpRequestInfo(), profileRequestInfo.getBinderId(), new AsyncCallback<List<TeamInfo>>() {
 			public void onFailure(Throwable t) {
 				Window.alert(t.toString());
 			}

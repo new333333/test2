@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
@@ -374,7 +375,7 @@ public class GwtMainPage extends Composite
 		else if ( GwtClientHelper.hasString( binderId ) ) contextBinderId = binderId;
 		else                                              contextBinderId = m_selectedBinderId;
 		
-		GwtTeaming.getRpcService().getBinderPermalink( binderId, new AsyncCallback<String>()
+		GwtTeaming.getRpcService().getBinderPermalink( new HttpRequestInfo(), binderId, new AsyncCallback<String>()
 		{
 			public void onFailure( Throwable t )
 			{
@@ -1089,7 +1090,7 @@ public class GwtMainPage extends Composite
 	private void toggleGwtUI()
 	{
 		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
-		rpcService.getUserWorkspacePermalink( new AsyncCallback<String>()
+		rpcService.getUserWorkspacePermalink( new HttpRequestInfo(), new AsyncCallback<String>()
 		{
 			public void onFailure( Throwable t ) {}
 			public void onSuccess( String userWorkspaceURL )
@@ -1179,7 +1180,7 @@ public class GwtMainPage extends Composite
 	private void viewTeamMembers()
 	{
 		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
-		rpcService.getBinderPermalink( m_selectedBinderId, new AsyncCallback<String>()
+		rpcService.getBinderPermalink( new HttpRequestInfo(), m_selectedBinderId, new AsyncCallback<String>()
 		{
 			public void onFailure( Throwable t ) {
 				Window.alert( t.toString() );

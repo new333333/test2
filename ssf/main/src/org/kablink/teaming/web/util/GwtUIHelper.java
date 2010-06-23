@@ -386,7 +386,7 @@ public class GwtUIHelper {
 	@SuppressWarnings("unchecked")
 	private static void addTrashToToolbar(AllModulesInjected bs, RenderRequest request, Map model, Binder binder, Toolbar tb) {
 		// Construct a permalink URL to the trash for the current binder...
-		String binderPermalink = PermaLinkUtil.getPermalink(binder);
+		String binderPermalink = PermaLinkUtil.getPermalink(request, binder);
 		String trashPermalink = getTrashPermalink(binderPermalink);
 		
 		// ...and add t to the toolbar.

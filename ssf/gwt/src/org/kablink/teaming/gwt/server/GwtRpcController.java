@@ -32,16 +32,13 @@
  */
 package org.kablink.teaming.gwt.server;
 
-
-import java.lang.reflect.Method;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -89,50 +86,24 @@ public class GwtRpcController extends RemoteServiceServlet
     @Override
     public String processCall( String payload ) throws SerializationException
     {
-		HttpSession session = null;
-        String methodName = null;
-        
         try
         {
             RPCRequest	rpcRequest;
-            Method method;
         	String results;
 
             rpcRequest = RPC.decodeRequest( payload, m_remoteServiceClass );
 
-            // Add the HttpServletRequest object we are dealing with to the session cache
-            // using the method name as the key.  This allows any method in GwtRpcServiceImpl.java
-            // to have access to the HttpServletRequest if they need it.
-            method = rpcRequest.getMethod();
-            if ( method != null )
+            // If the first parameter to the method is an
+            // HttpRequestInfo object...
+            Object[] parameters = rpcRequest.getParameters();
+            if ( ( null != parameters ) && ( 0 < parameters.length ) && ( parameters[0] instanceof HttpRequestInfo ) )
             {
-                methodName = method.getName();
-            	if ( methodName != null )
-            	{
-            		HttpServletRequest request;
-            		
-            		request = getThreadLocalRequest();
-            		
-            		// Store the HttpServletRequest in the session cache using the method name as the key.
-            		session = request.getSession();
-            		HttpServletRequest cachedRequest = null;
-            		try
-            		{
-            			cachedRequest = ((HttpServletRequest) session.getAttribute( methodName ));
-            		}
-            		catch ( Exception e )
-            		{
-            			cachedRequest = null;
-            		}
-            		if (null != cachedRequest) {
-            			m_logger.error( "GwtRpcController.processCall( HttpServletRequest for method '" + methodName + "' is already in the cache.  Overwritting it. )" );
-            		}
-            		session.setAttribute( methodName, request );
-            	}
+            	// ...drop in the current HttpServletRequest.
+            	((HttpRequestInfo) parameters[0]).setRequestObj( getThreadLocalRequest() );
             }
-
-            // delegate work to the spring injected service
-            results = RPC.invokeAndEncodeResponse( m_remoteService, rpcRequest.getMethod(), rpcRequest.getParameters() );
+            
+            // Delegate work to the spring injected service.
+            results = RPC.invokeAndEncodeResponse( m_remoteService, rpcRequest.getMethod(), parameters );
             	
             return results;
         }
@@ -142,12 +113,6 @@ public class GwtRpcController extends RemoteServiceServlet
                             "An IncompatibleRemoteServiceException was thrown while processing this call.",
                             ex );
             return RPC.encodeResponseForFailure( null, ex );
-        }
-        finally
-        {
-            // Remove the HttpServletRequest object from the session cache.
-            if ( session != null && methodName != null )
-            	session.removeAttribute( methodName );
         }
     }// end processCall()
     

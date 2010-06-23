@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
@@ -551,7 +552,7 @@ public class FindCtrl extends Composite
 		// Issue an ajax request to search for the specified type of object.
 		m_searchInProgress = true;
 		rpcService = GwtTeaming.getRpcService();
-		rpcService.executeSearch( m_searchCriteria, m_searchResultsCallback );
+		rpcService.executeSearch( new HttpRequestInfo(), m_searchCriteria, m_searchResultsCallback );
 
 		// We only want to show "Searching..." after the search has taken more than .5 seconds.
 		// Have we already created a timer?

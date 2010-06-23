@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.workspacetree;
 import java.util.Iterator;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
@@ -105,7 +106,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				// No, we aren't collapsing the node!  We must be
 				// expanding it.  Can we get a TreeInfo for the
 				// expansion?
-				getRpcService().getHorizontalNode(m_ti.getBinderInfo().getBinderId(), new AsyncCallback<TreeInfo>() {
+				getRpcService().getHorizontalNode(new HttpRequestInfo(), m_ti.getBinderInfo().getBinderId(), new AsyncCallback<TreeInfo>() {
 					public void onFailure(Throwable t) {}
 					public void onSuccess(TreeInfo expandedTI) {
 						// Yes!  Mark the node as being opened, save its
