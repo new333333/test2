@@ -400,6 +400,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public Binder addBinder(Long parentBinderId, String definitionId,
 			InputDataAccessor inputData, Map fileItems, Map options)
 			throws AccessControlException, WriteFilesException, WriteEntryDataException {
+		long begin = System.currentTimeMillis();
+		Binder binder = null;
 		Binder parentBinder = loadBinder(parentBinderId);
 		Definition def = null;
 		if (Validator.isNotNull(definitionId)) {
@@ -415,7 +417,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			checkAccess(parentBinder, BinderOperation.changeEntryTimestamps);
 		if (def.getType() == Definition.FOLDER_VIEW) {
 			checkAccess(parentBinder, BinderOperation.addFolder);
-			Binder binder = loadBinderProcessor(parentBinder).addBinder(
+			binder = loadBinderProcessor(parentBinder).addBinder(
 					parentBinder, def, Folder.class, inputData, fileItems,
 					options);
 			if (parentBinder instanceof Folder && parentBinder.isMirrored()
@@ -430,7 +432,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				((BinderModule) SpringContextUtil.getBean("binderModule"))
 						.setDefinitionsInherited(binder.getId(), true);
 			}
-			return binder;
 		} else {
 			if (!(parentBinder instanceof Workspace))
 				throw new NotSupportedException(
@@ -446,9 +447,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			} else {
 				checkAccess(parentBinder, BinderOperation.addWorkspace);
 			}
-			return loadBinderProcessor(parentBinder).addBinder(parentBinder,
+			binder = loadBinderProcessor(parentBinder).addBinder(parentBinder,
 					def, Workspace.class, inputData, fileItems, options);
 		}
+		end(begin, "addBinder");
+		return binder;
 	}
 
 	public Set<Long> indexTree(Long binderId) {
@@ -2091,15 +2094,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				statusTicket, reportMap);
 
 	}
-
-	public void importZip(Long binderId, InputStream fIn, StatusTicket statusTicket, 
-			Map reportMap) throws IOException, ExportException {
-		Binder binder = loadBinder(binderId);
-		checkAccess(binder, BinderOperation.export);
-		
-		ExportHelper.importZip(binderId, fIn, statusTicket, reportMap);
-	}
-
 
 	public String filename8BitSingleByteOnly(FileAttachment attachment,
 			boolean _8BitSingleByteOnly) {
