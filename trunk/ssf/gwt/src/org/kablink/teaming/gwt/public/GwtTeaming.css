@@ -1509,6 +1509,20 @@ body, table td, select
 	z-index: 0;
 }
 
+/* Style used for the beta text in the masthead. */
+.mastheadBeta
+{
+	color: #FFFFFF;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 0.95em;
+	font-style: italic;
+	left: 500px;
+	letter-spacing: 0.05em;
+	position: absolute;
+	top: 5px;
+	z-index: 21;
+}
+
 /* Style used with the panel that holds the global actions in the masthead. */
 .mastheadGlobalActionsPanel
 {

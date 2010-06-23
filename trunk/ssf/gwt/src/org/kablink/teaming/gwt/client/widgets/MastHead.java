@@ -68,6 +68,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -103,6 +104,7 @@ public class MastHead extends Composite
 	private Anchor m_loginLink = null;
 	private Anchor m_helpLink = null;
 	private InlineLabel m_userName = null;
+	private Label m_betaLabel = null;
 
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	private GwtBrandingData m_siteBrandingData = null;
@@ -122,6 +124,7 @@ public class MastHead extends Composite
 	public MastHead( RequestInfo requestInfo )
 	{
 		Command cmd = null;
+		boolean beta = true;
 		
         m_requestInfo = requestInfo;
         m_mastheadBinderId = m_requestInfo.getBinderId();
@@ -138,6 +141,14 @@ public class MastHead extends Composite
 		m_binderBrandingPanel = new BrandingPanel( requestInfo );
 		m_binderBrandingPanel.setVisible( false );
 		m_mainMastheadPanel.add( m_binderBrandingPanel );
+		
+		// Create a place for the beta text to go.
+		if ( beta )
+		{
+			m_betaLabel = new Label( GwtTeaming.getMessages().beta() );
+			m_betaLabel.addStyleName( "mastheadBeta" );
+			m_mainMastheadPanel.add( m_betaLabel );
+		}
 		
 		// Create the panel that will hold the global actions such as Administration", "Logout" etc
 		{
@@ -875,6 +886,25 @@ public class MastHead extends Composite
 		{
 			// Go back to the font color defined in the style sheet.
 			style.clearColor();
+		}
+		
+		if ( m_betaLabel != null )
+		{
+			element = m_betaLabel.getElement();
+			style = element.getStyle();
+
+			// Do we have a font color?
+			if ( fontColor != null && fontColor.length() > 0 )
+			{
+				// Yes
+				// Change the color of the font used to display the beta text
+				style.setColor( fontColor );
+			}
+			else
+			{
+				// Go back to the font color defined in the style sheet.
+				style.clearColor();
+			}
 		}
 	}// end setGlobalActionsFontColor()
 	
