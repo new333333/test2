@@ -37,7 +37,7 @@
 	name="binderId" value="${ssBinder.id}"/><ssf:param 
 	name="tabTitle" value=""/><ssf:param 
 	name="newTab" value="0"/></ssf:url>" 
-	method="post" onSubmit="return ss_prepareAdditionalSearchOptions();" id="ss_advSearchForm">
+	method="post" onSubmit="return ss_prepareAdditionalSearchOptions(this);" id="ss_advSearchForm">
 
 	<%@ include file="/WEB-INF/jsp/search/advanced_search_form_common.jsp" %>
 
