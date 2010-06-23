@@ -100,7 +100,7 @@
 				</c:if>
 				<c:set var="resourceDrivers" value="<%= org.kablink.teaming.fi.connection.ResourceDriverManagerUtil.getAllowedResourceDrivers() %>"/>
 				<div style="display:block">
-					<input type="checkbox" name="ss_mirrored" <c:if test="${ssDefinitionEntry.mirrored || empty resourceDrivers}">disabled</c:if> <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_mirrored.checked) document.${formName}.mirrored.value='true'; else document.${formName}.mirrored.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isMirrored"/></span> <ssf:showHelp guideName="adv_user" pageId="mngfldrs_mirrored" /> </input>
+					<input type="checkbox" name="ss_mirrored" <c:if test="${ssDefinitionEntry.mirrored || empty resourceDrivers}">disabled</c:if> <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_mirrored.checked) document.${formName}.mirrored.value='true'; else document.${formName}.mirrored.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isMirrored"/></span> <ssf:showHelp guideName="adv_user" pageId="mngfldr_mirrored" /> </input>
 				</div>
 				<input type="hidden" name="mirrored" value="${ssDefinitionEntry.mirrored}"/>
 				<br/>

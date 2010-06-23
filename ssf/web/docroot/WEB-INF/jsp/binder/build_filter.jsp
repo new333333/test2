@@ -71,7 +71,7 @@
 			<div class="ss_formBreak"/>
   
 			<fieldset class="ss_fieldset">
-				<legend class="ss_legend"><ssf:nlt tag="filter.terms" text="Filter terms"/> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/createFilter"/></legend>
+				<legend class="ss_legend"><ssf:nlt tag="filter.terms" text="Filter terms"/> <ssf:showHelp guideName="user" pageId="mngfolder_filter" sectionId="mngfolder_filter_create" /></legend>
 				<span class="ss_bold"><ssf:nlt tag="filter.selectFilterType"/></span><br/><br/>
 				<div class="ss_searchContainer" style="margin-left: 0;">
 					<div id="ss_content">
