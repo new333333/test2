@@ -397,7 +397,8 @@ public class ExportHelper {
 				}
 			}
 
-			String entityLetter = isWorkspace ? "w" : "f";
+			String entityLetter = "w";
+			if (EntityType.folder.equals(binder.getEntityType())) entityLetter = "f";
 			Set<FileAttachment> attachments = binder.getFileAttachments();
 	
 			for (FileAttachment attach : attachments) {
