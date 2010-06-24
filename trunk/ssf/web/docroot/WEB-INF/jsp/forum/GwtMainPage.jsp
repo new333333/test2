@@ -59,7 +59,7 @@
 		// Through an overlay we will access m_requestInfo from java.
 		var m_requestInfo = {
 			binderId : '${binderId}',
-			userName : '${userFullName}',
+			userName : '<ssf:escapeJavaScript>${userFullName}</ssf:escapeJavaScript>',
 			adaptedUrl : '${adaptedUrl}',
 			imagesPath : '<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
 			myWSUrl : '${myWorkspaceUrl}',
