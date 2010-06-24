@@ -35,6 +35,7 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
+<body class="ss_style_body">
 <div class="ss_style ss_portlet">
 <div style="margin:10px;">
 <script type="text/javascript">
@@ -142,3 +143,4 @@ function checkFilterForm(obj) {
 
 </div>
 </div>
+</body>

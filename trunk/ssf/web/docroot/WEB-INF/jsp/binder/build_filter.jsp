@@ -34,10 +34,10 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/search/search_js.jsp" %>
-<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
 
+<body class="ss_style_body">
 <div class="ss_style ss_portlet">
 	<div style="margin:10px;">
 		<form name="filterData" id="filterData" method="post" 
@@ -119,3 +119,5 @@
 		ss_showAdditionalOptions('ss_searchForm_additionalFilters', 'ss_search_more_options_txt_${ssNamespace}', '${ssNamespace}');
 	});
 </script>
+
+</body>
