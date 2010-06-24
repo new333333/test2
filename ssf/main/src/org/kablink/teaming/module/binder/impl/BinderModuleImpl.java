@@ -1322,7 +1322,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			try {
 				getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
 			} catch(AccessControlException ace) {
-				getAccessControlManager().checkOperation(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
+				try {
+					getAccessControlManager().checkOperation(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
+				} catch(AccessControlException ace2) {
+					throw ace;
+				}
 			}
 			return binder;
 		}

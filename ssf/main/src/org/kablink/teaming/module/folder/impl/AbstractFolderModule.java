@@ -329,7 +329,11 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			getAccessControlManager().checkOperation(folder, WorkAreaOperation.READ_ENTRIES);
 		} catch(AccessControlException ace) {
 			//Can't read it, so try seeing if the folder title is readable
-			getAccessControlManager().checkOperation(folder, WorkAreaOperation.VIEW_BINDER_TITLE);
+			try {
+				getAccessControlManager().checkOperation(folder, WorkAreaOperation.VIEW_BINDER_TITLE);
+			} catch(AccessControlException ace2) {
+				throw ace;
+			}
 		}
 		return folder;        
 	}
