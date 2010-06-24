@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="java.util.Date" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:if test="${empty ss_surveyFormCounter}"><c:set var="ss_surveyFormCounter" value="0" scope="request"/></c:if>

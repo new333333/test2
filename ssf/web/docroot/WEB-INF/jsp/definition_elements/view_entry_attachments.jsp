@@ -33,6 +33,7 @@
  */
 %>
 <% // View entry attachments %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil" %>
 <%

@@ -32,9 +32,9 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${!ss_pseudoEntity}">
 <%@ page import="org.kablink.util.BrowserSniffer" %>
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_tagViewNamespace" value="${renderResponse.namespace}" scope="request"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_tagViewNamespace" value="${ss_namespace}" scope="request"/></c:if>
 

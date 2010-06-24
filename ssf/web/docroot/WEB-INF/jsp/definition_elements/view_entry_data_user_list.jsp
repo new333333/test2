@@ -33,6 +33,7 @@
  */
 %>
 <% //User_list view %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="userlist_entry" value="${ssDefinitionEntry}"/>
 <jsp:useBean id="userlist_entry" type="org.kablink.teaming.domain.Entry" />
 <c:if test="${empty ss_element_display_style}">

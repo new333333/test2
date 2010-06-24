@@ -33,6 +33,7 @@
  */
 %>
 <% //Event view %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <div class="ss_entryContent">
 <div class="ss_labelAbove"><c:out value="${property_caption}" /></div>
 <c:choose>

@@ -34,6 +34,7 @@
 %>
 <%@ page import="org.kablink.teaming.web.util.DefinitionHelper" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:set var="captionValue" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
 <c:set var="caption" value=""/>

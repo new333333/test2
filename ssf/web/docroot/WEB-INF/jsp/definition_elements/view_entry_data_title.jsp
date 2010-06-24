@@ -33,6 +33,7 @@
  */
 %>
 <% //Title view %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:set var="ss_title_namespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_title_namespace" value="${ss_namespace}"/></c:if>

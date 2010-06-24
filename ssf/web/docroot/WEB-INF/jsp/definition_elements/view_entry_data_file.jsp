@@ -33,6 +33,7 @@
  */
 %>
 <% //File view %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="org.kablink.util.BrowserSniffer" %>
 <%
 boolean isIECheck = BrowserSniffer.is_ie(request);

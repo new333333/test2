@@ -33,6 +33,7 @@
  */
 %>
 <% //Selectbox view %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="org.kablink.teaming.web.util.DefinitionHelper" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 
