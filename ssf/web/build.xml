@@ -278,7 +278,7 @@
 	<target name="deploy-dojo-changes">
 		<copy todir="${app.server.ssf.dir}/js/dojo" overwrite="true">
 			<fileset dir="${web.dir}/js/dojo.changes">
-				<include name="**/*.js" />
+				<include name="**/*.*" />
 			</fileset>
 		</copy>
 	</target>
