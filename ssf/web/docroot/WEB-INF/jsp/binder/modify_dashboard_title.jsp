@@ -36,11 +36,11 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_js.jsp" %>
 
+<body class="ss_style_body tundra">
 <div class="ss_style ss_portlet">
+<ssf:form titleTag="dashboard.setTitle">
 <div class="ss_form" style="margin:6px;">
 <div style="margin:6px;">
-<span class="ss_bold ss_largerprint"><ssf:nlt tag="dashboard.setTitle"/></span>
-<br>
 
 <div class="ss_form">
 <form method="post" action="<ssf:url action="modify_dashboard" actionUrl="true"><ssf:param 
@@ -54,7 +54,7 @@
 </div>
 
 <div style="width:100%;">
-<span class="ss_bold"><ssf:nlt tag="dashboard.currentTitles" /></span>
+<span class="ss_bold"><ssf:nlt tag="<ssf:form" /></span>
 <br/>
 <div class="ss_indent_medium">
   <table>
@@ -123,6 +123,8 @@
 
 </div>
 </div>
-</div>
+</ssf:form>
 </div>
 
+</body>
+</html>

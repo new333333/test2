@@ -38,11 +38,11 @@
 <c:set var="ss_component_count" value="0" scope="request"/>
 <c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
 
+<body class="ss_style_body tundra">
 <div class="ss_style ss_portlet">
+<ssf:form titleTag="dashboard.configureDashboard">
 <div class="ss_form" style="margin:6px;">
 <div style="margin:6px;">
-<span class="ss_largerprint"><ssf:nlt tag="dashboard.configureDashboard"/></span>
-<br/>
 
 <div class="ss_form">
 <form class="ss_form" method="post">
@@ -114,4 +114,8 @@
 </div>
 </div>
 </div>
+</ssf:form>
+</div>
 
+</body>
+</html>

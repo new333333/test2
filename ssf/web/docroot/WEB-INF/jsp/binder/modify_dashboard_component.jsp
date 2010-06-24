@@ -36,8 +36,9 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <!-- h1> MODIFY DASHBOARD COMPONENT </h1 -->
-
+<body class="ss_style_body tundra">
 <div class="ss_style ss_portlet">
+<ssf:form titleTag="dashboard.componentLayout">
 <div class="ss_form" style="margin:6px;">
 <div style="margin:6px;">
 
@@ -125,11 +126,15 @@
 	<input type="submit" class="ss_submit" name="closeBtn"   value="<ssf:nlt tag="button.close" text="Close"/>"/>
 	&nbsp;&nbsp;
 	<input type="submit" class="ss_submit" name="_deleteComponent" value="<ssf:nlt tag="button.delete"/>"/>
+</div>
+</div>
 </form>
 </div>
 
 </div>
+</ssf:form>
 </div>
-</div>
-</div>
+
+</body>
+</html>
 
