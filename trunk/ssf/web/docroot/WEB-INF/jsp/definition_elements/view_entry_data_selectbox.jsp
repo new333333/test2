@@ -35,6 +35,7 @@
 <% //Selectbox view %>
 <%@ page import="org.kablink.teaming.web.util.DefinitionHelper" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 
 <c:if test="${!empty ss_element_display_style && 

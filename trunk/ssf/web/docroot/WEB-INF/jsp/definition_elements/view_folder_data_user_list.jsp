@@ -33,6 +33,7 @@
  */
 %>
 <% //User_list view %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="userlist_folder" value="${ssDefinitionEntry}"/>
 <jsp:useBean id="userlist_folder" type="org.kablink.teaming.domain.Folder" />
 

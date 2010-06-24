@@ -33,7 +33,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${!empty property_remoteApp}">
 <ssf:remoteApplication applicationId="${property_remoteApp}">
   <ssf:param name="binderId" value="${ssBinder.id}"/>

@@ -33,6 +33,7 @@
  */
 %>
 <% //checkbox view %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${empty ss_element_display_style}">
 <div class="ss_entryContent">
 <c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >

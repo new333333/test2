@@ -33,7 +33,7 @@
  */
 %>
 <% //team_list view %>
-
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:set var="teamlist_entry" value="${ssDefinitionEntry}"/>
 <jsp:useBean id="teamlist_entry" type="org.kablink.teaming.domain.Entry" />

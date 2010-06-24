@@ -33,5 +33,5 @@
  */
 %>
 <% //Title view for folders %>
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/view_binder_title.jsp" %>

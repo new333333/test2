@@ -44,49 +44,49 @@
 	String itemType = (String) item.attributeValue("formItem", "");
 
 	if (itemType.equals("title")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_folder_title.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_folder_title.jsp" /><%
 
 	} else if (itemType.equals("description")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_description.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_workspace_description.jsp" /><%
 
 	} else if (itemType.equals("htmlEditorTextarea")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_html_textarea.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_workspace_data_html_textarea.jsp" /><%
 		
 	} else if (itemType.equals("text") || itemType.equals("number") || itemType.equals("hidden")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_text.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_text.jsp" /><%
 		
 	} else if (itemType.equals("url")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_url.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_url.jsp" /><%
 		
 	} else if (itemType.equals("checkbox")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_checkbox.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_checkbox.jsp" /><%
 		
 	} else if (itemType.equals("selectbox")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_selectbox.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_selectbox.jsp" /><%
 		
 	} else if (itemType.equals("radio")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_radio.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_radio.jsp" /><%
 		
 	} else if (itemType.equals("file")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_file.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_workspace_data_file.jsp" /><%
 		
 	} else if (itemType.equals("graphic")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_graphic.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_workspace_data_graphic.jsp" /><%
 		
 	} else if (itemType.equals("attachFiles")) {
 		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" /><%		
 	
 	} else if (itemType.equals("folderRemoteApp")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/remote_application_view.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/remote_application_view.jsp" /><%
 
 	} else if (itemType.equals("folderAttributeList")) {
 		%><jsp:include page="/WEB-INF/jsp/definition_elements/binder_attributes_view.jsp" /><%
 
 	} else if (itemType.equals("mashupCanvas")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/mashup_canvas_view.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/mashup_canvas_view.jsp" /><%
 
 	} else if (itemType.equals("user_list") || itemType.equals("userListSelectbox")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_folder_data_user_list.jsp" %><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_folder_data_user_list.jsp" /><%
 		
 	} else {
         %>

@@ -33,6 +33,7 @@
  */
 %>
 <% //Group_list view %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="grouplist_entry" value="${ssDefinitionEntry}"/>
 <jsp:useBean id="grouplist_entry" type="org.kablink.teaming.domain.Entry" />
 

@@ -86,7 +86,7 @@
   
 </div>
 </div>
-<%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view.jsp" />
   </c:otherwise>
 </c:choose>
 <c:set var="ss_attachments_namespace" value="${renderResponse.namespace}"/>
