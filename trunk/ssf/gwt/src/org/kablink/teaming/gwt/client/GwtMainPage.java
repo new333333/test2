@@ -1441,6 +1441,13 @@ public class GwtMainPage extends Composite
 				// Yes
 				m_adminControl.relayoutPage();
 			}
+			
+			// Do we have a workspace tree control?
+			if ( null != m_wsTreeCtrl )
+			{
+				// Yes
+				m_wsTreeCtrl.relayoutPage();
+			}
 		}
 		else
 		{

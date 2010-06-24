@@ -51,6 +51,9 @@ import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayHorizontal;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayVertical;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
@@ -65,6 +68,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 public class WorkspaceTreeControl extends Composite implements ActionRequestor, ActionTrigger {
 	private RequestInfo m_requestInfo;
 	private TreeDisplayBase m_treeDisplay;
+	private TreeMode m_tm;
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	
 	/**
@@ -87,12 +91,13 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 	 */
 	public WorkspaceTreeControl(RequestInfo requestInfo, final String selectedBinderId, TreeMode tm) {
 		m_requestInfo = requestInfo;
+		m_tm = tm;
 
 		final WorkspaceTreeControl wsTree = this;
 		final FlowPanel mainPanel = new FlowPanel();
 		
 		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
-		switch (tm) {
+		switch (m_tm) {
 		case HORIZONTAL:
 			mainPanel.addStyleName( "breadCrumb_Browser" );
 			rpcService.getHorizontalTree(new HttpRequestInfo(), selectedBinderId, new AsyncCallback<List<TreeInfo>>() {
@@ -118,9 +123,16 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 					m_treeDisplay.render(selectedBinderId, mainPanel);
 				}
 			});
+			
+			// Set the size of the control.
+	        DeferredCommand.addCommand(
+	        	new Command() {
+	        		public void execute() {
+	        			relayoutPage();
+	        		}
+	        });		
 		}
 		
-
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
 	}
@@ -156,6 +168,41 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 		m_treeDisplay.setSelectedBinder(binderInfo);
 	}
 	
+	/**
+	 * Called to force the workspace tree control to lay itself
+	 * out correctly.
+	 */
+	public void relayoutPage()
+	{
+		// We only worry about layout if the tree if it's in vertical
+		// mode.  Is it?
+		if (TreeMode.VERTICAL == m_tm) {
+			// Yes!  Force it to lay itself out again.
+			DeferredCommand.addCommand(
+				new Command() {
+					public void execute() {
+						relayoutPageImpl();
+					}
+			});
+		}
+	}
+		
+	/*
+	 * Implementation method of relayoutPage() that actually performs
+	 * the changes.
+	 */
+	private void relayoutPageImpl() {
+		int height;
+		Style style;
+
+		// Calculate how high the workspace tree should be...
+		height = (Window.getClientHeight() - getAbsoluteTop() - 20);
+		
+		// ...and set it's height.
+		style = getElement().getStyle();
+		style.setHeight( height, Style.Unit.PX );
+	}
+
 	/**
 	 * Fires a TeamingAction at the registered ActionHandler's.
 	 * 
