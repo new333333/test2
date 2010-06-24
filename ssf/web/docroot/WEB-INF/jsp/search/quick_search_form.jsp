@@ -39,7 +39,7 @@
 	<div id="ss_searchForm_container">
 		<div id="ss_searchForm">
 			<div id="ss_searchForm_main">
-				<h4><ssf:nlt tag="searchForm.quicksearch.Title"/></h4>
+				<h4><ssf:nlt tag="searchForm.quicksearch.Title"/><ssf:showHelp guideName="user" pageId="informed_search" sectionId="informed_search_basic" /></h4>
 				<a href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
 					name="tabTitle" value=""/><ssf:param 
 					name="newTab" value="1"/><ssf:param 
