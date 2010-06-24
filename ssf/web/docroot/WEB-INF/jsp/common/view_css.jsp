@@ -157,7 +157,21 @@ var ss_buttonOK = "<ssf:nlt tag="button.ok"/>";
 var ss_findButtonClose = "<ssf:nlt tag="button.close"/>";
 var ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
 
+if (self != self.parent) {
+	//Check if this is a permalink being shown in the content frame
+	try {
+		if ( window.name == 'gwtContentIframe' ) {
+			// We are running inside the GWT content frame
+			if (self.location.href.indexOf("/action/view_permalink/") > 0) {
+				var url = self.location.href;
+				url = url.trim("/") + "/seen_by_gwt/1";
+				self.location.replace(url);
+			}
+		}
+	} catch(e) {}
+}
 </script>
+
 <%
 	boolean isIE = org.kablink.util.BrowserSniffer.is_ie(request);
 	%><%--
