@@ -36,6 +36,6 @@
 <%@ page contentType="text/html; charset=UTF-8" isELIgnored="false" %>
 <%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
 
-<a href="javascript: ;" onClick="ss_helpSystem.showHelp( '${helpUrl}' );return false;" >
+<a href="javascript: ;" class="${className}" onClick="ss_helpSystem.showHelp( '${helpUrl}' );return false;" >
 	<img border="0" alt="${alt}" src="<html:imagesPath/>pics/sym_s_help.gif"/>
 </a>
