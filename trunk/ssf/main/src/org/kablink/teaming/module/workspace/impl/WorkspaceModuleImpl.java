@@ -90,7 +90,11 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 		try {
 			getAccessControlManager().checkOperation(workspace, WorkAreaOperation.READ_ENTRIES);
 		} catch(AccessControlException ace) {
-			getAccessControlManager().checkOperation(workspace, WorkAreaOperation.VIEW_BINDER_TITLE);
+			try {
+				getAccessControlManager().checkOperation(workspace, WorkAreaOperation.VIEW_BINDER_TITLE);
+			} catch(AccessControlException ace2) {
+				throw ace;
+			}
 		}
  
        return workspace;
@@ -101,7 +105,11 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 		try {
 			getAccessControlManager().checkOperation(top, WorkAreaOperation.READ_ENTRIES);
 		} catch(AccessControlException ace) {
-			getAccessControlManager().checkOperation(top, WorkAreaOperation.VIEW_BINDER_TITLE);
+			try {
+				getAccessControlManager().checkOperation(top, WorkAreaOperation.VIEW_BINDER_TITLE);
+			} catch(AccessControlException ace2) {
+				throw ace;
+			}
 		}
 		return top;
    }

@@ -263,7 +263,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	try {
     		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
     	} catch(AccessControlException ace) {
-    		getAccessControlManager().checkOperation(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
+    		try {
+    			getAccessControlManager().checkOperation(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
+    		} catch(AccessControlException ace2) {
+    			throw ace;
+    		}
     	}
 	}
 	protected void checkReadAccess(Principal principal) {
