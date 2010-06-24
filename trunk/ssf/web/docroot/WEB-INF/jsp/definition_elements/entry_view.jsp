@@ -54,10 +54,7 @@
       alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
       src="<html:rootPath/>images/pics/masthead/masthead_printer.png" width="23" height="21"/></a>&nbsp;&nbsp;
   </ssf:ifadapter>
-    <a class="ss_actions_bar13_pane_none"
-      href="javascript: ss_helpSystem.run();"><img border="0"
-      <ssf:alt tag="navigation.help"/> src="<html:imagesPath/>icons/help.png" />
-    </a>&nbsp;&nbsp;
+  <ssf:showHelp className="ss_actions_bar13_pane_none" guideName="user" pageId="entry" />
 </td>
 </tr>
 </table>

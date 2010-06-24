@@ -53,6 +53,7 @@ public class ShowHelpTag extends BodyTagSupport
 	private String guideName;
 	private String pageId;
 	private String sectionId;
+	private String className;
 	private String _bodyContent;
     
 	/**
@@ -147,7 +148,8 @@ public class ShowHelpTag extends BodyTagSupport
 				rd = httpReq.getRequestDispatcher( jsp );	
 				req = pageContext.getRequest();	
 				res = new StringServletResponse( httpRes );	
-				req.setAttribute( "helpUrl", url );			
+				req.setAttribute( "helpUrl", url );
+				req.setAttribute( "className", this.className );
 				rd.include( req, res );	
 				pageContext.getOut().print( res.getString() );
 			}
@@ -165,6 +167,15 @@ public class ShowHelpTag extends BodyTagSupport
 			sectionId = null;
 		}
 	}// end doEndTag()
+
+	/**
+	 * 
+	 */
+	public void setClassName( String className )
+	{
+	    this.className = className;
+	}// end setClassName()
+
 
 	/**
 	 * 
