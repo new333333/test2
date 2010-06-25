@@ -371,7 +371,7 @@ public class GwtMainPage extends Composite
 		// workspace in the sidebar tree.  That's the way it worked
 		// in the traditional UI so I kept that functionality intact.
 		final String contextBinderId;
-		if      ( m_inSearch )                            contextBinderId = "1";
+		if      ( m_inSearch )                            contextBinderId = m_requestInfo.getTopWSId();
 		else if ( GwtClientHelper.hasString( binderId ) ) contextBinderId = binderId;
 		else                                              contextBinderId = m_selectedBinderId;
 		
