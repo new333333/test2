@@ -411,12 +411,14 @@ public class EnterExitEvent extends AbstractActionHandler {
 		HashMap details = new HashMap();
 		List<InternetAddress>addrs = getAddrs(notify.getToUsers());
 		//Add in the additional email addresses
-		for (String addr : notify.getEmailAddrs()) {
-			try {
-				InternetAddress ia = new InternetAddress(addr);
-				if (addrs == null) addrs = new ArrayList<InternetAddress>();
-				if (!addrs.contains(ia)) addrs.add(ia);
-			} catch(Exception e) {}
+		if (notify.getEmailAddrs() != null) {
+			for (String addr : notify.getEmailAddrs()) {
+				try {
+					InternetAddress ia = new InternetAddress(addr);
+					if (addrs == null) addrs = new ArrayList<InternetAddress>();
+					if (!addrs.contains(ia)) addrs.add(ia);
+				} catch(Exception e) {}
+			}
 		}
 		
 		if (addrs == null || addrs.isEmpty()) return; //need a to list
