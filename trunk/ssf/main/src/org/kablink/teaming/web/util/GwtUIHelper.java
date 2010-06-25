@@ -629,7 +629,8 @@ public class GwtUIHelper {
 			topWSId = null;
 		}
 		if (null == topWSId) {
-			topWSId = RequestContextHolder.getRequestContext().getUser().getId();
+			User user = RequestContextHolder.getRequestContext().getUser();
+			topWSId = bs.getProfileModule().getEntryWorkspaceId(user.getId());
 		}
 		
 		String reply = ((null == topWSId) ? "" : String.valueOf(topWSId.longValue()));
