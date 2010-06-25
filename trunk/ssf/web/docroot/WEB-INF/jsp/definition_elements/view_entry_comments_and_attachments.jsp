@@ -99,7 +99,7 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
 </script>
 
 <div class="ss_entryContent">
-<div style="text-align: left; margin: 0px 10px; border: 0pt none;" 
+<div style="text-align: left; margin: 0px; border: 0pt none;" 
   class="wg-tabs margintop3 marginbottom2">
   <table cellspacing="0" cellpadding="0" width="100%">
   <tr>

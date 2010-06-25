@@ -36,7 +36,7 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <ssf:ifadapter>
-<body class="tundra">
+<body>
 </ssf:ifadapter>
 
 <style type="text/css">
@@ -291,12 +291,11 @@ function ss_resizeIframeArea() {
 }
 </script>
 
-<div class="ss_style ss_portlet" style="padding:10px;">
-<ssf:form title='<%= NLT.get("entry.versionHistory") %>'>
-<div style="padding:10px 6px;">
-<span><ssf:nlt tag="entry.version.instructions"/>
-</span>
-</div>
+<div class="tab_form">
+	<ssf:form>
+	<div class="marginbottom3">
+		<span class="ss_style"><ssf:nlt tag="entry.version.instructions"/></span>
+	</div>
 <form class="ss_style ss_form" method="post" action="<ssf:url     
 		adapter="true" 
 		portletName="ss_forum" 
@@ -306,48 +305,54 @@ function ss_resizeIframeArea() {
 		<ssf:param name="operation" value="view_edit_history" />
 		</ssf:url>"
 >
-<table class="ss_style" cellpadding="6">
-<tr>
-<th colspan="2" style="text-align:left;"><ssf:nlt tag="entry.Version"/></th>
-<th><ssf:nlt tag="entry.modifiedOn"/></th>
-<th><ssf:nlt tag="entry.modifiedBy"/></th>
-<th><ssf:nlt tag="entry.change"/></th>
-<th></th>
-<th></th>
+
+
+
+<table class="ss_style" cellpadding="0" cellspacing="0">
+<tr class="ss_tab_table_columnhead">
+<td colspan="2"><ssf:nlt tag="entry.Version"/></td>
+<td><ssf:nlt tag="entry.modifiedOn"/></td>
+<td><ssf:nlt tag="entry.modifiedBy"/></td>
+<td><ssf:nlt tag="entry.change"/></td>
+<td colspan="2"></th>
 </tr>
+
 <c:forEach var="change" items="${ss_changeLogList}" varStatus="status">
-<tr>
-<td valign="bottom" nowrap>
+<tr class="ss_tab_table_row">
+<td>
   <input type="checkbox" id="compare${change.folderEntry.attributes.logVersion}"
   onChange="ss_updateCompareButton('${fn:length(ss_changeLogList)}')"
   onClick="ss_updateCompareButton('${fn:length(ss_changeLogList)}')"
   >
 </td>
-<td valign="bottom" nowrap>
-  <span style="padding-right:6px;">${change.folderEntry.attributes.logVersion}</span>
+<td>
+  <span>${change.folderEntry.attributes.logVersion}</span>
 </td>
-<td valign="bottom" nowrap>
-  <fmt:formatDate timeZone="${ssUser.timeZone.ID}" type="both" value="${change.changeLog.operationDate}"/>
+<td>
+<a href="javascript: ;"
+	onClick="ss_showHide('historyVersion_${status.count}');ss_resizeIframeArea();return false;"
+	title="<ssf:nlt tag="entry.modifiedView"/>"
+	><fmt:formatDate timeZone="${ssUser.timeZone.ID}" type="both" value="${change.changeLog.operationDate}"/>
+</a>
 </td>
-<td valign="bottom" nowrap>
+<td>
   <ssf:showUser user="${change.changeLogEntry.modification.principal}"/>
 </td>
-<td valign="bottom" nowrap>
+<td>
   <div><ssf:nlt tag="changeLog.operation.${change.operation}"/></div>
 </td>
-<td valign="bottom" nowrap>
-  <a href="javascript: ;" class="ss_tinyButton" onClick="ss_showHide('historyVersion_${status.count}');ss_resizeIframeArea();return false;">
-    <ssf:nlt tag="entry.revert.view"/>
-  </a>
+<td>
 </td>
-<td valign="bottom" nowrap>
+<td>
   <a class="ss_tinyButton"
     href="<ssf:url><ssf:param 
 	name="action" value="view_editable_history"/><ssf:param 
 	name="operation" value="revert"/><ssf:param 
 	name="entityId" value="${ss_entityId}"/><ssf:param 
 	name="versionId" value="${change.folderEntry.attributes.logVersion}"/></ssf:url>"
-	><ssf:nlt tag="entry.comparison.revert"/></a>
+	alt="<ssf:nlt tag="entry.comparison.revert"/>"
+	title="<ssf:nlt tag="entry.comparison.revert"/>"
+	><ssf:nlt tag="entry.revert"/></a>
 </td>
 </tr>
 <tr>
@@ -360,7 +365,7 @@ function ss_resizeIframeArea() {
 		Element configEle = (Element)changeLogEntry.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryView']");
 	%>
 	<c:set var="configEle" value="<%= configEle %>" />
-    <div id="historyVersion_${status.count}" style="display:none; padding:10px; border: 1px black solid;">
+    <div id="historyVersion_${status.count}" style="display:none; padding:10px; border: 1px solid #333; background-color: #fff; margin-bottom: 5px;">
 		<c:if test="${!empty configEle}">
 		  <c:set var="ssBinderOriginalFromDescriptionHistory" value="${ssBinder}" />
 		  <c:set var="ssBinder" value="${changeLogEntry.parentBinder}" scope="request"/>
@@ -395,8 +400,6 @@ function ss_resizeIframeArea() {
 </div>
 <div>
   <input type="button" name="compareBtn" id="compareBtn" value="<ssf:nlt tag="button.compare"/>" disabled="true" onclick="dodiff();"/>
-  &nbsp;&nbsp;&nbsp;
-  <input type="button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;"/>
 </div>
 </form>
 <br/>

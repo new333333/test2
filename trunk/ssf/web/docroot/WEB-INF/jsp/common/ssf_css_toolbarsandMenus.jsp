@@ -834,7 +834,7 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	background:none repeat scroll 0 0 #E6E6E4;
 	border: 3px solid #e6e6e4;
 	display: block;
-	margin: 0px 10px 10px;
+	margin: 0px 0px 10px 0px;
 	padding: 2px 5px;
 	}	
 .wg-tab-content-clipped {
@@ -843,13 +843,14 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	height: 300px;
 	overflow: auto;
 	display: block;
-	margin: 0px 10px 10px;
+	margin: 0px 0px 10px 0px;
 	padding: 2px 5px;
 	}	
 .wg-tab-iframe {
 	height: 290px;
 	width: 100%;
-	}	
+	border: 0px;
+	}
 .tabactions {
 	font-size: 12px;
 	text-align: right;

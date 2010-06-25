@@ -458,15 +458,16 @@ div.ss_entryContent a:hover {
   	color: ${ss_style_metadata_color};
   	}
 .ss_entryDescription {
+  	color: #333;
+  	font-family: Arial, Helvetica, sans-serif; 
+  	font-size: 13px;
+	line-height: 17px;
+  	margin-top: 10px;
   	padding-left: 15px;
   	padding-right: 25px;
   	padding-top: 10px;
-  	margin-top: 10px;
-  	padding-bottom: 10px;
-  	background-color: #E9F1F1;  /* switch back to this: #A6C5C5 #E9F1F1 !important; */
-  	font-family: Arial, Helvetica, sans-serif; 
-  	font-size: 12px;
-  	color: #333;
+  	padding-bottom: 5px;
+  	background-color: #E9F1F1;  /* switch back to this: #A6C5C5	 !important; */
 	}
 div.ss_entryDescription ul li {
     margin: 2px 0px 0px 25px;
@@ -644,22 +645,27 @@ input.ss_submit:hover, input.ss_linkButton:hover, a.ss_linkButton:hover {
 input.ss_tinyButton, a.ss_tinyButton:link, a.ss_tinyButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
  	font-size: ${ss_style_font_fineprint};
-    border: 1px solid #5691A6;
-    background-image: url(<html:imagesPath/>pics/background_inline_button_blue.gif);
-    background-repeat: repeat-x;
-  	padding: 0px 3px 0px 3px;
+	background:none repeat scroll 0 0 #949494;
+	color:#FFFFFF;
+	margin-right:3px;
+	padding:2px 10px;
+	text-decoration:none;
   	cursor: pointer;
   	white-space: nowrap;
+	-moz-border-radius: 10px 10px 10px 10px;
+	-webkit-border-radius: 10px 10px 10px 10px;
+	
 	}
 a.ss_tinyButton:focus, a.ss_tinyButton:hover {
   	color: ${ss_linkbutton_link_hover_color};
   	font-family: ${ss_style_folder_view_font_family};
   	font-size: ${ss_style_font_fineprint};
-  	background-color: ${ss_linkbutton_background_color};
-  	border: 1px solid ${ss_linkbutton_outline_color};
-  	padding: 0px 3px 0px 3px;
-  	cursor: pointer;
+	color: #fff;
+	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
+	background-position: center;
   	white-space: nowrap;
+	-moz-border-radius:10px 10px 10px 10px;
+	-webkit-border-radius:10px 10px 10px 10px;
 }
 
 /* styles for labels: required for forms; optional for views */
@@ -3463,6 +3469,24 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 .ss_diff_same {
 	background-color:${ss_diff_color_same};
 }
+
+tr.ss_tab_table_columnhead td {
+	color: #333; 
+	padding-top: 0.2em; 
+	padding-bottom: 0.2em;
+	padding-left: .5em;
+	padding-right: .5em;
+	border-bottom: 1px solid #bbbbb9; 
+	white-space: nowrap;
+	background:url(<html:imagesPath/>pics/gray_blend7_28.png) repeat-x;
+	background-position:bottom;
+	}
+tr.ss_tab_table_row td {
+	background-color: #fff;
+	padding: 4px 10px 2px 3px;
+	border-bottom: 1px solid #d2d5d1;
+	white-space: nowrap;
+	}
 
 /* Ajax loading... */
 #ss_loading, .ss_loading {
