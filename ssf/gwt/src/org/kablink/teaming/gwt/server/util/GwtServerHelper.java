@@ -1848,11 +1848,17 @@ public class GwtServerHelper {
 			rpi.setType(tab.getType());
 			switch (rpi.getTypeEnum()) {
 			case BINDER:
+				// If the tab's binder is no longer accessible...
 				Long binderId = tab.getBinderId();
+				Binder binder = getBinderSafely(bs.getBinderModule(), binderId);
+				if ((null == binder) || isBinderPreDeleted(binder)) {
+					// ...skip it.
+					continue;
+				}
 				rpi.setBinderId(String.valueOf(binderId));
 				rpi.setEntityPath(((String) tab.getData().get("path")));
 				rpi.setEntryId(String.valueOf(tab.getEntryId()));
-				rpi.setPermalink(PermaLinkUtil.getPermalink(request, bs.getBinderModule().getBinder(binderId)));
+				rpi.setPermalink(PermaLinkUtil.getPermalink(request, binder));
 				
 				break;
 				
