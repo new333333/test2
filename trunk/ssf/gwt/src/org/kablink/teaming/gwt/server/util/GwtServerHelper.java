@@ -620,7 +620,7 @@ public class GwtServerHelper {
 						{
 							title = NLT.get( "administration.search.title.index" );
 	
-							adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+							adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 							adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_FOLDER_INDEX_CONFIGURE );
 							url = adaptedUrl.toString();
 							
@@ -635,7 +635,7 @@ public class GwtServerHelper {
 						{
 							title = NLT.get( "administration.search.title.nodes" );
 	
-							adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+							adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 							adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_FOLDER_SEARCH_NODES_CONFIGURE );
 							url = adaptedUrl.toString();
 							
@@ -651,7 +651,7 @@ public class GwtServerHelper {
 						// Add a "Manage the search index" action.
 						title = NLT.get( "administration.configure_search_index" );
 
-						adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+						adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 						adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_FOLDER_INDEX_CONFIGURE );
 						url = adaptedUrl.toString();
 						
@@ -672,7 +672,7 @@ public class GwtServerHelper {
 					// Yes
 					title = NLT.get( "administration.manage.groups" );
 
-					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_GROUPS );
 					url = adaptedUrl.toString();
 					
@@ -693,7 +693,7 @@ public class GwtServerHelper {
 					// Yes
 					title = NLT.get( "administration.manage.quotas" );
 
-					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_QUOTAS );
 					url = adaptedUrl.toString();
 					
@@ -712,7 +712,7 @@ public class GwtServerHelper {
 				// Yes
 				title = NLT.get( "administration.configure_configurations" );
 
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION );
 				url = adaptedUrl.toString();
 				
@@ -731,7 +731,7 @@ public class GwtServerHelper {
 					// Yes
 					title = NLT.get( "administration.manage.license" );
 
-					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_LICENSE );
 					url = adaptedUrl.toString();
 					
@@ -750,7 +750,7 @@ public class GwtServerHelper {
 				// Yes
 				title = NLT.get( "administration.manage.zones" );
 
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_ZONES );
 				url = adaptedUrl.toString();
 				
@@ -769,7 +769,7 @@ public class GwtServerHelper {
 					// Yes
 					title = NLT.get( "administration.manage.applications" );
 
-					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_APPLICATIONS );
 					url = adaptedUrl.toString();
 					
@@ -790,7 +790,7 @@ public class GwtServerHelper {
 					// Yes
 					title = NLT.get( "administration.manage.application.groups" );
 
-					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_APPLICATION_GROUPS );
 					url = adaptedUrl.toString();
 					
@@ -809,7 +809,7 @@ public class GwtServerHelper {
 				// Yes
 				title = NLT.get( "administration.manage.extensions" );
 
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_EXTENSIONS );
 				url = adaptedUrl.toString();
 				
@@ -835,7 +835,7 @@ public class GwtServerHelper {
 			{
 				title = NLT.get( "administration.report.title.login" );
 
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_LOGIN_REPORT );
 				url = adaptedUrl.toString();
 				
@@ -852,7 +852,7 @@ public class GwtServerHelper {
 			{
 				title = NLT.get( "administration.report.title.license" );
 
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_LICENSE_REPORT );
 				url = adaptedUrl.toString();
 				
@@ -867,7 +867,7 @@ public class GwtServerHelper {
 			{
 				title = NLT.get( "administration.report.title.activityByUser" );
 
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ACTIVITY_REPORT_BY_USER );
 				url = adaptedUrl.toString();
 				
@@ -882,7 +882,7 @@ public class GwtServerHelper {
 			{
 				title = NLT.get( "administration.report.title.quota" );
 
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_QUOTA_REPORT );
 				url = adaptedUrl.toString();
 				
@@ -897,7 +897,7 @@ public class GwtServerHelper {
 			{
 				title = NLT.get( "administration.report.title.disk_quota_exceeded" );
 
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_QUOTA_EXCEEDED_REPORT );
 				url = adaptedUrl.toString();
 				
@@ -912,7 +912,7 @@ public class GwtServerHelper {
 			{
 				title = NLT.get( "administration.report.title.highwater_exceeded" );
 
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_QUOTA_HIGHWATER_EXCEEDED_REPORT );
 				url = adaptedUrl.toString();
 				
@@ -927,7 +927,7 @@ public class GwtServerHelper {
 			{
 				title = NLT.get( "administration.report.title.user_access" );
 
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_USER_ACCESS_REPORT  );
 				url = adaptedUrl.toString();
 				
@@ -945,7 +945,7 @@ public class GwtServerHelper {
 			{
 				title = NLT.get( "administration.credits" );
 	
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_CREDITS );
 				url = adaptedUrl.toString();
 				
@@ -963,7 +963,7 @@ public class GwtServerHelper {
 			// Yes
 			title = NLT.get( "administration.view_change_log" );
 			
-			adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+			adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 			adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_CHANGELOG );
 			url = adaptedUrl.toString();
 			
@@ -980,7 +980,7 @@ public class GwtServerHelper {
 			// Yes
 			title = NLT.get( "administration.system_error_logs" );
 			
-			adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+			adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 			adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ADMIN_ACTION_GET_LOG_FILES );
 			url = adaptedUrl.toString();
 			
@@ -1005,7 +1005,7 @@ public class GwtServerHelper {
 				// Yes
 				title = NLT.get( "administration.definition_builder_designers" );
 
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS );
 				url = adaptedUrl.toString();
 				
@@ -1024,7 +1024,7 @@ public class GwtServerHelper {
 				{
 					title = NLT.get( "administration.configure_ldap" );
 
-					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_LDAP_CONFIGURE );
 					url = adaptedUrl.toString();
 					
@@ -1045,7 +1045,7 @@ public class GwtServerHelper {
 				else
 					title = NLT.get( "administration.configure_userAccess" );
 
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_USER_ACCESS );
 				url = adaptedUrl.toString();
 				
@@ -1062,7 +1062,7 @@ public class GwtServerHelper {
 				// Yes
 				title = NLT.get( "administration.configure_mobileAccess" );
 
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_MOBILE_ACCESS );
 				url = adaptedUrl.toString();
 				
@@ -1079,7 +1079,7 @@ public class GwtServerHelper {
 				// Yes
 				title = NLT.get( "administration.configure_homePage" );
 
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_HOME_PAGE );
 				url = adaptedUrl.toString();
 				
@@ -1096,7 +1096,7 @@ public class GwtServerHelper {
 				// Yes
 				title = NLT.get( "administration.configure_roles" );
 
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ADMIN_ACTION_CONFIGURE_ROLES );
 				url = adaptedUrl.toString();
 				
@@ -1113,7 +1113,7 @@ public class GwtServerHelper {
 				// Yes
 				title = NLT.get( "administration.configure_mail" );
 
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_POSTINGJOB_CONFIGURE );
 				url = adaptedUrl.toString();
 				
@@ -1132,7 +1132,7 @@ public class GwtServerHelper {
 					// Yes
 					title = NLT.get( "administration.import.profiles" );
 
-					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_PROFILES_IMPORT );
 					url = adaptedUrl.toString();
 					
@@ -1154,7 +1154,7 @@ public class GwtServerHelper {
 				zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
 				title = NLT.get( "administration.manage.accessControl" );
 
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL );
 				adaptedUrl.setParameter( WebKeys.URL_WORKAREA_ID, zoneConfig.getWorkAreaId().toString() );
 				adaptedUrl.setParameter( WebKeys.URL_WORKAREA_TYPE, zoneConfig.getWorkAreaType() );
