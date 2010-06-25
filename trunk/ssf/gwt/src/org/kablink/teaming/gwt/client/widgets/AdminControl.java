@@ -478,6 +478,7 @@ public class AdminControl extends Composite
 		public void hideActions()
 		{
 			m_actionsTable.setVisible( false );
+			relayoutPage();
 		}// end hideActions()
 		
 		/**
@@ -504,6 +505,7 @@ public class AdminControl extends Composite
 		public void showActions()
 		{
 			m_actionsTable.setVisible( true );
+			relayoutPage();
 		}// end showActions()
 	}// end AdminCategoryControl
 	
