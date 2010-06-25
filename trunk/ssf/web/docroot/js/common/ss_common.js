@@ -1229,6 +1229,16 @@ function ss_toggleShowDiv(divName, namespace) {
 	}
 }
 
+//Routine to show and hide file action menus
+function ss_showHideMenuDiv(divId) {
+	var divObj = document.getElementById(divId);
+	if (divObj != null && divObj.style.display == "block") {
+		ss_HideDivIfActivated(divId);
+	} else {
+		ss_showDivActivate(divId);
+	}
+}
+
 //Routine to hide or show a region using a collapse/expand button
 function ss_toggleRegionInit(divId, imgId, ss_toggleRegionSize, initialRegionClass) {
 	var divHeight = ss_getDivHeight(divId);
@@ -2374,10 +2384,13 @@ function ss_showDivActivate(divName, nofocus) {
 
 //General routine to show a div given its name
 function ss_HideDivIfActivated(divName) {
-    if (ss_divBeingShown == divName) {
+    if (divName == ss_divBeingShown) {
         ss_hideDiv(ss_divBeingShown);
         ss_divBeingShown = null;
         ss_lastDivBeingShown = null;
+        return true;
+    } else {
+    	return false;
     }
 }
 

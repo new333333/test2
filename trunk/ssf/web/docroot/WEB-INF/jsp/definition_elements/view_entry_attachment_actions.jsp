@@ -80,7 +80,7 @@
 
   <div>
     <a href="javascript: ;" 
-      onClick="ss_showHide('ss_fileActionsMenu${ss_divCounter}_${ss_attachedFile.id}');return false;"
+      onClick="ss_showHideMenuDiv('ss_fileActionsMenu${ss_divCounter}_${ss_attachedFile.id}');return false;"
     ><ssf:nlt tag="file.actions"/>
     <img style="vertical-align: bottom;" src="<html:rootPath/>images/pics/menu_arrow.png"/></a>
   </div>
@@ -125,6 +125,7 @@
 		<%  }  %>
 	  </li>
 
+      <c:if test="${!ss_attachedFileIsVersion}">
 	  <ssf:ifSupportsViewAsHtml relativeFilePath="${ss_attachedFile.fileItem.name}" browserType="<%=strBrowserType%>">
 		<li>
 		  <a target="_blank" style="text-decoration: none;" href="<ssf:url 
@@ -139,6 +140,7 @@
 	       ><span><ssf:nlt tag="file.viewAsHtml" /></span></a>
 	    </li>
 	  </ssf:ifSupportsViewAsHtml>
+	  </c:if>
 
 		<c:if test="${!ss_attachedFileIsVersion}">
 		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
