@@ -944,14 +944,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public String getBinderPermalink( HttpRequestInfo ri, String binderId )
 	{
+		String reply = "";
+		
 		if ( binderId != null && binderId.length() > 0 )
 		{
-			Long binderIdL = new Long( binderId );
-			Binder binder = getBinderModule().getBinder( binderIdL );
-			return PermaLinkUtil.getPermalink( getRequest( ri ), binder );
+			Binder binder = GwtServerHelper.getBinderSafely( getBinderModule(), binderId );
+			if (null != binder)
+			{
+				reply = PermaLinkUtil.getPermalink( getRequest( ri ), binder );
+			}
 		}
 		
-		return "";
+		return reply;
 	}
 	
 	/**
@@ -1474,10 +1478,23 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public String getRootWorkspaceId( String binderId ) {
-		Binder binder = getBinderModule().getBinder( Long.parseLong( binderId ) );
-		Workspace binderWS = BinderHelper.getBinderWorkspace( binder );
-		return String.valueOf( binderWS.getId() );
+	public String getRootWorkspaceId( String binderId )
+	{
+		String reply;
+		
+		Binder binder = GwtServerHelper.getBinderSafely( getBinderModule(), binderId );
+		if (null != binder)
+		{
+			Workspace binderWS = BinderHelper.getBinderWorkspace( binder );
+			reply = String.valueOf( binderWS.getId() );
+		}
+		else
+		{
+			binder = getWorkspaceModule().getTopWorkspace();
+			reply = String.valueOf( binder.getId() );
+		}
+		
+		return reply;
 	}// end getRootWorkspaceId() 
 
 	/**
@@ -1500,7 +1517,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		TreeInfo reply;
 		
 		// Can we access the Binder?
-		binder = GwtServerHelper.getBinderForWorkspaceTree( this, binderIdS );
+		binder = GwtServerHelper.getBinderForWorkspaceTree( this, binderIdS, true );
 		if (null == binder) {
 			// No!  We can't build a TreeInfo for it.
 			reply = new TreeInfo();
@@ -1521,11 +1538,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			long binderId      = Long.parseLong( binderIdS );
 			long binderWSIdVal = binderWSId.longValue();
 			if ( binderId != binderWSIdVal ) {
-				binder = binder.getParentBinder();
-				while ( binder.getId().longValue() != binderWSIdVal )
+				Binder parentBinder = binder.getParentBinder();
+				if ( null != parentBinder )
 				{
-					expandedBindersList.add( binder.getId() );
-					binder = binder.getParentBinder();
+					binder = parentBinder;
+					while ( binder.getId().longValue() != binderWSIdVal )
+					{
+						expandedBindersList.add( binder.getId() );
+						binder = binder.getParentBinder();
+					}
 				}
 			}
 			
@@ -2258,8 +2279,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			Binder binder;
 			
 			// No!  Is the binder other than the profiles container?
-			binder = getBinderModule().getBinder( Long.parseLong( binderId ) );
-			if ( EntityIdentifier.EntityType.profiles != binder.getEntityType() )
+			binder = GwtServerHelper.getBinderSafely( getBinderModule(), binderId );
+			if ( ( null != binder ) && ( EntityIdentifier.EntityType.profiles != binder.getEntityType() ) )
 			{
 				AdaptedPortletURL adapterUrl;
 				HttpServletRequest request = getRequest( ri ); 

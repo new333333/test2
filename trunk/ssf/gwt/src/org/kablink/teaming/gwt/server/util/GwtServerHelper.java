@@ -1465,10 +1465,14 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static Binder getBinderForWorkspaceTree(AllModulesInjected bs, String binderId) {
+		return getBinderForWorkspaceTree(bs, binderId, false);
+	}
+	
+	public static Binder getBinderForWorkspaceTree(AllModulesInjected bs, String binderId, boolean defaultToTop) {
 		Binder reply;
 		try {
 			Long binderIdL = Long.parseLong(binderId);
-			reply = getBinderForWorkspaceTree(bs, binderIdL);
+			reply = getBinderForWorkspaceTree(bs, binderIdL, defaultToTop);
 		}
 		catch (NumberFormatException nfe) {
 			m_logger.debug("GwtServerHelper.getBinderForWorkspaceTree( Can't Access Binder (NumberFormatException) ):  '" + ((null == binderId) ? "<nul>" : binderId) + "'");
@@ -1481,6 +1485,10 @@ public class GwtServerHelper {
 	}
 	
 	public static Binder getBinderForWorkspaceTree(AllModulesInjected bs, Long binderId) {
+		return getBinderForWorkspaceTree(bs, binderId, false);
+	}
+	
+	public static Binder getBinderForWorkspaceTree(AllModulesInjected bs, Long binderId, boolean defaultToTop) {
 		Binder reply;
 		try {
 			reply = bs.getBinderModule().getBinder(binderId);
@@ -1494,6 +1502,19 @@ public class GwtServerHelper {
 		if ((null != reply) && isBinderPreDeleted(reply)) {
 			// ...we want to ignore it.
 			reply = null;
+		}
+		
+		// If we couldn't access the binder and we're supposed to
+		// default to the top workspace...
+		if ((null == reply) && defaultToTop) {
+			// ...default to it.
+			try {
+				reply = bs.getWorkspaceModule().getTopWorkspace();
+			}
+			catch (Exception e) {
+				m_logger.debug("GwtServerHelper.getBinderForWorkspaceTree( Can't Default to Top Workspace ) ");
+				reply = null;
+			}
 		}
 		
 		// If we get here, reply refers to the Binder if it could be
@@ -1510,7 +1531,16 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static BinderInfo getBinderInfo(AllModulesInjected bs, String binderId) {
-		return getBinderInfo(bs.getBinderModule().getBinder(Long.parseLong(binderId)));
+		BinderInfo reply;
+		Binder binder = getBinderSafely(bs.getBinderModule(), binderId);
+		if (null == binder) {
+			reply = new BinderInfo();
+			reply.setBinderId(binderId);
+		}
+		else {
+			reply = getBinderInfo(binder);
+		}
+		return reply;
 	}
 	
 	public static BinderInfo getBinderInfo(Binder binder) {
@@ -1520,6 +1550,33 @@ public class GwtServerHelper {
 		                                    reply.setBinderType(   getBinderType(      binder));
 		if      (reply.isBinderFolder())    reply.setFolderType(   getFolderType(      binder));
 		else if (reply.isBinderWorkspace()) reply.setWorkspaceType(getWorkspaceType(   binder));
+		return reply;
+	}
+	
+	/**
+	 * Returns s Binder from it's ID guarding against any exceptions.
+	 * If an exception is caught, null is returned.
+	 * 
+	 * @param bm
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static Binder getBinderSafely(BinderModule bm, String binderId) {
+		return getBinderSafely(bm, Long.parseLong(binderId));
+	}
+	
+	public static Binder getBinderSafely(BinderModule bm, Long binderId) {
+		Binder reply;
+		try
+		{
+			reply = bm.getBinder(binderId);
+		}
+		catch (Exception e)
+		{
+			m_logger.debug("GwtServerHelper.getBinderSafely(Binder could not be accessed - EXCEPTION:  " + e.getMessage() + ")");
+			reply = null;
+		}
 		return reply;
 	}
 	
