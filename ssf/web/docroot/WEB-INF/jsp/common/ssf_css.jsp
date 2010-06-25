@@ -468,6 +468,8 @@ div.ss_entryContent a:hover {
   	padding-top: 10px;
   	padding-bottom: 5px;
   	background-color: #E9F1F1;  /* switch back to this: #A6C5C5	 !important; */
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	}
 div.ss_entryDescription ul li {
     margin: 2px 0px 0px 25px;
