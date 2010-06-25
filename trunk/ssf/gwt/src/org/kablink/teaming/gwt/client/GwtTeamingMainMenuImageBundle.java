@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client;
 
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.ImageResource.ImageOptions;
+import com.google.gwt.resources.client.ImageResource.RepeatStyle;
 
 
 /**
@@ -43,54 +45,71 @@ import com.google.gwt.resources.client.ImageResource;
  * @author drfoster@novell.com
  */
 public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/browse_hierarchy.png")
 	public ImageResource browseHierarchy();
 
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/close_circle16.png")
 	public ImageResource closeCircle16();
 
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/close_x.png")
 	public ImageResource closeX();
 
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/gwt.png")
 	public ImageResource gwtUI();
 
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/home16.png")
 	public ImageResource home16();
 	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/menu_9.gif")
 	public ImageResource menu9();
 	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/menu_arrow.png")
 	public ImageResource menuArrow();
 	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/rating_star.gif")
 	public ImageResource ratingStar();
 	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/search_adv.png")
 	public ImageResource searchOptions();
 
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/search_delete.gif")
 	public ImageResource searchDelete();
 	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/search_glass.png")
 	public ImageResource searchGlass();
 
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/slide_down.png")
 	public ImageResource slideDown();
 
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/slide_left.png")
 	public ImageResource slideLeft();
 
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/slide_right.png")
 	public ImageResource slideRight();
 
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/slide_up.png")
 	public ImageResource slideUp();
 	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/spacer_1px.png")
 	public ImageResource spacer1px();
 	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/tag_delete.gif")
 	public ImageResource tagDelete();	
 }
