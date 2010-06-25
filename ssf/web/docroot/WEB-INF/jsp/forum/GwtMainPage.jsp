@@ -90,10 +90,10 @@
 				var iframeDiv = document.getElementById('contentControl')
 				var startOfContent = ss_getObjectTop(iframeDiv);
 				var windowHeight = window.innerHeight != null? window.innerHeight: document.body != null? document.body.clientHeight:null;
-				var iframeMinimum = parseInt(windowHeight - startOfContent);
+				var iframeMinimum = parseInt(windowHeight - startOfContent - ss_workareaIframeMinOffset);
 				if (iframeMinimum < 100) iframeMinimum = 100;
 				if (window.frames['gwtContentIframe'] != null) {
-					var iframeHeight = window.gwtContentIframe.innerHeight != null? window.gwtContentIframe.innerHeight: window.gwtContentIframe.document.body != null? window.gwtContentIframe.document.body.clientHeight:null;
+					var iframeHeight = window.gwtContentIframe.document.body.scrollHeight;
 					if (iframeHeight > iframeMinimum) {
 						if (parseInt(iframeDiv.style.height) != parseInt(iframeHeight + ss_workareaIframeOffset)) {
 							iframeDiv.style.height = parseInt(iframeHeight + ss_workareaIframeOffset) + "px";
