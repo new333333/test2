@@ -182,10 +182,8 @@ public class LoginController  extends SAbstractControllerRetry {
 			
 			// Add the "my workspace" url to the response.
 			{
-				String myWSUrl = "";
-
-				myWSUrl = PermaLinkUtil.getPermalink( request, user );
-				model.put( "myWorkspaceUrl", myWSUrl );
+				String myWSUrl = PermaLinkUtil.getPermalink( request, user );
+				model.put( "myWorkspaceUrl", (myWSUrl + "/seen_by_gwt/1") );
 			}
 			
 			// Add a flag that tells us if we are running Novell or Kablink Teaming.
