@@ -61,7 +61,7 @@
 	<%	} %>
 		
 	}// end handleCloseBtn()
-</script>"
+</script>
 
 <body class="ss_style_body tundra">
 <div class="ss_style ss_portlet">
