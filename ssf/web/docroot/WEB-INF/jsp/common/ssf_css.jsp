@@ -647,9 +647,11 @@ input[type="button"].n-button {
     font-family: Arial, sans-serif !important;
     white-space: nowrap !important;
     text-decoration: none !important;
-  	padding: 0px 6px 0px 6px !important;
-	background: #81b2bd url(<html:rootPath/>images/pics/n-button-left.png);
-	background-position: top left;
+  	padding: 0px 4px 2px 15px !important;
+	background-color: transparent;
+	background-image: url(<html:rootPath/>images/pics/n-button-left.png);
+	background-repeat: no-repeat;
+	background-position: center left;
 	border: 0px;
 	height: 23px;
 	<c:if test="<%= isIE %>">
@@ -657,7 +659,15 @@ input[type="button"].n-button {
   		margin-right: 1px;
 	</c:if>
 	}
-
+img.n-button-right {
+	background-color: transparent;
+	background-image: url(<html:rootPath/>images/pics/n-button-right.png);
+	background-repeat: no-repeat;
+	background-position: center right;
+	width: 21px;
+	height: 23px;
+	margin-right: 10px;
+	}
 input.ss_submit:hover, 
 input.ss_linkButton:hover, 
 a.ss_linkButton:hover {
