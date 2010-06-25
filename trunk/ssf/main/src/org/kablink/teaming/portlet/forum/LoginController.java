@@ -186,6 +186,10 @@ public class LoginController  extends SAbstractControllerRetry {
 				model.put( "myWorkspaceUrl", (myWSUrl + "/seen_by_gwt/1") );
 			}
 			
+			// Add the ID of the top workspace.
+			String topWSId = GwtUIHelper.getTopWSIdSafely( this );
+			model.put( "topWSId", topWSId );
+			
 			// Add a flag that tells us if we are running Novell or Kablink Teaming.
 			isNovellTeaming = Boolean.toString( ReleaseInfo.isLicenseRequiredEdition() );
 			model.put( "isNovellTeaming", isNovellTeaming );

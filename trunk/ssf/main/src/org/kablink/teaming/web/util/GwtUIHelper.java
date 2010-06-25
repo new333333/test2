@@ -611,6 +611,32 @@ public class GwtUIHelper {
 	}
 
 	/**
+	 * Returns the string representation of the top most workspace ID.
+	 * If the true top workspace ID can't be accessed, the current
+	 * user's workspace ID is returned.
+	 * 
+	 * @param bs
+	 * 
+	 * @return
+	 */
+	public static String getTopWSIdSafely(AllModulesInjected bs) {
+		Long topWSId;
+		
+		try {
+			topWSId = bs.getWorkspaceModule().getTopWorkspace().getId();
+		}
+		catch (Exception e) {
+			topWSId = null;
+		}
+		if (null == topWSId) {
+			topWSId = RequestContextHolder.getRequestContext().getUser().getId();
+		}
+		
+		String reply = ((null == topWSId) ? "" : String.valueOf(topWSId.longValue()));
+		return reply;
+	}
+	
+	/**
 	 * Returns true if the current user is the built-in guest user and
 	 * false otherwise.
 	 * 

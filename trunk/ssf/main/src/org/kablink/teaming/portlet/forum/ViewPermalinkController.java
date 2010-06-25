@@ -59,6 +59,7 @@ import org.kablink.teaming.portletadapter.portlet.PortletResponseImpl;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
@@ -534,6 +535,10 @@ public class ViewPermalinkController  extends SAbstractController {
 					String myWSUrl = PermaLinkUtil.getPermalink( request, user );
 					model.put( "myWorkspaceUrl", (myWSUrl + "/seen_by_gwt/1") );
 				}
+
+				// Add the ID of the top workspace.
+				String topWSId = GwtUIHelper.getTopWSIdSafely( this );
+				model.put( "topWSId", topWSId );
 				
 				// Add the flag that tells us if we are running Novell or Kablink Teaming to the response.
 				isNovellTeaming = Boolean.toString( ReleaseInfo.isLicenseRequiredEdition() );
