@@ -39,7 +39,7 @@
 
  <c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
   <div>
-    <a href="javascript: ;" onClick="ss_showHide('ss_fileStatusMenu${ss_divCounter}_${ss_attachedFile.id}');return false;"
+    <a href="javascript: ;" onClick="ss_showHideMenuDiv('ss_fileStatusMenu${ss_divCounter}_${ss_attachedFile.id}');return false;"
     ><span id="fileStatus${ss_divCounter}_${ss_attachedFile.id}">
       <c:if test="${ss_attachedFile.fileStatus != 0}">${ss_attachedFile.fileStatusText}</c:if>
       <c:if test="${ss_attachedFile.fileStatus == 0}"><ssf:nlt tag="file.statusNoStatus"/></c:if>
