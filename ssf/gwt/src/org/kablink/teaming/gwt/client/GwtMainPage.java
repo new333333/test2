@@ -770,7 +770,7 @@ public class GwtMainPage extends Composite
 		case MY_WORKSPACE:
 			// Change the browser's URL.
 			preContextSwitch();
-			gotoUrl( m_requestInfo.getMyWorkspaceUrl(), true );
+			gotoUrl( m_requestInfo.getMyWorkspaceUrl() );
 			break;
 			
 		case SELECTION_CHANGED:
@@ -800,12 +800,12 @@ public class GwtMainPage extends Composite
 			
 		case GOTO_CONTENT_URL:
 			preContextSwitch();
-			gotoUrl( obj, false );
+			gotoUrl( obj );
 			break;
 
 		case GOTO_PERMALINK_URL:
 			preContextSwitch();
-			gotoUrl( obj, true );
+			gotoUrl( obj, false );
 			break;
 
 		case TRACK_BINDER:
@@ -1199,22 +1199,31 @@ public class GwtMainPage extends Composite
 
 	
 	/*
-	 * This method will be called to goto a permalink URL received as a
-	 * parameter.
+	 * This method will be called to goto a URL, permalink or
+	 * otherwise, received as a parameter.
 	 * 
 	 * Implements the GOTO_CONTENT_URL, GOTO_PERMALINK_URL and
 	 * MY_WORKSPACE teaming actions.
 	 */
-	private void gotoUrl( Object obj, boolean isPermalink )
+	private void gotoUrl( Object obj )
+	{
+		// Default to submitting the URL to the content frame.
+		gotoUrl( obj, true );
+	}//end gotoUrl()
+	
+	private void gotoUrl( Object obj, boolean submitToContentFrame )
 	{
 		if ( obj instanceof String )
 		{
-			if (isPermalink)
-			     Window.Location.replace( (String) obj );
-			else GwtClientHelper.jsLoadUrlInContentFrame( (String) obj );
+			String url = ((String) obj);
+			if (submitToContentFrame)
+				 GwtClientHelper.jsLoadUrlInContentFrame( url );
+			else Window.Location.replace(                 url );
 		}
 		else
+		{
 			Window.alert( "in gotoUrl() and obj is not a String object" );
+		}
 	}//end gotoUrl()
 
 	/*

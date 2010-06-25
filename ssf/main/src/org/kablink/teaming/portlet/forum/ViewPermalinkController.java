@@ -516,7 +516,6 @@ public class ViewPermalinkController  extends SAbstractController {
 			   	String userName;
 			   	String isNovellTeaming;
 			   	String accessException;
-			   	String myWSUrl = "";
 			   	User user;
 			   
 				// No, let the gwt page handle this permalink
@@ -532,8 +531,8 @@ public class ViewPermalinkController  extends SAbstractController {
 
 				// Add the "my workspace" url to the response.
 				{
-					myWSUrl = PermaLinkUtil.getPermalink( request, user );
-					model.put( "myWorkspaceUrl", myWSUrl );
+					String myWSUrl = PermaLinkUtil.getPermalink( request, user );
+					model.put( "myWorkspaceUrl", (myWSUrl + "/seen_by_gwt/1") );
 				}
 				
 				// Add the flag that tells us if we are running Novell or Kablink Teaming to the response.
