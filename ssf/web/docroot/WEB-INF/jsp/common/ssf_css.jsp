@@ -616,7 +616,7 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
     font-family: Arial, sans-serif !important;
     white-space: nowrap !important;
     text-decoration: none !important;
-  	border: 1px solid #333 !important;
+  	border: 1px solid #333;
   	padding: 0px 6px 0px 6px !important
 	<c:if test="<%= isIE %>">
   		margin-left: 1px; 
@@ -629,7 +629,7 @@ button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type=
     font-family: Arial, sans-serif !important;
     white-space: nowrap !important;
     text-decoration: none !important;
-  	border: 1px dotted #333 !important;
+  	border: 1px dotted #333;
   	padding: 0px 6px 0px 6px !important;
   	<c:if test="<%= isIE %>">
   		padding: 0px;
@@ -639,14 +639,37 @@ button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type=
   		padding-right: 1px;
 	</c:if>
 	}
-input.ss_submit:hover, input.ss_linkButton:hover, a.ss_linkButton:hover {
+input[type="button"].n-button {
+	color: #fff;
+	font-weight: bold;	
+    text-align: center !important;
+    font-size: 13px !important;
+    font-family: Arial, sans-serif !important;
+    white-space: nowrap !important;
+    text-decoration: none !important;
+  	padding: 0px 6px 0px 6px !important;
+	background: #81b2bd url(<html:rootPath/>images/pics/n-button-left.png);
+	background-position: top left;
+	border: 0px;
+	height: 23px;
+	<c:if test="<%= isIE %>">
+  		margin-left: 1px; 
+  		margin-right: 1px;
+	</c:if>
+	}
+
+input.ss_submit:hover, 
+input.ss_linkButton:hover, 
+a.ss_linkButton:hover {
 	padding: 0px 6px 0px 6px;
 	border: 1px dotted #333;
 	color: #333;
 	}	
-input.ss_tinyButton, a.ss_tinyButton:link, a.ss_tinyButton:visited {
+input.ss_tinyButton, 
+a.ss_tinyButton:link, 
+a.ss_tinyButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
- 	font-size: ${ss_style_font_fineprint};
+ 	font-size: ${ss_style_font_smallprint};
 	background:none repeat scroll 0 0 #949494;
 	color:#FFFFFF;
 	margin-right:3px;
@@ -656,12 +679,12 @@ input.ss_tinyButton, a.ss_tinyButton:link, a.ss_tinyButton:visited {
   	white-space: nowrap;
 	-moz-border-radius: 10px 10px 10px 10px;
 	-webkit-border-radius: 10px 10px 10px 10px;
-	
 	}
-a.ss_tinyButton:focus, a.ss_tinyButton:hover {
+a.ss_tinyButton:focus,
+a.ss_tinyButton:hover {
   	color: ${ss_linkbutton_link_hover_color};
   	font-family: ${ss_style_folder_view_font_family};
-  	font-size: ${ss_style_font_fineprint};
+  	font-size: ${ss_style_font_smallprint};
 	color: #fff;
 	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
 	background-position: center;

@@ -307,6 +307,9 @@ function ss_resizeIframeArea() {
 >
 
 
+<div class="marginbottom2">
+  <input class="n-button" type="button" name="compareBtn" id="compareBtn" value="<ssf:nlt tag="button.compare"/>" disabled="true" onclick="dodiff();"/><span class="ss_style"><ssf:nlt tag="entry.version.compare"/></span>
+</div>
 
 <table class="ss_style" cellpadding="0" cellspacing="0">
 <tr class="ss_tab_table_columnhead">
@@ -395,11 +398,9 @@ function ss_resizeIframeArea() {
 </tr>
 </c:forEach>
 </table>
-<div style="padding-bottom:10px;">
-  <input type="button" name="clearAllBtn" value="<ssf:nlt tag="button.clearAll"/>" onclick="clearAllCheckboxes();"/>
-</div>
-<div>
-  <input type="button" name="compareBtn" id="compareBtn" value="<ssf:nlt tag="button.compare"/>" disabled="true" onclick="dodiff();"/>
+
+<div class="margintop2 marginbottom3">
+  <input class="ss_tinyButton" style="border: 0px; font-size: 11px;" type="button" name="clearAllBtn" value="<ssf:nlt tag="button.deselectAll"/>" onclick="clearAllCheckboxes();"/>
 </div>
 </form>
 <br/>
