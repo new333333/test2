@@ -48,7 +48,9 @@ function ss_history_revert_init() {
 	var inputList = self.document.getElementsByTagName("input");
 	for (var i = 0; i < inputList.length; i++) {
 		if (inputList[i].type == "checkbox" && inputList[i].name && inputList[i].name.indexOf("file_revert_") == 0) {
-			saveFileId(inputList[i]);
+			try {
+				saveFileId(inputList[i]);
+			} catch(e) {}
 		}
 	}
 }
@@ -167,7 +169,7 @@ ss_createOnLoadObj("ss_history_revert_init", ss_history_revert_init);
 <% 
   Element configEle2 = (Element)changeLogEntry2.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryForm']");
 %>
-   <div style="display:block;">
+   <div style="display:none;">
 	<c:if test="${!empty configEle}">
 	  <c:set var="ssBinderOriginalFromDescriptionHistory" value="${ssBinder}" />
 	  <c:set var="ssBinder" value="${changeLogEntry2.parentBinder}" scope="request"/>
