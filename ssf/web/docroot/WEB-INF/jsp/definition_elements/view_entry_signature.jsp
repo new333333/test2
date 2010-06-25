@@ -37,10 +37,10 @@
 <c:if test="${empty propertyValues_displayType || propertyValues_displayType[0] == 'inline'}">
 <table style="padding-left: 30px;" cellspacing="0" cellpadding="0">
  <tr>
-  <td valign="bottom" style="padding-left:10px;">
+  <td style="padding-left:10px;">
     <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
   </td>
-  <td valign="bottom" style="padding-left:15px;">
+  <td style="padding-left:15px;">
   <c:set var="property_caption" value=""/>
     <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
   </td>
@@ -51,7 +51,7 @@
     ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
 	<table style="padding-left: 30px;" cellspacing="0" cellpadding="0">
 	 <tr>
-	  <td valign="bottom" style="padding-left:30px;">
+	  <td style="padding-left:30px;">
 		<div class="ss_entryContent ss_entrySignature">
 		  <span style="padding-right:8px;"><ssf:nlt tag="entry.modifiedBy"/></span>
 	
@@ -59,7 +59,7 @@
 	
 		</div>
 	  </td>
-	  <td valign="bottom" style="padding-left:15px;">
+	  <td style="padding-left:15px;">
 		<div class="ss_entryContent ss_entrySignature">
 		<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 		     value="${ssDefinitionEntry.modification.date}" type="both" 
@@ -73,7 +73,7 @@
   <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
 	<table style="padding-left: 30px;" cellspacing="0" cellpadding="0">
 	 <tr>
-	  <td valign="bottom" style="padding-left:30px;">
+	  <td style="padding-left:30px;">
 		<div class="ss_entryContent ss_entrySignature">
 		  <span style="padding-right:8px;">
 		  <ssf:nlt tag="entry.reservedBy"/>&nbsp;<img <ssf:alt tag="alt.locked"/> 
@@ -95,7 +95,7 @@
 <c:if test="${propertyValues_displayType[0] == 'leftAligned'}">
 <table>
 <tr>
-<td valign="bottom">
+<td>
   <c:if test="${property_showPicture && !empty ssDefinitionEntry.top}">
     <div 
       <c:if test="${!ssDefinitionEntry.top}">class="ss_replies_indent_picture" </c:if>
@@ -116,12 +116,12 @@
   </c:if>
 <table cellspacing="0" cellpadding="0">
  <tr>
-  <td valign="bottom">
+  <td>
     <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
   </td>
  </tr>
  <tr>
-  <td valign="bottom">
+  <td>
   <c:set var="property_caption" value=""/>
     <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
   </td>
@@ -162,7 +162,7 @@
     </div>
   </c:if>
 </td>
-<td valign="bottom" style="padding-left:10px;">
+<td style="padding-left:10px;">
 <c:if test="${!empty ssConfigDefinition}">
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
@@ -178,33 +178,33 @@
 <tr><td valign="top">
 <table cellspacing="0" cellpadding="0">
 <tr>
-  <td valign="bottom">
+  <td>
     <div class="ss_entrySignature">
       <span><c:out value="${property_caption}" /></span>
     </div>
     <c:set var="property_caption" value=""/>
   </td>
-  <td valign="bottom">
+  <td>
       <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
   </td>
-  <td valign="bottom">
+  <td>
       <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
   </td>
  </tr>
   <c:if test="${!empty ssDefinitionEntry.modification.principal && 
     ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
    <tr>
-    <td valign="bottom">
+    <td>
 	  <div class="ss_entrySignature">
 	    <span><ssf:nlt tag="entry.modifiedBy"/></span>
 	  </div>
 	</td>
-	<td valign="bottom">
+	<td>
 	  <div class="ss_entrySignature">
 	    <ssf:showUser user="${ssDefinitionEntry.modification.principal}"/>
 	  </div>
 	</td>
-	<td valign="bottom">
+	<td>
 	  <div class="ss_entrySignature">
 	    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 		value="${ssDefinitionEntry.modification.date}" type="both" 
@@ -216,19 +216,19 @@
 
   <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
    <tr>
-    <td valign="bottom">
+    <td>
 	  <div class="ss_entrySignature">
 	    <ssf:nlt tag="entry.reservedBy"/>
 	  </div>
 	</td>
-	<td valign="bottom">
+	<td>
 	  <div class="ss_entrySignature">
 	    <img <ssf:alt tag="alt.locked"/> 
 	      src="<html:imagesPath/>pics/sym_s_caution.gif"/>
 	    <ssf:showUser user="${ssDefinitionEntry.reservation.principal}"/>
 	  </div>
 	</td>
-	<td valign="bottom">
+	<td>
 	</td>
    </tr>
   </c:if>

@@ -43,7 +43,7 @@
 <c:if test="${empty ss_presence_user}">
 <a href="javascript: ;"
  onClick="ss_popupPresenceMenu(this, '', '', '-1', '', '', '', '', '', '', '${ss_presence_component_id}', '${ss_presence_zonBridge}', '', '');return false;"
-><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
+><img border="0" align="absmiddle" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
  alt="<c:out value="${ss_presence_text}"/>"/></a>
 </c:if>
 
@@ -97,7 +97,7 @@
  title="<c:out value="${ss_presence_text}"/>"
  class="ss_presence_dude"
  onClick="window.top.ss_invokeSimpleProfile( this,'${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>');return false;"
-><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
+><img border="0" align="absmiddle" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
  alt="<c:out value="${ss_presence_text}"/>"/></a>
   <c:if test="${ss_presence_show_title}">
 	<ssf:ifadapter>

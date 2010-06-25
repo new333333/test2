@@ -204,6 +204,14 @@ td.rightend
 	border-left-color: #CCCCCC;
 	padding: 0 15px 15px 15px!important;
 	}
+.tab_form .ss_form_wrap {
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+	padding: 0px 15px 0px 0px !important;
+	}	
+	
 .ss_form_wrap_compact {
 	border-top-width: 24px;
 	border-right-width: thin;
