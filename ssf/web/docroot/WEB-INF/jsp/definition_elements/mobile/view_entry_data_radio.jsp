@@ -34,13 +34,19 @@
 %>
 <%@ page import="org.kablink.teaming.web.util.DefinitionHelper" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
-
+<jsp:useBean id="property_name" type="String" scope="request" />
+<jsp:useBean id="property_caption" type="String" scope="request" />
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssDefinitionEntry" type="org.kablink.teaming.domain.DefinableEntity" scope="request" />
 
 <%
+	//Get the item being displayed
+	Element item = (Element) request.getAttribute("item");
+
 	String caption = "";
-	if(ssDefinitionEntry.getCustomAttributes().get(property_name) != null) {
+	if(((DefinableEntity)ssDefinitionEntry).getCustomAttributes().get(property_name) != null) {
 		caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
-					(String) ((CustomAttribute) ssDefinitionEntry.getCustomAttributes().get(property_name)).getValue());
+					(String) ((CustomAttribute) ((DefinableEntity)ssDefinitionEntry).getCustomAttributes().get(property_name)).getValue());
 		caption = NLT.getDef(caption);
 	}
 %>

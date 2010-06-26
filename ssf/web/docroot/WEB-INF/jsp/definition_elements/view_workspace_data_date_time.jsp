@@ -34,6 +34,10 @@
 %>
 <% //Date view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<jsp:useBean id="property_name" type="String" scope="request" />
+<jsp:useBean id="property_caption" type="String" scope="request" />
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssDefinitionEntry" type="org.kablink.teaming.domain.DefinableEntity" scope="request" />
 <c:if test="${empty ss_element_display_style}"><table></c:if>
 <tr>
   <td class="ss_table_spacer_right"><c:out value="${property_caption}" />:</td>

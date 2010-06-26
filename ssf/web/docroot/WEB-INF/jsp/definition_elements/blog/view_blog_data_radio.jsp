@@ -35,12 +35,15 @@
 <%@ page import="org.kablink.teaming.web.util.DefinitionHelper" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%
+	//Get the item being displayed
+	Element item = (Element) request.getAttribute("item");
+	String s_property_name = (String) request.getAttribute("property_name");
 	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
 	String radio = "";
 	if (thisEntry instanceof FolderEntry) {
-		radio = (String) ((FolderEntry)thisEntry).getCustomAttribute(property_name).getValue();
+		radio = (String) ((FolderEntry)thisEntry).getCustomAttribute(s_property_name).getValue();
 	} else if (thisEntry instanceof Map) {
-		radio = (String) ((Map)thisEntry).get(property_name);
+		radio = (String) ((Map)thisEntry).get(s_property_name);
 	}
 %>
 

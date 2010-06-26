@@ -36,12 +36,12 @@
 <% //Textarea view %>
 <% //NOTE: textarea's are currently not stored in the search index, so this is element is never shown. %>
 <%
+	String s_property_name = (String) request.getAttribute("property_name");
 	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
 	String text = "";
 	if (thisEntry instanceof DefinableEntity) {
-
-		text = (String) ((FolderEntry)thisEntry).getCustomAttribute(property_name).getValue();
-		 if (text != null && !text.equals("")) {
+		text = (String) ((FolderEntry)thisEntry).getCustomAttribute(s_property_name).getValue();
+		if (text != null && !text.equals("")) {
 		%>
 <% //Description view %>
 <div class="ss_entryContent">
@@ -54,7 +54,7 @@
   <div class="ss_clear"></div>
 <%  	}
  	} else if (thisEntry instanceof Map) {
-		text = (String) ((Map)thisEntry).get(property_name);
+		text = (String) ((Map)thisEntry).get(s_property_name);
 	 if (text != null && !text.equals("")) {	
 	 %>	
 <% //Description view %>

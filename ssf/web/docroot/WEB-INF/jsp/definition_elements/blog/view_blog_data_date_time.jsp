@@ -34,13 +34,14 @@
 %>
 <% //Date and time view %>
 <%
+	String s_property_name = (String) request.getAttribute("property_name");
 	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
 	if (thisEntry instanceof FolderEntry) {
 		%>
-		<c:set var="thisDate" value="<%= ((FolderEntry)thisEntry).getCustomAttribute(property_name).getValue() %>"/>
+		<c:set var="thisDate" value="<%= ((FolderEntry)thisEntry).getCustomAttribute(s_property_name).getValue() %>"/>
 		<%
 	} else if (thisEntry instanceof Map) {
-		String dateValue = (String) ((Map)thisEntry).get(property_name);
+		String dateValue = (String) ((Map)thisEntry).get(s_property_name);
 		java.util.Date date = null;
 		if (dateValue == null) dateValue = "";
 		if (dateValue.length() >= 14) {

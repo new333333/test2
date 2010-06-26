@@ -33,5 +33,9 @@
  */
 %>
 <% //Title view for folders %>
+<jsp:useBean id="property_name" type="String" scope="request" />
+<jsp:useBean id="property_caption" type="String" scope="request" />
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssDefinitionEntry" type="org.kablink.teaming.domain.DefinableEntity" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/view_binder_title.jsp" %>

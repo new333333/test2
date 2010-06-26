@@ -34,12 +34,13 @@
 %>
 <% //checkbox view %>
 <%
+	String s_property_name = (String) request.getAttribute("property_name");
 	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
 	String checkbox = "";
 	if (thisEntry instanceof FolderEntry) {
-		checkbox = (String) ((FolderEntry)thisEntry).getCustomAttribute(property_name).getValue();
+		checkbox = (String) ((FolderEntry)thisEntry).getCustomAttribute(s_property_name).getValue();
 	} else if (thisEntry instanceof Map) {
-		checkbox = (String) ((Map)thisEntry).get(property_name);
+		checkbox = (String) ((Map)thisEntry).get(s_property_name);
 	}
 %>
 <div class="ss_entryContent">
