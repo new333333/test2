@@ -50,8 +50,13 @@ import com.sun.star.beans.XPropertySet;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiComponentFactory;
 
+import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.docconverter.HtmlConverter;
 import org.kablink.teaming.docconverter.util.OpenOfficeHelper;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.web.util.MiscUtil;
 
 import org.springframework.beans.factory.DisposableBean;
@@ -270,4 +275,11 @@ public class HtmlOpenOfficeConverter
 	    
 	    return;
 	  }
+
+	@Override
+	public void deleteConvertedFile(Binder binder, DefinableEntity entry,
+			FileAttachment fa) throws UncheckedIOException,
+			RepositoryServiceException {
+		super.deleteConvertedFile(binder, entry, fa, this.HTML_SUBDIR, this.HTML_FILE_SUFFIX);
+	}
 }

@@ -88,6 +88,7 @@ import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.ContentFilter;
+import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.module.file.DeleteVersionException;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.FilesErrors;
@@ -200,6 +201,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	protected FolderModule getFolderModule() {
 		// Can't use IoC due to circular dependency
 		return (FolderModule) SpringContextUtil.getBean("folderModule");
+	}
+
+	protected ConvertedFileModule getConvertedFileModule() {
+		// Can't use IoC due to circular dependency
+		return (ConvertedFileModule) SpringContextUtil.getBean("convertedFileModule");
 	}
 
 	protected void initFailedFilterFile() {
@@ -677,6 +683,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	newTopVa.getParentAttachment().setMajorVersion(newTopVa.getMajorVersion());
     	newTopVa.getParentAttachment().setMinorVersion(newTopVa.getMinorVersion());
 
+    	getConvertedFileModule().deleteCacheHtmlFile(binder, entity, fa);
     	setEntityModification(entity);
     	entity.incrLogVersion();
     	ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY_REVERT);
@@ -906,6 +913,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		fa.setMajorVersion(highestVa.getMajorVersion());
 		fa.setMinorVersion(highestVa.getMinorVersion());
 		fa.setFileStatus(highestVa.getFileStatus());
+		getConvertedFileModule().deleteCacheHtmlFile(binder, entity, fa);
 		
 		// Since creation date is not really useful, we will leave it alone. 
 		
@@ -2137,6 +2145,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	Calendar now = Calendar.getInstance();
     	now.setTime(new Date());
 		entity.setModification(new HistoryStamp(user, now.getTime()));
+
+    }
+    
+    protected void setFileAttachmentModification(FileAttachment fa) {
+    	User user = RequestContextHolder.getRequestContext().getUser();
+    	Calendar now = Calendar.getInstance();
+    	now.setTime(new Date());
+		fa.setModification(new HistoryStamp(user, now.getTime()));
 
     }
 }

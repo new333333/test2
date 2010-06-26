@@ -40,6 +40,7 @@ import java.io.OutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.UncheckedIOException;
+import org.kablink.teaming.docconverter.HtmlConverter;
 import org.kablink.teaming.docconverter.IHtmlConverterManager;
 import org.kablink.teaming.docconverter.IImageConverterManager;
 import org.kablink.teaming.docconverter.ImageConverter;
@@ -48,6 +49,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.module.file.FileModule;
+import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.FileUtil;
 import org.springframework.util.FileCopyUtils;
@@ -86,6 +88,13 @@ public class ConvertedFileModuleImpl implements ConvertedFileModule {
 		this.fileModule = fileModule;
 	}
 
+	public void deleteCacheHtmlFile(
+			Binder binder, DefinableEntity entity, FileAttachment fa) 
+		throws UncheckedIOException, RepositoryServiceException {
+		
+		HtmlConverter converter = this.htmlConverterManager.getConverter();
+		converter.deleteConvertedFile(binder, entity, fa);
+	}
 	public void readScaledFile(Binder binder, DefinableEntity entry, 
 			FileAttachment fa, OutputStream out)
 	{

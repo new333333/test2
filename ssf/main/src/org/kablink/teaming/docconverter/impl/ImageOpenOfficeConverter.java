@@ -48,6 +48,10 @@ import java.io.IOException;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.docconverter.IImageConverterManager;
 import org.kablink.teaming.docconverter.ImageConverter;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.util.DirPath;
 import org.kablink.teaming.util.FileStore;
 import org.kablink.teaming.util.SPropsUtil;
@@ -196,5 +200,11 @@ public class ImageOpenOfficeConverter
 	 */
 	public void setConfigFileName(String configFileName) {
 		_configFileName = configFileName;
+	}
+
+	@Override
+	public void deleteConvertedFile(Binder binder, DefinableEntity entry,
+			FileAttachment fa) throws UncheckedIOException,
+			RepositoryServiceException {
 	}
 }

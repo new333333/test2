@@ -51,8 +51,13 @@ import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.uri.ExternalUriReferenceTranslator;
 import com.sun.star.connection.NoConnectException;
 
+import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.docconverter.TextConverter;
 import org.kablink.teaming.docconverter.util.OpenOfficeHelper;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.web.util.MiscUtil;
 
 import org.springframework.beans.factory.DisposableBean;
@@ -292,5 +297,11 @@ public class TextOpenOfficeConverter
 	 */
 	public String getAdditionalExclusionsKey() {
 		return "exclude.from.openoffice.indexing.extensions";
+	}
+
+	@Override
+	public void deleteConvertedFile(Binder binder, DefinableEntity entry,
+			FileAttachment fa) throws UncheckedIOException,
+			RepositoryServiceException {
 	}
 }
