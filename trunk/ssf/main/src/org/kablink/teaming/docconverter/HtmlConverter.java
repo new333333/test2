@@ -44,9 +44,11 @@ import java.net.URLEncoder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.util.FilePathUtil;
 import org.kablink.teaming.util.FileStore;
@@ -57,8 +59,8 @@ import org.springframework.util.FileCopyUtils;
 
 public abstract class HtmlConverter extends Converter<String>
 {
-	private static final String HTML_SUBDIR = "html";
-	private static final String HTML_FILE_SUFFIX = ".html";
+	protected static final String HTML_SUBDIR = "html";
+	protected static final String HTML_FILE_SUFFIX = ".html";
 	protected final Log logger = LogFactory.getLog(getClass());	
     
     /**
@@ -234,6 +236,10 @@ public abstract class HtmlConverter extends Converter<String>
 		return super.convert(binder, entry, fa, url, HTML_SUBDIR, HTML_FILE_SUFFIX);
 	}
 	
+	public void deleteCacheHtmlFile(Binder binder, DefinableEntity entity, FileAttachment fa) 
+			throws UncheckedIOException, RepositoryServiceException {
+		super.deleteConvertedFile(binder, entity, fa, HTML_SUBDIR, HTML_FILE_SUFFIX);
+	}
 	public InputStream getCachedFile(Binder binder, DefinableEntity entry, FileAttachment fa, String fileName)
 	throws IOException
 	{

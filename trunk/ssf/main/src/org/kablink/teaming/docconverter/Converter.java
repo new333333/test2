@@ -38,10 +38,12 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.module.file.FileModule;
+import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.util.FileCharsetDetectorUtil;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.FilePathUtil;
@@ -87,6 +89,20 @@ public abstract class Converter<T>
 	 */
 	public abstract void convert(String origFileName, String ifp, String ofp, long timeout, T parameters)
 		throws Exception;
+
+	public abstract void deleteConvertedFile(Binder binder, DefinableEntity entry, FileAttachment fa)
+	throws UncheckedIOException, RepositoryServiceException;
+	
+	protected void deleteConvertedFile(Binder binder, DefinableEntity entry, FileAttachment fa, String subdir, String suffix)
+			throws UncheckedIOException, RepositoryServiceException {
+		String relativeFilePath = fa.getFileItem().getName();
+		String filePath = FilePathUtil.getFilePath(binder, entry, fa, subdir, relativeFilePath);
+		String convertedFilePath = filePath + suffix;
+		File convertedFile = cacheFileStore.getFile(convertedFilePath);
+		if (convertedFile != null) {
+			convertedFile.delete();
+		}
+	}
 
 	/*
 	 * Direct subclasses (like TextConverter) will provide public convert() methods, which (for the most part)
