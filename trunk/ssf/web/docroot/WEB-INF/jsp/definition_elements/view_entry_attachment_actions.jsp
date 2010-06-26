@@ -144,6 +144,7 @@
 
 		<c:if test="${!ss_attachedFileIsVersion}">
 		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
+		<c:if test="${!ss_attachedFile.currentlyLocked}">
 			<ssf:ifSupportsEditInPlace relativeFilePath="${ss_attachedFile.fileItem.name}" browserType="<%=strBrowserType%>">
 				<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="applet">
 					<ssf:isFileEditorConfiguredForOS relativeFilePath="${ss_attachedFile.fileItem.name}" operatingSystem="<%= operatingSystem %>">
@@ -188,6 +189,7 @@
 				</ssf:editorTypeToUseForEditInPlace>
 			
 			</ssf:ifSupportsEditInPlace>
+		  </c:if>
 		  </c:if>
 		  </c:if>
 		
