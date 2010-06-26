@@ -34,12 +34,13 @@
 %>
 <% //Text view %>
 <%
+	String s_property_name = (String) request.getAttribute("property_name");
 	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
 	String text = "";
 	if (thisEntry instanceof FolderEntry) {
-		text = (String) ((FolderEntry)thisEntry).getCustomAttribute(property_name).getValue();
+		text = (String) ((FolderEntry)thisEntry).getCustomAttribute(s_property_name).getValue();
 	} else if (thisEntry instanceof Map) {
-		text = (String) ((Map)thisEntry).get(property_name);
+		text = (String) ((Map)thisEntry).get(s_property_name);
 	}
 %>
 <div class="ss_entryContent">

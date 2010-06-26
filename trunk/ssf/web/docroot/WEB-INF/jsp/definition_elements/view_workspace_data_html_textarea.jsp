@@ -34,6 +34,10 @@
 %>
 <% //Textarea view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<jsp:useBean id="property_name" type="String" scope="request" />
+<jsp:useBean id="property_caption" type="String" scope="request" />
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssDefinitionEntry" type="org.kablink.teaming.domain.DefinableEntity" scope="request" />
 <div class="ss_entryContent">
  <span>
 <c:out value="${ssDefinitionEntry.customAttributes[property_name].value.text}" escapeXml="false"/>

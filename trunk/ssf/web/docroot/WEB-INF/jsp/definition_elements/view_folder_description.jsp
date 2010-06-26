@@ -34,6 +34,10 @@
 %>
 <% //Description view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<jsp:useBean id="property_name" type="String" scope="request" />
+<jsp:useBean id="property_caption" type="String" scope="request" />
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssDefinitionEntry" type="org.kablink.teaming.domain.DefinableEntity" scope="request" />
 <c:if test="${property_viewType == 'top'}">
   <c:if test="${!empty ssBlogSetBinder.description}">
     <div class="ss_entryContent">

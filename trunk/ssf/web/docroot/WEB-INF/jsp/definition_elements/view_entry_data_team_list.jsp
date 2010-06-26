@@ -34,6 +34,9 @@
 %>
 <% //team_list view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%
+String s_property_name = (String) request.getAttribute("property_name");
+%>
 
 <c:set var="teamlist_entry" value="${ssDefinitionEntry}"/>
 <jsp:useBean id="teamlist_entry" type="org.kablink.teaming.domain.Entry" />
@@ -42,7 +45,7 @@
 <div class="ss_entryContent">
 <span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
 <ul class="ss_nobullet">
-<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getBinders(teamlist_entry.getCustomAttribute(property_name)) %>" >
+<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getBinders(teamlist_entry.getCustomAttribute(s_property_name)) %>" >
 	<li><ssf:showTeam team="${selection}" showPresence="true"/></li>
 </c:forEach>
 </ul>
@@ -57,7 +60,7 @@
   </td>
   <td valign="top" align="left">
 	<ul class="ss_nobullet">
-	<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getBinders(teamlist_entry.getCustomAttribute(property_name)) %>" >
+	<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getBinders(teamlist_entry.getCustomAttribute(s_property_name)) %>" >
  	 <li><ssf:showTeam team="${selection}" showPresence="true"/></li>
 	</c:forEach>
 	</ul>

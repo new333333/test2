@@ -34,13 +34,14 @@
 %>
 <%@ page import="org.kablink.teaming.search.SearchFieldResult" %>
 <%
+	String s_property_name = (String) request.getAttribute("property_name");
 	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
 	java.util.Set placesIds = new java.util.HashSet();
 	if (thisEntry instanceof FolderEntry) {
-		CustomAttribute attr = ((FolderEntry)thisEntry).getCustomAttribute(property_name);
+		CustomAttribute attr = ((FolderEntry)thisEntry).getCustomAttribute(s_property_name);
 		if (attr != null) placesIds = attr.getValueSet();
 	} else if (thisEntry instanceof Map) {
-		Object valueObj = (Object) ((Map)thisEntry).get(property_name);
+		Object valueObj = (Object) ((Map)thisEntry).get(s_property_name);
 		if (valueObj != null && valueObj instanceof String) {
 			placesIds.add(valueObj);
 		} else if (valueObj != null && valueObj instanceof SearchFieldResult) {
