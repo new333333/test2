@@ -496,7 +496,15 @@ function ss_openUrlInPortlet(url, popup, width, height) {
 function ss_openTitleUrl(obj, showInParent) {
 	if (showInParent != null && showInParent) {
 		try {
-			//This is a request to just open the url in the parent (if it exists)
+			//This is a request to just open the url in the parent (if it exists and if not in the content frame)
+			var windowName = self.window.name    
+			if (windowName.indexOf("gwtContentIframe") == 0) {
+				self.location.href = obj.href;
+				return false;
+			} else if (typeof top.window.frames["gwtContentIframe"] != "undefined") {
+				top.window.frames["gwtContentIframe"].location.href = obj.href;
+				return false;
+			}
 			if (self != self.parent) {
 				self.parent.location.href = obj.href;
 			} else {
