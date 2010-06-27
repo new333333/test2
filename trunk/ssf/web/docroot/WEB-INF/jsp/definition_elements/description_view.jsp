@@ -53,7 +53,7 @@
   <c:set var="textFormat" value="${ssDefinitionEntry.description.format}"/>
 </c:if>
 <c:if test="${!empty ssDefinitionEntry.description.text}">
-    <c:if test="${ssDefinitionEntry.top}">
+    <c:if test="${ssDefinitionEntry.entityType != 'folderEntry' || ssDefinitionEntry.top}">
     <div id="descriptionRegionImg${ss_divCounter}" align="right" style="display:none; width:100%;">
       <a href="javascript: ;" 
         onClick="ss_toggleRegion(this, 'descriptionRegion${ss_divCounter}', 'descriptionRegion', 'wg-description-content', 200);return false;" 

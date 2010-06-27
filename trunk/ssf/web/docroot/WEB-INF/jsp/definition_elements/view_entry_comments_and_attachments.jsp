@@ -56,19 +56,24 @@ function ss_showHideEntryHistoryDiv${ss_divCounter}(iframeId) {
 }
 
 var ss_entryHistoryIframeOffset = 50;
-function ss_resizeEntryHistoryIframe(iframeId) {
+function ss_resizeEntryHistoryIframe(iframeId, loadingId) {
+	var iframeDiv = document.getElementById(iframeId)
+	if (typeof loadingId != "undefined" && iframeDiv.src.indexOf("null.html") < 0) {
+		var spanObj = self.document.getElementById(loadingId);
+		if (spanObj != null) spanObj.style.display = "none";
+	}
 	try {
-		var iframeDiv = document.getElementById(iframeId)
 		eval("var iframeHeight = parseInt(window." + iframeId + ".document.body.scrollHeight);")
 		if (typeof iframeDiv.style.height == "undefined" || iframeDiv.style.height == "" || 
-				(iframeHeight > 200 && parseInt(iframeDiv.style.height) != iframeHeight)) {
+				(iframeHeight > 200 && 
+				 parseInt(iframeDiv.style.height) != parseInt(iframeHeight + ss_entryHistoryIframeOffset))) {
 			iframeDiv.style.height = parseInt(iframeHeight + ss_entryHistoryIframeOffset) + "px"
 			//Signal that the layout changed
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 			if (self.parent.ssf_onLayoutChange) self.parent.ssf_onLayoutChange();
 			if (self.parent.parent.ssf_onLayoutChange) self.parent.parent.ssf_onLayoutChange();
 		}
-	} catch(e) {}
+	} catch(e) {alert(e)}
 }
 </script>
 <%
@@ -185,8 +190,10 @@ ss_createOnLoadObj("commentsAndAttachmentsRegion${ss_divCounter}", function() {
 
 <c:if test="${ssDefinitionEntry.top}">
 <div id="viewEntryHistory${ss_tabDivCount}Div" style="display:none;">
+  <div id="viewEntryHistory${ss_tabDivCount}loading" 
+    style="text-align:center;font-weight:bold;display:block;width:100%;"><ssf:nlt tag="Loading"/></div>
   <iframe id="viewEntryHistory${ss_tabDivCount}Iframe" name="viewEntryHistory${ss_tabDivCount}Iframe" 
-    onLoad="ss_resizeEntryHistoryIframe('viewEntryHistory${ss_tabDivCount}Iframe')" 
+    onLoad="ss_resizeEntryHistoryIframe('viewEntryHistory${ss_tabDivCount}Iframe', 'viewEntryHistory${ss_tabDivCount}loading')" 
     src="<html:rootPath/>js/forum/null.html" class="wg-tab-iframe" >xxx</iframe>
 </div>
 <script type="text/javascript">
