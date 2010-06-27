@@ -326,6 +326,11 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		self.location.href = obj.href;
 	}
 }
+function ss_navbarUnload() {
+	//Call the GWT parent to clear any context specific menu items
+	if (typeof preContextSwitch != "undefined") preContextSwitch();
+}
+ss_createEventObj('ss_navbarUnload', 'unload', ss_navbarUnload);
 </script>
 <c:if test="${(!ss_mashupHideMasthead || ss_mashupShowBranding || 
 	ss_mashupShowFavoritesAndTeams) && (empty ss_captive || !ss_captive)}">

@@ -1597,8 +1597,8 @@ function ss_createEventObj(function_name, event_name, function_def) {
         //eval("self.document.captureEvents(Event."+event_name+")")
     }
     if (ss_eventList[fn].eventName.toLowerCase() == "unload") {
-    	//Add the unload event to the body object
-    	eval("self.document.body.on"+ss_eventList[fn].eventName.toLowerCase()+" = ssf_event_handler;")
+    	//Add the unload event
+    	window.onunload = ssf_event_handler;
     } else {
     	eval("self.document.on"+ss_eventList[fn].eventName.toLowerCase()+" = ssf_event_handler;")
     }
