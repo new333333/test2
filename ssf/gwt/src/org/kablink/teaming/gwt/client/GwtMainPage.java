@@ -75,10 +75,10 @@ public class GwtMainPage extends Composite
 {
 	public static boolean m_novellTeaming = true;
 	public static RequestInfo m_requestInfo;
+	public static ContentControl m_contentCtrl;
 
 	private boolean m_inSearch = false;
 	private String m_searchTabId = "";
-	private ContentControl m_contentCtrl;
 	private EditBrandingDlg m_editBrandingDlg = null;
 	private PersonalPreferencesDlg m_personalPrefsDlg = null;
 	private LoginDlg m_loginDlg = null;
@@ -633,7 +633,9 @@ public class GwtMainPage extends Composite
 									 */
 									public void onSuccess( Boolean result )
 									{
-										// Nothing to do.
+										// The personal preferences affect how things are displayed in the content frame.
+										// So we need to reload the page in the content frame.
+										reloadContentPanel();
 									}// end onSuccess()
 								};
 							}
@@ -1217,7 +1219,7 @@ public class GwtMainPage extends Composite
 		{
 			String url = ((String) obj);
 			if (submitToContentFrame)
-				 GwtClientHelper.jsLoadUrlInContentFrame( url );
+				 GwtClientHelper.loadUrlInContentFrame( url );
 			else Window.Location.replace(                 url );
 		}
 		else
@@ -1315,7 +1317,7 @@ public class GwtMainPage extends Composite
 			// What are we searching for?
 			searchFor = ((null == obj ) ? "" : GwtClientHelper.jsEncodeURIComponent((String) obj));
 			String searchUrl = (m_requestInfo.getSimpleSearchUrl() + "&searchText=" + searchFor);
-			GwtClientHelper.jsLoadUrlInContentFrame(searchUrl);
+			GwtClientHelper.loadUrlInContentFrame(searchUrl);
 		}
 		else
 			Window.alert( "in simpleSearch() and obj is not a String object" );
@@ -1330,7 +1332,7 @@ public class GwtMainPage extends Composite
 	private void advancedSearch()
 	{
 		String searchUrl = (m_requestInfo.getAdvancedSearchUrl() + "&binderId=" + m_selectedBinderId);
-		GwtClientHelper.jsLoadUrlInContentFrame(searchUrl);
+		GwtClientHelper.loadUrlInContentFrame(searchUrl);
 	}//end advancedSearch()
 	
 	/*
@@ -1348,7 +1350,7 @@ public class GwtMainPage extends Composite
 			// What's the name of the saved search?
 			searchFor = ((null == obj ) ? "" : GwtClientHelper.jsEncodeURIComponent((String) obj));
 			String searchUrl = (m_requestInfo.getSavedSearchUrl() + "&ss_queryName=" + searchFor);
-			GwtClientHelper.jsLoadUrlInContentFrame(searchUrl);
+			GwtClientHelper.loadUrlInContentFrame(searchUrl);
 		}
 		else
 			Window.alert( "in savedSearch() and obj is not a String object" );
@@ -1369,7 +1371,7 @@ public class GwtMainPage extends Composite
 			// What tab is the recent place search for?
 			searchFor = ((Integer) obj);
 			String searchUrl = (m_requestInfo.getRecentPlaceSearchUrl() + "&tabId=" + String.valueOf(searchFor.intValue()));
-			GwtClientHelper.jsLoadUrlInContentFrame(searchUrl);
+			GwtClientHelper.loadUrlInContentFrame(searchUrl);
 		}
 		else
 			Window.alert( "in recentPlaceSearch() and obj is not an Integer object" );
@@ -1403,7 +1405,7 @@ public class GwtMainPage extends Composite
 			// What's the tag to be searched?
 			tagName = ((null == obj ) ? "" : GwtClientHelper.jsEncodeURIComponent((String) obj));
 			String searchUrl = GwtClientHelper.jsBuildTagSearchUrl(tagName);
-			GwtClientHelper.jsLoadUrlInContentFrame(searchUrl);
+			GwtClientHelper.loadUrlInContentFrame(searchUrl);
 		}
 		else
 			Window.alert( "in tagSearch() and obj is not a String object" );
@@ -1476,6 +1478,16 @@ public class GwtMainPage extends Composite
 		}
 	}// end relayoutPage()
 
+	
+	/**
+	 * Reload the page currently displayed in the content panel.
+	 */
+	public void reloadContentPanel()
+	{
+		m_contentCtrl.reload();
+	}// end reloadContentPanel()
+	
+	
 	/*
 	 * Does what's necessary to wire the GwtMainPage to an
 	 * ActionRequestor.

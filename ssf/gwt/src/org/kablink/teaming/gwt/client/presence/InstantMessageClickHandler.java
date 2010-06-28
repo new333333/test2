@@ -62,7 +62,7 @@ public class InstantMessageClickHandler implements ClickHandler {
 
 								public void onSuccess(String url) {
 									if (url != null && url.length() > 0) {
-										GwtClientHelper.jsLoadUrlInContentFrame(url);
+										GwtClientHelper.loadUrlInContentFrame(url);
 									}
 								}
 							});

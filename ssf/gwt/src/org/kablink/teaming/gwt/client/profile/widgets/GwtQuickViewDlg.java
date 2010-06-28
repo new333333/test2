@@ -633,7 +633,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 
 				public void onSuccess(String url) {
 					if(GwtClientHelper.hasString(url)) {
-						//GwtClientHelper.jsLoadUrlInContentFrame(url);
+						//GwtClientHelper.loadUrlInContentFrame(url);
 						GwtClientHelper.jsLaunchUrlInWindow(url,"_blank", 500, 500);
 						hide();
 					}

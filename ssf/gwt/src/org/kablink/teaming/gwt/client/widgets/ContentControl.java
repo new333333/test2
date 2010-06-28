@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.FrameElement;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.NamedFrame;
@@ -92,6 +93,25 @@ public class ContentControl extends Composite
 	}
 	
 	/**
+	 * Reload the page that is currently being displayed.
+	 */
+	public void reload()
+	{
+		String url;
+		
+		// Clear the iframe content.
+		clear();
+		
+		// Remember the current url.
+		url = m_frame.getUrl();
+
+		// Reload the url.
+		setUrl( "" );
+		setUrl( url );
+	}// end reload()
+	
+	
+	/**
 	 * Set the width and height of this control.
 	 */
 	public void setDimensions( int width, int height )
@@ -106,4 +126,5 @@ public class ContentControl extends Composite
 	{
 		m_frame.setUrl( url );
 	}// end setUrl()
+
 }// end ContentControl
