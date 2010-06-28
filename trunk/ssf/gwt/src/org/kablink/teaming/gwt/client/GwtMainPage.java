@@ -766,6 +766,11 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case LOGOUT:
+			// If the user has gone into the administration page, tell the administration page
+			// to do whatever cleanup it needs to do.
+			if ( m_adminControl != null )
+				m_adminControl.doPreLogoutCleanup();
+			
 			GwtClientHelper.jsLogout();
 			break;
 			

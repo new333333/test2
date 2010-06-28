@@ -825,6 +825,20 @@ public class AdminControl extends Composite
 
 	
 	/**
+	 * For some reason if we try to logout while the "configure ldap" page is still loaded
+	 * we see an error in IE.  So clear the content panel.
+	 */
+	public void doPreLogoutCleanup()
+	{
+		// Clear the iframe's content 
+		m_contentControl.clear();
+		
+		// Set the iframe's content to nothing.
+		m_contentControl.setUrl( "" );
+	}// end doPreLogoutCleanup()
+	
+	
+	/**
 	 * Issue an ajax request to get the upgrade information from the server.
 	 */
 	public void getUpgradeInfoFromServer( AsyncCallback<GwtUpgradeInfo> callback )
