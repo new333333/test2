@@ -296,7 +296,7 @@ function ss_resizeIframeArea() {
 	<div class="marginbottom3">
 		<span class="ss_style"><ssf:nlt tag="entry.version.instructions"/></span>
 	</div>
-<form class="ss_style ss_form" method="post" action="<ssf:url     
+	<form class="ss_style ss_form" method="post" action="<ssf:url     
 		adapter="true" 
 		portletName="ss_forum" 
 		action="view_editable_history" 
@@ -306,134 +306,128 @@ function ss_resizeIframeArea() {
 		</ssf:url>"
 >
 
-
-<div id="compare-button" class="marginbottom3">
-	<table cellpadding="0" cellspacing="0">
-		<tr
-			<td>
-				<div><input class="n-button" type="button" name="compareBtn" id="compareBtn" value="<ssf:nlt tag="button.compare"/>" disabled="true" onclick="dodiff();"/></div>
-			</td>
-			<td>
-				<div style="display:inline-block"><img class="n-button-right" src="<html:imagesPath/>pics/1pix.gif" border="0" ></div>
-			</td>
-			<td>
-				<span class="ss_style"><ssf:nlt tag="entry.version.compare"/></span>
-			</td>
+	<div id="compare-button" class="marginbottom3">
+		<table cellpadding="0" cellspacing="0">
+			<tr>
+				<td>
+					<div><input class="n-button" type="button" name="compareBtn" id="compareBtn" value="<ssf:nlt tag="button.compare"/>" disabled="true" onclick="dodiff();"/></div>
+				</td>
+				<td>
+					<img class="n-button-right" src="<html:imagesPath/>pics/1pix.gif" border="0" >
+				</td>
+				<td>
+					<span class="ss_style"><ssf:nlt tag="entry.version.compare"/></span>
+				</td>
+			</tr>	
 		</table>	
-</div>
+	</div>
 
-<table class="ss_style" cellpadding="0" cellspacing="0">
-<tr class="ss_tab_table_columnhead">
-<td colspan="2"><ssf:nlt tag="entry.Version"/></td>
-<td><ssf:nlt tag="entry.modifiedOn"/></td>
-<td><ssf:nlt tag="entry.modifiedBy"/></td>
-<td><ssf:nlt tag="entry.change"/></td>
-<td colspan="2"></th>
-</tr>
+	<table class="ss_style" cellpadding="0" cellspacing="0">
+		<tr class="ss_tab_table_columnhead">
+			<td colspan="2"><ssf:nlt tag="entry.Version"/></td>
+			<td><ssf:nlt tag="entry.modifiedOn"/></td>
+			<td><ssf:nlt tag="entry.modifiedBy"/></td>
+			<td><ssf:nlt tag="entry.change"/></td>
+			<td colspan="2">&nbsp;</td>
+		</tr>
+	
+		<c:forEach var="change" items="${ss_changeLogList}" varStatus="status">
+		<tr class="ss_tab_table_row">
+			<td>
+			  <input type="checkbox" id="compare${change.folderEntry.attributes.logVersion}"
+			  onChange="ss_updateCompareButton('${fn:length(ss_changeLogList)}')"
+			  onClick="ss_updateCompareButton('${fn:length(ss_changeLogList)}')"
+			  >
+			</td>
+			<td>
+			  <span>${change.folderEntry.attributes.logVersion}</span>
+			</td>
+			<td>
+			<a href="javascript: ;"
+				onClick="ss_showHide('historyVersion_${status.count}');ss_resizeIframeArea();return false;"
+				title="<ssf:nlt tag="entry.modifiedView"/>"
+				><fmt:formatDate timeZone="${ssUser.timeZone.ID}" type="both" value="${change.changeLog.operationDate}"/>
+			</a>
+			</td>
+			<td>
+			  <ssf:showUser user="${change.changeLogEntry.modification.principal}"/>
+			</td>
+			<td>
+			  <div><ssf:nlt tag="changeLog.operation.${change.operation}"/></div>
+			</td>		
+			<td colspan="2">
+			  <a class="ss_tinyButton"
+				href="<ssf:url><ssf:param 
+				name="action" value="view_editable_history"/><ssf:param 
+				name="operation" value="revert"/><ssf:param 
+				name="entityId" value="${ss_entityId}"/><ssf:param 
+				name="versionId" value="${change.folderEntry.attributes.logVersion}"/></ssf:url>"
+				alt="<ssf:nlt tag="entry.comparison.revert"/>"
+				title="<ssf:nlt tag="entry.comparison.revert"/>"
+				><ssf:nlt tag="entry.revert"/></a>
+			</td>
+		</tr>
+		<tr>
+			 <td colspan="7">
+			   <c:if test="${!empty change.changeLogEntry}">
+				<c:set var="changeLogEntry" value="${change.changeLogEntry}"/>
+				<jsp:useBean id="changeLogEntry" type="org.kablink.teaming.domain.DefinableEntity" />
+				<% 
+					Element configEle = (Element)changeLogEntry.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryView']");
+				%>
+				<c:set var="configEle" value="<%= configEle %>" />
+				<div id="historyVersion_${status.count}" style="display:none; padding:10px; border: 1px solid #333; background-color: #fff; margin-bottom: 5px;">
+					<c:if test="${!empty configEle}">
+					  <c:set var="ssBinderOriginalFromDescriptionHistory" value="${ssBinder}" />
+					  <c:set var="ssBinder" value="${changeLogEntry.parentBinder}" scope="request"/>
+					  <c:set var="ssEntryOriginalFromDescriptionHistory" value="${ssEntry}" />
+					  <c:set var="ssEntry" value="${changeLogEntry}" scope="request"/>
+					  <c:set var="ss_pseudoEntity" value="true" scope="request"/>
+					  <ssf:displayConfiguration 
+						configDefinition="${changeLogEntry.entryDef.definition}" 
+						configElement="<%= configEle %>"
+						configJspStyle="view" 
+						entry="${changeLogEntry}" 
+						processThisItem="true" />
+					  <c:set var="ssBinder" value="${ssBinderOriginalFromDescriptionHistory}" scope="request"/>
+					  <c:set var="ssEntry" value="${ssEntryOriginalFromDescriptionHistory}" scope="request"/>
+					</c:if>
+				</div>
+			   </c:if>
+			  <div style="display:none;">
+				<span class="ss_entryTitle" id="title${change.folderEntry.attributes.logVersion}">
+				  ${change.folderEntry.attribute.title.value}
+				</span>
+			  </div>
+			  <div style="display:none;" class="ss_entryContent ss_entryDescription" id="desc${change.folderEntry.attributes.logVersion}">
+				<ssf:markup entity="${changeLogEntry}">${change.folderEntry.attribute.description.value}</ssf:markup>
+			  </div>
+			 </td>
+		</tr>
+		</c:forEach>
+	</table>
+	
+	<div class="margintop2 marginbottom3">
+	  <input class="ss_tinyButton" style="border: 0px; font-size: 11px;" type="button" name="clearAllBtn" value="<ssf:nlt tag="button.deselectAll"/>" onclick="clearAllCheckboxes();"/>
+	</div>
+	</form>
 
-<c:forEach var="change" items="${ss_changeLogList}" varStatus="status">
-<tr class="ss_tab_table_row">
-<td>
-  <input type="checkbox" id="compare${change.folderEntry.attributes.logVersion}"
-  onChange="ss_updateCompareButton('${fn:length(ss_changeLogList)}')"
-  onClick="ss_updateCompareButton('${fn:length(ss_changeLogList)}')"
-  >
-</td>
-<td>
-  <span>${change.folderEntry.attributes.logVersion}</span>
-</td>
-<td>
-<a href="javascript: ;"
-	onClick="ss_showHide('historyVersion_${status.count}');ss_resizeIframeArea();return false;"
-	title="<ssf:nlt tag="entry.modifiedView"/>"
-	><fmt:formatDate timeZone="${ssUser.timeZone.ID}" type="both" value="${change.changeLog.operationDate}"/>
-</a>
-</td>
-<td>
-  <ssf:showUser user="${change.changeLogEntry.modification.principal}"/>
-</td>
-<td>
-  <div><ssf:nlt tag="changeLog.operation.${change.operation}"/></div>
-</td>
-<td>
-</td>
-<td>
-  <a class="ss_tinyButton"
-    href="<ssf:url><ssf:param 
-	name="action" value="view_editable_history"/><ssf:param 
-	name="operation" value="revert"/><ssf:param 
-	name="entityId" value="${ss_entityId}"/><ssf:param 
-	name="versionId" value="${change.folderEntry.attributes.logVersion}"/></ssf:url>"
-	alt="<ssf:nlt tag="entry.comparison.revert"/>"
-	title="<ssf:nlt tag="entry.comparison.revert"/>"
-	><ssf:nlt tag="entry.revert"/></a>
-</td>
-</tr>
-<tr>
- <td></td>
- <td colspan="7">
-   <c:if test="${!empty change.changeLogEntry}">
-    <c:set var="changeLogEntry" value="${change.changeLogEntry}"/>
-	<jsp:useBean id="changeLogEntry" type="org.kablink.teaming.domain.DefinableEntity" />
-	<% 
-		Element configEle = (Element)changeLogEntry.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryView']");
-	%>
-	<c:set var="configEle" value="<%= configEle %>" />
-    <div id="historyVersion_${status.count}" style="display:none; padding:10px; border: 1px solid #333; background-color: #fff; margin-bottom: 5px;">
-		<c:if test="${!empty configEle}">
-		  <c:set var="ssBinderOriginalFromDescriptionHistory" value="${ssBinder}" />
-		  <c:set var="ssBinder" value="${changeLogEntry.parentBinder}" scope="request"/>
-		  <c:set var="ssEntryOriginalFromDescriptionHistory" value="${ssEntry}" />
-		  <c:set var="ssEntry" value="${changeLogEntry}" scope="request"/>
-		  <c:set var="ss_pseudoEntity" value="true" scope="request"/>
-		  <ssf:displayConfiguration 
-		    configDefinition="${changeLogEntry.entryDef.definition}" 
-		    configElement="<%= configEle %>"
-		    configJspStyle="view" 
-		    entry="${changeLogEntry}" 
-		    processThisItem="true" />
-		  <c:set var="ssBinder" value="${ssBinderOriginalFromDescriptionHistory}" scope="request"/>
-		  <c:set var="ssEntry" value="${ssEntryOriginalFromDescriptionHistory}" scope="request"/>
-		</c:if>
-    </div>
-   </c:if>
-  <div style="display:none;">
-    <span class="ss_entryTitle" id="title${change.folderEntry.attributes.logVersion}">
-      ${change.folderEntry.attribute.title.value}
-    </span>
-  </div>
-  <div style="display:none;" class="ss_entryContent ss_entryDescription" id="desc${change.folderEntry.attributes.logVersion}">
-    <ssf:markup entity="${changeLogEntry}">${change.folderEntry.attribute.description.value}</ssf:markup>
-  </div>
- </td>
-</tr>
-</c:forEach>
-</table>
-
-<div class="margintop2 marginbottom3">
-  <input class="ss_tinyButton" style="border: 0px; font-size: 11px;" type="button" name="clearAllBtn" value="<ssf:nlt tag="button.deselectAll"/>" onclick="clearAllCheckboxes();"/>
-</div>
-</form>
-<br/>
-<br/>
-
-<div id ="diff" style="display:none">
-<h3 id="diff-header"><ssf:nlt tag="entry.comparison">
-  <ssf:param name="value" value="<span id=\"versionNumberA\">x</span>"/>
-  <ssf:param name="value" value="<span id=\"versionNumberB\">x</span>"/>
-  </ssf:nlt>
-</h3>
-<h4 id="diff-key">
-  <ssf:nlt tag="entry.comparison.key"/>
-  <br/>
-  <ssf:nlt tag="entry.comparison.note"/>
-</h4>
-
-<div class="ss_labelAbove"><ssf:nlt tag="general.title"/></div>
-<div id="diff-title" class="ss_entryTitle"></div>
-<div class="ss_labelAbove" style="padding-top:12px;"><ssf:nlt tag="__description"/></div>
-<div id="diff-desc" class="ss_entryContent ss_entryDescription"></div>
-</div>
+	<div id ="diff" class="ss_diff_content" style="display:none;">
+		<div id="diff-header" class="head2"><ssf:nlt tag="entry.comparison">
+		  <ssf:param name="value" value="<span id=\"versionNumberA\">x</span>"/>
+		  <ssf:param name="value" value="<span id=\"versionNumberB\">x</span>"/>
+		  </ssf:nlt>
+		</div>
+		<div id="diff-key" class="marginleft1">
+			<span style="padding: 3px;"><ssf:nlt tag="entry.comparison.key"/></span>
+			<span><ssf:nlt tag="entry.comparison.note"/>></span>
+		</div>
+	
+		<div class="head2 margintop3"><ssf:nlt tag="general.title"/></div>
+		<div id="diff-title" class="ss_entryTitle"></div>
+		<div class="head2 margintop2"><ssf:nlt tag="__description"/></div>
+		<div id="diff-desc" class="ss_entryContent ss_entryDescription"></div>
+	</div>
 
 </ssf:form>
 </div>
