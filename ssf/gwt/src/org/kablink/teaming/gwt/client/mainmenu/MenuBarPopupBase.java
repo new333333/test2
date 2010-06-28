@@ -174,6 +174,10 @@ public abstract class MenuBarPopupBase extends PopupPanel {
 	final public void addSpacerMenuItem() {
 		FlowPanel spacerPanel = new FlowPanel();
 		spacerPanel.addStyleName("mainMenuPopup_ItemSpacer");
+		if (GwtClientHelper.jsIsIE()) {
+			Image spacerContent = new Image(m_images.spacer1px());
+			spacerPanel.add(spacerContent);
+		}
 		addContentWidget(spacerPanel);
 		m_spacerNeeded = false;
 	}
