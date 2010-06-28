@@ -95,9 +95,9 @@
 				if (iframeMinimum < 100) iframeMinimum = 100;
 				if (window.frames['gwtContentIframe'] != null) {
 					var iframeHeight = window.gwtContentIframe.document.body.scrollHeight;
-					if (iframeHeight > iframeMinimum) {
-						if (parseInt(iframeDiv.style.height) != parseInt(iframeHeight + ss_workareaIframeOffset)) {
-							iframeDiv.style.height = parseInt(iframeHeight + ss_workareaIframeOffset) + "px";
+					if (0 == 1 && iframeHeight > iframeMinimum) {
+						if (parseInt(iframeDiv.style.height) != parseInt(iframeHeight)) {
+							iframeDiv.style.height = parseInt(iframeHeight) + "px";
 						}
 					} else {
 						if (parseInt(iframeDiv.style.height) != parseInt(iframeMinimum)) {
@@ -106,6 +106,7 @@
 					}
 				}
 			} catch(e) {
+				//alert('Error during frame resizing: ' + e)
 			}
 		}
 
